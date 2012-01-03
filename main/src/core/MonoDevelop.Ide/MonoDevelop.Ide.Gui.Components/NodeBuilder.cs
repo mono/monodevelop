@@ -27,8 +27,6 @@
 //
 
 using System;
-using System.Text;
-using System.Collections.Generic;
 
 using MonoDevelop.Core;
 
@@ -147,75 +145,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 			
 			return (nodeAttr & attr) != 0;
-		}
-		
-		
-		static Dictionary<char, string> MarkupSpecials;
-		
-		static NodeBuilder ()
-		{
-			byte c;
-			
-			MarkupSpecials = new Dictionary<char, string> ();
-			MarkupSpecials.Add ('\'', "&apos;");
-			MarkupSpecials.Add ('"', "&quot;");
-			MarkupSpecials.Add ('&', "&amp;");
-			MarkupSpecials.Add ('<', "&lt;");
-			MarkupSpecials.Add ('>', "&gt;");
-			
-			// Escape control characters.
-			for (c = 0x1; c <= 0x8; c++)
-				MarkupSpecials.Add ((char) c, string.Format ("&#0x{0:x};", c));
-			for (c = 0xb; c <= 0xc; c++)
-				MarkupSpecials.Add ((char) c, string.Format ("&#0x{0:x};", c));
-			for (c = 0xe; c <= 0x1f; c++)
-				MarkupSpecials.Add ((char) c, string.Format ("&#0x{0:x};", c));
-			for (c = 0x7f; c <= 0x84; c++)
-				MarkupSpecials.Add ((char) c, string.Format ("&#0x{0:x};", c));
-			for (c = 0x86; c <= 0x9f; c++)
-				MarkupSpecials.Add ((char) c, string.Format ("&#0x{0:x};", c));
-		}
-		
-		static int EscapedLength (string text, out int first)
-		{
-			int length = text.Length;
-			string escaped;
-			
-			first = -1;
-			
-			for (int i = 0; i < text.Length; i++) {
-				if (MarkupSpecials.TryGetValue (text[i], out escaped)) {
-					if (first == -1)
-						first = i;
-					
-					length += escaped.Length;
-				}
-			}
-			
-			return length;
-		}
-		
-		protected static string EscapeTextForMarkup (string text)
-		{
-			StringBuilder sb;
-			int length, i;
-			
-			if ((length = EscapedLength (text, out i)) == text.Length)
-				return text;
-			
-			sb = new StringBuilder (text, 0, i, length);
-			while (i < text.Length) {
-				string escaped;
-				
-				if (MarkupSpecials.TryGetValue (text[i], out escaped))
-					sb.Append (escaped);
-				else
-					sb.Append (text[i]);
-				
-				i++;
-			}
-			
-			return sb.ToString ();
 		}
 	}
 }

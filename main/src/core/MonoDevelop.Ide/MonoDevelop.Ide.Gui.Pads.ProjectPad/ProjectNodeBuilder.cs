@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			Project p = dataObject as Project;
 			
-			string escapedProjectName = EscapeTextForMarkup (p.Name);
+			string escapedProjectName = GLib.Markup.EscapeText (p.Name);
 			string iconName;
 			
 			if (p is DotNetProject && ((DotNetProject)p).LanguageBinding == null) {
