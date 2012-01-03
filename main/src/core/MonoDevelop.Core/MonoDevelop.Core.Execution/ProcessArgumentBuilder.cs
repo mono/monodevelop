@@ -200,6 +200,7 @@ namespace MonoDevelop.Core.Execution
 					}
 					
 					args.Add (argument);
+					i = j;
 				}
 				
 				i++;
