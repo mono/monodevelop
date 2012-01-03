@@ -23,8 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -33,7 +35,7 @@ namespace MonoDevelop.Core.Execution
 	/// </summary>
 	public class ProcessArgumentBuilder
 	{
-		System.Text.StringBuilder sb = new System.Text.StringBuilder ();
+		StringBuilder sb = new StringBuilder ();
 		
 		public string ProcessPath {
 			get; private set;
@@ -131,6 +133,100 @@ namespace MonoDevelop.Core.Execution
 					sb.Append ('\\');
 				sb.Append (c);
 			}
+		}
+		
+		static string GetArgument (StringBuilder builder, string buf, int startIndex, out int endIndex, out Exception ex)
+		{
+			bool escaped = false;
+			char qchar, c = '\0';
+			int i = startIndex;
+			
+			builder.Clear ();
+			switch (buf[startIndex]) {
+			case '\'': qchar = '\''; i++; break;
+			case '"': qchar = '"'; i++; break;
+			default: qchar = '\0'; break;
+			}
+			
+			while (i < buf.Length) {
+				c = buf[i];
+				
+				if (c == qchar && !escaped) {
+					// unescaped qchar means we've reached the end of the argument
+					i++;
+					break;
+				}
+				
+				if (c == '\\') {
+					escaped = true;
+				} else if (escaped) {
+					builder.Append (c);
+					escaped = false;
+				} else if (qchar == '\0' && (c == ' ' || c == '\t')) {
+					break;
+				} else {
+					builder.Append (c);
+				}
+				
+				i++;
+			}
+			
+			if (escaped || (qchar != '\0' && c != qchar)) {
+				ex = new FormatException (escaped ? "Incomplete escape sequence." : "No matching quote found.");
+				endIndex = -1;
+				return null;
+			}
+			
+			endIndex = i;
+			ex = null;
+			
+			return builder.ToString ();
+		}
+		
+		static bool TryParse (string commandline, out string[] argv, out Exception ex)
+		{
+			StringBuilder builder = new StringBuilder ();
+			List<string> args = new List<string> ();
+			string argument;
+			int i = 0, j;
+			char c;
+			
+			while (i < commandline.Length) {
+				c = commandline[i];
+				if (c != ' ' && c != '\t') {
+					if ((argument = GetArgument (builder, commandline, i, out j, out ex)) == null) {
+						argv =  null;
+						return false;
+					}
+					
+					args.Add (argument);
+				}
+				
+				i++;
+			}
+			
+			argv = args.ToArray ();
+			ex = null;
+			
+			return true;
+		}
+		
+		public static bool TryParse (string commandline, out string[] argv)
+		{
+			Exception ex;
+			
+			return TryParse (commandline, out argv, out ex);
+		}
+		
+		public static string[] Parse (string commandline)
+		{
+			string[] argv;
+			Exception ex;
+			
+			if (!TryParse (commandline, out argv, out ex))
+				throw ex;
+			
+			return argv;
 		}
 	}
 }
