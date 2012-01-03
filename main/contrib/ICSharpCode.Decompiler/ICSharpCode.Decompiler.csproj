@@ -14,8 +14,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,16 +46,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ast\Annotations.cs" />
     <Compile Include="Ast\AstBuilder.cs" />
     <Compile Include="Ast\AstMethodBodyBuilder.cs" />
+    <Compile Include="Ast\CecilTypeResolveContext.cs" />
     <Compile Include="Ast\CommentStatement.cs" />
     <Compile Include="Ast\DecompilerContext.cs" />
     <Compile Include="Ast\NameVariables.cs" />
@@ -119,26 +119,14 @@
     <Compile Include="ReferenceResolvingException.cs" />
     <Compile Include="TextOutputWriter.cs" />
     <None Include="Properties\AssemblyInfo.template.cs" />
+    <Compile Include="Ast\Annotations.cs" />
     <Compile Include="Tests\CallOverloadedMethod.cs" />
     <Compile Include="Ast\Transforms\DecimalConstantTransform.cs" />
-    <Compile Include="Ast\Transforms\CustomPatterns.cs" />
-    <Compile Include="Ast\Transforms\ExpressionTreeConverter.cs" />
-    <Compile Include="Ast\Transforms\FlattenSwitchBlocks.cs" />
-    <Compile Include="ILAst\LiftedOperators.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
       <Name>Mono.Cecil</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
