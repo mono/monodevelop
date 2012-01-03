@@ -51,6 +51,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +128,7 @@
     <ProjectReference Include="..\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
       <Name>Mono.Cecil</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
