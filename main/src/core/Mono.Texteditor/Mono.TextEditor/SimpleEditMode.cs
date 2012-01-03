@@ -348,6 +348,14 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Page_Up), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Page_Up), action);
 			
+			action = CaretMoveActions.PageDown;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Page_Down, Gdk.ModifierType.Mod1Mask), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Page_Down, Gdk.ModifierType.Mod1Mask), action);
+			
+			action = CaretMoveActions.PageUp;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Page_Up, Gdk.ModifierType.Mod1Mask), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Page_Up, Gdk.ModifierType.Mod1Mask), action);
+			
 			action = SelectionActions.MovePageUp;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Page_Up, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Page_Up, Gdk.ModifierType.ShiftMask), action);
