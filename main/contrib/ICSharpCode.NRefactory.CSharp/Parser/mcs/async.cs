@@ -40,12 +40,6 @@ namespace Mono.CSharp
 			this.loc = loc;
 		}
 
-		public Expression Expr {
-			get {
-				return expr;
-			}
-		}
-
 		protected override void CloneTo (CloneContext clonectx, Expression target)
 		{
 			var t = (Await) target;

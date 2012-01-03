@@ -33,16 +33,16 @@ namespace Mono.CSharp
 		protected T machine_initializer;
 		int resume_pc;
 		
+		public Expression Expr {
+			get { return this.expr; }
+		}
+		
 		protected YieldStatement (Expression expr, Location l)
 		{
 			this.expr = expr;
 			loc = l;
 		}
 
-		public Expression Expr {
-			get { return this.expr; }
-		}
-		
 		protected override void CloneTo (CloneContext clonectx, Statement t)
 		{
 			var target = (YieldStatement<T>) t;

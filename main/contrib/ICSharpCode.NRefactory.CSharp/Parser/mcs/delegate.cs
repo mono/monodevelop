@@ -81,13 +81,6 @@ namespace Mono.CSharp {
 				return parameters;
 			}
 		}
-
-		public FullNamedExpression TypExpression {
-			get {
-				return ReturnType;
-			}
-		}
-
 		#endregion
 
 		public override void Accept (StructuralVisitor visitor)

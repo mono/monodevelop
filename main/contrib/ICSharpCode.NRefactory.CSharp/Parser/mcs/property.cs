@@ -733,12 +733,6 @@ namespace Mono.CSharp
 		{
 		}
 
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
-		}
-		
-
 		void CreateAutomaticProperty ()
 		{
 			// Create backing field
@@ -761,6 +755,11 @@ namespace Mono.CSharp
 			Set.Block = new ToplevelBlock (Compiler, Set.ParameterInfo, Location);
 			Assign a = new SimpleAssign (fe, new SimpleName ("value", Location));
 			Set.Block.AddStatement (new StatementExpression (a));
+		}
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 		
 		public override bool Define ()
@@ -858,11 +857,6 @@ namespace Mono.CSharp
 		{
 		}
 
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
-		}
-		
 		public override bool Define()
 		{
 			if (!base.Define ())
@@ -877,6 +871,12 @@ namespace Mono.CSharp
 				return attribute_targets;
 			}
 		}
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
+
 	}
 
 	/// <summary>
@@ -999,12 +999,6 @@ namespace Mono.CSharp
 
 		#region Properties
 
-		public List<FieldDeclarator> Declarators {
-			get {
-				return this.declarators;
-			}
-		}
-
 		bool HasBackingField {
 			get {
 				return !IsInterface && (ModFlags & Modifiers.ABSTRACT) == 0;
@@ -1026,13 +1020,13 @@ namespace Mono.CSharp
 			}
 		}
 
-		#endregion
-
-		
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
+		public List<FieldDeclarator> Declarators {
+			get {
+				return this.declarators;
+			}
 		}
+
+		#endregion
 
 		public void AddDeclarator (FieldDeclarator declarator)
 		{
@@ -1110,6 +1104,11 @@ namespace Mono.CSharp
 			spec.BackingField = backing_field.Spec;
 
 			return true;
+		}
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 	}
 
@@ -1514,12 +1513,6 @@ namespace Mono.CSharp
 
 		#endregion
 
-		
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
-		}
-
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.Type == pa.IndexerName) {
@@ -1539,6 +1532,11 @@ namespace Mono.CSharp
 		protected override bool CheckForDuplications ()
 		{
 			return Parent.MemberCache.CheckExistingMembersOverloads (this, parameters);
+		}
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 		
 		public override bool Define ()

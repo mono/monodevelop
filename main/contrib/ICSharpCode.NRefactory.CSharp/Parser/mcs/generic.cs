@@ -94,12 +94,6 @@ namespace Mono.CSharp {
 
 		#region Properties
 
-		public List<FullNamedExpression> TypeExpressions {
-			get {
-				return constraints;
-			}
-		}
-
 		public Location Location {
 			get {
 				return loc;
@@ -391,12 +385,6 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public Constraints Constraints {
-			get {
-				return constraints;
-			}
-		}
-
 		public IAssemblyDefinition DeclaringAssembly {
 			get	{
 				return Module.DeclaringAssembly;
@@ -449,6 +437,12 @@ namespace Mono.CSharp {
 		public Variance Variance {
 			get {
 				return spec.Variance;
+			}
+		}
+
+		public Constraints Constraints {
+			get {
+				return this.constraints;
 			}
 		}
 
@@ -1915,12 +1909,6 @@ namespace Mono.CSharp {
 			get {
 				return false;
 			}
-		}
-
-		public List<FullNamedExpression> TypeExpressions {
-			get {
-				return this.args;
- 			}
 		}
 
 		public string GetSignatureForError()

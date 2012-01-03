@@ -899,11 +899,6 @@ namespace Mono.CSharp {
 
 #endregion
 
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
-		}
-
 		public static Method Create (DeclSpace parent, GenericMethod generic, FullNamedExpression returnType, Modifiers mod,
 				   MemberName name, ParametersCompiled parameters, Attributes attrs, bool hasConstraints)
 		{
@@ -1178,6 +1173,11 @@ namespace Mono.CSharp {
 			}
 
 			return true;
+		}
+
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 
 		//
@@ -1569,11 +1569,6 @@ namespace Mono.CSharp {
 					(Initializer.Arguments == null);
 		}
 
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
-		}
-
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.IsValidSecurityAttribute ()) {
@@ -1617,6 +1612,11 @@ namespace Mono.CSharp {
 			CheckProtectedModifier ();
 			
 			return true;
+		}
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 		
 		//
@@ -2155,11 +2155,6 @@ namespace Mono.CSharp {
 			ModFlags |= Modifiers.PROTECTED | Modifiers.OVERRIDE;
 		}
 
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
-		}
-
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.Type == pa.Conditional) {
@@ -2168,6 +2163,10 @@ namespace Mono.CSharp {
 			}
 
 			base.ApplyAttributeBuilder (a, ctor, cdata, pa);
+		}
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 		
 		protected override bool CheckBase ()
@@ -2515,11 +2514,6 @@ namespace Mono.CSharp {
 			Block = block;
 		}
 
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
-		}
-
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.Type == pa.Conditional) {
@@ -2528,6 +2522,11 @@ namespace Mono.CSharp {
 			}
 
 			base.ApplyAttributeBuilder (a, ctor, cdata, pa);
+		}
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 		
 		public override bool Define ()

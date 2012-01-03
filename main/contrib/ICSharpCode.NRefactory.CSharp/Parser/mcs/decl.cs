@@ -47,6 +47,7 @@ namespace Mono.CSharp {
 
 		bool is_double_colon;
 		
+		public bool IsDoubleColon { get { return is_double_colon; } }
 
 #if FULL_AST
 		public Location DotLocation {
@@ -120,12 +121,6 @@ namespace Mono.CSharp {
 		public int Arity {
 			get {
 				return TypeArguments == null ? 0 : TypeArguments.Count;
-			}
-		}
-
-		public bool IsDoubleColon {
-			get {
-				return is_double_colon;
 			}
 		}
 

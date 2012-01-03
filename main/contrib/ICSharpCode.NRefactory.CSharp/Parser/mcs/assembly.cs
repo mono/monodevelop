@@ -1090,7 +1090,8 @@ namespace Mono.CSharp
 
 		public abstract bool HasObjectType (T assembly);
 		protected abstract string[] GetDefaultReferences ();
-		public abstract T LoadAssemblyFile (string fileName, bool isImplicitReference);
+		public abstract T LoadAssemblyFile (string fileName);
+		public abstract T LoadAssemblyDefault (string assembly);
 		public abstract void LoadReferences (ModuleContainer module);
 
 		protected void Error_FileNotFound (string fileName)
@@ -1127,14 +1128,14 @@ namespace Mono.CSharp
 			// Load mscorlib.dll as the first
 			//
 			if (module.Compiler.Settings.StdLib) {
-				corlib_assembly = LoadAssemblyFile ("mscorlib.dll", true);
+				corlib_assembly = LoadAssemblyDefault ("mscorlib.dll");
 			} else {
 				corlib_assembly = default (T);
 			}
 
 			T a;
 			foreach (string r in module.Compiler.Settings.AssemblyReferences) {
-				a = LoadAssemblyFile (r, false);
+				a = LoadAssemblyFile (r);
 				if (a == null || EqualityComparer<T>.Default.Equals (a, corlib_assembly))
 					continue;
 
@@ -1152,7 +1153,7 @@ namespace Mono.CSharp
 			}
 
 			foreach (var entry in module.Compiler.Settings.AssemblyReferencesAliases) {
-				a = LoadAssemblyFile (entry.Item2, false);
+				a = LoadAssemblyFile (entry.Item2);
 				if (a == null)
 					continue;
 
@@ -1165,7 +1166,7 @@ namespace Mono.CSharp
 
 			if (compiler.Settings.LoadDefaultReferences) {
 				foreach (string r in GetDefaultReferences ()) {
-					a = LoadAssemblyFile (r, true);
+					a = LoadAssemblyDefault (r);
 					if (a == null)
 						continue;
 

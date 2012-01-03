@@ -208,8 +208,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (loc != null)
 						result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.LPar);
 						
-					if (attr.PositionalArguments != null) {
-						foreach (var arg in attr.PositionalArguments) {
+					if (attr.PosArguments != null) {
+						foreach (var arg in attr.PosArguments) {
 							var na = arg as NamedArgument;
 							if (na != null) {
 								var newArg = new NamedArgumentExpression ();
@@ -1465,7 +1465,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (StatementErrorExpression statementErrorExpression)
 			{
 				var result = new ExpressionStatement ();
-				var expr = statementErrorExpression.Expr.Accept (this) as Expression;
+				var expr = statementErrorExpression.Expression.Accept (this) as Expression;
 				if (expr != null)
 					result.AddChild ((Expression)expr, ExpressionStatement.Roles.Expression);
 				return result;
@@ -1849,14 +1849,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (new CSharpTokenNode (Convert (tryCatchStatement.loc), "try".Length), TryCatchStatement.TryKeywordRole);
 				if (tryCatchStatement.Block != null)
 					result.AddChild ((BlockStatement)tryCatchStatement.Block.Accept (this), TryCatchStatement.TryBlockRole);
-				if (tryCatchStatement.Clauses != null) {
-					foreach (Catch ctch in tryCatchStatement.Clauses) {
+				if (tryCatchStatement.Specific != null) {
+					foreach (Catch ctch in tryCatchStatement.Specific) {
 						result.AddChild (ConvertCatch (ctch), TryCatchStatement.CatchClauseRole);
 					}
 				}
-	/*			if (tryCatchStatement. != null)
+				if (tryCatchStatement.General != null)
 					result.AddChild (ConvertCatch (tryCatchStatement.General), TryCatchStatement.CatchClauseRole);
-	*/			
+				
 				return result;
 			}
 			
@@ -1868,8 +1868,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (new CSharpTokenNode (Convert (usingStatement.loc), "using".Length), UsingStatement.Roles.Keyword);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), UsingStatement.Roles.LPar);
-				if (usingStatement.Expr != null)
-					result.AddChild ((AstNode)usingStatement.Expr.Accept (this), UsingStatement.ResourceAcquisitionRole);
+				if (usingStatement.Expression != null)
+					result.AddChild ((AstNode)usingStatement.Expression.Accept (this), UsingStatement.ResourceAcquisitionRole);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [1]), 1), UsingStatement.Roles.RPar);
@@ -1889,8 +1889,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0]), 1), ForeachStatement.Roles.LPar);
 				
-				if (foreachStatement.TypeExpression != null)
-					result.AddChild (ConvertToType (foreachStatement.TypeExpression), ForeachStatement.Roles.Type);
+				if (foreachStatement.TypeExpr != null)
+					result.AddChild (ConvertToType (foreachStatement.TypeExpr), ForeachStatement.Roles.Type);
 				if (foreachStatement.Variable != null)
 					result.AddChild (Identifier.Create (foreachStatement.Variable.Name, Convert (foreachStatement.Variable.Location)), ForeachStatement.Roles.Identifier);
 				
@@ -2260,7 +2260,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new BinaryOperatorExpression ();
 				result.Operator = BinaryOperatorType.NullCoalescing;
-				result.AddChild ((Expression)nullCoalescingOperator.LeftExpression.Accept (this), BinaryOperatorExpression.LeftRole);
+				result.AddChild ((Expression)nullCoalescingOperator.Left.Accept (this), BinaryOperatorExpression.LeftRole);
 				result.AddChild (new CSharpTokenNode (Convert (nullCoalescingOperator.Location), 2), BinaryOperatorExpression.OperatorRole);
 				result.AddChild ((Expression)nullCoalescingOperator.Right.Accept (this), BinaryOperatorExpression.RightRole);
 				return result;
@@ -2489,8 +2489,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new InvocationExpression ();
 				var location = LocationsBag.GetLocations (invocationExpression);
-				if (invocationExpression.Exp != null)
-					result.AddChild ((Expression)invocationExpression.Exp.Accept (this), InvocationExpression.Roles.TargetExpression);
+				if (invocationExpression.Expression != null)
+					result.AddChild ((Expression)invocationExpression.Expression.Accept (this), InvocationExpression.Roles.TargetExpression);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), InvocationExpression.Roles.LPar);
 				AddArguments (result, location, invocationExpression.Arguments);
@@ -2796,7 +2796,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (new CSharpTokenNode (Convert (sizeOfExpression.Location), "sizeof".Length), TypeOfExpression.Roles.Keyword);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), TypeOfExpression.Roles.LPar);
-				result.AddChild (ConvertToType (sizeOfExpression.TypeExpression), TypeOfExpression.Roles.Type);
+				result.AddChild (ConvertToType (sizeOfExpression.QueriedType), TypeOfExpression.Roles.Type);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), TypeOfExpression.Roles.RPar);
 				return result;

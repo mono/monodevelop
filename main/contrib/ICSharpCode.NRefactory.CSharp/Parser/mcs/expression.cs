@@ -801,16 +801,16 @@ namespace Mono.CSharp
 		LocalTemporary temporary;
 		bool prepared;
 		
-		public Indirection (Expression expr, Location l)
-		{
-			this.expr = expr;
-			loc = l;
-		}
-
 		public Expression Expr {
 			get {
 				return expr;
 			}
+		}
+		
+		public Indirection (Expression expr, Location l)
+		{
+			this.expr = expr;
+			loc = l;
 		}
 
 		public bool IsFixed {
@@ -1017,13 +1017,6 @@ namespace Mono.CSharp
 		// Holds the real operation
 		Expression operation;
 		
-		public UnaryMutator (Mode m, Expression e, Location loc)
-		{
-			mode = m;
-			this.loc = loc;
-			expr = e;
-		}
-
 		public Mode UnaryMutatorMode {
 			get {
 				return mode;
@@ -1034,6 +1027,13 @@ namespace Mono.CSharp
 			get {
 				return expr;
 			}
+		}
+
+		public UnaryMutator (Mode m, Expression e, Location loc)
+		{
+			mode = m;
+			this.loc = loc;
+			expr = e;
 		}
 
 		public override bool ContainsEmitWithAwait ()
@@ -1283,7 +1283,6 @@ namespace Mono.CSharp
 
 			target.expr = expr.Clone (clonectx);
 		}
-
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
@@ -1370,10 +1369,6 @@ namespace Mono.CSharp
 		public Is (Expression expr, Expression probe_type, Location l)
 			: base (expr, probe_type, l)
 		{
-		}
-
-		protected override string OperatorName {
-			get { return "is"; }
 		}
 
 		public override Expression CreateExpressionTree (ResolveContext ec)
@@ -1550,6 +1545,10 @@ namespace Mono.CSharp
 			return this;
 		}
 		
+		protected override string OperatorName {
+			get { return "is"; }
+		}
+		
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
@@ -1565,10 +1564,6 @@ namespace Mono.CSharp
 		public As (Expression expr, Expression probe_type, Location l)
 			: base (expr, probe_type, l)
 		{
-		}
-
-		protected override string OperatorName {
-			get { return "as"; }
 		}
 
 		public override Expression CreateExpressionTree (ResolveContext ec)
@@ -1649,10 +1644,14 @@ namespace Mono.CSharp
 			return null;
 		}
 
+		protected override string OperatorName {
+			get { return "as"; }
+		}
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
 		}
+
 	}
 	
 	//
@@ -1754,17 +1753,18 @@ namespace Mono.CSharp
 	public class DefaultValueExpression : Expression
 	{
 		Expression expr;
+		
+		
+		public Expression Expr {
+			get {
+				return this.expr; 
+			}
+		}
 
 		public DefaultValueExpression (Expression expr, Location loc)
 		{
 			this.expr = expr;
 			this.loc = loc;
-		}
-
-		public Expression Expr {
-			get {
-				return this.expr; 
-			}
 		}
 
 		public override bool IsSideEffectFree {
@@ -2225,15 +2225,11 @@ namespace Mono.CSharp
 		}
 
 		public Expression Left {
-			get {
-				return this.left;
-			}
+			get { return this.left; }
 		}
 
 		public Expression Right {
-			get {
-				return this.right;
-			}
+			get { return this.right; }
 		}
 
 		#endregion
@@ -5239,7 +5235,7 @@ namespace Mono.CSharp
 			}
 		}
 		
-		public Expression Exp {
+		public Expression Expression {
 			get {
 				return expr;
 			}
@@ -5494,7 +5490,6 @@ namespace Mono.CSharp
 			return SLE.Expression.Call (instance_expr, (MethodInfo) mi.GetMetaInfo (), Arguments.MakeExpression (args, ctx));
 #endif
 		}
-
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
@@ -5543,12 +5538,6 @@ namespace Mono.CSharp
 		public bool IsDefaultStruct {
 			get {
 				return arguments == null && type.IsStruct && GetType () == typeof (New);
-			}
-		}
-
-		public Expression TypeExpression {
-			get {
-				return RequestedType;
 			}
 		}
 
@@ -5944,12 +5933,6 @@ namespace Mono.CSharp
 			get { return elements.Count; }
 		}
 
-		public List<Expression> Elements {
-			get {
-				return elements;
-			}
-		}
-
 		public Expression this [int index] {
 			get {
 				return elements [index];
@@ -5962,6 +5945,12 @@ namespace Mono.CSharp
 			}
 			set {
 				variable = value;
+			}
+		}
+
+		public List<Expression> Elements {
+			get {
+				return this.elements;
 			}
 		}
 		#endregion
@@ -6055,14 +6044,22 @@ namespace Mono.CSharp
 
 		// The number of constants in array initializers
 		int const_initializers_count;
-		bool only_constant_initializers;
+//		bool only_constant_initializers;
 		
 		public List<Expression> Arguments {
 			get { return this.arguments; }
 		}
 		
+		public ComposedTypeSpecifier Rank {
+			get { return this.rank; }
+		}
+		
 		public FullNamedExpression NewType {
 			get { return this.requested_base_type; }
+		}
+		
+		public ArrayInitializer Initializers {
+			get { return this.initializers; }
 		}
 		
 		public ArrayCreation (FullNamedExpression requested_base_type, List<Expression> exprs, ComposedTypeSpecifier rank, ArrayInitializer initializers, Location l)
@@ -6100,24 +6097,6 @@ namespace Mono.CSharp
 		public ArrayCreation (FullNamedExpression requested_base_type, ArrayInitializer initializers)
 			: this (requested_base_type, null, initializers, initializers.Location)
 		{
-		}
-
-		public ComposedTypeSpecifier Rank {
-			get {
-				return this.rank;
-			}
-		}
-		
-		public FullNamedExpression TypeExpression {
-			get {
-				return this.requested_base_type;
-			}
-		}
-		
-		public ArrayInitializer Initializers {
-			get {
-				return this.initializers;
-			}
 		}
 
 		bool CheckIndices (ResolveContext ec, ArrayInitializer probe, int idx, bool specified_dims, int child_bounds)
@@ -6200,7 +6179,7 @@ namespace Mono.CSharp
 							++const_initializers_count;
 						}
 					} else {
-						only_constant_initializers = false;
+//						only_constant_initializers = false;
 					}
 					
 					array_data.Add (element);
@@ -6305,7 +6284,7 @@ namespace Mono.CSharp
 
 		protected bool ResolveInitializers (ResolveContext ec)
 		{
-			only_constant_initializers = true;
+//			only_constant_initializers = true;
 
 			if (arguments != null) {
 				bool res = true;
@@ -7145,8 +7124,8 @@ namespace Mono.CSharp
 	/// </summary>
 	public class Arglist : Expression
 	{
-		Arguments arguments;
-
+		public Arguments Arguments { get; private set; }
+		
 		public Arglist (Location loc)
 			: this (null, loc)
 		{
@@ -7154,24 +7133,18 @@ namespace Mono.CSharp
 
 		public Arglist (Arguments args, Location l)
 		{
-			arguments = args;
+			Arguments = args;
 			loc = l;
-		}
-
-		public Arguments Arguments {
-			get {
-				return arguments;
-			}
 		}
 
 		public MetaType[] ArgumentTypes {
 		    get {
-				if (arguments == null)
+				if (Arguments == null)
 					return MetaType.EmptyTypes;
 
-				var retval = new MetaType[arguments.Count];
-				for (int i = 0; i < retval.Length; i++)
-					retval[i] = arguments[i].Expr.Type.GetMetaInfo ();
+				var retval = new MetaType[Arguments.Count];
+		        for (int i = 0; i < retval.Length; i++)
+					retval[i] = Arguments[i].Expr.Type.GetMetaInfo ();
 
 		        return retval;
 		    }
@@ -7192,9 +7165,9 @@ namespace Mono.CSharp
 		{
 			eclass = ExprClass.Variable;
 			type = InternalType.Arglist;
-			if (arguments != null) {
+			if (Arguments != null) {
 				bool dynamic;	// Can be ignored as there is always only 1 overload
-				arguments.Resolve (ec, out dynamic);
+				Arguments.Resolve (ec, out dynamic);
 			}
 
 			return this;
@@ -7202,18 +7175,17 @@ namespace Mono.CSharp
 
 		public override void Emit (EmitContext ec)
 		{
-			if (arguments != null)
-				arguments.Emit (ec);
+			if (Arguments != null)
+				Arguments.Emit (ec);
 		}
 
 		protected override void CloneTo (CloneContext clonectx, Expression t)
 		{
 			Arglist target = (Arglist) t;
 
-			if (arguments != null)
-				target.arguments = arguments.Clone (clonectx);
+			if (Arguments != null)
+				target.Arguments = Arguments.Clone (clonectx);
 		}
-
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
@@ -7233,12 +7205,6 @@ namespace Mono.CSharp
 		{
 			this.texpr = texpr;
 			this.loc = loc;
-		}
-
-		public FullNamedExpression TypeExpression {
-			get {
-				return texpr;
-			}
 		}
 
 		public override bool ContainsEmitWithAwait ()
@@ -7631,24 +7597,18 @@ namespace Mono.CSharp
 	///   Implements the sizeof expression
 	/// </summary>
 	public class SizeOf : Expression {
-		readonly Expression texpr;
+		public readonly Expression QueriedType;
 		TypeSpec type_queried;
 		
 		public SizeOf (Expression queried_type, Location l)
 		{
-			this.texpr = queried_type;
+			this.QueriedType = queried_type;
 			loc = l;
 		}
 
 		public override bool IsSideEffectFree {
 			get {
 				return true;
-			}
-		}
-
-		public Expression TypeExpression {
-			get {
-				return texpr;
 			}
 		}
 
@@ -7665,7 +7625,7 @@ namespace Mono.CSharp
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
-			type_queried = texpr.ResolveAsType (ec);
+			type_queried = QueriedType.ResolveAsType (ec);
 			if (type_queried == null)
 				return null;
 
@@ -7733,12 +7693,6 @@ namespace Mono.CSharp
 			this.alias = alias;
 		}
 
-		public string Alias {
-			get {
-				return alias;
-			}
-		}
-
 		public override FullNamedExpression ResolveAsTypeOrNamespace (IMemberContext ec)
 		{
 			if (alias == GlobalAlias) {
@@ -7753,13 +7707,31 @@ namespace Mono.CSharp
 					ec.Module.Compiler.Report.Error (432, loc, "Alias `{0}' not found", alias);
 				return null;
 			}
-			
-			return base.ResolveAsTypeOrNamespace (ec);
+
+			FullNamedExpression fne = base.ResolveAsTypeOrNamespace (ec);
+			if (fne == null)
+				return null;
+
+			if (expr.eclass == ExprClass.Type) {
+				ec.Module.Compiler.Report.Error (431, loc,
+					"Alias `{0}' cannot be used with '::' since it denotes a type. Consider replacing '::' with '.'", alias);
+
+				return null;
+			}
+
+			return fne;
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			return ResolveAsTypeOrNamespace (ec);
+		}
+
+		protected override void Error_IdentifierNotFound (IMemberContext rc, TypeSpec expr_type, string identifier)
+		{
+			rc.Module.Compiler.Report.Error (687, loc,
+				"A namespace alias qualifier `{0}' did not resolve to a namespace or a type",
+				GetSignatureForError ());
 		}
 
 		public override string GetSignatureForError ()
@@ -7774,14 +7746,6 @@ namespace Mono.CSharp
 
 		public override Expression LookupNameExpression (ResolveContext rc, MemberLookupRestrictions restrictions)
 		{
-			if ((restrictions & MemberLookupRestrictions.InvocableOnly) != 0) {
-				rc.Module.Compiler.Report.Error (687, loc,
-					"The namespace alias qualifier `::' cannot be used to invoke a method. Consider using `.' instead",
-					GetSignatureForError ());
-
-				return null;
-			}
-
 			return DoResolve (rc);
 		}
 
@@ -8141,14 +8105,6 @@ namespace Mono.CSharp
 				return null;
 			}
 
-			var qam = this as QualifiedAliasMember;
-			if (qam != null) {
-				rc.Module.Compiler.Report.Error (431, loc,
-					"Alias `{0}' cannot be used with `::' since it denotes a type. Consider replacing `::' with `.'",
-					qam.Alias);
-
-			}
-
 			TypeSpec nested = null;
 			while (expr_type != null) {
 				nested = MemberCache.FindNestedType (expr_type, Name, Arity);
@@ -8309,7 +8265,6 @@ namespace Mono.CSharp
 
 			target.Expr = Expr.Clone (clonectx);
 		}
-
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
@@ -8374,7 +8329,6 @@ namespace Mono.CSharp
 
 			target.Expr = Expr.Clone (clonectx);
 		}
-
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
@@ -9585,24 +9539,20 @@ namespace Mono.CSharp
 		TypeSpec otype;
 		Expression t;
 		Expression count;
+		
+		public Expression TypeExpression {
+			get { return this.t; }
+		}
 
+		public Expression CountExpression {
+			get { return this.count; }
+		}
+		
 		public StackAlloc (Expression type, Expression count, Location l)
 		{
 			t = type;
 			this.count = count;
 			loc = l;
-		}
-
-		public Expression TypeExpression {
-			get {
-				return this.t;
-			}
-		}
-
-		public Expression CountExpression {
-			get {
-				return this.count;
-			}
 		}
 
 		public override bool ContainsEmitWithAwait ()
@@ -10083,16 +10033,16 @@ namespace Mono.CSharp
 		CollectionOrObjectInitializers initializers;
 		IMemoryLocation instance;
 
-		public NewInitialize (FullNamedExpression requested_type, Arguments arguments, CollectionOrObjectInitializers initializers, Location l)
-			: base (requested_type, arguments, l)
-		{
-			this.initializers = initializers;
-		}
-
 		public CollectionOrObjectInitializers Initializers {
 			get {
 				return initializers;
 			}
+		}
+
+		public NewInitialize (FullNamedExpression requested_type, Arguments arguments, CollectionOrObjectInitializers initializers, Location l)
+			: base (requested_type, arguments, l)
+		{
+			this.initializers = initializers;
 		}
 
 		protected override void CloneTo (CloneContext clonectx, Expression t)
@@ -10205,17 +10155,15 @@ namespace Mono.CSharp
 		readonly TypeContainer parent;
 		AnonymousTypeClass anonymous_type;
 
+		public List<AnonymousTypeParameter> Parameters {
+			get { return this.parameters; }
+		}
+
 		public NewAnonymousType (List<AnonymousTypeParameter> parameters, TypeContainer parent, Location loc)
 			 : base (null, null, loc)
 		{
 			this.parameters = parameters;
 			this.parent = parent;
-		}
-
-		public List<AnonymousTypeParameter> Parameters {
-			get {
-				return this.parameters;
-			}
 		}
 
 		protected override void CloneTo (CloneContext clonectx, Expression target)

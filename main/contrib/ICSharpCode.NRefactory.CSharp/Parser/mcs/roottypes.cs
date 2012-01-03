@@ -367,7 +367,7 @@ namespace Mono.CSharp
 		public RootNamespace CreateRootNamespace (string alias)
 		{
 			if (alias == global_ns.Alias) {
-				RootNamespace.Error_GlobalNamespaceRedefined (Report, Location.Null);
+				NamespaceContainer.Error_GlobalNamespaceRedefined (Location.Null, Report);
 				return global_ns;
 			}
 

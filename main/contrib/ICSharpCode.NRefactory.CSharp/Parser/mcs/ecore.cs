@@ -4418,10 +4418,7 @@ namespace Mono.CSharp {
 
 			var ac_p = p as ArrayContainer;
 			if (ac_p != null) {
-				var ac_q = q as ArrayContainer;
-				if (ac_q == null)
-					return null;
-
+				var ac_q = ((ArrayContainer) q);
 				TypeSpec specific = MoreSpecific (ac_p.Element, ac_q.Element);
 				if (specific == ac_p.Element)
 					return p;

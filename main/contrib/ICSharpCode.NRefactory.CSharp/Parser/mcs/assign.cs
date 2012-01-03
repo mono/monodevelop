@@ -418,11 +418,6 @@ namespace Mono.CSharp {
 			_target.target = target.Clone (clonectx);
 			_target.source = source.Clone (clonectx);
 		}
-
-		public override object Accept (StructuralVisitor visitor)
-		{
-			return visitor.Visit (this);
-		}
 	}
 
 	public class SimpleAssign : Assign
@@ -658,12 +653,6 @@ namespace Mono.CSharp {
 			this.left = left;
 		}
 
-		public Binary.Operator Operator {
-			get {
-				return op;
-			}
-		}
-
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			right = right.Resolve (ec);
@@ -822,10 +811,10 @@ namespace Mono.CSharp {
 			ctarget.right = ctarget.source = source.Clone (clonectx);
 			ctarget.target = target.Clone (clonectx);
 		}
-
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
 		}
+
 	}
 }

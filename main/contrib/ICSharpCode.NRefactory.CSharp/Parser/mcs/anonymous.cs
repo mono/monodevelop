@@ -885,8 +885,9 @@ namespace Mono.CSharp {
 
 		public ParametersBlock Block;
 
-		public AnonymousMethodExpression (Location loc)
+		public AnonymousMethodExpression (bool isAsync, Location loc)
 		{
+			this.IsAsync = isAsync;
 			this.loc = loc;
 			this.compatibles = new Dictionary<TypeSpec, Expression> ();
 		}
