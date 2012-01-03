@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					break;
 			}
 			
-			label = EscapeTextForMarkup (label);
+			label = GLib.Markup.EscapeText (label);
 
 			if (!pref.IsValid) {
 				label = "<span color='red'>" + label + "</span>";

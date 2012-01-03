@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			ProjectFolder folder = (ProjectFolder) dataObject;
 
-			label = EscapeTextForMarkup (folder.Name);
+			label = GLib.Markup.EscapeText (folder.Name);
 			icon = folderOpenIcon;
 			closedIcon = folderClosedIcon;
 		}

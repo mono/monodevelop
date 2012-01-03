@@ -71,7 +71,7 @@ namespace MonoDevelop.AddinAuthoring.NodeBuilders
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
 		{
 			ExtensionPoint ep = (ExtensionPoint) dataObject;
-			label = EscapeTextForMarkup (!string.IsNullOrEmpty (ep.Name) ? ep.Name : ep.Path);
+			label = GLib.Markup.EscapeText (!string.IsNullOrEmpty (ep.Name) ? ep.Name : ep.Path);
 			icon = Context.GetIcon ("md-extension-point");
 		}
 		

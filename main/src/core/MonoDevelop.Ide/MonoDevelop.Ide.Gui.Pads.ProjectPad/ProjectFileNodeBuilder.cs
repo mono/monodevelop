@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			ProjectFile file = (ProjectFile) dataObject;
 
-			label = EscapeTextForMarkup (file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName);
+			label = GLib.Markup.EscapeText (file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName);
 			if (!File.Exists (file.FilePath)) {
 				label = "<span foreground='red'>" + label + "</span>";
 			}

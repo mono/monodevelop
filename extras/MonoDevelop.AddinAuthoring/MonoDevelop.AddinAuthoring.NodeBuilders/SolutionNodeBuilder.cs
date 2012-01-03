@@ -71,7 +71,7 @@ namespace MonoDevelop.AddinAuthoring.NodeBuilders
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Solution sol = (Solution) dataObject;
-			label = EscapeTextForMarkup (sol.Name);
+			label = GLib.Markup.EscapeText (sol.Name);
 			icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Solution);
 		}
 		
