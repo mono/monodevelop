@@ -71,7 +71,6 @@ FILES =  \
 	ILAst/ILCodes.cs \
 	ILAst/ILInlining.cs \
 	ILAst/InitializerPeepholeTransforms.cs \
-	ILAst/LiftedOperators.cs \
 	ILAst/LoopsAndConditions.cs \
 	ILAst/PatternMatching.cs \
 	ILAst/PeepholeTransform.cs \
@@ -81,7 +80,6 @@ FILES =  \
 	ITextOutput.cs \
 	PlainTextOutput.cs \
 	ReferenceResolvingException.cs \
-	Tests/CallOverloadedMethod.cs \
 	TextOutputWriter.cs 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 

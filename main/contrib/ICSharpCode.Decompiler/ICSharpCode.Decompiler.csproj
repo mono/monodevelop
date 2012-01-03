@@ -7,11 +7,16 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Decompiler</RootNamespace>
     <AssemblyName>ICSharpCode.Decompiler</AssemblyName>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\NRefactory\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
@@ -19,8 +24,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-    <BaseAddress>4194304</BaseAddress>
-    <FileAlignment>4096</FileAlignment>
+    <BaseAddress>448462848</BaseAddress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -32,32 +36,19 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
-    <DebugSymbols>False</DebugSymbols>
-    <DebugType>None</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>PdbOnly</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\build\bin</OutputPath>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>..\..\build\bin</OutputPath>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="ICSharpCode.NRefactory">
-      <HintPath>..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Ast\Annotations.cs" />
     <Compile Include="Ast\AstBuilder.cs" />
     <Compile Include="Ast\AstMethodBodyBuilder.cs" />
-    <Compile Include="Ast\CecilTypeResolveContext.cs" />
     <Compile Include="Ast\CommentStatement.cs" />
     <Compile Include="Ast\DecompilerContext.cs" />
     <Compile Include="Ast\NameVariables.cs" />
@@ -67,8 +58,12 @@
     <Compile Include="Ast\Transforms\CombineQueryExpressions.cs" />
     <Compile Include="Ast\Transforms\ContextTrackingVisitor.cs" />
     <Compile Include="Ast\Transforms\ConvertConstructorCallIntoInitializer.cs" />
+    <Compile Include="Ast\Transforms\CustomPatterns.cs" />
+    <Compile Include="Ast\Transforms\DecimalConstantTransform.cs" />
     <Compile Include="Ast\Transforms\DeclareVariables.cs" />
     <Compile Include="Ast\Transforms\DelegateConstruction.cs" />
+    <Compile Include="Ast\Transforms\ExpressionTreeConverter.cs" />
+    <Compile Include="Ast\Transforms\FlattenSwitchBlocks.cs" />
     <Compile Include="Ast\Transforms\IntroduceExtensionMethods.cs" />
     <Compile Include="Ast\Transforms\IntroduceQueryExpressions.cs" />
     <Compile Include="Ast\Transforms\IntroduceUnsafeModifier.cs" />
@@ -119,9 +114,6 @@
     <Compile Include="ReferenceResolvingException.cs" />
     <Compile Include="TextOutputWriter.cs" />
     <None Include="Properties\AssemblyInfo.template.cs" />
-    <Compile Include="Ast\Annotations.cs" />
-    <Compile Include="Tests\CallOverloadedMethod.cs" />
-    <Compile Include="Ast\Transforms\DecimalConstantTransform.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Cecil\Mono.Cecil.csproj">
@@ -129,15 +121,22 @@
       <Name>Mono.Cecil</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Ast\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Target Name="BeforeBuild">
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\BuildTools\UpdateAssemblyInfo\UpdateAssemblyInfo.csproj" Targets="Build" Properties="Configuration=Debug" />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)\..\BuildTools\UpdateAssemblyInfo\bin\Debug" Command="UpdateAssemblyInfo.exe --branchname $(BranchName)" Timeout="60000" Condition=" '$(BranchName)' != '' " />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)\..\BuildTools\UpdateAssemblyInfo\bin\Debug" Command="UpdateAssemblyInfo.exe" Timeout="60000" Condition=" '$(BranchName)' == '' " />
+  </Target>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../..">
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../main">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
           <ResourcesVar />
