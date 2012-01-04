@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AstFormattingVisitor.cs
 //  
 // Author:
@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			int endOffset = segment.EndOffset;
 			for (int i = segment.Offset; i < endOffset; i++) {
-				if (!IsSpacing (document.GetCharAt (i)))
+				if (!IsSpacing(document.GetCharAt(i)))
 					return false;
 			}
 			return true;
@@ -1485,29 +1485,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override object VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, object data)
 		{
-			if (policy.PlaceArrayInitializersOnNewLine == ArrayInitializerPlacement.AlwaysSameLine) {
-				foreach (var el in arrayObjectCreateExpression.Initializer.Elements) {
-					int lastEnd = this.document.GetOffset (el.GetPrevNode ().EndLocation);
-					int offset = this.document.GetOffset (el.StartLocation);
-					AddChange (lastEnd, offset - lastEnd, " ");
-				}
-				
-				int lastEnd2 = this.document.GetOffset (arrayObjectCreateExpression.Initializer.RBraceToken.GetPrevNode ().EndLocation);
-				int offset2 = this.document.GetOffset (arrayObjectCreateExpression.Initializer.RBraceToken.StartLocation);
-				AddChange (lastEnd2, offset2 - lastEnd2, " ");
-				
-			} else {
-				EnforceBraceStyle (BraceStyle.EndOfLine, arrayObjectCreateExpression.Initializer.LBraceToken, arrayObjectCreateExpression.Initializer.RBraceToken);
-				IndentLevel++;
-				foreach (var comma in arrayObjectCreateExpression.Initializer.Children.Where (node => node.Role == FieldDeclaration.Roles.Comma)) {
-					ForceSpacesAfter (comma, false);
-					
-				}
-				foreach (var el in arrayObjectCreateExpression.Initializer.Elements) {
-					PlaceOnNewLine (true, el);
-				}
-				IndentLevel--;
-			}
+			FormatCommas (arrayObjectCreateExpression, policy.SpaceBeforeMethodCallParameterComma, policy.SpaceAfterMethodCallParameterComma);
 			return base.VisitArrayCreateExpression (arrayObjectCreateExpression, data);
 		}
 
@@ -1591,7 +1569,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (offset < endOffset) {
 				AddChange (offset, endOffset - offset, null);
 			}
-		}
+		}	
 
 		void PlaceOnNewLine (bool newLine, AstNode keywordNode)
 		{
@@ -1664,18 +1642,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		string GetIndentation (int lineNumber)
+		string GetIndentation(int lineNumber)
 		{
-			IDocumentLine line = document.GetLineByNumber (lineNumber);
-			StringBuilder b = new StringBuilder ();
+			IDocumentLine line = document.GetLineByNumber(lineNumber);
+			StringBuilder b = new StringBuilder();
 			int endOffset = line.EndOffset;
 			for (int i = line.Offset; i < endOffset; i++) {
-				char c = document.GetCharAt (i);
-				if (!IsSpacing (c))
+				char c = document.GetCharAt(i);
+				if (!IsSpacing(c))
 					break;
-				b.Append (c);
+				b.Append(c);
 			}
-			return b.ToString ();
+			return b.ToString();
 		}
 	}
 }

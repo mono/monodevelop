@@ -242,6 +242,8 @@
     <Compile Include="Utils\LazyInit.cs" />
     <Compile Include="Utils\ProjectedList.cs" />
     <Compile Include="IAnnotatable.cs" />
+    <Compile Include="Semantics\Conversion.cs" />
+    <Compile Include="Semantics\ConversionResolveResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />

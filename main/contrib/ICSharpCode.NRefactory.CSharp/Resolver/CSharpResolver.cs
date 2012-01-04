@@ -1157,7 +1157,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool TryConvert(ref ResolveResult rr, IType targetType)
 		{
 			Conversion c = conversions.ImplicitConversion(rr, targetType);
-			if (c) {
+			if (c.IsValid) {
 				rr = Convert(rr, targetType, c);
 				return true;
 			} else {
@@ -1208,11 +1208,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			Conversion c = conversions.ExplicitConversion(expression, targetType);
-			if (c) {
-				return new ConversionResolveResult(targetType, expression, c);
-			} else {
-				return new ErrorResolveResult(targetType);
-			}
+			return new ConversionResolveResult(targetType, expression, c);
 		}
 		
 		internal object CSharpPrimitiveCast(TypeCode targetType, object input)
@@ -1348,10 +1344,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
-					// look for type parameter with that name
+					// Look for type parameter with that name
 					var typeParameters = t.TypeParameters;
-					// only look at type parameters defined directly on this type, not at those copied from outer classes
-					for (int i = (t.DeclaringTypeDefinition != null ? t.DeclaringTypeDefinition.TypeParameterCount : 0); i < typeParameters.Count; i++) {
+					// Look at all type parameters, including those copied from outer classes,
+					// so that we can fetch the version with the correct owner.
+					for (int i = 0; i < typeParameters.Count; i++) {
 						if (typeParameters[i].Name == identifier)
 							return new TypeResolveResult(typeParameters[i]);
 					}
@@ -1981,11 +1978,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// The operator is valid:
 				// a) if there's a conversion in one direction but not the other
 				// b) if there are conversions in both directions, and the types are equivalent
-				if (t2f && !f2t) {
+				if (t2f.IsValid && !f2t.IsValid) {
 					resultType = falseExpression.Type;
 					isValid = true;
 					trueExpression = Convert(trueExpression, resultType, t2f);
-				} else if (f2t && !t2f) {
+				} else if (f2t.IsValid && !t2f.IsValid) {
 					resultType = trueExpression.Type;
 					isValid = true;
 					falseExpression = Convert(falseExpression, resultType, f2t);

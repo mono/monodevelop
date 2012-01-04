@@ -503,7 +503,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (!(c == Conversion.IdentityConversion || c == Conversion.ImplicitReferenceConversion || c == Conversion.BoxingConversion))
 						candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
 				} else {
-					if (!c)
+					if (!c.IsValid)
 						candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
 				}
 			}

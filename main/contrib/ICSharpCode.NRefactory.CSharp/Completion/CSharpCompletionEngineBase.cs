@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			var currentType = parent;
 			foreach (var type in parent.NestedTypes) {
-				if (type.Region.Begin < location && location < type.Region.End)
+				if (type.Region.Begin < location  && location < type.Region.End)
 					currentType = FindInnerType (type, location);
 			}
 			
@@ -96,50 +96,49 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			for (int i = startOffset; i < endOffset; i++) {
 				char ch = document.GetCharAt (i);
 				switch (ch) {
-				case '(':
-				case '[':
-				case '{':
-					if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
-						bracketStack.Push (ch);
-					break;
-				case ')':
-				case ']':
-				case '}':
-					if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
-					if (bracketStack.Count > 0)
-						bracketStack.Pop ();
-					break;
-				case '\r':
-				case '\n':
-					isInLineComment = false;
-					break;
-				case '/':
-					if (isInBlockComment) {
-						if (i > 0 && document.GetCharAt (i - 1) == '*') 
-							isInBlockComment = false;
-					} else if (!isInString && !isInChar && i + 1 < document.TextLength) {
-						char nextChar = document.GetCharAt (i + 1);
-						if (nextChar == '/')
-							isInLineComment = true;
-						if (!isInLineComment && nextChar == '*')
-							isInBlockComment = true;
+					case '(':
+					case '[':
+					case '{':
+						if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+							bracketStack.Push (ch);
+						break;
+					case ')':
+					case ']':
+					case '}':
+						if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+						if (bracketStack.Count > 0)
+							bracketStack.Pop ();
+						break;
+					case '\r':
+					case '\n':
+						isInLineComment = false;
+						break;
+					case '/':
+						if (isInBlockComment) {
+							if (i > 0 && document.GetCharAt (i - 1) == '*') 
+								isInBlockComment = false;
+						} else if (!isInString && !isInChar && i + 1 < document.TextLength) {
+							char nextChar = document.GetCharAt (i + 1);
+							if (nextChar == '/')
+								isInLineComment = true;
+							if (!isInLineComment && nextChar == '*')
+								isInBlockComment = true;
+						}
+						break;
+					case '"':
+						if (!(isInChar || isInLineComment || isInBlockComment)) 
+							isInString = !isInString;
+						break;
+					case '\'':
+						if (!(isInString || isInLineComment || isInBlockComment)) 
+							isInChar = !isInChar;
+						break;
+					default :
+						break;
 					}
-					break;
-				case '"':
-					if (!(isInChar || isInLineComment || isInBlockComment)) 
-						isInString = !isInString;
-					break;
-				case '\'':
-					if (!(isInString || isInLineComment || isInBlockComment)) 
-						isInChar = !isInChar;
-					break;
-				default :
-					break;
 				}
-			}
 			return bracketStack.Any (t => t == '{');
 		}
-
 		protected void SetOffset (int offset)
 		{
 			Reset ();
