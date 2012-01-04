@@ -36,10 +36,13 @@ using MonoDevelop.Ide.CodeCompletion;
 using PyBinding;
 using PyBinding.Parser;
 using PyBinding.Parser.Dom;
+using MonoDevelop.Components;
+using MonoDevelop.Projects.Dom.Output;
+using MonoDevelop.Ide;
 
 namespace PyBinding.Gui
 {
-	public class PythonEditorCompletion : CompletionTextEditorExtension
+	public class PythonEditorCompletion : CompletionTextEditorExtension, IPathedDocument
 	{
 		const string s_ImgModule = "md-package";
 		const string s_ImgAttr   = "md-property";
@@ -60,6 +63,10 @@ namespace PyBinding.Gui
 			
 			if (m_site == null)
 				m_site = new PythonSite (PythonHelper.FindPreferedRuntime ());
+				
+			UpdatePath (null, null);
+			Document.Editor.Caret.PositionChanged += UpdatePath;
+			Document.DocumentParsed += delegate { UpdatePath (null, null); };
 		}
 
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar)
@@ -262,6 +269,110 @@ namespace PyBinding.Gui
 			}
 			
 			return line;
+		}
+
+		#region IPathedDocument implementation
+		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
+
+		public Gtk.Widget CreatePathWidget (int index)
+		{
+			PathEntry[] path = CurrentPath;
+			if (null == path || 0 > index || path.Length <= index) {
+				return null;
+			}
+			
+			object tag = path[index].Tag;
+			DropDownBoxListWindow.IListDataProvider provider = null;
+			if (tag is ICompilationUnit) {
+				provider = new CompilationUnitDataProvider (Document);
+			} else {
+				provider = new DataProvider (Document, tag, GetAmbience ());
+			}
+			
+			DropDownBoxListWindow window = new DropDownBoxListWindow (provider);
+			window.SelectItem (tag);
+			return window;
+		}
+
+		public PathEntry[] CurrentPath {
+			get;
+			private set;
+		}
+		
+		protected virtual void OnPathChanged (object sender, DocumentPathChangedEventArgs args)
+		{
+			if (PathChanged != null)
+				PathChanged (sender, args);
+		}
+		#endregion
+		
+		// Yoinked from C# binding
+		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		{
+			var unit = Document.CompilationUnit;
+			var textEditorData = Document.Editor;
+			
+			if (unit == null)
+				return;
+				
+			var loc = textEditorData.Caret.Location;
+			IType type = unit.GetTypeAt (loc.Line, loc.Column);
+			List<PathEntry> result = new List<PathEntry> ();
+			Ambience amb = GetAmbience ();
+			IMember member = null;
+			INode node = (INode)unit;
+			
+			if (type != null && type.ClassType != ClassType.Delegate) {
+				member = type.GetMemberAt (loc.Line, loc.Column);
+			}
+			
+			if (null != member) {
+				node = member;
+			} else if (null != type) {
+				node = type;
+			}
+			
+			while (node != null) {
+				PathEntry entry;
+				if (node is ICompilationUnit) {
+					if (!Document.ParsedDocument.UserRegions.Any ())
+						break;
+					FoldingRegion reg = Document.ParsedDocument.UserRegions.Where (r => r.Region.Contains (loc.Line, loc.Column)).LastOrDefault ();
+					if (reg == null) {
+						entry = new PathEntry (GettextCatalog.GetString ("No region"));
+					} else {
+						entry = new PathEntry (CompilationUnitDataProvider.Pixbuf, reg.Name);
+					}
+					entry.Position = EntryPosition.Right;
+				} else {
+					entry = new PathEntry (ImageService.GetPixbuf (((IMember)node).StockIcon, Gtk.IconSize.Menu), amb.GetString ((IMember)node, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates));
+				}
+				entry.Tag = node;
+				result.Insert (0, entry);
+				node = node.Parent;
+			}
+			
+			PathEntry noSelection = null;
+			if (type == null) {
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (Document.CompilationUnit) };
+			} else if (member == null && type.ClassType != ClassType.Delegate) 
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = new CustomNode (type) };
+			if (noSelection != null) {
+				result.Add (noSelection);
+			}
+			
+			var prev = CurrentPath;
+			CurrentPath = result.ToArray ();
+			OnPathChanged (this, new DocumentPathChangedEventArgs (prev));
+		}
+		
+		// Yoinked from C# binding
+		class CustomNode : MonoDevelop.Projects.Dom.AbstractNode
+		{
+			public CustomNode (INode parent)
+			{
+				this.Parent = parent;
+			}
 		}
 	}
 }
