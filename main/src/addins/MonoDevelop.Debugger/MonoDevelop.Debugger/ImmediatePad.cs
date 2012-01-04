@@ -58,6 +58,7 @@ namespace MonoDevelop.Debugger
 			} else {
 				EvaluationOptions ops = EvaluationOptions.DefaultOptions;
 				ops.AllowMethodEvaluation = true;
+				ops.AllowToStringCalls = true;
 				ops.AllowTargetInvoke = true;
 				ops.EvaluationTimeout = 20000;
 				ops.EllipsizeStrings = false;
