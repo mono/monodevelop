@@ -466,6 +466,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		[Serializable]
 		public class UnresolvedAssemblyDecorator : IUnresolvedAssembly
 		{
 			ProjectContentWrapper wrapper;

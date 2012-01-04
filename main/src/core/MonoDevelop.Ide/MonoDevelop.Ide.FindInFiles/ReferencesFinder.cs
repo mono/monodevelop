@@ -192,8 +192,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			// prepare references finder
 			var preparedFinders = new List<Tuple<ReferenceFinder, IProjectContent, List<FilePath>>> ();
 			var curList = new List<FilePath> ();
-			string oldMime = null;
 			foreach (var info in GetFileNames (solution, unit, member, scope, monitor)) {
+				string oldMime = null;
 				foreach (var file in info.Files) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;

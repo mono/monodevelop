@@ -42,7 +42,6 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading;
 
-
 namespace MonoDevelop.CSharp.Refactoring
 {
 	using MonoDevelop.Projects;
@@ -166,12 +165,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var opendoc in openDocuments) {
 				refs.AddRange (FindInDocument (opendoc.Item2));
 			}
+			
 			foreach (var file in files) {
 				string text = File.ReadAllText (file);
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0)
 					continue;
 				
 				using (var editor = new TextEditorData ()) {
+					editor.Document.FileName = file;
 					editor.Text = text;
 					var unit = new CSharpParser ().Parse (editor);
 					if (unit == null)
@@ -184,7 +185,6 @@ namespace MonoDevelop.CSharp.Refactoring
 					
 					if (parsedFile == null)
 						parsedFile = unit.ToTypeSystem ();
-					
 					refFinder.FindReferencesInFile (
 						scopes,
 						parsedFile,
@@ -195,7 +195,6 @@ namespace MonoDevelop.CSharp.Refactoring
 					);
 				}
 			}
-			
 			return refs;
 		}
 	}
