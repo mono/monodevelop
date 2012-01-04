@@ -433,6 +433,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
 				}
+				
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : ';';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[](){}+-*/%^?:&|~!<>=";
@@ -451,9 +452,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return HandleKeywordCompletion (tokenIndex, token);
 					}
 				}
-				
-				if (identifierStart == null)
-					return HandleAccessorContext () ?? DefaultControlSpaceItems ();
+				if (identifierStart == null) {
+					var accCtx = HandleAccessorContext ();
+					if (accCtx != null)
+						return accCtx;
+					return DefaultControlSpaceItems (null, controlSpace);
+				}
 				
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
@@ -652,7 +656,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return contextList.Result;
 		}
 		
-		IEnumerable<ICompletionData> DefaultControlSpaceItems (Tuple<CSharpParsedFile, AstNode, CompilationUnit> xp = null)
+		IEnumerable<ICompletionData> DefaultControlSpaceItems (Tuple<CSharpParsedFile, AstNode, CompilationUnit> xp = null, bool controlSpace = true)
 		{
 			var wrapper = new CompletionDataWrapper (this);
 			if (offset >= document.TextLength)
@@ -669,10 +673,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = xp.Item2;
 				rr = ResolveExpression (xp.Item1, node, xp.Item3);
 			} else {
-				node = Unit.GetNodeAt (location);
-				rr = ResolveExpression (CSharpParsedFile, node, Unit);
+				var unit = ParseStub ("a");
+				node = unit.GetNodeAt (location);
+				rr = ResolveExpression (CSharpParsedFile, node, unit);
+				Print (unit);
 			}
-			
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -684,8 +689,23 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AutoCompleteEmptyMatch = false;
 				return wrapper.Result;
 			}
-
 			
+			if (node is Identifier && node.Parent is ParameterDeclaration) {
+				if (!controlSpace)
+					return null;
+				// Try Parameter name case 
+				var param = node.Parent as ParameterDeclaration;
+				if (param != null) {
+					foreach (var possibleName in GenerateNameProposals (param.Type)) {
+						Console.WriteLine (possibleName);
+						if (possibleName.Length > 0)
+							wrapper.Result.Add (factory.CreateLiteralCompletionData (possibleName.ToString ()));
+					}
+					AutoSelect = false;
+					AutoCompleteEmptyMatch = false;
+					return wrapper.Result;
+				}
+			}
 			AddContextCompletion (wrapper, rr != null && (node is Expression) ? rr.Item2 : GetState (), node);
 			
 			return wrapper.Result;
@@ -744,7 +764,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AddKeywords (wrapper, primitiveTypesKeywords);
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 			
-			if (node.Role == AstNode.Roles.Argument) {
+			if (node != null && node.Role == AstNode.Roles.Argument) {
 				var resolved = ResolveExpression (CSharpParsedFile, node.Parent, Unit);
 				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
 				if (invokeResult != null) {
@@ -1918,7 +1938,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				baseUnit = ParseStub ("> ()", false, "{}");
 				expr = baseUnit.GetNodeAt<TypeParameterDeclaration> (location.Line, location.Column - 1); 
 			}
-			
 			
 			if (expr == null)
 				return null;
