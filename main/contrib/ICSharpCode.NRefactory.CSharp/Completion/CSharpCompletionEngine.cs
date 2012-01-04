@@ -57,8 +57,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public bool CloseOnSquareBrackets;
 		#endregion
 		
-		public CSharpCompletionEngine (IDocument document, ICompletionDataFactory factory)
+		public CSharpCompletionEngine (IDocument document, ICompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx, CompilationUnit unit, CSharpParsedFile parsedFile) : base (content, ctx, unit, parsedFile)
 		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			if (factory == null)
+				throw new ArgumentNullException ("factory");
 			this.document = document;
 			this.factory = factory;
 		}
@@ -498,7 +502,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						return contextList.Result;
 					}
-					Console.WriteLine ("blub");
 					return DefaultControlSpaceItems ();
 				}
 				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
@@ -611,7 +614,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (cu == null)
 				return null;
 			var member = cu.GetNodeAt<EnumMemberDeclaration> (location);
-			Print (cu);
 			if (member != null && member.NameToken.EndLocation < location)
 				return DefaultControlSpaceItems ();
 			return null;
@@ -1780,20 +1782,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return Tuple.Create (CSharpParsedFile, (AstNode)target, Unit);
 				}
 			}
-			
-			if (currentMember == null && currentType == null) {
+			if (currentMember == null && currentType == null)
 				return null;
-			}
-			baseUnit = ParseStub ("a()");
 			
+			baseUnit = ParseStub ("a()");
+			var curNode = baseUnit.GetNodeAt (location);
 			// Hack for handle object initializer continuation expressions
-			if (baseUnit.GetNodeAt (location) is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
+			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()};");
 			}
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
-			Print (baseUnit);
 			if (mref == null) {
 				var invoke = baseUnit.GetNodeAt<InvocationExpression> (location); 
 				if (invoke != null)
@@ -1805,13 +1805,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				mref.Parent.ReplaceWith (expr);
 			} else {
 				Expression tref = baseUnit.GetNodeAt<TypeReferenceExpression> (location); 
-				var memberType = tref != null ? ((TypeReferenceExpression)tref).Type as MemberType : null;
+				MemberType memberType = tref != null ? ((TypeReferenceExpression)tref).Type as MemberType : null;
 				if (memberType == null) {
 					memberType = baseUnit.GetNodeAt<MemberType> (location); 
 					if (memberType != null) {
 						tref = baseUnit.GetNodeAt<Expression> (location); 
-						if (tref == null)
-							return null;
+						if (tref == null) {
+							tref = new TypeReferenceExpression (memberType.Clone ());
+							memberType.Parent.AddChild (tref, AstNode.Roles.Expression);
+						}
 					}
 					if (tref is ObjectCreateExpression) {
 						expr = new TypeReferenceExpression (memberType.Target.Clone ());

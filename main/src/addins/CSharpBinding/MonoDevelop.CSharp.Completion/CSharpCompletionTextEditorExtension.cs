@@ -186,12 +186,15 @@ namespace MonoDevelop.CSharp.Completion
 			if (Unit == null || CSharpParsedFile == null)
 				return null;
 			var list = new CompletionDataList ();
-			var engine = new CSharpCompletionEngine (textEditorData.Document, this);
-			engine.ctx = CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext;
-			engine.Unit = Unit;
-			engine.CSharpParsedFile = CSharpParsedFile;
+			var engine = new CSharpCompletionEngine (
+				textEditorData.Document,
+				this,
+				Document.GetProjectContext (),
+				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext,
+				Unit,
+				CSharpParsedFile
+			);
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
-			engine.ProjectContent = Document.GetProjectContext ();
 			engine.EolMarker = textEditorData.EolMarker;
 			engine.IndentString = textEditorData.Options.IndentationString;
 			list.AddRange (engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace));
@@ -328,11 +331,14 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			if (Unit == null || CSharpParsedFile == null)
 				return null;
-			var engine = new CSharpParameterCompletionEngine (textEditorData.Document, this);
-			engine.ctx = CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext;
-			engine.Unit = Unit;
-			engine.CSharpParsedFile = CSharpParsedFile;
-			engine.ProjectContent = Document.GetProjectContext ();
+			var engine = new CSharpParameterCompletionEngine (
+				textEditorData.Document,
+				this,
+				Document.GetProjectContext (),
+				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext,
+				Unit,
+				CSharpParsedFile
+			);
 			return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar);
 		}
 		
@@ -394,10 +400,14 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int GetCurrentParameterIndex (CodeCompletionContext completionCtx)
 		{
-			var engine = new CSharpParameterCompletionEngine (textEditorData.Document, this);
-			engine.Unit = Unit;
-			engine.CSharpParsedFile = CSharpParsedFile;
-			engine.ProjectContent = Document.GetProjectContext ();
+			var engine = new CSharpParameterCompletionEngine (
+				textEditorData.Document,
+				this,
+				Document.GetProjectContext (),
+				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext,
+				Unit,
+				CSharpParsedFile
+			);
 			return engine.GetCurrentParameterIndex (document.Editor.Caret.Offset);
 		}
 		/*

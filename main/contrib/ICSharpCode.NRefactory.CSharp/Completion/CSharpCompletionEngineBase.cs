@@ -49,13 +49,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		protected IUnresolvedMember currentMember;
 		
 		#region Input properties
-		public CSharpTypeResolveContext ctx { get; set; }
+		public CSharpTypeResolveContext ctx { get; private set; }
 
-		public CompilationUnit Unit { get; set; }
+		public CompilationUnit Unit { get; private set; }
 
-		public CSharpParsedFile CSharpParsedFile { get; set; }
+		public CSharpParsedFile CSharpParsedFile { get; private set; }
 
-		public IProjectContent ProjectContent { get; set; }
+		public IProjectContent ProjectContent { get; private set; }
 		
 		ICompilation compilation;
 
@@ -66,8 +66,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return compilation;
 			}
 		}
-		
 		#endregion
+		
+		protected CSharpCompletionEngineBase (IProjectContent content, CSharpTypeResolveContext ctx, CompilationUnit unit, CSharpParsedFile parsedFile)
+		{
+			if (content == null)
+				throw new ArgumentNullException ("content");
+			if (ctx == null)
+				throw new ArgumentNullException ("ctx");
+			if (unit == null)
+				throw new ArgumentNullException ("unit");
+			if (parsedFile == null)
+				throw new ArgumentNullException ("parsedFile");
+			
+			this.ProjectContent = content;
+			this.ctx = ctx;
+			this.Unit = unit;
+			this.CSharpParsedFile = parsedFile;
+		}
 		
 		IUnresolvedTypeDefinition FindInnerType (IUnresolvedTypeDefinition parent, TextLocation location)
 		{

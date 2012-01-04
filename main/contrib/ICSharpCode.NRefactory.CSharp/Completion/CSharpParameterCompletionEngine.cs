@@ -38,8 +38,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	{
 		internal IParameterCompletionDataFactory factory;
 		
-		public CSharpParameterCompletionEngine (IDocument document, IParameterCompletionDataFactory factory)
+		public CSharpParameterCompletionEngine (IDocument document, IParameterCompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx, CompilationUnit unit, CSharpParsedFile parsedFile) : base (content, ctx, unit, parsedFile)
 		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			if (factory == null)
+				throw new ArgumentNullException ("factory");
 			this.document = document;
 			this.factory = factory;
 		}
