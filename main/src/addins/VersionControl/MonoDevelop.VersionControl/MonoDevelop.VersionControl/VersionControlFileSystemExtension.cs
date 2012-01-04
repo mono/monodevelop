@@ -61,6 +61,11 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
+		public override void RenameFile (FilePath file, string newName)
+		{
+			MoveFile (file, file.ParentDirectory.Combine (newName));
+		}
+
 		public override void DeleteFile (FilePath file)
 		{
 			Repository repo = GetRepository (file);
