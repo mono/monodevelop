@@ -37,6 +37,8 @@ namespace MonoDevelop.Ide
 {
 	public class LogReportingStartup : CommandHandler
 	{
+		static bool ShouldPromptToOptIn = Environment.GetEnvironmentVariable ("MONODEVELOP_TEST_CRASH_REPORTING") == "prompt";
+
 		protected override void Run ()
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
@@ -56,7 +58,7 @@ namespace MonoDevelop.Ide
 					? GettextCatalog.GetString ("A fatal error has occurred")
 					: GettextCatalog.GetString ("An error has occurred");
 
-				if (enabled.HasValue) {
+				if (!ShouldPromptToOptIn && enabled.HasValue) {
 					if (enabled.Value) {
 						message = GettextCatalog.GetString (
 							"Details of this error have been automatically sent to Xamarin for analysis.");

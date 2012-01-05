@@ -203,7 +203,7 @@ namespace MonoDevelop.Ide
 				ignoreFeedbackButtonClick = true;
 		}
 
-		static readonly bool FeedbackButtonThrowsException = Environment.GetEnvironmentVariable ("MONODEVELOP_FEEDBACK_THROWS_EXCEPTION") != null;
+		static readonly bool FeedbackButtonThrowsException = Environment.GetEnvironmentVariable ("MONODEVELOP_TEST_CRASH_REPORTING") != null;
 		void HandleFeedbackButtonClicked (object sender, EventArgs e)
 		{
 			if (FeedbackButtonThrowsException) {
