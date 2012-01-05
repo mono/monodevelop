@@ -39,8 +39,10 @@ namespace MonoDevelop.Ide
 	{
 		protected override void Run ()
 		{
-			// Process cached crash reports if there are any and uploading is enabled
-			LogReportingService.ProcessCache ();
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				// Process cached crash reports if there are any and uploading is enabled
+				LogReportingService.ProcessCache ();
+			});
 			
 			// Attach a handler for when exceptions need to be processed
 			LogReportingService.UnhandledErrorOccured = (enabled, ex, willShutdown) => {
@@ -53,7 +55,7 @@ namespace MonoDevelop.Ide
 				string title = willShutdown
 					? GettextCatalog.GetString ("A fatal error has occurred")
 					: GettextCatalog.GetString ("An error has occurred");
-				
+
 				if (enabled.HasValue && enabled.Value) {
 					message = GettextCatalog.GetString (
 						"Details of this error have been automatically sent to Xamarin for analysis.");
@@ -63,7 +65,7 @@ namespace MonoDevelop.Ide
 					MessageService.ShowException (ex, message, title, AlertButton.Ok);
 					return true;
 				}
-				
+
 				message = GettextCatalog.GetString (
 					"Details of errors, along with anonymous installation information, can be sent to Xamarin to " +
 					"help improve {0}. Do you wish to send this information?", BrandingService.ApplicationName);
