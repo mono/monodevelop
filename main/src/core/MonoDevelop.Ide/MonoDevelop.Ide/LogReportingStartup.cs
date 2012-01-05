@@ -39,8 +39,10 @@ namespace MonoDevelop.Ide
 	{
 		protected override void Run ()
 		{
-			// Process cached crash reports if there are any and uploading is enabled
-			LogReportingService.ProcessCache ();
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				// Process cached crash reports if there are any and uploading is enabled
+				LogReportingService.ProcessCache ();
+			});
 			
 			// Attach a handler for when exceptions need to be processed
 			LogReportingService.UnhandledErrorOccured = (enabled, ex, willShutdown) => {
@@ -53,22 +55,28 @@ namespace MonoDevelop.Ide
 				string title = willShutdown
 					? GettextCatalog.GetString ("A fatal error has occurred")
 					: GettextCatalog.GetString ("An error has occurred");
-				
-				if (enabled.HasValue && enabled.Value) {
-					message = GettextCatalog.GetString (
-						"Details of this error have been automatically sent to Xamarin for analysis.");
+
+				if (enabled.HasValue) {
+					if (enabled.Value) {
+						message = GettextCatalog.GetString (
+							"Details of this error have been automatically sent to Xamarin for analysis.");
+					} else {
+						message = GettextCatalog.GetString (
+							"Details of this error have not been sent to Xamarin for analysis as crash diagnostics " +
+							"have been disabled.");
+					}
 					if (willShutdown) {
 						message += GettextCatalog.GetString (" {0} will now close.", BrandingService.ApplicationName);
 					}
 					MessageService.ShowException (ex, message, title, AlertButton.Ok);
-					return true;
+					return enabled;
 				}
-				
+
 				message = GettextCatalog.GetString (
 					"Details of errors, along with anonymous installation information, can be sent to Xamarin to " +
 					"help improve {0}. Do you wish to send this information?", BrandingService.ApplicationName);
 				var result = MessageService.ShowException (ex, message, title, doNotSend, sendOnce, alwaysSend);
-				
+
 				if (result == sendOnce) {
 					return null;
 				} else if (result == alwaysSend) {
