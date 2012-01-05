@@ -39,46 +39,42 @@ namespace MonoDevelop.Ide
 	{
 		protected override void Run ()
 		{
-			
 			// Process cached crash reports if there are any and uploading is enabled
 			LogReportingService.ProcessCache ();
-
+			
 			// Attach a handler for when exceptions need to be processed
 			LogReportingService.UnhandledErrorOccured = (enabled, ex, willShutdown) => {
+				var doNotSend = new AlertButton (GettextCatalog.GetString ("Do Not Send"));
+				var sendOnce = new AlertButton (GettextCatalog.GetString ("Send This Time"));
+				var alwaysSend = new AlertButton (GettextCatalog.GetString ("Always Send"));
+				
 				AlertButton[] buttons = null;
 				string message = null;
-				string title = GettextCatalog.GetString ("An error has occurred");
-
-				if (enabled.HasValue) {
-					if (enabled.Value) {
-						message = GettextCatalog.GetString ("Details of this error have been automatically submitted for analysis.");
-					} else {
-						message = GettextCatalog.GetString ("Details of this error have not been submitted as error reporting is disabled.");
+				string title = willShutdown
+					? GettextCatalog.GetString ("A fatal error has occurred")
+					: GettextCatalog.GetString ("An error has occurred");
+				
+				if (enabled.HasValue && enabled.Value) {
+					message = GettextCatalog.GetString (
+						"Details of this error have been automatically sent to Xamarin for analysis.");
+					if (willShutdown) {
+						message += GettextCatalog.GetString (" {0} will now close.", BrandingService.ApplicationName);
 					}
-					if (willShutdown)
-						message += GettextCatalog.GetString (" MonoDevelop will now close.");
-
-					buttons = new [] { AlertButton.Ok };
-				} else {
-					var part1 = GettextCatalog.GetString ("Details of this error, along with anonymous installation " +
-								"information, can be uploaded to Xamarin to help diagnose the issue. " +
-							    "Do you wish to automatically upload this information for this and future crashes?");
-					var part2 = GettextCatalog.GetString ("This setting can be changed in the 'Log Agent' section of the MonoDevelop preferences.");
-					message = string.Format ("{0}{1}{1}{2}", part1, Environment.NewLine, part2);
-					buttons = new [] { AlertButton.Never, AlertButton.ThisTimeOnly, AlertButton.Always };
-				}
-
-				var result = MessageService.ShowException (ex, message, title, buttons);
-				if (enabled.HasValue) {
-					// In this case we will not change the value
-					return enabled;
-				} else if (result == AlertButton.Always) {
+					MessageService.ShowException (ex, message, title, AlertButton.Ok);
 					return true;
-				} else if (result == AlertButton.Never) {
-					return false;
-				} else {
-					// The user has decided to submit this one only
+				}
+				
+				message = GettextCatalog.GetString (
+					"Details of errors, along with anonymous installation information, can be sent to Xamarin to " +
+					"help improve {0}. Do you wish to send this information?", BrandingService.ApplicationName);
+				var result = MessageService.ShowException (ex, message, title, doNotSend, sendOnce, alwaysSend);
+				
+				if (result == sendOnce) {
 					return null;
+				} else if (result == alwaysSend) {
+					return true;
+				} else {
+					return false;
 				}
 			};
 		}
