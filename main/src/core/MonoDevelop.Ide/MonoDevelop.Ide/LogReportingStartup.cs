@@ -58,15 +58,9 @@ namespace MonoDevelop.Ide
 					? GettextCatalog.GetString ("A fatal error has occurred")
 					: GettextCatalog.GetString ("An error has occurred");
 
-				if (!ShouldPromptToOptIn && enabled.HasValue) {
-					if (enabled.Value) {
-						message = GettextCatalog.GetString (
-							"Details of this error have been automatically sent to Xamarin for analysis.");
-					} else {
-						message = GettextCatalog.GetString (
-							"Details of this error have not been sent to Xamarin for analysis as crash diagnostics " +
-							"have been disabled.");
-					}
+				if (!ShouldPromptToOptIn && enabled.GetValueOrDefault ()) {
+					message = GettextCatalog.GetString (
+						"Details of this error have been automatically sent to Xamarin for analysis.");
 					if (willShutdown) {
 						message += GettextCatalog.GetString (" {0} will now close.", BrandingService.ApplicationName);
 					}
