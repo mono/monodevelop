@@ -751,8 +751,10 @@ namespace MonoDevelop.Ide.Gui.Components
 					foreach (TreeNode cn in node.Children)
 						RemoveNode (cn);
 				}
-				if (!node.HasIter) {
-					List<TreeNode> list = objects [node.DataItem];
+				
+				List<TreeNode> list = null;
+				
+				if (!node.HasIter && objects.TryGetValue (node.DataItem, out list)) {
 					list.Remove (node);
 					if (list.Count == 0) {
 						objects.Remove (node.DataItem);
