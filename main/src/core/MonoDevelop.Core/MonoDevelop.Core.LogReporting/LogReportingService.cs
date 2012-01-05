@@ -61,6 +61,8 @@ namespace MonoDevelop.Core.LogReporting
 		
 		public static void ReportUnhandledException (Exception ex, bool willShutDown)
 		{
+			var oldReportCrashes = ReportCrashes;
+			
 			if (UnhandledErrorOccured != null)
 				ReportCrashes = UnhandledErrorOccured (ReportCrashes, ex, willShutDown);
 			
@@ -89,6 +91,11 @@ namespace MonoDevelop.Core.LogReporting
 					Directory.CreateDirectory (CrashLogDirectory);
 
 				File.WriteAllBytes (CrashLogDirectory.Combine (filename), data);
+			}
+			
+			//ensure we don't lose the setting
+			if (ReportCrashes != oldReportCrashes) {
+				PropertyService.SaveProperties ();
 			}
 		}
 		
