@@ -79,7 +79,11 @@ namespace MonoDevelop.Debugger
 			int line = frame.SourceLocation.Line;
 			
 			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
-				OpenDocumentOptions ops = !disassemblyCurrent ? OpenDocumentOptions.BringToFront : OpenDocumentOptions.None;
+				OpenDocumentOptions ops = OpenDocumentOptions.Debugger;
+				
+				if (disassemblyCurrent)
+					ops &= ~OpenDocumentOptions.BringToFront;
+				
 				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, ops);
 				if (doc != null)
 					return;

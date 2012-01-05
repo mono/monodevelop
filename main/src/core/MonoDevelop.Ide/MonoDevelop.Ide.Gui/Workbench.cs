@@ -1105,6 +1105,7 @@ namespace MonoDevelop.Ide.Gui
 		OnlyExternalViewer = 1 << 4,
 		TryToReuseViewer = 1 << 5,
 		
-		Default = BringToFront | CenterCaretLine | HighlightCaretLine | TryToReuseViewer
+		Default = BringToFront | CenterCaretLine | HighlightCaretLine | TryToReuseViewer,
+		Debugger = BringToFront | CenterCaretLine | TryToReuseViewer
 	}
 }
