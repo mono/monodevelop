@@ -76,8 +76,8 @@ namespace MonoDevelop.Ide.Gui
 			this.tabPage = content.Control;
 			
 			ShadowType = ShadowType.None;
+			
 			box = new VBox ();
-			Add (box);
 			box.PackStart (content.Control);
 			
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
@@ -92,11 +92,11 @@ namespace MonoDevelop.Ide.Gui
 			content.ContentChanged     += new EventHandler (OnContentChanged);
 			
 			box.Show ();
+			Add (box);
 			
 			SetTitleEvent(null, null);
 			
 			commandHandler = new ViewCommandHandlers (this);
-			Show ();
 		}
 		
 		protected SdiWorkspaceWindow (IntPtr p): base (p)
