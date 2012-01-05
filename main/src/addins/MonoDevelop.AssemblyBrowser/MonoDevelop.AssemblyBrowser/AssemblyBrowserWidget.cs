@@ -329,20 +329,25 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		static bool IsMatch (ITreeNavigator nav, string helpUrl)
 		{
-			var member = nav.DataItem as IEntity;
+			var member = nav.DataItem as IUnresolvedEntity;
+			if (member == null)
+				return false;
 			return member != null && member.GetHelpUrl () == helpUrl;
 		}
 			
 		static bool SkipChildren (ITreeNavigator nav, string helpUrl)
 		{
 			string strippedUrl = helpUrl;
+			if (strippedUrl.Length > 2 && strippedUrl[1] == ':')
+				strippedUrl = strippedUrl.Substring (2);
 			int idx = strippedUrl.IndexOf ('~');
 			if (idx > 0) 
 				strippedUrl = strippedUrl.Substring (0, idx);
 			
-			if (nav.DataItem is IType && !strippedUrl.Contains ((nav.DataItem as IType).FullName)) 
+			var type = nav.DataItem as IUnresolvedTypeDefinition;
+			if (type != null && !strippedUrl.StartsWith (type.FullName, StringComparison.Ordinal))
 				return true;
-			if (nav.DataItem is Namespace && !strippedUrl.Contains (((Namespace)nav.DataItem).Name))
+			if (nav.DataItem is Namespace && !strippedUrl.StartsWith (((Namespace)nav.DataItem).Name, StringComparison.Ordinal))
 				return true;
 			return false;
 		}

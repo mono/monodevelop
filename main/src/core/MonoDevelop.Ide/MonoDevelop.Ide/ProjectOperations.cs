@@ -217,11 +217,13 @@ namespace MonoDevelop.Ide
 			var entity = element as IEntity;
 			if (entity == null && element is IType)
 				entity = ((IType)element).GetDefinition ();
+			if (entity == null)
+				return false;
 			
-			if (entity != null) {
-				return !entity.Region.IsEmpty;
+			if (entity.Region.IsEmpty) {
+				return !string.IsNullOrEmpty (entity.ParentAssembly.UnresolvedAssembly.Location);
 			}
-			return false;
+			return true;
 		}
 		
 		public void JumpToDeclaration (INamedElement visitable, bool askIfMultipleLocations)
@@ -267,9 +269,7 @@ namespace MonoDevelop.Ide
 			string fileName;
 			bool isCecilProjectContent = entity.Region.IsEmpty;
 			if (isCecilProjectContent) {
-				//TODO !!!
-				fileName = "";
-//				fileName = entity.ProjectContent.Annotation<string> (); // get dll
+				fileName = entity.ParentAssembly.UnresolvedAssembly.Location;
 			} else {
 				fileName = entity.Region.FileName;
 			}

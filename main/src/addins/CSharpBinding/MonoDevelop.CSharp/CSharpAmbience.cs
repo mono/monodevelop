@@ -417,7 +417,7 @@ namespace MonoDevelop.CSharp
 			if (type == null)
 				return "";
 			
-			if (type.Namespace == "System" && type.TypeParameterCount == 0) {
+			if (!settings.UseNETTypeNames && type.Namespace == "System" && type.TypeParameterCount == 0) {
 				switch (type.Name) {
 				case "Object":
 					return "object";

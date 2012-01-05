@@ -119,7 +119,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var type = (IUnresolvedTypeDefinition)dataObject;
 			var resolved = Resolve (treeBuilder, type);
-			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.UseNETTypeNames);
 			if (type.IsPrivate)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			

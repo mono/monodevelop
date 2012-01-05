@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string AssemblyName {
 			get { return assemblyName; }
 		}
-		
+		public string Location { get; set; }
 		public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
 			get {
 				return this.Files.SelectMany(f => f.AssemblyAttributes);

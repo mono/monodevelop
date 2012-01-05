@@ -211,6 +211,24 @@ namespace MonoDevelop.Projects
 			result.Append (')');
 		}
 		
+		static void AppendHelpParameterList (StringBuilder result, IList<IUnresolvedParameter> parameters)
+		{
+			result.Append ('(');
+			if (parameters != null) {
+				for (int i = 0; i < parameters.Count; i++) {
+					if (i > 0)
+						result.Append (',');
+					var p = parameters [i];
+					if (p == null)
+						continue;
+					if (p.IsRef || p.IsOut)
+						result.Append ("&");
+					AppendTypeReference (result, p.Type);
+				}
+			}
+			result.Append (')');
+		}
+		
 		public static string GetHelpUrl (this IType type)
 		{
 			if (type.TypeParameterCount == 0)
@@ -275,6 +293,55 @@ namespace MonoDevelop.Projects
 			return "unknown entity: " + member;
 		}
 		
+		public static string GetHelpUrl (this IUnresolvedEntity member)
+		{
+			StringBuilder sb;
+			
+			switch (member.EntityType) {
+			case EntityType.TypeDefinition:
+				var type = member as IUnresolvedTypeDefinition;
+				if (type.TypeParameters.Count == 0)
+					return "T:" + type.FullName;
+				return "T:" + type.FullName + "`" + type.TypeParameters.Count;
+			case EntityType.Method:
+				var method = (IUnresolvedMethod)member;
+				sb = new StringBuilder ();
+				sb.Append ("M:");
+				sb.Append (method.FullName);
+				if (method.TypeParameters.Count > 0) {
+					sb.Append ("`");
+					sb.Append (method.TypeParameters.Count);
+				}
+				AppendHelpParameterList (sb, method.Parameters);
+				return sb.ToString ();
+			case EntityType.Constructor:
+				var constructor = (IUnresolvedMethod)member;
+				sb = new StringBuilder ();
+				sb.Append ("M:");
+				sb.Append (constructor.DeclaringTypeDefinition.FullName);
+				sb.Append (".#ctor");
+				AppendHelpParameterList (sb, constructor.Parameters);
+				return sb.ToString ();
+			case EntityType.Destructor: // todo
+				return "todo";
+			case EntityType.Property:
+				return "P:" + member.FullName;
+			case EntityType.Indexer:
+				var indexer = (IUnresolvedProperty)member;
+				sb = new StringBuilder ();
+				sb.Append ("P:");
+				sb.Append (indexer.DeclaringTypeDefinition.FullName);
+				sb.Append (".Item");
+				AppendHelpParameterList (sb, indexer.Parameters);
+				return sb.ToString ();
+			case EntityType.Field:
+			case EntityType.Event:
+				return "F:" + member.FullName;
+			case EntityType.Operator: // todo
+				return "todo";
+			}
+			return "unknown entity: " + member;
+		}
 		
 		static XmlNode FindMatch (IMethod method, XmlNodeList nodes)
 		{

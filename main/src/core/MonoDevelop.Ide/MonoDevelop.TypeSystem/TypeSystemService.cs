@@ -488,6 +488,15 @@ namespace MonoDevelop.TypeSystem
 					return assembly.AssemblyName;
 				}
 			}
+			
+			public string Location {
+				get {
+					return assembly.Location;
+				}
+				set {
+					assembly.Location = value;
+				}
+			}
 
 			public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
 				get {
@@ -973,6 +982,7 @@ namespace MonoDevelop.TypeSystem
 				result.FileName = fileName;
 				result.LastWriteTime = File.GetLastWriteTime (fileName);
 				result.Ctx = loader.LoadAssembly (asm);
+				result.Ctx.Location = fileName;
 				cache = CreateCacheDirectory (fileName);
 				if (cache != null)
 					SerializeObject (Path.Combine (cache, "completion.cache"), result);
