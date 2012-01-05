@@ -441,9 +441,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
 					return null;
+				
 				// Do not pop up completion on identifier identifier (should be handled by keyword completion).
 				tokenIndex = offset - 1;
 				token = GetPreviousToken (ref tokenIndex, false);
+				if (token == "class" || token == "namespace") // after these always follows a name
+					return null;
 				int prevTokenIndex = tokenIndex;
 				var prevToken2 = GetPreviousToken (ref prevTokenIndex, false);
 				if (identifierStart == null && !string.IsNullOrEmpty (token) && !(IsInsideComment (tokenIndex) || IsInsideString (tokenIndex)) && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
