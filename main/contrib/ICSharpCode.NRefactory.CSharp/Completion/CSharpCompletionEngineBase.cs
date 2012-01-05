@@ -98,7 +98,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return currentType;
 		}
 		
-		bool IsInsideType (IUnresolvedTypeDefinition currentType, TextLocation location)
+		bool IsInsideType (IUnresolvedEntity currentType, TextLocation location)
 		{
 			int startOffset = document.GetOffset (currentType.Region.Begin);
 			int endOffset = document.GetOffset (location);
@@ -175,6 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!IsInsideType (currentType, location))
 					currentType = null;
 			}
+			
 			this.currentMember = null;
 			if (this.currentType != null) {
 				foreach (var member in currentType.Members) {
@@ -182,6 +183,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						currentMember = member;
 				}
 			}
+			
+			// location is beyond last reported end region, now we need to check, if the end region changed
+			// NOTE: Enums are a special case, there the "last" field needs to be treated as current member
+			if (currentMember != null && currentMember.Region.End < location && currentType.Kind != TypeKind.Enum) {
+				if (!IsInsideType (currentMember, location))
+					currentMember = null;
+			}
+			
 			var stack = GetBracketStack (GetMemberTextToCaret ().Item1);
 			if (stack.Count == 0)
 				currentMember = null;
