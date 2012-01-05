@@ -472,6 +472,30 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					}
 				}
+				if (n != null && n.Parent is InvocationExpression) {
+					var invokeResult = ResolveExpression (identifierStart.Item1, ((InvocationExpression)n.Parent).Target, identifierStart.Item3);
+					var mgr = invokeResult != null ? invokeResult.Item1 as MethodGroupResolveResult : null;
+					if (mgr != null) {
+						foreach (var method in mgr.Methods) {
+							foreach (var p in method.Parameters) {
+								contextList.AddVariable (p);
+							}
+						}
+					}
+				}
+				
+				if (n != null && n.Parent is ObjectCreateExpression) {
+					var invokeResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
+					var mgr = invokeResult != null ? invokeResult.Item1 as ResolveResult : null;
+					
+					if (mgr != null) {
+						foreach (var constructor in mgr.Type.GetConstructors ()) {
+							foreach (var p in constructor.Parameters) {
+								contextList.AddVariable (p);
+							}
+						}
+					}
+				}
 				
 				if (n is Identifier && n.Parent is ForeachStatement) {
 					if (controlSpace)
