@@ -44,9 +44,9 @@ namespace MonoDevelop.Ide
 			
 			// Attach a handler for when exceptions need to be processed
 			LogReportingService.UnhandledErrorOccured = (enabled, ex, willShutdown) => {
-				var doNotSend = new AlertButton (GettextCatalog.GetString ("Do Not Send"));
-				var sendOnce = new AlertButton (GettextCatalog.GetString ("Send This Time"));
-				var alwaysSend = new AlertButton (GettextCatalog.GetString ("Always Send"));
+				var doNotSend = new AlertButton (GettextCatalog.GetString ("Do _Not Send"));
+				var sendOnce = new AlertButton (GettextCatalog.GetString ("_Send This Time"));
+				var alwaysSend = new AlertButton (GettextCatalog.GetString ("_Always Send"));
 				
 				AlertButton[] buttons = null;
 				string message = null;
