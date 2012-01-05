@@ -32,15 +32,90 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	internal partial class GtkErrorDialog : Gtk.Dialog
 	{
-		TextTag tagNoWrap;
-		TextTag tagWrap;
+		TextTag tagWrap, tagNoWrap;
+		TextView detailsTextView;
+		Expander expander;
 		
-		public GtkErrorDialog (Window parent)
+		public GtkErrorDialog (Window parent, string title, string message, AlertButton[] buttons)
 		{
-			this.Build ();
-			this.Title = BrandingService.ApplicationName;
+			if (string.IsNullOrEmpty (title))
+				throw new ArgumentException ();
+			if (buttons == null)
+				throw new ArgumentException ();
+			
+			Title = BrandingService.ApplicationName;
 			TransientFor = parent;
-			descriptionLabel.ModifyBg (StateType.Normal, new Gdk.Color (255,0,0));
+			Modal = true;
+			WindowPosition = Gtk.WindowPosition.CenterOnParent;
+			DefaultWidth = 624;
+			DefaultHeight = 142;
+			
+			this.VBox.BorderWidth = 2;
+			
+			var hbox = new HBox () {
+				Spacing = 6,
+				BorderWidth = 12,
+			};
+			
+			var errorImage = new Image (Gtk.Stock.DialogError, IconSize.Dialog) {
+				Yalign = 0F,
+			};
+			hbox.PackStart (errorImage, false, false, 0);
+			this.VBox.Add (hbox);
+			
+			var vbox = new VBox () {
+				Spacing = 6,
+			};
+			hbox.PackEnd (vbox, true, true, 0);
+			
+			var titleLabel = new Label () {
+				Markup = "<b>" + GLib.Markup.EscapeText (title) + "</b>",
+				Xalign = 0F,
+			};
+			vbox.PackStart (titleLabel, false, false, 0);
+			
+			if (!string.IsNullOrWhiteSpace (message)) {
+				message = message.Trim ();
+				var descriptionLabel = new Label (message) {
+					Xalign = 0F,
+					Selectable = true,
+				};
+				descriptionLabel.LineWrap = true;
+				descriptionLabel.WidthRequest = 500;
+				descriptionLabel.ModifyBg (StateType.Normal, new Gdk.Color (255,0,0));
+				vbox.PackStart (descriptionLabel, false, false, 0);
+			}
+			
+			expander = new Expander (GettextCatalog.GetString ("Details")) {
+				CanFocus = true,
+				Visible = false,
+			};
+			vbox.PackEnd (expander, true, true, 0);
+			
+			var sw = new ScrolledWindow () {
+				HeightRequest = 180,
+				ShadowType = ShadowType.Out,
+			};
+			expander.Add (sw);
+			
+			detailsTextView = new TextView () {
+				CanFocus = true,
+			};
+			sw.Add (detailsTextView);
+			
+			var aa = this.ActionArea;
+			aa.Spacing = 10;
+			aa.LayoutStyle = ButtonBoxStyle.End;
+			aa.BorderWidth = 5;
+			aa.Homogeneous = true;
+			
+			expander.Activated += delegate {
+				this.AllowGrow = expander.Expanded;
+				GLib.Timeout.Add (100, delegate {
+					Resize (DefaultWidth, 1);
+					return false;
+				});
+			};
 			
 			tagNoWrap = new TextTag ("nowrap");
 			tagNoWrap.WrapMode = WrapMode.None;
@@ -50,36 +125,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			tagWrap.WrapMode = WrapMode.Word;
 			detailsTextView.Buffer.TagTable.Add (tagWrap);
 			
-			expander.Visible = false;
-
-			ActionArea.Homogeneous = true;
-			ActionArea.Remove (okButton);
-		}
-		
-		public AlertButton[] Buttons {
-			get; set;
-		}
-
-		public string Message {
-			get { return descriptionLabel.Text; }
-			set {
-				string message = value;
-				while (message.EndsWith ("\r") || message.EndsWith ("\n"))
-					message = message.Substring (0, message.Length - 1);
-				if (!message.EndsWith (".")) message += ".";
-				descriptionLabel.Text = message;
-			}
-		}
-
-		protected override void OnRealized ()
-		{
+			this.Buttons = buttons;
 			for (int i = 0; i < Buttons.Length; i++) {
 				Gtk.Button button;
 				button = new Gtk.Button (Buttons[i].Label);
 				button.ShowAll ();
 				AddActionWidget (button, i);
 			}
-			base.OnRealized ();
+			
+			Child.ShowAll ();
+			Hide ();
+		}
+		
+		public AlertButton[] Buttons {
+			get; private set;
 		}
 
 		public void AddDetails (string text, bool wrapped)
@@ -90,24 +149,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			else
 				detailsTextView.Buffer.InsertWithTags (ref it, text, tagNoWrap);
 			expander.Visible = true;
-		}
-		
-		protected virtual void OnExpander1Activated (object sender, System.EventArgs e)
-		{
-			GLib.Timeout.Add (100, new GLib.TimeoutHandler (UpdateSize));
-		}
-		
-		bool UpdateSize ()
-		{
-			int w, h;
-			GetSize (out w, out h);
-			Resize (w, 1);
-			return false;
-		}
-		
-		protected virtual void OnOkButtonClicked (object sender, System.EventArgs e)
-		{
-			Destroy ();
 		}
 	}
 }

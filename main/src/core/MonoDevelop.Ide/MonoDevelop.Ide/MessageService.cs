@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string message)
 		{
-			ShowException (parent, e, message, "An unexpected error occured");
+			ShowException (parent, e, message, null);
 		}
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string message, string title)
@@ -437,8 +437,8 @@ namespace MonoDevelop.Ide
 			public AlertButton ShowException (Gtk.Window parent, string title, string message, Exception e, params AlertButton[] buttons)
 			{
 				var exceptionDialog = new ExceptionDialog () {
-					Buttons = buttons,
-					Title = title,
+					Buttons = buttons ?? new AlertButton[] { AlertButton.Ok },
+					Title = title ?? GettextCatalog.GetString ("An error has occurred"),
 					Message = message,
 					Exception = e,
 					TransientFor = parent,
