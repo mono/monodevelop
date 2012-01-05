@@ -52,6 +52,10 @@
 		<ExtensionNode name = "Class" objectType = "MonoDevelop.Core.ISystemInformationProvider" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Core/PasswordProvider" name = "API for saving/retrieving passwords">
+		<ExtensionNode name = "Class" objectType = "MonoDevelop.Core.IPasswordProvider" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Core/Frameworks">
 		<Description>Target frameworks.</Description>
 		<ExtensionNode name="Framework" type="MonoDevelop.Core.AddIns.TargetFrameworkNode" objectType="MonoDevelop.Core.Assemblies.TargetFramework">

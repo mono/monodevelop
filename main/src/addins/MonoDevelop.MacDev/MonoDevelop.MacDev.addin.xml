@@ -128,4 +128,8 @@
 	<Extension path = "/MonoDevelop/Core/SystemInformation">
 		<Class class = "MonoDevelop.MacDev.AppleSdkAboutInformation" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/PasswordProvider">
+		<Class class = "MonoDevelop.MacDev.MacKeychainPasswordProvider" />
+	</Extension>
 </Addin>

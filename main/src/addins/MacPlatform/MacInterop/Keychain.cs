@@ -340,21 +340,21 @@ namespace MonoDevelop.MacInterop
 			return cert.GetNameInfo (X509NameType.SimpleName, false);
 		}
 
-		public static void AddInternetPassword (Uri uri, string userName, string password)
+		public static void AddInternetPassword (Uri uri, string password)
 		{
 			var result = SecKeychainAddInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
-			                                             (uint) userName.Length, userName, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
+			                                             (uint) uri.UserInfo.Length, uri.UserInfo, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
 			                                             (ushort) uri.Port, 0, 0, (uint) password.Length, password, IntPtr.Zero);
 			if (result != OSStatus.Ok)
 				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
 		}
 
-		public static string FindInternetPassword (Uri uri, string userName)
+		public static string FindInternetPassword (Uri uri)
 		{
-			uint passwordLength;
 			IntPtr password;
+			uint passwordLength;
 			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
-			                                              (uint) userName.Length, userName, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
+			                                              (uint) uri.UserInfo.Length, uri.UserInfo, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
 			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, IntPtr.Zero);
 			if (result == OSStatus.ItemNotFound)
 				return null;
