@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			global::Stetic.BinContainer.Attach (this);
 			
 			var value = LogReportingService.ReportCrashes;
-			chkCrash = new CheckButton (GettextCatalog.GetString ("Automatically submit crash diagnostic information"));
+			chkCrash = new CheckButton (GettextCatalog.GetString ("Automatically submit error diagnostic information"));
 			if (value.HasValue)
 				chkCrash.Active = value.Value;
 			chkCrash.Toggled += (sender, e) => reportCrash = chkCrash.Active;
