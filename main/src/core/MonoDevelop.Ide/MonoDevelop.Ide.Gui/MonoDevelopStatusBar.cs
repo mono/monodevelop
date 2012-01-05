@@ -203,8 +203,14 @@ namespace MonoDevelop.Ide
 				ignoreFeedbackButtonClick = true;
 		}
 
+		static readonly bool FeedbackButtonThrowsException = Environment.GetEnvironmentVariable ("MONODEVELOP_FEEDBACK_THROWS_EXCEPTION") != null;
 		void HandleFeedbackButtonClicked (object sender, EventArgs e)
 		{
+			if (FeedbackButtonThrowsException) {
+				GLib.ExceptionManager.RaiseUnhandledException (new Exception ("Feedback Button is throwing an exception", new Exception (Environment.StackTrace)), false);
+				return;
+			}
+
 			if (!ignoreFeedbackButtonClick)
 				FeedbackService.ShowFeedbackWindow ();
 			ignoreFeedbackButtonClick = false;
