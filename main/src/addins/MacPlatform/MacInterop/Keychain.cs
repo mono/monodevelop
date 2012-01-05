@@ -52,6 +52,29 @@ namespace MonoDevelop.MacInterop
 		}
 		
 		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainItemFreeContent (IntPtr attrList, IntPtr data);
+
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainAddGenericPassword (IntPtr keychain, uint serviceNameLength, string serviceName,
+		                                                      uint accountNameLength, string accountName, uint passwordLength,
+		                                                      string passwordData, IntPtr itemRef);
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainFindGenericPassword (IntPtr keychain, uint serviceNameLength, string serviceName,
+		                                                      uint accountNameLength, string accountName, out uint passwordLength,
+		                                                      out IntPtr passwordData, IntPtr itemRef);
+
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainAddInternetPassword (IntPtr keychain, uint serverNameLength, string serverName, uint securityDomainLength,
+		                                                      string securityDomain, uint accountNameLength, string accountName, uint pathLength,
+		                                                      string path, ushort port, int protocol, int authenticationType,
+		                                                      uint passwordLength, string passwordData, IntPtr itemRef);
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainFindInternetPassword (IntPtr keychain, uint serverNameLength, string serverName, uint securityDomainLength,
+		                                                      string securityDomain, uint accountNameLength, string accountName, uint pathLength,
+		                                                      string path, ushort port, int protocol, int authenticationType,
+		                                                      out uint passwordLength, out IntPtr passwordData, IntPtr itemRef);
+
+		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainSearchCreateFromAttributes (IntPtr keychainOrArray, SecItemClass itemClass, IntPtr attrList, out IntPtr searchRef);
 		
 		[DllImport (SecurityLib)]
@@ -315,6 +338,31 @@ namespace MonoDevelop.MacInterop
 		public static string GetCertificateCommonName (X509Certificate2 cert)
 		{
 			return cert.GetNameInfo (X509NameType.SimpleName, false);
+		}
+
+		public static void AddInternetPassword (Uri uri, string userName, string password)
+		{
+			var result = SecKeychainAddInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
+			                                             (uint) userName.Length, userName, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
+			                                             (ushort) uri.Port, 0, 0, (uint) password.Length, password, IntPtr.Zero);
+			if (result != OSStatus.Ok)
+				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
+		}
+
+		public static string FindInternetPassword (Uri uri, string userName)
+		{
+			uint passwordLength;
+			IntPtr password;
+			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
+			                                              (uint) userName.Length, userName, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
+			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, IntPtr.Zero);
+			if (result == OSStatus.ItemNotFound)
+				return null;
+
+			if (result != OSStatus.Ok)
+				throw new Exception ("Could not find internet password: " + GetError (result));
+
+			return Marshal.PtrToStringAuto (password, (int) passwordLength);
 		}
 		
 		enum SecItemClass : uint
