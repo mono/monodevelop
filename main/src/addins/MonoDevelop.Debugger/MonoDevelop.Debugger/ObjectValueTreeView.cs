@@ -499,6 +499,7 @@ namespace MonoDevelop.Debugger
 			
 			EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
 			ops.AllowMethodEvaluation = true;
+			ops.AllowToStringCalls = true;
 			ops.AllowTargetInvoke = true;
 			ops.EllipsizeStrings = false;
 			

@@ -47,7 +47,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.ProjectSelectorWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.AddinLoadErrorDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.GtkErrorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MultiMessageDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.MultiTaskProgressDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog.cs \

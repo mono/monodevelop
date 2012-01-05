@@ -343,39 +343,41 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
+			
 			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + fileName)) {
 				NavigationHistoryService.LogActiveDocument ();
 				
-				Counters.OpenDocumentTimer.Trace ("Look for open document");
-				
-				foreach (Document doc in Documents) {
-					IBaseViewContent vcFound = null;
-					int vcIndex = 0;
+				if (options.HasFlag (OpenDocumentOptions.TryToReuseViewer)) {
+					Counters.OpenDocumentTimer.Trace ("Look for open document");
 					
-					//search all ViewContents to see if they can "re-use" this filename
-					if (doc.Window.ViewContent.CanReuseView (fileName))
-						vcFound = doc.Window.ViewContent;
-					
-					
-					//old method as fallback
-					if ((vcFound == null) && (doc.FileName == fileName))
-						vcFound = doc.Window.ViewContent;
-					
-					//if found, select window and jump to line
-					if (vcFound != null) {
-						IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
-						if (line >= 1 && ipos != null) {
-							ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine), options.HasFlag (OpenDocumentOptions.CenterCaretLine));
-						}
+					foreach (Document doc in Documents) {
+						IBaseViewContent vcFound = null;
+						int vcIndex = 0;
 						
-						if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
-							doc.Select ();
-							doc.Window.SwitchView (vcIndex);
-							doc.Window.SelectWindow ();
-							NavigationHistoryService.LogActiveDocument ();
-							Present ();
+						//search all ViewContents to see if they can "re-use" this filename
+						if (doc.Window.ViewContent.CanReuseView (fileName))
+							vcFound = doc.Window.ViewContent;
+						
+						//old method as fallback
+						if ((vcFound == null) && (doc.FileName == fileName))
+							vcFound = doc.Window.ViewContent;
+						
+						//if found, select window and jump to line
+						if (vcFound != null) {
+							IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
+							if (line >= 1 && ipos != null) {
+								ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine), options.HasFlag (OpenDocumentOptions.CenterCaretLine));
+							}
+							
+							if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
+								doc.Select ();
+								doc.Window.SwitchView (vcIndex);
+								doc.Window.SelectWindow ();
+								NavigationHistoryService.LogActiveDocument ();
+								Present ();
+							}
+							return doc;
 						}
-						return doc;
 					}
 				}
 				
@@ -702,6 +704,7 @@ namespace MonoDevelop.Ide.Gui
 					monitor.ReportError (GettextCatalog.GetString ("{0} is a directory", fileName), null);
 					return;
 				}
+				
 				// test, if file fileName exists
 				if (!origName.StartsWith("http://")) {
 					// test, if an untitled file should be opened
@@ -716,22 +719,6 @@ namespace MonoDevelop.Ide.Gui
 					}
 					if (!File.Exists (fileName)) {
 						monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", fileName), null);
-						return;
-					}
-				}
-				
-				foreach (Document doc in Documents) {
-					if (doc.FileName == fileName) {
-						if (openFileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
-							doc.Select ();
-							doc.RunWhenLoaded (delegate {
-								IEditableTextBuffer ipos = doc.GetContent <IEditableTextBuffer> ();
-								if (openFileInfo.Line > 0 && ipos != null) {
-									ipos.SetCaretTo (openFileInfo.Line, Math.Max (1, openFileInfo.Column), openFileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
-								}
-							});
-						}
-						openFileInfo.NewContent = doc.Window.ViewContent;
 						return;
 					}
 				}
@@ -759,6 +746,7 @@ namespace MonoDevelop.Ide.Gui
 						viewBinding = binding as IViewDisplayBinding;
 					}
 				}
+				
 				try {
 					if (binding != null) {
 						if (viewBinding != null)  {
@@ -1078,6 +1066,7 @@ namespace MonoDevelop.Ide.Gui
 				fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
 				return;
 			}
+			
 			// content got re-used
 			if (newContent.WorkbenchWindow != null) {
 				newContent.WorkbenchWindow.SelectWindow ();
@@ -1095,6 +1084,7 @@ namespace MonoDevelop.Ide.Gui
 			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();
 			if (fileInfo.Line > 0 && ipos != null)
 				JumpToLine ();
+			
 			fileInfo.NewContent = newContent;
 		}
 		
@@ -1116,7 +1106,8 @@ namespace MonoDevelop.Ide.Gui
 		HighlightCaretLine = 1 << 2,
 		OnlyInternalViewer = 1 << 3,
 		OnlyExternalViewer = 1 << 4,
+		TryToReuseViewer = 1 << 5,
 		
-		Default = BringToFront | CenterCaretLine | HighlightCaretLine
+		Default = BringToFront | CenterCaretLine | HighlightCaretLine | TryToReuseViewer
 	}
 }

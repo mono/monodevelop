@@ -39,10 +39,8 @@ namespace MonoDevelop.Ide
 {
 	public class AlertButton 
 	{
-		public static AlertButton Always  = new AlertButton (GettextCatalog.GetString ("_Always"));
 		public static AlertButton Ok      = new AlertButton (Gtk.Stock.Ok, true);
 		public static AlertButton Yes     = new AlertButton (Gtk.Stock.Yes, true);
-		public static AlertButton Never   = new AlertButton (GettextCatalog.GetString ("_Never"));
 		public static AlertButton No      = new AlertButton (Gtk.Stock.No, true);
 		public static AlertButton Close   = new AlertButton (Gtk.Stock.Close, true);
 		public static AlertButton Cancel  = new AlertButton (Gtk.Stock.Cancel, true);
@@ -61,7 +59,6 @@ namespace MonoDevelop.Ide
 		public static AlertButton Stop    = new AlertButton (Gtk.Stock.Stop, true);
 		public static AlertButton Proceed = new AlertButton (GettextCatalog.GetString ("_Proceed"));
 		public static AlertButton Replace = new AlertButton (GettextCatalog.GetString ("_Replace"));
-		public static AlertButton ThisTimeOnly = new AlertButton (GettextCatalog.GetString ("_This time only"));
 		
 		public static AlertButton OverwriteFile = new AlertButton (GettextCatalog.GetString ("_Overwrite file"));
 		
@@ -169,7 +166,7 @@ namespace MonoDevelop.Ide
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string message)
 		{
-			ShowException (parent, e, message, "An unexpected error occured");
+			ShowException (parent, e, message, null);
 		}
 		
 		public static void ShowException (Gtk.Window parent, Exception e, string message, string title)
@@ -437,8 +434,8 @@ namespace MonoDevelop.Ide
 			public AlertButton ShowException (Gtk.Window parent, string title, string message, Exception e, params AlertButton[] buttons)
 			{
 				var exceptionDialog = new ExceptionDialog () {
-					Buttons = buttons,
-					Title = title,
+					Buttons = buttons ?? new AlertButton[] { AlertButton.Ok },
+					Title = title ?? GettextCatalog.GetString ("An error has occurred"),
 					Message = message,
 					Exception = e,
 					TransientFor = parent,

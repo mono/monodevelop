@@ -47,6 +47,9 @@ namespace MonoDevelop.Ide
 		
 		public static void ShowFeedbackWindow ()
 		{
+			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_CRASHREPORTER_TEST")))
+				throw new Exception ();
+			
 			if (currentFeedbackDialog == null) {
 				var p = FeedbackPositionGetter ();
 				currentFeedbackDialog = new FeedbackDialog (p.X, p.Y);
