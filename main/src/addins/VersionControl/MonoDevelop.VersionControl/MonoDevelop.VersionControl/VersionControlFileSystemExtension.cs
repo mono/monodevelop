@@ -61,6 +61,11 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
+		public override void RenameDirectory (FilePath path, string newName)
+		{
+			MoveDirectory (path, path.ParentDirectory.Combine (newName));
+		}
+
 		public override void RenameFile (FilePath file, string newName)
 		{
 			MoveFile (file, file.ParentDirectory.Combine (newName));
@@ -76,6 +81,7 @@ namespace MonoDevelop.VersionControl
 		{
 			Repository repo = GetRepository (path);
 			repo.CreateLocalDirectory (path);
+			repo.Add (path, false, new NullProgressMonitor ());
 		}
 		
 		public override void MoveDirectory (FilePath sourcePath, FilePath destPath)
