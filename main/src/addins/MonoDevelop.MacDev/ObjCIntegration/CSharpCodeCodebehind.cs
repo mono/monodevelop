@@ -258,7 +258,7 @@ foreach (var nso in Types) {
             #line hidden
             
             #line 43 "/Users/fejj/src/xamarin/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
-            this.Write("\t\t\n\t\tvoid ReleaseOutlets ()\n\t\t{\n");
+            this.Write("\t\t\n\t\tvoid ReleaseDesignerOutlets ()\n\t\t{\n");
             
             #line default
             #line hidden

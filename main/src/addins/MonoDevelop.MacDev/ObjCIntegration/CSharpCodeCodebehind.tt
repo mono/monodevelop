@@ -40,7 +40,7 @@ foreach (var nso in Types) {
 		partial void <#=EscapeIdentifier (action.CliName)#> (<# AddParameters (action); #>);
 <#	}#>
 		
-		void ReleaseOutlets ()
+		void ReleaseDesignerOutlets ()
 		{
 <#		bool firstOutlet = true;
 		foreach (var outlet in nso.Outlets.Where (o => o.IsDesigner)) {
