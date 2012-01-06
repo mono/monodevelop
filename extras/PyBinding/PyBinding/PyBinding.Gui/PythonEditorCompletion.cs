@@ -337,7 +337,7 @@ namespace PyBinding.Gui
 				if (node is ICompilationUnit) {
 					if (!Document.ParsedDocument.UserRegions.Any ())
 						break;
-					FoldingRegion reg = Document.ParsedDocument.UserRegions.Where (r => r.Region.Contains (loc.Line, loc.Column)).LastOrDefault ();
+					FoldingRegion reg = Document.ParsedDocument.UserRegions.LastOrDefault (r => r.Region.Contains (loc.Line, loc.Column));
 					if (reg == null) {
 						entry = new PathEntry (GettextCatalog.GetString ("No region"));
 					} else {
