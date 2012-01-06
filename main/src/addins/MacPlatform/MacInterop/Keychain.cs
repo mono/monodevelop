@@ -57,23 +57,26 @@ namespace MonoDevelop.MacInterop
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainAddGenericPassword (IntPtr keychain, uint serviceNameLength, string serviceName,
 		                                                      uint accountNameLength, string accountName, uint passwordLength,
-		                                                      string passwordData, IntPtr itemRef);
+		                                                      byte[] passwordData, ref IntPtr itemRef);
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainFindGenericPassword (IntPtr keychain, uint serviceNameLength, string serviceName,
 		                                                      uint accountNameLength, string accountName, out uint passwordLength,
-		                                                      out IntPtr passwordData, IntPtr itemRef);
+		                                                      out IntPtr passwordData, ref IntPtr itemRef);
 
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainAddInternetPassword (IntPtr keychain, uint serverNameLength, string serverName, uint securityDomainLength,
 		                                                      string securityDomain, uint accountNameLength, string accountName, uint pathLength,
 		                                                      string path, ushort port, int protocol, int authenticationType,
-		                                                      uint passwordLength, string passwordData, IntPtr itemRef);
+		                                                      uint passwordLength, byte[] passwordData, ref IntPtr itemRef);
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainFindInternetPassword (IntPtr keychain, uint serverNameLength, string serverName, uint securityDomainLength,
 		                                                      string securityDomain, uint accountNameLength, string accountName, uint pathLength,
 		                                                      string path, ushort port, int protocol, int authenticationType,
-		                                                      out uint passwordLength, out IntPtr passwordData, IntPtr itemRef);
+		                                                      out uint passwordLength, out IntPtr passwordData, ref IntPtr itemRef);
 
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainItemModifyAttributesAndData (IntPtr itemRef, IntPtr attrList, uint length, byte [] data);
+		
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainSearchCreateFromAttributes (IntPtr keychainOrArray, SecItemClass itemClass, IntPtr attrList, out IntPtr searchRef);
 		
@@ -342,20 +345,37 @@ namespace MonoDevelop.MacInterop
 
 		public static void AddInternetPassword (Uri uri, string password)
 		{
-			var result = SecKeychainAddInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
+			IntPtr itemRef;
+			IntPtr passwordPtr;
+			uint passwordLength;
+			var passwordBytes = System.Text.Encoding.UTF8.GetBytes (password);
+			
+			// See if there is already a password there for this uri
+			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
+			                                              (uint) uri.UserInfo.Length, uri.UserInfo, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
+			                                              (ushort) uri.Port, 0, 0, out passwordLength, out passwordPtr, ref itemRef);
+			if (result == OSStatus.Ok) {
+				// If there is, replace it with the new one
+				result = SecKeychainItemModifyAttributesAndData (itemRef, IntPtr.Zero, (uint) passwordBytes.Length, passwordBytes);
+			} else {
+				// Otherwise add a new entry with the password
+				result = SecKeychainAddInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
 			                                             (uint) uri.UserInfo.Length, uri.UserInfo, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
-			                                             (ushort) uri.Port, 0, 0, (uint) password.Length, password, IntPtr.Zero);
+			                                             (ushort) uri.Port, 0, 0, (uint) passwordBytes.Length, passwordBytes, ref itemRef);
+			}
+			
 			if (result != OSStatus.Ok)
 				throw new Exception ("Could not add internet password to keychain: " + GetError (result));
 		}
 
 		public static string FindInternetPassword (Uri uri)
 		{
+			IntPtr itemRef;
 			IntPtr password;
 			uint passwordLength;
 			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
 			                                              (uint) uri.UserInfo.Length, uri.UserInfo, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
-			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, IntPtr.Zero);
+			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, ref itemRef);
 			if (result == OSStatus.ItemNotFound)
 				return null;
 
