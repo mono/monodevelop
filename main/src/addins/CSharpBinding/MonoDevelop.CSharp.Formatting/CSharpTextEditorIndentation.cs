@@ -233,49 +233,51 @@ namespace MonoDevelop.CSharp.Formatting
 
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
-				//capture some of the current state
-				int oldBufLen = textEditorData.Length;
-				int oldLine = textEditorData.Caret.Line + 1;
-				bool hadSelection = textEditorData.IsSomethingSelected;
-
-				//pass through to the base class, which actually inserts the character
-				//and calls HandleCodeCompletion etc to handles completion
-				DoPreInsertionSmartIndent (key);
-				bool retval = base.KeyPress (key, keyChar, modifier);
-
-				//handle inserted characters
-				if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
-					return retval;
-
-				lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
-				if (lastCharInserted == '\0')
-					return retval;
-				stateTracker.UpdateEngine ();
-
-				bool reIndent = false;
-				if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
-					FixLineStart (textEditorData.Caret.Line + 1);
-				} else {
-					if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
-						DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
-				}
-				//reindent the line after the insertion, if needed
-				//N.B. if the engine says we need to reindent, make sure that it's because a char was 
-				//inserted rather than just updating the stack due to moving around
-				stateTracker.UpdateEngine ();
-				bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
-				if (reIndent || automaticReindent)
-					DoReSmartIndent ();
-
-				if (lastCharInserted == '\n' && !(textEditorData.CurrentMode is TextLinkEditMode)) {
-					RunFormatter ();
+				using (var undo = textEditorData.OpenUndoGroup ()) {
+					//capture some of the current state
+					int oldBufLen = textEditorData.Length;
+					int oldLine = textEditorData.Caret.Line + 1;
+					bool hadSelection = textEditorData.IsSomethingSelected;
+	
+					//pass through to the base class, which actually inserts the character
+					//and calls HandleCodeCompletion etc to handles completion
+					DoPreInsertionSmartIndent (key);
+					bool retval = base.KeyPress (key, keyChar, modifier);
+	
+					//handle inserted characters
+					if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
+						return retval;
+	
+					lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
+					if (lastCharInserted == '\0')
+						return retval;
 					stateTracker.UpdateEngine ();
-					//					DoReSmartIndent ();
+	
+					bool reIndent = false;
+					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
+						FixLineStart (textEditorData.Caret.Line + 1);
+					} else {
+						if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
+							DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
+					}
+					//reindent the line after the insertion, if needed
+					//N.B. if the engine says we need to reindent, make sure that it's because a char was 
+					//inserted rather than just updating the stack due to moving around
+					stateTracker.UpdateEngine ();
+					bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
+					if (reIndent || automaticReindent)
+						DoReSmartIndent ();
+	
+					if (lastCharInserted == '\n' && !(textEditorData.CurrentMode is TextLinkEditMode)) {
+						RunFormatter ();
+						stateTracker.UpdateEngine ();
+						//					DoReSmartIndent ();
+					}
+	
+					stateTracker.UpdateEngine ();
+					lastCharInserted = '\0';
+					return retval;
 				}
-
-				stateTracker.UpdateEngine ();
-				lastCharInserted = '\0';
-				return retval;
 			}
 
 			if (TextEditorProperties.IndentStyle == IndentStyle.Auto && TextEditorProperties.TabIsReindent && key == Gdk.Key.Tab) {
