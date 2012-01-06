@@ -250,6 +250,26 @@ namespace MonoDevelop.Refactoring
 			
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
+			
+			
+			bool canRename;
+			if (item is IVariable || item is IParameter) {
+				canRename = true; 
+			} else if (item is ITypeDefinition) { 
+				Console.WriteLine (((ITypeDefinition)item).Region);
+				canRename = !((ITypeDefinition)item).Region.IsEmpty;
+			} else if (item is IMember) {
+				canRename = !((IMember)item).Region.IsEmpty;
+			} else {
+				canRename = false;
+			}
+			if (canRename) {
+				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new System.Action (delegate {
+					new MonoDevelop.Refactoring.Rename.RenameHandler ().Start (null);
+				}));
+				added = true;
+			}
+			
 			foreach (var refactoring in RefactoringService.Refactorings) {
 				if (refactoring.IsValid (options)) {
 					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
@@ -388,20 +408,6 @@ namespace MonoDevelop.Refactoring
 //				}
 			}
 			
-			
-//			bool canRename;
-//			if (item is IVariable || item is IParameter) {
-//				canRename = true; 
-//			} else if (item is ITypeDefinition) { 
-//				canRename = ((ITypeDefinition)item).ProjectContent is ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleProjectContent;
-//			} else if (item is IMember) {
-//				var cls = ((IMember)item).DeclaringTypeDefinition;
-//				canRename = cls.ProjectContent is ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleProjectContent;
-//			} else {
-//				canRename = false;
-//			}
-//			if (canRename)
-//				ciset.CommandInfos.Add (GettextCatalog.GetString ("_Rename"), new System.Action (new Rename (ctx, item).Run));
 			
 //				
 //				if (cls.GetSourceProject () != null && includeModifyCommands && ((cls.ClassType == ClassType.Class) || (cls.ClassType == ClassType.Struct))) {
