@@ -161,7 +161,7 @@ namespace Mono.Debugging.Client
 			get {
 				ObjectValue file = frame.GetChild ("File");
 				if (file != null)
-					return (string) file.GetRawValue ();
+					return file.Value;
 				else
 					return null;
 			}
@@ -171,7 +171,7 @@ namespace Mono.Debugging.Client
 			get {
 				ObjectValue val = frame.GetChild ("Line");
 				if (val != null)
-					return int.Parse ((string) val.GetRawValue ());
+					return int.Parse (val.Value);
 				else
 					return 0;
 			}
@@ -181,14 +181,14 @@ namespace Mono.Debugging.Client
 			get {
 				ObjectValue val = frame.GetChild ("Column");
 				if (val != null)
-					return int.Parse ((string) val.GetRawValue ());
+					return int.Parse (val.Value);
 				else
 					return 0;
 			}
 		}
 
 		public string DisplayText {
-			get { return (string) frame.GetRawValue (); }
+			get { return frame.Value; }
 		}
 	}
 }
