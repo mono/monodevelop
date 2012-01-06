@@ -279,7 +279,10 @@ namespace MonoDevelop.Debugger
 		
 		public static void ShowExceptionCaughtDialog ()
 		{
-			ExceptionInfo val = CurrentFrame.GetException ();
+			EvaluationOptions ops = session.EvaluationOptions.Clone ();
+			ops.EllipsizeStrings = false;
+			
+			ExceptionInfo val = CurrentFrame.GetException (ops);
 			if (val != null) {
 				ExceptionCaughtDialog dlg = new ExceptionCaughtDialog (val);
 				dlg.TransientFor = IdeApp.Workbench.RootWindow;

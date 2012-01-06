@@ -139,7 +139,7 @@ namespace Mono.Debugging.Evaluation
 				int col = 0;
 				ObjectValue fileVal = ObjectValue.CreatePrimitive (null, new ObjectPath("File"), "", new EvaluationResult (file), ObjectValueFlags.None);
 				ObjectValue lineVal = ObjectValue.CreatePrimitive (null, new ObjectPath("Line"), "", new EvaluationResult (line.ToString ()), ObjectValueFlags.None);
-				ObjectValue colVal = ObjectValue.CreatePrimitive (null, new ObjectPath("Col"), "", new EvaluationResult (col.ToString ()), ObjectValueFlags.None);
+				ObjectValue colVal = ObjectValue.CreatePrimitive (null, new ObjectPath("Column"), "", new EvaluationResult (col.ToString ()), ObjectValueFlags.None);
 				ObjectValue[] children = new ObjectValue[] { fileVal, lineVal, colVal };
 				ObjectValue frame = ObjectValue.CreateObject (null, new ObjectPath (), "", new EvaluationResult (txt), ObjectValueFlags.None, children);
 				frames.Add (frame);
