@@ -57,6 +57,9 @@ namespace MonoDevelop.MacIntegration
 						Cut (this);
 						break;
 					case "c":
+						NSRange range = SelectedRange;
+						if (range.Length == 0)
+							SelectAll (this);
 						Copy (this);
 						break;
 					case "a":
