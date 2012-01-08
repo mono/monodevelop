@@ -202,7 +202,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 			new ColorMetaData ("keyword", GettextCatalog.GetString ("Keywords"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.access", GettextCatalog.GetString ("Access keywords"), ColorsAvailable.Text),
-			new ColorMetaData ("keyword.operator", GettextCatalog.GetString ("Operatork eywords"), ColorsAvailable.Text),
+			new ColorMetaData ("keyword.operator", GettextCatalog.GetString ("Operator keywords"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.operator.declaration", GettextCatalog.GetString ("Operator declaration keywords"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.selection", GettextCatalog.GetString ("Selection keywords"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.iteration", GettextCatalog.GetString ("Iteration keywords"), ColorsAvailable.Text),
