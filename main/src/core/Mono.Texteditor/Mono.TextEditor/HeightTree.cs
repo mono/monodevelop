@@ -89,6 +89,7 @@ namespace Mono.TextEditor
 		
 		public void Rebuild ()
 		{
+			markers.Clear ();
 			tree.Count = 1;
 			double h = editor.LineCount * editor.LineHeight;
 			tree.Root = new HeightNode () {
@@ -166,7 +167,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		HashSet<FoldMarker> markers = new HashSet<FoldMarker> ();
+		readonly HashSet<FoldMarker> markers = new HashSet<FoldMarker> ();
 		
 		public FoldMarker Fold (int lineNumber, int count)
 		{
@@ -182,7 +183,7 @@ namespace Mono.TextEditor
 			markers.Add (result);
 			return result;
 		}
-
+		
 		public void Unfold (FoldMarker marker, int lineNumber, int count)
 		{
 			if (marker == null || !markers.Contains (marker))
