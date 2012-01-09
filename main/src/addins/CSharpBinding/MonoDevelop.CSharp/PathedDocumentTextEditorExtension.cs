@@ -40,11 +40,23 @@ namespace MonoDevelop.CSharp
 {
 	public class PathedDocumentTextEditorExtension : TextEditorExtension, IPathedDocument
 	{
+		public override void Dispose ()
+		{
+			Document.Editor.Caret.PositionChanged -= UpdatePath;
+			Document.DocumentParsed -= HandleDocumentParsed;
+			base.Dispose ();
+		}
+		
 		public override void Initialize ()
 		{
 			UpdatePath (null, null);
 			Document.Editor.Caret.PositionChanged += UpdatePath;
-			Document.DocumentParsed += (sender, e) => UpdatePath (null, null);
+			Document.DocumentParsed += HandleDocumentParsed;
+		}
+
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			UpdatePath (null, null);
 		}
 		
 		#region IPathedDocument implementation
