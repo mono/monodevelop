@@ -45,6 +45,8 @@ FILES =  \
 	Semantics/ArrayCreateResolveResult.cs \
 	Semantics/ByReferenceResolveResult.cs \
 	Semantics/ConstantResolveResult.cs \
+	Semantics/Conversion.cs \
+	Semantics/ConversionResolveResult.cs \
 	Semantics/ErrorResolveResult.cs \
 	Semantics/InvocationResolveResult.cs \
 	Semantics/LocalResolveResult.cs \
