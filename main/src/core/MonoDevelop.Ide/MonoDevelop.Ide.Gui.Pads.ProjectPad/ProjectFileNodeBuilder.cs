@@ -192,6 +192,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workbench.OpenDocument (file.FilePath);
 		}
 		
+		public override void ActivateMultipleItems ()
+		{
+			ProjectFile file;
+			for (int i = 0; i < CurrentNodes.Length; i++) {
+				// Only bring the last file to the front
+				file = (ProjectFile) CurrentNodes [i].DataItem;
+				IdeApp.Workbench.OpenDocument (file.FilePath, i == CurrentNodes.Length - 1);
+			}
+		}
+		
 		public override DragOperation CanDragNode ()
 		{
 			if (((ProjectFile) CurrentNode.DataItem).DependsOnFile == null)
