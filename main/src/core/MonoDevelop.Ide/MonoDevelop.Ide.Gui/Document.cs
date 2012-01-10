@@ -533,6 +533,7 @@ namespace MonoDevelop.Ide.Gui
 			if (ViewChanged != null)
 				ViewChanged (this, args);
 		}
+		
 		bool wasEdited;
 		internal void OnDocumentAttached ()
 		{
@@ -568,20 +569,27 @@ namespace MonoDevelop.Ide.Gui
 			foreach (TextEditorExtensionNode extNode in extensions) {
 				if (!extNode.Supports (FileName))
 					continue;
+				
 				TextEditorExtension ext = (TextEditorExtension) extNode.CreateInstance ();
 				if (ext.ExtendsEditor (this, editor)) {
 					if (editorExtension == null)
 						editorExtension = ext;
+					
 					if (last != null)
 						last.Next = ext;
+					
 					last = ext;
 					ext.Initialize (this);
 				}
 			}
+			
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
+			
 			window.Document = this;
-			RunWhenLoaded (() => UpdateParseDocument ());
+			
+			RunWhenLoaded (() => ReparseDocument ());
+			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
@@ -672,6 +680,15 @@ namespace MonoDevelop.Ide.Gui
 				parseTimeout = 0;
 				return false;
 			});
+		}
+		
+		/// <summary>
+		/// This method kicks off an async document parser and should be used instead of 
+		/// <see cref="UpdateParseDocument"/> unless you need the parsed document immediately.
+		/// </summary>
+		public void ReparseDocument ()
+		{
+			StartReparseThread ();
 		}
 		
 		internal object ExtendedCommandTargetChain {

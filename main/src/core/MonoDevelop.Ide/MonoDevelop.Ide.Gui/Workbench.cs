@@ -1007,7 +1007,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (var doc in Documents) {
 				if (doc.ParsedDocument != null)
-					doc.UpdateParseDocument ();
+					doc.ReparseDocument ();
 			}
 		}
 	}

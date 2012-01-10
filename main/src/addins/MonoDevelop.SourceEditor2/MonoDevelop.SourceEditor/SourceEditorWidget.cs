@@ -857,7 +857,7 @@ namespace MonoDevelop.SourceEditor
 						AutoSave.RemoveAutoSaveFile (fileName);
 						TextEditor.GrabFocus ();
 						view.Load (fileName);
-						view.WorkbenchWindow.Document.UpdateParseDocument ();
+						view.WorkbenchWindow.Document.ReparseDocument ();
 					} catch (Exception ex) {
 						MessageService.ShowException (ex, "Could not remove the autosave file.");
 					} finally {
@@ -874,7 +874,7 @@ namespace MonoDevelop.SourceEditor
 						AutoSave.RemoveAutoSaveFile (fileName);
 						TextEditor.GrabFocus ();
 						view.Load (fileName, content, null);
-						view.WorkbenchWindow.Document.UpdateParseDocument ();
+						view.WorkbenchWindow.Document.ReparseDocument ();
 						view.IsDirty = true;
 					} catch (Exception ex) {
 						MessageService.ShowException (ex, "Could not remove the autosave file.");
