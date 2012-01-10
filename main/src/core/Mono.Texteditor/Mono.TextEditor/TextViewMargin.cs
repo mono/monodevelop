@@ -1551,7 +1551,7 @@ namespace Mono.TextEditor
 			if (args.Button == 1) {
 				VisualLocationTranslator trans = new VisualLocationTranslator (this);
 				clickLocation = trans.PointToLocation (args.X, args.Y);
-				if (clickLocation.IsEmpty)
+				if (clickLocation.Line < DocumentLocation.MinLine || clickLocation.Column < DocumentLocation.MinColumn)
 					return;
 				LineSegment line = Document.GetLine (clickLocation.Line);
 				bool isHandled = false;
@@ -1624,6 +1624,9 @@ namespace Mono.TextEditor
 			}
 
 			DocumentLocation docLocation = PointToLocation (args.X, args.Y);
+			if (docLocation.Line < DocumentLocation.MinLine || docLocation.Column < DocumentLocation.MinColumn)
+				return;
+			
 			// disable middle click on windows.
 			if (!Platform.IsWindows && args.Button == 2 && this.textEditor.CanEdit (docLocation.Line)) {
 				ISegment selectionRange = null;
