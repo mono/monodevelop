@@ -728,6 +728,7 @@ namespace MonoDevelop.Ide.Gui
 						}
 					}
 				}
+				
 				if (!File.Exists (fileName)) {
 					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", fileName), null);
 					return;
@@ -844,7 +845,9 @@ namespace MonoDevelop.Ide.Gui
 					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, doc.Line, doc.Column);
 					if (fileName == currentFileName)
 						currentView = view;
-					docViews.Add (view);
+					
+					if (view != null)
+						docViews.Add (view);
 				}
 			}
 			
@@ -1104,7 +1107,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront));
 			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);
-			
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
 			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();
