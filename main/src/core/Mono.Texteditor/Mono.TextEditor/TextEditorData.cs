@@ -43,6 +43,7 @@ namespace Mono.TextEditor
 		Caret      caret;
 		
 		static Adjustment emptyAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+		
 		Adjustment hadjustment = emptyAdjustment; 
 		public Adjustment HAdjustment {
 			get {
@@ -62,6 +63,7 @@ namespace Mono.TextEditor
 				vadjustment = value;
 			}
 		}
+		
 		EditMode currentMode = null;
 		public EditMode CurrentMode {
 			get {
