@@ -354,7 +354,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return success;
 		}
 		
-				const string XCODE_OPEN_PROJECT =
+		const string XCODE_OPEN_PROJECT =
 @"tell application ""{0}""
 	if it is not running then
 		launch
