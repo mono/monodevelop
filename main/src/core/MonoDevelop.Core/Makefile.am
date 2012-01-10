@@ -170,11 +170,13 @@ FILES =  \
 	MonoDevelop.Core/IAsyncOperation.cs \
 	MonoDevelop.Core/IconId.cs \
 	MonoDevelop.Core/ICustomXmlSerializer.cs \
+	MonoDevelop.Core/IPasswordProvider.cs \
 	MonoDevelop.Core/IProgressMonitor.cs \
 	MonoDevelop.Core/ISystemInformationProvider.cs \
 	MonoDevelop.Core/LinuxSystemInformation.cs \
 	MonoDevelop.Core/LoggingService.cs \
 	MonoDevelop.Core/MacSystemInformation.cs \
+	MonoDevelop.Core/PasswordService.cs \
 	MonoDevelop.Core/Platform.cs \
 	MonoDevelop.Core/Properties.cs \
 	MonoDevelop.Core/PropertyBag.cs \

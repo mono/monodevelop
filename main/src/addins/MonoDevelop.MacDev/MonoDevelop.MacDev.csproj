@@ -142,6 +142,7 @@
     <Compile Include="MonoDevelop.MacDev.PlistEditor\PlistDiffHandler.cs" />
     <Compile Include="BindingProject\ObjcBindingProject.cs" />
     <Compile Include="BindingProject\ObjcBindingProjectConfiguration.cs" />
+    <Compile Include="MacKeychainPasswordProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">

@@ -161,7 +161,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				return null;
 			
 			if (File.Exists (clog))
-				return IdeApp.Workbench.OpenDocument (clog, OpenDocumentOptions.OnlyInternalViewer);
+				return IdeApp.Workbench.OpenDocument (clog, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			
 			Document document = IdeApp.Workbench.NewDocument (clog, "text/plain", "");
 			document.Save();

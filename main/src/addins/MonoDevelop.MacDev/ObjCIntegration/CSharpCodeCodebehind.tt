@@ -26,20 +26,33 @@ foreach (var nso in Types) {
 <#	bool firstMember = true;
 	foreach (var outlet in nso.Outlets.Where (o => o.IsDesigner)) {
 		BlankLine (ref firstMember);
-		if (outlet.CliName == outlet.ObjCName) { #>
+		if (outlet.CliName == outlet.ObjCName) {#>
 		[Outlet]
-<#		} else { #>
+<#		} else {#>
 		[Outlet ("<#=outlet.ObjCName#>")]
-<#		} #>
+<#		}#>
 		<#=outlet.CliType#> <#=EscapeIdentifier (outlet.CliName)#> { get; set; }
 <#	}
+	
 	foreach (var action in nso.Actions.Where (a => a.IsDesigner)) {
-   		BlankLine (ref firstMember); #>
+   		BlankLine (ref firstMember);#>
 		[Action ("<#=action.GetObjcFullName ()#>")]
 		partial void <#=EscapeIdentifier (action.CliName)#> (<# AddParameters (action); #>);
-<#	} #>
+<#	}#>
+		
+		void ReleaseDesignerOutlets ()
+		{
+<#		bool firstOutlet = true;
+		foreach (var outlet in nso.Outlets.Where (o => o.IsDesigner)) {
+			BlankLine (ref firstOutlet);#>
+			if (<#=outlet.CliName#> != null) {
+				<#=outlet.CliName#>.Dispose ();
+				<#=outlet.CliName#> = null;
+			}
+<#		}#>
+		}
 	}
-<#} #>
+<#}#>
 }
 <#+
 void AddParameters (IBAction action)

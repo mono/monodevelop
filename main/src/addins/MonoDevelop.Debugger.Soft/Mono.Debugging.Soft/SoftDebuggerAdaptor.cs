@@ -48,6 +48,9 @@ namespace Mono.Debugging.Soft
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			
+			if (obj == null)
+				return string.Empty;
+			
 			if (obj is StringMirror)
 				return ((StringMirror)obj).Value;
 			else if (obj is EnumMirror) {
@@ -62,8 +65,6 @@ namespace Mono.Debugging.Soft
 				if (sm.Fields.Length > 0 && (sm.Fields[0] is PrimitiveValue))
 					return ((PrimitiveValue)sm.Fields[0]).Value.ToString ();
 			}
-			else if (obj == null)
-				return string.Empty;
 			else if ((obj is ObjectMirror) && cx.Options.AllowTargetInvoke) {
 				ObjectMirror ob = (ObjectMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
@@ -80,20 +81,22 @@ namespace Mono.Debugging.Soft
 					return res != null ? res.Value : string.Empty;
 				}
 			}
+			
 			return GetDisplayTypeName (GetValueTypeName (ctx, obj));
 		}
 
 		public override object TryConvert (EvaluationContext ctx, object obj, object targetType)
 		{
 			object res = TryCast (ctx, obj, targetType);
-			if (res != null)
+			
+			if (res != null || obj == null)
 				return res;
-			if (obj == null)
-				return null;
+			
 			object otype = GetValueType (ctx, obj);
 			if (otype is Type) {
 				if (targetType is TypeMirror)
 					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
+				
 				Type tt = targetType as Type;
 				if (tt != null) {
 					try {
@@ -111,12 +114,15 @@ namespace Mono.Debugging.Soft
 		public override object TryCast (EvaluationContext ctx, object obj, object targetType)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			
 			if (obj == null)
 				return null;
+			
 			object valueType = GetValueType (ctx, obj);
 			if (valueType is TypeMirror) {
 				if ((targetType is TypeMirror) && ((TypeMirror)targetType).IsAssignableFrom ((TypeMirror)valueType))
 					return obj;
+				
 				// Try casting the primitive type of the enum
 				EnumMirror em = obj as EnumMirror;
 				if (em != null)
@@ -132,6 +138,7 @@ namespace Mono.Debugging.Soft
 					}
 					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
 				}
+				
 				Type tt = targetType as Type;
 				if (tt != null) {
 					if (tt.IsAssignableFrom ((Type)valueType))

@@ -101,6 +101,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			detailsTextView = new TextView () {
 				CanFocus = true,
 			};
+			detailsTextView.KeyPressEvent += TextViewKeyPressed;
 			sw.Add (detailsTextView);
 			
 			var aa = this.ActionArea;
@@ -135,6 +136,35 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			Child.ShowAll ();
 			Hide ();
+		}
+		
+		[GLib.ConnectBefore]
+		void TextViewKeyPressed (object sender, KeyPressEventArgs args)
+		{
+			if (args.Event.State.HasFlag (Gdk.ModifierType.ControlMask) &&
+			    (args.Event.Key == Gdk.Key.c || args.Event.Key == Gdk.Key.C)) {
+				TextView tv = (TextView) sender;
+				
+				Gtk.Clipboard clipboard = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				Gtk.TextIter start, end;
+				string text;
+				
+				if (!tv.Buffer.GetSelectionBounds (out start, out end) || start.Offset == end.Offset) {
+					start = tv.Buffer.StartIter;
+					end = tv.Buffer.EndIter;
+				}
+				
+				text = tv.Buffer.GetText (start, end, true);
+				
+				if (Platform.IsWindows) {
+					// Windows specific hack
+					text = text.Replace ("\r\n", "\n");
+				}
+				
+				clipboard.Text = text;
+				
+				args.RetVal = true;
+			}
 		}
 		
 		public AlertButton[] Buttons {

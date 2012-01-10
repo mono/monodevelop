@@ -129,7 +129,7 @@ foreach (var nso in Types) {
 	bool firstMember = true;
 	foreach (var outlet in nso.Outlets.Where (o => o.IsDesigner)) {
 		BlankLine (ref firstMember);
-		if (outlet.CliName == outlet.ObjCName) { 
+		if (outlet.CliName == outlet.ObjCName) {
             
             #line default
             #line hidden
@@ -202,8 +202,9 @@ foreach (var nso in Types) {
             
             #line 35 "/Users/mike/work/monodevelop/main/src/addins/MonoDevelop.MacDev/ObjCIntegration/CSharpCodeCodebehind.tt"
 	}
+	
 	foreach (var action in nso.Actions.Where (a => a.IsDesigner)) {
-   		BlankLine (ref firstMember); 
+   		BlankLine (ref firstMember);
             
             #line default
             #line hidden

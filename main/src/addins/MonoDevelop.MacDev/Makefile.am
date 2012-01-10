@@ -30,6 +30,7 @@ FILES =  \
 	BindingProject/ObjcBindingProject.cs \
 	BindingProject/ObjcBindingProjectConfiguration.cs \
 	MacBuildUtilities.cs \
+	MacKeychainPasswordProvider.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/Collections.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBConnectionRecord.cs \
 	MonoDevelop.MacDev.InterfaceBuilder/IBDocument.cs \

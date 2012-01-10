@@ -6,6 +6,7 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
@@ -17,8 +18,7 @@ REFS =  \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
-	-r:System.Xml \
-	-r:../../../build/bin/ICSharpCode.NRefactory.dll
+	-r:System.Xml
 
 FILES =  \
 	AssemblyInfo.cs \
