@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using System.CodeDom;
 
 using Mono.Cecil;
@@ -53,6 +54,8 @@ namespace MonoDevelop.Projects.Dom
 			try {
 				foreach (var argument in customAttribute.ConstructorArguments)
 					AddPositionalArgument (CreateExpressionFor (argument));
+			} catch (FileNotFoundException fnf) {
+				LoggingService.LogError ("Error reading attributes: {0}", fnf.Message);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error reading attributes", e);
 			}
@@ -60,6 +63,8 @@ namespace MonoDevelop.Projects.Dom
 			try {
 				foreach (var namedArgument in customAttribute.Properties)
 					AddNamedArgument (namedArgument.Name, CreateExpressionFor (namedArgument.Argument));
+			} catch (FileNotFoundException fnf) {
+				LoggingService.LogError ("Error reading attributes: {0}", fnf.Message);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error reading attributes", e);
 			}
@@ -67,6 +72,8 @@ namespace MonoDevelop.Projects.Dom
 			try {
 				foreach (var namedArgument in customAttribute.Fields)
 					AddNamedArgument (namedArgument.Name, CreateExpressionFor (namedArgument.Argument));
+			} catch (FileNotFoundException fnf) {
+				LoggingService.LogError ("Error reading attributes: {0}", fnf.Message);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error reading attributes", e);
 			}
