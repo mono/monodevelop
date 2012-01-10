@@ -409,7 +409,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			tabControl.InsertPage (sdiWorkspaceWindow, tabLabel, -1);
 			
-			
 			if (content.Project != null)
 				content.Project.NameChanged += HandleProjectNameChanged;
 			
@@ -741,6 +740,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (lastActiveWindows.Count > MAX_LASTACTIVEWINDOWS)
 				lastActiveWindows.RemoveFirst ();
+			
 			lastActiveWindows.AddLast (lastActive);
 			lastActive = ActiveWorkbenchWindow;
 			SetWorkbenchTitle ();
@@ -831,8 +831,8 @@ namespace MonoDevelop.Ide.Gui
 			tabControl = new SdiDragNotebook (dock.ShadedContainer);
 			tabControl.Scrollable = true;
 			tabControl.SwitchPage += OnActiveWindowChanged;
-			tabControl.PageAdded += delegate { OnActiveWindowChanged (null, null); };
-			tabControl.PageRemoved += delegate { OnActiveWindowChanged (null, null); };
+			tabControl.PageAdded += OnActiveWindowChanged;
+			tabControl.PageRemoved += OnActiveWindowChanged;
 		
 			tabControl.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs e) {
 				int tab = tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot);
