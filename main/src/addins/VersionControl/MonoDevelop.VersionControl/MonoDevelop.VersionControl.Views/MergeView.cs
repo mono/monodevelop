@@ -36,18 +36,23 @@ namespace MonoDevelop.VersionControl.Views
 	
 	class MergeView : BaseView, IMergeView
 	{
+		VersionControlDocumentInfo info;
 		MergeWidget widget;
 
 		public override Gtk.Widget Control { 
 			get {
+				if (widget == null) {
+					widget = new MergeWidget ();
+					widget.Load (info);
+				}
+				
 				return widget;
 			}
 		}
 
 		public MergeView (VersionControlDocumentInfo info) : base (GettextCatalog.GetString ("Merge"))
 		{
-			widget = new MergeWidget ();
-			widget.Load (info);
+			this.info = info;
 		}
 
 		public void Selected ()
