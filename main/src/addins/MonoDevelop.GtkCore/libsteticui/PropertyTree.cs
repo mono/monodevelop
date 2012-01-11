@@ -521,10 +521,10 @@ namespace Stetic
 			// tree, since it would hide the cell editor.
 			args.RetVal = true;
 		}
-		
-		protected override void OnParentSet (Gtk.Widget parent)
+
+		protected override void OnParentSet (Gtk.Widget previous_parent)
 		{
-			base.OnParentSet (parent);
+			base.OnParentSet (previous_parent);
 			
 			if (Parent != null) {
 				if (this.ParentWindow != null)
@@ -535,7 +535,7 @@ namespace Stetic
 			}
 			else {
 				session.Dispose ();
-				((InternalTree)parent).Editing = false;
+				((InternalTree)previous_parent).Editing = false;
 				box.Unparent ();
 			}
 		}
