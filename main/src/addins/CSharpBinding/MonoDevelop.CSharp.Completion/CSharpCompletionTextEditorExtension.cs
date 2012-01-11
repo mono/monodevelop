@@ -159,8 +159,11 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			//	var timer = Counters.ResolveTime.BeginTiming ();
 			try {
-				if (char.IsLetterOrDigit (completionChar))
+				if (char.IsLetterOrDigit (completionChar)) {
+					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (document.Editor.GetCharAt (completionContext.TriggerOffset - 2)))
+						return null;
 					triggerWordLength = 1;
+				}
 				return InternalHandleCodeCompletion (completionContext, completionChar, false, ref triggerWordLength);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
