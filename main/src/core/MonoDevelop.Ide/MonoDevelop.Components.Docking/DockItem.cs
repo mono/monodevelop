@@ -365,8 +365,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			ResetBarUndockMode ();
 			if (floatingWindow == null) {
-				if (Widget.Parent is Gtk.Container) {
-					MonoDevelop.Core.LoggingService.LogError ("Unparenting {0} from {1} even though it should already be unparented", Widget, widget.Parent);
+				if (Widget.Parent != null) {
 					((Gtk.Container) Widget.Parent).Remove (Widget);
 				}
 				floatingWindow = new Window (GetWindowTitle ());
@@ -422,8 +421,9 @@ namespace MonoDevelop.Components.Docking
 			ResetMode ();
 			if (widget != null) {
 				widget.Hide (); // Avoids size allocation warning
-				if (widget.Parent is Gtk.Container)
-					widget.Unparent ();
+				if (widget.Parent != null) {
+					((Gtk.Container)widget.Parent).Remove (widget);
+				}
 			}
 			dockBarItem = frame.BarDock (pos, this, size);
 			if (widget != null)
