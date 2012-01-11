@@ -93,13 +93,7 @@ namespace MonoDevelop.CSharp
 				stringCache.Clear ();
 				memberList.Clear ();
 				if (tag is IParsedFile) {
-					var types = new Stack<ITypeDefinition> (this.Document.Compilation.GetAllTypeDefinitions ().Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
-					while (types.Count > 0) {
-						var type = types.Pop ();
-						memberList.Add (type);
-						foreach (var innerType in type.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic))
-							types.Push (innerType);
-					}
+					memberList.AddRange (this.Document.Compilation.GetAllTypeDefinitions ().Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
 				} else if (tag is ITypeDefinition) {
 					var type = (ITypeDefinition)tag;
 					memberList.AddRange (type.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
@@ -268,7 +262,7 @@ namespace MonoDevelop.CSharp
 					if (curType.DeclaringTypeDefinition == null)
 						flags |= OutputFlags.UseFullInnerTypeName;
 					var markup = amb.GetString ((IEntity)curType, flags);
-					result.Insert (0, new PathEntry (ImageService.GetPixbuf (curType.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)typeDef.DeclaringTypeDefinition ?? unit });
+					result.Insert (0, new PathEntry (ImageService.GetPixbuf (curType.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)curType.DeclaringTypeDefinition ?? unit });
 					curType = curType.DeclaringTypeDefinition;
 				}
 			}
