@@ -10872,7 +10872,7 @@ msgstr "Перед выполнением"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:506
 #, fuzzy
 msgid "Method call"
-msgstr "Переименовать метод"
+msgstr "Вызов метода"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:476
 #, fuzzy
@@ -10882,7 +10882,7 @@ msgstr "Перейти к объявлению"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:479
 #, fuzzy
 msgid "Constructor call"
-msgstr "Строительство"
+msgstr "Вызов конструктора"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:482
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:509
@@ -10911,11 +10911,11 @@ msgstr "Операторы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:494
 msgid "Assignment (=, -=, ...)"
-msgstr ""
+msgstr "Присвоение (=, -=, ...)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:495
 msgid "Logical (&&,||) operators"
-msgstr ""
+msgstr "Логические (&&, ||) операторы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:496
 msgid "Equality (==, !=) operators"
@@ -10927,7 +10927,7 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:498
 msgid "Bitwise (&,|,^) operators"
-msgstr ""
+msgstr "Побитовые (&,|,^) операторы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:499
 msgid "Additive (+,-) operators"
@@ -10948,18 +10948,18 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:505
 #, fuzzy
 msgid "Parentheses"
-msgstr "Параметры"
+msgstr "Круглые скобки"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:519
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs:123
 #, fuzzy
 msgid "Expressions"
-msgstr "Регулярные выражения"
+msgstr "Выражения"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:520
 #, fuzzy
 msgid "Type cast"
-msgstr "Типы"
+msgstr "Приведение типов"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:521
 #, fuzzy
@@ -11003,12 +11003,12 @@ msgstr "Подсвечивать парные _скобки"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:572
 #, fuzzy
 msgid "After comma"
-msgstr "После очистки"
+msgstr "После запятой"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:573
 #, fuzzy
 msgid "Before comma"
-msgstr "Перед очисткой"
+msgstr "Перед запятой"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:574
 #, fuzzy
@@ -11018,7 +11018,7 @@ msgstr "После построения"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.xml:575
 #, fuzzy
 msgid "After type cast"
-msgstr "После выполнения"
+msgstr "После приведения типов"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:561
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Resolver/ResolveVisitor.cs:603
@@ -11027,51 +11027,51 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:74
 msgid "Name must not be empty."
-msgstr ""
+msgstr "Имя не должно быть пустым"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:78
 msgid "Name can't be a keyword."
-msgstr ""
+msgstr "Имя не должно быть ключевым словом"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:82
 msgid "Name must start with a letter or '_'"
-msgstr ""
+msgstr "Имя должно начинаться с буквы или с '_'"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:87
 msgid "Name can only contain letters, digits and '_'"
-msgstr ""
+msgstr "Имя должно содержать только буквы, цифры и '_'"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:92
 msgid "Local variables shouldn't start with upper case"
-msgstr ""
+msgstr "Локальные переменные не должны начинаться с заглавной буквы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:98
 msgid "Parameters shouldn't start with upper case"
-msgstr ""
+msgstr "Параметры не должны начинаться с заглавной буквы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:105
 msgid "Fields shouldn't start with upper case"
-msgstr ""
+msgstr "Поля не должны начинаться с заглавной буквы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:112
 msgid "Interfaces should always start with 'I'"
-msgstr ""
+msgstr "Интерфейсы всегда должны начинаться с 'I'"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:115
 msgid "Types should always start with upper case"
-msgstr ""
+msgstr "Типы всегда должны начинаться с заглавной буквы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:121
 msgid "Methods should always start with upper case"
-msgstr ""
+msgstr "Методы должны всегда начинаться с заглавной буквы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:128
 msgid "Properties should always start with upper case"
-msgstr ""
+msgstr "Свойства должны всегда начинаться с заглавной буквы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/CodeGenerator.cs:134
 msgid "Events should always start with upper case"
-msgstr ""
+msgstr "Событитя всегда должны начинаться с заглавной буквы"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:131
 msgid "Invalid code page number."
