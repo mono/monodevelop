@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui
 				monitor.Step (1);
 				
 				((Gtk.Window)workbench).Visible = false;
-				workbench.ActiveWorkbenchWindowChanged += new EventHandler (OnDocumentChanged);
+				workbench.ActiveWorkbenchWindowChanged += OnDocumentChanged;
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
 				
@@ -384,7 +384,6 @@ namespace MonoDevelop.Ide.Gui
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
 				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Opening {0}", fileName), Stock.OpenFileIcon, true);
 				var openFileInfo = new FileOpenInformation () {
-					ProgressMonitor = pm,
 					FileName = fileName,
 					Options = options,
 					Line = line,
@@ -392,10 +391,9 @@ namespace MonoDevelop.Ide.Gui
 					DisplayBinding = binding,
 					Encoding = encoding
 				};
-				RealOpenFile (openFileInfo);
 				
-				if (!pm.AsyncOperation.Success)
-					return null;
+				RealOpenFile (pm, openFileInfo);
+				pm.Dispose ();
 				
 				if (openFileInfo.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
@@ -411,6 +409,25 @@ namespace MonoDevelop.Ide.Gui
 				} else {
 					return null;
 				}
+			}
+		}
+		
+		IViewContent BatchOpenDocument (IProgressMonitor monitor, FilePath fileName, int line, int column)
+		{
+			if (string.IsNullOrEmpty (fileName))
+				return null;
+			
+			using (Counters.OpenDocumentTimer.BeginTiming ("Batch opening file " + fileName)) {
+				var openFileInfo = new FileOpenInformation () {
+					FileName = fileName,
+					Options = OpenDocumentOptions.OnlyInternalViewer,
+					Line = line,
+					Column = column,
+				};
+				
+				RealOpenFile (monitor, openFileInfo);
+				
+				return openFileInfo.NewContent;
 			}
 		}
 		
@@ -583,6 +600,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			doc.OnDocumentAttached ();
 			OnDocumentOpened (new DocumentEventArgs (doc));
+			
 			return doc;
 		}
 		
@@ -674,104 +692,100 @@ namespace MonoDevelop.Ide.Gui
 			return project;
 		}
 		
-		
-		void RealOpenFile (FileOpenInformation openFileInfo)
+		void RealOpenFile (IProgressMonitor monitor, FileOpenInformation openFileInfo)
 		{
 			FilePath fileName;
-			IProgressMonitor monitor = openFileInfo.ProgressMonitor;
-
-			using (monitor)
-			{
-				Counters.OpenDocumentTimer.Trace ("Checking file");
+			
+			Counters.OpenDocumentTimer.Trace ("Checking file");
+			
+			string origName = openFileInfo.FileName;
+			
+			if (origName == null) {
+				monitor.ReportError (GettextCatalog.GetString ("Invalid file name"), null);
+				return;
+			}
+			
+			if (origName.StartsWith ("file://"))
+				fileName = new Uri (origName).LocalPath;
+			else
+				fileName = origName;
+			
+			if (!origName.StartsWith ("http://"))
+				fileName = fileName.FullPath;
+			
+			//Debug.Assert(FileService.IsValidPath(fileName));
+			if (FileService.IsDirectory (fileName)) {
+				monitor.ReportError (GettextCatalog.GetString ("{0} is a directory", fileName), null);
+				return;
+			}
+			
+			// test, if file fileName exists
+			if (!origName.StartsWith("http://")) {
+				// test, if an untitled file should be opened
+				if (!System.IO.Path.IsPathRooted(origName)) {
+					foreach (Document doc in Documents) {
+						if (doc.Window.ViewContent.IsUntitled && doc.Window.ViewContent.UntitledName == origName) {
+							doc.Select ();
+							openFileInfo.NewContent = doc.Window.ViewContent;
+							return;
+						}
+					}
+				}
 				
-				string origName = openFileInfo.FileName;
-
-				if (origName == null) {
-					monitor.ReportError (GettextCatalog.GetString ("Invalid file name"), null);
+				if (!File.Exists (fileName)) {
+					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", fileName), null);
 					return;
 				}
-
-				if (origName.StartsWith ("file://"))
-					fileName = new Uri (origName).LocalPath;
-				else
-					fileName = origName;
-
-				if (!origName.StartsWith ("http://"))
-					fileName = fileName.FullPath;
-				
-				//Debug.Assert(FileService.IsValidPath(fileName));
-				if (FileService.IsDirectory (fileName)) {
-					monitor.ReportError (GettextCatalog.GetString ("{0} is a directory", fileName), null);
-					return;
+			}
+			
+			Counters.OpenDocumentTimer.Trace ("Looking for binding");
+			
+			IDisplayBinding binding = null;
+			IViewDisplayBinding viewBinding = null;
+			Project project = GetProjectContainingFile (fileName);
+			
+			if (openFileInfo.DisplayBinding != null) {
+				binding = viewBinding = openFileInfo.DisplayBinding;
+			} else {
+				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, project).Where (d => d.CanUseAsDefault);
+				if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
+					binding = bindings.OfType<IViewDisplayBinding>().FirstOrDefault ();
+					viewBinding = (IViewDisplayBinding) binding;
 				}
-				
-				// test, if file fileName exists
-				if (!origName.StartsWith("http://")) {
-					// test, if an untitled file should be opened
-					if (!System.IO.Path.IsPathRooted(origName)) { 
-						foreach (Document doc in Documents) {
-							if (doc.Window.ViewContent.IsUntitled && doc.Window.ViewContent.UntitledName == origName) {
-								doc.Select ();
-								openFileInfo.NewContent = doc.Window.ViewContent;
-								return;
-							}
-						}
-					}
-					if (!File.Exists (fileName)) {
-						monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", fileName), null);
-						return;
-					}
+				else if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyExternalViewer)) {
+					binding = bindings.OfType<IExternalDisplayBinding>().FirstOrDefault ();
+					viewBinding = null;
 				}
-				
-				Counters.OpenDocumentTimer.Trace ("Looking for binding");
-				
-				IDisplayBinding binding = null;
-				IViewDisplayBinding viewBinding = null;
-				Project project = GetProjectContainingFile (fileName);
-				
-				if (openFileInfo.DisplayBinding != null) {
-					binding = viewBinding = openFileInfo.DisplayBinding;
-				} else {
-					var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, project).Where (d => d.CanUseAsDefault);
-					if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
-						binding = bindings.OfType<IViewDisplayBinding>().FirstOrDefault ();
-						viewBinding = (IViewDisplayBinding) binding;
+				else {
+					binding = bindings.FirstOrDefault ();
+					viewBinding = binding as IViewDisplayBinding;
+				}
+			}
+			
+			try {
+				if (binding != null) {
+					if (viewBinding != null)  {
+						var fw = new LoadFileWrapper (monitor, workbench, viewBinding, project, openFileInfo);
+						fw.Invoke (fileName);
+					} else {
+						var extBinding = (IExternalDisplayBinding)binding;
+						var app = extBinding.GetApplication (fileName, null, project);
+						app.Launch (fileName);
 					}
-					else if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyExternalViewer)) {
-						binding = bindings.OfType<IExternalDisplayBinding>().FirstOrDefault ();
-						viewBinding = null;
-					}
-					else {
-						binding = bindings.FirstOrDefault ();
-						viewBinding = binding as IViewDisplayBinding;
+					
+					Counters.OpenDocumentTimer.Trace ("Adding to recent files");
+					DesktopService.RecentFiles.AddFile (fileName, project);
+				} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
+					try {
+						Counters.OpenDocumentTimer.Trace ("Showing in browser");
+						DesktopService.OpenFile (fileName);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error opening file: " + fileName, ex);
+						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
 					}
 				}
-				
-				try {
-					if (binding != null) {
-						if (viewBinding != null)  {
-							var fw = new LoadFileWrapper (workbench, viewBinding, project, openFileInfo);
-							fw.Invoke (fileName);
-						} else {
-							var extBinding = (IExternalDisplayBinding)binding;
-							var app = extBinding.GetApplication (fileName, null, project);
-							app.Launch (fileName);
-						}
-						
-						Counters.OpenDocumentTimer.Trace ("Adding to recent files");
-						DesktopService.RecentFiles.AddFile (fileName, project);
-					} else if (!openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
-						try {
-							Counters.OpenDocumentTimer.Trace ("Showing in browser");
-							DesktopService.OpenFile (fileName);
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error opening file: " + fileName, ex);
-							MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
-						}
-					}
-				} catch (Exception ex) {
-					monitor.ReportError ("", ex);
-				}
+			} catch (Exception ex) {
+				monitor.ReportError ("", ex);
 			}
 		}
 		
@@ -821,17 +835,34 @@ namespace MonoDevelop.Ide.Gui
 			if (prefs == null)
 				return;
 			
+			NavigationHistoryService.LogActiveDocument ();
+			
 			string currentFileName = prefs.ActiveDocument != null ? Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, prefs.ActiveDocument)) : null;
+			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.OpenFileIcon, true);
+			List<IViewContent> docViews = new List<IViewContent> ();
+			IViewContent currentView = null;
 			
 			foreach (DocumentUserPrefs doc in prefs.Files) {
 				FilePath fileName = args.Item.BaseDirectory.Combine (doc.FileName).FullPath;
 				if (File.Exists (fileName)) {
-					OpenDocumentOptions ops = OpenDocumentOptions.OnlyInternalViewer;
+					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, doc.Line, doc.Column);
 					if (fileName == currentFileName)
-						ops |= OpenDocumentOptions.BringToFront;
-					IdeApp.Workbench.OpenDocument (fileName, doc.Line, doc.Column, ops, null, null);
+						currentView = view;
+					
+					if (view != null)
+						docViews.Add (view);
 				}
 			}
+			
+			foreach (var view in docViews) {
+				Document doc = WrapDocument (view.WorkbenchWindow);
+				if (view == currentView) {
+					Present ();
+					doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+				}
+			}
+			
+			pm.Dispose ();
 			
 			foreach (PadUserPrefs pi in prefs.Pads) {
 				foreach (Pad pad in IdeApp.Workbench.Pads) {
@@ -979,14 +1010,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			foreach (var doc in Documents) {
 				if (doc.ParsedDocument != null)
-					doc.UpdateParseDocument ();
+					doc.ReparseDocument ();
 			}
 		}
 	}
 
 	public class FileOpenInformation
 	{
-		public IProgressMonitor ProgressMonitor { get; set; }
 		public string FileName { get; set; }
 		public OpenDocumentOptions Options { get; set; }
 		public int Line { get; set; }
@@ -1014,17 +1044,19 @@ namespace MonoDevelop.Ide.Gui
 		Project project;
 		FileOpenInformation fileInfo;
 		DefaultWorkbench workbench;
+		IProgressMonitor monitor;
 		IViewContent newContent;
 		
-		public LoadFileWrapper (DefaultWorkbench workbench, IViewDisplayBinding binding, FileOpenInformation fileInfo)
+		public LoadFileWrapper (IProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, FileOpenInformation fileInfo)
 		{
+			this.monitor = monitor;
 			this.workbench = workbench;
 			this.fileInfo = fileInfo;
 			this.binding = binding;
 		}
 		
-		public LoadFileWrapper (DefaultWorkbench workbench, IViewDisplayBinding binding, Project project, FileOpenInformation fileInfo)
-			: this (workbench, binding, fileInfo)
+		public LoadFileWrapper (IProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, Project project, FileOpenInformation fileInfo)
+			: this (monitor, workbench, binding, fileInfo)
 		{
 			this.project = project;
 		}
@@ -1037,10 +1069,10 @@ namespace MonoDevelop.Ide.Gui
 				if (binding.CanHandle (fileName, mimeType, project)) {
 					newContent = binding.CreateContent (fileName, mimeType, project);
 				} else {
-					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
+					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 				}
 				if (newContent == null) {
-					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
+					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 					return;
 				}
 				
@@ -1056,14 +1088,14 @@ namespace MonoDevelop.Ide.Gui
 					else
 						newContent.Load (fileName);
 				} catch (InvalidEncodingException iex) {
-					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
+					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
 					return;
 				} catch (OverflowException) {
-					fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
+					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
 					return;
 				}
 			} catch (Exception ex) {
-				fileInfo.ProgressMonitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
+				monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
 				return;
 			}
 			
@@ -1078,7 +1110,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront));
 			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);
-			
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
 			IEditableTextBuffer ipos = newContent.GetContent<IEditableTextBuffer> ();

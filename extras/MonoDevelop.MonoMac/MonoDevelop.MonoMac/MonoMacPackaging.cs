@@ -120,7 +120,7 @@ namespace MonoDevelop.MonoMac.Gui
 			try {
 				//user will have agreed to overwrite when they picked the target
 				if (Directory.Exists (target))
-					Directory.Delete (target);
+					Directory.Delete (target, true);
 				else if (File.Exists (target))
 					File.Delete (target);
 				

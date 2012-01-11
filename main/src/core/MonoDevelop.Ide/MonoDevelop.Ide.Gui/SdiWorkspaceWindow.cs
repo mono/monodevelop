@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Gui
 			return -1;
 		}
 		
-		public void SelectWindow()	
+		public void SelectWindow()
 		{
 			if (this.Parent == null)
 				return;
