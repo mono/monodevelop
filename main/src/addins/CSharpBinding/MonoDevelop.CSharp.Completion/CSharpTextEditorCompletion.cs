@@ -231,6 +231,153 @@ namespace MonoDevelop.CSharp.Completion
 			return null;
 		}
 
+<<<<<<< HEAD
+=======
+		public string GetPreviousMemberReferenceExpression (int tokenIndex)
+		{
+			string result = GetPreviousToken (ref tokenIndex, false);
+			result = GetPreviousToken (ref tokenIndex, false);
+			if (result != ".") {
+				result = null;
+			} else {
+				List<string > names = new List<string> ();
+				while (result == ".") {
+					result = GetPreviousToken (ref tokenIndex, false);
+					if (result == "this") {
+						names.Add ("handle");
+					} else if (result != null) {
+						string trimmedName = result.Trim ();
+						if (trimmedName.Length == 0)
+							break;
+						names.Insert (0, trimmedName);
+					}
+					result = GetPreviousToken (ref tokenIndex, false);
+				}
+				result = String.Join ("", names.ToArray ());
+				foreach (char ch in result) {
+					if (!char.IsLetterOrDigit (ch) && ch != '_') {
+						result = "";
+						break;
+					}
+				}
+			}
+			return result;
+		}
+
+		string AddDelegateHandlers (CompletionDataList completionList, IType delegateType, bool addSemicolon = true, bool addDefault = true)
+		{
+			IMethod delegateMethod = delegateType.Methods.First ();
+			string delegateEndString = Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + "}" + (addSemicolon ? ";" : "");
+			bool containsDelegateData = completionList.Any (d => d.DisplayText.StartsWith ("delegate("));
+			if (addDefault)
+				completionList.Add ("delegate", "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + delegateEndString);
+			
+			StringBuilder sb = new StringBuilder ("(");
+			StringBuilder sbWithoutTypes = new StringBuilder ("(");
+			for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
+				if (k > 0) {
+					sb.Append (", ");
+					sbWithoutTypes.Append (", ");
+				}
+				IType parameterType = dom.GetType (delegateMethod.Parameters [k].ReturnType);
+				IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters [k].ReturnType;
+				var unit = Document.CompilationUnit;
+				if (unit != null) {
+					sb.Append (CompletionDataCollector.ambience.GetString (unit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName));
+				} else {
+					sb.Append (CompletionDataCollector.ambience.GetString (returnType, OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName));
+				}
+				sb.Append (" ");
+				sb.Append (delegateMethod.Parameters [k].Name);
+				sbWithoutTypes.Append (delegateMethod.Parameters [k].Name);
+			}
+			sb.Append (")");
+			sbWithoutTypes.Append (")");
+			completionList.Add ("delegate" + sb, "md-keyword", GettextCatalog.GetString ("Creates anonymous delegate."), "delegate" + sb + " {" + Document.Editor.EolMarker + stateTracker.Engine.ThisLineIndent + TextEditorProperties.IndentString + "|" + delegateEndString);
+			if (!completionList.Any (data => data.DisplayText == sbWithoutTypes.ToString ()))
+				completionList.Add (sbWithoutTypes.ToString (), "md-keyword", GettextCatalog.GetString ("Creates lambda expression."), sbWithoutTypes + " => |" + (addSemicolon ? ";" : ""));
+			
+			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('
+			// otherwise we would end up with () => )
+			if (!containsDelegateData) {
+				var savedValue = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
+				MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = false;
+				completionList.CompletionListClosed += delegate {
+					MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = savedValue;
+				};
+			}
+			return sb.ToString ();
+		}
+		
+		public void AddEnumMembers (CompletionDataList completionList, IType resolvedType)
+		{
+			if (resolvedType == null || resolvedType.ClassType != MonoDevelop.Projects.Dom.ClassType.Enum)
+				return;
+			string typeString = Document.CompilationUnit.ShortenTypeName (new DomReturnType (resolvedType), new DomLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column)).ToInvariantString ();
+			if (typeString.Contains ("."))
+				completionList.Add (typeString, resolvedType.StockIcon);
+			foreach (var field in resolvedType.Fields) {
+				if (field.IsConst || field.IsStatic)
+					completionList.Add (typeString + "." + field.Name, field.StockIcon);
+			}
+			completionList.DefaultCompletionString = typeString;
+		}
+
+		public CompletionDataList CreateParameterCompletion (NRefactoryResolver resolver, DomLocation location, ExpressionContext context, IEnumerable<IMethod> possibleMethods, int parameter)
+		{
+			CompletionDataList completionList = new ProjectDomCompletionDataList ();
+			var addedEnums = new HashSet<string> ();
+			var addedDelegates = new HashSet<string> ();
+			IType resolvedType = null;
+			foreach (var method in possibleMethods) {
+				if (method.Parameters.Count <= parameter)
+					continue;
+				resolvedType = dom.GetType (method.Parameters [parameter].ReturnType);
+				if (resolvedType == null)
+					continue;
+				switch (resolvedType.ClassType) {
+				case MonoDevelop.Projects.Dom.ClassType.Enum:
+					if (addedEnums.Contains (resolvedType.DecoratedFullName))
+						continue;
+					addedEnums.Add (resolvedType.DecoratedFullName);
+					AddEnumMembers (completionList, resolvedType);
+					break;
+				case MonoDevelop.Projects.Dom.ClassType.Delegate:
+					if (addedDelegates.Contains (resolvedType.DecoratedFullName))
+						continue;
+					addedDelegates.Add (resolvedType.DecoratedFullName);
+					string parameterDefinition = AddDelegateHandlers (completionList, resolvedType, false, addedDelegates.Count == 1);
+					string varName = "Handle" + method.Parameters [parameter].ReturnType.Name + method.Parameters [parameter].Name;
+					completionList.Add (new EventCreationCompletionData (textEditorData, varName, resolvedType, null, parameterDefinition, resolver.Unit.GetMemberAt (location), resolvedType) { AddSemicolon = false });
+					break;
+				}
+			}
+			if (addedEnums.Count + addedDelegates.Count == 0)
+				return null;
+			CompletionDataCollector cdc = new CompletionDataCollector (this, dom, completionList, Document.CompilationUnit, resolver.CallingType, location);
+			completionList.AutoCompleteEmptyMatch = false;
+			completionList.AutoSelect = false;
+			resolver.AddAccessibleCodeCompletionData (ExpressionContext.MethodBody, cdc);
+			if (addedDelegates.Count > 0) {
+				foreach (var data in completionList) {
+					if (data is MemberCompletionData) 
+						((MemberCompletionData)data).IsDelegateExpected = true;
+				}
+			}
+			return completionList;
+		}
+		
+		public bool IsInLinqContext (ExpressionResult result)
+		{
+			if (result.Contexts == null)
+				return false;
+			var ctx = (ExpressionContext.LinqContext)result.Contexts.FirstOrDefault (c => c is ExpressionContext.LinqContext);
+			if (ctx == null)
+				return false;
+			int offset = this.textEditorData.Document.LocationToOffset (ctx.Line, ctx.Column);
+			return !GetTextWithoutCommentsAndStrings (this.textEditorData.Document, offset, textEditorData.Caret.Offset).Any (p => p.Key == ';');
+		}
+>>>>>>> [CSharpBinding] Fixed potential null ref.
 		
 		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Mono.TextEditor.Document doc, int start, int end) 
 		{
