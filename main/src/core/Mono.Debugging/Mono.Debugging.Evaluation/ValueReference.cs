@@ -88,7 +88,6 @@ namespace Mono.Debugging.Evaluation
 			if (!CanEvaluate (options))
 				return DC.ObjectValue.CreateImplicitNotSupported (this, new ObjectPath (Name), ctx.Adapter.GetTypeName (GetContext (options), Type), Flags);
 			if (withTimeout) {
-				options = options.Clone ();
 				return ctx.Adapter.CreateObjectValueAsync (Name, Flags, delegate {
 					return CreateObjectValue (options);
 				});
@@ -128,7 +127,18 @@ namespace Mono.Debugging.Evaluation
 				name = "?";
 			
 			EvaluationContext newCtx = GetContext (options);
-			object val = Value;
+			EvaluationContext oldCtx = Context;
+			object val = null;
+			
+			try {
+				// Note: The Value property implementation may make use of the EvaluationOptions,
+				// so we need to override our context temporarily to do the evaluation.
+				ctx = newCtx;
+				val = Value;
+			} finally {
+				ctx = oldCtx;
+			}
+			
 			if (val != null)
 				return newCtx.Adapter.CreateObjectValue (newCtx, this, new ObjectPath (name), val, Flags);
 			else
