@@ -218,7 +218,7 @@ namespace MonoDevelop.MacIntegration
 			if (System.IO.Directory.Exists (filename))
 				return;
 			
-			int selected = 0;
+			int selected = -1;
 			int i = 0;
 			
 			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (filename)) {
@@ -228,6 +228,7 @@ namespace MonoDevelop.MacIntegration
 				if (closeSolutionButton != null)
 					closeSolutionButton.State = NSCellStateValue.On;
 				
+				selected = 0;
 				i++;
 			}
 			
@@ -236,16 +237,15 @@ namespace MonoDevelop.MacIntegration
 					button.Menu.AddItem (new NSMenuItem () { Title = vw.Title });
 					currentViewers.Add (vw);
 					
-					if (vw.CanUseAsDefault) {
-						if (closeSolutionButton != null)
-							closeSolutionButton.State = NSCellStateValue.Off;
-						
+					if (vw.CanUseAsDefault && selected == -1)
 						selected = i;
-					}
 					
 					i++;
 				}
 			}
+			
+			if (selected == -1)
+				selected = 0;
 			
 			button.Enabled = currentViewers.Count > 1;
 			button.SelectItem (selected);
