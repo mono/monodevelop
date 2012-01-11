@@ -771,7 +771,12 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				IType parameterType = dom.GetType (delegateMethod.Parameters [k].ReturnType);
 				IReturnType returnType = parameterType != null ? new DomReturnType (parameterType) : delegateMethod.Parameters [k].ReturnType;
-				sb.Append (CompletionDataCollector.ambience.GetString (Document.CompilationUnit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName));
+				var unit = Document.CompilationUnit;
+				if (unit != null) {
+					sb.Append (CompletionDataCollector.ambience.GetString (unit.ShortenTypeName (returnType, textEditorData.Caret.Line, textEditorData.Caret.Column), OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName));
+				} else {
+					sb.Append (CompletionDataCollector.ambience.GetString (returnType, OutputFlags.ClassBrowserEntries | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName));
+				}
 				sb.Append (" ");
 				sb.Append (delegateMethod.Parameters [k].Name);
 				sbWithoutTypes.Append (delegateMethod.Parameters [k].Name);
