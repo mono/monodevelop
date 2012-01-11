@@ -209,7 +209,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (Filenames.Length == 0 || Filename.Length == 0 || System.IO.Directory.Exists (Filename))
 				return;
 			
-			int selected = 0;
+			int selected = -1;
 			int i = 0;
 			
 			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (Filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (Filename)) {
@@ -219,6 +219,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (closeWorkspaceCheck.Visible)
 					closeWorkspaceCheck.Active = true;
 				
+				selected = 0;
 				i++;
 			}
 			
@@ -227,16 +228,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					viewerSelector.AppendText (vw.Title);
 					currentViewers.Add (vw);
 					
-					if (vw.CanUseAsDefault) {
-						if (closeWorkspaceCheck.Visible)
-							closeWorkspaceCheck.Active = false;
-						
+					if (vw.CanUseAsDefault && selected == -1)
 						selected = i;
-					}
 					
 					i++;
 				}
 			}
+			
+			if (selected == -1)
+				selected = 0;
 			
 			viewerSelector.Active = selected;
 			viewerLabel.Sensitive = viewerSelector.Sensitive = currentViewers.Count > 1;
