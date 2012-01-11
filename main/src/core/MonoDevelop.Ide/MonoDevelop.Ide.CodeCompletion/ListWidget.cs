@@ -553,16 +553,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return result;
 		}
 		
+		string oldCompletionString = null;
 		public void FilterWords ()
 		{
-			filteredItems.Clear ();
 			categories.Clear ();
 			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
-			for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
-				if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
-					var completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
-					GetCategory (completionCategory).Items.Add (filteredItems.Count);
-					filteredItems.Add (newSelection);
+				
+			if (oldCompletionString == null || !CompletionString.StartsWith (oldCompletionString)) {
+				filteredItems.Clear ();
+				for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
+					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
+						var completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
+						GetCategory (completionCategory).Items.Add (filteredItems.Count);
+						filteredItems.Add (newSelection);
+					}
+				}
+			} else {
+				var oldItems = filteredItems;
+				filteredItems = new List<int> ();
+				foreach (int newSelection in oldItems) {
+					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
+						var completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
+						GetCategory (completionCategory).Items.Add (filteredItems.Count);
+						filteredItems.Add (newSelection);
+					}
 				}
 			}
 			categories.Sort (delegate (Category left, Category right) {
@@ -574,6 +588,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdatePage ();
 			
 			OnWordsFiltered (EventArgs.Empty);
+			oldCompletionString = CompletionString;
 		}
 		
 		void SelectFirstItemInCategory ()
