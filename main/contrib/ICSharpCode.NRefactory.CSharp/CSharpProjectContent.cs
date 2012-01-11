@@ -32,20 +32,30 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		string assemblyName;
 		Dictionary<string, IParsedFile> parsedFiles;
-		List<IAssemblyReference> assemblyReferences;
+		
+		[NonSerialized]
+		List<IAssemblyReference> _assemblyReferences;
+		
+		List<IAssemblyReference> assemblyReferences {
+			get {
+				if (_assemblyReferences == null)
+					_assemblyReferences = new List<IAssemblyReference>();
+				return _assemblyReferences;
+			}
+			
+		}
 		
 		public CSharpProjectContent()
 		{
 			this.assemblyName = string.Empty;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
-			this.assemblyReferences = new List<IAssemblyReference>();
 		}
 		
 		protected CSharpProjectContent(CSharpProjectContent pc)
 		{
 			this.assemblyName = pc.assemblyName;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles);
-			this.assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
+			this._assemblyReferences = new List<IAssemblyReference>(pc._assemblyReferences);
 		}
 		
 		public IEnumerable<IParsedFile> Files {
@@ -90,14 +100,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		public ICompilation CreateCompilation()
 		{
 			var solutionSnapshot = new DefaultSolutionSnapshot();
-			ICompilation compilation = new SimpleCompilation(solutionSnapshot, this, assemblyReferences);
+			ICompilation compilation = new SimpleCompilation(solutionSnapshot, this, AssemblyReferences);
 			solutionSnapshot.AddCompilation(this, compilation);
 			return compilation;
 		}
 		
 		public ICompilation CreateCompilation(ISolutionSnapshot solutionSnapshot)
 		{
-			return new SimpleCompilation(solutionSnapshot, this, assemblyReferences);
+			return new SimpleCompilation(solutionSnapshot, this, AssemblyReferences);
 		}
 		
 		public IProjectContent SetAssemblyName(string newAssemblyName)
