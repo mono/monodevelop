@@ -67,7 +67,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public TypeParameter[] CurrentTypeParameters {
+		public TypeParameters CurrentTypeParameters {
 			get {
 				throw new NotImplementedException ();
 			}
@@ -443,7 +443,7 @@ namespace Mono.CSharp {
 						optional = tm.optional;
 					}
 
-					if (op == Operation.Lookup && name.Left != null && ambiguousCandidate == null) {
+					if (op == Operation.Lookup && name.ExplicitInterface != null && ambiguousCandidate == null) {
 						ambiguousCandidate = m;
 						continue;
 					}

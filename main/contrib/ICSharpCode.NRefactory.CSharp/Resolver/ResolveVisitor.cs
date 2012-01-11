@@ -916,11 +916,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Expression resolveExpr;
 				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
 				if (!string.IsNullOrEmpty(name)) {
+					var returnType = new VarTypeReference(this, resolver, resolveExpr);
 					var property = new DefaultUnresolvedProperty {
 						Name = name,
 						Accessibility = Accessibility.Public,
-						ReturnType = new VarTypeReference(this, resolver, resolveExpr),
-						Getter = DefaultUnresolvedAccessor.GetFromAccessibility(Accessibility.Public)
+						ReturnType = returnType,
+						Getter = new DefaultUnresolvedMethod {
+							Name = "get_" + name,
+							Accessibility = Accessibility.Public,
+							ReturnType = returnType
+						}
 					};
 					properties.Add(property);
 				}

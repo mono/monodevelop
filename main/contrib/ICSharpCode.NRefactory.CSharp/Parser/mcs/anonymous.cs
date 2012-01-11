@@ -16,6 +16,7 @@ using System.Collections.Generic;
 #if STATIC
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
+using System.Diagnostics;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
@@ -36,15 +37,18 @@ namespace Mono.CSharp {
 				throw new InternalErrorException ("Helper class already defined!");
 		}
 
-		protected static MemberName MakeMemberName (MemberBase host, string name, int unique_id, TypeParameter[] tparams, Location loc)
+		protected static MemberName MakeMemberName (MemberBase host, string name, int unique_id, TypeParameters tparams, Location loc)
 		{
-			string host_name = host == null ? null : host.Name;
+			string host_name = host == null ? null : host is InterfaceMemberBase ? ((InterfaceMemberBase)host).GetFullName (host.MemberName) : host.Name;
 			string tname = MakeName (host_name, "c", name, unique_id);
-			TypeArguments args = null;
+			TypeParameters args = null;
 			if (tparams != null) {
-				args = new TypeArguments ();
-				foreach (TypeParameter tparam in tparams)
-					args.Add (new TypeParameterName (tparam.Name, null, loc));
+				args = new TypeParameters (tparams.Count);
+
+				// Type parameters will be filled later when we have TypeContainer
+				// instance, for now we need only correct arity to create valid name
+				for (int i = 0; i < tparams.Count; ++i)
+					args.Add ((TypeParameter) null);
 			}
 
 			return new MemberName (tname, args, loc);
@@ -81,15 +85,16 @@ namespace Mono.CSharp {
 
 		protected TypeParameterMutator mutator;
 
-		public HoistedStoreyClass (TypeContainer parent, MemberName name, TypeParameter[] tparams, Modifiers mod)
+		public HoistedStoreyClass (TypeContainer parent, MemberName name, TypeParameters tparams, Modifiers mod)
 			: base (parent, name, mod | Modifiers.PRIVATE)
 		{
-			if (tparams != null) {
-				type_params = new TypeParameter[tparams.Length];
-				var src = new TypeParameterSpec[tparams.Length];
-				var dst = new TypeParameterSpec[tparams.Length];
 
-				for (int i = 0; i < type_params.Length; ++i) {
+			if (tparams != null) {
+				var type_params = name.TypeParameters;
+				var src = new TypeParameterSpec[tparams.Count];
+				var dst = new TypeParameterSpec[tparams.Count];
+
+				for (int i = 0; i < tparams.Count; ++i) {
 					type_params[i] = tparams[i].CreateHoistedCopy (this, spec);
 
 					src[i] = tparams[i].Type;
@@ -99,7 +104,7 @@ namespace Mono.CSharp {
 				// A copy is not enough, inflate any type parameter constraints
 				// using a new type parameters
 				var inflator = new TypeParameterInflator (this, null, src, dst);
-				for (int i = 0; i < type_params.Length; ++i) {
+				for (int i = 0; i < tparams.Count; ++i) {
 					src[i].InflateConstraints (inflator, dst[i]);
 				}
 
@@ -196,7 +201,7 @@ namespace Mono.CSharp {
 		// Local variable which holds this storey instance
 		public Expression Instance;
 
-		public AnonymousMethodStorey (Block block, TypeContainer parent, MemberBase host, TypeParameter[] tparams, string name)
+		public AnonymousMethodStorey (Block block, TypeContainer parent, MemberBase host, TypeParameters tparams, string name)
 			: base (parent, MakeMemberName (host, name, unique_id, tparams, block.StartLocation),
 				tparams, Modifiers.SEALED)
 		{
@@ -323,8 +328,8 @@ namespace Mono.CSharp {
 				// Use current method type parameter (MVAR) for top level storey only. All
 				// nested storeys use class type parameter (VAR)
 				//
-				TypeParameter[] tparams = ec.CurrentAnonymousMethod != null && ec.CurrentAnonymousMethod.Storey != null ?
-					ec.CurrentAnonymousMethod.Storey.TypeParameters :
+				var tparams = ec.CurrentAnonymousMethod != null && ec.CurrentAnonymousMethod.Storey != null ?
+					ec.CurrentAnonymousMethod.Storey.CurrentTypeParameters :
 					ec.CurrentTypeParameters;
 
 				TypeArguments targs = new TypeArguments ();
@@ -333,7 +338,7 @@ namespace Mono.CSharp {
 				// Use type parameter name instead of resolved type parameter
 				// specification to resolve to correctly nested type parameters
 				//
-				for (int i = 0; i < tparams.Length; ++i)
+				for (int i = 0; i < tparams.Count; ++i)
 					targs.Add (new SimpleName (tparams [i].Name, Location)); //  new TypeParameterExpr (tparams[i], Location));
 
 				storey_type_expr = new GenericTypeExpr (Definition, targs, Location);
@@ -347,19 +352,18 @@ namespace Mono.CSharp {
 		public void SetNestedStoryParent (AnonymousMethodStorey parentStorey)
 		{
 			Parent = parentStorey;
-			type_params = null;
 			spec.IsGeneric = false;
 			spec.DeclaringType = parentStorey.CurrentType;
-			MemberName.TypeArguments = null;
+			MemberName.TypeParameters = null;
 		}
 
 		protected override bool DoResolveTypeParameters ()
 		{
 			// Although any storey can have type parameters they are all clones of method type
 			// parameters therefore have to mutate MVAR references in any of cloned constraints
-			if (type_params != null) {
-				for (int i = 0; i < type_params.Length; ++i) {
-					var spec = type_params[i].Type;
+			if (CurrentTypeParameters != null) {
+				for (int i = 0; i < CurrentTypeParameters.Count; ++i) {
+					var spec = CurrentTypeParameters[i].Type;
 					spec.BaseType = mutator.Mutate (spec.BaseType);
 					if (spec.InterfacesDefined != null) {
 						var mutated = new TypeSpec[spec.InterfacesDefined.Length];
@@ -885,9 +889,8 @@ namespace Mono.CSharp {
 
 		public ParametersBlock Block;
 
-		public AnonymousMethodExpression (bool isAsync, Location loc)
+		public AnonymousMethodExpression (Location loc)
 		{
-			this.IsAsync = isAsync;
 			this.loc = loc;
 			this.compatibles = new Dictionary<TypeSpec, Expression> ();
 		}
@@ -911,10 +914,10 @@ namespace Mono.CSharp {
 				return Block.Parameters;
 			}
 		}
-
+		
 		public bool IsAsync {
 			get;
-			private set;
+			internal set;
 		}
 		#endregion
 
@@ -1588,16 +1591,17 @@ namespace Mono.CSharp {
 
 			MemberName member_name;
 			GenericMethod generic_method;
-			if (storey == null && mc.MemberName.TypeArguments != null) {
-				member_name = new MemberName (name, mc.MemberName.TypeArguments.Clone (), Location);
+			if (storey == null && ec.CurrentTypeParameters != null) {
 
 				var hoisted_tparams = ec.CurrentTypeParameters;
-				var type_params = new TypeParameter[hoisted_tparams.Length];
-				for (int i = 0; i < type_params.Length; ++i) {
-					type_params[i] = hoisted_tparams[i].CreateHoistedCopy (parent, null);
+				var type_params = new TypeParameters (hoisted_tparams.Count);
+				for (int i = 0; i < hoisted_tparams.Count; ++i) {
+				    type_params.Add (hoisted_tparams[i].CreateHoistedCopy (parent, null));
 				}
 
-				generic_method = new GenericMethod (parent.NamespaceEntry, parent, member_name, type_params,
+				member_name = new MemberName (name, type_params, Location);
+
+				generic_method = new GenericMethod (parent.NamespaceEntry, parent, member_name, //type_params,
 					new TypeExpression (ReturnType, Location), parameters);
 			} else {
 				member_name = new MemberName (name, Location);
@@ -1782,16 +1786,15 @@ namespace Mono.CSharp {
 			string name = ClassNamePrefix + types_counter++;
 
 			ParametersCompiled all_parameters;
-			TypeParameterName[] t_params;
+			TypeParameters tparams = null;
 			SimpleName[] t_args;
 
 			if (parameters.Count == 0) {
 				all_parameters = ParametersCompiled.EmptyReadOnlyParameters;
-				t_params = new TypeParameterName[0];
 				t_args = null;
 			} else {
 				t_args = new SimpleName[parameters.Count];
-				t_params = new TypeParameterName[parameters.Count];
+				tparams = new TypeParameters ();
 				Parameter[] ctor_params = new Parameter[parameters.Count];
 				for (int i = 0; i < parameters.Count; ++i) {
 					AnonymousTypeParameter p = parameters[i];
@@ -1808,7 +1811,7 @@ namespace Mono.CSharp {
 					}
 
 					t_args[i] = new SimpleName ("<" + p.Name + ">__T", p.Location);
-					t_params[i] = new TypeParameterName (t_args[i].Name, null, p.Location);
+					tparams.Add (new TypeParameter (i, new MemberName (t_args[i].Name, p.Location), null, null, Variance.None));
 					ctor_params[i] = new Parameter (t_args[i], p.Name, Parameter.Modifier.NONE, null, p.Location);
 				}
 
@@ -1820,13 +1823,13 @@ namespace Mono.CSharp {
 			// named upon properties names
 			//
 			AnonymousTypeClass a_type = new AnonymousTypeClass (parent.NamespaceEntry.SlaveDeclSpace,
-				new MemberName (name, new TypeArguments (t_params), loc), parameters, loc);
+				new MemberName (name, tparams, loc), parameters, loc);
 
 			if (parameters.Count > 0)
 				a_type.SetParameterInfo (null);
 
 			Constructor c = new Constructor (a_type, name, Modifiers.PUBLIC | Modifiers.DEBUGGER_HIDDEN,
-				null, all_parameters, null, loc);
+				null, all_parameters, loc);
 			c.Block = new ToplevelBlock (parent.Module.Compiler, c.ParameterInfo, loc);
 
 			// 
@@ -1913,10 +1916,11 @@ namespace Mono.CSharp {
 			ToplevelBlock equals_block = new ToplevelBlock (Compiler, equals.ParameterInfo, loc);
 
 			TypeExpr current_type;
-			if (type_params != null) {
+			if (CurrentTypeParameters != null) {
 				var targs = new TypeArguments ();
-				foreach (var type_param in type_params)
-					targs.Add (new TypeParameterExpr (type_param, type_param.Location));
+				for (int i = 0; i < CurrentTypeParameters.Count; ++i) {
+					targs.Add (new TypeParameterExpr (CurrentTypeParameters[i], Location));
+				}
 
 				current_type = new GenericTypeExpr (Definition, targs, loc);
 			} else {

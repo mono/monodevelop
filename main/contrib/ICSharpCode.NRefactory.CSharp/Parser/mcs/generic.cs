@@ -94,6 +94,12 @@ namespace Mono.CSharp {
 
 		#region Properties
 
+		public List<FullNamedExpression> TypeExpressions {
+			get {
+				return constraints;
+			}
+		}
+
 		public Location Location {
 			get {
 				return loc;
@@ -360,15 +366,24 @@ namespace Mono.CSharp {
 		GenericTypeParameterBuilder builder;
 		TypeParameterSpec spec;
 
-		public TypeParameter (DeclSpace parent, int index, MemberName name, Constraints constraints, Attributes attrs, Variance variance)
-			: base (parent, name, attrs)
+		public TypeParameter (int index, MemberName name, Constraints constraints, Attributes attrs, Variance variance)
+			: base (null, name, attrs)
 		{
 			this.constraints = constraints;
 			this.spec = new TypeParameterSpec (null, index, this, SpecialConstraint.None, variance, null);
 		}
 
+		//
+		// Used by parser
+		//
+		public TypeParameter (MemberName name, Attributes attrs, Variance variance)
+			: base (null, name, attrs)
+		{
+			this.spec = new TypeParameterSpec (null, -1, this, SpecialConstraint.None, variance, null);
+		}
+
 		public TypeParameter (TypeParameterSpec spec, DeclSpace parent, TypeSpec parentSpec, MemberName name, Attributes attrs)
-			: base (parent, name, attrs)
+			: base (null, name, attrs)
 		{
 			this.spec = new TypeParameterSpec (parentSpec, spec.DeclaredPosition, spec.MemberDefinition, spec.SpecialConstraint, spec.Variance, null) {
 				BaseType = spec.BaseType,
@@ -382,6 +397,15 @@ namespace Mono.CSharp {
 		public override AttributeTargets AttributeTargets {
 			get {
 				return AttributeTargets.GenericParameter;
+			}
+		}
+
+		public Constraints Constraints {
+			get {
+				return constraints;
+			}
+			set {
+				constraints = value;
 			}
 		}
 
@@ -437,12 +461,6 @@ namespace Mono.CSharp {
 		public Variance Variance {
 			get {
 				return spec.Variance;
-			}
-		}
-
-		public Constraints Constraints {
-			get {
-				return this.constraints;
 			}
 		}
 
@@ -509,11 +527,13 @@ namespace Mono.CSharp {
 		// with SRE (by calling `DefineGenericParameters()' on the TypeBuilder /
 		// MethodBuilder).
 		//
-		public void Define (GenericTypeParameterBuilder type, TypeSpec declaringType)
+		public void Define (GenericTypeParameterBuilder type, TypeSpec declaringType, TypeContainer parent)
 		{
 			if (builder != null)
 				throw new InternalErrorException ();
 
+			// Needed to get compiler reference
+			this.Parent = parent;
 			this.builder = type;
 			spec.DeclaringType = declaringType;
 			spec.SetMetaInfo (type);
@@ -625,16 +645,6 @@ namespace Mono.CSharp {
 			return true;
 		}
 
-		public static TypeParameter FindTypeParameter (TypeParameter[] tparams, string name)
-		{
-			foreach (var tp in tparams) {
-				if (tp.Name == name)
-					return tp;
-			}
-
-			return null;
-		}
-
 		public override bool IsClsComplianceRequired ()
 		{
 			return false;
@@ -645,6 +655,14 @@ namespace Mono.CSharp {
 			if (constraints != null)
 				constraints.VerifyClsCompliance (Report);
 		}
+
+		public void WarningParentNameConflict (TypeParameter conflict)
+		{
+			conflict.Report.SymbolRelatedToPreviousError (conflict.Location, null);
+			conflict.Report.Warning (693, 3, Location,
+				"Type parameter `{0}' has the same name as the type parameter from outer type `{1}'",
+				GetSignatureForError (), conflict.CurrentType.GetSignatureForError ());
+		}
 	}
 
 	[System.Diagnostics.DebuggerDisplay ("{DisplayDebugInfo()}")]
@@ -654,7 +672,7 @@ namespace Mono.CSharp {
 
 		Variance variance;
 		SpecialConstraint spec;
-		readonly int tp_pos;
+		int tp_pos;
 		TypeSpec[] targs;
 		TypeSpec[] ifaces_defined;
 
@@ -683,6 +701,9 @@ namespace Mono.CSharp {
 		public int DeclaredPosition {
 			get {
 				return tp_pos;
+			}
+			set {
+				tp_pos = value;
 			}
 		}
 
@@ -918,15 +939,8 @@ namespace Mono.CSharp {
 
 		public override string GetSignatureForDocumentation ()
 		{
-			int c = 0;
-			var type = DeclaringType;
-			while (type != null && type.DeclaringType != null) {
-				type = type.DeclaringType;
-				c += type.MemberDefinition.TypeParametersCount;
-			}
-
 			var prefix = IsMethodOwned ? "``" : "`";
-			return prefix + (c + DeclaredPosition);
+			return prefix + DeclaredPosition;
 		}
 
 		public override string GetSignatureForError ()
@@ -1364,13 +1378,13 @@ namespace Mono.CSharp {
 	//
 	public class TypeParameterMutator
 	{
-		readonly TypeParameter[] mvar;
-		readonly TypeParameter[] var;
+		readonly TypeParameters mvar;
+		readonly TypeParameters var;
 		Dictionary<TypeSpec, TypeSpec> mutated_typespec;
 
-		public TypeParameterMutator (TypeParameter[] mvar, TypeParameter[] var)
+		public TypeParameterMutator (TypeParameters mvar, TypeParameters var)
 		{
-			if (mvar.Length != var.Length)
+			if (mvar.Count != var.Count)
 				throw new ArgumentException ();
 
 			this.mvar = mvar;
@@ -1379,7 +1393,7 @@ namespace Mono.CSharp {
 
 		#region Properties
 
-		public TypeParameter[] MethodTypeParameters {
+		public TypeParameters MethodTypeParameters {
 			get {
 				return mvar;
 			}
@@ -1416,7 +1430,7 @@ namespace Mono.CSharp {
 
 		public TypeParameterSpec Mutate (TypeParameterSpec tp)
 		{
-			for (int i = 0; i < mvar.Length; ++i) {
+			for (int i = 0; i < mvar.Count; ++i) {
 				if (mvar[i].Type == tp)
 					return var[i].Type;
 			}
@@ -1879,12 +1893,6 @@ namespace Mono.CSharp {
 			args.Add (type);
 		}
 
-		// TODO: Kill this monster
-		public TypeParameterName[] GetDeclarations ()
-		{
-			return args.ConvertAll (i => (TypeParameterName) i).ToArray ();
-		}
-
 		/// <summary>
 		///   We may only be used after Resolve() is called and return the fully
 		///   resolved types.
@@ -1909,6 +1917,12 @@ namespace Mono.CSharp {
 			get {
 				return false;
 			}
+		}
+
+		public List<FullNamedExpression> TypeExpressions {
+			get {
+				return this.args;
+ 			}
 		}
 
 		public string GetSignatureForError()
@@ -1998,32 +2012,95 @@ namespace Mono.CSharp {
 		}
 	}
 
-	public class TypeParameterName : SimpleName
+	public class TypeParameters
 	{
-		Attributes attributes;
-		Variance variance;
+		List<TypeParameter> names;
+		TypeParameterSpec[] types;
 
-		public TypeParameterName (string name, Attributes attrs, Location loc)
-			: this (name, attrs, Variance.None, loc)
+		public TypeParameters ()
 		{
+			names = new List<TypeParameter> ();
 		}
 
-		public TypeParameterName (string name, Attributes attrs, Variance variance, Location loc)
-			: base (name, loc)
+		public TypeParameters (int count)
 		{
-			attributes = attrs;
-			this.variance = variance;
+			names = new List<TypeParameter> (count);
 		}
 
-		public Attributes OptAttributes {
+		#region Properties
+
+		public int Count {
 			get {
-				return attributes;
+				return names.Count;
 			}
 		}
 
-		public Variance Variance {
+		public TypeParameterSpec[] Types {
 			get {
-				return variance;
+				return types;
+			}
+		}
+
+		#endregion
+
+		public void Add (TypeParameter tparam)
+		{
+			names.Add (tparam);
+		}
+
+		public void Add (TypeParameters tparams)
+		{
+			names.AddRange (tparams.names);
+		}
+
+		public void Define (GenericTypeParameterBuilder[] buiders, TypeSpec declaringType, int parentOffset, TypeContainer parent)
+		{
+			types = new TypeParameterSpec[Count];
+			for (int i = 0; i < types.Length; ++i) {
+				names[i].Define (buiders[i + parentOffset], declaringType, parent);
+				types[i] = names[i].Type;
+				types[i].DeclaredPosition = i + parentOffset;
+			}
+		}
+
+		public TypeParameter this[int index] {
+			get {
+				return names [index];
+			}
+			set {
+				names[index] = value;
+			}
+		}
+
+		public TypeParameter Find (string name)
+		{
+			foreach (var tp in names) {
+				if (tp.Name == name)
+					return tp;
+			}
+
+			return null;
+		}
+
+		public string GetSignatureForError ()
+		{
+			StringBuilder sb = new StringBuilder ();
+			for (int i = 0; i < Count; ++i) {
+				if (i > 0)
+					sb.Append (',');
+
+				var name = names[i];
+				if (name != null)
+					sb.Append (name.GetSignatureForError ());
+			}
+
+			return sb.ToString ();
+		}
+
+		public void VerifyClsCompliance ()
+		{
+			foreach (var tp in names) {
+				tp.VerifyClsCompliance ();
 			}
 		}
 	}
@@ -2443,16 +2520,9 @@ namespace Mono.CSharp {
 			this.parameters = parameters;
 		}
 
-		public GenericMethod (NamespaceContainer ns, DeclSpace parent, MemberName name, TypeParameter[] tparams,
-					  FullNamedExpression return_type, ParametersCompiled parameters)
-			: this (ns, parent, name, return_type, parameters)
-		{
-			this.type_params = tparams;
-		}
-
-		public override TypeParameter[] CurrentTypeParameters {
+		public override TypeParameters CurrentTypeParameters {
 			get {
-				return base.type_params;
+				return MemberName.TypeParameters;
 			}
 		}
 
@@ -2483,11 +2553,13 @@ namespace Mono.CSharp {
 		/// </summary>
 		public bool Define (MethodOrOperator m)
 		{
-			TypeParameterName[] names = MemberName.TypeArguments.GetDeclarations ();
-			string[] snames = new string [names.Length];
+			var tparams = MemberName.TypeParameters;
+			string[] snames = new string[MemberName.Arity];
 			var block = m.Block;
-			for (int i = 0; i < names.Length; i++) {
-				string type_argument_name = names[i].Name;
+			var parent_tparams = Parent.TypeParametersAll;
+
+			for (int i = 0; i < snames.Length; i++) {
+				string type_argument_name = tparams[i].MemberName.Name;
 
 				if (block == null) {
 					int idx = parameters.GetParameterIndexByName (type_argument_name);
@@ -2505,12 +2577,18 @@ namespace Mono.CSharp {
 						variable.Block.Error_AlreadyDeclaredTypeParameter (type_argument_name, variable.Location);
 				}
 
+				if (parent_tparams != null) {
+					var tp = parent_tparams.Find (type_argument_name);
+					if (tp != null) {
+						tparams[i].WarningParentNameConflict (tp);
+					}
+				}
+
 				snames[i] = type_argument_name;
 			}
 
 			GenericTypeParameterBuilder[] gen_params = m.MethodBuilder.DefineGenericParameters (snames);
-			for (int i = 0; i < TypeParameters.Length; i++)
-				TypeParameters [i].Define (gen_params [i], null);
+			tparams.Define (gen_params, null, 0, Parent);
 
 			return true;
 		}
@@ -2538,9 +2616,7 @@ namespace Mono.CSharp {
 
 		public new void VerifyClsCompliance ()
 		{
-			foreach (TypeParameter tp in TypeParameters) {
-				tp.VerifyClsCompliance ();
-			}
+			MemberName.TypeParameters.VerifyClsCompliance ();
 		}
 	}
 

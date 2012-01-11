@@ -71,7 +71,7 @@ namespace Mono.CSharp
 				get { return tc.Parent.CurrentType; }
 			}
 
-			public TypeParameter[] CurrentTypeParameters {
+			public TypeParameters CurrentTypeParameters {
 				get { return tc.PartialContainer.CurrentTypeParameters; }
 			}
 
@@ -113,9 +113,9 @@ namespace Mono.CSharp
 			public FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
 			{
 				if (arity == 0) {
-					TypeParameter[] tp = CurrentTypeParameters;
+					var tp = CurrentTypeParameters;
 					if (tp != null) {
-						TypeParameter t = TypeParameter.FindTypeParameter (tp, name);
+						TypeParameter t = tp.Find (name);
 						if (t != null)
 							return new TypeParameterExpr (t, loc);
 					}
@@ -201,7 +201,7 @@ namespace Mono.CSharp
 		// from classes from the arraylist `type_bases' 
 		//
 		protected TypeSpec base_type;
-		protected FullNamedExpression base_type_expr;	// TODO: It's temporary variable
+		FullNamedExpression base_type_expr;	// TODO: It's temporary variable
 		protected TypeSpec[] iface_exprs;
 
 		protected List<FullNamedExpression> type_bases;
@@ -213,6 +213,11 @@ namespace Mono.CSharp
 		TypeContainer InTransit;
 
 		GenericTypeParameterBuilder[] all_tp_builders;
+		//
+		// All recursive type parameters put together sharing same
+		// TypeParameter instances
+		//
+		TypeParameters all_type_parameters;
 
 		public const string DefaultIndexerName = "Item";
 
@@ -256,6 +261,12 @@ namespace Mono.CSharp
 
 		#region Properties
 
+		public List<FullNamedExpression> BaseTypeExpressions {
+			get {
+				return type_bases;
+			}
+		}
+
 		public override TypeSpec CurrentType {
 			get {
 				if (current_type == null) {
@@ -263,7 +274,7 @@ namespace Mono.CSharp
 						//
 						// Switch to inflated version as it's used by all expressions
 						//
-						var targs = CurrentTypeParameters == null ? TypeSpec.EmptyTypes : CurrentTypeParameters.Select (l => l.Type).ToArray ();
+						var targs = CurrentTypeParameters == null ? TypeSpec.EmptyTypes : CurrentTypeParameters.Types;
 						current_type = spec.MakeGenericType (this, targs);
 					} else {
 						current_type = spec;
@@ -274,9 +285,9 @@ namespace Mono.CSharp
 			}
 		}
 
-		public override TypeParameter[] CurrentTypeParameters {
+		public override TypeParameters CurrentTypeParameters {
 			get {
-				return PartialContainer.type_params;
+				return PartialContainer.MemberName.TypeParameters;
 			}
 		}
 
@@ -284,7 +295,7 @@ namespace Mono.CSharp
 			get {
 				int total = all_tp_builders.Length;
 				if (CurrentTypeParameters != null) {
-					return total - CurrentTypeParameters.Length;
+					return total - CurrentTypeParameters.Count;
 				}
 				return total;
 			}
@@ -326,13 +337,19 @@ namespace Mono.CSharp
 			}
 		}
 
+		public TypeParameters TypeParametersAll {
+			get {
+				return all_type_parameters;
+			}
+		}
+
 		#endregion
 
 		public override void Accept (StructuralVisitor visitor)
 		{
 			visitor.Visit (this);
 		}
-		
+
 		public bool AddMember (MemberCore symbol)
 		{
 			return AddToContainer (symbol, symbol.MemberName.Basename);
@@ -450,14 +467,14 @@ namespace Mono.CSharp
 			AddTypeContainer (d);
 		}
 
-		private void AddMemberToList (MemberCore mc, List<MemberCore> alist, bool isexplicit)
+		private void AddMemberToList (InterfaceMemberBase mc, List<MemberCore> alist)
 		{
 			if (ordered_explicit_member_list == null)  {
 				ordered_explicit_member_list = new List<MemberCore> ();
 				ordered_member_list = new List<MemberCore> ();
 			}
 
-			if (isexplicit) {
+			if (mc.IsExplicitImpl) {
 				if (Kind == MemberKind.Interface) {
 					Report.Error (541, mc.Location,
 						"`{0}': explicit interface declaration can only be declared in a class or struct",
@@ -482,10 +499,7 @@ namespace Mono.CSharp
 			if (methods == null)
 				methods = new List<MemberCore> ();
 
-			if (method.MemberName.Left != null) 
-				AddMemberToList (method, methods, true);
-			else 
-				AddMemberToList (method, methods, false);
+			AddMemberToList (method, methods);
 		}
 
 		public void AddConstructor (Constructor c)
@@ -550,10 +564,7 @@ namespace Mono.CSharp
 			if (properties == null)
 				properties = new List<MemberCore> ();
 
-			if (prop.MemberName.Left != null)
-				AddMemberToList (prop, properties, true);
-			else 
-				AddMemberToList (prop, properties, false);
+			AddMemberToList (prop, properties);
 		}
 
 		public void AddEvent (Event e)
@@ -575,10 +586,8 @@ namespace Mono.CSharp
 			orderedAllMembers.Add (i);
 			if (indexers == null)
 				indexers = new List<MemberCore> ();
-			if (i.IsExplicitImpl)
-				AddMemberToList (i, indexers, true);
-			else 
-				AddMemberToList (i, indexers, false);
+
+			AddMemberToList (i, indexers);
 		}
 
 		public void AddOperator (Operator op)
@@ -697,8 +706,7 @@ namespace Mono.CSharp
 
 		TypeParameterSpec[] ITypeDefinition.TypeParameters {
 			get {
-				// TODO MemberCache: this is going to hurt
-				return PartialContainer.type_params.Select (l => l.Type).ToArray ();
+				return PartialContainer.CurrentTypeParameters.Types;
 			}
 		}
 
@@ -1105,20 +1113,63 @@ namespace Mono.CSharp
 				Parent.MemberCache.AddMember (spec);
 
 			if (IsGeneric) {
-				string[] param_names = new string[TypeParameters.Length];
-				for (int i = 0; i < TypeParameters.Length; i++)
-					param_names [i] = TypeParameters[i].Name;
+				var tparam_names = CreateTypeParameters ();
 
-				all_tp_builders = TypeBuilder.DefineGenericParameters (param_names);
+				all_tp_builders = TypeBuilder.DefineGenericParameters (tparam_names);
 
-				int offset = CurrentTypeParametersStartIndex;
-				for (int i = offset; i < all_tp_builders.Length; i++) {
-					CurrentTypeParameters [i - offset].Define (all_tp_builders [i], spec);
-				}
+				if (CurrentTypeParameters != null)
+					CurrentTypeParameters.Define (all_tp_builders, spec, CurrentTypeParametersStartIndex, this);
 			}
 
 			return true;
 		}
+
+		string[] CreateTypeParameters ()
+		{
+			string[] names;
+			int parent_offset = 0;
+			var parent_all = Parent.all_type_parameters;
+			if (parent_all != null) {
+				if (CurrentTypeParameters == null) {
+					all_type_parameters = Parent.all_type_parameters;
+					return Parent.all_tp_builders.Select (l => l.Name).ToArray ();
+				}
+
+				names = new string[parent_all.Count + CurrentTypeParameters.Count];
+				all_type_parameters = new TypeParameters (names.Length);
+				all_type_parameters.Add (Parent.all_type_parameters);
+
+				parent_offset = all_type_parameters.Count;
+				for (int i = 0; i < parent_offset; ++i)
+					names[i] = all_type_parameters[i].MemberName.Name;
+
+			} else {
+				names = new string[CurrentTypeParameters.Count];
+			}
+
+			for (int i = 0; i < CurrentTypeParameters.Count; ++i) {
+				if (all_type_parameters != null)
+					all_type_parameters.Add (MemberName.TypeParameters[i]);
+
+				var name = CurrentTypeParameters[i].MemberName.Name;
+				names[parent_offset + i] = name;
+				for (int ii = 0; ii < parent_offset + i; ++ii) {
+					if (names[ii] != name)
+						continue;
+
+					var tp = CurrentTypeParameters[i];
+					var conflict = all_type_parameters[ii];
+
+					tp.WarningParentNameConflict (conflict);
+				}
+			}
+
+			if (all_type_parameters == null)
+				all_type_parameters = CurrentTypeParameters;
+
+			return names;
+		}
+
 
 		//
 		// Creates a proxy base method call inside this container for hoisted base member calls
@@ -1161,18 +1212,20 @@ namespace Mono.CSharp
 					// Copy all base generic method type parameters info
 					//
 					var hoisted_tparams = method.GenericDefinition.TypeParameters;
-					var type_params = new TypeParameter[hoisted_tparams.Length];
+					var tparams = new TypeParameters ();
+
 					targs = new TypeArguments ();
-					targs.Arguments = new TypeSpec[type_params.Length];
-					for (int i = 0; i < type_params.Length; ++i) {
+					targs.Arguments = new TypeSpec[hoisted_tparams.Length];
+					for (int i = 0; i < hoisted_tparams.Length; ++i) {
 						var tp = hoisted_tparams[i];
-						targs.Add (new TypeParameterName (tp.Name, null, Location));
+						tparams.Add (new TypeParameter (tp, this, null, new MemberName (tp.Name, Location), null));
+
+						targs.Add (new SimpleName (tp.Name, Location));
 						targs.Arguments[i] = tp;
-						type_params[i] = new TypeParameter (tp, this, null, new MemberName (tp.Name), null);
 					}
 
-					member_name = new MemberName (name, targs, Location);
-					generic_method = new GenericMethod (NamespaceEntry, this, member_name, type_params,
+					member_name = new MemberName (name, tparams, Location);
+					generic_method = new GenericMethod (NamespaceEntry, this, member_name,
 						new TypeExpression (method.ReturnType, Location), cloned_params);
 				} else {
 					member_name = new MemberName (name);
@@ -1345,6 +1398,8 @@ namespace Mono.CSharp
 					part.spec = spec;
 					part.current_type = current_type;
 					part.TypeBuilder = TypeBuilder;
+					part.all_type_parameters = all_type_parameters;
+					part.all_tp_builders = all_tp_builders;
 				}
 			}
 
@@ -1366,9 +1421,13 @@ namespace Mono.CSharp
 
 			type_defined = true;
 
-			// TODO: Driver resolves only first level of namespace, do the rest here for now
-			if (IsTopLevel && (ModFlags & Modifiers.COMPILER_GENERATED) == 0) {
-				NamespaceEntry.Resolve ();
+			// Nested type share same namespace
+			if (IsTopLevel && !IsCompilerGenerated) {
+				NamespaceEntry.Define ();
+				if (partial_parts != null) {
+					foreach (var part in partial_parts)
+						part.NamespaceEntry.Define ();
+				}
 			}
 
 			if (!DefineBaseTypes ()) {
@@ -1389,16 +1448,17 @@ namespace Mono.CSharp
 			if (PartialContainer.CurrentTypeParameters == null || PartialContainer == this)
 				return;
 
-			TypeParameter[] tc_names = PartialContainer.CurrentTypeParameters;
-			for (int i = 0; i < tc_names.Length; ++i) {
-				if (tc_names [i].Name != type_params [i].Name) {
+			var tc_names = PartialContainer.CurrentTypeParameters;
+			for (int i = 0; i < tc_names.Count; ++i) {
+				var tp = MemberName.TypeParameters[i];
+				if (tc_names[i].MemberName.Name != tp.MemberName.Name) {
 					Report.SymbolRelatedToPreviousError (PartialContainer.Location, "");
 					Report.Error (264, Location, "Partial declarations of `{0}' must have the same type parameter names in the same order",
 						GetSignatureForError ());
 					break;
 				}
 
-				if (tc_names [i].Variance != type_params [i].Variance) {
+				if (tc_names[i].Variance != tp.Variance) {
 					Report.SymbolRelatedToPreviousError (PartialContainer.Location, "");
 					Report.Error (1067, Location, "Partial declarations of `{0}' must have the same type parameter variance modifiers",
 						GetSignatureForError ());
@@ -1431,15 +1491,14 @@ namespace Mono.CSharp
 
 		void UpdateTypeParameterConstraints (TypeContainer part)
 		{
-			TypeParameter[] current_params = type_params;
-			for (int i = 0; i < current_params.Length; i++) {
-				if (current_params [i].AddPartialConstraints (part, part.type_params [i]))
+			for (int i = 0; i < CurrentTypeParameters.Count; i++) {
+				if (CurrentTypeParameters[i].AddPartialConstraints (part, part.MemberName.TypeParameters[i]))
 					continue;
 
 				Report.SymbolRelatedToPreviousError (Location, "");
 				Report.Error (265, part.Location,
 					"Partial declarations of `{0}' have inconsistent constraints for type parameter `{1}'",
-					GetSignatureForError (), current_params [i].GetSignatureForError ());
+					GetSignatureForError (), CurrentTypeParameters[i].GetSignatureForError ());
 			}
 		}
 
@@ -1465,15 +1524,18 @@ namespace Mono.CSharp
 
 		protected virtual bool DoResolveTypeParameters ()
 		{
-			if (CurrentTypeParameters == null)
+			var tparams = CurrentTypeParameters;
+			if (tparams == null)
 				return true;
 
 			if (PartialContainer != this)
 				throw new InternalErrorException ();
 
 			var base_context = new BaseContext (this);
-			foreach (TypeParameter type_param in CurrentTypeParameters) {
-				if (!type_param.ResolveConstraints (base_context)) {
+			for (int i = 0; i < tparams.Count; ++i) {
+				var tp = tparams[i];
+
+				if (!tp.ResolveConstraints (base_context)) {
 					error = true;
 					return false;
 				}
@@ -1892,7 +1954,7 @@ namespace Mono.CSharp
 				int current_starts_index = CurrentTypeParametersStartIndex;
 				for (int i = 0; i < all_tp_builders.Length; i++) {
 					if (i < current_starts_index) {
-						TypeParameters[i].EmitConstraints (all_tp_builders [i]);
+						all_type_parameters[i].EmitConstraints (all_tp_builders [i]);
 					} else {
 						var tp = CurrentTypeParameters [i - current_starts_index];
 						tp.CheckGenericConstraints (!IsObsolete);
@@ -2238,9 +2300,9 @@ namespace Mono.CSharp
 			e = null;
 
 			if (arity == 0) {
-				TypeParameter[] tp = CurrentTypeParameters;
+				var tp = CurrentTypeParameters;
 				if (tp != null) {
-					TypeParameter tparam = TypeParameter.FindTypeParameter (tp, name);
+					TypeParameter tparam = tp.Find (name);
 					if (tparam != null)
 						e = new TypeParameterExpr (tparam, Location.Null);
 				}
@@ -2424,9 +2486,8 @@ namespace Mono.CSharp
 			}
 
 			Constructor c = new Constructor (this, MemberName.Name, mods,
-				null, ParametersCompiled.EmptyReadOnlyParameters,
-				new GeneratedBaseInitializer (Location),
-				Location);
+				null, ParametersCompiled.EmptyReadOnlyParameters, Location);
+			c.Initializer = new GeneratedBaseInitializer (Location);
 			
 			AddConstructor (c);
 			c.Block = new ToplevelBlock (Compiler, ParametersCompiled.EmptyReadOnlyParameters, Location);
@@ -3068,7 +3129,7 @@ namespace Mono.CSharp
 				name, attrs)
 		{
 			IsInterface = parent.PartialContainer.Kind == MemberKind.Interface;
-			IsExplicitImpl = (MemberName.Left != null);
+			IsExplicitImpl = (MemberName.ExplicitInterface != null);
 			explicit_mod_flags = mod;
 		}
 
@@ -3291,7 +3352,7 @@ namespace Mono.CSharp
 			}
 
 			if (IsExplicitImpl) {
-				InterfaceType = MemberName.Left.GetTypeExpression ().ResolveAsType (Parent);
+				InterfaceType = MemberName.ExplicitInterface.ResolveAsType (Parent);
 				if (InterfaceType == null)
 					return false;
 
@@ -3428,7 +3489,6 @@ namespace Mono.CSharp
 		//
 		public string ShortName {
 			get { return MemberName.Name; }
-			set { SetMemberName (new MemberName (MemberName.Left, value, Location)); }
 		}
 		
 		//

@@ -244,7 +244,7 @@ namespace Mono.CSharp {
 		protected void Error_ValueCannotBeConvertedCore (ResolveContext ec, Location loc, TypeSpec target, bool expl)
 		{
 			// The error was already reported as CS1660
-			if (type == InternalType.AnonymousMethod)
+			if (type == InternalType.AnonymousMethod || type == InternalType.ErrorType)
 				return;
 
 			string from_type = type.GetSignatureForError ();
@@ -2452,13 +2452,11 @@ namespace Mono.CSharp {
 						rc.Report.Error (841, loc, "A local variable `{0}' cannot be used before it is declared", Name);
 					} else {
 						if (Arity > 0) {
-							TypeParameter[] tparams = rc.CurrentTypeParameters;
+							var tparams = rc.CurrentTypeParameters;
 							if (tparams != null) {
-								foreach (var ctp in tparams) {
-									if (ctp.Name == Name) {
-										Error_TypeArgumentsCannotBeUsed (rc, "type parameter", Name, loc);
-										return null;
-									}
+								if (tparams.Find (Name) != null) {
+									Error_TypeArgumentsCannotBeUsed (rc, "type parameter", Name, loc);
+									return null;
 								}
 							}
 
@@ -4418,7 +4416,10 @@ namespace Mono.CSharp {
 
 			var ac_p = p as ArrayContainer;
 			if (ac_p != null) {
-				var ac_q = ((ArrayContainer) q);
+				var ac_q = q as ArrayContainer;
+				if (ac_q == null)
+					return null;
+
 				TypeSpec specific = MoreSpecific (ac_p.Element, ac_q.Element);
 				if (specific == ac_p.Element)
 					return p;

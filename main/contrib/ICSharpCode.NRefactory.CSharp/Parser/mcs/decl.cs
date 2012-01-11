@@ -36,18 +36,20 @@ namespace Mono.CSharp {
 	// Better name would be DottenName
 	//
 	[DebuggerDisplay ("{GetSignatureForError()}")]
-	public class MemberName {
-		public readonly string Name;
-		public TypeArguments TypeArguments;
-
-		public readonly MemberName Left;
-		public readonly Location Location;
-
+	public class MemberName
+	{
 		public static readonly MemberName Null = new MemberName ("");
 
-		bool is_double_colon;
-		
-		public bool IsDoubleColon { get { return is_double_colon; } }
+		public readonly string Name;
+		public TypeParameters TypeParameters;
+		public readonly FullNamedExpression ExplicitInterface;
+		public readonly Location Location;
+
+		public readonly MemberName Left;
+
+		public MemberName (string name)
+			: this (name, Location.Null)
+		{ }
 
 #if FULL_AST
 		public Location DotLocation {
@@ -55,61 +57,43 @@ namespace Mono.CSharp {
 			set;
 		}
 #endif
-		private MemberName (MemberName left, string name, bool is_double_colon,
-				    Location loc)
+		public MemberName (string name, Location loc)
+			: this (null, name, loc)
+		{ }
+
+		public MemberName (string name, TypeParameters tparams, Location loc)
 		{
 			this.Name = name;
 			this.Location = loc;
-			this.is_double_colon = is_double_colon;
+
+			this.TypeParameters = tparams;
+		}
+
+		public MemberName (string name, TypeParameters tparams, FullNamedExpression explicitInterface, Location loc)
+			: this (name, tparams, loc)
+		{
+			this.ExplicitInterface = explicitInterface;
+		}
+
+		public MemberName (MemberName left, string name, Location loc)
+		{
+			this.Name = name;
+			this.Location = loc;
 			this.Left = left;
 		}
 
-		private MemberName (MemberName left, string name, bool is_double_colon,
-				    TypeArguments args, Location loc)
-			: this (left, name, is_double_colon, loc)
+		public MemberName (MemberName left, string name, FullNamedExpression explicitInterface, Location loc)
+			: this (left, name, loc)
 		{
-			if (args != null && args.Count > 0)
-				this.TypeArguments = args;
+			this.ExplicitInterface = explicitInterface;
 		}
 
-		public MemberName (string name)
-			: this (name, Location.Null)
-		{ }
-
-		public MemberName (string name, Location loc)
-			: this (null, name, false, loc)
-		{ }
-
-		public MemberName (string name, TypeArguments args, Location loc)
-			: this (null, name, false, args, loc)
-		{ }
-
-		public MemberName (MemberName left, string name)
-			: this (left, name, left != null ? left.Location : Location.Null)
-		{ }
-
-		public MemberName (MemberName left, string name, Location loc)
-			: this (left, name, false, loc)
-		{ }
-
-		public MemberName (MemberName left, string name, TypeArguments args, Location loc)
-			: this (left, name, false, args, loc)
-		{ }
-
-		public MemberName (string alias, string name, TypeArguments args, Location loc)
-			: this (new MemberName (alias, loc), name, true, args, loc)
-		{ }
-
 		public MemberName (MemberName left, MemberName right)
-			: this (left, right, right.Location)
-		{ }
-
-		public MemberName (MemberName left, MemberName right, Location loc)
-			: this (null, right.Name, false, right.TypeArguments, loc)
 		{
-			if (right.is_double_colon)
-				throw new InternalErrorException ("Cannot append double_colon member name");
-			this.Left = (right.Left == null) ? left : new MemberName (left, right.Left);
+			this.Name = right.Name;
+			this.Location = right.Location;
+			this.TypeParameters = right.TypeParameters;
+			this.Left = left;
 		}
 
 		// TODO: Remove
@@ -120,13 +104,13 @@ namespace Mono.CSharp {
 
 		public int Arity {
 			get {
-				return TypeArguments == null ? 0 : TypeArguments.Count;
+				return TypeParameters == null ? 0 : TypeParameters.Count;
 			}
 		}
 
 		public bool IsGeneric {
 			get {
-				if (TypeArguments != null)
+				if (TypeParameters != null)
 					return true;
 				else if (Left != null)
 					return Left.IsGeneric;
@@ -139,55 +123,31 @@ namespace Mono.CSharp {
 		{
 			string name = is_generic ? Basename : Name;
 			if (Left != null)
-				return Left.GetName (is_generic) + (is_double_colon ? "::" : ".") + name;
+				return Left.GetName (is_generic) + "." + name;
 
 			return name;
 		}
 
-		public ATypeNameExpression GetTypeExpression ()
-		{
-			if (Left == null) {
-				if (TypeArguments != null)
-					return new SimpleName (Name, TypeArguments, Location);
-				
-				return new SimpleName (Name, Location);
-			}
-
-			if (is_double_colon) {
-				if (Left.Left != null)
-					throw new InternalErrorException ("The left side of a :: should be an identifier");
-				return new QualifiedAliasMember (Left.Name, Name, TypeArguments, Location);
-			}
-
-			Expression lexpr = Left.GetTypeExpression ();
-			var result = new MemberAccess (lexpr, Name, TypeArguments, Location);
-#if FULL_AST
-			result.DotLocation = DotLocation;
-#endif
-			return result;
-		}
-
-		public MemberName Clone ()
-		{
-			MemberName left_clone = Left == null ? null : Left.Clone ();
-			return new MemberName (left_clone, Name, is_double_colon, TypeArguments, Location);
-		}
-
 		public string Basename {
 			get {
-				if (TypeArguments != null)
-					return MakeName (Name, TypeArguments);
+				if (TypeParameters != null)
+					return MakeName (Name, TypeParameters);
 				return Name;
 			}
 		}
 
 		public string GetSignatureForError ()
 		{
-			string append = TypeArguments == null ? "" : "<" + TypeArguments.GetSignatureForError () + ">";
+			string s = TypeParameters == null ? null : "<" + TypeParameters.GetSignatureForError () + ">";
+			s = Name + s;
+
+			if (ExplicitInterface != null)
+				s = ExplicitInterface.GetSignatureForError () + "." + s;
+
 			if (Left == null)
-				return Name + append;
-			string connect = is_double_colon ? "::" : ".";
-			return Left.GetSignatureForError () + connect + Name + append;
+				return s;
+
+			return Left.GetSignatureForError () + "." + s;
 		}
 
 		public override bool Equals (object other)
@@ -201,14 +161,12 @@ namespace Mono.CSharp {
 				return true;
 			if (other == null || Name != other.Name)
 				return false;
-			if (is_double_colon != other.is_double_colon)
+
+			if ((TypeParameters != null) &&
+			    (other.TypeParameters == null || TypeParameters.Count != other.TypeParameters.Count))
 				return false;
 
-			if ((TypeArguments != null) &&
-			    (other.TypeArguments == null || TypeArguments.Count != other.TypeArguments.Count))
-				return false;
-
-			if ((TypeArguments == null) && (other.TypeArguments != null))
+			if ((TypeParameters == null) && (other.TypeParameters != null))
 				return false;
 
 			if (Left == null)
@@ -222,27 +180,14 @@ namespace Mono.CSharp {
 			int hash = Name.GetHashCode ();
 			for (MemberName n = Left; n != null; n = n.Left)
 				hash ^= n.Name.GetHashCode ();
-			if (is_double_colon)
-				hash ^= 0xbadc01d;
 
-			if (TypeArguments != null)
-				hash ^= TypeArguments.Count << 5;
+			if (TypeParameters != null)
+				hash ^= TypeParameters.Count << 5;
 
 			return hash & 0x7FFFFFFF;
 		}
 
-		public int CountTypeArguments {
-			get {
-				if (TypeArguments != null)
-					return TypeArguments.Count;
-				else if (Left != null)
-					return Left.CountTypeArguments; 
-				else
-					return 0;
-			}
-		}
-
-		public static string MakeName (string name, TypeArguments args)
+		public static string MakeName (string name, TypeParameters args)
 		{
 			if (args == null)
 				return name;
@@ -871,7 +816,7 @@ namespace Mono.CSharp {
 			get { return this; }
 		}
 
-		public virtual TypeParameter[] CurrentTypeParameters {
+		public virtual TypeParameters CurrentTypeParameters {
 			get { return null; }
 		}
 
@@ -1275,12 +1220,9 @@ namespace Mono.CSharp {
 		
 		protected Dictionary<string, MemberCore> defined_names;
 
-		public TypeContainer PartialContainer;		
+		public TypeContainer PartialContainer;
 
 		protected readonly bool is_generic;
-		readonly int count_type_params;
-		protected TypeParameter[] type_params;
-		TypeParameter[] type_param_list;
 
 		//
 		// Whether we are Generic
@@ -1306,12 +1248,9 @@ namespace Mono.CSharp {
 			Basename = name.Basename;
 			defined_names = new Dictionary<string, MemberCore> ();
 			PartialContainer = null;
-			if (name.TypeArguments != null) {
+			if (name.TypeParameters != null) {
 				is_generic = true;
-				count_type_params = name.TypeArguments.Count;
 			}
-			if (parent != null)
-				count_type_params += parent.count_type_params;
 		}
 
 		/// <summary>
@@ -1407,45 +1346,7 @@ namespace Mono.CSharp {
 		{
 			return MemberName.GetSignatureForError ();
 		}
-		
-		TypeParameter[] initialize_type_params ()
-		{
-			if (type_param_list != null)
-				return type_param_list;
 
-			DeclSpace the_parent = Parent;
-			if (this is GenericMethod)
-				the_parent = null;
-
-			var list = new List<TypeParameter> ();
-			if (the_parent != null && the_parent.IsGeneric) {
-				// FIXME: move generics info out of DeclSpace
-				TypeParameter[] parent_params = the_parent.TypeParameters;
-				list.AddRange (parent_params);
-			}
- 
-			int count = type_params != null ? type_params.Length : 0;
-			for (int i = 0; i < count; i++) {
-				TypeParameter param = type_params [i];
-				list.Add (param);
-				if (Parent.CurrentTypeParameters != null) {
-					foreach (TypeParameter tp in Parent.CurrentTypeParameters) {
-						if (tp.Name != param.Name)				
-							continue;
-
-						Report.SymbolRelatedToPreviousError (tp.Location, null);
-						Report.Warning (693, 3, param.Location,
-							"Type parameter `{0}' has the same name as the type parameter from outer type `{1}'",
-							param.Name, Parent.GetSignatureForError ());
-					}
-				}
-			}
-
-			type_param_list = new TypeParameter [list.Count];
-			list.CopyTo (type_param_list, 0);
-			return type_param_list;
-		}
-		
 #if FULL_AST
 		public List<Constraints> PlainConstraints {
 			get;
@@ -1467,7 +1368,6 @@ namespace Mono.CSharp {
 			}
 		}
 #endif
-
 		public List<Constraints> Constraints {
 			get;
 			private set;
@@ -1493,27 +1393,24 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			TypeParameterName[] names = MemberName.TypeArguments.GetDeclarations ();
-			type_params = new TypeParameter [names.Length];
-
 			//
 			// Register all the names
 			//
-			for (int i = 0; i < type_params.Length; i++) {
-				TypeParameterName name = names [i];
+			for (int i = 0; i < MemberName.TypeParameters.Count; i++) {
+				var name = MemberName.TypeParameters [i];
 
 				Constraints constraints = null;
 				if (constraints_list != null) {
 					int total = constraints_list.Count;
 					for (int ii = 0; ii < total; ++ii) {
-						Constraints constraints_at = (Constraints)constraints_list[ii];
+						Constraints constraints_at = constraints_list[ii];
 						// TODO: it is used by iterators only
 						if (constraints_at == null) {
 							constraints_list.RemoveAt (ii);
 							--total;
 							continue;
 						}
-						if (constraints_at.TypeParameter.Value == name.Name) {
+						if (constraints_at.TypeParameter.Value == name.MemberName.Name) {
 							constraints = constraints_at;
 							constraints_list.RemoveAt(ii);
 							break;
@@ -1521,16 +1418,13 @@ namespace Mono.CSharp {
 					}
 				}
 
-				Variance variance = name.Variance;
 				if (name.Variance != Variance.None && !(this is Delegate || this is Interface)) {
 					Report.Error (1960, name.Location, "Variant type parameters can only be used with interfaces and delegates");
-					variance = Variance.None;
 				}
 
-				type_params [i] = new TypeParameter (
-					Parent, i, new MemberName (name.Name, Location), constraints, name.OptAttributes, variance);
-
-				AddToContainer (type_params [i], name.Name);
+				MemberName.TypeParameters[i].Constraints = constraints;
+				if (name.MemberName != null)
+					AddToContainer (name, name.MemberName.Name);
 			}
 
 			if (constraints_list != null && constraints_list.Count > 0) {
@@ -1538,25 +1432,6 @@ namespace Mono.CSharp {
 					Report.Error(699, constraint.Location, "`{0}': A constraint references nonexistent type parameter `{1}'", 
 						GetSignatureForError (), constraint.TypeParameter.Value);
 				}
-			}
-		}
-
-		protected TypeParameter[] TypeParameters {
-			get {
-				if (!IsGeneric)
-					throw new InvalidOperationException ();
-				if ((PartialContainer != null) && (PartialContainer != this))
-					return PartialContainer.TypeParameters;
-				if (type_param_list == null)
-					initialize_type_params ();
-
-				return type_param_list;
-			}
-		}
-
-		public int CountTypeParameters {
-			get {
-				return count_type_params;
 			}
 		}
 
@@ -1570,10 +1445,8 @@ namespace Mono.CSharp {
 				return false;
 			}
 
-			if (type_params != null) {
-				foreach (TypeParameter tp in type_params) {
-					tp.VerifyClsCompliance ();
-				}
+			if (CurrentTypeParameters != null) {
+				CurrentTypeParameters.VerifyClsCompliance ();
 			}
 
 			return true;

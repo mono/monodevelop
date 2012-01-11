@@ -420,7 +420,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertParameters(m.Parameters, methodDeclaration.Parameters);
 			if (!methodDeclaration.PrivateImplementationType.IsNull) {
 				m.Accessibility = Accessibility.None;
-				m.InterfaceImplementations.Add(new DefaultMemberReference(
+				m.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					m.EntityType, ConvertType(methodDeclaration.PrivateImplementationType), m.Name,
 					m.TypeParameters.Count, GetParameterTypes(m.Parameters)));
 			}
@@ -597,11 +597,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertAttributes(p.Attributes, propertyDeclaration.Attributes);
 			if (!propertyDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
-				p.InterfaceImplementations.Add(new DefaultMemberReference(
+				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					p.EntityType, ConvertType(propertyDeclaration.PrivateImplementationType), p.Name));
 			}
-			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p.Accessibility);
-			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p.Accessibility);
+			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p, "get_");
+			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p, "set_");
 			currentTypeDefinition.Members.Add(p);
 			if (interningProvider != null) {
 				p.ApplyInterningProvider(interningProvider);
@@ -619,13 +619,13 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			p.ReturnType = ConvertType(indexerDeclaration.ReturnType);
 			ConvertAttributes(p.Attributes, indexerDeclaration.Attributes);
 			
-			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p.Accessibility);
-			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p.Accessibility);
+			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_");
+			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p, "set_");
 			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			
 			if (!indexerDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
-				p.InterfaceImplementations.Add(new DefaultMemberReference(
+				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					p.EntityType, ConvertType(indexerDeclaration.PrivateImplementationType), p.Name, 0, GetParameterTypes(p.Parameters)));
 			}
 			
@@ -636,17 +636,27 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return p;
 		}
 		
-		IUnresolvedAccessor ConvertAccessor(Accessor accessor, Accessibility defaultAccessibility)
+		DefaultUnresolvedMethod ConvertAccessor(Accessor accessor, IUnresolvedMember p, string prefix)
 		{
 			if (accessor.IsNull)
 				return null;
-			DefaultUnresolvedAccessor a = new DefaultUnresolvedAccessor();
-			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? defaultAccessibility;
+			var a = new DefaultUnresolvedMethod(currentTypeDefinition, prefix + p.Name);
+			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? p.Accessibility;
 			a.Region = MakeRegion(accessor);
+			DefaultUnresolvedParameter param = null;
+			if (accessor.Role == PropertyDeclaration.GetterRole) {
+				a.ReturnType = p.ReturnType;
+			} else {
+				param = new DefaultUnresolvedParameter(p.ReturnType, "value");
+				a.Parameters.Add(param);
+				a.ReturnType = KnownTypeReference.Void;
+			}
 			foreach (AttributeSection section in accessor.Attributes) {
 				if (section.AttributeTarget == "return") {
 					ConvertAttributes(a.ReturnTypeAttributes, section);
-				} else if (section.AttributeTarget != "param") {
+				} else if (param != null && section.AttributeTarget == "param") {
+					ConvertAttributes(param.Attributes, section);
+				} else {
 					ConvertAttributes(a.Attributes, section);
 				}
 			}
@@ -670,16 +680,17 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				
 				ev.ReturnType = ConvertType(eventDeclaration.ReturnType);
 				
-				if (eventDeclaration.Attributes.Any(a => a.AttributeTarget == "method")) {
-					ev.AddAccessor = ev.RemoveAccessor = new DefaultUnresolvedAccessor { Accessibility = ev.Accessibility };
-				} else {
-					// if there's no attributes on the accessors, we can re-use the shared accessor instance
-					ev.AddAccessor = ev.RemoveAccessor = DefaultUnresolvedAccessor.GetFromAccessibility(ev.Accessibility);
-				}
+				var valueParameter = new DefaultUnresolvedParameter(ev.ReturnType, "value");
+				ev.AddAccessor = CreateDefaultEventAccessor(ev, "get_" + ev.Name, valueParameter);
+				ev.RemoveAccessor = CreateDefaultEventAccessor(ev, "set_" + ev.Name, valueParameter);
+				
 				foreach (AttributeSection section in eventDeclaration.Attributes) {
 					if (section.AttributeTarget == "method") {
-						// as we use the same instance for AddAccessor and RemoveAccessor, we only need to add the attribute once
-						ConvertAttributes(ev.AddAccessor.Attributes, section);
+						foreach (var attrNode in section.Attributes) {
+							IUnresolvedAttribute attr = ConvertAttribute(attrNode);
+							ev.AddAccessor.Attributes.Add(attr);
+							ev.RemoveAccessor.Attributes.Add(attr);
+						}
 					} else if (section.AttributeTarget != "field") {
 						ConvertAttributes(ev.Attributes, section);
 					}
@@ -693,6 +704,17 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return isSingleEvent ? ev : null;
 		}
 		
+		DefaultUnresolvedMethod CreateDefaultEventAccessor(IUnresolvedEvent ev, string name, IUnresolvedParameter valueParameter)
+		{
+			var a = new DefaultUnresolvedMethod(currentTypeDefinition, name);
+			a.Region = ev.BodyRegion;
+			a.BodyRegion = ev.BodyRegion;
+			a.Accessibility = ev.Accessibility;
+			a.ReturnType = KnownTypeReference.Void;
+			a.Parameters.Add(valueParameter);
+			return a;
+		}
+		
 		public override IUnresolvedEntity VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration, object data)
 		{
 			DefaultUnresolvedEvent e = new DefaultUnresolvedEvent(currentTypeDefinition, eventDeclaration.Name);
@@ -704,12 +726,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			if (!eventDeclaration.PrivateImplementationType.IsNull) {
 				e.Accessibility = Accessibility.None;
-				e.InterfaceImplementations.Add(new DefaultMemberReference(
+				e.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					e.EntityType, ConvertType(eventDeclaration.PrivateImplementationType), e.Name));
 			}
 			
-			e.AddAccessor = ConvertAccessor(eventDeclaration.AddAccessor, e.Accessibility);
-			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e.Accessibility);
+			e.AddAccessor = ConvertAccessor(eventDeclaration.AddAccessor, e, "add_");
+			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e, "remove_");
 			
 			currentTypeDefinition.Members.Add(e);
 			if (interningProvider != null) {

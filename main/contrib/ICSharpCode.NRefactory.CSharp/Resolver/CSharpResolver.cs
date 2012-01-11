@@ -2094,10 +2094,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// The initializer elements. May be null if no array initializer was specified.
 		/// The resolver may mutate this array to wrap elements in <see cref="ConversionResolveResult"/>s!
 		/// </param>
-		/// <param name="allowArrayConstants">
-		/// Specifies whether to allow treating single-dimensional arrays like compile-time constants.
-		/// This is used for attribute arguments.
-		/// </param>
 		public ArrayCreateResolveResult ResolveArrayCreation(IType elementType, int dimensions = 1, ResolveResult[] sizeArguments = null, ResolveResult[] initializerElements = null)
 		{
 			if (sizeArguments != null && dimensions != Math.Max(1, sizeArguments.Length))

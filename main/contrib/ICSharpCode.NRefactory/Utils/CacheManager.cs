@@ -23,7 +23,6 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory.Utils
 {
-/*
 	/// <summary>
 	/// Allows caching values for a specific compilation.
 	/// A CacheManager consists of two dictionaries: one for shared instances (shared among all threads working with that resolve context),
@@ -68,38 +67,5 @@ namespace ICSharpCode.NRefactory.Utils
 		{
 			localDict.Value[key] = val;
 		}
-	}*/
-	
-	
-	// TODO: Cache strategy causes a memory leak, therefore caching is disabled.
-	public sealed class CacheManager
-	{
-		public object GetShared(object key)
-		{
-			return null;
-		}
-		
-		public object GetOrAddShared(object key, Func<object, object> valueFactory)
-		{
-			return valueFactory (key);
-		}
-		
-		public object GetOrAddShared(object key, object val)
-		{
-			return val;
-		}
-		
-		public void SetShared(object key, object val)
-		{
-		}
-		
-		public object GetThreadLocal(object key)
-		{
-			return null;
-		}
-		
-		public void SetThreadLocal(object key, object val)
-		{
-		}
-	}	
+	}
 }

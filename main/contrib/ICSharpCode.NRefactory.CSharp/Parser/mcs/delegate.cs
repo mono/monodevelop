@@ -81,6 +81,13 @@ namespace Mono.CSharp {
 				return parameters;
 			}
 		}
+
+		public FullNamedExpression TypExpression {
+			get {
+				return ReturnType;
+			}
+		}
+
 		#endregion
 
 		public override void Accept (StructuralVisitor visitor)
@@ -123,7 +130,7 @@ namespace Mono.CSharp {
 			);
 
 			Constructor = new Constructor (this, Constructor.ConstructorName,
-				Modifiers.PUBLIC, null, ctor_parameters, null, Location);
+				Modifiers.PUBLIC, null, ctor_parameters, Location);
 			Constructor.Define ();
 
 			//

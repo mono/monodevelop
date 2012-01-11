@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		}
 		
 		/// <summary>
-		/// Returns the type that is referenced; or <see cref="SpecialTypes.UnknownType"/> if the type isn't found.
+		/// Returns the type that is referenced; or <see cref="SpecialType.UnknownType"/> if the type isn't found.
 		/// </summary>
 		public IType ResolveType(CSharpResolver resolver)
 		{

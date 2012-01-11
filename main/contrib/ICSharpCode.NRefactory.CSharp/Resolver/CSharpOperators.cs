@@ -127,6 +127,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return this; }
 			}
 			
+			IUnresolvedMember IMember.UnresolvedMember {
+				get { return null; }
+			}
+			
 			IList<IMember> IMember.InterfaceImplementations {
 				get { return EmptyList<IMember>.Instance; }
 			}

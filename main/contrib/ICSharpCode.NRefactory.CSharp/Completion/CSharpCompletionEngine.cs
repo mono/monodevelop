@@ -567,7 +567,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				// identifier has already started with the first letter
 				offset--;
-				
 				AddContextCompletion (contextList, csResolver, identifierStart.Item2);
 				return contextList.Result;
 //				if (stub.Parent is BlockStatement)
@@ -703,7 +702,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var unit = ParseStub ("a");
 				node = unit.GetNodeAt (location);
 				rr = ResolveExpression (CSharpParsedFile, node, unit);
-				Print (unit);
 			}
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
@@ -724,7 +722,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var param = node.Parent as ParameterDeclaration;
 				if (param != null) {
 					foreach (var possibleName in GenerateNameProposals (param.Type)) {
-						Console.WriteLine (possibleName);
 						if (possibleName.Length > 0)
 							wrapper.Result.Add (factory.CreateLiteralCompletionData (possibleName.ToString ()));
 					}
@@ -733,7 +730,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return wrapper.Result;
 				}
 			}
-			AddContextCompletion (wrapper, rr != null && (node is Expression) ? rr.Item2 : GetState (), node);
+			
+			CSharpResolver csResolver;
+			if (node != null) {
+				var nodes = new List<AstNode> ();
+				var n = node;
+				nodes.Add (n);
+				if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
+					nodes.Add (n.Parent);
+				var navigator = new NodeListResolveVisitorNavigator (nodes);
+				
+				var visitor = new ResolveVisitor (GetState (), xp != null ? xp.Item1 : CSharpParsedFile, navigator);
+				visitor.Scan (node);
+				try {
+					csResolver = visitor.GetResolverStateBefore (node);
+				} catch (Exception) {
+					csResolver = GetState ();
+				}
+				
+			} else {
+				csResolver = GetState ();
+			}
+			
+			AddContextCompletion (wrapper, csResolver, node);
 			
 			return wrapper.Result;
 		}
@@ -745,6 +764,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddVariable (variable);
 				}
 			}
+			
 			if (currentMember is IUnresolvedParameterizedMember) {
 				var param = (IParameterizedMember)currentMember.CreateResolved (ctx);
 				foreach (var p in param.Parameters) {
@@ -1897,11 +1917,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = location;
 			}
-				
 			var baseUnit = ParseStub ("");
-			
 			var tmpUnit = baseUnit;
 			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1);
+			
 			if (expr == null)
 				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
 			

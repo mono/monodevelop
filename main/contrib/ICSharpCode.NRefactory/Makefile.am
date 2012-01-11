@@ -68,7 +68,6 @@ FILES =  \
 	TypeSystem/EntityType.cs \
 	TypeSystem/Error.cs \
 	TypeSystem/ExtensionMethods.cs \
-	TypeSystem/IAccessor.cs \
 	TypeSystem/IAmbience.cs \
 	TypeSystem/IAssembly.cs \
 	TypeSystem/IAttribute.cs \
@@ -93,7 +92,6 @@ FILES =  \
 	TypeSystem/Implementation/DefaultAssemblyReference.cs \
 	TypeSystem/Implementation/DefaultMemberReference.cs \
 	TypeSystem/Implementation/DefaultParameter.cs \
-	TypeSystem/Implementation/DefaultResolvedAccessor.cs \
 	TypeSystem/Implementation/DefaultResolvedEvent.cs \
 	TypeSystem/Implementation/DefaultResolvedField.cs \
 	TypeSystem/Implementation/DefaultResolvedMethod.cs \
@@ -101,7 +99,6 @@ FILES =  \
 	TypeSystem/Implementation/DefaultResolvedTypeDefinition.cs \
 	TypeSystem/Implementation/DefaultResolvedTypeParameter.cs \
 	TypeSystem/Implementation/DefaultSolutionSnapshot.cs \
-	TypeSystem/Implementation/DefaultUnresolvedAccessor.cs \
 	TypeSystem/Implementation/DefaultUnresolvedAssembly.cs \
 	TypeSystem/Implementation/DefaultUnresolvedAttribute.cs \
 	TypeSystem/Implementation/DefaultUnresolvedEvent.cs \

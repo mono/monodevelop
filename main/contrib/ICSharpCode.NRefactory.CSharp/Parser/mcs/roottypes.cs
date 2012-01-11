@@ -351,6 +351,12 @@ namespace Mono.CSharp
 				tc.CloseType ();
 			}
 
+			if (anonymous_types != null) {
+				foreach (var atypes in anonymous_types)
+					foreach (var at in atypes.Value)
+						at.CloseType ();
+			}
+
 			if (compiler_generated != null)
 				foreach (CompilerGeneratedClass c in compiler_generated)
 					c.CloseType ();
@@ -367,7 +373,7 @@ namespace Mono.CSharp
 		public RootNamespace CreateRootNamespace (string alias)
 		{
 			if (alias == global_ns.Alias) {
-				NamespaceContainer.Error_GlobalNamespaceRedefined (Location.Null, Report);
+				RootNamespace.Error_GlobalNamespaceRedefined (Report, Location.Null);
 				return global_ns;
 			}
 
@@ -444,6 +450,12 @@ namespace Mono.CSharp
 
 			foreach (TypeContainer tc in types)
 				tc.VerifyMembers ();
+
+			if (anonymous_types != null) {
+				foreach (var atypes in anonymous_types)
+					foreach (var at in atypes.Value)
+						at.EmitType ();
+			}
 
 			if (compiler_generated != null)
 				foreach (var c in compiler_generated)
@@ -540,7 +552,7 @@ namespace Mono.CSharp
 			}
 
 			string ns = mn.Left != null ? mn.Left.GetSignatureForError () : Module.GlobalRootNamespace.GetSignatureForError ();
-			mn = new MemberName (mn.Name, mn.TypeArguments, mn.Location);
+			mn = new MemberName (mn.Name, mn.TypeParameters, mn.Location);
 
 			Report.SymbolRelatedToPreviousError (found.Location, "");
 			Report.Error (101, container.Location,

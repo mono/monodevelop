@@ -200,7 +200,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Writes a comma.
 		/// </summary>
 		/// <param name="nextNode">The next node after the comma.</param>
-		/// <param name="noSpacesAfterComma">When set prevents printing a space after comma.</param>
+		/// <param name="noSpaceAfterComma">When set prevents printing a space after comma.</param>
 		void Comma (AstNode nextNode, bool noSpaceAfterComma = false)
 		{
 			WriteSpecialsUpToRole (AstNode.Roles.Comma, nextNode);

@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -47,9 +48,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public IList<IMember> InterfaceImplementations {
+		public IUnresolvedMember UnresolvedMember {
+			get { return unresolved; }
+		}
+		
+		IList<IMember> IMember.InterfaceImplementations {
 			get {
-				return new List<IMember> ();
+				throw new NotImplementedException();
 			}
 		}
 		
@@ -72,6 +77,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IMemberReference ToMemberReference()
 		{
 			return new DefaultMemberReference(this.EntityType, this.DeclaringType.ToTypeReference(), this.Name);
+		}
+		
+		internal IMethod GetAccessor(ref IMethod accessorField, IUnresolvedMethod unresolvedAccessor)
+		{
+			if (unresolvedAccessor == null)
+				return null;
+			IMethod result = accessorField;
+			if (result != null) {
+				LazyInit.ReadBarrier();
+				return result;
+			} else {
+				return LazyInit.GetOrSet(ref accessorField, (IMethod)unresolvedAccessor.CreateResolved(context));
+			}
 		}
 	}
 }

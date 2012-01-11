@@ -875,7 +875,7 @@ namespace Mono.CSharp {
 
 		#region Properties
 
-		public override TypeParameter[] CurrentTypeParameters {
+		public override TypeParameters CurrentTypeParameters {
 			get {
 				if (GenericMethod != null)
 					return GenericMethod.CurrentTypeParameters;
@@ -886,18 +886,22 @@ namespace Mono.CSharp {
 
 		public TypeParameterSpec[] TypeParameters {
 			get {
-				// TODO: Cache this
-				return CurrentTypeParameters.Select (l => l.Type).ToArray ();
+				return CurrentTypeParameters.Types;
 			}
 		}
 
 		public int TypeParametersCount {
 			get {
-				return CurrentTypeParameters == null ? 0 : CurrentTypeParameters.Length;
+				return CurrentTypeParameters == null ? 0 : CurrentTypeParameters.Count;
 			}
 		}
 
 #endregion
+
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
 
 		public static Method Create (DeclSpace parent, GenericMethod generic, FullNamedExpression returnType, Modifiers mod,
 				   MemberName name, ParametersCompiled parameters, Attributes attrs, bool hasConstraints)
@@ -966,9 +970,9 @@ namespace Mono.CSharp {
 		public override FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
 		{
 			if (arity == 0) {
-				TypeParameter[] tp = CurrentTypeParameters;
+				var tp = CurrentTypeParameters;
 				if (tp != null) {
-					TypeParameter t = TypeParameter.FindTypeParameter (tp, name);
+					TypeParameter t = tp.Find (name);
 					if (t != null)
 						return new TypeParameterExpr (t, loc);
 				}
@@ -1065,10 +1069,10 @@ namespace Mono.CSharp {
 
 						if (base_decl_tparams.Length != 0) {
 							base_decl_tparams = base_decl_tparams.Concat (base_tparams).ToArray ();
-							base_targs = base_targs.Concat (tparams.Select<TypeParameter, TypeSpec> (l => l.Type)).ToArray ();
+							base_targs = base_targs.Concat (tparams.Types).ToArray ();
 						} else {
 							base_decl_tparams = base_tparams;
-							base_targs = tparams.Select (l => l.Type).ToArray ();
+							base_targs = tparams.Types;
 						}
 					}
 				} else if (MethodData.implementing != null) {
@@ -1085,7 +1089,7 @@ namespace Mono.CSharp {
 				}
 			}
 
-			for (int i = 0; i < tparams.Length; ++i) {
+			for (int i = 0; i < tparams.Count; ++i) {
 				var tp = tparams[i];
 
 				if (!tp.ResolveConstraints (this))
@@ -1173,11 +1177,6 @@ namespace Mono.CSharp {
 			}
 
 			return true;
-		}
-
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
 		}
 
 		//
@@ -1313,7 +1312,7 @@ namespace Mono.CSharp {
 				}
 
 				if (CurrentTypeParameters != null) {
-					for (int i = 0; i < CurrentTypeParameters.Length; ++i) {
+					for (int i = 0; i < CurrentTypeParameters.Count; ++i) {
 						var tp = CurrentTypeParameters [i];
 						tp.CheckGenericConstraints (false);
 						tp.Emit ();
@@ -1528,20 +1527,16 @@ namespace Mono.CSharp {
 		public static readonly string ConstructorName = ".ctor";
 		public static readonly string TypeConstructorName = ".cctor";
 
-		//
-		// The spec claims that static is not permitted, but
-		// my very own code has static constructors.
-		//
-		public Constructor (DeclSpace parent, string name, Modifiers mod, Attributes attrs, ParametersCompiled args,
-				    ConstructorInitializer init, Location loc)
+		public Constructor (DeclSpace parent, string name, Modifiers mod, Attributes attrs, ParametersCompiled args, Location loc)
 			: base (parent, null, null, mod, AllowedModifiers,
 				new MemberName (name, loc), attrs, args)
 		{
-			Initializer = init;
 		}
 
 		public bool HasCompliantArgs {
-			get { return has_compliant_args; }
+			get {
+				return has_compliant_args;
+			}
 		}
 
 		public override AttributeTargets AttributeTargets {
@@ -1567,6 +1562,11 @@ namespace Mono.CSharp {
 			return parameters.IsEmpty &&
 					(Initializer is ConstructorBaseInitializer) &&
 					(Initializer.Arguments == null);
+		}
+
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
@@ -1612,11 +1612,6 @@ namespace Mono.CSharp {
 			CheckProtectedModifier ();
 			
 			return true;
-		}
-		
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
 		}
 		
 		//
@@ -2155,6 +2150,11 @@ namespace Mono.CSharp {
 			ModFlags |= Modifiers.PROTECTED | Modifiers.OVERRIDE;
 		}
 
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
+
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.Type == pa.Conditional) {
@@ -2163,10 +2163,6 @@ namespace Mono.CSharp {
 			}
 
 			base.ApplyAttributeBuilder (a, ctor, cdata, pa);
-		}
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
 		}
 		
 		protected override bool CheckBase ()
@@ -2242,7 +2238,7 @@ namespace Mono.CSharp {
 
 		static MemberName SetupName (string prefix, InterfaceMemberBase member, Location loc)
 		{
-			return new MemberName (member.MemberName.Left, prefix + member.ShortName, loc);
+			return new MemberName (member.MemberName.Left, prefix + member.ShortName, member.MemberName.ExplicitInterface, loc);
 		}
 
 		public void UpdateName (InterfaceMemberBase member)
@@ -2514,6 +2510,11 @@ namespace Mono.CSharp {
 			Block = block;
 		}
 
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
+
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
 			if (a.Type == pa.Conditional) {
@@ -2522,11 +2523,6 @@ namespace Mono.CSharp {
 			}
 
 			base.ApplyAttributeBuilder (a, ctor, cdata, pa);
-		}
-		
-		public override void Accept (StructuralVisitor visitor)
-		{
-			visitor.Visit (this);
 		}
 		
 		public override bool Define ()

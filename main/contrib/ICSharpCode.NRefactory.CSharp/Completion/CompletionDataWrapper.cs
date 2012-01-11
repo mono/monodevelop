@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.TypeSystem;
-using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
@@ -214,9 +213,22 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (Type.ReflectionName == compareCategory.Type.ReflectionName)
 					return 0;
 					
-				if (Type.GetAllBaseTypes ().Any (t => t.ReflectionName == compareCategory.Type.ReflectionName))
+				// System.Object is always the smallest
+				if (Type.ReflectionName == "System.Object") 
+					return -1;
+				if (compareCategory.Type.ReflectionName == "System.Object")
 					return 1;
-				return -1;
+					
+/*					if (Type.GetProjectContent () != null) {
+						if (Type.GetProjectContent ().GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == compareCategory.Type.DecoratedFullName))
+							return 1;
+						return -1;
+					}
+					
+					// source project dom == null - try to make the opposite comparison
+					if (compareCategory.Type.GetProjectContent () != null && compareCategory.Type.GetProjectContent ().GetInheritanceTree (Type).Any (t => t != null && t.DecoratedFullName == Type.DecoratedFullName))
+						return -1;*/
+				return 1;
 			}
 		}
 	}

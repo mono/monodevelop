@@ -1109,7 +1109,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (typeCode == KnownTypeCode.Object) {
 					// boxed value type
 					IType boxedTyped = ReadCustomAttributeFieldOrPropType();
-					return ReadElem(boxedTyped);
+					ResolveResult elem = ReadElem(boxedTyped);
+					if (elem.IsCompileTimeConstant && elem.ConstantValue == null)
+						return new ConstantResolveResult(elementType, null);
+					else
+						return new ConversionResolveResult(elementType, elem, Conversion.BoxingConversion);
 				} else if (typeCode == KnownTypeCode.Type) {
 					return new TypeOfResolveResult(underlyingType, ReadType());
 				} else {
@@ -1580,15 +1584,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			td.AddDefaultConstructorIfRequired = (td.Kind == TypeKind.Struct || td.Kind == TypeKind.Enum);
 			if (typeDefinition.HasMethods) {
 				foreach (MethodDefinition method in typeDefinition.Methods) {
-					if (IsVisible(method.Attributes)) {
+					if (IsVisible(method.Attributes) && !IsAccessor(method.SemanticsAttributes)) {
 						EntityType type = EntityType.Method;
 						if (method.IsSpecialName) {
 							if (method.IsConstructor)
 								type = EntityType.Constructor;
 							else if (method.Name.StartsWith("op_", StringComparison.Ordinal))
 								type = EntityType.Operator;
-							else
-								continue;
 						}
 						td.Members.Add(ReadMethod(method, td, type));
 					}
@@ -1625,12 +1627,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 		}
+		
+		static bool IsAccessor(MethodSemanticsAttributes semantics)
+		{
+			return !(semantics == MethodSemanticsAttributes.None || semantics == MethodSemanticsAttributes.Other);
+		}
 		#endregion
 		
 		#region Read Method
 		[CLSCompliant(false)]
 		public IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, EntityType methodType = EntityType.Method)
 		{
+			if (method == null)
+				return null;
 			DefaultUnresolvedMethod m = new DefaultUnresolvedMethod(parentType, method.Name);
 			m.EntityType = methodType;
 			if (method.HasGenericParameters) {
@@ -1858,8 +1867,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
 			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property);
 			
-			p.Getter = ReadAccessor(property.GetMethod);
-			p.Setter = ReadAccessor(property.SetMethod);
+			p.Getter = ReadMethod(property.GetMethod, parentType);
+			p.Setter = ReadMethod(property.SetMethod, parentType);
 			
 			if (property.HasParameters) {
 				foreach (ParameterDefinition par in property.Parameters) {
@@ -1870,23 +1879,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			FinishReadMember(p, property);
 			return p;
-		}
-		
-		IUnresolvedAccessor ReadAccessor(MethodDefinition accessorMethod)
-		{
-			if (accessorMethod != null && IsVisible(accessorMethod.Attributes)) {
-				Accessibility accessibility = GetAccessibility(accessorMethod.Attributes);
-				if (HasAnyAttributes(accessorMethod)) {
-					DefaultUnresolvedAccessor a = new DefaultUnresolvedAccessor();
-					a.Accessibility = accessibility;
-					AddAttributes(accessorMethod, a.Attributes, a.ReturnTypeAttributes);
-					return a;
-				} else {
-					return DefaultUnresolvedAccessor.GetFromAccessibility(accessibility);
-				}
-			} else {
-				return null;
-			}
 		}
 		#endregion
 		
@@ -1903,9 +1895,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(ev.AddMethod, e);
 			e.ReturnType = ReadTypeReference(ev.EventType, typeAttributes: ev);
 			
-			e.AddAccessor = ReadAccessor(ev.AddMethod);
-			e.RemoveAccessor = ReadAccessor(ev.RemoveMethod);
-			e.InvokeAccessor = ReadAccessor(ev.InvokeMethod);
+			e.AddAccessor = ReadMethod(ev.AddMethod, parentType);
+			e.RemoveAccessor = ReadMethod(ev.RemoveMethod, parentType);
+			e.InvokeAccessor = ReadMethod(ev.InvokeMethod, parentType);
 			
 			AddAttributes(ev, e);
 			
