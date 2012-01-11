@@ -64,9 +64,7 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				return CreateObjectValueImpl (ctx, source, path, obj, flags);
-			}
-			catch (Exception ex) {
-				Console.WriteLine (ex);
+			} catch (Exception ex) {
 				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
 			}
 		}
