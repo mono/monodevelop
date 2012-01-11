@@ -350,6 +350,12 @@ namespace MonoDevelop.Components.Docking
 			base.OnAdded (widget);
 			child = widget;
 		}
+		
+		protected override void OnRemoved (Widget widget)
+		{
+			base.OnRemoved (widget);
+			child = null;
+		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
