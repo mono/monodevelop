@@ -345,9 +345,9 @@ namespace MonoDevelop.MacInterop
 
 		public static void AddInternetPassword (Uri uri, string password)
 		{
-			IntPtr itemRef;
-			IntPtr passwordPtr;
-			uint passwordLength;
+			IntPtr itemRef = IntPtr.Zero;
+			IntPtr passwordPtr = IntPtr.Zero;
+			uint passwordLength = 0;
 			var passwordBytes = System.Text.Encoding.UTF8.GetBytes (password);
 			
 			// See if there is already a password there for this uri
@@ -370,9 +370,9 @@ namespace MonoDevelop.MacInterop
 
 		public static string FindInternetPassword (Uri uri)
 		{
-			IntPtr itemRef;
-			IntPtr password;
-			uint passwordLength;
+			IntPtr itemRef = IntPtr.Zero;
+			IntPtr password = IntPtr.Zero;
+			uint passwordLength = 0;
 			var result = SecKeychainFindInternetPassword (IntPtr.Zero, (uint) uri.Host.Length, uri.Host, 0, null,
 			                                              (uint) uri.UserInfo.Length, uri.UserInfo, (uint) uri.PathAndQuery.Length, uri.PathAndQuery,
 			                                              (ushort) uri.Port, 0, 0, out passwordLength, out password, ref itemRef);
