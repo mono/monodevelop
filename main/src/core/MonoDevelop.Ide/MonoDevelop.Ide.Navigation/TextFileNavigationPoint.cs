@@ -42,8 +42,7 @@ namespace MonoDevelop.Ide.Navigation
 		public TextFileNavigationPoint (Document doc, IEditableTextBuffer buffer)
 			: base (doc)
 		{
-			int col;
-			buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out col);
+			buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
 		}
 		
 		public TextFileNavigationPoint (FilePath file, int line, int column)
@@ -82,7 +81,7 @@ namespace MonoDevelop.Ide.Navigation
 			if (doc != null) {
 				IEditableTextBuffer buf = doc.GetContent<IEditableTextBuffer> ();
 				if (buf != null)
-					buf.SetCaretTo (Math.Max (line, 1), 1);
+					buf.SetCaretTo (Math.Max (line, 1), Math.Max (column, 1));
 			}
 			return doc;
 		}
