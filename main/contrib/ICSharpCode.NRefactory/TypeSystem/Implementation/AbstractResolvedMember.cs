@@ -54,7 +54,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		IList<IMember> IMember.InterfaceImplementations {
 			get {
-				throw new NotImplementedException();
+				return new List<IMember> ();
+			//	throw new NotImplementedException();
 			}
 		}
 		

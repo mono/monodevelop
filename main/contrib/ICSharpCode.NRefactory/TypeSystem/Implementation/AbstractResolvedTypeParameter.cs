@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IType> EffectiveInterfaceSet {
 			get {
-				throw new NotImplementedException();
+				return new List<IType> ();
 			}
 		}
 		
