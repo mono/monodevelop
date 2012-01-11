@@ -646,8 +646,11 @@ namespace MonoDevelop.Components.Docking
 				widget.AnimateHide ();
 			}
 			else {
+				// The widget may already be removed from the parent
+				// so 'parent' can be null
 				Gtk.Container parent = (Gtk.Container) item.Widget.Parent;
-				parent.Remove (item.Widget);
+				if (parent != null)
+					parent.Remove (item.Widget);
 				RemoveTopLevel (widget);
 				widget.Disposed = true;
 				widget.Destroy ();
