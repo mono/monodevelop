@@ -365,8 +365,10 @@ namespace MonoDevelop.Components.Docking
 		{
 			ResetBarUndockMode ();
 			if (floatingWindow == null) {
-				if (Widget.Parent != null)
-					Widget.Unparent ();
+				if (Widget.Parent is Gtk.Container) {
+					MonoDevelop.Core.LoggingService.LogError ("Unparenting {0} from {1} even though it should already be unparented", Widget, widget.Parent);
+					((Gtk.Container) Widget.Parent).Remove (Widget);
+				}
 				floatingWindow = new Window (GetWindowTitle ());
 				floatingWindow.TransientFor = frame.Toplevel as Gtk.Window;
 				floatingWindow.TypeHint = Gdk.WindowTypeHint.Utility;
