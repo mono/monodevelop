@@ -423,7 +423,7 @@ namespace MonoDevelop.Components.Docking
 			if (widget != null) {
 				widget.Hide (); // Avoids size allocation warning
 				if (widget.Parent is Gtk.Container)
-					((Gtk.Container) widget.Parent).Remove (widget);
+					widget.Unparent ();
 			}
 			dockBarItem = frame.BarDock (pos, this, size);
 			if (widget != null)
