@@ -104,6 +104,10 @@ namespace MonoDevelop.Components.Docking
 			scrollable.ScrollMode = false;
 			scrollable.Show ();
 
+			if (item.Widget.Parent != null) {
+				((Gtk.Container)item.Widget.Parent).Remove (item.Widget);
+			}
+
 			item.Widget.Show ();
 			scrollable.Add (item.Widget);
 			fr.PackStart (scrollable, true, true, 0);
