@@ -81,8 +81,9 @@ namespace Mono.Debugging.Client
 			get { return adjustedLine == -1 ? line : adjustedLine; }
 		}
 		
-		internal void SetLine (int newLine)
+		public void SetLine (int newLine)
 		{
+			ResetAdjustedLine ();
 			line = newLine;
 		}
 		

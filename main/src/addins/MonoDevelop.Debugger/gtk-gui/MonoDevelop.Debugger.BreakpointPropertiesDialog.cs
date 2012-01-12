@@ -9,7 +9,7 @@ namespace MonoDevelop.Debugger
 		private global::Gtk.Table table1;
 		private global::Gtk.Entry entryFile;
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Entry entryLine;
+		private global::Gtk.SpinButton spinLine;
 		private global::Gtk.Label label4;
 		private global::Gtk.Label label5;
 		private global::Gtk.Label label6;
@@ -91,21 +91,25 @@ namespace MonoDevelop.Debugger
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.entryLine = new global::Gtk.Entry ();
-			this.entryLine.CanFocus = true;
-			this.entryLine.Name = "entryLine";
-			this.entryLine.IsEditable = true;
-			this.entryLine.WidthChars = 10;
-			this.entryLine.InvisibleChar = '●';
-			this.hbox1.Add (this.entryLine);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryLine]));
+			this.spinLine = new global::Gtk.SpinButton (1, 100, 1);
+			this.spinLine.CanFocus = true;
+			this.spinLine.Name = "spinLine";
+			this.spinLine.Adjustment.PageIncrement = 10;
+			this.spinLine.ClimbRate = 1;
+			this.spinLine.Numeric = true;
+			this.spinLine.Value = 1;
+			this.hbox1.Add (this.spinLine);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.spinLine]));
 			w4.Position = 0;
+			w4.Expand = false;
+			w4.Fill = false;
 			this.table1.Add (this.hbox1);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.hbox1]));
 			w5.TopAttach = ((uint)(1));
 			w5.BottomAttach = ((uint)(2));
 			w5.LeftAttach = ((uint)(2));
 			w5.RightAttach = ((uint)(3));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
@@ -141,8 +145,6 @@ namespace MonoDevelop.Debugger
 			this.vbox2.Add (this.table1);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
 			w9.Position = 1;
-			w9.Expand = false;
-			w9.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
@@ -175,7 +177,6 @@ namespace MonoDevelop.Debugger
 			this.radioBreakAlways = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Always break"));
 			this.radioBreakAlways.CanFocus = true;
 			this.radioBreakAlways.Name = "radioBreakAlways";
-			this.radioBreakAlways.Active = true;
 			this.radioBreakAlways.DrawIndicator = true;
 			this.radioBreakAlways.UseUnderline = true;
 			this.radioBreakAlways.Group = new global::GLib.SList (global::System.IntPtr.Zero);
@@ -333,7 +334,6 @@ namespace MonoDevelop.Debugger
 			this.radioActionBreak = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Break"));
 			this.radioActionBreak.CanFocus = true;
 			this.radioActionBreak.Name = "radioActionBreak";
-			this.radioActionBreak.Active = true;
 			this.radioActionBreak.DrawIndicator = true;
 			this.radioActionBreak.UseUnderline = true;
 			this.radioActionBreak.Group = new global::GLib.SList (global::System.IntPtr.Zero);

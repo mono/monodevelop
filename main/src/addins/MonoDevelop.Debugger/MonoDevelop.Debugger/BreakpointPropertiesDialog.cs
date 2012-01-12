@@ -36,22 +36,30 @@ namespace MonoDevelop.Debugger
 	public partial class BreakpointPropertiesDialog : Gtk.Dialog
 	{
 		Breakpoint bp;
+		bool isNew;
 		
 		public BreakpointPropertiesDialog (Breakpoint bp, bool isNew)
 		{
 			this.Build();
+			
+			this.isNew = isNew;
 			this.bp = bp;
 			
+			spinLine.Adjustment.Upper = int.MaxValue;
+			spinLine.Adjustment.Lower = 1;
+			
 			entryFile.Text = bp.FileName;
-			entryLine.Text = bp.Line.ToString ();
+			spinLine.Value = bp.Line;
+			
+			entryFile.IsEditable = false;
+			
+			// We don't use ".Sensitive = false" because we want the user to be able to select & copy the text.
+			entryFile.ModifyBase (Gtk.StateType.Normal, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
+			entryFile.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
 			
 			if (!isNew) {
-				entryFile.IsEditable = false;
-				entryLine.IsEditable = false;
-				entryFile.ModifyBase (Gtk.StateType.Normal, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-				entryFile.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-				entryLine.ModifyBase (Gtk.StateType.Normal, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-				entryLine.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
+				spinLine.IsEditable = false;
+				spinLine.Sensitive = false;
 			}
 			
 			if (string.IsNullOrEmpty (bp.ConditionExpression)) {
@@ -107,6 +115,9 @@ namespace MonoDevelop.Debugger
 		
 		public void Save ()
 		{
+			if (isNew)
+				bp.SetLine ((int) spinLine.Value);
+			
 			if (!radioBreakAlways.Active) {
 				bp.ConditionExpression = entryCondition.Text;
 				bp.BreakIfConditionChanges = radioBreakChange.Active;
