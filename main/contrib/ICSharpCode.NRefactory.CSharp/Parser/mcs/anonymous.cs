@@ -39,7 +39,7 @@ namespace Mono.CSharp {
 
 		protected static MemberName MakeMemberName (MemberBase host, string name, int unique_id, TypeParameters tparams, Location loc)
 		{
-			string host_name = host == null ? null : host is InterfaceMemberBase ? ((InterfaceMemberBase)host).GetFullName (host.MemberName) : host.Name;
+			string host_name = host == null ? null : host is InterfaceMemberBase ? ((InterfaceMemberBase)host).GetFullName (host.MemberName) : host.MemberName.Name;
 			string tname = MakeName (host_name, "c", name, unique_id);
 			TypeParameters args = null;
 			if (tparams != null) {
@@ -95,7 +95,7 @@ namespace Mono.CSharp {
 				var dst = new TypeParameterSpec[tparams.Count];
 
 				for (int i = 0; i < tparams.Count; ++i) {
-					type_params[i] = tparams[i].CreateHoistedCopy (this, spec);
+					type_params[i] = tparams[i].CreateHoistedCopy (spec);
 
 					src[i] = tparams[i].Type;
 					dst[i] = type_params[i].Type;
@@ -127,7 +127,7 @@ namespace Mono.CSharp {
 
 		public HoistedStoreyClass GetGenericStorey ()
 		{
-			DeclSpace storey = this;
+			TypeContainer storey = this;
 			while (storey != null && storey.CurrentTypeParameters == null)
 				storey = storey.Parent;
 
@@ -231,7 +231,7 @@ namespace Mono.CSharp {
 			CheckMembersDefined ();
 
 			FullNamedExpression field_type = new TypeExpression (type, Location);
-			if (!IsGeneric)
+			if (!spec.IsGenericOrParentIsGeneric)
 				return AddCompilerGeneratedField (name, field_type);
 
 			const Modifiers mod = Modifiers.INTERNAL | Modifiers.COMPILER_GENERATED;
@@ -718,7 +718,7 @@ namespace Mono.CSharp {
 			}
 
 			if (inner_access == null) {
-				if (field.Parent.IsGeneric) {
+				if (field.Parent.IsGenericOrParentIsGeneric) {
 					var fs = MemberCache.GetMember (field.Parent.CurrentType, field.Spec);
 					inner_access = new FieldExpr (fs, field.Location);
 				} else {
@@ -1326,11 +1326,11 @@ namespace Mono.CSharp {
 			public readonly AnonymousMethodStorey Storey;
 			readonly string RealName;
 
-			public AnonymousMethodMethod (DeclSpace parent, AnonymousExpression am, AnonymousMethodStorey storey,
-							  GenericMethod generic, TypeExpr return_type,
+			public AnonymousMethodMethod (TypeContainer parent, AnonymousExpression am, AnonymousMethodStorey storey,
+							  TypeExpr return_type,
 							  Modifiers mod, string real_name, MemberName name,
 							  ParametersCompiled parameters)
-				: base (parent, generic, return_type, mod | Modifiers.COMPILER_GENERATED,
+				: base (parent, return_type, mod | Modifiers.COMPILER_GENERATED,
 						name, parameters, null)
 			{
 				this.AnonymousMethod = am;
@@ -1590,22 +1590,17 @@ namespace Mono.CSharp {
 				"m", null, unique_id++);
 
 			MemberName member_name;
-			GenericMethod generic_method;
 			if (storey == null && ec.CurrentTypeParameters != null) {
 
 				var hoisted_tparams = ec.CurrentTypeParameters;
 				var type_params = new TypeParameters (hoisted_tparams.Count);
 				for (int i = 0; i < hoisted_tparams.Count; ++i) {
-				    type_params.Add (hoisted_tparams[i].CreateHoistedCopy (parent, null));
+				    type_params.Add (hoisted_tparams[i].CreateHoistedCopy (null));
 				}
 
 				member_name = new MemberName (name, type_params, Location);
-
-				generic_method = new GenericMethod (parent.NamespaceEntry, parent, member_name, //type_params,
-					new TypeExpression (ReturnType, Location), parameters);
 			} else {
 				member_name = new MemberName (name, Location);
-				generic_method = null;
 			}
 
 			string real_name = String.Format (
@@ -1613,7 +1608,7 @@ namespace Mono.CSharp {
 				parameters.GetSignatureForError ());
 
 			return new AnonymousMethodMethod (parent,
-				this, storey, generic_method, new TypeExpression (ReturnType, Location), modifiers,
+				this, storey, new TypeExpression (ReturnType, Location), modifiers,
 				real_name, member_name, parameters);
 		}
 
@@ -1825,9 +1820,6 @@ namespace Mono.CSharp {
 			AnonymousTypeClass a_type = new AnonymousTypeClass (parent.NamespaceEntry.SlaveDeclSpace,
 				new MemberName (name, tparams, loc), parameters, loc);
 
-			if (parameters.Count > 0)
-				a_type.SetParameterInfo (null);
-
 			Constructor c = new Constructor (a_type, name, Modifiers.PUBLIC | Modifiers.DEBUGGER_HIDDEN,
 				null, all_parameters, loc);
 			c.Block = new ToplevelBlock (parent.Module.Compiler, c.ParameterInfo, loc);
@@ -1903,13 +1895,13 @@ namespace Mono.CSharp {
 			var equals_parameters = ParametersCompiled.CreateFullyResolved (
 				new Parameter (new TypeExpression (Compiler.BuiltinTypes.Object, loc), "obj", 0, null, loc), Compiler.BuiltinTypes.Object);
 
-			Method equals = new Method (this, null, new TypeExpression (Compiler.BuiltinTypes.Bool, loc),
+			Method equals = new Method (this, new TypeExpression (Compiler.BuiltinTypes.Bool, loc),
 				Modifiers.PUBLIC | Modifiers.OVERRIDE | Modifiers.DEBUGGER_HIDDEN, new MemberName ("Equals", loc),
 				equals_parameters, null);
 
 			equals_parameters[0].Resolve (equals, 0);
 
-			Method tostring = new Method (this, null, new TypeExpression (Compiler.BuiltinTypes.String, loc),
+			Method tostring = new Method (this, new TypeExpression (Compiler.BuiltinTypes.String, loc),
 				Modifiers.PUBLIC | Modifiers.OVERRIDE | Modifiers.DEBUGGER_HIDDEN, new MemberName ("ToString", loc),
 				Mono.CSharp.ParametersCompiled.EmptyReadOnlyParameters, null);
 
@@ -2021,7 +2013,7 @@ namespace Mono.CSharp {
 			//
 			// GetHashCode () override
 			//
-			Method hashcode = new Method (this, null, new TypeExpression (Compiler.BuiltinTypes.Int, loc),
+			Method hashcode = new Method (this, new TypeExpression (Compiler.BuiltinTypes.Int, loc),
 				Modifiers.PUBLIC | Modifiers.OVERRIDE | Modifiers.DEBUGGER_HIDDEN,
 				new MemberName ("GetHashCode", loc),
 				Mono.CSharp.ParametersCompiled.EmptyReadOnlyParameters, null);

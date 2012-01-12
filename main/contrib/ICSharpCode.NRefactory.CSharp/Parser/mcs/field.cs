@@ -62,10 +62,8 @@ namespace Mono.CSharp
 
 		static readonly string[] attribute_targets = new string [] { "field" };
 
-		protected FieldBase (DeclSpace parent, FullNamedExpression type, Modifiers mod,
-				     Modifiers allowed_mod, MemberName name, Attributes attrs)
-			: base (parent, null, type, mod, allowed_mod | Modifiers.ABSTRACT, Modifiers.PRIVATE,
-				name, attrs)
+		protected FieldBase (TypeContainer parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod, MemberName name, Attributes attrs)
+			: base (parent, type, mod, allowed_mod | Modifiers.ABSTRACT, Modifiers.PRIVATE, name, attrs)
 		{
 			if ((mod & Modifiers.ABSTRACT) != 0)
 				Report.Error (681, Location, "The modifier 'abstract' is not valid on fields. Try using a property instead");
@@ -85,6 +83,12 @@ namespace Mono.CSharp
 			}
 			set {
 				this.initializer = value;
+			}
+		}
+
+		public string Name {
+			get {
+				return MemberName.Name;
 			}
 		}
 
@@ -371,7 +375,7 @@ namespace Mono.CSharp
 			Modifiers.PRIVATE |
 			Modifiers.UNSAFE;
 
-		public FixedField (DeclSpace parent, FullNamedExpression type, Modifiers mod, MemberName name, Attributes attrs)
+		public FixedField (TypeContainer parent, FullNamedExpression type, Modifiers mod, MemberName name, Attributes attrs)
 			: base (parent, type, mod, AllowedModifiers, name, attrs)
 		{
 		}
@@ -573,8 +577,7 @@ namespace Mono.CSharp
 			Modifiers.UNSAFE |
 			Modifiers.READONLY;
 
-		public Field (DeclSpace parent, FullNamedExpression type, Modifiers mod, MemberName name,
-			      Attributes attrs)
+		public Field (TypeContainer parent, FullNamedExpression type, Modifiers mod, MemberName name, Attributes attrs)
 			: base (parent, type, mod, AllowedModifiers, name, attrs)
 		{
 		}

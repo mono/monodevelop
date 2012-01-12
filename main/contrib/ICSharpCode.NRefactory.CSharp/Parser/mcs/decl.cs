@@ -220,20 +220,6 @@ namespace Mono.CSharp {
 	[System.Diagnostics.DebuggerDisplay ("{GetSignatureForError()}")]
 	public abstract class MemberCore : Attributable, IMemberContext, IMemberDefinition
 	{
-		/// <summary>
-		///   Public name
-		/// </summary>
-
-		protected string cached_name;
-		// TODO: Remove in favor of MemberName
-		public string Name {
-			get {
-				if (cached_name == null)
-					cached_name = MemberName.GetName (!(this is GenericMethod) && !(this is Method));
-				return cached_name;
-			}
-		}
-
 		string IMemberDefinition.Name {
 			get {
 				return member_name.Name;
@@ -312,9 +298,9 @@ namespace Mono.CSharp {
 		/// </summary>
 		internal Flags caching_flags;
 
-		public MemberCore (DeclSpace parent, MemberName name, Attributes attrs)
+		public MemberCore (TypeContainer parent, MemberName name, Attributes attrs)
 		{
-			this.Parent = parent as TypeContainer;
+			this.Parent = parent;
 			member_name = name;
 			caching_flags = Flags.Obsolete_Undetected | Flags.ClsCompliance_Undetected | Flags.HasCompliantAttribute_Undetected | Flags.Excluded_Undetected;
 			AddAttributes (attrs, this);
@@ -323,7 +309,6 @@ namespace Mono.CSharp {
 		protected virtual void SetMemberName (MemberName new_name)
 		{
 			member_name = new_name;
-			cached_name = null;
 		}
 
 		public virtual void Accept (StructuralVisitor visitor)
@@ -465,6 +450,26 @@ namespace Mono.CSharp {
 		public void SetIsAssigned ()
 		{
 			caching_flags |= Flags.IsAssigned;
+		}
+
+		public void SetConstraints (List<Constraints> constraints_list)
+		{
+			var tparams = member_name.TypeParameters;
+			if (tparams == null) {
+				Report.Error (80, Location, "Constraints are not allowed on non-generic declarations");
+				return;
+			}
+
+			foreach (var c in constraints_list) {
+				var tp = tparams.Find (c.TypeParameter.Value);
+				if (tp == null) {
+					Report.Error (699, c.Location, "`{0}': A constraint references nonexistent type parameter `{1}'",
+						GetSignatureForError (), c.TypeParameter.Value);
+					continue;
+				}
+
+				tp.Constraints = c;
+			}
 		}
 
 		/// <summary>
@@ -640,7 +645,7 @@ namespace Mono.CSharp {
 			if ((ModFlags & (Modifiers.PUBLIC | Modifiers.PROTECTED)) == 0)
 				return false;
 			
-			DeclSpace parentContainer = Parent.PartialContainer;
+			var parentContainer = Parent.PartialContainer;
 			while (parentContainer != null && parentContainer.ModFlags != 0) {
 				if ((parentContainer.ModFlags & (Modifiers.PUBLIC | Modifiers.PROTECTED)) == 0)
 					return false;
@@ -768,6 +773,9 @@ namespace Mono.CSharp {
 			if (member_name.Name [0] == '_') {
 				Report.Warning (3008, 1, Location, "Identifier `{0}' is not CLS-compliant", GetSignatureForError () );
 			}
+
+			if (member_name.TypeParameters != null)
+				member_name.TypeParameters.VerifyClsCompliance ();
 
 			return true;
 		}
@@ -1054,7 +1062,13 @@ namespace Mono.CSharp {
 		public virtual string GetSignatureForError ()
 		{
 			var bf = MemberDefinition as Property.BackingField;
-			var name = bf == null ? Name : bf.OriginalName;
+			string name;
+			if (bf == null) {
+				name = Name;
+			} else {
+				name = bf.OriginalProperty.MemberName.Name;
+			}
+
 			return DeclaringType.GetSignatureForError () + "." + name;
 		}
 
@@ -1196,260 +1210,5 @@ namespace Mono.CSharp {
 	public interface IInterfaceMemberSpec
 	{
 		TypeSpec MemberType { get; }
-	}
-
-	//
-	// Base type container declaration. It exists to handle partial types
-	// which share same definition (PartialContainer) but have different
-	// resolve scopes
-	//
-	public abstract class DeclSpace : MemberCore {
-		/// <summary>
-		///   This points to the actual definition that is being
-		///   created with System.Reflection.Emit
-		/// </summary>
-		public TypeBuilder TypeBuilder;
-
-		//
-		// This is the namespace in which this typecontainer
-		// was declared.  We use this to resolve names.
-		//
-		public NamespaceContainer NamespaceEntry;
-
-		public readonly string Basename;
-		
-		protected Dictionary<string, MemberCore> defined_names;
-
-		public TypeContainer PartialContainer;
-
-		protected readonly bool is_generic;
-
-		//
-		// Whether we are Generic
-		//
-		public bool IsGeneric {
-			get {
-				if (is_generic)
-					return true;
-				else if (Parent != null)
-					return Parent.IsGeneric;
-				else
-					return false;
-			}
-		}
-
-		static readonly string[] attribute_targets = new string [] { "type" };
-
-		public DeclSpace (NamespaceContainer ns, DeclSpace parent, MemberName name,
-				  Attributes attrs)
-			: base (parent, name, attrs)
-		{
-			NamespaceEntry = ns;
-			Basename = name.Basename;
-			defined_names = new Dictionary<string, MemberCore> ();
-			PartialContainer = null;
-			if (name.TypeParameters != null) {
-				is_generic = true;
-			}
-		}
-
-		/// <summary>
-		/// Adds the member to defined_names table. It tests for duplications and enclosing name conflicts
-		/// </summary>
-		protected virtual bool AddToContainer (MemberCore symbol, string name)
-		{
-			MemberCore mc;
-			if (!defined_names.TryGetValue (name, out mc)) {
-				defined_names.Add (name, symbol);
-				return true;
-			}
-
-			if (((mc.ModFlags | symbol.ModFlags) & Modifiers.COMPILER_GENERATED) != 0)
-				return true;
-
-			if (symbol.EnableOverloadChecks (mc))
-				return true;
-
-			InterfaceMemberBase im = mc as InterfaceMemberBase;
-			if (im != null && im.IsExplicitImpl)
-				return true;
-
-			Report.SymbolRelatedToPreviousError (mc);
-			if ((mc.ModFlags & Modifiers.PARTIAL) != 0 && (symbol is ClassOrStruct || symbol is Interface)) {
-				Error_MissingPartialModifier (symbol);
-				return false;
-			}
-
-			if (symbol is TypeParameter) {
-				Report.Error (692, symbol.Location,
-					"Duplicate type parameter `{0}'", symbol.GetSignatureForError ());
-			} else {
-				Report.Error (102, symbol.Location,
-					"The type `{0}' already contains a definition for `{1}'",
-					GetSignatureForError (), name);
-			}
-
-			return false;
-		}
-
-		protected void RemoveFromContainer (string name)
-		{
-			defined_names.Remove (name);
-		}
-		
-		/// <summary>
-		///   Returns the MemberCore associated with a given name in the declaration
-		///   space. It doesn't return method based symbols !!
-		/// </summary>
-		/// 
-		public MemberCore GetDefinition (string name)
-		{
-			MemberCore mc = null;
-			defined_names.TryGetValue (name, out mc);
-			return mc;
-		}
-	
-		// 
-		// root_types contains all the types.  All TopLevel types
-		// hence have a parent that points to `root_types', that is
-		// why there is a non-obvious test down here.
-		//
-		public bool IsTopLevel {
-			get { return (Parent != null && Parent.Parent == null); }
-		}
-
-		public virtual bool IsUnmanagedType ()
-		{
-			return false;
-		}
-
-		protected abstract TypeAttributes TypeAttr { get; }
-
-		/// <remarks>
-		///  Should be overriten by the appropriate declaration space
-		/// </remarks>
-		public abstract void DefineType ();
-
-		protected void Error_MissingPartialModifier (MemberCore type)
-		{
-			Report.Error (260, type.Location,
-				"Missing partial modifier on declaration of type `{0}'. Another partial declaration of this type exists",
-				type.GetSignatureForError ());
-		}
-
-		public override string GetSignatureForDocumentation ()
-		{
-			return Name;
-		}
-
-		public override string GetSignatureForError ()
-		{
-			return MemberName.GetSignatureForError ();
-		}
-
-#if FULL_AST
-		public List<Constraints> PlainConstraints {
-			get;
-			private set;
-		}
-		
-		public bool HasOptionalSemicolon {
-			get;
-			private set;
-		}
-		Location optionalSemicolon;
-		public Location OptionalSemicolon {
-			get {
-				return optionalSemicolon;
-			}
-			set {
-				optionalSemicolon = value;
-				HasOptionalSemicolon = true;
-			}
-		}
-#endif
-		public List<Constraints> Constraints {
-			get;
-			private set;
-		}
-		
-		public virtual void SetParameterInfo (List<Constraints> constraints_list)
-		{
-#if FULL_AST
-			if (constraints_list != null) {
-				this.PlainConstraints = constraints_list;
-				constraints_list = this.Constraints = new List<Constraints> (constraints_list);
-			}
-#else
-			this.Constraints = constraints_list;
-#endif
-			if (!is_generic) {
-				if (constraints_list != null) {
-					Report.Error (
-						80, Location, "Constraints are not allowed " +
-						"on non-generic declarations");
-				}
-
-				return;
-			}
-
-			//
-			// Register all the names
-			//
-			for (int i = 0; i < MemberName.TypeParameters.Count; i++) {
-				var name = MemberName.TypeParameters [i];
-
-				Constraints constraints = null;
-				if (constraints_list != null) {
-					int total = constraints_list.Count;
-					for (int ii = 0; ii < total; ++ii) {
-						Constraints constraints_at = constraints_list[ii];
-						// TODO: it is used by iterators only
-						if (constraints_at == null) {
-							constraints_list.RemoveAt (ii);
-							--total;
-							continue;
-						}
-						if (constraints_at.TypeParameter.Value == name.MemberName.Name) {
-							constraints = constraints_at;
-							constraints_list.RemoveAt(ii);
-							break;
-						}
-					}
-				}
-
-				if (name.Variance != Variance.None && !(this is Delegate || this is Interface)) {
-					Report.Error (1960, name.Location, "Variant type parameters can only be used with interfaces and delegates");
-				}
-
-				MemberName.TypeParameters[i].Constraints = constraints;
-				if (name.MemberName != null)
-					AddToContainer (name, name.MemberName.Name);
-			}
-
-			if (constraints_list != null && constraints_list.Count > 0) {
-				foreach (Constraints constraint in constraints_list) {
-					Report.Error(699, constraint.Location, "`{0}': A constraint references nonexistent type parameter `{1}'", 
-						GetSignatureForError (), constraint.TypeParameter.Value);
-				}
-			}
-		}
-
-		public override string[] ValidAttributeTargets {
-			get { return attribute_targets; }
-		}
-
-		protected override bool VerifyClsCompliance ()
-		{
-			if (!base.VerifyClsCompliance ()) {
-				return false;
-			}
-
-			if (CurrentTypeParameters != null) {
-				CurrentTypeParameters.VerifyClsCompliance ();
-			}
-
-			return true;
-		}
 	}
 }
