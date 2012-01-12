@@ -546,8 +546,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var navigator = new NodeListResolveVisitorNavigator (new[] { resolveNode });
 			var visitor = new ResolveVisitor (csResolver, CSharpParsedFile, navigator);
-			
-			visitor.Scan (unit);
+			var parentUnit = resolveNode;
+			while (parentUnit.Parent != null)
+				parentUnit = parentUnit.Parent;
+			visitor.Scan (parentUnit);
 			var state = visitor.GetResolverStateBefore (resolveNode);
 			var result = visitor.GetResolveResult (resolveNode);
 			return Tuple.Create (result, state);
