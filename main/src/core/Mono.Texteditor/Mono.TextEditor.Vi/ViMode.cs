@@ -110,7 +110,7 @@ namespace Mono.TextEditor.Vi
 		Dictionary<char,ViMacro> macros = new Dictionary<char, ViMacro>();
 		char macros_lastplayed = '@'; // start with the illegal macro character
 		string statusText = "";
-		
+		string numberText = "";
 		/// <summary>
 		/// The macro currently being implemented. Will be set to null and checked as a flag when required.
 		/// </summary>
@@ -542,6 +542,9 @@ namespace Mono.TextEditor.Vi
 					case '*':
 						SearchWordAtCaret ();
 						return;
+					}
+					if (character >= '0' && character <= '9') {
+						numberText += character.ToString ();
 					}
 					
 				}
