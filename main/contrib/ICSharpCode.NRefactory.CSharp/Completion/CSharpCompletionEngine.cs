@@ -426,6 +426,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var contextList = new CompletionDataWrapper (this);
 				var identifierStart = GetExpressionAtCursor ();
+				
 				if (identifierStart != null && identifierStart.Item2 is TypeParameterDeclaration)
 					return null;
 				
@@ -1957,7 +1958,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			if (expr == null) {
-				var forStmt = tmpUnit.GetNodeAt<ForStatement> (location.Line, location.Column - 3); 
+				var block = tmpUnit.GetNodeAt<BlockStatement> (location); 
+				var node = block != null ? block.Statements.LastOrDefault () : null;
+				
+				var forStmt = node != null ? node.PrevSibling as ForStatement : null;
 				if (forStmt != null && forStmt.EmbeddedStatement.IsNull) {
 					expr = forStmt;
 					var id = new IdentifierExpression ("stub");
