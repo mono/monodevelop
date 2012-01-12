@@ -1075,14 +1075,15 @@ namespace ICSharpCode.NRefactory.CSharp
 					
 					if (initializerLocation != null)
 						newConstructor.AddChild (new CSharpTokenNode (Convert (initializerLocation[0]), 1), ConstructorDeclaration.Roles.Colon);
-					// this and base has the same length
-					initializer.AddChild (new CSharpTokenNode (Convert (c.Initializer.Location), "this".Length), ConstructorDeclaration.Roles.Keyword);
-					if (initializerLocation != null)
+					
+					if (initializerLocation != null && initializerLocation.Count > 1) {
+						// this and base has the same length
+						initializer.AddChild (new CSharpTokenNode (Convert (c.Initializer.Location), "this".Length), ConstructorDeclaration.Roles.Keyword);
 						initializer.AddChild (new CSharpTokenNode (Convert (initializerLocation[1]), 1), ConstructorDeclaration.Roles.LPar);
-					AddArguments (initializer, LocationsBag.GetLocations (c.Initializer.Arguments), c.Initializer.Arguments);
-					if (initializerLocation != null)
+						AddArguments (initializer, LocationsBag.GetLocations (c.Initializer.Arguments), c.Initializer.Arguments);
 						initializer.AddChild (new CSharpTokenNode (Convert (initializerLocation[2]), 1), ConstructorDeclaration.Roles.RPar);
-					newConstructor.AddChild (initializer, ConstructorDeclaration.InitializerRole);
+						newConstructor.AddChild (initializer, ConstructorDeclaration.InitializerRole);
+					}
 				}
 				
 				if (c.Block != null)

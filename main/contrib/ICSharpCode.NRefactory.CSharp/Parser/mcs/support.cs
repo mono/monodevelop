@@ -241,7 +241,9 @@ namespace Mono.CSharp {
 		
 		public char GetChar (int position)
 		{
-			return buffer[position];
+			if (buffer_start <= position && position < buffer.Length)
+				return buffer[position];
+			return '\0';
 		}
 		
 		public char[] ReadChars (int fromPosition, int toPosition)
