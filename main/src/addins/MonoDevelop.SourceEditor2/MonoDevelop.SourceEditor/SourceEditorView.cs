@@ -128,6 +128,26 @@ namespace MonoDevelop.SourceEditor
 		public override string TabPageLabel {
 			get { return GettextCatalog.GetString ("Source"); }
 		}
+		
+		uint autoSaveTimer = 0;
+		void InformAutoSave ()
+		{
+			RemoveAutoSaveTimer ();
+			autoSaveTimer = GLib.Timeout.Add (500, delegate {
+				AutoSave.InformAutoSaveThread (Document);
+				autoSaveTimer = 0;
+				return false;
+			});
+		}
+		
+		void RemoveAutoSaveTimer ()
+		{
+			if (autoSaveTimer == 0)
+				return;
+			GLib.Source.Remove (autoSaveTimer);
+			autoSaveTimer = 0;
+		}
+		
 		bool wasEdited = false;
 		public SourceEditorView ()
 		{
@@ -143,7 +163,7 @@ namespace MonoDevelop.SourceEditor
 					if (widget.TextEditor.Document.IsInAtomicUndo) {
 						wasEdited = true;
 					} else {
-						AutoSave.InformAutoSaveThread (Document);
+						InformAutoSave ();
 					}
 				}
 				int startIndex = args.Offset;
@@ -172,7 +192,7 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Document.EndUndo += delegate {
 				if (wasEdited)
-					AutoSave.InformAutoSaveThread (Document);
+					InformAutoSave ();
 			};
 			widget.TextEditor.Document.Undone += (o, a) => AutoSave.InformAutoSaveThread (Document);
 			widget.TextEditor.Document.Redone += (o, a) => AutoSave.InformAutoSaveThread (Document);
@@ -631,6 +651,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose()
 		{
+			RemoveAutoSaveTimer ();
+			
 			StoreSettings ();
 			
 			this.isDisposed= true;
