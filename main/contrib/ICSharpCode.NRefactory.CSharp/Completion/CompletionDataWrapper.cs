@@ -209,17 +209,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			{
 				var compareCategory = other as TypeCompletionCategory;
 				if (compareCategory == null)
-					return 1;
+					return -1;
 					
 				if (Type.ReflectionName == compareCategory.Type.ReflectionName)
 					return 0;
 					
 				if (Type.GetAllBaseTypes ().Any (t => t.ReflectionName == compareCategory.Type.ReflectionName))
-					return 1;
-				return -1;
+					return -1;
+				return 1;
 			}
 		}
 	}
 }
+
+
 
 
