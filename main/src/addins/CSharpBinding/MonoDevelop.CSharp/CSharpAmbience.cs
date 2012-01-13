@@ -747,9 +747,11 @@ namespace MonoDevelop.CSharp
 		
 		void AppendExplicitInterfaces (StringBuilder sb, IMember member, OutputSettings settings)
 		{
-			if (!member.IsExplicitInterfaceImplementation)
+			if (member == null || !member.IsExplicitInterfaceImplementation)
 				return;
 			foreach (var explicitInterface in member.InterfaceImplementations) {
+				if (explicitInterface == null)
+					continue;
 				sb.Append (Format (explicitInterface.FullName));
 				sb.Append (settings.Markup ("."));
 			}
