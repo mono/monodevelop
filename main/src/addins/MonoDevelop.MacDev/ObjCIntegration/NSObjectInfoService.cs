@@ -222,7 +222,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							continue;
 					
 					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.FullName);
-					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.DeclaringTypeDefinition.Region.FileName))
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.Region.FileName))
 						ol.IsDesigner = true;
 					info.Outlets.Add (ol);
 					break;
@@ -258,7 +258,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							label = null;
 						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.Type.FullName));
 					}
-					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.DeclaringTypeDefinition.Region.FileName))
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.Region.FileName))
 						action.IsDesigner = true;
 					info.Actions.Add (action);
 					break;
