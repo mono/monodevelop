@@ -427,6 +427,9 @@ namespace MonoDevelop.Ide.Gui
 			CancelParseTimeout ();
 			ClearTasks ();
 			
+			if (parsedDocument != null)
+				parsedDocument.RemoveAnnotations ();
+			
 			string currentParseFile = FileName;
 			Project curentParseProject = Project;
 			
@@ -464,7 +467,7 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.RemoveFileDom (FileName);
 				dom = null;
 			}*/
-			
+			data = null;
 			Counters.OpenDocuments--;
 		}
 #region document tasks

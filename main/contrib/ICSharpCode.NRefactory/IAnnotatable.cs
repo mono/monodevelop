@@ -76,6 +76,9 @@ namespace ICSharpCode.NRefactory
 		/// The type of the annotations to remove.
 		/// </param>
 		void RemoveAnnotations(Type type);
+		
+		
+		void RemoveAnnotations ();
 	}
 	
 	[Serializable]
@@ -137,6 +140,11 @@ namespace ICSharpCode.NRefactory
 					list.Add (annotation);
 				}
 			}
+		}
+		
+		public virtual void RemoveAnnotations ()
+		{
+			annotations = null;
 		}
 		
 		public virtual void RemoveAnnotations<T> () where T : class
