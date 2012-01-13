@@ -84,8 +84,10 @@ namespace Mono.TextEditor.Theatrics
 		
 		public void ReplaceVScrollBar (Gtk.Widget widget)
 		{
-			vScrollBar.Unparent ();
-			vScrollBar.Destroy ();
+			if (vScrollBar != null) {
+				vScrollBar.Unparent ();
+				vScrollBar.Destroy ();
+			}
 			this.vScrollBar = widget;
 			this.vScrollBar.Parent = this;
 			this.vScrollBar.Show ();

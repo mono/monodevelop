@@ -149,9 +149,11 @@ namespace Mono.TextEditor
 				if (textEditorData.Options != null)
 					textEditorData.Options.Changed -= OptionsChanged;
 				textEditorData.Options = value;
-				textEditorData.Options.Changed += OptionsChanged;
-				if (IsRealized)
-					OptionsChanged (null, null);
+				if (textEditorData.Options != null) {
+					textEditorData.Options.Changed += OptionsChanged;
+					if (IsRealized)
+						OptionsChanged (null, null);
+				}
 			}
 		}
 		
@@ -568,15 +570,26 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
+		uint focusOutTimerId = 0;
+		void RemoveFocusOutTimerId ()
+		{
+			if (focusOutTimerId == 0)
+				return;
+			GLib.Source.Remove (focusOutTimerId);
+			focusOutTimerId = 0;
+		}
+		
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
 			var result = base.OnFocusOutEvent (evnt);
 			imContextNeedsReset = true;
 			imContext.FocusOut ();
-			GLib.Timeout.Add (10, delegate {
+			RemoveFocusOutTimerId ();
+			focusOutTimerId = GLib.Timeout.Add (10, delegate {
 				// Don't immediately hide the tooltip. Wait a bit and check if the tooltip has the focus.
 				if (tipWindow != null && !tipWindow.HasToplevelFocus)
 					HideTooltip ();
+				focusOutTimerId = 0;
 				return false;
 			});
 			TextViewMargin.StopCaretThread ();
@@ -703,6 +716,7 @@ namespace Mono.TextEditor
 			
 			DisposeAnimations ();
 			
+			RemoveFocusOutTimerId ();
 			RemoveScrollWindowTimer ();
 			if (invisibleCursor != null)
 				invisibleCursor.Dispose ();
