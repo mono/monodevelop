@@ -548,14 +548,15 @@ namespace Mono.Debugging.Client
 					breakpoints [be] = eventInfo;
 				}
 				eventInfo.AttachSession (this, be);
-				
 			} catch (Exception ex) {
-				Breakpoint bp = be as Breakpoint;
 				string msg;
-				if (bp != null)
-					msg = "Could not set breakpoint at location '" + bp.FileName + ":" + bp.Line + "'";
+				
+				if (be is FunctionBreakpoint)
+					msg = "Could not set breakpoint at location '" + ((FunctionBreakpoint) be).FunctionName + ":" + ((FunctionBreakpoint) be).Line + "'";
+				else if (be is Breakpoint)
+					msg = "Could not set breakpoint at location '" + ((Breakpoint) be).FileName + ":" + ((Breakpoint) be).Line + "'";
 				else
-					msg = "Could not set catchpoint for exception '" + ((Catchpoint)be).ExceptionName + "'";
+					msg = "Could not set catchpoint for exception '" + ((Catchpoint) be).ExceptionName + "'";
 				
 				msg += " (" + ex.Message + ")";
 				OnDebuggerOutput (false, msg + "\n");

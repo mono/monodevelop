@@ -56,6 +56,7 @@ namespace MonoDevelop.Debugger
 		DisableAllBreakpoints,
 		ShowDisassembly,
 		NewBreakpoint,
+		NewFunctionBreakpoint,
 		RemoveBreakpoint,
 		ShowBreakpointProperties,
 		ExpressionEvaluator,
@@ -504,6 +505,22 @@ namespace MonoDevelop.Debugger
 			}
 			else
 				info.Enabled = false;
+		}
+	}
+	
+	internal class NewFunctionBreakpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			FunctionBreakpoint bp = new FunctionBreakpoint ("", "C#");
+			if (DebuggingService.ShowBreakpointProperties (bp, true))
+				DebuggingService.Breakpoints.Add (bp);
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
 	

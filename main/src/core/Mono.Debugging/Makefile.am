@@ -38,6 +38,7 @@ FILES =  \
 	Mono.Debugging.Client/DebuggerStartInfo.cs \
 	Mono.Debugging.Client/EvaluationOptions.cs \
 	Mono.Debugging.Client/ExceptionInfo.cs \
+	Mono.Debugging.Client/FunctionBreakpoint.cs \
 	Mono.Debugging.Client/IExpressionEvaluator.cs \
 	Mono.Debugging.Client/ObjectPath.cs \
 	Mono.Debugging.Client/ObjectValue.cs \

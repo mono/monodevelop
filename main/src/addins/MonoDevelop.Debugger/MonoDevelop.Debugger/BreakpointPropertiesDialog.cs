@@ -35,31 +35,66 @@ namespace MonoDevelop.Debugger
 {
 	public partial class BreakpointPropertiesDialog : Gtk.Dialog
 	{
+		string[] parsedParamTypes;
+		string parsedFunction;
 		Breakpoint bp;
 		bool isNew;
 		
 		public BreakpointPropertiesDialog (Breakpoint bp, bool isNew)
 		{
-			this.Build();
+			this.Build ();
 			
 			this.isNew = isNew;
 			this.bp = bp;
 			
+			spinColumn.Adjustment.Upper = int.MaxValue;
+			spinColumn.Adjustment.Lower = 1;
 			spinLine.Adjustment.Upper = int.MaxValue;
 			spinLine.Adjustment.Lower = 1;
 			
-			entryFile.Text = bp.FileName;
-			spinLine.Value = bp.Line;
-			
-			entryFile.IsEditable = false;
-			
-			// We don't use ".Sensitive = false" because we want the user to be able to select & copy the text.
-			entryFile.ModifyBase (Gtk.StateType.Normal, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-			entryFile.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
-			
-			if (!isNew) {
-				spinLine.IsEditable = false;
-				spinLine.Sensitive = false;
+			if (bp is FunctionBreakpoint) {
+				FunctionBreakpoint fb = (FunctionBreakpoint) bp;
+				
+				labelFileFunction.LabelProp = GettextCatalog.GetString ("Function:");
+				
+				if (fb.ParamTypes != null) {
+					// FIXME: support non-C# syntax based on fb.Language
+					entryFileFunction.Text = fb.FunctionName + " (" + string.Join (", ", fb.ParamTypes) + ")";
+				} else
+					entryFileFunction.Text = fb.FunctionName;
+				
+				if (!isNew) {
+					// We don't use ".Sensitive = false" because we want the user to be able to select & copy the text.
+					entryFileFunction.ModifyBase (Gtk.StateType.Normal, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
+					entryFileFunction.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
+					entryFileFunction.IsEditable = false;
+				}
+				
+				// Function breakpoints only support breaking on the first line
+				hboxLineColumn.Destroy ();
+				labelLine.Destroy ();
+				table1.NRows--;
+			} else {
+				labelFileFunction.LabelProp = GettextCatalog.GetString ("File:");
+				entryFileFunction.Text = ((Breakpoint) bp).FileName;
+				
+				// We don't use ".Sensitive = false" because we want the user to be able to select & copy the text.
+				entryFileFunction.ModifyBase (Gtk.StateType.Normal, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
+				entryFileFunction.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
+				entryFileFunction.IsEditable = false;
+				
+				//spinColumn.Value = bp.Column;
+				spinLine.Value = bp.Line;
+				
+				if (!isNew) {
+					spinColumn.IsEditable = false;
+					spinColumn.Sensitive = false;
+					spinLine.IsEditable = false;
+					spinLine.Sensitive = false;
+				}
+				
+				// Note: We hide the column spin button for now because we don't support it yet
+				hboxColumn.Hide ();
 			}
 			
 			if (string.IsNullOrEmpty (bp.ConditionExpression)) {
@@ -81,7 +116,10 @@ namespace MonoDevelop.Debugger
 				entryTraceExpr.Text = bp.TraceExpression;
 			}
 			
-			Project project = IdeApp.Workspace.GetProjectContainingFile (bp.FileName);
+			Project project = null;
+			if (!string.IsNullOrEmpty (bp.FileName))
+				project = IdeApp.Workspace.GetProjectContainingFile (bp.FileName);
+			
 			if (project != null) {
 				// Check the startup project of the solution too, since the current project may be a library
 				SolutionEntityItem startup = project.ParentSolution.StartupItem;
@@ -100,23 +138,78 @@ namespace MonoDevelop.Debugger
 			boxCondition.Sensitive = !radioBreakAlways.Active;
 		}
 		
+		bool TryParseFunction (string signature, out string function, out string[] paramTypes)
+		{
+			// FIXME: this is a hack, but it'll work until we get actual language parsers...
+			int paramListStart = signature.IndexOf ('(');
+			int paramListEnd;
+			
+			if (paramListStart == -1) {
+				function = signature;
+				paramTypes = null;
+				return true;
+			}
+			
+			function = signature.Substring (0, paramListStart).TrimEnd ();
+			
+			paramListStart++;
+			paramListEnd = paramListStart;
+			while (paramListEnd < signature.Length && signature[paramListEnd] != ')')
+				paramListEnd++;
+			
+			if (paramListEnd == signature.Length) {
+				function = null;
+				paramTypes = null;
+				return false;
+			}
+			
+			paramTypes = signature.Substring (paramListStart, paramListEnd - paramListStart).Split (new char [] { ',' });
+			for (int i = 0; i < paramTypes.Length; i++)
+				paramTypes[i] = paramTypes[i].Trim ();
+			
+			return true;
+		}
+		
 		public bool Check ()
 		{
+			if (bp is FunctionBreakpoint) {
+				if (entryFileFunction.Text.Length == 0) {
+					MessageService.ShowError (GettextCatalog.GetString ("Function name not specified"));
+					return false;
+				}
+				
+				if (!TryParseFunction (entryFileFunction.Text.Trim (), out parsedFunction, out parsedParamTypes)) {
+					MessageService.ShowError (GettextCatalog.GetString ("Invalid function syntax"));
+					return false;
+				}
+			}
+			
 			if (!radioBreakAlways.Active && entryCondition.Text.Length == 0) {
 				MessageService.ShowError (GettextCatalog.GetString ("Condition expression not specified"));
 				return false;
 			}
+			
 			if (radioActionTrace.Active && entryTraceExpr.Text.Length == 0) {
 				MessageService.ShowError (GettextCatalog.GetString ("Trace expression not specified"));
 				return false;
 			}
+			
 			return true;
 		}
 		
 		public void Save ()
 		{
-			if (isNew)
-				bp.SetLine ((int) spinLine.Value);
+			if (isNew) {
+				if (bp is FunctionBreakpoint) {
+					FunctionBreakpoint fb = (FunctionBreakpoint) bp;
+					
+					fb.FunctionName = parsedFunction;
+					fb.ParamTypes = parsedParamTypes;
+				} else {
+					//bp.SetColumn ((int) spinColumn.Value);
+					bp.SetLine ((int) spinLine.Value);
+				}
+			}
 			
 			if (!radioBreakAlways.Active) {
 				bp.ConditionExpression = entryCondition.Text;

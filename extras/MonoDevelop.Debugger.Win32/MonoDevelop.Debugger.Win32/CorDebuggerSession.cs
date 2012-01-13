@@ -635,47 +635,53 @@ namespace MonoDevelop.Debugger.Win32
 			lock (documents) {
 				Breakpoint bp = be as Breakpoint;
 				if (bp != null) {
-					DocInfo doc;
-					if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc)) {
-						binfo.SetStatus (BreakEventStatus.NotBound, null);
-						return binfo;
-					}
-
-					int line;
-                    try {
-                        line = doc.Document.FindClosestLine(bp.Line);
-                    }
-                    catch {
-                        // Invalid line
+					if (bp is FunctionBreakpoint) {
+						// FIXME: implement breaking on function name
 						binfo.SetStatus (BreakEventStatus.Invalid, null);
 						return binfo;
-					}
-					ISymbolMethod met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
-					if (met == null) {
-						binfo.SetStatus (BreakEventStatus.Invalid, null);
-						return binfo;
-					}
-
-					int offset = -1;
-					foreach (SequencePoint sp in met.GetSequencePoints ()) {
-						if (sp.Line == line && sp.Document.URL == doc.Document.URL) {
-							offset = sp.Offset;
-							break;
+					} else {
+						DocInfo doc;
+						if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc)) {
+							binfo.SetStatus (BreakEventStatus.NotBound, null);
+							return binfo;
 						}
-					}
-					if (offset == -1) {
-						binfo.SetStatus (BreakEventStatus.Invalid, null);
+						
+						int line;
+						try {
+							line = doc.Document.FindClosestLine(bp.Line);
+						}
+						catch {
+							// Invalid line
+							binfo.SetStatus (BreakEventStatus.Invalid, null);
+							return binfo;
+						}
+						ISymbolMethod met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
+						if (met == null) {
+							binfo.SetStatus (BreakEventStatus.Invalid, null);
+							return binfo;
+						}
+						
+						int offset = -1;
+						foreach (SequencePoint sp in met.GetSequencePoints ()) {
+							if (sp.Line == line && sp.Document.URL == doc.Document.URL) {
+								offset = sp.Offset;
+								break;
+							}
+						}
+						if (offset == -1) {
+							binfo.SetStatus (BreakEventStatus.Invalid, null);
+							return binfo;
+						}
+						
+						CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
+						CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
+						corBp.Activate (bp.Enabled);
+						breakpoints[corBp] = binfo;
+						
+						binfo.Handle = corBp;
+						binfo.SetStatus (BreakEventStatus.Bound, null);
 						return binfo;
 					}
-
-					CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
-					CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
-					corBp.Activate (bp.Enabled);
-					breakpoints[corBp] = binfo;
-
-					binfo.Handle = corBp;
-					binfo.SetStatus (BreakEventStatus.Bound, null);
-					return binfo;
 				}
 			}
 			return null;

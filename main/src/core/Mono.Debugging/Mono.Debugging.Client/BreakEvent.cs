@@ -83,7 +83,9 @@ namespace Mono.Debugging.Client
 		
 		internal static BreakEvent FromXml (XmlElement elem)
 		{
-			if (elem.Name == "Breakpoint")
+			if (elem.Name == "FunctionBreakpoint")
+				return new FunctionBreakpoint (elem);
+			else if (elem.Name == "Breakpoint")
 				return new Breakpoint (elem);
 			else if (elem.Name == "Catchpoint")
 				return new Catchpoint (elem);

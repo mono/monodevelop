@@ -935,10 +935,7 @@ namespace MonoDevelop.SourceEditor
 			if (!forceUpdate) {
 				int i = 0, count = 0;
 				bool mismatch = false;
-				foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
-					if (fp.FullPath != bp.FileName)
-						continue;
-					
+				foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
 					count++;
 					if (i < breakpointSegments.Count) {
 						int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments[i].Offset);
@@ -966,10 +963,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			breakpointSegments.Clear ();
-			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpoints ()) {
-				if (fp.FullPath != bp.FileName)
-					continue;
-				
+			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
 				lineNumbers.Add (bp.Line);
 				AddBreakpoint (bp);
 			}
