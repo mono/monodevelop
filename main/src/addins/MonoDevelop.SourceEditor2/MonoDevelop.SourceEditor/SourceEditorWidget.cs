@@ -61,7 +61,11 @@ namespace MonoDevelop.SourceEditor
 		
 //		bool shouldShowclassBrowser;
 //		bool canShowClassBrowser;
-		ISourceEditorOptions options;
+		ISourceEditorOptions options {
+			get {
+				return this.textEditor.Options;
+			}
+		}
 		
 		bool isDisposed = false;
 		
@@ -293,7 +297,6 @@ namespace MonoDevelop.SourceEditor
 			mainsw.SetTextEditor (textEditorContainer);
 			
 			vbox.PackStart (mainsw, true, true, 0);
-			options = this.textEditor.Options;
 			
 			textEditorData = textEditor.GetTextEditorData ();
 			ResetFocusChain ();
@@ -353,7 +356,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Dispose ()
 		{
-			// nothing
+			RemoveErrorUndelinesResetTimerId ();
 		}
 		
 		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
@@ -536,6 +539,14 @@ namespace MonoDevelop.SourceEditor
 		List<ErrorMarker> errors = new List<ErrorMarker> ();
 		uint resetTimerId;
 		
+		void RemoveErrorUndelinesResetTimerId ()
+		{
+			if (resetTimerId > 0) {
+				GLib.Source.Remove (resetTimerId);
+				resetTimerId = 0;
+			}
+		}
+		
 		void UpdateErrorUndelines (ParsedDocument parsedDocument)
 		{
 			if (!options.UnderlineErrors || parsedDocument == null)
@@ -544,11 +555,7 @@ namespace MonoDevelop.SourceEditor
 			Application.Invoke (delegate {
 				if (!quickTaskProvider.Contains (this))
 					AddQuickTaskProvider (this);
-				if (resetTimerId > 0) {
-					GLib.Source.Remove (resetTimerId);
-					resetTimerId = 0;
-				}
-				
+				RemoveErrorUndelinesResetTimerId ();
 				const uint timeout = 500;
 				resetTimerId = GLib.Timeout.Add (timeout, delegate {
 					if (!this.isDisposed) {

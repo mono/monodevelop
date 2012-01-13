@@ -912,6 +912,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public IEnumerable<QuickTask> AllTasks {
 			get {
+				if (providerTasks == null)
+					yield break;
 				foreach (var tasks in providerTasks.Values) {
 					foreach (var task in tasks) {
 						yield return task;
@@ -963,6 +965,9 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
+			adj = null;
+			textEditor = null;
+			providerTasks = null;
 			PropertyService.RemovePropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
 			base.OnDestroyed ();
 		}
@@ -977,6 +982,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Update (IQuickTaskProvider provider)
 		{
+			if (providerTasks == null)
+				return;
 			providerTasks [provider] = new List<QuickTask> (provider.QuickTasks);
 			OnTaskProviderUpdated (EventArgs.Empty);
 		}

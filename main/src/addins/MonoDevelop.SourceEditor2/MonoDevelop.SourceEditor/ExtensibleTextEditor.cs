@@ -176,8 +176,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			ExtensionContext = null;
 			view = null;
-
 			base.OnDestroyed ();
+			if (Options != null) {
+				Options.Dispose ();
+				base.Options = null;
+			}
 		}
 		
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
