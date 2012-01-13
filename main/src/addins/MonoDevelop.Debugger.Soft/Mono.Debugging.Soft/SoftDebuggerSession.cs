@@ -1500,8 +1500,9 @@ namespace Mono.Debugging.Soft
 							
 							loc = GetLocFromMethod (method, bp.Line);
 							if (loc != null) {
-								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}:{1}' to {2}:{3} [0x{4:x5}].\n",
-								                                        bp.FunctionName, bp.Line, loc.SourceFile, loc.LineNumber, loc.ILOffset));
+								string paramList = bp.ParamTypes != null ? "(" + string.Join (",", bp.ParamTypes) + ")" : "";
+								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
+								                                        bp.FunctionName, paramList, loc.SourceFile, loc.LineNumber, loc.ILOffset));
 								
 								if (bp.ParamTypes == null)
 									bp.ParamTypes = GetParamTypes (method);
@@ -1519,8 +1520,9 @@ namespace Mono.Debugging.Soft
 							
 							loc = GetLocFromMethod (method, bp.Line);
 							if (loc != null) {
-								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}:{1}' to {2}:{3} [0x{4:x5}].\n",
-								                                        bp.FunctionName, bp.Line, loc.SourceFile, loc.LineNumber, loc.ILOffset));
+								string paramList = bp.ParamTypes != null ? "(" + string.Join (",", bp.ParamTypes) + ")" : "";
+								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
+								                                        bp.FunctionName, paramList, loc.SourceFile, loc.LineNumber, loc.ILOffset));
 								
 								if (bp.ParamTypes == null)
 									bp.ParamTypes = GetParamTypes (method);
