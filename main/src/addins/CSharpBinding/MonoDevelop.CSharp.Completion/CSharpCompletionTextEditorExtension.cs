@@ -126,20 +126,28 @@ namespace MonoDevelop.CSharp.Completion
 				this.CSharpParsedFile = parsedDocument.Annotation<CSharpParsedFile> ();
 			}
 			
-			Document.DocumentParsed += delegate {
-				var newDocument = Document.ParsedDocument;
-				if (newDocument == null) 
-					return;
-				this.Unit = newDocument.Annotation<CompilationUnit> ();
-				this.CSharpParsedFile = newDocument.Annotation<CSharpParsedFile> ();
-				var textEditor = Editor.Parent;
-				if (textEditor != null) {
-					textEditor.TextViewMargin.PurgeLayoutCache ();
-					textEditor.RedrawMarginLines (textEditor.TextViewMargin, 1, Editor.LineCount);
-				}
-			};
+			Document.DocumentParsed += HandleDocumentParsed; 
 		}
 		
+		public void Dispose ()
+		{
+			Document.DocumentParsed -= HandleDocumentParsed; 
+			base.Dispose ();
+		}
+
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			var newDocument = Document.ParsedDocument;
+			if (newDocument == null) 
+				return;
+			this.Unit = newDocument.Annotation<CompilationUnit> ();
+			this.CSharpParsedFile = newDocument.Annotation<CSharpParsedFile> ();
+			var textEditor = Editor.Parent;
+			if (textEditor != null) {
+				textEditor.TextViewMargin.PurgeLayoutCache ();
+				textEditor.RedrawMarginLines (textEditor.TextViewMargin, 1, Editor.LineCount);
+			}
+		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
