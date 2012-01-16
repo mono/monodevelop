@@ -35,7 +35,6 @@ using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	// TODO: Find all references
 	public abstract class ReferenceFinder
 	{
 		public bool IncludeDocumentation {
@@ -43,11 +42,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 		
-		protected IProjectContent Content {
-			get;
-			private set;
-		}
-		
+		/*
 		Project project;
 		protected Project Project {
 			get {
@@ -55,7 +50,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					project = Content.GetProject ();
 				return project;
 			}
-		}
+		}*/
 		
 		static List<ReferenceFinderCodon> referenceFinderCodons = new List<ReferenceFinderCodon> ();
 		
@@ -93,6 +88,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		class FileList
 		{
+			public Project Project {
+				get;
+				private set;
+			}
+
 			public IProjectContent Content {
 				get;
 				private set;
@@ -103,8 +103,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				private set;
 			}
 			
-			public FileList (IProjectContent content, IEnumerable<FilePath> files)
+			public FileList (Project project, IProjectContent content, IEnumerable<FilePath> files)
 			{
+				this.Project = project;
 				this.Content = content;
 				this.Files = files;
 			}
@@ -126,7 +127,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				var doc = IdeApp.Workbench.GetDocument (fileName);
 
 				if (doc != null)
-					yield return new FileList (doc.TypeResolveContext, new [] { (FilePath)unit.FileName });
+					yield return new FileList (doc.Project, doc.TypeResolveContext, new [] { (FilePath)unit.FileName });
 				break;
 			case RefactoryScope.Project:
 				var prj = TypeSystemService.GetProject ((IEntity)member);
@@ -135,7 +136,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				var ctx = TypeSystemService.GetProjectContext (prj);
 				if (ctx == null)
 					yield break;
-				yield return new FileList (ctx, prj.Files.Select (f => f.FilePath));
+				yield return new FileList (prj, ctx, prj.Files.Select (f => f.FilePath));
 				break;
 			case RefactoryScope.Solution:
 				var allProjects = solution.GetAllProjects ();
@@ -146,7 +147,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					var currentDom = TypeSystemService.GetProjectContext (project);
-					yield return new FileList (currentDom, project.Files.Select (f => f.FilePath));
+					yield return new FileList (project, currentDom, project.Files.Select (f => f.FilePath));
 					if (monitor != null)
 						monitor.Step (1);
 				}
@@ -185,12 +186,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				var e = (IEntity)member;
 //				dom = ((IEntity)member).DeclaringTypeDefinition.ProjectContent;
 				unit = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ().ParsedFile;
-//				if (member is IMethod)
-//					searchNodes = CollectMembers (dom, (IMethod)member);
+				if (member is IMethod)
+					searchNodes = CollectMembers ((IMethod)member);
 			}
 			
 			// prepare references finder
-			var preparedFinders = new List<Tuple<ReferenceFinder, IProjectContent, List<FilePath>>> ();
+			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
 			var curList = new List<FilePath> ();
 			foreach (var info in GetFileNames (solution, unit, member, scope, monitor)) {
 				string oldMime = null;
@@ -207,7 +208,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						oldMime = mime;
 						
 						curList = new List<FilePath> ();
-						preparedFinders.Add (Tuple.Create (finder, info.Content, curList));
+						preparedFinders.Add (Tuple.Create (finder, info.Project, info.Content, curList));
 					}
 					curList.Add (file);
 				}
@@ -216,10 +217,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			// execute search
 			foreach (var tuple in preparedFinders) {
 				var finder = tuple.Item1;
-				finder.Content = tuple.Item2;
-				finder.SetSearchedMembers (searchNodes);
-				finder.SetPossibleFiles (tuple.Item3);
-				foreach (var foundReference in finder.FindReferences ()) {
+				foreach (var foundReference in finder.FindReferences (tuple.Item2, tuple.Item3, tuple.Item4, searchNodes)) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					yield return foundReference;
@@ -227,47 +225,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public abstract void SetSearchedMembers (IEnumerable<object> searchedMembers);
-		public abstract void SetPossibleFiles (IEnumerable<FilePath> files);
-		public abstract IEnumerable<MemberReference> FindReferences ();
+		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IEnumerable<object> searchedMembers);
 		
-//		internal static IEnumerable<IEntity> CollectMembers (ITypeResolveContext dom, IMethod member)
-//		{
-//			if (member.IsConstructor) {
-//				yield return member;
-//				yield break;
-//			}
-//			
-//			bool isOverrideable = member.DeclaringType.GetDefinition ().ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract;
-//			bool isLastMember = false;
-//			// for members we need to collect the whole 'class' of members (overloads & implementing types)
-//			HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
-//			foreach (var type in member.DeclaringTypeDefinition.GetBaseTypes (dom)) {
-//				if (type.GetDefinition ().ClassType == ClassType.Interface || isOverrideable || type.Equals (member.DeclaringType)) {
-//					// search in the class for the member
-//					foreach (var interfaceMember in type.GetDefinition ().Methods.Where (m => m.Name == member.Name)) {
-//						yield return interfaceMember;
-//					}
-//					
-//					// now search in all subclasses of this class for the member
-//					isLastMember = !member.IsOverride;
-//					foreach (var implementingType in type.GetBaseTypes (dom)) {
-//						string name = implementingType.ReflectionName;
-//						if (alreadyVisitedTypes.Contains (name))
-//							continue;
-//						alreadyVisitedTypes.Add (name);
-//						foreach (var typeMember in implementingType.GetDefinition ().Methods.Where (m => m.Name == member.Name)) {
-//							isLastMember = type.GetDefinition ().ClassType != ClassType.Interface && (typeMember.IsVirtual || typeMember.IsAbstract || !typeMember.IsOverride);
-//							yield return typeMember;
-//						}
-//						if (!isOverrideable)
-//							break;
-//					}
-//					if (isLastMember)
-//						break;
-//				}
-//			}
-//		}
+		internal static IEnumerable<IEntity> CollectMembers (IMethod member)
+		{
+			if (member.IsConstructor || member.IsDestructor || member.IsOperator)
+				return new IEntity[] { member };
+			
+			return member.DeclaringType.GetMethods (m => m.Name == member.Name);
+		}
 		
 		public enum RefactoryScope{ Unknown, File, DeclaringType, Solution, Project}
 		static RefactoryScope GetScope (object o)

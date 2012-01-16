@@ -38,7 +38,6 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 
-
 namespace MonoDevelop.CSharp.Refactoring
 {
 	public class ASPNetReferenceFinder : ReferenceFinder
@@ -66,15 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //				yield return new DomRegion (fileName, loc.Line, loc.Column, loc.Line, loc.Column + result.Name.Lenhth);
 //			}
 		}
-		public override void SetPossibleFiles (IEnumerable<FilePath> files)
-		{
-			
-		}
-		public override void SetSearchedMembers (IEnumerable<object> searchedMembers)
-		{
-		}
-		
-		public override IEnumerable<MemberReference> FindReferences ()
+		public override IEnumerable<MemberReference> FindReferences (MonoDevelop.Projects.Project project, IProjectContent content, IEnumerable<FilePath> files, IEnumerable<object> searchedMembers)
 		{ // TODO: Type system conversion.
 			yield break;
 //			var editor = TextFileProvider.Instance.GetTextEditorData (fileName);

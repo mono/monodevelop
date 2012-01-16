@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			IncludeDocumentation = true;
 		}
 		
-		public override void SetSearchedMembers (IEnumerable<object> searchedMembers)
+		public void SetSearchedMembers (IEnumerable<object> searchedMembers)
 		{
 			this.searchedMembers = new List<object> (searchedMembers);
 			var firstMember = searchedMembers.FirstOrDefault ();
@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				memberName = ((IVariable)firstMember).Name;
 		}
 		
-		public override void SetPossibleFiles (IEnumerable<FilePath> files)
+		void SetPossibleFiles (IEnumerable<FilePath> files)
 		{
 			foreach (var file in files) {
 				var openDocument = IdeApp.Workbench.GetDocument (file);
@@ -85,8 +85,9 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		MemberReference GetReference (ResolveResult result, AstNode node, string fileName, Mono.TextEditor.TextEditorData editor)
 		{
-			if (result == null || result.IsError)
+			if (result == null) {
 				return null;
+			}
 			object valid = null;
 			if (result is MethodGroupResolveResult) {
 				valid = ((MethodGroupResolveResult)result).Methods.FirstOrDefault (m => searchedMembers.Any (member => member is IMethod && ((IMethod)member).Region == m.Region));
@@ -102,7 +103,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else if (result is TypeResolveResult) {
 				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
 			}
-			
 			if (node is InvocationExpression)
 				node = ((InvocationExpression)node).Target;
 			
@@ -119,7 +119,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 			
-			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.BeginLine, region.BeginColumn), memberName.Length);
+			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.Begin), memberName.Length);
 		}
 
 		bool IsNodeValid (object searchedMember, AstNode node)
@@ -156,11 +156,19 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 		
-		public override IEnumerable<MemberReference> FindReferences ()
+		public override IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> possibleFiles, IEnumerable<object> searchedMembers)
 		{
+			if (project == null)
+				throw new ArgumentNullException ("Project", "Project not set.");
+			if (content == null)
+				throw new ArgumentNullException ("content", "Project content not set.");
+			
+			SetPossibleFiles (possibleFiles);
+			SetSearchedMembers (searchedMembers);
+			
 			var entity = searchedMembers.First () as IEntity;
-			var scopes = entity != null ? refFinder.GetSearchScopes (entity) : null;
-			var compilation = Content != null ? Content.CreateCompilation () : null;
+			var scopes = searchedMembers.Select (e => refFinder.GetSearchScopes (e as IEntity));
+			var compilation = entity != null ? entity.Compilation : content.CreateCompilation ();
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
 				refs.AddRange (FindInDocument (opendoc.Item2));
@@ -170,29 +178,36 @@ namespace MonoDevelop.CSharp.Refactoring
 				string text = File.ReadAllText (file);
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0)
 					continue;
-				
 				using (var editor = new TextEditorData ()) {
 					editor.Document.FileName = file;
 					editor.Text = text;
 					var unit = new CSharpParser ().Parse (editor);
 					if (unit == null)
 						continue;
-					var storedFile = Content != null ? Content.GetFile (file) : null;
+					
+					var storedFile = content != null ? content.GetFile (file) : null;
 					var parsedFile = storedFile as CSharpParsedFile;
 					
-					if (parsedFile == null && storedFile is ParsedDocumentDecorator)
+					if (parsedFile == null && storedFile is ParsedDocumentDecorator) {
 						parsedFile = ((ParsedDocumentDecorator)storedFile).ParsedFile as CSharpParsedFile;
+					}
 					
-					if (parsedFile == null)
+					if (parsedFile == null) {
+						// for fallback purposes - should never happen.
 						parsedFile = unit.ToTypeSystem ();
-					refFinder.FindReferencesInFile (
-						scopes,
-						parsedFile,
-						unit,
-						compilation,
-						(astNode, result) => refs.Add (GetReference (result, astNode, file, editor)),
-						CancellationToken.None
-					);
+						content = content.UpdateProjectContent (content.GetFile (file), parsedFile);
+						compilation = content.CreateCompilation ();
+					}
+					foreach (var scope in scopes) {
+						refFinder.FindReferencesInFile (
+							scope,
+							parsedFile,
+							unit,
+							compilation,
+							(astNode, result) => refs.Add (GetReference (result, astNode, file, editor)),
+							CancellationToken.None
+						);
+					}
 				}
 			}
 			return refs;

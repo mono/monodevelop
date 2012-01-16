@@ -608,14 +608,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					PointerReferenceExpression pre = target as PointerReferenceExpression;
 					if (pre != null)
 						return pre.MemberName == method.Name;
+				} else if (!(node.Parent is InvocationExpression)) {
+					var mre = node as MemberReferenceExpression;
+					if (mre != null) {
+						return mre.MemberName == method.Name;
+					} else {
+						var ident = node as IdentifierExpression;
+						if (ident != null)
+							return ident.Identifier == method.Name;
+					}
 				}
 				return node is MethodDeclaration;
 			}
 			
 			internal override bool IsMatch(ResolveResult rr)
 			{
-				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && method == mrr.Member.MemberDefinition;
+				var mrr = rr as MemberResolveResult;
+				if (mrr != null)
+					return method == mrr.Member.MemberDefinition;
+				
+				// Not 100% correct - TODO: overload resolution.
+				var mgr = rr as MethodGroupResolveResult;
+				return mgr != null && mgr.Methods.Any (m => m == method);
 			}
 		}
 		#endregion
