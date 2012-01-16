@@ -103,11 +103,16 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else if (result is TypeResolveResult) {
 				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
 			}
+			
 			if (node is InvocationExpression)
 				node = ((InvocationExpression)node).Target;
 			
 			if (node is MemberReferenceExpression)
 				node = ((MemberReferenceExpression)node).MemberNameToken;
+			
+			if (node is MemberType)
+				node = ((MemberType)node).MemberNameToken;
+			
 			if (node is MemberDeclaration && (searchedMembers.First () is IMember)) 
 				node = ((MemberDeclaration)node).NameToken;
 			
