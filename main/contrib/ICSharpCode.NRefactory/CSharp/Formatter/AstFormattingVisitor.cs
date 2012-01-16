@@ -173,7 +173,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
 			if (policy.IndentNamespaceBody)
 				IndentLevel--;
-			FixIndentation (namespaceDeclaration.RBraceToken.StartLocation);
+			if (namespaceDeclaration.RBraceToken.StartLocation.Line < int.MaxValue)
+				FixIndentation (namespaceDeclaration.RBraceToken.StartLocation);
 			return result;
 		}
 
