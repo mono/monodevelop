@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.FindInFiles
 //				dom = ((IEntity)member).DeclaringTypeDefinition.ProjectContent;
 				unit = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ().ParsedFile;
 				if (member is IMethod)
-					searchNodes = CollectMembers ((IMethod)member);
+					searchNodes = CollectMembers (solution, (IMethod)member);
 			}
 			
 			// prepare references finder
@@ -227,12 +227,29 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IEnumerable<object> searchedMembers);
 		
-		internal static IEnumerable<IEntity> CollectMembers (IMethod member)
+		internal static IEnumerable<IEntity> CollectMembers (Solution solution, IMethod member)
 		{
 			if (member.IsConstructor || member.IsDestructor || member.IsOperator)
 				return new IEntity[] { member };
 			
-			return member.DeclaringType.GetMethods (m => m.Name == member.Name);
+			// For renaming interface members search for all methods implementing the interface method.
+			var declaringType = member.DeclaringType.GetDefinition ();
+			var methods = new List<IMethod> (declaringType.GetMethods (m => m.Name == member.Name));
+			var result = new List<IEntity> (methods);
+			if (declaringType.Kind == TypeKind.Interface) {
+				foreach (var p in solution.GetAllSolutionItems<Project> ()) {
+					foreach (var type in TypeSystemService.GetCompilation (p).GetAllTypeDefinitions ()) {
+						if (!type.IsDerivedFrom (declaringType)) 
+							continue;
+						if (type.ReflectionName == declaringType.ReflectionName)
+							continue;
+						// Parameter list needs to match any parameter list from the interface.
+						result.AddRange (type.GetMethods (m => m.Name == member.Name).Where (m => methods.Any (om => ParameterListComparer.Instance.Equals (om.Parameters, m.Parameters))));
+					}
+				}
+			}
+			
+			return result;
 		}
 		
 		public enum RefactoryScope{ Unknown, File, DeclaringType, Solution, Project}
