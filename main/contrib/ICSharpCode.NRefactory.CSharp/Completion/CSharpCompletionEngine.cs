@@ -872,7 +872,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					foreach (var member in def.GetMembers ()) {
 						if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
 							continue;
-											
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
 					}
@@ -1857,6 +1856,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					baseUnit = ParseStub ("a;", false);
 					type = baseUnit.GetNodeAt<MemberType> (location);
 				}
+				
+				if (type == null) {
+					baseUnit = ParseStub ("A a;", false);
+					type = baseUnit.GetNodeAt<MemberType> (location);
+				}
+				
 				if (type != null) {
 					// insert target type into compilation unit, to respect the 
 					var target = type.Target;
