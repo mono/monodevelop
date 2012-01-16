@@ -79,8 +79,10 @@ namespace MonoDevelop.Debugger
 			
 			ShowStackTrace (exception, false);
 			
-			valueView.AddValue (exception.Instance);
-			valueView.ExpandRow (new TreePath ("0"), false);
+			if (!exception.IsEvaluating && exception.Instance != null) {
+				valueView.AddValue (exception.Instance);
+				valueView.ExpandRow (new TreePath ("0"), false);
+			}
 		}
 		
 		void ShowStackTrace (ExceptionInfo exc, bool showExceptionNode)

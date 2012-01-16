@@ -57,7 +57,6 @@ namespace Mono.Debugging.Client
 			this.exception = exception;
 			if (exception.IsEvaluating || exception.IsEvaluatingGroup)
 				exception.ValueChanged += HandleExceptionValueChanged;
-				
 		}
 
 		void HandleExceptionValueChanged (object sender, EventArgs e)
@@ -90,6 +89,10 @@ namespace Mono.Debugging.Client
 			get {
 				return exception.GetChild ("Instance");
 			}
+		}
+		
+		public bool IsEvaluating {
+			get { return exception.IsEvaluating || exception.IsEvaluatingGroup; }
 		}
 
 		public ExceptionStackFrame[] StackTrace {
