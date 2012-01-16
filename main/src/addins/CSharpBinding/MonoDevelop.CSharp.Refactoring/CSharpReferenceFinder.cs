@@ -171,7 +171,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			var compilation = entity != null ? entity.Compilation : content.CreateCompilation ();
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
-				refs.AddRange (FindInDocument (opendoc.Item2));
+				foreach (var newRef in FindInDocument (opendoc.Item2)) {
+					if (refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
+						continue;
+					refs.Add (newRef);
+				}
 			}
 			
 			foreach (var file in files) {
@@ -204,7 +208,12 @@ namespace MonoDevelop.CSharp.Refactoring
 							parsedFile,
 							unit,
 							compilation,
-							(astNode, result) => refs.Add (GetReference (result, astNode, file, editor)),
+							(astNode, result) => {
+								var newRef = GetReference (result, astNode, file, editor);
+								if (refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
+									return;
+								refs.Add (newRef);
+							},
 							CancellationToken.None
 						);
 					}
