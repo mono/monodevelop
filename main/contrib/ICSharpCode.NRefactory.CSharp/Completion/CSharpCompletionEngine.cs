@@ -870,6 +870,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (this.currentMember != null) {
 					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition (currentType);
 					foreach (var member in def.GetMembers ()) {
+						if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
+							continue;
+											
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
 					}
@@ -1774,6 +1777,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						//					Console.WriteLine ("skip non static member: " + member.FullName);
 						continue;
 					}
+					
+					if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
+						continue;
+					
 					//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}
