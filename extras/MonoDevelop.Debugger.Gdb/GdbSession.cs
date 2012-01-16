@@ -283,26 +283,36 @@ namespace MonoDevelop.Debugger.Gdb
 							extraCmd += " -c " + bp.ConditionExpression;
 					}
 					
-					// Breakpoint locations must be double-quoted if files contain spaces.
-					// For example: -break-insert "\"C:/Documents and Settings/foo.c\":17"
-					
-					RunCommand ("-environment-directory", Escape (Path.GetDirectoryName (bp.FileName)));
 					GdbCommandResult res = null;
 					string errorMsg = null;
-					try {
-						res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (bp.FileName) + ":" + bp.Line));
-					} catch (Exception ex) {
-						errorMsg = ex.Message;
+					
+					if (bp is FunctionBreakpoint) {
+						try {
+							res = RunCommand ("-break-insert", extraCmd.Trim (), ((FunctionBreakpoint) bp).FunctionName);
+						} catch (Exception ex) {
+							errorMsg = ex.Message;
+						}
+					} else {
+						// Breakpoint locations must be double-quoted if files contain spaces.
+						// For example: -break-insert "\"C:/Documents and Settings/foo.c\":17"
+						RunCommand ("-environment-directory", Escape (Path.GetDirectoryName (bp.FileName)));
+						
+						try {
+							res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (bp.FileName) + ":" + bp.Line));
+						} catch (Exception ex) {
+							errorMsg = ex.Message;
+						}
+						
+						if (res == null) {
+							try {
+								res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (Path.GetFileName (bp.FileName)) + ":" + bp.Line));
+							}
+							catch {
+								// Ignore
+							}
+						}
 					}
 					
-					if (res == null) {
-						try {
-							res = RunCommand ("-break-insert", extraCmd.Trim (), Escape (Escape (Path.GetFileName (bp.FileName)) + ":" + bp.Line));
-						}
-						catch {
-						// Ignore
-						}
-					}
 					if (res == null) {
 						bi.SetStatus (BreakEventStatus.Invalid, errorMsg);
 						return bi;

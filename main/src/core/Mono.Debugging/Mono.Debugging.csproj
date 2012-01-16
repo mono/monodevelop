@@ -107,6 +107,7 @@
     <Compile Include="Mono.Debugging.Evaluation\ExceptionInfoSource.cs" />
     <Compile Include="Mono.Debugging.Client\BreakEventStatus.cs" />
     <Compile Include="Mono.Debugging.Client\BreakEventInfo.cs" />
+    <Compile Include="Mono.Debugging.Client\FunctionBreakpoint.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

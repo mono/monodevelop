@@ -33,53 +33,84 @@ namespace Mono.Debugging.Client
 	[Serializable]
 	public class Breakpoint: BreakEvent
 	{
-		string fileName;
-		int line;
-		int adjustedLine = -1;
-		
+		bool breakIfConditionChanges;
 		string conditionExpression;
 		string lastConditionValue;
-		bool breakIfConditionChanges;
+		//int adjustedColumn = -1;
+		int adjustedLine = -1;
+		string fileName;
+		//int column;
+		int line;
 		
-		public Breakpoint (string fileName, int line)
+		public Breakpoint (string fileName, int line/*, int column*/)
 		{
-			this.fileName = fileName;
-			this.line = line;
+			FileName = fileName;
+			//Column = column;
+			Line = line;
 		}
 		
 		internal Breakpoint (XmlElement elem): base (elem)
 		{
-			fileName = elem.GetAttribute ("file");
-			line = int.Parse (elem.GetAttribute ("line"));
-			string s = elem.GetAttribute ("conditionExpression");
-			if (s.Length > 0)
+			string s = elem.GetAttribute ("file");
+			if (!string.IsNullOrEmpty (s))
+				fileName = s;
+			
+			s = elem.GetAttribute ("line");
+			if (!string.IsNullOrEmpty (s) || !int.TryParse (s, out line))
+				line = 1;
+			
+			//s = elem.GetAttribute ("column");
+			//if (!string.IsNullOrEmpty (s) || !int.TryParse (s, out column))
+			//	column = 1;
+			
+			s = elem.GetAttribute ("conditionExpression");
+			if (!string.IsNullOrEmpty (s))
 				conditionExpression = s;
+			
 			s = elem.GetAttribute ("breakIfConditionChanges");
-			if (s.Length > 0)
-				breakIfConditionChanges = bool.Parse (s);
+			if (!string.IsNullOrEmpty (s) && !bool.TryParse (s, out breakIfConditionChanges))
+				breakIfConditionChanges = false;
 		}
 		
 		internal override XmlElement ToXml (XmlDocument doc)
 		{
 			XmlElement elem = base.ToXml (doc);
-			elem.SetAttribute ("file", fileName);
+			
+			if (!string.IsNullOrEmpty (fileName))
+				elem.SetAttribute ("file", fileName);
+			
 			elem.SetAttribute ("line", line.ToString ());
+			//elem.SetAttribute ("column", column.ToString ());
+			
 			if (!string.IsNullOrEmpty (conditionExpression)) {
 				elem.SetAttribute ("conditionExpression", conditionExpression);
 				if (breakIfConditionChanges)
 					elem.SetAttribute ("breakIfConditionChanges", "True");
 			}
+			
 			return elem;
 		}
-
 		
 		public string FileName {
 			get { return fileName; }
+			protected set { fileName = value; }
 		}
+		
+		//public int Column {
+		//	get { return adjustedColumn == -1 ? column : adjustedColumn; }
+		//	protected set { column = value; }
+		//}
 		
 		public int Line {
 			get { return adjustedLine == -1 ? line : adjustedLine; }
+			protected set { line = value; }
 		}
+		
+		//public void SetColumn (int newColumn)
+		//{
+		//	ResetAdjustedColumn ();
+		//	column = newColumn;
+		//}
 		
 		public void SetLine (int newLine)
 		{
@@ -87,15 +118,29 @@ namespace Mono.Debugging.Client
 			line = newLine;
 		}
 		
+		//internal void SetAdjustedColumn (int newColumn)
+		//{
+		//	adjustedColumn = newColumn;
+		//}
+		
 		internal void SetAdjustedLine (int newLine)
 		{
 			adjustedLine = newLine;
 		}
 		
+		//internal void ResetAdjustedColumn ()
+		//{
+		//	adjustedColumn = -1;
+		//}
+		
 		internal void ResetAdjustedLine ()
 		{
 			adjustedLine = -1;
 		}
+		
+		//internal bool HasAdjustedColumn {
+		//	get { return adjustedColumn != -1; }
+		//}
 
 		internal bool HasAdjustedLine {
 			get { return adjustedLine != -1; }
@@ -112,13 +157,13 @@ namespace Mono.Debugging.Client
 		
 		public string LastConditionValue {
 			get {
-				return this.lastConditionValue;
+				return lastConditionValue;
 			}
 			set {
 				lastConditionValue = value;
 			}
 		}
-
+		
 		public bool BreakIfConditionChanges {
 			get {
 				return breakIfConditionChanges;
@@ -131,13 +176,15 @@ namespace Mono.Debugging.Client
 		public override void CopyFrom (BreakEvent ev)
 		{
 			base.CopyFrom (ev);
+			
 			Breakpoint bp = (Breakpoint) ev;
-			fileName = bp.fileName;
-			line = bp.line;
-			conditionExpression = bp.conditionExpression;
+			
 			breakIfConditionChanges = bp.breakIfConditionChanges;
+			conditionExpression = bp.conditionExpression;
+			fileName = bp.fileName;
+			//column = bp.column;
+			line = bp.line;
 		}
-
 	}
 	
 	public enum HitAction
