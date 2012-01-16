@@ -536,6 +536,7 @@ namespace MonoDevelop.Projects
 		
 		protected virtual void OnNameChanged (WorkspaceItemRenamedEventArgs e)
 		{
+			fileStatusTracker.ResetLoadTimes ();
 			NotifyModified ();
 			if (NameChanged != null)
 				NameChanged (this, e);

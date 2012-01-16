@@ -60,30 +60,32 @@ namespace MonoDevelop.Ide.Projects
 			
 			FilePath oldFile = item.FileName;
 			string oldName = item.Name;
+			FilePath newFile = oldFile.ParentDirectory.Combine (newName + oldFile.Extension);
 			
+			// Rename the physical file first as changing the name of an IWorkspaceFileObject
+			// can result in the filesystem being probed for a file with that name.
+			if (!RenameItemFile (oldFile, newFile))
+				return;
+
 			try {
 				item.Name = newName;
 				item.NeedsReload = false;
-				if (oldFile != item.FileName) {
+				// We renamed it to the wrong thing...
+				if (item.FileName != newFile) {
+					LoggingService.LogError ("File {0} was renamed to {1} instead of {2}.", item.FileName, item.FileName.FileName, newFile.FileName);
 					// File name changed, rename the project file
-					if (!RenameItemFile (oldFile, item.FileName)) {
+					if (!RenameItemFile (newFile, item.FileName)) {
+						RenameItemFile (newFile, oldFile);
 						item.Name = oldName;
 						item.NeedsReload = false;
 						return;
 					}
 				}
-				else if (oldFile.FileNameWithoutExtension == oldName) {
-					FilePath newFile = oldFile.ParentDirectory.Combine (newName + oldFile.Extension);
-					if (newFile != oldFile) {
-						if (!RenameItemFile (oldFile, newFile)) {
-							item.Name = oldName;
-							item.NeedsReload = false;
-							return;
-						}
-						item.FileName = newFile;
-					}
-				}
 			} catch (Exception ex) {
+				if (File.Exists (item.FileName))
+					FileService.RenameFile (item.FileName, oldFile);
+				else if (File.Exists (newFile))
+					FileService.RenameFile (newFile, oldFile);
 				item.Name = oldName;
 				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be renamed."));
 				return;
