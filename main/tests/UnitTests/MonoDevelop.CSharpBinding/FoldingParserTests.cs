@@ -153,7 +153,7 @@ using System;");
 }");
 		}
 		
-		/*
+	
 		[Test]
 		public void TestDocComment ()
 		{
@@ -166,8 +166,9 @@ using System;");
 	{
 	}
 }");
-			doc.Comments.ForAll (cmt => Assert.IsTrue (cmt.IsDocumentation));
-		}*/
+			foreach (var cmt in doc.Comments)
+				Assert.IsTrue (cmt.IsDocumentation);
+		}
 		
 	}
 }
