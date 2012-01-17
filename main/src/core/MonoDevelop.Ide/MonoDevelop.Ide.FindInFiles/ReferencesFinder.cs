@@ -172,20 +172,20 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (member == null)
 				yield break;
-//			IProjectContent dom = null;
 			IParsedFile unit = null;
 			IEnumerable<object> searchNodes = new [] { member };
 			if (member is IVariable) { 
 				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).Region.FileName);
-//				dom = doc.GetProjectContext ();
 				unit = doc.ParsedDocument;
 			} else if (member is IType) {
-//				dom = ((IType)member).GetDefinition ().ProjectContent;
-				unit = ((IType)member).GetDefinition ().Parts.First ().ParsedFile;
+				var declaringPart = ((IType)member).GetDefinition ().Parts.FirstOrDefault ();
+				if (declaringPart != null)
+					unit = declaringPart.ParsedFile;
 			} else if (member is IEntity) {
 				var e = (IEntity)member;
-//				dom = ((IEntity)member).DeclaringTypeDefinition.ProjectContent;
-				unit = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ().ParsedFile;
+				var declaringPart = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ();
+				if (declaringPart != null)
+					unit = declaringPart.ParsedFile;
 				if (member is IMethod)
 					searchNodes = CollectMembers (solution, (IMethod)member);
 			}
