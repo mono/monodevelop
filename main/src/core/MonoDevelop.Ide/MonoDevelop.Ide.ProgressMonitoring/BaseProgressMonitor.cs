@@ -131,9 +131,13 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		[FreeDispatch]
 		public virtual void ReportError (string message, Exception ex)
 		{
-			if (message == null && ex != null)
-				message = ex.Message;
-			else if (message != null && ex != null) {
+			if (message == null && ex != null) {
+				var userEx = ex as UserException;
+				if (userEx != null)
+					message = string.Format ("{0}{1}{1}{2}", userEx.Message, Environment.NewLine, userEx.Details);
+				else
+					message = ex.Message;
+			} else if (message != null && ex != null) {
 				if (!message.EndsWith (".")) message += ".";
 				message += " " + ex.Message;
 			}

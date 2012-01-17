@@ -251,8 +251,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					type.BaseCliType = resolved.CliName;
 				} else  {
 					type.BaseCliType = defaultNamespace + "." + provider.CreateValidIdentifier (type.BaseObjCType);
-					monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on type {1}",
-						type.BaseObjCType, type.ObjCName));
+
+					var message = string.Format ("Failed to resolve Objective-C type '{0}' to a type in the current solution.", type.BaseObjCType);
+					message += string.Format (" If the type '{0}' exists, adding a [Register] attribute to the type will allow it to be synced correctly. Alternatively adding a [Register (\"{0}\")] attribute to any type will allow that type to be used while syncing.", type.BaseObjCType);
+					monitor.ReportError (null, new UserException ("Error while syncing", message));
 				}
 			}
 			
@@ -265,8 +267,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					outlet.CliType = resolved.CliName;
 				} else {
 					outlet.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (outlet.ObjCType);
-					monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on outlet {1} on type {2}",
-						outlet.ObjCType, outlet.ObjCName, type.ObjCName));
+
+					var message = string.Format ("Failed to resolve Objective-C outlet '{0}' of type '{1}' to a type in the current solution.", outlet.ObjCName, outlet.ObjCType);
+					message += string.Format (" If the type '{0}' exists, adding a [Register] attribute to the type will allow it to be synced correctly. Alternatively adding a [Register (\"{0}\")] attribute to any type will allow that type to be used while syncing.", outlet.ObjCType);
+					monitor.ReportError (null, new UserException ("Error while syncing", message));
 				}
 			}
 			
@@ -280,8 +284,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						param.CliType = resolved.CliName;
 					} else {
 						param.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (param.ObjCType);
-						monitor.ReportWarning (string.Format ("Failed to resolve Objective-C type {0} to CLI type on action parameter {1} for action {2} on type {3}",
-							param.ObjCType, param.Name, action.ObjCName, type.ObjCName));
+	
+						var message = string.Format ("Failed to resolve paramater '{0}' of type '{2}' on Objective-C action '{1}' to a type in the current solution.", param.Name, action.ObjCName, param.ObjCType);
+						message += string.Format (" If the type '{0}' exists, adding a [Register] attribute to the type will allow it to be synced correctly. Alternatively adding a [Register (\"{0}\")] attribute to any type will allow that type to be used while syncing.", param.ObjCType);
+						monitor.ReportError (null, new UserException ("Error while syncing", message));
 					}
 				}
 			}
