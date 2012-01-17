@@ -45,4 +45,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 		IExpressionFinder CreateExpressionFinder (ProjectDom dom);
 		IResolver         CreateResolver (ProjectDom dom, object editor, string fileName);
 	}
+	
+	public interface IFoldingParser
+	{
+		ParsedDocument Parse (string fileName, string content);
+	}
 }
