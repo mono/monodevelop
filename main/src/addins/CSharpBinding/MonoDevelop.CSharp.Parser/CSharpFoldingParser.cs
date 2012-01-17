@@ -100,11 +100,15 @@ namespace MonoDevelop.CSharp.Parser
 						break;
 					case '\n':
 						if (inSingleComment) {
+							bool isDocumentation = *beginPtr == '/';
+							if (isDocumentation)
+								beginPtr++;
 							result.Add (new Comment () { 
 								Region = new DomRegion (startLoc, new DomLocation (line, column)),
 								CommentType = CommentType.SingleLine, 
 								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
-								CommentStartsLine = hasStartedAtLine
+								CommentStartsLine = hasStartedAtLine,
+								IsDocumentation = isDocumentation
 							});
 							inSingleComment = false;
 						}
