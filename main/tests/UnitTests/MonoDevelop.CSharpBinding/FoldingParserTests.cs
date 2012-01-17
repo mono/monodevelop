@@ -170,6 +170,29 @@ using System;");
 				Assert.IsTrue (cmt.IsDocumentation);
 		}
 		
+		
+		[Test]
+		public void TestNestedSingeLineComment ()
+		{
+			Test (@"[/* 
+
+// Comment 
+
+*/]");
+		}		
+		
+		
+		
+		[Test]
+		public void TestNestedMultiLineComment ()
+		{
+			Test (@"[/* 
+
+/*
+
+*/]");
+		}		
+		
 	}
 }
 

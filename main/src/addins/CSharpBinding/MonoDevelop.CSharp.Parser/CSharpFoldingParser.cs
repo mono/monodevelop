@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Parser
 				while (ptr < endPtr) {
 					switch (*ptr) {
 					case '/':
-						if (inString || inChar || inVerbatimString)
+						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment)
 							break;
 						if (ptr + 1 < endPtr) {
 							char nextCh = *(ptr + 1);
