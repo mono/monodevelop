@@ -155,7 +155,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/FoldingParser">
-		<ExtensionNode name="Parser" type="MonoDevelop.Projects.CodeGeneration.MimeTypeExtensionNode"/>
+		<ExtensionNode name="Parser" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode"/>
 	</ExtensionPoint
 		>	
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Ambiences" name = "Language ambiences">

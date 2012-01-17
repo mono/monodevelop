@@ -150,6 +150,9 @@ namespace MonoDevelop.CSharp.Parser
 					ptr++;
 				}
 			}
+			foreach (var fold in result.Comments.ToFolds ()) {
+				result.Add (fold);
+			}
 			return result;
 		}
 		#endregion
