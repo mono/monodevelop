@@ -164,6 +164,10 @@
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/DocumentationGenerator">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/FoldingParser">
+		<ExtensionNode name="Parser" type="MonoDevelop.Projects.CodeGeneration.MimeTypeExtensionNode"/>
+	</ExtensionPoint>
 	<!-- Extensions -->
 	
 	

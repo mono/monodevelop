@@ -46,6 +46,13 @@ namespace MonoDevelop.Projects.Dom.Parser
 		IResolver         CreateResolver (ProjectDom dom, object editor, string fileName);
 	}
 	
+	/// <summary>
+	/// The folding parser is used for generating a preliminary parsed document that does not
+	/// contain a full dom - only some basic lexical constructs like comments or pre processor directives.
+	/// 
+	/// This is useful for opening a document the first time to have some folding regions as start that are folded by default.
+	/// Otherwise an irritating screen update will occur.
+	/// </summary>
 	public interface IFoldingParser
 	{
 		ParsedDocument Parse (string fileName, string content);
