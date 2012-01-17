@@ -483,6 +483,15 @@ namespace MonoDevelop.SourceEditor
 		{
 			Load (fileName, null);
 		}
+
+		void RunFirstTimeFoldUpdate (string text)
+		{
+			if (string.IsNullOrEmpty (text)) 
+				return;
+			var foldingParser = TypeSystemService.GetFoldingParser (Document.MimeType);
+			if (foldingParser != null) 
+				widget.UpdateParsedDocument (foldingParser.Parse (Document.FileName, text));
+		}
 		
 		public void Load (string fileName, string encoding)
 		{
@@ -498,6 +507,7 @@ namespace MonoDevelop.SourceEditor
 			
 			// Look for a mime type for which there is a syntax mode
 			UpdateMimeType (fileName);
+			string text = null;
 			bool didLoadCleanly;
 			if (AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
@@ -506,7 +516,7 @@ namespace MonoDevelop.SourceEditor
 			} else {
 				TextFile file = TextFile.ReadFile (fileName, encoding);
 				inLoad = true;
-				Document.Text = file.Text;
+				Document.Text = text = file.Text;
 				inLoad = false;
 				this.encoding = file.SourceEncoding;
 				this.hadBom = file.HadBOM;
@@ -533,6 +543,7 @@ namespace MonoDevelop.SourceEditor
 			
 			ContentName = fileName;
 			lastSaveTime = File.GetLastWriteTime (ContentName);			
+			RunFirstTimeFoldUpdate (text);
 			
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
@@ -618,7 +629,7 @@ namespace MonoDevelop.SourceEditor
 			inLoad = false;
 			this.encoding = encoding;
 			ContentName = fileName;
-
+			RunFirstTimeFoldUpdate (content);
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 			UpdatePinnedWatches ();

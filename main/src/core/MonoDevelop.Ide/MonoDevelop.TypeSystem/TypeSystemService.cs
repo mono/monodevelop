@@ -42,6 +42,7 @@ using System.Xml;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -129,6 +130,18 @@ namespace MonoDevelop.TypeSystem
 		}
 	}
 	
+	/// <summary>
+	/// The folding parser is used for generating a preliminary parsed document that does not
+	/// contain a full dom - only some basic lexical constructs like comments or pre processor directives.
+	/// 
+	/// This is useful for opening a document the first time to have some folding regions as start that are folded by default.
+	/// Otherwise an irritating screen update will occur.
+	/// </summary>
+	public interface IFoldingParser
+	{
+		ParsedDocument Parse (string fileName, string content);
+	}	
+	
 	public static class TypeSystemService
 	{
 		static List<TypeSystemParserNode> parsers;
@@ -160,6 +173,34 @@ namespace MonoDevelop.TypeSystem
 			return provider != null ? provider.Parser : null;
 		}
 		
+		static List<MimeTypeExtensionNode> foldingParsers;
+		static IEnumerable<MimeTypeExtensionNode> FoldingParsers {
+			get {
+				if (foldingParsers == null) {
+					foldingParsers = new List<MimeTypeExtensionNode> ();
+					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/FoldingParser", delegate (object sender, ExtensionNodeEventArgs args) {
+						switch (args.Change) {
+						case ExtensionChange.Add:
+							foldingParsers.Add ((MimeTypeExtensionNode) args.ExtensionNode);
+							break;
+						case ExtensionChange.Remove:
+							foldingParsers.Remove ((MimeTypeExtensionNode) args.ExtensionNode);
+							break;
+						}
+					});
+				}
+				return foldingParsers;
+			}
+		}
+		
+		public static IFoldingParser GetFoldingParser (string mimeType)
+		{
+			var node = FoldingParsers.Where (n => n.MimeType == mimeType).FirstOrDefault ();
+			if (node == null)
+				return null;
+			return node.CreateInstance () as IFoldingParser;
+		}
+
 		public static ParsedDocument ParseFile (Project project, string fileName)
 		{
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), File.ReadAllText (fileName));

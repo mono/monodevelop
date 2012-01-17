@@ -347,6 +347,7 @@ namespace MonoDevelop.Projects
 					project.RenameReferences (e.OldName, e.NewName);
 				}
 			}
+			fileStatusTracker.ResetLoadTimes ();
 			base.OnNameChanged (e);
 		}
 		

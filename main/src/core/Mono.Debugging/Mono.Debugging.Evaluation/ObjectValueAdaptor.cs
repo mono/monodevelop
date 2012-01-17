@@ -65,6 +65,7 @@ namespace Mono.Debugging.Evaluation
 			try {
 				return CreateObjectValueImpl (ctx, source, path, obj, flags);
 			} catch (Exception ex) {
+				ctx.WriteDebuggerError (ex);
 				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
 			}
 		}
@@ -558,7 +559,7 @@ namespace Mono.Debugging.Evaluation
 							return data;
 						}
 					} catch (Exception ex) {
-						Console.WriteLine (ex);
+						ctx.WriteDebuggerError (ex);
 					}
 					i++;
 				}
@@ -897,7 +898,7 @@ namespace Mono.Debugging.Evaluation
 				td = OnGetTypeDisplayData (ctx, type);
 			}
 			catch (Exception ex) {
-				Console.WriteLine (ex);
+				ctx.WriteDebuggerError (ex);
 			}
 			if (td == null)
 				typeDisplayData[tname] = td = TypeDisplayData.Default;

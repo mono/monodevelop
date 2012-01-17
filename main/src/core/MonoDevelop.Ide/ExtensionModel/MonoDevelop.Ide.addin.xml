@@ -154,6 +154,10 @@
 		<ExtensionNode name="Parser" type="MonoDevelop.TypeSystem.TypeSystemParserNode"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/FoldingParser">
+		<ExtensionNode name="Parser" type="MonoDevelop.Projects.CodeGeneration.MimeTypeExtensionNode"/>
+	</ExtensionPoint
+		>	
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Ambiences" name = "Language ambiences">
 		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
 		<ExtensionNode name="Ambience" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode" />

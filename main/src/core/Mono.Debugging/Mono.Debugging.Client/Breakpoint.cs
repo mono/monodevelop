@@ -56,11 +56,11 @@ namespace Mono.Debugging.Client
 				fileName = s;
 			
 			s = elem.GetAttribute ("line");
-			if (!string.IsNullOrEmpty (s) || !int.TryParse (s, out line))
+			if (string.IsNullOrEmpty (s) || !int.TryParse (s, out line))
 				line = 1;
 			
 			//s = elem.GetAttribute ("column");
-			//if (!string.IsNullOrEmpty (s) || !int.TryParse (s, out column))
+			//if (string.IsNullOrEmpty (s) || !int.TryParse (s, out column))
 			//	column = 1;
 			
 			s = elem.GetAttribute ("conditionExpression");

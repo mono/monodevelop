@@ -43,6 +43,7 @@ using MonoDevelop.Core.Collections;
 using MonoDevelop.Projects;
 using Mono.Addins;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Projects.CodeGeneration;
 //using MonoDevelop.Projects.Dom.Database;
 
 namespace MonoDevelop.Projects.Dom.Parser
@@ -90,11 +91,25 @@ namespace MonoDevelop.Projects.Dom.Parser
 		
 		static Dictionary<string,ProjectDom> databases = new Dictionary<string,ProjectDom>();
 		static Dictionary<FilePath,SingleFileCacheEntry> singleDatabases = new Dictionary<FilePath,SingleFileCacheEntry> ();		
+		static List<MimeTypeExtensionNode> foldingParsers = new List<MimeTypeExtensionNode> ();
 		
 		static ProjectDomService ()
 		{
 			CodeCompletionPath = GetDefaultCompletionFileLocation ();
 			// for unit tests it may not have been initialized.
+			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/FoldingParser", delegate (object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					foldingParsers.Add ((MimeTypeExtensionNode) args.ExtensionNode);
+					break;
+				case ExtensionChange.Remove:
+					foldingParsers.Remove ((MimeTypeExtensionNode) args.ExtensionNode);
+					break;
+				}
+			});
+			
+			
 		}
 
 		public static RootTree HelpTree {
@@ -153,6 +168,14 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return Parsers.Where (n => n.Supports (fileName)).Select (n => n.Parser)
 				.Where (p => p.CanParse (fileName))
 				.FirstOrDefault ();
+		}
+		
+		public static IFoldingParser GetFoldingParser (string mimeType)
+		{
+			var node = foldingParsers.Where (n => n.MimeType == mimeType).FirstOrDefault ();
+			if (node == null)
+				return null;
+			return node.CreateInstance () as IFoldingParser;
 		}
 
 		#endregion
