@@ -253,7 +253,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					type.BaseCliType = defaultNamespace + "." + provider.CreateValidIdentifier (type.BaseObjCType);
 
 					var message = string.Format ("Failed to resolve Objective-C type '{0}' to a type in the current solution.", type.BaseObjCType);
-					message += string.Format (" If the type '{0}' exists, adding a [Register] attribute to the type will allow it to be synced correctly. Alternatively adding a [Register (\"{0}\")] attribute to any type will allow that type to be used while syncing.", type.BaseObjCType);
+					message += string.Format (" Adding a [Register (\"{0}\")] attribute to the class which corresponds to this will allow it to be synced to Objective-C.", type.BaseObjCType);
 					monitor.ReportError (null, new UserException ("Error while syncing", message));
 				}
 			}
@@ -269,7 +269,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					outlet.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (outlet.ObjCType);
 
 					var message = string.Format ("Failed to resolve Objective-C outlet '{0}' of type '{1}' to a type in the current solution.", outlet.ObjCName, outlet.ObjCType);
-					message += string.Format (" If the type '{0}' exists, adding a [Register] attribute to the type will allow it to be synced correctly. Alternatively adding a [Register (\"{0}\")] attribute to any type will allow that type to be used while syncing.", outlet.ObjCType);
+					message += string.Format (" Adding a [Register (\"{0}\")] attribute to the class which corresponds to this will allow it to be synced to Objective-C.", outlet.ObjCType);
 					monitor.ReportError (null, new UserException ("Error while syncing", message));
 				}
 			}
@@ -286,7 +286,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						param.CliType = defaultNamespace + "." + provider.CreateValidIdentifier (param.ObjCType);
 	
 						var message = string.Format ("Failed to resolve paramater '{0}' of type '{2}' on Objective-C action '{1}' to a type in the current solution.", param.Name, action.ObjCName, param.ObjCType);
-						message += string.Format (" If the type '{0}' exists, adding a [Register] attribute to the type will allow it to be synced correctly. Alternatively adding a [Register (\"{0}\")] attribute to any type will allow that type to be used while syncing.", param.ObjCType);
+						message += string.Format (" Adding a [Register (\"{0}\")] attribute to the class which corresponds to this will allow it to be synced to Objective-C.", param.ObjCType);
 						monitor.ReportError (null, new UserException ("Error while syncing", message));
 					}
 				}
