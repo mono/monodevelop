@@ -996,6 +996,7 @@ namespace Mono.TextEditor
 			var newSegments = (List<FoldSegment>)e.Argument;
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
+			bool foldedSegmentAdded = false;
 			newSegments.Sort ();
 			var newFoldedSegments = new HashSet<FoldSegment> ();
 			foreach (FoldSegment newFoldSegment in newSegments) {
@@ -1014,8 +1015,10 @@ namespace Mono.TextEditor
 					curSegment.EndColumn = curSegment.EndOffset - curSegment.EndLine.Offset + 1;
 					curSegment.Column = offset - curSegment.StartLine.Offset + 1;
 					
-					if (newFoldSegment.IsFolded)
+					if (newFoldSegment.IsFolded) {
+						foldedSegmentAdded |= !curSegment.IsFolded;
 						curSegment.isFolded = true;
+					}
 					if (curSegment.isFolded)
 						newFoldedSegments.Add (curSegment);
 					oldIndex++;
@@ -1025,6 +1028,7 @@ namespace Mono.TextEditor
 					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
 					newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
+					foldedSegmentAdded |= newFoldSegment.IsFolded;
 					if (oldIndex < oldSegments.Count && newFoldSegment.Length == oldSegments [oldIndex].Length) {
 						newFoldSegment.isFolded = oldSegments [oldIndex].IsFolded;
 					}
@@ -1037,17 +1041,19 @@ namespace Mono.TextEditor
 				RemoveFolding (oldSegments [oldIndex]);
 				oldIndex++;
 			}
+			bool countChanged = foldedSegments.Count != newFoldedSegments.Count;
 			if (worker != null) {
 				Gtk.Application.Invoke (delegate {
-					bool countChanged = foldedSegments.Count != newFoldedSegments.Count;
 					foldedSegments = newFoldedSegments;
 					InformFoldTreeUpdated ();
-					if (countChanged)
+					if (foldedSegmentAdded || countChanged)
 						CommitUpdateAll ();
 				});
 			} else {
 				foldedSegments = newFoldedSegments;
 				InformFoldTreeUpdated ();
+				if (foldedSegmentAdded || countChanged)
+					CommitUpdateAll ();
 			}
 		}
 		
