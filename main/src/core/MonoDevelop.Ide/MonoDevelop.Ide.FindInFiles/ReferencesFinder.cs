@@ -174,10 +174,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				yield break;
 			IParsedFile unit = null;
 			IEnumerable<object> searchNodes = new [] { member };
-			if (member is IVariable) { 
-				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).Region.FileName);
-				unit = doc.ParsedDocument;
-			} else if (member is IType) {
+			if (member is IType) {
 				var declaringPart = ((IType)member).GetDefinition ().Parts.FirstOrDefault ();
 				if (declaringPart != null)
 					unit = declaringPart.ParsedFile;
@@ -188,6 +185,9 @@ namespace MonoDevelop.Ide.FindInFiles
 					unit = declaringPart.ParsedFile;
 				if (member is IMethod)
 					searchNodes = CollectMembers (solution, (IMethod)member);
+			} else if (member is IVariable) { 
+				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).Region.FileName);
+				unit = doc.ParsedDocument;
 			}
 			
 			// prepare references finder
