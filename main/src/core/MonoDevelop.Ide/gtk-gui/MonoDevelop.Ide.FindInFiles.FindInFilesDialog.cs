@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.toggleFindInFiles.TooltipMarkup = "Switch to Find in Files";
 			this.toggleFindInFiles.CanFocus = true;
 			this.toggleFindInFiles.Name = "toggleFindInFiles";
+			this.toggleFindInFiles.Active = true;
 			this.toggleFindInFiles.DrawIndicator = false;
 			this.toggleFindInFiles.UseUnderline = true;
 			this.toggleFindInFiles.Relief = ((global::Gtk.ReliefStyle)(2));
