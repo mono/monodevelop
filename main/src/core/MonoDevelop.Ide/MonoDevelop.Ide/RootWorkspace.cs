@@ -83,7 +83,6 @@ namespace MonoDevelop.Ide
 			descendantItemRemovedHandler = (EventHandler<WorkspaceItemChangeEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemChangeEventArgs> (NotifyDescendantItemRemoved));
 			configurationsChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (NotifyConfigurationsChanged));
 			
-			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckFileRemove));
 			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (CheckFileRename));
 			
 			// Set the initial active runtime
@@ -1226,14 +1225,6 @@ namespace MonoDevelop.Ide
 					SolutionUnloaded (this, new SolutionEventArgs ((Solution)item));
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error in SolutionClosed event.", ex);
-			}
-		}
-
-		void CheckFileRemove(object sender, FileEventArgs e)
-		{
-			foreach (Solution sol in GetAllSolutions ()) {
-				foreach (FilePath p in e.Select (fi => fi.FileName))
-					sol.RootFolder.RemoveFileFromProjects (p);
 			}
 		}
 		
