@@ -501,10 +501,11 @@ namespace MonoDevelop.Projects.Dom
 		{
 			if (baseType.ToInvariantString () == type.ToInvariantString ())
 				return true;
-			ProjectDom dom = null;
 			if (CallingType == null) 
 				return false;
-			dom = CallingType.SourceProjectDom;
+			var dom = CallingType.SourceProjectDom;
+			if (dom == null)
+				return false;
 			IType b = dom.SearchType (CallingType.CompilationUnit, CallingType, CallingType.Location, baseType);
 			IType t = dom.SearchType (CallingType.CompilationUnit, CallingType, CallingType.Location, type);
 			if (b == null || t == null)
