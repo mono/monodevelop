@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Parser
 			bool inChar = false;
 			bool inLineStart = true, hasStartedAtLine = false;
 			int line = 1, column = 1;
-			DomLocation startLoc;
+			var startLoc = DomLocation.Empty;
 			
 			fixed (char* startPtr = content) {
 				char* endPtr = startPtr + content.Length;
