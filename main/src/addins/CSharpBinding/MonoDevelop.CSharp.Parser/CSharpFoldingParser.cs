@@ -26,7 +26,8 @@
 using System;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Dom;
-
+using System.Collections.Generic;
+ 
 namespace MonoDevelop.CSharp.Parser
 {
 	public unsafe class CSharpFoldingParser : IFoldingParser
@@ -35,14 +36,121 @@ namespace MonoDevelop.CSharp.Parser
 		public unsafe ParsedDocument Parse (string fileName, string content)
 		{
 			var result = new ParsedDocument (fileName);
+			bool inSingleComment = false, inMultiLineComment = false;
+			bool inString = false, inVerbatimString = false;
+			bool inChar = false;
+			bool inLineStart = true, hasStartedAtLine = false;
+			int line = 1, column = 1;
+			DomLocation startLoc;
+			
 			fixed (char* startPtr = content) {
 				char* endPtr = startPtr + content.Length;
 				char* ptr = startPtr;
+				char* beginPtr = ptr;
+				char nextCh;
 				while (ptr < endPtr) {
-					
+					switch (*ptr) {
+					case '/':
+						if (inString || inChar || inVerbatimString)
+							break;
+						nextCh = *(ptr + 1);
+						if (nextCh == '/') {
+							hasStartedAtLine = inLineStart;
+							beginPtr = ptr + 2;
+							startLoc = new DomLocation (line, column);
+							ptr++;
+							column++;
+							inSingleComment = true;
+						}
+						if (nextCh == '*') {
+							hasStartedAtLine = inLineStart;
+							beginPtr = ptr + 2;
+							startLoc = new DomLocation (line, column);
+							ptr++;
+							column++;
+							inMultiLineComment = true;
+						}
+						break;
+					case '*':
+						if (inString || inChar || inVerbatimString || inSingleComment)
+							break;
+						if (inMultiLineComment) {
+							nextCh = *(ptr + 1);
+							if (nextCh == '/') {
+								ptr += 2;
+								column += 2;
+								inMultiLineComment = false;
+								result.Add (new Comment () {
+									Region = new DomRegion (startLoc, new DomLocation (line, column)),
+									CommentType = CommentType.MultiLine,
+									Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
+									CommentStartsLine = hasStartedAtLine
+								});
+								continue;
+							}
+						}
+						break;
+					case '@':
+						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+							break;
+						nextCh = *(ptr + 1);
+						if (nextCh == '"') {
+							ptr++;
+							column++;
+							inVerbatimString = true;
+						}
+						break;
+					case '\n':
+						if (inSingleComment) {
+							result.Add (new Comment () { 
+								Region = new DomRegion (startLoc, new DomLocation (line, column)),
+								CommentType = CommentType.SingleLine, 
+								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
+								CommentStartsLine = hasStartedAtLine
+							});
+							inSingleComment = false;
+						}
+						inString = false;
+						inChar = false;
+						inLineStart = true;
+						line++;
+						column = 1;
+						ptr++;
+						continue;
+					case '\r':
+						nextCh = *(ptr + 1);
+						if (nextCh == '\n')
+							ptr++;
+						goto case '\n';
+					case '\\':
+						if (inString || inChar)
+							ptr++;
+						break;
+					case '"':
+						if (inSingleComment || inMultiLineComment || inChar)
+							break;
+						if (inVerbatimString) {
+							nextCh = *(ptr + 1);
+							if (nextCh == '"') {
+								ptr++;
+								column++;
+								break;
+							}
+							inVerbatimString = false;
+							break;
+						}
+						inString = !inString;
+						break;
+					case '\'':
+						if (inSingleComment || inMultiLineComment || inString || inVerbatimString)
+							break;
+						inChar = !inChar;
+						break;
+					}
+
+					column++;
 					ptr++;
 				}
-				
 			}
 			return result;
 		}

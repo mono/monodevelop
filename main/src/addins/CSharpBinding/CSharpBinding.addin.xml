@@ -91,6 +91,10 @@
 		<Parser class = "MonoDevelop.CSharp.Parser.McsParser" fileExtensions=".cs" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/FoldingParser">
+		<Parser class = "MonoDevelop.CSharp.Parser.CSharpFoldingParser" mimeType="text/x-csharp" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
 		<Class id = "C#" class = "MonoDevelop.CSharp.CSharpAmbience" />
 	</Extension>

@@ -21,6 +21,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -32,6 +33,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -244,6 +246,7 @@
     <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionWrappers.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextAction.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
