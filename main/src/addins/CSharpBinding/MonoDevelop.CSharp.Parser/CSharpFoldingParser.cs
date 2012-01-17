@@ -47,36 +47,35 @@ namespace MonoDevelop.CSharp.Parser
 				char* endPtr = startPtr + content.Length;
 				char* ptr = startPtr;
 				char* beginPtr = ptr;
-				char nextCh;
 				while (ptr < endPtr) {
 					switch (*ptr) {
 					case '/':
 						if (inString || inChar || inVerbatimString)
 							break;
-						nextCh = *(ptr + 1);
-						if (nextCh == '/') {
-							hasStartedAtLine = inLineStart;
-							beginPtr = ptr + 2;
-							startLoc = new DomLocation (line, column);
-							ptr++;
-							column++;
-							inSingleComment = true;
-						}
-						if (nextCh == '*') {
-							hasStartedAtLine = inLineStart;
-							beginPtr = ptr + 2;
-							startLoc = new DomLocation (line, column);
-							ptr++;
-							column++;
-							inMultiLineComment = true;
+						if (ptr + 1 < endPtr) {
+							char nextCh = *(ptr + 1);
+							if (nextCh == '/') {
+								hasStartedAtLine = inLineStart;
+								beginPtr = ptr + 2;
+								startLoc = new DomLocation (line, column);
+								ptr++;
+								column++;
+								inSingleComment = true;
+							} else if (nextCh == '*') {
+								hasStartedAtLine = inLineStart;
+								beginPtr = ptr + 2;
+								startLoc = new DomLocation (line, column);
+								ptr++;
+								column++;
+								inMultiLineComment = true;
+							}
 						}
 						break;
 					case '*':
 						if (inString || inChar || inVerbatimString || inSingleComment)
 							break;
-						if (inMultiLineComment) {
-							nextCh = *(ptr + 1);
-							if (nextCh == '/') {
+						if (inMultiLineComment && ptr + 1 < endPtr) {
+							if (ptr + 1 < endPtr && *(ptr + 1) == '/') {
 								ptr += 2;
 								column += 2;
 								inMultiLineComment = false;
@@ -93,8 +92,7 @@ namespace MonoDevelop.CSharp.Parser
 					case '@':
 						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
 							break;
-						nextCh = *(ptr + 1);
-						if (nextCh == '"') {
+						if (ptr + 1 < endPtr && *(ptr + 1) == '"') {
 							ptr++;
 							column++;
 							inVerbatimString = true;
@@ -118,8 +116,7 @@ namespace MonoDevelop.CSharp.Parser
 						ptr++;
 						continue;
 					case '\r':
-						nextCh = *(ptr + 1);
-						if (nextCh == '\n')
+						if (ptr + 1 < endPtr && *(ptr + 1) == '\n')
 							ptr++;
 						goto case '\n';
 					case '\\':
@@ -130,8 +127,7 @@ namespace MonoDevelop.CSharp.Parser
 						if (inSingleComment || inMultiLineComment || inChar)
 							break;
 						if (inVerbatimString) {
-							nextCh = *(ptr + 1);
-							if (nextCh == '"') {
+							if (ptr + 1 < endPtr && *(ptr + 1) == '"') {
 								ptr++;
 								column++;
 								break;
