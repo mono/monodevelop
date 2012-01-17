@@ -152,7 +152,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			TreeWalk treeWalk = new TreeWalk (Repository);
 			treeWalk.Reset ();
-			treeWalk.Recursive = false;
+			treeWalk.Recursive = recursive;
 
 			if (commit != null)
 				treeWalk.AddTree (commit.Tree);
