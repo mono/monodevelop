@@ -239,26 +239,33 @@ namespace MonoDevelop.Core.Assemblies
 			return aname;
 		}
 		
+		static Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
 		internal static System.Reflection.AssemblyName GetAssemblyNameObj (string file)
 		{
-			try {
-				AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
-				return new AssemblyName (asm.Name.FullName);
+			lock (assemblyNameCache) {
+				AssemblyName name;
+				if (assemblyNameCache.TryGetValue (file, out name))
+					return name;
 				
-				// Don't use reflection to get the name since it is a common cause for deadlocks
-				// in Mono < 2.6.
-				// return System.Reflection.AssemblyName.GetAssemblyName (file);
+				try {
+					AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
+					assemblyNameCache [file] = new AssemblyName (asm.Name.FullName);
+				return assemblyNameCache [file];
 				
-			} catch (FileNotFoundException) {
-				// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
-				foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
-					if (f != file)
-						return GetAssemblyNameObj (f);
+					// Don't use reflection to get the name since it is a common cause for deadlocks
+					// in Mono < 2.6.
+					// return System.Reflection.AssemblyName.GetAssemblyName (file);
+				
+				} catch (FileNotFoundException) {
+					// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
+					foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
+						if (f != file) {
+							assemblyNameCache [file] = GetAssemblyNameObj (f);
+							return assemblyNameCache [file];
+						}
+					}
+					throw;
 				}
-				throw;
-			} catch (BadImageFormatException) {
-				AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
-				return new AssemblyName (asm.Name.FullName);
 			}
 		}
 		
