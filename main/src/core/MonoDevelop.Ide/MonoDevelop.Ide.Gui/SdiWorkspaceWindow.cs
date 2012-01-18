@@ -472,14 +472,18 @@ namespace MonoDevelop.Ide.Gui
 			// If this is the current displayed document
 			// we need to add the control immediately as the
 			// tab is already active.
-			if (addedContent )
+			if (addedContent) {
 				widgetBox.Add (viewContent.Control);
+				widgetBox.ShowAll ();
+			}
 			
 			subViewToolbar.AddTab (tab);
 			subViewNotebook.AppendPage (widgetBox, new Gtk.Label ());
 			tab.Activated += (sender, e) => {
-				if (!addedContent)
+				if (!addedContent) {
 					widgetBox.Add (viewContent.Control);
+					widgetBox.ShowAll ();
+				}
 				addedContent = true;
 				SetCurrentView ((int)((Tab)sender).Tag);
 				QueueDraw ();
