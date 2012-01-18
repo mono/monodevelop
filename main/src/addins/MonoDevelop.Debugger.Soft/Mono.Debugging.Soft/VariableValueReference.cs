@@ -67,10 +67,7 @@ namespace Mono.Debugging.Soft
 				try {
 					return ctx.Frame.GetValue (variable);
 				} catch (AbsentInformationException) {
-					if (((SoftDebuggerSession) ctx.Session).IsExternalCode (ctx.Frame))
-						throw new EvaluatorException ("Value not available");
-					
-					throw;
+					throw new EvaluatorException ("Value not available");
 				}
 			}
 			set {

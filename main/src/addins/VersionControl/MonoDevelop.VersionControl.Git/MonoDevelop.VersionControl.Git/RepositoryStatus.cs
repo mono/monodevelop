@@ -50,6 +50,48 @@ using NGit.Treewalk.Filter;
 
 namespace MonoDevelop.VersionControl.Git
 {
+	class SpecificStatus : NGit.Api.StatusCommand
+	{
+		WorkingTreeIterator iter;
+		IEnumerable<string> Files {
+			get; set;
+		}
+		
+		public SpecificStatus (NGit.Repository repository)
+			: base (repository)
+		{
+		}
+		
+		public SpecificStatus (NGit.Repository repository, IEnumerable<string> files)
+			: base (repository)
+		{
+			Files = files;
+		}
+		
+		public override void SetWorkingTreeIt (WorkingTreeIterator workingTreeIt)
+		{
+			iter = workingTreeIt;
+		}
+		
+		public override NGit.Api.Status Call ()
+		{
+			if (iter == null)
+				iter = new FileTreeIterator(repo);
+			
+			IndexDiff diff = new IndexDiff(repo, Constants.HEAD, iter);
+			if (Files != null) {
+				var filters = Files.Select (PathFilter.Create).ToArray ();
+				if (filters.Length > 1)
+					diff.SetFilter (OrTreeFilter.Create (filters));
+				else
+					diff.SetFilter (filters [0]);
+			}
+			
+			diff.Diff ();
+			return new NGit.Api.Status(diff);
+		}
+	}
+	
 	public class RepositoryStatus
 	{
 		private string _root_path;
@@ -133,11 +175,37 @@ namespace MonoDevelop.VersionControl.Git
 			MergeConflict = new HashSet<string>();
 			
 			if (_file_paths != null)
-				UpdateDirectory (_file_paths, false);
+				UpdateSingleFiles (_file_paths.ToList ());
 			else if (_recursive)
 				UpdateDirectory (new string[] { _root_path }, true);
 			else
 				UpdateDirectory (new string[] { _root_path }, false);
+		}
+		
+		void UpdateSingleFiles (List<string> singleFiles)
+		{
+			var status = new SpecificStatus (Repository, singleFiles).Call ();
+			
+			foreach (var v in status.GetAdded ())
+				Added.Add (v);
+			
+			foreach (var v in status.GetChanged ())
+				Modified.Add (v);
+			
+			foreach (var v in status.GetConflicting ())
+				MergeConflict.Add (v);
+			
+			foreach (var v in status.GetMissing ())
+				Missing.Add (v);
+			
+			foreach (var v in status.GetModified ())
+				Modified.Add (v);
+				
+			foreach (var v in status.GetRemoved ())
+				Removed.Add (v);
+			
+			foreach (var v in status.GetUntracked ())
+				Untracked.Add (v);
 		}
 
 		/// <summary>
@@ -152,7 +220,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			TreeWalk treeWalk = new TreeWalk (Repository);
 			treeWalk.Reset ();
-			treeWalk.Recursive = false;
+			treeWalk.Recursive = recursive;
 
 			if (commit != null)
 				treeWalk.AddTree (commit.Tree);

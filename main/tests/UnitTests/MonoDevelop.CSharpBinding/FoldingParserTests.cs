@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 	[TestFixture]
 	public class FoldingParserTests
 	{
-		static void Test (string code)
+		static ParsedDocument Test (string code)
 		{
 			var parser = new CSharpFoldingParser ();
 			var sb = new StringBuilder ();
@@ -78,6 +78,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			foreach (var generated in generatedFoldings) {
 				Assert.IsTrue (foldingList.Any (f => f == generated.Region), "fold not found:" + generated.Region);
 			}
+			return doc;
 		}
 		
 		[Test]
@@ -153,6 +154,46 @@ using System;");
 	#endregion]
 }");
 		}
+		
+	
+		[Test]
+		public void TestDocComment ()
+		{
+			var doc = Test (@"class Test
+{
+	[/// <summary>
+	/// Test
+	/// </summary>]
+	void FooBar ()
+	{
+	}
+}");
+			foreach (var cmt in doc.Comments)
+				Assert.IsTrue (cmt.IsDocumentation);
+		}
+		
+		
+		[Test]
+		public void TestNestedSingeLineComment ()
+		{
+			Test (@"[/* 
+
+// Comment 
+
+*/]");
+		}		
+		
+		
+		
+		[Test]
+		public void TestNestedMultiLineComment ()
+		{
+			Test (@"[/* 
+
+/*
+
+*/]");
+		}		
 		
 	}
 }

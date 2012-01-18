@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Parser
 				while (ptr < endPtr) {
 					switch (*ptr) {
 					case '/':
-						if (inString || inChar || inVerbatimString)
+						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment)
 							break;
 						if (ptr + 1 < endPtr) {
 							char nextCh = *(ptr + 1);
@@ -102,11 +102,16 @@ namespace MonoDevelop.CSharp.Parser
 						break;
 					case '\n':
 						if (inSingleComment) {
+							bool isDocumentation = *beginPtr == '/';
+							if (isDocumentation)
+								beginPtr++;
+							
 							result.Add (new MonoDevelop.TypeSystem.Comment () { 
 								Region = new DomRegion (startLoc, new TextLocation (line, column)),
 								CommentType = CommentType.SingleLine, 
 								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
-								CommentStartsLine = hasStartedAtLine
+								CommentStartsLine = hasStartedAtLine,
+								IsDocumentation = isDocumentation
 							});
 							inSingleComment = false;
 						}
