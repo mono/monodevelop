@@ -334,7 +334,99 @@ namespace MonoDevelop.Projects.Text
 			WriteFile (name, text.ToString (), sourceEncoding, HadBOM);
 			modified = false;
 		}
+		
+		public static void WriteFile (FilePath fileName, byte[] content, string encoding, ByteOrderMark bom, bool onlyIfChanged)
+		{
+			int contentLength = content.Length + (bom != null ? bom.Length : 0);
+			byte[] converted;
+			
+			if (encoding != null)
+				converted = ConvertToBytes (content, content.LongLength, encoding, "UTF-8");
+			else
+				converted = content;
+			
+			if (onlyIfChanged) {
+				FileInfo finfo = new FileInfo (fileName);
+				if (finfo.Length == contentLength) {
+					bool changed = false;
+					
+					// Open the file on disk and compare them byte by byte...
+					using (FileStream stream = finfo.Open (FileMode.Open, FileAccess.Read, FileShare.Read)) {
+						byte[] buf = new byte [4096];
+						int bomOffset = 0;
+						int offset = 0;
+						int nread;
+						int i;
+						
+						while (!changed && (nread = stream.Read (buf, 0, buf.Length)) > 0) {
+							i = 0;
+							
+							if (bom != null && bomOffset < bom.Length) {
+								while (i < nread && bomOffset < bom.Length) {
+									if (bom.Bytes[bomOffset] != buf[i]) {
+										changed = true;
+										break;
+									}
+									
+									bomOffset++;
+									i++;
+								}
+								
+								if (changed)
+									break;
+							}
+							
+							while (i < nread && offset < converted.Length) {
+								if (converted[offset] != buf[i]) {
+									changed = true;
+									break;
+								}
+								
+								offset++;
+								i++;
+							}
+							
+							if (offset == converted.Length && i < nread)
+								changed = true;
+						}
+						
+						if (offset < converted.Length)
+							changed = true;
+					}
+					
+					if (!changed)
+						return;
+				}
+				
+				// Content has changed...
+			}
+			
+			string tempName = Path.GetDirectoryName (fileName) + 
+				Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
+			FileStream fs = new FileStream (tempName, FileMode.Create, FileAccess.Write);
+			
+			if (bom != null)
+				fs.Write (bom.Bytes, 0, bom.Length);
+			
+			fs.Write (converted, 0, converted.Length);
+			fs.Flush ();
+			fs.Close ();
 
+			FileService.SystemRename (tempName, fileName);
+		}
+		
+		public static void WriteFile (FilePath fileName, string content, string encoding, ByteOrderMark bom, bool onlyIfChanged)
+		{
+			byte[] buf = Encoding.UTF8.GetBytes (content);
+			
+			WriteFile (fileName, buf, encoding, bom, onlyIfChanged);
+		}
+		
+		public static void WriteFile (FilePath fileName, string content, ByteOrderMark bom, bool onlyIfChanged)
+		{
+			WriteFile (fileName, content, bom != null ? bom.Name : null, bom, onlyIfChanged);
+		}
+		
 		public static void WriteFile (FilePath fileName, string content, string encoding)
 		{
 			WriteFile (fileName, content, encoding, false);
@@ -342,24 +434,9 @@ namespace MonoDevelop.Projects.Text
 		
 		public static void WriteFile (FilePath fileName, string content, string encoding, bool saveBOM)
 		{
-			byte[] buf = Encoding.UTF8.GetBytes (content);
-			ByteOrderMark bom;
+			ByteOrderMark bom = saveBOM && encoding != null ? ByteOrderMark.GetByName (encoding) : null;
 			
-			if (encoding != null)
-				buf = ConvertToBytes (buf, buf.LongLength, encoding, "UTF-8");
-			
-			string tempName = Path.GetDirectoryName (fileName) + 
-				Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
-			FileStream fs = new FileStream (tempName, FileMode.Create, FileAccess.Write);
-			
-			if (saveBOM && (bom = ByteOrderMark.GetByName (encoding)) != null)
-				fs.Write (bom.Bytes, 0, bom.Length);
-			
-			fs.Write (buf, 0, buf.Length);
-			fs.Flush ();
-			fs.Close ();
-
-			FileService.SystemRename (tempName, fileName);
+			WriteFile (fileName, content, encoding, bom, false);
 		}
 	}
 	
