@@ -35,6 +35,7 @@ using System.Runtime.InteropServices;
 using Mono.Unix;
 using Mono.Unix.Native;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Utility;
 
 namespace MonoDevelop.Projects.Text
 {
@@ -73,42 +74,6 @@ namespace MonoDevelop.Projects.Text
 			return tf;
 		}
 		
-		class BOM 
-		{
-			public string Enc {
-				get;
-				private set;
-			}
-			
-			public byte[] Bytes {
-				get;
-				private set;
-			}
-			
-			public BOM (string enc, byte[] bytes)
-			{
-				this.Enc = enc;
-				this.Bytes = bytes;
-			}
-		}
-		
-		static readonly BOM[] bomTable = new [] {
-			new BOM ("UTF-8", new byte[] {0xEF, 0xBB, 0xBF}),
-			new BOM ("UTF-32BE", new byte[] {0x00, 0x00, 0xFE, 0xFF}),
-			new BOM ("UTF-32LE", new byte[] {0xFF, 0xFE, 0x00, 0x00}),
-			new BOM ("UTF-16BE", new byte[] {0xFE, 0xFF}),
-			new BOM ("UTF-16LE", new byte[] {0xFF, 0xFE}),
-			new BOM ("UTF-7", new byte[] {0x2B, 0x2F, 0x76, 0x38}),
-			new BOM ("UTF-7", new byte[] {0x2B, 0x2F, 0x76, 0x39}),
-			new BOM ("UTF-7", new byte[] {0x2B, 0x2F, 0x76, 0x2B}),
-			new BOM ("UTF-7", new byte[] {0x2B, 0x2F, 0x76, 0x2F}),
-			new BOM ("UTF-1", new byte[] {0xF7, 0x64, 0x4C}),
-			new BOM ("UTF-EBCDIC", new byte[] {0xDD, 0x73, 0x66, 073}),
-			new BOM ("SCSU", new byte[] {0x0E, 0xFE, 0xFF}),
-			new BOM ("BOCU-1", new byte[] {0xFB, 0xEE, 0x28}),
-			new BOM ("GB18030",new byte[] {0x84, 0x31, 0x95, 0x33}),
-		};
-
 		public void Read (FilePath fileName, string encoding)
 		{
 			// Reads the file using the specified encoding.
@@ -118,68 +83,61 @@ namespace MonoDevelop.Projects.Text
 			this.name = fileName;
 			
 			FileInfo f = new FileInfo (fileName);
-			byte[] content = new byte [f.Length];
+			ByteOrderMark bom = null;
+			byte[] content = null;
+			long nread;
 			
+		retry:
 			using (FileStream stream = f.Open (FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				int n = 0, nc;
-				while ((nc = stream.Read (content, n, (content.Length - n))) > 0)
-					n += nc;
+				if (encoding == null) {
+					if (ByteOrderMark.TryParse (stream, out bom))
+						stream.Seek (bom.Length, SeekOrigin.Begin);
+					else
+						stream.Seek (0, SeekOrigin.Begin);
+				}
+				
+				content = new byte [bom != null ? f.Length - bom.Length : f.Length];
+				nread = 0;
+				
+				int n;
+				while ((n = stream.Read (content, (int) nread, (content.Length - (int) nread))) > 0)
+					nread += n;
 			}
 			
 			if (encoding != null) {
-				string s = ConvertFromEncoding (content, encoding);
+				string s = ConvertFromEncoding (content, nread, encoding);
 				if (s == null) {
-					Read (fileName, null);
-					return;
-				}	
+					// The encoding provided was wrong, fall back to trying to use the BOM if it exists...
+					encoding = null;
+					content = null;
+					goto retry;
+				}
+				
 				text = new StringBuilder (s);
 				sourceEncoding = encoding;
-			} else {
-				string enc = (from bom in bomTable where content.StartsWith (bom.Bytes) select bom.Enc).FirstOrDefault ();
-				if (!string.IsNullOrEmpty (enc)) {
-					// remove the BOM (see bug Bug 538827 – Pango crash when opening a specific file)
-					byte[] bomBytes = (from bom in bomTable where enc == bom.Enc select bom.Bytes).FirstOrDefault ();
-					if (bomBytes != null && bomBytes.Length > 0) {
-						byte[] newContent = new byte [content.Length - bomBytes.Length];
-						Array.Copy (content, bomBytes.Length, newContent, 0, newContent.Length);
-						content = newContent;
-					}
-					string s = ConvertFromEncoding (content, enc);
+				return;
+			} else if (bom != null) {
+				string s = ConvertFromEncoding (content, nread, bom.Name);
 				
-					if (s != null) {
-						HadBOM = true;
-						sourceEncoding = enc;
-						text = new StringBuilder (s);
-						return;
-					}
-				}
-				HadBOM = false;
-				
-				foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
-					string s = ConvertFromEncoding (content, co.Id);
-					if (s != null) {
-						sourceEncoding = co.Id;
-						text = new StringBuilder (s);
-						return;
-					}
-				}
-				
-/*				if (string.IsNullOrEmpty (enc))
-					enc = "UTF-8";
-				string s = Convert (content, "UTF-8", enc);
 				if (s != null) {
-					sourceEncoding = enc;
+					HadBOM = true;
+					sourceEncoding = bom.Name;
 					text = new StringBuilder (s);
 					return;
 				}
-				enc = "ISO-8859-15";
-				s = Convert (content, "UTF-8", enc);
-				sourceEncoding = enc;
-				text = new StringBuilder (s);
-*/
-				throw new Exception ("Unknown text file encoding");
-				
 			}
+			
+			// Fall back to trying all the encodings...
+			foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
+				string s = ConvertFromEncoding (content, nread, co.Id);
+				if (s != null) {
+					sourceEncoding = co.Id;
+					text = new StringBuilder (s);
+					return;
+				}
+			}
+			
+			throw new Exception ("Unknown text file encoding");
 		}
 
 		public static string GetFileEncoding (FilePath fileName)
@@ -191,10 +149,10 @@ namespace MonoDevelop.Projects.Text
 		
 		#region g_convert
 
-		static string ConvertFromEncoding (byte[] content, string fromEncoding)
+		static string ConvertFromEncoding (byte[] content, long nread, string fromEncoding)
 		{
 			try {
-				return Encoding.UTF8.GetString (ConvertToBytes (content, "UTF-8", fromEncoding));
+				return Encoding.UTF8.GetString (ConvertToBytes (content, nread, "UTF-8", fromEncoding));
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Fail to use encoding " + fromEncoding, e);
 				return null;
@@ -230,12 +188,13 @@ namespace MonoDevelop.Projects.Text
 			return System.Text.Encoding.UTF8.GetString (bytes);
 		}
 		
-		static byte[] ConvertToBytes (byte[] content, string toEncoding, string fromEncoding)
+		static byte[] ConvertToBytes (byte[] content, long nread, string toEncoding, string fromEncoding)
 		{
-			if (content.LongLength > int.MaxValue)
+			if (nread > int.MaxValue)
 				throw new Exception ("Content too large.");
+			
 			IntPtr nr = IntPtr.Zero, nw = IntPtr.Zero;
-			IntPtr clPtr = new IntPtr (content.Length);
+			IntPtr clPtr = new IntPtr (nread);
 			IntPtr errptr = IntPtr.Zero;
 			
 			IntPtr cc = g_convert (content, clPtr, toEncoding, fromEncoding, ref nr, ref nw, ref errptr);
@@ -274,8 +233,7 @@ namespace MonoDevelop.Projects.Text
 		}
 		
 		public bool HadBOM {
-			get;
-			set;
+			get; private set;
 		}
 		
 		public bool Modified {
@@ -385,19 +343,17 @@ namespace MonoDevelop.Projects.Text
 		public static void WriteFile (FilePath fileName, string content, string encoding, bool saveBOM)
 		{
 			byte[] buf = Encoding.UTF8.GetBytes (content);
+			ByteOrderMark bom;
 			
 			if (encoding != null)
-				buf = ConvertToBytes (buf, encoding, "UTF-8");
+				buf = ConvertToBytes (buf, buf.LongLength, encoding, "UTF-8");
 			
 			string tempName = Path.GetDirectoryName (fileName) + 
 				Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
 			FileStream fs = new FileStream (tempName, FileMode.Create, FileAccess.Write);
 			
-			if (saveBOM) {
-				byte[] bytes = (from bom in bomTable where bom.Enc == encoding select bom.Bytes).FirstOrDefault ();
-				if (bytes != null)
-					fs.Write (bytes, 0, bytes.Length);
-			}
+			if (saveBOM && (bom = ByteOrderMark.GetByName (encoding)) != null)
+				fs.Write (bom.Bytes, 0, bom.Length);
 			
 			fs.Write (buf, 0, buf.Length);
 			fs.Flush ();
