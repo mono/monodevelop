@@ -1036,13 +1036,18 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		public static ICompilation LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
-		{ // TODO: Runtimes
-/*			var asm = ReadAssembly (fileName);
+		{
+			var asm = ReadAssembly (fileName);
 			if (asm == null)
 				return null;
-			var result = new CecilLoader ().LoadAssembly (asm);
-			return result;*/
-			return null;
+			var loc = runtime.AssemblyContext.GetAssemblyLocation ("mscorlib", null);
+			
+			var mscorlibAsm = loc != fileName ? ReadAssembly (loc) : asm;
+			
+			var unresolvedAssembly = new CecilLoader ().LoadAssembly (asm);
+			var mscorlib = new CecilLoader ().LoadAssembly (mscorlibAsm);
+			
+			return new SimpleCompilation (unresolvedAssembly, mscorlib);
 		}
 		
 		public static IProjectContent GetProjectContext (Project project)
