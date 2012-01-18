@@ -375,7 +375,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void LoadStatus (List<VersionInfo> newList)
 		{
-			statuses = newList;
+			statuses = newList.Where (f => FileVisible (f)).ToList ();
 			
 			// Remove from the changeset files/folders which have been deleted
 			var toRemove = new List<ChangeSetItem> ();
@@ -933,7 +933,26 @@ namespace MonoDevelop.VersionControl.Views
 				delegate {
 					ddata.diffException = null;
 					try {
-						ddata.difs = vc.PathDiff (filepath, null, remote);
+						List<DiffInfo> diffs = new List<DiffInfo> ();
+						// Calling GenerateDiff and supplying the versioninfo
+						// is the new fast way of doing things. If we do not get
+						// the same number of diffs as VersionInfos, we should
+						// fall back to the old slow method as the VC addin probably
+						// has not implemented the new fast one.
+						// The new way can also only be used locally.
+						if (!remote) {
+							foreach (var vi in statuses) {
+								var diff = vc.GenerateDiff (filepath, vi);
+								if (diff == null)
+									break;
+								diffs.Add (diff);
+							}
+						}
+					
+						if (diffs.Count == statuses.Count)
+							ddata.difs = diffs.ToArray ();
+						else
+							ddata.difs = vc.PathDiff (filepath, null, remote);
 					} catch (Exception ex) {
 						ddata.diffException = ex;
 					} finally {
