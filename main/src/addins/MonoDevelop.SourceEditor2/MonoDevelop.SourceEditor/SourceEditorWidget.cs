@@ -775,8 +775,16 @@ namespace MonoDevelop.SourceEditor
 			if (firstLine != null && firstLine.DelimiterLength > 0) {
 				string firstDelimiter = Document.GetTextAt (firstLine.EditableLength, firstLine.DelimiterLength);
 				if (firstDelimiter != TextEditor.Options.DefaultEolMarker) {
-					ShowIncorretEolMarkers (fileName, encoding);
-					return false;
+					switch (DefaultSourceEditorOptions.Instance.LineEndingConversion) {
+					case LineEndingConversion.Ask:
+						ShowIncorretEolMarkers (fileName, encoding);
+						return false;
+					case LineEndingConversion.ConvertAlways:
+						ConvertLineEndings ();
+						return true;
+					default:
+						return true;
+					}
 				}
 			}
 			return true;

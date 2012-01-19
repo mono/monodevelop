@@ -40,6 +40,12 @@ namespace MonoDevelop.SourceEditor
 		
 	}
 	
+	public enum LineEndingConversion {
+		Ask,
+		LeaveAsIs,
+		ConvertAlways
+	}
+	
 	public class DefaultSourceEditorOptions : TextEditorOptions, ISourceEditorOptions
 	{
 		static DefaultSourceEditorOptions instance;
@@ -451,6 +457,21 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 		}
+		
+		LineEndingConversion lineEndingConversion;
+		public LineEndingConversion LineEndingConversion {
+			get {
+				return lineEndingConversion;
+			}
+			set {
+				if (value != this.lineEndingConversion) {
+					this.lineEndingConversion = value;
+					PropertyService.Set ("LineEndingConversion", value);
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
 		#endregion
 		
 		bool useViModes = false;
