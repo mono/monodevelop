@@ -251,16 +251,27 @@ namespace MonoDevelop.CSharp
 			var unit = Document.ParsedDocument;
 			if (unit == null || unit.ParsedFile == null)
 				return;
+			
+			var offset = Document.Editor.Caret.Offset;
 			var loc = Document.Editor.Caret.Location;
-			var currentType = unit.GetInnermostTypeDefinition (loc);
-			if (currentType == null)
+			var ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
+			
+			var currentType = ext != null && ext.typeSystemSegmentTree != null ? ext.typeSystemSegmentTree.GetTypeAt (offset) : unit.GetInnermostTypeDefinition (loc);
+			
+			if (currentType == null) {
+				if (CurrentPath != null && CurrentPath.Length > 0) {
+					var prev = CurrentPath;
+					CurrentPath = new PathEntry[0];
+					OnPathChanged (new DocumentPathChangedEventArgs (prev));	
+				}
 				return;
+			}
 			
 			ThreadPool.QueueUserWorkItem (delegate {
 				var result = new List<PathEntry> ();
 				var amb = GetAmbience ();
-			
-				var typeDef = currentType.Resolve (unit.GetTypeResolveContext (document.Compilation, loc)).GetDefinition ();
+				var resolveCtx = unit.GetTypeResolveContext (document.Compilation, loc);
+				var typeDef = currentType.Resolve (resolveCtx).GetDefinition ();
 				if (typeDef != null) {
 					var curType = typeDef;
 					while (curType != null) {
@@ -272,8 +283,15 @@ namespace MonoDevelop.CSharp
 						curType = curType.DeclaringTypeDefinition;
 					}
 				}
+				IMember member = null;
+				if (ext != null && ext.typeSystemSegmentTree != null) {
+					var unresolvedMember = ext.typeSystemSegmentTree.GetMemberAt (offset);
+					if (unresolvedMember != null)
+						member = unresolvedMember.CreateResolved (resolveCtx);
+				} else {
+					member = typeDef != null && typeDef.Kind != TypeKind.Delegate ? typeDef.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (loc)) : null;
+				}
 				
-				var member = typeDef != null && typeDef.Kind != TypeKind.Delegate ? typeDef.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (loc)) : null;
 				if (member != null) {
 					var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
 					result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member });

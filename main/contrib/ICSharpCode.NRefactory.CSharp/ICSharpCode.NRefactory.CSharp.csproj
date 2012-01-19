@@ -321,6 +321,7 @@
     <Compile Include="TypeSystem\TypeOrNamespaceReference.cs" />
     <Compile Include="TypeSystem\TypeSystemConvertVisitor.cs" />
     <Compile Include="TypeSystem\UsingScope.cs" />
+    <Compile Include="Completion\IMemberProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

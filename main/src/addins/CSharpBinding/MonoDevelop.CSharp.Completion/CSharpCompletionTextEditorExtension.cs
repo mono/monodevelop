@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -140,6 +141,12 @@ namespace MonoDevelop.CSharp.Completion
 			var newDocument = Document.ParsedDocument;
 			if (newDocument == null) 
 				return;
+			var newTree = TypeSystemSegmentTree.Create (Document);
+			if (typeSystemSegmentTree != null)
+				typeSystemSegmentTree.RemoveListener (document.Editor.Document);
+			typeSystemSegmentTree = newTree;
+			typeSystemSegmentTree.InstallListener (document.Editor.Document);
+			
 			this.Unit = newDocument.Annotation<CompilationUnit> ();
 			this.CSharpParsedFile = newDocument.Annotation<CSharpParsedFile> ();
 			var textEditor = Editor.Parent;
@@ -205,6 +212,7 @@ namespace MonoDevelop.CSharp.Completion
 				Unit,
 				CSharpParsedFile
 			);
+			engine.MemberProvider = typeSystemSegmentTree;
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
 			engine.EolMarker = textEditorData.EolMarker;
 			engine.IndentString = textEditorData.Options.IndentationString;
@@ -350,6 +358,7 @@ namespace MonoDevelop.CSharp.Completion
 				Unit,
 				CSharpParsedFile
 			);
+			engine.MemberProvider = typeSystemSegmentTree;
 			return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar);
 		}
 		
@@ -419,6 +428,7 @@ namespace MonoDevelop.CSharp.Completion
 				Unit,
 				CSharpParsedFile
 			);
+			engine.MemberProvider = typeSystemSegmentTree;
 			return engine.GetCurrentParameterIndex (document.Editor.Caret.Offset);
 		}
 		/*
@@ -567,7 +577,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new MethodParameterDataProvider (this, par1);
 		}
-
+		
 		public IParameterDataProvider CreateMethodDataProvider (IMethod method)
 		{
 			return new MethodParameterDataProvider (this, method);
@@ -581,6 +591,77 @@ namespace MonoDevelop.CSharp.Completion
 		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (IType type, AstNode resolvedNode)
 		{
 			return new IndexerParameterDataProvider (this, type, resolvedNode);
+		}
+		#endregion
+		
+		#region TypeSystemSegmentTree
+		
+		internal TypeSystemSegmentTree typeSystemSegmentTree;
+		
+		internal class TypeSystemTreeSegment : TreeSegment
+		{
+			public IUnresolvedEntity Entity {
+				get;
+				private set;
+			}
+			
+			public TypeSystemTreeSegment (int offset, int length, IUnresolvedEntity entity) : base (offset, length)
+			{
+				this.Entity = entity;
+			}
+		}
+		
+		internal class TypeSystemSegmentTree : SegmentTree<TypeSystemTreeSegment>, IMemberProvider
+		{
+			public IUnresolvedTypeDefinition GetTypeAt (int offset)
+			{
+				IUnresolvedTypeDefinition result = null;
+				foreach (var seg in GetSegmentsAt (offset).Where (s => s.Entity is IUnresolvedTypeDefinition)) {
+					if (result == null || result.Region.IsInside (seg.Entity.Region.Begin))
+						result = (IUnresolvedTypeDefinition)seg.Entity;
+				}
+				return result;
+			}
+			
+			public IUnresolvedMember GetMemberAt (int offset)
+			{
+				// Members don't overlap
+				var seg = GetSegmentsAt (offset).FirstOrDefault (s => s.Entity is IUnresolvedMember);
+				if (seg == null)
+					return null;
+				return (IUnresolvedMember)seg.Entity;
+			}
+			
+			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Gui.Document document)
+			{
+				TypeSystemSegmentTree result = new TypeSystemSegmentTree ();
+				
+				foreach (var type in document.ParsedDocument.TopLevelTypeDefinitions)
+					AddType (document, result, type);
+				
+				return result;
+			}
+			
+			static void AddType (MonoDevelop.Ide.Gui.Document document, TypeSystemSegmentTree result, IUnresolvedTypeDefinition type)
+			{
+				int offset = document.Editor.LocationToOffset (type.Region.Begin);
+				int endOffset = document.Editor.LocationToOffset (type.Region.End);
+				result.Add (new TypeSystemTreeSegment (offset, endOffset - offset, type));
+				foreach (var entity in type.Members) {
+					offset = document.Editor.LocationToOffset (entity.Region.Begin);
+					endOffset = document.Editor.LocationToOffset (entity.Region.End);
+					result.Add (new TypeSystemTreeSegment (offset, endOffset - offset, entity));
+				}
+				
+				foreach (var nested in type.NestedTypes)
+					AddType (document, result, nested);
+			}
+
+			void IMemberProvider.GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember)
+			{
+				currentType = GetTypeAt (offset);
+				currentMember = GetMemberAt (offset);
+			}
 		}
 		#endregion
 	}

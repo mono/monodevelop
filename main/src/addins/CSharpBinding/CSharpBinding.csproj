@@ -259,7 +259,6 @@
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
     <None Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
