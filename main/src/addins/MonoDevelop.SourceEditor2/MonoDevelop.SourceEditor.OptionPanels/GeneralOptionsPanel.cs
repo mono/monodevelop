@@ -24,7 +24,8 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Dialogs; 
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Core; 
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -34,6 +35,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.Build();
 			this.codeCompletioncheckbutton.Toggled += HandleCodeCompletioncheckbuttonToggled;
+			
+			this.comboboxLineEndings.AppendText (GettextCatalog.GetString ("Always ask for conversion"));
+			this.comboboxLineEndings.AppendText (GettextCatalog.GetString ("Leave line endings as is"));
+			this.comboboxLineEndings.AppendText (GettextCatalog.GetString ("Always convert line endings"));
+			this.comboboxLineEndings.Active = (int)DefaultSourceEditorOptions.Instance.LineEndingConversion;
 		}
 
 		void HandleCodeCompletioncheckbuttonToggled (object sender, EventArgs e)
@@ -71,6 +77,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.CompleteWithSpaceOrPunctuation = this.spaceOrPunctiuationCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.EnableParameterInsight = this.enableParameterInsightCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.UseAntiAliasing = this.antiAliasingCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.LineEndingConversion = (LineEndingConversion)this.comboboxLineEndings.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)
