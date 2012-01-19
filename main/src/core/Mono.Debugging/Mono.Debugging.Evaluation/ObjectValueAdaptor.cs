@@ -80,84 +80,111 @@ namespace Mono.Debugging.Evaluation
 			return GetDisplayTypeName (GetTypeName (ctx, type));
 		}
 		
-		string GetDisplayTypeName (string typeName, int idx, int end)
+		string GetDisplayTypeName (string typeName, int startIndex, int endIndex)
 		{
-			int i = typeName.IndexOf ('[', idx, end - idx);  // Bracket may be an array start or a generic arg definition start
-			int ci = typeName.IndexOf (',', idx, end - idx); // Text after comma is the assembly name
-			
+			// Note: '[' denotes the start of an array
+			//       '`' denotes a generic type
+			//       ',' denotes the start of the assembly name
+			int tokenIndex = typeName.IndexOfAny (new char [] { '[', '`', ',' }, startIndex, endIndex - startIndex);
 			List<string> genericArgs = null;
 			string array = string.Empty;
-			int te = end;
-			if (i != -1) te = i;
-			if (ci != -1 && ci < te) te = ci;
+			int genericEndIndex = -1;
+			int typeEndIndex;
 			
-			if (i != -1 && typeName.IndexOf ('`', idx, te - idx) != -1) {
-				// Is generic
-				genericArgs = GetGenericArguments (typeName, ref i);
-				if (i >= end || typeName [i] != '[')
-					i = -1;
+			if (tokenIndex == -1) // Simple type
+				return GetShortTypeName (typeName.Substring (startIndex, endIndex - startIndex));
+			
+			if (typeName[tokenIndex] == ',') // Simple type with an assembly name
+				return GetShortTypeName (typeName.Substring (startIndex, tokenIndex - startIndex));
+			
+			// save the index of the end of the type name
+			typeEndIndex = tokenIndex;
+			
+			// decode generic args first, if this is a generic type
+			if (typeName[tokenIndex] == '`') {
+				genericEndIndex = tokenIndex = typeName.IndexOf ('[', tokenIndex, endIndex - tokenIndex);
+				genericArgs = GetGenericArguments (typeName, ref tokenIndex, endIndex);
 			}
-			if (i != -1) {
-				// Is array
-				while (i < end && typeName [i] == '[') {
-					int ea = typeName.IndexOf (']', i);
-					array += typeName.Substring (i, ea - i + 1);
-					i = ea + 1;
-				}
+			
+			// decode array rank info
+			while (tokenIndex < endIndex && typeName[tokenIndex] == '[') {
+				int arrayEndIndex = typeName.IndexOf (']', tokenIndex, endIndex - tokenIndex);
+				if (arrayEndIndex == -1)
+					break;
+				arrayEndIndex++;
+				array += typeName.Substring (tokenIndex, arrayEndIndex - tokenIndex);
+				tokenIndex = arrayEndIndex;
 			}
+			
+			string name = typeName.Substring (startIndex, typeEndIndex - startIndex);
 			
 			if (genericArgs == null)
-				return GetShortTypeName (typeName.Substring (idx, te - idx)) + array;
-
+				return GetShortTypeName (name) + array;
+			
+			// Use the prettier name for nullable types
+			if (name == "System.Nullable" && genericArgs.Count == 1)
+				return genericArgs[0] + "?";
+			
 			// Insert the generic arguments next to each type.
 			// for example: Foo`1+Bar`1[System.Int32,System.String]
 			// is converted to: Foo<int>.Bar<string>
-			StringBuilder sb = new StringBuilder ();
-			int gi = 0;
-			int j = typeName.IndexOf ('`', idx, te - idx);
-			while (j != -1) {
-				sb.Append (typeName.Substring (idx, j - idx)).Append ('<');
-				int ej = ++j;
-				while (ej < typeName.Length && char.IsDigit (typeName [ej]))
-					ej++;
-				int n;
-				if (int.TryParse (typeName.Substring (j, ej - j), out n)) {
-					while (n > 0 && gi < genericArgs.Count) {
-						sb.Append (genericArgs [gi++]);
-						if (--n > 0)
-							sb.Append (',');
-					}
+			StringBuilder sb = new StringBuilder (name);
+			int i = typeEndIndex + 1;
+			int genericIndex = 0;
+			int argCount, next;
+			
+			while (i < genericEndIndex) {
+				// decode the argument count
+				argCount = 0;
+				while (i < genericEndIndex && char.IsDigit (typeName[i])) {
+					argCount = (argCount * 10) + (typeName[i] - '0');
+					i++;
+				}
+				
+				// insert the argument types
+				sb.Append ('<');
+				while (argCount > 0 && genericIndex < genericArgs.Count) {
+					sb.Append (genericArgs[genericIndex++]);
+					if (--argCount > 0)
+						sb.Append (',');
 				}
 				sb.Append ('>');
-				idx = ej;
-				j = typeName.IndexOf ('`', idx, te - idx);
+				
+				// Find the end of the next generic type component
+				if ((next = typeName.IndexOf ('`', i, genericEndIndex - i)) == -1)
+					next = genericEndIndex;
+				
+				// Append the next generic type component
+				sb.Append (typeName.Substring (i, next - i));
+				
+				i = next;
 			}
-			sb.Append (typeName.Substring (idx, te - idx)).Append (array);
+			
 			return sb.ToString ();
 		}
 		
-		List<string> GetGenericArguments (string typeName, ref int i)
+		List<string> GetGenericArguments (string typeName, ref int i, int endIndex)
 		{
 			// Get a list of the generic arguments.
 			// When returning, i points to the next char after the closing ']'
 			List<string> genericArgs = new List<string> ();
 			i++;
-			while (i < typeName.Length && typeName [i] != ']') {
-				int pend = FindTypeEnd (typeName, i);
+			while (i < endIndex && typeName [i] != ']') {
+				int pend = FindTypeEnd (typeName, i, endIndex);
 				bool escaped = typeName [i] == '[';
 				genericArgs.Add (GetDisplayTypeName (typeName, escaped ? i + 1 : i, escaped ? pend - 1 : pend));
 				i = pend;
-				if (i < typeName.Length && typeName[i] == ',')
+				if (i < endIndex && typeName[i] == ',')
 					i++;
 			}
 			i++;
 			return genericArgs;
 		}
 		
-		int FindTypeEnd (string s, int i)
+		int FindTypeEnd (string s, int i, int endIndex)
 		{
 			int bc = 0;
-			while (i < s.Length) {
+			while (i < endIndex) {
 				char c = s[i];
 				if (c == '[')
 					bc++;
