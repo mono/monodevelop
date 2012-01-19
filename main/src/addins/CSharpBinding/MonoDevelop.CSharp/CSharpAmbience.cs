@@ -306,10 +306,11 @@ namespace MonoDevelop.CSharp
 			
 			var typeWithElementType = type as TypeWithElementType;
 			if (typeWithElementType != null) {
+				AppendType (sb, typeWithElementType.ElementType, settings);
+				
 				if (typeWithElementType is PointerType) {
 					sb.Append (settings.Markup ("*"));
 				} 
-				AppendType (sb, typeWithElementType.ElementType, settings);
 				
 				if (typeWithElementType is ArrayType) {
 					sb.Append (settings.Markup ("["));
