@@ -60,6 +60,10 @@ namespace MonoDevelop.Components
 			}
 		}
 		
+		public IList<Tab> Tabs {
+			get { return tabs.AsReadOnly (); }
+		}
+		
 		public int TabCount {
 			get {
 				return tabs.Count;

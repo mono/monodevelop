@@ -377,6 +377,11 @@ namespace MonoDevelop.VersionControl
 			throw new System.NotSupportedException ();
 		}
 		
+		public virtual DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)
+		{
+			return null;
+		}
+		
 		// Returns a dif description between local files and the remote files.
 		// baseLocalPath is the root path of the diff. localPaths is optional and
 		// it can be a list of files to compare.

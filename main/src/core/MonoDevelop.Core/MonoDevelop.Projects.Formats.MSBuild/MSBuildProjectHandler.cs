@@ -47,7 +47,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildProjectHandler: MSBuildHandler, IResourceHandler, IPathHandler, IAssemblyReferenceHandler
 	{
-		string fileContent;
 		List<string> targetImports = new List<string> ();
 		IResourceHandler customResourceHandler;
 		List<string> subtypeGuids = new List<string> ();
@@ -58,6 +57,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		ITimeTracker timer;
 		bool useXBuild;
 		MSBuildVerbosity verbosity;
+		string fileName;
 		
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -242,8 +242,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			timer.Trace ("Reading project file");
 			MSBuildProject p = new MSBuildProject ();
-			fileContent = File.ReadAllText (fileName);
-			p.LoadXml (fileContent);
+			this.fileName = fileName;
+			p.Load (fileName);
 			
 			//determine the file format
 			MSBuildFileFormat format = null;
@@ -340,8 +340,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							throw new Exception ("Unable to correct flavor GUID");
 						var gg = string.Join (";", subtypeGuids) + ";" + TypeGuid;
 						p.GetGlobalPropertyGroup ().SetPropertyValue ("ProjectTypeGuids", gg.ToUpper ());
-						fileContent = p.Save ();
-						MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, fileContent, "UTF-8");
+						p.Save (fileName);
 					}
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 				} else
@@ -450,8 +449,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			foreach (var t in toRemove)
 				msproject.RemoveItem (t);
-			fileContent = msproject.Save ();
-			MonoDevelop.Projects.Text.TextFile.WriteFile (fileName, fileContent, "UTF-8");
+			
+			msproject.Save (fileName);
 		}
 		
 		void Load (IProgressMonitor monitor, MSBuildProject msproject)
@@ -782,8 +781,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			DotNetProject dotNetProject = Item as DotNetProject;
 			
 			MSBuildProject msproject = new MSBuildProject ();
-			if (fileContent != null) {
-				msproject.LoadXml (fileContent);
+			if (fileName != null) {
+				msproject.Load (fileName);
 			} else {
 				msproject.DefaultTargets = "Build";
 				newProject = true;
@@ -857,7 +856,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				langParams = dotNetProject.LanguageParameters;
 			}
 			
-			if (fileContent == null)
+			if (fileName == null)
 				ser.InternalItemProperties.ItemData.Sort (globalConfigOrder);
 
 			WritePropertyGroupMetadata (globalGroup, ser.InternalItemProperties.ItemData, ser, Item, langParams);
@@ -1032,16 +1031,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else
 				msproject.RemoveProjectExtensions ("MonoDevelop");
 			
-			string txt = msproject.Save ();
-			
 			// Don't save the file to disk if the content did not change
-			if (txt != fileContent) {
-				MonoDevelop.Projects.Text.TextFile.WriteFile (eitem.FileName, txt, "UTF-8");
-				fileContent = txt;
-				
-				if (projectBuilder != null)
-					projectBuilder.Refresh ();
-			}
+			msproject.Save (eitem.FileName);
+			
+			if (projectBuilder != null)
+				projectBuilder.Refresh ();
 		}
 		
 		void ForceDefaultValueSerialization (MSBuildSerializer ser, MSBuildPropertySet baseGroup, object ob)

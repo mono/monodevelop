@@ -615,7 +615,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static string LoadProjectTypeGuids (string fileName)
 		{
 			MSBuildProject project = new MSBuildProject ();
-			project.LoadXml (File.ReadAllText (fileName));
+			project.Load (fileName);
 			
 			MSBuildPropertySet globalGroup = project.GetGlobalPropertyGroup ();
 			if (globalGroup == null)

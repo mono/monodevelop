@@ -36,23 +36,24 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		protected override void Run ()
 		{
-			Ide.IdeApp.Workbench.DocumentOpened += HandleDocumentOpened;
+			Ide.IdeApp.Workbench.ActiveDocumentChanged += HandleDocumentChanged;
 		}
 
-		void HandleDocumentOpened (object sender, Ide.Gui.DocumentEventArgs e)
+		void HandleDocumentChanged (object sender, EventArgs e)
 		{
-			if (!e.Document.IsFile || e.Document.Project == null)
+			var document = Ide.IdeApp.Workbench.ActiveDocument;
+			if (document == null || !document.IsFile || document.Project == null || document.Window.FindView<IDiffView> () >= 0)
 				return;
 			
-			var repo = VersionControlService.GetRepository (e.Document.Project);
-			if (repo == null || !repo.GetVersionInfo (e.Document.FileName).IsVersioned)
+			var repo = VersionControlService.GetRepository (document.Project);
+			if (repo == null || !repo.GetVersionInfo (document.FileName).IsVersioned)
 				return;
 			
-			var item = new VersionControlItem (repo, e.Document.Project, e.Document.FileName, false, null);
-			TryAttachView <IDiffView> (e.Document, item, DiffCommand.DiffViewHandlers);
-			TryAttachView <IBlameView> (e.Document, item, BlameCommand.BlameViewHandlers);
-			TryAttachView <ILogView> (e.Document, item, LogCommand.LogViewHandlers);
-			TryAttachView <IMergeView> (e.Document, item, MergeCommand.MergeViewHandlers);
+			var item = new VersionControlItem (repo, document.Project, document.FileName, false, null);
+			TryAttachView <IDiffView> (document, item, DiffCommand.DiffViewHandlers);
+			TryAttachView <IBlameView> (document, item, BlameCommand.BlameViewHandlers);
+			TryAttachView <ILogView> (document, item, LogCommand.LogViewHandlers);
+			TryAttachView <IMergeView> (document, item, MergeCommand.MergeViewHandlers);
 		}
 		
 		void TryAttachView <T>(Document document, VersionControlItem item, string type)

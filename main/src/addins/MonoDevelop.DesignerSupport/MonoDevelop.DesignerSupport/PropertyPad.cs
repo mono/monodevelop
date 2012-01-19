@@ -46,6 +46,7 @@ namespace MonoDevelop.DesignerSupport
 		pg.PropertyGrid grid;
 		MonoDevelop.Components.InvisibleFrame frame;
 		bool customWidget;
+		IPadWindow container;
 		
 		public PropertyPad ()
 		{
@@ -61,6 +62,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			base.Initialize (container);
 			grid.SetToolbarProvider (new DockToolbarProvider (container.GetToolbar (Gtk.PositionType.Top)));
+			this.container = container;
 		}
 
 		
@@ -97,6 +99,11 @@ namespace MonoDevelop.DesignerSupport
 		
 		internal void UseCustomWidget (Gtk.Widget widget)
 		{
+			if (container != null) {
+				var toolbar = container.GetToolbar (Gtk.PositionType.Top);
+				foreach (var w in toolbar.Children)
+					toolbar.Remove (w);
+			}
 			customWidget = true;
 			frame.Remove (frame.Child);
 			frame.Add (widget);

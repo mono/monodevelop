@@ -32,6 +32,9 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Text;
 
+using MonoDevelop.Projects.Utility;
+using MonoDevelop.Projects.Text;
+
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildProject
@@ -45,6 +48,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		bool endsWithEmptyLine;
 		string newLine = Environment.NewLine;
+		ByteOrderMark bom;
 		
 		internal static XmlNamespaceManager XmlNamespaceManager {
 			get {
@@ -65,51 +69,89 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public void Load (string file)
 		{
-			string xml = File.ReadAllText (file);
-			LoadXml (xml);
-		}
-		
-		public void LoadXml (string xml)
-		{
+			using (FileStream fs = File.OpenRead (file)) {
+				byte[] buf = new byte [1024];
+				int nread, i;
+				
+				if ((nread = fs.Read (buf, 0, buf.Length)) <= 0)
+					return;
+				
+				if (ByteOrderMark.TryParse (buf, nread, out bom))
+					i = bom.Length;
+				else
+					i = 0;
+				
+				do {
+					// Read to the first newline to figure out which line endings this file is using
+					while (i < nread) {
+						if (buf[i] == '\r') {
+							newLine = "\r\n";
+							break;
+						} else if (buf[i] == '\n') {
+							newLine = "\n";
+							break;
+						}
+						
+						i++;
+					}
+					
+					if (newLine == null) {
+						if ((nread = fs.Read (buf, 0, buf.Length)) <= 0) {
+							newLine = "\n";
+							break;
+						}
+						
+						i = 0;
+					}
+				} while (newLine == null);
+				
+				// Check for a blank line at the end
+				endsWithEmptyLine = fs.Seek (-1, SeekOrigin.End) > 0 && fs.ReadByte () == (int) '\n';
+			}
+			
+			// Load the XML document
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = false;
+			
+			// HACK: XmlStreamReader will fail if the file is encoded in UTF-8 but has <?xml version="1.0" encoding="utf-16"?>
+			// To work around this, we load the XML content into a string and use XmlDocument.LoadXml() instead.
+			string xml = File.ReadAllText (file);
+			
 			doc.LoadXml (xml);
-			newLine = CountNewLines ("\r\n", xml) > (CountNewLines ("\n", xml) / 2) ? "\r\n" : "\n";
-			if (xml.EndsWith (newLine))
-				endsWithEmptyLine = true;
 		}
 		
-		class Utf8Writer: StringWriter
+		class ProjectWriter : StringWriter
 		{
+			Encoding encoding;
+			
+			public ProjectWriter (ByteOrderMark bom)
+			{
+				encoding = bom != null ? Encoding.GetEncoding (bom.Name) : null;
+				ByteOrderMark = bom;
+			}
+			
+			public ByteOrderMark ByteOrderMark {
+				get; private set;
+			}
+			
 			public override Encoding Encoding {
-				get { return Encoding.UTF8; }
+				get { return encoding ?? Encoding.UTF8; }
 			}
 		}
 		
-		public string Save ()
+		public void Save (string fileName)
 		{
 			// StringWriter.Encoding always returns UTF16. We need it to return UTF8, so the
 			// XmlDocument will write the UTF8 header.
-			Utf8Writer sw = new Utf8Writer ();
+			ProjectWriter sw = new ProjectWriter (bom);
 			sw.NewLine = newLine;
 			doc.Save (sw);
-			string txt = sw.ToString ();
-			if (endsWithEmptyLine && !txt.EndsWith (newLine))
-				txt += newLine;
-			return txt;
-		}
-		
-		int CountNewLines (string nl, string text)
-		{
-			int i = -1;
-			int c = -1;
-			do {
-				c++;
-				i++;
-				i = text.IndexOf (nl, i);
-			}
-			while (i != -1);
-			return c;
+			
+			string content = sw.ToString ();
+			if (endsWithEmptyLine && !content.EndsWith (newLine))
+				content += newLine;
+			
+			TextFile.WriteFile (fileName, content, bom, true);
 		}
 		
 		public string DefaultTargets {

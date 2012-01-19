@@ -58,8 +58,11 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			if (idx + pattern.Length > str.Length)
 				return false;
-			int i = idx;
-			return pattern.All (ch => str[i++] == ch);
+
+			for (int i = 0; i < pattern.Length; i++)
+				if (pattern [i] != str [idx + i])
+					return false;
+			return true;
 		}
 	}		
 
