@@ -804,13 +804,23 @@ namespace Mono.Debugging.Evaluation
 				TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
 				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					return new EvaluationResult (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
+				
 				// Return the type name
-				if (ctx.Options.AllowToStringCalls)
-					return new EvaluationResult ("{" + CallToString (ctx, obj) + "}");
+				if (ctx.Options.AllowToStringCalls) {
+					string res = CallToString (ctx, obj);
+					
+					if (string.IsNullOrEmpty (res))
+						return new EvaluationResult ("null");
+					
+					return new EvaluationResult ("{" + res + "}");
+				}
+				
 				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					return new EvaluationResult ("{" + EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString) + "}");
+				
 				return new EvaluationResult ("{" + GetDisplayTypeName (GetValueTypeName (ctx, obj)) + "}");
 			}
+			
 			return new EvaluationResult ("{" + CallToString (ctx, obj) + "}");
 		}
 
