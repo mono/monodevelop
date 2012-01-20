@@ -131,6 +131,7 @@ FILES =  \
 	Completion/CSharpCompletionEngineBase.cs \
 	Completion/CSharpParameterCompletionEngine.cs \
 	Completion/ICompletionDataFactory.cs \
+	Completion/IMemberProvider.cs \
 	Completion/IParameterCompletionDataFactory.cs \
 	CSharpProjectContent.cs \
 	Formatter/AstFormattingVisitor.cs \
