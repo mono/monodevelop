@@ -815,7 +815,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			if (IsInSwitchContext (node)) {
 				wrapper.AddCustom ("case"); 
-				wrapper.AddCustom ("default"); 
 			}
 			
 			AddKeywords (wrapper, primitiveTypesKeywords);
