@@ -68,6 +68,7 @@ namespace Mono.TextEditor
 		Gdk.Key lastIMEventMappedKey;
 		uint lastIMEventMappedChar;
 		Gdk.ModifierType lastIMEventMappedModifier;
+		bool sizeHasBeenAllocated;
 		bool imContextNeedsReset;
 		string currentStyleName;
 		
@@ -1424,6 +1425,7 @@ namespace Mono.TextEditor
 			if (this.GdkWindow != null) 
 				this.GdkWindow.MoveResize (allocation);
 			SetAdjustments (Allocation);
+			sizeHasBeenAllocated = true;
 			QueueDraw ();
 		}
 		
@@ -2843,7 +2845,7 @@ namespace Mono.TextEditor
 			if (column < DocumentLocation.MinColumn)
 				throw new ArgumentException ("column < MinColumn");
 			
-			if (!IsRealized) {
+			if (!sizeHasBeenAllocated) {
 				SetCaret setCaret = new SetCaret (this, line, column, highlight, centerCaret);
 				SizeAllocated += setCaret.Run;
 			} else {
