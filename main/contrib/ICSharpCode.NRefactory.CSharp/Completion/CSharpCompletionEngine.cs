@@ -871,6 +871,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					foreach (var member in def.GetMembers ()) {
 						if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
 							continue;
+						if (member.EntityType == EntityType.Operator)
+							continue;
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
 					}
@@ -1778,7 +1780,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					
 					if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
 						continue;
-					
+					if (member.EntityType == EntityType.Operator)
+						continue;
 					//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}
