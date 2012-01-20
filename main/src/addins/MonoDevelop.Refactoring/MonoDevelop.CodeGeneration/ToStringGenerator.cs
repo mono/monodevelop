@@ -115,7 +115,7 @@ namespace MonoDevelop.CodeGeneration
 				methodDeclaration.ReturnType = DomReturnType.String.ConvertToTypeReference ();
 				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
 				methodDeclaration.Body = new BlockStatement ();
-				MemberReferenceExpression formatReference = new MemberReferenceExpression (new TypeReferenceExpression (methodDeclaration.ReturnType), "Format");
+				MemberReferenceExpression formatReference = new MemberReferenceExpression (new TypeReferenceExpression (methodDeclaration.ReturnType.Clone ()), "Format");
 				List<Expression> arguments = new List<Expression> ();
 				arguments.Add (new PrimitiveExpression (format.ToString ()));
 
