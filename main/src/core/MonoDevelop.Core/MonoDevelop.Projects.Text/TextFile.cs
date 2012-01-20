@@ -347,7 +347,7 @@ namespace MonoDevelop.Projects.Text
 			
 			if (onlyIfChanged) {
 				FileInfo finfo = new FileInfo (fileName);
-				if (finfo.Length == contentLength) {
+				if (finfo.Exists && finfo.Length == contentLength) {
 					bool changed = false;
 					
 					// Open the file on disk and compare them byte by byte...

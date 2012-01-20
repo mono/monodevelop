@@ -184,28 +184,39 @@ namespace MonoDevelop.VersionControl.Git
 		
 		void UpdateSingleFiles (List<string> singleFiles)
 		{
+			// NGIT HACK: We verify that all the files listed in the result of
+			// the GitStatus call are actually in the list of files we're interested
+			// in. This is because NGit cannot properly filter the git tree and
+			// incorrectly includes extra directories. See bug #
 			var status = new SpecificStatus (Repository, singleFiles).Call ();
-			
+
 			foreach (var v in status.GetAdded ())
-				Added.Add (v);
-			
+				if (singleFiles.Contains (v))
+					Added.Add (v);
+
 			foreach (var v in status.GetChanged ())
-				Modified.Add (v);
-			
+				if (singleFiles.Contains (v))
+					Modified.Add (v);
+
 			foreach (var v in status.GetConflicting ())
-				MergeConflict.Add (v);
-			
+				if (singleFiles.Contains (v))
+					MergeConflict.Add (v);
+
 			foreach (var v in status.GetMissing ())
-				Missing.Add (v);
-			
+				if (singleFiles.Contains (v))
+					Missing.Add (v);
+
 			foreach (var v in status.GetModified ())
-				Modified.Add (v);
-				
+				if (singleFiles.Contains (v))
+					Modified.Add (v);
+
 			foreach (var v in status.GetRemoved ())
-				Removed.Add (v);
+				if (singleFiles.Contains (v))
+					Removed.Add (v);
 			
 			foreach (var v in status.GetUntracked ())
-				Untracked.Add (v);
+				if (singleFiles.Contains (v))
+					Untracked.Add (v);
 		}
 
 		/// <summary>
