@@ -39,6 +39,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.ContextAction;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -49,23 +50,32 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (data, TextLocation.Empty, false);
 		}
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location, bool runAferCR = false)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location)
 		{
-			Format (data, location, false, runAferCR);
+			Format (data, location, false);
 		} 
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location, bool correctBlankLines, bool runAferCR = false)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location, bool correctBlankLines)
 		{
 			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, data, location, correctBlankLines, runAferCR);
+			Format (policyParent, mimeTypeChain, data, location, correctBlankLines);
 		}
 
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, TextLocation location, bool correctBlankLines, bool runAferCR/* = false*/)
+		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, TextLocation location, bool correctBlankLines)
 		{
 			if (data.ParsedDocument == null)
 				return;
-			var member = data.ParsedDocument.GetMember (location.Line + (runAferCR ? -1 : 0), location.Column);
+			var ext = data.GetContent<CSharpCompletionTextEditorExtension> ();
+			Console.WriteLine ("EXT:" + ext);
+			if (ext == null)
+				return;
+			
+			var offset = data.Editor.LocationToOffset (location);
+			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (offset);
+			if (seg == null)
+				return;
+			var member = seg.Entity;
 			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
 				return;
 			
@@ -75,7 +85,8 @@ namespace MonoDevelop.CSharp.Formatting
 			StringBuilder sb = new StringBuilder ();
 			int closingBrackets = 0;
 //			DomRegion validRegion = DomRegion.Empty;
-			var scope = pf.GetUsingScope (new TextLocation (data.Editor.Caret.Line, data.Editor.Caret.Column));
+			var scope = pf.GetUsingScope (location);
+			
 			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				sb.Append ("namespace Stub {");
 				sb.Append (data.Editor.EolMarker);
@@ -93,13 +104,8 @@ namespace MonoDevelop.CSharp.Formatting
 				parent = parent.DeclaringTypeDefinition;
 			}
 
-			int memberStart = data.Editor.LocationToOffset (member.Region.BeginLine, 1);
-			int memberEnd = data.Editor.LocationToOffset (member.Region.EndLine + (runAferCR ? 1 : 0), member.Region.EndColumn);
-			if (memberEnd < 0)
-				memberEnd = data.Editor.Length;
-			
 			int startOffset = sb.Length;
-			sb.Append (data.Editor.GetTextBetween (memberStart, memberEnd));
+			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
 			
 			int endOffset = sb.Length;
 			sb.Append (data.Editor.EolMarker);
@@ -119,7 +125,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			
-			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, new FormattingActionFactory (data.Editor), stubData.Options.TabsToSpaces, stubData.Options.TabSize) {
+			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, new FormattingActionFactory (data.Editor), data.Editor.Options.TabsToSpaces, data.Editor.Options.TabSize) {
 				HadErrors = hadErrors,
 				EolMarker = stubData.EolMarker
 			};
@@ -128,7 +134,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
 			
-			int delta = memberStart - startOffset;
+			int delta = seg.Offset - startOffset;
 			
 			HashSet<int> lines = new HashSet<int> ();
 			foreach (TextReplaceAction change in changes) {

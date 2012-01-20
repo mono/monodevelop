@@ -632,6 +632,16 @@ namespace MonoDevelop.CSharp.Completion
 				return (IUnresolvedMember)seg.Entity;
 			}
 			
+			public TypeSystemTreeSegment GetMemberSegmentAt (int offset)
+			{
+				// Members don't overlap
+				var seg = GetSegmentsAt (offset).FirstOrDefault (s => s.Entity is IUnresolvedMember);
+				if (seg == null)
+					return null;
+				return seg;
+			}
+			
+			
 			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Gui.Document document)
 			{
 				TypeSystemSegmentTree result = new TypeSystemSegmentTree ();
