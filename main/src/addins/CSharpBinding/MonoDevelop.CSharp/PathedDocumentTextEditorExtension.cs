@@ -246,6 +246,13 @@ namespace MonoDevelop.CSharp
 			return entry;
 		}
 		
+		void ClearPath ()
+		{
+			var prev = CurrentPath;
+			CurrentPath = new PathEntry[0];
+			OnPathChanged (new DocumentPathChangedEventArgs (prev));	
+		}
+		
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
 			var unit = Document.ParsedDocument;
@@ -259,11 +266,8 @@ namespace MonoDevelop.CSharp
 			var currentType = ext != null && ext.typeSystemSegmentTree != null ? ext.typeSystemSegmentTree.GetTypeAt (offset) : unit.GetInnermostTypeDefinition (loc);
 			
 			if (currentType == null) {
-				if (CurrentPath != null && CurrentPath.Length > 0) {
-					var prev = CurrentPath;
-					CurrentPath = new PathEntry[0];
-					OnPathChanged (new DocumentPathChangedEventArgs (prev));	
-				}
+				if (CurrentPath != null && CurrentPath.Length > 0)
+					ClearPath ();
 				return;
 			}
 			
@@ -271,7 +275,18 @@ namespace MonoDevelop.CSharp
 				var result = new List<PathEntry> ();
 				var amb = GetAmbience ();
 				var resolveCtx = unit.GetTypeResolveContext (document.Compilation, loc);
-				var typeDef = currentType.Resolve (resolveCtx).GetDefinition ();
+				ITypeDefinition typeDef;
+				try {
+					var resolved = currentType.Resolve (resolveCtx);
+					if (resolved == null) {
+						ClearPath ();
+						return;
+					}
+					typeDef = resolved.GetDefinition ();
+				} catch (Exception) {
+					ClearPath ();
+					return;
+				}
 				if (typeDef != null) {
 					var curType = typeDef;
 					while (curType != null) {
@@ -286,8 +301,13 @@ namespace MonoDevelop.CSharp
 				IMember member = null;
 				if (ext != null && ext.typeSystemSegmentTree != null) {
 					var unresolvedMember = ext.typeSystemSegmentTree.GetMemberAt (offset);
-					if (unresolvedMember != null)
-						member = unresolvedMember.CreateResolved (resolveCtx);
+					try {
+						if (unresolvedMember != null)
+							member = unresolvedMember.CreateResolved (resolveCtx);
+					} catch (Exception) {
+						ClearPath ();
+						return;
+					}
 				} else {
 					member = typeDef != null && typeDef.Kind != TypeKind.Delegate ? typeDef.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (loc)) : null;
 				}
