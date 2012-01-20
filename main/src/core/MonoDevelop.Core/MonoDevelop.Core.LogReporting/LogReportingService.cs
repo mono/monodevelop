@@ -133,6 +133,11 @@ namespace MonoDevelop.Core.LogReporting
 		static bool TryUploadReport (string filename, byte[] data)
 		{
 			try {
+				// Empty files won't be accepted by the server as it thinks 'ContentLength' has not been set as it's
+				// zero. We don't need empty files anyway.
+				if (data.Length == 0)
+					return true;
+				
 				var server = Environment.GetEnvironmentVariable ("MONODEVELOP_CRASHREPORT_SERVER");
 				if (string.IsNullOrEmpty (server))
 					server = "monodevlog.xamarin.com:35162";
