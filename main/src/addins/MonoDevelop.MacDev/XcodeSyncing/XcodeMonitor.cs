@@ -239,7 +239,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var needsSync = new List<XcodeSyncedItem> (items.Where (i => i.NeedsSyncBack (ctx)));
 			var knownFiles = GetKnownFiles ();
 			
-			ScanForAddedFiles (ctx, knownFiles, projectDir, null);
+			if (Directory.Exists (projectDir))
+				ScanForAddedFiles (ctx, knownFiles, projectDir, null);
 			
 			if (needsSync.Count > 0) {
 				monitor.BeginStepTask (GettextCatalog.GetString ("Synchronizing Xcode project changes"), needsSync.Count, 1);
