@@ -233,6 +233,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
+				bool retval;
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					//capture some of the current state
 					int oldBufLen = textEditorData.Length;
@@ -242,7 +243,7 @@ namespace MonoDevelop.CSharp.Formatting
 					//pass through to the base class, which actually inserts the character
 					//and calls HandleCodeCompletion etc to handles completion
 					DoPreInsertionSmartIndent (key);
-					bool retval = base.KeyPress (key, keyChar, modifier);
+					retval = base.KeyPress (key, keyChar, modifier);
 	
 					//handle inserted characters
 					if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
@@ -267,17 +268,19 @@ namespace MonoDevelop.CSharp.Formatting
 					bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
 					if (reIndent || automaticReindent)
 						DoReSmartIndent ();
-	
-					if (lastCharInserted == '\n' && !(textEditorData.CurrentMode is TextLinkEditMode)) {
+				}
+
+				if (lastCharInserted == '\n' && !(textEditorData.CurrentMode is TextLinkEditMode)) {
+					using (var undo = textEditorData.OpenUndoGroup ()) {
 						RunFormatter ();
 						stateTracker.UpdateEngine ();
-						//					DoReSmartIndent ();
 					}
-	
-					stateTracker.UpdateEngine ();
-					lastCharInserted = '\0';
-					return retval;
+					//					DoReSmartIndent ();
 				}
+
+				stateTracker.UpdateEngine ();
+				lastCharInserted = '\0';
+				return retval;
 			}
 
 			if (TextEditorProperties.IndentStyle == IndentStyle.Auto && TextEditorProperties.TabIsReindent && key == Gdk.Key.Tab) {
