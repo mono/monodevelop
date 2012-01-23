@@ -2202,6 +2202,12 @@ namespace Mono.TextEditor
 
 			if (!isSelectionDrawn) {
 				if (isEolSelected) {
+					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
+					lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale - 1,
+						lineArea.Y,
+						textEditor.Allocation.Width - pangoPosition / Pango.Scale.PangoScale + 1,
+						lineArea.Height);
+					
 					DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.CairoBackgroundColor, false);
 				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
 					LayoutWrapper wrapper = GetLayout (line);
