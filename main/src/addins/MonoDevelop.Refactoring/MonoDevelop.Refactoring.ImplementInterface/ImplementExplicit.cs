@@ -55,6 +55,8 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 				return false;
 			if (!declaration.BaseTypes.Any (bt => bt.Contains (loc.Line, loc.Column)))
 				return false;
+			if (options.ResolveResult == null)
+				return false;
 			interfaceType = options.ResolveResult.Type;
 			var def = interfaceType.GetDefinition ();
 			if (def == null)
