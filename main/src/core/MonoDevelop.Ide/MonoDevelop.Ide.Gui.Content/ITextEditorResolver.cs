@@ -52,6 +52,13 @@ namespace MonoDevelop.Ide.Gui.Content
 		string CreateTooltip (IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
 	}
 	
+	public interface ITextEditorMemberPositionProvider
+	{
+		IUnresolvedTypeDefinition GetTypeAt (int offset);
+		IUnresolvedMember GetMemberAt (int offset);
+	}
+	
+	
 	public static class TextEditorResolverService
 	{
 		static List<TextEditorResolverProviderCodon> providers = new List<TextEditorResolverProviderCodon> ();

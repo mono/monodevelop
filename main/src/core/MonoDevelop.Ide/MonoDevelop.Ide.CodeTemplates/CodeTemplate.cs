@@ -393,7 +393,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 		/// </summary>
 		public TemplateResult InsertTemplateContents (MonoDevelop.Ide.Gui.Document document)
 		{
-			var doc = document.UpdateParseDocument ();
 			Mono.TextEditor.TextEditorData data = document.Editor;
 			
 			int offset = data.Caret.Offset;
@@ -402,7 +401,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			TemplateContext context = new TemplateContext {
 				Template = this,
 				Document = document,
-				ParsedDocument = doc,
+				ParsedDocument = document.ParsedDocument,
 				InsertPosition = data.Caret.Location,
 				LineIndent = data.Document.GetLineIndent (data.Caret.Line),
 				TemplateCode = Code

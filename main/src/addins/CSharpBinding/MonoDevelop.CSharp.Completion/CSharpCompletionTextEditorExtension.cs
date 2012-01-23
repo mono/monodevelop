@@ -51,7 +51,7 @@ using Mono.TextEditor;
 namespace MonoDevelop.CSharp.Completion
 {
 	
-	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, ICompletionDataFactory, IParameterCompletionDataFactory
+	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, ICompletionDataFactory, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider
 	{
 		internal Mono.TextEditor.TextEditorData textEditorData;
 		
@@ -672,6 +672,20 @@ namespace MonoDevelop.CSharp.Completion
 				currentType = GetTypeAt (offset);
 				currentMember = GetMemberAt (offset);
 			}
+		}
+		
+		public IUnresolvedTypeDefinition GetTypeAt (int offset)
+		{
+			if (typeSystemSegmentTree == null)
+				return null;
+			return typeSystemSegmentTree.GetTypeAt (offset);
+		}
+			
+		public IUnresolvedMember GetMemberAt (int offset)
+		{
+			if (typeSystemSegmentTree == null)
+				return null;
+			return typeSystemSegmentTree.GetMemberAt (offset);
 		}
 		#endregion
 	}

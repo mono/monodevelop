@@ -95,7 +95,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (CurrentContext.ParsedDocument == null)
 				return null;
-			var type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			IUnresolvedTypeDefinition type = null;
+			var provider = CurrentContext.Document.GetContent<ITextEditorMemberPositionProvider>();
+			if (provider == null) {
+				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			} else {
+				type = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
+			}
+			
 			if (type == null)
 				return null;
 			return type.Name;
@@ -105,7 +112,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (CurrentContext.ParsedDocument == null)
 				return null;
-			var type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			IUnresolvedTypeDefinition type = null;
+			var provider = CurrentContext.Document.GetContent<ITextEditorMemberPositionProvider>();
+			if (provider == null) {
+				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
+			} else {
+				type = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
+			}
+			
 			if (type == null)
 				return "";
 			return type.IsStatic ? "static " : "public ";
