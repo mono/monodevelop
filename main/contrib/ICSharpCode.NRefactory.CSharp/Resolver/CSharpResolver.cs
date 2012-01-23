@@ -1601,10 +1601,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public List<List<IMethod>> GetAllExtensionMethods(IType targetType)
 		{
+			var allBaseTypes = new List<IType> (targetType.GetAllBaseTypes ());
 			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
 			foreach (var inputGroup in GetAllExtensionMethods()) {
 				List<IMethod> outputGroup = new List<IMethod>();
 				foreach (var method in inputGroup) {
+					var p = method.Parameters.FirstOrDefault ();
+					if (p == null || !allBaseTypes.Any (t => t == p.Type || (t.GetDefinition () != null && p.Type.GetDefinition () != null && t.GetDefinition().Parts.Any (part => p.Type.GetDefinition ().Parts.Contains (part)))))
+						continue;
 					outputGroup.Add(method);
 				}
 				if (outputGroup.Count > 0)
