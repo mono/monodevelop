@@ -62,7 +62,8 @@ EXTRA_DIST += $(build_sources) $(build_resx_files) $(build_others_files) $(ASSEM
 CLEANFILES += $(ASSEMBLY) $(ASSEMBLY).mdb $(BINARIES) $(build_resx_resources) $(build_satellite_assembly_list)
 DISTCLEANFILES = $(GENERATED_FILES) $(pc_files) $(BUILD_DIR)/*
 
-pkglib_SCRIPTS = $(ASSEMBLY)
+programfilesdir = $(pkglibdir)
+programfiles_DATA = $(ASSEMBLY)
 bin_SCRIPTS = $(BINARIES)
 
 %%DEPLOY_DIRS%%

@@ -162,6 +162,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override object GetParentObject (object dataObject)
 		{
 			SolutionItem it = (SolutionItem) dataObject;
+			if (it.ParentFolder == null)
+				return null;
+			
 			return it.ParentFolder.IsRoot ? (object) it.ParentSolution : (object) it.ParentFolder;
 		}
 		
