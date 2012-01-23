@@ -252,6 +252,8 @@ namespace MonoDevelop.CSharp
 			CurrentPath = new PathEntry[0];
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));	
 		}
+		IUnresolvedTypeDefinition lastType;
+		IUnresolvedMember lastMember;
 		
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
@@ -263,21 +265,26 @@ namespace MonoDevelop.CSharp
 			var loc = Document.Editor.Caret.Location;
 			var ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
 			
-			var currentType = ext != null && ext.typeSystemSegmentTree != null ? ext.typeSystemSegmentTree.GetTypeAt (offset) : unit.GetInnermostTypeDefinition (loc);
+			var unresolvedType = ext != null ? ext.GetTypeAt (offset) : unit.GetInnermostTypeDefinition (loc);
+			var unresolvedMember = ext != null ? ext.GetMemberAt (offset) : null;
+			if (unresolvedType == lastType  && lastMember == unresolvedMember)
+				return;
+			lastType = unresolvedType;
+			lastMember = unresolvedMember;
 			
-			if (currentType == null) {
+			if (unresolvedType == null) {
 				if (CurrentPath != null && CurrentPath.Length > 0)
 					ClearPath ();
 				return;
 			}
 			
-			ThreadPool.QueueUserWorkItem (delegate {
+		//	ThreadPool.QueueUserWorkItem (delegate {
 				var result = new List<PathEntry> ();
 				var amb = GetAmbience ();
 				var resolveCtx = unit.GetTypeResolveContext (document.Compilation, loc);
 				ITypeDefinition typeDef;
 				try {
-					var resolved = currentType.Resolve (resolveCtx);
+					var resolved = unresolvedType.Resolve (resolveCtx);
 					if (resolved == null) {
 						ClearPath ();
 						return;
@@ -300,7 +307,6 @@ namespace MonoDevelop.CSharp
 				}
 				IMember member = null;
 				if (ext != null && ext.typeSystemSegmentTree != null) {
-					var unresolvedMember = ext.typeSystemSegmentTree.GetMemberAt (offset);
 					try {
 						if (unresolvedMember != null)
 							member = unresolvedMember.CreateResolved (resolveCtx);
@@ -340,11 +346,11 @@ namespace MonoDevelop.CSharp
 					if (equals)
 						return;
 				}
-				Gtk.Application.Invoke (delegate {
+		//		Gtk.Application.Invoke (delegate {
 					CurrentPath = result.ToArray ();
 					OnPathChanged (new DocumentPathChangedEventArgs (prev));	
-				});
-			});
+		//		});
+		//	});
 		}
 		#endregion
 	}
