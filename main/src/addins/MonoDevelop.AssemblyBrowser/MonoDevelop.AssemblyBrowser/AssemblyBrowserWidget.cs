@@ -1065,7 +1065,13 @@ namespace MonoDevelop.AssemblyBrowser
 				if (unit.FileName == fileName) 
 					return unit.AssemblyDefinition;
 			}
-			DomCecilCompilationUnit newUnit = DomCecilCompilationUnit.Load (fileName, true, false);
+			DomCecilCompilationUnit newUnit = null;
+			try {
+				newUnit = DomCecilCompilationUnit.Load (fileName, true, false);
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't add reference to:" + fileName, e);
+				return null;
+			}
 			definitions.Add (newUnit);
 		
 			ITreeBuilder builder;
