@@ -1077,24 +1077,23 @@ namespace MonoDevelop.AssemblyBrowser
 			if (definitions.Any (d => d.AssemblyName == fileName))
 				return definitions.First (d => d.AssemblyName == fileName);
 			try {
-				definitions.Add (newUnit);
-				
 				var assembly = ReadAssembly (fileName);
 				result = loader.LoadAssembly (assembly);
-				definitions.Add (result);
-				ITreeBuilder builder;
-				if (definitions.Count == 1) {
-					builder = TreeView.LoadTree (result);
-				} else {
-					builder = TreeView.AddChild (result);
-				}
-				builder.MoveToFirstChild ();
-				builder.Expanded = true;
-				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't add reference to:" + fileName, e);
 				return null;
 			}
+				
+			definitions.Add (result);
+			ITreeBuilder builder;
+			if (definitions.Count == 1) {
+				builder = TreeView.LoadTree (result);
+			} else {
+				builder = TreeView.AddChild (result);
+			}
+			builder.MoveToFirstChild ();
+			builder.Expanded = true;
+			return result;
 		}
 		
 		[CommandHandler (SearchCommands.Find)]
