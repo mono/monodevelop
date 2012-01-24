@@ -72,8 +72,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Projects.CombineEntryFeatureSelector.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.DeleteConfigDialog.cs \
-	gtk-gui/MonoDevelop.Ide.Projects.ExportProjectDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.ExportSolutionDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.FeatureSelectorDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.ImportProjectPolicyDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs \
@@ -622,8 +622,8 @@ FILES =  \
 	MonoDevelop.Ide.Projects/ConfirmProjectDeleteDialog.cs \
 	MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs \
 	MonoDevelop.Ide.Projects/DeleteConfigDialog.cs \
-	MonoDevelop.Ide.Projects/ExportProjectDialog.cs \
 	MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs \
+	MonoDevelop.Ide.Projects/ExportSolutionDialog.cs \
 	MonoDevelop.Ide.Projects/FeatureSelectorDialog.cs \
 	MonoDevelop.Ide.Projects/ImportProjectPolicyDialog.cs \
 	MonoDevelop.Ide.Projects/IncludeNewFilesDialog.cs \

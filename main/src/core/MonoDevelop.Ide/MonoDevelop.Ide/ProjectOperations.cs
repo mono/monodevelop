@@ -333,22 +333,19 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public void Export (IWorkspaceObject item)
+		public void Export (WorkspaceItem item)
 		{
 			Export (item, null);
 		}
 		
-		public void Export (IWorkspaceObject entry, FileFormat format)
+		public void Export (WorkspaceItem item, FileFormat format)
 		{
-			ExportProjectDialog dlg = new ExportProjectDialog (entry, format);
+			ExportSolutionDialog dlg = new ExportSolutionDialog (item, format);
+			
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
-					
-					using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true)) {
-						string folder = dlg.TargetFolder;
-						
-						string file = entry is WorkspaceItem ? ((WorkspaceItem)entry).FileName : ((SolutionEntityItem)entry).FileName;
-						Services.ProjectService.Export (mon, file, folder, dlg.Format);
+					using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (true)) {
+						Services.ProjectService.Export (monitor, item.FileName, dlg.TargetFolder, dlg.Format);
 					}
 				}
 			} finally {

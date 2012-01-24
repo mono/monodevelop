@@ -190,12 +190,12 @@
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
 		<Condition id="ItemType" value="MonoDevelop.AspNet.AspNetAppProject">
-			<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+			<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"/>
 		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
-		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+		<CommandItem id = "MonoDevelop.AspNet.Deployment.WebDeployCommands.DeployProject" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">

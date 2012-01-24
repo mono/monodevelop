@@ -624,7 +624,7 @@
       <Type Name="CombineEntryFeatureSelector" />
       <Type Name="DeleteFileDialog" />
       <Type Name="EncapsulateFieldDialog" />
-      <Type Name="ExportProjectDialog" />
+      <Type Name="ExportSolutionDialog" />
       <Type Name="FeatureSelectorDialog" />
       <Type Name="NewProjectDialog" />
       <Type Name="OpenFileInSolutionDialog" />

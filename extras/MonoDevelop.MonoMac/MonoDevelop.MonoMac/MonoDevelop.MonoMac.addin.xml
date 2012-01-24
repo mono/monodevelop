@@ -114,7 +114,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 			<CommandItem id = "MonoDevelop.MonoMac.MonoMacCommands.CreateMacInstaller"
-			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution" />
 	</Extension>
 
 	<!-- debugger addin -->

@@ -82,14 +82,14 @@
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
 		<Condition id="ItemType" value="Solution|Project">
-			<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+			<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"/>
 			<CommandItem id = "MonoDevelop.Deployment.Commands.Install" insertafter="ExportSeparator"/>
 		</Condition>
 	</Extension>	
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
-		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
-	</Extension>	
+		<CommandItem id = "MonoDevelop.Deployment.Commands.CreatePackage" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"/>
+	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.Deployment.Targets.LocalFileCopyConfiguration" />
