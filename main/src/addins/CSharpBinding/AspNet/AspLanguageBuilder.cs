@@ -252,7 +252,13 @@ namespace MonoDevelop.CSharp.Completion
 				translatedCtx.TriggerWordLength = ctx.TriggerWordLength;
 				realDocument.GetContent <ICompletionWidget> ().SetCompletionText (translatedCtx, partial_word, complete_word, wordOffset);
 			}
-
+			
+			public int CaretOffset {
+				get {
+					return localInfo.HiddenDocument.Editor.Caret.Offset;
+				}
+			}
+			
 			public int TextLength {
 				get {
 					return localInfo.HiddenDocument.Editor.Document.Length;
