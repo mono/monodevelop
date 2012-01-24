@@ -936,9 +936,8 @@ namespace MonoDevelop.Debugger
 			Gtk.Entry entry = (Gtk.Entry)s;
 			
 			if (currentCompletionData != null) {
-				KeyActions ka;
-				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State, out ka);
-				CompletionWindowManager.PostProcessKeyEvent (ka, args.Event.Key, (char)args.Event.Key, args.Event.State);
+				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
+				CompletionWindowManager.PostProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
 				args.RetVal = ret;
 			}
 			
@@ -1254,6 +1253,12 @@ namespace MonoDevelop.Debugger
 				editEntry.Text = editEntry.Text.Remove (offset, count);
 			if (!string.IsNullOrEmpty (text))
 				editEntry.Text = editEntry.Text.Insert (offset, text);
+		}
+		
+		int ICompletionWidget.CaretOffset {
+			get {
+				return editEntry.Position;
+			}
 		}
 		
 		char ICompletionWidget.GetChar (int offset)

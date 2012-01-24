@@ -69,11 +69,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			bool res;
-			
-			KeyActions ka = KeyActions.None;
 			if (currentCompletionContext != null) {
-				if (CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier, out ka)) {
-					CompletionWindowManager.PostProcessKeyEvent (ka, key, keyChar, modifier);
+				if (CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier)) {
+					CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
 					autoHideCompletionWindow = true;
 					return false;
 				}
@@ -91,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			res = base.KeyPress (key, keyChar, modifier);
 			
-			CompletionWindowManager.PostProcessKeyEvent (ka, key, keyChar, modifier);
+			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
 			
 			var ignoreMods = Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
 				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask;
@@ -122,7 +120,6 @@ namespace MonoDevelop.Ide.Gui.Content
 
 			if (keyChar != '\0' && CompletionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
-				
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
 				ICompletionDataList completionList = HandleCodeCompletion (currentCompletionContext, keyChar,
 				                                                           ref triggerWordLength);
@@ -133,7 +130,6 @@ namespace MonoDevelop.Ide.Gui.Content
 						= CompletionWidget.CreateCodeCompletionContext (Editor.Caret.Offset - triggerWordLength);
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
-				
 				if (completionList != null) {
 					if (!CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, 
 					                                         currentCompletionContext, OnCompletionWindowClosed))

@@ -131,20 +131,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 			OnWindowClosed (EventArgs.Empty);
 		}
 		
-		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
+		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (wnd == null /*|| !wnd.Visible*/) {
-				ka = KeyActions.None;
 				return false;
 			}
-			return wnd.PreProcessKeyEvent (key, keyChar, modifier, out ka);
+			return wnd.PreProcessKeyEvent (key, keyChar, modifier);
 		}
 		
-		public static void PostProcessKeyEvent (KeyActions ka, Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public static void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (wnd == null)
 				return;
-			wnd.PostProcessKeyEvent (ka, key, keyChar, modifier);
+			wnd.PostProcessKeyEvent (key, keyChar, modifier);
 		}
 		
 		public static void HideWindow ()

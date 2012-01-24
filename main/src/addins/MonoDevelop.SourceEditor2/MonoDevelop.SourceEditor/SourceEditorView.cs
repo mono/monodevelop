@@ -1432,6 +1432,12 @@ namespace MonoDevelop.SourceEditor
 			return Document.GetCharAt (offset);
 		}
 		
+		public int CaretOffset {
+			get {
+				return TextEditor.Caret.Offset;
+			}
+		}
+		
 		public Gtk.Style GtkStyle { 
 			get {
 				return widget.Vbox.Style.Copy ();
@@ -1542,13 +1548,14 @@ namespace MonoDevelop.SourceEditor
 				}
 			} else {
 				data.Replace (triggerOffset, length, complete_word);
-				data.Caret.Offset = triggerOffset + idx;
+				if (triggerOffset <= data.Caret.Offset)
+					data.Caret.Offset = data.Caret.Offset - length + complete_word.Length;
 			}
 			
 			data.Document.CommitLineUpdate (data.Caret.Line);
 		}
 		
-		void FireCompletionContextChanged ()
+		internal void FireCompletionContextChanged ()
 		{
 			if (CompletionContextChanged != null)
 				CompletionContextChanged (this, EventArgs.Empty);
