@@ -192,7 +192,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		bool IncludeInSyncedProject (ProjectFile pf)
 		{
-			return pf.BuildAction == BuildAction.Content
+			return (pf.BuildAction == BuildAction.Content && pf.ProjectVirtualPath.ParentDirectory.IsNullOrEmpty)
 				|| (pf.BuildAction == BuildAction.InterfaceDefinition && HasInterfaceDefinitionExtension (pf.FilePath));
 		}
 		

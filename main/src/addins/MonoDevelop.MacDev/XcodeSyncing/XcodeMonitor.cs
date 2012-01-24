@@ -75,7 +75,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			monitor.BeginTask (GettextCatalog.GetString ("Updating Xcode project..."), items.Count);
 			monitor.Log.WriteLine ("Updating synced project with {0} items", items.Count);
 			XC4Debug.Log ("Updating synced project with {0} items", items.Count);
-		
+			
 			var ctx = new XcodeSyncContext (projectDir, syncTimeCache);
 			
 			var toRemove = new HashSet<string> (itemMap.Keys);
