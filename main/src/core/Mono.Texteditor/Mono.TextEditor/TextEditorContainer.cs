@@ -155,7 +155,9 @@ namespace Mono.TextEditor
 		protected override void OnMapped ()
 		{
 			WidgetFlags |= WidgetFlags.Mapped;
-			containerChildren.ForEach (child => child.Child.Map ());
+			// Note: SourceEditorWidget.ShowAutoSaveWarning() might have set TextEditor.Visible to false,
+			// in which case we want to not map it (would cause a gtk+ critical error).
+			containerChildren.ForEach (child => { if (child.Child.Visible) child.Child.Map (); });
 			GdkWindow.Show ();
 		}
 		
