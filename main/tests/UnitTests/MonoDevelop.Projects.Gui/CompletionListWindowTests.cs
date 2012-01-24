@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using NUnit.Framework;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -51,12 +52,12 @@ namespace MonoDevelop.Projects.Gui
 			
 			public string GetText (int startOffset, int endOffset)
 			{
-				return "";
+				return sb.ToString ().Substring (startOffset, endOffset - startOffset);
 			}
 			
 			public char GetChar (int offset)
 			{
-				return '\0';
+				return sb.ToString () [offset];
 			}
 			
 			public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
@@ -86,9 +87,16 @@ namespace MonoDevelop.Projects.Gui
 			public void Replace (int offset, int count, string text)
 			{
 			}
+			
+			public int CaretOffset {
+				get {
+					return sb.Length;
+				}
+			}
+			
 			public int TextLength {
 				get {
-					return 0;
+					return sb.Length;
 				}
 			}
 			
@@ -104,7 +112,15 @@ namespace MonoDevelop.Projects.Gui
 				}
 			}
 			#endregion
-			
+			public void AddChar (char ch)
+			{
+				sb.Append (ch);
+			}
+			public void Backspace ()
+			{
+				sb.Length--;
+			}
+			StringBuilder sb = new StringBuilder ();
 		}
 		
 		static void SimulateInput (CompletionListWindow listWindow, string input)
@@ -113,35 +129,44 @@ namespace MonoDevelop.Projects.Gui
 				KeyActions ka;
 				switch (ch) {
 				case '8':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Up, '\0', Gdk.ModifierType.None, out ka);
+					listWindow.PreProcessKeyEvent (Gdk.Key.Up, '\0', Gdk.ModifierType.None);
+					listWindow.PostProcessKeyEvent (Gdk.Key.Up, '\0', Gdk.ModifierType.None);
 					break;
 				case '2':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Down, '\0', Gdk.ModifierType.None, out ka);
+					listWindow.PreProcessKeyEvent (Gdk.Key.Down, '\0', Gdk.ModifierType.None);
+					listWindow.PostProcessKeyEvent (Gdk.Key.Down, '\0', Gdk.ModifierType.None);
 					break;
 				case '4':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Left, '\0', Gdk.ModifierType.None, out ka);
+					listWindow.PreProcessKeyEvent (Gdk.Key.Left, '\0', Gdk.ModifierType.None);
+					listWindow.PostProcessKeyEvent (Gdk.Key.Left, '\0', Gdk.ModifierType.None);
 					break;
 				case '6':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None, out ka);
+					listWindow.PreProcessKeyEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
+					listWindow.PostProcessKeyEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
 					break;
 				case '\t':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Tab, '\t', Gdk.ModifierType.None, out ka);
+					listWindow.PreProcessKeyEvent (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+					listWindow.PostProcessKeyEvent (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
 					break;
 				case '\b':
-					listWindow.PreProcessKeyEvent (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None, out ka);
+					listWindow.PreProcessKeyEvent (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
+					((TestCompletionWidget)listWindow.CompletionWidget).Backspace ();
+					listWindow.PostProcessKeyEvent (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
 					break;
 				case '\n':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Return, '\n', Gdk.ModifierType.None, out ka);
+					listWindow.PreProcessKeyEvent (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+					listWindow.PostProcessKeyEvent (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 					break;
 				default:
-					listWindow.PreProcessKeyEvent ((Gdk.Key)ch, ch, Gdk.ModifierType.None, out ka);
+					listWindow.PreProcessKeyEvent ((Gdk.Key)ch, ch, Gdk.ModifierType.None);
+					((TestCompletionWidget)listWindow.CompletionWidget).AddChar (ch);
+					listWindow.PostProcessKeyEvent ((Gdk.Key)ch, ch, Gdk.ModifierType.None);
 					break;
 				}
 			}
 		}
 		
 		class SimulationSettings {
-			public string PartialWord { get; set; }
 			public string SimulatedInput { get; set; }
 			public bool AutoSelect { get; set; }
 			public bool CompleteWithSpaceOrPunctuation { get; set; }
@@ -159,7 +184,6 @@ namespace MonoDevelop.Projects.Gui
 		static string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string[] completionData)
 		{
 			return RunSimulation (new SimulationSettings () {
-				PartialWord = partialWord,
 				SimulatedInput = simulatedInput,
 				AutoSelect = autoSelect,
 				CompleteWithSpaceOrPunctuation = completeWithSpaceOrPunctuation,
@@ -189,7 +213,6 @@ namespace MonoDevelop.Projects.Gui
 				CodeCompletionContext = new CodeCompletionContext (),
 				CompleteWithSpaceOrPunctuation = settings.CompleteWithSpaceOrPunctuation,
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
-				PartialWord = settings.PartialWord,
 				DefaultCompletionString = settings.DefaultCompletionString
 			};
 			listWindow.UpdateWordSelection ();
@@ -215,7 +238,7 @@ namespace MonoDevelop.Projects.Gui
 			
 			Assert.AreEqual ("AbAb", output);
 			
-			output = RunSimulation ("", "AbAbAb.", true, true, 
+			output = RunSimulation ("", "AbAbA.", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -469,7 +492,6 @@ namespace MonoDevelop.Projects.Gui
 		public void TestDefaultCompletionString ()
 		{
 			string output = RunSimulation (new SimulationSettings {
-				PartialWord = "",
 				SimulatedInput = "\t",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
@@ -485,7 +507,6 @@ namespace MonoDevelop.Projects.Gui
 			Assert.AreEqual ("C", output);
 			
 			output = RunSimulation (new SimulationSettings {
-				PartialWord = "",
 				SimulatedInput = " ",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
@@ -505,7 +526,6 @@ namespace MonoDevelop.Projects.Gui
 		public void TestDefaultCompletionStringList ()
 		{
 			CompletionListWindow listWindow = CreateListWindow (new SimulationSettings {
-				PartialWord = "",
 				SimulatedInput = "\t",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
@@ -527,14 +547,13 @@ namespace MonoDevelop.Projects.Gui
 		public void TestBug543923 ()
 		{
 			string output = RunSimulation (new SimulationSettings {
-				PartialWord = "",
 				SimulatedInput = "i\b ",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
 				AutoCompleteEmptyMatch = false,
 				CompletionData = new[] { "#if", "if", "other" }
 			});
-			Assert.IsTrue (string.IsNullOrEmpty (output));
+			Assert.IsTrue (string.IsNullOrEmpty (output), "output was:"+ output);
 		}
 		
 		
@@ -592,7 +611,7 @@ namespace MonoDevelop.Projects.Gui
 		public void TestBug629361 ()
 		{
 			string output = RunSimulation ("", "unit\t", true, true, false, "Unit", "unit");
-			Assert.AreEqual ("unit", output);
+			Assert.IsTrue (output == null || "unit" == output);
 		}
 		
 		/// <summary>

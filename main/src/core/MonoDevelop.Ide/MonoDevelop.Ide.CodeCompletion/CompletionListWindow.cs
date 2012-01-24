@@ -53,11 +53,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 		
-		public ICompletionWidget CompletionWidget {
-			get;
-			set;
-		}
-		
 		public int X { get; private set; }
 		public int Y { get; private set; }
 		
@@ -126,10 +121,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.OnDestroyed ();
 		}
 
-		public void PostProcessKeyEvent (KeyActions ka, Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if ((ka & KeyActions.Complete) != 0) 
+			KeyActions ka = KeyActions.None;
+			bool keyHandled = false;
+			foreach (var handler in CompletionDataList.KeyHandler) {
+				if (handler.PostProcessKey (this, key, keyChar, modifier, out ka)) {
+					keyHandled = true;
+					break;
+				}
+			}
+			
+			if (!keyHandled)
+				ka = PostProcessKey (key, keyChar, modifier);
+			if ((ka & KeyActions.Complete) != 0)
 				CompleteWord (ref ka, key, keyChar, modifier);
+			if ((ka & KeyActions.CloseWindow) != 0)
+				CompletionWindowManager.HideWindow ();
 		}
 		
 		public void ToggleCategoryMode ()
@@ -139,30 +147,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.List.QueueDraw ();
 		}
 		
-		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions ka)
+		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			ka = KeyActions.None;
+			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
 			foreach (ICompletionKeyHandler handler in CompletionDataList.KeyHandler) {
-				if (handler.ProcessKey (this, key, keyChar, modifier, out ka)) {
+				if (handler.PreProcessKey (this, key, keyChar, modifier, out ka)) {
 					keyHandled = true;
 					break;
 				}
 			}
 			
-			if (!keyHandled) {
-				ka = ProcessKey (key, keyChar, modifier);
-			}
-			
-			if ((ka & KeyActions.Complete) != 0) {
-				//bool completed =
+			if (!keyHandled)
+				ka = PreProcessKey (key, keyChar, modifier);
+			if ((ka & KeyActions.Complete) != 0)
 				CompleteWord (ref ka, key, keyChar, modifier);
-				//NOTE: this passes the enter keystroke through to the editor if the current item is an exact match
-				//if (!completed) {
-				//	CompletionWindowManager.HideWindow ();
-				//	return false;
-				//}
-			}
 
 			if ((ka & KeyActions.CloseWindow) != 0)
 				CompletionWindowManager.HideWindow ();
@@ -247,6 +246,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (text.Length == 0) {
 					UpdateWordSelection ();
 					initialWordLength = 0;//completionWidget.SelectedLength;
+					StartOffset = completionWidget.CaretOffset;
 					ResetSizes ();
 					ShowAll ();
 					UpdateWordSelection ();
@@ -259,12 +259,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 					return true;
 				}
-
+				
 				initialWordLength = text.Length /*+ completionWidget.SelectedLength*/;
-				PartialWord = text;
+				StartOffset = completionWidget.CaretOffset - initialWordLength;
 				HideWhenWordDeleted = initialWordLength != 0;
 				UpdateWordSelection ();
-			
 				//if there is only one matching result we take it by default
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 					CompleteWord ();

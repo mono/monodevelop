@@ -55,7 +55,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	
 	public interface ICompletionKeyHandler
 	{
-		bool ProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
+		bool PreProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
+		bool PostProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
 	}
 	
 	public enum CompletionSelectionMode {
