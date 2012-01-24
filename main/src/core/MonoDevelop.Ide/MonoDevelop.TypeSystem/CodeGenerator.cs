@@ -33,6 +33,7 @@ using Mono.TextEditor;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -51,6 +52,11 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		public int TabSize {
+			get;
+			set;
+		}
+		
+		public virtual PolicyContainer PolicyParent {
 			get;
 			set;
 		}

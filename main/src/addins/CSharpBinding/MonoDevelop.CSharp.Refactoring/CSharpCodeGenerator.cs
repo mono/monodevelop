@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.Projects.Policies;
 
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -44,16 +45,34 @@ namespace MonoDevelop.CSharp.Refactoring
 	{
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		
-		Lazy<CSharpFormattingPolicy> policy = new Lazy<CSharpFormattingPolicy> (() => {
-			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-		});
+		CSharpFormattingPolicy policy;
 		
 		public MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
 			get {
-				return this.policy.Value;
+				if (policy == null) {
+					var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+					if (PolicyParent != null)
+						policy = PolicyParent.Get<CSharpFormattingPolicy> (types);
+					if (policy == null) {
+						
+						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+					}
+				}
+				return this.policy;
 			}
 		}
+		
+		public override PolicyContainer PolicyParent {
+			get {
+				return base.PolicyParent;
+			}
+			set {
+				base.PolicyParent = value;
+				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+				policy = value.Get<CSharpFormattingPolicy> (types);
+			}
+		}
+		
 		
 		class CodeGenerationOptions
 		{

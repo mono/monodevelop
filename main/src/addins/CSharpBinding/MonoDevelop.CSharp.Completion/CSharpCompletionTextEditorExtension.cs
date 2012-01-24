@@ -89,6 +89,12 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
+		public MonoDevelop.Projects.Project Project {
+			get {
+				return document.Project;
+			}
+		}
+		
 		CSharpFormattingPolicy policy;
 		public CSharpFormattingPolicy FormattingPolicy {
 			get {

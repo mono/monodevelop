@@ -75,6 +75,8 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			var resolvedType = type.Resolve (ext.ParsedDocument.GetTypeResolveContext (ext.Compilation, editor.Caret.Location)).GetDefinition ();
+			if (ext.Project != null)
+				generator.PolicyParent = ext.Project.Policies;
 			var result = generator.CreateMemberImplementation (resolvedType, type, member, isExplicit);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
