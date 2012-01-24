@@ -37,18 +37,22 @@ namespace MonoDevelop.AspNet
 	{
 		const string target05 = @"$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v8.0\WebApplications\Microsoft.WebApplication.targets";
 		const string target08 = @"$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets";
+		const string target10 = @"$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets";
 			
 		public void UpdateImports (SolutionEntityItem item, List<string> imports)
 		{
 			imports.Remove (target05);
 			imports.Remove (target08);
+			imports.Remove (target10);
 			
 			AspNetAppProject project = item as AspNetAppProject;
 			if (project != null) {
 				if (project.FileFormat.Id == "MSBuild05")
 					imports.Add (target05);
-				else
+				else if (project.FileFormat.Id == "MSBuild08")
 					imports.Add (target08);
+				else
+					imports.Add (target10);
 			}
 		}
 	}

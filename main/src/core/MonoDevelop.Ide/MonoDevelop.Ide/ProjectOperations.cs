@@ -1107,44 +1107,51 @@ namespace MonoDevelop.Ide
 					BuildDone (monitor, result, entry, tt);	// BuildDone disposes the monitor
 			});
 		}
+		
+		// Note: This must run in the main thread
+		void PromptForSave (BuildResult result)
+		{
+			var couldNotSaveError = "The build has been aborted as the file '{0}' could not be saved";
+			
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				if (doc.IsDirty && doc.Project != null) {
+					if (MessageService.AskQuestion (GettextCatalog.GetString ("Save changed documents before building?"),
+					                                GettextCatalog.GetString ("Some of the open documents have unsaved changes."),
+					                                AlertButton.BuildWithoutSave, AlertButton.Save) == AlertButton.Save) {
+						MarkFileDirty (doc.FileName);
+						doc.Save ();
+						if (doc.IsDirty)
+							result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
+					} else
+						break;
+				}
+			}
+		}
+		
+		// Note: This must run in the main thread
+		void SaveAllFiles (BuildResult result)
+		{
+			var couldNotSaveError = "The build has been aborted as the file '{0}' could not be saved";
+			
+			foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents)) {
+				if (doc.IsDirty && doc.Project != null) {
+					doc.Save ();
+					if (doc.IsDirty)
+						result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
+				}
+			}
+		}
 
 		BuildResult DoBeforeCompileAction ()
 		{
-			var result = new BuildResult ();
-			var couldNotSaveError = "The build has been aborted as the file '{0}' could not be saved";
 			BeforeCompileAction action = IdeApp.Preferences.BeforeBuildSaveAction;
+			var result = new BuildResult ();
 			
 			switch (action) {
-				case BeforeCompileAction.Nothing:
-					break;
-				case BeforeCompileAction.PromptForSave:
-					foreach (var doc in IdeApp.Workbench.Documents) {
-						if (doc.IsDirty && doc.Project != null) {
-							if (MessageService.AskQuestion (
-						            GettextCatalog.GetString ("Save changed documents before building?"),
-							        GettextCatalog.GetString ("Some of the open documents have unsaved changes."),
-							                                AlertButton.BuildWithoutSave, AlertButton.Save) == AlertButton.Save) {
-								MarkFileDirty (doc.FileName);
-								doc.Save ();
-								if (doc.IsDirty)
-									result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
-							}
-							else
-								break;
-						}
-					}
-					break;
-				case BeforeCompileAction.SaveAllFiles:
-					foreach (var doc in new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents))
-						if (doc.IsDirty && doc.Project != null) {
-							doc.Save ();
-							if (doc.IsDirty)
-								result.AddError (string.Format (couldNotSaveError, Path.GetFileName (doc.FileName)), doc.FileName);
-						}
-					break;
-				default:
-					System.Diagnostics.Debug.Assert(false);
-					break;
+			case BeforeCompileAction.Nothing: break;
+			case BeforeCompileAction.PromptForSave: DispatchService.GuiDispatch (delegate { PromptForSave (result); }); break;
+			case BeforeCompileAction.SaveAllFiles: DispatchService.GuiDispatch (delegate { SaveAllFiles (result); }); break;
+			default: System.Diagnostics.Debug.Assert (false); break;
 			}
 			
 			return result;

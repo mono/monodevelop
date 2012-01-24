@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Xml.Serialization;
 using System.Globalization;
@@ -229,8 +230,12 @@ namespace MonoDevelop.NUnit
 			TestRecord res = (TestRecord) fileCache [file];
 			if (res != null)
 				return res;
-			
-			string filePath = Path.Combine (basePath, file);
+			string filePath;
+			try {
+				filePath = Path.Combine (basePath, file);
+			} catch (Exception) {
+				return null;
+			}
 			if (!File.Exists (filePath))
 				return null;
 
@@ -274,7 +279,9 @@ namespace MonoDevelop.NUnit
 		
 		string GetRootFileName (string configuration, DateTime date)
 		{
-			return storeId + "-" + configuration + "-" + date.ToString ("yyyy-MM-dd", CultureInfo.InvariantCulture) + ".xml";
+			// Filter out all invalid path characters in the file name (see: Bug 3023 - Running NUnit tests throws ArgumentException: Illegal Characters in path)
+			var filteredConfiguration = new string (configuration.Where (c => !Path.InvalidPathChars.Any (i => c == i)).ToArray ());
+			return storeId + "-" + filteredConfiguration + "-" + date.ToString ("yyyy-MM-dd", CultureInfo.InvariantCulture) + ".xml";
 		}
 		
 		DateTime ParseFileNameDate (string configuration, string fileName)
