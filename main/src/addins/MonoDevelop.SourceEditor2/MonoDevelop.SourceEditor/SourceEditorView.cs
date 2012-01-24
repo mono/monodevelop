@@ -1548,7 +1548,7 @@ namespace MonoDevelop.SourceEditor
 			data.Document.CommitLineUpdate (data.Caret.Line);
 		}
 		
-		void FireCompletionContextChanged ()
+		internal void FireCompletionContextChanged ()
 		{
 			if (CompletionContextChanged != null)
 				CompletionContextChanged (this, EventArgs.Empty);
