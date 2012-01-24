@@ -139,6 +139,13 @@ namespace MonoDevelop.Components
 			return base.OnExposeEvent (evnt);
 		}
 		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			var rect = Allocation.Union (allocation);
+			QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
+			base.OnSizeAllocated (allocation);
+		}
+		
 		//this is used to style like a tooltip
 		bool changeStyle = false;
 		
