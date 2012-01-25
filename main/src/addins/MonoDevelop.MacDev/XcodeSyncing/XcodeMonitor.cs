@@ -72,9 +72,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			items = allItems;
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Updating Xcode project..."), items.Count);
-			monitor.Log.WriteLine ("Updating synced project with {0} items", items.Count);
-			XC4Debug.Log ("Updating synced project with {0} items", items.Count);
+			monitor.BeginTask (GettextCatalog.GetString ("Updating Xcode project for {0}...", name), items.Count);
 			
 			var ctx = new XcodeSyncContext (projectDir, syncTimeCache);
 			
@@ -89,14 +87,18 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					syncList.Add (item);
 				
 				var files = item.GetTargetRelativeFileNames ();
-				foreach (var f in files) {
-					toRemove.Remove (f);
-					if (!itemMap.ContainsKey (f)) {
+				foreach (var file in files) {
+					toRemove.Remove (file);
+					
+					if (!itemMap.ContainsKey (file)) {
+						monitor.Log.WriteLine ("'{0}' needs to be updated.", file);
 						updateProject = true;
 					} else if (needsSync) {
-						toClose.Add (f);
+						monitor.Log.WriteLine ("'{0}' needs to be closed.", file);
+						toClose.Add (file);
 					}
-					itemMap [f] = item;
+					
+					itemMap[file] = item;
 				}
 			}
 			updateProject = updateProject || toRemove.Any ();
@@ -104,14 +106,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			bool removedOldProject = false;
 			if (updateProject) {
 				if (pendingProjectWrite == null && ProjectExists ()) {
-					monitor.Log.WriteLine ("Project file needs to be updated, closing and removing old project");
+					monitor.Log.WriteLine ("A project file needs to be updated, closing and removing old project.");
 					CloseProject ();
-					DeleteXcproj ();
+					DeleteXcproj (monitor);
 					removedOldProject = true;
 				}
 			} else {
 				foreach (var f in toClose)
-					CloseFile (projectDir.Combine (f));
+					CloseFile (monitor, projectDir.Combine (f));
 			}
 			
 			foreach (var f in toRemove) {
@@ -123,7 +125,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			if (removedOldProject) {
-				HackRelocateProject ();
+				HackRelocateProject (monitor);
 				ctx.ProjectDir = projectDir;
 			}
 			
@@ -133,13 +135,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 			
 			foreach (var item in syncList) {
-				monitor.Log.WriteLine ("Syncing item {0}", item.GetTargetRelativeFileNames ()[0]);
-				item.SyncOut (ctx);
+				item.SyncOut (monitor, ctx);
 				monitor.Step (1);
 			}
 			
 			if (updateProject) {
-				monitor.Log.WriteLine ("Queuing Xcode project {0} to write when opened", projectDir);
+				monitor.Log.WriteLine ("Queued write of '{0}'.", xcproj);
 				pendingProjectWrite = emptyProject;
 			}
 
@@ -154,17 +155,21 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		// To work around this we increment a subdirectory name and use that, and do some
 		// careful bookkeeping to reduce the unnecessary I/O overhead that this adds.
 		//
-		void HackRelocateProject ()
+		void HackRelocateProject (IProgressMonitor monitor)
 		{
 			var oldProjectDir = projectDir;
 			HackGetNextProjectDir ();
-			XC4Debug.Log ("Relocating {0} to {1}", oldProjectDir, projectDir);
+			
+			monitor.Log.WriteLine ("Relocating {0} to {1}", oldProjectDir, projectDir);
+			
 			foreach (var f in syncTimeCache) {
 				var target = projectDir.Combine (f.Key);
 				var src = oldProjectDir.Combine (f.Key);
 				var parent = target.ParentDirectory;
+				
 				if (!Directory.Exists (parent))
 					Directory.CreateDirectory (parent);
+				
 				File.Move (src, target);
 			}
 		}
@@ -172,10 +177,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		void HackGetNextProjectDir ()
 		{
 			do {
-				this.projectDir = originalProjectDir.Combine (nextHackDir.ToString ());
+				projectDir = originalProjectDir.Combine (nextHackDir.ToString ());
 				nextHackDir++;
-			} while (Directory.Exists (this.projectDir));
-			this.xcproj = projectDir.Combine (name + ".xcodeproj");
+			} while (Directory.Exists (projectDir));
+			
+			xcproj = projectDir.Combine (name + ".xcodeproj");
 		}
 		
 		HashSet<string> GetKnownFiles ()
@@ -190,7 +196,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return knownItems;
 		}
 		
-		void ScanForAddedFiles (XcodeSyncBackContext ctx, HashSet<string> knownFiles, string directory, string relativePath)
+		void ScanForAddedFiles (IProgressMonitor monitor, XcodeSyncBackContext ctx, HashSet<string> knownFiles, string directory, string relativePath)
 		{
 			foreach (var file in Directory.EnumerateFiles (directory)) {
 				if (file.EndsWith ("~") || file.EndsWith (".m"))
@@ -202,6 +208,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (file.EndsWith (".h")) {
 					NSObjectTypeInfo parsed = NSObjectInfoService.ParseHeader (file);
 					
+					monitor.Log.WriteLine ("New Objective-C header file found: {0}", Path.Combine (relativePath, Path.GetFileName (file)));
 					ctx.TypeSyncJobs.Add (XcodeSyncObjcBackJob.NewType (parsed, relativePath));
 				} else {
 					FilePath original, relative;
@@ -213,6 +220,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					
 					original = ctx.Project.BaseDirectory.Combine (relative);
 					
+					monitor.Log.WriteLine ("New content file found: {0}", relative);
 					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, true));
 				}
 			}
@@ -229,7 +237,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				else
 					relative = Path.GetFileName (dir);
 				
-				ScanForAddedFiles (ctx, knownFiles, dir, relative);
+				ScanForAddedFiles (monitor, ctx, knownFiles, dir, relative);
 			}
 		}
 
@@ -239,18 +247,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var needsSync = new List<XcodeSyncedItem> (items.Where (i => i.NeedsSyncBack (ctx)));
 			var knownFiles = GetKnownFiles ();
 			
-			if (Directory.Exists (projectDir))
-				ScanForAddedFiles (ctx, knownFiles, projectDir, null);
+			if (Directory.Exists (projectDir)) {
+				monitor.BeginTask ("Scanning for newly-added files in the Xcode project...", 0);
+				ScanForAddedFiles (monitor, ctx, knownFiles, projectDir, null);
+				monitor.EndTask ();
+			}
 			
 			if (needsSync.Count > 0) {
-				monitor.BeginStepTask (GettextCatalog.GetString ("Synchronizing Xcode project changes"), needsSync.Count, 1);
+				monitor.BeginStepTask (GettextCatalog.GetString ("Synchronizing changes made to known files in Xcode back to MonoDevelop..."), needsSync.Count, 1);
 				for (int i = 0; i < needsSync.Count; i++) {
 					var item = needsSync [i];
-					item.SyncBack (ctx);
+					item.SyncBack (monitor, ctx);
 					monitor.Step (1);
 				}
-				
-				monitor.Log.WriteLine (GettextCatalog.GetPluralString ("Synchronized {0} file", "Synchronized {0} files", needsSync.Count), needsSync.Count);
 				monitor.EndTask ();
 			}
 			
@@ -261,48 +270,58 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			var appPathKey = new NSString ("NSApplicationPath");
 			var appPathVal = new NSString (AppleSdkSettings.XcodePath);
+			
 			return NSWorkspace.SharedWorkspace.LaunchedApplications.Any (app => appPathVal.Equals (app[appPathKey]));
 		}
 		
-		public void SaveProject ()
+		public void SaveProject (IProgressMonitor monitor)
 		{
+			if (!CheckRunning () || !IsProjectOpen ())
+				return;
+			
+			monitor.Log.WriteLine ("Asking Xcode to save pending changes for the {0} project", name);
 			AppleScript.Run (XCODE_SAVE_IN_PATH, AppleSdkSettings.XcodePath, projectDir);
 		}
 
-		void SyncProject ()
+		void SyncProject (IProgressMonitor monitor)
 		{
 			if (pendingProjectWrite != null) {
+				monitor.Log.WriteLine ("Generating 'project.pbxproj' for {0}", name);
 				pendingProjectWrite.Generate (projectDir);
 				pendingProjectWrite = null;
 			}
 		}
 		
-		public void OpenFile (string relativeName)
+		public void OpenFile (IProgressMonitor monitor, string relativeName)
 		{
-			XC4Debug.Log ("Opening file in Xcode: {0}", relativeName);
-			SyncProject ();
+			SyncProject (monitor);
+			
+			monitor.Log.WriteLine ("Asking Xcode to open '{0}'...", projectDir.Combine (relativeName));
 			AppleScript.Run (XCODE_OPEN_PROJECT_FILE, AppleSdkSettings.XcodePath, xcproj, projectDir.Combine (relativeName));
 		}
 		
 		public void DeleteProjectDirectory ()
 		{
-			XC4Debug.Log ("Deleting temp project directories");
 			bool isRunning = CheckRunning ();
+			
+			XC4Debug.Log ("Deleting temporary Xcode project directories.");
+			
 			if (Directory.Exists (projectDir))
 				Directory.Delete (projectDir, true);
+			
 			if (isRunning) {
-				XC4Debug.Log ("Xcode still running, leaving empty directory in place to prevent name re-use");
+				XC4Debug.Log ("Xcode still running, leaving empty directory in place to prevent name re-use.");
 				Directory.CreateDirectory (projectDir);
 			} else {
-				XC4Debug.Log ("Xcode not running, removing all temp directories");
-				if (Directory.Exists (this.originalProjectDir))
-					Directory.Delete (this.originalProjectDir, true);
+				XC4Debug.Log ("Xcode not running, removing all temporary directories.");
+				if (Directory.Exists (originalProjectDir))
+					Directory.Delete (originalProjectDir, true);
 			}
 		}
 		
-		void DeleteXcproj ()
+		void DeleteXcproj (IProgressMonitor monitor)
 		{
-			XC4Debug.Log ("Deleting project artifacts");
+			monitor.Log.WriteLine ("Deleting project artifacts.");
 			if (Directory.Exists (xcproj))
 				Directory.Delete (xcproj, true);
 		}
@@ -315,7 +334,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (dict.TryGetValue<PString>("WorkspacePath", out val))
 					return val.Value;
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while reading info.plist from:" + infoPlist, e);
+				LoggingService.LogError ("Error while reading info.plist from " + infoPlist, e);
 			}
 			return null;
 		}
@@ -324,6 +343,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			if (!CheckRunning ())
 				return false;
+			
 			return AppleScript.Run (XCODE_CHECK_PROJECT_OPEN, AppleSdkSettings.XcodePath, xcproj) == "true";
 		}
 		
@@ -332,27 +352,33 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			if (!CheckRunning ())
 				return true;
 			
-			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, projectDir) == "true";
-			XC4Debug.Log ("Closing project: {0}", success);
+			XC4Debug.Log ("Asking Xcode to close the {0} project...", name);
+			
+			bool success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, projectDir) == "true";
+			
+			if (success)
+				XC4Debug.Log ("Xcode successfully closed the project.");
+			else
+				XC4Debug.Log ("Xcode failed to close the project.");
+			
 			return success;
 		}
 		
-		public bool OpenProject ()
+		public void OpenProject (IProgressMonitor monitor)
 		{
-			SyncProject ();
-			var success = AppleScript.Run (XCODE_OPEN_PROJECT, AppleSdkSettings.XcodePath, projectDir) == "true";
-			XC4Debug.Log ("Opening project: {0}", success);
-			return success;
+			SyncProject (monitor);
+			
+			monitor.Log.WriteLine ("Asking Xcode to open the {0} project...", name);
+			AppleScript.Run (XCODE_OPEN_PROJECT, AppleSdkSettings.XcodePath, projectDir);
 		}
 		
-		public bool CloseFile (string fileName)
+		public void CloseFile (IProgressMonitor monitor, string fileName)
 		{
 			if (!CheckRunning ())
-				return true;
+				return;
 			
-			var success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, fileName) == "true";
-			XC4Debug.Log ("Closing file {0}: {1}", fileName, success);
-			return success;
+			monitor.Log.WriteLine ("Asking Xcode to close '{0}'...", fileName);
+			AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, fileName);
 		}
 		
 		const string XCODE_OPEN_PROJECT =

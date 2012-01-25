@@ -55,14 +55,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return !File.Exists (target) || context.GetSyncTime (targetRelative) != File.GetLastWriteTime (source);
 		}
 		
-		public override void SyncOut (XcodeSyncContext context)
+		public override void SyncOut (IProgressMonitor monitor, XcodeSyncContext context)
 		{
+			monitor.Log.WriteLine ("Exporting '{0}' to Xcode.", targetRelative);
+			
 			var target = context.ProjectDir.Combine (targetRelative);
 			var dir = target.ParentDirectory;
+			
 			if (!Directory.Exists (dir))
 				Directory.CreateDirectory (dir);
+			
 			if (File.Exists (target))
 				File.Delete (target);
+			
 			File.Copy (source, target);
 			File.SetLastWriteTime (target, File.GetLastWriteTime (source));
 			context.UpdateSyncTime (targetRelative);
@@ -76,8 +81,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return File.GetLastWriteTime (target) != context.GetSyncTime (targetRelative);
 		}
 		
-		public override void SyncBack (XcodeSyncBackContext context)
+		public override void SyncBack (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
+			monitor.Log.WriteLine ("Queueing sync-back of changes made to '{0}' from Xcode.", targetRelative);
+			
 			context.FileSyncJobs.Add (new XcodeSyncFileBackJob (source, targetRelative, false));
 		}
 		

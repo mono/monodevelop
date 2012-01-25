@@ -58,8 +58,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return !File.Exists (path) || context.GetSyncTime (h) != Type.DefinedIn.Max (f => File.GetLastWriteTime (f));
 		}
 		
-		public override void SyncOut (XcodeSyncContext context)
+		public override void SyncOut (IProgressMonitor monitor, XcodeSyncContext context)
 		{
+			monitor.Log.WriteLine ("Exporting Objective-C source code for the {0} class to Xcode.", Type.CliName);
 			Type.GenerateObjcType (context.ProjectDir, Frameworks);
 			context.UpdateSyncTime (Type.ObjCName + ".h");
 			context.UpdateSyncTime (Type.ObjCName + ".m");
@@ -72,30 +73,32 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return File.Exists (path) && File.GetLastWriteTime (path) != context.GetSyncTime (h);
 		}
 		
-		public override void SyncBack (XcodeSyncBackContext context)
+		public override void SyncBack (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
+			monitor.Log.WriteLine ("Queueing sync-back of changes made to the {0} class from Xcode.", Type.CliName);
+			
 			var hFile = context.ProjectDir.Combine (Type.ObjCName + ".h");
 			var objcType = context.ProjectInfo.GetType (Type.ObjCName);
 			
 			if (objcType == null) {
-				context.ReportError ("Missing objc type {0}", Type.ObjCName);
+				context.ReportError ("Missing Objective-C type: {0}", Type.ObjCName);
 				return;
 			}
 			
 			if (!objcType.IsUserType) {
-				context.ReportError ("Parsed type {0} is not a user type", objcType);
+				context.ReportError ("Parsed Objective-C type '{0}' is not a user type", objcType);
 				return;
 			}
 			
 			var parsed = NSObjectInfoService.ParseHeader (hFile);
 			
 			if (parsed == null) {
-				context.ReportError ("Error parsing objc type {0}", Type.ObjCName);
+				context.ReportError ("Error parsing Objective-C type: {0}", Type.ObjCName);
 				return;
 			}
 			
 			if (parsed.ObjCName != objcType.ObjCName) {
-				context.ReportError ("Parsed type name {0} does not match original {1}",
+				context.ReportError ("Parsed type name '{0}' does not match original: {1}",
 					parsed.ObjCName, objcType.ObjCName);
 				return;
 			}

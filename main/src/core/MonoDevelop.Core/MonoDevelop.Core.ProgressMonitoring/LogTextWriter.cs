@@ -42,7 +42,9 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public void ChainWriter (TextWriter writer)
 		{
-			if (chainedWriters == null) chainedWriters = new List<TextWriter> ();
+			if (chainedWriters == null)
+				chainedWriters = new List<TextWriter> ();
+			
 			chainedWriters.Add (writer);
 		}
 		
@@ -69,6 +71,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			if (TextWritten != null)
 				TextWritten (new string (buffer, index, count));
+			
 			if (chainedWriters != null)
 				foreach (TextWriter cw in chainedWriters)
 					cw.Write (buffer, index, count);
@@ -78,6 +81,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			if (TextWritten != null)
 				TextWritten (value.ToString ());
+			
 			if (chainedWriters != null)
 				foreach (TextWriter cw in chainedWriters)
 					cw.Write (value);
@@ -87,6 +91,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			if (TextWritten != null)
 				TextWritten (value);
+			
 			if (chainedWriters != null)
 				foreach (TextWriter cw in chainedWriters)
 					cw.Write (value);
