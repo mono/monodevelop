@@ -414,7 +414,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					FileService.SystemRename (tempFile, file.Original);
 					context.SetSyncTimeToNow (file.SyncedRelative);
 				} else {
-					monitor.Log.WriteLine ("Copying {0} from Xcode failed because it does not exist.", file.SyncedRelative);
+					monitor.Log.WriteLine ("Error: '{0}' does not exist.", file.SyncedRelative);
 				}
 			}
 			
