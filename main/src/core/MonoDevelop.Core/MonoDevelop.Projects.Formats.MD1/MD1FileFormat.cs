@@ -46,10 +46,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 	internal class MD1FileFormat: IFileFormat
 	{
-		public string Name {
-			get { return "MonoDevelop 1.0"; }
-		}
-		
 		public bool SupportsMixedFormats {
 			get { return true; }
 		}
