@@ -413,6 +413,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
 					FileService.SystemRename (tempFile, file.Original);
 					context.SetSyncTimeToNow (file.SyncedRelative);
+				} else {
+					monitor.Log.WriteLine ("Copying {0} from Xcode failed because it does not exist.", file.SyncedRelative);
 				}
 			}
 			
