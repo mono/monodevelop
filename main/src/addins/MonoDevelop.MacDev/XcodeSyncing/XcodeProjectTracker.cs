@@ -407,9 +407,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					Directory.CreateDirectory (file.Original.ParentDirectory);
 				
 				var tempFile = file.Original.ParentDirectory.Combine (".#" + file.Original.ParentDirectory.FileName);
-				File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
-				FileService.SystemRename (tempFile, file.Original);
-				context.SetSyncTimeToNow (file.SyncedRelative);
+				FilePath path = context.ProjectDir.Combine (file.SyncedRelative);
+				
+				if (File.Exists (path)) {
+					File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
+					FileService.SystemRename (tempFile, file.Original);
+					context.SetSyncTimeToNow (file.SyncedRelative);
+				}
 			}
 			
 			monitor.EndTask ();
