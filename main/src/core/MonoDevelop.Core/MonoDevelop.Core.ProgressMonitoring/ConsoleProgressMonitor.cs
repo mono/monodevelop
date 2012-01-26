@@ -43,6 +43,10 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		bool ignoreLogMessages;
 		TextWriter writer;
 		
+		string TimeStamp {
+			get { return EnableTimeStamp ? string.Format ("[{0}] ", DateTime.Now.ToString ("yyyy-MM-dd HH:mm:ss.f")) : string.Empty; }
+		}
+		
 		public ConsoleProgressMonitor () : this (Console.Out)
 		{
 			//FIXME: can we efficiently update Console.WindowWidth when it changes?
@@ -55,6 +59,10 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			this.writer = writer;
 			logger = new LogTextWriter ();
 			logger.TextWritten += new LogTextEventHandler (WriteLog);
+		}
+		
+		public bool EnableTimeStamp {
+			get; set;
 		}
 		
 		public bool WrapText {
@@ -138,16 +146,17 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		void WriteText (string text, int leftMargin)
 		{
-			if (String.IsNullOrEmpty (text))
+			if (text == null)
 				return;
-
+			
+			string timestamp = TimeStamp;
+			int maxCols = wrap ? columns - timestamp.Length : int.MaxValue;
 			int n = 0;
-			int maxCols = wrap ? columns : int.MaxValue;
 
 			while (n < text.Length)
 			{
 				if (col == -1) {
-					writer.Write (new String (' ', leftMargin));
+					writer.Write (timestamp + new string (' ', leftMargin));
 					col = leftMargin;
 				}
 				

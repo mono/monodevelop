@@ -39,10 +39,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 {
 	abstract class XcodeSyncedItem
 	{
-		public abstract bool NeedsSyncOut (XcodeSyncContext context);
-		public abstract bool NeedsSyncBack (XcodeSyncContext context);
-		public abstract void SyncOut (XcodeSyncContext context);
-		public abstract void SyncBack (XcodeSyncBackContext context);
+		public abstract bool NeedsSyncOut (IProgressMonitor monitor, XcodeSyncContext context);
+		public abstract bool NeedsSyncBack (IProgressMonitor monitor, XcodeSyncContext context);
+		public abstract void SyncOut (IProgressMonitor monitor, XcodeSyncContext context);
+		public abstract void SyncBack (IProgressMonitor monitor, XcodeSyncBackContext context);
 		public abstract void AddToProject (XcodeProject project, FilePath syncProjectDir);
 		public abstract string[] GetTargetRelativeFileNames ();
 	}

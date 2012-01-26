@@ -49,53 +49,78 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			Type = type;
 		}
 		
-		public override bool NeedsSyncOut (XcodeSyncContext context)
+		public string GetObjCHeaderPath (XcodeSyncContext context)
+		{
+			return context.ProjectDir.Combine (Type.ObjCName + ".h");
+		}
+		
+		public override bool NeedsSyncOut (IProgressMonitor monitor, XcodeSyncContext context)
 		{
 			//FIXME: types dep on other types on project, need better regeneration skipping
-			var h = Type.ObjCName + ".h";
-			var path = context.ProjectDir.Combine (h);
-
-			return !File.Exists (path) || context.GetSyncTime (h) != Type.DefinedIn.Max (f => File.GetLastWriteTime (f));
+			string h = Type.ObjCName + ".h";
+			
+			if (!File.Exists (GetObjCHeaderPath (context)))
+				return true;
+			
+			DateTime syncTime = context.GetSyncTime (h);
+			foreach (var path in Type.DefinedIn) {
+				if (File.GetLastWriteTime (path) > syncTime) {
+					monitor.Log.WriteLine ("The {0} class has changed since last sync ({1}).", Type.CliName, Path.GetFileName (path));
+					return true;
+				}
+			}
+			
+			return false;
 		}
 		
-		public override void SyncOut (XcodeSyncContext context)
+		public override void SyncOut (IProgressMonitor monitor, XcodeSyncContext context)
 		{
+			monitor.Log.WriteLine ("Exporting Objective-C source code for the {0} class to Xcode.", Type.CliName);
 			Type.GenerateObjcType (context.ProjectDir, Frameworks);
-			context.UpdateSyncTime (Type.ObjCName + ".h");
-			context.UpdateSyncTime (Type.ObjCName + ".m");
+			
+			DateTime mtime = File.GetLastWriteTime (GetObjCHeaderPath (context));
+			context.SetSyncTime (Type.ObjCName + ".h", mtime);
 		}
 		
-		public override bool NeedsSyncBack (XcodeSyncContext context)
+		public override bool NeedsSyncBack (IProgressMonitor monitor, XcodeSyncContext context)
 		{
-			var h = Type.ObjCName + ".h";
-			var path = context.ProjectDir.Combine (h);
-			return File.Exists (path) && File.GetLastWriteTime (path) != context.GetSyncTime (h);
+			string path = GetObjCHeaderPath (context);
+			string h = Type.ObjCName + ".h";
+			
+			if (File.Exists (path) && File.GetLastWriteTime (path) > context.GetSyncTime (h)) {
+				monitor.Log.WriteLine ("{0} has changed since last sync.", h);
+				return true;
+			}
+			
+			return false;
 		}
 		
-		public override void SyncBack (XcodeSyncBackContext context)
+		public override void SyncBack (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
-			var hFile = context.ProjectDir.Combine (Type.ObjCName + ".h");
+			monitor.Log.WriteLine ("Queueing sync-back of changes made to the {0} class from Xcode.", Type.CliName);
+			
 			var objcType = context.ProjectInfo.GetType (Type.ObjCName);
+			var hFile = GetObjCHeaderPath (context);
 			
 			if (objcType == null) {
-				context.ReportError ("Missing objc type {0}", Type.ObjCName);
+				context.ReportError ("Missing Objective-C type: {0}", Type.ObjCName);
 				return;
 			}
 			
 			if (!objcType.IsUserType) {
-				context.ReportError ("Parsed type {0} is not a user type", objcType);
+				context.ReportError ("Parsed Objective-C type '{0}' is not a user type", objcType);
 				return;
 			}
 			
 			var parsed = NSObjectInfoService.ParseHeader (hFile);
 			
 			if (parsed == null) {
-				context.ReportError ("Error parsing objc type {0}", Type.ObjCName);
+				context.ReportError ("Error parsing Objective-C type: {0}", Type.ObjCName);
 				return;
 			}
 			
 			if (parsed.ObjCName != objcType.ObjCName) {
-				context.ReportError ("Parsed type name {0} does not match original {1}",
+				context.ReportError ("Parsed type name '{0}' does not match original: {1}",
 					parsed.ObjCName, objcType.ObjCName);
 				return;
 			}

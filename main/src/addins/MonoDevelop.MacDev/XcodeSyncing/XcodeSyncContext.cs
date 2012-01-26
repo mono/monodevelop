@@ -51,22 +51,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public DateTime GetSyncTime (string relativeFilename)
 		{
-			DateTime value;
-			if (!syncTimes.TryGetValue (relativeFilename, out value)) {
-				value = File.GetLastWriteTime (ProjectDir.Combine (relativeFilename));
-				syncTimes[relativeFilename] = value;
+			DateTime mtime;
+			
+			if (!syncTimes.TryGetValue (relativeFilename, out mtime)) {
+				mtime = File.GetLastWriteTime (ProjectDir.Combine (relativeFilename));
+				syncTimes[relativeFilename] = mtime;
 			}
-			return value;
+			
+			return mtime;
 		}
 		
-		public void UpdateSyncTime (string relativeFilename)
+		public void SetSyncTime (string relativeFilename, DateTime mtime)
 		{
-			syncTimes[relativeFilename] = File.GetLastWriteTime (ProjectDir.Combine (relativeFilename));
-		}
-		
-		public void SetSyncTimeToNow (string relativeFilename)
-		{
-			syncTimes[relativeFilename] = DateTime.Now;
+			syncTimes[relativeFilename] = mtime;
 		}
 	}
 }
