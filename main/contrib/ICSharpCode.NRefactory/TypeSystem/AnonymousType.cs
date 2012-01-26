@@ -42,7 +42,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.compilation = compilation;
 			this.unresolvedProperties = properties.ToArray();
 			var context = new SimpleTypeResolveContext(compilation.MainAssembly);
-			this.resolvedProperties = new ProjectedList<ITypeResolveContext, IUnresolvedProperty, IProperty>(context, unresolvedProperties, (c, p) => (IProperty)p.CreateResolved(c));
+			this.resolvedProperties = new ProjectedList<ITypeResolveContext, IUnresolvedProperty, IProperty>(context, unresolvedProperties, (c, p) => new AnonymousTypeProperty(p, c, this));
+		}
+		
+		sealed class AnonymousTypeProperty : DefaultResolvedProperty, IEntity
+		{
+			readonly AnonymousType declaringType;
+			
+			public AnonymousTypeProperty(IUnresolvedProperty unresolved, ITypeResolveContext parentContext, AnonymousType declaringType)
+				: base(unresolved, parentContext)
+			{
+				this.declaringType = declaringType;
+			}
+			
+			IType IEntity.DeclaringType {
+				get { return declaringType; }
+			}
 		}
 		
 		public override ITypeReference ToTypeReference()

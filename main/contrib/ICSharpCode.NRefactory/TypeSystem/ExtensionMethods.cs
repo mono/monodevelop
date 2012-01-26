@@ -328,15 +328,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ProjectedList<ITypeResolveContext, ITypeReference, IType>(context, typeReferences, (c, t) => t.Resolve(c));
 		}
 		
-		public static IList<IMember> Resolve(this IList<IMemberReference> memberReferences, ITypeResolveContext context)
-		{
-			if (memberReferences == null)
-				throw new ArgumentNullException("memberReferences");
-			if (memberReferences.Count == 0)
-				return EmptyList<IMember>.Instance;
-			else
-				return new ProjectedList<ITypeResolveContext, IMemberReference, IMember>(context, memberReferences, (c, t) => t.Resolve(c));
-		}
+		// There is intentionally no Resolve() overload for IList<IMemberReference>: the resulting IList<Member> would
+		// contains nulls when there are resolve errors.
 		
 		public static IList<ResolveResult> Resolve(this IList<IConstantValue> constantValues, ITypeResolveContext context)
 		{
