@@ -49,10 +49,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			isInterfaceDefinition = p.BuildAction == BuildAction.InterfaceDefinition;
 		}
 		
-		public override bool NeedsSyncOut (XcodeSyncContext context)
+		public override bool NeedsSyncOut (IProgressMonitor monitor, XcodeSyncContext context)
 		{
 			string target = context.ProjectDir.Combine (targetRelative);
-			return !File.Exists (target) || context.GetSyncTime (targetRelative) != File.GetLastWriteTime (source);
+			
+			if (!File.Exists (target))
+				return true;
+			
+			if (File.GetLastWriteTime (source) > context.GetSyncTime (targetRelative)) {
+				monitor.Log.WriteLine ("{0} has changed since last sync.", targetRelative);
+				return true;
+			}
+			
+			return false;
 		}
 		
 		public override void SyncOut (IProgressMonitor monitor, XcodeSyncContext context)
@@ -69,17 +78,23 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				File.Delete (target);
 			
 			File.Copy (source, target);
-			File.SetLastWriteTime (target, File.GetLastWriteTime (source));
-			context.UpdateSyncTime (targetRelative);
+			DateTime mtime = File.GetLastWriteTime (target);
+			context.SetSyncTime (targetRelative, mtime);
 		}
 		
-		public override bool NeedsSyncBack (XcodeSyncContext context)
+		public override bool NeedsSyncBack (IProgressMonitor monitor, XcodeSyncContext context)
 		{
 			if (!isInterfaceDefinition)
 				return false;
 			
 			string target = context.ProjectDir.Combine (targetRelative);
-			return File.GetLastWriteTime (target) != context.GetSyncTime (targetRelative);
+			
+			if (File.GetLastWriteTime (target) > context.GetSyncTime (targetRelative)) {
+				monitor.Log.WriteLine ("{0} has changed since last sync.", targetRelative);
+				return true;
+			}
+			
+			return false;
 		}
 		
 		public override void SyncBack (IProgressMonitor monitor, XcodeSyncBackContext context)

@@ -465,7 +465,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (File.Exists (path)) {
 					File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
 					FileService.SystemRename (tempFile, file.Original);
-					context.UpdateSyncTime (file.SyncedRelative);
+					
+					DateTime mtime = File.GetLastWriteTime (file.Original);
+					context.SetSyncTime (file.SyncedRelative, mtime);
 				} else {
 					monitor.ReportWarning (string.Format ("'{0}' does not exist.", file.SyncedRelative));
 				}
@@ -534,13 +536,17 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			bool addedTypes = false;
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Generating custom classes defined in UI definition files..."), 0);
+			bool beganTask = false;
 			
 			// Collect our list of custom classes from UI definition files
 			foreach (var job in context.FileSyncJobs) {
 				if (!HasInterfaceDefinitionExtension (job.Original))
 					continue;
+				
+				if (!beganTask) {
+					monitor.BeginTask (GettextCatalog.GetString ("Generating custom classes defined in UI definition files..."), 0);
+					beganTask = true;
+				}
 				
 				string relative = job.SyncedRelative.ParentDirectory;
 				string dir = dnp.BaseDirectory;
@@ -591,7 +597,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			writer.WriteOpenFiles ();
 			
-			monitor.EndTask ();
+			if (beganTask)
+				monitor.EndTask ();
 			
 			return addedTypes;
 		}
@@ -628,8 +635,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				typesAdded = false;
 				return false;
 			}
-			
-			monitor.Log.WriteLine ("Found {0} changed custom user types", updates.Count);
 			monitor.EndTask ();
 			
 			int count = updates.Count + (newTypes != null ? newTypes.Count : 0);
@@ -666,7 +671,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			// Next, generate the designer files for any added/changed types
 			foreach (var df in updates) {
-				monitor.Log.WriteLine ("Syncing {0} types from Xcode to designer file: '{1}'", df.Value.Count, df.Key);
+				monitor.Log.WriteLine ("Generating designer file: {0}", df.Key);
 				if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 					var cs = new CSharpCodeCodebehind () {
 						Types = df.Value,
@@ -686,10 +691,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			// Update sync timestamps
 			foreach (var df in updates) {
-				foreach (var type in df.Value) {
-					context.UpdateSyncTime (type.ObjCName + ".h");
-					context.UpdateSyncTime (type.ObjCName + ".m");
-				}
+				foreach (var type in df.Value)
+					context.SetSyncTime (type.ObjCName + ".h", DateTime.Now);
 			}
 			
 			// Add new files to the DotNetProject
@@ -756,7 +759,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		}
 		
 		static string TimeStamp {
-			get { return string.Format ("[{0}] ", DateTime.Now.ToString ("R")); }
+			get { return string.Format ("[{0}] ", DateTime.Now.ToString ("yyyy-MM-dd HH:mm:ss.f")); }
 		}
 		
 		public static void Indent ()
