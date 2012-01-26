@@ -1096,11 +1096,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				if (!IsLineEmptyUpToEol ())
 					return null;
+				var state = GetState ();
 				
-				overrideCls = CSharpParsedFile.GetInnermostTypeDefinition (location);
-				if (overrideCls != null && (overrideCls.Kind == TypeKind.Class || overrideCls.Kind == TypeKind.Struct)) {
+				if (state.CurrentTypeDefinition != null && (state.CurrentTypeDefinition.Kind == TypeKind.Class || state.CurrentTypeDefinition.Kind == TypeKind.Struct)) {
 					string modifiers = document.GetText (firstMod, wordStart - firstMod);
-					return GetPartialCompletionData (overrideCls, modifiers);
+					return GetPartialCompletionData (state.CurrentTypeDefinition, modifiers);
 				}
 				return null;
 				
@@ -1114,7 +1114,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (accessorContext != null)
 					return accessorContext;
 				wrapper = new CompletionDataWrapper (this);
-				var state = GetState ();
+				state = GetState ();
 				AddTypesAndNamespaces (wrapper, state, null, null, m => false);
 				AddKeywords (wrapper, typeLevelKeywords);
 				AddKeywords (wrapper, primitiveTypesKeywords);
@@ -1353,71 +1353,56 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return wrapper.Result;
 		}
 		
-		IEnumerable<ICompletionData> GetPartialCompletionData (IUnresolvedTypeDefinition type, string modifiers)
+		IEnumerable<ICompletionData> GetPartialCompletionData (ITypeDefinition type, string modifiers)
 		{
 			var wrapper = new CompletionDataWrapper (this);
-			var partialType = type.Resolve (ctx);
-			if (partialType != null) {
-				int declarationBegin = offset;
-				int j = declarationBegin;
-				for (int i = 0; i < 3; i++) {
-					switch (GetPreviousToken (ref j, true)) {
-					case "public":
-					case "protected":
-					case "private":
-					case "internal":
-					case "sealed":
-					case "override":
-						declarationBegin = j;
-						break;
-					case "static":
-						return null; // don't add override completion for static members
-					}
+			int declarationBegin = offset;
+			int j = declarationBegin;
+			for (int i = 0; i < 3; i++) {
+				switch (GetPreviousToken (ref j, true)) {
+				case "public":
+				case "protected":
+				case "private":
+				case "internal":
+				case "sealed":
+				case "override":
+					declarationBegin = j;
+					break;
+				case "static":
+					return null; // don't add override completion for static members
 				}
-				
-				var methods = new List<IMethod> ();
-				// gather all partial methods without implementation
-/* TODO:		foreach (var method in partialType.GetMethods ()) {
-					if (method.IsPartial && method.BodyRegion.IsEmpty) {
+			}
+			
+			var methods = new List<IUnresolvedMethod> ();
+			
+			foreach (var part in type.Parts) {
+				foreach (var method in part.Methods) {
+					if (method.BodyRegion.IsEmpty) {
+						if (GetImplementation (type, method) != null)
+							continue;
 						methods.Add (method);
 					}
-				}
-
-				// now filter all methods that are implemented in the compound class
-				foreach (var part in partialType.GetParts ()) {
-					if (part == type)
-						continue;
-					for (int i = 0; i < methods.Count; i++) {
-						var curMethod = methods [i];
-						var method = GetImplementation (partialType, curMethod);
-						if (method != null && !method.BodyRegion.IsEmpty) {
-							methods.RemoveAt (i);
-							i--;
-							continue;
-						}
-					}
-				}
-				 */
-				
-				foreach (var method in methods) {
-					wrapper.Add (factory.CreateNewOverrideCompletionData (declarationBegin, type, method));
-				}
-				
+				}	
 			}
+			
+			foreach (var method in methods) {
+				wrapper.Add (factory.CreateNewPartialCompletionData (declarationBegin, method.DeclaringTypeDefinition, method));
+			} 
+			
 			return wrapper.Result;
 		}
 		
-		IMethod GetImplementation (ITypeDefinition type, IMethod method)
+		IMethod GetImplementation (ITypeDefinition type, IUnresolvedMethod method)
 		{
 			foreach (var cur in type.Methods) {
 				if (cur.Name == method.Name && cur.Parameters.Count == method.Parameters.Count && !cur.BodyRegion.IsEmpty) {
 					bool equal = true;
-					for (int i = 0; i < cur.Parameters.Count; i++) {
+					/*for (int i = 0; i < cur.Parameters.Count; i++) {
 						if (!cur.Parameters [i].Type.Equals (method.Parameters [i].Type)) {
 							equal = false;
 							break;
 						}
-					}
+					}*/
 					if (equal)
 						return cur;
 				}
