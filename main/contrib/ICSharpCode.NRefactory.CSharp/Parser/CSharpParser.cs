@@ -2579,6 +2579,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (newAnonymousType.Parameters == null)
 					return result;
 				foreach (var par in newAnonymousType.Parameters) {
+					if (par == null)
+						continue;
 					var location = LocationsBag.GetLocations (par);
 
 					if (location == null) {

@@ -336,7 +336,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				wrapper.Append ('}');
 			
 			TextLocation memberLocation;
-			if (currentMember != null && currentType.Kind != TypeKind.Enum) {
+			if (currentMember != null && currentType != null && currentType.Kind != TypeKind.Enum) {
 				memberLocation = currentMember.Region.Begin;
 			} else if (currentType != null) {
 				memberLocation = currentType.Region.Begin;
@@ -365,7 +365,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		protected Tuple<string, bool> GetMemberTextToCaret ()
 		{
 			int startOffset;
-			if (currentMember != null && currentType.Kind != TypeKind.Enum) {
+			if (currentMember != null && currentType != null && currentType.Kind != TypeKind.Enum) {
 				startOffset = document.GetOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
 			} else if (currentType != null) {
 				startOffset = document.GetOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
