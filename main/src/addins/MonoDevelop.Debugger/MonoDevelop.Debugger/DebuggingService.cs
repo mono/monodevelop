@@ -973,13 +973,18 @@ namespace MonoDevelop.Debugger
 			
 			string title;
 			
-			message = message.Trim ();
-			int i = message.IndexOfAny (new char[] { '\n', '\r' });
-			if (i > 0) {
-				title = message.Substring (0, i).Trim ();
-				message = message.Substring (i).Trim ();
-			} else {
+			if (message == null) {
 				title = GettextCatalog.GetString ("Waiting for debugger");
+			} else {
+				message = message.Trim ();
+				int i = message.IndexOfAny (new char[] { '\n', '\r' });
+				if (i > 0) {
+					title = message.Substring (0, i).Trim ();
+					message = message.Substring (i).Trim ();
+				} else {
+					title = message;
+					message = null;
+				}
 			}
 
 			var gm = new GenericMessage (title, message, cts.Token);
