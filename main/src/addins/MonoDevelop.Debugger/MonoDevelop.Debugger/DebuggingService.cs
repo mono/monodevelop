@@ -944,8 +944,7 @@ namespace MonoDevelop.Debugger
 	internal class GtkConnectionDialog : IConnectionDialog
 	{
 		bool disposed;
-		Gtk.Dialog dialog;
-		Gtk.Label label;
+		System.Threading.CancellationTokenSource cts;
 		
 		public event EventHandler UserCancelled;
 		
@@ -955,26 +954,16 @@ namespace MonoDevelop.Debugger
 
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
-			if (disposed)
+			//FIXME: we don't support changing the message
+			if (disposed || cts != null)
 				return;
 			
-			if (string.IsNullOrEmpty (message))
-				message = DefaultListenMessage;
+			cts = new System.Threading.CancellationTokenSource ();
 			
-			if (dialog == null) {
-				Gtk.Application.Invoke (delegate {
-					if (disposed)
-						return;
-					RunDialog (message);
-				});
-			} else {
-				Gtk.Application.Invoke (delegate {
-					if (disposed)
-						return;
-					if (label != null)
-						label.Text = message;
-				});
-			}
+			//MessageService is threadsafe but we want this to be async
+			Gtk.Application.Invoke (delegate {
+				RunDialog (message);
+			});
 		}
 		
 		void RunDialog (string message)
@@ -982,24 +971,24 @@ namespace MonoDevelop.Debugger
 			if (disposed)
 				return;
 			
-			dialog = new Gtk.Dialog () {
-				Title = "Waiting for debugger"
-			};
+			string title;
 			
-			var label = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f) {
-				Child = new Gtk.Label (message),
-				BorderWidth = 12
-			};
-			dialog.VBox.PackStart (label);
-			label.ShowAll ();
+			message = message.Trim ();
+			int i = message.IndexOfAny (new char[] { '\n', '\r' });
+			if (i > 0) {
+				title = message.Substring (0, i).Trim ();
+				message = message.Substring (i).Trim ();
+			} else {
+				title = GettextCatalog.GetString ("Waiting for debugger");
+			}
+
+			var gm = new GenericMessage (title, message, cts.Token);
+			gm.Buttons.Add (AlertButton.Cancel);
+			gm.DefaultButton = 0;
+			MessageService.GenericAlert (gm);
+			cts = null;
 			
-			dialog.AddButton ("Cancel", Gtk.ResponseType.Cancel);
-			
-			int response = MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog);
-			dialog.Destroy ();
-			dialog = null;
-			
-			if (!disposed && response != (int) Gtk.ResponseType.Ok && UserCancelled != null) {
+			if (!disposed && UserCancelled != null) {
 				UserCancelled (null, null);
 			}
 		}
@@ -1009,13 +998,9 @@ namespace MonoDevelop.Debugger
 			if (disposed)
 				return;
 			disposed = true;
-			
-			if (dialog != null) {
-				Gtk.Application.Invoke (delegate {
-					if (dialog != null)
-						dialog.Respond (Gtk.ResponseType.Ok);
-				});
-			}
+			var c = cts;
+			if (c != null)
+				c.Cancel ();
 		}
 	}
 }
