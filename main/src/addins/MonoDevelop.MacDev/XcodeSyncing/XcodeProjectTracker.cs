@@ -326,7 +326,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		#region Progress monitors
 		
-		//FIXME: should use a modal monitor to prevent the user doing unexpected things?
+		//FIXME: should we use a modal monitor to prevent the user doing unexpected things?
 		IProgressMonitor GetStatusMonitor (string title)
 		{
 			IProgressMonitor monitor = MonoDevelop.Ide.IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (

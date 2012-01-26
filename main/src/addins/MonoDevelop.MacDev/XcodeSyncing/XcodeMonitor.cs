@@ -276,9 +276,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public void SaveProject (IProgressMonitor monitor)
 		{
-			if (!CheckRunning () || !IsProjectOpen ())
-				return;
-			
 			monitor.Log.WriteLine ("Asking Xcode to save pending changes for the {0} project", name);
 			AppleScript.Run (XCODE_SAVE_IN_PATH, AppleSdkSettings.XcodePath, projectDir);
 		}
