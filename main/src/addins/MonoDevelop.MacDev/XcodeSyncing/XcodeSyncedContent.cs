@@ -77,6 +77,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			if (!isInterfaceDefinition)
 				return false;
+			
 			string target = context.ProjectDir.Combine (targetRelative);
 			return File.GetLastWriteTime (target) != context.GetSyncTime (targetRelative);
 		}

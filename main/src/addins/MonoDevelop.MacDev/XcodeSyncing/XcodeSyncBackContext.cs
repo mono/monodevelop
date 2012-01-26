@@ -115,7 +115,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			out Dictionary<string, NSObjectTypeInfo> newTypes,
 			out Dictionary<string, ProjectFile> newFiles)
 		{
-			monitor.Log.WriteLine ("Aggregating {0} type updates...", typeSyncJobs.Count);
 			newFiles = null;
 			newTypes = null;
 			

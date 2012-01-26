@@ -191,7 +191,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			Debug.Assert (IsInterfaceDefinition (xibFile));
 			
 			using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Opening document '{0}' from project '{1}' in Xcode...", xibFile.ProjectVirtualPath, dnp.Name))) {
-				monitor.BeginTask (GettextCatalog.GetString ("Opening document '{0}' from project '{1}' in Xcode...", xibFile.ProjectVirtualPath, dnp.Name));
+				monitor.BeginTask (GettextCatalog.GetString ("Opening document '{0}' from project '{1}' in Xcode...", xibFile.ProjectVirtualPath, dnp.Name), 0);
 				success = OpenFileInXcodeProject (monitor, xibFile.ProjectVirtualPath);
 				monitor.EndTask ();
 			}
@@ -465,7 +465,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (File.Exists (path)) {
 					File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
 					FileService.SystemRename (tempFile, file.Original);
-					context.SetSyncTimeToNow (file.SyncedRelative);
+					context.UpdateSyncTime (file.SyncedRelative);
 				} else {
 					monitor.ReportWarning (string.Format ("'{0}' does not exist.", file.SyncedRelative));
 				}
@@ -687,8 +687,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			// Update sync timestamps
 			foreach (var df in updates) {
 				foreach (var type in df.Value) {
-					context.SetSyncTimeToNow (type.ObjCName + ".h");
-					context.SetSyncTimeToNow (type.ObjCName + ".m");
+					context.UpdateSyncTime (type.ObjCName + ".h");
+					context.UpdateSyncTime (type.ObjCName + ".m");
 				}
 			}
 			
