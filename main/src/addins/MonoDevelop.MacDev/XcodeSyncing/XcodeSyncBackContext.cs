@@ -91,11 +91,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			// First, we need to name any new user-defined types.
 			foreach (var job in TypeSyncJobs) {
-				if (!job.IsFreshlyAdded)
+				if (!job.IsFreshlyAdded) {
+					monitor.Log.WriteLine ("Found updated class: {0}", job.Type.CliName);
 					continue;
+				}
 				
 				defaultNamespace = Project.GetDefaultNamespace (job.RelativePath);
 				job.Type.CliName = defaultNamespace + "." + provider.CreateValidIdentifier (job.Type.ObjCName);
+				monitor.Log.WriteLine ("Found newly-added class: {0}", job.Type.CliName);
 				ProjectInfo.InsertUpdatedType (job.Type);
 			}
 			
