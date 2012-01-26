@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using System.Collections.Generic;
 using MonoDevelop.Components.Extensions;
 using Mono.Addins;
+using System.Threading;
 
 namespace MonoDevelop.Ide
 {
@@ -385,13 +386,19 @@ namespace MonoDevelop.Ide
 			return GenericAlert (icon, primaryText, secondaryText, buttons.Length - 1, buttons);
 		}
 		
-		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
+		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton,
+			params AlertButton[] buttons)
 		{
-			GenericMessage message = new GenericMessage () {
+			return GenericAlert (icon, primaryText, secondaryText, defaultButton, CancellationToken.None, buttons);
+		}
+		
+		public static AlertButton GenericAlert (string icon, string primaryText, string secondaryText, int defaultButton,
+			CancellationToken cancellationToken,
+			params AlertButton[] buttons)
+		{
+			var message = new GenericMessage (primaryText, secondaryText, cancellationToken) {
 				Icon = icon,
-				Text = primaryText,
-				SecondaryText = secondaryText,
-				DefaultButton = defaultButton
+				DefaultButton = defaultButton,
 			};
 			foreach (AlertButton but in buttons)
 				message.Buttons.Add (but);
@@ -468,11 +475,16 @@ namespace MonoDevelop.Ide
 	
 	public class MessageDescription
 	{
-		internal MessageDescription ()
+		internal MessageDescription () : this (CancellationToken.None)
+		{
+		}
+		
+		internal MessageDescription (CancellationToken cancellationToken)
 		{
 			DefaultButton = -1;
 			Buttons = new List<AlertButton> ();
 			Options = new List<AlertOption> ();
+			CancellationToken = cancellationToken;
 		}
 		
 		internal IList<AlertButton> Buttons { get; private set; }
@@ -486,6 +498,7 @@ namespace MonoDevelop.Ide
 		public string SecondaryText { get; set; }
 		public bool AllowApplyToAll { get; set; }
 		public int DefaultButton { get; set; }
+		public CancellationToken CancellationToken { get; private set; }
 		
 		public void AddOption (string id, string text, bool setByDefault)
 		{
@@ -514,17 +527,24 @@ namespace MonoDevelop.Ide
 	
 	public sealed class GenericMessage: MessageDescription
 	{
-		public GenericMessage ()
+		public GenericMessage () : base (CancellationToken.None)
 		{
 		}
 		
-		public GenericMessage (string text)
+		public GenericMessage (string text) : this () 
 		{
 			Text = text;
 		}
 		
-		public GenericMessage (string text, string secondaryText): this (text)
+		public GenericMessage (string text, string secondaryText) : this (text)
 		{
+			SecondaryText = secondaryText;
+		}
+
+		public GenericMessage (string text, string secondaryText, CancellationToken cancellationToken)
+			: base (cancellationToken)
+		{
+			Text = text;
 			SecondaryText = secondaryText;
 		}
 		

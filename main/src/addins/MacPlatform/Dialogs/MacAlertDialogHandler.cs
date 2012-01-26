@@ -49,7 +49,7 @@ namespace MonoDevelop.MacIntegration
 					alert.AlertStyle = NSAlertStyle.Critical;
 				} else if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Warning) {
 					alert.AlertStyle = NSAlertStyle.Warning;
-				} else if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Information) {
+				} else { //if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Information) {
 					alert.AlertStyle = NSAlertStyle.Informational;
 				}
 				
@@ -62,6 +62,9 @@ namespace MonoDevelop.MacIntegration
 							alert.Icon = new NSImage (NSData.FromBytes ((IntPtr)b, (uint)buf.Length));
 						}
 					}
+				} else {
+					//for some reason the NSAlert doesn't pick up the app icon by default
+					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 				}
 				
 				alert.MessageText = data.Message.Text;
@@ -129,9 +132,30 @@ namespace MonoDevelop.MacIntegration
 				((NSPanel) alert.Window).SetFrame (new RectangleF (frame.X, frame.Y, Math.Max (frame.Width, 600), frame.Height), true);
 				alert.Layout ();
 				
-				int result = alert.RunModal () - (int)NSAlertButtonReturn.First;
+				bool cancelled = false, completed = false;
+				if (data.Message.CancellationToken.CanBeCanceled) {
+					data.Message.CancellationToken.Register (delegate {
+						alert.InvokeOnMainThread (() => {
+							if (!completed) {
+								cancelled = true;
+								NSApplication.SharedApplication.AbortModal ();
+							}
+						});
+					});
+				}
 				
-				data.ResultButton = buttons [result];
+				int result = alert.RunModal () - (int)NSAlertButtonReturn.First;
+				completed = true;
+				
+				if (result < 0 || result > buttons.Count) {
+					cancelled = true;
+				} else {
+					data.ResultButton = buttons [result];
+				}
+				
+				if (cancelled || data.Message.CancellationToken.IsCancellationRequested) {
+					data.SetResultToCancelled ();
+				}
 				
 				if (optionButtons != null) {
 					foreach (var button in optionButtons) {
