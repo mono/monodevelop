@@ -139,7 +139,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public IType GetExpectedType(Expression expr, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			throw new NotImplementedException();
+			if (expr == null || expr.IsNull)
+				throw new ArgumentNullException("expr");
+			InitResolver(expr);
+			lock (resolveVisitor) {
+				return resolveVisitor.GetConversionWithTargetType(expr).TargetType;
+			}
 		}
 		
 		/// <summary>
@@ -147,7 +152,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public Conversion GetConversion(Expression expr, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			throw new NotImplementedException();
+			if (expr == null || expr.IsNull)
+				throw new ArgumentNullException("expr");
+			InitResolver(expr);
+			lock (resolveVisitor) {
+				return resolveVisitor.GetConversionWithTargetType(expr).Conversion;
+			}
 		}
 		
 		/// <summary>

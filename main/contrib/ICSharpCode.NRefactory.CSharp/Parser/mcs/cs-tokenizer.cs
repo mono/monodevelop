@@ -73,7 +73,8 @@ namespace Mono.CSharp
 		{
 			int row, column;
 			string value;
-			static LocatedToken[] buffer;
+
+			static LocatedToken[] buffer = new LocatedToken[0];
 			static int pos;
 
 			private LocatedToken ()
@@ -129,8 +130,10 @@ namespace Mono.CSharp
 
 			public static void Initialize ()
 			{
-				if (buffer == null)
+#if !FULL_AST
+				if (buffer.Length == 0)
 					buffer = new LocatedToken [10000];
+#endif
 				pos = 0;
 			}
 
@@ -263,7 +266,7 @@ namespace Mono.CSharp
 		// 
 		static readonly KeywordEntry<int>[][] keywords;
 		static readonly KeywordEntry<PreprocessorDirective>[][] keywords_preprocessor;
-		static readonly Dictionary<string, object> keyword_strings; 		// TODO: HashSet
+		static readonly HashSet<string> keyword_strings;
 		static readonly NumberStyles styles;
 		static readonly NumberFormatInfo csharp_format_info;
 
@@ -348,14 +351,27 @@ namespace Mono.CSharp
 		//
 		Stack<int> ifstack;
 
-		static System.Text.StringBuilder string_builder;
 		const int max_id_size = 512;
-		static readonly char[] id_builder = new char [max_id_size];
-		public static Dictionary<char[], string>[] identifiers = new Dictionary<char[], string>[max_id_size + 1];
 		const int max_number_size = 512;
-		static char[] number_builder = new char [max_number_size];
+
+#if FULL_AST
+		readonly char [] id_builder = new char [max_id_size];
+
+		Dictionary<char[], string>[] identifiers = new Dictionary<char[], string>[max_id_size + 1];
+
+		char [] number_builder = new char [max_number_size];
+		int number_pos;
+
+		char[] value_builder = new char[256];
+#else
+		static readonly char [] id_builder = new char [max_id_size];
+
+		static Dictionary<char[], string>[] identifiers = new Dictionary<char[], string>[max_id_size + 1];
+
+		static char [] number_builder = new char [max_number_size];
 		static int number_pos;
 		static char[] value_builder = new char[256];
+#endif
 
 		public int Line {
 			get {
@@ -457,7 +473,7 @@ namespace Mono.CSharp
 		
 		static void AddKeyword (string kw, int token)
 		{
-			keyword_strings.Add (kw, null);
+			keyword_strings.Add (kw);
 
 			AddKeyword (keywords, kw, token);
 }
@@ -493,7 +509,7 @@ namespace Mono.CSharp
 		// 
 		static Tokenizer ()
 		{
-			keyword_strings = new Dictionary<string, object> ();
+			keyword_strings = new HashSet<string> ();
 
 			// 11 is the length of the longest keyword for now
 			keywords = new KeywordEntry<int>[11][];
@@ -621,8 +637,6 @@ namespace Mono.CSharp
 
 			csharp_format_info = NumberFormatInfo.InvariantInfo;
 			styles = NumberStyles.Float;
-
-			string_builder = new System.Text.StringBuilder ();
 		}
 
 		int GetKeyword (char[] id, int id_len)
@@ -900,7 +914,7 @@ namespace Mono.CSharp
 
 		public static bool IsKeyword (string s)
 		{
-			return keyword_strings.ContainsKey (s);
+			return keyword_strings.Contains (s);
 		}
 
 		//
@@ -1511,6 +1525,12 @@ namespace Mono.CSharp
 
 #if FULL_AST
 			int read_start = reader.Position - 1;
+			if (c == '.') {
+				//
+				// Caller did peek_char
+				//
+				--read_start;
+			}
 #endif
 			number_pos = 0;
 			var loc = Location;
@@ -1596,10 +1616,10 @@ namespace Mono.CSharp
 
 			val = res;
 #if FULL_AST
-			var endPos = reader.Position - (type == TypeCode.Empty ? 1 : 0);
-			if (reader.GetChar (endPos - 1) == '\r')
-				endPos--;
-			res.ParsedValue = reader.ReadChars (hasLeadingDot ? read_start - 1 : read_start, endPos);
+			var chars = reader.ReadChars (read_start, reader.Position - (type == TypeCode.Empty && c > 0 ? 1 : 0));
+			if (chars[chars.Length - 1] == '\r')
+				Array.Resize (ref chars, chars.Length - 1);
+			res.ParsedValue = chars;
 #endif
 
 			return Token.LITERAL;
@@ -1774,7 +1794,7 @@ namespace Mono.CSharp
 			return reader.Peek ();
 		}
 		
-		void putback (int c)
+		public void putback (int c)
 		{
 			if (putback_char != -1){
 				Console.WriteLine ("Col: " + col);
@@ -1965,7 +1985,7 @@ namespace Mono.CSharp
 					
 					char [] quotes = { '\"' };
 					
-					string name = arg.Substring (pos). Trim (quotes);
+					string name = arg.Substring (pos).Trim (quotes);
 					ref_name = context.LookupFile (file_name, name);
 					file_name.AddIncludeFile (ref_name);
 					hidden = false;
@@ -2072,7 +2092,7 @@ namespace Mono.CSharp
 			if (c != '"')
 				return false;
 
-			string_builder.Length = 0;
+			var string_builder = new StringBuilder ();
 			while (c != -1 && c != '\n') {
 				c = get_char ();
 				if (c == '"') {
@@ -2897,7 +2917,7 @@ namespace Mono.CSharp
 			return Token.IDENTIFIER;
 		}
 
-		static string InternIdentifier (char[] charBuffer, int length)
+		string InternIdentifier (char[] charBuffer, int length)
 		{
 			//
 			// Keep identifiers in an array of hashtables to avoid needless

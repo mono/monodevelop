@@ -83,6 +83,7 @@ namespace Mono.CSharp {
 		string fullname;
 		protected Dictionary<string, Namespace> namespaces;
 		protected Dictionary<string, IList<TypeSpec>> types;
+		List<TypeSpec> extension_method_types;
 		Dictionary<string, TypeExpr> cached_types;
 		RootNamespace root;
 		bool cls_checked;
@@ -194,7 +195,29 @@ namespace Mono.CSharp {
 		{
 			return fullname;
 		}
-		
+
+		public Namespace AddNamespace (MemberName name)
+		{
+			Namespace ns_parent;
+			if (name.Left != null) {
+				if (parent != null)
+					ns_parent = parent.AddNamespace (name.Left);
+				else
+					ns_parent = AddNamespace (name.Left);
+			} else {
+				ns_parent = this;
+			}
+
+			Namespace ns;
+			if (!ns_parent.namespaces.TryGetValue (name.Basename, out ns)) {
+				ns = new Namespace (ns_parent, name.Basename);
+				ns_parent.namespaces.Add (name.Basename, ns);
+			}
+
+			return ns;
+		}
+
+		// TODO: Replace with CreateNamespace where MemberName is created for the method call
 		public Namespace GetNamespace (string name, bool create)
 		{
 			int pos = name.IndexOf ('.');
@@ -381,57 +404,53 @@ namespace Mono.CSharp {
 		//
 		public List<MethodSpec> LookupExtensionMethod (IMemberContext invocationContext, TypeSpec extensionType, string name, int arity)
 		{
-			if (types == null)
+			if (extension_method_types == null)
 				return null;
 
 			List<MethodSpec> found = null;
+			for (int i = 0; i < extension_method_types.Count; ++i) {
+				var ts = extension_method_types[i];
 
-			// TODO: Add per namespace flag when at least 1 type has extension
-
-			foreach (var tgroup in types.Values) {
-				foreach (var ts in tgroup) {
-					if ((ts.Modifiers & Modifiers.METHOD_EXTENSION) == 0)
-						continue;
-
-					var res = ts.MemberCache.FindExtensionMethods (invocationContext, extensionType, name, arity);
-					if (res == null)
-						continue;
-
-					if (found == null) {
-						found = res;
-					} else {
-						found.AddRange (res);
+				//
+				// When the list was built we didn't know what members the type
+				// contains
+				//
+				if ((ts.Modifiers & Modifiers.METHOD_EXTENSION) == 0) {
+					if (extension_method_types.Count == 1) {
+						extension_method_types = null;
+						return found;
 					}
+
+					extension_method_types.RemoveAt (i--);
+					continue;
+				}
+
+				var res = ts.MemberCache.FindExtensionMethods (invocationContext, extensionType, name, arity);
+				if (res == null)
+					continue;
+
+				if (found == null) {
+					found = res;
+				} else {
+					found.AddRange (res);
 				}
 			}
 
 			return found;
 		}
 
-		//
-		// Extension methods look up for dotted namespace names
-		//
-		public IList<MethodSpec> LookupExtensionMethod (IMemberContext invocationContext, TypeSpec extensionType, string name, int arity, out Namespace scope)
-		{
-			//
-			// Inspect parent namespaces in namespace expression
-			//
-			scope = this;
-			do {
-				var candidates = scope.LookupExtensionMethod (invocationContext, extensionType, name, arity);
-				if (candidates != null)
-					return candidates;
-
-				scope = scope.Parent;
-			} while (scope != null);
-
-			return null;
-		}
-
 		public void AddType (ModuleContainer module, TypeSpec ts)
 		{
 			if (types == null) {
 				types = new Dictionary<string, IList<TypeSpec>> (64);
+			}
+
+			if (ts.IsStatic && ts.Arity == 0 &&
+				(ts.MemberDefinition.DeclaringAssembly == null || ts.MemberDefinition.DeclaringAssembly.HasExtensionMethod)) {
+				if (extension_method_types == null)
+					extension_method_types = new List<TypeSpec> ();
+
+				extension_method_types.Add (ts);
 			}
 
 			var name = ts.Name;
@@ -499,10 +518,10 @@ namespace Mono.CSharp {
 			return null;
 		}
 
-		public void RemoveDeclSpace (string name)
+		public void RemoveContainer (TypeContainer tc)
 		{
-			types.Remove (name);
-			cached_types.Remove (name);
+			types.Remove (tc.Basename);
+			cached_types.Remove (tc.Basename);
 		}
 
 		public override FullNamedExpression ResolveAsTypeOrNamespace (IMemberContext mc)
@@ -581,7 +600,7 @@ namespace Mono.CSharp {
 	//
 	// Namespace block as created by the parser
 	//
-	public class NamespaceContainer : IMemberContext, ITypesContainer
+	public class NamespaceContainer : TypeContainer, IMemberContext
 	{
 		static readonly Namespace[] empty_namespaces = new Namespace[0];
 		static readonly string[] empty_using_list = new string[0];
@@ -589,9 +608,9 @@ namespace Mono.CSharp {
 		Namespace ns;
 
 		readonly ModuleContainer module;
-		readonly NamespaceContainer parent;
 		readonly CompilationSourceFile file;
-		readonly MemberName name;
+
+		public new readonly NamespaceContainer Parent;
 
 		int symfile_id;
 
@@ -600,41 +619,39 @@ namespace Mono.CSharp {
 		// Used by parsed to check for parser errors
 		public bool DeclarationFound;
 
-		bool resolved;
-
-		public readonly TypeContainer SlaveDeclSpace;
-
 		Namespace[] namespace_using_table;
 		Dictionary<string, UsingAliasNamespace> aliases;
-
+		public readonly MemberName RealMemberName;
+		
 		public NamespaceContainer (MemberName name, ModuleContainer module, NamespaceContainer parent, CompilationSourceFile sourceFile)
+			: base ((TypeContainer) parent ?? module, name, null, MemberKind.Namespace)
 		{
+			this.RealMemberName = name;
 			this.module = module;
-			this.parent = parent;
+			this.Parent = parent;
 			this.file = sourceFile;
-			this.name = name ?? MemberName.Null;
 
 			if (parent != null)
-				ns = parent.NS.GetNamespace (name.GetName (), true);
+				ns = parent.NS.AddNamespace (name);
 			else if (name != null)
-				ns = module.GlobalRootNamespace.GetNamespace (name.GetName (), true);
+				ns = module.GlobalRootNamespace.AddNamespace (name);
 			else
 				ns = module.GlobalRootNamespace;
 
-			SlaveDeclSpace = new RootDeclSpace (module, this);
+			containers = new List<TypeContainer> ();
 		}
 
 		#region Properties
 
-		public Location Location {
+		public override AttributeTargets AttributeTargets {
 			get {
-				return name.Location;
+				throw new NotSupportedException ();
 			}
 		}
 
-		public MemberName MemberName {
+		public override string DocCommentHeader {
 			get {
-				return name;
+				throw new NotSupportedException ();
 			}
 		}
 
@@ -644,9 +661,9 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public NamespaceContainer Parent {
+		public override ModuleContainer Module {
 			get {
-				return parent;
+				return module;
 			}
 		}
 
@@ -662,6 +679,12 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public override string[] ValidAttributeTargets {
+			get {
+				throw new NotSupportedException ();
+			}
+		}
+
 		#endregion
 
 		public void AddUsing (UsingNamespace un)
@@ -674,8 +697,6 @@ namespace Mono.CSharp {
 				clauses = new List<UsingNamespace> ();
 
 			clauses.Add (un);
-
-			resolved = false;
 		}
 
 		public void AddUsing (UsingAliasNamespace un)
@@ -703,54 +724,157 @@ namespace Mono.CSharp {
 			}
 
 			clauses.Add (un);
-
-			resolved = false;
 		}
 
-		//
-		// Does extension methods look up to find a method which matches name and extensionType.
-		// Search starts from this namespace and continues hierarchically up to top level.
-		//
-		public ExtensionMethodCandidates LookupExtensionMethod (TypeSpec extensionType, string name, int arity)
+		public override void AddPartial (TypeDefinition next_part)
 		{
-			List<MethodSpec> candidates = null;
-			foreach (Namespace n in namespace_using_table) {
-				var a = n.LookupExtensionMethod (this, extensionType, name, arity);
-				if (a == null)
-					continue;
+			var existing = ns.LookupType (this, next_part.MemberName.Name, next_part.MemberName.Arity, LookupMode.Probing, Location.Null);
+			var td = existing != null ? existing.Type.MemberDefinition as TypeDefinition : null;
+			AddPartial (next_part, td);
+		}
 
-				if (candidates == null)
-					candidates = a;
-				else
-					candidates.AddRange (a);
+		public override void AddTypeContainer (TypeContainer tc)
+		{
+			string name = tc.Basename;
+
+			var mn = tc.MemberName;
+			while (mn.Left != null) {
+				mn = mn.Left;
+				name = mn.Name;
 			}
 
-			if (candidates != null)
-				return new ExtensionMethodCandidates (candidates, this);
+			MemberCore mc;
+			if (defined_names.TryGetValue (name, out mc)) {
+				if (tc is NamespaceContainer && mc is NamespaceContainer) {
+					containers.Add (tc);
+					return;
+				}
 
-			if (parent == null)
-				return null;
+				Report.SymbolRelatedToPreviousError (mc);
+				if ((mc.ModFlags & Modifiers.PARTIAL) != 0 && (tc is ClassOrStruct || tc is Interface)) {
+					Error_MissingPartialModifier (tc);
+				} else {
+					Report.Error (101, tc.Location, "The namespace `{0}' already contains a definition for `{1}'",
+						GetSignatureForError (), mn.GetSignatureForError ());
+				}
+			} else {
+				defined_names.Add (name, tc);
+			}
 
-			Namespace ns_scope;
-			var ns_candidates = ns.Parent.LookupExtensionMethod (this, extensionType, name, arity, out ns_scope);
-			if (ns_candidates != null)
-				return new ExtensionMethodCandidates (ns_candidates, this, ns_scope);
+			base.AddTypeContainer (tc);
 
-			//
-			// Continue in parent container
-			//
-			return parent.LookupExtensionMethod (extensionType, name, arity);
+			var tdef = tc.PartialContainer;
+			if (tdef != null)
+				ns.AddType (module, tdef.Definition);
 		}
 
-		public FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
+		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public override void EmitContainer ()
+		{
+			VerifyClsCompliance ();
+
+			base.EmitContainer ();
+		}
+
+		public ExtensionMethodCandidates LookupExtensionMethod (IMemberContext invocationContext, TypeSpec extensionType, string name, int arity, NamespaceContainer container, int position)
+		{
+			//
+			// Here we try to resume the search for extension method at the point
+			// where the last bunch of candidates was found. It's more tricky than
+			// it seems as we have to check both namespace containers and namespace
+			// in correct order.
+			//
+			// Consider:
+			// 
+			// namespace A {
+			//	using N1;
+			//  namespace B.C.D {
+			//		<our first search found candidates in A.B.C.D
+			//  }
+			// }
+			//
+			// In the example above namespace A.B.C.D, A.B.C and A.B have to be
+			// checked before we hit A.N1 using
+			//
+			ExtensionMethodCandidates candidates;
+			for (; container != null; container = container.Parent) {
+				candidates = container.LookupExtensionMethodCandidates (invocationContext, extensionType, name, arity, ref position);
+				if (candidates != null || container.MemberName == null)
+					return candidates;
+
+				var container_ns = container.ns.Parent;
+				var mn = container.MemberName.Left;
+				int already_checked = position - 2;
+				while (already_checked-- > 0) {
+					mn = mn.Left;
+					container_ns = container_ns.Parent;
+				}
+
+				while (mn != null) {
+					++position;
+
+					var methods = container_ns.LookupExtensionMethod (invocationContext, extensionType, name, arity);
+					if (methods != null) {
+						return new ExtensionMethodCandidates (invocationContext, methods, container, position);
+					}
+
+					mn = mn.Left;
+					container_ns = container_ns.Parent;
+				}
+
+				position = 0;
+			}
+
+			return null;
+		}
+
+		ExtensionMethodCandidates LookupExtensionMethodCandidates (IMemberContext invocationContext, TypeSpec extensionType, string name, int arity, ref int position)
+		{
+			List<MethodSpec> candidates = null;
+
+			if (position == 0) {
+				++position;
+
+				candidates = ns.LookupExtensionMethod (invocationContext, extensionType, name, arity);
+				if (candidates != null) {
+					return new ExtensionMethodCandidates (invocationContext, candidates, this, position);
+				}
+			}
+
+			if (position == 1) {
+				++position;
+
+				foreach (Namespace n in namespace_using_table) {
+					var a = n.LookupExtensionMethod (invocationContext, extensionType, name, arity);
+					if (a == null)
+						continue;
+
+					if (candidates == null)
+						candidates = a;
+					else
+						candidates.AddRange (a);
+				}
+
+				if (candidates != null)
+					return new ExtensionMethodCandidates (invocationContext, candidates, this, position);
+			}
+
+			return null;
+		}
+
+		public override FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
 		{
 			//
 			// Only simple names (no dots) will be looked up with this function
 			//
 			FullNamedExpression resolved;
-			for (NamespaceContainer container = this; container != null; container = container.parent) {
+			for (NamespaceContainer container = this; container != null; container = container.Parent) {
 				resolved = container.Lookup (name, arity, mode, loc);
-				if (resolved != null)
+				if (resolved != null || container.MemberName == null)
 					return resolved;
 
 				var container_ns = container.ns.Parent;
@@ -768,25 +892,35 @@ namespace Mono.CSharp {
 			return null;
 		}
 
-		public IList<string> CompletionGetTypesStartingWith (string prefix)
+		public override void GetCompletionStartingWith (string prefix, List<string> results)
 		{
-			IEnumerable<string> all = Enumerable.Empty<string> ();
-			
-			for (NamespaceContainer curr_ns = this; curr_ns != null; curr_ns = curr_ns.parent){
-				foreach (Namespace using_ns in namespace_using_table){
-					if (prefix.StartsWith (using_ns.Name)){
-						int ld = prefix.LastIndexOf ('.');
-						if (ld != -1){
-							string rest = prefix.Substring (ld+1);
+			foreach (var un in Usings) {
+				if (un.Alias != null)
+					continue;
 
-							all = all.Concat (using_ns.CompletionGetTypesStartingWith (rest));
-						}
-					}
-					all = all.Concat (using_ns.CompletionGetTypesStartingWith (prefix));
-				}
+				var name = un.NamespaceExpression.Name;
+				if (name.StartsWith (prefix))
+					results.Add (name);
 			}
 
-			return all.Distinct ().ToList ();
+
+			IEnumerable<string> all = Enumerable.Empty<string> ();
+
+			foreach (Namespace using_ns in namespace_using_table) {
+				if (prefix.StartsWith (using_ns.Name)) {
+					int ld = prefix.LastIndexOf ('.');
+					if (ld != -1) {
+						string rest = prefix.Substring (ld + 1);
+
+						all = all.Concat (using_ns.CompletionGetTypesStartingWith (rest));
+					}
+				}
+				all = all.Concat (using_ns.CompletionGetTypesStartingWith (prefix));
+			}
+
+			results.AddRange (all);
+
+			base.GetCompletionStartingWith (prefix, results);
 		}
 
 		
@@ -808,9 +942,9 @@ namespace Mono.CSharp {
 		//
 		// Looks-up a alias named @name in this and surrounding namespace declarations
 		//
-		public FullNamedExpression LookupNamespaceAlias (string name)
+		public override FullNamedExpression LookupNamespaceAlias (string name)
 		{
-			for (NamespaceContainer n = this; n != null; n = n.parent) {
+			for (NamespaceContainer n = this; n != null; n = n.Parent) {
 				if (n.aliases == null)
 					continue;
 
@@ -850,6 +984,13 @@ namespace Mono.CSharp {
 
 			if (fne != null)
 				return fne;
+
+			//
+			// Lookup can be called before the namespace is defined from different namespace using alias clause
+			//
+			if (namespace_using_table == null) {
+				DoDefineNamespace ();
+			}
 
 			//
 			// Check using entries.
@@ -902,7 +1043,7 @@ namespace Mono.CSharp {
 		public int SymbolFileID {
 			get {
 				if (symfile_id == 0 && file.SourceFileEntry != null) {
-					int parent_id = parent == null ? 0 : parent.SymbolFileID;
+					int parent_id = Parent == null ? 0 : Parent.SymbolFileID;
 
 					string [] using_list = empty_using_list;
 					if (clauses != null) {
@@ -959,17 +1100,17 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public void Define ()
+		protected override void DefineNamespace ()
 		{
-			if (resolved)
-				return;
+			if (namespace_using_table == null)
+				DoDefineNamespace ();
 
-			// FIXME: Because we call Define from bottom not top
-			if (parent != null)
-				parent.Define ();
+			base.DefineNamespace ();
+		}
 
+		void DoDefineNamespace ()
+		{
 			namespace_using_table = empty_namespaces;
-			resolved = true;
 
 			if (clauses != null) {
 				var list = new List<Namespace> (clauses.Count);
@@ -1031,46 +1172,48 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public string GetSignatureForError ()
+		public void EnableUsingClausesRedefinition ()
 		{
-			return ns.GetSignatureForError ();
+			namespace_using_table = null;
 		}
 
-		#region IMemberContext Members
-
-		CompilerContext Compiler {
-			get { return module.Compiler; }
+		internal override void GenerateDocComment (DocumentationBuilder builder)
+		{
+			if (containers != null) {
+				foreach (var tc in containers)
+					tc.GenerateDocComment (builder);
+			}
 		}
 
-		public TypeSpec CurrentType {
-			get { return SlaveDeclSpace.CurrentType; }
+		public override string GetSignatureForError ()
+		{
+			return MemberName == null ? "global::" : base.GetSignatureForError ();
 		}
 
-		public MemberCore CurrentMemberDefinition {
-			get { return SlaveDeclSpace.CurrentMemberDefinition; }
+		public override void RemoveContainer (TypeContainer cont)
+		{
+			base.RemoveContainer (cont);
+			NS.RemoveContainer (cont);
 		}
 
-		public TypeParameters CurrentTypeParameters {
-			get { return SlaveDeclSpace.CurrentTypeParameters; }
-		}
+		protected override bool VerifyClsCompliance ()
+		{
+			if (Module.IsClsComplianceRequired ()) {
+				if (MemberName != null && MemberName.Name[0] == '_') {
+					Warning_IdentifierNotCompliant ();
+				}
 
-		public bool IsObsolete {
-			get { return false; }
-		}
+				ns.VerifyClsCompliance ();
+				return true;
+			}
 
-		public bool IsUnsafe {
-			get { return SlaveDeclSpace.IsUnsafe; }
+			return false;
 		}
-
-		public bool IsStatic {
-			get { return SlaveDeclSpace.IsStatic; }
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
-
-		public ModuleContainer Module {
-			get { return module; }
-		}
-
-		#endregion
 	}
 
 	public class UsingNamespace
@@ -1131,6 +1274,11 @@ namespace Mono.CSharp {
 				}
 			}
 		}
+		
+		public virtual void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
 	}
 
 	public class UsingExternAlias : UsingAliasNamespace
@@ -1149,13 +1297,18 @@ namespace Mono.CSharp {
 					Alias.Value);
 			}
 		}
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
 	}
 
 	public class UsingAliasNamespace : UsingNamespace
 	{
 		readonly SimpleMemberName alias;
 
-		struct AliasContext : IMemberContext
+		public struct AliasContext : IMemberContext
 		{
 			readonly NamespaceContainer ns;
 
@@ -1226,7 +1379,7 @@ namespace Mono.CSharp {
 				// Only extern aliases are allowed in this context
 				//
 				fne = ns.LookupExternAlias (name);
-				if (fne != null)
+				if (fne != null || ns.MemberName == null)
 					return fne;
 
 				var container_ns = ns.NS.Parent;
@@ -1277,6 +1430,11 @@ namespace Mono.CSharp {
 			// namespace or type resolve calls to parent namespace
 			//
 			resolved = NamespaceExpression.ResolveAsTypeOrNamespace (new AliasContext (ctx));
+		}
+		
+		public override void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 	}
 }

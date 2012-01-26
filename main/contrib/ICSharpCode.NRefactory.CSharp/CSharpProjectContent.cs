@@ -49,6 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.assemblyName = string.Empty;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
+			this._assemblyReferences = new List<IAssemblyReference>();
 		}
 		
 		protected CSharpProjectContent(CSharpProjectContent pc)
@@ -97,36 +98,41 @@ namespace ICSharpCode.NRefactory.CSharp
 				return null;
 		}
 		
-		public ICompilation CreateCompilation()
+		public virtual ICompilation CreateCompilation()
 		{
 			var solutionSnapshot = new DefaultSolutionSnapshot();
-			ICompilation compilation = new SimpleCompilation(solutionSnapshot, this, AssemblyReferences);
+			ICompilation compilation = new SimpleCompilation(solutionSnapshot, this, assemblyReferences);
 			solutionSnapshot.AddCompilation(this, compilation);
 			return compilation;
 		}
 		
-		public ICompilation CreateCompilation(ISolutionSnapshot solutionSnapshot)
+		public virtual ICompilation CreateCompilation(ISolutionSnapshot solutionSnapshot)
 		{
-			return new SimpleCompilation(solutionSnapshot, this, AssemblyReferences);
+			return new SimpleCompilation(solutionSnapshot, this, assemblyReferences);
+		}
+		
+		protected virtual CSharpProjectContent Clone()
+		{
+			return new CSharpProjectContent(this);
 		}
 		
 		public IProjectContent SetAssemblyName(string newAssemblyName)
 		{
-			CSharpProjectContent pc = new CSharpProjectContent(this);
+			CSharpProjectContent pc = Clone();
 			pc.assemblyName = newAssemblyName;
 			return pc;
 		}
 		
 		public IProjectContent AddAssemblyReferences(IEnumerable<IAssemblyReference> references)
 		{
-			CSharpProjectContent pc = new CSharpProjectContent(this);
+			CSharpProjectContent pc = Clone();
 			pc.assemblyReferences.AddRange(references);
 			return pc;
 		}
 		
 		public IProjectContent RemoveAssemblyReferences(IEnumerable<IAssemblyReference> references)
 		{
-			CSharpProjectContent pc = new CSharpProjectContent(this);
+			CSharpProjectContent pc = Clone();
 			pc.assemblyReferences.RemoveAll(r => references.Contains(r));
 			return pc;
 		}
@@ -139,7 +145,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (!Platform.FileNameComparer.Equals(oldFile.FileName, newFile.FileName))
 					throw new ArgumentException("When both oldFile and newFile are specified, they must use the same file name.");
 			}
-			CSharpProjectContent pc = new CSharpProjectContent(this);
+			CSharpProjectContent pc = Clone();
 			if (newFile == null)
 				pc.parsedFiles.Remove(oldFile.FileName);
 			else
@@ -149,7 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IProjectContent UpdateProjectContent(IEnumerable<IParsedFile> oldFiles, IEnumerable<IParsedFile> newFiles)
 		{
-			CSharpProjectContent pc = new CSharpProjectContent(this);
+			CSharpProjectContent pc = Clone();
 			if (oldFiles != null) {
 				foreach (var oldFile in oldFiles) {
 					pc.parsedFiles.Remove(oldFile.FileName);

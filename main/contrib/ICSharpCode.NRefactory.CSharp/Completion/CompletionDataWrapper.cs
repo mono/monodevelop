@@ -223,5 +223,3 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 }
 
 
-
-

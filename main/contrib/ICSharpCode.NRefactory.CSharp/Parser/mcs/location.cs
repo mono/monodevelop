@@ -220,7 +220,7 @@ namespace Mono.CSharp {
 		static Checkpoint [] checkpoints;
 		static int checkpoint_index;
 		
-		public readonly static Location Null = new Location (-1);
+		public readonly static Location Null = new Location ();
 		public static bool InEmacs;
 		
 		static Location ()
@@ -269,11 +269,6 @@ namespace Mono.CSharp {
 			// File is always pushed before being changed.
 		}
 		
-		public Location (int row)
-			: this (row, 0)
-		{
-		}
-
 		public Location (int row, int column)
 		{
 			if (row <= 0)
@@ -763,175 +758,6 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			MemberLocations found;
 			member_locs.TryGetValue (element, out found);
 			return found;
-		}
-	}
-	
-	public class UsingsBag
-	{
-		public class Namespace {
-			public Location NamespaceLocation { get; set; }
-			public MemberName Name { get; set; }
-			
-			public Location OpenBrace { get; set; }
-			public Location CloseBrace { get; set; }
-			public Location OptSemicolon { get; set; }
-			
-			public List<object> usings = new List<object> ();
-			public List<object> members = new List<object> ();
-			
-			public Namespace ()
-			{
-				// in case of missing close brace, set it to the highest value.
-				CloseBrace = new Location (int.MaxValue, int.MaxValue);
-			}
-			
-			public virtual void Accept (StructuralVisitor visitor)
-			{
-				visitor.Visit (this);
-			}
-		}
-		
-		public class AliasUsing
-		{
-			public readonly Location UsingLocation;
-			public readonly Tokenizer.LocatedToken Identifier;
-			public readonly Location AssignLocation;
-			public readonly ATypeNameExpression Nspace;
-			public readonly Location SemicolonLocation;
-			
-			public AliasUsing (Location usingLocation, Tokenizer.LocatedToken identifier, Location assignLocation, ATypeNameExpression nspace, Location semicolonLocation)
-			{
-				this.UsingLocation = usingLocation;
-				this.Identifier = identifier;
-				this.AssignLocation = assignLocation;
-				this.Nspace = nspace;
-				this.SemicolonLocation = semicolonLocation;
-			}
-			
-			public virtual void Accept (StructuralVisitor visitor)
-			{
-				visitor.Visit (this);
-			}
-		}
-		
-		public class Using
-		{
-			public readonly Location UsingLocation;
-			public readonly ATypeNameExpression NSpace;
-			public readonly Location SemicolonLocation;
-
-			public Using (Location usingLocation, ATypeNameExpression nSpace, Location semicolonLocation)
-			{
-				this.UsingLocation = usingLocation;
-				this.NSpace = nSpace;
-				this.SemicolonLocation = semicolonLocation;
-			}
-
-			public virtual void Accept (StructuralVisitor visitor)
-			{
-				visitor.Visit (this);
-			}
-		}
-		
-		public class ExternAlias 
-		{
-			public readonly Location ExternLocation;
-			public readonly Location AliasLocation;
-			public readonly Tokenizer.LocatedToken Identifier;
-			public readonly Location SemicolonLocation;
-			
-			public ExternAlias (Location externLocation, Location aliasLocation, Tokenizer.LocatedToken identifier, Location semicolonLocation)
-			{
-				this.ExternLocation = externLocation;
-				this.AliasLocation = aliasLocation;
-				this.Identifier = identifier;
-				this.SemicolonLocation = semicolonLocation;
-			}
-
-			public virtual void Accept (StructuralVisitor visitor)
-			{
-				visitor.Visit (this);
-			}
-		}
-		
-		public Namespace Global {
-			get;
-			set;
-		}
-		Stack<Namespace> curNamespace = new Stack<Namespace> ();
-		
-		public UsingsBag ()
-		{
-			Global = new Namespace ();
-			Global.OpenBrace = new Location (1, 1);
-			Global.CloseBrace = new Location (int.MaxValue, int.MaxValue);
-			curNamespace.Push (Global);
-		}
-		
-		[Conditional ("FULL_AST")]
-		public void AddUsingAlias (Location usingLocation, Tokenizer.LocatedToken identifier, Location assignLocation, ATypeNameExpression nspace, Location semicolonLocation)
-		{
-			curNamespace.Peek ().usings.Add (new AliasUsing (usingLocation, identifier, assignLocation, nspace, semicolonLocation));
-		}
-		
-		[Conditional ("FULL_AST")]
-		public void AddUsing (Location usingLocation, ATypeNameExpression nspace, Location semicolonLocation)
-		{
-			curNamespace.Peek ().usings.Add (new Using (usingLocation, nspace, semicolonLocation));
-		}
-
-		[Conditional ("FULL_AST")]
-		public void AddExternAlias (Location externLocation, Location aliasLocation, Tokenizer.LocatedToken identifier, Location semicolonLocation)
-		{
-			curNamespace.Peek ().usings.Add (new ExternAlias (externLocation, aliasLocation, identifier, semicolonLocation));
-		}
-		
-		[Conditional ("FULL_AST")]
-		public void DeclareNamespace (Location namespaceLocation, MemberName nspace)
-		{
-			var newNamespace = new Namespace () { NamespaceLocation = namespaceLocation, Name = nspace };
-			curNamespace.Peek ().members.Add (newNamespace);
-			curNamespace.Push (newNamespace);
-		}
-		
-		int typeLevel = 0;
-		[Conditional ("FULL_AST")]
-		public void PushTypeDeclaration (object type)
-		{
-			if (typeLevel == 0)
-				curNamespace.Peek ().members.Add (type);
-			typeLevel++;
-		}
-		
-		[Conditional ("FULL_AST")]
-		public void PopTypeDeclaration ()
-		{
-			typeLevel--;
-		}
-		
-		[Conditional ("FULL_AST")]
-		public void EndNamespace (Location optSemicolon)
-		{
-			curNamespace.Peek ().OptSemicolon = optSemicolon;
-			curNamespace.Pop ();
-		}
-		
-		[Conditional ("FULL_AST")]
-		public void EndNamespace ()
-		{
-			curNamespace.Pop ();
-		}
-		
-		[Conditional ("FULL_AST")]
-		public void OpenNamespace (Location bracketLocation)
-		{
-			curNamespace.Peek ().OpenBrace = bracketLocation;
-		}
-		
-		[Conditional ("FULL_AST")]
-		public void CloseNamespace (Location bracketLocation)
-		{
-			curNamespace.Peek ().CloseBrace = bracketLocation;
 		}
 	}
 }

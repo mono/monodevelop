@@ -200,7 +200,6 @@
     <Compile Include="Parser\mcs\cs-tokenizer.cs" />
     <Compile Include="Parser\mcs\decl.cs" />
     <Compile Include="Parser\mcs\delegate.cs" />
-    <Compile Include="Parser\mcs\doc-bootstrap.cs" />
     <Compile Include="Parser\mcs\doc.cs" />
     <Compile Include="Parser\mcs\driver.cs" />
     <Compile Include="Parser\mcs\dynamic.cs" />
@@ -211,7 +210,6 @@
     <Compile Include="Parser\mcs\field.cs" />
     <Compile Include="Parser\mcs\flowanalysis.cs" />
     <Compile Include="Parser\mcs\generic.cs" />
-    <Compile Include="Parser\mcs\hosting.cs" />
     <Compile Include="Parser\mcs\import.cs" />
     <Compile Include="Parser\mcs\iterators.cs" />
     <Compile Include="Parser\mcs\lambda.cs" />
@@ -232,8 +230,6 @@
     <Compile Include="Parser\mcs\property.cs" />
     <Compile Include="Parser\mcs\reflection.cs" />
     <Compile Include="Parser\mcs\report.cs" />
-    <Compile Include="Parser\mcs\rootcontext.cs" />
-    <Compile Include="Parser\mcs\roottypes.cs" />
     <Compile Include="Parser\mcs\statement.cs" />
     <Compile Include="Parser\mcs\support.cs" />
     <Compile Include="Parser\mcs\symbolwriter.cs" />
@@ -322,6 +318,8 @@
     <Compile Include="TypeSystem\TypeSystemConvertVisitor.cs" />
     <Compile Include="TypeSystem\UsingScope.cs" />
     <Compile Include="Completion\IMemberProvider.cs" />
+    <Compile Include="Parser\mcs\module.cs" />
+    <Compile Include="Parser\mcs\settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -346,4 +344,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="Parser\mcs\cs-parser.jay" />
+  </ItemGroup>
 </Project>

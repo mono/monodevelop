@@ -286,46 +286,50 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 		
-		string[] GetCompilerArguments (MonoDevelop.Projects.Project project)
+		CompilerSettings GetCompilerArguments (MonoDevelop.Projects.Project project)
 		{
+			var compilerArguments = new CompilerSettings ();
 			if (project == null)
-				return new string[0];
-			var compilerArguments = new List<string> ();
-			
+				return compilerArguments;
+
 			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
 			
 			if (par == null)
-				return compilerArguments.ToArray ();
+				return compilerArguments;
 				
-			if (!string.IsNullOrEmpty (par.DefineSymbols))
-				compilerArguments.Add ("-define:" + string.Join (";", par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s))));
+			if (!string.IsNullOrEmpty (par.DefineSymbols)) {
+				foreach (var sym in par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s)))
+					compilerArguments.AddConditionalSymbol (sym);
+			}
 			
-			if (par.UnsafeCode)
-				compilerArguments.Add ("-unsafe");
-			if (par.TreatWarningsAsErrors)
-				compilerArguments.Add ("-warnaserror");
+			compilerArguments.Unsafe = par.UnsafeCode;
+			compilerArguments.Version = ConvertLanguageVersion (par.LangVersion);
+			compilerArguments.Checked = par.GenerateOverflowChecks;
+			
+			// TODO: Warning options need to be set in the report object.
+			
+/*			compilerArguments.EnhancedWarnings = par.TreatWarningsAsErrors;
 			if (!string.IsNullOrEmpty (par.NoWarnings))
 				compilerArguments.Add ("-nowarn:" + string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
-			compilerArguments.Add ("-warn:" + par.WarningLevel);
-			compilerArguments.Add ("-langversion:" + GetLangString (par.LangVersion));
-			if (par.GenerateOverflowChecks)
-				compilerArguments.Add ("-checked");
 			
-			return compilerArguments.ToArray ();
+			compilerArguments.Add ("-warn:" + par.WarningLevel);
+*/
+			
+			return compilerArguments;
 		}
 		
-		static string GetLangString (LangVersion ver)
+		static Mono.CSharp.LanguageVersion ConvertLanguageVersion (LangVersion ver)
 		{
 			switch (ver) {
 			case LangVersion.Default:
-				return "Default";
+				return Mono.CSharp.LanguageVersion.Default;
 			case LangVersion.ISO_1:
-				return "ISO-1";
+				return Mono.CSharp.LanguageVersion.ISO_1;
 			case LangVersion.ISO_2:
-				return "ISO-2";
+				return Mono.CSharp.LanguageVersion.ISO_2;
 			}
-			return "Default";
+			return Mono.CSharp.LanguageVersion.Default;
 		}
 	}
 	

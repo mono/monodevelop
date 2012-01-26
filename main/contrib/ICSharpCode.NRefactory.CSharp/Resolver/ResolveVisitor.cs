@@ -58,7 +58,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
 		static readonly ResolveResult errorResult = ErrorResolveResult.UnknownError;
-		static readonly ResolveResult transparentIdentifierResolveResult = new ResolveResult(SpecialType.UnboundTypeArgument);
 		readonly ResolveResult voidResult;
 		
 		CSharpResolver resolver;
@@ -68,6 +67,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly CSharpParsedFile parsedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
+		readonly Dictionary<Expression, ConversionWithTargetType> conversionDict = new Dictionary<Expression, ConversionWithTargetType>();
+		
+		internal struct ConversionWithTargetType
+		{
+			public readonly Conversion Conversion;
+			public readonly IType TargetType;
+			
+			public ConversionWithTargetType(Conversion conversion, IType targetType)
+			{
+				this.Conversion = conversion;
+				this.TargetType = targetType;
+			}
+		}
 		
 		IResolveVisitorNavigator navigator;
 		bool resolverEnabled;
@@ -294,8 +306,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					afc.ExplicitlyTypedLambda.ApplyReturnType(this, afc.ReturnType);
 				Log.Unindent();
 			}
-			if (conversion != Conversion.IdentityConversion)
+			if (conversion != Conversion.IdentityConversion) {
 				navigator.ProcessConversion(expr, rr, conversion, targetType);
+				conversionDict[expr] = new ConversionWithTargetType(conversion, targetType);
+			}
+		}
+		
+		void ImportConversions(ResolveVisitor childVisitor)
+		{
+			foreach (var pair in childVisitor.conversionDict) {
+				conversionDict.Add(pair.Key, pair.Value);
+				navigator.ProcessConversion(pair.Key, resolveResultCache[pair.Key], pair.Value.Conversion, pair.Value.TargetType);
+			}
 		}
 		
 		/// <summary>
@@ -461,6 +483,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				node = node.Parent;
 			}
 			return null;
+		}
+		
+		public ConversionWithTargetType GetConversionWithTargetType(Expression expr)
+		{
+			MergeUndecidedLambdas();
+			ResolveParentForConversion(expr);
+			ConversionWithTargetType result;
+			if (conversionDict.TryGetValue(expr, out result)) {
+				return result;
+			} else {
+				ResolveResult rr = GetResolveResultIfResolved(expr);
+				return new ConversionWithTargetType(Conversion.IdentityConversion, rr != null ? rr.Type : SpecialType.UnknownType);
+			}
 		}
 		#endregion
 		
@@ -912,7 +947,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// 7.6.10.6 Anonymous object creation expressions
 			List<IUnresolvedProperty> properties = new List<IUnresolvedProperty>();
 			foreach (var expr in anonymousTypeCreateExpression.Initializers) {
-				Scan(expr);
 				Expression resolveExpr;
 				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
 				if (!string.IsNullOrEmpty(name)) {
@@ -930,7 +964,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					properties.Add(property);
 				}
 			}
-			return new ResolveResult(new AnonymousType(resolver.Compilation, properties));
+			IType anonymousType = new AnonymousType(resolver.Compilation, properties);
+			resolver = resolver.PushInitializerType(anonymousType);
+			ScanChildren(anonymousTypeCreateExpression);
+			resolver = resolver.PopInitializerType();
+			return new ResolveResult(anonymousType);
 		}
 		
 		sealed class VarTypeReference : ITypeReference
@@ -1881,8 +1919,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.WriteLine("Applying return type {0} to explicitly-typed lambda {1}", returnType, this.LambdaExpression);
 				if (isAsync)
 					returnType = parentVisitor.UnpackTask(returnType);
-				for (int i = 0; i < returnExpressions.Count; i++) {
-					visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
+				if (returnType.Kind != TypeKind.Void) {
+					for (int i = 0; i < returnExpressions.Count; i++) {
+						visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
+					}
 				}
 			}
 			
@@ -2167,8 +2207,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.WriteLine("Applying return type {0} to implicitly-typed lambda {1}", returnType, lambda.LambdaExpression);
 				if (lambda.IsAsync)
 					returnType = parentVisitor.UnpackTask(returnType);
-				for (int i = 0; i < returnExpressions.Count; i++) {
-					visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
+				if (returnType.Kind != TypeKind.Void) {
+					for (int i = 0; i < returnExpressions.Count; i++) {
+						visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
+					}
 				}
 				
 				visitor.MergeUndecidedLambdas();
@@ -2179,6 +2221,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (var pair in visitor.resolveResultCache) {
 					parentVisitor.StoreResult(pair.Key, pair.Value);
 				}
+				parentVisitor.ImportConversions(visitor);
 				parentVisitor.undecidedLambdas.Remove(lambda);
 			}
 			
@@ -2218,21 +2261,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Log.Indent();
 			while (undecidedLambdas.Count > 0) {
 				LambdaBase lambda = undecidedLambdas[0];
-				AstNode parent = lambda.LambdaExpression.Parent;
-				// Continue going upwards until we find a node that can be resolved and provides
-				// an expected type.
-				while (ActsAsParenthesizedExpression(parent) || parent is NamedArgumentExpression || parent is ArrayInitializerExpression) {
-					parent = parent.Parent;
-				}
-				CSharpResolver storedResolver;
-				if (parent != null && resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
-					Log.WriteLine("Trying to resolve '" + parent + "' in order to merge the lambda...");
-					Log.Indent();
-					ResetContext(storedResolver, delegate { Resolve(parent); });
-					Log.Unindent();
-				} else {
-					Log.WriteLine("Could not find a suitable parent for '" + lambda);
-				}
+				ResolveParentForConversion(lambda.LambdaExpression);
 				if (lambda.IsUndecided) {
 					// Lambda wasn't merged by resolving its parent -> enforce merging
 					Log.WriteLine("Lambda wasn't merged by conversion - enforce merging");
@@ -2241,6 +2270,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			Log.Unindent();
 			Log.WriteLine("MergeUndecidedLambdas() finished.");
+		}
+		
+		void ResolveParentForConversion(AstNode expression)
+		{
+			AstNode parent = expression.Parent;
+			// Continue going upwards until we find a node that can be resolved and provides
+			// an expected type.
+			while (ActsAsParenthesizedExpression(parent) || parent is NamedArgumentExpression || parent is ArrayInitializerExpression) {
+				parent = parent.Parent;
+			}
+			CSharpResolver storedResolver;
+			if (parent != null && resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
+				Log.WriteLine("Trying to resolve '" + parent + "' in order to find the conversion applied to '" + expression + "'...");
+				Log.Indent();
+				ResetContext(storedResolver, delegate { Resolve(parent); });
+				Log.Unindent();
+			} else {
+				Log.WriteLine("Could not find a suitable parent for '" + expression);
+			}
 		}
 		
 		internal static bool ActsAsParenthesizedExpression(AstNode expression)
@@ -3192,6 +3240,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return GetElementTypeFromIEnumerable(type, resolver.Compilation, false);
 		}
 		
+		ResolveResult MakeTransparentIdentifierResolveResult()
+		{
+			return new ResolveResult(new AnonymousType(resolver.Compilation, EmptyList<IUnresolvedProperty>.Instance));
+		}
+		
 		sealed class QueryExpressionLambdaConversion : Conversion
 		{
 			internal readonly IType[] ParameterTypes;
@@ -3319,7 +3372,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					selectResult = Resolve(selectClause.Expression);
 				} else {
 					// from .. from ... ... - introduce a transparent identifier
-					selectResult = transparentIdentifierResolveResult;
+					selectResult = MakeTransparentIdentifierResolveResult();
 				}
 				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "SelectMany", EmptyList<IType>.Instance, true);
 				ResolveResult[] arguments = {
@@ -3352,7 +3405,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled && currentQueryResult != null) {
 				// resolve the .Select() call
 				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance, true);
-				ResolveResult[] arguments = { new QueryExpressionLambda(1, transparentIdentifierResolveResult) };
+				ResolveResult[] arguments = { new QueryExpressionLambda(1, MakeTransparentIdentifierResolveResult()) };
 				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {
 				return null;
@@ -3405,7 +3458,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						selectResult = Resolve(selectClause.Expression);
 					} else {
 						// from .. join ... ... - introduce a transparent identifier
-						selectResult = transparentIdentifierResolveResult;
+						selectResult = MakeTransparentIdentifierResolveResult();
 					}
 					
 					var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Join", EmptyList<IType>.Instance);
@@ -3444,7 +3497,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				groupJoinLambda = new ImplicitlyTypedLambda(selectClause, selectLambdaParameters, this);
 			} else {
 				// from .. join ... ... - introduce a transparent identifier
-				groupJoinLambda = new QueryExpressionLambda(2, transparentIdentifierResolveResult);
+				groupJoinLambda = new QueryExpressionLambda(2, MakeTransparentIdentifierResolveResult());
 			}
 			
 			ResolveResult[] arguments = {

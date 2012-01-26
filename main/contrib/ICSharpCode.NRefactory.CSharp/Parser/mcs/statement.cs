@@ -1456,7 +1456,7 @@ namespace Mono.CSharp {
 			if (bc.Report.Errors != 0)
 				return;
 
-			var container = bc.CurrentMemberDefinition.Parent;
+			var container = bc.CurrentMemberDefinition.Parent.PartialContainer;
 
 			Field f = new Field (container, new TypeExpression (li.Type, li.Location), Modifiers.PUBLIC | Modifiers.STATIC,
 				new MemberName (li.Name, li.Location), null);
@@ -1912,7 +1912,7 @@ namespace Mono.CSharp {
 			if (!ec.DoFlowAnalysis || ec.CurrentBranching.IsAssigned (VariableInfo))
 				return true;
 
-			return VariableInfo.TypeInfo.IsFullyInitialized (ec, VariableInfo, block.StartLocation);
+			return VariableInfo.IsFullyInitialized (ec, block.StartLocation);
 		}
 
 		public bool IsAssigned (BlockContext ec)
@@ -2099,9 +2099,9 @@ namespace Mono.CSharp {
 			AddLocalName (li.Name, li);
 		}
 
-		public virtual void AddLocalName (string name, INamedBlockVariable li)
+		public void AddLocalName (string name, INamedBlockVariable li)
 		{
-			ParametersBlock.TopBlock.AddLocalName (name, li);
+			ParametersBlock.TopBlock.AddLocalName (name, li, false);
 		}
 
 		public virtual void Error_AlreadyDeclared (string name, INamedBlockVariable variable, string reason)
@@ -2481,9 +2481,8 @@ namespace Mono.CSharp {
 				am_storey.Mutator = ec.CurrentAnonymousMethod.Storey.Mutator;
 			}
 
-			am_storey.CreateType ();
-			am_storey.DefineType ();
-			am_storey.ResolveTypeParameters ();
+			am_storey.CreateContainer ();
+			am_storey.DefineContainer ();
 
 			var ref_blocks = am_storey.ReferencesFromChildrenBlock;
 			if (ref_blocks != null) {
@@ -2921,7 +2920,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public void WrapIntoIterator (IMethodData method, TypeContainer host, TypeSpec iterator_type, bool is_enumerable)
+		public void WrapIntoIterator (IMethodData method, TypeDefinition host, TypeSpec iterator_type, bool is_enumerable)
 		{
 			ParametersBlock pb = new ParametersBlock (this, ParametersCompiled.EmptyReadOnlyParameters, StartLocation);
 			pb.EndLocation = EndLocation;
@@ -2936,7 +2935,7 @@ namespace Mono.CSharp {
 			flags &= ~Flags.YieldBlock;
 		}
 
-		public void WrapIntoAsyncTask (IMemberContext context, TypeContainer host, TypeSpec returnType)
+		public void WrapIntoAsyncTask (IMemberContext context, TypeDefinition host, TypeSpec returnType)
 		{
 			ParametersBlock pb = new ParametersBlock (this, ParametersCompiled.EmptyReadOnlyParameters, StartLocation);
 			pb.EndLocation = EndLocation;
@@ -3004,7 +3003,7 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public override void AddLocalName (string name, INamedBlockVariable li)
+		public void AddLocalName (string name, INamedBlockVariable li, bool ignoreChildrenBlocks)
 		{
 			if (names == null)
 				names = new Dictionary<string, object> ();
@@ -3048,13 +3047,15 @@ namespace Mono.CSharp {
 					}
 				}
 
-				// Collision with with children
-				b = existing.Block;
-				while ((b = b.Parent) != null) {
-					if (li.Block == b) {
-						li.Block.Error_AlreadyDeclared (name, li, "child");
-						i = existing_list.Count;
-						break;
+				if (!ignoreChildrenBlocks) {
+					// Collision with children
+					b = existing.Block;
+					while ((b = b.Parent) != null) {
+						if (li.Block == b) {
+							li.Block.Error_AlreadyDeclared (name, li, "child");
+							i = existing_list.Count;
+							break;
+						}
 					}
 				}
 			}
@@ -3552,7 +3553,6 @@ namespace Mono.CSharp {
 		VariableReference value;
 		ExpressionStatement string_dictionary;
 		FieldExpr switch_cache_field;
-		static int unique_counter;
 		ExplicitBlock block;
 
 		//
@@ -3913,11 +3913,6 @@ namespace Mono.CSharp {
 			return null;
 		}
 
-		public static void Reset ()
-		{
-			unique_counter = 0;
-		}
-
 		public override bool Resolve (BlockContext ec)
 		{
 			Expr = Expr.Resolve (ec);
@@ -4090,7 +4085,7 @@ namespace Mono.CSharp {
 			var ctype = ec.CurrentMemberDefinition.Parent.PartialContainer;
 			Field field = new Field (ctype, string_dictionary_type,
 				Modifiers.STATIC | Modifiers.PRIVATE | Modifiers.COMPILER_GENERATED,
-				new MemberName (CompilerGeneratedClass.MakeName (null, "f", "switch$map", unique_counter++), loc), null);
+				new MemberName (CompilerGeneratedClass.MakeName (null, "f", "switch$map", ec.Module.CounterSwitchTypes++), loc), null);
 			if (!field.Define ())
 				return;
 			ctype.AddField (field);
@@ -5952,9 +5947,11 @@ namespace Mono.CSharp {
 				} while (t != null);
 
 				if (iface_candidate == null) {
-					rc.Report.Error (1579, loc,
-						"foreach statement cannot operate on variables of type `{0}' because it does not contain a definition for `{1}' or is inaccessible",
-						expr.Type.GetSignatureForError (), "GetEnumerator");
+					if (expr.Type != InternalType.ErrorType) {
+						rc.Report.Error (1579, loc,
+							"foreach statement cannot operate on variables of type `{0}' because it does not contain a definition for `{1}' or is inaccessible",
+							expr.Type.GetSignatureForError (), "GetEnumerator");
+					}
 
 					return null;
 				}
