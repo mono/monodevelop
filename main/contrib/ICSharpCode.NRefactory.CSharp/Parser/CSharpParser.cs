@@ -319,7 +319,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (nspace.Containers != null) {
 					foreach (var container in nspace.Containers) {
-						Console.WriteLine ("add container:"+ container);
 						container.Accept (this);
 					}
 				}
