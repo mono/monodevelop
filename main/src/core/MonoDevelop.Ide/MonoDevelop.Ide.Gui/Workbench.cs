@@ -48,6 +48,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Navigation;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -309,9 +310,19 @@ namespace MonoDevelop.Ide.Gui
 			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 		
+		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
+		{
+			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
+		}
+		
 		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
+		}
+		
+		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
+		{
+			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
 		}
 
 		public Document OpenDocument (FilePath fileName, bool bringToFront)

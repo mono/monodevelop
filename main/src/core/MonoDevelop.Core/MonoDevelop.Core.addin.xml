@@ -217,7 +217,7 @@
 			canDefault = "true" />
 		<FileFormat id = "MD1" 
 			class = "MonoDevelop.Projects.Formats.MD1.MD1FileFormat"
-			name = "MonoDevelop 1.0" />
+			name = "MonoDevelop 1.0 (deprecated)" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">

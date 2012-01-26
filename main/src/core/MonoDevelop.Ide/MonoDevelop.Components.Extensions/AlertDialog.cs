@@ -43,6 +43,20 @@ namespace MonoDevelop.Components.Extensions
 		
 		public IList<AlertButton> Buttons { get { return Message.Buttons; } }
 		public IList<AlertOption> Options { get { return Message.Options; } }
+		
+		// If the dialog is closed clicking the close window button we may have no result.
+		// In that case, try to find a cancelling button
+		public void SetResultToCancelled ()
+		{
+			if (Buttons.Contains (AlertButton.Cancel))
+				ResultButton = AlertButton.Cancel;
+			else if (Buttons.Contains (AlertButton.No))
+				ResultButton = AlertButton.No;
+			else if (Buttons.Contains (AlertButton.Close))
+				ResultButton = AlertButton.Close;
+			else
+				ResultButton = null;
+		}
 	}
 	
 	public class AlertDialog : PlatformDialog<AlertDialogData>
@@ -68,23 +82,29 @@ namespace MonoDevelop.Components.Extensions
 		{
 			var alertDialog = new GtkAlertDialog (data.Message);
 			alertDialog.FocusButton (data.Message.DefaultButton);
+			
+			if (data.Message.CancellationToken.CanBeCanceled) {
+				data.Message.CancellationToken.Register (delegate {
+					 Gtk.Application.Invoke (delegate {
+						if (alertDialog != null) {
+							alertDialog.Respond (Gtk.ResponseType.DeleteEvent);
+						}
+					});
+				});
+			}
+			
 			MessageService.ShowCustomDialog (alertDialog, data.TransientFor);
 			if (alertDialog.ApplyToAll)
 				data.ApplyToAll = true;
 			data.ResultButton = alertDialog.ResultButton;
 			
-			if (data.ResultButton == null) {
-				// If the dialog is closed clicking the close window button we may have no result.
-				// In that case, try to find a cancelling button
-				if (data.Buttons.Contains (AlertButton.Cancel))
-					data.ResultButton = AlertButton.Cancel;
-				else if (data.Buttons.Contains (AlertButton.No))
-					data.ResultButton = AlertButton.No;
-				else if (data.Buttons.Contains (AlertButton.Close))
-					data.ResultButton = AlertButton.Close;
+			alertDialog = null;
+			
+			if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {
+				data.SetResultToCancelled ();
 			}
+			
 			return true;
 		}
 	}
 }
-

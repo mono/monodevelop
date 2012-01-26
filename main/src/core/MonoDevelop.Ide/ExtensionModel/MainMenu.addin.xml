@@ -160,7 +160,7 @@
 	</ItemSet>
 
 	<ItemSet id = "Project" _label = "_Project">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
 		<SeparatorItem id = "ExportSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
@@ -251,4 +251,3 @@
 </Extension>
 
 </ExtensionModel>
-	

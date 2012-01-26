@@ -33,18 +33,17 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public partial class ExportProjectDialog : Gtk.Dialog
+	public partial class ExportSolutionDialog : Gtk.Dialog
 	{
 		FileFormat[] formats;
 		
-		public ExportProjectDialog (IWorkspaceObject entry, FileFormat selectedFormat)
+		public ExportSolutionDialog (WorkspaceItem item, FileFormat selectedFormat)
 		{
 			this.Build();
 			
-			FileFormat f = entry is WorkspaceItem ? ((WorkspaceItem)entry).FileFormat : ((SolutionEntityItem)entry).FileFormat;
-			labelNewFormat.Text = f.Name;
+			labelNewFormat.Text = item.FileFormat.Name;
 			
-			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (entry);
+			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (item);
 			foreach (FileFormat format in formats)
 				comboFormat.AppendText (format.Name);
 
@@ -52,7 +51,7 @@ namespace MonoDevelop.Ide.Projects
 			if (sel == -1) sel = 0;
 			comboFormat.Active = sel;
 			
-			folderEntry.Path = entry.ItemDirectory;
+			folderEntry.Path = item.ItemDirectory;
 			UpdateControls ();
 		}
 		

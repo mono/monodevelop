@@ -91,11 +91,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			// First, we need to name any new user-defined types.
 			foreach (var job in TypeSyncJobs) {
-				if (!job.IsFreshlyAdded)
+				if (!job.IsFreshlyAdded) {
+					monitor.Log.WriteLine ("Found updated class: {0}", job.Type.CliName);
 					continue;
+				}
 				
 				defaultNamespace = Project.GetDefaultNamespace (job.RelativePath);
 				job.Type.CliName = defaultNamespace + "." + provider.CreateValidIdentifier (job.Type.ObjCName);
+				monitor.Log.WriteLine ("Found newly-added class: {0}", job.Type.CliName);
 				ProjectInfo.InsertUpdatedType (job.Type);
 			}
 			
@@ -105,17 +108,16 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				ProjectInfo.ResolveObjcToCli (monitor, job.Type, provider, defaultNamespace);
 			}
 			
-			AggregateTypeUpdates (provider, designerFiles, out newTypes, out newFiles);
+			AggregateTypeUpdates (monitor, provider, designerFiles, out newTypes, out newFiles);
 			MergeExistingTypes (designerFiles);
 			
 			return designerFiles;
 		}
 		
-		void AggregateTypeUpdates (CodeDomProvider provider, Dictionary<string, List<NSObjectTypeInfo>> designerFiles,
+		void AggregateTypeUpdates (IProgressMonitor monitor, CodeDomProvider provider, Dictionary<string, List<NSObjectTypeInfo>> designerFiles,
 			out Dictionary<string, NSObjectTypeInfo> newTypes,
 			out Dictionary<string, ProjectFile> newFiles)
 		{
-			XC4Debug.Log ("Aggregating {0} type updates", typeSyncJobs.Count);
 			newFiles = null;
 			newTypes = null;
 			
@@ -157,7 +159,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				List<NSObjectTypeInfo> types;
 				if (!designerFiles.TryGetValue (job.DesignerFile, out types))
 					designerFiles[job.DesignerFile] = types = new List<NSObjectTypeInfo> ();
-				XC4Debug.Log ("{0}: {1}", job.DesignerFile, job.Type.ObjCName);
+				
 				types.Add (job.Type);
 			}
 		}

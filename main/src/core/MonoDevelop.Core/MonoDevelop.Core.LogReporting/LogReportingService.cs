@@ -85,7 +85,7 @@ namespace MonoDevelop.Core.LogReporting
 			}
 			
 			// Log to disk only if uploading fails.
-			var filename = string.Format ("{0}.{1}.crashlog", SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
+			var filename = string.Format ("{0}.{1}.{2}.crashlog", DateTime.UtcNow.ToString ("yyyy-MM-dd__HH-mm-ss"), SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
 			ThreadPool.QueueUserWorkItem (delegate {
 				if (!TryUploadReport (filename, data)) {
 					if (!Directory.Exists (CrashLogDirectory))
