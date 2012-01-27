@@ -80,9 +80,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return new string[] { "Foundation" };
 		}
 		
+		bool SyncingEnabled {
+			get { return xcode != null; }
+		}
+		
 		void EnableSyncing (IProgressMonitor monitor)
 		{
-			if (xcode != null)
+			if (SyncingEnabled)
 				return;
 			
 			monitor.Log.WriteLine ("Enabled syncing for project: {0}", dnp.Name);
@@ -99,7 +103,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void DisableSyncing ()
 		{
-			if (xcode == null)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("Disabled syncing for project: {0}", dnp.Name);
@@ -123,7 +127,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void AppRegainedFocus (object sender, EventArgs e)
 		{
-			if (xcode == null)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("MonoDevelop has regained focus.");
@@ -227,7 +231,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void FileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
-			if (xcode == null)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("Files removed from project '{0}'", dnp.Name);
@@ -252,7 +256,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 
 		void FileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
-			if (xcode == null)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("Files added to project '{0}'", dnp.Name);
@@ -265,7 +269,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		void FileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
 			// avoid infinite recursion when we add files
-			if (xcode == null || updatingProjectFiles)
+			if (!SyncingEnabled || updatingProjectFiles)
 				return;
 			
 			XC4Debug.Log ("Files changed in project '{0}'", dnp.Name);
@@ -277,7 +281,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 
 		void FilePropertyChangedInProject (object sender, ProjectFileEventArgs e)
 		{
-			if (xcode == null)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("File properties changed in project '{0}'", dnp.Name);
