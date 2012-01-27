@@ -121,6 +121,7 @@ namespace MonoDevelop.Debugger
 			menuSet = new CommandEntrySet ();
 			menuSet.AddItem (DebugCommands.AddWatch);
 			menuSet.AddSeparator ();
+			menuSet.AddItem (EditCommands.Copy);
 			menuSet.AddItem (EditCommands.Rename);
 			menuSet.AddItem (EditCommands.DeleteKey);
 		}
@@ -1061,6 +1062,22 @@ namespace MonoDevelop.Debugger
 		void ShowPopup (Gdk.EventButton evt)
 		{
 			IdeApp.CommandService.ShowContextMenu (this, evt, menuSet, this);
+		}
+		
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			TreePath[] selected = Selection.GetSelectedRows ();
+			TreeIter iter;
+			
+			if (selected == null || selected.Length != 1)
+				return;
+			
+			if (!store.GetIter (out iter, selected[0]))
+				return;
+			
+			string value = (string) store.GetValue (iter, ValueCol);
+			Clipboard.Get (Gdk.Selection.Clipboard).Text = value;
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
