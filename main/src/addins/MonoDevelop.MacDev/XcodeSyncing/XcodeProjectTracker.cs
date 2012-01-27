@@ -133,8 +133,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			XC4Debug.Log ("MonoDevelop has regained focus.");
 			
-			bool isOpen = xcode != null && xcode.IsProjectOpen ();
 			using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Synchronizing changes from Xcode..."))) {
+				bool isOpen = xcode != null && xcode.IsProjectOpen ();
+				
 				if (isOpen) {
 					try {
 						xcode.SaveProject (monitor);
@@ -148,12 +149,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					}
 				}
 				
-				SyncXcodeChanges (monitor);
-			}
-			
-			if (!isOpen) {
-				XC4Debug.Log ("Xcode project for '{0}' is not open, disabling syncing.", dnp.Name);
-				DisableSyncing ();
+				try {
+					SyncXcodeChanges (monitor);
+				} finally {
+					if (!isOpen) {
+						XC4Debug.Log ("Xcode project for '{0}' is not open, disabling syncing.", dnp.Name);
+						DisableSyncing ();
+					}
+				}
 			}
 		}
 		
