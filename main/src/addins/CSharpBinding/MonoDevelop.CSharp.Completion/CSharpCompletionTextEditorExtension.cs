@@ -550,7 +550,11 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new NewOverrideCompletionData (this, declarationBegin, type, m);
 		}
-		
+		ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
+		{
+			var ctx = CSharpParsedFile.GetTypeResolveContext (Compilation, document.Editor.Caret.Location);
+			return new NewOverrideCompletionData (this, declarationBegin, type, m.CreateResolved (ctx));
+		}
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
 		{
 			var result = new CompletionDataList ();

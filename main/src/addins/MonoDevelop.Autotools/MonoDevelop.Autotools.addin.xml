@@ -68,7 +68,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<Condition id="Platform" value="!windows">
-			<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"/>
+			<CommandItem id = "MonoDevelop.Autotools.Commands.GenerateFiles" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"/>
 		</Condition>
 	</Extension>
 	

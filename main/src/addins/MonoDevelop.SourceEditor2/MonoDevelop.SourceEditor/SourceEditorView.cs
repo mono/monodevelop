@@ -736,8 +736,10 @@ namespace MonoDevelop.SourceEditor
 		
 		void GotFileChanged (object sender, FileEventArgs args)
 		{
-			if (!isDisposed) {
-				foreach (FileEventInfo f in args)
+			if (!isDisposed && !string.IsNullOrEmpty (ContentName)) {
+				FilePath path = new FilePath (ContentName).CanonicalPath;
+				var f = args.FirstOrDefault (fi => fi.FileName.CanonicalPath == path);
+				if (f != null)
 					HandleFileChanged (f.FileName);
 			}
 		}

@@ -609,6 +609,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (pre != null)
 						return pre.MemberName == method.Name;
 				} else if (!(node.Parent is InvocationExpression)) {
+					// MemberReferences & Identifiers that aren't used in an invocation can still match the method
+					// as delegate name.
 					var mre = node as MemberReferenceExpression;
 					if (mre != null) {
 						return mre.MemberName == method.Name;
@@ -627,7 +629,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (mrr != null)
 					return method == mrr.Member.MemberDefinition;
 				
-				// Not 100% correct - TODO: overload resolution.
+				// Delegate case is not 100% correct - TODO: overload resolution.
 				var mgr = rr as MethodGroupResolveResult;
 				return mgr != null && mgr.Methods.Any (m => m == method);
 			}

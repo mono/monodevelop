@@ -145,12 +145,18 @@ namespace MonoDevelop.Ide.Codons
 		}
 		
 		public PadCodon (IPadContent content, string id, string label, string defaultPlacement, string icon)
+			: this (content, id, label, defaultPlacement, DockItemStatus.Dockable, icon)
+		{
+		}
+		
+		public PadCodon (IPadContent content, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, string icon)
 		{
 			this.id               = id;
 			this.content          = content;
 			this.label            = label;
 			this.defaultPlacement = defaultPlacement;
 			this.icon             = icon;
+			this.defaultStatus    = defaultStatus;
 		}
 		
 		protected virtual IPadContent CreatePad ()

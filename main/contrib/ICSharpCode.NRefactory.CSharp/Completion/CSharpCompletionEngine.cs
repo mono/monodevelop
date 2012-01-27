@@ -464,7 +464,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return accCtx;
 					return DefaultControlSpaceItems (null, controlSpace);
 				}
-				
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
 				// Handle foreach (type name _
@@ -769,13 +768,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddContextCompletion (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
-			if (state != null) {
+			if (state != null && !(node is AstType)) {
 				foreach (var variable in state.LocalVariables) {
 					wrapper.AddVariable (variable);
 				}
 			}
 			
-			if (currentMember is IUnresolvedParameterizedMember) {
+			if (currentMember is IUnresolvedParameterizedMember && !(node is AstType)) {
 				var param = (IParameterizedMember)currentMember.CreateResolved (ctx);
 				foreach (var p in param.Parameters) {
 					wrapper.AddVariable (p);
@@ -799,25 +798,28 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AddTypesAndNamespaces (wrapper, state, node, typePred);
 			
 			wrapper.Result.Add (factory.CreateLiteralCompletionData ("global"));
-			if (currentMember != null) {
-				AddKeywords (wrapper, statementStartKeywords);
-				AddKeywords (wrapper, expressionLevelKeywords);
-			} else if (currentType != null) {
-				AddKeywords (wrapper, typeLevelKeywords);
-			} else {
-				AddKeywords (wrapper, globalLevelKeywords);
+			if (!(node is AstType)) {
+				if (currentMember != null) {
+					AddKeywords (wrapper, statementStartKeywords);
+					AddKeywords (wrapper, expressionLevelKeywords);
+				} else if (currentType != null) {
+					AddKeywords (wrapper, typeLevelKeywords);
+				} else {
+					AddKeywords (wrapper, globalLevelKeywords);
+				}
+				var prop = currentMember as IUnresolvedProperty;
+				if (prop != null && prop.Setter != null && prop.Setter.Region.IsInside (location))
+					wrapper.AddCustom ("value"); 
+				if (currentMember is IUnresolvedEvent)
+					wrapper.AddCustom ("value"); 
+				
+				if (IsInSwitchContext (node)) {
+					wrapper.AddCustom ("case"); 
+				}
+				
+				AddKeywords (wrapper, primitiveTypesKeywords);
 			}
-			var prop = currentMember as IUnresolvedProperty;
-			if (prop != null && prop.Setter != null && prop.Setter.Region.IsInside (location))
-				wrapper.AddCustom ("value"); 
-			if (currentMember is IUnresolvedEvent)
-				wrapper.AddCustom ("value"); 
 			
-			if (IsInSwitchContext (node)) {
-				wrapper.AddCustom ("case"); 
-			}
-			
-			AddKeywords (wrapper, primitiveTypesKeywords);
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 			
 			if (node != null && node.Role == AstNode.Roles.Argument) {
@@ -854,7 +856,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Predicate<IType> typePred = null, Predicate<IMember> memberPred = null)
 		{
-			var currentMember = ctx.CurrentMember;
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
@@ -866,7 +867,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				if (this.currentMember != null) {
+				if (this.currentMember != null && !(node is AstType)) {
 					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition (currentType);
 					foreach (var member in def.GetMembers ()) {
 						if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
@@ -1005,7 +1006,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							isAsType = resolved.Item1.Type;
 					}
 				}
-				
 				var isAsWrapper = new CompletionDataWrapper (this);
 				AddTypesAndNamespaces (isAsWrapper, GetState (), null, t => isAsType == null || t.GetDefinition ().IsDerivedFrom (isAsType.GetDefinition ()));
 				return isAsWrapper.Result;
@@ -1096,11 +1096,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				if (!IsLineEmptyUpToEol ())
 					return null;
+				var state = GetState ();
 				
-				overrideCls = CSharpParsedFile.GetInnermostTypeDefinition (location);
-				if (overrideCls != null && (overrideCls.Kind == TypeKind.Class || overrideCls.Kind == TypeKind.Struct)) {
+				if (state.CurrentTypeDefinition != null && (state.CurrentTypeDefinition.Kind == TypeKind.Class || state.CurrentTypeDefinition.Kind == TypeKind.Struct)) {
 					string modifiers = document.GetText (firstMod, wordStart - firstMod);
-					return GetPartialCompletionData (overrideCls, modifiers);
+					return GetPartialCompletionData (state.CurrentTypeDefinition, modifiers);
 				}
 				return null;
 				
@@ -1114,7 +1114,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (accessorContext != null)
 					return accessorContext;
 				wrapper = new CompletionDataWrapper (this);
-				var state = GetState ();
+				state = GetState ();
 				AddTypesAndNamespaces (wrapper, state, null, null, m => false);
 				AddKeywords (wrapper, typeLevelKeywords);
 				AddKeywords (wrapper, primitiveTypesKeywords);
@@ -1353,71 +1353,56 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return wrapper.Result;
 		}
 		
-		IEnumerable<ICompletionData> GetPartialCompletionData (IUnresolvedTypeDefinition type, string modifiers)
+		IEnumerable<ICompletionData> GetPartialCompletionData (ITypeDefinition type, string modifiers)
 		{
 			var wrapper = new CompletionDataWrapper (this);
-			var partialType = type.Resolve (ctx);
-			if (partialType != null) {
-				int declarationBegin = offset;
-				int j = declarationBegin;
-				for (int i = 0; i < 3; i++) {
-					switch (GetPreviousToken (ref j, true)) {
-					case "public":
-					case "protected":
-					case "private":
-					case "internal":
-					case "sealed":
-					case "override":
-						declarationBegin = j;
-						break;
-					case "static":
-						return null; // don't add override completion for static members
-					}
+			int declarationBegin = offset;
+			int j = declarationBegin;
+			for (int i = 0; i < 3; i++) {
+				switch (GetPreviousToken (ref j, true)) {
+				case "public":
+				case "protected":
+				case "private":
+				case "internal":
+				case "sealed":
+				case "override":
+					declarationBegin = j;
+					break;
+				case "static":
+					return null; // don't add override completion for static members
 				}
-				
-				var methods = new List<IMethod> ();
-				// gather all partial methods without implementation
-/* TODO:		foreach (var method in partialType.GetMethods ()) {
-					if (method.IsPartial && method.BodyRegion.IsEmpty) {
+			}
+			
+			var methods = new List<IUnresolvedMethod> ();
+			
+			foreach (var part in type.Parts) {
+				foreach (var method in part.Methods) {
+					if (method.BodyRegion.IsEmpty) {
+						if (GetImplementation (type, method) != null)
+							continue;
 						methods.Add (method);
 					}
-				}
-
-				// now filter all methods that are implemented in the compound class
-				foreach (var part in partialType.GetParts ()) {
-					if (part == type)
-						continue;
-					for (int i = 0; i < methods.Count; i++) {
-						var curMethod = methods [i];
-						var method = GetImplementation (partialType, curMethod);
-						if (method != null && !method.BodyRegion.IsEmpty) {
-							methods.RemoveAt (i);
-							i--;
-							continue;
-						}
-					}
-				}
-				 */
-				
-				foreach (var method in methods) {
-					wrapper.Add (factory.CreateNewOverrideCompletionData (declarationBegin, type, method));
-				}
-				
+				}	
 			}
+			
+			foreach (var method in methods) {
+				wrapper.Add (factory.CreateNewPartialCompletionData (declarationBegin, method.DeclaringTypeDefinition, method));
+			} 
+			
 			return wrapper.Result;
 		}
 		
-		IMethod GetImplementation (ITypeDefinition type, IMethod method)
+		IMethod GetImplementation (ITypeDefinition type, IUnresolvedMethod method)
 		{
 			foreach (var cur in type.Methods) {
 				if (cur.Name == method.Name && cur.Parameters.Count == method.Parameters.Count && !cur.BodyRegion.IsEmpty) {
 					bool equal = true;
-					for (int i = 0; i < cur.Parameters.Count; i++) {
+					/*for (int i = 0; i < cur.Parameters.Count; i++) {
 						if (!cur.Parameters [i].Type.Equals (method.Parameters [i].Type)) {
 							equal = false;
 							break;
 						}
-					}
+					}*/
 					if (equal)
 						return cur;
 				}
@@ -1944,9 +1929,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var baseUnit = ParseStub ("");
 			var tmpUnit = baseUnit;
 			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1);
-			
 			if (expr == null)
 				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
+			if (expr == null)
+				expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column - 1);
 			
 			// try insertStatement
 			if (expr == null && baseUnit.GetNodeAt<EmptyStatement> (location.Line, location.Column) != null) {

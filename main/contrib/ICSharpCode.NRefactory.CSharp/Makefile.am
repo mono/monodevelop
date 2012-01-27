@@ -164,7 +164,6 @@ FILES =  \
 	Parser/mcs/decl.cs \
 	Parser/mcs/delegate.cs \
 	Parser/mcs/doc.cs \
-	Parser/mcs/doc-bootstrap.cs \
 	Parser/mcs/driver.cs \
 	Parser/mcs/dynamic.cs \
 	Parser/mcs/ecore.cs \
@@ -174,7 +173,6 @@ FILES =  \
 	Parser/mcs/field.cs \
 	Parser/mcs/flowanalysis.cs \
 	Parser/mcs/generic.cs \
-	Parser/mcs/hosting.cs \
 	Parser/mcs/import.cs \
 	Parser/mcs/iterators.cs \
 	Parser/mcs/lambda.cs \
@@ -184,6 +182,7 @@ FILES =  \
 	Parser/mcs/membercache.cs \
 	Parser/mcs/method.cs \
 	Parser/mcs/modifiers.cs \
+	Parser/mcs/module.cs \
 	Parser/mcs/MonoSymbolFile.cs \
 	Parser/mcs/MonoSymbolTable.cs \
 	Parser/mcs/MonoSymbolWriter.cs \
@@ -195,8 +194,7 @@ FILES =  \
 	Parser/mcs/property.cs \
 	Parser/mcs/reflection.cs \
 	Parser/mcs/report.cs \
-	Parser/mcs/rootcontext.cs \
-	Parser/mcs/roottypes.cs \
+	Parser/mcs/settings.cs \
 	Parser/mcs/statement.cs \
 	Parser/mcs/support.cs \
 	Parser/mcs/symbolwriter.cs \

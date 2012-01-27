@@ -440,8 +440,9 @@ namespace MonoDevelop.Ide.Gui
 			AddButton (this.ViewContent.TabPageLabel, this.ViewContent);
 			
 			//pack them in a box
+			subViewNotebook.Show ();
 			box.PackStart (subViewNotebook, true, true, 1);
-			box.ShowAll ();
+			box.Show ();
 		}
 		#endregion
 		
@@ -473,7 +474,7 @@ namespace MonoDevelop.Ide.Gui
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
 			if (addedContent) {
 				widgetBox.Add (viewContent.Control);
-				widgetBox.ShowAll ();
+				widgetBox.Show ();
 			}
 			
 			subViewToolbar.AddTab (tab);
@@ -481,7 +482,7 @@ namespace MonoDevelop.Ide.Gui
 			tab.Activated += (sender, e) => {
 				if (!addedContent) {
 					widgetBox.Add (viewContent.Control);
-					widgetBox.ShowAll ();
+					widgetBox.Show ();
 				}
 				addedContent = true;
 				SetCurrentView ((int)((Tab)sender).Tag);

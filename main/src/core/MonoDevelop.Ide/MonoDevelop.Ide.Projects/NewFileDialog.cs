@@ -342,11 +342,50 @@ namespace MonoDevelop.Ide.Projects
 				iconView.Add (item);
 			}
 		}
-
-		// list view event handlers
-		void SelectedIndexChange (object sender, EventArgs e)
+		
+		void SelectedTemplateChanged (object sender, EventArgs e)
 		{
-			UpdateOkStatus ();
+			FileTemplate template = iconView.CurrentlySelected != null ? iconView.CurrentlySelected.Template : null;
+			
+			if (template != null) {
+				labelTemplateTitle.Markup = "<b>" + GettextCatalog.GetString (template.Name) + "</b>";
+				infoLabel.Text = GettextCatalog.GetString (template.Description);
+				
+				string filename = GetFileNameFromEntry ();
+				string name = null;
+				
+				// Desensitize the text entry if the name is fixed.
+				// Be careful to store user-entered text so we can replace it if they change their selection
+				if (template.IsFixedFilename) {
+					if (userEditedEntryText == null)
+						userEditedEntryText = filename;
+					name = template.DefaultFilename;
+					nameEntry.Sensitive = false;
+				} else {
+					if (userEditedEntryText != null) {
+						name = userEditedEntryText;
+						userEditedEntryText = null;
+					}
+					nameEntry.Sensitive = true;
+				}
+				
+				// Fill in a default name if text entry is empty or contains a default name
+				if ((string.IsNullOrEmpty (filename) || (previousDefaultEntryText == filename)) && !string.IsNullOrEmpty (template.DefaultFilename)) {
+					previousDefaultEntryText = template.DefaultFilename;
+					name = template.DefaultFilename;
+				}
+				
+				if (name != null) {
+					// Note: this will cause UpdateOkStatus() to be invoked via the Gtk.Entry.Changed event.
+					nameEntry.Text = name;
+				} else {
+					UpdateOkStatus ();
+				}
+			} else {
+				labelTemplateTitle.Text = string.Empty;
+				infoLabel.Text = string.Empty;
+				nameEntry.Sensitive = true;
+			}
 		}
 
 		void NameChanged (object sender, EventArgs e)
@@ -358,63 +397,32 @@ namespace MonoDevelop.Ide.Projects
 		{
 			return nameEntry.Text.Trim ();
 		}
-
+		
 		void UpdateOkStatus ()
 		{
 			try {
-				TemplateItem sel = (TemplateItem)iconView.CurrentlySelected;
-				if (sel == null) {
-					okButton.Sensitive = false;
-					infoLabel.Text = string.Empty;
-					labelTemplateTitle.Text = string.Empty;
-					return;
-				}
-
-				FileTemplate item = sel.Template;
-
-				if (item != null) {
-					labelTemplateTitle.Markup = "<b>" + GettextCatalog.GetString (item.Name) + "</b>";
-					infoLabel.Text = GettextCatalog.GetString (item.Description);
-
+				FileTemplate template = iconView.CurrentlySelected != null ? iconView.CurrentlySelected.Template : null;
+				
+				if (template != null) {
+					string language = iconView.CurrentlySelected.Language;
 					string filename = GetFileNameFromEntry ();
-
-					//desensitise the text entry if the name is fixed
-					//careful to store user-entered text so we can replace it if they change their selection
-					if (item.IsFixedFilename) {
-						if (userEditedEntryText == null)
-							userEditedEntryText = filename;
-						nameEntry.Text = item.DefaultFilename;
-						nameEntry.Sensitive = false;
-					} else {
-						if (userEditedEntryText != null) {
-							nameEntry.Text = userEditedEntryText;
-							userEditedEntryText = null;
-						}
-						nameEntry.Sensitive = true;
-					}
-
-					//fill in a default name if text entry is empty or contains a default name
-					if ((string.IsNullOrEmpty (filename) || (previousDefaultEntryText == filename)) && !string.IsNullOrEmpty (item.DefaultFilename)) {
-						nameEntry.Text = item.DefaultFilename;
-						previousDefaultEntryText = item.DefaultFilename;
-					}
-					
 					Project project = null;
 					string path = null;
+					
 					if (!boxProject.Visible || projectAddCheckbox.Active) {
 						project = parentProject;
 						path = basePath;
 					}
 					
 					if (projectAddCheckbox.Active) {
-						okButton.Sensitive = item.IsValidName (filename, sel.Language);
+						okButton.Sensitive = template.IsValidName (filename, language);
 					} else {
-						if (!item.IsValidName (filename, sel.Language)) {
+						if (!template.IsValidName (filename, language)) {
 							okButton.Sensitive = false;
 						} else {
 							bool sensitive = true;
-							foreach (var file in item.Files) {
-								if (!item.CanCreateUnsavedFiles (file, project, project, path, sel.Language, filename)) {
+							foreach (var file in template.Files) {
+								if (!template.CanCreateUnsavedFiles (file, project, project, path, language, filename)) {
 									sensitive = false;
 									break;
 								}
@@ -423,10 +431,7 @@ namespace MonoDevelop.Ide.Projects
 						}
 					}
 				} else {
-					nameEntry.Sensitive = true;
 					okButton.Sensitive = false;
-					infoLabel.Text = string.Empty;
-					labelTemplateTitle.Text = string.Empty;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
@@ -638,7 +643,7 @@ namespace MonoDevelop.Ide.Projects
 
 			catView.Selection.Changed += new EventHandler (CategoryChange);
 			catView.RowActivated += new RowActivatedHandler (CategoryActivated);
-			iconView.SelectionChanged += new EventHandler (SelectedIndexChange);
+			iconView.SelectionChanged += new EventHandler (SelectedTemplateChanged);
 			iconView.DoubleClicked += new EventHandler (OpenEvent);
 			InitializeDialog (false);
 			InitializeView ();

@@ -825,7 +825,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override OperatorMethod Lift(CSharpOperators operators)
 			{
-				return new LiftedBinaryOperatorMethod(operators, this);
+				var lifted = new LiftedBinaryOperatorMethod(operators, this);
+				lifted.ReturnType = this.ReturnType; // don't lift the return type for relational operators
+				return lifted;
 			}
 		}
 		

@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		protected readonly ITypeResolveContext context;
 		volatile IType returnType;
 		IList<IMember> interfaceImplementations;
-			
+		
 		protected AbstractResolvedMember(IUnresolvedMember unresolved, ITypeResolveContext parentContext)
 			: base(unresolved, parentContext)
 		{
@@ -68,7 +68,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		IList<IMember> FindInterfaceImplementations()
 		{
 			if (unresolved.IsExplicitInterfaceImplementation) {
-				return unresolved.ExplicitInterfaceImplementations.Resolve(context);
+				List<IMember> result = new List<IMember>();
+				foreach (var memberReference in unresolved.ExplicitInterfaceImplementations) {
+					IMember member = memberReference.Resolve(context);
+					if (member != null)
+						result.Add(member);
+				}
+				return result.ToArray();
 			} else {
 				throw new NotImplementedException();
 			}

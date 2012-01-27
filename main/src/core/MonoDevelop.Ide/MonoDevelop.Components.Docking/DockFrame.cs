@@ -48,8 +48,8 @@ namespace MonoDevelop.Components.Docking
 		
 		int handleSize = IsWindows ? 4 : 6;
 		int handlePadding = 0;
-		int defaultItemWidth = 130;
-		int defaultItemHeight = 130;
+		int defaultItemWidth = 300;
+		int defaultItemHeight = 250;
 		uint autoShowDelay = 400;
 		uint autoHideDelay = 500;
 		

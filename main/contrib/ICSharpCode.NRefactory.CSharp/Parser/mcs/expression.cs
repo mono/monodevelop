@@ -3664,7 +3664,7 @@ namespace Mono.CSharp
 
 		//
 		// Merge two sets of user operators into one, they are mostly distinguish
-		// expect when they share base type and it contains an operator
+		// except when they share base type and it contains an operator
 		//
 		static IList<MemberSpec> CombineUserOperators (IList<MemberSpec> left, IList<MemberSpec> right)
 		{
@@ -8208,9 +8208,9 @@ namespace Mono.CSharp
 				return;
 			}
 
-			var any_other_member = MemberLookup (rc, true, expr_type, Name, 0, MemberLookupRestrictions.None, loc);
+			var any_other_member = MemberLookup (rc, false, expr_type, Name, 0, MemberLookupRestrictions.None, loc);
 			if (any_other_member != null) {
-				any_other_member.Error_UnexpectedKind (rc.Module.Compiler.Report, null, "type", loc);
+				any_other_member.Error_UnexpectedKind (rc, any_other_member, "type", any_other_member.ExprClassName, loc);
 				return;
 			}
 
@@ -8811,6 +8811,10 @@ namespace Mono.CSharp
 			get {
 				return false;
 			}
+		}
+
+		public override string KindName {
+			get { return "indexer"; }
 		}
 
 		public override string Name {
@@ -10245,9 +10249,8 @@ namespace Mono.CSharp
 				return null;
 
 			int errors = ec.Report.Errors;
-			type.CreateType ();
-			type.DefineType ();
-			type.ResolveTypeParameters ();
+			type.CreateContainer ();
+			type.DefineContainer ();
 			type.Define ();
 			if ((ec.Report.Errors - errors) == 0) {
 				parent.Module.AddAnonymousType (type);
@@ -10262,8 +10265,11 @@ namespace Mono.CSharp
 				return base.CreateExpressionTree (ec);
 
 			var init = new ArrayInitializer (parameters.Count, loc);
-			foreach (Property p in anonymous_type.Properties)
-				init.Add (new TypeOfMethod (MemberCache.GetMember (type, p.Get.Spec), loc));
+			foreach (var m in anonymous_type.Members) {
+				var p = m as Property;
+				if (p != null)
+					init.Add (new TypeOfMethod (MemberCache.GetMember (type, p.Get.Spec), loc));
+			}
 
 			var ctor_args = new ArrayInitializer (arguments.Count, loc);
 			foreach (Argument a in arguments)

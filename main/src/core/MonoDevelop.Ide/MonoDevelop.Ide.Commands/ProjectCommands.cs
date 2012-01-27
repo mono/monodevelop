@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Commands
 		ConfigurationSelector,
 		CustomCommandList,
 		Reload,
-		ExportProject,
+		ExportSolution,
 		SpecificAssemblyVersion,
 		SelectActiveConfiguration,
 		SelectActiveRuntime
@@ -481,17 +481,25 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 
-	internal class ExportProjectHandler : CommandHandler
+	internal class ExportSolutionHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
-			if (!(IdeApp.ProjectOperations.CurrentSelectedItem is WorkspaceItem) && !(IdeApp.ProjectOperations.CurrentSelectedItem is SolutionEntityItem))
+			// FIXME: Once we fix Workspaces to offer Visual Studio formats (instead of the deprecated MonoDevelop 1.0 format), we can allow exporting of Workspaces as well.
+			if (!(IdeApp.ProjectOperations.CurrentSelectedItem is Solution) && !(IdeApp.ProjectOperations.CurrentSelectedItem is SolutionEntityItem))
 				info.Enabled = false;
 		}
 
 		protected override void Run ()
 		{
-			IdeApp.ProjectOperations.Export (((IWorkspaceObject)IdeApp.ProjectOperations.CurrentSelectedItem), null);
+			WorkspaceItem workspace;
+			
+			if (!(IdeApp.ProjectOperations.CurrentSelectedItem is WorkspaceItem))
+				workspace = ((SolutionEntityItem) IdeApp.ProjectOperations.CurrentSelectedItem).ParentSolution;
+			else
+				workspace = (WorkspaceItem) IdeApp.ProjectOperations.CurrentSelectedItem;
+			
+			IdeApp.ProjectOperations.Export (workspace, null);
 		}
 	}
 	

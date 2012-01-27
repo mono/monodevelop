@@ -315,9 +315,9 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Reload"
 			_description = "Reload selected project or solution"
 			_label = "Reload" />
-	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportProject"
-			defaultHandler = "MonoDevelop.Ide.Commands.ExportProjectHandler"
-			_description = "Convert selected project or solution to another format"
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"
+			defaultHandler = "MonoDevelop.Ide.Commands.ExportSolutionHandler"
+			_description = "Convert selected solution to another format"
 			_label = "_Export..." />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration"
 			type = "radio|array"

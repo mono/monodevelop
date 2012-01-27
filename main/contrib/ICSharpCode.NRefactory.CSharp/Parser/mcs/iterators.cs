@@ -160,7 +160,7 @@ namespace Mono.CSharp
 		Field pc_field;
 		StateMachineMethod method;
 
-		protected StateMachine (Block block, TypeContainer parent, MemberBase host, TypeParameters tparams, string name)
+		protected StateMachine (Block block, TypeDefinition parent, MemberBase host, TypeParameters tparams, string name)
 			: base (block, parent, host, tparams, name)
 		{
 		}
@@ -187,7 +187,7 @@ namespace Mono.CSharp
 				throw new InternalErrorException ();
 
 			this.method = method;
-			AddMethod (method);
+			Members.Add (method);
 		}
 
 		protected override bool DoDefineMembers ()
@@ -329,7 +329,7 @@ namespace Mono.CSharp
 				: base (host, null, new TypeExpression (host.Compiler.BuiltinTypes.Void, host.Location), Modifiers.PUBLIC | Modifiers.DEBUGGER_HIDDEN,
 					new MemberName ("Dispose", host.Location))
 			{
-				host.AddMethod (this);
+				host.Members.Add (this);
 
 				Block.AddStatement (new DisposeMethodStatement (host.Iterator));
 			}
@@ -494,10 +494,10 @@ namespace Mono.CSharp
 					get_enumerator.Block.AddStatement (
 						new Return (new Invocation (new DynamicMethodGroupExpr (gget_enumerator, Location), null), Location));
 
-					AddMethod (get_enumerator);
-					AddMethod (gget_enumerator);
+					Members.Add (get_enumerator);
+					Members.Add (gget_enumerator);
 				} else {
-					AddMethod (new GetEnumeratorMethod (this, enumerator_type, name));
+					Members.Add (new GetEnumeratorMethod (this, enumerator_type, name));
 				}
 			}
 
@@ -526,7 +526,7 @@ namespace Mono.CSharp
 			current.Get = new Property.GetMethod (current, 0, null, Location);
 			current.Get.Block = get_block;
 
-			AddProperty (current);
+			Members.Add (current);
 		}
 
 		void Define_Reset ()
@@ -536,7 +536,7 @@ namespace Mono.CSharp
 				Modifiers.PUBLIC | Modifiers.DEBUGGER_HIDDEN,
 				new MemberName ("Reset", Location),
 				ParametersCompiled.EmptyReadOnlyParameters, null);
-			AddMethod (reset);
+			Members.Add (reset);
 
 			reset.Block = new ToplevelBlock (Compiler, Location);
 
@@ -611,7 +611,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		public readonly TypeContainer Host;
+		public readonly TypeDefinition Host;
 		protected StateMachine storey;
 
 		//
@@ -624,7 +624,7 @@ namespace Mono.CSharp
 		protected LocalBuilder current_pc;
 		protected List<ResumableStatement> resume_points;
 
-		protected StateMachineInitializer (ParametersBlock block, TypeContainer host, TypeSpec returnType)
+		protected StateMachineInitializer (ParametersBlock block, TypeDefinition host, TypeSpec returnType)
 			: base (block, returnType, block.StartLocation)
 		{
 			this.Host = host;
@@ -897,7 +897,7 @@ namespace Mono.CSharp
 		public readonly bool IsEnumerable;
 		public readonly TypeSpec OriginalIteratorType;
 
-		public Iterator (ParametersBlock block, IMethodData method, TypeContainer host, TypeSpec iterator_type, bool is_enumerable)
+		public Iterator (ParametersBlock block, IMethodData method, TypeDefinition host, TypeSpec iterator_type, bool is_enumerable)
 			: base (block, host, host.Compiler.BuiltinTypes.Bool)
 		{
 			this.OriginalMethod = method;
@@ -1025,7 +1025,7 @@ namespace Mono.CSharp
 			return bc;
 		}
 
-		public static void CreateIterator (IMethodData method, TypeContainer parent, Modifiers modifiers)
+		public static void CreateIterator (IMethodData method, TypeDefinition parent, Modifiers modifiers)
 		{
 			bool is_enumerable;
 			TypeSpec iterator_type;
