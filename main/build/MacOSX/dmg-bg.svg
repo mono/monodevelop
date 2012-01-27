@@ -14,11 +14,11 @@
    height="380"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.48.1 r9760"
+   inkscape:version="0.48.2 r9819"
    sodipodi:docname="dmg-bg.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0"
-   inkscape:export-filename="/Volumes/sources/monodevelop/main/build/MacOSX/dmg-bg.png"
+   inkscape:export-filename="/Users/duncan/git/mono/monodevelop/main/build/MacOSX/dmg-bg.png"
    inkscape:export-xdpi="128.64999"
    inkscape:export-ydpi="128.64999">
   <sodipodi:namedview
@@ -295,7 +295,7 @@
          id="tspan5421"
          x="3.8116512"
          y="-67.38591"
-         style="font-size:34px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient6215);fill-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold">2.8.6.3</tspan></text>
+         style="font-size:34px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:url(#linearGradient6215);fill-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans Bold">2.8.6.4</tspan></text>
     <rect
        style="fill:#9f0000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.49700001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect5520-2-0"
