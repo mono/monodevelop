@@ -93,11 +93,12 @@ namespace MonoDevelop.Components.Extensions
 				});
 			}
 			
-			MessageService.ShowCustomDialog (alertDialog, data.TransientFor);
-			if (alertDialog.ApplyToAll)
-				data.ApplyToAll = true;
-			data.ResultButton = alertDialog.ResultButton;
-			
+			if (!data.Message.CancellationToken.IsCancellationRequested) {
+				MessageService.ShowCustomDialog (alertDialog, data.TransientFor);
+				if (alertDialog.ApplyToAll)
+					data.ApplyToAll = true;
+				data.ResultButton = alertDialog.ResultButton;
+			}
 			alertDialog = null;
 			
 			if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {

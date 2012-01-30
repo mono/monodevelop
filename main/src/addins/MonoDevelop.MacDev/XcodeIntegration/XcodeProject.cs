@@ -110,6 +110,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			projectBuildConfiguration.AddSetting ("GCC_WARN_ABOUT_MISSING_PROTOTYPES", "YES");
 			projectBuildConfiguration.AddSetting ("GCC_WARN_ABOUT_RETURN_TYPE", "YES");
 			projectBuildConfiguration.AddSetting ("GCC_WARN_UNUSED_VARIABLE", "YES");
+			//projectBuildConfiguration.AddSetting ("IPHONEOS_DEPLOYMENT_TARGET", "5.0");
 			projectBuildConfiguration.AddSetting ("OTHER_CFLAGS", "\"\"");
 			projectBuildConfiguration.AddSetting ("OTHER_LDFLAGS", "\"\"");
 			projectBuildConfiguration.AddSetting ("SDKROOT", sdkRoot);

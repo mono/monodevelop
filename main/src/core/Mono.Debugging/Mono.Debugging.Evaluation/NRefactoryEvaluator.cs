@@ -745,7 +745,7 @@ namespace Mono.Debugging.Evaluation
 			}
 			
 			if (!(res is bool))
-				res = (long) Convert.ChangeType (res, GetCommonType (v1, v2));
+				res = Convert.ChangeType (res, GetCommonType (val1, val2));
 			
 			if (ctx.Adapter.IsEnum (ctx, targetVal1)) {
 				object tval = ctx.Adapter.Cast (ctx, ctx.Adapter.CreateValue (ctx, res), ctx.Adapter.GetValueType (ctx, targetVal1));

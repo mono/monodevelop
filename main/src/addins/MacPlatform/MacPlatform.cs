@@ -296,11 +296,20 @@ namespace MonoDevelop.MacIntegration
 				
 				//if not running inside an app bundle, assume usual MD build layout and load the app icon
 				FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+				string iconFile = null;
 				if (!exePath.ToString ().Contains ("MonoDevelop.app")) {
 					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
-					var icons = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
-					if (File.Exists (icons))
-						NSApplication.SharedApplication.ApplicationIconImage = new NSImage (icons);
+					iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
+				} else {
+					//HACK: override the app image
+					//NSApplication doesn't seem to pick up the image correctly, probably due to the
+					//getting confused about the bundle root because of the launch script
+					var bundleContents = exePath.ParentDirectory.ParentDirectory.ParentDirectory
+						.ParentDirectory.ParentDirectory;
+					iconFile = bundleContents.Combine ("Resources", "monodevelop.icns");
+				}
+				if (File.Exists (iconFile)) {
+					NSApplication.SharedApplication.ApplicationIconImage = new NSImage (iconFile);
 				}
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not install app event handlers", ex);

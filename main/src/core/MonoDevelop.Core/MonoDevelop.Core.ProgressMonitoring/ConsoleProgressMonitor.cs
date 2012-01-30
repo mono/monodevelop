@@ -44,7 +44,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		TextWriter writer;
 		
 		string TimeStamp {
-			get { return EnableTimeStamp ? string.Format ("[{0}] ", DateTime.Now.ToString ("R")) : string.Empty; }
+			get { return EnableTimeStamp ? string.Format ("[{0}] ", DateTime.Now.ToString ("yyyy-MM-dd HH:mm:ss.f")) : string.Empty; }
 		}
 		
 		public ConsoleProgressMonitor () : this (Console.Out)

@@ -214,7 +214,7 @@ namespace MonoDevelop.SourceEditor
 			oldY = y;
 			
 			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-			if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Height - edgeGap)
+			if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Y + geometry.Height - edgeGap)
 				y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
 			if (y < geometry.Top + edgeGap)
 				y = geometry.Top + edgeGap;

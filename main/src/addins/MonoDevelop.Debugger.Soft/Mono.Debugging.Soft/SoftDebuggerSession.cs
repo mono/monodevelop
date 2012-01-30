@@ -1567,7 +1567,6 @@ namespace Mono.Debugging.Soft
 			}
 			
 			// Thirdly, resolve pending catchpoints
-			
 			foreach (var bi in pending_bes.Where (b => b.BreakEvent is Catchpoint)) {
 				var cp = (Catchpoint) bi.BreakEvent;
 				if (cp.ExceptionName == typeName) {

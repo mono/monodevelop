@@ -82,7 +82,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			bool updateProject = false;
 			
 			foreach (var item in items) {
-				bool needsSync = item.NeedsSyncOut (ctx);
+				bool needsSync = item.NeedsSyncOut (monitor, ctx);
 				if (needsSync)
 					syncList.Add (item);
 				
@@ -244,7 +244,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		public XcodeSyncBackContext GetChanges (IProgressMonitor monitor, NSObjectInfoService infoService, DotNetProject project)
 		{
 			var ctx = new XcodeSyncBackContext (projectDir, syncTimeCache, infoService, project);
-			var needsSync = new List<XcodeSyncedItem> (items.Where (i => i.NeedsSyncBack (ctx)));
+			var needsSync = new List<XcodeSyncedItem> (items.Where (i => i.NeedsSyncBack (monitor, ctx)));
 			var knownFiles = GetKnownFiles ();
 			
 			if (Directory.Exists (projectDir)) {
@@ -276,9 +276,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public void SaveProject (IProgressMonitor monitor)
 		{
-			if (!CheckRunning () || !IsProjectOpen ())
-				return;
-			
 			monitor.Log.WriteLine ("Asking Xcode to save pending changes for the {0} project", name);
 			AppleScript.Run (XCODE_SAVE_IN_PATH, AppleSdkSettings.XcodePath, projectDir);
 		}
@@ -286,7 +283,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		void SyncProject (IProgressMonitor monitor)
 		{
 			if (pendingProjectWrite != null) {
-				monitor.Log.WriteLine ("Generating 'project.pbxproj' for {0}", name);
+				monitor.Log.WriteLine ("Generating project.pbxproj file for {0}", name);
 				pendingProjectWrite.Generate (projectDir);
 				pendingProjectWrite = null;
 			}

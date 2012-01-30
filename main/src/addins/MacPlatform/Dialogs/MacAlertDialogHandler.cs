@@ -132,28 +132,28 @@ namespace MonoDevelop.MacIntegration
 				((NSPanel) alert.Window).SetFrame (new RectangleF (frame.X, frame.Y, Math.Max (frame.Width, 600), frame.Height), true);
 				alert.Layout ();
 				
-				bool cancelled = false, completed = false;
+				bool completed = false;
 				if (data.Message.CancellationToken.CanBeCanceled) {
 					data.Message.CancellationToken.Register (delegate {
 						alert.InvokeOnMainThread (() => {
 							if (!completed) {
-								cancelled = true;
 								NSApplication.SharedApplication.AbortModal ();
 							}
 						});
 					});
 				}
 				
-				int result = alert.RunModal () - (int)NSAlertButtonReturn.First;
-				completed = true;
-				
-				if (result < 0 || result > buttons.Count) {
-					cancelled = true;
-				} else {
-					data.ResultButton = buttons [result];
+				if (!data.Message.CancellationToken.IsCancellationRequested) {
+					int result = alert.RunModal () - (int)NSAlertButtonReturn.First;
+					completed = true;
+					if (result >= 0 && result < buttons.Count) {
+						data.ResultButton = buttons [result];
+					} else {
+						data.ResultButton = null;
+					}
 				}
 				
-				if (cancelled || data.Message.CancellationToken.IsCancellationRequested) {
+				if (data.ResultButton == null || data.Message.CancellationToken.IsCancellationRequested) {
 					data.SetResultToCancelled ();
 				}
 				

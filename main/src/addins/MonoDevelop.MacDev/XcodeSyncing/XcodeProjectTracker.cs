@@ -51,10 +51,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		List<NSObjectTypeInfo> userTypes;
 		XcodeMonitor xcode;
 		
-		bool syncing;
-		bool disposed;
-		
 		bool updatingProjectFiles;
+		bool disposed;
 		
 		public XcodeProjectTracker (DotNetProject dnp, NSObjectInfoService infoService)
 		{
@@ -82,14 +80,17 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return new string[] { "Foundation" };
 		}
 		
+		bool SyncingEnabled {
+			get { return xcode != null; }
+		}
+		
 		void EnableSyncing (IProgressMonitor monitor)
 		{
-			if (syncing)
+			if (SyncingEnabled)
 				return;
 			
 			monitor.Log.WriteLine ("Enabled syncing for project: {0}", dnp.Name);
 			
-			syncing = true;
 			xcode = new XcodeMonitor (dnp.BaseDirectory.Combine ("obj", "Xcode"), dnp.Name);
 			
 			dnp.FileAddedToProject += FileAddedToProject;
@@ -102,12 +103,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void DisableSyncing ()
 		{
-			if (!syncing)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("Disabled syncing for project: {0}", dnp.Name);
-			
-			syncing = false;
 			
 			XC4Debug.Indent ();
 			try {
@@ -128,13 +127,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void AppRegainedFocus (object sender, EventArgs e)
 		{
-			if (!syncing)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("MonoDevelop has regained focus.");
 			
-			bool isOpen = xcode != null && xcode.IsProjectOpen ();
 			using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Synchronizing changes from Xcode..."))) {
+				bool isOpen = xcode.IsProjectOpen ();
+				
 				if (isOpen) {
 					try {
 						xcode.SaveProject (monitor);
@@ -148,12 +148,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					}
 				}
 				
-				SyncXcodeChanges (monitor);
-			}
-			
-			if (!isOpen) {
-				XC4Debug.Log ("Xcode project for '{0}' is not open, disabling syncing.", dnp.Name);
-				DisableSyncing ();
+				try {
+					SyncXcodeChanges (monitor);
+				} finally {
+					if (!isOpen) {
+						XC4Debug.Log ("Xcode project for '{0}' is not open, disabling syncing.", dnp.Name);
+						DisableSyncing ();
+					}
+				}
 			}
 		}
 		
@@ -229,7 +231,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void FileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
-			if (!syncing)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("Files removed from project '{0}'", dnp.Name);
@@ -254,7 +256,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 
 		void FileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
-			if (!syncing)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("Files added to project '{0}'", dnp.Name);
@@ -267,7 +269,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		void FileChangedInProject (object sender, ProjectFileEventArgs e)
 		{
 			// avoid infinite recursion when we add files
-			if (!syncing || updatingProjectFiles)
+			if (!SyncingEnabled || updatingProjectFiles)
 				return;
 			
 			XC4Debug.Log ("Files changed in project '{0}'", dnp.Name);
@@ -279,7 +281,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 
 		void FilePropertyChangedInProject (object sender, ProjectFileEventArgs e)
 		{
-			if (!syncing)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("File properties changed in project '{0}'", dnp.Name);
@@ -326,7 +328,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		#region Progress monitors
 		
-		//FIXME: should use a modal monitor to prevent the user doing unexpected things?
+		//FIXME: should we use a modal monitor to prevent the user doing unexpected things?
 		IProgressMonitor GetStatusMonitor (string title)
 		{
 			IProgressMonitor monitor = MonoDevelop.Ide.IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
@@ -465,7 +467,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (File.Exists (path)) {
 					File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
 					FileService.SystemRename (tempFile, file.Original);
-					context.UpdateSyncTime (file.SyncedRelative);
+					
+					DateTime mtime = File.GetLastWriteTime (file.Original);
+					context.SetSyncTime (file.SyncedRelative, mtime);
 				} else {
 					monitor.ReportWarning (string.Format ("'{0}' does not exist.", file.SyncedRelative));
 				}
@@ -534,13 +538,17 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var writer = MonoDevelop.DesignerSupport.CodeBehindWriter.CreateForProject (
 				new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), dnp);
 			bool addedTypes = false;
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Generating custom classes defined in UI definition files..."), 0);
+			bool beganTask = false;
 			
 			// Collect our list of custom classes from UI definition files
 			foreach (var job in context.FileSyncJobs) {
 				if (!HasInterfaceDefinitionExtension (job.Original))
 					continue;
+				
+				if (!beganTask) {
+					monitor.BeginTask (GettextCatalog.GetString ("Generating custom classes defined in UI definition files..."), 0);
+					beganTask = true;
+				}
 				
 				string relative = job.SyncedRelative.ParentDirectory;
 				string dir = dnp.BaseDirectory;
@@ -591,7 +599,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			writer.WriteOpenFiles ();
 			
-			monitor.EndTask ();
+			if (beganTask)
+				monitor.EndTask ();
 			
 			return addedTypes;
 		}
@@ -628,8 +637,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				typesAdded = false;
 				return false;
 			}
-			
-			monitor.Log.WriteLine ("Found {0} changed custom user types", updates.Count);
 			monitor.EndTask ();
 			
 			int count = updates.Count + (newTypes != null ? newTypes.Count : 0);
@@ -666,7 +673,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			// Next, generate the designer files for any added/changed types
 			foreach (var df in updates) {
-				monitor.Log.WriteLine ("Syncing {0} types from Xcode to designer file: '{1}'", df.Value.Count, df.Key);
+				monitor.Log.WriteLine ("Generating designer file: {0}", df.Key);
 				if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 					var cs = new CSharpCodeCodebehind () {
 						Types = df.Value,
@@ -686,10 +693,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			// Update sync timestamps
 			foreach (var df in updates) {
-				foreach (var type in df.Value) {
-					context.UpdateSyncTime (type.ObjCName + ".h");
-					context.UpdateSyncTime (type.ObjCName + ".m");
-				}
+				foreach (var type in df.Value)
+					context.SetSyncTime (type.ObjCName + ".h", DateTime.Now);
 			}
 			
 			// Add new files to the DotNetProject
@@ -756,7 +761,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		}
 		
 		static string TimeStamp {
-			get { return string.Format ("[{0}] ", DateTime.Now.ToString ("R")); }
+			get { return string.Format ("[{0}] ", DateTime.Now.ToString ("yyyy-MM-dd HH:mm:ss.f")); }
 		}
 		
 		public static void Indent ()
