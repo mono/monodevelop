@@ -1427,8 +1427,9 @@ namespace MonoDevelop.Ide
 					
 					var vpath = targetPath.ToRelative (project.BaseDirectory);
 					if (vpathsInProject.Contains (vpath)) {
-						MessageService.ShowWarning (GettextCatalog.GetString (
-							"There is a already a file or link in the project with the name '{0}'", vpath));
+						if (project.Files.GetFileWithVirtualPath (vpath).FilePath != file)
+							MessageService.ShowWarning (GettextCatalog.GetString (
+								"There is a already a file or link in the project with the name '{0}'", vpath));
 						continue;
 					}
 					
