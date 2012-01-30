@@ -125,6 +125,8 @@ MonoDevelop.app:
 	@echo ""
 	@echo "Updating build information"
 	@echo ""
+	
+	pushd ../..; make buildinfo; popd
 
 	echo "a3140c14-ef90-4019-ae6c-9d93804d6611 $$(cat release-info)" > "$(MACOS)/updateinfo"
 	
