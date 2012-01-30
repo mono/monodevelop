@@ -42,7 +42,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		static readonly IntPtr cls_NSPropertyListSerialization = Class.GetHandle ("NSPropertyListSerialization");
 		static readonly IntPtr sel_dataFromPropertyList_format_options_error = Selector.GetHandle ("dataWithPropertyList:format:options:error:");
+		static readonly IntPtr sel_propertyListWithData_options_format_error = Selector.GetHandle ("propertyListWithData:options:format:error:");
 				
+		[DllImport (MonoMac.Constants.ObjectiveCLibrary, EntryPoint="objc_msgSend")]
+		static extern IntPtr IntPtr_objc_msgSend_IntPtr_Int_OutInt_OutIntPtr (
+			IntPtr target,
+			IntPtr selector,
+			IntPtr arg0,
+			int arg1,
+			out int arg2,
+			out IntPtr arg3);
+		
 		[DllImport (MonoMac.Constants.ObjectiveCLibrary, EntryPoint="objc_msgSend")]
 		static extern IntPtr IntPtr_objc_msgSend_IntPtr_Int_Int_OutIntPtr (
 			IntPtr target,
@@ -86,6 +96,45 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		internal static NSData DataFromPropertyList (NSObject pobject, NSPropertyListFormat format, int options)
+		{
+			IntPtr errorPtr;
+			var ptr = IntPtr_objc_msgSend_IntPtr_Int_Int_OutIntPtr (
+				cls_NSPropertyListSerialization,
+				sel_dataFromPropertyList_format_options_error,
+				pobject.Handle, (int) format, options, out errorPtr);
+			
+			if (errorPtr != IntPtr.Zero) {
+				var error = (NSError) MonoMac.ObjCRuntime.Runtime.GetNSObject (errorPtr);
+				throw new Exception (error.LocalizedDescription);
+			}
+			
+			if (ptr == IntPtr.Zero)
+				return null;
+			
+			return (NSData) MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr);
+		}
+		
+		internal static NSObject PropertyListWithData (NSData data, int options, out NSPropertyListFormat format)
+		{
+			IntPtr errorPtr;
+			int formatInt;
+			var ptr = IntPtr_objc_msgSend_IntPtr_Int_OutInt_OutIntPtr (
+				cls_NSPropertyListSerialization,
+				sel_propertyListWithData_options_format_error,
+				data.Handle, options, out formatInt, out errorPtr);
+			format = (NSPropertyListFormat) formatInt;
+			
+			if (errorPtr != IntPtr.Zero) {
+				var error = (NSError) MonoMac.ObjCRuntime.Runtime.GetNSObject (errorPtr);
+				throw new Exception (error.LocalizedDescription);
+			}
+			
+			if (ptr == IntPtr.Zero)
+				return null;
+			
+			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr);
+		}
 		
 		PObject parent;
 		public PObject Parent {
@@ -200,21 +249,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			using (new NSAutoreleasePool ()) {
 				var errorPtr = IntPtr.Zero;
 				var pobject = Convert ();
-				
-				var nsDataPtr = IntPtr_objc_msgSend_IntPtr_Int_Int_OutIntPtr (
-					cls_NSPropertyListSerialization,
-					sel_dataFromPropertyList_format_options_error,
-					pobject.Handle, (int) NSPropertyListFormat.Xml, 0, out errorPtr);
-				
-				if (errorPtr != IntPtr.Zero) {
-					var error = (NSError) MonoMac.ObjCRuntime.Runtime.GetNSObject (errorPtr);
-					throw new Exception (error.LocalizedDescription);
-				} else if (nsDataPtr == IntPtr.Zero) {
+				var data = PObject.DataFromPropertyList (pobject, NSPropertyListFormat.Xml, 0);
+				if (data == null) {
 					throw new Exception ("Could not convert the NSDictionary to xml representation");	
-				} else {
-					var nsData = (NSData) MonoMac.ObjCRuntime.Runtime.GetNSObject (nsDataPtr);
-					return System.Text.Encoding.UTF8.GetString (nsData.ToArray ());
 				}
+				return System.Text.Encoding.UTF8.GetString (data.ToArray ());
 			}
 		}
 	}
@@ -222,7 +261,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public abstract class PObjectContainer : PObject
 	{
 		public abstract bool Reload (string fileName);
-		public abstract void Save (string fileName);
+		
+		public void Save (string filename, bool atomic = false, bool binary = false)
+		{
+			using (new NSAutoreleasePool ()) {
+				var obj = Convert ();
+				NSPropertyListFormat fmt = binary? NSPropertyListFormat.Binary : NSPropertyListFormat.Xml;
+				var data = PObject.DataFromPropertyList (obj, fmt, 0);
+				NSError error;
+				data.Save (filename, atomic, out error);
+				if (error != null)
+					throw new Exception (error.LocalizedDescription);
+			}
+		}
 	}
 	
 	public interface IPValueObject
@@ -449,19 +500,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSDictionary.FromObjectsAndKeys (objs.ToArray (), keys.ToArray ());
 		}
 		
-		public override  void Save (string fileName)
-		{
-			using (new NSAutoreleasePool ()) {
-				var dict = (NSDictionary)Convert ();
-				dict.WriteToFile (fileName, false);
-			}
-		}
-		
 		public static PDictionary Load (string fileName)
 		{
+			bool isBinary;
+			return Load (fileName, out isBinary);
+		}
+		
+		public static PDictionary Load (string fileName, out bool isBinary)
+		{
 			using (new NSAutoreleasePool ()) {
-				var dict = NSDictionary.FromFile (fileName);
-				return (PDictionary)Conv (dict);
+				NSError error;
+				var data = NSData.FromFile (fileName, 0, out error);
+				if (error != null) {
+					NSPropertyListFormat format;
+					var dict = PObject.PropertyListWithData (data, 0, out format);
+					if (error != null) {
+						isBinary = format != NSPropertyListFormat.OpenStep;
+						return (PDictionary) Conv (dict);
+					}
+				}
+				throw new Exception (error.LocalizedDescription);
 			}
 		}
 		
@@ -639,14 +697,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			OnChanged (EventArgs.Empty);
 			return true;
-		}
-		
-		public override void Save (string fileName)
-		{
-			using (new NSAutoreleasePool ()) {
-				var arr = (NSArray)Convert ();
-				arr.WriteToFile (fileName, false);
-			}
 		}
 
 		public void Add (PObject obj)
