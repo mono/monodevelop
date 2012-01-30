@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 using System.Diagnostics;
 using System.IO;
 using MonoDevelop.Core.Serialization;
-using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.PlistEditor;
 using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MonoMac.Gui
@@ -190,10 +190,9 @@ namespace MonoDevelop.MonoMac.Gui
 					}
 					
 					var plistFile = workingApp.Combine ("Contents", "Info.plist");
-					var plistDoc = new PlistDocument ();
-					plistDoc.LoadFromXmlFile (plistFile);
-					((PlistDictionary)plistDoc.Root)["MonoBundleExecutable"] = cfg.CompiledOutputName.FileName;
-					plistDoc.WriteToFile (plistFile);
+					var plistDoc = PDictionary.Load (plistFile);
+					plistDoc ["MonoBundleExecutable"] = cfg.CompiledOutputName.FileName;
+					plistDoc.Save (plistFile);
 					
 					monitor.EndTask ();
 				}

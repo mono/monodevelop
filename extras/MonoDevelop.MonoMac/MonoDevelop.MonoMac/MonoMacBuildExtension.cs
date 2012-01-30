@@ -38,7 +38,7 @@ using System.CodeDom.Compiler;
 using Mono.Addins;
 using MonoDevelop.MacDev;
 using Mono.Unix;
-using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.PlistEditor;
 using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.MonoMac
@@ -128,11 +128,8 @@ namespace MonoDevelop.MonoMac
 		BuildResult MergeInfoPlist (IProgressMonitor monitor, MonoMacProject proj, MonoMacProjectConfiguration conf, 
 		                            ProjectFile template, FilePath plistOut)
 		{
-			return MacBuildUtilities.CreateMergedPlist (monitor, template, plistOut, (PlistDocument doc) => {
+			return MacBuildUtilities.CreateMergedPlist (monitor, template, plistOut, (PDictionary dict) => {
 				var result = new BuildResult ();
-				var dict = doc.Root as PlistDictionary;
-				if (dict == null)
-					doc.Root = dict = new PlistDictionary ();
 				
 				//required keys that the user is likely to want to modify
 				SetIfNotPresent (dict, "CFBundleName", proj.Name);
@@ -152,7 +149,7 @@ namespace MonoDevelop.MonoMac
 			});
 		}
 		
-		static void SetIfNotPresent (PlistDictionary dict, string key, PlistObjectBase value)
+		static void SetIfNotPresent (PDictionary dict, string key, PObject value)
 		{
 			if (!dict.ContainsKey (key))
 				dict[key] = value;

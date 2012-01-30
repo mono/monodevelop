@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using System.Diagnostics;
-using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.PlistEditor;
 using System.Linq;
 using System.IO;
 using MonoDevelop.Core.ProgressMonitoring;
@@ -110,41 +110,40 @@ namespace MonoDevelop.MacDev
 		
 		public static BuildResult CreateMergedPlist (IProgressMonitor monitor, 
 			ProjectFile template, string outPath,
-			Func<PlistDocument,BuildResult> merge)
+			Func<PDictionary,BuildResult> merge)
 		{
 			var result = new BuildResult ();
 			
-			var doc = new PlistDocument ();
+			PDictionary doc;
 			if (template != null) {
 				try {
-					doc.LoadFromXmlFile (template.FilePath);
+					doc = PDictionary.Load (template.FilePath);
 				} catch (Exception ex) {
-					if (ex is XmlException)
-						result.AddError (template.FilePath, ((XmlException)ex).LineNumber,
-						                 ((XmlException)ex).LinePosition, null, ex.Message);
-					else
-						result.AddError (template.FilePath, 0, 0, null, ex.Message);
-					monitor.ReportError (GettextCatalog.GetString ("Could not load file '{0}': {1}",
-					                                               template.FilePath, ex.Message), null);
+					result.AddError ("Error reading plist template: " + ex.Message, template.FilePath);
+					monitor.ReportError (string.Format ("Error reading plist template '{0}'", template.FilePath), ex);
 					return result;
 				}
+			} else {
+				doc = new PDictionary ();
 			}
 			
 			try {
 				if (result.Append (merge (doc)).ErrorCount > 0)
 					return result;
 			} catch (Exception ex) {
-				result.AddError ("Error merging Info.plist: " + ex.Message);
-				LoggingService.LogError ("Error merging Info.plist", ex);
+				string message = string.Format ("Error merging plist file '{0}'", outPath);
+				result.AddError (message + ": " + ex.Message);
+				monitor.ReportError (message, ex);
 				return result;
 			}
 			
 			try {
 				EnsureDirectoryForFile (outPath);
-				doc.WriteToFile (outPath);
+				doc.Save (outPath);
 			} catch (Exception ex) {
-				result.AddError (outPath, 0, 0, null, ex.Message);
-				monitor.ReportError (GettextCatalog.GetString ("Could not write file '{0}'", outPath), ex);
+				string message = string.Format ("Error saving plist file '{0}'", outPath);
+				result.AddError (message + ": " + ex.Message);
+				monitor.ReportError (message, ex);
 			}
 			return result;
 		}

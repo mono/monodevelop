@@ -51,7 +51,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.MacDev.Plist\" />
     <Folder Include="MonoDevelop.MacDev.InterfaceBuilder\" />
     <Folder Include="icons\" />
     <Folder Include="ObjCIntegration\" />
@@ -70,17 +69,6 @@
     <Compile Include="MonoDevelop.MacDev.InterfaceBuilder\IBObjectRecord.cs" />
     <Compile Include="MonoDevelop.MacDev.InterfaceBuilder\IBReference.cs" />
     <Compile Include="MonoDevelop.MacDev.InterfaceBuilder\UnknownIBObject.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistArray.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistBoolean.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistData.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistDate.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistDictionary.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistDocument.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistInteger.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistObject.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistObjectBase.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistReal.cs" />
-    <Compile Include="MonoDevelop.MacDev.Plist\PlistString.cs" />
     <Compile Include="MacBuildUtilities.cs" />
     <Compile Include="SigningIdentityCombo.cs" />
     <Compile Include="ObjCIntegration\IBOutlet.cs" />

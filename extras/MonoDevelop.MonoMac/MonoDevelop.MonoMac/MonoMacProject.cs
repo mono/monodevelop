@@ -36,7 +36,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using System.Reflection;
-using MonoDevelop.MacDev.Plist;
+using MonoDevelop.MacDev.PlistEditor;
 using MonoDevelop.MacDev.XcodeSyncing;
 using MonoDevelop.MacDev.XcodeIntegration;
 using MonoDevelop.MacDev.NativeReferences;
@@ -259,9 +259,8 @@ namespace MonoDevelop.MonoMac
 			if (pf != null)
 				return pf;
 			
-			var doc = new PlistDocument ();
-			doc.Root = new PlistDictionary ();
-			doc.WriteToFile (name);
+			var doc = new PDictionary ();
+			doc.Save (name);
 			return AddFile (name);
 		}
 		
