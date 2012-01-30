@@ -73,12 +73,23 @@ namespace MonoDevelop.Projects
 		
 		public bool CanExecute (IWorkspaceObject entry, CustomCommandType type, ExecutionContext context, ConfigurationSelector configuration)
 		{
+			// Note: if this gets changed to return true if *any* of the commands can execute, then
+			// ExecuteCommand() needs to be fixed to only execute commands that can be executed.
+			bool hasCommandType = false;
+			bool canExecute = true;
+			
 			foreach (CustomCommand cmd in this) {
 				if (cmd.Type == type) {
-					return cmd.CanExecute (entry, context, configuration);
+					hasCommandType = true;
+					
+					if (!cmd.CanExecute (entry, context, configuration)) {
+						canExecute = false;
+						break;
+					}
 				}
 			}
-			return false;
+			
+			return hasCommandType && canExecute;
 		}
 	}
 }
