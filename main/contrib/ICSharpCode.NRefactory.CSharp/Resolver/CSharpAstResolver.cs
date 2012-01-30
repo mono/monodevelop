@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Creates a new C# AST resolver.
 		/// </summary>
-		/// <param name="resolver">The resolver state at the root node.</param>
+		/// <param name="resolver">The resolver state at the root node (to be more precise: outside the root node).</param>
 		/// <param name="rootNode">The root node of the resolved tree.</param>
 		/// <param name="parsedFile">The parsed file for the nodes being resolved. This parameter is used only
 		/// when the root node is on the type level; it is not necessary when an expression is passed.

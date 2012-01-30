@@ -126,6 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		/// <summary>
 		/// Gets all candidate extension methods.
+		/// Note: this includes candidates that are not eligible due to a
 		/// </summary>
 		/// <remarks>
 		/// The results are stored in nested lists because they are grouped by using scope.
@@ -141,7 +142,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolver != null) {
 				Debug.Assert(extensionMethods == null);
 				try {
-					extensionMethods = resolver.GetExtensionMethods(this.TargetType, methodName, typeArguments);
+					extensionMethods = resolver.GetExtensionMethods(methodName, typeArguments);
 				} finally {
 					resolver = null;
 				}
