@@ -767,9 +767,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					
 					try {
 						csResolver = visitor.GetResolverStateBefore (node);
-						Console.WriteLine (csResolver.LocalVariables.Count ());
 					} catch (Exception  e)  {
-						Console.WriteLine ("E!!!" + e);
 					}
 					
 				} else {
@@ -1892,7 +1890,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()};");
 			}
-			Print (baseUnit);
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
 			if (mref == null) {
@@ -2024,7 +2021,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			// try expression in anonymous type "new { sample = x$" case
 			if (expr == null) {
 				baseUnit = ParseStub ("a", false);
-				Print (baseUnit);
 				expr = baseUnit.GetNodeAt<AnonymousTypeCreateExpression> (location.Line, location.Column); 
 				if (expr != null)
 					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 

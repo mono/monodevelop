@@ -144,7 +144,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public int Selection {
 			get { return selection; }
 			set {
-				value = Math.Min (filteredItems.Count - 1, Math.Max (0, value));
 				if (value != selection) {
 					selection = value;
 					UpdatePage ();
