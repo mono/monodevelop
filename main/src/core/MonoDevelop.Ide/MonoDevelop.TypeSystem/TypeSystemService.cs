@@ -140,7 +140,7 @@ namespace MonoDevelop.TypeSystem
 	public interface IFoldingParser
 	{
 		ParsedDocument Parse (string fileName, string content);
-	}	
+	}
 	
 	public static class TypeSystemService
 	{
@@ -174,6 +174,7 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		static List<MimeTypeExtensionNode> foldingParsers;
+
 		static IEnumerable<MimeTypeExtensionNode> FoldingParsers {
 			get {
 				if (foldingParsers == null) {
@@ -181,10 +182,10 @@ namespace MonoDevelop.TypeSystem
 					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/FoldingParser", delegate (object sender, ExtensionNodeEventArgs args) {
 						switch (args.Change) {
 						case ExtensionChange.Add:
-							foldingParsers.Add ((MimeTypeExtensionNode) args.ExtensionNode);
+							foldingParsers.Add ((MimeTypeExtensionNode)args.ExtensionNode);
 							break;
 						case ExtensionChange.Remove:
-							foldingParsers.Remove ((MimeTypeExtensionNode) args.ExtensionNode);
+							foldingParsers.Remove ((MimeTypeExtensionNode)args.ExtensionNode);
 							break;
 						}
 					});
@@ -203,7 +204,17 @@ namespace MonoDevelop.TypeSystem
 
 		public static ParsedDocument ParseFile (Project project, string fileName)
 		{
-			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), File.ReadAllText (fileName));
+			string text;
+			
+			try {
+				if (!File.Exists (fileName))
+					return null;
+				text = File.ReadAllText (fileName);
+			} catch (Exception) {
+				return null;
+			}
+			
+			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text);
 		}
 		
 		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
@@ -239,8 +250,6 @@ namespace MonoDevelop.TypeSystem
 		{
 			return ParseFile (project, data.FileName, data.MimeType, data.Text);
 		}
-		
-		
 		
 		public static ParsedDocument ParseFile (string fileName, string mimeType, string text, ProjectContentWrapper wrapper = null)
 		{
@@ -349,7 +358,7 @@ namespace MonoDevelop.TypeSystem
 				
 				Directory.CreateDirectory (cacheDir);
 				
-				System.IO.File.WriteAllText (Path.Combine(cacheDir, "data.xml"), string.Format ("<DerivedData><File name=\"{0}\"/></DerivedData>", fileName));
+				System.IO.File.WriteAllText (Path.Combine (cacheDir, "data.xml"), string.Format ("<DerivedData><File name=\"{0}\"/></DerivedData>", fileName));
 				return cacheDir;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error creating cache for " + fileName, e);
@@ -362,7 +371,7 @@ namespace MonoDevelop.TypeSystem
 			try {
 				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					using (var reader = new BinaryReaderWith7BitEncodedInts (fs)) {
-						var s = new FastSerializer();
+						var s = new FastSerializer ();
 						return (T)s.Deserialize (reader);
 					}
 				}
@@ -444,7 +453,7 @@ namespace MonoDevelop.TypeSystem
 			TouchCache (cacheDir);
 			solutionCache = DeserializeObject<Dictionary<string, IProjectContent>> (Path.Combine (cacheDir, "completion.cache")) ?? new Dictionary<string, IProjectContent> ();
 			if (solutionCache == null)
- 				RemoveCache (cacheDir);
+				RemoveCache (cacheDir);
 			CleanupCache ();
 		}
 		
@@ -458,7 +467,7 @@ namespace MonoDevelop.TypeSystem
 				var key = pair.Key.FileName.ToString ();
 				if (string.IsNullOrEmpty (key))
 					continue;
-				cache[key] = pair.Value.Content;
+				cache [key] = pair.Value.Content;
 			}
 			
 			string fileName = Path.GetTempFileName ();
@@ -497,7 +506,6 @@ namespace MonoDevelop.TypeSystem
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}
 		}
-
 		
 		static void ReloadAllReferences ()
 		{
@@ -570,6 +578,7 @@ namespace MonoDevelop.TypeSystem
 		public class ProjectContentWrapper
 		{
 			IProjectContent content;
+
 			public IProjectContent Content {
 				get {
 					return content;
@@ -593,7 +602,7 @@ namespace MonoDevelop.TypeSystem
 			
 			public Project Project {
 				get {
-					foreach (var pair in projectContents){
+					foreach (var pair in projectContents) {
 						if (pair.Value == this)
 							return pair.Key;
 					}
@@ -606,8 +615,7 @@ namespace MonoDevelop.TypeSystem
 				this.content = content;
 			}
 			
-			
-			public IEnumerable<Project> GetReferencedProjects  (Project project)
+			public IEnumerable<Project> GetReferencedProjects (Project project)
 			{
 				foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
 					var referencedProject = pr as Project;
@@ -767,6 +775,7 @@ namespace MonoDevelop.TypeSystem
 		#endregion
 		
 		public static event EventHandler<ProjectContentEventArgs> ProjectContentLoaded;
+
 		static void OnProjectContentLoaded (ProjectContentEventArgs e)
 		{
 			var handler = ProjectContentLoaded;
@@ -884,7 +893,8 @@ namespace MonoDevelop.TypeSystem
 		#endregion
 		
 		
-		class SimpleAssemblyResolver : IAssemblyResolver
+		class SimpleAssemblyResolver
+		: IAssemblyResolver
 		{
 			string lookupPath;
 			Dictionary<string, AssemblyDefinition> cache = new Dictionary<string, AssemblyDefinition> ();
@@ -988,7 +998,7 @@ namespace MonoDevelop.TypeSystem
 		static AssemblyContext LoadAssemblyContext (string fileName)
 		{
 			AssemblyContext loadedContext;
-			if (cachedAssemblyContents.TryGetValue(fileName, out loadedContext))
+			if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext))
 				return loadedContext;
 			if (!File.Exists (fileName))
 				return null;
@@ -997,7 +1007,7 @@ namespace MonoDevelop.TypeSystem
 				TouchCache (cache);
 				var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "completion.cache"));
 				if (deserialized != null) {
-					cachedAssemblyContents[fileName] = deserialized;
+					cachedAssemblyContents [fileName] = deserialized;
 					return deserialized;
 				} else {
 					RemoveCache (cache);
@@ -1027,7 +1037,7 @@ namespace MonoDevelop.TypeSystem
 				cache = CreateCacheDirectory (fileName);
 				if (cache != null)
 					SerializeObject (Path.Combine (cache, "completion.cache"), result);
-				cachedAssemblyContents[fileName] = result;
+				cachedAssemblyContents [fileName] = result;
 				return result;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error loading assembly " + fileName, ex);
@@ -1103,7 +1113,8 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 			
-		class InternalProgressMonitor: NullProgressMonitor
+		class InternalProgressMonitor
+		: NullProgressMonitor
 		{
 			public InternalProgressMonitor ()
 			{
@@ -1127,7 +1138,7 @@ namespace MonoDevelop.TypeSystem
 			return new AggregatedProgressMonitor (mon, new InternalProgressMonitor ());
 		}
 		
-		static Queue<ParsingJob> parseQueue = new Queue<ParsingJob>();
+		static Queue<ParsingJob> parseQueue = new Queue<ParsingJob> ();
 		class ParsingJob
 		{
 			public ProjectContentWrapper Context;
@@ -1179,7 +1190,8 @@ namespace MonoDevelop.TypeSystem
 			get { return parseStatus > 0; }
 		}
 		
-		static Dictionary<Project, ParsingJob> parseQueueIndex = new Dictionary<Project,ParsingJob>();
+		static Dictionary<Project, ParsingJob> parseQueueIndex = new Dictionary<Project,ParsingJob> ();
+
 		internal static int PendingJobCount {
 			get {
 				lock (parseQueueLock) {
@@ -1197,8 +1209,7 @@ namespace MonoDevelop.TypeSystem
 				FileList = fileList
 			};
 			
-			lock (parseQueueLock)
-			{
+			lock (parseQueueLock) {
 				RemoveParseJob (project);
 				parseQueueIndex [project] = job;
 				parseQueue.Enqueue (job);
@@ -1216,8 +1227,7 @@ namespace MonoDevelop.TypeSystem
 		
 		static ParsingJob DequeueParseJob ()
 		{
-			lock (parseQueueLock)
-			{
+			lock (parseQueueLock) {
 				if (parseQueue.Count > 0) {
 					var job = parseQueue.Dequeue ();
 					parseQueueIndex.Remove (job.Project);
@@ -1234,8 +1244,7 @@ namespace MonoDevelop.TypeSystem
 		
 		static void RemoveParseJob (Project project)
 		{
-			lock (parseQueueLock)
-			{
+			lock (parseQueueLock) {
 				ParsingJob job;
 				if (parseQueueIndex.TryGetValue (project, out job)) {
 					parseQueueIndex.Remove (project);
@@ -1245,8 +1254,7 @@ namespace MonoDevelop.TypeSystem
 		
 		static void RemoveParseJobs (IProjectContent context)
 		{
-			lock (parseQueueLock)
-			{
+			lock (parseQueueLock) {
 				foreach (var pj in parseQueue) {
 					if (pj.Context == context) {
 						parseQueueIndex.Remove (pj.Project);
@@ -1255,21 +1263,21 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static void StartParserThread()
+		static void StartParserThread ()
 		{
 			lock (parseQueueLock) {
 				if (!threadRunning) {
 					threadRunning = true;
 					var t = new Thread (new ThreadStart (ParserUpdateThread));
 					t.Name = "Background parser";
-					t.IsBackground  = true;
+					t.IsBackground = true;
 					t.Priority = ThreadPriority.AboveNormal;
 					t.Start ();
 				}
 			}
 		}
 		
-		static void ParserUpdateThread()
+		static void ParserUpdateThread ()
 		{
 			try {
 				while (trackingFileChanges) {
