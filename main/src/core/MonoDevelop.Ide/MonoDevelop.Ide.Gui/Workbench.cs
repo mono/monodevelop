@@ -850,7 +850,7 @@ namespace MonoDevelop.Ide.Gui
 			List<IViewContent> docViews = new List<IViewContent> ();
 			IViewContent currentView = null;
 			
-			foreach (DocumentUserPrefs doc in prefs.Files) {
+			foreach (DocumentUserPrefs doc in prefs.Files.Distinct ()) {
 				FilePath fileName = args.Item.BaseDirectory.Combine (doc.FileName).FullPath;
 				if (File.Exists (fileName)) {
 					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, doc.Line, doc.Column);
