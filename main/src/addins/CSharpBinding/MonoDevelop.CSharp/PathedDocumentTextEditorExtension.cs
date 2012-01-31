@@ -35,6 +35,7 @@ using MonoDevelop.CSharp.Completion;
 using System.Linq;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Threading;
 
 namespace MonoDevelop.CSharp
@@ -44,7 +45,6 @@ namespace MonoDevelop.CSharp
 		public override void Dispose ()
 		{
 			Document.Editor.Caret.PositionChanged -= UpdatePath;
-			Document.DocumentParsed -= HandleDocumentParsed;
 			base.Dispose ();
 		}
 		
@@ -52,14 +52,10 @@ namespace MonoDevelop.CSharp
 		{
 			UpdatePath (null, null);
 			Document.Editor.Caret.PositionChanged += UpdatePath;
-			Document.DocumentParsed += HandleDocumentParsed;
+			var ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
+			ext.TypeSegmentTreeUpdated += (o, s) => UpdatePath (null, null);
 		}
 
-		void HandleDocumentParsed (object sender, EventArgs e)
-		{
-			UpdatePath (null, null);
-		}
-		
 		#region IPathedDocument implementation
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 
@@ -253,7 +249,7 @@ namespace MonoDevelop.CSharp
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));	
 		}
 		IUnresolvedTypeDefinition lastType;
-		IUnresolvedMember lastMember;
+		IUnresolvedMember lastMember = new DefaultUnresolvedField ();
 		
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
@@ -265,16 +261,19 @@ namespace MonoDevelop.CSharp
 			var loc = Document.Editor.Caret.Location;
 			var ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
 			
-			var unresolvedType = ext != null ? ext.GetTypeAt (offset) : unit.GetInnermostTypeDefinition (loc);
-			var unresolvedMember = ext != null ? ext.GetMemberAt (offset) : null;
+			var unresolvedType = ext.GetTypeAt (offset);
+			var unresolvedMember = ext.GetMemberAt (offset);
 			if (unresolvedType == lastType  && lastMember == unresolvedMember)
 				return;
 			lastType = unresolvedType;
 			lastMember = unresolvedMember;
 			
 			if (unresolvedType == null) {
-				if (CurrentPath != null && CurrentPath.Length > 0)
-					ClearPath ();
+				if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath[0].Tag is IParsedFile)
+					return;
+				var prevPath = CurrentPath;
+				CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit } };
+				OnPathChanged (new DocumentPathChangedEventArgs (prevPath));	
 				return;
 			}
 			
@@ -306,7 +305,7 @@ namespace MonoDevelop.CSharp
 					}
 				}
 				IMember member = null;
-				if (ext != null && ext.typeSystemSegmentTree != null) {
+				if (ext.typeSystemSegmentTree != null) {
 					try {
 						if (unresolvedMember != null)
 							member = unresolvedMember.CreateResolved (resolveCtx);

@@ -160,7 +160,10 @@ namespace MonoDevelop.CSharp.Completion
 				textEditor.TextViewMargin.PurgeLayoutCache ();
 				textEditor.RedrawMarginLines (textEditor.TextViewMargin, 1, Editor.LineCount);
 			}
+			if (TypeSegmentTreeUpdated != null)
+				TypeSegmentTreeUpdated (this, EventArgs.Empty);
 		}
+		public event EventHandler TypeSegmentTreeUpdated;
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{

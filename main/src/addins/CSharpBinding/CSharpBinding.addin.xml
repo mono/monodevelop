@@ -77,10 +77,10 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
