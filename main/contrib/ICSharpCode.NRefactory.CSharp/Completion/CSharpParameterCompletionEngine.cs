@@ -57,13 +57,31 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt (location, n => n is IndexerExpression); 
-			Print (baseUnit);
 			AstNode expr;
 			if (mref is IndexerExpression) {
 				expr = ((IndexerExpression)mref).Target;
 			} else {
 				return null;
 			}
+			
+			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			member2.Remove ();
+			member.ReplaceWith (member2);
+			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
+			Unit.AcceptVisitor (tsvisitor, null);
+			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
+		}
+		
+		public Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetTypeBeforeCursor ()
+		{
+			CompilationUnit baseUnit;
+			if (currentMember == null && currentType == null) 
+				return null;
+			baseUnit = ParseStub ("x> a");
+			
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			var expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column + 1); // '>' position
 			
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
@@ -85,13 +103,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (IsInsideCommentOrString ())
 				return null;
 			
-			var invoke = GetInvocationBeforeCursor (true) ?? GetIndexerBeforeCursor ();
-			if (invoke == null)
-				return null;
 			
 			ResolveResult resolveResult;
 			switch (completionChar) {
 			case '(':
+				var invoke = GetInvocationBeforeCursor (true) ?? GetIndexerBeforeCursor ();
+				if (invoke == null)
+					return null;
 				if (invoke.Item2 is ObjectCreateExpression) {
 					var createType = ResolveExpression (invoke.Item1, ((ObjectCreateExpression)invoke.Item2).Type, invoke.Item3);
 					return factory.CreateConstructorProvider (createType.Item1.Type);
@@ -131,6 +149,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //				}
 				break;
 			case ',':
+				invoke = GetInvocationBeforeCursor (true) ?? GetIndexerBeforeCursor ();
+				if (invoke == null) {
+					invoke = GetTypeBeforeCursor ();
+					if (invoke !=null) {
+						var typeExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+						if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError)
+							return null;
+						
+						return factory.CreateTypeParameterDataProvider (CollectAllTypes (typeExpression.Item1.Type));
+					}
+					return null;
+				}
 				if (invoke.Item2 is ObjectCreateExpression) {
 					var createType = ResolveExpression (invoke.Item1, ((ObjectCreateExpression)invoke.Item2).Type, invoke.Item3);
 					return factory.CreateConstructorProvider (createType.Item1.Type);
@@ -161,18 +191,43 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (resolveResult != null)
 					return factory.CreateIndexerParameterDataProvider (resolveResult.Type, invoke.Item2);
 				break;
-//			case '<':
-//				if (string.IsNullOrEmpty (result.Expression))
-//					return null;
-//				return new NRefactoryTemplateParameterDataProvider (textEditorData, resolver, GetUsedNamespaces (), result, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
+			case '<':
+				invoke = GetTypeBeforeCursor ();
+				if (invoke == null)
+					return null;
+				var typeExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError)
+					return null;
 				
+				return factory.CreateTypeParameterDataProvider (CollectAllTypes (typeExpression.Item1.Type));
 			case '[':
+				invoke = GetIndexerBeforeCursor ();
+				if (invoke == null)
+					return null;
 				var indexerExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
 				if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError)
 					return null;
 				return factory.CreateIndexerParameterDataProvider (indexerExpression.Item1.Type, invoke.Item2);
 			}
 			return null;
+		}
+		
+		IEnumerable<IType> CollectAllTypes (IType baseType)
+		{
+			var state = GetState ();
+			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
+				foreach (var u in n.Usings) {
+					foreach (var type in u.Types) {
+						if (type.TypeParameterCount > 0 && type.Name == baseType.Name)
+							yield return type;
+					}
+				}
+				
+				foreach (var type in n.Namespace.Types) {
+					if (type.TypeParameterCount > 0 && type.Name == baseType.Name)
+						yield return type;
+				}
+			}
 		}
 		
 		List<string> GetUsedNamespaces ()

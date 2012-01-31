@@ -192,7 +192,33 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var expr = Unit.GetNodeAt<PrimitiveExpression> (loc.Line, loc.Column);
 			return expr != null && expr.Value is string;
 		}
-		#endregion
+		
+		protected CSharpResolver GetState ()
+		{
+			return new CSharpResolver (ctx);
+			/*var state = new CSharpResolver (ctx);
+			
+			state.CurrentMember = currentMember;
+			state.CurrentTypeDefinition = currentType;
+			state.CurrentUsingScope = CSharpParsedFile.GetUsingScope (location);
+			if (state.CurrentMember != null) {
+				var node = Unit.GetNodeAt (location);
+				if (node == null)
+					return state;
+				var navigator = new NodeListResolveVisitorNavigator (new[] { node });
+				var visitor = new ResolveVisitor (state, CSharpParsedFile, navigator);
+				Unit.AcceptVisitor (visitor, null);
+				try {
+					var newState = visitor.GetResolverStateBefore (node);
+					if (newState != null)
+						state = newState;
+				} catch (Exception) {
+				}
+			}
+			
+			return state;*/
+		}
+				#endregion
 		
 		#region Basic parsing/resolving functions
 		Stack<Tuple<char, int>> GetBracketStack (string memberText)
@@ -343,7 +369,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
-			
+					Console.WriteLine ("------");
+					Console.WriteLine (wrapper);
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();

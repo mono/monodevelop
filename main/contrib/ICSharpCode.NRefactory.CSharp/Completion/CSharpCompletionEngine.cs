@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -169,6 +169,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains ('.'))
 						return null;
 				}
+				
 				
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
 				
@@ -408,13 +409,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (IsInsideCommentOrString ())
 					return null;
 				if (IsInLinqContext (offset)) {
-					if (!controlSpace && !(char.IsLetter (completionChar) || completionChar == '_'))
-						return null;
 					tokenIndex = offset;
 					token = GetPreviousToken (ref tokenIndex, false); // token last typed
-					if (!char.IsWhiteSpace (completionChar) && !linqKeywords.Contains (token))
-						token = GetPreviousToken (ref tokenIndex, false); // token last typed
-					
 					if (linqKeywords.Contains (token)) {
 						if (token == "from") // after from no auto code completion.
 							return null;
@@ -440,6 +436,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
 				}
+				
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : ';';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[](){}+-*/%^?:&|~!<>=";
@@ -469,11 +466,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
-				
-				if (n != null && n.Parent is AnonymousTypeCreateExpression) {
-					AutoSelect = false;
-				}
-				
 				// Handle foreach (type name _
 				if (n is IdentifierExpression) {
 					var prev = n.GetPrevNode () as ForeachStatement;
@@ -665,7 +657,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			while (null != (token = GetPreviousToken (ref offset, true)) && !IsInsideComment (offset) && !IsInsideString (offset)) {
 				if (token == "from")
 					return true;
-				if (token == ";" || token == "{")
+				if (token == ";")
 					return false;
 			}
 			return false;
@@ -701,7 +693,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				offset--;
 			}
 			location = document.GetLocation (offset);
-			
 			if (xp == null)
 				xp = GetExpressionAtCursor ();
 			AstNode node;
@@ -714,7 +705,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = unit.GetNodeAt (location);
 				rr = ResolveExpression (CSharpParsedFile, node, unit);
 			}
-			
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -750,29 +740,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return wrapper.Result;
 				}
 			}
-			CSharpResolver csResolver = null;
-			if (rr != null)
-				csResolver = rr.Item2;
-			if (csResolver == null) {
-				if (node != null) {
-					csResolver =  GetState ();
-					var nodes = new List<AstNode> ();
-					var n = node;
-					nodes.Add (n);
-					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
-						nodes.Add (n.Parent);
-					var navigator = new NodeListResolveVisitorNavigator (nodes);
-					var visitor = new ResolveVisitor (csResolver, xp != null ? xp.Item1 : CSharpParsedFile, navigator);
-					visitor.Scan (node);
-					
-					try {
-						csResolver = visitor.GetResolverStateBefore (node);
-					} catch (Exception  e)  {
-					}
-					
-				} else {
+			CSharpResolver csResolver;
+			if (node != null) {
+				var nodes = new List<AstNode> ();
+				var n = node;
+				nodes.Add (n);
+				if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
+					nodes.Add (n.Parent);
+				var navigator = new NodeListResolveVisitorNavigator (nodes);
+				
+				var visitor = new ResolveVisitor (GetState (), xp != null ? xp.Item1 : CSharpParsedFile, navigator);
+				visitor.Scan (node);
+				try {
+					csResolver = visitor.GetResolverStateBefore (node);
+				} catch (Exception) {
 					csResolver = GetState ();
 				}
+				
+			} else {
+				csResolver = GetState ();
 			}
 			
 			AddContextCompletion (wrapper, csResolver, node);
@@ -784,8 +770,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (state != null && !(node is AstType)) {
 				foreach (var variable in state.LocalVariables) {
-					if (variable.Region.IsInside (location.Line, location.Column - 1))
-						continue;
 					wrapper.AddVariable (variable);
 				}
 			}
@@ -1794,7 +1778,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 			} else {
-				foreach (var meths in state.GetExtensionMethods (type)) {
+				foreach (var meths in state.GetAllExtensionMethods (type)) {
 					foreach (var m in meths) {
 						result.AddMember (m);
 					}
@@ -1877,19 +1861,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (currentMember == null && currentType == null)
 				return null;
 			
-			baseUnit = ParseStub ("a()", false);
+			baseUnit = ParseStub ("a()");
 			var curNode = baseUnit.GetNodeAt (location);
-			
-			// hack for local variable declaration missing ';' issue - remove that if it works.
-			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
-				baseUnit = ParseStub ("a()");
-				curNode = baseUnit.GetNodeAt (location);
-			}
-			
 			// Hack for handle object initializer continuation expressions
 			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()};");
 			}
+			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
 			if (mref == null) {
@@ -2001,6 +1979,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					baseUnit = tmpUnit;
 				}
 			}
+			
+			
 			if (expr == null) {
 				expr = tmpUnit.GetNodeAt<VariableInitializer> (location.Line, location.Column - 1);
 				baseUnit = tmpUnit;
@@ -2016,14 +1996,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				baseUnit = ParseStub ("> ()", false, "{}");
 				expr = baseUnit.GetNodeAt<TypeParameterDeclaration> (location.Line, location.Column - 1); 
-			}
-			
-			// try expression in anonymous type "new { sample = x$" case
-			if (expr == null) {
-				baseUnit = ParseStub ("a", false);
-				expr = baseUnit.GetNodeAt<AnonymousTypeCreateExpression> (location.Line, location.Column); 
-				if (expr != null)
-					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 
 			}
 			
 			if (expr == null)
@@ -2242,31 +2214,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return parentheses != 1 || bracket > 0 ? -1 : index;
 		}
 		
-		CSharpResolver GetState ()
-		{
-			return new CSharpResolver (ctx);
-			/*var state = new CSharpResolver (ctx);
-			
-			state.CurrentMember = currentMember;
-			state.CurrentTypeDefinition = currentType;
-			state.CurrentUsingScope = CSharpParsedFile.GetUsingScope (location);
-			if (state.CurrentMember != null) {
-				var node = Unit.GetNodeAt (location);
-				if (node == null)
-					return state;
-				var navigator = new NodeListResolveVisitorNavigator (new[] { node });
-				var visitor = new ResolveVisitor (state, CSharpParsedFile, navigator);
-				Unit.AcceptVisitor (visitor, null);
-				try {
-					var newState = visitor.GetResolverStateBefore (node);
-					if (newState != null)
-						state = newState;
-				} catch (Exception) {
-				}
-			}
-			
-			return state;*/
-		}
 		#endregion
 		
 		#region Preprocessor

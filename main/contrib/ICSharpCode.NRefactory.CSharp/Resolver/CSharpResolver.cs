@@ -1530,7 +1530,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			MemberLookup lookup = CreateMemberLookup();
 			ResolveResult result = lookup.Lookup(target, identifier, typeArguments, isInvocationTarget);
 			if (result is UnknownMemberResolveResult) {
-				var extensionMethods = GetExtensionMethods(identifier, typeArguments);
+				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments);
 				if (extensionMethods.Count > 0) {
 					return new MethodGroupResolveResult(target, identifier, EmptyList<MethodListWithDeclaringType>.Instance, typeArguments) {
 						extensionMethods = extensionMethods
@@ -1600,33 +1600,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		#region GetExtensionMethods
 		/// <summary>
-		/// Gets all extension methods that are available in the current context.
-		/// </summary>
-		/// <param name="name">Name of the extension method. Pass null to retrieve all extension methods.</param>
-		/// <param name="typeArguments">Explicitly provided type arguments.
-		/// An empty list will return all matching extension method definitions;
-		/// a non-empty list will return <see cref="SpecializedMethod"/>s for all extension methods
-		/// with the matching number of type parameters.</param>
-		/// <remarks>
-		/// The results are stored in nested lists because they are grouped by using scope.
-		/// That is, for "using SomeExtensions; namespace X { using MoreExtensions; ... }",
-		/// the return value will be
-		/// new List {
-		///    new List { all extensions from MoreExtensions },
-		///    new List { all extensions from SomeExtensions }
-		/// }
-		/// </remarks>
-		public List<List<IMethod>> GetExtensionMethods(string name = null, IList<IType> typeArguments = null)
-		{
-			return GetExtensionMethods(null, name, typeArguments);
-		}
-		
-		/// <summary>
 		/// Gets the extension methods that are called 'name'
 		/// and are applicable with a first argument type of 'targetType'.
 		/// </summary>
 		/// <param name="targetType">Type of the 'this' argument</param>
-		/// <param name="name">Name of the extension method. Pass null to retrieve all extension methods.</param>
+		/// <param name="name">Name of the extension method</param>
 		/// <param name="typeArguments">Explicitly provided type arguments.
 		/// An empty list will return all matching extension method definitions;
 		/// a non-empty list will return <see cref="SpecializedMethod"/>s for all extension methods
@@ -1640,24 +1618,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		///    new List { all extensions from SomeExtensions }
 		/// }
 		/// </remarks>
-		public List<List<IMethod>> GetExtensionMethods(IType targetType, string name = null, IList<IType> typeArguments = null)
+		public List<List<IMethod>> GetExtensionMethods(IType targetType, string name, IList<IType> typeArguments = null)
 		{
 			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
 			foreach (var inputGroup in GetAllExtensionMethods()) {
 				List<IMethod> outputGroup = new List<IMethod>();
 				foreach (var method in inputGroup) {
-					if (name != null && method.Name != name)
+					if (method.Name != name)
 						continue;
 					
 					if (typeArguments != null && typeArguments.Count > 0) {
 						if (method.TypeParameters.Count != typeArguments.Count)
 							continue;
 						SpecializedMethod sm = new SpecializedMethod(method.DeclaringType, method, typeArguments);
-						if (IsEligibleExtensionMethod(targetType, method, false))
-							outputGroup.Add(sm);
+						// TODO: verify targetType
+						outputGroup.Add(sm);
 					} else {
-						if (IsEligibleExtensionMethod(targetType, method, true))
-							outputGroup.Add(method);
+						// TODO: verify targetType
+						outputGroup.Add(method);
 					}
 				}
 				if (outputGroup.Count > 0)
@@ -1666,33 +1644,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return extensionMethodGroups;
 		}
 		
-		bool IsEligibleExtensionMethod(IType targetType, IMethod method, bool useTypeInference)
+		public List<List<IMethod>> GetAllExtensionMethods(IType targetType)
 		{
-			if (targetType == null)
-				return true;
-			if (method.Parameters.Count == 0)
-				return false;
-			IType thisParameterType = method.Parameters[0].Type;
-			if (useTypeInference && method.TypeParameters.Count > 0) {
-				// We need to infer type arguments from targetType:
-				TypeInference ti = new TypeInference(compilation, conversions);
-				ResolveResult[] arguments = { new ResolveResult(targetType) };
-				IType[] parameterTypes = { method.Parameters[0].Type };
-				bool success;
-				IType[] inferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, parameterTypes, out success);
-				var substitution = new TypeParameterSubstitution(null, inferredTypes);
-				// Validate that the types that could be inferred (aren't unknown) satisfy the constraints:
-				for (int i = 0; i < inferredTypes.Length; i++) {
-					if (inferredTypes[i].Kind != TypeKind.Unknown && inferredTypes[i].Kind != TypeKind.UnboundTypeArgument) {
-						if (!OverloadResolution.ValidateConstraints(method.TypeParameters[i], inferredTypes[i], substitution, conversions))
-							return false;
-					}
+			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+			foreach (var inputGroup in GetAllExtensionMethods()) {
+				List<IMethod> outputGroup = new List<IMethod>();
+				foreach (var method in inputGroup) {
+					outputGroup.Add(method);
 				}
-				thisParameterType = thisParameterType.AcceptVisitor(substitution);
+				if (outputGroup.Count > 0)
+					extensionMethodGroups.Add(outputGroup);
 			}
-			Conversion c = conversions.ImplicitConversion(targetType, thisParameterType);
-			return c.IsValid && (c.IsIdentityConversion || c.IsReferenceConversion || c.IsBoxingConversion);
+			return extensionMethodGroups;
 		}
+		
+		//
 		
 		/// <summary>
 		/// Gets all extension methods available in the current using scope.
