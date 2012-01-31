@@ -177,6 +177,8 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
+			if (document.ParsedDocument == null)
+				return new List<InsertionPoint> ();
 			return GetInsertionPoints (document.Editor, document.ParsedDocument, type);
 		}
 		
@@ -214,8 +216,8 @@ namespace MonoDevelop.TypeSystem
 				}
 				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
 			}
-			result[result.Count - 1].LineAfter = NewLineInsertion.None;
-			CheckStartPoint (data.Document, result[0], result.Count == 1);
+			result [result.Count - 1].LineAfter = NewLineInsertion.None;
+			CheckStartPoint (data.Document, result [0], result.Count == 1);
 			if (result.Count > 1) {
 				result.RemoveAt (result.Count - 1); 
 				NewLineInsertion insertLine;
@@ -231,7 +233,7 @@ namespace MonoDevelop.TypeSystem
 				while (col > 1 && char.IsWhiteSpace (data.GetCharAt (line.Offset + col - 2)))
 					col--;
 				result.Add (new InsertionPoint (new DocumentLocation (type.BodyRegion.EndLine, col), insertLine, NewLineInsertion.Eol));
-				CheckEndPoint (data.Document, result[result.Count - 1], result.Count == 1);
+				CheckEndPoint (data.Document, result [result.Count - 1], result.Count == 1);
 			}
 			
 			foreach (var region in parsedDocument.UserRegions.Where (r => type.BodyRegion.IsInside (r.Region.Begin))) {
