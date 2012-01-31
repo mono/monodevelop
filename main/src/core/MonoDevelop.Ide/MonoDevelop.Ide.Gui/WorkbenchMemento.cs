@@ -104,7 +104,24 @@ namespace MonoDevelop.Ide.Gui
 			this.properties = properties;
 		}
 	}
+	
+	class DocumentUserPrefsFilenameComparer : IEqualityComparer<DocumentUserPrefs>
+	{
+		public bool Equals (DocumentUserPrefs x, DocumentUserPrefs y)
+		{
+			if (x == null)
+				return y == null;
+			if (y == null)
+				return false;
+			return x.FileName == y.FileName;
+		}
 
+		public int GetHashCode (DocumentUserPrefs obj)
+		{
+			return obj == null || obj.FileName == null ? 0 : obj.FileName.GetHashCode ();
+		}
+	}
+	
 	[DataItem ("File")]
 	class DocumentUserPrefs
 	{
