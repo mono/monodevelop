@@ -454,8 +454,10 @@ namespace MonoDevelop.Projects
 					if (item.CopyOnlyIfNewer && File.Exists (dest) && (File.GetLastWriteTimeUtc (dest) >= File.GetLastWriteTimeUtc (src)))
 						continue;
 
+					// Use Directory.Create so we don't trigger the VersionControl addin and try to
+					// add the directory to version control.
 					if (!Directory.Exists (Path.GetDirectoryName (dest)))
-						FileService.CreateDirectory (Path.GetDirectoryName (dest));
+						Directory.CreateDirectory (Path.GetDirectoryName (dest));
 
 					if (File.Exists (src)) {
 						dest.Delete ();

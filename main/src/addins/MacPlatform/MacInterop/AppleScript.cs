@@ -101,10 +101,15 @@ namespace MonoDevelop.MacInterop
 		{
 			string value;
 			var ret = Run (compile, ref scriptData, out value);
-			if (ret == OsaError.Success)
+			
+			switch (ret) {
+			case OsaError.Success:
 				return value;
-			else
-				throw new Exception (string.Format ("Error {0}: {1}", ret, value));
+			case OsaError.Timeout:
+				throw new TimeoutException ("The AppleScript command timed out.");
+			default:
+				throw new AppleScriptException (ret, value);
+			}
 		}
 		
 		static OsaError Run (bool compile, ref AEDesc scriptData, out string value)
@@ -144,7 +149,7 @@ namespace MonoDevelop.MacInterop
 						value = AppleEvent.GetStringFromAEDesc (ref errorDesc);
 						return result;
 					} else {
-						throw new InvalidOperationException (string.Format ("Unexpected result {0}", (long)result));
+						throw new InvalidOperationException (string.Format ("Unexpected result: {0}", (long) result));
 					}
 				} finally {
 					AppleEvent.AEDisposeDesc (ref errorDesc);
@@ -195,14 +200,15 @@ namespace MonoDevelop.MacInterop
 		Range = 1701998183, // 'erng'
 	}
 	
-	enum OsaError : int //this is a ComponentResult typedef - is it long on int64?
+	public enum OsaError : int //this is a ComponentResult typedef - is it long on int64? Many of these values can be gotten from MacErrors.h
 	{
 		Success = 0,
 		CantCoerce = -1700,	
-		MissingParameter = -1701	,
+		MissingParameter = -1701,
 		CorruptData = -1702,	
 		TypeError = -1703,
 		MessageNotUnderstood = -1708,
+		Timeout = -1712,
 		UndefinedHandler = -1717,
 		IllegalIndex	 = -1719,
 		IllegalRange	 = -1720,
@@ -217,7 +223,7 @@ namespace MonoDevelop.MacInterop
 		BadSelector = -1754,
 		SourceNotAvailable = -1756,
 		NoSuchDialect = -1757,
-		DataFormatObsolete =-1758,
+		DataFormatObsolete = -1758,
 		DataFormatTooNew = -1759,
 		ComponentMismatch = -1761,
 		CantOpenComponent = -1762,
@@ -234,13 +240,13 @@ namespace MonoDevelop.MacInterop
 		CantCreate = -2710,
 		SyntaxError = -2740,
 		SyntaxTypeError = -2741,
-		TokenTooLong	 = -2742	,
+		TokenTooLong	 = -2742,
 		DuplicateParameter = -2750,
 		DuplicateProperty = -2751,
 		DuplicateHandler = -2752,
 		UndefinedVariable = -2753,
-		InconsistentDeclarations = -2754	,
-		ControlFlowError = -2755	,
+		InconsistentDeclarations = -2754,
+		ControlFlowError = -2755,
 		IllegalAssign = -10003,
 		CantAssign = -10006,
 	}
@@ -272,6 +278,17 @@ namespace MonoDevelop.MacInterop
 		DispatchToDirectObject = 0x00020000,
 		DontGetDataForArguments = 0x00040000,
 		FullyQualifyDescriptors = 0x00080000,
+	}
+	
+	public class AppleScriptException : Exception {
+		public AppleScriptException (OsaError error, string message) : base (message)
+		{
+			ErrorCode = error;
+		}
+		
+		public OsaError ErrorCode {
+			get; private set;
+		}
 	}
 }
 

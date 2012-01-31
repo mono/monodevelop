@@ -29,6 +29,8 @@ $(buildinfo): vcrevision
 	@echo "Updated build information"
 	@cat $(buildinfo)
 
+buildinfo: $(buildinfo)
+
 buildinfodir = $(MD_ASSEMBLY_DIR)
 buildinfo_DATA = $(buildinfo)
 
@@ -168,7 +170,7 @@ distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required 
 distcleancheck_listfiles      = find . -type f -print		# automake-1.9 setting
 distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required filtering
 
-.PHONY: vcrevision
+.PHONY: vcrevision buildinfo
 
 package-monomac:
 	$(MD_LAUNCH_SETUP) mono --debug "build/bin/mdtool.exe" setup pack ../extras/MonoDevelop.MonoMac/build/MonoDevelop.MonoMac.dll

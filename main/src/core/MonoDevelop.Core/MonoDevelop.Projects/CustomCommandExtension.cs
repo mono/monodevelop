@@ -39,15 +39,19 @@ namespace MonoDevelop.Projects
 		{
 			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeBuild, configuration);
+				if (conf.CustomCommands.CanExecute (entry, CustomCommandType.BeforeBuild, null, configuration))
+					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeBuild, configuration);
+				
 				if (monitor.IsCancelRequested)
 					return new BuildResult (new CompilerResults (null), "");
 			}
 			
 			BuildResult res = base.Build (monitor, entry, configuration);
 			
-			if (conf != null && !monitor.IsCancelRequested && !res.Failed)
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterBuild, configuration);
+			if (conf != null && !monitor.IsCancelRequested && !res.Failed) {
+				if (conf.CustomCommands.CanExecute (entry, CustomCommandType.AfterBuild, null, configuration))
+					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterBuild, configuration);
+			}
 				                                    
 			return res;
 		}
@@ -56,15 +60,19 @@ namespace MonoDevelop.Projects
 		{
 			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeClean, configuration);
+				if (conf.CustomCommands.CanExecute (entry, CustomCommandType.BeforeClean, null, configuration))
+					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeClean, configuration);
+				
 				if (monitor.IsCancelRequested)
 					return;
 			}
 			
 			base.Clean (monitor, entry, configuration);
 			
-			if (conf != null && !monitor.IsCancelRequested)
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterClean, configuration);
+			if (conf != null && !monitor.IsCancelRequested) {
+				if (conf.CustomCommands.CanExecute (entry, CustomCommandType.AfterClean, null, configuration))
+					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterClean, configuration);
+			}
 		}
 
 		protected override void Execute (IProgressMonitor monitor, SolutionEntityItem entry, ExecutionContext context, ConfigurationSelector configuration)
@@ -72,7 +80,10 @@ namespace MonoDevelop.Projects
 			SolutionItemConfiguration conf = entry.GetConfiguration (configuration) as SolutionItemConfiguration;
 			if (conf != null) {
 				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory);
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, localContext, configuration);
+				
+				if (conf.CustomCommands.CanExecute (entry, CustomCommandType.BeforeExecute, localContext, configuration))
+					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.BeforeExecute, localContext, configuration);
+				
 				if (monitor.IsCancelRequested)
 					return;
 			}
@@ -81,7 +92,9 @@ namespace MonoDevelop.Projects
 			
 			if (conf != null && !monitor.IsCancelRequested) {
 				ExecutionContext localContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, context.ConsoleFactory);
-				conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterExecute, localContext, configuration);
+				
+				if (conf.CustomCommands.CanExecute (entry, CustomCommandType.AfterExecute, localContext, configuration))
+					conf.CustomCommands.ExecuteCommand (monitor, entry, CustomCommandType.AfterExecute, localContext, configuration);
 			}
 		}
 	}

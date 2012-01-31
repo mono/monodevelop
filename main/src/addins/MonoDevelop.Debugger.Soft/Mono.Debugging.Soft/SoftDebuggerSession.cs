@@ -716,13 +716,19 @@ namespace Mono.Debugging.Soft
 			
 			if (ev is FunctionBreakpoint) {
 				var fb = (FunctionBreakpoint) ev;
-				bi.Location = FindLocationByFunction (fb.FunctionName, fb.ParamTypes, fb.Line);
+				bool generic;
+				
+				bi.Location = FindLocationByFunction (fb.FunctionName, fb.ParamTypes, fb.Line, out generic);
 				if (bi.Location != null) {
 					fb.SetResolvedFileName (bi.Location.SourceFile);
 					bi.FileName = fb.FileName;
 					
 					InsertBreakpoint (fb, bi);
 					bi.SetStatus (BreakEventStatus.Bound, null);
+					
+					// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
+					if (generic)
+						pending_bes.Add (bi);
 				} else {
 					int dot = fb.FunctionName.LastIndexOf ('.');
 					if (dot != -1)
@@ -733,16 +739,22 @@ namespace Mono.Debugging.Soft
 				}
 			} else if (ev is Breakpoint) {
 				var bp = (Breakpoint) ev;
-				bool inisideLoadedRange;
+				bool insideLoadedRange;
+				bool generic;
+				
+				bi.Location = FindLocationByFile (bp.FileName, bp.Line, out generic, out insideLoadedRange);
 				bi.FileName = bp.FileName;
-				bi.Location = FindLocationByFile (bp.FileName, bp.Line, out inisideLoadedRange);
+				
 				if (bi.Location != null) {
 					InsertBreakpoint (bp, bi);
 					bi.SetStatus (BreakEventStatus.Bound, null);
-				}
-				else {
+					
+					// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
+					if (generic)
+						pending_bes.Add (bi);
+				} else {
 					pending_bes.Add (bi);
-					if (inisideLoadedRange)
+					if (insideLoadedRange)
 						bi.SetStatus (BreakEventStatus.Invalid, null);
 					else
 						bi.SetStatus (BreakEventStatus.NotBound, null);
@@ -759,6 +771,7 @@ namespace Mono.Debugging.Soft
 							ProcessType (t);
 					}
 				}
+				
 				if (types.TryGetValue (cp.ExceptionName, out type)) {
 					InsertCatchpoint (cp, bi, type);
 					bi.SetStatus (BreakEventStatus.Bound, null);
@@ -815,10 +828,13 @@ namespace Mono.Debugging.Soft
 		{
 			if (exited)
 				return;
+			
 			var bi = (BreakInfo) binfo;
-			if (bi.Req != null) {
-				bi.Req.Enabled = false;
-				RemoveQueuedBreakEvents (bi.Req);
+			if (bi.Requests.Count != 0) {
+				foreach (var request in bi.Requests)
+					request.Enabled = false;
+				
+				RemoveQueuedBreakEvents (bi.Requests);
 			}
 			pending_bes.Remove (bi);
 		}
@@ -827,11 +843,14 @@ namespace Mono.Debugging.Soft
 		{
 			if (exited)
 				return;
+			
 			var bi = (BreakInfo) binfo;
-			if (bi.Req != null) {
-				bi.Req.Enabled = enable;
+			if (bi.Requests.Count != 0) {
+				foreach (var request in bi.Requests)
+					request.Enabled = enable;
+				
 				if (!enable)
-					RemoveQueuedBreakEvents (bi.Req);
+					RemoveQueuedBreakEvents (bi.Requests);
 			}
 		}
 
@@ -841,9 +860,13 @@ namespace Mono.Debugging.Soft
 
 		void InsertBreakpoint (Breakpoint bp, BreakInfo bi)
 		{
-			bi.Req = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
-			bi.Req.Enabled = bp.Enabled;
-			breakpoints [bi.Req] = bi;
+			EventRequest request;
+			
+			request = vm.SetBreakpoint (bi.Location.Method, bi.Location.ILOffset);
+			request.Enabled = bp.Enabled;
+			bi.Requests.Add (request);
+			
+			breakpoints[request] = bi;
 			
 			if (bi.Location.LineNumber != bp.Line)
 				bi.AdjustBreakpointLocation (bi.Location.LineNumber);
@@ -851,9 +874,13 @@ namespace Mono.Debugging.Soft
 		
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
 		{
-			var request = bi.Req = vm.CreateExceptionRequest (excType, true, true);
+			EventRequest request;
+			
+			request = vm.CreateExceptionRequest (excType, true, true);
+			request.Enabled = cp.Enabled;
 			request.Count = cp.HitCount;
-			bi.Req.Enabled = cp.Enabled;
+			
+			bi.Requests.Add (request);
 		}
 		
 		bool CheckMethodParams (MethodMirror method, string[] paramTypes)
@@ -880,8 +907,10 @@ namespace Mono.Debugging.Soft
 			return i == paramTypes.Length;
 		}
 		
-		Location FindLocationByFunction (string function, string[] paramTypes, int line)
+		Location FindLocationByFunction (string function, string[] paramTypes, int line, out bool genericTypeOrMethod)
 		{
+			genericTypeOrMethod = false;
+			
 			if (!started)
 				return null;
 			
@@ -901,8 +930,10 @@ namespace Mono.Debugging.Soft
 							continue;
 						
 						Location location = GetLocFromMethod (method, line);
-						if (location != null)
+						if (location != null) {
+							genericTypeOrMethod = type.IsGenericType || method.IsGenericMethod;
 							return location;
+						}
 					}
 				}
 			}
@@ -910,9 +941,11 @@ namespace Mono.Debugging.Soft
 			return null;
 		}
 		
-		Location FindLocationByFile (string file, int line, out bool insideLoadedRange)
+		Location FindLocationByFile (string file, int line, out bool genericTypeOrMethod, out bool insideLoadedRange)
 		{
+			genericTypeOrMethod = false;
 			insideLoadedRange = false;
+			
 			if (!started)
 				return null;
 
@@ -945,18 +978,21 @@ namespace Mono.Debugging.Soft
 			List<TypeMirror> types;
 
 			if (source_to_type.TryGetValue (filename, out types)) {
-				foreach (TypeMirror t in types) {
+				foreach (TypeMirror type in types) {
+					bool genericMethod;
 					bool insideRange;
-					target_loc = GetLocFromType (t, filename, line, out insideRange);
+					
+					target_loc = GetLocFromType (type, filename, line, out genericMethod, out insideRange);
 					if (insideRange)
 						insideLoadedRange = true;
-					if (target_loc != null)
+					
+					if (target_loc != null) {
+						genericTypeOrMethod = genericMethod || type.IsGenericType;
 						break;
+					}
 				}
 			}
-	
-			// FIXME: Add a pending breakpoint
-	
+			
 			return target_loc;
 		}
 		
@@ -1265,16 +1301,25 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
-		void RemoveQueuedBreakEvents (EventRequest request)
+		void RemoveQueuedBreakEvents (List<EventRequest> requests)
 		{
 			int resume = 0;
+			
 			lock (queuedEventSets) {
 				var node = queuedEventSets.First;
+				
 				while (node != null) {
 					List<Event> q = node.Value;
-					for (int i = 0; i < q.Count; i++)
-						if (q[i].Request == request)
-							q.RemoveAt (i--);
+					
+					for (int i = 0; i < q.Count; i++) {
+						foreach (var request in requests) {
+							if (q[i].Request == request) {
+								q.RemoveAt (i--);
+								break;
+							}
+						}
+					}
+					
 					if (q.Count == 0) {
 						var d = node;
 						node = node.Next;
@@ -1285,6 +1330,7 @@ namespace Mono.Debugging.Soft
 					}
 				}
 			}
+			
 			for (int i = 0; i < resume; i++)
 				vm.Resume ();
 		}
@@ -1476,13 +1522,13 @@ namespace Mono.Debugging.Soft
 			return paramTypes.ToArray ();
 		}
 
-		void ResolveBreakpoints (TypeMirror t)
+		void ResolveBreakpoints (TypeMirror type)
 		{
 			var resolved = new List<BreakInfo> ();
-			string typeName = t.FullName;
+			string typeName = type.FullName;
 			Location loc;
 			
-			ProcessType (t);
+			ProcessType (type);
 			
 			// First, resolve FunctionBreakpoints
 			foreach (var bi in pending_bes.Where (b => b.BreakEvent is FunctionBreakpoint)) {
@@ -1494,7 +1540,7 @@ namespace Mono.Debugging.Soft
 					string methodName = bp.FunctionName.Substring (dot + 1);
 					
 					if (vm.Version.AtLeast (2, 6)) {
-						foreach (var method in t.GetMethodsByNameFlags (methodName, BindingFlags.Default, false)) {
+						foreach (var method in type.GetMethodsByNameFlags (methodName, BindingFlags.Default, false)) {
 							if (!CheckMethodParams (method, bp.ParamTypes))
 								continue;
 							
@@ -1509,12 +1555,15 @@ namespace Mono.Debugging.Soft
 								
 								bp.SetResolvedFileName (loc.SourceFile);
 								ResolvePendingBreakpoint (bi, loc);
-								resolved.Add (bi);
+								
+								// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
+								if (!type.IsGenericType && !method.IsGenericMethod)
+									resolved.Add (bi);
 								break;
 							}
 						}
 					} else {
-						foreach (var method in t.GetMethods ()) {
+						foreach (var method in type.GetMethods ()) {
 							if (method.Name != methodName || !CheckMethodParams (method, bp.ParamTypes))
 								continue;
 							
@@ -1529,7 +1578,10 @@ namespace Mono.Debugging.Soft
 								
 								bp.SetResolvedFileName (loc.SourceFile);
 								ResolvePendingBreakpoint (bi, loc);
-								resolved.Add (bi);
+								
+								// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
+								if (!type.IsGenericType && !method.IsGenericMethod)
+									resolved.Add (bi);
 								break;
 							}
 						}
@@ -1542,17 +1594,22 @@ namespace Mono.Debugging.Soft
 			resolved.Clear ();
 
 			// Now resolve normal Breakpoints
-			foreach (string s in type_to_source [t]) {
+			foreach (string s in type_to_source [type]) {
 				foreach (var bi in pending_bes.Where (b => b.BreakEvent is Breakpoint)) {
 					var bp = (Breakpoint) bi.BreakEvent;
 					if (PathComparer.Compare (PathToFileName (bp.FileName), s) == 0) {
 						bool insideLoadedRange;
-						loc = GetLocFromType (t, s, bp.Line, out insideLoadedRange);
+						bool genericMethod;
+						
+						loc = GetLocFromType (type, s, bp.Line, out genericMethod, out insideLoadedRange);
 						if (loc != null) {
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2} [0x{3:x5}].\n",
 							                                        s, loc.LineNumber, loc.Method.FullName, loc.ILOffset));
 							ResolvePendingBreakpoint (bi, loc);
-							resolved.Add (bi);
+							
+							// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
+							if (!genericMethod && !type.IsGenericType)
+								resolved.Add (bi);
 						} else {
 							if (insideLoadedRange) {
 								bi.SetStatus (BreakEventStatus.Invalid, null);
@@ -1570,7 +1627,7 @@ namespace Mono.Debugging.Soft
 			foreach (var bi in pending_bes.Where (b => b.BreakEvent is Catchpoint)) {
 				var cp = (Catchpoint) bi.BreakEvent;
 				if (cp.ExceptionName == typeName) {
-					ResolvePendingCatchpoint (bi, t);
+					ResolvePendingCatchpoint (bi, type);
 					resolved.Add (bi);
 				}
 			}
@@ -1614,45 +1671,50 @@ namespace Mono.Debugging.Soft
 			return target_loc;
 		}
 		
-		Location GetLocFromType (TypeMirror type, string file, int line, out bool insideTypeRange)
+		Location GetLocFromType (TypeMirror type, string file, int line, out bool genericMethod, out bool insideTypeRange)
 		{
 			Location target_loc = null;
-			insideTypeRange = false;
 			
-			foreach (MethodMirror m in type.GetMethods ())
-			{
+			insideTypeRange = false;
+			genericMethod = false;
+			
+			foreach (MethodMirror method in type.GetMethods ()) {
 				int rangeFirstLine = -1;
 				int rangeLastLine = -1;
 				
-				foreach (Location l in m.Locations) {
-					if (PathComparer.Compare (PathToFileName (NormalizePath (l.SourceFile)), file) == 0) {
+				foreach (Location location in method.Locations) {
+					if (PathComparer.Compare (PathToFileName (NormalizePath (location.SourceFile)), file) == 0) {
 						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
 						// pick the L+1 location, since that's where the debugger is going to stop.
-						if (l.LineNumber == line) {
+						if (location.LineNumber == line) {
 							if (target_loc == null)
-								target_loc = l;
+								target_loc = location;
 						}
 						else if (target_loc != null) {
-							if (target_loc.ILOffset == l.ILOffset)
-								target_loc = l;
+							if (target_loc.ILOffset == location.ILOffset)
+								target_loc = location;
 							else
 								break;
 						}
-						rangeLastLine = l.LineNumber;
+						rangeLastLine = location.LineNumber;
 						if (rangeFirstLine == -1)
-							rangeFirstLine = l.LineNumber;
+							rangeFirstLine = location.LineNumber;
 					} else {
 						if (rangeFirstLine != -1 && line >= rangeFirstLine && line <= rangeLastLine)
 							insideTypeRange = true;
 						rangeFirstLine = -1;
 					}
 				}
-				if (target_loc != null)
+				
+				if (target_loc != null) {
+					genericMethod = method.IsGenericMethod;
 					break;
+				}
+				
 				if (rangeFirstLine != -1 && line >= rangeFirstLine && line <= rangeLastLine)
 					insideTypeRange = true;
 			}
-	
+			
 			return target_loc;
 		}
 
@@ -1934,7 +1996,7 @@ namespace Mono.Debugging.Soft
 	class BreakInfo: BreakEventInfo
 	{
 		public Location Location;
-		public EventRequest Req;
+		public List<EventRequest> Requests = new List<EventRequest> ();
 		public string LastConditionValue;
 		public string FileName;
 		public string TypeName;
