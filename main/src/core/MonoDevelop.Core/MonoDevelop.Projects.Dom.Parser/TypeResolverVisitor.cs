@@ -24,10 +24,10 @@
 // THE SOFTWARE.
 //
 //
-
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Dom;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Dom.Parser
 {
@@ -88,6 +88,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 		}
 		
 		bool visitAttribute = false;
+
 		public override INode Visit (IAttribute attribute, IType data)
 		{
 			visitAttribute = true;
@@ -114,7 +115,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 				if (currentMethod.IsOverride) {
 					foreach (IType curType2 in db.GetInheritanceTree (contextType)) {
 						
-						foreach (IMethod curMethod in curType2.SearchMember (currentMethod.Name, true)) {
+						foreach (IMethod curMethod in curType2.SearchMember (currentMethod.Name, true).Where (m => m is IMethod)) {
 							if (!curMethod.IsOverride && curMethod.Parameters.Count == currentMethod.Parameters.Count && curMethod.TypeParameters.Count == currentMethod.TypeParameters.Count) {
 								method = curMethod;
 								break;
@@ -201,8 +202,7 @@ namespace MonoDevelop.Projects.Dom.Parser
 			return db.GetSharedReturnType (rt);
 		}
 		
-		public int UnresolvedCount
-		{
+		public int UnresolvedCount {
 			get { return unresolvedCount; }
 			set { unresolvedCount = value; }
 		}
