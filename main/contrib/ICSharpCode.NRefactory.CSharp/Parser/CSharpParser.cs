@@ -3112,7 +3112,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null)
 					fromClause.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryFromClause.InKeywordRole);
-				fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
+				if (queryStart.Expr != null)
+					fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
 				return fromClause;
 			}
 			
@@ -3130,7 +3131,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null)
 					fromClause.AddChild (new CSharpTokenNode (Convert (location[0]), "in".Length), QueryFromClause.InKeywordRole);
-				fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
+				
+				if (queryStart.Expr != null)
+					fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
 				return fromClause;
 			}
 			
@@ -3138,7 +3141,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new QuerySelectClause ();
 				result.AddChild (new CSharpTokenNode (Convert (sel.Location), "select".Length), QueryWhereClause.Roles.Keyword);
-				result.AddChild ((Expression)sel.Expr.Accept (this), QueryWhereClause.Roles.Expression);
+				if (sel.Expr != null)
+					result.AddChild ((Expression)sel.Expr.Accept (this), QueryWhereClause.Roles.Expression);
 				return result;
 			}
 			
@@ -3150,7 +3154,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild ((Expression)groupBy.ElementSelector.Accept (this), QueryGroupClause.ProjectionRole);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "by".Length), QueryGroupClause.ByKeywordRole);
-				result.AddChild ((Expression)groupBy.Expr.Accept (this), QueryGroupClause.KeyRole);
+				if (groupBy.Expr != null)
+					result.AddChild ((Expression)groupBy.Expr.Accept (this), QueryGroupClause.KeyRole);
 				return result;
 			}
 			
@@ -3163,7 +3168,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (Identifier.Create (l.IntoVariable.Name, Convert (l.IntoVariable.Location)), Identifier.Roles.Identifier);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), QueryLetClause.Roles.Assign);
-				result.AddChild ((Expression)l.Expr.Accept (this), QueryLetClause.Roles.Expression);
+				if (l.Expr != null)
+					result.AddChild ((Expression)l.Expr.Accept (this), QueryLetClause.Roles.Expression);
 				return result;
 			}
 			
@@ -3173,7 +3179,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (w);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "where".Length), QueryWhereClause.Roles.Keyword);
-				result.AddChild ((Expression)w.Expr.Accept (this), QueryWhereClause.Roles.Condition);
+				if (w.Expr != null)
+					result.AddChild ((Expression)w.Expr.Accept (this), QueryWhereClause.Roles.Condition);
 				return result;
 			}
 			

@@ -189,7 +189,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			SearchScope additionalScope = null;
 			switch (entity.EntityType) {
 				case EntityType.TypeDefinition:
-					scope = FindTypeDefinitionReferences((ITypeDefinition)entity, this.FindTypeReferencesEvenIfAliased);
+					scope = FindTypeDefinitionReferences((ITypeDefinition)entity, this.FindTypeReferencesEvenIfAliased, out additionalScope);
 					break;
 				case EntityType.Field:
 					if (entity.DeclaringTypeDefinition != null && entity.DeclaringTypeDefinition.Kind == TypeKind.Enum)
@@ -353,14 +353,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Find TypeDefinition References
-		SearchScope FindTypeDefinitionReferences(ITypeDefinition typeDefinition, bool findTypeReferencesEvenIfAliased)
+		SearchScope FindTypeDefinitionReferences(ITypeDefinition typeDefinition, bool findTypeReferencesEvenIfAliased, out SearchScope additionalScope)
 		{
 			string searchTerm = null;
-			if (!findTypeReferencesEvenIfAliased && ReflectionHelper.GetTypeCode(typeDefinition) == TypeCode.Empty) {
-				// not a built-in type
+			additionalScope = null;
+			if (!findTypeReferencesEvenIfAliased && KnownTypeReference.GetCSharpNameByTypeCode(typeDefinition.KnownTypeCode) == null) {
+				// We can optimize the search by looking only for the type references with the right identifier,
+				// but only if it's not a primitive type and we're not looking for indirect references (through an alias)
 				searchTerm = typeDefinition.Name;
+				if (searchTerm.Length > 9 && searchTerm.EndsWith("Attribute", StringComparison.Ordinal)) {
+					// The type might be an attribute, so we also need to look for the short form:
+					string shortForm = searchTerm.Substring(0, searchTerm.Length - 9);
+					additionalScope = new SearchScope(
+						shortForm,
+						delegate (ICompilation compilation) {
+							ITypeDefinition imported = compilation.Import(typeDefinition);
+							if (imported != null)
+								return new FindTypeDefinitionReferencesNavigator(imported, shortForm);
+							else
+								return null;
+						});
+				}
 			}
-			
 			return new SearchScope(
 				searchTerm,
 				delegate (ICompilation compilation) {
@@ -404,7 +418,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (searchTerm == null && node is PrimitiveType)
 					return true;
 				
-				return node is TypeDeclaration || node is DelegateDeclaration;
+				TypeDeclaration typeDecl = node as TypeDeclaration;
+				if (typeDecl != null)
+					return searchTerm == null || typeDecl.Name == searchTerm;
+				
+				DelegateDeclaration delegateDecl = node as DelegateDeclaration;
+				if (delegateDecl != null)
+					return searchTerm == null || delegateDecl.Name == searchTerm;
+				
+				return false;
 			}
 			
 			internal override bool IsMatch(ResolveResult rr)
@@ -872,9 +894,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ctor = (IMethod)ctor.MemberDefinition;
 			string searchTerm = null;
-			if (ReflectionHelper.GetTypeCode(ctor.DeclaringTypeDefinition) == TypeCode.Empty) {
+			if (KnownTypeReference.GetCSharpNameByTypeCode(ctor.DeclaringTypeDefinition.KnownTypeCode) == null) {
 				// not a built-in type
 				searchTerm = ctor.DeclaringTypeDefinition.Name;
+				if (searchTerm.Length > 9 && searchTerm.EndsWith("Attribute", StringComparison.Ordinal)) {
+					// we also need to look for the short form
+					searchTerm = null;
+				}
 			}
 			return new SearchScope(
 				searchTerm,
@@ -898,7 +924,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool CanMatch(AstNode node)
 			{
-				return node is ObjectCreateExpression || node is ConstructorDeclaration;
+				return node is ObjectCreateExpression || node is ConstructorDeclaration || node is Attribute;
 			}
 			
 			internal override bool IsMatch(ResolveResult rr)

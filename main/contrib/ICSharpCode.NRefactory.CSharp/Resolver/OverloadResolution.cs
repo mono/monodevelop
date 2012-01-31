@@ -418,42 +418,75 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (newParameterizedType != null) {
 						// C# 4.0 spec: §4.4.4 Satisfying constraints
 						var typeParameters = newParameterizedType.GetDefinition().TypeParameters;
+						var substitution = newParameterizedType.GetSubstitution();
 						for (int i = 0; i < typeParameters.Count; i++) {
-							ITypeParameter tp = typeParameters[i];
-							IType typeArg = newParameterizedType.GetTypeArgument(i);
-							switch (typeArg.Kind) { // void, null, and pointers cannot be used as type arguments
-								case TypeKind.Void:
-								case TypeKind.Null:
-								case TypeKind.Pointer:
-									ConstraintsValid = false;
-									break;
-							}
-							if (tp.HasReferenceTypeConstraint) {
-								if (typeArg.IsReferenceType != true)
-									ConstraintsValid = false;
-							}
-							if (tp.HasValueTypeConstraint) {
-								if (!NullableType.IsNonNullableValueType(typeArg))
-									ConstraintsValid = false;
-							}
-							if (tp.HasDefaultConstructorConstraint) {
-								ITypeDefinition def = typeArg.GetDefinition();
-								if (def != null && def.IsAbstract)
-									ConstraintsValid = false;
-								ConstraintsValid &= typeArg.GetConstructors(
-									m => m.Parameters.Count == 0 && m.Accessibility == Accessibility.Public,
-									GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions
-								).Any();
-							}
-							foreach (IType constraintType in tp.DirectBaseTypes) {
-								IType c = constraintType.AcceptVisitor(newParameterizedType.GetSubstitution());
-								ConstraintsValid &= conversions.IsConstraintConvertible(typeArg, c);
+							if (!ValidateConstraints(typeParameters[i], newParameterizedType.GetTypeArgument(i), substitution, conversions)) {
+								ConstraintsValid = false;
+								break;
 							}
 						}
 					}
 				}
 				return newType;
 			}
+		}
+		#endregion
+		
+		#region Validate Constraints
+		/// <summary>
+		/// Validates whether the given type argument satisfies the constraints for the given type parameter.
+		/// </summary>
+		/// <param name="typeParameter">The type parameter.</param>
+		/// <param name="typeArgument">The type argument.</param>
+		/// <param name="substitution">The substitution that defines how type parameters are replaced with type arguments.
+		/// The substitution is used to check constraints that depend on other type parameters (or recursively on the same type parameter).</param>
+		/// <returns>True if the constraints are satisfied; false otherwise.</returns>
+		public static bool ValidateConstraints(ITypeParameter typeParameter, IType typeArgument, TypeVisitor substitution)
+		{
+			if (typeParameter == null)
+				throw new ArgumentNullException("typeParameter");
+			if (typeParameter.Owner == null)
+				throw new ArgumentNullException("typeParameter.Owner");
+			if (typeArgument == null)
+				throw new ArgumentNullException("typeArgument");
+			return ValidateConstraints(typeParameter, typeArgument, substitution, Conversions.Get(typeParameter.Owner.Compilation));
+		}
+		
+		internal static bool ValidateConstraints(ITypeParameter typeParameter, IType typeArgument, TypeVisitor substitution, Conversions conversions)
+		{
+			switch (typeArgument.Kind) { // void, null, and pointers cannot be used as type arguments
+				case TypeKind.Void:
+				case TypeKind.Null:
+				case TypeKind.Pointer:
+					return false;
+			}
+			if (typeParameter.HasReferenceTypeConstraint) {
+				if (typeArgument.IsReferenceType != true)
+					return false;
+			}
+			if (typeParameter.HasValueTypeConstraint) {
+				if (!NullableType.IsNonNullableValueType(typeArgument))
+					return false;
+			}
+			if (typeParameter.HasDefaultConstructorConstraint) {
+				ITypeDefinition def = typeArgument.GetDefinition();
+				if (def != null && def.IsAbstract)
+					return false;
+				var ctors = typeArgument.GetConstructors(
+					m => m.Parameters.Count == 0 && m.Accessibility == Accessibility.Public,
+					GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions
+				);
+				if (!ctors.Any())
+					return false;
+			}
+			foreach (IType constraintType in typeParameter.DirectBaseTypes) {
+				IType c = constraintType;
+				if (substitution != null)
+					c = c.AcceptVisitor(substitution);
+				if (!conversions.IsConstraintConvertible(typeArgument, c))
+					return false;
+			}
+			return true;
 		}
 		#endregion
 		
