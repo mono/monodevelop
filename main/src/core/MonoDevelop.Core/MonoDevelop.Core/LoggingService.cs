@@ -134,8 +134,7 @@ namespace MonoDevelop.Core
 
 		static IEnumerable<string> GetGenericLogFiles (FilePath logDirectory)
 		{
-			// Look for MonoDevelop.log and also MonoDevelop-XXX.log and move them to MonoDevelop.{timestamp}.log files
-			// as we cannot symlink on windows and we want 'MonoDevelop.log' to be the newest log file
+			// Look for MonoDevelop.log and also MonoDevelop-XXX.log
 			string additonalGenericLogs = Path.GetFileNameWithoutExtension (GenericLogFile) + "-";
 			return Directory.GetFiles (logDirectory)
 				.Where (f => f == GenericLogFile || f.StartsWith (additonalGenericLogs))
@@ -149,8 +148,7 @@ namespace MonoDevelop.Core
 				try {
 					var creationTime = File.GetCreationTime (path);
 					var destination = logDirectory.Combine (FormattedUniqueFileName (creationTime));
-					File.Copy (path, destination, true);
-					File.Delete (path);
+					FileService.RenameFile (path, destination);
 				} catch {}
 			}
 
