@@ -766,7 +766,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (Item is UnknownProject || Item is UnknownSolutionItem)
 				return;
 			
-			bool newProject = false;
+			bool newProject;
 			SolutionEntityItem eitem = EntityItem;
 			
 			MSBuildSerializer ser = CreateSerializer ();
@@ -776,11 +776,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			DotNetProject dotNetProject = Item as DotNetProject;
 			
 			MSBuildProject msproject = new MSBuildProject ();
-			if (EntityItem.FileName != null) {
-				msproject.Load (EntityItem.FileName);
-			} else {
+			newProject = EntityItem.FileName == null || !File.Exists (EntityItem.FileName);
+			if (newProject) {
 				msproject.DefaultTargets = "Build";
-				newProject = true;
+			} else {
+				msproject.Load (EntityItem.FileName);
 			}
 
 			// Global properties
@@ -851,7 +851,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				langParams = dotNetProject.LanguageParameters;
 			}
 			
-			if (EntityItem.FileName == null)
+			if (newProject)
 				ser.InternalItemProperties.ItemData.Sort (globalConfigOrder);
 
 			WritePropertyGroupMetadata (globalGroup, ser.InternalItemProperties.ItemData, ser, Item, langParams);
