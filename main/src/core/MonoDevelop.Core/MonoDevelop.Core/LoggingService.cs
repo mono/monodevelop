@@ -40,6 +40,7 @@ namespace MonoDevelop.Core
 	{
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
+		static int logId = 0;
 		
 		static LoggingService ()
 		{
@@ -88,6 +89,10 @@ namespace MonoDevelop.Core
 			return string.Format ("MonoDevelop.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
 		}
 		
+		public static int LogId {
+			get { return logId; }
+		}
+		
 		public static void Initialize (bool redirectOutput)
 		{
 			PurgeOldLogs ();
@@ -98,13 +103,13 @@ namespace MonoDevelop.Core
 		
 		static void PurgeOldLogs ()
 		{
-			// Delete all logs older than 30 days
+			// Delete all logs older than a week
 			if (!Directory.Exists (UserProfile.Current.LogDir))
 				return;
 
-			var files = Directory.EnumerateFiles (UserProfile.Current.LogDir, "MonoDevelop.*.log")
+			var files = Directory.EnumerateFiles (UserProfile.Current.LogDir, "*.log")
 				.Select (f => new FileInfo (f))
-				.Where (f => f.CreationTimeUtc < DateTime.UtcNow.Subtract (TimeSpan.FromDays (30)));
+				.Where (f => f.CreationTimeUtc < DateTime.UtcNow.Subtract (TimeSpan.FromDays (7)));
 
 			foreach (var v in files)
 				v.Delete ();
@@ -150,14 +155,22 @@ namespace MonoDevelop.Core
 			}
 
 			// Find the first free filename, try MonoDevelop.log first and then MonoDevelop-{0}.log
-			int count = 0;
-			var newLogFileName = GenericLogFile;
-			var existingFiles = GetGenericLogFiles (logDirectory).Select (f => Path.GetFileName (f)).ToList ();
-			while (existingFiles.Contains (newLogFileName))
-				newLogFileName = FormattedGenericLogFile (count ++);
-
-			var logFile = new StreamWriter (logDirectory.Combine (newLogFileName));
-			logFile.AutoFlush = true;
+			string logName = GenericLogFile;
+			FileStream stream = null;
+			
+			do {
+				try {
+					stream = File.Open (logDirectory.Combine (logName), FileMode.CreateNew, FileAccess.Write);
+					break;
+				} catch (IOException) {
+					// the file already exists...
+				}
+				
+				logName = FormattedGenericLogFile (++logId);
+			} while (true);
+			
+			var logFile = new StreamWriter (stream) { AutoFlush = true };
+			
 			Console.SetOut (logFile);
 			Console.SetError (logFile);
 		}
