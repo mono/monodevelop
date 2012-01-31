@@ -244,17 +244,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public event EventHandler Changed;
 		
-		public string ToXml ()
+		public byte[] ToByteArray (bool binary)
 		{
 			using (new NSAutoreleasePool ()) {
 				var errorPtr = IntPtr.Zero;
 				var pobject = Convert ();
-				var data = PObject.DataFromPropertyList (pobject, NSPropertyListFormat.Xml, 0);
+				NSPropertyListFormat format = binary? NSPropertyListFormat.Binary : NSPropertyListFormat.Xml;
+				var data = PObject.DataFromPropertyList (pobject, format, 0);
 				if (data == null) {
 					throw new Exception ("Could not convert the NSDictionary to xml representation");	
 				}
-				return System.Text.Encoding.UTF8.GetString (data.ToArray ());
+				return data.ToArray ();
 			}
+		}
+		
+		public string ToXml ()
+		{
+			return System.Text.Encoding.UTF8.GetString (ToByteArray (false));
 		}
 	}
 	
@@ -500,13 +506,31 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSDictionary.FromObjectsAndKeys (objs.ToArray (), keys.ToArray ());
 		}
 		
+		public static PDictionary FromByteArray (byte[] array, out bool isBinary)
+		{
+			using (new NSAutoreleasePool ()) {
+				NSPropertyListFormat format;
+				var data = NSData.FromArray (array);
+				var dict = PObject.PropertyListWithData (data, 0, out format);
+				isBinary = format != NSPropertyListFormat.OpenStep;
+				return (PDictionary) Conv (dict);
+			}
+		}
+		
+		[Obsolete ("Use FromFile")]
 		public static PDictionary Load (string fileName)
 		{
 			bool isBinary;
-			return Load (fileName, out isBinary);
+			return FromFile (fileName, out isBinary);
 		}
 		
-		public static PDictionary Load (string fileName, out bool isBinary)
+		public static PDictionary FromFile (string fileName)
+		{
+			bool isBinary;
+			return FromFile (fileName, out isBinary);
+		}
+		
+		public static PDictionary FromFile (string fileName, out bool isBinary)
 		{
 			using (new NSAutoreleasePool ()) {
 				NSError error;
