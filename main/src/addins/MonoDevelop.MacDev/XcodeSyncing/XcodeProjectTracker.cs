@@ -779,13 +779,47 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		static XC4Debug ()
 		{
 			FilePath logDir = UserProfile.Current.LogDir;
-			FilePath logFile = logDir.Combine ("Xcode4Sync.log");
+			FilePath logFile = logDir.Combine (GetGenericFileName ());
+			
 			FileService.EnsureDirectoryExists (logDir);
+			TimestampLogFiles (logDir);
 			
 			try {
 				writer = new StreamWriter (logFile) { AutoFlush = true };
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not create Xcode sync logging file", ex);
+			}
+		}
+		
+		static string GetGenericFileName ()
+		{
+			if (LoggingService.LogId != 0)
+				return string.Format ("Xcode4Sync-{0}.log", LoggingService.LogId);
+			
+			return "Xcode4Sync.log";
+		}
+		
+		static string GetTimestampFileName (DateTime time)
+		{
+			return string.Format ("Xcode4Sync.{0}.log", time.ToString ("yyyy-MM-dd__HH-mm-ss"));
+		}
+		
+		static IEnumerable<string> GetGenericLogFiles (FilePath logDirectory)
+		{
+			return Directory.GetFiles (logDirectory)
+				.Where (f => f == "Xcode4Sync.log" || f.StartsWith ("Xcode4Sync-"))
+				.OrderBy (f => f);
+		}
+
+		static void TimestampLogFiles (FilePath logDirectory)
+		{
+			// Move any generic Xcode4Sync.log files to a timestamped filename
+			foreach (var path in GetGenericLogFiles (logDirectory)) {
+				try {
+					var ctime = File.GetCreationTime (path);
+					var destination = logDirectory.Combine (GetTimestampFileName (ctime));
+					FileService.RenameFile (path, destination);
+				} catch {}
 			}
 		}
 		
