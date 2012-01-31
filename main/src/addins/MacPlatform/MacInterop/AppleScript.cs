@@ -101,10 +101,15 @@ namespace MonoDevelop.MacInterop
 		{
 			string value;
 			var ret = Run (compile, ref scriptData, out value);
-			if (ret == OsaError.Success)
+			
+			switch (ret) {
+			case OsaError.Success:
 				return value;
-			else
+			case OsaError.Timeout:
+				throw new TimeoutException ("The AppleScript command timed out.");
+			default:
 				throw new AppleScriptException (ret, value);
+			}
 		}
 		
 		static OsaError Run (bool compile, ref AEDesc scriptData, out string value)
@@ -195,7 +200,7 @@ namespace MonoDevelop.MacInterop
 		Range = 1701998183, // 'erng'
 	}
 	
-	public enum OsaError : int //this is a ComponentResult typedef - is it long on int64?
+	public enum OsaError : int //this is a ComponentResult typedef - is it long on int64? Many of these values can be gotten from MacErrors.h
 	{
 		Success = 0,
 		CantCoerce = -1700,	
@@ -203,6 +208,7 @@ namespace MonoDevelop.MacInterop
 		CorruptData = -1702,	
 		TypeError = -1703,
 		MessageNotUnderstood = -1708,
+		Timeout = -1712,
 		UndefinedHandler = -1717,
 		IllegalIndex	 = -1719,
 		IllegalRange	 = -1720,
