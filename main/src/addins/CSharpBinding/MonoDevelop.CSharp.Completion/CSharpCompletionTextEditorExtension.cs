@@ -602,6 +602,11 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new IndexerParameterDataProvider (this, type, resolvedNode);
 		}
+		
+		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider (IEnumerable<IType> types)
+		{
+			return new TemplateParameterDataProvider (this, types);
+		}
 		#endregion
 		
 		#region TypeSystemSegmentTree

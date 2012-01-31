@@ -96,7 +96,8 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
-			return result.ToString ();		}
+			return result.ToString ();
+		}
 
 		public string GetParameterMarkup (int overload, int paramIndex)
 		{

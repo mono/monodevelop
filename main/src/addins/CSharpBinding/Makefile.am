@@ -50,6 +50,7 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/MemberCompletionData.cs \
 	MonoDevelop.CSharp.Completion/MethodParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs \
+	MonoDevelop.CSharp.Completion/TemplateParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/VariableCompletionData.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
