@@ -665,7 +665,9 @@ namespace MonoDevelop.Ide.Gui
 //						this.parsedDocument = currentParsedDocument;
 //						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
 //							this.lastErrorFreeParsedDocument = parsedDocument;
-						OnDocumentParsed (EventArgs.Empty);
+						ThreadPool.QueueUserWorkItem (delegate {
+							OnDocumentParsed (EventArgs.Empty);
+						});
 					});
 				});
 				parseTimeout = 0;
