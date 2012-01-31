@@ -43,6 +43,11 @@ namespace MonoDevelop.ContextAction
 		ContextActionWidget widget;
 		uint quickFixTimeout;
 		
+		public List<ContextAction> Fixes {
+			get;
+			private set;
+		}
+		
 		public void RemoveWidget ()
 		{
 			if (widget == null)
@@ -67,9 +72,10 @@ namespace MonoDevelop.ContextAction
 		
 		public void CreateWidget (List<ContextAction> fixes, TextLocation loc)
 		{
+			this.Fixes = fixes;
 			if (!fixes.Any ())
 				return;
-			
+		/* CONTEXT WIDGET DISABLED FOR NOW !
 			widget = new ContextActionWidget (this, Document, loc, fixes);
 			var container = Document.Editor.Parent.Parent as TextEditorContainer;
 			if (container == null) 
@@ -77,7 +83,7 @@ namespace MonoDevelop.ContextAction
 			container.AddTopLevelWidget (widget,
 				2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
 				-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
-			widget.Show ();
+			widget.Show ();*/
 		}
 
 		public void CancelQuickFixTimer ()
@@ -92,6 +98,7 @@ namespace MonoDevelop.ContextAction
 		{
 			RemoveWidget ();
 			CancelQuickFixTimer ();
+			
 			if (Document.ParsedDocument != null) {
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					TextLocation loc = new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);

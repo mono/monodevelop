@@ -379,6 +379,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			this.Document = document;
+			this.Compilation = document.Compilation;
 			this.Location = new TextLocation (loc.Line, loc.Column);
 			this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
 			this.CSharpParsedFile = document.ParsedDocument.Annotation<CSharpParsedFile> ();
@@ -485,28 +486,8 @@ namespace MonoDevelop.CSharp.ContextAction
 		public void FormatText (Func<MDRefactoringContext, AstNode> update)
 		{
 		}
-		
-		
-		
-		
-
 		*/
 		
-		//these methods don't get used in 2.8
 		
-		public override AstType CreateShortType (AstType fullType)
-		{
-			throw new NotImplementedException ();
-		}
-		
-//		public override AstType CreateShortType (ICSharpCode.NRefactory.TypeSystem.IType fullType)
-//		{
-//			throw new NotImplementedException ();
-//		}
-//		
-//		public override ResolveResult Resolve (AstNode expression)
-//		{
-//			throw new NotImplementedException ();
-//		}
 	}
 }

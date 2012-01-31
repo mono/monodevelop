@@ -48,6 +48,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.ContextAction;
 
 namespace MonoDevelop.Refactoring
 {
@@ -256,7 +257,6 @@ namespace MonoDevelop.Refactoring
 			if (item is IVariable || item is IParameter) {
 				canRename = true; 
 			} else if (item is ITypeDefinition) { 
-				Console.WriteLine (((ITypeDefinition)item).Region);
 				canRename = !((ITypeDefinition)item).Region.IsEmpty;
 			} else if (item is IMember) {
 				canRename = !((IMember)item).Region.IsEmpty;
@@ -277,6 +277,25 @@ namespace MonoDevelop.Refactoring
 					ciset.CommandInfos.Add (info, new System.Action (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
+			var ext = doc.GetContent<ContextActionEditorExtension> ();
+			if (ext != null) {
+				var fixes = ext.Fixes;
+				if (fixes != null){
+					var loc = doc.Editor.Caret.Location;
+					bool first = true;
+					foreach (var fix in fixes) {
+						if (first) {
+							first = false;
+							if (ciset.CommandInfos.Count > 0)
+								ciset.CommandInfos.AddSeparator ();
+						}
+						ciset.CommandInfos.Add (fix.GetMenuText (doc, loc), new System.Action (delegate {
+							fix.Run (doc, loc);
+						}));
+					}
+				}
+			}
+			
 			
 			if (ciset.CommandInfos.Count > 0) {
 				ainfo.Add (ciset, null);
@@ -558,9 +577,6 @@ namespace MonoDevelop.Refactoring
 			
 			if (added)
 				ainfo.AddSeparator ();
-			
-			
-			
 			/*
 			while (item != null) {
 				CommandInfo ci;
