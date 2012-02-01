@@ -534,8 +534,8 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public FileCopySet GetSupportFileList (ConfigurationSelector configuration)
 		{
-			FileCopySet list = new FileCopySet ();
-			Services.ProjectService.GetExtensionChain (this).PopulateSupportFileList (this, list, configuration);
+			var list = new FileCopySet ();
+			PopulateSupportFileList (list, configuration);
 			return list;
 		}
 
@@ -577,7 +577,7 @@ namespace MonoDevelop.Projects
 		public List<FilePath> GetOutputFiles (ConfigurationSelector configuration)
 		{
 			List<FilePath> list = new List<FilePath> ();
-			Services.ProjectService.GetExtensionChain (this).PopulateOutputFileList (this, list, configuration);
+			PopulateOutputFileList (list, configuration);
 			return list;
 		}
 
