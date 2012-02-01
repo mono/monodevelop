@@ -118,6 +118,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				WriteSpecialsUpToNode (node);
 			containerStack.Push (node);
 			positionStack.Push (node.FirstChild);
+			formatter.WriteToken (""); // force indentation, if required
 			OnOutputStarted (new AstNodeEventArgs (node));
 			formatter.StartNode (node);
 		}

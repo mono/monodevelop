@@ -162,7 +162,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				result.NodeSegments [e.AstNode] = new NodeOutput.Segment (stringWriter.GetStringBuilder ().Length);
 			};
 			visitor.OutputFinished += (sender, e) => {
-				result.NodeSegments [e.AstNode].EndOffset = stringWriter.GetStringBuilder ().Length;
+				var nodeSegment = result.NodeSegments [e.AstNode];
+				nodeSegment.Length = stringWriter.GetStringBuilder ().Length - nodeSegment.Offset;
 			};
 			node.AcceptVisitor (visitor, null);
 			result.Text = stringWriter.ToString ().TrimEnd ();

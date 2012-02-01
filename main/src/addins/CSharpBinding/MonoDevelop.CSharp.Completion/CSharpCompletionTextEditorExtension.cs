@@ -157,8 +157,10 @@ namespace MonoDevelop.CSharp.Completion
 			this.CSharpParsedFile = newDocument.Annotation<CSharpParsedFile> ();
 			var textEditor = Editor.Parent;
 			if (textEditor != null) {
-				textEditor.TextViewMargin.PurgeLayoutCache ();
-				textEditor.RedrawMarginLines (textEditor.TextViewMargin, 1, Editor.LineCount);
+				Gtk.Application.Invoke (delegate {
+					textEditor.TextViewMargin.PurgeLayoutCache ();
+					textEditor.RedrawMarginLines (textEditor.TextViewMargin, 1, Editor.LineCount);
+				});
 			}
 			if (TypeSegmentTreeUpdated != null)
 				TypeSegmentTreeUpdated (this, EventArgs.Empty);

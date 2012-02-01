@@ -316,7 +316,9 @@ namespace MonoDevelop.CSharp.ContextAction
 			
 			public override void Dispose ()
 			{
-				RunActions (changes, this);
+				using (ctx.Document.Editor.OpenUndoGroup ()) {
+					RunActions (changes, this);
+				}
 			}
 			
 			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
