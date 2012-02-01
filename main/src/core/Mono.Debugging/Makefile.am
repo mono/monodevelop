@@ -1,4 +1,4 @@
-	
+
 ASSEMBLY_BUILD_DIR = $(top_builddir)/build/bin
 ASSEMBLY = $(ASSEMBLY_BUILD_DIR)/Mono.Debugging.dll
 
@@ -78,7 +78,8 @@ FILES =  \
 	Mono.Debugging.Evaluation/TimeOutException.cs \
 	Mono.Debugging.Evaluation/TypeValueReference.cs \
 	Mono.Debugging.Evaluation/UserVariableReference.cs \
-	Mono.Debugging.Evaluation/ValueReference.cs
+	Mono.Debugging.Evaluation/ValueReference.cs \
+	Mono.Debugging.Evaluation/IStringAdaptor.cs
 
 RES = 
 
