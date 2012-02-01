@@ -12,7 +12,8 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:Mono.Posix \
-	-r:System
+	-r:System \
+	-r:System.Core
 
 FILES =  \
 	AssemblyInfo.cs \

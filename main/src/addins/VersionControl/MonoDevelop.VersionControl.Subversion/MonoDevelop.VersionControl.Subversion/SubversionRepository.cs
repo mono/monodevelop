@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Collections;
 using System.Text;
 using MonoDevelop.Core;
@@ -483,7 +484,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			string diff = Svn.GetUnifiedDiff (versionInfo.LocalPath, false, false);
 			if (!string.IsNullOrEmpty (diff))
-				return GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { versionInfo.LocalPath }) [0];
+				return GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { versionInfo.LocalPath }).FirstOrDefault ();
 			return null;
 		}
 		
