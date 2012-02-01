@@ -252,8 +252,8 @@ namespace MonoDevelop.VersionControl.Subversion
 					}
 				}
 				else {
-					if (File.Exists (path) && !IsVersioned (path.ParentDirectory)) {
-						// The file belongs to an unversioned folder. We can add it by versioning the parent
+					if (!IsVersioned (path.ParentDirectory)) {
+						// The file/folder belongs to an unversioned folder. We can add it by versioning the parent
 						// folders up to the root of the repository
 						
 						if (!path.IsChildPathOf (rootPath))
