@@ -214,6 +214,10 @@ namespace MonoDevelop.Refactoring
 		
 		public RenameFileChange (string oldName, string newName)
 		{
+			if (oldName == null)
+				throw new ArgumentNullException ("oldName");
+			if (newName == null)
+				throw new ArgumentNullException ("newName");
 			this.OldName = oldName;
 			this.NewName = newName;
 			this.Description = string.Format (GettextCatalog.GetString ("Rename file '{0}' to '{1}'"), Path.GetFileName (oldName), Path.GetFileName (newName));
@@ -221,10 +225,15 @@ namespace MonoDevelop.Refactoring
 		
 		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
 		{
+			if (rctx == null)
+				throw new ArgumentNullException ("rctx");
 			FileService.RenameFile (OldName, NewName);
-			var project = rctx.Document.Project;
-			if (project != null)
-				IdeApp.ProjectOperations.Save (project);
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+				foreach (var p in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+					if (p.GetProjectFile (NewName) != null)
+						IdeApp.ProjectOperations.Save (p);
+				}
+			}
 		}
 	}
 	
