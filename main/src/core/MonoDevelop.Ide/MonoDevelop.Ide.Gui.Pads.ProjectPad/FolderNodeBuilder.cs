@@ -415,10 +415,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					MessageService.ShowWarning (GettextCatalog.GetString (
 						"There is already a link with the name '{0}' in the target directory", srcRoot.FileName));
 					return;
-				} else {
-					project.Files.Add (new ProjectFile (targetRoot) { Subtype = Subtype.Directory });
-					changedProject = true;
 				}
+			} else {
+				project.Files.Add (new ProjectFile (targetRoot) { Subtype = Subtype.Directory });
+				changedProject = true;
 			}
 
 			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
