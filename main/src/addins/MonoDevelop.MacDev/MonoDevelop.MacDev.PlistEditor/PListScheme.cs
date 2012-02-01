@@ -35,10 +35,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 	{
 		public abstract class SchemaItem
 		{
-			public string ArrayType { get; set; }
+			public PObjectType? ArrayType { get; set; }
 			public string Description { get; set; }
 			public string Identifier { get; set; }
-			public string Type { get; set; }
+			public PObjectType? Type { get; set; }
 			public List<Value> Values { get; set; }
 			
 			public SchemaItem ()
@@ -48,7 +48,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			public PObject Create ()
 			{
-				if (Type == PDictionary.Type) {
+				if (Type == PObjectType.Dictionary) {
 					var dictionary = new PDictionary ();
 					foreach (var v in Values) {
 						if (v.Required)
@@ -59,13 +59,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (dictionary.Count == 0) {
 						var first = Values.FirstOrDefault ();
 						if (first == null) {
-							dictionary.Add ("newNode", PObject.Create (PString.Type));
+							dictionary.Add ("newNode", PObject.Create (PObjectType.String));
 						} else {
 							dictionary.Add (first.Identifier ?? "newNode", first.Create ());
 						}
 					}
 					return dictionary;
-				} else if (Type == PArray.Type) {
+				} else if (Type == PObjectType.Array) {
 					var array = new PArray ();
 					foreach (var v in Values) {
 						if (v.Required)
@@ -75,8 +75,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 					// If nothing was required, create an initial one anyway
 					if (array.Count == 0) {
 						var first = Values.FirstOrDefault ();
-						if (first == null) {
-							array.Add (PObject.Create (ArrayType));
+						if (first == null && ArrayType.HasValue) {
+							array.Add (PObject.Create (ArrayType.Value));
 						} else {
 							array.Add (first.Create ());
 						}
@@ -85,9 +85,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 				} else if (Values.Any ()){
 					return Values.First ().Create ();
 				} else {
-					var obj = PObject.Create (Type);
-					if (!string.IsNullOrEmpty (Identifier) && !(this is Key))
-						obj.SetValue (Identifier);
+					var obj = PObject.Create (Type ?? PObjectType.String);
+					if (!string.IsNullOrEmpty (Identifier) && !(this is Key) && obj is IPValueObject) {
+						((IPValueObject)obj).TrySetValueFromString (Identifier, System.Globalization.CultureInfo.InvariantCulture);
+					}
 					return obj;
 				}
 			}
@@ -111,8 +112,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public partial class PListScheme
 	{
 		public static readonly PListScheme Empty = new PListScheme () { keys = new Key [0] };
-		static readonly Value BooleanYes = new Value { Identifier = "Yes", Description = "Yes", Type = "Boolean" };
-		static readonly Value BooleanNo = new Value { Identifier = "No", Description = "No", Type = "Boolean" };
+		static readonly Value BooleanYes = new Value { Identifier = "Yes", Description = "Yes", Type = PObjectType.Boolean };
+		static readonly Value BooleanNo = new Value { Identifier = "No", Description = "No", Type = PObjectType.Boolean };
 		
 		IList<Key> keys = new List<Key> ();
 
@@ -142,7 +143,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					values.Add (new Value {
 						Identifier = GettextCatalog.GetString ("New element"),
 						Description = GettextCatalog.GetString ("New element"),
-						Type = obj is PArray ? key.ArrayType : PString.Type
+						Type = obj is PArray? key.ArrayType : PObjectType.String
 					});
 				} else if (values.Count == 1 && values [0].Identifier == null) {
 					// In this case every element in the array/dictionary is produced from this single Value
@@ -201,8 +202,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var key = new Key {
 					Identifier = AttributeToString (keyNode.Attributes ["name"]),
 					Description = AttributeToString (keyNode.Attributes ["_description"]),
-					Type = AttributeToString (keyNode.Attributes ["type"]),
-					ArrayType = AttributeToString (keyNode.Attributes ["arrayType"])
+					Type = ParseType (AttributeToString (keyNode.Attributes ["type"])),
+					ArrayType = ParseType (AttributeToString (keyNode.Attributes ["arrayType"]))
 				};
 				
 				CreateChildValues (key, keyNode);
@@ -233,14 +234,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 				
 				// Every array element is produced by instantiating a copy of this value
-				if (key.Type == PArray.Type && key.Values.Count == 1 && key.Values [0].Identifier == null) {
+				if (key.Type == PObjectType.Array && key.Values.Count == 1 && key.Values [0].Identifier == null) {
 					results.Add (kp.Value, key);
 					foreach (var v in ((PArray) kp.Value)) {
 						Match (v, key.Values [0], results);
 					}
-				} else if (key.Type == PArray.Type) {
-					Match (kp.Value, key, results);
-				} else if (key.Type == PDictionary.Type) {
+				} else if (key.Type == PObjectType.Array ||key.Type == PObjectType.Dictionary) {
 					Match (kp.Value, key, results);
 				} else {
 					results.Add (kp.Value, key);
@@ -261,7 +260,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 
-		static IEnumerable<Value> ParseValues (string type, XmlNodeList nodeList)
+		static IEnumerable<Value> ParseValues (PObjectType? type, XmlNodeList nodeList)
 		{
 			List<Value> values = new List<Value> ();
 			foreach (XmlNode node in nodeList) {
@@ -269,10 +268,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 					throw new NotSupportedException (string.Format ("Node of type {0} not supported as a Value", node.Name));
 				
 				Value v = new Value {
-					ArrayType = AttributeToString (node.Attributes ["arrayType"]),
+					ArrayType = ParseType (AttributeToString (node.Attributes ["arrayType"])),
 					Description = AttributeToString (node.Attributes ["_description"]),
 					Identifier = AttributeToString (node.Attributes ["name"]),
-					Type = AttributeToString (node.Attributes ["type"]) ?? type
+					Type = ParseType (AttributeToString (node.Attributes ["type"])) ?? type
 				};
 				
 				if (node.Attributes ["required"] != null)
@@ -289,6 +288,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (attr == null || string.IsNullOrEmpty (attr.Value))
 				return null;
 			return attr.Value;
+		}
+
+		static PObjectType? ParseType (string type)
+		{
+			if (string.IsNullOrWhiteSpace (type))
+				return null;
+			return (PObjectType) Enum.Parse (typeof (PObjectType), type);
 		}
 	}
 }

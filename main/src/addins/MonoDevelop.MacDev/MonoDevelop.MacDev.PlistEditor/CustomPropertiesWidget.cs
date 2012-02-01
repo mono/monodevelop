@@ -32,6 +32,7 @@ using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using Mono.TextEditor;
+using System.Globalization;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
@@ -39,7 +40,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public class CustomPropertiesWidget : VBox, IRawPListDisplayWidget
 	{
 		static readonly string AddKeyNode = GettextCatalog.GetString ("Add new entry");
-		const string DefaultNewObjectType = PString.Type;
+		const PObjectType DefaultNewObjectType = PObjectType.String;
 		
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject), typeof (PListScheme.SchemaItem));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
@@ -85,6 +86,112 @@ namespace MonoDevelop.MacDev.PlistEditor
 				QueueDraw ();
 			};
 			RefreshTree ();
+		}
+		
+		void RenderValue (PObject obj, CellRendererCombo renderer)
+		{
+			switch (obj.Type) {
+			case PObjectType.Dictionary:
+			case PObjectType.Array:
+				int count = ((PObjectContainer)obj).Count;
+				renderer.Sensitive = false;
+				renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", count), count);
+				return;
+			case PObjectType.Number:
+				renderer.Sensitive = true;
+				renderer.Text = ((PNumber)obj).Value.ToString (CultureInfo.CurrentCulture);
+				return;
+			case PObjectType.Boolean:
+				renderer.Sensitive = true;
+				renderer.Text = ((PBoolean)obj).Value
+					? GettextCatalog.GetString ("Yes")
+					: GettextCatalog.GetString ("No");
+				return;
+			case PObjectType.Data:
+				renderer.Sensitive = false;
+				renderer.Text = string.Format ("byte[{0}]", ((PData)obj).Value.Length);
+				return;
+			case PObjectType.String:
+				string str = ((PString)obj).Value;
+				var key = obj.Parent != null? this.Scheme.GetKey (obj.Parent.Key) : null;
+				if (key != null) {
+					var val = key.Values.FirstOrDefault (v => v.Identifier == str);
+					if (val != null && this.ShowDescriptions) {
+						str = GettextCatalog.GetString (val.Description);
+					}
+				}
+				renderer.Sensitive = true;
+				renderer.Text = str;
+				return;
+			case PObjectType.Date:
+				renderer.Sensitive = true;
+				renderer.Text = ((PDate)obj).Value.ToString (CultureInfo.CurrentCulture);
+				return;
+			}
+			throw new InvalidOperationException ();
+		}
+
+		static string GetTranslatedStringFromPObjectType (PObjectType type)
+		{
+			switch (type) {
+			case PObjectType.Dictionary:
+				return GettextCatalog.GetString ("Dictionary");
+			case PObjectType.Array:
+				return GettextCatalog.GetString ("Array");
+			case PObjectType.Number:
+				return GettextCatalog.GetString ("Number");
+			case PObjectType.Boolean:
+				return GettextCatalog.GetString ("Boolean");
+			case PObjectType.Data:
+				return GettextCatalog.GetString ("Data");
+			case PObjectType.String:
+				return GettextCatalog.GetString ("String");
+			case PObjectType.Date:
+				return GettextCatalog.GetString ("Date");
+			}
+			throw new ArgumentOutOfRangeException ();
+		}
+
+		static PObjectType GetPObjectTypeFromTranslatedString (string str)
+		{
+			if (str == GettextCatalog.GetString ("Dictionary"))
+				return PObjectType.Dictionary;
+			if (str == GettextCatalog.GetString ("Array"))
+				return PObjectType.Array;
+			if (str == GettextCatalog.GetString ("Number"))
+				return PObjectType.Number;
+			if (str == GettextCatalog.GetString ("Boolean"))
+				return PObjectType.Boolean;
+			if (str == GettextCatalog.GetString ("Data"))
+				return PObjectType.Data;
+			if (str == GettextCatalog.GetString ("String"))
+				return PObjectType.String;
+			if (str == GettextCatalog.GetString ("Date"))
+				return PObjectType.Date;
+			throw new ArgumentOutOfRangeException ();
+		}
+		
+		static bool TrySetValueFromString (PObject obj, string text)
+		{
+			//special case boolean since it's localized
+			if (obj is PBoolean) {
+				const StringComparison ic = StringComparison.OrdinalIgnoreCase;
+				if (GettextCatalog.GetString ("Yes").Equals (text, ic)) {
+					((PBoolean)obj).Value = true;
+					return true;
+				} else if (GettextCatalog.GetString ("No").Equals (text, ic)) {
+					((PBoolean)obj).Value = false;
+					return true;
+				}
+			}
+
+			if (obj is IPValueObject) {
+				var pv = (IPValueObject) obj;
+				return pv.TrySetValueFromString (text, CultureInfo.CurrentCulture)
+					|| pv.TrySetValueFromString (text, CultureInfo.InvariantCulture);
+			}
+
+			throw new NotSupportedException ();
 		}
 		
 		class PopupTreeView : MonoDevelop.Components.ContextMenuTreeView
@@ -261,15 +368,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 			};
 
 			var comboRenderer = new CellRendererCombo ();
-			
+
 			var typeModel = new ListStore (typeof (string));
-			typeModel.AppendValues (PArray.Type);
-			typeModel.AppendValues (PDictionary.Type);
-			typeModel.AppendValues (PBoolean.Type);
-			typeModel.AppendValues (PData.Type);
-			typeModel.AppendValues (PData.Type);
-			typeModel.AppendValues (PNumber.Type);
-			typeModel.AppendValues (PString.Type);
+			typeModel.AppendValues (GetTranslatedStringFromPObjectType (PObjectType.Array));
+			typeModel.AppendValues (GetTranslatedStringFromPObjectType (PObjectType.Dictionary));
+			typeModel.AppendValues (GetTranslatedStringFromPObjectType (PObjectType.Boolean));
+			typeModel.AppendValues (GetTranslatedStringFromPObjectType (PObjectType.Data));
+			typeModel.AppendValues (GetTranslatedStringFromPObjectType (PObjectType.Date));
+			typeModel.AppendValues (GetTranslatedStringFromPObjectType (PObjectType.Number));
+			typeModel.AppendValues (GetTranslatedStringFromPObjectType (PObjectType.String));
+
 			comboRenderer.Model = typeModel;
 			comboRenderer.Mode = CellRendererMode.Editable;
 			comboRenderer.HasEntry = false;
@@ -278,10 +386,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 				TreeIter selIter;
 				if (!treeStore.GetIterFromString (out selIter, args.Path)) 
 					return;
+
+				var type = GetPObjectTypeFromTranslatedString (args.NewText);
 				
 				PObject oldObj = (PObject)treeStore.GetValue (selIter, 1);
-				if (oldObj != null && oldObj.TypeString != args.NewText)
-					oldObj.Replace (PObject.Create (args.NewText));
+				if (oldObj != null && oldObj.Type != type) {
+					oldObj.Replace (PObject.Create (type));
+				}
 			};
 			
 			treeview.AppendColumn (GettextCatalog.GetString ("Type"), comboRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
@@ -291,7 +402,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var key   = (PListScheme.SchemaItem)tree_model.GetValue (iter, 2);
 				renderer.Editable = key == null && !AddKeyNode.Equals (value);
 				renderer.ForegroundGdk = Style.Text (renderer.Editable ? StateType.Normal : StateType.Insensitive);
-				renderer.Text = obj == null ? "" : obj.TypeString;
+				renderer.Text = obj == null ? "" : GetTranslatedStringFromPObjectType (obj.Type);
 			});
 			
 			var propRenderer = new CellRendererCombo ();
@@ -306,45 +417,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var renderer = (CellRendererCombo)cell;
 				var obj      = (PObject)tree_model.GetValue (iter, 1);
 
-				renderer.Sensitive = obj != null && !(obj is PDictionary || obj is PArray || obj is PData);
-				renderer.Editable = renderer.Sensitive;
-				if (!renderer.Sensitive) {
-					renderer.Text = "";
-					return;
-				}
-				
-				if (ShowDescriptions) {
-					var identifier = (string) tree_model.GetValue (iter, 0);
-					var values = PListScheme.AvailableValues (obj, CurrentTree);
-					var item = values == null ? null : values.FirstOrDefault (v => v.Identifier == identifier);
-					if (item != null) {
-						renderer.Text = item.Description ?? item.Identifier;
-						return;
-					}
-				}
-
-				switch (obj.TypeString) {
-				case PDictionary.Type:
-					renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", ((PDictionary)obj).Count), ((PDictionary)obj).Count);
-					break;
-				case PArray.Type:
-					renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", ((PArray)obj).Count, ((PArray)obj).Count));
-					break;
-				case PBoolean.Type:
-					renderer.Text = ((PBoolean)obj).Value ? GettextCatalog.GetString ("Yes") : GettextCatalog.GetString ("No");
-					break;
-				case PData.Type:
-					renderer.Text = string.Format ("byte[{0}]", ((PData)obj).Value.Length);
-					break;
-				default:
-					if (obj is IPValueObject) {
-						renderer.Text = (((IPValueObject)obj).Value ?? "").ToString ();
-					} else {
-						renderer.Sensitive = false;
-						renderer.Text = GettextCatalog.GetString ("Could not render {0}.", obj.GetType ().Name);
-					}
-					break;
-				}
+				RenderValue (obj, renderer);
 			});
 			treeview.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview.Model = treeStore;
@@ -422,7 +495,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (value != null)
 						newText = value.Identifier;
 				}
-				obj.SetValue (newText);
+				TrySetValueFromString (obj, newText);
 			} catch (Exception ex) {
 				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
 			}

@@ -134,9 +134,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 			addRemoveRenderer.RemoveClicked += delegate {
 				TreeIter iter;
 				bool hasSelection = treeview.Selection.GetSelected (out iter);
-				PObject obj = null;
+				PString obj = null;
 				if (hasSelection) {
-					obj = (PObject) treeStore.GetValue (iter, (int) ListColumn.Object);
+					obj = (PString) treeStore.GetValue (iter, (int) ListColumn.Object);
 					treeStore.Remove (ref iter);
 
 					editing = true;
@@ -145,7 +145,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			};
 			addRemoveRenderer.AddClicked += delegate {
-				PObject obj = new PString (string.Empty);
+				PString obj = new PString (string.Empty);
 				TreeIter iter;
 
 				bool hasSelection = treeview.Selection.GetSelected (out iter);
@@ -170,18 +170,18 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (!treeStore.GetIterFromString (out iter, args.Path))
 					return;
 				
-				var pObject = (PObject) treeStore.GetValue (iter, (int) ListColumn.Object);
+				var pObject = (PString) treeStore.GetValue (iter, (int) ListColumn.Object);
 				if (pObject == null)
 					return;
 				
 				string newValue = !string.IsNullOrEmpty (ValuePrefix) ? ValuePrefix + args.NewText : args.NewText;
 				
-				pObject.SetValue (newValue);
+				pObject.Value = newValue;
 			};
 			
 			treeview.AppendColumn (GettextCatalog.GetString ("Value"), valueRenderer, delegate (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var text     = (string) tree_model.GetValue (iter, (int) ListColumn.DisplayValue);
-				var obj      = (PObject) tree_model.GetValue (iter, (int) ListColumn.Object);
+				var obj      = (PString) tree_model.GetValue (iter, (int) ListColumn.Object);
 				var renderer = (CellRendererCombo) cell;
 				
 				renderer.Sensitive = obj != null;

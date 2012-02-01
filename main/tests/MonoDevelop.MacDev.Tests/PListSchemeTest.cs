@@ -127,7 +127,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var available = PListScheme.AvailableKeys (value, PListScheme.Match (root, scheme));
 			Assert.AreEqual (1, available.Count, "#1");
-			Assert.AreEqual (PNumber.Type, available [0].Type, "#2");
+			Assert.AreEqual (PObjectType.Number, available [0].Type, "#2");
 		}
 
 		[Test]
@@ -144,7 +144,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var available = PListScheme.AvailableKeys (value, PListScheme.Match (root, scheme));
 			Assert.AreEqual (1, available.Count, "#1");
-			Assert.AreEqual (PString.Type, available [0].Type, "#2");
+			Assert.AreEqual (PObjectType.String, available [0].Type, "#2");
 		}
 
 		[Test]
@@ -161,7 +161,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var available = PListScheme.AvailableKeys (value, PListScheme.Match (root, scheme));
 			Assert.AreEqual (1, available.Count, "#1");
-			Assert.AreEqual (PString.Type, available [0].Type, "#2");
+			Assert.AreEqual (PObjectType.String, available [0].Type, "#2");
 		}
 
 		[Test]
@@ -384,7 +384,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var key = scheme.GetKey ("keyname");
 			Assert.AreEqual (1, key.Values.Count, "#1");
-			Assert.AreEqual (PDictionary.Type, key.Values [0].Type, "#2");
+			Assert.AreEqual (PObjectType.Dictionary, key.Values [0].Type, "#2");
 		}
 		
 		[Test]
