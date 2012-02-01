@@ -286,7 +286,9 @@ namespace MonoDevelop.Debugger.Win32
 			CorValRef arr = new CorValRef (delegate {
 				return ctx.Session.NewArray (ctx, (CorType)GetValueType (ctx, val), 1);
 			});
-			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr);
+			CorArrayValue array = CorObjectAdaptor.GetRealObject (ctx, arr) as CorArrayValue;
+			
+			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr, array);
 			realArr.SetElement (new int[] { 0 }, val);
 			
 			CorType at = (CorType) GetType (ctx, "System.Array");
