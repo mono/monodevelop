@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		ITimeTracker timer;
 		bool useXBuild;
 		MSBuildVerbosity verbosity;
-		
+
 		struct ItemInfo {
 			public MSBuildItem Item;
 			public bool Added;
@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		RemoteProjectBuilder GetProjectBuilder ()
 		{
-			SolutionEntityItem item = EntityItem;
+			SolutionEntityItem item = (SolutionEntityItem) Item;
 			TargetRuntime runtime = null;
 			string toolsVersion;
 			if (item is IAssemblyProject) {
@@ -157,7 +157,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (useXBuild) {
 				// Get the references list from the msbuild project
-				SolutionEntityItem item = EntityItem;
+				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				SolutionItemConfiguration configObject = item.GetConfiguration (configuration);
 				foreach (string s in builder.GetAssemblyReferences (configObject.Name, configObject.Platform))
@@ -288,13 +288,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				Item.SetItemHandler (this);
 				MSBuildProjectService.SetId (Item, itemGuid);
 				
-				EntityItem.FileName = fileName;
-				EntityItem.Name = System.IO.Path.GetFileNameWithoutExtension (fileName);
+				SolutionEntityItem it = (SolutionEntityItem) Item;
+				
+				it.FileName = fileName;
+				it.Name = System.IO.Path.GetFileNameWithoutExtension (fileName);
 				
 				RemoveDuplicateItems (p, fileName);
 				
 				Load (monitor, p);
-				return EntityItem;
+				return it;
 				
 			} finally {
 				ProjectExtensionUtil.EndLoadOperation ();
@@ -323,7 +325,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						
 						var oldSt = st;
 						st = MSBuildProjectService.GetItemSubtypeNodes ()
-							.Where (t => t.CanHandleItem (EntityItem)).Last ();
+							.Where (t => t.CanHandleItem ((SolutionEntityItem)item)).Last ();
 						for (int i = 0; i < subtypeGuids.Count; i++) {
 							if (string.Equals (subtypeGuids[i], oldSt.Guid, StringComparison.OrdinalIgnoreCase)) {
 								subtypeGuids[i] = st.Guid;
@@ -337,7 +339,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						p.GetGlobalPropertyGroup ().SetPropertyValue ("ProjectTypeGuids", gg.ToUpper ());
 						p.Save (fileName);
 					}
-					st.UpdateImports (EntityItem, targetImports);
+					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 				} else
 					throw new UnknownSolutionItemTypeException (typeGuids);
 			}
