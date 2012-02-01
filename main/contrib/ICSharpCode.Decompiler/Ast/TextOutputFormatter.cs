@@ -165,6 +165,8 @@ namespace ICSharpCode.Decompiler.Ast
 		
 		public void WriteToken(string token)
 		{
+			if (string.IsNullOrEmpty (token))
+				return;
 			// Attach member reference to token only if there's no identifier in the current node.
 			MemberReference memberRef = GetCurrentMemberReference();
 			var node = nodeStack.Peek();
