@@ -23,6 +23,7 @@ FILES =  \
 	SoftDebuggerSession.cs \
 	SoftDebuggerStartInfo.cs \
 	SoftEvaluationContext.cs \
+	StringAdaptor.cs \
 	VariableValueReference.cs
 
 RES =

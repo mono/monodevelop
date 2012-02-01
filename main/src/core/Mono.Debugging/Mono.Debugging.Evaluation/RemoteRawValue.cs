@@ -150,5 +150,39 @@ namespace Mono.Debugging.Evaluation
 				return array.ToArray ();
 		}
 	}
+	
+	internal class RemoteRawValueString: RemoteFrameObject, IRawValueString
+	{
+		object targetObject;
+		EvaluationContext ctx;
+		IObjectSource source;
+		IStringAdaptor targetString;
+		
+		public RemoteRawValueString (EvaluationContext ctx, IObjectSource source, IStringAdaptor targetString, object targetObject)
+		{
+			this.ctx = ctx;
+			this.targetString = targetString;
+			this.targetObject = targetObject;
+			this.source = source;
+			Connect ();
+		}
+		
+		public object TargetObject {
+			get { return this.targetObject; }
+		}
+		
+		public int Length {
+			get { return targetString.Length; }
+		}
+		
+		public string Value {
+			get { return targetString.Value; }
+		}
+		
+		public string Substring (int index, int length)
+		{
+			return targetString.Substring (index, length);
+		}
+	}
 }
 

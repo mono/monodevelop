@@ -185,5 +185,60 @@ namespace Mono.Debugging.Client
 			}
 		}
 	}
+	
+	/// <summary>
+	/// Represents a string object in the process being debugged
+	/// </summary>
+	[Serializable]
+	public class RawValueString
+	{
+		IRawValueString source;
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Mono.Debugging.Client.RawValueString"/> class.
+		/// </summary>
+		/// <param name='source'>
+		/// Value source.
+		/// </param>
+		public RawValueString (IRawValueString source)
+		{
+			this.source = source;
+		}
+		
+		internal IRawValueString Source {
+			get { return this.source; }
+		}
+
+		/// <summary>
+		/// Gets the length of the string
+		/// </summary>
+		public int Length {
+			get { return source.Length; }
+		}
+		
+		/// <summary>
+		/// Gets a substring of the string
+		/// </summary>
+		/// <param name='index'>
+		/// The starting index of the requested substring.
+		/// </param>
+		/// <param name='length'>
+		/// The length of the requested substring.
+		/// </param>
+		public string Substring (int index, int length)
+		{
+			return source.Substring (index, length);
+		}
+		
+		/// <summary>
+		/// Gets the value.
+		/// </summary>
+		/// <value>
+		/// The value.
+		/// </value>
+		public string Value {
+			get { return source.Value; }
+		}
+	}
 }
 

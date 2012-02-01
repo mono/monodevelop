@@ -55,6 +55,13 @@ namespace Mono.Debugging.Backend
 		Array ToArray ();
 	}
 	
+	public interface IRawValueString
+	{
+		string Substring (int index, int length);
+		string Value { get; }
+		int Length { get; }
+	}
+	
 	[Serializable]
 	public class EvaluationResult
 	{

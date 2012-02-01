@@ -190,7 +190,7 @@ namespace Mono.Debugging.Evaluation
 			return GetChildren (path, index, count, options);
 		}
 		
-		public virtual string CallToString ( )
+		public virtual string CallToString ()
 		{
 			return ctx.Adapter.CallToString (ctx, Value);
 		}

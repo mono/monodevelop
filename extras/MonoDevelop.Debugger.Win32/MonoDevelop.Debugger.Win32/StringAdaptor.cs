@@ -1,20 +1,20 @@
-// ArrayAdaptor.cs
-//
-// Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
-//
+// 
+// StringAdaptor.cs
+//  
+// Author: Jeffrey Stedfast <jeff@xamarin.com>
+// 
+// Copyright (c) 2012 Xamarin Inc.
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,8 +22,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
+// 
 
 using System;
 using Mono.Debugging.Client;
@@ -32,57 +31,30 @@ using Mono.Debugging.Evaluation;
 
 namespace MonoDevelop.Debugger.Win32
 {
-	class ArrayAdaptor: ICollectionAdaptor
+	public class StringAdaptor: IStringAdaptor
 	{
 		CorEvaluationContext ctx;
-		CorArrayValue array;
+		CorStringValue str;
 		CorValRef obj;
-
-		public ArrayAdaptor (EvaluationContext ctx, CorValRef obj, CorArrayValue array)
+		
+		public StringAdaptor (EvaluationContext ctx, CorValRef obj, CorStringValue str)
 		{
 			this.ctx = (CorEvaluationContext) ctx;
-			this.array = array;
+			this.str = str;
 			this.obj = obj;
 		}
 		
-		public int[] GetDimensions ()
-		{
-			if (array != null)
-				return array.GetDimensions ();
-			else
-				return new int[0];
+		public int Length {
+			get { return str.Length; }
 		}
 		
-		public object GetElement (int[] indices)
-		{
-			return new CorValRef (delegate {
-				if (array != null)
-					return array.GetElement (indices);
-				else
-					return null;
-			});
+		public string Value {
+			get { return str.String; }
 		}
 		
-		public void SetElement (int[] indices, object val)
+		public string Substring (int index, int length)
 		{
-			CorValRef it = (CorValRef) GetElement (indices);
-			it.SetValue (ctx, (CorValRef) val);
-		}
-		
-		public object ElementType {
-			get {
-				return obj.Val.ExactType.FirstTypeParameter;
-			}
-		}
-
-		public ObjectValue CreateElementValue (ArrayElementGroup grp, ObjectPath path, int[] indices)
-		{
-			if (array != null) {
-				CorValRef elem = (CorValRef) GetElement (indices);
-				return ctx.Adapter.CreateObjectValue (ctx, grp, path, elem, ObjectValueFlags.ArrayElement);
-			}
-			else
-				return ObjectValue.CreateUnknown ("?");
+			return str.String.Substring (index, length);
 		}
 	}
 }

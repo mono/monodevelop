@@ -218,9 +218,11 @@ namespace Mono.Debugging.Evaluation
 		}
 
 		public abstract ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr);
+		public abstract IStringAdaptor CreateStringAdaptor (EvaluationContext ctx, object str);
 
 		public abstract bool IsNull (EvaluationContext ctx, object val);
 		public abstract bool IsPrimitive (EvaluationContext ctx, object val);
+		public abstract bool IsString (EvaluationContext ctx, object val);
 		public abstract bool IsArray (EvaluationContext ctx, object val);
 		public abstract bool IsEnum (EvaluationContext ctx, object val);
 		public abstract bool IsClass (object type);
@@ -725,6 +727,12 @@ namespace Mono.Debugging.Evaluation
 				object c = Cast (ctx, obj, longType);
 				return TargetObjectToObject (ctx, c);
 			}
+			
+			if (ctx.Options.ChunkRawStrings && IsString (ctx, obj)) {
+				IStringAdaptor adaptor = CreateStringAdaptor (ctx, obj);
+				return new RawValueString (new RemoteRawValueString (ctx, source, adaptor, obj));
+			}
+			
 			if (IsPrimitive (ctx, obj))
 				return TargetObjectToObject (ctx, obj);
 				
@@ -732,6 +740,7 @@ namespace Mono.Debugging.Evaluation
 				ICollectionAdaptor adaptor = CreateArrayAdaptor (ctx, obj);
 				return new RawValueArray (new RemoteRawValueArray (ctx, source, adaptor, obj));
 			}
+			
 			return new RawValue (new RemoteRawValue (ctx, source, obj));
 		}
 		
@@ -746,7 +755,13 @@ namespace Mono.Debugging.Evaluation
 			else if (obj is RawValueArray) {
 				RemoteRawValueArray val = ((RawValueArray)obj).Source as RemoteRawValueArray;
 				if (val == null)
-					throw new InvalidOperationException ("Unknown RawValue source: " + ((RawValueArray)obj).Source);
+					throw new InvalidOperationException ("Unknown RawValueArray source: " + ((RawValueArray)obj).Source);
+				return val.TargetObject;
+			}
+			else if (obj is RawValueString) {
+				RemoteRawValueString val = ((RawValueString)obj).Source as RemoteRawValueString;
+				if (val == null)
+					throw new InvalidOperationException ("Unknown RawValueString source: " + ((RawValueString)obj).Source);
 				return val.TargetObject;
 			}
 			else {
