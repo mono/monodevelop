@@ -219,33 +219,4 @@ namespace MonoDevelop.MacDev
 		
 		public static event Action Changed;
 	}
-	
-	class AppleSdkAboutInformation : ISystemInformationProvider
-	{
-		public string Description {
-			get {
-				AppleSdkSettings.CheckChanged ();
-
-				var sb = new System.Text.StringBuilder ();
-				sb.AppendLine ("Apple Developer Tools:");
-				if (!AppleSdkSettings.IsValid) {
-					sb.AppendLine ("\t(Not Found)");
-					return sb.ToString ();
-				}
-				
-				using (var pool = new NSAutoreleasePool ()) {
-					var dict = NSDictionary.FromFile (AppleSdkSettings.XcodePath.Combine ("Contents", "Info.plist"));
-					sb.AppendFormat ("\t Xcode {0} ({1})",
-						dict[(NSString)"CFBundleShortVersionString"],
-						dict[(NSString)"CFBundleVersion"]);
-					sb.AppendLine ();
-					
-					dict = NSDictionary.FromFile (AppleSdkSettings.DeveloperRootVersionPlist);
-					sb.AppendFormat ("\t Build {0}",
-						dict[(NSString)"ProductBuildVersion"]);
-				}
-				return sb.ToString ();
-			}
-		}
-	}
 }
