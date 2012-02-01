@@ -62,14 +62,12 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			if (unit == null)
 				return null;
 			
-			TextLocation loc = new TextLocation (options.Document.Editor.Caret.Line, options.Document.Editor.Caret.Column);
-			return unit.GetNodeAt<AttributedNode> (loc);
+			return unit.GetNodeAt<AttributedNode> (options.Document.Editor.Caret.Location);
 		}
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			if (!(options.SelectedItem is IVariable)) {
-				//				Console.WriteLine ("!!! Item is not LocalVariable");
+			if (!(options.SelectedItem is IVariable) || options.SelectedItem is IParameter) {
 				return false;
 			}
 			var result = GetMemberBodyNode (options);

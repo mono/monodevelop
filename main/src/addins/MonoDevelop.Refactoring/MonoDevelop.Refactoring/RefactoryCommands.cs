@@ -949,7 +949,7 @@ namespace MonoDevelop.Refactoring
 		}
 		*/
 		
-		public static bool ContainsAbstractMembers (ITypeResolveContext ctx, IType cls)
+		public static bool ContainsAbstractMembers (IType cls)
 		{
 			if (cls == null)
 				return false;
