@@ -1063,7 +1063,7 @@ namespace MonoDevelop.Ide
 				OnStartClean (monitor, tt);
 
 				DispatchService.ThreadDispatch (delegate {
-					CleanAsync (entry, monitor, tt, false);
+					CleanAsync (entry, monitor, tt, true);
 					if (monitor.AsyncOperation.IsCompleted && !monitor.AsyncOperation.Success) {
 						tt.End ();
 						monitor.Dispose ();
