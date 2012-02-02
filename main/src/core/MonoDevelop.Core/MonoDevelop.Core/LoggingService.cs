@@ -111,8 +111,13 @@ namespace MonoDevelop.Core
 				.Select (f => new FileInfo (f))
 				.Where (f => f.CreationTimeUtc < DateTime.UtcNow.Subtract (TimeSpan.FromDays (7)));
 
-			foreach (var v in files)
-				v.Delete ();
+			foreach (var v in files) {
+				try {
+					v.Delete ();
+				} catch (Exception e) {
+					Console.WriteLine ("Can't Delete " + v + " got exception : " + e);
+				}
+			}
 		}
 		
 		static void RedirectOutputToLogFile ()
