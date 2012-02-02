@@ -433,7 +433,7 @@ namespace MonoDevelop.Projects
 			//copy references and files marked to "CopyToOutputDirectory"
 			CopySupportFiles (monitor, configuration);
 		
-			monitor.BeginTask (GettextCatalog.GetString ("Performing main compilation..."), 0);
+			monitor.Log.WriteLine ("Performing main compilation...");
 			
 			BuildResult res = DoBuild (monitor, configuration);
 
@@ -445,7 +445,6 @@ namespace MonoDevelop.Projects
 
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Build complete -- ") + errorString + ", " + warningString);
 			}
-			monitor.EndTask ();
 
 			return res;
 		}
@@ -654,7 +653,7 @@ namespace MonoDevelop.Projects
 				return;
 			}
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Performing clean..."), 0);
+			monitor.Log.WriteLine ("Removing output files...");
 			
 			// Delete generated files
 			foreach (FilePath file in GetOutputFiles (configuration)) {
@@ -668,9 +667,7 @@ namespace MonoDevelop.Projects
 			DeleteSupportFiles (monitor, configuration);
 			
 			DoClean (monitor, config.Selector);
-			monitor.Log.WriteLine ();
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Clean complete"));
-			monitor.EndTask ();
 		}
 
 		protected virtual void DoClean (IProgressMonitor monitor, ConfigurationSelector configuration)
