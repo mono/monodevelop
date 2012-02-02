@@ -61,6 +61,11 @@ namespace MonoDevelop.Ide.Gui
 			return GetBuildProgressMonitor (GettextCatalog.GetString ("Cleaning..."));
 		}
 		
+		public IProgressMonitor GetRebuildProgressMonitor ()
+		{
+			return GetBuildProgressMonitor (GettextCatalog.GetString ("Rebuilding..."));
+		}
+		
 		private IProgressMonitor GetBuildProgressMonitor (string statusText)
 		{
 			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();

@@ -927,14 +927,8 @@ namespace MonoDevelop.Ide
 			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Cleaning " + entry.Name);
 			try {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetCleanProgressMonitor ();
-				
-				tt.Trace ("Start clean event");
-				TaskService.Errors.ClearByOwner (this);
-				OnStartClean (monitor);
-				
-				DispatchService.ThreadDispatch (delegate {
-					CleanAsync (entry, monitor, tt);
-				}, null);
+				OnStartClean (monitor, tt);
+				DispatchService.ThreadDispatch (() => CleanAsync (entry, monitor, tt, false));
 				
 				currentBuildOperation = monitor.AsyncOperation;
 				currentBuildOperationOwner = entry;
@@ -950,7 +944,7 @@ namespace MonoDevelop.Ide
 			return currentBuildOperation;
 		}
 		
-		void CleanAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt)
+		void CleanAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt, bool isRebuilding)
 		{
 			try {
 				tt.Trace ("Cleaning item");
@@ -966,10 +960,14 @@ namespace MonoDevelop.Ide
 			} finally {
 				tt.Trace ("Done cleaning");
 			}
-			DispatchService.GuiDispatch (
-				delegate {
-					CleanDone (monitor, entry, tt);
-			});
+			
+			if (isRebuilding) {
+				if (EndClean != null) {
+					DispatchService.GuiSyncDispatch (() => OnEndClean (monitor, tt));
+				}
+			} else {
+				DispatchService.GuiDispatch (() => CleanDone (monitor, entry, tt));
+			}
 		}
 		
 		void CleanDone (IProgressMonitor monitor, IBuildTarget entry, ITimeTracker tt)
@@ -980,8 +978,7 @@ namespace MonoDevelop.Ide
 				monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 				tt.Trace ("Reporting result");			
 				monitor.ReportSuccess (GettextCatalog.GetString ("Clean successful."));
-				tt.Trace ("End clean event");
-				OnEndClean (monitor);
+				OnEndClean (monitor, tt);
 			} finally {
 				monitor.Dispose ();
 				tt.End ();
@@ -1060,18 +1057,33 @@ namespace MonoDevelop.Ide
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			
-			var asyncOperation = new AsyncOperation ();
-			IAsyncOperation cleanOperation = Clean (entry);
+			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Rebuilding " + entry.Name);
+			try {
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRebuildProgressMonitor ();
+				OnStartClean (monitor, tt);
 
-			asyncOperation.TrackOperation (cleanOperation, false);
-			
-			cleanOperation.Completed += (aop) => {
-				if (aop.Success)
-					asyncOperation.TrackOperation (Build (entry), true);
-			};
-			
-			return asyncOperation;
+				DispatchService.ThreadDispatch (delegate {
+					CleanAsync (entry, monitor, tt, false);
+					if (monitor.AsyncOperation.IsCompleted && !monitor.AsyncOperation.Success) {
+						tt.End ();
+						monitor.Dispose ();
+						return;
+					}
+					if (StartBuild != null) {
+						DispatchService.GuiSyncDispatch (() => BeginBuild (monitor, tt, true));
+					}
+					BuildSolutionItemAsync (entry, monitor, tt);
+				}, null);
+				currentBuildOperation = monitor.AsyncOperation;
+				currentBuildOperationOwner = entry;
+				currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
+			} catch {
+				tt.End ();
+				throw;
+			}
+			return currentBuildOperation;
 		}
+		
 //		bool errorPadInitialized = false;
 		public IAsyncOperation Build (IBuildTarget entry)
 		{
@@ -1097,13 +1109,8 @@ namespace MonoDevelop.Ide
 			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Building " + entry.Name);
 			try {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
-			
-				tt.Trace ("Start build event");
-				BeginBuild (monitor);
-
-				DispatchService.ThreadDispatch (delegate {
-					BuildSolutionItemAsync (entry, monitor, tt);
-				}, null);
+				BeginBuild (monitor, tt, false);
+				DispatchService.ThreadDispatch (() => BuildSolutionItemAsync (entry, monitor, tt));
 				currentBuildOperation = monitor.AsyncOperation;
 				currentBuildOperationOwner = entry;
 				currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
@@ -1189,11 +1196,15 @@ namespace MonoDevelop.Ide
 			return result;
 		}
 
-		void BeginBuild (IProgressMonitor monitor)
+		void BeginBuild (IProgressMonitor monitor, ITimeTracker tt, bool isRebuilding)
 		{
-			TaskService.Errors.ClearByOwner (this);
-			if (StartBuild != null)
+			tt.Trace ("Start build event");
+			if (!isRebuilding) {
+				TaskService.Errors.ClearByOwner (this);
+			}
+			if (StartBuild != null) {
 				StartBuild (this, new BuildEventArgs (monitor, true));
+			}
 		}
 		
 		void BuildDone (IProgressMonitor monitor, BuildResult result, IBuildTarget entry, ITimeTracker tt)
@@ -1820,15 +1831,18 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		void OnStartClean (IProgressMonitor monitor)
+		void OnStartClean (IProgressMonitor monitor, ITimeTracker tt)
 		{
+			tt.Trace ("Start clean event");
+			TaskService.Errors.ClearByOwner (this);
 			if (StartClean != null) {
 				StartClean (this, new CleanEventArgs (monitor));
 			}
 		}
 		
-		void OnEndClean (IProgressMonitor monitor)
+		void OnEndClean (IProgressMonitor monitor, ITimeTracker tt)
 		{
+			tt.Trace ("End clean event");
 			if (EndClean != null) {
 				EndClean (this, new CleanEventArgs (monitor));
 			}
