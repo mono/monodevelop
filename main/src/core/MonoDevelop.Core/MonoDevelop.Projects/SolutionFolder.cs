@@ -548,7 +548,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			try {
-				monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), allProjects.Count);
+				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 				
 				BuildResult cres = new BuildResult ();
 				cres.BuildCount = 0;
@@ -584,9 +584,8 @@ namespace MonoDevelop.Projects
 				return;
 			
 			try {
-				
-				monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution {0}", Name), Items.Count);
-				
+				monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), Items.Count);
+
 				foreach (SolutionItem item in Items) {
 					if (item is SolutionFolder)
 						item.Clean (monitor, configuration);
@@ -622,8 +621,8 @@ namespace MonoDevelop.Projects
 			try {
 				List<SolutionItem> toBuild = new List<SolutionItem> (allProjects.Where (p => p.NeedsBuilding (configuration)));
 				
-				monitor.BeginTask (GettextCatalog.GetString ("Building Solution {0}", Name), toBuild.Count);
-				
+				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), toBuild.Count);
+
 				BuildResult cres = new BuildResult ();
 				cres.BuildCount = 0;
 				HashSet<SolutionItem> failedItems = new HashSet<SolutionItem> ();

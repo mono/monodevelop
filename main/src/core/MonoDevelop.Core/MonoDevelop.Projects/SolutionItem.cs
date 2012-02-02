@@ -461,13 +461,18 @@ namespace MonoDevelop.Projects
 		{
 			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name);
 			try {
+				//SolutionFolder handles the begin/end task itself, don't duplicate
+				if (this is SolutionFolder) {
+					RunTarget (monitor, ProjectService.CleanTarget, configuration);
+					return;
+				}
+				
 				try {
 					SolutionEntityItem it = this as SolutionEntityItem;
 					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (configuration) : null;
 					string confName = iconf != null ? iconf.Id : configuration.ToString ();
 					monitor.BeginTask (GettextCatalog.GetString ("Cleaning: {0} ({1})", Name, confName), 1);
 					RunTarget (monitor, ProjectService.CleanTarget, configuration);
-					monitor.Step (1);
 				} finally {
 					monitor.EndTask ();
 				}
@@ -510,7 +515,12 @@ namespace MonoDevelop.Projects
 				if (!buildReferences) {
 					if (!NeedsBuilding (solutionConfiguration))
 						return new BuildResult (new CompilerResults (null), "");
-						
+					
+					//SolutionFolder's OnRunTarget handles the begin/end task itself, don't duplicate
+					if (this is SolutionFolder) {
+						return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
+					}
+					
 					try {
 						SolutionEntityItem it = this as SolutionEntityItem;
 						SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
