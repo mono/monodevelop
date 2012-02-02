@@ -50,6 +50,10 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
 			if (unit == null)
 				return false;
+			var generator = options.CreateCodeGenerator ();
+			if (generator == null) 
+				return false;
+			
 			var loc = options.Document.Editor.Caret.Location;
 			var declaration = unit.GetNodeAt<TypeDeclaration> (loc.Line, loc.Column);
 			if (declaration == null)
