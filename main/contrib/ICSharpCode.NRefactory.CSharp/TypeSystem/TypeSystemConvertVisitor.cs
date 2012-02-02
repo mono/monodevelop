@@ -345,7 +345,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
 				}
 				
-				currentTypeDefinition.Members.Add(field);
+				if (currentTypeDefinition != null)
+					currentTypeDefinition.Members.Add(field);
 				if (interningProvider != null) {
 					field.ApplyInterningProvider(interningProvider);
 				}
@@ -379,7 +380,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				}
 			}
 			
-			currentTypeDefinition.Members.Add(field);
+			if (currentTypeDefinition != null)
+				currentTypeDefinition.Members.Add(field);
 			if (interningProvider != null) {
 				field.ApplyInterningProvider(interningProvider);
 			}
@@ -426,7 +428,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					m.TypeParameters.Count, GetParameterTypes(m.Parameters)));
 			}
 			
-			currentTypeDefinition.Members.Add(m);
+			if (currentTypeDefinition != null)
+				currentTypeDefinition.Members.Add(m);
 			currentMethod = null;
 			if (interningProvider != null) {
 				m.ApplyInterningProvider(interningProvider);
@@ -527,7 +530,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			ConvertParameters(m.Parameters, operatorDeclaration.Parameters);
 			
-			currentTypeDefinition.Members.Add(m);
+			if (currentTypeDefinition != null)
+				currentTypeDefinition.Members.Add(m);
 			if (interningProvider != null) {
 				m.ApplyInterningProvider(interningProvider);
 			}
@@ -558,7 +562,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			else
 				ApplyModifiers(ctor, modifiers);
 			
-			currentTypeDefinition.Members.Add(ctor);
+			if (currentTypeDefinition != null)
+				currentTypeDefinition.Members.Add(ctor);
 			if (interningProvider != null) {
 				ctor.ApplyInterningProvider(interningProvider);
 			}
@@ -579,7 +584,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
 			
-			currentTypeDefinition.Members.Add(dtor);
+			if (currentTypeDefinition != null)
+				currentTypeDefinition.Members.Add(dtor);
 			if (interningProvider != null) {
 				dtor.ApplyInterningProvider(interningProvider);
 			}
@@ -604,7 +610,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p, "get_");
 			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p, "set_");
-			currentTypeDefinition.Members.Add(p);
+			if (currentTypeDefinition != null)
+				currentTypeDefinition.Members.Add(p);
 			if (interningProvider != null) {
 				p.ApplyInterningProvider(interningProvider);
 			}
@@ -632,7 +639,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					p.EntityType, ConvertType(indexerDeclaration.PrivateImplementationType), p.Name, 0, GetParameterTypes(p.Parameters)));
 			}
 			
-			currentTypeDefinition.Members.Add(p);
+			if (currentTypeDefinition != null)
+				currentTypeDefinition.Members.Add(p);
 			if (interningProvider != null) {
 				p.ApplyInterningProvider(interningProvider);
 			}
@@ -699,7 +707,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					}
 				}
 				
-				currentTypeDefinition.Members.Add(ev);
+				if (currentTypeDefinition != null)
+					currentTypeDefinition.Members.Add(ev);
 				if (interningProvider != null) {
 					ev.ApplyInterningProvider(interningProvider);
 				}
@@ -737,7 +746,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			e.AddAccessor = ConvertAccessor(eventDeclaration.AddAccessor, e, "add_");
 			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e, "remove_");
 			
-			currentTypeDefinition.Members.Add(e);
+			if (currentTypeDefinition != null)
+				currentTypeDefinition.Members.Add(e);
 			if (interningProvider != null) {
 				e.ApplyInterningProvider(interningProvider);
 			}
@@ -757,7 +767,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		static void ApplyModifiers(AbstractUnresolvedMember m, Modifiers modifiers)
 		{
 			// members from interfaces are always Public+Abstract.
-			if (m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
+			if (m.DeclaringTypeDefinition != null && m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				m.Accessibility = Accessibility.Public;
 				m.IsAbstract = true;
 				return;
