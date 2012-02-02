@@ -119,6 +119,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		protected void OnButtonUpdateNowClicked (object sender, System.EventArgs e)
 		{
+			Store ();
 			UpdateService.CheckForUpdates ();
 		}
 	}
