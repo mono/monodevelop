@@ -63,6 +63,11 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			return GetRealObject (ctx, val) is CorArrayValue;
 		}
+		
+		public override bool IsString (EvaluationContext ctx, object val)
+		{
+			return GetRealObject (ctx, val) is CorStringValue;
+		}
 
 		public override bool IsClassInstance (EvaluationContext ctx, object val)
 		{
@@ -281,7 +286,9 @@ namespace MonoDevelop.Debugger.Win32
 			CorValRef arr = new CorValRef (delegate {
 				return ctx.Session.NewArray (ctx, (CorType)GetValueType (ctx, val), 1);
 			});
-			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr);
+			CorArrayValue array = CorObjectAdaptor.GetRealObject (ctx, arr) as CorArrayValue;
+			
+			ArrayAdaptor realArr = new ArrayAdaptor (ctx, arr, array);
 			realArr.SetElement (new int[] { 0 }, val);
 			
 			CorType at = (CorType) GetType (ctx, "System.Array");
@@ -646,8 +653,20 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr)
 		{
-			if (GetRealObject (ctx, arr) is CorArrayValue)
-				return new ArrayAdaptor (ctx, (CorValRef) arr);
+			CorValue val = CorObjectAdaptor.GetRealObject (ctx, arr);
+			
+			if (val is CorArrayValue)
+				return new ArrayAdaptor (ctx, (CorValRef) arr, (CorArrayValue) val);
+			else
+				return null;
+		}
+		
+		public override IStringAdaptor CreateStringAdaptor (EvaluationContext ctx, object str)
+		{
+			CorValue val = CorObjectAdaptor.GetRealObject (ctx, str);
+			
+			if (val is CorStringValue)
+				return new StringAdaptor (ctx, (CorValRef) str, (CorStringValue) val);
 			else
 				return null;
 		}

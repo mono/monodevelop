@@ -55,7 +55,7 @@ namespace Mono.Debugging.Evaluation
 		{
 		}
 
-		public void WaitRuntimeInvokes ( )
+		public void WaitRuntimeInvokes ()
 		{
 		}
 		
@@ -70,7 +70,7 @@ namespace Mono.Debugging.Evaluation
 			this.options = options;
 		}
 
-		public EvaluationContext Clone ( )
+		public EvaluationContext Clone ()
 		{
 			EvaluationContext clone = (EvaluationContext) MemberwiseClone ();
 			clone.CopyFrom (this);

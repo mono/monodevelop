@@ -385,6 +385,14 @@ namespace MonoDevelop.Projects
 			AddFile (newDir);
 			return newDir;
 		}
+		
+		//HACK: the build code is structured such that support file copying is in here instead of the item handler
+		//so in order to avoid doing them twice when using the msbuild engine, we special-case them
+		bool UsingMSBuildEngine ()
+		{
+			var msbuildHandler = ItemHandler as MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectHandler;
+			return msbuildHandler != null && msbuildHandler.UseXbuild;
+		}
 
 		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
@@ -395,6 +403,15 @@ namespace MonoDevelop.Projects
 				cres.AddError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration.ToString (), Name));
 				return cres;
 			}
+			
+			StringParserService.Properties["Project"] = Name;
+			
+			if (UsingMSBuildEngine ()) {
+				var r = DoBuild (monitor, configuration);
+				isDirty = false;
+				return r;
+			}
+			
 			string outputDir = conf.OutputDirectory;
 			try {
 				DirectoryInfo directoryInfo = new DirectoryInfo (outputDir);
@@ -407,10 +424,9 @@ namespace MonoDevelop.Projects
 
 			//copy references and files marked to "CopyToOutputDirectory"
 			CopySupportFiles (monitor, configuration);
-
-			StringParserService.Properties["Project"] = Name;
-
+		
 			monitor.BeginTask (GettextCatalog.GetString ("Performing main compilation..."), 0);
+			
 			BuildResult res = DoBuild (monitor, configuration);
 
 			isDirty = false;
@@ -526,8 +542,8 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public FileCopySet GetSupportFileList (ConfigurationSelector configuration)
 		{
-			FileCopySet list = new FileCopySet ();
-			Services.ProjectService.GetExtensionChain (this).PopulateSupportFileList (this, list, configuration);
+			var list = new FileCopySet ();
+			PopulateSupportFileList (list, configuration);
 			return list;
 		}
 
@@ -569,7 +585,7 @@ namespace MonoDevelop.Projects
 		public List<FilePath> GetOutputFiles (ConfigurationSelector configuration)
 		{
 			List<FilePath> list = new List<FilePath> ();
-			Services.ProjectService.GetExtensionChain (this).PopulateOutputFileList (this, list, configuration);
+			PopulateOutputFileList (list, configuration);
 			return list;
 		}
 
@@ -618,15 +634,21 @@ namespace MonoDevelop.Projects
 		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			SetDirty ();
+			
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", config.Id, Name), null);
 				return;
 			}
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Performing clean..."), 0);
-			// Delete generated files
+			if (UsingMSBuildEngine ()) {
+				DoClean (monitor, config.Selector);
+				return;
+			}
 			
+			monitor.BeginTask (GettextCatalog.GetString ("Performing clean..."), 0);
+			
+			// Delete generated files
 			foreach (FilePath file in GetOutputFiles (configuration)) {
 				if (File.Exists (file)) {
 					FileService.DeleteFile (file);
@@ -634,8 +656,9 @@ namespace MonoDevelop.Projects
 						FileService.DeleteDirectory (file.ParentDirectory);
 				}
 			}
-
+	
 			DeleteSupportFiles (monitor, configuration);
+			
 			DoClean (monitor, config.Selector);
 			monitor.Log.WriteLine ();
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Clean complete"));

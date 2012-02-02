@@ -36,6 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.MacDev.ObjCIntegration;
 using System.Threading.Tasks;
 using MonoDevelop.MacDev.XcodeIntegration;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacDev.XcodeSyncing
 {
@@ -125,6 +126,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn -= AppRegainedFocus;
 		}
 		
+		void ShowXcodeScriptError ()
+		{
+			MonoDevelop.Ide.MessageService.ShowError (
+				GettextCatalog.GetString ("MonoDevelop could not communicate with Xcode"),
+				GettextCatalog.GetString ("If Xcode is still running, please ensure that all changes have been saved and " +
+			                          "Xcode has been exited before continuing, otherwise any new changes may be lost."));
+		}
+		
 		void AppRegainedFocus (object sender, EventArgs e)
 		{
 			if (!SyncingEnabled)
@@ -133,25 +142,24 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			XC4Debug.Log ("MonoDevelop has regained focus.");
 			
 			using (var monitor = GetStatusMonitor (GettextCatalog.GetString ("Synchronizing changes from Xcode..."))) {
-				bool isOpen = xcode.IsProjectOpen ();
+				bool projectOpen = false;
 				
-				if (isOpen) {
-					try {
+				try {
+					// Note: Both IsProjectOpen() and SaveProject() may throw TimeoutExceptions or AppleScriptExceptions
+					if ((projectOpen = xcode.IsProjectOpen ()))
 						xcode.SaveProject (monitor);
-					} catch (Exception ex) {
-						MonoDevelop.Ide.MessageService.ShowError (
-							GettextCatalog.GetString ("MonoDevelop could not communicate with Xcode"),
-							GettextCatalog.GetString (
-							"If Xcode is still running, please ensure that all changes have been saved and " +
-							"Xcode has been exited before continuing, otherwise any new changes may be lost."));
-						monitor.Log.WriteLine ("Xcode failed to save pending changes to project: {0}", ex);
-					}
+				} catch (Exception ex) {
+					ShowXcodeScriptError ();
+					monitor.Log.WriteLine ("Xcode failed to save pending changes to project: {0}", ex);
+					
+					// Note: This will cause us to disable syncing after we sync whatever we can over from Xcode...
+					projectOpen = false;
 				}
 				
 				try {
 					SyncXcodeChanges (monitor);
 				} finally {
-					if (!isOpen) {
+					if (!projectOpen) {
 						XC4Debug.Log ("Xcode project for '{0}' is not open, disabling syncing.", dnp.Name);
 						DisableSyncing ();
 					}
@@ -174,6 +182,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				
 				xcode.OpenFile (monitor, path);
 				succeeded = true;
+			} catch (AppleScriptException asex) {
+				ShowXcodeScriptError ();
+				monitor.ReportError (GettextCatalog.GetString ("Could not open file in Xcode project."), asex);
+			} catch (TimeoutException tex) {
+				ShowXcodeScriptError ();
+				monitor.ReportError (GettextCatalog.GetString ("Could not open file in Xcode project."), tex);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not open file in Xcode project."), ex);
 			} finally {
@@ -318,8 +332,15 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					//FIXME: make this async (and safely async)
 					var running = xcode.CheckRunning ();
 					UpdateXcodeProject (monitor);
-					if (running)
-						xcode.OpenProject (monitor);
+					if (running) {
+						try {
+							xcode.OpenProject (monitor);
+						} catch (AppleScriptException) {
+							ShowXcodeScriptError ();
+						} catch (TimeoutException) {
+							ShowXcodeScriptError ();
+						}
+					}
 				}
 			}
 		}
@@ -370,6 +391,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			try {
 				xcode.UpdateProject (monitor, CreateSyncList (), CreateProject (dnp.Name));
 				return true;
+			} catch (AppleScriptException asex) {
+				ShowXcodeScriptError ();
+				monitor.ReportError (GettextCatalog.GetString ("Error updating Xcode project"), asex);
+				return false;
+			} catch (TimeoutException tex) {
+				ShowXcodeScriptError ();
+				monitor.ReportError (GettextCatalog.GetString ("Error updating Xcode project"), tex);
+				return false;
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Error updating Xcode project"), ex);
 				return false;
@@ -750,13 +779,47 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		static XC4Debug ()
 		{
 			FilePath logDir = UserProfile.Current.LogDir;
-			FilePath logFile = logDir.Combine ("Xcode4Sync.log");
+			FilePath logFile = logDir.Combine (GetGenericFileName ());
+			
 			FileService.EnsureDirectoryExists (logDir);
+			TimestampLogFiles (logDir);
 			
 			try {
 				writer = new StreamWriter (logFile) { AutoFlush = true };
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not create Xcode sync logging file", ex);
+			}
+		}
+		
+		static string GetGenericFileName ()
+		{
+			if (LoggingService.LogId != 0)
+				return string.Format ("Xcode4Sync-{0}.log", LoggingService.LogId);
+			
+			return "Xcode4Sync.log";
+		}
+		
+		static string GetTimestampFileName (DateTime time)
+		{
+			return string.Format ("Xcode4Sync.{0}.log", time.ToString ("yyyy-MM-dd__HH-mm-ss"));
+		}
+		
+		static IEnumerable<string> GetGenericLogFiles (FilePath logDirectory)
+		{
+			return Directory.GetFiles (logDirectory)
+				.Where (f => f == "Xcode4Sync.log" || f.StartsWith ("Xcode4Sync-"))
+				.OrderBy (f => f);
+		}
+
+		static void TimestampLogFiles (FilePath logDirectory)
+		{
+			// Move any generic Xcode4Sync.log files to a timestamped filename
+			foreach (var path in GetGenericLogFiles (logDirectory)) {
+				try {
+					var ctime = File.GetCreationTime (path);
+					var destination = logDirectory.Combine (GetTimestampFileName (ctime));
+					FileService.RenameFile (path, destination);
+				} catch {}
 			}
 		}
 		

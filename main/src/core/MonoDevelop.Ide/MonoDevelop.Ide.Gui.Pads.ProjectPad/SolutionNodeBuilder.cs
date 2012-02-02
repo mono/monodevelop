@@ -349,17 +349,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.Expanded = true;
 			Tree.StartLabelEdit ();
 		}
-		
-		[CommandHandler (FileCommands.CloseWorkspaceItem)]
-		[AllowMultiSelection]
-		public void OnCloseItem ()
-		{
-			foreach (ITreeNavigator node in CurrentNodes) {
-				Solution solution = (Solution) node.DataItem;
-				IdeApp.Workspace.CloseWorkspaceItem (solution);
-			}
-		}
-		
+
 		[CommandUpdateHandler (FileCommands.CloseWorkspaceItem)]
 		public void OnUpdateCloseItem (CommandInfo info)
 		{

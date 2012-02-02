@@ -1,4 +1,4 @@
-	
+
 ASSEMBLY_BUILD_DIR = $(top_builddir)/build/bin
 ASSEMBLY = $(ASSEMBLY_BUILD_DIR)/Mono.Debugging.dll
 
@@ -64,6 +64,7 @@ FILES =  \
 	Mono.Debugging.Evaluation/FilteredMembersSource.cs \
 	Mono.Debugging.Evaluation/ICollectionAdaptor.cs \
 	Mono.Debugging.Evaluation/IObjectSource.cs \
+	Mono.Debugging.Evaluation/IStringAdaptor.cs \
 	Mono.Debugging.Evaluation/LiteralValueReference.cs \
 	Mono.Debugging.Evaluation/NamespaceValueReference.cs \
 	Mono.Debugging.Evaluation/NRefactoryEvaluator.cs \
@@ -77,7 +78,8 @@ FILES =  \
 	Mono.Debugging.Evaluation/TimeOutException.cs \
 	Mono.Debugging.Evaluation/TypeValueReference.cs \
 	Mono.Debugging.Evaluation/UserVariableReference.cs \
-	Mono.Debugging.Evaluation/ValueReference.cs
+	Mono.Debugging.Evaluation/ValueReference.cs \
+	Mono.Debugging.Evaluation/IStringAdaptor.cs
 
 RES = 
 

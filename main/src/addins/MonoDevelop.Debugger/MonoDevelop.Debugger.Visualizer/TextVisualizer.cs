@@ -33,7 +33,14 @@ namespace MonoDevelop.Debugger.Visualizer
 {
 	public class TextVisualizer: IValueVisualizer
 	{
+		const int CHUNK_SIZE = 1024;
+		
 		TextView textView;
+		RawValueString raw;
+		ObjectValue val;
+		uint idle_id;
+		int length;
+		int offset;
 		
 		public TextVisualizer ()
 		{
@@ -45,18 +52,33 @@ namespace MonoDevelop.Debugger.Visualizer
 			}
 		}
 		
-		
 		public bool CanVisualize (ObjectValue val)
 		{
 			return val.TypeName == "string";
+		}
+		
+		bool GetNextStringChunk ()
+		{
+			int amount = Math.Min (length - offset, CHUNK_SIZE);
+			string chunk = raw.Substring (offset, amount);
+			TextIter iter = textView.Buffer.EndIter;
+			
+			textView.Buffer.Insert (ref iter, chunk);
+			offset += amount;
+			
+			if (offset < length)
+				return true;
+			
+			idle_id = 0;
+			
+			// Remove this idle callback
+			return false;
 		}
 
 		public Gtk.Widget GetVisualizerWidget (ObjectValue val)
 		{
 			VBox box = new VBox (false, 6);
-			textView = new TextView ();
-			textView.Buffer.Text = val.GetRawValue () as string;
-			textView.WrapMode = WrapMode.Char;
+			textView = new TextView () { WrapMode = WrapMode.Char };
 			Gtk.ScrolledWindow scrolled = new Gtk.ScrolledWindow ();
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
 			scrolled.VscrollbarPolicy = PolicyType.Automatic;
@@ -73,6 +95,25 @@ namespace MonoDevelop.Debugger.Visualizer
 			};
 			box.PackStart (cb, false, false, 0);
 			box.ShowAll ();
+			
+			EvaluationOptions ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			ops.ChunkRawStrings = true;
+			
+			this.raw = val.GetRawValue (ops) as RawValueString;
+			this.length = raw.Length;
+			this.offset = 0;
+			this.val = val;
+			
+			if (this.length > 0) {
+				idle_id = GLib.Idle.Add (GetNextStringChunk);
+				textView.Destroyed += delegate {
+					if (idle_id != 0) {
+						GLib.Source.Remove (idle_id);
+						idle_id = 0;
+					}
+				};
+			}
+			
 			return box;
 		}
 		

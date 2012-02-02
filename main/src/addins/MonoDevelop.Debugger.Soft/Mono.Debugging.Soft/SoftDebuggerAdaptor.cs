@@ -158,6 +158,11 @@ namespace Mono.Debugging.Soft
 			}
 			return null;
 		}
+		
+		public override IStringAdaptor CreateStringAdaptor (EvaluationContext ctx, object str)
+		{
+			return new StringAdaptor ((StringMirror) str);
+		}
 
 		public override ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr)
 		{
@@ -793,7 +798,11 @@ namespace Mono.Debugging.Soft
 				return true;
 		}
 
-
+		public override bool IsString (EvaluationContext ctx, object val)
+		{
+			return val is StringMirror;
+		}
+		
 		public override bool IsArray (EvaluationContext ctx, object val)
 		{
 			return val is ArrayMirror;

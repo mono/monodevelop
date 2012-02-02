@@ -777,16 +777,6 @@ namespace MonoDevelop.Projects
 		{
 			return callback (monitor, item, buildData);
 		}
-		
-		public override void PopulateSupportFileList (Project project, FileCopySet list, ConfigurationSelector configuration)
-		{
-			project.PopulateSupportFileList (list, configuration);
-		}
-		
-		public override void PopulateOutputFileList (Project project, List<FilePath> list, ConfigurationSelector configuration)
-		{
-			project.PopulateOutputFileList (list, configuration);
-		}
 	}	
 	
 	internal static class Counters

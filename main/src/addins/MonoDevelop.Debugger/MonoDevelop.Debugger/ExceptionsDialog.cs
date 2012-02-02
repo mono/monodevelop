@@ -208,12 +208,26 @@ namespace MonoDevelop.Debugger
 		}
 
 		[GLib.ConnectBefore]
+		protected virtual void OnTreeSelectedButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
+				OnButtonRemoveClicked (o, args);
+		}
+
+		[GLib.ConnectBefore]
 		protected virtual void OnTreeExceptionsKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
 		{
 			if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter) {
 				OnButtonAddClicked (null, null);
 				args.RetVal = true;
 			}
+		}
+
+		[GLib.ConnectBefore]
+		protected virtual void OnTreeExceptionsButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
+				OnButtonAddClicked (o, args);
 		}
 	}
 }

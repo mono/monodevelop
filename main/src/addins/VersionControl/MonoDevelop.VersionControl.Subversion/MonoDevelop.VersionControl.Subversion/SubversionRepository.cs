@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Collections;
 using System.Text;
 using MonoDevelop.Core;
@@ -252,8 +253,8 @@ namespace MonoDevelop.VersionControl.Subversion
 					}
 				}
 				else {
-					if (File.Exists (path) && !IsVersioned (path.ParentDirectory)) {
-						// The file belongs to an unversioned folder. We can add it by versioning the parent
+					if (!IsVersioned (path.ParentDirectory)) {
+						// The file/folder belongs to an unversioned folder. We can add it by versioning the parent
 						// folders up to the root of the repository
 						
 						if (!path.IsChildPathOf (rootPath))
@@ -483,7 +484,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			string diff = Svn.GetUnifiedDiff (versionInfo.LocalPath, false, false);
 			if (!string.IsNullOrEmpty (diff))
-				return GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { versionInfo.LocalPath }) [0];
+				return GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { versionInfo.LocalPath }).FirstOrDefault ();
 			return null;
 		}
 		

@@ -251,6 +251,7 @@
                         <property name="ShowScrollbars">True</property>
                         <property name="HeadersVisible">False</property>
                         <signal name="KeyPressEvent" handler="OnTreeExceptionsKeyPressEvent" />
+                        <signal name="ButtonPressEvent" handler="OnTreeExceptionsButtonPressEvent" />
                       </widget>
                     </child>
                   </widget>
@@ -357,6 +358,7 @@
                         <property name="ShowScrollbars">True</property>
                         <property name="HeadersVisible">False</property>
                         <signal name="KeyPressEvent" handler="OnTreeSelectedKeyPressEvent" />
+                        <signal name="ButtonPressEvent" handler="OnTreeSelectedButtonPressEvent" />
                       </widget>
                     </child>
                   </widget>

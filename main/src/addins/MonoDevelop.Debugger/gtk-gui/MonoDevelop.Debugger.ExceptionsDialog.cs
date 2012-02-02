@@ -240,9 +240,11 @@ namespace MonoDevelop.Debugger
 			this.entryFilter.Changed += new global::System.EventHandler (this.OnEntryFilterChanged);
 			this.entryFilter.Activated += new global::System.EventHandler (this.OnEntryFilterActivated);
 			this.treeExceptions.KeyPressEvent += new global::Gtk.KeyPressEventHandler (this.OnTreeExceptionsKeyPressEvent);
+			this.treeExceptions.ButtonPressEvent += new global::Gtk.ButtonPressEventHandler (this.OnTreeExceptionsButtonPressEvent);
 			this.buttonAdd.Clicked += new global::System.EventHandler (this.OnButtonAddClicked);
 			this.buttonRemove.Clicked += new global::System.EventHandler (this.OnButtonRemoveClicked);
 			this.treeSelected.KeyPressEvent += new global::Gtk.KeyPressEventHandler (this.OnTreeSelectedKeyPressEvent);
+			this.treeSelected.ButtonPressEvent += new global::Gtk.ButtonPressEventHandler (this.OnTreeSelectedButtonPressEvent);
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);
 		}
 	}

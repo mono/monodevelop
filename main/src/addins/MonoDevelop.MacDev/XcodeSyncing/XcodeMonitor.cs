@@ -68,6 +68,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return Directory.Exists (xcproj);
 		}
 		
+		// Note: This method may throw TimeoutException or AppleScriptException
 		public void UpdateProject (IProgressMonitor monitor, List<XcodeSyncedItem> allItems, XcodeProject emptyProject)
 		{
 			items = allItems;
@@ -274,6 +275,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return NSWorkspace.SharedWorkspace.LaunchedApplications.Any (app => appPathVal.Equals (app[appPathKey]));
 		}
 		
+		// Note: This method may throw TimeoutException or AppleScriptException
 		public void SaveProject (IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ("Asking Xcode to save pending changes for the {0} project", name);
@@ -289,12 +291,24 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
+		// Note: This method may throw TimeoutException or AppleScriptException
 		public void OpenFile (IProgressMonitor monitor, string relativeName)
 		{
 			SyncProject (monitor);
 			
-			monitor.Log.WriteLine ("Asking Xcode to open '{0}'...", projectDir.Combine (relativeName));
-			AppleScript.Run (XCODE_OPEN_PROJECT_FILE, AppleSdkSettings.XcodePath, xcproj, projectDir.Combine (relativeName));
+			string path = projectDir.Combine (relativeName);
+			
+			monitor.Log.WriteLine ("Asking Xcode to open '{0}'...", path);
+			try {
+				AppleScript.Run (XCODE_OPEN_PROJECT_FILE, AppleSdkSettings.XcodePath, xcproj, path);
+				monitor.Log.WriteLine ("Xcode successfully opened '{0}'", path);
+			} catch (AppleScriptException asex) {
+				monitor.Log.WriteLine ("Xcode failed to open '{0}': OSAError={1}: {2}", path, (int) asex.ErrorCode, asex.Message);
+				throw;
+			} catch (TimeoutException) {
+				monitor.Log.WriteLine ("Xcode timed out trying to open '{0}'.", path);
+				throw;
+			}
 		}
 		
 		public void DeleteProjectDirectory ()
@@ -336,6 +350,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return null;
 		}
 		
+		// Note: This method may throw TimeoutException or AppleScriptException
 		public bool IsProjectOpen ()
 		{
 			if (!CheckRunning ())
@@ -344,104 +359,143 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return AppleScript.Run (XCODE_CHECK_PROJECT_OPEN, AppleSdkSettings.XcodePath, xcproj) == "true";
 		}
 		
-		public bool CloseProject ()
+		public void CloseProject ()
 		{
 			if (!CheckRunning ())
-				return true;
+				return;
 			
 			XC4Debug.Log ("Asking Xcode to close the {0} project...", name);
 			
-			bool success = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, projectDir) == "true";
-			
-			if (success)
-				XC4Debug.Log ("Xcode successfully closed the project.");
-			else
-				XC4Debug.Log ("Xcode failed to close the project.");
-			
-			return success;
+			try {
+				// Exceptions closing the project are non-fatal.
+				bool closed = AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, projectDir) == "true";
+				XC4Debug.Log ("Xcode {0} the project.", closed ? "successfully closed" : "failed to close");
+			} catch (AppleScriptException asex) {
+				XC4Debug.Log ("Xcode failed to close the project: OSAError {0}: {1}", (int) asex.ErrorCode, asex.Message);
+			} catch (TimeoutException) {
+				XC4Debug.Log ("Xcode timed out trying to close the project.");
+			}
 		}
 		
+		// Note: This method may throw TimeoutException or AppleScriptException
 		public void OpenProject (IProgressMonitor monitor)
 		{
 			SyncProject (monitor);
 			
 			monitor.Log.WriteLine ("Asking Xcode to open the {0} project...", name);
-			AppleScript.Run (XCODE_OPEN_PROJECT, AppleSdkSettings.XcodePath, projectDir);
+			try {
+				AppleScript.Run (XCODE_OPEN_PROJECT, AppleSdkSettings.XcodePath, projectDir);
+				monitor.Log.WriteLine ("Xcode successfully opened the {0} project.", name);
+			} catch (AppleScriptException asex) {
+				monitor.Log.WriteLine ("Xcode failed to open the {0} project: OSAError {1}: {2}", name, (int) asex.ErrorCode, asex.Message);
+				throw;
+			} catch (TimeoutException) {
+				monitor.Log.WriteLine ("Xcode timed out trying to open the {0} project.", name);
+				throw;
+			}
 		}
 		
-		public void CloseFile (IProgressMonitor monitor, string fileName)
+		// Note: This method may throw TimeoutException or AppleScriptException
+		void CloseFile (IProgressMonitor monitor, string fileName)
 		{
 			if (!CheckRunning ())
 				return;
 			
 			monitor.Log.WriteLine ("Asking Xcode to close '{0}'...", fileName);
-			AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, fileName);
+			try {
+				AppleScript.Run (XCODE_CLOSE_IN_PATH, AppleSdkSettings.XcodePath, fileName);
+				monitor.Log.WriteLine ("Xcode successfully closed '{0}'", fileName);
+			} catch (AppleScriptException asex) {
+				monitor.Log.WriteLine ("Xcode failed to close '{0}': OSAError {1}: {2}", fileName, (int) asex.ErrorCode, asex.Message);
+				throw;
+			} catch (TimeoutException) {
+				monitor.Log.WriteLine ("Xcode timed out trying to close '{0}'.", fileName);
+				throw;
+			}
 		}
 		
+		// Note: Can throw TimeoutException
 		const string XCODE_OPEN_PROJECT =
 @"tell application ""{0}""
 	if it is not running then
-		launch
-		activate
+		with timeout of 60 seconds
+			launch
+			activate
+		end timeout
 	end if
-	open ""{1}""
+	with timeout of 30 seconds
+		open ""{1}""
+	end timeout
 end tell";
-
+		
+		// Note: Can throw TimeoutException
 		const string XCODE_OPEN_PROJECT_FILE =
 @"tell application ""{0}""
-	activate
-	activate
-	open ""{1}""
-	activate
-	open ""{2}""
+	with timeout of 30 seconds
+		activate
+		activate
+		open ""{1}""
+		activate
+		open ""{2}""
+	end timeout
 end tell";
-
+		
+		// Note: Can throw TimeoutException
 		const string XCODE_SAVE_IN_PATH =
 @"tell application ""{0}""
 	if it is running then
-		set pp to ""{1}""
-		set ext to {{ "".storyboard"", "".xib"", "".h"", "".m"" }}
-		repeat with d in documents
-			if d is modified then
-				set f to path of d
-				if f starts with pp then
-					repeat with e in ext
-						if f ends with e then
-							save d
-							exit repeat
-						end if
-					end repeat
+		set fileExtensions to {{ "".storyboard"", "".xib"", "".h"", "".m"" }}
+		set projectPath to ""{1}""
+		
+		with timeout of 30 seconds
+			repeat with doc in documents
+				if doc is modified then
+					set docPath to path of doc
+					if docPath starts with projectPath then
+						repeat with ext in fileExtensions
+							if docPath ends with ext then
+								save doc
+								exit repeat
+							end if
+						end repeat
+					end if
 				end if
-			end if
-		end repeat
+			end repeat
+		end timeout
 	end if
 end tell";
 		
+		// Note: Can throw TimeoutException
 		const string XCODE_CLOSE_IN_PATH =
 @"tell application ""{0}""
 	if it is running then
-		set pp to ""{1}""
-		repeat with d in documents
-			set f to path of d
-			if f starts with pp then
-				close d
-				return true
-			end if
-		end repeat
+		set projectPath to ""{1}""
+		with timeout of 30 seconds
+			repeat with doc in documents
+				set docPath to path of doc
+				if docPath starts with projectPath then
+					close doc
+					return true
+				end if
+			end repeat
+		end timeout
 	end if
 	return false
 end tell";
 		
+		// Note: Can throw TimeoutException
 		const string XCODE_CHECK_PROJECT_OPEN =
 @"tell application ""{0}""
 	if it is running then
-		set pp to ""{1}""
-		repeat with p in projects
-			if real path of p is pp then
-				return true
-				exit repeat
-			end if
-		end repeat
+		with timeout of 30 seconds
+			set projectPath to ""{1}""
+			repeat with proj in projects
+				if real path of proj is projectPath then
+					return true
+					exit repeat
+				end if
+			end repeat
+		end timeout
 	end if
 	return false
 end tell";

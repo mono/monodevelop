@@ -54,6 +54,7 @@ namespace Mono.Debugging.Client
 				ops.CurrentExceptionTag = "$exception";
 				ops.EllipsizeStrings = true;
 				ops.EllipsizedLength = 100;
+				ops.ChunkRawStrings = false;
 				return ops;
 			}
 		}
@@ -62,6 +63,8 @@ namespace Mono.Debugging.Client
 		{
 			return (EvaluationOptions) MemberwiseClone ();
 		}
+		
+		public bool ChunkRawStrings { get; set; }
 		
 		public bool EllipsizeStrings { get; set; }
 		public int EllipsizedLength { get; set; }
