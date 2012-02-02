@@ -153,11 +153,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (invoke == null) {
 					invoke = GetTypeBeforeCursor ();
 					if (invoke !=null) {
-						var tExpr = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
-						if (tExpr == null || tExpr.Item1 == null || tExpr.Item1.IsError)
+						var typeExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+						if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError)
 							return null;
 						
-						return factory.CreateTypeParameterDataProvider (CollectAllTypes (tExpr.Item1.Type));
+						return factory.CreateTypeParameterDataProvider (CollectAllTypes (typeExpression.Item1.Type));
 					}
 					return null;
 				}
@@ -195,11 +195,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				invoke = GetTypeBeforeCursor ();
 				if (invoke == null)
 					return null;
-				var typeExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
-				if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError)
+				var tExpr = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				if (tExpr == null || tExpr.Item1 == null || tExpr.Item1.IsError)
 					return null;
 				
-				return factory.CreateTypeParameterDataProvider (CollectAllTypes (typeExpression.Item1.Type));
+				return factory.CreateTypeParameterDataProvider (CollectAllTypes (tExpr.Item1.Type));
 			case '[':
 				invoke = GetIndexerBeforeCursor ();
 				if (invoke == null)

@@ -307,12 +307,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				case "=":
 				case "==":
 					GetPreviousToken (ref tokenIndex, false);
-					
 					var expressionOrVariableDeclaration = GetExpressionAt (tokenIndex);
 					if (expressionOrVariableDeclaration == null)
 						return null;
 					
 					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
+					
 					if (resolveResult == null)
 						return null;
 					if (resolveResult.Item1.Type.Kind == TypeKind.Enum) {
@@ -440,7 +440,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
 				}
-				
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : ';';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[](){}+-*/%^?:&|~!<>=";
@@ -470,6 +469,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
+				
+				if (n != null && n.Parent is AnonymousTypeCreateExpression) {
+					AutoSelect = false;
+				}
+				
 				// Handle foreach (type name _
 				if (n is IdentifierExpression) {
 					var prev = n.GetPrevNode () as ForeachStatement;
@@ -505,6 +509,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
+				
+				if (n is IdentifierExpression) {
+					var bop = n.Parent as BinaryOperatorExpression;
+					Expression evaluationExpr = null;
+					
+					if (bop != null && bop.Right == n && (bop.Operator == BinaryOperatorType.Equality || bop.Operator == BinaryOperatorType.InEquality)) {
+						evaluationExpr = bop.Left;
+					}
+					// check for compare to enum case 
+					if (evaluationExpr != null) {
+						resolveResult = ResolveExpression (identifierStart.Item1, evaluationExpr, identifierStart.Item3);
+						if (resolveResult != null && resolveResult.Item1.Type.Kind == TypeKind.Enum) {
+							var wrapper = new CompletionDataWrapper (this);
+							AddContextCompletion (wrapper, resolveResult.Item2, evaluationExpr);
+							AddEnumMembers (wrapper, resolveResult.Item1.Type, resolveResult.Item2);
+							AutoCompleteEmptyMatch = false;
+							return wrapper.Result;
+						}
+					}
+				}
+				
 				
 				if (n is Identifier && n.Parent is ForeachStatement) {
 					if (controlSpace)
@@ -883,23 +908,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				if (this.currentMember != null && !(node is AstType)) {
 					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition (currentType);
-					if (def != null) {
-						foreach (var member in def.GetMembers ()) {
-							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
-								continue;
-							if (member.EntityType == EntityType.Operator)
-								continue;
+					foreach (var member in def.GetMembers ()) {
+						if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
+							continue;
+						if (member.EntityType == EntityType.Operator)
+							continue;
+						if (memberPred == null || memberPred (member))
+							wrapper.AddMember (member);
+					}
+					var declaring = def.DeclaringTypeDefinition;
+					while (declaring != null) {
+						foreach (var member in declaring.GetMembers (m => m.IsStatic)) {
 							if (memberPred == null || memberPred (member))
 								wrapper.AddMember (member);
 						}
-						var declaring = def.DeclaringTypeDefinition;
-						while (declaring != null) {
-							foreach (var member in declaring.GetMembers (m => m.IsStatic)) {
-								if (memberPred == null || memberPred (member))
-									wrapper.AddMember (member);
-							}
-							declaring = declaring.DeclaringTypeDefinition;
-						}
+						declaring = declaring.DeclaringTypeDefinition;
 					}
 				}
 				foreach (var p in currentType.TypeParameters) {
@@ -2020,10 +2043,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			// try expression in anonymous type "new { sample = x$" case
 			if (expr == null) {
-				baseUnit = ParseStub ("a };", false);
+				baseUnit = ParseStub ("a", false);
 				expr = baseUnit.GetNodeAt<AnonymousTypeCreateExpression> (location.Line, location.Column); 
 				if (expr != null)
-					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column); 
+					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 
 			}
 			
 			if (expr == null)
