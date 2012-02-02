@@ -49,6 +49,10 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			if (options.ResolveResult == null)
 				return false;
 			
+			CodeGenerator generator = options.Document.CreateCodeGenerator ();
+			if (generator == null)
+				return false;
+			
 			IType type = options.Dom.GetType (options.ResolveResult.ResolvedType);
 			if (type == null || type.ClassType != MonoDevelop.Projects.Dom.ClassType.Class)
 				return false;
@@ -82,6 +86,8 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					CodeGenerator generator = document.CreateCodeGenerator ();
+					if (generator == null)
+						return;
 					var missingAbstractMembers = abstractType.Members.Where (member => member.IsAbstract && !member.IsSpecialName && !declaringType.Members.Any (m => member.Name == m.Name));
 					StringBuilder sb = new StringBuilder ();
 					foreach (var member in missingAbstractMembers) {
