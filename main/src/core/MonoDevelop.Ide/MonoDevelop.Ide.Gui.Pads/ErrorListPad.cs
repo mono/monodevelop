@@ -77,6 +77,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		const string showWarningsPropertyName = "SharpDevelop.TaskList.ShowWarnings";
 		const string showMessagesPropertyName = "SharpDevelop.TaskList.ShowMessages";
 		const string logSeparatorPositionPropertyName = "SharpDevelop.TaskList.LogSeparatorPosition";
+		const string outputViewVisiblePropertyName = "SharpDevelop.TaskList.OutputViewVisible";
 
 		static class DataColumns
 		{
@@ -205,19 +206,41 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			Control.ShowAll ();
 			
-			sw.SizeAllocated += delegate {
-				if (outputView.Visible)
-					PropertyService.Set (logSeparatorPositionPropertyName, (double) ((double) control.Position / (double) control.Allocation.Width));
-			};
+			control.SizeAllocated += HandleControlSizeAllocated;
 			
-			outputView.Hide ();
-
+			bool outputVisible = PropertyService.Get<bool> (outputViewVisiblePropertyName, false);
+			if (outputVisible) {
+				outputView.Visible = true;
+				logBtn.Active = true;
+			} else {
+				outputView.Hide ();
+			}
+			
+			sw.SizeAllocated += HandleSwSizeAllocated;
+			
 			// Load existing tasks
 			foreach (Task t in TaskService.Errors) {
 				AddTask (t);
 			}
 
 			control.FocusChain = new Gtk.Widget [] { sw };
+		}
+		
+		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (!initialLogShow && outputView.Visible) {
+				var val = (double) ((double) control.Position / (double) control.Allocation.Width);
+				PropertyService.Set (logSeparatorPositionPropertyName, val);
+			}
+		}
+		
+		[GLib.ConnectBefore]
+		void HandleControlSizeAllocated (object o, SizeAllocatedArgs args)
+		{
+			if (initialLogShow && outputView.Visible) {
+				SetInitialOutputViewSize (args.Allocation.Width);
+				initialLogShow = false;
+			}
 		}
 		
 		public IProgressMonitor GetBuildProgressMonitor ()
@@ -792,15 +815,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void HandleLogBtnToggled (object sender, EventArgs e)
 		{
-			if (!outputView.Visible && initialLogShow) {
-				double relPos = PropertyService.Get<double> (logSeparatorPositionPropertyName, 0.5d);
-				int pos = (int) (control.Allocation.Width * relPos);
-				if (pos < 30) pos = 30;
-				control.Position = pos;
-				initialLogShow = false;
-			}
+			var visible = logBtn.Active;
+			PropertyService.Set (outputViewVisiblePropertyName, visible);
+			outputView.Visible = visible;
 			
-			outputView.Visible = logBtn.Active;
+			if (initialLogShow && visible && control.IsRealized) {
+				initialLogShow = false;
+				SetInitialOutputViewSize (control.Allocation.Width);
+			}
+		}
+		
+		void SetInitialOutputViewSize (int controlWidth)
+		{
+			double relPos = PropertyService.Get<double> (logSeparatorPositionPropertyName, 0.5d);
+			int pos = (int) (controlWidth * relPos);
+			pos = Math.Max (30, Math.Min (pos, controlWidth - 30));
+			control.Position = pos;
 		}
 	}
 	
