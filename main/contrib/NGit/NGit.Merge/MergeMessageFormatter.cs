@@ -111,7 +111,8 @@ namespace NGit.Merge
 			}
 			if (!remoteBranches.IsEmpty())
 			{
-				listings.AddItem(JoinNames(remoteBranches, "remote branch", "remote branches"));
+				listings.AddItem(JoinNames(remoteBranches, "remote-tracking branch", "remote-tracking branches"
+					));
 			}
 			if (!tags.IsEmpty())
 			{

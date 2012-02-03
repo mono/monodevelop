@@ -55,7 +55,12 @@ namespace Sharpen
 
 		public bool CanWrite ()
 		{
-			return ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0);
+			try {
+				var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
+				return info.CanAccess (Mono.Unix.Native.AccessModes.W_OK);
+			} catch {
+				return ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0);
+			}
 		}
 
 		public bool CreateNewFile ()
@@ -97,6 +102,15 @@ namespace Sharpen
 		public bool Delete ()
 		{
 			try {
+				try {
+					var info = UnixFileSystemInfo.GetFileSystemEntry (path);
+					if (info.Exists)
+						info.Delete ();
+					return true;
+				} catch {
+					
+				}
+
 				if (Directory.Exists (path)) {
 					if (Directory.GetFileSystemEntries (path).Length != 0)
 						return false;
@@ -121,7 +135,11 @@ namespace Sharpen
 
 		public bool Exists ()
 		{
-			return (File.Exists (path) || Directory.Exists (path));
+			try {
+				return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path).Exists;
+			} catch {
+				return (File.Exists (path) || Directory.Exists (path));
+			}
 		}
 
 		public FilePath GetAbsoluteFile ()
@@ -168,28 +186,49 @@ namespace Sharpen
 
 		public bool IsDirectory ()
 		{
-			return Directory.Exists (path);
+			try {
+				var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
+				return info.Exists && info.FileType == FileTypes.Directory;
+			} catch {
+				return Directory.Exists (path);
+			}
 		}
 
 		public bool IsFile ()
 		{
-			return File.Exists (path);
+			try {
+				var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
+				return info.Exists && (info.FileType == FileTypes.RegularFile || info.FileType == FileTypes.SymbolicLink);
+			} catch {
+				return File.Exists (path);
+			}
 		}
 
 		public long LastModified ()
 		{
 			if (!Exists ())
 				return 0;
-			return File.GetLastWriteTimeUtc (path).ToMillisecondsSinceEpoch ();
+
+			try {
+				return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path).LastWriteTimeUtc.ToMillisecondsSinceEpoch ();
+			} catch {
+				return File.GetLastWriteTimeUtc (path).ToMillisecondsSinceEpoch ();
+			}
 		}
 
 		public long Length ()
 		{
-			FileInfo info = new FileInfo (path);
-			if (info.Exists)
-				return info.Length;
-			else
-				return 0;
+			try {
+				var info = UnixFileInfo.GetFileSystemEntry (path);
+				if (info.Exists)
+					return info.Length;
+			} catch {
+				var info = new FileInfo (path);
+				if (info.Exists)
+					return info.Length;
+			}
+
+			return 0;
 		}
 
 		public string[] List ()
@@ -242,10 +281,15 @@ namespace Sharpen
 
 		private void MakeFileWritable (string file)
 		{
-			FileAttributes fileAttributes = File.GetAttributes (file);
-			if ((fileAttributes & FileAttributes.ReadOnly) != 0) {
-				fileAttributes &= ~FileAttributes.ReadOnly;
-				File.SetAttributes (file, fileAttributes);
+			try {
+				var info = UnixFileInfo.GetFileSystemEntry (file);
+				info.FileAccessPermissions |= (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
+			} catch {
+				FileAttributes fileAttributes = File.GetAttributes (file);
+				if ((fileAttributes & FileAttributes.ReadOnly) != 0) {
+					fileAttributes &= ~FileAttributes.ReadOnly;
+					File.SetAttributes (file, fileAttributes);
+				}
 			}
 		}
 
@@ -281,8 +325,19 @@ namespace Sharpen
 		public bool RenameTo (string name)
 		{
 			try {
-				File.Move (path, name);
-				return true;
+				try {
+					var symlink = UnixFileInfo.GetFileSystemEntry (path) as UnixSymbolicLinkInfo;
+					if (symlink != null) {
+						var newFile = new UnixSymbolicLinkInfo (name);
+						newFile.CreateSymbolicLinkTo (symlink.ContentsPath);
+					} else {
+						File.Move (path, name);
+					}
+					return true;
+				} catch {
+					File.Move (path, name);
+					return true;
+				}
 			} catch {
 				return false;
 			}
@@ -290,14 +345,19 @@ namespace Sharpen
 
 		public void SetLastModified (long milis)
 		{
+			// FIXME: I don't know how to change the modified time on a symlink
 			DateTime utcDateTime = Extensions.MillisToDateTimeOffset (milis, 0L).UtcDateTime;
 			File.SetLastWriteTimeUtc (path, utcDateTime);
 		}
 
 		public void SetReadOnly ()
 		{
-			FileAttributes fileAttributes = File.GetAttributes (this.path) | FileAttributes.ReadOnly;
-			File.SetAttributes (path, fileAttributes);
+			try {
+				UnixFileInfo.GetFileSystemEntry (path).FileAccessPermissions &= ~ (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
+			} catch {
+				FileAttributes fileAttributes = File.GetAttributes (this.path) | FileAttributes.ReadOnly;
+				File.SetAttributes (path, fileAttributes);
+			}
 		}
 		
 		public Uri ToURI ()
@@ -320,12 +380,21 @@ namespace Sharpen
 			try {
 				UnixFileInfo fi = new UnixFileInfo (path);
 				FileAccessPermissions perms = fi.FileAccessPermissions;
-				if ((perms & FileAccessPermissions.UserRead) != 0)
-					perms |= FileAccessPermissions.UserExecute;
-				if ((perms & FileAccessPermissions.OtherRead) != 0)
-					perms |= FileAccessPermissions.OtherExecute;
-				if ((perms & FileAccessPermissions.GroupRead) != 0)
-					perms |= FileAccessPermissions.GroupExecute;
+				if (exec) {
+					if (perms.HasFlag (FileAccessPermissions.UserRead))
+						perms |= FileAccessPermissions.UserExecute;
+					if (perms.HasFlag (FileAccessPermissions.OtherRead))
+						perms |= FileAccessPermissions.OtherExecute;
+					if ((perms.HasFlag (FileAccessPermissions.GroupRead)))
+						perms |= FileAccessPermissions.GroupExecute;
+				} else {
+					if (perms.HasFlag (FileAccessPermissions.UserRead))
+						perms &= ~FileAccessPermissions.UserExecute;
+					if (perms.HasFlag (FileAccessPermissions.OtherRead))
+						perms &= ~FileAccessPermissions.OtherExecute;
+					if ((perms.HasFlag (FileAccessPermissions.GroupRead)))
+						perms &= ~FileAccessPermissions.GroupExecute;
+				}
 				fi.FileAccessPermissions = perms;
 				return true;
 			} catch {

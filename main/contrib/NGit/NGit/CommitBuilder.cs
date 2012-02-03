@@ -221,10 +221,7 @@ namespace NGit
 			else
 			{
 				ObjectId[] newParents = new ObjectId[parentIds.Length + 1];
-				for (int i = 0; i < parentIds.Length; i++)
-				{
-					newParents[i] = parentIds[i];
-				}
+				System.Array.Copy(parentIds, 0, newParents, 0, parentIds.Length);
 				newParents[parentIds.Length] = additionalParent.Copy();
 				parentIds = newParents;
 			}

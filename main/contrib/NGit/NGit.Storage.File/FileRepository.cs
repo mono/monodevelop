@@ -88,6 +88,8 @@ namespace NGit.Storage.File
 
 		private readonly ObjectDirectory objectDatabase;
 
+		private FileSnapshot snapshot;
+
 		/// <summary>Construct a representation of a Git repository.</summary>
 		/// <remarks>
 		/// Construct a representation of a Git repository.
@@ -139,14 +141,12 @@ namespace NGit.Storage.File
 		{
 			systemConfig = SystemReader.GetInstance().OpenSystemConfig(null, FileSystem);
 			userConfig = SystemReader.GetInstance().OpenUserConfig(systemConfig, FileSystem);
-			repoConfig = new FileBasedConfig(userConfig, FileSystem.Resolve(Directory, "config"
-				), FileSystem);
-			//
-			//
+			repoConfig = new FileBasedConfig(userConfig, FileSystem.Resolve(Directory, Constants
+				.CONFIG), FileSystem);
 			LoadSystemConfig();
 			LoadUserConfig();
 			LoadRepoConfig();
-			repoConfig.AddChangeListener(new _ConfigChangedListener_168(this));
+			repoConfig.AddChangeListener(new _ConfigChangedListener_171(this));
 			refs = new RefDirectory(this);
 			objectDatabase = new ObjectDirectory(repoConfig, options.GetObjectDirectory(), options
 				.GetAlternateObjectDirectories(), FileSystem);
@@ -163,11 +163,15 @@ namespace NGit.Storage.File
 						, repositoryFormatVersion));
 				}
 			}
+			if (!IsBare)
+			{
+				snapshot = FileSnapshot.Save(GetIndexFile());
+			}
 		}
 
-		private sealed class _ConfigChangedListener_168 : ConfigChangedListener
+		private sealed class _ConfigChangedListener_171 : ConfigChangedListener
 		{
-			public _ConfigChangedListener_168(FileRepository _enclosing)
+			public _ConfigChangedListener_171(FileRepository _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -400,20 +404,42 @@ namespace NGit.Storage.File
 			objectDatabase.OpenPack(pack, idx);
 		}
 
-		/// <summary>Force a scan for changed refs.</summary>
-		/// <remarks>Force a scan for changed refs.</remarks>
-		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		/// <exception cref="System.IO.IOException"></exception>
 		public override void ScanForRepoChanges()
 		{
 			GetAllRefs();
 			// This will look for changes to refs
-			if (!IsBare)
+			DetectIndexChanges();
+		}
+
+		/// <summary>Detect index changes.</summary>
+		/// <remarks>Detect index changes.</remarks>
+		private void DetectIndexChanges()
+		{
+			if (IsBare)
 			{
-				GetIndex();
+				return;
+			}
+			FilePath indexFile = GetIndexFile();
+			if (snapshot == null)
+			{
+				snapshot = FileSnapshot.Save(indexFile);
+			}
+			else
+			{
+				if (snapshot.IsModified(indexFile))
+				{
+					NotifyIndexChanged();
+				}
 			}
 		}
 
-		// This will detect changes in the index
+		public override void NotifyIndexChanged()
+		{
+			snapshot = FileSnapshot.Save(GetIndexFile());
+			FireEvent(new IndexChangedEvent());
+		}
+
 		/// <param name="refName"></param>
 		/// <returns>
 		/// a

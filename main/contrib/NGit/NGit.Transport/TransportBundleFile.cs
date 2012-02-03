@@ -137,7 +137,7 @@ namespace NGit.Transport
 		/// <exception cref="System.NotSupportedException"></exception>
 		public override PushConnection OpenPush()
 		{
-			throw new NotSupportedException(JGitText.Get().pushIsNotSupportedForBundleTransport
+			throw new NGit.Errors.NotSupportedException(JGitText.Get().pushIsNotSupportedForBundleTransport
 				);
 		}
 

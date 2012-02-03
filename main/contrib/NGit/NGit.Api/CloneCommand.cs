@@ -56,7 +56,7 @@ namespace NGit.Api
 	/// <summary>Clone a repository into a new working directory</summary>
 	/// <seealso><a href="http://www.kernel.org/pub/software/scm/git/docs/git-clone.html"
 	/// *      >Git documentation about Clone</a></seealso>
-	public class CloneCommand : Callable<Git>
+	public class CloneCommand : TransportCommand<NGit.Api.CloneCommand, Git>
 	{
 		private string uri;
 
@@ -70,15 +70,18 @@ namespace NGit.Api
 
 		private ProgressMonitor monitor = NullProgressMonitor.INSTANCE;
 
-		private CredentialsProvider credentialsProvider;
-
-		private int timeout;
-
 		private bool cloneAllBranches;
+
+		private bool cloneSubmodules;
 
 		private bool noCheckout;
 
 		private ICollection<string> branchesToClone;
+
+		/// <summary>Create clone command with no repository set</summary>
+		public CloneCommand() : base(null)
+		{
+		}
 
 		/// <summary>
 		/// Executes the
@@ -92,7 +95,7 @@ namespace NGit.Api
 		/// <code>Git</code>
 		/// object with associated repository
 		/// </returns>
-		public virtual Git Call()
+		public override Git Call()
 		{
 			try
 			{
@@ -127,6 +130,11 @@ namespace NGit.Api
 			{
 				directory = new FilePath(u.GetHumanishName(), Constants.DOT_GIT);
 			}
+			if (directory.Exists() && directory.ListFiles().Length != 0)
+			{
+				throw new JGitInternalException(MessageFormat.Format(JGitText.Get().cloneNonEmptyDirectory
+					, directory.GetName()));
+			}
 			command.SetDirectory(directory);
 			return command.Call().GetRepository();
 		}
@@ -135,10 +143,10 @@ namespace NGit.Api
 		/// <exception cref="NGit.Api.Errors.JGitInternalException"></exception>
 		/// <exception cref="NGit.Api.Errors.InvalidRemoteException"></exception>
 		/// <exception cref="System.IO.IOException"></exception>
-		private FetchResult Fetch(Repository repo, URIish u)
+		private FetchResult Fetch(Repository clonedRepo, URIish u)
 		{
 			// create the remote config and save it
-			RemoteConfig config = new RemoteConfig(repo.GetConfig(), remote);
+			RemoteConfig config = new RemoteConfig(clonedRepo.GetConfig(), remote);
 			config.AddURI(u);
 			string dst = bare ? Constants.R_HEADS : Constants.R_REMOTES + config.Name;
 			RefSpec refSpec = new RefSpec();
@@ -146,18 +154,14 @@ namespace NGit.Api
 			refSpec = refSpec.SetSourceDestination(Constants.R_HEADS + "*", dst + "/*");
 			//$NON-NLS-1$ //$NON-NLS-2$
 			config.AddFetchRefSpec(refSpec);
-			config.Update(repo.GetConfig());
-			repo.GetConfig().Save();
+			config.Update(clonedRepo.GetConfig());
+			clonedRepo.GetConfig().Save();
 			// run the fetch command
-			FetchCommand command = new FetchCommand(repo);
+			FetchCommand command = new FetchCommand(clonedRepo);
 			command.SetRemote(remote);
 			command.SetProgressMonitor(monitor);
 			command.SetTagOpt(TagOpt.FETCH_TAGS);
-			command.SetTimeout(timeout);
-			if (credentialsProvider != null)
-			{
-				command.SetCredentialsProvider(credentialsProvider);
-			}
+			Configure(command);
 			IList<RefSpec> specs = CalculateRefSpecs(dst);
 			command.SetRefSpecs(specs);
 			return command.Call();
@@ -194,7 +198,7 @@ namespace NGit.Api
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
 		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
 		/// <exception cref="System.IO.IOException"></exception>
-		private void Checkout(Repository repo, FetchResult result)
+		private void Checkout(Repository clonedRepo, FetchResult result)
 		{
 			Ref head = result.GetAdvertisedRef(branch);
 			if (branch.Equals(Constants.HEAD))
@@ -212,36 +216,58 @@ namespace NGit.Api
 			// throw exception?
 			if (head.GetName().StartsWith(Constants.R_HEADS))
 			{
-				RefUpdate newHead = repo.UpdateRef(Constants.HEAD);
+				RefUpdate newHead = clonedRepo.UpdateRef(Constants.HEAD);
 				newHead.DisableRefLog();
 				newHead.Link(head.GetName());
-				AddMergeConfig(repo, head);
+				AddMergeConfig(clonedRepo, head);
 			}
-			RevCommit commit = ParseCommit(repo, head);
+			RevCommit commit = ParseCommit(clonedRepo, head);
 			bool detached = !head.GetName().StartsWith(Constants.R_HEADS);
-			RefUpdate u = repo.UpdateRef(Constants.HEAD, detached);
+			RefUpdate u = clonedRepo.UpdateRef(Constants.HEAD, detached);
 			u.SetNewObjectId(commit.Id);
 			u.ForceUpdate();
 			if (!bare)
 			{
-				DirCache dc = repo.LockDirCache();
-				DirCacheCheckout co = new DirCacheCheckout(repo, dc, commit.Tree);
+				DirCache dc = clonedRepo.LockDirCache();
+				DirCacheCheckout co = new DirCacheCheckout(clonedRepo, dc, commit.Tree);
 				co.Checkout();
+				if (cloneSubmodules)
+				{
+					CloneSubmodules(clonedRepo);
+				}
 			}
+		}
+
+		private void CloneSubmodules(Repository clonedRepo)
+		{
+			SubmoduleInitCommand init = new SubmoduleInitCommand(clonedRepo);
+			if (init.Call().IsEmpty())
+			{
+				return;
+			}
+			SubmoduleUpdateCommand update = new SubmoduleUpdateCommand(clonedRepo);
+			Configure(update);
+			update.SetProgressMonitor(monitor);
+			update.Call();
 		}
 
 		private Ref FindBranchToCheckout(FetchResult result)
 		{
-			Ref foundBranch = null;
 			Ref idHEAD = result.GetAdvertisedRef(Constants.HEAD);
+			if (idHEAD == null)
+			{
+				return null;
+			}
+			Ref master = result.GetAdvertisedRef(Constants.R_HEADS + Constants.MASTER);
+			if (master != null && master.GetObjectId().Equals(idHEAD.GetObjectId()))
+			{
+				return master;
+			}
+			Ref foundBranch = null;
 			foreach (Ref r in result.GetAdvertisedRefs())
 			{
 				string n = r.GetName();
 				if (!n.StartsWith(Constants.R_HEADS))
-				{
-					continue;
-				}
-				if (idHEAD == null)
 				{
 					continue;
 				}
@@ -255,22 +281,22 @@ namespace NGit.Api
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private void AddMergeConfig(Repository repo, Ref head)
+		private void AddMergeConfig(Repository clonedRepo, Ref head)
 		{
 			string branchName = Repository.ShortenRefName(head.GetName());
-			repo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants
-				.CONFIG_KEY_REMOTE, remote);
-			repo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName, ConfigConstants
-				.CONFIG_KEY_MERGE, head.GetName());
-			repo.GetConfig().Save();
+			clonedRepo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName
+				, ConfigConstants.CONFIG_KEY_REMOTE, remote);
+			clonedRepo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName
+				, ConfigConstants.CONFIG_KEY_MERGE, head.GetName());
+			clonedRepo.GetConfig().Save();
 		}
 
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
 		/// <exception cref="NGit.Errors.IncorrectObjectTypeException"></exception>
 		/// <exception cref="System.IO.IOException"></exception>
-		private RevCommit ParseCommit(Repository repo, Ref @ref)
+		private RevCommit ParseCommit(Repository clonedRepo, Ref @ref)
 		{
-			RevWalk rw = new RevWalk(repo);
+			RevWalk rw = new RevWalk(clonedRepo);
 			RevCommit commit;
 			try
 			{
@@ -285,7 +311,7 @@ namespace NGit.Api
 
 		/// <param name="uri">the uri to clone from</param>
 		/// <returns>this instance</returns>
-		public virtual CloneCommand SetURI(string uri)
+		public virtual NGit.Api.CloneCommand SetURI(string uri)
 		{
 			this.uri = uri;
 			return this;
@@ -300,7 +326,7 @@ namespace NGit.Api
 		/// 	</seealso>
 		/// <param name="directory">the directory to clone to</param>
 		/// <returns>this instance</returns>
-		public virtual CloneCommand SetDirectory(FilePath directory)
+		public virtual NGit.Api.CloneCommand SetDirectory(FilePath directory)
 		{
 			this.directory = directory;
 			return this;
@@ -308,15 +334,26 @@ namespace NGit.Api
 
 		/// <param name="bare">whether the cloned repository is bare or not</param>
 		/// <returns>this instance</returns>
-		public virtual CloneCommand SetBare(bool bare)
+		public virtual NGit.Api.CloneCommand SetBare(bool bare)
 		{
 			this.bare = bare;
 			return this;
 		}
 
-		/// <param name="remote">the branch to keep track of in the origin repository</param>
+		/// <summary>
+		/// The remote name used to keep track of the upstream repository for the
+		/// clone operation.
+		/// </summary>
+		/// <remarks>
+		/// The remote name used to keep track of the upstream repository for the
+		/// clone operation. If no remote name is set, the default value of
+		/// <code>Constants.DEFAULT_REMOTE_NAME</code> will be used.
+		/// </remarks>
+		/// <seealso cref="NGit.Constants.DEFAULT_REMOTE_NAME">NGit.Constants.DEFAULT_REMOTE_NAME
+		/// 	</seealso>
+		/// <param name="remote">name that keeps track of the upstream repository</param>
 		/// <returns>this instance</returns>
-		public virtual CloneCommand SetRemote(string remote)
+		public virtual NGit.Api.CloneCommand SetRemote(string remote)
 		{
 			this.remote = remote;
 			return this;
@@ -324,7 +361,7 @@ namespace NGit.Api
 
 		/// <param name="branch">the initial branch to check out when cloning the repository</param>
 		/// <returns>this instance</returns>
-		public virtual CloneCommand SetBranch(string branch)
+		public virtual NGit.Api.CloneCommand SetBranch(string branch)
 		{
 			this.branch = branch;
 			return this;
@@ -341,37 +378,9 @@ namespace NGit.Api
 		/// 
 		/// <code>this</code>
 		/// </returns>
-		public virtual CloneCommand SetProgressMonitor(ProgressMonitor monitor)
+		public virtual NGit.Api.CloneCommand SetProgressMonitor(ProgressMonitor monitor)
 		{
 			this.monitor = monitor;
-			return this;
-		}
-
-		/// <param name="credentialsProvider">
-		/// the
-		/// <see cref="NGit.Transport.CredentialsProvider">NGit.Transport.CredentialsProvider
-		/// 	</see>
-		/// to use
-		/// </param>
-		/// <returns>
-		/// 
-		/// <code>this</code>
-		/// </returns>
-		public virtual CloneCommand SetCredentialsProvider(CredentialsProvider credentialsProvider
-			)
-		{
-			this.credentialsProvider = credentialsProvider;
-			return this;
-		}
-
-		/// <param name="timeout">the timeout used for the fetch step</param>
-		/// <returns>
-		/// 
-		/// <code>this</code>
-		/// </returns>
-		public virtual CloneCommand SetTimeout(int timeout)
-		{
-			this.timeout = timeout;
 			return this;
 		}
 
@@ -383,9 +392,24 @@ namespace NGit.Api
 		/// 
 		/// <code>this</code>
 		/// </returns>
-		public virtual CloneCommand SetCloneAllBranches(bool cloneAllBranches)
+		public virtual NGit.Api.CloneCommand SetCloneAllBranches(bool cloneAllBranches)
 		{
 			this.cloneAllBranches = cloneAllBranches;
+			return this;
+		}
+
+		/// <param name="cloneSubmodules">
+		/// true to initialize and update submodules. Ignored when
+		/// <see cref="SetBare(bool)">SetBare(bool)</see>
+		/// is set to true.
+		/// </param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Api.CloneCommand SetCloneSubmodules(bool cloneSubmodules)
+		{
+			this.cloneSubmodules = cloneSubmodules;
 			return this;
 		}
 
@@ -397,7 +421,7 @@ namespace NGit.Api
 		/// 
 		/// <code>this</code>
 		/// </returns>
-		public virtual CloneCommand SetBranchesToClone(ICollection<string> branchesToClone
+		public virtual NGit.Api.CloneCommand SetBranchesToClone(ICollection<string> branchesToClone
 			)
 		{
 			this.branchesToClone = branchesToClone;
@@ -413,7 +437,7 @@ namespace NGit.Api
 		/// 
 		/// <code>this</code>
 		/// </returns>
-		public virtual CloneCommand SetNoCheckout(bool noCheckout)
+		public virtual NGit.Api.CloneCommand SetNoCheckout(bool noCheckout)
 		{
 			this.noCheckout = noCheckout;
 			return this;

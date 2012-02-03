@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System.Net;
 using System.Net.Sockets;
 using NGit.Transport;
+using NGit.Util.IO;
 using Sharpen;
 
 namespace NGit.Transport
@@ -103,7 +104,7 @@ namespace NGit.Transport
 		internal virtual void Execute(Socket sock)
 		{
 			rawIn = new BufferedInputStream(sock.GetInputStream());
-			rawOut = new BufferedOutputStream(sock.GetOutputStream());
+			rawOut = new SafeBufferedOutputStream(sock.GetOutputStream());
 			if (0 < daemon.GetTimeout())
 			{
 				sock.ReceiveTimeout = daemon.GetTimeout() * 1000;

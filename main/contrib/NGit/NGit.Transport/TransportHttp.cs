@@ -256,7 +256,7 @@ namespace NGit.Transport
 			catch (UriFormatException e)
 			{
 				//$NON-NLS-1$
-				throw new NotSupportedException(MessageFormat.Format(JGitText.Get().invalidURL, uri
+				throw new NGit.Errors.NotSupportedException(MessageFormat.Format(JGitText.Get().invalidURL, uri
 					), e);
 			}
 			http = local.GetConfig().Get(HTTP_KEY);
@@ -310,7 +310,7 @@ namespace NGit.Transport
 					@in.Close();
 				}
 			}
-			catch (NotSupportedException err)
+			catch (NGit.Errors.NotSupportedException err)
 			{
 				throw;
 			}
@@ -426,12 +426,12 @@ namespace NGit.Transport
 						if (!useSmartHttp)
 						{
 							string msg = JGitText.Get().smartHTTPPushDisabled;
-							throw new NotSupportedException(msg);
+							throw new NGit.Errors.NotSupportedException(msg);
 						}
 						else
 						{
 							string msg = JGitText.Get().remoteDoesNotSupportSmartHTTPPush;
-							throw new NotSupportedException(msg);
+							throw new NGit.Errors.NotSupportedException(msg);
 						}
 					}
 				}
@@ -440,7 +440,7 @@ namespace NGit.Transport
 					@in.Close();
 				}
 			}
-			catch (NotSupportedException err)
+			catch (NGit.Errors.NotSupportedException err)
 			{
 				throw;
 			}
@@ -485,7 +485,7 @@ namespace NGit.Transport
 			}
 			catch (UriFormatException e)
 			{
-				throw new NotSupportedException(MessageFormat.Format(JGitText.Get().invalidURL, uri
+				throw new NGit.Errors.NotSupportedException(MessageFormat.Format(JGitText.Get().invalidURL, uri
 					), e);
 			}
 			try
@@ -552,7 +552,7 @@ namespace NGit.Transport
 					}
 				}
 			}
-			catch (NotSupportedException e)
+			catch (NGit.Errors.NotSupportedException e)
 			{
 				throw;
 			}
@@ -1063,13 +1063,6 @@ namespace NGit.Transport
 
 			internal class HttpExecuteStream : InputStream
 			{
-				/// <exception cref="System.IO.IOException"></exception>
-				public override int Available()
-				{
-					this._enclosing.Execute();
-					return 0;
-				}
-
 				/// <exception cref="System.IO.IOException"></exception>
 				public override int Read()
 				{

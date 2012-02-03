@@ -76,5 +76,10 @@ namespace Sharpen
 		public override int Count {
 			get { return this.dict.Count; }
 		}
+		
+		public override string ToString ()
+		{
+			return "[" + string.Join (", ", this.Select (d => d.ToString ()).ToArray ()) + "]";
+		}
 	}
 }

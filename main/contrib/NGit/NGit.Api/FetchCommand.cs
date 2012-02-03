@@ -63,7 +63,7 @@ namespace NGit.Api
 	/// </summary>
 	/// <seealso><a href="http://www.kernel.org/pub/software/scm/git/docs/git-fetch.html"
 	/// *      >Git documentation about Fetch</a></seealso>
-	public class FetchCommand : GitCommand<FetchResult>
+	public class FetchCommand : TransportCommand<NGit.Api.FetchCommand, FetchResult>
 	{
 		private string remote = Constants.DEFAULT_REMOTE_NAME;
 
@@ -78,10 +78,6 @@ namespace NGit.Api
 		private bool dryRun;
 
 		private bool thin = NGit.Transport.Transport.DEFAULT_FETCH_THIN;
-
-		private int timeout;
-
-		private CredentialsProvider credentialsProvider;
 
 		private TagOpt tagOption;
 
@@ -125,17 +121,13 @@ namespace NGit.Api
 				{
 					transport.SetCheckFetchedObjects(checkFetchedObjects);
 					transport.SetRemoveDeletedRefs(removeDeletedRefs);
-					transport.SetTimeout(timeout);
 					transport.SetDryRun(dryRun);
 					if (tagOption != null)
 					{
 						transport.SetTagOpt(tagOption);
 					}
 					transport.SetFetchThin(thin);
-					if (credentialsProvider != null)
-					{
-						transport.SetCredentialsProvider(credentialsProvider);
-					}
+					Configure(transport);
 					FetchResult result = transport.Fetch(monitor, refSpecs);
 					return result;
 				}
@@ -159,7 +151,7 @@ namespace NGit.Api
 				throw new InvalidRemoteException(MessageFormat.Format(JGitText.Get().invalidRemote
 					, remote));
 			}
-			catch (NotSupportedException e)
+			catch (NGit.Errors.NotSupportedException e)
 			{
 				throw new JGitInternalException(JGitText.Get().exceptionCaughtDuringExecutionOfFetchCommand
 					, e);
@@ -190,18 +182,6 @@ namespace NGit.Api
 		public virtual string GetRemote()
 		{
 			return remote;
-		}
-
-		/// <param name="timeout">the timeout used for the fetch operation</param>
-		/// <returns>
-		/// 
-		/// <code>this</code>
-		/// </returns>
-		public virtual NGit.Api.FetchCommand SetTimeout(int timeout)
-		{
-			CheckCallable();
-			this.timeout = timeout;
-			return this;
 		}
 
 		/// <returns>the timeout used for the fetch operation</returns>
@@ -349,24 +329,6 @@ namespace NGit.Api
 		{
 			CheckCallable();
 			this.thin = thin;
-			return this;
-		}
-
-		/// <param name="credentialsProvider">
-		/// the
-		/// <see cref="NGit.Transport.CredentialsProvider">NGit.Transport.CredentialsProvider
-		/// 	</see>
-		/// to use
-		/// </param>
-		/// <returns>
-		/// 
-		/// <code>this</code>
-		/// </returns>
-		public virtual NGit.Api.FetchCommand SetCredentialsProvider(CredentialsProvider credentialsProvider
-			)
-		{
-			CheckCallable();
-			this.credentialsProvider = credentialsProvider;
 			return this;
 		}
 

@@ -49,6 +49,7 @@ using System.Text;
 using NGit;
 using NGit.Errors;
 using NGit.Transport;
+using NGit.Util.IO;
 using Sharpen;
 
 namespace NGit.Transport
@@ -201,7 +202,7 @@ namespace NGit.Transport
 					InputStream sIn = this.sock.GetInputStream();
 					OutputStream sOut = this.sock.GetOutputStream();
 					sIn = new BufferedInputStream(sIn);
-					sOut = new BufferedOutputStream(sOut);
+					sOut = new SafeBufferedOutputStream(sOut);
 					this.Init(sIn, sOut);
 					this._enclosing.Service("git-upload-pack", this.pckOut);
 				}
@@ -251,7 +252,7 @@ namespace NGit.Transport
 					InputStream sIn = this.sock.GetInputStream();
 					OutputStream sOut = this.sock.GetOutputStream();
 					sIn = new BufferedInputStream(sIn);
-					sOut = new BufferedOutputStream(sOut);
+					sOut = new SafeBufferedOutputStream(sOut);
 					this.Init(sIn, sOut);
 					this._enclosing.Service("git-receive-pack", this.pckOut);
 				}

@@ -65,13 +65,48 @@ namespace NGit.Storage.File
 	{
 		internal static readonly string SUFFIX = ".lock";
 
-		private sealed class _FilenameFilter_79 : FilenameFilter
+		//$NON-NLS-1$
+		/// <summary>Unlock the given file.</summary>
+		/// <remarks>
+		/// Unlock the given file.
+		/// <p>
+		/// This method can be used for recovering from a thrown
+		/// <see cref="NGit.Errors.LockFailedException">NGit.Errors.LockFailedException</see>
+		/// . This method does not validate that the lock
+		/// is or is not currently held before attempting to unlock it.
+		/// </remarks>
+		/// <param name="file"></param>
+		/// <returns>true if unlocked, false if unlocking failed</returns>
+		public static bool Unlock(FilePath file)
 		{
-			public _FilenameFilter_79()
+			FilePath lockFile = GetLockFile(file);
+			int flags = FileUtils.RETRY | FileUtils.SKIP_MISSING;
+			try
+			{
+				FileUtils.Delete(lockFile, flags);
+			}
+			catch (IOException)
+			{
+			}
+			// Ignore and return whether lock file still exists
+			return !lockFile.Exists();
+		}
+
+		/// <summary>Get the lock file corresponding to the given file.</summary>
+		/// <remarks>Get the lock file corresponding to the given file.</remarks>
+		/// <param name="file"></param>
+		/// <returns>lock file</returns>
+		internal static FilePath GetLockFile(FilePath file)
+		{
+			return new FilePath(file.GetParentFile(), file.GetName() + SUFFIX);
+		}
+
+		private sealed class _FilenameFilter_111 : FilenameFilter
+		{
+			public _FilenameFilter_111()
 			{
 			}
 
-			//$NON-NLS-1$
 			public bool Accept(FilePath dir, string name)
 			{
 				return !name.EndsWith(NGit.Storage.File.LockFile.SUFFIX);
@@ -80,7 +115,7 @@ namespace NGit.Storage.File
 
 		/// <summary>Filter to skip over active lock files when listing a directory.</summary>
 		/// <remarks>Filter to skip over active lock files when listing a directory.</remarks>
-		internal static readonly FilenameFilter FILTER = new _FilenameFilter_79();
+		internal static readonly FilenameFilter FILTER = new _FilenameFilter_111();
 
 		private readonly FilePath @ref;
 
@@ -108,7 +143,7 @@ namespace NGit.Storage.File
 		public LockFile(FilePath f, FS fs)
 		{
 			@ref = f;
-			lck = new FilePath(@ref.GetParentFile(), @ref.GetName() + SUFFIX);
+			lck = GetLockFile(@ref);
 			this.fs = fs;
 		}
 
@@ -341,12 +376,12 @@ namespace NGit.Storage.File
 			{
 				@out = os;
 			}
-			return new _OutputStream_291(this, @out);
+			return new _OutputStream_323(this, @out);
 		}
 
-		private sealed class _OutputStream_291 : OutputStream
+		private sealed class _OutputStream_323 : OutputStream
 		{
-			public _OutputStream_291(LockFile _enclosing, OutputStream @out)
+			public _OutputStream_323(LockFile _enclosing, OutputStream @out)
 			{
 				this._enclosing = _enclosing;
 				this.@out = @out;

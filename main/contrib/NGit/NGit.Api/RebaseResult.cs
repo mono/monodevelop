@@ -56,30 +56,88 @@ namespace NGit.Api
 	/// </summary>
 	public class RebaseResult
 	{
-		/// <summary>The overall status</summary>
-		public enum Status
+		public abstract class Status
 		{
-			OK,
-			ABORTED,
-			STOPPED,
-			FAILED,
-			UP_TO_DATE,
-			FAST_FORWARD
+			public static RebaseResult.Status OK = new RebaseResult.Status.OK_Class();
+
+			public static RebaseResult.Status ABORTED = new RebaseResult.Status.ABORTED_Class
+				();
+
+			public static RebaseResult.Status STOPPED = new RebaseResult.Status.STOPPED_Class
+				();
+
+			public static RebaseResult.Status FAILED = new RebaseResult.Status.FAILED_Class();
+
+			public static RebaseResult.Status UP_TO_DATE = new RebaseResult.Status.UP_TO_DATE_Class
+				();
+
+			public static RebaseResult.Status FAST_FORWARD = new RebaseResult.Status.FAST_FORWARD_Class
+				();
+
+			internal class OK_Class : RebaseResult.Status
+			{
+				public override bool IsSuccessful()
+				{
+					return true;
+				}
+			}
+
+			internal class ABORTED_Class : RebaseResult.Status
+			{
+				public override bool IsSuccessful()
+				{
+					return false;
+				}
+			}
+
+			internal class STOPPED_Class : RebaseResult.Status
+			{
+				public override bool IsSuccessful()
+				{
+					return false;
+				}
+			}
+
+			internal class FAILED_Class : RebaseResult.Status
+			{
+				public override bool IsSuccessful()
+				{
+					return false;
+				}
+			}
+
+			internal class UP_TO_DATE_Class : RebaseResult.Status
+			{
+				public override bool IsSuccessful()
+				{
+					return true;
+				}
+			}
+
+			internal class FAST_FORWARD_Class : RebaseResult.Status
+			{
+				public override bool IsSuccessful()
+				{
+					return true;
+				}
+			}
+
+			public abstract bool IsSuccessful();
 		}
 
-		internal static readonly NGit.Api.RebaseResult OK_RESULT = new NGit.Api.RebaseResult
-			(RebaseResult.Status.OK);
+		internal static readonly RebaseResult OK_RESULT = new RebaseResult(RebaseResult.Status
+			.OK);
 
-		internal static readonly NGit.Api.RebaseResult ABORTED_RESULT = new NGit.Api.RebaseResult
-			(RebaseResult.Status.ABORTED);
+		internal static readonly RebaseResult ABORTED_RESULT = new RebaseResult(RebaseResult.Status
+			.ABORTED);
 
-		internal static readonly NGit.Api.RebaseResult UP_TO_DATE_RESULT = new NGit.Api.RebaseResult
-			(RebaseResult.Status.UP_TO_DATE);
+		internal static readonly RebaseResult UP_TO_DATE_RESULT = new RebaseResult(RebaseResult.Status
+			.UP_TO_DATE);
 
-		internal static readonly NGit.Api.RebaseResult FAST_FORWARD_RESULT = new NGit.Api.RebaseResult
-			(RebaseResult.Status.FAST_FORWARD);
+		internal static readonly RebaseResult FAST_FORWARD_RESULT = new RebaseResult(RebaseResult.Status
+			.FAST_FORWARD);
 
-		private readonly RebaseResult.Status mySatus;
+		private readonly RebaseResult.Status status;
 
 		private readonly RevCommit currentCommit;
 
@@ -87,7 +145,7 @@ namespace NGit.Api
 
 		private RebaseResult(RebaseResult.Status status)
 		{
-			this.mySatus = status;
+			this.status = status;
 			currentCommit = null;
 		}
 
@@ -98,7 +156,7 @@ namespace NGit.Api
 		/// <param name="commit">current commit</param>
 		internal RebaseResult(RevCommit commit)
 		{
-			mySatus = RebaseResult.Status.STOPPED;
+			status = RebaseResult.Status.STOPPED;
 			currentCommit = commit;
 		}
 
@@ -110,7 +168,7 @@ namespace NGit.Api
 		internal RebaseResult(IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths
 			)
 		{
-			mySatus = RebaseResult.Status.FAILED;
+			status = RebaseResult.Status.FAILED;
 			currentCommit = null;
 			this.failingPaths = failingPaths;
 		}
@@ -118,7 +176,7 @@ namespace NGit.Api
 		/// <returns>the overall status</returns>
 		public virtual RebaseResult.Status GetStatus()
 		{
-			return mySatus;
+			return status;
 		}
 
 		/// <returns>

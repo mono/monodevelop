@@ -149,6 +149,7 @@ namespace NGit.Revplot
 					rObj.AddPassingLane(c.lane);
 				}
 				currCommit.lane = c.lane;
+				HandleBlockedLanes(index, currCommit, nChildren);
 			}
 			else
 			{
@@ -209,51 +210,67 @@ namespace NGit.Revplot
 				}
 				currCommit.lane = NextFreeLane();
 				activeLanes.AddItem(currCommit.lane);
-				// take care: when connecting yourself to your child make sure that
-				// you will not be located on a lane on which a passed commit is
-				// located on. Otherwise we would have to draw a line through a
-				// commit.
-				int remaining = nChildren;
-				BitSet blockedPositions = new BitSet();
-				for (int r = index - 1; r >= 0; r--)
+				HandleBlockedLanes(index, currCommit, nChildren);
+			}
+		}
+
+		/// <summary>
+		/// when connecting a plotcommit to the child make sure that you will not be
+		/// located on a lane on which a passed commit is located on.
+		/// </summary>
+		/// <remarks>
+		/// when connecting a plotcommit to the child make sure that you will not be
+		/// located on a lane on which a passed commit is located on. Otherwise we
+		/// would have to draw a line through a commit.
+		/// </remarks>
+		/// <param name="index"></param>
+		/// <param name="commit"></param>
+		/// <param name="nChildren"></param>
+		private void HandleBlockedLanes(int index, PlotCommit<L> commit, int nChildren)
+		{
+			// take care:
+			int remaining = nChildren;
+			BitSet blockedPositions = new BitSet();
+			for (int r = index - 1; r >= 0; r--)
+			{
+				PlotCommit rObj = this[r];
+				if (commit.IsChild(rObj))
 				{
-					PlotCommit rObj = this[r];
-					if (currCommit.IsChild(rObj))
+					if (--remaining == 0)
 					{
-						if (--remaining == 0)
-						{
-							break;
-						}
-					}
-					if (rObj != null)
-					{
-						PlotLane lane = rObj.GetLane();
-						if (lane != null)
-						{
-							blockedPositions.Set(lane.GetPosition());
-						}
-						rObj.AddPassingLane(currCommit.lane);
+						break;
 					}
 				}
-				// Now let's check whether we have to reposition the lane
-				if (blockedPositions.Get(currCommit.lane.GetPosition()))
+				if (rObj != null)
 				{
-					int newPos = -1;
-					foreach (int pos in freePositions)
+					PlotLane lane = rObj.GetLane();
+					if (lane != null)
 					{
-						if (!blockedPositions.Get(pos))
-						{
-							newPos = pos;
-							break;
-						}
+						blockedPositions.Set(lane.GetPosition());
 					}
-					if (newPos == -1)
-					{
-						newPos = positionsAllocated++;
-					}
-					freePositions.AddItem(currCommit.lane.GetPosition());
-					currCommit.lane.position = newPos;
+					rObj.AddPassingLane(commit.lane);
 				}
+			}
+			// Now let's check whether we have to reposition the lane
+			if (blockedPositions.Get(commit.lane.GetPosition()))
+			{
+				int newPos = -1;
+				foreach (int pos in freePositions)
+				{
+					if (!blockedPositions.Get(pos))
+					{
+						newPos = pos;
+						break;
+					}
+				}
+				if (newPos == -1)
+				{
+					newPos = positionsAllocated++;
+				}
+				freePositions.AddItem(commit.lane.GetPosition());
+				activeLanes.Remove(commit.lane);
+				commit.lane.position = newPos;
+				activeLanes.AddItem(commit.lane);
 			}
 		}
 

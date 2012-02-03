@@ -281,6 +281,13 @@ namespace NGit.Revwalk
 				if (IsRename(ent) && ent.GetNewPath().Equals(oldFilter.GetPath()))
 				{
 					newFilter = FollowFilter.Create(ent.GetOldPath());
+					RenameCallback callback = oldFilter.GetRenameCallback();
+					if (callback != null)
+					{
+						callback.Renamed(ent);
+						// forward the callback to the new follow filter
+						((FollowFilter)newFilter).SetRenameCallback(callback);
+					}
 					break;
 				}
 			}

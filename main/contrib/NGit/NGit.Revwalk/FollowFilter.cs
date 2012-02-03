@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using NGit.Revwalk;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
 using Sharpen;
@@ -56,6 +57,9 @@ namespace NGit.Revwalk
 	/// , but also
 	/// triggers rename detection so that the path node is updated to include a prior
 	/// file name as the RevWalk traverses history.
+	/// The renames found will be reported to a
+	/// <see cref="RenameCallback">RenameCallback</see>
+	/// if one is set.
 	/// <p>
 	/// Results with this filter are unpredictable if the path being followed is a
 	/// subdirectory.
@@ -86,6 +90,8 @@ namespace NGit.Revwalk
 		}
 
 		private readonly PathFilter path;
+
+		private RenameCallback renameCallback;
 
 		internal FollowFilter(PathFilter path)
 		{
@@ -120,7 +126,24 @@ namespace NGit.Revwalk
 		{
 			return "(FOLLOW(" + path.ToString() + ")" + " AND " + ANY_DIFF.ToString() + ")";
 		}
+
 		//
 		//
+		/// <returns>
+		/// the callback to which renames are reported, or <code>null</code>
+		/// if none
+		/// </returns>
+		public virtual RenameCallback GetRenameCallback()
+		{
+			return renameCallback;
+		}
+
+		/// <summary>Sets the callback to which renames shall be reported.</summary>
+		/// <remarks>Sets the callback to which renames shall be reported.</remarks>
+		/// <param name="callback">the callback to use</param>
+		public virtual void SetRenameCallback(RenameCallback callback)
+		{
+			renameCallback = callback;
+		}
 	}
 }

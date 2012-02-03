@@ -624,7 +624,7 @@ namespace NGit.Storage.Pack
 			/// <exception cref="System.IO.IOException"></exception>
 			public override void Write(int b)
 			{
-				throw new NotSupportedException();
+				throw new NGit.Errors.NotSupportedException();
 			}
 		}
 	}

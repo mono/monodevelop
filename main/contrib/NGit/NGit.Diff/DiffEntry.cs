@@ -41,6 +41,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using NGit;
@@ -91,8 +92,47 @@ namespace NGit.Diff
 		/// <param name="walk">the TreeWalk to walk through. Must have exactly two trees.</param>
 		/// <returns>headers describing the changed files.</returns>
 		/// <exception cref="System.IO.IOException">the repository cannot be accessed.</exception>
+		/// <exception cref="System.ArgumentException">When given TreeWalk doesn't have exactly two trees.
+		/// 	</exception>
 		public static IList<NGit.Diff.DiffEntry> Scan(TreeWalk walk)
 		{
+			return Scan(walk, false);
+		}
+
+		/// <summary>
+		/// Convert the TreeWalk into DiffEntry headers, depending on
+		/// <code>includeTrees</code>
+		/// it will add tree objects into result or not.
+		/// </summary>
+		/// <param name="walk">
+		/// the TreeWalk to walk through. Must have exactly two trees and
+		/// when
+		/// <code>includeTrees</code>
+		/// parameter is
+		/// <code>true</code>
+		/// it can't
+		/// be recursive.
+		/// </param>
+		/// <param name="includeTrees">include tree object's.</param>
+		/// <returns>headers describing the changed files.</returns>
+		/// <exception cref="System.IO.IOException">the repository cannot be accessed.</exception>
+		/// <exception cref="System.ArgumentException">
+		/// when
+		/// <code>includeTrees</code>
+		/// is true and given TreeWalk is
+		/// recursive. Or when given TreeWalk doesn't have exactly two
+		/// trees
+		/// </exception>
+		public static IList<NGit.Diff.DiffEntry> Scan(TreeWalk walk, bool includeTrees)
+		{
+			if (walk.TreeCount != 2)
+			{
+				throw new ArgumentException(JGitText.Get().treeWalkMustHaveExactlyTwoTrees);
+			}
+			if (includeTrees && walk.Recursive)
+			{
+				throw new ArgumentException(JGitText.Get().cannotBeRecursiveWhenTreesAreIncluded);
+			}
 			IList<NGit.Diff.DiffEntry> r = new AList<NGit.Diff.DiffEntry>();
 			MutableObjectId idBuf = new MutableObjectId();
 			while (walk.Next())
@@ -121,16 +161,31 @@ namespace NGit.Diff
 					}
 					else
 					{
-						entry.changeType = DiffEntry.ChangeType.MODIFY;
-						if (RenameDetector.SameType(entry.oldMode, entry.newMode))
+						if (!entry.oldId.Equals(entry.newId))
 						{
-							r.AddItem(entry);
+							entry.changeType = DiffEntry.ChangeType.MODIFY;
+							if (RenameDetector.SameType(entry.oldMode, entry.newMode))
+							{
+								r.AddItem(entry);
+							}
+							else
+							{
+								Sharpen.Collections.AddAll(r, BreakModify(entry));
+							}
 						}
 						else
 						{
-							Sharpen.Collections.AddAll(r, BreakModify(entry));
+							if (entry.oldMode != entry.newMode)
+							{
+								entry.changeType = DiffEntry.ChangeType.MODIFY;
+								r.AddItem(entry);
+							}
 						}
 					}
+				}
+				if (includeTrees && walk.IsSubtree)
+				{
+					walk.EnterSubtree();
 				}
 			}
 			return r;

@@ -53,10 +53,10 @@ namespace NGit.Treewalk
 	/// </summary>
 	public class WorkingTreeOptions
 	{
-		private sealed class _SectionParser_52 : Config.SectionParser<NGit.Treewalk.WorkingTreeOptions
+		private sealed class _SectionParser_53 : Config.SectionParser<NGit.Treewalk.WorkingTreeOptions
 			>
 		{
-			public _SectionParser_52()
+			public _SectionParser_53()
 			{
 			}
 
@@ -73,7 +73,7 @@ namespace NGit.Treewalk
 		/// .
 		/// </summary>
 		public static readonly Config.SectionParser<NGit.Treewalk.WorkingTreeOptions> KEY
-			 = new _SectionParser_52();
+			 = new _SectionParser_53();
 
 		private readonly bool fileMode;
 
@@ -81,8 +81,10 @@ namespace NGit.Treewalk
 
 		private WorkingTreeOptions(Config rc)
 		{
-			fileMode = rc.GetBoolean("core", "filemode", true);
-			autoCRLF = rc.GetEnum("core", null, "autocrlf", CoreConfig.AutoCRLF.FALSE);
+			fileMode = rc.GetBoolean(ConfigConstants.CONFIG_CORE_SECTION, ConfigConstants.CONFIG_KEY_FILEMODE
+				, true);
+			autoCRLF = rc.GetEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.
+				CONFIG_KEY_AUTOCRLF, CoreConfig.AutoCRLF.FALSE);
 		}
 
 		/// <returns>true if the execute bit on working files should be trusted.</returns>

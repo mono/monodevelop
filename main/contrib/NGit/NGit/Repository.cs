@@ -52,6 +52,7 @@ using NGit.Revwalk;
 using NGit.Storage.File;
 using NGit.Treewalk;
 using NGit.Util;
+using NGit.Util.IO;
 using Sharpen;
 
 namespace NGit
@@ -84,8 +85,6 @@ namespace NGit
 		/// <summary>File abstraction used to resolve paths.</summary>
 		/// <remarks>File abstraction used to resolve paths.</remarks>
 		private readonly FS fs;
-
-		private GitIndex index;
 
 		private readonly ListenerList myListeners = new ListenerList();
 
@@ -602,15 +601,22 @@ namespace NGit
 								break;
 							}
 						}
-						string distnum = new string(rev, i + 1, l - i - 1);
 						int dist;
-						try
+						if (l - i > 1)
 						{
-							dist = System.Convert.ToInt32(distnum);
+							string distnum = new string(rev, i + 1, l - i - 1);
+							try
+							{
+								dist = System.Convert.ToInt32(distnum);
+							}
+							catch (FormatException)
+							{
+								throw new RevisionSyntaxException(JGitText.Get().invalidAncestryLength, revstr);
+							}
 						}
-						catch (FormatException)
+						else
 						{
-							throw new RevisionSyntaxException(JGitText.Get().invalidAncestryLength, revstr);
+							dist = 1;
 						}
 						while (dist > 0)
 						{
@@ -643,10 +649,19 @@ namespace NGit
 						}
 						if (time != null)
 						{
-							throw new RevisionSyntaxException(JGitText.Get().reflogsNotYetSupportedByRevisionParser
-								, revstr);
+							string refName = new string(rev, 0, i);
+							Ref resolved = RefDatabase.GetRef(refName);
+							if (resolved == null)
+							{
+								return null;
+							}
+							@ref = ResolveReflog(rw, resolved, time);
+							i = m;
 						}
-						i = m - 1;
+						else
+						{
+							i = m - 1;
+						}
 						break;
 					}
 
@@ -682,7 +697,7 @@ namespace NGit
 						{
 							tree = rw.ParseTree(@ref);
 						}
-						if (i == rev.Length - i)
+						if (i == rev.Length - 1)
 						{
 							return tree.Copy();
 						}
@@ -747,8 +762,8 @@ namespace NGit
 				return ResolveAbbreviation(revstr);
 			}
 			int dashg = revstr.IndexOf("-g");
-			if (4 < revstr.Length && 0 <= dashg && IsHex(revstr[dashg + 2]) && IsHex(revstr[dashg
-				 + 3]) && IsAllHex(revstr, dashg + 4))
+			if ((dashg + 5) < revstr.Length && 0 <= dashg && IsHex(revstr[dashg + 2]) && IsHex
+				(revstr[dashg + 3]) && IsAllHex(revstr, dashg + 4))
 			{
 				// Possibly output from git describe?
 				string s = Sharpen.Runtime.Substring(revstr, dashg + 2);
@@ -758,6 +773,34 @@ namespace NGit
 				}
 			}
 			return null;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private RevCommit ResolveReflog(RevWalk rw, Ref @ref, string time)
+		{
+			int number;
+			try
+			{
+				number = System.Convert.ToInt32(time);
+			}
+			catch (FormatException)
+			{
+				throw new RevisionSyntaxException(MessageFormat.Format(JGitText.Get().invalidReflogRevision
+					, time));
+			}
+			if (number < 0)
+			{
+				throw new RevisionSyntaxException(MessageFormat.Format(JGitText.Get().invalidReflogRevision
+					, time));
+			}
+			ReflogReader reader = new ReflogReader(this, @ref.GetName());
+			ReflogEntry entry = reader.GetReverseEntry(number);
+			if (entry == null)
+			{
+				throw new RevisionSyntaxException(MessageFormat.Format(JGitText.Get().reflogEntryNotFound
+					, Sharpen.Extensions.ValueOf(number), @ref.GetName()));
+			}
+			return rw.ParseCommit(entry.GetNewId());
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -1028,35 +1071,6 @@ namespace NGit
 			return ret;
 		}
 
-		/// <returns>
-		/// a representation of the index associated with this
-		/// <see cref="Repository">Repository</see>
-		/// </returns>
-		/// <exception cref="System.IO.IOException">if the index can not be read</exception>
-		/// <exception cref="NGit.Errors.NoWorkTreeException">
-		/// if this is bare, which implies it has no working directory.
-		/// See
-		/// <see cref="IsBare()">IsBare()</see>
-		/// .
-		/// </exception>
-		public virtual GitIndex GetIndex()
-		{
-			if (IsBare)
-			{
-				throw new NoWorkTreeException();
-			}
-			if (index == null)
-			{
-				index = new GitIndex(this);
-				index.Read();
-			}
-			else
-			{
-				index.RereadIfNecessary();
-			}
-			return index;
-		}
-
 		/// <returns>the index file location</returns>
 		/// <exception cref="NGit.Errors.NoWorkTreeException">
 		/// if this is bare, which implies it has no working directory.
@@ -1130,7 +1144,25 @@ namespace NGit
 		/// </exception>
 		public virtual DirCache LockDirCache()
 		{
-			return DirCache.Lock(GetIndexFile(), FileSystem);
+			// we want DirCache to inform us so that we can inform registered
+			// listeners about index changes
+			IndexChangedListener l = new _IndexChangedListener_900(this);
+			return DirCache.Lock(GetIndexFile(), FileSystem, l);
+		}
+
+		private sealed class _IndexChangedListener_900 : IndexChangedListener
+		{
+			public _IndexChangedListener_900(Repository _enclosing)
+			{
+				this._enclosing = _enclosing;
+			}
+
+			public void OnIndexChanged(IndexChangedEvent @event)
+			{
+				this._enclosing.NotifyIndexChanged();
+			}
+
+			private readonly Repository _enclosing;
 		}
 
 		internal static byte[] GitInternalSlash(byte[] bytes)
@@ -1198,13 +1230,12 @@ namespace NGit
 						return RepositoryState.MERGING_RESOLVED;
 					}
 				}
-				catch (IOException e)
+				catch (IOException)
 				{
-					// Can't decide whether unmerged paths exists. Return
-					// MERGING state to be on the safe side (in state MERGING
-					// you are not allow to do anything)
-					Sharpen.Runtime.PrintStackTrace(e);
 				}
+				// Can't decide whether unmerged paths exists. Return
+				// MERGING state to be on the safe side (in state MERGING
+				// you are not allow to do anything)
 				return RepositoryState.MERGING;
 			}
 			if (new FilePath(Directory, "BISECT_LOG").Exists())
@@ -1221,11 +1252,10 @@ namespace NGit
 						return RepositoryState.CHERRY_PICKING_RESOLVED;
 					}
 				}
-				catch (IOException e)
+				catch (IOException)
 				{
-					// fall through to CHERRY_PICKING
-					Sharpen.Runtime.PrintStackTrace(e);
 				}
+				// fall through to CHERRY_PICKING
 				return RepositoryState.CHERRY_PICKING;
 			}
 			return RepositoryState.SAFE;
@@ -1382,6 +1412,9 @@ namespace NGit
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		public abstract void ScanForRepoChanges();
 
+		/// <summary>Notify that the index changed</summary>
+		public abstract void NotifyIndexChanged();
+
 		/// <param name="refName"></param>
 		/// <returns>a more user friendly ref name</returns>
 		public static string ShortenRefName(string refName)
@@ -1477,7 +1510,7 @@ namespace NGit
 			}
 			else
 			{
-				FileUtils.Delete(mergeMsgFile);
+				FileUtils.Delete(mergeMsgFile, FileUtils.SKIP_MISSING);
 			}
 		}
 
@@ -1622,7 +1655,7 @@ namespace NGit
 			FilePath headsFile = new FilePath(Directory, filename);
 			if (heads != null)
 			{
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(headsFile
+				BufferedOutputStream bos = new SafeBufferedOutputStream(new FileOutputStream(headsFile
 					));
 				try
 				{

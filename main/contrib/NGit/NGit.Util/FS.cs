@@ -270,8 +270,20 @@ namespace NGit.Util
 			}
 		}
 
+		/// <summary>Searches the given path to see if it contains one of the given files.</summary>
+		/// <remarks>
+		/// Searches the given path to see if it contains one of the given files.
+		/// Returns the first it finds. Returns null if not found or if path is null.
+		/// </remarks>
+		/// <param name="path">List of paths to search separated by File.pathSeparator</param>
+		/// <param name="lookFor">Files to search for in the given path</param>
+		/// <returns>the first match found, or null</returns>
 		internal static FilePath SearchPath(string path, params string[] lookFor)
 		{
+			if (path == null)
+			{
+				return null;
+			}
 			foreach (string p in path.Split(FilePath.pathSeparator))
 			{
 				foreach (string command in lookFor)
@@ -307,7 +319,7 @@ namespace NGit.Util
 					(), encoding));
 				p.GetOutputStream().Close();
 				AtomicBoolean gooblerFail = new AtomicBoolean(false);
-				Sharpen.Thread gobbler = new _Thread_280(p, debug, gooblerFail);
+				Sharpen.Thread gobbler = new _Thread_293(p, debug, gooblerFail);
 				// ignore
 				// Just print on stderr for debugging
 				// Just print on stderr for debugging
@@ -372,9 +384,9 @@ namespace NGit.Util
 			return null;
 		}
 
-		private sealed class _Thread_280 : Sharpen.Thread
+		private sealed class _Thread_293 : Sharpen.Thread
 		{
-			public _Thread_280(SystemProcess p, bool debug, AtomicBoolean gooblerFail)
+			public _Thread_293(SystemProcess p, bool debug, AtomicBoolean gooblerFail)
 			{
 				this.p = p;
 				this.debug = debug;
@@ -403,7 +415,10 @@ namespace NGit.Util
 				}
 				catch (IOException e)
 				{
-					Sharpen.Runtime.PrintStackTrace(e, System.Console.Error);
+					if (debug)
+					{
+						Sharpen.Runtime.PrintStackTrace(e, System.Console.Error);
+					}
 					gooblerFail.Set(true);
 				}
 				try
@@ -412,7 +427,10 @@ namespace NGit.Util
 				}
 				catch (IOException e)
 				{
-					Sharpen.Runtime.PrintStackTrace(e, System.Console.Error);
+					if (debug)
+					{
+						Sharpen.Runtime.PrintStackTrace(e, System.Console.Error);
+					}
 					gooblerFail.Set(true);
 				}
 			}

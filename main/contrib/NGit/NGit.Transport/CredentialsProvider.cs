@@ -152,5 +152,12 @@ namespace NGit.Transport
 			return Get(uri, Sharpen.Collections.ToArray(items, new CredentialItem[items.Count
 				]));
 		}
+
+		/// <summary>Reset the credentials provider for the given URI</summary>
+		/// <param name="uri"></param>
+		public virtual void Reset(URIish uri)
+		{
+		}
+		// default does nothing
 	}
 }

@@ -48,6 +48,7 @@ using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Errors;
 using NGit.Revwalk;
+using NGit.Revwalk.Filter;
 using NGit.Treewalk.Filter;
 using Sharpen;
 
@@ -79,6 +80,10 @@ namespace NGit.Api
 
 		private readonly IList<PathFilter> pathFilters = new AList<PathFilter>();
 
+		private int maxCount = -1;
+
+		private int skip = -1;
+
 		/// <param name="repo"></param>
 		protected internal LogCommand(Repository repo) : base(repo)
 		{
@@ -107,6 +112,25 @@ namespace NGit.Api
 			{
 				walk.SetTreeFilter(AndTreeFilter.Create(PathFilterGroup.Create(pathFilters), TreeFilter
 					.ANY_DIFF));
+			}
+			if (skip > -1 && maxCount > -1)
+			{
+				walk.SetRevFilter(AndRevFilter.Create(SkipRevFilter.Create(skip), MaxCountRevFilter
+					.Create(maxCount)));
+			}
+			else
+			{
+				if (skip > -1)
+				{
+					walk.SetRevFilter(SkipRevFilter.Create(skip));
+				}
+				else
+				{
+					if (maxCount > -1)
+					{
+						walk.SetRevFilter(MaxCountRevFilter.Create(maxCount));
+					}
+				}
 			}
 			if (!startSpecified)
 			{
@@ -270,6 +294,28 @@ namespace NGit.Api
 			return Not(since).Add(until);
 		}
 
+		/// <summary>Add all refs as commits to start the graph traversal from.</summary>
+		/// <remarks>Add all refs as commits to start the graph traversal from.</remarks>
+		/// <seealso cref="Add(NGit.AnyObjectId)">Add(NGit.AnyObjectId)</seealso>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		/// <exception cref="System.IO.IOException">the references could not be accessed</exception>
+		public virtual NGit.Api.LogCommand All()
+		{
+			foreach (Ref @ref in GetRepository().GetAllRefs().Values)
+			{
+				ObjectId objectId = @ref.GetPeeledObjectId();
+				if (objectId == null)
+				{
+					objectId = @ref.GetObjectId();
+				}
+				Add(objectId);
+			}
+			return this;
+		}
+
 		/// <summary>Show only commits that affect any of the specified paths.</summary>
 		/// <remarks>
 		/// Show only commits that affect any of the specified paths. The path must
@@ -285,6 +331,34 @@ namespace NGit.Api
 		{
 			CheckCallable();
 			pathFilters.AddItem(PathFilter.Create(path));
+			return this;
+		}
+
+		/// <summary>Skip the number of commits before starting to show the commit output.</summary>
+		/// <remarks>Skip the number of commits before starting to show the commit output.</remarks>
+		/// <param name="skip">the number of commits to skip</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Api.LogCommand SetSkip(int skip)
+		{
+			CheckCallable();
+			this.skip = skip;
+			return this;
+		}
+
+		/// <summary>Limit the number of commits to output.</summary>
+		/// <remarks>Limit the number of commits to output.</remarks>
+		/// <param name="maxCount">the limit</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Api.LogCommand SetMaxCount(int maxCount)
+		{
+			CheckCallable();
+			this.maxCount = maxCount;
 			return this;
 		}
 

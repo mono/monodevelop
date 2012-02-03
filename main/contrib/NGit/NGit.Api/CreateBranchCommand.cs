@@ -101,6 +101,7 @@ namespace NGit.Api
 		{
 			CheckCallable();
 			ProcessOptions();
+			RevWalk revWalk = new RevWalk(repo);
 			try
 			{
 				Ref refToCheck = repo.GetRef(name);
@@ -108,7 +109,7 @@ namespace NGit.Api
 					);
 				if (!force && exists)
 				{
-					throw new RefAlreadyExistsException(MessageFormat.Format(JGitText.Get().refAlreadExists
+					throw new RefAlreadyExistsException(MessageFormat.Format(JGitText.Get().refAlreadyExists
 						, name));
 				}
 				ObjectId startAt = GetStartPoint();
@@ -134,7 +135,7 @@ namespace NGit.Api
 					}
 					else
 					{
-						RevCommit commit = new RevWalk(repo).ParseCommit(repo.Resolve(startPoint));
+						RevCommit commit = revWalk.ParseCommit(repo.Resolve(startPoint));
 						baseCommit = commit.GetShortMessage();
 					}
 					if (exists)
@@ -164,6 +165,7 @@ namespace NGit.Api
 					}
 					else
 					{
+						startAt = revWalk.Peel(revWalk.ParseAny(startAt));
 						if (exists)
 						{
 							refLogMessage = "branch: Reset start-point to tag " + startPointFullName;
@@ -295,6 +297,10 @@ namespace NGit.Api
 			catch (IOException ioe)
 			{
 				throw new JGitInternalException(ioe.Message, ioe);
+			}
+			finally
+			{
+				revWalk.Release();
 			}
 		}
 

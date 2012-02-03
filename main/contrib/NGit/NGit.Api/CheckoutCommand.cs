@@ -121,7 +121,8 @@ namespace NGit.Api
 					command.Call();
 				}
 				Ref headRef = repo.GetRef(Constants.HEAD);
-				string refLogMessage = "checkout: moving from " + headRef.GetTarget().GetName();
+				string shortHeadRef = GetShortBranchName(headRef);
+				string refLogMessage = "checkout: moving from " + shortHeadRef;
 				ObjectId branch = repo.Resolve(name);
 				if (branch == null)
 				{
@@ -150,9 +151,10 @@ namespace NGit.Api
 				{
 					@ref = null;
 				}
+				string toName = Repository.ShortenRefName(name);
 				RefUpdate refUpdate = repo.UpdateRef(Constants.HEAD, @ref == null);
 				refUpdate.SetForceUpdate(force);
-				refUpdate.SetRefLogMessage(refLogMessage + " to " + newCommit.GetName(), false);
+				refUpdate.SetRefLogMessage(refLogMessage + " to " + toName, false);
 				RefUpdate.Result updateResult;
 				if (@ref != null)
 				{
@@ -216,6 +218,15 @@ namespace NGit.Api
 			}
 		}
 
+		private string GetShortBranchName(Ref headRef)
+		{
+			if (headRef.GetTarget().GetName().Equals(headRef.GetName()))
+			{
+				return headRef.GetTarget().GetObjectId().GetName();
+			}
+			return Repository.ShortenRefName(headRef.GetTarget().GetName());
+		}
+
 		/// <param name="path">Path to update in the working tree and index.</param>
 		/// <returns>
 		/// 
@@ -239,34 +250,36 @@ namespace NGit.Api
 			DirCache dc = repo.LockDirCache();
 			try
 			{
-				TreeWalk treeWalk = new TreeWalk(revWalk.GetObjectReader());
-				treeWalk.Recursive = true;
-				treeWalk.AddTree(new DirCacheIterator(dc));
-				treeWalk.Filter = PathFilterGroup.CreateFromStrings(paths);
-				IList<string> files = new List<string>();
-				while (treeWalk.Next())
+				DirCacheEditor editor = dc.Editor();
+				TreeWalk startWalk = new TreeWalk(revWalk.GetObjectReader());
+				startWalk.Recursive = true;
+				startWalk.Filter = PathFilterGroup.CreateFromStrings(paths);
+				bool checkoutIndex = startCommit == null && startPoint == null;
+				if (!checkoutIndex)
 				{
-					files.AddItem(treeWalk.PathString);
-				}
-				if (startCommit != null || startPoint != null)
-				{
-					DirCacheEditor editor = dc.Editor();
-					TreeWalk startWalk = new TreeWalk(revWalk.GetObjectReader());
-					startWalk.Recursive = true;
-					startWalk.Filter = treeWalk.Filter;
 					startWalk.AddTree(revWalk.ParseCommit(GetStartPoint()).Tree);
+				}
+				else
+				{
+					startWalk.AddTree(new DirCacheIterator(dc));
+				}
+				FilePath workTree = repo.WorkTree;
+				ObjectReader r = repo.ObjectDatabase.NewReader();
+				try
+				{
 					while (startWalk.Next())
 					{
 						ObjectId blobId = startWalk.GetObjectId(0);
-						editor.Add(new _PathEdit_258(blobId, startWalk.PathString));
+						FileMode mode = startWalk.GetFileMode(0);
+						editor.Add(new _PathEdit_266(this, blobId, mode, workTree, r, startWalk.PathString
+							));
 					}
 					editor.Commit();
 				}
-				FilePath workTree = repo.WorkTree;
-				foreach (string file in files)
+				finally
 				{
-					DirCacheCheckout.CheckoutEntry(repo, new FilePath(workTree, file), dc.GetEntry(file
-						));
+					startWalk.Release();
+					r.Release();
 				}
 			}
 			finally
@@ -277,19 +290,43 @@ namespace NGit.Api
 			return this;
 		}
 
-		private sealed class _PathEdit_258 : DirCacheEditor.PathEdit
+		private sealed class _PathEdit_266 : DirCacheEditor.PathEdit
 		{
-			public _PathEdit_258(ObjectId blobId, string baseArg1) : base(baseArg1)
+			public _PathEdit_266(CheckoutCommand _enclosing, ObjectId blobId, FileMode mode, 
+				FilePath workTree, ObjectReader r, string baseArg1) : base(baseArg1)
 			{
+				this._enclosing = _enclosing;
 				this.blobId = blobId;
+				this.mode = mode;
+				this.workTree = workTree;
+				this.r = r;
 			}
 
 			public override void Apply(DirCacheEntry ent)
 			{
 				ent.SetObjectId(blobId);
+				ent.FileMode = mode;
+				try
+				{
+					DirCacheCheckout.CheckoutEntry(this._enclosing.repo, new FilePath(workTree, ent.PathString
+						), ent, r);
+				}
+				catch (IOException e)
+				{
+					throw new JGitInternalException(MessageFormat.Format(JGitText.Get().checkoutConflictWithFile
+						, ent.PathString), e);
+				}
 			}
 
+			private readonly CheckoutCommand _enclosing;
+
 			private readonly ObjectId blobId;
+
+			private readonly FileMode mode;
+
+			private readonly FilePath workTree;
+
+			private readonly ObjectReader r;
 		}
 
 		/// <exception cref="NGit.Errors.AmbiguousObjectException"></exception>

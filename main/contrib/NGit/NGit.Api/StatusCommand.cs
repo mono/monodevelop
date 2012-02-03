@@ -72,7 +72,6 @@ namespace NGit.Api
 		{
 		}
 
-		// TODO Auto-generated constructor stub
 		/// <summary>
 		/// Executes the
 		/// <code>Status</code>
@@ -108,10 +107,16 @@ namespace NGit.Api
 		/// <see cref="NGit.Treewalk.FileTreeIterator">NGit.Treewalk.FileTreeIterator</see>
 		/// is used.
 		/// </summary>
-		/// <param name="workingTreeIt"></param>
-		public virtual void SetWorkingTreeIt(WorkingTreeIterator workingTreeIt)
+		/// <param name="workingTreeIt">a working tree iterator</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Api.StatusCommand SetWorkingTreeIt(WorkingTreeIterator workingTreeIt
+			)
 		{
 			this.workingTreeIt = workingTreeIt;
+			return this;
 		}
 	}
 }

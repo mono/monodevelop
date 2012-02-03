@@ -47,8 +47,10 @@ using System.IO;
 using NGit;
 using NGit.Dircache;
 using NGit.Errors;
+using NGit.Events;
 using NGit.Storage.File;
 using NGit.Util;
+using NGit.Util.IO;
 using Sharpen;
 
 namespace NGit.Dircache
@@ -76,9 +78,11 @@ namespace NGit.Dircache
 
 		private static readonly DirCacheEntry[] NO_ENTRIES = new DirCacheEntry[] {  };
 
-		private sealed class _IComparer_97 : IComparer<DirCacheEntry>
+		private static readonly byte[] NO_CHECKSUM = new byte[] {  };
+
+		private sealed class _IComparer_103 : IComparer<DirCacheEntry>
 		{
-			public _IComparer_97()
+			public _IComparer_103()
 			{
 			}
 
@@ -93,7 +97,7 @@ namespace NGit.Dircache
 			}
 		}
 
-		internal static readonly IComparer<DirCacheEntry> ENT_CMP = new _IComparer_97();
+		internal static readonly IComparer<DirCacheEntry> ENT_CMP = new _IComparer_103();
 
 		internal static int Cmp(DirCacheEntry a, DirCacheEntry b)
 		{
@@ -192,8 +196,7 @@ namespace NGit.Dircache
 			NGit.Dircache.DirCache c = new NGit.Dircache.DirCache(indexLocation, fs);
 			if (!c.Lock())
 			{
-				throw new IOException(MessageFormat.Format(JGitText.Get().cannotLock, indexLocation
-					));
+				throw new LockFailedException(indexLocation);
 			}
 			try
 			{
@@ -214,6 +217,42 @@ namespace NGit.Dircache
 				c.Unlock();
 				throw;
 			}
+			return c;
+		}
+
+		/// <summary>Create a new in-core index representation, lock it, and read from disk.</summary>
+		/// <remarks>
+		/// Create a new in-core index representation, lock it, and read from disk.
+		/// <p>
+		/// The new index will be locked and then read before it is returned to the
+		/// caller. Read failures are reported as exceptions and therefore prevent
+		/// the method from returning a partially populated index. On read failure,
+		/// the lock is released.
+		/// </remarks>
+		/// <param name="indexLocation">location of the index file on disk.</param>
+		/// <param name="fs">
+		/// the file system abstraction which will be necessary to perform
+		/// certain file system operations.
+		/// </param>
+		/// <param name="indexChangedListener">listener to be informed when DirCache is committed
+		/// 	</param>
+		/// <returns>
+		/// a cache representing the contents of the specified index file (if
+		/// it exists) or an empty cache if the file does not exist.
+		/// </returns>
+		/// <exception cref="System.IO.IOException">
+		/// the index file is present but could not be read, or the lock
+		/// could not be obtained.
+		/// </exception>
+		/// <exception cref="NGit.Errors.CorruptObjectException">
+		/// the index file is using a format or extension that this
+		/// library does not support.
+		/// </exception>
+		public static NGit.Dircache.DirCache Lock(FilePath indexLocation, FS fs, IndexChangedListener
+			 indexChangedListener)
+		{
+			NGit.Dircache.DirCache c = Lock(indexLocation, fs);
+			c.RegisterIndexChangedListener(indexChangedListener);
 			return c;
 		}
 
@@ -245,6 +284,15 @@ namespace NGit.Dircache
 
 		/// <summary>Keep track of whether the index has changed or not</summary>
 		private FileSnapshot snapshot;
+
+		/// <summary>index checksum when index was read from disk</summary>
+		private byte[] readIndexChecksum;
+
+		/// <summary>index checksum when index was written to disk</summary>
+		private byte[] writeIndexChecksum;
+
+		/// <summary>listener to be informed on commit</summary>
+		private IndexChangedListener indexChangedListener;
 
 		/// <summary>Create a new in-core index representation.</summary>
 		/// <remarks>
@@ -383,6 +431,7 @@ namespace NGit.Dircache
 			sortedEntries = NO_ENTRIES;
 			entryCnt = 0;
 			tree = null;
+			readIndexChecksum = NO_CHECKSUM;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -486,8 +535,8 @@ namespace NGit.Dircache
 					}
 				}
 			}
-			byte[] exp = md.Digest();
-			if (!Arrays.Equals(exp, hdr))
+			readIndexChecksum = md.Digest();
+			if (!Arrays.Equals(readIndexChecksum, hdr))
 			{
 				throw new CorruptObjectException(JGitText.Get().DIRCChecksumMismatch);
 			}
@@ -588,7 +637,7 @@ namespace NGit.Dircache
 			RequireLocked(tmp);
 			try
 			{
-				WriteTo(new BufferedOutputStream(tmp.GetOutputStream()));
+				WriteTo(new SafeBufferedOutputStream(tmp.GetOutputStream()));
 			}
 			catch (IOException err)
 			{
@@ -659,7 +708,8 @@ namespace NGit.Dircache
 				dos.Write(tmp, 0, 8);
 				bb.WriteTo(dos, null);
 			}
-			os.Write(foot.Digest());
+			writeIndexChecksum = foot.Digest();
+			os.Write(writeIndexChecksum);
 			os.Close();
 		}
 
@@ -685,6 +735,11 @@ namespace NGit.Dircache
 				return false;
 			}
 			snapshot = tmp.GetCommitSnapshot();
+			if (indexChangedListener != null && !Arrays.Equals(readIndexChecksum, writeIndexChecksum
+				))
+			{
+				indexChangedListener.OnIndexChanged(new IndexChangedEvent());
+			}
 			return true;
 		}
 
@@ -857,6 +912,12 @@ namespace NGit.Dircache
 		/// <returns>all entries recursively contained within the subtree.</returns>
 		public virtual DirCacheEntry[] GetEntriesWithin(string path)
 		{
+			if (path.Length == 0)
+			{
+				DirCacheEntry[] r = new DirCacheEntry[sortedEntries.Length];
+				System.Array.Copy(sortedEntries, 0, r, 0, sortedEntries.Length);
+				return r;
+			}
 			if (!path.EndsWith("/"))
 			{
 				path += "/";
@@ -869,9 +930,9 @@ namespace NGit.Dircache
 				eIdx = -(eIdx + 1);
 			}
 			int lastIdx = NextEntry(p, pLen, eIdx);
-			DirCacheEntry[] r = new DirCacheEntry[lastIdx - eIdx];
-			System.Array.Copy(sortedEntries, eIdx, r, 0, r.Length);
-			return r;
+			DirCacheEntry[] r_1 = new DirCacheEntry[lastIdx - eIdx];
+			System.Array.Copy(sortedEntries, eIdx, r_1, 0, r_1.Length);
+			return r_1;
 		}
 
 		internal virtual void ToArray(int i, DirCacheEntry[] dst, int off, int cnt)
@@ -950,6 +1011,11 @@ namespace NGit.Dircache
 				}
 			}
 			return false;
+		}
+
+		private void RegisterIndexChangedListener(IndexChangedListener listener)
+		{
+			this.indexChangedListener = listener;
 		}
 	}
 }

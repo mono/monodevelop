@@ -64,7 +64,8 @@ namespace NGit.Api
 	/// </summary>
 	/// <seealso><a href="http://www.kernel.org/pub/software/scm/git/docs/git-push.html"
 	/// *      >Git documentation about Push</a></seealso>
-	public class PushCommand : GitCommand<Iterable<PushResult>>
+	public class PushCommand : TransportCommand<NGit.Api.PushCommand, Iterable<PushResult
+		>>
 	{
 		private string remote = Constants.DEFAULT_REMOTE_NAME;
 
@@ -79,10 +80,6 @@ namespace NGit.Api
 		private bool force;
 
 		private bool thin = NGit.Transport.Transport.DEFAULT_PUSH_THIN;
-
-		private int timeout;
-
-		private CredentialsProvider credentialsProvider;
 
 		/// <param name="repo"></param>
 		protected internal PushCommand(Repository repo) : base(repo)
@@ -121,6 +118,11 @@ namespace NGit.Api
 			{
 				if (refSpecs.IsEmpty())
 				{
+					RemoteConfig config = new RemoteConfig(repo.GetConfig(), GetRemote());
+					Sharpen.Collections.AddAll(refSpecs, config.PushRefSpecs);
+				}
+				if (refSpecs.IsEmpty())
+				{
 					Ref head = repo.GetRef(Constants.HEAD);
 					if (head != null && head.IsSymbolic())
 					{
@@ -139,20 +141,13 @@ namespace NGit.Api
 					);
 				foreach (NGit.Transport.Transport transport in transports)
 				{
-					if (0 <= timeout)
-					{
-						transport.SetTimeout(timeout);
-					}
 					transport.SetPushThin(thin);
 					if (receivePack != null)
 					{
 						transport.SetOptionReceivePack(receivePack);
 					}
 					transport.SetDryRun(dryRun);
-					if (credentialsProvider != null)
-					{
-						transport.SetCredentialsProvider(credentialsProvider);
-					}
+					Configure(transport);
 					ICollection<RemoteRefUpdate> toPush = transport.FindRemoteRefUpdatesFor(refSpecs);
 					try
 					{
@@ -175,7 +170,7 @@ namespace NGit.Api
 				throw new InvalidRemoteException(MessageFormat.Format(JGitText.Get().invalidRemote
 					, remote));
 			}
-			catch (NotSupportedException e)
+			catch (NGit.Errors.NotSupportedException e)
 			{
 				throw new JGitInternalException(JGitText.Get().exceptionCaughtDuringExecutionOfPushCommand
 					, e);
@@ -239,18 +234,6 @@ namespace NGit.Api
 		public virtual string GetReceivePack()
 		{
 			return receivePack;
-		}
-
-		/// <param name="timeout">the timeout used for the push operation</param>
-		/// <returns>
-		/// 
-		/// <code>this</code>
-		/// </returns>
-		public virtual NGit.Api.PushCommand SetTimeout(int timeout)
-		{
-			CheckCallable();
-			this.timeout = timeout;
-			return this;
 		}
 
 		/// <returns>the timeout used for the push operation</returns>
@@ -444,24 +427,6 @@ namespace NGit.Api
 		{
 			CheckCallable();
 			this.force = force;
-			return this;
-		}
-
-		/// <param name="credentialsProvider">
-		/// the
-		/// <see cref="NGit.Transport.CredentialsProvider">NGit.Transport.CredentialsProvider
-		/// 	</see>
-		/// to use
-		/// </param>
-		/// <returns>
-		/// 
-		/// <code>this</code>
-		/// </returns>
-		public virtual NGit.Api.PushCommand SetCredentialsProvider(CredentialsProvider credentialsProvider
-			)
-		{
-			CheckCallable();
-			this.credentialsProvider = credentialsProvider;
 			return this;
 		}
 	}

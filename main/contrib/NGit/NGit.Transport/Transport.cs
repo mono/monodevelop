@@ -611,7 +611,7 @@ namespace NGit.Transport
 					return proto.Open(uri, local, remoteName);
 				}
 			}
-			throw new NotSupportedException(MessageFormat.Format(JGitText.Get().URINotSupported
+			throw new NGit.Errors.NotSupportedException(MessageFormat.Format(JGitText.Get().URINotSupported
 				, uri));
 		}
 

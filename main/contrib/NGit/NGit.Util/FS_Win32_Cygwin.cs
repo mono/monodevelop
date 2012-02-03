@@ -94,20 +94,24 @@ namespace NGit.Util
 
 		public override FilePath Resolve(FilePath dir, string pn)
 		{
-			string w = ReadPipe(dir, new string[] { cygpath, "--windows", "--absolute", pn }, 
-				"UTF-8");
-			//
-			//
-			if (w != null)
+			string useCygPath = Runtime.GetProperty("jgit.usecygpath");
+			if (useCygPath != null && useCygPath.Equals("true"))
 			{
-				return new FilePath(w);
+				string w = ReadPipe(dir, new string[] { cygpath, "--windows", "--absolute", pn }, 
+					"UTF-8");
+				//
+				//
+				if (w != null)
+				{
+					return new FilePath(w);
+				}
 			}
 			return base.Resolve(dir, pn);
 		}
 
 		protected internal override FilePath UserHomeImpl()
 		{
-			string home = AccessController.DoPrivileged(new _PrivilegedAction_95());
+			string home = AccessController.DoPrivileged(new _PrivilegedAction_98());
 			if (home == null || home.Length == 0)
 			{
 				return base.UserHomeImpl();
@@ -115,9 +119,9 @@ namespace NGit.Util
 			return Resolve(new FilePath("."), home);
 		}
 
-		private sealed class _PrivilegedAction_95 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_98 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_95()
+			public _PrivilegedAction_98()
 			{
 			}
 

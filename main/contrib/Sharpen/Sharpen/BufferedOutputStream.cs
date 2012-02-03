@@ -3,7 +3,7 @@ namespace Sharpen
 	using System;
 	using System.IO;
 
-	internal class BufferedOutputStream : OutputStream
+	public class BufferedOutputStream : OutputStream
 	{
 		public BufferedOutputStream (OutputStream outs)
 		{

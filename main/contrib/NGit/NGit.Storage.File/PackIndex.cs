@@ -87,26 +87,7 @@ namespace NGit.Storage.File
 			FileInputStream fd = new FileInputStream(idxFile);
 			try
 			{
-				byte[] hdr = new byte[8];
-				IOUtil.ReadFully(fd, hdr, 0, hdr.Length);
-				if (IsTOC(hdr))
-				{
-					int v = NB.DecodeInt32(hdr, 4);
-					switch (v)
-					{
-						case 2:
-						{
-							return new PackIndexV2(fd);
-						}
-
-						default:
-						{
-							throw new IOException(MessageFormat.Format(JGitText.Get().unsupportedPackIndexVersion
-								, v));
-						}
-					}
-				}
-				return new PackIndexV1(fd, hdr);
+				return Read(fd);
 			}
 			catch (IOException ioe)
 			{
@@ -130,6 +111,47 @@ namespace NGit.Storage.File
 		}
 
 		// ignore
+		/// <summary>Read an existing pack index file from a buffered stream.</summary>
+		/// <remarks>
+		/// Read an existing pack index file from a buffered stream.
+		/// <p>
+		/// The format of the file will be automatically detected and a proper access
+		/// implementation for that format will be constructed and returned to the
+		/// caller. The file may or may not be held open by the returned instance.
+		/// </remarks>
+		/// <param name="fd">
+		/// stream to read the index file from. The stream must be
+		/// buffered as some small IOs are performed against the stream.
+		/// The caller is responsible for closing the stream.
+		/// </param>
+		/// <returns>a copy of the index in-memory.</returns>
+		/// <exception cref="System.IO.IOException">the stream cannot be read.</exception>
+		/// <exception cref="NGit.Errors.CorruptObjectException">the stream does not contain a valid pack index.
+		/// 	</exception>
+		public static PackIndex Read(InputStream fd)
+		{
+			byte[] hdr = new byte[8];
+			IOUtil.ReadFully(fd, hdr, 0, hdr.Length);
+			if (IsTOC(hdr))
+			{
+				int v = NB.DecodeInt32(hdr, 4);
+				switch (v)
+				{
+					case 2:
+					{
+						return new PackIndexV2(fd);
+					}
+
+					default:
+					{
+						throw new IOException(MessageFormat.Format(JGitText.Get().unsupportedPackIndexVersion
+							, v));
+					}
+				}
+			}
+			return new PackIndexV1(fd, hdr);
+		}
+
 		private static bool IsTOC(byte[] h)
 		{
 			byte[] toc = PackIndexWriter.TOC;
@@ -175,7 +197,7 @@ namespace NGit.Storage.File
 		/// number of objects in this index, and likewise in the associated
 		/// pack that this index was generated from.
 		/// </returns>
-		internal abstract long GetObjectCount();
+		public abstract long GetObjectCount();
 
 		/// <summary>Obtain the total number of objects needing 64 bit offsets.</summary>
 		/// <remarks>Obtain the total number of objects needing 64 bit offsets.</remarks>
@@ -183,7 +205,7 @@ namespace NGit.Storage.File
 		/// number of objects in this index using a 64 bit offset; that is an
 		/// object positioned after the 2 GB position within the file.
 		/// </returns>
-		internal abstract long GetOffset64Count();
+		public abstract long GetOffset64Count();
 
 		/// <summary>
 		/// Get ObjectId for the n-th object entry returned by
@@ -208,7 +230,7 @@ namespace NGit.Storage.File
 		/// is 0, the second is 1, etc.
 		/// </param>
 		/// <returns>the ObjectId for the corresponding entry.</returns>
-		internal abstract ObjectId GetObjectId(long nthPosition);
+		public abstract ObjectId GetObjectId(long nthPosition);
 
 		/// <summary>
 		/// Get ObjectId for the n-th object entry returned by
@@ -234,7 +256,7 @@ namespace NGit.Storage.File
 		/// etc. Positions past 2**31-1 are negative, but still valid.
 		/// </param>
 		/// <returns>the ObjectId for the corresponding entry.</returns>
-		internal ObjectId GetObjectId(int nthPosition)
+		public ObjectId GetObjectId(int nthPosition)
 		{
 			if (nthPosition >= 0)
 			{
@@ -253,7 +275,7 @@ namespace NGit.Storage.File
 		/// object does not exist in this index and is thus not stored in the
 		/// associated pack.
 		/// </returns>
-		internal abstract long FindOffset(AnyObjectId objId);
+		public abstract long FindOffset(AnyObjectId objId);
 
 		/// <summary>
 		/// Retrieve stored CRC32 checksum of the requested object raw-data
@@ -269,16 +291,27 @@ namespace NGit.Storage.File
 		/// 	</exception>
 		/// <exception cref="System.NotSupportedException">when this index doesn't support CRC32 checksum
 		/// 	</exception>
-		internal abstract long FindCRC32(AnyObjectId objId);
+		public abstract long FindCRC32(AnyObjectId objId);
 
 		/// <summary>Check whether this index supports (has) CRC32 checksums for objects.</summary>
 		/// <remarks>Check whether this index supports (has) CRC32 checksums for objects.</remarks>
 		/// <returns>true if CRC32 is stored, false otherwise</returns>
-		internal abstract bool HasCRC32Support();
+		public abstract bool HasCRC32Support();
 
-		/// <exception cref="System.IO.IOException"></exception>
-		internal abstract void Resolve(ICollection<ObjectId> matches, AbbreviatedObjectId
-			 id, int matchLimit);
+		/// <summary>Find objects matching the prefix abbreviation.</summary>
+		/// <remarks>Find objects matching the prefix abbreviation.</remarks>
+		/// <param name="matches">
+		/// set to add any located ObjectIds to. This is an output
+		/// parameter.
+		/// </param>
+		/// <param name="id">prefix to search for.</param>
+		/// <param name="matchLimit">
+		/// maximum number of results to return. At most this many
+		/// ObjectIds should be added to matches before returning.
+		/// </param>
+		/// <exception cref="System.IO.IOException">the index cannot be read.</exception>
+		public abstract void Resolve(ICollection<ObjectId> matches, AbbreviatedObjectId id
+			, int matchLimit);
 
 		/// <summary>
 		/// Represent mutable entry of pack index consisting of object id and offset

@@ -411,11 +411,23 @@ namespace NGit.Storage.File
 				}
 				if (0 < entries.Length)
 				{
+					for (int i = 0; i < entries.Length; ++i)
+					{
+						string e = entries[i];
+						FilePath f = new FilePath(dir, e);
+						if (f.IsDirectory())
+						{
+							entries[i] += '/';
+						}
+					}
 					Arrays.Sort(entries);
 					foreach (string name in entries)
 					{
-						FilePath e = new FilePath(dir, name);
-						if (!this.ScanTree(prefix + name + '/', e))
+						if (name[name.Length - 1] == '/')
+						{
+							this.ScanTree(prefix + name, new FilePath(dir, name));
+						}
+						else
 						{
 							this.ScanOne(prefix + name);
 						}
@@ -644,8 +656,7 @@ namespace NGit.Storage.File
 				LockFile lck = new LockFile(packedRefsFile, update.GetRepository().FileSystem);
 				if (!lck.Lock())
 				{
-					throw new IOException(MessageFormat.Format(JGitText.Get().cannotLockFile, packedRefsFile
-						));
+					throw new LockFailedException(packedRefsFile);
 				}
 				try
 				{
@@ -796,9 +807,10 @@ namespace NGit.Storage.File
 		private bool ShouldAutoCreateLog(string refName)
 		{
 			return refName.Equals(Constants.HEAD) || refName.StartsWith(Constants.R_HEADS) ||
-				 refName.StartsWith(Constants.R_REMOTES);
+				 refName.StartsWith(Constants.R_REMOTES) || refName.Equals(Constants.R_STASH);
 		}
 
+		//
 		//
 		//
 		/// <exception cref="System.IO.IOException"></exception>
@@ -961,12 +973,12 @@ namespace NGit.Storage.File
 		private void CommitPackedRefs(LockFile lck, RefList<Ref> refs, RefDirectory.PackedRefList
 			 oldPackedList)
 		{
-			new _RefWriter_786(this, lck, oldPackedList, refs, refs).WritePackedRefs();
+			new _RefWriter_795(this, lck, oldPackedList, refs, refs).WritePackedRefs();
 		}
 
-		private sealed class _RefWriter_786 : RefWriter
+		private sealed class _RefWriter_795 : RefWriter
 		{
-			public _RefWriter_786(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
+			public _RefWriter_795(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
 				 oldPackedList, RefList<Ref> refs, RefList<Ref> baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;
@@ -1371,7 +1383,7 @@ namespace NGit.Storage.File
 			public RefDirectory.LooseRef Peel(ObjectIdRef newLeaf)
 			{
 				// We should never try to peel the symbolic references.
-				throw new NotSupportedException();
+				throw new NGit.Errors.NotSupportedException();
 			}
 		}
 	}

@@ -107,6 +107,78 @@ namespace NGit.Storage.Pack
 	{
 		private const int PACK_VERSION_GENERATED = 2;
 
+		private static readonly IDictionary<WeakReference<NGit.Storage.Pack.PackWriter>, 
+			bool> instances = new ConcurrentHashMap<WeakReference<NGit.Storage.Pack.PackWriter
+			>, bool>();
+
+		private sealed class _Iterable_150 : Iterable<NGit.Storage.Pack.PackWriter>
+		{
+			public _Iterable_150()
+			{
+			}
+
+			public override Iterator<NGit.Storage.Pack.PackWriter> Iterator()
+			{
+				return new _Iterator_152();
+			}
+
+			private sealed class _Iterator_152 : Iterator<NGit.Storage.Pack.PackWriter>
+			{
+				public _Iterator_152()
+				{
+					this.it = NGit.Storage.Pack.PackWriter.instances.Keys.Iterator();
+				}
+
+				private readonly Iterator<WeakReference<NGit.Storage.Pack.PackWriter>> it;
+
+				private NGit.Storage.Pack.PackWriter next;
+
+				public override bool HasNext()
+				{
+					if (this.next != null)
+					{
+						return true;
+					}
+					while (this.it.HasNext())
+					{
+						WeakReference<NGit.Storage.Pack.PackWriter> @ref = this.it.Next();
+						this.next = @ref.Get();
+						if (this.next != null)
+						{
+							return true;
+						}
+						this.it.Remove();
+					}
+					return false;
+				}
+
+				public override NGit.Storage.Pack.PackWriter Next()
+				{
+					if (this.HasNext())
+					{
+						NGit.Storage.Pack.PackWriter result = this.next;
+						this.next = null;
+						return result;
+					}
+					throw new NoSuchElementException();
+				}
+
+				public override void Remove()
+				{
+					throw new NGit.Errors.NotSupportedException();
+				}
+			}
+		}
+
+		private static readonly Iterable<NGit.Storage.Pack.PackWriter> instancesIterable = 
+			new _Iterable_150();
+
+		/// <returns>all allocated, non-released PackWriters instances.</returns>
+		public static Iterable<NGit.Storage.Pack.PackWriter> GetInstances()
+		{
+			return instancesIterable;
+		}
+
 		private readonly BlockList<ObjectToPack>[] objectsLists = new BlockList<ObjectToPack>[Constants
 			.OBJ_TAG + 1];
 
@@ -118,6 +190,10 @@ namespace NGit.Storage.Pack
 		private IList<CachedPack> cachedPacks = new AList<CachedPack>(2);
 
 		private ICollection<ObjectId> tagTargets = Sharpen.Collections.EmptySet<ObjectId>();
+
+		private PackIndex[] excludeInPacks;
+
+		private PackIndex excludeInPackLast;
 
 		private ICSharpCode.SharpZipLib.Zip.Compression.Deflater myDeflater;
 
@@ -132,6 +208,10 @@ namespace NGit.Storage.Pack
 		private readonly PackConfig config;
 
 		private readonly PackWriter.Statistics stats;
+
+		private readonly PackWriter.MutableState state;
+
+		private readonly WeakReference<NGit.Storage.Pack.PackWriter> selfRef;
 
 		private PackWriter.Statistics.ObjectType typeStats;
 
@@ -154,6 +234,12 @@ namespace NGit.Storage.Pack
 		private bool ignoreMissingUninteresting = true;
 
 		private bool pruneCurrentObjectList;
+
+		private bool shallowPack;
+
+		private int depth;
+
+		private ICollection<ObjectId> unshallowObjects;
 
 		/// <summary>Create writer for specified repository.</summary>
 		/// <remarks>
@@ -250,6 +336,9 @@ namespace NGit.Storage.Pack
 			reuseValidate = true;
 			// be paranoid by default
 			stats = new PackWriter.Statistics();
+			state = new PackWriter.MutableState(this);
+			selfRef = new WeakReference<NGit.Storage.Pack.PackWriter>(this);
+			instances.Put(selfRef, true);
 		}
 
 		/// <summary>
@@ -421,6 +510,20 @@ namespace NGit.Storage.Pack
 			tagTargets = objects;
 		}
 
+		/// <summary>Configure this pack for a shallow clone.</summary>
+		/// <remarks>Configure this pack for a shallow clone.</remarks>
+		/// <param name="depth">maximum depth to traverse the commit graph</param>
+		/// <param name="unshallow">
+		/// objects which used to be shallow on the client, but are being
+		/// extended as part of this fetch
+		/// </param>
+		public virtual void SetShallowPack(int depth, ICollection<NGit.ObjectId> unshallow)
+		{
+			this.shallowPack = true;
+			this.depth = depth;
+			this.unshallowObjects = unshallow;
+		}
+
 		/// <summary>Returns objects number in a pack file that was created by this writer.</summary>
 		/// <remarks>Returns objects number in a pack file that was created by this writer.</remarks>
 		/// <returns>number of objects in pack.</returns>
@@ -442,6 +545,26 @@ namespace NGit.Storage.Pack
 				return objCnt;
 			}
 			return stats.totalObjects;
+		}
+
+		/// <summary>Add a pack index whose contents should be excluded from the result.</summary>
+		/// <remarks>Add a pack index whose contents should be excluded from the result.</remarks>
+		/// <param name="idx">objects in this index will not be in the output pack.</param>
+		public virtual void ExcludeObjects(PackIndex idx)
+		{
+			if (excludeInPacks == null)
+			{
+				excludeInPacks = new PackIndex[] { idx };
+				excludeInPackLast = idx;
+			}
+			else
+			{
+				int cnt = excludeInPacks.Length;
+				PackIndex[] newList = new PackIndex[cnt + 1];
+				System.Array.Copy(excludeInPacks, 0, newList, 0, cnt);
+				newList[cnt] = idx;
+				excludeInPacks = newList;
+			}
 		}
 
 		/// <summary>Prepare the list of objects to be written to the pack stream.</summary>
@@ -482,6 +605,98 @@ namespace NGit.Storage.Pack
 			}
 		}
 
+//		/// <summary>Prepare the list of objects to be written to the pack stream.</summary>
+//		/// <remarks>
+//		/// Prepare the list of objects to be written to the pack stream.
+//		/// <p>
+//		/// Basing on these 2 sets, another set of objects to put in a pack file is
+//		/// created: this set consists of all objects reachable (ancestors) from
+//		/// interesting objects, except uninteresting objects and their ancestors.
+//		/// This method uses class
+//		/// <see cref="NGit.Revwalk.ObjectWalk">NGit.Revwalk.ObjectWalk</see>
+//		/// extensively to find out that
+//		/// appropriate set of output objects and their optimal order in output pack.
+//		/// Order is consistent with general git in-pack rules: sort by object type,
+//		/// recency, path and delta-base first.
+//		/// </p>
+//		/// </remarks>
+//		/// <param name="countingMonitor">progress during object enumeration.</param>
+//		/// <param name="want">
+//		/// collection of objects to be marked as interesting (start
+//		/// points of graph traversal).
+//		/// </param>
+//		/// <param name="have">
+//		/// collection of objects to be marked as uninteresting (end
+//		/// points of graph traversal).
+//		/// </param>
+//		/// <exception cref="System.IO.IOException">when some I/O problem occur during reading objects.
+//		/// 	</exception>
+//		[System.ObsoleteAttribute(@"to be removed in 2.0; use the Set version of this method."
+//			)]
+//		public virtual void PreparePack<_T0, _T1>(ProgressMonitor countingMonitor, ICollection
+//			<_T0> want, ICollection<_T1> have) where _T0:ObjectId where _T1:ObjectId
+//		{
+//			PreparePack(countingMonitor, EnsureSet(want), EnsureSet(have));
+//		}
+//
+//		/// <summary>Prepare the list of objects to be written to the pack stream.</summary>
+//		/// <remarks>
+//		/// Prepare the list of objects to be written to the pack stream.
+//		/// <p>
+//		/// Basing on these 2 sets, another set of objects to put in a pack file is
+//		/// created: this set consists of all objects reachable (ancestors) from
+//		/// interesting objects, except uninteresting objects and their ancestors.
+//		/// This method uses class
+//		/// <see cref="NGit.Revwalk.ObjectWalk">NGit.Revwalk.ObjectWalk</see>
+//		/// extensively to find out that
+//		/// appropriate set of output objects and their optimal order in output pack.
+//		/// Order is consistent with general git in-pack rules: sort by object type,
+//		/// recency, path and delta-base first.
+//		/// </p>
+//		/// </remarks>
+//		/// <param name="countingMonitor">progress during object enumeration.</param>
+//		/// <param name="walk">ObjectWalk to perform enumeration.</param>
+//		/// <param name="interestingObjects">
+//		/// collection of objects to be marked as interesting (start
+//		/// points of graph traversal).
+//		/// </param>
+//		/// <param name="uninterestingObjects">
+//		/// collection of objects to be marked as uninteresting (end
+//		/// points of graph traversal).
+//		/// </param>
+//		/// <exception cref="System.IO.IOException">when some I/O problem occur during reading objects.
+//		/// 	</exception>
+//		[System.ObsoleteAttribute(@"to be removed in 2.0; use the Set version of this method."
+//			)]
+//		public virtual void PreparePack<_T0, _T1>(ProgressMonitor countingMonitor, ObjectWalk
+//			 walk, ICollection<_T0> interestingObjects, ICollection<_T1> uninterestingObjects
+//			) where _T0:ObjectId where _T1:ObjectId
+//		{
+//			PreparePack(countingMonitor, walk, EnsureSet(interestingObjects), EnsureSet(uninterestingObjects
+//				));
+//		}
+
+		private static ICollection<ObjectId> EnsureSet(ICollection<ObjectId> objs) 
+		{
+			ICollection<ObjectId> set;
+			if (objs is ICollection<ObjectId>)
+			{
+				set = (ICollection<ObjectId>)objs;
+			}
+			else
+			{
+				if (objs == null)
+				{
+					set = Sharpen.Collections.EmptySet<ObjectId>();
+				}
+				else
+				{
+					set = new HashSet<ObjectId>(objs);
+				}
+			}
+			return set;
+		}
+
 		/// <summary>Prepare the list of objects to be written to the pack stream.</summary>
 		/// <remarks>
 		/// Prepare the list of objects to be written to the pack stream.
@@ -511,7 +726,15 @@ namespace NGit.Storage.Pack
 		public virtual void PreparePack<_T0, _T1>(ProgressMonitor countingMonitor, ICollection
 			<_T0> want, ICollection<_T1> have) where _T0:ObjectId where _T1:ObjectId
 		{
-			ObjectWalk ow = new ObjectWalk(reader);
+			ObjectWalk ow;
+			if (shallowPack)
+			{
+				ow = new NGit.Revwalk.Depthwalk.ObjectWalk(reader, depth);
+			}
+			else
+			{
+				ow = new ObjectWalk(reader);
+			}
 			PreparePack(countingMonitor, ow, want, have);
 		}
 
@@ -549,6 +772,10 @@ namespace NGit.Storage.Pack
 			if (countingMonitor == null)
 			{
 				countingMonitor = NullProgressMonitor.INSTANCE;
+			}
+			if (shallowPack && !(walk is NGit.Revwalk.Depthwalk.ObjectWalk))
+			{
+				walk = new NGit.Revwalk.Depthwalk.ObjectWalk(reader, depth);
 			}
 			FindObjectsToPack(countingMonitor, walk, interestingObjects, uninterestingObjects
 				);
@@ -601,15 +828,11 @@ namespace NGit.Storage.Pack
 		/// Create an index file to match the pack file just written.
 		/// <p>
 		/// This method can only be invoked after
-		/// <see cref="PreparePack(Sharpen.Iterator{E})">PreparePack(Sharpen.Iterator&lt;E&gt;)
-		/// 	</see>
-		/// or
-		/// <see cref="PreparePack(NGit.ProgressMonitor, System.Collections.Generic.ICollection{E}, System.Collections.Generic.ICollection{E})
-		/// 	">PreparePack(NGit.ProgressMonitor, System.Collections.Generic.ICollection&lt;E&gt;, System.Collections.Generic.ICollection&lt;E&gt;)
-		/// 	</see>
-		/// has been
-		/// invoked and completed successfully. Writing a corresponding index is an
-		/// optional feature that not all pack users may require.
+		/// <see cref="WritePack(NGit.ProgressMonitor, NGit.ProgressMonitor, Sharpen.OutputStream)
+		/// 	">WritePack(NGit.ProgressMonitor, NGit.ProgressMonitor, Sharpen.OutputStream)</see>
+		/// has
+		/// been invoked and completed successfully. Writing a corresponding index is
+		/// an optional feature that not all pack users may require.
 		/// </remarks>
 		/// <param name="indexStream">
 		/// output for the index data. Caller is responsible for closing
@@ -623,6 +846,7 @@ namespace NGit.Storage.Pack
 			{
 				throw new IOException(JGitText.Get().cachedPacksPreventsIndexCreation);
 			}
+			long writeStart = Runtime.CurrentTimeMillis();
 			IList<ObjectToPack> list = SortByName();
 			PackIndexWriter iw;
 			int indexVersion = config.GetIndexVersion();
@@ -635,6 +859,7 @@ namespace NGit.Storage.Pack
 				iw = PackIndexWriter.CreateVersion(indexStream, indexVersion);
 			}
 			iw.Write(list, packcsum);
+			stats.timeWriting += Runtime.CurrentTimeMillis() - writeStart;
 		}
 
 		private IList<ObjectToPack> SortByName()
@@ -654,6 +879,57 @@ namespace NGit.Storage.Pack
 				sortedByName.Sort();
 			}
 			return sortedByName;
+		}
+
+		private void BeginPhase(PackWriter.PackingPhase phase, ProgressMonitor monitor, long
+			 cnt)
+		{
+			state.phase = phase;
+			string task;
+			switch (phase)
+			{
+				case PackWriter.PackingPhase.COUNTING:
+				{
+					task = JGitText.Get().countingObjects;
+					break;
+				}
+
+				case PackWriter.PackingPhase.GETTING_SIZES:
+				{
+					task = JGitText.Get().searchForSizes;
+					break;
+				}
+
+				case PackWriter.PackingPhase.FINDING_SOURCES:
+				{
+					task = JGitText.Get().searchForReuse;
+					break;
+				}
+
+				case PackWriter.PackingPhase.COMPRESSING:
+				{
+					task = JGitText.Get().compressingObjects;
+					break;
+				}
+
+				case PackWriter.PackingPhase.WRITING:
+				{
+					task = JGitText.Get().writingObjects;
+					break;
+				}
+
+				default:
+				{
+					throw new ArgumentException(MessageFormat.Format(JGitText.Get().illegalPackingPhase
+						, phase));
+				}
+			}
+			monitor.BeginTask(task, (int)cnt);
+		}
+
+		private void EndPhase(ProgressMonitor monitor)
+		{
+			monitor.EndTask();
 		}
 
 		/// <summary>Write the prepared pack to the supplied stream.</summary>
@@ -693,8 +969,21 @@ namespace NGit.Storage.Pack
 			{
 				writeMonitor = NullProgressMonitor.INSTANCE;
 			}
-			if (reuseSupport != null && (reuseDeltas || config.IsReuseObjects() || !cachedPacks
-				.IsEmpty()))
+			excludeInPacks = null;
+			excludeInPackLast = null;
+			bool needSearchForReuse = reuseSupport != null && (reuseDeltas || config.IsReuseObjects
+				() || !cachedPacks.IsEmpty());
+			if (compressMonitor is BatchingProgressMonitor)
+			{
+				long delay = 1000;
+				if (needSearchForReuse && config.IsDeltaCompress())
+				{
+					delay = 500;
+				}
+				((BatchingProgressMonitor)compressMonitor).SetDelayStart(delay, TimeUnit.MILLISECONDS
+					);
+			}
+			if (needSearchForReuse)
 			{
 				SearchForReuse(compressMonitor);
 			}
@@ -705,7 +994,7 @@ namespace NGit.Storage.Pack
 			PackOutputStream @out = new PackOutputStream(writeMonitor, packStream, this);
 			long objCnt = GetObjectCount();
 			stats.totalObjects = objCnt;
-			writeMonitor.BeginTask(JGitText.Get().writingObjects, (int)objCnt);
+			BeginPhase(PackWriter.PackingPhase.WRITING, writeMonitor, objCnt);
 			long writeStart = Runtime.CurrentTimeMillis();
 			@out.WriteFileHeader(PACK_VERSION_GENERATED, objCnt);
 			@out.Flush();
@@ -734,6 +1023,7 @@ namespace NGit.Storage.Pack
 			stats.timeWriting = Runtime.CurrentTimeMillis() - writeStart;
 			stats.totalBytes = @out.Length();
 			stats.reusedPacks = Sharpen.Collections.UnmodifiableList(cachedPacks);
+			stats.depth = depth;
 			foreach (PackWriter.Statistics.ObjectType typeStat_1 in stats.objectTypes)
 			{
 				if (typeStat_1 == null)
@@ -746,7 +1036,7 @@ namespace NGit.Storage.Pack
 				stats.totalDeltas += typeStat_1.cntDeltas;
 			}
 			reader.Release();
-			writeMonitor.EndTask();
+			EndPhase(writeMonitor);
 		}
 
 		/// <returns>
@@ -760,6 +1050,12 @@ namespace NGit.Storage.Pack
 			return stats;
 		}
 
+		/// <returns>snapshot of the current state of this PackWriter.</returns>
+		public virtual PackWriter.State GetState()
+		{
+			return state.Snapshot();
+		}
+
 		/// <summary>Release all resources used by this writer.</summary>
 		/// <remarks>Release all resources used by this writer.</remarks>
 		public virtual void Release()
@@ -770,26 +1066,27 @@ namespace NGit.Storage.Pack
 				myDeflater.Finish();
 				myDeflater = null;
 			}
+			Sharpen.Collections.Remove(instances, selfRef);
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
 		private void SearchForReuse(ProgressMonitor monitor)
 		{
-			int cnt = 0;
+			long cnt = 0;
 			cnt += objectsLists[Constants.OBJ_COMMIT].Count;
 			cnt += objectsLists[Constants.OBJ_TREE].Count;
 			cnt += objectsLists[Constants.OBJ_BLOB].Count;
 			cnt += objectsLists[Constants.OBJ_TAG].Count;
 			long start = Runtime.CurrentTimeMillis();
-			monitor.BeginTask(JGitText.Get().searchForReuse, cnt);
+			BeginPhase(PackWriter.PackingPhase.FINDING_SOURCES, monitor, cnt);
 			if (cnt <= 4096)
 			{
 				// For small object counts, do everything as one list.
-				BlockList<ObjectToPack> tmp = new BlockList<ObjectToPack>(cnt);
+				BlockList<ObjectToPack> tmp = new BlockList<ObjectToPack>((int)cnt);
+				tmp.AddAll(objectsLists[Constants.OBJ_TAG]);
 				tmp.AddAll(objectsLists[Constants.OBJ_COMMIT]);
 				tmp.AddAll(objectsLists[Constants.OBJ_TREE]);
 				tmp.AddAll(objectsLists[Constants.OBJ_BLOB]);
-				tmp.AddAll(objectsLists[Constants.OBJ_TAG]);
 				SearchForReuse(monitor, tmp);
 				if (pruneCurrentObjectList)
 				{
@@ -802,12 +1099,12 @@ namespace NGit.Storage.Pack
 			}
 			else
 			{
+				SearchForReuse(monitor, objectsLists[Constants.OBJ_TAG]);
 				SearchForReuse(monitor, objectsLists[Constants.OBJ_COMMIT]);
 				SearchForReuse(monitor, objectsLists[Constants.OBJ_TREE]);
 				SearchForReuse(monitor, objectsLists[Constants.OBJ_BLOB]);
-				SearchForReuse(monitor, objectsLists[Constants.OBJ_TAG]);
 			}
-			monitor.EndTask();
+			EndPhase(monitor);
 			stats.timeSearchingForReuse = Runtime.CurrentTimeMillis() - start;
 		}
 
@@ -859,7 +1156,7 @@ namespace NGit.Storage.Pack
 			// abort with an exception if we actually had to have it.
 			//
 			long sizingStart = Runtime.CurrentTimeMillis();
-			monitor.BeginTask(JGitText.Get().searchForSizes, cnt);
+			BeginPhase(PackWriter.PackingPhase.GETTING_SIZES, monitor, cnt);
 			AsyncObjectSizeQueue<ObjectToPack> sizeQueue = reader.GetObjectSize(Arrays.AsList
 				<ObjectToPack>(list).SubList(0, cnt).AsIterable(), false);
 			try
@@ -867,7 +1164,6 @@ namespace NGit.Storage.Pack
 				long limit = config.GetBigFileThreshold();
 				for (; ; )
 				{
-					monitor.Update(1);
 					try
 					{
 						if (!sizeQueue.Next())
@@ -877,6 +1173,7 @@ namespace NGit.Storage.Pack
 					}
 					catch (MissingObjectException notFound)
 					{
+						monitor.Update(1);
 						if (ignoreMissingUninteresting)
 						{
 							ObjectToPack otp = sizeQueue.GetCurrent();
@@ -917,20 +1214,21 @@ namespace NGit.Storage.Pack
 							otp_1.SetWeight((int)sz);
 						}
 					}
+					monitor.Update(1);
 				}
 			}
 			finally
 			{
 				sizeQueue.Release();
 			}
-			monitor.EndTask();
+			EndPhase(monitor);
 			stats.timeSearchingForSizes = Runtime.CurrentTimeMillis() - sizingStart;
 			// Sort the objects by path hash so like files are near each other,
 			// and then by size descending so that bigger files are first. This
 			// applies "Linus' Law" which states that newer files tend to be the
 			// bigger ones, because source files grow and hardly ever shrink.
 			//
-			Arrays.Sort(list, 0, cnt, new _IComparer_849());
+			Arrays.Sort(list, 0, cnt, new _IComparer_1091());
 			// Above we stored the objects we cannot delta onto the end.
 			// Remove them from the list so we don't waste time on them.
 			while (0 < cnt && list[cnt - 1].IsDoNotDelta())
@@ -946,9 +1244,9 @@ namespace NGit.Storage.Pack
 				return;
 			}
 			long searchStart = Runtime.CurrentTimeMillis();
-			monitor.BeginTask(JGitText.Get().compressingObjects, nonEdgeCnt);
+			BeginPhase(PackWriter.PackingPhase.COMPRESSING, monitor, nonEdgeCnt);
 			SearchForDeltas(monitor, list, cnt);
-			monitor.EndTask();
+			EndPhase(monitor);
 			stats.deltaSearchNonEdgeObjects = nonEdgeCnt;
 			stats.timeCompressing = Runtime.CurrentTimeMillis() - searchStart;
 			for (int i = 0; i < cnt; i++)
@@ -960,9 +1258,9 @@ namespace NGit.Storage.Pack
 			}
 		}
 
-		private sealed class _IComparer_849 : IComparer<ObjectToPack>
+		private sealed class _IComparer_1091 : IComparer<ObjectToPack>
 		{
-			public _IComparer_849()
+			public _IComparer_1091()
 			{
 			}
 
@@ -1002,14 +1300,14 @@ namespace NGit.Storage.Pack
 		{
 			foreach (ObjectToPack otp in objectsLists[type])
 			{
-				if (otp.IsReuseAsIs())
-				{
-					// already reusing a representation
-					continue;
-				}
 				if (otp.IsDoNotDelta())
 				{
 					// delta is disabled for this path
+					continue;
+				}
+				if (otp.IsDeltaRepresentation())
+				{
+					// already reusing a delta
 					continue;
 				}
 				otp.SetWeight(0);
@@ -1133,7 +1431,7 @@ namespace NGit.Storage.Pack
 					//
 					foreach (DeltaTask task in myTasks)
 					{
-						executor.Execute(new _Runnable_999(task, errors));
+						executor.Execute(new _Runnable_1241(task, errors));
 					}
 					try
 					{
@@ -1172,9 +1470,9 @@ namespace NGit.Storage.Pack
 			}
 		}
 
-		private sealed class _Runnable_999 : Runnable
+		private sealed class _Runnable_1241 : Runnable
 		{
-			public _Runnable_999(DeltaTask task, IList<Exception> errors)
+			public _Runnable_1241(DeltaTask task, IList<Exception> errors)
 			{
 				this.task = task;
 				this.errors = errors;
@@ -1351,11 +1649,11 @@ namespace NGit.Storage.Pack
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		private void WriteBase(PackOutputStream @out, ObjectToPack baseInPack)
+		private void WriteBase(PackOutputStream @out, ObjectToPack @base)
 		{
-			if (baseInPack != null && !baseInPack.IsWritten())
+			if (@base != null && !@base.IsWritten() && !@base.IsEdge())
 			{
-				WriteObjectImpl(@out, baseInPack);
+				WriteObjectImpl(@out, @base);
 			}
 		}
 
@@ -1457,7 +1755,7 @@ namespace NGit.Storage.Pack
 			_T1:ObjectId
 		{
 			long countingStart = Runtime.CurrentTimeMillis();
-			countingMonitor.BeginTask(JGitText.Get().countingObjects, ProgressMonitor.UNKNOWN
+			BeginPhase(PackWriter.PackingPhase.COUNTING, countingMonitor, ProgressMonitor.UNKNOWN
 				);
 			if (have == null)
 			{
@@ -1505,7 +1803,7 @@ namespace NGit.Storage.Pack
 						{
 							countingMonitor.Update((int)pack_1.GetObjectCount());
 						}
-						countingMonitor.EndTask();
+						EndPhase(countingMonitor);
 						stats.timeCounting = Runtime.CurrentTimeMillis() - countingStart;
 						return;
 					}
@@ -1543,16 +1841,13 @@ namespace NGit.Storage.Pack
 						{
 							haveObjs.AddItem(o);
 						}
-						else
+						if (want.Contains(o))
 						{
-							if (want.Contains(o))
+							o.Add(include);
+							wantObjs.AddItem(o);
+							if (o is RevTag)
 							{
-								o.Add(include);
-								wantObjs.AddItem(o);
-								if (o is RevTag)
-								{
-									wantTags.AddItem((RevTag)o);
-								}
+								wantTags.AddItem((RevTag)o);
 							}
 						}
 					}
@@ -1590,9 +1885,27 @@ namespace NGit.Storage.Pack
 					q.Release();
 				}
 			}
-			foreach (RevObject obj in wantObjs)
+			if (walker is NGit.Revwalk.Depthwalk.ObjectWalk)
 			{
-				walker.MarkStart(obj);
+				var depthWalk = (NGit.Revwalk.Depthwalk.ObjectWalk)walker;
+				foreach (RevObject obj in wantObjs)
+				{
+					depthWalk.MarkRoot(obj);
+				}
+				if (unshallowObjects != null)
+				{
+					foreach (ObjectId id in unshallowObjects)
+					{
+						depthWalk.MarkUnshallow(walker.ParseAny(id));
+					}
+				}
+			}
+			else
+			{
+				foreach (RevObject obj in wantObjs)
+				{
+					walker.MarkStart(obj);
+				}
 			}
 			foreach (RevObject obj_1 in haveObjs)
 			{
@@ -1604,6 +1917,10 @@ namespace NGit.Storage.Pack
 			RevCommit c;
 			while ((c = walker.Next()) != null)
 			{
+				if (Exclude(c))
+				{
+					continue;
+				}
 				if (c.Has(inCachedPack))
 				{
 					CachedPack pack = tipToPack.Get(c);
@@ -1612,8 +1929,8 @@ namespace NGit.Storage.Pack
 						UseCachedPack(walker, keepOnRestart, wantObjs, haveObjs, pack);
 						//
 						commits = new BlockList<RevCommit>();
-						countingMonitor.EndTask();
-						countingMonitor.BeginTask(JGitText.Get().countingObjects, ProgressMonitor.UNKNOWN
+						EndPhase(countingMonitor);
+						BeginPhase(PackWriter.PackingPhase.COUNTING, countingMonitor, ProgressMonitor.UNKNOWN
 							);
 						continue;
 					}
@@ -1629,64 +1946,98 @@ namespace NGit.Storage.Pack
 				commits.AddItem(c);
 				countingMonitor.Update(1);
 			}
-			int commitCnt = 0;
-			bool putTagTargets = false;
-			foreach (RevCommit cmit in commits)
+			if (shallowPack)
 			{
-				if (!cmit.Has(added))
+				foreach (RevCommit cmit in commits)
 				{
-					cmit.Add(added);
 					AddObject(cmit, 0);
-					commitCnt++;
 				}
-				for (int i = 0; i < cmit.ParentCount; i++)
+			}
+			else
+			{
+				int commitCnt = 0;
+				bool putTagTargets = false;
+				foreach (RevCommit cmit in commits)
 				{
-					RevCommit p = cmit.GetParent(i);
-					if (!p.Has(added) && !p.Has(RevFlag.UNINTERESTING))
+					if (!cmit.Has(added))
 					{
-						p.Add(added);
-						AddObject(p, 0);
+						cmit.Add(added);
+						AddObject(cmit, 0);
 						commitCnt++;
 					}
-				}
-				if (!putTagTargets && 4096 < commitCnt)
-				{
-					foreach (ObjectId id in tagTargets)
+					for (int i = 0; i < cmit.ParentCount; i++)
 					{
-						RevObject obj_2 = walker.LookupOrNull(id);
-						if (obj_2 is RevCommit && obj_2.Has(include) && !obj_2.Has(RevFlag.UNINTERESTING)
-							 && !obj_2.Has(added))
+						RevCommit p = cmit.GetParent(i);
+						if (!p.Has(added) && !p.Has(RevFlag.UNINTERESTING))
 						{
-							obj_2.Add(added);
-							AddObject(obj_2, 0);
+							p.Add(added);
+							AddObject(p, 0);
+							commitCnt++;
 						}
 					}
-					putTagTargets = true;
+					if (!putTagTargets && 4096 < commitCnt)
+					{
+						foreach (ObjectId id in tagTargets)
+						{
+							RevObject obj_1 = walker.LookupOrNull(id);
+							if (obj_1 is RevCommit && obj_1.Has(include) && !obj_1.Has(RevFlag.UNINTERESTING)
+								 && !obj_1.Has(added))
+							{
+								obj_1.Add(added);
+								AddObject(obj_1, 0);
+							}
+						}
+						putTagTargets = true;
+					}
 				}
 			}
 			commits = null;
-			BaseSearch bases = new BaseSearch(countingMonitor, baseTrees, objectsMap, edgeObjects
-				, reader);
-			//
-			RevObject o_1;
-			while ((o_1 = walker.NextObject()) != null)
+			if (thin && !baseTrees.IsEmpty())
 			{
-				if (o_1.Has(RevFlag.UNINTERESTING))
+				BaseSearch bases = new BaseSearch(countingMonitor, baseTrees, objectsMap, edgeObjects
+					, reader);
+				//
+				RevObject o;
+				while ((o = walker.NextObject()) != null)
 				{
-					continue;
+					if (o.Has(RevFlag.UNINTERESTING))
+					{
+						continue;
+					}
+					if (Exclude(o))
+					{
+						continue;
+					}
+					int pathHash = walker.GetPathHashCode();
+					byte[] pathBuf = walker.GetPathBuffer();
+					int pathLen = walker.GetPathLength();
+					bases.AddBase(o.Type, pathBuf, pathLen, pathHash);
+					AddObject(o, pathHash);
+					countingMonitor.Update(1);
 				}
-				int pathHash = walker.GetPathHashCode();
-				byte[] pathBuf = walker.GetPathBuffer();
-				int pathLen = walker.GetPathLength();
-				bases.AddBase(o_1.Type, pathBuf, pathLen, pathHash);
-				AddObject(o_1, pathHash);
-				countingMonitor.Update(1);
+			}
+			else
+			{
+				RevObject o;
+				while ((o = walker.NextObject()) != null)
+				{
+					if (o.Has(RevFlag.UNINTERESTING))
+					{
+						continue;
+					}
+					if (Exclude(o))
+					{
+						continue;
+					}
+					AddObject(o, walker.GetPathHashCode());
+					countingMonitor.Update(1);
+				}
 			}
 			foreach (CachedPack pack_2 in cachedPacks)
 			{
 				countingMonitor.Update((int)pack_2.GetObjectCount());
 			}
-			countingMonitor.EndTask();
+			EndPhase(countingMonitor);
 			stats.timeCounting = Runtime.CurrentTimeMillis() - countingStart;
 		}
 
@@ -1765,7 +2116,10 @@ namespace NGit.Storage.Pack
 		/// 	</exception>
 		public virtual void AddObject(RevObject @object)
 		{
-			AddObject(@object, 0);
+			if (!Exclude(@object))
+			{
+				AddObject(@object, 0);
+			}
 		}
 
 		private void AddObject(RevObject @object, int pathHashCode)
@@ -1782,6 +2136,27 @@ namespace NGit.Storage.Pack
 			otp.SetPathHash(pathHashCode);
 			objectsLists[@object.Type].AddItem(otp);
 			objectsMap.Add(otp);
+		}
+
+		private bool Exclude(AnyObjectId objectId)
+		{
+			if (excludeInPacks == null)
+			{
+				return false;
+			}
+			if (excludeInPackLast.HasObject(objectId))
+			{
+				return true;
+			}
+			foreach (PackIndex idx in excludeInPacks)
+			{
+				if (idx.HasObject(objectId))
+				{
+					excludeInPackLast = idx;
+					return true;
+				}
+			}
+			return false;
 		}
 
 		/// <summary>Select an object representation for this writer.</summary>
@@ -1996,6 +2371,8 @@ namespace NGit.Storage.Pack
 
 			internal ICollection<CachedPack> reusedPacks;
 
+			internal int depth;
+
 			internal int deltaSearchNonEdgeObjects;
 
 			internal int deltasFound;
@@ -2144,6 +2521,18 @@ namespace NGit.Storage.Pack
 				return objectTypes[typeCode];
 			}
 
+			/// <returns>true if the resulting pack file was a shallow pack.</returns>
+			public virtual bool IsShallow()
+			{
+				return depth > 0;
+			}
+
+			/// <returns>depth (in commits) the pack includes if shallow.</returns>
+			public virtual int GetDepth()
+			{
+				return depth;
+			}
+
 			/// <returns>
 			/// time in milliseconds spent enumerating the objects that need
 			/// to be included in the output. This time includes any restarts
@@ -2199,6 +2588,13 @@ namespace NGit.Storage.Pack
 				return timeWriting;
 			}
 
+			/// <returns>total time spent processing this pack.</returns>
+			public virtual long GetTimeTotal()
+			{
+				return timeCounting + timeSearchingForReuse + timeSearchingForSizes + timeCompressing
+					 + timeWriting;
+			}
+
 			/// <returns>
 			/// get the average output speed in terms of bytes-per-second.
 			/// <code>getTotalBytes() / (getTimeWriting() / 1000.0)</code>
@@ -2228,6 +2624,117 @@ namespace NGit.Storage.Pack
 			}
 			//
 			//
+		}
+
+		private class MutableState
+		{
+			/// <summary>Estimated size of a single ObjectToPack instance.</summary>
+			/// <remarks>Estimated size of a single ObjectToPack instance.</remarks>
+			private const long OBJECT_TO_PACK_SIZE = (2 * 8) + (2 * 8) + (2 * 8) + (8 + 8) + 
+				8 + 40 + 8;
+
+			private readonly long totalDeltaSearchBytes;
+
+			public PackWriter.PackingPhase phase;
+
+			public MutableState(PackWriter _enclosing)
+			{
+				this._enclosing = _enclosing;
+				// Assume 64-bit pointers, since this is just an estimate.
+				// Object header
+				// ObjectToPack fields
+				// PackedObjectInfo fields
+				// ObjectIdOwnerMap fields
+				// AnyObjectId fields
+				// Reference in BlockList
+				this.phase = PackWriter.PackingPhase.COUNTING;
+				if (this._enclosing.config.IsDeltaCompress())
+				{
+					int threads = this._enclosing.config.GetThreads();
+					if (threads <= 0)
+					{
+						threads = Runtime.GetRuntime().AvailableProcessors();
+					}
+					this.totalDeltaSearchBytes = (threads * this._enclosing.config.GetDeltaSearchMemoryLimit
+						()) + this._enclosing.config.GetBigFileThreshold();
+				}
+				else
+				{
+					this.totalDeltaSearchBytes = 0;
+				}
+			}
+
+			internal virtual PackWriter.State Snapshot()
+			{
+				long objCnt = 0;
+				objCnt += this._enclosing.objectsLists[Constants.OBJ_COMMIT].Count;
+				objCnt += this._enclosing.objectsLists[Constants.OBJ_TREE].Count;
+				objCnt += this._enclosing.objectsLists[Constants.OBJ_BLOB].Count;
+				objCnt += this._enclosing.objectsLists[Constants.OBJ_TAG].Count;
+				// Exclude CachedPacks.
+				long bytesUsed = PackWriter.MutableState.OBJECT_TO_PACK_SIZE * objCnt;
+				PackWriter.PackingPhase curr = this.phase;
+				if (curr == PackWriter.PackingPhase.COMPRESSING)
+				{
+					bytesUsed += this.totalDeltaSearchBytes;
+				}
+				return new PackWriter.State(_enclosing, curr, bytesUsed);
+			}
+
+			private readonly PackWriter _enclosing;
+		}
+
+		/// <summary>Possible states that a PackWriter can be in.</summary>
+		/// <remarks>Possible states that a PackWriter can be in.</remarks>
+		public enum PackingPhase
+		{
+			COUNTING,
+			GETTING_SIZES,
+			FINDING_SOURCES,
+			COMPRESSING,
+			WRITING
+		}
+
+		/// <summary>Summary of the current state of a PackWriter.</summary>
+		/// <remarks>Summary of the current state of a PackWriter.</remarks>
+		public class State
+		{
+			private readonly PackWriter.PackingPhase phase;
+
+			private readonly long bytesUsed;
+
+			internal State(PackWriter _enclosing, PackWriter.PackingPhase phase, long bytesUsed
+				)
+			{
+				this._enclosing = _enclosing;
+				this.phase = phase;
+				this.bytesUsed = bytesUsed;
+			}
+
+			/// <returns>the PackConfig used to build the writer.</returns>
+			public virtual PackConfig GetConfig()
+			{
+				return this._enclosing.config;
+			}
+
+			/// <returns>the current phase of the writer.</returns>
+			public virtual PackWriter.PackingPhase GetPhase()
+			{
+				return this.phase;
+			}
+
+			/// <returns>an estimate of the total memory used by the writer.</returns>
+			public virtual long EstimateBytesUsed()
+			{
+				return this.bytesUsed;
+			}
+
+			public override string ToString()
+			{
+				return "PackWriter.State[" + this.phase + ", memory=" + this.bytesUsed + "]";
+			}
+
+			private readonly PackWriter _enclosing;
 		}
 	}
 }

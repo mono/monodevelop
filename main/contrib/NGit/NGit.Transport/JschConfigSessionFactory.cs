@@ -106,31 +106,33 @@ namespace NGit.Transport
 					{
 						user = hc.GetUser();
 					}
-					Session session = CreateSession(hc, user, host, port, fs);
-					if (pass != null)
+					Session session = CreateSession(credentialsProvider, fs, user, pass, host, port, 
+						hc);
+					int retries = 0;
+					while (!session.IsConnected() && retries < 3)
 					{
-						session.SetPassword(pass);
-					}
-					string strictHostKeyCheckingPolicy = hc.GetStrictHostKeyChecking();
-					if (strictHostKeyCheckingPolicy != null)
-					{
-						session.SetConfig("StrictHostKeyChecking", strictHostKeyCheckingPolicy);
-					}
-					string pauth = hc.GetPreferredAuthentications();
-					if (pauth != null)
-					{
-						session.SetConfig("PreferredAuthentications", pauth);
-					}
-					if (credentialsProvider != null && (!hc.IsBatchMode() || !credentialsProvider.IsInteractive
-						()))
-					{
-						session.SetUserInfo(new CredentialsProviderUserInfo(session, credentialsProvider)
-							);
-					}
-					Configure(hc, session);
-					if (!session.IsConnected())
-					{
-						session.Connect(tms);
+						try
+						{
+							retries++;
+							session.Connect(tms);
+						}
+						catch (JSchException e)
+						{
+							session.Disconnect();
+							session = null;
+							// if authentication failed maybe credentials changed at the
+							// remote end therefore reset credentials and retry
+							if (credentialsProvider != null && e.InnerException == null && e.Message.Equals("Auth fail"
+								))
+							{
+								credentialsProvider.Reset(uri);
+								session = CreateSession(credentialsProvider, fs, user, pass, host, port, hc);
+							}
+							else
+							{
+								throw;
+							}
+						}
 					}
 					return new JschSession(session, uri);
 				}
@@ -148,6 +150,35 @@ namespace NGit.Transport
 					throw new TransportException(uri, je.Message, je);
 				}
 			}
+		}
+
+		/// <exception cref="NSch.JSchException"></exception>
+		private Session CreateSession(CredentialsProvider credentialsProvider, FS fs, string
+			 user, string pass, string host, int port, OpenSshConfig.Host hc)
+		{
+			Session session = CreateSession(hc, user, host, port, fs);
+			if (pass != null)
+			{
+				session.SetPassword(pass);
+			}
+			string strictHostKeyCheckingPolicy = hc.GetStrictHostKeyChecking();
+			if (strictHostKeyCheckingPolicy != null)
+			{
+				session.SetConfig("StrictHostKeyChecking", strictHostKeyCheckingPolicy);
+			}
+			string pauth = hc.GetPreferredAuthentications();
+			if (pauth != null)
+			{
+				session.SetConfig("PreferredAuthentications", pauth);
+			}
+			if (credentialsProvider != null && (!hc.IsBatchMode() || !credentialsProvider.IsInteractive
+				()))
+			{
+				session.SetUserInfo(new CredentialsProviderUserInfo(session, credentialsProvider)
+					);
+			}
+			Configure(hc, session);
+			return session;
 		}
 
 		/// <summary>Create a new remote session for the requested address.</summary>

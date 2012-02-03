@@ -127,13 +127,13 @@ namespace NGit.Ignore
 				{
 					matcher = new FileNameMatcher(pattern, '/');
 				}
-				catch (InvalidPatternException e)
+				catch (InvalidPatternException)
 				{
-					Sharpen.Runtime.PrintStackTrace(e);
 				}
 			}
 		}
 
+		// Ignore pattern exceptions
 		/// <returns>True if the pattern is just a file name and not a path</returns>
 		public virtual bool GetNameOnly()
 		{

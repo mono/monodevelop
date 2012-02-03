@@ -59,11 +59,27 @@ namespace NGit.Transport
 	/// to remember
 	/// the connection information before invoking UploadPack.
 	/// </summary>
-	public interface UploadPackLogger
+	public abstract class UploadPackLogger
 	{
+		private sealed class _UploadPackLogger_58 : UploadPackLogger
+		{
+			public _UploadPackLogger_58()
+			{
+			}
+
+			public override void OnPackStatistics(PackWriter.Statistics stats)
+			{
+			}
+		}
+
+		/// <summary>A simple no-op logger.</summary>
+		/// <remarks>A simple no-op logger.</remarks>
+		public static UploadPackLogger NULL = new _UploadPackLogger_58();
+
+		// Do nothing.
 		/// <summary>Notice to the logger after a pack has been sent.</summary>
 		/// <remarks>Notice to the logger after a pack has been sent.</remarks>
 		/// <param name="stats">the statistics after sending a pack to the client.</param>
-		void OnPackStatistics(PackWriter.Statistics stats);
+		public abstract void OnPackStatistics(PackWriter.Statistics stats);
 	}
 }

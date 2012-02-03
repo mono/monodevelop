@@ -149,7 +149,7 @@ namespace NGit.Merge
 		/// one or more sources could not be read, or outputs could not
 		/// be written to the Repository.
 		/// </exception>
-		public virtual bool Merge(AnyObjectId[] tips)
+		public virtual bool Merge(params AnyObjectId[] tips)
 		{
 			sourceObjects = new RevObject[tips.Length];
 			for (int i = 0; i < tips.Length; i++)
@@ -175,7 +175,12 @@ namespace NGit.Merge
 			}
 			try
 			{
-				return MergeImpl();
+				bool ok = MergeImpl();
+				if (ok && inserter != null)
+				{
+					inserter.Flush();
+				}
+				return ok;
 			}
 			finally
 			{

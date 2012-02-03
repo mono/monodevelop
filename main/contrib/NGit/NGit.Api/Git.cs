@@ -315,6 +315,16 @@ namespace NGit.Api
 			return new ListBranchCommand(repo);
 		}
 
+		/// <summary>Returns a command object used to list tags</summary>
+		/// <returns>
+		/// a
+		/// <see cref="ListTagCommand">ListTagCommand</see>
+		/// </returns>
+		public virtual ListTagCommand TagList()
+		{
+			return new ListTagCommand(repo);
+		}
+
 		/// <summary>Returns a command object used to rename branches</summary>
 		/// <returns>
 		/// a
@@ -657,6 +667,149 @@ namespace NGit.Api
 		public virtual BlameCommand Blame()
 		{
 			return new BlameCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>reflog</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-reflog.html"
+		/// *      >Git documentation about reflog</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="ReflogCommand">ReflogCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>reflog</code>
+		/// command
+		/// </returns>
+		public virtual ReflogCommand Reflog()
+		{
+			return new ReflogCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>diff</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-diff.html"
+		/// *      >Git documentation about diff</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="DiffCommand">DiffCommand</see>
+		/// used to collect all optional parameters and
+		/// to finally execute the
+		/// <code>diff</code>
+		/// command
+		/// </returns>
+		public virtual DiffCommand Diff()
+		{
+			return new DiffCommand(repo);
+		}
+
+		/// <summary>Returns a command object used to delete tags</summary>
+		/// <returns>
+		/// a
+		/// <see cref="DeleteTagCommand">DeleteTagCommand</see>
+		/// </returns>
+		public virtual DeleteTagCommand TagDelete()
+		{
+			return new DeleteTagCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>submodule add</code>
+		/// command
+		/// </summary>
+		/// <returns>
+		/// a
+		/// <see cref="SubmoduleAddCommand">SubmoduleAddCommand</see>
+		/// used to add a new submodule to a
+		/// parent repository
+		/// </returns>
+		public virtual SubmoduleAddCommand SubmoduleAdd()
+		{
+			return new SubmoduleAddCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>submodule init</code>
+		/// command
+		/// </summary>
+		/// <returns>
+		/// a
+		/// <see cref="SubmoduleInitCommand">SubmoduleInitCommand</see>
+		/// used to initialize the
+		/// repository's config with settings from the .gitmodules file in
+		/// the working tree
+		/// </returns>
+		public virtual SubmoduleInitCommand SubmoduleInit()
+		{
+			return new SubmoduleInitCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>submodule status</code>
+		/// command
+		/// </summary>
+		/// <returns>
+		/// a
+		/// <see cref="SubmoduleStatusCommand">SubmoduleStatusCommand</see>
+		/// used to report the status of a
+		/// repository's configured submodules
+		/// </returns>
+		public virtual SubmoduleStatusCommand SubmoduleStatus()
+		{
+			return new SubmoduleStatusCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>submodule sync</code>
+		/// command
+		/// </summary>
+		/// <returns>
+		/// a
+		/// <see cref="SubmoduleSyncCommand">SubmoduleSyncCommand</see>
+		/// used to update the URL of a
+		/// submodule from the parent repository's .gitmodules file
+		/// </returns>
+		public virtual SubmoduleSyncCommand SubmoduleSync()
+		{
+			return new SubmoduleSyncCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>submodule update</code>
+		/// command
+		/// </summary>
+		/// <returns>
+		/// a
+		/// <see cref="SubmoduleUpdateCommand">SubmoduleUpdateCommand</see>
+		/// used to update the submodules in
+		/// a repository to the configured revision
+		/// </returns>
+		public virtual SubmoduleUpdateCommand SubmoduleUpdate()
+		{
+			return new SubmoduleUpdateCommand(repo);
+		}
+
+		/// <summary>Returns a command object used to list stashed commits</summary>
+		/// <returns>
+		/// a
+		/// <see cref="StashListCommand">StashListCommand</see>
+		/// </returns>
+		public virtual StashListCommand StashList()
+		{
+			return new StashListCommand(repo);
 		}
 
 		/// <returns>the git repository this class is interacting with</returns>

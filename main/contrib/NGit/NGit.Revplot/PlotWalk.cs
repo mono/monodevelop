@@ -72,6 +72,27 @@ namespace NGit.Revplot
 			reverseRefMap = repo.GetAllRefsByPeeledObjectId();
 		}
 
+		/// <summary>Add additional refs to the walk</summary>
+		/// <param name="refs">additional refs</param>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public virtual void AddAdditionalRefs(Iterable<Ref> refs)
+		{
+			foreach (Ref @ref in refs)
+			{
+				ICollection<Ref> set = reverseRefMap.Get(@ref.GetObjectId());
+				if (set == null)
+				{
+					set = Sharpen.Collections.Singleton(@ref);
+				}
+				else
+				{
+					set = new HashSet<Ref>(set);
+					set.AddItem(@ref);
+				}
+				reverseRefMap.Put(@ref.GetObjectId(), set);
+			}
+		}
+
 		public override void Sort(RevSort s, bool use)
 		{
 			if (s == RevSort.TOPO && !use)

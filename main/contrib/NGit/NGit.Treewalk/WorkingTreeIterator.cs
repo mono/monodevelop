@@ -47,6 +47,7 @@ using System.IO;
 using NGit;
 using NGit.Diff;
 using NGit.Dircache;
+using NGit.Errors;
 using NGit.Ignore;
 using NGit.Treewalk;
 using NGit.Util;
@@ -135,6 +136,9 @@ namespace NGit.Treewalk
 		/// <remarks>If there is a .gitignore file present, the parsed rules from it.</remarks>
 		private IgnoreNode ignoreNode;
 
+		/// <summary>Repository that is the root level being iterated over</summary>
+		protected internal Repository repository;
+
 		/// <summary>Cached value of isEntryIgnored().</summary>
 		/// <remarks>
 		/// Cached value of isEntryIgnored(). 0 if not ignored, 1 if ignored, -1 if
@@ -194,6 +198,7 @@ namespace NGit.Treewalk
 		/// <param name="repo">the repository.</param>
 		protected internal virtual void InitRootIterator(Repository repo)
 		{
+			repository = repo;
 			WorkingTreeIterator.Entry entry;
 			if (ignoreNode is WorkingTreeIterator.PerDirectoryIgnoreNode)
 			{
@@ -283,13 +288,87 @@ namespace NGit.Treewalk
 
 					case FileMode.TYPE_GITLINK:
 					{
-						// TODO: Support obtaining current HEAD SHA-1 from nested repository
-						//
-						return zeroid;
+						contentIdFromPtr = ptr;
+						return contentId = IdSubmodule(entries[ptr]);
 					}
 				}
 				return zeroid;
 			}
+		}
+
+		/// <summary>Get submodule id for given entry.</summary>
+		/// <remarks>Get submodule id for given entry.</remarks>
+		/// <param name="e"></param>
+		/// <returns>non-null submodule id</returns>
+		protected internal virtual byte[] IdSubmodule(WorkingTreeIterator.Entry e)
+		{
+			if (repository == null)
+			{
+				return zeroid;
+			}
+			FilePath directory;
+			try
+			{
+				directory = repository.WorkTree;
+			}
+			catch (NoWorkTreeException)
+			{
+				return zeroid;
+			}
+			return IdSubmodule(directory, e);
+		}
+
+		/// <summary>
+		/// Get submodule id using the repository at the location of the entry
+		/// relative to the directory.
+		/// </summary>
+		/// <remarks>
+		/// Get submodule id using the repository at the location of the entry
+		/// relative to the directory.
+		/// </remarks>
+		/// <param name="directory"></param>
+		/// <param name="e"></param>
+		/// <returns>non-null submodule id</returns>
+		protected internal virtual byte[] IdSubmodule(FilePath directory, WorkingTreeIterator.Entry
+			 e)
+		{
+			string gitDirPath = e.GetName() + "/" + Constants.DOT_GIT;
+			FilePath submoduleGitDir = new FilePath(directory, gitDirPath);
+			if (!submoduleGitDir.IsDirectory())
+			{
+				return zeroid;
+			}
+			Repository submoduleRepo;
+			try
+			{
+				FS fs = repository != null ? repository.FileSystem : FS.DETECTED;
+				submoduleRepo = new RepositoryBuilder().SetGitDir(submoduleGitDir).SetMustExist(true
+					).SetFS(fs).Build();
+			}
+			catch (IOException)
+			{
+				return zeroid;
+			}
+			ObjectId head;
+			try
+			{
+				head = submoduleRepo.Resolve(Constants.HEAD);
+			}
+			catch (IOException)
+			{
+				return zeroid;
+			}
+			finally
+			{
+				submoduleRepo.Close();
+			}
+			if (head == null)
+			{
+				return zeroid;
+			}
+			byte[] id = new byte[Constants.OBJECT_ID_LENGTH];
+			head.CopyRawTo(id, 0);
+			return id;
 		}
 
 		private static readonly byte[] digits = new byte[] { (byte)('0'), (byte)('1'), (byte
@@ -413,9 +492,17 @@ namespace NGit.Treewalk
 		private ByteBuffer FilterClean(byte[] src, int n)
 		{
 			InputStream @in = new ByteArrayInputStream(src);
-			return IOUtil.ReadWholeStream(FilterClean(@in), n);
+			try
+			{
+				return IOUtil.ReadWholeStream(FilterClean(@in), n);
+			}
+			finally
+			{
+				SafeClose(@in);
+			}
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
 		private InputStream FilterClean(InputStream @in)
 		{
 			return new EolCanonicalizingInputStream(@in);
@@ -530,7 +617,17 @@ namespace NGit.Treewalk
 		/// 	</exception>
 		public virtual InputStream OpenEntryStream()
 		{
-			return Current().OpenInputStream();
+			InputStream rawis = Current().OpenInputStream();
+			InputStream @is;
+			if (GetOptions().GetAutoCRLF() != CoreConfig.AutoCRLF.FALSE)
+			{
+				@is = new EolCanonicalizingInputStream(rawis);
+			}
+			else
+			{
+				@is = rawis;
+			}
+			return @is;
 		}
 
 		/// <summary>Determine if the current entry path is ignored by an ignore rule.</summary>
@@ -609,9 +706,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		private sealed class _IComparer_504 : IComparer<WorkingTreeIterator.Entry>
+		private sealed class _IComparer_575 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_504()
+			public _IComparer_575()
 			{
 			}
 
@@ -645,7 +742,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_504
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_575
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)
@@ -864,6 +961,46 @@ namespace NGit.Treewalk
 						, diff.ToString()));
 				}
 			}
+		}
+
+		/// <summary>
+		/// Get the file mode to use for the current entry when it is to be updated
+		/// in the index.
+		/// </summary>
+		/// <remarks>
+		/// Get the file mode to use for the current entry when it is to be updated
+		/// in the index.
+		/// </remarks>
+		/// <param name="indexIter">
+		/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+		/// positioned at the same entry as this
+		/// iterator or null if no
+		/// <see cref="NGit.Dircache.DirCacheIterator">NGit.Dircache.DirCacheIterator</see>
+		/// is available
+		/// at this iterator's current entry
+		/// </param>
+		/// <returns>index file mode</returns>
+		public virtual FileMode GetIndexFileMode(DirCacheIterator indexIter)
+		{
+			FileMode wtMode = EntryFileMode;
+			if (indexIter == null)
+			{
+				return wtMode;
+			}
+			if (GetOptions().IsFileMode())
+			{
+				return wtMode;
+			}
+			FileMode iMode = indexIter.EntryFileMode;
+			if (FileMode.REGULAR_FILE == wtMode && FileMode.EXECUTABLE_FILE == iMode)
+			{
+				return iMode;
+			}
+			if (FileMode.EXECUTABLE_FILE == wtMode && FileMode.REGULAR_FILE == iMode)
+			{
+				return iMode;
+			}
+			return wtMode;
 		}
 
 		/// <summary>Compares the entries content with the content in the filesystem.</summary>

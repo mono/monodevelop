@@ -45,6 +45,7 @@ using System;
 using System.IO;
 using NGit;
 using NGit.Util;
+using NGit.Util.IO;
 using Sharpen;
 
 namespace NGit.Util
@@ -362,7 +363,7 @@ namespace NGit.Util
 				overflow.Write(b.buffer, 0, b.count);
 			}
 			blocks = null;
-			overflow = new BufferedOutputStream(overflow, TemporaryBuffer.Block.SZ);
+			overflow = new SafeBufferedOutputStream(overflow, TemporaryBuffer.Block.SZ);
 			overflow.Write(last.buffer, 0, last.count);
 		}
 
@@ -667,7 +668,7 @@ namespace NGit.Util
 				while (0 < cnt)
 				{
 					int n = (int)Math.Min(this.block.count - this.blockPos, cnt);
-					if (n < 0)
+					if (0 < n)
 					{
 						this.blockPos += n;
 						skipped += n;
@@ -699,12 +700,13 @@ namespace NGit.Util
 				while (0 < len)
 				{
 					int c = Math.Min(this.block.count - this.blockPos, len);
-					if (c < 0)
+					if (0 < c)
 					{
 						System.Array.Copy(this.block.buffer, this.blockPos, b, off, c);
 						this.blockPos += c;
 						off += c;
 						len -= c;
+						copied += c;
 					}
 					else
 					{

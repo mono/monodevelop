@@ -594,7 +594,13 @@ namespace NGit.Diff
 		}
 
 		/// <summary>Format a patch script from a list of difference entries.</summary>
-		/// <remarks>Format a patch script from a list of difference entries.</remarks>
+		/// <remarks>
+		/// Format a patch script from a list of difference entries. Requires
+		/// <see cref="Scan(NGit.Treewalk.AbstractTreeIterator, NGit.Treewalk.AbstractTreeIterator)
+		/// 	">Scan(NGit.Treewalk.AbstractTreeIterator, NGit.Treewalk.AbstractTreeIterator)</see>
+		/// to have been
+		/// called first.
+		/// </remarks>
 		/// <param name="entries">entries describing the affected files.</param>
 		/// <exception cref="System.IO.IOException">
 		/// a file's content cannot be read, or the output stream cannot
@@ -1170,6 +1176,10 @@ namespace NGit.Diff
 		/// <exception cref="System.IO.IOException"></exception>
 		private void FormatOldNewPaths(ByteArrayOutputStream o, DiffEntry ent)
 		{
+			if (ent.oldId.Equals(ent.newId))
+			{
+				return;
+			}
 			string oldp;
 			string newp;
 			switch (ent.GetChangeType())

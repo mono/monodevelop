@@ -138,7 +138,13 @@ namespace NGit.Util
 					throw new IOException(MessageFormat.Format(JGitText.Get().fileIsTooLarge, path));
 				}
 				byte[] buf = new byte[(int)sz];
-				IOUtil.ReadFully(@in, buf, 0, buf.Length);
+				int actSz = IOUtil.ReadFully(@in, buf, 0);
+				if (actSz == sz)
+				{
+					byte[] ret = new byte[actSz];
+					System.Array.Copy(buf, 0, ret, 0, actSz);
+					return ret;
+				}
 				return buf;
 			}
 			finally
@@ -228,6 +234,25 @@ namespace NGit.Util
 				off += r;
 				len -= r;
 			}
+		}
+
+		/// <summary>Read the entire byte array into memory, unless input is shorter</summary>
+		/// <param name="fd">input stream to read the data from.</param>
+		/// <param name="dst">buffer that must be fully populated, [off, off+len).</param>
+		/// <param name="off">position within the buffer to start writing to.</param>
+		/// <returns>number of bytes in buffer or stream, whichever is shortest</returns>
+		/// <exception cref="System.IO.IOException">there was an error reading from the stream.
+		/// 	</exception>
+		public static int ReadFully(InputStream fd, byte[] dst, int off)
+		{
+			int r;
+			int len = 0;
+			while ((r = fd.Read(dst, off, dst.Length - off)) >= 0 && len < dst.Length)
+			{
+				off += r;
+				len += r;
+			}
+			return len;
 		}
 
 		/// <summary>Skip an entire region of an input stream.</summary>

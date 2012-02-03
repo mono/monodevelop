@@ -54,6 +54,10 @@ namespace NGit.Storage.File
 	/// <seealso cref="PackIndexV2">PackIndexV2</seealso>
 	internal class PackIndexWriterV2 : PackIndexWriter
 	{
+		private const int MAX_OFFSET_32 = unchecked((int)(0x7fffffff));
+
+		private const int IS_OFFSET_64 = unchecked((int)(0x80000000));
+
 		protected internal PackIndexWriterV2(OutputStream dst) : base(dst)
 		{
 		}
@@ -96,13 +100,13 @@ namespace NGit.Storage.File
 			foreach (PackedObjectInfo oe in entries)
 			{
 				long o = oe.GetOffset();
-				if (o < int.MaxValue)
+				if (o <= MAX_OFFSET_32)
 				{
 					NB.EncodeInt32(tmp, 0, (int)o);
 				}
 				else
 				{
-					NB.EncodeInt32(tmp, 0, (1 << 31) | o64++);
+					NB.EncodeInt32(tmp, 0, IS_OFFSET_64 | o64++);
 				}
 				@out.Write(tmp, 0, 4);
 			}
@@ -114,7 +118,7 @@ namespace NGit.Storage.File
 			foreach (PackedObjectInfo oe in entries)
 			{
 				long o = oe.GetOffset();
-				if (o > int.MaxValue)
+				if (MAX_OFFSET_32 < o)
 				{
 					NB.EncodeInt64(tmp, 0, o);
 					@out.Write(tmp, 0, 8);

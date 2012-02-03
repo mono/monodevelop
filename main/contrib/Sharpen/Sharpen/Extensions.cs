@@ -32,6 +32,22 @@ namespace Sharpen
 		{
 			list.Insert (index, item);
 		}
+		
+		public static void AddFirst<T> (this IList<T> list, T item)
+		{
+			list.Insert (0, item);
+		}
+		
+		public static void AddLast<T> (this IList<T> list, T item)
+		{
+			list.Add (item);
+		}
+		
+		public static void RemoveLast<T> (this IList<T> list)
+		{
+			if (list.Count > 0)
+				list.Remove (list.Count - 1);
+		}
 
 		public static StringBuilder AppendRange (this StringBuilder sb, string str, int start, int end)
 		{
@@ -173,7 +189,7 @@ namespace Sharpen
 			d [key] = value;
 			return old;
 		}
-
+		
 		public static void PutAll<T, U> (this IDictionary<T, U> d, IDictionary<T, U> values)
 		{
 			foreach (KeyValuePair<T,U> val in values)
