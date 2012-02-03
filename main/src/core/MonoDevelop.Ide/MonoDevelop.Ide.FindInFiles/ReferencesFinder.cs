@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				var doc = IdeApp.Workbench.GetDocument (fileName);
 
 				if (doc != null)
-					yield return new FileList (doc.Project, doc.TypeResolveContext, new [] { (FilePath)unit.FileName });
+					yield return new FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)unit.FileName });
 				break;
 			case RefactoryScope.Project:
 				var prj = TypeSystemService.GetProject ((IEntity)member);

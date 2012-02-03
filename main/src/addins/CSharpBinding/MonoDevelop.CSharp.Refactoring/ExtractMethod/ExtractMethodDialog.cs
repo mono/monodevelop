@@ -149,7 +149,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 
 		bool HasMember (string name)
 		{
-			var ctx = options.Document.TypeResolveContext;
+			var ctx = options.Document.ProjectContent;
 			foreach (var member in properties.DeclaringMember.DeclaringType.GetMembers (m => m.Name == name)) {
 				var method = member as IMethod;
 				if (method == null)

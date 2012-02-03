@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		IProjectContent singleFileContext;
-		public  virtual IProjectContent TypeResolveContext {
+		public  virtual IProjectContent ProjectContent {
 			get {
 				return Project != null ? TypeSystemService.GetProjectContext (Project) : GetProjectContext ();
 			}

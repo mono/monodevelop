@@ -74,7 +74,7 @@ namespace MonoDevelop.DocFood
 			var member = GetMemberToDocument ();
 			if (member == null)
 				return base.KeyPress (key, keyChar, modifier);
-			var ctx = document.TypeResolveContext;
+			
 			string documentation = GenerateDocumentation (member, textEditorData.Document.GetLineIndent (line));
 			if (string.IsNullOrEmpty (documentation))
 				return base.KeyPress (key, keyChar, modifier);

@@ -141,7 +141,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			var editor = doc.Editor;
 			var unit = doc.ParsedDocument.Annotation<CompilationUnit> ();
 			var file = doc.ParsedDocument.Annotation<CSharpParsedFile> ();
-			var ctx = doc.TypeResolveContext;
 			var compilation = doc.Compilation;
 			var result = new List<MemberReference> ();
 			

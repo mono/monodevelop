@@ -156,7 +156,6 @@ namespace MonoDevelop.Refactoring
 			var scope = pf.GetUsingScope (loc);
 			if (scope == null)
 				return result;
-			var ctx = doc.TypeResolveContext;
 			var resolver = pf.GetResolver (doc.Compilation, loc);
 			for (var n = scope; n != null; n = n.Parent) {
 				result.Add (n.NamespaceName);
