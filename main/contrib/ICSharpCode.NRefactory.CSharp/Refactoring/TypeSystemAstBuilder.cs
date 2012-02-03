@@ -187,18 +187,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 				return shortResult;
 			}
-			
 			MemberType result = new MemberType();
 			if (typeDef.DeclaringTypeDefinition != null) {
 				// check if the declaring type is a nested type in the nested type hierarchy
-				var declaringType = resolver.CurrentTypeDefinition;
-				while (declaringType != null) {
-					if (typeDef.DeclaringTypeDefinition.Equals (declaringType)) {
-						var innerType = new SimpleType(typeDef.Name);
-						AddTypeArguments(innerType, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
-						return innerType;
+				if (resolver != null) {
+					var declaringType = resolver.CurrentTypeDefinition;
+					while (declaringType != null) {
+						if (typeDef.DeclaringTypeDefinition.Equals (declaringType)) {
+							var innerType = new SimpleType(typeDef.Name);
+							AddTypeArguments(innerType, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
+							return innerType;
+						}
+						declaringType = declaringType.DeclaringTypeDefinition;
 					}
-					declaringType = declaringType.DeclaringTypeDefinition;
 				}
 				
 				// Handle nested types
