@@ -73,9 +73,14 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			if (data == null || !data.IsSomethingSelected)
 				return false;
 			
+			if (options.Document.ParsedDocument == null)
+				return false;
+			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			if (unit == null)
+				return false;
+			
 			var startPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Anchor : data.MainSelection.Lead; 
 			var endPoint = data.MainSelection.Anchor < data.MainSelection.Lead ? data.MainSelection.Lead : data.MainSelection.Anchor; 
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
 			
 			var startExpression = unit.GetNodeAt<Expression> (startPoint.Line, startPoint.Column);
 			var endExpression = unit.GetNodeAt<Expression> (endPoint.Line, endPoint.Column);
