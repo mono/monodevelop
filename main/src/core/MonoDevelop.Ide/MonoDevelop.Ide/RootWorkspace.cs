@@ -449,10 +449,8 @@ namespace MonoDevelop.Ide
 					Document[] docs = new Document[IdeApp.Workbench.Documents.Count];
 					IdeApp.Workbench.Documents.CopyTo (docs, 0);
 					foreach (Document doc in docs) {
-						if (doc.HasProject) {
-							if (!doc.Close ())
-								return false;
-						}
+						if (!doc.Close ())
+							return false;
 					}
 				}
 				
