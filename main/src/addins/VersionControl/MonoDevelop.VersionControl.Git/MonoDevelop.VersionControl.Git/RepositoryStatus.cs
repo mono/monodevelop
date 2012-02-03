@@ -68,9 +68,10 @@ namespace MonoDevelop.VersionControl.Git
 			Files = files;
 		}
 		
-		public override void SetWorkingTreeIt (WorkingTreeIterator workingTreeIt)
+		public override NGit.Api.StatusCommand SetWorkingTreeIt (WorkingTreeIterator workingTreeIt)
 		{
 			iter = workingTreeIt;
+			return this;
 		}
 		
 		public override NGit.Api.Status Call ()
