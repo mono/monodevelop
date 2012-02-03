@@ -33,7 +33,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class ConsoleProgressMonitor: NullProgressMonitor
 	{
-		int columns = 80;
+		int columns = 0;
 		bool indent = true;
 		bool wrap = false;
 		int ilevel = 0;
@@ -49,9 +49,16 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public ConsoleProgressMonitor () : this (Console.Out)
 		{
-			//FIXME: can we efficiently update Console.WindowWidth when it changes?
-			columns = Console.WindowWidth;
-			this.wrap = columns > 0;
+			//TODO: can we efficiently update Console.WindowWidth when it changes?
+			try {
+				columns = Console.WindowWidth;
+			}
+			//when the output is redirected, Mono returns 0 but .NET throws IOException
+			catch (IOException) {
+				columns = 0;
+			}
+			
+			wrap = columns > 0;
 		}
 		
 		public ConsoleProgressMonitor (TextWriter writer)

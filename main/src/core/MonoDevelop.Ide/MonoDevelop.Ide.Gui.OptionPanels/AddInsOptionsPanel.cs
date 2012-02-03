@@ -45,6 +45,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	internal class AddInsOptionsPanel : OptionsPanel
 	{
 		AddInsPanelWidget widget;
+		
+		public override bool IsVisible ()
+		{
+			return !AddinManager.IsAddinLoaded ("MonoDevelop.Xamarin.Ide");
+		}
 
 		public override Widget CreatePanelWidget ()
 		{
@@ -114,6 +119,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		protected void OnButtonUpdateNowClicked (object sender, System.EventArgs e)
 		{
+			Store ();
 			UpdateService.CheckForUpdates ();
 		}
 	}

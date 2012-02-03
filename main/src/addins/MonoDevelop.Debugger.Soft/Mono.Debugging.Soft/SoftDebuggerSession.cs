@@ -929,7 +929,7 @@ namespace Mono.Debugging.Soft
 						if (!CheckMethodParams (method, paramTypes))
 							continue;
 						
-						Location location = GetLocFromMethod (method, line);
+						Location location = GetLocFromMethod (method);
 						if (location != null) {
 							genericTypeOrMethod = type.IsGenericType || method.IsGenericMethod;
 							return location;
@@ -1544,7 +1544,7 @@ namespace Mono.Debugging.Soft
 							if (!CheckMethodParams (method, bp.ParamTypes))
 								continue;
 							
-							loc = GetLocFromMethod (method, bp.Line);
+							loc = GetLocFromMethod (method);
 							if (loc != null) {
 								string paramList = bp.ParamTypes != null ? "(" + string.Join (",", bp.ParamTypes) + ")" : "";
 								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
@@ -1567,7 +1567,7 @@ namespace Mono.Debugging.Soft
 							if (method.Name != methodName || !CheckMethodParams (method, bp.ParamTypes))
 								continue;
 							
-							loc = GetLocFromMethod (method, bp.Line);
+							loc = GetLocFromMethod (method);
 							if (loc != null) {
 								string paramList = bp.ParamTypes != null ? "(" + string.Join (",", bp.ParamTypes) + ")" : "";
 								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
@@ -1657,18 +1657,10 @@ namespace Mono.Debugging.Soft
 			return PathComparer.Compare (p1, p2) == 0;
 		}
 		
-		Location GetLocFromMethod (MethodMirror method, int line)
+		Location GetLocFromMethod (MethodMirror method)
 		{
-			Location target_loc = null;
-			
-			foreach (Location loc in method.Locations) {
-				if (target_loc == null || target_loc.ILOffset == loc.ILOffset)
-					target_loc = loc;
-				else
-					break;
-			}
-			
-			return target_loc;
+			// Return the location of the method.
+			return method.Locations.Count > 0 ? method.Locations[0] : null;
 		}
 		
 		Location GetLocFromType (TypeMirror type, string file, int line, out bool genericMethod, out bool insideTypeRange)

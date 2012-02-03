@@ -78,8 +78,7 @@ FILES =  \
 	Mono.Debugging.Evaluation/TimeOutException.cs \
 	Mono.Debugging.Evaluation/TypeValueReference.cs \
 	Mono.Debugging.Evaluation/UserVariableReference.cs \
-	Mono.Debugging.Evaluation/ValueReference.cs \
-	Mono.Debugging.Evaluation/IStringAdaptor.cs
+	Mono.Debugging.Evaluation/ValueReference.cs
 
 RES = 
 
