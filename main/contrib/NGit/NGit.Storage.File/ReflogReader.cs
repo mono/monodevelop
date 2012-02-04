@@ -54,103 +54,74 @@ namespace NGit.Storage.File
 	/// <summary>Utility for reading reflog entries</summary>
 	public class ReflogReader
 	{
-		/// <summary>Parsed reflog entry</summary>
-		public class Entry
-		{
-			private ObjectId oldId;
-
-			private ObjectId newId;
-
-			private PersonIdent who;
-
-			private string comment;
-
-			internal Entry(byte[] raw, int pos)
-			{
-				oldId = ObjectId.FromString(raw, pos);
-				pos += Constants.OBJECT_ID_STRING_LENGTH;
-				if (raw[pos++] != ' ')
-				{
-					throw new ArgumentException(JGitText.Get().rawLogMessageDoesNotParseAsLogEntry);
-				}
-				newId = ObjectId.FromString(raw, pos);
-				pos += Constants.OBJECT_ID_STRING_LENGTH;
-				if (raw[pos++] != ' ')
-				{
-					throw new ArgumentException(JGitText.Get().rawLogMessageDoesNotParseAsLogEntry);
-				}
-				who = RawParseUtils.ParsePersonIdentOnly(raw, pos);
-				int p0 = RawParseUtils.Next(raw, pos, '\t');
-				if (p0 >= raw.Length)
-				{
-					comment = string.Empty;
-				}
-				else
-				{
-					// personident has no \t, no comment present
-					int p1 = RawParseUtils.NextLF(raw, p0);
-					comment = p1 > p0 ? RawParseUtils.Decode(raw, p0, p1 - 1) : string.Empty;
-				}
-			}
-
-			/// <returns>the commit id before the change</returns>
-			public virtual ObjectId GetOldId()
-			{
-				return oldId;
-			}
-
-			/// <returns>the commit id after the change</returns>
-			public virtual ObjectId GetNewId()
-			{
-				return newId;
-			}
-
-			/// <returns>user performin the change</returns>
-			public virtual PersonIdent GetWho()
-			{
-				return who;
-			}
-
-			/// <returns>textual description of the change</returns>
-			public virtual string GetComment()
-			{
-				return comment;
-			}
-
-			public override string ToString()
-			{
-				return "Entry[" + oldId.Name + ", " + newId.Name + ", " + GetWho() + ", " + GetComment
-					() + "]";
-			}
-		}
-
 		private FilePath logName;
 
-		internal ReflogReader(Repository db, string refname)
+		/// <param name="db"></param>
+		/// <param name="refname"></param>
+		public ReflogReader(Repository db, string refname)
 		{
-			logName = new FilePath(db.Directory, "logs/" + refname);
+			logName = new FilePath(db.Directory, Constants.LOGS + '/' + refname);
 		}
 
 		/// <summary>Get the last entry in the reflog</summary>
 		/// <returns>the latest reflog entry, or null if no log</returns>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
-		public virtual ReflogReader.Entry GetLastEntry()
+		public virtual ReflogEntry GetLastEntry()
 		{
-			IList<ReflogReader.Entry> entries = GetReverseEntries(1);
-			return entries.Count > 0 ? entries[0] : null;
+			return GetReverseEntry(0);
 		}
 
 		/// <returns>all reflog entries in reverse order</returns>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
-		public virtual IList<ReflogReader.Entry> GetReverseEntries()
+		public virtual IList<ReflogEntry> GetReverseEntries()
 		{
 			return GetReverseEntries(int.MaxValue);
 		}
 
-		/// <param name="max">max numer of entries to read</param>
+		/// <summary>
+		/// Get specific entry in the reflog relative to the last entry which is
+		/// considered entry zero.
+		/// </summary>
+		/// <remarks>
+		/// Get specific entry in the reflog relative to the last entry which is
+		/// considered entry zero.
+		/// </remarks>
+		/// <param name="number"></param>
+		/// <returns>reflog entry or null if not found</returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public virtual ReflogEntry GetReverseEntry(int number)
+		{
+			if (number < 0)
+			{
+				throw new ArgumentException();
+			}
+			byte[] log;
+			try
+			{
+				log = IOUtil.ReadFully(logName);
+			}
+			catch (FileNotFoundException)
+			{
+				return null;
+			}
+			int rs = RawParseUtils.PrevLF(log, log.Length);
+			int current = 0;
+			while (rs >= 0)
+			{
+				rs = RawParseUtils.PrevLF(log, rs);
+				if (number == current)
+				{
+					return new ReflogEntry(log, rs < 0 ? 0 : rs + 2);
+				}
+				current++;
+			}
+			return null;
+		}
+
+		/// <param name="max">max number of entries to read</param>
 		/// <returns>all reflog entries in reverse order</returns>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
-		public virtual IList<ReflogReader.Entry> GetReverseEntries(int max)
+		public virtual IList<ReflogEntry> GetReverseEntries(int max)
 		{
 			byte[] log;
 			try
@@ -159,14 +130,14 @@ namespace NGit.Storage.File
 			}
 			catch (FileNotFoundException)
 			{
-				return Sharpen.Collections.EmptyList<ReflogReader.Entry>();
+				return Sharpen.Collections.EmptyList<ReflogEntry>();
 			}
 			int rs = RawParseUtils.PrevLF(log, log.Length);
-			IList<ReflogReader.Entry> ret = new AList<ReflogReader.Entry>();
+			IList<ReflogEntry> ret = new AList<ReflogEntry>();
 			while (rs >= 0 && max-- > 0)
 			{
 				rs = RawParseUtils.PrevLF(log, rs);
-				ReflogReader.Entry entry = new ReflogReader.Entry(log, rs < 0 ? 0 : rs + 2);
+				ReflogEntry entry = new ReflogEntry(log, rs < 0 ? 0 : rs + 2);
 				ret.AddItem(entry);
 			}
 			return ret;

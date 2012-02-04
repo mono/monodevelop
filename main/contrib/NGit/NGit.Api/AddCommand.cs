@@ -177,20 +177,35 @@ namespace NGit.Api
 									DirCacheEntry entry = new DirCacheEntry(path);
 									if (c == null || c.GetDirCacheEntry() == null || !c.GetDirCacheEntry().IsAssumeValid)
 									{
-										entry.SetLength(sz);
-										entry.LastModified = f.GetEntryLastModified();
-										entry.FileMode = f.EntryFileMode;
-										InputStream @in = f.OpenEntryStream();
-										try
+										FileMode mode = f.GetIndexFileMode(c);
+										entry.FileMode = mode;
+										if (FileMode.GITLINK != mode)
 										{
-											entry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, sz, @in));
+											entry.SetLength(sz);
+											entry.LastModified = f.GetEntryLastModified();
+											InputStream @in = f.OpenEntryStream();
+											try
+											{
+												entry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, sz, @in));
+											}
+											finally
+											{
+												@in.Close();
+											}
+											builder.Add(entry);
+											lastAddedFile = path;
 										}
-										finally
+										else
 										{
-											@in.Close();
+											Repository subRepo = Git.Open(new FilePath(repo.WorkTree, path)).GetRepository();
+											ObjectId subRepoHead = subRepo.Resolve(Constants.HEAD);
+											if (subRepoHead != null)
+											{
+												entry.SetObjectId(subRepoHead);
+												builder.Add(entry);
+												lastAddedFile = path;
+											}
 										}
-										builder.Add(entry);
-										lastAddedFile = path;
 									}
 									else
 									{

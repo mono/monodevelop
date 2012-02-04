@@ -53,7 +53,11 @@ namespace NGit.Errors
 	public class NotSupportedException : IOException
 	{
 		private const long serialVersionUID = 1L;
-
+		
+		public NotSupportedException ()
+		{
+		}
+		
 		/// <summary>
 		/// Construct a NotSupportedException for some issue JGit cannot
 		/// yet handle.

@@ -41,6 +41,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
+using NGit;
 using NGit.Dircache;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
@@ -93,6 +95,12 @@ namespace NGit.Treewalk.Filter
 		private readonly int workingTree;
 
 		private readonly bool honorIgnores;
+
+		private readonly ICollection<string> ignoredPaths = new HashSet<string>();
+
+		private readonly List<string> untrackedParentFolders = new List<string>();
+
+		private readonly List<string> untrackedFolders = new List<string>();
 
 		/// <summary>Creates a new instance of this filter.</summary>
 		/// <remarks>
@@ -150,9 +158,40 @@ namespace NGit.Treewalk.Filter
 		/// <exception cref="System.IO.IOException"></exception>
 		public override bool Include(TreeWalk tw)
 		{
+			int cnt = tw.TreeCount;
+			int wm = tw.GetRawMode(workingTree);
+			string path = tw.PathString;
+			if (!tw.PostOrderTraversal)
+			{
+				// detect untracked Folders
+				// Whenever we enter a folder in the workingtree assume it will
+				// contain only untracked files and add it to
+				// untrackedParentFolders. If we later find tracked files we will
+				// remove it from this list
+				if (FileMode.TREE.Equals(wm))
+				{
+					// Clean untrackedParentFolders. This potentially moves entries
+					// from untrackedParentFolders to untrackedFolders
+					CopyUntrackedFolders(path);
+					// add the folder we just entered to untrackedParentFolders
+					untrackedParentFolders.AddFirst(path);
+				}
+				// detect untracked Folders
+				// Whenever we see a tracked file we know that all of its parent
+				// folders do not belong into untrackedParentFolders anymore. Clean
+				// it.
+				for (int i = 0; i < cnt; i++)
+				{
+					int rmode = tw.GetRawMode(i);
+					if (i != workingTree && rmode != 0 && FileMode.TREE.Equals(rmode))
+					{
+						untrackedParentFolders.Clear();
+						break;
+					}
+				}
+			}
 			// If the working tree file doesn't exist, it does exist for at least
 			// one other so include this difference.
-			int wm = tw.GetRawMode(workingTree);
 			if (wm == 0)
 			{
 				return true;
@@ -160,12 +199,13 @@ namespace NGit.Treewalk.Filter
 			// If the path does not appear in the DirCache and its ignored
 			// we can avoid returning a result here, but only if its not in any
 			// other tree.
-			int cnt = tw.TreeCount;
 			int dm = tw.GetRawMode(dirCache);
+			WorkingTreeIterator wi = WorkingTree(tw);
 			if (dm == 0)
 			{
-				if (honorIgnores && WorkingTree(tw).IsEntryIgnored())
+				if (honorIgnores && wi.IsEntryIgnored())
 				{
+					ignoredPaths.AddItem(wi.EntryPathString);
 					int i = 0;
 					for (; i < cnt; i++)
 					{
@@ -211,9 +251,38 @@ namespace NGit.Treewalk.Filter
 			// Only one chance left to detect a diff: between index and working
 			// tree. Make use of the WorkingTreeIterator#isModified() method to
 			// avoid computing SHA1 on filesystem content if not really needed.
-			WorkingTreeIterator wi = WorkingTree(tw);
 			DirCacheIterator di = tw.GetTree<DirCacheIterator>(dirCache);
 			return wi.IsModified(di.GetDirCacheEntry(), true);
+		}
+
+		/// <summary>
+		/// Copy all entries which are still in untrackedParentFolders and which
+		/// belong to a path this treewalk has left into untrackedFolders.
+		/// </summary>
+		/// <remarks>
+		/// Copy all entries which are still in untrackedParentFolders and which
+		/// belong to a path this treewalk has left into untrackedFolders. It is sure
+		/// that we will not find any tracked files underneath these paths. Therefore
+		/// these paths definitely belong to untracked folders.
+		/// </remarks>
+		/// <param name="currentPath">the current path of the treewalk</param>
+		private void CopyUntrackedFolders(string currentPath)
+		{
+			string pathToBeSaved = null;
+			while (!untrackedParentFolders.IsEmpty() && !currentPath.StartsWith(untrackedParentFolders
+				.GetFirst() + "/"))
+			{
+				pathToBeSaved = untrackedParentFolders.RemoveFirst();
+			}
+			if (pathToBeSaved != null)
+			{
+				while (!untrackedFolders.IsEmpty() && untrackedFolders.GetLast().StartsWith(pathToBeSaved
+					))
+				{
+					untrackedFolders.RemoveLast();
+				}
+				untrackedFolders.AddLast(pathToBeSaved);
+			}
 		}
 
 		private WorkingTreeIterator WorkingTree(TreeWalk tw)
@@ -236,6 +305,44 @@ namespace NGit.Treewalk.Filter
 		public override string ToString()
 		{
 			return "INDEX_DIFF_FILTER";
+		}
+
+		/// <summary>The method returns the list of ignored files and folders.</summary>
+		/// <remarks>
+		/// The method returns the list of ignored files and folders. Only the root
+		/// folder of an ignored folder hierarchy is reported. If a/b/c is listed in
+		/// the .gitignore then you should not expect a/b/c/d/e/f to be reported
+		/// here. Only a/b/c will be reported. Furthermore only ignored files /
+		/// folders are returned that are NOT in the index.
+		/// </remarks>
+		/// <returns>ignored paths</returns>
+		public virtual ICollection<string> GetIgnoredPaths()
+		{
+			return ignoredPaths;
+		}
+
+		/// <returns>
+		/// all paths of folders which contain only untracked files/folders.
+		/// If on the associated treewalk postorder traversal was turned on
+		/// (see
+		/// <see cref="NGit.Treewalk.TreeWalk.PostOrderTraversal(bool)">NGit.Treewalk.TreeWalk.PostOrderTraversal(bool)
+		/// 	</see>
+		/// ) then an
+		/// empty list will be returned.
+		/// </returns>
+		public virtual IList<string> GetUntrackedFolders()
+		{
+			List<string> ret = new List<string>(untrackedFolders);
+			if (!untrackedParentFolders.IsEmpty())
+			{
+				string toBeAdded = untrackedParentFolders.GetLast();
+				while (!ret.IsEmpty() && ret.GetLast().StartsWith(toBeAdded))
+				{
+					ret.RemoveLast();
+				}
+				ret.AddLast(toBeAdded);
+			}
+			return ret;
 		}
 	}
 }

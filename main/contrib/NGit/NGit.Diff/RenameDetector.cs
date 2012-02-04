@@ -302,7 +302,7 @@ namespace NGit.Diff
 					case DiffEntry.ChangeType.RENAME:
 					default:
 					{
-						entriesToAdd.AddItem(entry);
+						entries.AddItem(entry);
 						break;
 					}
 				}

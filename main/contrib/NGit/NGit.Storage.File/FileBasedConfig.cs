@@ -175,8 +175,7 @@ namespace NGit.Storage.File
 			LockFile lf = new LockFile(GetFile(), fs);
 			if (!lf.Lock())
 			{
-				throw new IOException(MessageFormat.Format(JGitText.Get().cannotLockFile, GetFile
-					()));
+				throw new LockFailedException(GetFile());
 			}
 			try
 			{

@@ -75,8 +75,7 @@ namespace NGit.Merge
 		/// <param name="id">
 		/// common base treeish; null to automatically compute the common
 		/// base from the input commits during
-		/// <see cref="Merge(NGit.AnyObjectId, NGit.AnyObjectId)">Merge(NGit.AnyObjectId, NGit.AnyObjectId)
-		/// 	</see>
+		/// <see cref="Merge(NGit.AnyObjectId[])">Merge(NGit.AnyObjectId[])</see>
 		/// .
 		/// </param>
 		/// <exception cref="NGit.Errors.IncorrectObjectTypeException">the object is not a treeish.
@@ -95,35 +94,8 @@ namespace NGit.Merge
 			}
 		}
 
-		/// <summary>Merge together two tree-ish objects.</summary>
-		/// <remarks>
-		/// Merge together two tree-ish objects.
-		/// <p>
-		/// Any tree-ish may be supplied as inputs. Commits and/or tags pointing at
-		/// trees or commits may be passed as input objects.
-		/// </remarks>
-		/// <param name="a">source tree to be combined together.</param>
-		/// <param name="b">source tree to be combined together.</param>
-		/// <returns>
-		/// true if the merge was completed without conflicts; false if the
-		/// merge strategy cannot handle this merge or there were conflicts
-		/// preventing it from automatically resolving all paths.
-		/// </returns>
-		/// <exception cref="NGit.Errors.IncorrectObjectTypeException">
-		/// one of the input objects is not a commit, but the strategy
-		/// requires it to be a commit.
-		/// </exception>
-		/// <exception cref="System.IO.IOException">
-		/// one or more sources could not be read, or outputs could not
-		/// be written to the Repository.
-		/// </exception>
-		public virtual bool Merge(AnyObjectId a, AnyObjectId b)
-		{
-			return Merge(new AnyObjectId[] { a, b });
-		}
-
 		/// <exception cref="System.IO.IOException"></exception>
-		public override bool Merge(AnyObjectId[] tips)
+		public override bool Merge(params AnyObjectId[] tips)
 		{
 			if (tips.Length != 2)
 			{

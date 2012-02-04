@@ -83,7 +83,7 @@ namespace NGit.Util
 		/// </returns>
 		public static string Format(DateTime when)
 		{
-			long ageMillis = (Runtime.CurrentTimeMillis() - when.GetTime());
+			long ageMillis = SystemReader.GetInstance().GetCurrentTime() - when.GetTime();
 			// shouldn't happen in a perfect world
 			if (ageMillis < 0)
 			{
@@ -132,10 +132,11 @@ namespace NGit.Util
 				string yearLabel = (years > 1) ? JGitText.Get().years : JGitText.Get().year;
 				//
 				long months = Round(ageMillis % YEAR_IN_MILLIS, MONTH_IN_MILLIS);
-				string monthLabel = (months > 1) ? JGitText.Get().months : JGitText.Get().month;
+				string monthLabel = (months > 1) ? JGitText.Get().months : (months == 1 ? JGitText
+					.Get().month : string.Empty);
 				//
-				return MessageFormat.Format(JGitText.Get().yearsMonthsAgo, new object[] { years, 
-					yearLabel, months, monthLabel });
+				return MessageFormat.Format(months == 0 ? JGitText.Get().years0MonthsAgo : JGitText
+					.Get().yearsMonthsAgo, new object[] { years, yearLabel, months, monthLabel });
 			}
 			// years
 			return MessageFormat.Format(JGitText.Get().yearsAgo, Round(ageMillis, YEAR_IN_MILLIS

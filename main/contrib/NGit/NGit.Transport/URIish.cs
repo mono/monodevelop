@@ -55,9 +55,9 @@ namespace NGit.Transport
 	/// </summary>
 	/// <remarks>
 	/// This URI like construct used for referencing Git archives over the net, as
-	/// well as locally stored archives. The most important difference compared to
-	/// RFC 2396 URI's is that no URI encoding/decoding ever takes place. A space or
-	/// any special character is written as-is.
+	/// well as locally stored archives. It is similar to RFC 2396 URI's, but also
+	/// support SCP and the malformed file://<path> syntax (as opposed to the correct
+	/// file:<path> syntax.
 	/// </remarks>
 	[System.Serializable]
 	public class URIish
@@ -80,7 +80,7 @@ namespace NGit.Transport
 		/// capturing groups: the first containing the user and the second containing
 		/// the password
 		/// </remarks>
-		private static readonly string OPT_USER_PWD_P = "(?:([^\\\\/:@]+)(?::([^\\\\/]+))?@)?";
+		private static readonly string OPT_USER_PWD_P = "(?:([^/:@]+)(?::([^\\\\/]+))?@)?";
 
 		/// <summary>Part of a pattern which matches the host part of URIs.</summary>
 		/// <remarks>
@@ -170,6 +170,8 @@ namespace NGit.Transport
 
 		private string path;
 
+		private string rawPath;
+
 		private string user;
 
 		private string pass;
@@ -224,21 +226,24 @@ namespace NGit.Transport
 			if (matcher.Matches())
 			{
 				scheme = matcher.Group(1);
-				path = CleanLeadingSlashes(matcher.Group(2), scheme);
+				rawPath = CleanLeadingSlashes(matcher.Group(2), scheme);
+				path = Unescape(rawPath);
 				return;
 			}
 			matcher = FULL_URI.Matcher(s);
 			if (matcher.Matches())
 			{
 				scheme = matcher.Group(1);
-				user = matcher.Group(2);
-				pass = matcher.Group(3);
-				host = matcher.Group(4);
+				user = Unescape(matcher.Group(2));
+				pass = Unescape(matcher.Group(3));
+				host = Unescape(matcher.Group(4));
 				if (matcher.Group(5) != null)
 				{
 					port = System.Convert.ToInt32(matcher.Group(5));
 				}
-				path = CleanLeadingSlashes(N2e(matcher.Group(6)) + N2e(matcher.Group(7)), scheme);
+				rawPath = CleanLeadingSlashes(N2e(matcher.Group(6)) + N2e(matcher.Group(7)), scheme
+					);
+				path = Unescape(rawPath);
 				return;
 			}
 			matcher = RELATIVE_SCP_URI.Matcher(s);
@@ -247,7 +252,8 @@ namespace NGit.Transport
 				user = matcher.Group(1);
 				pass = matcher.Group(2);
 				host = matcher.Group(3);
-				path = matcher.Group(4);
+				rawPath = matcher.Group(4);
+				path = rawPath;
 				return;
 			}
 			matcher = ABSOLUTE_SCP_URI.Matcher(s);
@@ -256,16 +262,117 @@ namespace NGit.Transport
 				user = matcher.Group(1);
 				pass = matcher.Group(2);
 				host = matcher.Group(3);
-				path = matcher.Group(4);
+				rawPath = matcher.Group(4);
+				path = rawPath;
 				return;
 			}
 			matcher = LOCAL_FILE.Matcher(s);
 			if (matcher.Matches())
 			{
-				path = matcher.Group(1);
+				rawPath = matcher.Group(1);
+				path = rawPath;
 				return;
 			}
 			throw new URISyntaxException(s, JGitText.Get().cannotParseGitURIish);
+		}
+
+		/// <exception cref="Sharpen.URISyntaxException"></exception>
+		private static string Unescape(string s)
+		{
+			if (s == null)
+			{
+				return null;
+			}
+			if (s.IndexOf('%') < 0)
+			{
+				return s;
+			}
+			byte[] bytes;
+			try
+			{
+				bytes = Sharpen.Runtime.GetBytesForString(s, Constants.CHARACTER_ENCODING);
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				throw new RuntimeException(e);
+			}
+			// can't happen
+			byte[] os = new byte[bytes.Length];
+			int j = 0;
+			for (int i = 0; i < bytes.Length; ++i)
+			{
+				byte c = bytes[i];
+				if (c == '%')
+				{
+					if (i + 2 >= bytes.Length)
+					{
+						throw new URISyntaxException(s, JGitText.Get().cannotParseGitURIish);
+					}
+					int val = (RawParseUtils.ParseHexInt4(bytes[i + 1]) << 4) | RawParseUtils.ParseHexInt4
+						(bytes[i + 2]);
+					os[j++] = unchecked((byte)val);
+					i += 2;
+				}
+				else
+				{
+					os[j++] = c;
+				}
+			}
+			return RawParseUtils.Decode(os, 0, j);
+		}
+
+		private static readonly BitSet reservedChars = new BitSet(127);
+
+		static URIish()
+		{
+			foreach (byte b in Constants.EncodeASCII("!*'();:@&=+$,/?#[]"))
+			{
+				reservedChars.Set(b);
+			}
+		}
+
+		/// <summary>Escape unprintable characters optionally URI-reserved characters</summary>
+		/// <param name="s">The Java String to encode (may contain any character)</param>
+		/// <param name="escapeReservedChars">true to escape URI reserved characters</param>
+		/// <param name="encodeNonAscii">encode any non-ASCII characters</param>
+		/// <returns>a URI-encoded string</returns>
+		private static string Escape(string s, bool escapeReservedChars, bool encodeNonAscii
+			)
+		{
+			if (s == null)
+			{
+				return null;
+			}
+			ByteArrayOutputStream os = new ByteArrayOutputStream(s.Length);
+			byte[] bytes;
+			try
+			{
+				bytes = Sharpen.Runtime.GetBytesForString(s, Constants.CHARACTER_ENCODING);
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				throw new RuntimeException(e);
+			}
+			// cannot happen
+			for (int i = 0; i < bytes.Length; ++i)
+			{
+				int b = bytes[i] & unchecked((int)(0xFF));
+				if (b <= 32 || (encodeNonAscii && b > 127) || b == '%' || (escapeReservedChars &&
+					 reservedChars.Get(b)))
+				{
+					os.Write('%');
+					byte[] tmp = Constants.EncodeASCII(string.Format("{0:x2}", Sharpen.Extensions.ValueOf
+						(b)));
+					os.Write(tmp[0]);
+					os.Write(tmp[1]);
+				}
+				else
+				{
+					os.Write(b);
+				}
+			}
+			byte[] buf = os.ToByteArray();
+			return RawParseUtils.Decode(buf, 0, buf.Length);
 		}
 
 		private string N2e(string s)
@@ -307,8 +414,11 @@ namespace NGit.Transport
 		/// <param name="u">the source URL to convert from.</param>
 		public URIish(Uri u)
 		{
+			rawPath = u.LocalPath;
 			scheme = u.Scheme;
 			path = u.AbsolutePath;
+
+			// Impossible
 			string ui = u.GetUserInfo();
 			if (ui != null)
 			{
@@ -330,6 +440,7 @@ namespace NGit.Transport
 		{
 			// Configure nothing.
 			this.scheme = u.scheme;
+			this.rawPath = u.rawPath;
 			this.path = u.path;
 			this.user = u.user;
 			this.pass = u.pass;
@@ -383,6 +494,12 @@ namespace NGit.Transport
 			return path;
 		}
 
+		/// <returns>path name component</returns>
+		public virtual string GetRawPath()
+		{
+			return rawPath;
+		}
+
 		/// <summary>Return a new URI matching this one, but with a different path.</summary>
 		/// <remarks>Return a new URI matching this one, but with a different path.</remarks>
 		/// <param name="n">the new value for path.</param>
@@ -391,6 +508,20 @@ namespace NGit.Transport
 		{
 			NGit.Transport.URIish r = new NGit.Transport.URIish(this);
 			r.path = n;
+			r.rawPath = n;
+			return r;
+		}
+
+		/// <summary>Return a new URI matching this one, but with a different (raw) path.</summary>
+		/// <remarks>Return a new URI matching this one, but with a different (raw) path.</remarks>
+		/// <param name="n">the new value for path.</param>
+		/// <returns>a new URI with the updated value.</returns>
+		/// <exception cref="Sharpen.URISyntaxException">Sharpen.URISyntaxException</exception>
+		public virtual NGit.Transport.URIish SetRawPath(string n)
+		{
+			NGit.Transport.URIish r = new NGit.Transport.URIish(this);
+			r.path = Unescape(n);
+			r.rawPath = n;
 			return r;
 		}
 
@@ -527,15 +658,15 @@ namespace NGit.Transport
 		/// <returns>the URI, including its password field, if any.</returns>
 		public virtual string ToPrivateString()
 		{
-			return Format(true);
+			return Format(true, false, false);
 		}
 
 		public override string ToString()
 		{
-			return Format(false);
+			return Format(false, false, false);
 		}
 
-		private string Format(bool includePassword)
+		private string Format(bool includePassword, bool escape, bool escapeNonAscii)
 		{
 			StringBuilder r = new StringBuilder();
 			if (GetScheme() != null)
@@ -545,11 +676,11 @@ namespace NGit.Transport
 			}
 			if (GetUser() != null)
 			{
-				r.Append(GetUser());
+				r.Append(Escape(GetUser(), true, escapeNonAscii));
 				if (includePassword && GetPass() != null)
 				{
 					r.Append(':');
-					r.Append(GetPass());
+					r.Append(Escape(GetPass(), true, escapeNonAscii));
 				}
 			}
 			if (GetHost() != null)
@@ -558,7 +689,7 @@ namespace NGit.Transport
 				{
 					r.Append('@');
 				}
-				r.Append(GetHost());
+				r.Append(Escape(GetHost(), false, escapeNonAscii));
 				if (GetScheme() != null && GetPort() > 0)
 				{
 					r.Append(':');
@@ -581,9 +712,38 @@ namespace NGit.Transport
 						r.Append(':');
 					}
 				}
-				r.Append(GetPath());
+				if (GetScheme() != null)
+				{
+					if (escapeNonAscii)
+					{
+						r.Append(Escape(GetPath(), false, escapeNonAscii));
+					}
+					else
+					{
+						r.Append(GetRawPath());
+					}
+				}
+				else
+				{
+					r.Append(GetPath());
+				}
 			}
 			return r.ToString();
+		}
+
+		/// <returns>the URI as an ASCII string. Password is not included.</returns>
+		public virtual string ToASCIIString()
+		{
+			return Format(false, true, true);
+		}
+
+		/// <returns>
+		/// the URI including password, formatted with only ASCII characters
+		/// such that it will be valid for use over the network.
+		/// </returns>
+		public virtual string ToPrivateASCIIString()
+		{
+			return Format(true, true, true);
 		}
 
 		/// <summary>Get the "humanish" part of the path.</summary>

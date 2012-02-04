@@ -194,6 +194,10 @@ namespace NGit.Util.IO
 					else
 					{
 						Pop();
+						if (0 < cnt)
+						{
+							break;
+						}
 					}
 				}
 			}
@@ -235,6 +239,10 @@ namespace NGit.Util.IO
 						if (r < 0)
 						{
 							Pop();
+							if (0 < cnt)
+							{
+								break;
+							}
 						}
 						else
 						{

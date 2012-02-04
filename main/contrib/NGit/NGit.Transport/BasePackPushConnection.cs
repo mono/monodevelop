@@ -138,7 +138,7 @@ namespace NGit.Transport
 			{
 				transport.OpenFetch().Close();
 			}
-			catch (NotSupportedException)
+			catch (NGit.Errors.NotSupportedException)
 			{
 			}
 			catch (NoRemoteRepositoryException e)
@@ -270,8 +270,8 @@ namespace NGit.Transport
 		private void WritePack(IDictionary<string, RemoteRefUpdate> refUpdates, ProgressMonitor
 			 monitor)
 		{
-			IList<ObjectId> remoteObjects = new AList<ObjectId>(GetRefs().Count);
-			IList<ObjectId> newObjects = new AList<ObjectId>(refUpdates.Count);
+			ICollection<ObjectId> remoteObjects = new HashSet<ObjectId>();
+			ICollection<ObjectId> newObjects = new HashSet<ObjectId>();
 			PackWriter writer = new PackWriter(transport.GetPackConfig(), local.NewObjectReader
 				());
 			try

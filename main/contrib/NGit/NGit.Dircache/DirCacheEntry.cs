@@ -77,6 +77,8 @@ namespace NGit.Dircache
 		/// <remarks>The second tree revision (usually called "theirs").</remarks>
 		public const int STAGE_3 = 3;
 
+		private const int P_CTIME = 0;
+
 		private const int P_MTIME = 8;
 
 		private const int P_MODE = 24;
@@ -137,7 +139,6 @@ namespace NGit.Dircache
 		internal DirCacheEntry(byte[] sharedInfo, MutableInteger infoAt, InputStream @in, 
 			MessageDigest md)
 		{
-			// private static final int P_CTIME = 0;
 			// private static final int P_CTIME_NSEC = 4;
 			// private static final int P_MTIME_NSEC = 12;
 			// private static final int P_DEV = 16;
@@ -560,6 +561,25 @@ namespace NGit.Dircache
 			}
 		}
 
+		/// <summary>Get the cached creation time of this file, in milliseconds.</summary>
+		/// <remarks>Get the cached creation time of this file, in milliseconds.</remarks>
+		/// <returns>
+		/// cached creation time of this file, in milliseconds since the
+		/// Java epoch (midnight Jan 1, 1970 UTC).
+		/// </returns>
+		public virtual long GetCreationTime()
+		{
+			return DecodeTS(P_CTIME);
+		}
+
+		/// <summary>Set the cached creation time of this file, using milliseconds.</summary>
+		/// <remarks>Set the cached creation time of this file, using milliseconds.</remarks>
+		/// <param name="when">new cached creation time of the file, in milliseconds.</param>
+		public virtual void SetCreationTime(long when)
+		{
+			EncodeTS(P_CTIME, when);
+		}
+
 		/// <summary>Get the cached last modification date of this file, in milliseconds.</summary>
 		/// <remarks>
 		/// Get the cached last modification date of this file, in milliseconds.
@@ -692,6 +712,13 @@ namespace NGit.Dircache
 			{
 				return ToString(path);
 			}
+		}
+
+		/// <summary>Use for debugging only !</summary>
+		public override string ToString()
+		{
+			return FileMode + " " + Length + " " + LastModified + " " + GetObjectId() + " " +
+				 Stage + " " + PathString + "\n";
 		}
 
 		/// <summary>Copy the ObjectId and other meta fields from an existing entry.</summary>

@@ -542,5 +542,18 @@ SCAN_break: ;
 			int end = s.IndexOf('\n', offsets[fileIdx]);
 			offsets[fileIdx] = end < 0 ? s.Length : end + 1;
 		}
+
+		public override string ToString()
+		{
+			StringBuilder buf = new StringBuilder();
+			buf.Append("HunkHeader[");
+			buf.Append(GetOldImage().GetStartLine());
+			buf.Append(',');
+			buf.Append(GetOldImage().GetLineCount());
+			buf.Append("->");
+			buf.Append(GetNewStartLine()).Append(',').Append(GetNewLineCount());
+			buf.Append(']');
+			return buf.ToString();
+		}
 	}
 }

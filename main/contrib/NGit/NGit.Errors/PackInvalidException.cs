@@ -56,8 +56,15 @@ namespace NGit.Errors
 		/// <summary>Construct a pack invalid error.</summary>
 		/// <remarks>Construct a pack invalid error.</remarks>
 		/// <param name="path">path of the invalid pack file.</param>
-		public PackInvalidException(FilePath path) : base(MessageFormat.Format(JGitText.Get
-			().packFileInvalid, path.GetAbsolutePath()))
+		public PackInvalidException(FilePath path) : this(path.GetAbsolutePath())
+		{
+		}
+
+		/// <summary>Construct a pack invalid error.</summary>
+		/// <remarks>Construct a pack invalid error.</remarks>
+		/// <param name="path">path of the invalid pack file.</param>
+		public PackInvalidException(string path) : base(MessageFormat.Format(JGitText.Get
+			().packFileInvalid, path))
 		{
 		}
 	}

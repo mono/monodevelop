@@ -367,7 +367,7 @@ namespace NGit
 				GitIndex.Entry e = (GitIndex.Entry)i.Next();
 				if (e.GetStage() != 0)
 				{
-					throw new NotSupportedException(JGitText.Get().cannotWorkWithOtherStagesThanZeroRightNow
+					throw new NGit.Errors.NotSupportedException(JGitText.Get().cannotWorkWithOtherStagesThanZeroRightNow
 						);
 				}
 			}

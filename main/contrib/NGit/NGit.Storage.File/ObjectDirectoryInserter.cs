@@ -72,11 +72,42 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
+		public override ObjectId Insert(int type, byte[] data, int off, int len)
+		{
+			ObjectId id = IdFor(type, data, off, len);
+			if (db.Has(id))
+			{
+				return id;
+			}
+			else
+			{
+				FilePath tmp = ToTemp(type, data, off, len);
+				return InsertOneObject(tmp, id);
+			}
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
 		public override ObjectId Insert(int type, long len, InputStream @is)
 		{
-			MessageDigest md = Digest();
-			FilePath tmp = ToTemp(md, type, len, @is);
-			ObjectId id = ObjectId.FromRaw(md.Digest());
+			if (len <= Buffer().Length)
+			{
+				byte[] buf = Buffer();
+				int actLen = IOUtil.ReadFully(@is, buf, 0);
+				return Insert(type, buf, 0, actLen);
+			}
+			else
+			{
+				MessageDigest md = Digest();
+				FilePath tmp = ToTemp(md, type, len, @is);
+				ObjectId id = ObjectId.FromRaw(md.Digest());
+				return InsertOneObject(tmp, id);
+			}
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="NGit.Errors.ObjectWritingException"></exception>
+		private ObjectId InsertOneObject(FilePath tmp, ObjectId id)
+		{
 			switch (db.InsertUnpackedObject(tmp, id, false))
 			{
 				case FileObjectDatabase.InsertLooseObjectResult.INSERTED:
@@ -179,6 +210,47 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
+		/// <exception cref="System.IO.FileNotFoundException"></exception>
+		private FilePath ToTemp(int type, byte[] buf, int pos, int len)
+		{
+			bool delete = true;
+			FilePath tmp = NewTempFile();
+			try
+			{
+				FileOutputStream fOut = new FileOutputStream(tmp);
+				try
+				{
+					OutputStream @out = fOut;
+					if (config.GetFSyncObjectFiles())
+					{
+						@out = Channels.NewOutputStream(fOut.GetChannel());
+					}
+					DeflaterOutputStream cOut = Compress(@out);
+					WriteHeader(cOut, type, len);
+					cOut.Write(buf, pos, len);
+					cOut.Finish();
+				}
+				finally
+				{
+					if (config.GetFSyncObjectFiles())
+					{
+						fOut.GetChannel().Force(true);
+					}
+					fOut.Close();
+				}
+				delete = false;
+				return tmp;
+			}
+			finally
+			{
+				if (delete)
+				{
+					FileUtils.Delete(tmp);
+				}
+			}
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
 		internal virtual void WriteHeader(OutputStream @out, int type, long len)
 		{
 			@out.Write(Constants.EncodedTypeString(type));
@@ -203,7 +275,7 @@ namespace NGit.Storage.File
 			{
 				deflate.Reset();
 			}
-			return new DeflaterOutputStream(@out, deflate);
+			return new DeflaterOutputStream(@out, deflate, 8192);
 		}
 
 		private static EOFException ShortInput(long missing)

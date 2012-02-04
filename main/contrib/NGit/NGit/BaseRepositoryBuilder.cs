@@ -819,7 +819,7 @@ namespace NGit
 				// the user file, as these parameters must be unique to this
 				// repository and not inherited from other files.
 				//
-				FilePath path = SafeFS().Resolve(GetGitDir(), "config");
+				FilePath path = SafeFS().Resolve(GetGitDir(), Constants.CONFIG);
 				FileBasedConfig cfg = new FileBasedConfig(path, SafeFS());
 				try
 				{

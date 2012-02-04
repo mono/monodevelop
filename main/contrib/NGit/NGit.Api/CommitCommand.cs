@@ -92,6 +92,8 @@ namespace NGit.Api
 		/// </remarks>
 		private IList<ObjectId> parents = new List<ObjectId>();
 
+		private string reflogComment;
+
 		/// <param name="repo"></param>
 		protected internal CommitCommand(Repository repo) : base(repo)
 		{
@@ -217,9 +219,23 @@ namespace NGit.Api
 							RevCommit revCommit = revWalk.ParseCommit(commitId);
 							RefUpdate ru = repo.UpdateRef(Constants.HEAD);
 							ru.SetNewObjectId(commitId);
-							string prefix = amend ? "commit (amend): " : "commit: ";
-							ru.SetRefLogMessage(prefix + revCommit.GetShortMessage(), false);
-							ru.SetExpectedOldObjectId(headId);
+							if (reflogComment != null)
+							{
+								ru.SetRefLogMessage(reflogComment, false);
+							}
+							else
+							{
+								string prefix = amend ? "commit (amend): " : "commit: ";
+								ru.SetRefLogMessage(prefix + revCommit.GetShortMessage(), false);
+							}
+							if (headId != null)
+							{
+								ru.SetExpectedOldObjectId(headId);
+							}
+							else
+							{
+								ru.SetExpectedOldObjectId(ObjectId.ZeroId);
+							}
 							RefUpdate.Result rc = ru.ForceUpdate();
 							switch (rc)
 							{
@@ -356,7 +372,7 @@ namespace NGit.Api
 						long entryLength = fTree.GetEntryLength();
 						dcEntry.SetLength(entryLength);
 						dcEntry.LastModified = fTree.GetEntryLastModified();
-						dcEntry.FileMode = fTree.EntryFileMode;
+						dcEntry.FileMode = fTree.GetIndexFileMode(dcTree);
 						bool objectExists = (dcTree != null && fTree.IdEqual(dcTree)) || (hTree != null &&
 							 fTree.IdEqual(hTree));
 						if (objectExists)
@@ -365,27 +381,37 @@ namespace NGit.Api
 						}
 						else
 						{
-							// insert object
-							if (inserter == null)
+							if (FileMode.GITLINK.Equals(dcEntry.FileMode))
 							{
-								inserter = repo.NewObjectInserter();
+								// Do not check the content of submodule entries
+								// Use the old entry information instead.
+								dcEntry.CopyMetaData(index.GetEntry(dcEntry.PathString));
 							}
-							InputStream inputStream = fTree.OpenEntryStream();
-							try
+							else
 							{
-								dcEntry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, entryLength, inputStream)
-									);
-							}
-							finally
-							{
-								inputStream.Close();
+								// insert object
+								if (inserter == null)
+								{
+									inserter = repo.NewObjectInserter();
+								}
+								InputStream inputStream = fTree.OpenEntryStream();
+								try
+								{
+									dcEntry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, entryLength, inputStream)
+										);
+								}
+								finally
+								{
+									inputStream.Close();
+								}
 							}
 						}
 						// update index
-						dcEditor.Add(new _PathEdit_359(dcEntry, path));
+						dcEditor.Add(new _PathEdit_376(dcEntry, path));
 						// add to temporary in-core index
 						dcBuilder.Add(dcEntry);
-						if (emptyCommit && (hTree == null || !hTree.IdEqual(fTree)))
+						if (emptyCommit && (hTree == null || !hTree.IdEqual(fTree) || hTree.EntryRawMode 
+							!= fTree.EntryRawMode))
 						{
 							// this is a change
 							emptyCommit = false;
@@ -441,9 +467,9 @@ namespace NGit.Api
 			return inCoreIndex;
 		}
 
-		private sealed class _PathEdit_359 : DirCacheEditor.PathEdit
+		private sealed class _PathEdit_376 : DirCacheEditor.PathEdit
 		{
-			public _PathEdit_359(DirCacheEntry dcEntry, string baseArg1) : base(baseArg1)
+			public _PathEdit_376(DirCacheEntry dcEntry, string baseArg1) : base(baseArg1)
 			{
 				this.dcEntry = dcEntry;
 			}
@@ -796,6 +822,18 @@ namespace NGit.Api
 		{
 			CheckCallable();
 			this.insertChangeId = insertChangeId;
+			return this;
+		}
+
+		/// <summary>Override the message written to the reflog</summary>
+		/// <param name="reflogComment"></param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Api.CommitCommand SetReflogComment(string reflogComment)
+		{
+			this.reflogComment = reflogComment;
 			return this;
 		}
 	}

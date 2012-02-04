@@ -56,8 +56,11 @@ namespace NGit
 	/// Git combines Name + email + time + time zone to specify who wrote or
 	/// committed something.
 	/// </remarks>
+	[System.Serializable]
 	public class PersonIdent
 	{
+		private const long serialVersionUID = 1L;
+
 		private readonly string name;
 
 		private readonly string emailAddress;

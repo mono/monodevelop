@@ -64,11 +64,23 @@ namespace NGit
 		/// <summary>The "diff" section</summary>
 		public static readonly string CONFIG_DIFF_SECTION = "diff";
 
+		/// <summary>The "dfs" section</summary>
+		public static readonly string CONFIG_DFS_SECTION = "dfs";
+
 		/// <summary>The "user" section</summary>
 		public static readonly string CONFIG_USER_SECTION = "user";
 
 		/// <summary>The "gerrit" section</summary>
 		public static readonly string CONFIG_GERRIT_SECTION = "gerrit";
+
+		/// <summary>The "workflow" section</summary>
+		public static readonly string CONFIG_WORKFLOW_SECTION = "workflow";
+
+		/// <summary>The "submodule" section</summary>
+		public static readonly string CONFIG_SUBMODULE_SECTION = "submodule";
+
+		/// <summary>The "pack" section</summary>
+		public static readonly string CONFIG_PACK_SECTION = "pack";
 
 		/// <summary>The "algorithm" key</summary>
 		public static readonly string CONFIG_KEY_ALGORITHM = "algorithm";
@@ -93,6 +105,24 @@ namespace NGit
 
 		/// <summary>The "worktree" key</summary>
 		public static readonly string CONFIG_KEY_WORKTREE = "worktree";
+
+		/// <summary>The "blockLimit" key</summary>
+		public static readonly string CONFIG_KEY_BLOCK_LIMIT = "blockLimit";
+
+		/// <summary>The "blockSize" key</summary>
+		public static readonly string CONFIG_KEY_BLOCK_SIZE = "blockSize";
+
+		/// <summary>The "readAheadLimit" key</summary>
+		public static readonly string CONFIG_KEY_READ_AHEAD_LIMIT = "readAheadLimit";
+
+		/// <summary>The "readAheadThreads" key</summary>
+		public static readonly string CONFIG_KEY_READ_AHEAD_THREADS = "readAheadThreads";
+
+		/// <summary>The "deltaBaseCacheLimit" key</summary>
+		public static readonly string CONFIG_KEY_DELTA_BASE_CACHE_LIMIT = "deltaBaseCacheLimit";
+
+		/// <summary>The "streamFileThreshold" key</summary>
+		public static readonly string CONFIG_KEY_STREAM_FILE_TRESHOLD = "streamFileThreshold";
 
 		/// <summary>The "remote" key</summary>
 		public static readonly string CONFIG_KEY_REMOTE = "remote";
@@ -156,5 +186,20 @@ namespace NGit
 
 		/// <summary>The "createchangeid" key</summary>
 		public static readonly string CONFIG_KEY_CREATECHANGEID = "createchangeid";
+
+		/// <summary>The "defaultsourceref" key</summary>
+		public static readonly string CONFIG_KEY_DEFBRANCHSTARTPOINT = "defbranchstartpoint";
+
+		/// <summary>The "path" key</summary>
+		public static readonly string CONFIG_KEY_PATH = "path";
+
+		/// <summary>The "update" key</summary>
+		public static readonly string CONFIG_KEY_UPDATE = "update";
+
+		/// <summary>The "compression" key</summary>
+		public static readonly string CONFIG_KEY_COMPRESSION = "compression";
+
+		/// <summary>The "indexversion" key</summary>
+		public static readonly string CONFIG_KEY_INDEXVERSION = "indexversion";
 	}
 }

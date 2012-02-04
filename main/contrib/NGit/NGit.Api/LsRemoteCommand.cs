@@ -56,7 +56,8 @@ namespace NGit.Api
 	/// <seealso><a
 	/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-ls-remote.html"
 	/// *      >Git documentation about ls-remote</a></seealso>
-	public class LsRemoteCommand : GitCommand<ICollection<Ref>>
+	public class LsRemoteCommand : TransportCommand<NGit.Api.LsRemoteCommand, ICollection
+		<Ref>>
 	{
 		private string remote = Constants.DEFAULT_REMOTE_NAME;
 
@@ -112,73 +113,97 @@ namespace NGit.Api
 			this.uploadPack = uploadPack;
 		}
 
-		/// <exception cref="System.Exception"></exception>
+		/// <summary>
+		/// Executes the
+		/// <code>LsRemote</code>
+		/// command with all the options and parameters
+		/// collected by the setter methods (e.g.
+		/// <see cref="SetHeads(bool)">SetHeads(bool)</see>
+		/// ) of this
+		/// class. Each instance of this class should only be used for one invocation
+		/// of the command. Don't call this method twice on an instance.
+		/// </summary>
+		/// <returns>a collection of references in the remote repository</returns>
+		/// <exception cref="NGit.Api.Errors.InvalidRemoteException">when called with an invalid remote uri
+		/// 	</exception>
+		/// <exception cref="NGit.Api.Errors.JGitInternalException">
+		/// a low-level exception of JGit has occurred. The original
+		/// exception can be retrieved by calling
+		/// <see cref="System.Exception.InnerException()">System.Exception.InnerException()</see>
+		/// .
+		/// </exception>
+		/// <exception cref="NGit.Api.Errors.GitAPIException"></exception>
 		public override ICollection<Ref> Call()
 		{
 			CheckCallable();
+			NGit.Transport.Transport transport = null;
+			FetchConnection fc = null;
 			try
 			{
-				NGit.Transport.Transport transport = NGit.Transport.Transport.Open(repo, remote);
+				transport = NGit.Transport.Transport.Open(repo, remote);
 				transport.SetOptionUploadPack(uploadPack);
-				try
+				Configure(transport);
+				ICollection<RefSpec> refSpecs = new AList<RefSpec>(1);
+				if (tags)
 				{
-					ICollection<RefSpec> refSpecs = new AList<RefSpec>(1);
-					if (tags)
+					refSpecs.AddItem(new RefSpec("refs/tags/*:refs/remotes/origin/tags/*"));
+				}
+				if (heads)
+				{
+					refSpecs.AddItem(new RefSpec("refs/heads/*:refs/remotes/origin/*"));
+				}
+				ICollection<Ref> refs;
+				IDictionary<string, Ref> refmap = new Dictionary<string, Ref>();
+				fc = transport.OpenFetch();
+				refs = fc.GetRefs();
+				if (refSpecs.IsEmpty())
+				{
+					foreach (Ref r in refs)
 					{
-						refSpecs.AddItem(new RefSpec("refs/tags/*:refs/remotes/origin/tags/*"));
+						refmap.Put(r.GetName(), r);
 					}
-					if (heads)
+				}
+				else
+				{
+					foreach (Ref r_1 in refs)
 					{
-						refSpecs.AddItem(new RefSpec("refs/heads/*:refs/remotes/origin/*"));
-					}
-					ICollection<Ref> refs;
-					IDictionary<string, Ref> refmap = new Dictionary<string, Ref>();
-					FetchConnection fc = transport.OpenFetch();
-					try
-					{
-						refs = fc.GetRefs();
-						foreach (Ref r in refs)
+						foreach (RefSpec rs in refSpecs)
 						{
-							bool found = refSpecs.IsEmpty();
-							foreach (RefSpec rs in refSpecs)
+							if (rs.MatchSource(r_1))
 							{
-								if (rs.MatchSource(r))
-								{
-									found = true;
-									break;
-								}
-							}
-							if (found)
-							{
-								refmap.Put(r.GetName(), r);
+								refmap.Put(r_1.GetName(), r_1);
+								break;
 							}
 						}
 					}
-					finally
-					{
-						fc.Close();
-					}
-					return refmap.Values;
 				}
-				catch (TransportException e)
-				{
-					throw new JGitInternalException(JGitText.Get().exceptionCaughtDuringExecutionOfLsRemoteCommand
-						, e);
-				}
-				finally
-				{
-					transport.Close();
-				}
+				return refmap.Values;
 			}
 			catch (URISyntaxException)
 			{
 				throw new InvalidRemoteException(MessageFormat.Format(JGitText.Get().invalidRemote
 					, remote));
 			}
-			catch (NotSupportedException e)
+			catch (NGit.Errors.NotSupportedException e)
 			{
 				throw new JGitInternalException(JGitText.Get().exceptionCaughtDuringExecutionOfLsRemoteCommand
 					, e);
+			}
+			catch (TransportException e)
+			{
+				throw new TransportException(JGitText.Get().exceptionCaughtDuringExecutionOfLsRemoteCommand
+					, e);
+			}
+			finally
+			{
+				if (fc != null)
+				{
+					fc.Close();
+				}
+				if (transport != null)
+				{
+					transport.Close();
+				}
 			}
 		}
 	}

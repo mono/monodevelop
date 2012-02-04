@@ -135,14 +135,22 @@ namespace NGit.Revwalk
 				pendingOutputType |= HAS_REWRITE | NEEDS_REWRITE;
 			}
 			walker.queue = q;
-			g = new PendingGenerator(w, pending, rf, pendingOutputType);
-			if (boundary)
+			if (walker is DepthWalk)
 			{
-				// Because the boundary generator may produce uninteresting
-				// commits we cannot allow the pending generator to dispose
-				// of them early.
-				//
-				((PendingGenerator)g).canDispose = false;
+				DepthWalk dw = (DepthWalk)walker;
+				g = new DepthGenerator(dw, pending);
+			}
+			else
+			{
+				g = new PendingGenerator(w, pending, rf, pendingOutputType);
+				if (boundary)
+				{
+					// Because the boundary generator may produce uninteresting
+					// commits we cannot allow the pending generator to dispose
+					// of them early.
+					//
+					((PendingGenerator)g).canDispose = false;
+				}
 			}
 			if ((g.OutputType() & NEEDS_REWRITE) != 0)
 			{

@@ -439,25 +439,20 @@ namespace NGit.Transport
 				{
 					dc.Execute(s);
 				}
-				catch (RepositoryNotFoundException)
-				{
-				}
 				catch (ServiceNotEnabledException)
 				{
 				}
 				catch (ServiceNotAuthorizedException)
 				{
 				}
-				catch (IOException e)
+				catch (IOException)
 				{
-					// Ignored. Client cannot use this repository.
-					// Ignored. Client cannot use this repository.
-					// Ignored. Client cannot use this repository.
-					// Ignore unexpected IO exceptions from clients
-					Sharpen.Runtime.PrintStackTrace(e);
 				}
 				finally
 				{
+					// Ignored. Client cannot use this repository.
+					// Ignored. Client cannot use this repository.
+					// Ignore unexpected IO exceptions from clients
 					try
 					{
 						s.GetInputStream().Close();

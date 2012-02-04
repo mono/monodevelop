@@ -190,6 +190,9 @@ namespace NGit.Transport
 
 		private bool checkReferencedIsReachable;
 
+		/// <summary>Git object size limit</summary>
+		private long maxObjectSizeLimit;
+
 		/// <summary>Create a new pack receive for an open repository.</summary>
 		/// <remarks>Create a new pack receive for an open repository.</remarks>
 		/// <param name="into">the destination repository.</param>
@@ -211,10 +214,10 @@ namespace NGit.Transport
 
 		private class ReceiveConfig
 		{
-			private sealed class _SectionParser_218 : Config.SectionParser<ReceivePack.ReceiveConfig
+			private sealed class _SectionParser_222 : Config.SectionParser<ReceivePack.ReceiveConfig
 				>
 			{
-				public _SectionParser_218()
+				public _SectionParser_222()
 				{
 				}
 
@@ -225,7 +228,7 @@ namespace NGit.Transport
 			}
 
 			internal static readonly Config.SectionParser<ReceivePack.ReceiveConfig> KEY = new 
-				_SectionParser_218();
+				_SectionParser_222();
 
 			internal readonly bool checkReceivedObjects;
 
@@ -532,6 +535,19 @@ namespace NGit.Transport
 			timeout = seconds;
 		}
 
+		/// <summary>Set the maximum allowed Git object size.</summary>
+		/// <remarks>
+		/// Set the maximum allowed Git object size.
+		/// <p>
+		/// If an object is larger than the given size the pack-parsing will throw an
+		/// exception aborting the receive-pack operation.
+		/// </remarks>
+		/// <param name="limit">the Git object size limit. If zero then there is not limit.</param>
+		public virtual void SetMaxObjectSizeLimit(long limit)
+		{
+			maxObjectSizeLimit = limit;
+		}
+
 		/// <returns>all of the command received by the current request.</returns>
 		public virtual IList<ReceiveCommand> GetAllCommands()
 		{
@@ -775,14 +791,14 @@ namespace NGit.Transport
 				UnlockPack();
 				if (reportStatus)
 				{
-					SendStatusReport(true, new _Reporter_685(this));
+					SendStatusReport(true, new _Reporter_702(this));
 					pckOut.End();
 				}
 				else
 				{
 					if (msgOut != null)
 					{
-						SendStatusReport(false, new _Reporter_692(this));
+						SendStatusReport(false, new _Reporter_709(this));
 					}
 				}
 				postReceive.OnPostReceive(this, FilterCommands(ReceiveCommand.Result.OK));
@@ -793,9 +809,9 @@ namespace NGit.Transport
 			}
 		}
 
-		private sealed class _Reporter_685 : ReceivePack.Reporter
+		private sealed class _Reporter_702 : ReceivePack.Reporter
 		{
-			public _Reporter_685(ReceivePack _enclosing)
+			public _Reporter_702(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -809,9 +825,9 @@ namespace NGit.Transport
 			private readonly ReceivePack _enclosing;
 		}
 
-		private sealed class _Reporter_692 : ReceivePack.Reporter
+		private sealed class _Reporter_709 : ReceivePack.Reporter
 		{
-			public _Reporter_692(ReceivePack _enclosing)
+			public _Reporter_709(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -985,6 +1001,7 @@ namespace NGit.Transport
 				parser.SetCheckEofAfterPackFooter(!biDirectionalPipe);
 				parser.SetObjectChecking(IsCheckReceivedObjects());
 				parser.SetLockMessage(lockMsg);
+				parser.SetMaxObjectSizeLimit(maxObjectSizeLimit);
 				packLock = parser.Parse(receiving, resolving);
 				ins.Flush();
 			}
@@ -1136,7 +1153,8 @@ namespace NGit.Transport
 						// A well behaved client shouldn't have sent us a
 						// create command for a ref we advertised to it.
 						//
-						cmd.SetResult(ReceiveCommand.Result.REJECTED_OTHER_REASON, "ref exists");
+						cmd.SetResult(ReceiveCommand.Result.REJECTED_OTHER_REASON, MessageFormat.Format(JGitText
+							.Get().refAlreadyExists, @ref));
 						continue;
 					}
 				}
@@ -1228,11 +1246,22 @@ namespace NGit.Transport
 		{
 			preReceive.OnPreReceive(this, FilterCommands(ReceiveCommand.Result.NOT_ATTEMPTED)
 				);
-			foreach (ReceiveCommand cmd in FilterCommands(ReceiveCommand.Result.NOT_ATTEMPTED
-				))
+			IList<ReceiveCommand> toApply = FilterCommands(ReceiveCommand.Result.NOT_ATTEMPTED
+				);
+			ProgressMonitor updating = NullProgressMonitor.INSTANCE;
+			if (sideBand)
 			{
+				SideBandProgressMonitor pm = new SideBandProgressMonitor(msgOut);
+				pm.SetDelayStart(250, TimeUnit.MILLISECONDS);
+				updating = pm;
+			}
+			updating.BeginTask(JGitText.Get().updatingReferences, toApply.Count);
+			foreach (ReceiveCommand cmd in toApply)
+			{
+				updating.Update(1);
 				Execute(cmd);
 			}
+			updating.EndTask();
 		}
 
 		private void Execute(ReceiveCommand cmd)

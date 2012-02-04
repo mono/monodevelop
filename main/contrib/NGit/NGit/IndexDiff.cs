@@ -154,9 +154,13 @@ namespace NGit
 
 		private ICollection<string> conflicts = new HashSet<string>();
 
+		private ICollection<string> ignored;
+
 		private ICollection<string> assumeUnchanged;
 
 		private DirCache dirCache;
+
+		private IndexDiffFilter indexDiffFilter;
 
 		/// <summary>Construct an IndexDiff</summary>
 		/// <param name="repository"></param>
@@ -282,7 +286,8 @@ namespace NGit
 				filters.AddItem(filter);
 			}
 			filters.AddItem(new SkipWorkTreeFilter(INDEX));
-			filters.AddItem(new IndexDiffFilter(INDEX, WORKDIR));
+			indexDiffFilter = new IndexDiffFilter(INDEX, WORKDIR);
+			filters.AddItem(indexDiffFilter);
 			treeWalk.Filter = AndTreeFilter.Create(filters);
 			while (treeWalk.Next())
 			{
@@ -358,6 +363,7 @@ namespace NGit
 			{
 				monitor.EndTask();
 			}
+			ignored = indexDiffFilter.GetIgnoredPaths();
 			if (added.IsEmpty() && changed.IsEmpty() && removed.IsEmpty() && missing.IsEmpty(
 				) && modified.IsEmpty() && untracked.IsEmpty())
 			{
@@ -393,7 +399,7 @@ namespace NGit
 			return missing;
 		}
 
-		/// <returns>list of files on modified on disk relative to the index</returns>
+		/// <returns>list of files modified on disk relative to the index</returns>
 		public virtual ICollection<string> GetModified()
 		{
 			return modified;
@@ -409,6 +415,20 @@ namespace NGit
 		public virtual ICollection<string> GetConflicting()
 		{
 			return conflicts;
+		}
+
+		/// <summary>The method returns the list of ignored files and folders.</summary>
+		/// <remarks>
+		/// The method returns the list of ignored files and folders. Only the root
+		/// folder of an ignored folder hierarchy is reported. If a/b/c is listed in
+		/// the .gitignore then you should not expect a/b/c/d/e/f to be reported
+		/// here. Only a/b/c will be reported. Furthermore only ignored files /
+		/// folders are returned that are NOT in the index.
+		/// </remarks>
+		/// <returns>list of files / folders that are ignored</returns>
+		public virtual ICollection<string> GetIgnoredNotInIndex()
+		{
+			return ignored;
 		}
 
 		/// <returns>list of files with the flag assume-unchanged</returns>
@@ -427,6 +447,22 @@ namespace NGit
 				assumeUnchanged = unchanged;
 			}
 			return assumeUnchanged;
+		}
+
+		/// <returns>list of folders containing only untracked files/folders</returns>
+		public virtual ICollection<string> GetUntrackedFolders()
+		{
+			return ((indexDiffFilter == null) ? Sharpen.Collections.EmptySet<string>() : new 
+				HashSet<string>(indexDiffFilter.GetUntrackedFolders()));
+		}
+
+		/// <summary>Get the file mode of the given path in the index</summary>
+		/// <param name="path"></param>
+		/// <returns>file mode</returns>
+		public virtual FileMode GetIndexMode(string path)
+		{
+			DirCacheEntry entry = dirCache.GetEntry(path);
+			return entry != null ? entry.FileMode : FileMode.MISSING;
 		}
 	}
 }

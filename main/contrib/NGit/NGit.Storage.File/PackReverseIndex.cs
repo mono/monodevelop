@@ -62,7 +62,7 @@ namespace NGit.Storage.File
 	/// </remarks>
 	/// <seealso cref="PackIndex">PackIndex</seealso>
 	/// <seealso cref="PackFile">PackFile</seealso>
-	internal class PackReverseIndex
+	public class PackReverseIndex
 	{
 		/// <summary>Index we were created from, and that has our ObjectId data.</summary>
 		/// <remarks>Index we were created from, and that has our ObjectId data.</remarks>
@@ -103,7 +103,7 @@ namespace NGit.Storage.File
 		/// its entries.
 		/// </remarks>
 		/// <param name="packIndex">forward index - entries to (reverse) index.</param>
-		internal PackReverseIndex(PackIndex packIndex)
+		public PackReverseIndex(PackIndex packIndex)
 		{
 			index = packIndex;
 			long cnt = index.GetObjectCount();
@@ -159,7 +159,7 @@ namespace NGit.Storage.File
 		/// </remarks>
 		/// <param name="offset">start offset of object to find.</param>
 		/// <returns>object id for this offset, or null if no object was found.</returns>
-		internal virtual ObjectId FindObject(long offset)
+		public virtual ObjectId FindObject(long offset)
 		{
 			if (offset <= int.MaxValue)
 			{
@@ -203,7 +203,7 @@ namespace NGit.Storage.File
 		/// </returns>
 		/// <exception cref="NGit.Errors.CorruptObjectException">when there is no object with the provided offset.
 		/// 	</exception>
-		internal virtual long FindNextOffset(long offset, long maxOffset)
+		public virtual long FindNextOffset(long offset, long maxOffset)
 		{
 			if (offset <= int.MaxValue)
 			{

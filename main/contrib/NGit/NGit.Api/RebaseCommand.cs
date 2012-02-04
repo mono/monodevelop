@@ -611,8 +611,8 @@ namespace NGit.Api
 			{
 				if (commit.ParentCount != 1)
 				{
-					throw new JGitInternalException(JGitText.Get().canOnlyCherryPickCommitsWithOneParent
-						);
+					throw new JGitInternalException(MessageFormat.Format(JGitText.Get().canOnlyCherryPickCommitsWithOneParent
+						, commit.Name, Sharpen.Extensions.ValueOf(commit.ParentCount)));
 				}
 				cherryPickList.AddItem(commit);
 			}

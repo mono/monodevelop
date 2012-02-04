@@ -107,6 +107,23 @@ namespace NGit.Api
 			return this.fetchedFrom;
 		}
 
+		/// <returns>whether the pull was successful</returns>
+		public virtual bool IsSuccessful()
+		{
+			if (mergeResult != null)
+			{
+				return mergeResult.GetMergeStatus().IsSuccessful();
+			}
+			else
+			{
+				if (rebaseResult != null)
+				{
+					return rebaseResult.GetStatus().IsSuccessful();
+				}
+			}
+			return true;
+		}
+
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();

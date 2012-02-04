@@ -121,8 +121,9 @@ namespace NGit.Api
 					// get the parent of the commit to cherry-pick
 					if (srcCommit.ParentCount != 1)
 					{
-						throw new MultipleParentsNotAllowedException(JGitText.Get().canOnlyCherryPickCommitsWithOneParent
-							);
+						throw new MultipleParentsNotAllowedException(MessageFormat.Format(JGitText.Get().
+							canOnlyCherryPickCommitsWithOneParent, srcCommit.Name, Sharpen.Extensions.ValueOf
+							(srcCommit.ParentCount)));
 					}
 					RevCommit srcParent = srcCommit.GetParent(0);
 					revWalk.ParseHeaders(srcParent);
@@ -141,7 +142,8 @@ namespace NGit.Api
 						dco.SetFailOnConflict(true);
 						dco.Checkout();
 						newHead = new Git(GetRepository()).Commit().SetMessage(srcCommit.GetFullMessage()
-							).SetAuthor(srcCommit.GetAuthorIdent()).Call();
+							).SetReflogComment("cherry-pick: " + srcCommit.GetShortMessage()).SetAuthor(srcCommit
+							.GetAuthorIdent()).Call();
 						cherryPickedRefs.AddItem(src);
 					}
 					else

@@ -68,12 +68,32 @@ namespace NGit.Api
 	/// </remarks>
 	public class Status
 	{
-		private IndexDiff diff;
+		private readonly IndexDiff diff;
+
+		private readonly bool clean;
 
 		/// <param name="diff"></param>
 		public Status(IndexDiff diff) : base()
 		{
 			this.diff = diff;
+			clean = diff.GetAdded().IsEmpty() && diff.GetChanged().IsEmpty() && diff.GetRemoved
+				().IsEmpty() && diff.GetMissing().IsEmpty() && diff.GetModified().IsEmpty() && diff
+				.GetUntracked().IsEmpty() && diff.GetConflicting().IsEmpty();
+		}
+
+		//
+		//
+		//
+		//
+		//
+		//
+		/// <returns>
+		/// true if no differences exist between the working-tree, the index,
+		/// and the current HEAD, false if differences do exist
+		/// </returns>
+		public virtual bool IsClean()
+		{
+			return clean;
 		}
 
 		/// <returns>

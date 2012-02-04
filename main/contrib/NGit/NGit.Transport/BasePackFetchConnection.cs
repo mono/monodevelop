@@ -543,7 +543,7 @@ namespace NGit.Transport
 				state.WriteTo(@out, null);
 			}
 			NegotiateBegin();
-			while (!receivedReady)
+			for (; ; )
 			{
 				RevCommit c = walk.Next();
 				if (c == null)
@@ -634,6 +634,10 @@ namespace NGit.Transport
 READ_RESULT_continue: ;
 				}
 READ_RESULT_break: ;
+				if (noDone & receivedReady)
+				{
+					goto SEND_HAVES_break;
+				}
 				if (statelessRPC)
 				{
 					state.WriteTo(@out, null);
@@ -721,12 +725,12 @@ READ_RESULT_break2: ;
 			walk.ResetRetain(REACHABLE, ADVERTISED);
 			walk.MarkStart(reachableCommits);
 			walk.Sort(RevSort.COMMIT_TIME_DESC);
-			walk.SetRevFilter(new _RevFilter_605(this));
+			walk.SetRevFilter(new _RevFilter_609(this));
 		}
 
-		private sealed class _RevFilter_605 : RevFilter
+		private sealed class _RevFilter_609 : RevFilter
 		{
-			public _RevFilter_605(BasePackFetchConnection _enclosing)
+			public _RevFilter_609(BasePackFetchConnection _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}

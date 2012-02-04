@@ -92,7 +92,7 @@ namespace NGit.Api
 		/// <see cref="NGit.Merge.MergeStrategy">NGit.Merge.MergeStrategy</see>
 		/// </param>
 		public MergeCommandResult(ObjectId newHead, ObjectId @base, ObjectId[] mergedCommits
-			, MergeStatus mergeStatus, IDictionary<string, NGit.Merge.MergeResult<Sequence>> lowLevelResults
+			, MergeStatus mergeStatus, IDictionary<string, MergeResult<Sequence>> lowLevelResults
 			, MergeStrategy mergeStrategy) : this(newHead, @base, mergedCommits, mergeStatus
 			, mergeStrategy, lowLevelResults, null)
 		{
@@ -117,7 +117,7 @@ namespace NGit.Api
 		/// </param>
 		/// <param name="description">a user friendly description of the merge result</param>
 		public MergeCommandResult(ObjectId newHead, ObjectId @base, ObjectId[] mergedCommits
-			, MergeStatus mergeStatus, MergeStrategy mergeStrategy, IDictionary<string, NGit.Merge.MergeResult
+			, MergeStatus mergeStatus, MergeStrategy mergeStrategy, IDictionary<string, MergeResult
 			<Sequence>> lowLevelResults, string description) : this(newHead, @base, mergedCommits
 			, mergeStatus, mergeStrategy, lowLevelResults, null, null)
 		{
@@ -147,7 +147,7 @@ namespace NGit.Api
 		/// </param>
 		/// <param name="description">a user friendly description of the merge result</param>
 		public MergeCommandResult(ObjectId newHead, ObjectId @base, ObjectId[] mergedCommits
-			, MergeStatus mergeStatus, MergeStrategy mergeStrategy, IDictionary<string, NGit.Merge.MergeResult
+			, MergeStatus mergeStatus, MergeStrategy mergeStrategy, IDictionary<string, MergeResult
 			<Sequence>> lowLevelResults, IDictionary<string, ResolveMerger.MergeFailureReason>
 			 failingPaths, string description)
 		{
@@ -160,8 +160,8 @@ namespace NGit.Api
 			this.failingPaths = failingPaths;
 			if (lowLevelResults != null)
 			{
-				foreach (KeyValuePair<string, NGit.Merge.MergeResult<Sequence>> result in lowLevelResults
-					.EntrySet())
+				foreach (KeyValuePair<string, MergeResult<Sequence>> result in lowLevelResults.EntrySet
+					())
 				{
 					AddConflict(result.Key, result.Value);
 				}
@@ -236,7 +236,7 @@ namespace NGit.Api
 
 		/// <param name="path"></param>
 		/// <param name="lowLevelResult"></param>
-		public virtual void AddConflict<_T0>(string path, NGit.Merge.MergeResult<_T0> lowLevelResult
+		public virtual void AddConflict<_T0>(string path, MergeResult<_T0> lowLevelResult
 			) where _T0:Sequence
 		{
 			if (!lowLevelResult.ContainsConflicts())
@@ -349,15 +349,103 @@ namespace NGit.Api
 		}
 	}
 
-	/// <summary>The status the merge resulted in.</summary>
-	/// <remarks>The status the merge resulted in.</remarks>
-	public enum MergeStatus
+	public abstract class MergeStatus
 	{
-		FAST_FORWARD,
-		ALREADY_UP_TO_DATE,
-		FAILED,
-		MERGED,
-		CONFLICTING,
-		NOT_SUPPORTED
+		public static MergeStatus FAST_FORWARD = new MergeStatus.FAST_FORWARD_Class
+			();
+
+		public static MergeStatus ALREADY_UP_TO_DATE = new MergeStatus.ALREADY_UP_TO_DATE_Class
+			();
+
+		public static MergeStatus FAILED = new MergeStatus.FAILED_Class();
+
+		public static MergeStatus MERGED = new MergeStatus.MERGED_Class();
+
+		public static MergeStatus CONFLICTING = new MergeStatus.CONFLICTING_Class
+			();
+
+		public static MergeStatus NOT_SUPPORTED = new MergeStatus.NOT_SUPPORTED_Class
+			();
+
+		internal class FAST_FORWARD_Class : MergeStatus
+		{
+			public override string ToString()
+			{
+				return "Fast-forward";
+			}
+
+			public override bool IsSuccessful()
+			{
+				return true;
+			}
+		}
+
+		internal class ALREADY_UP_TO_DATE_Class : MergeStatus
+		{
+			public override string ToString()
+			{
+				return "Already-up-to-date";
+			}
+
+			public override bool IsSuccessful()
+			{
+				return true;
+			}
+		}
+
+		internal class FAILED_Class : MergeStatus
+		{
+			public override string ToString()
+			{
+				return "Failed";
+			}
+
+			public override bool IsSuccessful()
+			{
+				return false;
+			}
+		}
+
+		internal class MERGED_Class : MergeStatus
+		{
+			public override string ToString()
+			{
+				return "Merged";
+			}
+
+			public override bool IsSuccessful()
+			{
+				return true;
+			}
+		}
+
+		internal class CONFLICTING_Class : MergeStatus
+		{
+			public override string ToString()
+			{
+				return "Conflicting";
+			}
+
+			public override bool IsSuccessful()
+			{
+				return false;
+			}
+		}
+
+		internal class NOT_SUPPORTED_Class : MergeStatus
+		{
+			public override string ToString()
+			{
+				return "Not-yet-supported";
+			}
+
+			public override bool IsSuccessful()
+			{
+				return false;
+			}
+		}
+
+		/// <returns>whether the status indicates a successful result</returns>
+		public abstract bool IsSuccessful();
 	}
 }

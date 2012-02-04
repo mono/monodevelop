@@ -107,6 +107,7 @@ namespace NGit.Api
 					.GetName(), Sharpen.Extensions.ValueOf(commits.Count)));
 			}
 			RevWalk revWalk = null;
+			DirCacheCheckout dco = null;
 			try
 			{
 				Ref head = repo.GetRef(Constants.HEAD);
@@ -132,8 +133,7 @@ namespace NGit.Api
 				if (headId == null)
 				{
 					revWalk.ParseHeaders(srcCommit);
-					DirCacheCheckout dco = new DirCacheCheckout(repo, repo.LockDirCache(), srcCommit.
-						Tree);
+					dco = new DirCacheCheckout(repo, repo.LockDirCache(), srcCommit.Tree);
 					dco.SetFailOnConflict(true);
 					dco.Checkout();
 					RefUpdate refUpdate = repo.UpdateRef(head.GetTarget().GetName());
@@ -163,8 +163,8 @@ namespace NGit.Api
 						// FAST_FORWARD detected: skip doing a real merge but only
 						// update HEAD
 						refLogMessage.Append(": " + MergeStatus.FAST_FORWARD);
-						DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache
-							(), srcCommit.Tree);
+						dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache(), srcCommit.
+							Tree);
 						dco.SetFailOnConflict(true);
 						dco.Checkout();
 						UpdateHead(refLogMessage, srcCommit, headId);
@@ -177,7 +177,7 @@ namespace NGit.Api
 						string mergeMessage = new MergeMessageFormatter().Format(commits, head);
 						repo.WriteMergeCommitMsg(mergeMessage);
 						repo.WriteMergeHeads(Arrays.AsList(@ref.GetObjectId()));
-						ThreeWayMerger merger = (ThreeWayMerger)mergeStrategy.NewMerger(repo);
+						Merger merger = mergeStrategy.NewMerger(repo);
 						bool noProblems;
 						IDictionary<string, MergeResult<NGit.Diff.Sequence>> lowLevelResults = null;
 						IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = null;
@@ -196,13 +196,17 @@ namespace NGit.Api
 						{
 							noProblems = merger.Merge(headCommit, srcCommit);
 						}
+						refLogMessage.Append(": Merge made by ");
+						refLogMessage.Append(mergeStrategy.GetName());
+						refLogMessage.Append('.');
 						if (noProblems)
 						{
-							DirCacheCheckout dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache
-								(), merger.GetResultTreeId());
+							dco = new DirCacheCheckout(repo, headCommit.Tree, repo.LockDirCache(), merger.GetResultTreeId
+								());
 							dco.SetFailOnConflict(true);
 							dco.Checkout();
-							RevCommit newHead = new Git(GetRepository()).Commit().Call();
+							RevCommit newHead = new Git(GetRepository()).Commit().SetReflogComment(refLogMessage
+								.ToString()).Call();
 							return new MergeCommandResult(newHead.Id, null, new ObjectId[] { headCommit.Id, srcCommit
 								.Id }, MergeStatus.MERGED, mergeStrategy, null, null);
 						}
@@ -228,6 +232,12 @@ namespace NGit.Api
 						}
 					}
 				}
+			}
+			catch (NGit.Errors.CheckoutConflictException e)
+			{
+				IList<string> conflicts = (dco == null) ? Sharpen.Collections.EmptyList<string>()
+					 : dco.GetConflicts();
+				throw new NGit.Api.Errors.CheckoutConflictException(conflicts, e);
 			}
 			catch (IOException e)
 			{

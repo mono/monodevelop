@@ -42,6 +42,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.Globalization;
 using System.Net;
 using NGit;
 using NGit.Storage.File;
@@ -61,9 +62,9 @@ namespace NGit.Util
 	/// </remarks>
 	public abstract class SystemReader
 	{
-		private sealed class _SystemReader_65 : SystemReader
+		private sealed class _SystemReader_66 : SystemReader
 		{
-			public _SystemReader_65()
+			public _SystemReader_66()
 			{
 			}
 
@@ -84,7 +85,7 @@ namespace NGit.Util
 				FilePath prefix = fs.GitPrefix();
 				if (prefix == null)
 				{
-					return new _FileBasedConfig_79(null, fs);
+					return new _FileBasedConfig_80(null, fs);
 				}
 				// empty, do not load
 				// regular class would bomb here
@@ -93,9 +94,9 @@ namespace NGit.Util
 				return new FileBasedConfig(parent, config, fs);
 			}
 
-			private sealed class _FileBasedConfig_79 : FileBasedConfig
+			private sealed class _FileBasedConfig_80 : FileBasedConfig
 			{
-				public _FileBasedConfig_79(FilePath baseArg1, FS baseArg2) : base(baseArg1, baseArg2
+				public _FileBasedConfig_80(FilePath baseArg1, FS baseArg2) : base(baseArg1, baseArg2
 					)
 				{
 				}
@@ -141,11 +142,11 @@ namespace NGit.Util
 
 			public override int GetTimezone(long when)
 			{
-				return System.TimeZoneInfo.Local.GetOffset(when) / (60 * 1000);
+				return this.GetTimeZone().GetOffset(when) / (60 * 1000);
 			}
 		}
 
-		private static SystemReader INSTANCE = new _SystemReader_65();
+		private static SystemReader INSTANCE = new _SystemReader_66();
 
 		/// <returns>the live instance to read system properties.</returns>
 		public static SystemReader GetInstance()
@@ -204,5 +205,19 @@ namespace NGit.Util
 		/// <param name="when">TODO</param>
 		/// <returns>the local time zone</returns>
 		public abstract int GetTimezone(long when);
+
+		/// <returns>system time zone, possibly mocked for testing</returns>
+		/// <since>1.2</since>
+		public virtual TimeZoneInfo GetTimeZone()
+		{
+			return System.TimeZoneInfo.Local;
+		}
+
+		/// <returns>the locale to use</returns>
+		/// <since>1.2</since>
+		public virtual CultureInfo GetLocale()
+		{
+			return CultureInfo.CurrentCulture;
+		}
 	}
 }

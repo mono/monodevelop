@@ -83,7 +83,7 @@ namespace NGit.Api
 
 		private string @ref = Constants.HEAD;
 
-		private ResetCommand.ResetType mode;
+		private ResetCommand.ResetType? mode;
 
 		private ICollection<string> filepaths = new List<string>();
 
@@ -120,6 +120,12 @@ namespace NGit.Api
 				try
 				{
 					commitId = repo.Resolve(@ref);
+					if (commitId == null)
+					{
+						// @TODO throw an InvalidRefNameException. We can't do that
+						// now because this would break the API
+						throw new JGitInternalException("Invalid ref " + @ref + " specified");
+					}
 				}
 				catch (IOException e)
 				{
@@ -258,6 +264,7 @@ namespace NGit.Api
 				tw.AddTree(new DirCacheIterator(dc));
 				tw.AddTree(commit.Tree);
 				tw.Filter = PathFilterGroup.CreateFromStrings(filepaths);
+				tw.Recursive = true;
 				while (tw.Next())
 				{
 					string path = tw.PathString;
@@ -271,7 +278,13 @@ namespace NGit.Api
 					else
 					{
 						// revert index to commit
-						edit.Add(new _PathEdit_281(tree, path));
+						// it seams that there is concurrent access to tree
+						// variable, therefore we need to keep references to
+						// entryFileMode and entryObjectId in local
+						// variables
+						FileMode entryFileMode = tree.EntryFileMode;
+						ObjectId entryObjectId = tree.EntryObjectId;
+						edit.Add(new _PathEdit_294(entryFileMode, entryObjectId, path));
 					}
 				}
 				edit.Commit();
@@ -289,21 +302,25 @@ namespace NGit.Api
 			}
 		}
 
-		private sealed class _PathEdit_281 : DirCacheEditor.PathEdit
+		private sealed class _PathEdit_294 : DirCacheEditor.PathEdit
 		{
-			public _PathEdit_281(CanonicalTreeParser tree, string baseArg1) : base(baseArg1)
+			public _PathEdit_294(FileMode entryFileMode, ObjectId entryObjectId, string baseArg1
+				) : base(baseArg1)
 			{
-				this.tree = tree;
+				this.entryFileMode = entryFileMode;
+				this.entryObjectId = entryObjectId;
 			}
 
 			public override void Apply(DirCacheEntry ent)
 			{
-				ent.FileMode = tree.EntryFileMode;
-				ent.SetObjectId(tree.EntryObjectId);
+				ent.FileMode = entryFileMode;
+				ent.SetObjectId(entryObjectId);
 				ent.LastModified = 0;
 			}
 
-			private readonly CanonicalTreeParser tree;
+			private readonly FileMode entryFileMode;
+
+			private readonly ObjectId entryObjectId;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

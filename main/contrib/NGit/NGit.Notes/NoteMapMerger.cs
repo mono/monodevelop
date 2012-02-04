@@ -384,27 +384,16 @@ namespace NGit.Notes
 			ObjectId oursId = Write(oursList);
 			ObjectId theirsId = Write(theirsList);
 			inserter.Flush();
-			ObjectId resultTreeId;
-			if (nonNotesMergeStrategy is ThreeWayMergeStrategy)
+			Merger m = nonNotesMergeStrategy.NewMerger(db, true);
+			if (m is ThreeWayMerger)
 			{
-				ThreeWayMerger m = ((ThreeWayMerger)((ThreeWayMergeStrategy)nonNotesMergeStrategy
-					).NewMerger(db, true));
-				m.SetBase(baseId);
-				if (!m.Merge(oursId, theirsId))
-				{
-					throw new NotesMergeConflictException(baseList, oursList, theirsList);
-				}
-				resultTreeId = m.GetResultTreeId();
+				((ThreeWayMerger)m).SetBase(baseId);
 			}
-			else
+			if (!m.Merge(oursId, theirsId))
 			{
-				Merger m = nonNotesMergeStrategy.NewMerger(db, true);
-				if (!m.Merge(new AnyObjectId[] { oursId, theirsId }))
-				{
-					throw new NotesMergeConflictException(baseList, oursList, theirsList);
-				}
-				resultTreeId = m.GetResultTreeId();
+				throw new NotesMergeConflictException(baseList, oursList, theirsList);
 			}
+			ObjectId resultTreeId = m.GetResultTreeId();
 			AbbreviatedObjectId none = AbbreviatedObjectId.FromString(string.Empty);
 			return NoteParser.Parse(none, resultTreeId, reader).nonNotes;
 		}

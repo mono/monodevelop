@@ -75,6 +75,10 @@ namespace NGit.Api
 
 		private IList<Ref> revertedRefs = new List<Ref>();
 
+		private MergeCommandResult failingResult;
+
+		private IList<string> unmergedPaths;
+
 		/// <param name="repo"></param>
 		protected internal RevertCommand(Repository repo) : base(repo)
 		{
@@ -151,13 +155,24 @@ namespace NGit.Api
 							(), merger.GetResultTreeId());
 						dco.SetFailOnConflict(true);
 						dco.Checkout();
-						string newMessage = "Revert \"" + srcCommit.GetShortMessage() + "\"" + "\n\n" + "This reverts commit "
-							 + srcCommit.Id.GetName() + ".\n";
-						newHead = new Git(GetRepository()).Commit().SetMessage(newMessage).Call();
+						string shortMessage = "Revert \"" + srcCommit.GetShortMessage() + "\"";
+						string newMessage = shortMessage + "\n\n" + "This reverts commit " + srcCommit.Id
+							.GetName() + ".\n";
+						newHead = new Git(GetRepository()).Commit().SetMessage(newMessage).SetReflogComment
+							("revert: " + shortMessage).Call();
 						revertedRefs.AddItem(src);
 					}
 					else
 					{
+						unmergedPaths = merger.GetUnmergedPaths();
+						IDictionary<string, ResolveMerger.MergeFailureReason> failingPaths = merger.GetFailingPaths
+							();
+						if (failingPaths != null)
+						{
+							failingResult = new MergeCommandResult(null, merger.GetBaseCommit(0, 1), new ObjectId
+								[] { headCommit.Id, srcParent.Id }, MergeStatus.FAILED, MergeStrategy.RESOLVE, merger
+								.GetMergeResults(), failingPaths, null);
+						}
 						return null;
 					}
 				}
@@ -220,6 +235,21 @@ namespace NGit.Api
 		public virtual IList<Ref> GetRevertedRefs()
 		{
 			return revertedRefs;
+		}
+
+		/// <returns>
+		/// the result of the merge failure, <code>null</code> if no merge
+		/// failure occurred during the revert
+		/// </returns>
+		public virtual MergeCommandResult GetFailingResult()
+		{
+			return failingResult;
+		}
+
+		/// <returns>the unmerged paths, will be null if no merge conflicts</returns>
+		public virtual IList<string> GetUnmergedPaths()
+		{
+			return unmergedPaths;
 		}
 	}
 }

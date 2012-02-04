@@ -45,6 +45,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using NGit;
 using NGit.Errors;
 using NGit.Fnmatch;
 using NGit.Transport;
@@ -90,7 +91,7 @@ namespace NGit.Transport
 			{
 				home = new FilePath(".").GetAbsoluteFile();
 			}
-			FilePath config = new FilePath(new FilePath(home, ".ssh"), "config");
+			FilePath config = new FilePath(new FilePath(home, ".ssh"), Constants.CONFIG);
 			NGit.Transport.OpenSshConfig osc = new NGit.Transport.OpenSshConfig(home, config);
 			osc.Refresh();
 			return osc;
@@ -414,12 +415,12 @@ namespace NGit.Transport
 
 		internal static string UserName()
 		{
-			return AccessController.DoPrivileged(new _PrivilegedAction_296());
+			return AccessController.DoPrivileged(new _PrivilegedAction_297());
 		}
 
-		private sealed class _PrivilegedAction_296 : PrivilegedAction<string>
+		private sealed class _PrivilegedAction_297 : PrivilegedAction<string>
 		{
-			public _PrivilegedAction_296()
+			public _PrivilegedAction_297()
 			{
 			}
 

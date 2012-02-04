@@ -1733,6 +1733,28 @@ namespace NGit
 				}
 				return a.Equals(b);
 			}
+
+			public override string ToString()
+			{
+				if (section == null)
+				{
+					return "<empty>";
+				}
+				StringBuilder b = new StringBuilder(section);
+				if (subsection != null)
+				{
+					b.Append(".").Append(subsection);
+				}
+				if (name != null)
+				{
+					b.Append(".").Append(name);
+				}
+				if (value != null)
+				{
+					b.Append("=").Append(value);
+				}
+				return b.ToString();
+			}
 		}
 
 		private class StringReader

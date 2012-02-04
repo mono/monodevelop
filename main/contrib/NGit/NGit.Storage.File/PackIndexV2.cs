@@ -178,17 +178,17 @@ namespace NGit.Storage.File
 			IOUtil.ReadFully(fd, packChecksum, 0, packChecksum.Length);
 		}
 
-		internal override long GetObjectCount()
+		public override long GetObjectCount()
 		{
 			return objectCnt;
 		}
 
-		internal override long GetOffset64Count()
+		public override long GetOffset64Count()
 		{
 			return offset64.Length / 8;
 		}
 
-		internal override ObjectId GetObjectId(long nthPosition)
+		public override ObjectId GetObjectId(long nthPosition)
 		{
 			int levelOne = System.Array.BinarySearch(fanoutTable, nthPosition + 1);
 			long @base;
@@ -216,7 +216,7 @@ namespace NGit.Storage.File
 		}
 
 		// p * 5
-		internal override long FindOffset(AnyObjectId objId)
+		public override long FindOffset(AnyObjectId objId)
 		{
 			int levelOne = objId.FirstByte;
 			int levelTwo = BinarySearchLevelTwo(objId, levelOne);
@@ -233,7 +233,7 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="NGit.Errors.MissingObjectException"></exception>
-		internal override long FindCRC32(AnyObjectId objId)
+		public override long FindCRC32(AnyObjectId objId)
 		{
 			int levelOne = objId.FirstByte;
 			int levelTwo = BinarySearchLevelTwo(objId, levelOne);
@@ -244,7 +244,7 @@ namespace NGit.Storage.File
 			return NB.DecodeUInt32(crc32[levelOne], levelTwo << 2);
 		}
 
-		internal override bool HasCRC32Support()
+		public override bool HasCRC32Support()
 		{
 			return true;
 		}
@@ -255,8 +255,8 @@ namespace NGit.Storage.File
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
-		internal override void Resolve(ICollection<ObjectId> matches, AbbreviatedObjectId
-			 id, int matchLimit)
+		public override void Resolve(ICollection<ObjectId> matches, AbbreviatedObjectId id
+			, int matchLimit)
 		{
 			int[] data = names[id.FirstByte];
 			int max = (int)(((uint)offset32[id.FirstByte].Length) >> 2);
@@ -354,12 +354,12 @@ namespace NGit.Storage.File
 
 			protected internal override PackIndex.MutableEntry InitEntry()
 			{
-				return new _MutableEntry_290(this);
+				return new _MutableEntry_291(this);
 			}
 
-			private sealed class _MutableEntry_290 : PackIndex.MutableEntry
+			private sealed class _MutableEntry_291 : PackIndex.MutableEntry
 			{
-				public _MutableEntry_290(EntriesIteratorV2 _enclosing)
+				public _MutableEntry_291(EntriesIteratorV2 _enclosing)
 				{
 					this._enclosing = _enclosing;
 				}

@@ -217,22 +217,30 @@ namespace NGit.Merge
 		/// <exception cref="System.IO.IOException"></exception>
 		private void Checkout()
 		{
-			foreach (KeyValuePair<string, DirCacheEntry> entry in toBeCheckedOut.EntrySet())
+			ObjectReader r = db.ObjectDatabase.NewReader();
+			try
 			{
-				FilePath f = new FilePath(db.WorkTree, entry.Key);
-				if (entry.Value != null)
+				foreach (KeyValuePair<string, DirCacheEntry> entry in toBeCheckedOut.EntrySet())
 				{
-					CreateDir(f.GetParentFile());
-					DirCacheCheckout.CheckoutEntry(db, f, entry.Value);
-				}
-				else
-				{
-					if (!f.Delete())
+					FilePath f = new FilePath(db.WorkTree, entry.Key);
+					if (entry.Value != null)
 					{
-						failingPaths.Put(entry.Key, ResolveMerger.MergeFailureReason.COULD_NOT_DELETE);
+						CreateDir(f.GetParentFile());
+						DirCacheCheckout.CheckoutEntry(db, f, entry.Value, r);
 					}
+					else
+					{
+						if (!f.Delete())
+						{
+							failingPaths.Put(entry.Key, ResolveMerger.MergeFailureReason.COULD_NOT_DELETE);
+						}
+					}
+					modifiedFiles.AddItem(entry.Key);
 				}
-				modifiedFiles.AddItem(entry.Key);
+			}
+			finally
+			{
+				r.Release();
 			}
 		}
 
@@ -374,13 +382,55 @@ namespace NGit.Merge
 			{
 				return false;
 			}
-			if (NonTree(modeO) && modeO == modeT && tw.IdEqual(T_OURS, T_THEIRS))
+			if (NonTree(modeO) && NonTree(modeT) && tw.IdEqual(T_OURS, T_THEIRS))
 			{
-				// OURS and THEIRS are equal: it doesn't matter which one we choose.
-				// OURS is chosen.
-				Add(tw.RawPath, ours, DirCacheEntry.STAGE_0);
-				// no checkout needed!
-				return true;
+				// OURS and THEIRS have equal content. Check the file mode
+				if (modeO == modeT)
+				{
+					// content and mode of OURS and THEIRS are equal: it doesn't
+					// matter which one we choose. OURS is chosen.
+					Add(tw.RawPath, ours, DirCacheEntry.STAGE_0);
+					// no checkout needed!
+					return true;
+				}
+				else
+				{
+					// same content but different mode on OURS and THEIRS.
+					// Try to merge the mode and report an error if this is
+					// not possible.
+					int newMode = MergeFileModes(modeB, modeO, modeT);
+					if (newMode != FileMode.MISSING.GetBits())
+					{
+						if (newMode == modeO)
+						{
+							// ours version is preferred
+							Add(tw.RawPath, ours, DirCacheEntry.STAGE_0);
+						}
+						else
+						{
+							// the preferred version THEIRS has a different mode
+							// than ours. Check it out!
+							if (IsWorktreeDirty())
+							{
+								return false;
+							}
+							DirCacheEntry e = Add(tw.RawPath, theirs, DirCacheEntry.STAGE_0);
+							toBeCheckedOut.Put(tw.PathString, e);
+						}
+						return true;
+					}
+					else
+					{
+						// FileModes are not mergeable. We found a conflict on modes
+						Add(tw.RawPath, @base, DirCacheEntry.STAGE_1);
+						Add(tw.RawPath, ours, DirCacheEntry.STAGE_2);
+						Add(tw.RawPath, theirs, DirCacheEntry.STAGE_3);
+						unmergedPaths.AddItem(tw.PathString);
+						mergeResults.Put(tw.PathString, new MergeResult<RawText>(Sharpen.Collections.EmptyList
+							<RawText>()).Upcast ());
+					}
+					return true;
+				}
 			}
 			if (NonTree(modeO) && modeB == modeT && tw.IdEqual(T_BASE, T_THEIRS))
 			{
@@ -465,7 +515,10 @@ namespace NGit.Merge
 				{
 					return false;
 				}
-				if (!ContentMerge(@base, ours, theirs))
+				MergeResult<RawText> result = ContentMerge(@base, ours, theirs);
+				FilePath of = WriteMergedFile(result);
+				UpdateIndex(@base, ours, theirs, result, of);
+				if (result.ContainsConflicts())
 				{
 					unmergedPaths.AddItem(tw.PathString);
 				}
@@ -500,19 +553,37 @@ namespace NGit.Merge
 						}
 						unmergedPaths.AddItem(tw.PathString);
 						// generate a MergeResult for the deleted file
-						RawText baseText = @base == null ? RawText.EMPTY_TEXT : GetRawText(@base.EntryObjectId
-							, db);
-						RawText ourText = ours == null ? RawText.EMPTY_TEXT : GetRawText(ours.EntryObjectId
-							, db);
-						RawText theirsText = theirs == null ? RawText.EMPTY_TEXT : GetRawText(theirs.EntryObjectId
-							, db);
-						MergeResult<RawText> result = mergeAlgorithm.Merge(RawTextComparator.DEFAULT, baseText
-							, ourText, theirsText);
-						mergeResults.Put(tw.PathString, result.Upcast());
+						mergeResults.Put(tw.PathString, ContentMerge(@base, ours, theirs).Upcast ());
 					}
 				}
 			}
 			return true;
+		}
+
+		/// <summary>Does the content merge.</summary>
+		/// <remarks>
+		/// Does the content merge. The three texts base, ours and theirs are
+		/// specified with
+		/// <see cref="NGit.Treewalk.CanonicalTreeParser">NGit.Treewalk.CanonicalTreeParser</see>
+		/// . If any of the parsers is
+		/// specified as <code>null</code> then an empty text will be used instead.
+		/// </remarks>
+		/// <param name="base"></param>
+		/// <param name="ours"></param>
+		/// <param name="theirs"></param>
+		/// <returns>the result of the content merge</returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		private MergeResult<RawText> ContentMerge(CanonicalTreeParser @base, CanonicalTreeParser
+			 ours, CanonicalTreeParser theirs)
+		{
+			RawText baseText = @base == null ? RawText.EMPTY_TEXT : GetRawText(@base.EntryObjectId
+				, db);
+			RawText ourText = ours == null ? RawText.EMPTY_TEXT : GetRawText(ours.EntryObjectId
+				, db);
+			RawText theirsText = theirs == null ? RawText.EMPTY_TEXT : GetRawText(theirs.EntryObjectId
+				, db);
+			return (mergeAlgorithm.Merge(RawTextComparator.DEFAULT, baseText, ourText, theirsText
+				));
 		}
 
 		private bool IsIndexDirty()
@@ -545,18 +616,79 @@ namespace NGit.Merge
 			return isDirty;
 		}
 
-		/// <exception cref="System.IO.FileNotFoundException"></exception>
-		/// <exception cref="System.InvalidOperationException"></exception>
-		/// <exception cref="System.IO.IOException"></exception>
-		private bool ContentMerge(CanonicalTreeParser @base, CanonicalTreeParser ours, CanonicalTreeParser
-			 theirs)
+		/// <summary>Updates the index after a content merge has happened.</summary>
+		/// <remarks>
+		/// Updates the index after a content merge has happened. If no conflict has
+		/// occurred this includes persisting the merged content to the object
+		/// database. In case of conflicts this method takes care to write the
+		/// correct stages to the index.
+		/// </remarks>
+		/// <param name="base"></param>
+		/// <param name="ours"></param>
+		/// <param name="theirs"></param>
+		/// <param name="result"></param>
+		/// <param name="of"></param>
+		/// <exception cref="System.IO.FileNotFoundException">System.IO.FileNotFoundException
+		/// 	</exception>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		private void UpdateIndex(CanonicalTreeParser @base, CanonicalTreeParser ours, CanonicalTreeParser
+			 theirs, MergeResult<RawText> result, FilePath of)
+		{
+			if (result.ContainsConflicts())
+			{
+				// a conflict occurred, the file will contain conflict markers
+				// the index will be populated with the three stages and only the
+				// workdir (if used) contains the halfways merged content
+				Add(tw.RawPath, @base, DirCacheEntry.STAGE_1);
+				Add(tw.RawPath, ours, DirCacheEntry.STAGE_2);
+				Add(tw.RawPath, theirs, DirCacheEntry.STAGE_3);
+				mergeResults.Put(tw.PathString, result.Upcast ());
+			}
+			else
+			{
+				// no conflict occurred, the file will contain fully merged content.
+				// the index will be populated with the new merged version
+				DirCacheEntry dce = new DirCacheEntry(tw.PathString);
+				int newMode = MergeFileModes(tw.GetRawMode(0), tw.GetRawMode(1), tw.GetRawMode(2)
+					);
+				// set the mode for the new content. Fall back to REGULAR_FILE if
+				// you can't merge modes of OURS and THEIRS
+				dce.FileMode = (newMode == FileMode.MISSING.GetBits()) ? FileMode.REGULAR_FILE : 
+					FileMode.FromBits(newMode);
+				dce.LastModified = of.LastModified();
+				dce.SetLength((int)of.Length());
+				InputStream @is = new FileInputStream(of);
+				try
+				{
+					dce.SetObjectId(oi.Insert(Constants.OBJ_BLOB, of.Length(), @is));
+				}
+				finally
+				{
+					@is.Close();
+					if (inCore)
+					{
+						FileUtils.Delete(of);
+					}
+				}
+				builder.Add(dce);
+			}
+		}
+
+		/// <summary>Writes merged file content to the working tree.</summary>
+		/// <remarks>
+		/// Writes merged file content to the working tree. In case
+		/// <see cref="inCore">inCore</see>
+		/// is set and we don't have a working tree the content is written to a
+		/// temporary file
+		/// </remarks>
+		/// <param name="result">the result of the content merge</param>
+		/// <returns>the file to which the merged content was written</returns>
+		/// <exception cref="System.IO.FileNotFoundException">System.IO.FileNotFoundException
+		/// 	</exception>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		private FilePath WriteMergedFile(MergeResult<RawText> result)
 		{
 			MergeFormatter fmt = new MergeFormatter();
-			RawText baseText = @base == null ? RawText.EMPTY_TEXT : GetRawText(@base.EntryObjectId
-				, db);
-			// do the merge
-			MergeResult<RawText> result = mergeAlgorithm.Merge(RawTextComparator.DEFAULT, baseText
-				, GetRawText(ours.EntryObjectId, db), GetRawText(theirs.EntryObjectId, db));
 			FilePath of = null;
 			FileOutputStream fos;
 			if (!inCore)
@@ -566,7 +698,7 @@ namespace NGit.Merge
 				{
 					// TODO: This should be handled by WorkingTreeIterators which
 					// support write operations
-					throw new NotSupportedException();
+					throw new NGit.Errors.NotSupportedException();
 				}
 				of = new FilePath(workTree, tw.PathString);
 				fos = new FileOutputStream(of);
@@ -599,41 +731,44 @@ namespace NGit.Merge
 					}
 				}
 			}
-			if (result.ContainsConflicts())
+			return of;
+		}
+
+		/// <summary>Try to merge filemodes.</summary>
+		/// <remarks>
+		/// Try to merge filemodes. If only ours or theirs have changed the mode
+		/// (compared to base) we choose that one. If ours and theirs have equal
+		/// modes return that one. If also that is not the case the modes are not
+		/// mergeable. Return
+		/// <see cref="NGit.FileMode.MISSING">NGit.FileMode.MISSING</see>
+		/// int that case.
+		/// </remarks>
+		/// <param name="modeB">filemode found in BASE</param>
+		/// <param name="modeO">filemode found in OURS</param>
+		/// <param name="modeT">filemode found in THEIRS</param>
+		/// <returns>
+		/// the merged filemode or
+		/// <see cref="NGit.FileMode.MISSING">NGit.FileMode.MISSING</see>
+		/// in case of a
+		/// conflict
+		/// </returns>
+		private int MergeFileModes(int modeB, int modeO, int modeT)
+		{
+			if (modeO == modeT)
 			{
-				// a conflict occurred, the file will contain conflict markers
-				// the index will be populated with the three stages and only the
-				// workdir (if used) contains the halfways merged content
-				Add(tw.RawPath, @base, DirCacheEntry.STAGE_1);
-				Add(tw.RawPath, ours, DirCacheEntry.STAGE_2);
-				Add(tw.RawPath, theirs, DirCacheEntry.STAGE_3);
-				mergeResults.Put(tw.PathString, result.Upcast ());
-				return false;
+				return modeO;
 			}
-			else
+			if (modeB == modeO)
 			{
-				// no conflict occurred, the file will contain fully merged content.
-				// the index will be populated with the new merged version
-				DirCacheEntry dce = new DirCacheEntry(tw.PathString);
-				dce.FileMode = tw.GetFileMode(0);
-				dce.LastModified = of.LastModified();
-				dce.SetLength((int)of.Length());
-				InputStream @is = new FileInputStream(of);
-				try
-				{
-					dce.SetObjectId(oi.Insert(Constants.OBJ_BLOB, of.Length(), @is));
-				}
-				finally
-				{
-					@is.Close();
-					if (inCore)
-					{
-						FileUtils.Delete(of);
-					}
-				}
-				builder.Add(dce);
-				return true;
+				// Base equal to Ours -> chooses Theirs if that is not missing
+				return (modeT == FileMode.MISSING.GetBits()) ? modeO : modeT;
 			}
+			if (modeB == modeT)
+			{
+				// Base equal to Theirs -> chooses Ours if that is not missing
+				return (modeO == FileMode.MISSING.GetBits()) ? modeT : modeO;
+			}
+			return FileMode.MISSING.GetBits();
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

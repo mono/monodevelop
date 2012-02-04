@@ -190,6 +190,27 @@ namespace NGit.Storage.Pack
 			FromConfig(cfg);
 		}
 
+		/// <summary>Copy an existing configuration to a new instance.</summary>
+		/// <remarks>Copy an existing configuration to a new instance.</remarks>
+		/// <param name="cfg">the source configuration to copy from.</param>
+		public PackConfig(NGit.Storage.Pack.PackConfig cfg)
+		{
+			this.compressionLevel = cfg.compressionLevel;
+			this.reuseDeltas = cfg.reuseDeltas;
+			this.reuseObjects = cfg.reuseObjects;
+			this.deltaBaseAsOffset = cfg.deltaBaseAsOffset;
+			this.deltaCompress = cfg.deltaCompress;
+			this.maxDeltaDepth = cfg.maxDeltaDepth;
+			this.deltaSearchWindowSize = cfg.deltaSearchWindowSize;
+			this.deltaSearchMemoryLimit = cfg.deltaSearchMemoryLimit;
+			this.deltaCacheSize = cfg.deltaCacheSize;
+			this.deltaCacheLimit = cfg.deltaCacheLimit;
+			this.bigFileThreshold = cfg.bigFileThreshold;
+			this.threads = cfg.threads;
+			this.executor = cfg.executor;
+			this.indexVersion = cfg.indexVersion;
+		}
+
 		/// <summary>Check whether to reuse deltas existing in repository.</summary>
 		/// <remarks>
 		/// Check whether to reuse deltas existing in repository.

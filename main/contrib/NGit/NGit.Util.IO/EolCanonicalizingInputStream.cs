@@ -41,13 +41,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using NGit.Diff;
 using Sharpen;
 
 namespace NGit.Util.IO
 {
-	/// <summary>An input stream which canonicalizes EOLs bytes on the fly to '\n'.</summary>
+	/// <summary>
+	/// An input stream which canonicalizes EOLs bytes on the fly to '\n', unless the
+	/// first 8000 bytes indicate the stream is binary.
+	/// </summary>
 	/// <remarks>
-	/// An input stream which canonicalizes EOLs bytes on the fly to '\n'.
+	/// An input stream which canonicalizes EOLs bytes on the fly to '\n', unless the
+	/// first 8000 bytes indicate the stream is binary.
 	/// Note: Make sure to apply this InputStream only to text files!
 	/// </remarks>
 	public class EolCanonicalizingInputStream : InputStream
@@ -61,6 +66,10 @@ namespace NGit.Util.IO
 		private int cnt;
 
 		private int ptr;
+
+		private bool isBinary;
+
+		private bool modeDetected;
 
 		/// <summary>Creates a new InputStream, wrapping the specified stream</summary>
 		/// <param name="in">raw input stream</param>
@@ -96,8 +105,9 @@ namespace NGit.Util.IO
 					break;
 				}
 				byte b = buf[ptr++];
-				if (b != '\r')
+				if (isBinary || b != '\r')
 				{
+					// Logic for binary files ends here
 					bs[off++] = b;
 					continue;
 				}
@@ -132,6 +142,11 @@ namespace NGit.Util.IO
 			if (cnt < 1)
 			{
 				return false;
+			}
+			if (!modeDetected)
+			{
+				isBinary = RawText.IsBinary(buf, cnt);
+				modeDetected = true;
 			}
 			ptr = 0;
 			return true;

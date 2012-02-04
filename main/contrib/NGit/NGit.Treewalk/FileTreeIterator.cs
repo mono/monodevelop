@@ -246,5 +246,14 @@ namespace NGit.Treewalk
 		{
 			return ((FileTreeIterator.FileEntry)Current()).GetFile();
 		}
+
+		protected internal override byte[] IdSubmodule(WorkingTreeIterator.Entry e)
+		{
+			if (repository == null)
+			{
+				return IdSubmodule(GetDirectory(), e);
+			}
+			return base.IdSubmodule(e);
+		}
 	}
 }

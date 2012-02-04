@@ -99,6 +99,36 @@ namespace NGit.Treewalk.Filter
 			return Create(p);
 		}
 
+		/// <summary>Create a collection of path filters from Java strings.</summary>
+		/// <remarks>
+		/// Create a collection of path filters from Java strings.
+		/// <p>
+		/// Path strings are relative to the root of the repository. If the user's
+		/// input should be assumed relative to a subdirectory of the repository the
+		/// caller must prepend the subdirectory's path prior to creating the filter.
+		/// <p>
+		/// Path strings use '/' to delimit directories on all platforms.
+		/// <p>
+		/// Paths may appear in any order. Sorting may be done internally when the
+		/// group is constructed if doing so will improve path matching performance.
+		/// </remarks>
+		/// <param name="paths">the paths to test against. Must have at least one entry.</param>
+		/// <returns>a new filter for the paths supplied.</returns>
+		public static TreeFilter CreateFromStrings(params string[] paths)
+		{
+			if (paths.Length == 0)
+			{
+				throw new ArgumentException(JGitText.Get().atLeastOnePathIsRequired);
+			}
+			int length = paths.Length;
+			PathFilter[] p = new PathFilter[length];
+			for (int i = 0; i < length; i++)
+			{
+				p[i] = PathFilter.Create(paths[i]);
+			}
+			return Create(p);
+		}
+
 		/// <summary>Create a collection of path filters.</summary>
 		/// <remarks>
 		/// Create a collection of path filters.
@@ -169,9 +199,9 @@ namespace NGit.Treewalk.Filter
 
 		internal class Group : TreeFilter
 		{
-			private sealed class _IComparer_153 : IComparer<PathFilter>
+			private sealed class _IComparer_180 : IComparer<PathFilter>
 			{
-				public _IComparer_153()
+				public _IComparer_180()
 				{
 				}
 
@@ -181,7 +211,7 @@ namespace NGit.Treewalk.Filter
 				}
 			}
 
-			private static readonly IComparer<PathFilter> PATH_SORT = new _IComparer_153();
+			private static readonly IComparer<PathFilter> PATH_SORT = new _IComparer_180();
 
 			private readonly PathFilter[] paths;
 

@@ -52,8 +52,11 @@ namespace NGit.Revplot
 	/// <p>
 	/// Commits are strung onto a lane. For many UIs a lane represents a column.
 	/// </remarks>
+	[System.Serializable]
 	public class PlotLane
 	{
+		private const long serialVersionUID = 1L;
+
 		internal int position;
 
 		/// <summary>Logical location of this lane within the graphing plane.</summary>

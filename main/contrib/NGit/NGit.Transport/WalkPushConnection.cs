@@ -47,6 +47,7 @@ using NGit;
 using NGit.Errors;
 using NGit.Storage.Pack;
 using NGit.Transport;
+using NGit.Util.IO;
 using Sharpen;
 
 namespace NGit.Transport
@@ -176,7 +177,7 @@ namespace NGit.Transport
 			{
 				CreateNewRepository(updates);
 			}
-			RefWriter refWriter = new _RefWriter_177(this, newRefs.Values);
+			RefWriter refWriter = new _RefWriter_179(this, newRefs.Values);
 			if (!packedRefUpdates.IsEmpty())
 			{
 				try
@@ -207,9 +208,9 @@ namespace NGit.Transport
 			}
 		}
 
-		private sealed class _RefWriter_177 : RefWriter
+		private sealed class _RefWriter_179 : RefWriter
 		{
-			public _RefWriter_177(WalkPushConnection _enclosing, ICollection<Ref> baseArg1) : 
+			public _RefWriter_179(WalkPushConnection _enclosing, ICollection<Ref> baseArg1) : 
 				base(baseArg1)
 			{
 				this._enclosing = _enclosing;
@@ -238,8 +239,8 @@ namespace NGit.Transport
 				());
 			try
 			{
-				IList<ObjectId> need = new AList<ObjectId>();
-				IList<ObjectId> have = new AList<ObjectId>();
+				ICollection<ObjectId> need = new HashSet<ObjectId>();
+				ICollection<ObjectId> have = new HashSet<ObjectId>();
 				foreach (RemoteRefUpdate r in updates)
 				{
 					need.AddItem(r.GetNewObjectId());
@@ -286,7 +287,7 @@ namespace NGit.Transport
 				OutputStream os = dest.WriteFile(pathPack, monitor, wt + "..pack");
 				try
 				{
-					os = new BufferedOutputStream(os);
+					os = new SafeBufferedOutputStream(os);
 					writer.WritePack(monitor, monitor, os);
 				}
 				finally
@@ -296,7 +297,7 @@ namespace NGit.Transport
 				os = dest.WriteFile(pathIdx, monitor, wt + "..idx");
 				try
 				{
-					os = new BufferedOutputStream(os);
+					os = new SafeBufferedOutputStream(os);
 					writer.WriteIndex(os);
 				}
 				finally
@@ -417,7 +418,7 @@ namespace NGit.Transport
 			{
 				string config = "[core]\n" + "\trepositoryformatversion = 0\n";
 				byte[] bytes = Constants.Encode(config);
-				dest.WriteFile(WalkRemoteObjectDatabase.ROOT_DIR + "config", bytes);
+				dest.WriteFile(WalkRemoteObjectDatabase.ROOT_DIR + Constants.CONFIG, bytes);
 			}
 			catch (IOException e)
 			{

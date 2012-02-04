@@ -3,13 +3,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>NSch</RootNamespace>
     <AssemblyName>NSch</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -194,6 +193,7 @@
     <Compile Include="NSch\Sharpen\MessageProp.cs" />
     <Compile Include="NSch\Sharpen\DHPrivateKey.cs" />
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="NSch\Sharpen\" />
   </ItemGroup>
@@ -203,5 +203,4 @@
       <Name>Sharpen</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

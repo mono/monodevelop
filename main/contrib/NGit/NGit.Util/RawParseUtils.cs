@@ -822,7 +822,8 @@ namespace NGit.Util
 			{
 				return null;
 			}
-			int nameEnd = emailB - 2 >= 0 && raw[emailB - 2] == ' ' ? emailB - 2 : emailB - 1;
+			int nameEnd = emailB - 2 >= nameB && raw[emailB - 2] == ' ' ? emailB - 2 : emailB
+				 - 1;
 			string name = Decode(cs, raw, nameB, nameEnd);
 			string email = Decode(cs, raw, emailB, emailE - 1);
 			// Start searching from end of line, as after first name-email pair,

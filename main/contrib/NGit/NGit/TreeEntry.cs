@@ -236,18 +236,6 @@ namespace NGit
 			}
 		}
 
-		/// <summary>Helper for accessing tree/blob/index methods.</summary>
-		/// <remarks>Helper for accessing tree/blob/index methods.</remarks>
-		/// <param name="i"></param>
-		/// <returns>'/' for Tree entries and NUL for non-treeish objects</returns>
-		public static int LastChar(GitIndex.Entry i)
-		{
-			// FIXME, gitlink etc. Currently Trees cannot appear in the
-			// index so '\0' is always returned, except maybe for submodules
-			// which we do not support yet.
-			return FileMode.TREE.Equals(i.GetModeBits()) ? '/' : '\0';
-		}
-
 		/// <returns>mode (type of object)</returns>
 		public abstract FileMode GetMode();
 

@@ -94,9 +94,12 @@ namespace NGit
 
 		private CoreConfig(Config rc)
 		{
-			compression = rc.GetInt("core", "compression", Deflater.DEFAULT_COMPRESSION);
-			packIndexVersion = rc.GetInt("pack", "indexversion", 2);
-			logAllRefUpdates = rc.GetBoolean("core", "logallrefupdates", true);
+			compression = rc.GetInt(ConfigConstants.CONFIG_CORE_SECTION, ConfigConstants.CONFIG_KEY_COMPRESSION
+				, Deflater.DEFAULT_COMPRESSION);
+			packIndexVersion = rc.GetInt(ConfigConstants.CONFIG_PACK_SECTION, ConfigConstants
+				.CONFIG_KEY_INDEXVERSION, 2);
+			logAllRefUpdates = rc.GetBoolean(ConfigConstants.CONFIG_CORE_SECTION, ConfigConstants
+				.CONFIG_KEY_LOGALLREFUPDATES, true);
 			excludesfile = rc.GetString(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants
 				.CONFIG_KEY_EXCLUDESFILE);
 		}
