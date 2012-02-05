@@ -217,6 +217,12 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
+			// If we have an array of paths such as: new [] { "/Foo/Directory", "/Foo/Directory/File1", "/Foo/Directory/File2" }
+			// svn will successfully revert the first entry (the directory) and then throw an error when trying to revert the
+			// second and third entries because by reverting the directory the files are implicitly reverted. Try to work around
+			// this issue.
+			Array.Sort<FilePath>(localPaths);
+			Array.Reverse (localPaths);
 			Svn.Revert (localPaths, recurse, monitor);
 		}
 
