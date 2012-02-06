@@ -571,9 +571,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (task == null)
 				return;
 			
-			string tmpPath = GetPath (task);
-			string fileName;
+			string tmpPath = "";
+			string fileName = "";
 			try {
+				tmpPath = GetPath (task);
 				fileName = Path.GetFileName (tmpPath);
 			} catch (Exception) { 
 				fileName =  tmpPath;
