@@ -350,58 +350,6 @@ namespace MonoDevelop.VersionControl.Git
 			repo.GetConfig().Save();
 			return repo;
 		}
-		
-		static int GetFileLineCount (NGit.Repository repo, TreeWalk tw) {
-			ObjectId id = tw.GetObjectId (0);
-			byte[] data = repo.ObjectDatabase.Open (id).GetBytes ();			
-			return new RawText (data).Size();
-		}
-		
-		static RawText GetRawText(NGit.Repository repo, string file, RevCommit commit) {
-			TreeWalk tw = TreeWalk.ForPath (repo, file, commit.Tree);
-			if (tw == null)
-				return new RawText (new byte[0]);
-			ObjectId objectID = tw.GetObjectId(0);
-			byte[] data = repo.ObjectDatabase.Open (objectID).GetBytes ();
-			return new RawText (data);
-		}
-
-		static IEnumerable<Hunk> GetDiffHunks (RawText curText, RawText ancestorText)
-		{
-			Dictionary<string, int> codeDictionary = new Dictionary<string, int> ();
-			int codeCounter = 0;
-			int[] ancestorDiffCodes = GetDiffCodes (ref codeCounter, codeDictionary, ancestorText);
-			int[] currentDiffCodes = GetDiffCodes (ref codeCounter, codeDictionary, curText);
-			return Diff.GetDiff<int> (ancestorDiffCodes, currentDiffCodes);
-		}
-
-		static int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary, RawText text)
-		{
-			int lineCount = text.Size ();
-			int[] result = new int[lineCount];
-			string[] lines = GetLineStrings (text);
-			for (int i = 0; i < lineCount; i++) {
-				string lineText = lines [i];
-				int curCode;
-				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
-					codeDictionary [lineText] = curCode = ++codeCounter;
-				}
-				result [i] = curCode;
-			}
-			return result;
-		}
-
-		static string[] GetLineStrings (RawText text)
-		{
-			int lineCount = text.Size ();
-			string[] lines = new string[lineCount];
-
-			for (int i = 0; i < lineCount; i++) {
-				lines [i] = text.GetString (i);
-			}
-
-			return lines;
-		}
 
 		public static MergeCommandResult MergeTrees (NGit.ProgressMonitor monitor, NGit.Repository repo, RevCommit srcBase, RevCommit srcCommit, string sourceDisplayName, bool commitResult)
 		{
