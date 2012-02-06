@@ -430,17 +430,5 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 	}
-	
-	class RevisionObjectIdPair
-	{
-		public RevisionObjectIdPair(RevCommit revision, ObjectId objectId)
-		{
-			this.Commit = revision;
-			this.ObjectId = objectId;
-		}
-		
-		public RevCommit Commit { get; private set; }
-		public ObjectId ObjectId { get; private set; }
-	}
 }
 
