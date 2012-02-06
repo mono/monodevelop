@@ -243,7 +243,7 @@ namespace Mono.Debugging.Client
 						breakpointStore.BreakEventModified -= OnBreakpointModified;
 						breakpointStore.BreakEventEnableStatusChanged -= OnBreakpointStatusChanged;
 						breakpointStore.CheckingReadOnly -= BreakpointStoreCheckingReadOnly;
-						Breakpoints.ResetAdjustedBreakpoints ();
+						breakpointStore.ResetAdjustedBreakpoints ();
 					}
 					
 					breakpointStore = value;
