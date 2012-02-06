@@ -644,8 +644,8 @@ namespace MonoDevelop.VersionControl.Git
 			List<FilePath> changedFiles = new List<FilePath> ();
 			List<FilePath> removedFiles = new List<FilePath> ();
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Revering files"), 3);
-			monitor.BeginStepTask (GettextCatalog.GetString ("Revering files"), localPaths.Length, 2);
+			monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), 3);
+			monitor.BeginStepTask (GettextCatalog.GetString ("Reverting files"), localPaths.Length, 2);
 			
 			DirCache dc = repo.LockDirCache ();
 			DirCacheBuilder builder = dc.Builder ();
