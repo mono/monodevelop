@@ -163,7 +163,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevWalk walk = new RevWalk (repo);
 			string path = ToGitPath (localFile);
 			if (path != ".")
-				walk.SetTreeFilter (AndTreeFilter.Create (TreeFilter.ANY_DIFF, PathFilter.Create (path)));
+				walk.SetTreeFilter (FollowFilter.Create (path));
 			walk.MarkStart (hc);
 			
 			foreach (RevCommit commit in walk) {
