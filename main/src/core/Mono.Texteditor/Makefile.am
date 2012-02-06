@@ -159,6 +159,8 @@ RES =  \
 	Styles/IrBlackStyle.xml \
 	Styles/OblivionStyle.xml \
 	Styles/Styles.xsd \
+	Styles/SolarizedDarkStyle.xml \
+	Styles/SolarizedLightStyle.xml \
 	Styles/TangoLightStyle.xml \
 	Styles/VisualStudioStyle.xml \
 	SyntaxModes/ActionScriptSyntaxMode.xml \

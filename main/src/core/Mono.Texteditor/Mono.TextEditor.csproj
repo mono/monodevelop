@@ -291,6 +291,12 @@
     <EmbeddedResource Include="SyntaxModes\ShellScriptSyntaxMode.xml">
       <LogicalName>ShellScriptSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Styles\SolarizedLightStyle.xml">
+      <LogicalName>SolarizedLightStyle.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\SolarizedDarkStyle.xml">
+      <LogicalName>SolarizedDarkStyle.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
