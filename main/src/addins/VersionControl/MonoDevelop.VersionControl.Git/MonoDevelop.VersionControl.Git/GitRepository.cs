@@ -163,7 +163,7 @@ namespace MonoDevelop.VersionControl.Git
 			RevWalk walk = new RevWalk (repo);
 			string path = ToGitPath (localFile);
 			if (path != ".")
-				walk.SetTreeFilter (AndTreeFilter.Create (TreeFilter.ANY_DIFF, PathFilter.Create (path)));
+				walk.SetTreeFilter (FollowFilter.Create (path));
 			walk.MarkStart (hc);
 			
 			foreach (RevCommit commit in walk) {
@@ -644,8 +644,8 @@ namespace MonoDevelop.VersionControl.Git
 			List<FilePath> changedFiles = new List<FilePath> ();
 			List<FilePath> removedFiles = new List<FilePath> ();
 			
-			monitor.BeginTask (GettextCatalog.GetString ("Revering files"), 3);
-			monitor.BeginStepTask (GettextCatalog.GetString ("Revering files"), localPaths.Length, 2);
+			monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), 3);
+			monitor.BeginStepTask (GettextCatalog.GetString ("Reverting files"), localPaths.Length, 2);
 			
 			DirCache dc = repo.LockDirCache ();
 			DirCacheBuilder builder = dc.Builder ();
@@ -1282,35 +1282,24 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit hc = GetHeadCommit ();
 			if (hc == null)
 				return new Annotation [0];
-			RevCommit[] lineCommits = GitUtil.Blame (repo, hc, repositoryPath);
-			int lineCount = lineCommits.Length;
-			List<Annotation> annotations = new List<Annotation>(lineCount);
-			for (int n = 0; n < lineCount; n++) {
-				RevCommit c = lineCommits[n];
-				Annotation annotation = new Annotation (c.Name, c.GetAuthorIdent ().GetName () + "<" + c.GetAuthorIdent ().GetEmailAddress () + ">", c.GetCommitterIdent ().GetWhen ());
-				annotations.Add(annotation);
-			}
 			
-			Document baseDocument = new Document (GetCommitTextContent (hc, repositoryPath));
-			Document workingDocument = new Document (File.ReadAllText (repositoryPath));
-			Annotation uncommittedRev = new Annotation("0000000000000000000000000000000000000000", "", new DateTime());
-			
-			// Based on Subversion code until we support blame on things other than commits
-			foreach (var hunk in baseDocument.Diff (workingDocument)) {
-				annotations.RemoveRange (hunk.RemoveStart, hunk.Removed);
-				int start = hunk.InsertStart - 1; //Line number - 1 = index
-				bool insert = (start < annotations.Count);
-					
-				for (int i = 0; i < hunk.Inserted; ++i) {
-					if (insert) {
-						annotations.Insert (start, uncommittedRev);
-					} else {
-						annotations.Add (uncommittedRev);
-					}
+			var git = new NGit.Api.Git (repo);
+			var result = git.Blame ().SetFilePath (ToGitPath (repositoryPath)).Call ();
+			result.ComputeAll ();
+
+			List<Annotation> list = new List<Annotation> ();
+			for (int i = 0; i < result.GetResultContents ().Size (); i++) {
+				var commit = result.GetSourceCommit (i);
+				var author = result.GetSourceCommitter (i);
+				if (commit != null && author != null) {
+					string name = string.Format ("{0} <{1}>", author.GetName (), author.GetEmailAddress ());
+					var commitTime = new DateTime (1970, 1, 1).AddSeconds (commit.CommitTime);
+					list.Add (new Annotation (commit.Name, name, commitTime));
+				} else {
+					list.Add (new Annotation (new string ('0', 20), "<uncommitted>", DateTime.Now));
 				}
 			}
-			
-			return annotations.ToArray();
+			return list.ToArray ();
 		}
 		
 		internal GitRevision GetPreviousRevisionFor (GitRevision revision)
