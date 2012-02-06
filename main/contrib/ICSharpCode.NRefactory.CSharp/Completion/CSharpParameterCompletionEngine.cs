@@ -53,6 +53,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			CompilationUnit baseUnit;
 			if (currentMember == null && currentType == null) 
 				return null;
+			if (Unit == null)
+				return null;
 			baseUnit = ParseStub ("x] = a[1");
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
@@ -66,6 +68,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			if (member == null || member2 == null)
+				return null;
 			member2.Remove ();
 			member.ReplaceWith (member2);
 			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
@@ -78,13 +82,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			CompilationUnit baseUnit;
 			if (currentMember == null && currentType == null) 
 				return null;
+			if (Unit == null)
+				return null;
 			baseUnit = ParseStub ("x> a");
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column + 1); // '>' position
-			
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			if (member == null || member2 == null)
+				return null;
 			member2.Remove ();
 			member.ReplaceWith (member2);
 			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
