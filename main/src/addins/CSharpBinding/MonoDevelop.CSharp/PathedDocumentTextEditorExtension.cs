@@ -111,9 +111,9 @@ namespace MonoDevelop.CSharp
 					return result;
 				var pf = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
 				if (tag is IParsedFile) {
-					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
+					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
 				} else {
-					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
+					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates);
 				}
 				
 				stringCache[rx] = result;
@@ -296,7 +296,7 @@ namespace MonoDevelop.CSharp
 				if (typeDef != null) {
 					var curType = typeDef;
 					while (curType != null) {
-						var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
+						var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
 						if (curType.DeclaringTypeDefinition == null)
 							flags |= OutputFlags.UseFullInnerTypeName;
 						var markup = amb.GetString ((IEntity)curType, flags);
@@ -318,7 +318,7 @@ namespace MonoDevelop.CSharp
 				}
 				
 				if (member != null) {
-					var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
+					var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
 					result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member });
 				}
 				
