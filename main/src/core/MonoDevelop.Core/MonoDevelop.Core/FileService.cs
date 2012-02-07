@@ -195,9 +195,11 @@ namespace MonoDevelop.Core
 		
 		public static void CreateDirectory (string path)
 		{
-			Debug.Assert (!String.IsNullOrEmpty (path));
-			GetFileSystemForPath (path, true).CreateDirectory (path);
-			OnFileCreated (new FileEventArgs (path, true));
+			if (!Directory.Exists (path)) {
+				Debug.Assert (!String.IsNullOrEmpty (path));
+				GetFileSystemForPath (path, true).CreateDirectory (path);
+				OnFileCreated (new FileEventArgs (path, true));
+			}
 		}
 		
 		public static void CopyDirectory (string srcPath, string dstPath)
