@@ -106,7 +106,7 @@ namespace Mono.TextEditor.Tests
 
 		public List<ISegment> BreakAllLines (TextEditor editor)
 		{
-			return TextBreaker.BreakLinesIntoWords (editor, 1, editor.LineCount);
+			return TextBreaker.BreakLinesIntoWords (editor, 1, editor.LineCount, false);
 		}
 
 		[TestFixtureSetUp] 

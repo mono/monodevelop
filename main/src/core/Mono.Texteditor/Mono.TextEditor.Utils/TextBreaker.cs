@@ -71,7 +71,7 @@ namespace Mono.TextEditor.Utils
 		/// <param name='lineCount'>
 		/// The number of lines to get words from
 		/// </param>
-		public static List<ISegment> BreakLinesIntoWords (Document document, int startLine, int lineCount)
+		public static List<ISegment> BreakLinesIntoWords (Document document, int startLine, int lineCount, bool includeDelimiter = true)
 		{
 			var result = new List<ISegment> ();
 			for (int line = startLine; line < startLine + lineCount; line++) {
@@ -95,6 +95,8 @@ namespace Mono.TextEditor.Utils
 				if (lastWordEnd != lineSegment.EditableLength) {
 					result.Add (new Mono.TextEditor.Segment (offset + lastWordEnd, lineSegment.EditableLength - lastWordEnd));
 				}
+				if (includeDelimiter && lineSegment.DelimiterLength > 0)
+					result.Add (new Mono.TextEditor.Segment (lineSegment.Offset + lineSegment.EditableLength, lineSegment.DelimiterLength));
 			}
 			
 			return result;

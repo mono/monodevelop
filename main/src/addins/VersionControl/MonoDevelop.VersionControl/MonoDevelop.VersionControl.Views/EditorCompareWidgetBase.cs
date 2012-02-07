@@ -257,7 +257,13 @@ namespace MonoDevelop.VersionControl.Views
 		public static Cairo.Rectangle GetDiffRectangle (TextEditor editor, int startOffset, int endOffset)
 		{
 			var point = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset), true);
-			var point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (endOffset), true);
+			Cairo.Point point2;
+			var line = editor.GetLineByOffset (startOffset);
+			if (line.Offset + line.EditableLength < endOffset) {
+				point2 = new Cairo.Point ((int)(point.X + editor.TextViewMargin.CharWidth * (endOffset - startOffset)), point.Y);
+			} else {
+				point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (endOffset), true);
+			}
 			return new Cairo.Rectangle (point.X - editor.TextViewMargin.XOffset, point.Y, point2.X - point.X, editor.LineHeight);
 		}
 		
