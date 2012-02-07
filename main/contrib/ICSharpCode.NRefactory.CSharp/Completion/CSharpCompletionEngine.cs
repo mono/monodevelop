@@ -595,7 +595,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				} else {
 					csResolver = GetState ();
 				}
-				
 				// identifier has already started with the first letter
 				offset--;
 				AddContextCompletion (contextList, csResolver, identifierStart.Item2);
@@ -837,6 +836,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AddTypesAndNamespaces (wrapper, state, node, typePred);
 			
 			wrapper.Result.Add (factory.CreateLiteralCompletionData ("global"));
+			
 			if (!(node is AstType)) {
 				if (currentMember != null) {
 					AddKeywords (wrapper, statementStartKeywords);
@@ -856,9 +856,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddCustom ("case"); 
 				}
 				
-				AddKeywords (wrapper, primitiveTypesKeywords);
 			}
-			
+			AddKeywords (wrapper, primitiveTypesKeywords);
+			if (currentMember != null)
+				wrapper.AddCustom ("var"); 
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 			
 			if (node != null && node.Role == AstNode.Roles.Argument) {
