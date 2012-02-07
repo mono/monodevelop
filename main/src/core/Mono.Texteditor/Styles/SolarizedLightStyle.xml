@@ -54,8 +54,8 @@ THE SOFTWARE.
 	<Style name="text" color="base00" bgColor="base3">
 		<Style name="background" color="base3">
 			<Style name="readonly" color="base2"/>
-			<Style name="searchresult-main" color="#f3d647"/>
-			<Style name="searchresult" color="#ffe2b9"/>
+			<Style name="searchresult-main" color="base03"/>
+			<Style name="searchresult" color="base03"/>
 		</Style>
 		<Style name="selection" color="base3" bgColor="magenta"/>
 		<Style name="selection.inactive" color="base3" bgColor="magenta"/>
@@ -87,9 +87,9 @@ THE SOFTWARE.
 	</Style>
 	
 	<Style name="marker">
-		<Style name="line" color="base1"/>
-		<Style name="line.changed" color="#90EE90"/>
-		<Style name="line.dirty" color="#EEEE50"/>
+		<Style name="line" color="base2"/>
+		<Style name="line.changed" color="green"/>
+		<Style name="line.dirty" color="yellow"/>
 	
 		<Style name="ruler" color="base1"/>
 		<Style name="whitespace" color="base1"> 
@@ -100,12 +100,12 @@ THE SOFTWARE.
 		
 		<Style name="bookmark.color1" color="base3"/>
 		<Style name="bookmark.color2" color="blue"/>
-<!--		<Style name="underline" color="scarletred1">
-			<Style name="error" color="scarletred1"/>
-			<Style name="warning" color="butter3"/>
-			<Style name="warning" color="butter3"/>
+		<Style name="underline" color="red">
+			<Style name="error" color="red"/>
+			<Style name="warning" color="orange"/>
+			<Style name="warning" color="orange"/>
 		</Style>
-		
+<!--
 		<Style name="template">
 			<Style name="primary_template" color="aluminium2" bgColor="Zombie"/>
 			<Style name="primary_highlighted_template" color="Zombie" bgColor="Lawn"/>
@@ -116,8 +116,8 @@ THE SOFTWARE.
 	</Style>
 	
 	<Style name="bubble">
-		<Style name="warning" color="base1" bgColor="#f4eeda"/>
-		<Style name="error" color="base2" bgColor="#f5eae7"/>
+		<Style name="warning" color="yellow" bgColor="base2"/>
+		<Style name="error" color="red" bgColor="base2"/>
 	</Style>
 
 	<Style name="linenumber" color="base00" bgColor="base2">
@@ -141,9 +141,9 @@ THE SOFTWARE.
 	
 	<Style name="string" color="cyan" />
 	
-	<Style name="keyword" color="yellow">
-		<Style name="semantic.type" color="green"/>
-		<Style name="semantic.field" color="green" weight="Italic"/>
+	<Style name="keyword" color="green">
+		<Style name="semantic.type" color="blue"/>
+		<Style name="semantic.field" color="blue" weight="Italic"/>
 	</Style>
 </EditorStyle>
 
