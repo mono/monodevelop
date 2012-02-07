@@ -1554,12 +1554,12 @@ namespace Mono.TextEditor
 		
 		
 		#region Diff
-		int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary)
+		int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary, bool includeEol)
 		{
 			int i = 0;
 			var result = new int[LineCount];
 			foreach (LineSegment line in Lines) {
-				string lineText = buffer.GetTextAt (line.Offset, line.EditableLength);
+				string lineText = buffer.GetTextAt (line.Offset, includeEol ? line.Length : line.EditableLength);
 				int curCode;
 				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
 					codeDictionary[lineText] = curCode = ++codeCounter;
@@ -1570,12 +1570,12 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public IEnumerable<Hunk> Diff (Document changedDocument)
+		public IEnumerable<Hunk> Diff (Document changedDocument, bool includeEol = true)
 		{
 			var codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;
-			return Mono.TextEditor.Utils.Diff.GetDiff<int> (this.GetDiffCodes (ref codeCounter, codeDictionary),
-				changedDocument.GetDiffCodes (ref codeCounter, codeDictionary));
+			return Mono.TextEditor.Utils.Diff.GetDiff<int> (this.GetDiffCodes (ref codeCounter, codeDictionary, includeEol),
+				changedDocument.GetDiffCodes (ref codeCounter, codeDictionary, includeEol));
 		}
 		#endregion
 		
