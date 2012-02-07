@@ -17,7 +17,7 @@ MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 # Normal launching
 if [ -z "$MONOMAC_DEBUGLAUNCHER_LOGDIR" ]; then
 	#Environment setup
-	export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH:$(HOME)/lib:/usr/local/lib:/lib:/usr/lib"
+	export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH:$HOME/lib:/usr/local/lib:/lib:/usr/lib"
 	export PATH="$MONO_FRAMEWORK_PATH/bin:$PATH"
 	export DYLD_LIBRARY_PATH="$RESOURCES_PATH:$DYLD_LIBRARY_PATH"
 	
@@ -48,7 +48,7 @@ if [ -n "$MONOMAC_DEBUGLAUNCHER_RUNTIME" -a "x$MONOMAC_DEBUGLAUNCHER_RUNTIME" !=
 fi
 
 # Environment setup
-export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH:$(HOME)/lib:/usr/local/lib:/lib:/usr/lib"
+export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH:$HOME/lib:/usr/local/lib:/lib:/usr/lib"
 export PATH="$MONO_FRAMEWORK_PATH/bin:$PATH"
 export DYLD_LIBRARY_PATH="$RESOURCES_PATH:$DYLD_LIBRARY_PATH"
 
