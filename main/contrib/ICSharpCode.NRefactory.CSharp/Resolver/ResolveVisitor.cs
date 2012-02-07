@@ -2528,7 +2528,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			StoreCurrentState(foreachStatement.VariableNameToken);
 			resolver = resolver.AddVariable(v);
-			StoreResult(foreachStatement.VariableNameToken, new LocalResolveResult(v));
+			
+			if (!resolveResultCache.ContainsKey(foreachStatement.VariableNameToken)) {
+				StoreResult(foreachStatement.VariableNameToken, new LocalResolveResult(v));
+			}
+			
 			Scan(foreachStatement.EmbeddedStatement);
 			resolver = resolver.PopBlock();
 			return voidResult;
