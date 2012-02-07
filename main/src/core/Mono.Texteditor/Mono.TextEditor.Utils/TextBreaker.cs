@@ -49,9 +49,9 @@ namespace Mono.TextEditor.Utils
 		/// <param name='lineCount'>
 		/// The number of lines to get words from
 		/// </param>
-		public static List<ISegment> BreakLinesIntoWords (TextEditor editor, int startLine, int lineCount)
+		public static List<ISegment> BreakLinesIntoWords (TextEditor editor, int startLine, int lineCount, bool includeDelimiter = true)
 		{
-			return BreakLinesIntoWords (editor.Document, startLine, lineCount);
+			return BreakLinesIntoWords (editor.Document, startLine, lineCount, includeDelimiter);
 		}
 
 		
