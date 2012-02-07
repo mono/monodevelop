@@ -1,7 +1,7 @@
 #!/bin/bash
 VERSION=2.1.0
 profile=default
-
+tests=no
 prefix=NONE
 test -e "$CONFIG_SITE" && . "$CONFIG_SITE"
 test "$prefix" = NONE && prefix=/usr/local
@@ -136,6 +136,11 @@ configure_packages ()
 	for p in `sed -e /#/d -e 's/ /,/g' < profiles/$profile` ; do
 		path=`echo $p | cut -d ',' -f 1`
 		ops=`echo $p | sed -e s,$path,, -e 's/,/ /'g`
+		if test xyes == x$tests; then
+			enable_tests=--enable-tests
+		else
+			enable_tests=" "
+		fi
 		title="Configuring package: $path"
 		nc=`echo $title | wc -m`
 		echo $title
@@ -143,7 +148,7 @@ configure_packages ()
 		echo
 		echo "Configuration options: $ops"
 		if test -a $path/autogen.sh; then
-			sct=./autogen.sh
+			sct="./autogen.sh $enable_tests"
 		elif test -a $path/configure; then
 			sct=./configure
 		else
@@ -190,6 +195,9 @@ echo
 
 while test x$1 != x; do
 	case $1 in
+		--enable-tests)
+			tests=yes
+			;;
 		--prefix=*)
 			prefix=`echo $1 | sed 's/--prefix=//'`
 			;;
