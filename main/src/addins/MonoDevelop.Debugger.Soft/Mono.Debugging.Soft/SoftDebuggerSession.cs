@@ -1675,7 +1675,9 @@ namespace Mono.Debugging.Soft
 				int rangeLastLine = -1;
 				
 				foreach (Location location in method.Locations) {
-					if (PathComparer.Compare (PathToFileName (NormalizePath (location.SourceFile)), file) == 0) {
+					string srcFile = location.SourceFile;
+					
+					if (srcFile != null && PathComparer.Compare (PathToFileName (NormalizePath (srcFile)), file) == 0) {
 						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
 						// pick the L+1 location, since that's where the debugger is going to stop.
 						if (location.LineNumber == line) {
@@ -1849,12 +1851,16 @@ namespace Mono.Debugging.Soft
 			var lines = new List<AssemblyLine> ();
 			foreach (TypeMirror type in types) {
 				foreach (MethodMirror met in type.GetMethods ()) {
-					if (!PathsAreEqual (NormalizePath (met.SourceFile), file))
+					string srcFile = met.SourceFile != null ? NormalizePath (met.SourceFile) : null;
+					
+					if (srcFile == null || !PathsAreEqual (srcFile, file))
 						continue;
+					
 					var body = met.GetMethodBody ();
 					int lastLine = -1;
 					int firstPos = lines.Count;
 					string addrSpace = met.FullName;
+					
 					foreach (var ins in body.Instructions) {
 						Location loc = met.LocationAtILOffset (ins.Offset);
 						if (loc != null && lastLine == -1) {
