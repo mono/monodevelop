@@ -242,9 +242,12 @@ namespace MonoDevelop.VersionControl.Git
 			
 			if (blame == null)
 			{
-				ObjectId objectId = repo.Resolve (revision);
-				RevCommit commit = walker.ParseCommit (objectId);
-				blame = GitUtil.Blame (repo, commit, new FileInfo (path).FullName);
+				var git = new NGit.Api.Git (repo);
+				var result = git.Blame ().SetFilePath (filePath).Call ();
+
+				blame = new RevCommit [result.GetResultContents ().Size ()];
+				for (int i = 0; i < result.GetResultContents ().Size (); i ++)
+					blame [i] = result.GetSourceCommit (i);
 				blames.Add(key, blame);
 			}
 			
