@@ -57,14 +57,14 @@ THE SOFTWARE.
 			<Style name="searchresult-main" color="base03"/>
 			<Style name="searchresult" color="base03"/>
 		</Style>
-		<Style name="selection" color="base3" bgColor="magenta"/>
-		<Style name="selection.inactive" color="base3" bgColor="magenta"/>
+		<Style name="selection" color="base2" bgColor="base0"/>
+		<Style name="selection.inactive" color="base3" bgColor="base1"/>
 		<Style name="link" color="base00"/>
 		<Style name="punctuation" color="base00"/>
 		<Style name="preprocessor" color="red">
 			<Style name="keyword" color="red" weight="Bold"/>
 		</Style>
-		<Style name="markup" color="red">
+		<Style name="markup" color="blue">
 			<Style name="tag"/>
 		</Style>
 	</Style>
@@ -95,7 +95,7 @@ THE SOFTWARE.
 		<Style name="whitespace" color="base1"> 
 			<Style name="eol" color="base1"/> 
 		</Style>
-		<Style name="invalidline" color="orange"/>
+		<Style name="invalidline" color="base1"/>
 		<Style name="bracket" color="orange" bgColor="base2"/>
 		
 		<Style name="bookmark.color1" color="base3"/>
@@ -131,7 +131,7 @@ THE SOFTWARE.
 	<Style name="fold.highlight" color="base1"/>
 	<Style name="fold.togglemarker" color="base1"/>
 	
-	<Style name="comment"  weight="italic" color="base0">
+	<Style name="comment" color="base0">
 		<Style name="keyword" color="magenta"/>
 	</Style>
 	
@@ -142,8 +142,14 @@ THE SOFTWARE.
 	<Style name="string" color="cyan" />
 	
 	<Style name="keyword" color="green">
+		<Style name="namespace" color="yellow"/>
+		<Style name="type" color="yellow"/>
+		<Style name="modifier" color="yellow"/>
+		
+		<Style name="declaration" color="yellow"/>
+		<Style name="access" color="yellow"/>
 		<Style name="semantic.type" color="blue"/>
-		<Style name="semantic.field" color="blue" weight="Italic"/>
+		<Style name="semantic.field" color="base00" weight="Italic"/>
 	</Style>
 </EditorStyle>
 
