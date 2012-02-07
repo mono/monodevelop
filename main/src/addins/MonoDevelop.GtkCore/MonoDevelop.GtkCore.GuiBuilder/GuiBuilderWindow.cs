@@ -226,7 +226,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal bool IsValidClass (IType cls)
 		{
-			foreach (var bt in cls.GetAllBaseTypeDefinitions ()) {
+			foreach (var bt in cls.DirectBaseTypes) {
 				if (bt.ReflectionName == rootWidget.Component.Type.ClassName)
 					return true;
 				

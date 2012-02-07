@@ -180,6 +180,8 @@ namespace MonoDevelop.AspNet
 		{
 			var existingMembers = new HashSet<string> ();
 			while (cls != null) {
+				if (cls.GetDefinition () == null)
+					break;
 				foreach (var member in cls.GetMembers ()) {
 					if (member.Accessibility == Accessibility.Private || member.Accessibility == Accessibility.Internal)
 					    continue;
@@ -187,9 +189,9 @@ namespace MonoDevelop.AspNet
 						continue;
 					existingMembers.Add (member.Name);
 				}
-				if (!cls.GetAllBaseTypeDefinitions ().Any ())
+				if (!cls.DirectBaseTypes.Any (t => t.Kind != TypeKind.Interface))
 					break;
-				cls = cls.GetAllBaseTypeDefinitions ().First ();
+				cls = cls.DirectBaseTypes.First(t => t.Kind != TypeKind.Interface);
 			}
 			return members.Where (m => !existingMembers.Contains (m.Name));
 		}

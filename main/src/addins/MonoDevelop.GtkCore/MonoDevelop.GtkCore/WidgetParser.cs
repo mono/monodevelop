@@ -84,24 +84,24 @@ namespace MonoDevelop.GtkCore
 					events [ev.Name] = ev;
 					
 			if (inherited) {
-				foreach (var bcls in cls.GetAllBaseTypeDefinitions ()) {
-					if (bcls != null && bcls.Kind != TypeKind.Class)
-						CollectMembers (bcls, true, topType, properties, events);
+				foreach (var bcls in cls.DirectBaseTypes) {
+					if (bcls.GetDefinition () != null && bcls.Kind != TypeKind.Class)
+						CollectMembers (bcls.GetDefinition (), true, topType, properties, events);
 				}
 			}
 		}
 		
 		public string GetBaseType (ITypeDefinition cls, Hashtable knownTypes)
 		{
-			foreach (var bt in cls.GetAllBaseTypeDefinitions ()) {
+			foreach (var bt in cls.DirectBaseTypes) {
 				string name = bt.ReflectionName;
 				if (knownTypes.Contains (name))
 					return name;
 			}
 
-			foreach (var bcls in cls.GetAllBaseTypeDefinitions ()) {
-				if (bcls != null) {
-					string ret = GetBaseType (bcls, knownTypes);
+			foreach (var bcls in cls.DirectBaseTypes) {
+				if (bcls.GetDefinition () != null) {
+					string ret = GetBaseType (bcls.GetDefinition (), knownTypes);
 					if (ret != null)
 						return ret;
 				}
@@ -213,9 +213,9 @@ namespace MonoDevelop.GtkCore
 				}
 			}
 
-			foreach (var bcls in cls.GetAllBaseTypeDefinitions ()) {
-				if (bcls != null && bcls.Kind != TypeKind.Interface)
-					return IsToolboxWidget (bcls);
+			foreach (var bcls in cls.DirectBaseTypes) {
+				if (bcls.GetDefinition () != null && bcls.Kind != TypeKind.Interface)
+					return IsToolboxWidget (bcls.GetDefinition ());
 			}
 
 			return false;

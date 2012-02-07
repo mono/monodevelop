@@ -299,7 +299,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			string typeName = obj.Type.ClassName;
 			
-			foreach (var bt in cls.GetAllBaseTypeDefinitions ()) {
+			foreach (var bt in cls.DirectBaseTypes) {
 				if (bt.FullName == typeName)
 					return true;
 				
