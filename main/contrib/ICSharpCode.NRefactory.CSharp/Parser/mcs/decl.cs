@@ -1199,7 +1199,7 @@ namespace Mono.CSharp {
 			return (state & StateFlags.CLSCompliant) != 0;
 		}
 
-		public bool IsConditionallyExcluded (CompilerContext ctx, Location loc)
+		public bool IsConditionallyExcluded (IMemberContext ctx, Location loc)
 		{
 			if ((Kind & (MemberKind.Class | MemberKind.Method)) == 0)
 				return false;
@@ -1208,9 +1208,18 @@ namespace Mono.CSharp {
 			if (conditions == null)
 				return false;
 
-			foreach (var condition in conditions) {
-				if (loc.CompilationUnit.IsConditionalDefined (ctx, condition))
-					return false;
+			var m = ctx.CurrentMemberDefinition;
+			CompilationSourceFile unit = null;
+			while (m != null && unit == null) {
+				unit = m as CompilationSourceFile;
+				m = m.Parent;
+			}
+
+			if (unit != null) {
+				foreach (var condition in conditions) {
+					if (unit.IsConditionalDefined (condition))
+						return false;
+				}
 			}
 
 			return true;

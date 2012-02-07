@@ -642,6 +642,12 @@ namespace Mono.CSharp {
 			loc = expr.Location;
 		}
 
+		public StatementExpression (ExpressionStatement expr, Location loc)
+		{
+			this.expr = expr;
+			this.loc = loc;
+		}
+
 		public ExpressionStatement Expr {
 			get {
  				return this.expr;
@@ -925,14 +931,17 @@ namespace Mono.CSharp {
 					return;
 				}
 
-				if (unwind_protect)
+				if (unwind_protect || ec.EmitAccurateDebugInfo)
 					ec.Emit (OpCodes.Stloc, ec.TemporaryReturn ());
 			}
 
-			if (unwind_protect)
+			if (unwind_protect) {
 				ec.Emit (OpCodes.Leave, ec.CreateReturnLabel ());
-			else
+			} else if (ec.EmitAccurateDebugInfo) {
+				ec.Emit (OpCodes.Br, ec.CreateReturnLabel ());
+			} else {
 				ec.Emit (OpCodes.Ret);
+			}
 		}
 
 		void Error_ReturnFromIterator (ResolveContext rc)
@@ -1576,9 +1585,6 @@ namespace Mono.CSharp {
 
 		protected override void DoEmit (EmitContext ec)
 		{
-			if (li.IsConstant)
-				return;
-
 			li.CreateBuilder (ec);
 
 			if (Initializer != null)
@@ -1621,6 +1627,11 @@ namespace Mono.CSharp {
 		public BlockConstantDeclaration (FullNamedExpression type, LocalVariable li)
 			: base (type, li)
 		{
+		}
+
+		public override void Emit (EmitContext ec)
+		{
+			// Nothing to emit, not even sequence point
 		}
 
 		protected override Expression ResolveInitializer (BlockContext bc, LocalVariable li, Expression initializer)
@@ -2042,8 +2053,10 @@ namespace Mono.CSharp {
 
 		#region Properties
 
-		public bool HasRet {
-			get { return (flags & Flags.HasRet) != 0; }
+		public bool HasUnreachableClosingBrace {
+			get {
+				return (flags & Flags.HasRet) != 0;
+			}
 		}
 
 		public Block Original {
@@ -2296,7 +2309,6 @@ namespace Mono.CSharp {
 			if (scope_initializers != null)
 				EmitScopeInitializers (ec);
 
-			ec.Mark (StartLocation);
 			DoEmit (ec);
 
 			if (SymbolWriter.HasSymbolWriter)
@@ -2305,14 +2317,8 @@ namespace Mono.CSharp {
 
 		protected void EmitScopeInitializers (EmitContext ec)
 		{
-			SymbolWriter.OpenCompilerGeneratedBlock (ec);
-
-			using (ec.With (EmitContext.Options.OmitDebugInfo, true)) {
-				foreach (Statement s in scope_initializers)
-					s.Emit (ec);
-			}
-
-			SymbolWriter.CloseCompilerGeneratedBlock (ec);
+			foreach (Statement s in scope_initializers)
+				s.Emit (ec);
 		}
 
 		protected virtual void EmitSymbolInfo (EmitContext ec)
@@ -2444,14 +2450,28 @@ namespace Mono.CSharp {
 				am_storey.EmitStoreyInstantiation (ec, this);
 			}
 
+			if (scope_initializers != null)
+				EmitScopeInitializers (ec);
+
+			if (ec.EmitAccurateDebugInfo && ec.Mark (StartLocation)) {
+				ec.Emit (OpCodes.Nop);
+			}
+
 			bool emit_debug_info = SymbolWriter.HasSymbolWriter && Parent != null && !(am_storey is IteratorStorey);
 			if (emit_debug_info)
 				ec.BeginScope ();
 
-			base.Emit (ec);
+			DoEmit (ec);
+
+			if (SymbolWriter.HasSymbolWriter)
+				EmitSymbolInfo (ec);
 
 			if (emit_debug_info)
 				ec.EndScope ();
+
+			if (ec.EmitAccurateDebugInfo && !HasUnreachableClosingBrace && ec.Mark (EndLocation)) {
+				ec.Emit (OpCodes.Nop);
+			}
 		}
 
 		void DefineAnonymousStorey (EmitContext ec)
@@ -2980,6 +3000,7 @@ namespace Mono.CSharp {
 		{
 			this.compiler = ctx;
 			top_block = this;
+			flags |= Flags.HasRet;
 
 			ProcessParameters ();
 		}
@@ -2995,6 +3016,7 @@ namespace Mono.CSharp {
 		{
 			this.compiler = source.TopBlock.compiler;
 			top_block = this;
+			flags |= Flags.HasRet;
 		}
 
 		public bool IsIterator {
@@ -3029,18 +3051,18 @@ namespace Mono.CSharp {
 			//
 			for (int i = 0; i < existing_list.Count; ++i) {
 				existing = existing_list[i];
-				Block b = existing.Block;
+				Block b = existing.Block.Explicit;
 
 				// Collision at same level
-				if (li.Block == b) {
+				if (li.Block.Explicit == b) {
 					li.Block.Error_AlreadyDeclared (name, li);
 					break;
 				}
 
 				// Collision with parent
-				b = li.Block;
-				while ((b = b.Parent) != null) {
-					if (existing.Block == b) {
+				Block parent = li.Block.Explicit;
+				while ((parent = parent.Parent) != null) {
+					if (parent == b) {
 						li.Block.Error_AlreadyDeclared (name, li, "parent or current");
 						i = existing_list.Count;
 						break;
@@ -3049,9 +3071,8 @@ namespace Mono.CSharp {
 
 				if (!ignoreChildrenBlocks) {
 					// Collision with children
-					b = existing.Block;
 					while ((b = b.Parent) != null) {
-						if (li.Block == b) {
+						if (li.Block.Explicit == b) {
 							li.Block.Error_AlreadyDeclared (name, li, "child");
 							i = existing_list.Count;
 							break;
@@ -3272,36 +3293,37 @@ namespace Mono.CSharp {
 #if PRODUCTION
 			try {
 #endif
-
-			base.Emit (ec);
-
-			ec.Mark (EndLocation);
-
-			if (ec.HasReturnLabel)
-				ec.MarkLabel (ec.ReturnLabel);
-
-			if (ec.return_value != null) {
-				ec.Emit (OpCodes.Ldloc, ec.return_value);
-				ec.Emit (OpCodes.Ret);
-			} else {
-				//
-				// If `HasReturnLabel' is set, then we already emitted a
-				// jump to the end of the method, so we must emit a `ret'
-				// there.
-				//
-				// Unfortunately, System.Reflection.Emit automatically emits
-				// a leave to the end of a finally block.  This is a problem
-				// if no code is following the try/finally block since we may
-				// jump to a point after the end of the method.
-				// As a workaround, we're always creating a return label in
-				// this case.
-				//
-
-				if (ec.HasReturnLabel || !unreachable) {
-					if (ec.ReturnType.Kind != MemberKind.Void)
-						ec.Emit (OpCodes.Ldloc, ec.TemporaryReturn ());
-					ec.Emit (OpCodes.Ret);
+			if (IsCompilerGenerated) {
+				using (ec.With (BuilderContext.Options.OmitDebugInfo, true)) {
+					base.Emit (ec);
 				}
+			} else {
+				base.Emit (ec);
+			}
+
+			//
+			// If `HasReturnLabel' is set, then we already emitted a
+			// jump to the end of the method, so we must emit a `ret'
+			// there.
+			//
+			// Unfortunately, System.Reflection.Emit automatically emits
+			// a leave to the end of a finally block.  This is a problem
+			// if no code is following the try/finally block since we may
+			// jump to a point after the end of the method.
+			// As a workaround, we're always creating a return label in
+			// this case.
+			//
+			if (ec.HasReturnLabel || !unreachable) {
+				if (ec.HasReturnLabel)
+					ec.MarkLabel (ec.ReturnLabel);
+
+				if (ec.ReturnType.Kind != MemberKind.Void)
+					ec.Emit (OpCodes.Ldloc, ec.TemporaryReturn ());
+
+				if (ec.EmitAccurateDebugInfo && !IsCompilerGenerated)
+					ec.Mark (EndLocation);
+
+				ec.Emit (OpCodes.Ret);
 			}
 
 #if PRODUCTION

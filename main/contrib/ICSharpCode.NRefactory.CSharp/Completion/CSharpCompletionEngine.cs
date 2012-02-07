@@ -1706,6 +1706,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		string GetShortType (IType type, CSharpResolver state)
 		{
 			var builder = new TypeSystemAstBuilder (state);
+			var dt = state.CurrentTypeDefinition;
+			var declaring = type.DeclaringType != null ? type.DeclaringType.GetDefinition () : null;
+			if (declaring != null) {
+				while (dt != null) {
+					if (dt.Equals (declaring)) {
+						builder.AlwaysUseShortTypeNames = true;
+						break;
+					}
+					dt = dt.DeclaringTypeDefinition;
+				}
+			}
 			var shortType = builder.ConvertType (type);
 			using (var w = new System.IO.StringWriter ()) {
 				var visitor = new CSharpOutputVisitor (w, FormattingPolicy);

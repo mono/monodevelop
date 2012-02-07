@@ -189,19 +189,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			MemberType result = new MemberType();
 			if (typeDef.DeclaringTypeDefinition != null) {
-				// check if the declaring type is a nested type in the nested type hierarchy
-				if (resolver != null) {
-					var declaringType = resolver.CurrentTypeDefinition;
-					while (declaringType != null) {
-						if (typeDef.DeclaringTypeDefinition.Equals (declaringType)) {
-							var innerType = new SimpleType(typeDef.Name);
-							AddTypeArguments(innerType, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
-							return innerType;
-						}
-						declaringType = declaringType.DeclaringTypeDefinition;
-					}
-				}
-				
 				// Handle nested types
 				result.Target = ConvertTypeHelper(typeDef.DeclaringTypeDefinition, typeArguments);
 			} else {

@@ -242,11 +242,11 @@ namespace Mono.CSharp
 			return true;
 		}
 
-		public virtual void DefineConstants ()
+		public virtual void PrepareEmit ()
 		{
 			if (containers != null) {
 				foreach (var t in containers) {
-					t.DefineConstants ();
+					t.PrepareEmit ();
 				}
 			}
 		}
@@ -1006,6 +1006,18 @@ namespace Mono.CSharp
 			return a.GetAttributeUsageAttribute ();
 		}
 
+		public virtual CompilationSourceFile GetCompilationSourceFile ()
+		{
+			TypeContainer ns = Parent;
+			while (true) {
+				var sf = ns as CompilationSourceFile;
+				if (sf != null)
+					return sf;
+
+				ns = ns.Parent;
+			}
+		}
+
 		public virtual void AddBasesForPart (List<FullNamedExpression> bases)
 		{
 			type_bases = bases;
@@ -1462,7 +1474,7 @@ namespace Mono.CSharp
 			return true;
 		}
 
-		public override void DefineConstants ()
+		public override void PrepareEmit ()
 		{
 			foreach (var member in members) {
 				var pm = member as IParametersMember;
@@ -1480,7 +1492,7 @@ namespace Mono.CSharp
 					c.DefineValue ();
 			}
 
-			base.DefineConstants ();
+			base.PrepareEmit ();
 		}
 
 		//
@@ -1817,7 +1829,7 @@ namespace Mono.CSharp
 			//
 			// Check for internal or private fields that were never assigned
 			//
-			if (!IsCompilerGenerated && Report.WarningLevel >= 3) {
+			if (!IsCompilerGenerated && Compiler.Settings.WarningLevel >= 3 && this == PartialContainer) {
 				bool is_type_exposed = Kind == MemberKind.Struct || IsExposedFromAssembly ();
 				foreach (var member in members) {
 					if (member is Event) {
@@ -1858,7 +1870,7 @@ namespace Mono.CSharp
 					//
 					// Only report 649 on level 4
 					//
-					if (Report.WarningLevel < 4)
+					if (Compiler.Settings.WarningLevel < 4)
 						continue;
 
 					//
@@ -2366,12 +2378,14 @@ namespace Mono.CSharp
 				mods = ((ModFlags & Modifiers.ABSTRACT) != 0) ? Modifiers.PROTECTED : Modifiers.PUBLIC;
 			}
 
-			Constructor c = new Constructor (this, MemberName.Name, mods,
-				null, ParametersCompiled.EmptyReadOnlyParameters, Location);
+			var c = new Constructor (this, MemberName.Name, mods, null, ParametersCompiled.EmptyReadOnlyParameters, Location);
 			c.Initializer = new GeneratedBaseInitializer (Location);
 			
 			AddConstructor (c, true);
-			c.Block = new ToplevelBlock (Compiler, ParametersCompiled.EmptyReadOnlyParameters, Location);
+			c.Block = new ToplevelBlock (Compiler, ParametersCompiled.EmptyReadOnlyParameters, Location) {
+				IsCompilerGenerated = true
+			};
+
 			return c;
 		}
 
@@ -2467,7 +2481,7 @@ namespace Mono.CSharp
 				return;
 			}
 
-			if (a.Type.IsConditionallyExcluded (Compiler, Location))
+			if (a.Type.IsConditionallyExcluded (this, Location))
 				return;
 
 			base.ApplyAttributeBuilder (a, ctor, cdata, pa);

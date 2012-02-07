@@ -68,11 +68,53 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit (ModuleContainer mc)
 			{
-				AddAttributeSection (Unit, mc);
+				bool first = true;
 				foreach (var container in mc.Containers) {
-					container.Accept (this);
+					var nspace = container as NamespaceContainer;
+					if (nspace == null) {
+						container.Accept (this);
+						continue;
+					}
+					NamespaceDeclaration nDecl = null;
+					var loc = LocationsBag.GetLocations (nspace);
+					
+					if (nspace.NS != null && !string.IsNullOrEmpty (nspace.NS.Name)) {
+						nDecl = new NamespaceDeclaration ();
+						if (loc != null)
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc[0]), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
+						ConvertNamespaceName (nspace.RealMemberName, nDecl);
+						if (loc != null && loc.Count > 1)
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), NamespaceDeclaration.Roles.LBrace);
+						AddToNamespace (nDecl);
+						namespaceStack.Push (nDecl);
+					}
+					
+					if (nspace.Usings != null) {
+						foreach (var us in nspace.Usings) {
+							us.Accept (this);
+						}
+					}
+					
+					if (first) {
+						first = false;
+						AddAttributeSection (Unit, mc);
+					}
+					
+					if (nspace.Containers != null) {
+						foreach (var subContainer in nspace.Containers) {
+							subContainer.Accept (this);
+						}
+					}
+					
+					if (nDecl != null) {
+						if (loc != null && loc.Count > 2)
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc[2]), 1), NamespaceDeclaration.Roles.RBrace);
+						if (loc != null && loc.Count > 3)
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc[3]), 1), NamespaceDeclaration.Roles.Semicolon);
+						
+						namespaceStack.Pop ();
+					}
 				}
-				
 			}
 			
 			#region Global
@@ -3532,10 +3574,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			lock (parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
-				var ctx = new CompilerContext (CompilerSettings, new Report (errorReportPrinter));
+				var ctx = new CompilerContext (CompilerSettings, errorReportPrinter);
+				ctx.Settings.TabSize = 1;
 				var reader = new SeekableStreamReader (stream, Encoding.UTF8);
-				var file = new CompilationSourceFile (fileName, fileName, 0);
-				Location.Initialize (new List<CompilationSourceFile> (new [] { file }));
+				var file = new SourceFile (fileName, fileName, 0);
+				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
 				var driver = new Driver (ctx);
 				var parser = driver.Parse (reader, file, module);

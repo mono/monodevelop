@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.CompilerServices.SymbolWriter;
 
 namespace Mono.CSharp {
 
@@ -597,22 +598,123 @@ namespace Mono.CSharp {
 		}
 	}
 
+	public class CompilationSourceFile : NamespaceContainer
+	{
+		readonly SourceFile file;
+		CompileUnitEntry comp_unit;
+		Dictionary<string, SourceFile> include_files;
+		Dictionary<string, bool> conditionals;
+
+		public CompilationSourceFile (ModuleContainer parent, SourceFile sourceFile)
+			: this (parent)
+		{
+			this.file = sourceFile;
+		}
+
+		public CompilationSourceFile (ModuleContainer parent)
+			: base (parent)
+		{
+		}
+
+		public CompileUnitEntry SymbolUnitEntry {
+			get {
+				return comp_unit;
+			}
+		}
+
+		public string FileName {
+			get {
+				return file.Name;
+			}
+		}
+
+		public SourceFile SourceFile {
+			get {
+				return file;
+			}
+		}
+
+		public void AddIncludeFile (SourceFile file)
+		{
+			if (file == this.file)
+				return;
+
+			if (include_files == null)
+				include_files = new Dictionary<string, SourceFile> ();
+
+			if (!include_files.ContainsKey (file.FullPathName))
+				include_files.Add (file.FullPathName, file);
+		}
+
+		public void AddDefine (string value)
+		{
+			if (conditionals == null)
+				conditionals = new Dictionary<string, bool> (2);
+
+			conditionals[value] = true;
+		}
+
+		public void AddUndefine (string value)
+		{
+			if (conditionals == null)
+				conditionals = new Dictionary<string, bool> (2);
+
+			conditionals[value] = false;
+		}
+
+		public override void PrepareEmit ()
+		{
+			// Compiler.SymbolWriter
+			if (SymbolWriter.symwriter != null) {
+				CreateUnitSymbolInfo (SymbolWriter.symwriter);
+			}
+
+			base.PrepareEmit ();
+		}
+
+		//
+		// Creates symbol file index in debug symbol file
+		//
+		void CreateUnitSymbolInfo (MonoSymbolWriter symwriter)
+		{
+			var si = file.CreateSymbolInfo (symwriter);
+			comp_unit = symwriter.DefineCompilationUnit (si);
+
+			if (include_files != null) {
+				foreach (SourceFile include in include_files.Values) {
+					si = include.CreateSymbolInfo (symwriter);
+					comp_unit.AddFile (si);
+				}
+			}
+		}
+
+		public bool IsConditionalDefined (string value)
+		{
+			if (conditionals != null) {
+				bool res;
+				if (conditionals.TryGetValue (value, out res))
+					return res;
+
+				// When conditional was undefined
+				if (conditionals.ContainsKey (value))
+					return false;
+			}
+
+			return Compiler.Settings.IsConditionalSymbolDefined (value);
+		}
+	}
+
+
 	//
 	// Namespace block as created by the parser
 	//
 	public class NamespaceContainer : TypeContainer, IMemberContext
 	{
 		static readonly Namespace[] empty_namespaces = new Namespace[0];
-		static readonly string[] empty_using_list = new string[0];
 
-		Namespace ns;
-
-		readonly ModuleContainer module;
-		readonly CompilationSourceFile file;
+		readonly Namespace ns;
 
 		public new readonly NamespaceContainer Parent;
-
-		int symfile_id;
 
 		List<UsingNamespace> clauses;
 
@@ -622,23 +724,22 @@ namespace Mono.CSharp {
 		Namespace[] namespace_using_table;
 		Dictionary<string, UsingAliasNamespace> aliases;
 		public readonly MemberName RealMemberName;
-		
-		public NamespaceContainer (MemberName name, ModuleContainer module, NamespaceContainer parent, CompilationSourceFile sourceFile)
-			: base ((TypeContainer) parent ?? module, name, null, MemberKind.Namespace)
+
+		public NamespaceContainer (MemberName name, NamespaceContainer parent)
+			: base (parent, name, null, MemberKind.Namespace)
 		{
 			this.RealMemberName = name;
-			this.module = module;
 			this.Parent = parent;
-			this.file = sourceFile;
-
-			if (parent != null)
-				ns = parent.NS.AddNamespace (name);
-			else if (name != null)
-				ns = module.GlobalRootNamespace.AddNamespace (name);
-			else
-				ns = module.GlobalRootNamespace;
+			this.ns = parent.NS.AddNamespace (name);
 
 			containers = new List<TypeContainer> ();
+		}
+
+		protected NamespaceContainer (ModuleContainer parent)
+			: base (parent, null, null, MemberKind.Namespace)
+		{
+			ns = parent.GlobalRootNamespace;
+			containers = new List<TypeContainer> (2);
 		}
 
 		#region Properties
@@ -658,18 +759,6 @@ namespace Mono.CSharp {
 		public Namespace NS {
 			get {
 				return ns;
-			}
-		}
-
-		public override ModuleContainer Module {
-			get {
-				return module;
-			}
-		}
-
-		public CompilationSourceFile SourceFile {
-			get {
-				return file;
 			}
 		}
 
@@ -765,7 +854,7 @@ namespace Mono.CSharp {
 
 			var tdef = tc.PartialContainer;
 			if (tdef != null)
-				ns.AddType (module, tdef.Definition);
+				ns.AddType (Module, tdef.Definition);
 		}
 
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
@@ -1021,7 +1110,7 @@ namespace Mono.CSharp {
 				}
 
 				// It can be top level accessibility only
-				var better = Namespace.IsImportedTypeOverride (module, texpr_match.Type, texpr_fne.Type);
+				var better = Namespace.IsImportedTypeOverride (Module, texpr_match.Type, texpr_fne.Type);
 				if (better == null) {
 					if (mode == LookupMode.Normal) {
 						Compiler.Report.SymbolRelatedToPreviousError (texpr_match.Type);
@@ -1038,28 +1127,6 @@ namespace Mono.CSharp {
 			}
 
 			return match;
-		}
-
-		public int SymbolFileID {
-			get {
-				if (symfile_id == 0 && file.SourceFileEntry != null) {
-					int parent_id = Parent == null ? 0 : Parent.SymbolFileID;
-
-					string [] using_list = empty_using_list;
-					if (clauses != null) {
-						// TODO: Why is it needed, what to do with aliases
-						var ul = new List<string> ();
-						foreach (var c in clauses) {
-							ul.Add (c.ResolvedExpression.GetSignatureForError ());
-						}
-						
-						using_list = ul.ToArray ();
-					}
-
-					symfile_id = SymbolWriter.DefineNamespace (ns.Name, file.CompileUnitEntry, using_list, parent_id);
-				}
-				return symfile_id;
-			}
 		}
 
 		static void MsgtryRef (string s)

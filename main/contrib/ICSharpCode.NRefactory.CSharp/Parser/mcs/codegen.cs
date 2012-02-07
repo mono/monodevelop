@@ -89,6 +89,13 @@ namespace Mono.CSharp
 			if (rc.Module.Compiler.Settings.Checked)
 				flags |= Options.CheckedScope;
 
+			if (SymbolWriter.HasSymbolWriter) {
+				if (!rc.Module.Compiler.Settings.Optimize)
+					flags |= Options.AccurateDebugInfo;
+			} else {
+				flags |= Options.OmitDebugInfo;
+			}
+
 #if STATIC
 			ig.__CleverExceptionBlockAssistance ();
 #endif
@@ -118,6 +125,12 @@ namespace Mono.CSharp
 
 		public MemberCore CurrentTypeDefinition {
 			get { return member_context.CurrentMemberDefinition; }
+		}
+
+		public bool EmitAccurateDebugInfo {
+			get {
+				return (flags & Options.AccurateDebugInfo) != 0;
+			}
 		}
 
 		public bool HasReturnLabel {
@@ -188,12 +201,19 @@ namespace Mono.CSharp
 		///   This is called immediately before emitting an IL opcode to tell the symbol
 		///   writer to which source line this opcode belongs.
 		/// </summary>
-		public void Mark (Location loc)
+		public bool Mark (Location loc)
 		{
-			if (!SymbolWriter.HasSymbolWriter || HasSet (Options.OmitDebugInfo) || loc.IsNull)
-				return;
+			if ((flags & Options.OmitDebugInfo) != 0)
+				return false;
+
+			if (loc.IsNull)
+				return false;
+
+			if (loc.SourceFile.IsHiddenLocation (loc))
+				return false;
 
 			SymbolWriter.MarkSequencePoint (ig, loc);
+			return true;
 		}
 
 		public void DefineLocalVariable (string name, LocalBuilder builder)
@@ -865,7 +885,7 @@ namespace Mono.CSharp
 		public void Emit (EmitContext ec, MethodSpec method, Arguments Arguments, Location loc)
 		{
 			// Speed up the check by not doing it on not allowed targets
-			if (method.ReturnType.Kind == MemberKind.Void && method.IsConditionallyExcluded (ec.Module.Compiler, loc))
+			if (method.ReturnType.Kind == MemberKind.Void && method.IsConditionallyExcluded (ec.MemberContext, loc))
 				return;
 
 			EmitPredefined (ec, method, Arguments);

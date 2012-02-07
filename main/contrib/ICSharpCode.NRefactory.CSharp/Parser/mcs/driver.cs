@@ -41,20 +41,22 @@ namespace Mono.CSharp
 			}
 		}
 
-		void tokenize_file (CompilationSourceFile file)
+		void tokenize_file (SourceFile sourceFile, ModuleContainer module)
 		{
 			Stream input;
 
 			try {
-				input = File.OpenRead (file.Name);
+				input = File.OpenRead (sourceFile.Name);
 			} catch {
-				Report.Error (2001, "Source file `" + file.Name + "' could not be found");
+				Report.Error (2001, "Source file `" + sourceFile.Name + "' could not be found");
 				return;
 			}
 
 			using (input){
 				SeekableStreamReader reader = new SeekableStreamReader (input, ctx.Settings.Encoding);
-				Tokenizer lexer = new Tokenizer (reader, file, ctx);
+				var file = new CompilationSourceFile (module, sourceFile);
+
+				Tokenizer lexer = new Tokenizer (reader, file);
 				int token, tokens = 0, errors = 0;
 
 				while ((token = lexer.token ()) != Token.EOF){
@@ -70,20 +72,21 @@ namespace Mono.CSharp
 
 		void Parse (ModuleContainer module)
 		{
-			Location.Initialize (module.Compiler.SourceFiles);
-
 			bool tokenize_only = module.Compiler.Settings.TokenizeOnly;
 			var sources = module.Compiler.SourceFiles;
+
+			Location.Initialize (sources);
+
 			for (int i = 0; i < sources.Count; ++i) {
 				if (tokenize_only) {
-					tokenize_file (sources[i]);
+					tokenize_file (sources[i], module);
 				} else {
 					Parse (sources[i], module);
 				}
 			}
 		}
 
-		public void Parse (CompilationSourceFile file, ModuleContainer module)
+		public void Parse (SourceFile file, ModuleContainer module)
 		{
 			Stream input;
 
@@ -108,15 +111,14 @@ namespace Mono.CSharp
 			Parse (reader, file, module);
 			reader.Dispose ();
 			input.Close ();
-		}	
-		
-		public CSharpParser Parse (SeekableStreamReader reader, CompilationSourceFile file, ModuleContainer module)
+		}
+
+		public CSharpParser Parse (SeekableStreamReader reader, SourceFile sourceFile, ModuleContainer module)
 		{
-			var root = new NamespaceContainer (null, module, null, file);
-			file.NamespaceContainer = root;
-			module.AddTypeContainer (root);
+			var file = new CompilationSourceFile (module, sourceFile);
+			module.AddTypeContainer (file);
+
 			CSharpParser parser = new CSharpParser (reader, file);
-			parser.Lexer.TabSize = 1;
 			parser.Lexer.sbag = new SpecialsBag ();
 			parser.parse ();
 			return parser;
@@ -126,16 +128,15 @@ namespace Mono.CSharp
 		{
 			Location.InEmacs = Environment.GetEnvironmentVariable ("EMACS") == "t";
 
-			var r = new Report (new ConsoleReportPrinter ());
-			CommandLineParser cmd = new CommandLineParser (r);
+			CommandLineParser cmd = new CommandLineParser (Console.Out);
 			var settings = cmd.ParseArguments (args);
-			if (settings == null || r.Errors > 0)
+			if (settings == null)
 				return 1;
 
 			if (cmd.HasBeenStopped)
 				return 0;
 
-			Driver d = new Driver (new CompilerContext (settings, r));
+			Driver d = new Driver (new CompilerContext (settings, new ConsoleReportPrinter ()));
 
 			if (d.Compile () && d.Report.Errors == 0) {
 				if (d.Report.Warnings > 0) {
@@ -367,13 +368,12 @@ namespace Mono.CSharp
 		public static bool InvokeCompiler (string [] args, TextWriter error)
 		{
 			try {
-				var r = new Report (new StreamReportPrinter (error));
-				CommandLineParser cmd = new CommandLineParser (r, error);
+				CommandLineParser cmd = new CommandLineParser (error);
 				var setting = cmd.ParseArguments (args);
-				if (setting == null || r.Errors > 0)
+				if (setting == null)
 					return false;
 
-				var d = new Driver (new CompilerContext (setting, r));
+				var d = new Driver (new CompilerContext (setting, new StreamReportPrinter (error)));
 				return d.Compile ();
 			} finally {
 				Reset ();

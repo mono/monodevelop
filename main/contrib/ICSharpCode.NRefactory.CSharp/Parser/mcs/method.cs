@@ -774,9 +774,6 @@ namespace Mono.CSharp {
 			return conditions;
 		}
 
-		public virtual void EmitExtraSymbolInfo (SourceMethod source)
-		{ }
-
 		#endregion
 
 	}
@@ -784,17 +781,11 @@ namespace Mono.CSharp {
 	public class SourceMethod : IMethodDef
 	{
 		MethodBase method;
-		SourceMethodBuilder builder;
 
-		protected SourceMethod (TypeDefinition parent, MethodBase method, ICompileUnit file)
+		SourceMethod (MethodBase method, ICompileUnit file)
 		{
 			this.method = method;
-
-			TypeContainer ns = parent.Parent;
-			while (ns != null && !(ns is NamespaceContainer))
-				ns = ns.Parent;
-
-			builder = SymbolWriter.OpenMethod (file, ns == null ? -1 : ((NamespaceContainer) ns).SymbolFileID, this);
+			SymbolWriter.OpenMethod (file, this);
 		}
 
 		public string Name {
@@ -822,28 +813,16 @@ namespace Mono.CSharp {
 			SymbolWriter.CloseMethod ();
 		}
 
-		public void SetRealMethodName (string name)
-		{
-			if (builder != null)
-				builder.SetRealMethodName (name);
-		}
-
-		public static SourceMethod Create (TypeDefinition parent, MethodBase method, Block block)
+		public static SourceMethod Create (TypeDefinition parent, MethodBase method)
 		{
 			if (!SymbolWriter.HasSymbolWriter)
 				return null;
-			if (block == null)
+
+			var source_file = parent.GetCompilationSourceFile ();
+			if (source_file == null)
 				return null;
 
-			Location start_loc = block.StartLocation;
-			if (start_loc.IsNull)
-				return null;
-
-			ICompileUnit compile_unit = start_loc.CompilationUnit;
-			if (compile_unit == null)
-				return null;
-
-			return new SourceMethod (parent, method, compile_unit);
+			return new SourceMethod (method, source_file.SymbolUnitEntry);
 		}
 	}
 
@@ -1484,7 +1463,7 @@ namespace Mono.CSharp {
 				ec.Report.Error (516, loc, "Constructor `{0}' cannot call itself",
 					caller_builder.GetSignatureForError ());
 			}
-						
+
 			return this;
 		}
 
@@ -1494,8 +1473,6 @@ namespace Mono.CSharp {
 			if (base_ctor == null)
 				return;
 			
-			ec.Mark (loc);
-
 			var call = new CallEmitter ();
 			call.InstanceExpression = new CompilerGeneratedThis (type, loc); 
 			call.EmitPredefined (ec, base_ctor, argument_list);
@@ -1700,49 +1677,55 @@ namespace Mono.CSharp {
 			base.Emit ();
 			parameters.ApplyAttributes (this, ConstructorBuilder);
 
-			//
-			// If we use a "this (...)" constructor initializer, then
-			// do not emit field initializers, they are initialized in the other constructor
-			//
-			bool emit_field_initializers = ((ModFlags & Modifiers.STATIC) != 0) ||
-				!(Initializer is ConstructorThisInitializer);
 
 			BlockContext bc = new BlockContext (this, block, Compiler.BuiltinTypes.Void);
 			bc.Set (ResolveContext.Options.ConstructorScope);
 
-			if (emit_field_initializers)
+			//
+			// If we use a "this (...)" constructor initializer, then
+			// do not emit field initializers, they are initialized in the other constructor
+			//
+			if (!(Initializer is ConstructorThisInitializer))
 				Parent.PartialContainer.ResolveFieldInitializers (bc);
 
 			if (block != null) {
-				// If this is a non-static `struct' constructor and doesn't have any
-				// initializer, it must initialize all of the struct's fields.
-				if ((Parent.PartialContainer.Kind == MemberKind.Struct) &&
-					((ModFlags & Modifiers.STATIC) == 0) && (Initializer == null))
-					block.AddThisVariable (bc);
-
-				if ((ModFlags & Modifiers.STATIC) == 0){
-					if (Parent.PartialContainer.Kind == MemberKind.Class && Initializer == null)
-						Initializer = new GeneratedBaseInitializer (Location);
+				if (!IsStatic) {
+					if (Initializer == null) {
+						if (Parent.PartialContainer.Kind == MemberKind.Struct) {
+							//
+							// If this is a non-static `struct' constructor and doesn't have any
+							// initializer, it must initialize all of the struct's fields.
+							//
+							block.AddThisVariable (bc);
+						} else if (Parent.PartialContainer.Kind == MemberKind.Class) {
+							Initializer = new GeneratedBaseInitializer (Location);
+						}
+					}
 
 					if (Initializer != null) {
-						block.AddScopeStatement (new StatementExpression (Initializer));
+						//
+						// Use location of the constructor to emit sequence point of initializers
+						// at beginning of constructor name
+						//
+						// TODO: Need to extend mdb to support line regions to allow set a breakpoint at
+						// initializer
+						//
+						block.AddScopeStatement (new StatementExpression (Initializer, Location));
 					}
 				}
-			}
 
-			SourceMethod source = SourceMethod.Create (Parent, ConstructorBuilder, block);
-
-			if (block != null) {
 				if (block.Resolve (null, bc, this)) {
 					EmitContext ec = new EmitContext (this, ConstructorBuilder.GetILGenerator (), bc.ReturnType);
 					ec.With (EmitContext.Options.ConstructorScope, true);
 
+					SourceMethod source = SourceMethod.Create (Parent, ConstructorBuilder);
+
 					block.Emit (ec);
+
+					if (source != null)
+						source.CloseMethod ();
 				}
 			}
-
-			if (source != null)
-				source.CloseMethod ();
 
 			if (declarative_security != null) {
 				foreach (var de in declarative_security) {
@@ -1822,9 +1805,6 @@ namespace Mono.CSharp {
 			return false;
 		}
 
-		void IMethodData.EmitExtraSymbolInfo (SourceMethod source)
-		{ }
-
 		#endregion
 	}
 
@@ -1845,7 +1825,6 @@ namespace Mono.CSharp {
 		ToplevelBlock Block { get; set; }
 
 		EmitContext CreateEmitContext (ILGenerator ig);
-		void EmitExtraSymbolInfo (SourceMethod source);
 	}
 
 	//
@@ -2120,21 +2099,19 @@ namespace Mono.CSharp {
 
 			method.ParameterInfo.ApplyAttributes (mc, MethodBuilder);
 
-			SourceMethod source = SourceMethod.Create (parent, MethodBuilder, method.Block);
-
 			ToplevelBlock block = method.Block;
 			if (block != null) {
 				BlockContext bc = new BlockContext (mc, block, method.ReturnType);
 				if (block.Resolve (null, bc, method)) {
 					EmitContext ec = method.CreateEmitContext (MethodBuilder.GetILGenerator ());
 
-					block.Emit (ec);
-				}
-			}
+					SourceMethod source = SourceMethod.Create (parent, MethodBuilder);
 
-			if (source != null) {
-				method.EmitExtraSymbolInfo (source);
-				source.CloseMethod ();
+					block.Emit (ec);
+
+					if (source != null)
+						source.CloseMethod ();
+				}
 			}
 		}
 	}
@@ -2411,9 +2388,6 @@ namespace Mono.CSharp {
 		public override string DocCommentHeader {
 			get { throw new InvalidOperationException ("Unexpected attempt to get doc comment from " + this.GetType () + "."); }
 		}
-
-		void IMethodData.EmitExtraSymbolInfo (SourceMethod source)
-		{ }
 	}
 
 	public class Operator : MethodOrOperator {

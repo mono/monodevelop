@@ -185,7 +185,7 @@ namespace Mono.CompilerServices.SymbolWriter
 		public readonly int Row;
 		public readonly int File;
 		public readonly int Offset;
-		public readonly bool IsHidden;
+		public readonly bool IsHidden;	// Obsolete is never used
 		#endregion
 
 		public LineNumberEntry (int file, int row, int offset)
@@ -568,6 +568,7 @@ namespace Mono.CompilerServices.SymbolWriter
 			}
 		}
 
+		[Obsolete]
 		public int DefineNamespace (string name, string[] using_clauses, int parent)
 		{
 			if (!creating)
@@ -698,6 +699,12 @@ namespace Mono.CompilerServices.SymbolWriter
 		{
 			this.guid = guid;
 			this.hash = checksum;
+		}
+
+		public byte[] Checksum {
+			get {
+				return hash;
+			}
 		}
 
 		internal void WriteData (MyBinaryWriter bw)

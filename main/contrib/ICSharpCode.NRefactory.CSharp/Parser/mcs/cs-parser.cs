@@ -1597,10 +1597,7 @@ case 94:
 	  }
   break;
 case 95:
-#line 931 "cs-parser.jay"
-  { 
-		push_current_container (new Struct (current_container, (MemberName) yyVals[0+yyTop], (Modifiers) yyVals[-4+yyTop], (Attributes) yyVals[-5+yyTop]), yyVals[-3+yyTop]);
-	  }
+  case_95();
   break;
 case 96:
   case_96();
@@ -4126,7 +4123,7 @@ void case_21()
 		var name = (MemberName) yyVals[0+yyTop];
 		if (attrs != null) {
 			bool valid_global_attrs = true;
-			if ((current_namespace.DeclarationFound || current_namespace != file.NamespaceContainer)) {
+			if ((current_namespace.DeclarationFound || current_namespace != file)) {
 				valid_global_attrs = false;
 			} else {
 				foreach (var a in attrs.Attrs) {
@@ -4144,7 +4141,7 @@ void case_21()
 	
 		module.AddAttributes (attrs, current_namespace);
 		
-		var ns = new NamespaceContainer (name, module, current_namespace, file);
+		var ns = new NamespaceContainer (name, current_namespace);
 		current_namespace.AddTypeContainer (ns);
 		current_container = current_namespace = ns;
 	  }
@@ -4205,7 +4202,7 @@ void case_39()
 			/* we parse succeeding declaration hence we parse them as normal and re-attach them*/
 			/* when we know whether they are global (assembly:, module:) or local (type:).*/
 			if (ds.OptAttributes != null) {
-				ds.OptAttributes.ConvertGlobalAttributes (ds, current_namespace, !current_namespace.DeclarationFound && current_namespace == file.NamespaceContainer);
+				ds.OptAttributes.ConvertGlobalAttributes (ds, current_namespace, !current_namespace.DeclarationFound && current_namespace == file);
 			}
 		}
 		current_namespace.DeclarationFound = true;
@@ -4426,8 +4423,15 @@ void case_93()
 		lexer.parsing_generic_declaration = false;
 	  }
 
+void case_95()
+#line 929 "cs-parser.jay"
+{ 
+		push_current_container (new Struct (current_container, (MemberName) yyVals[0+yyTop], (Modifiers) yyVals[-4+yyTop], (Attributes) yyVals[-5+yyTop]), yyVals[-3+yyTop]);
+		lbag.AddMember (current_container, GetModifierLocations (), GetLocation (yyVals[-2+yyTop]));
+	  }
+
 void case_96()
-#line 934 "cs-parser.jay"
+#line 935 "cs-parser.jay"
 {
 		lexer.ConstraintsParsing = false;
 
@@ -4437,7 +4441,6 @@ void case_96()
 		if (doc_support)
 			current_container.PartialContainer.DocComment = Lexer.consume_doc_comment ();
 
-		lbag.AddMember (current_container, GetModifierLocations (), GetLocation (yyVals[-5+yyTop]));
 		
 		lexer.parsing_modifiers = true;
 	  }
@@ -7182,16 +7185,16 @@ void case_629()
 		}
 			
 		push_current_container (c, yyVals[-3+yyTop]);
+		lbag.AddMember (current_container, GetModifierLocations (), GetLocation (yyVals[-2+yyTop]));
 	  }
 
 void case_630()
-#line 4318 "cs-parser.jay"
+#line 4319 "cs-parser.jay"
 {
 		lexer.ConstraintsParsing = false;
 
 		if (yyVals[0+yyTop] != null)
 			current_container.SetConstraints ((List<Constraints>) yyVals[0+yyTop]);
-		lbag.AddMember (current_container, GetModifierLocations (), GetLocation (yyVals[-5+yyTop]));
 
 		if (doc_support) {
 			current_container.PartialContainer.DocComment = Lexer.consume_doc_comment ();
@@ -12469,17 +12472,17 @@ static CSharpParser ()
 }
 
 public CSharpParser (SeekableStreamReader reader, CompilationSourceFile file)
-	: this (reader, file, file.NamespaceContainer.Module.Compiler.Report)
+	: this (reader, file, file.Compiler.Report)
 {
 }
 
 public CSharpParser (SeekableStreamReader reader, CompilationSourceFile file, Report report)
 {
 	this.file = file;
-	current_container = current_namespace = file.NamespaceContainer;
+	current_container = current_namespace = file;
 	
-	this.module = current_namespace.Module;
-	this.compiler = module.Compiler;
+	this.module = file.Module;
+	this.compiler = file.Compiler;
 	this.settings = compiler.Settings;
 	this.report = report;
 	
@@ -12487,7 +12490,7 @@ public CSharpParser (SeekableStreamReader reader, CompilationSourceFile file, Re
 	yacc_verbose_flag = settings.VerboseParserFlag;
 	doc_support = settings.DocumentationFile != null;
 	oob_stack.Clear ();
-	lexer = new Tokenizer (reader, file, compiler);
+	lexer = new Tokenizer (reader, file);
 
 #if FULL_AST
 	lbag = new LocationsBag ();

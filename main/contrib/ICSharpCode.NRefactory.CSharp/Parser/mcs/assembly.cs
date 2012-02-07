@@ -448,11 +448,6 @@ namespace Mono.CSharp
 			if (Compiler.Settings.GenerateDebugInfo) {
 				symbol_writer = new MonoSymbolWriter (file_name);
 
-				// Register all source files with symbol writer
-				foreach (var source in Compiler.SourceFiles) {
-					source.DefineSymbolInfo (symbol_writer);
-				}
-
 				// TODO: global variables
 				SymbolWriter.symwriter = symbol_writer;
 			}
@@ -484,12 +479,7 @@ namespace Mono.CSharp
 					Builder.__AddDeclarativeSecurity (entry);
 				}
 #else
-				var args = new PermissionSet[3];
-#pragma warning disable 618
-				declarative_security.TryGetValue (SecurityAction.RequestMinimum, out args[0]);
-				declarative_security.TryGetValue (SecurityAction.RequestOptional, out args[1]);
-				declarative_security.TryGetValue (SecurityAction.RequestRefuse, out args[2]);
-				builder_extra.AddPermissionRequests (args);
+				throw new NotSupportedException ("Assembly-level security");
 #endif
 			}
 
