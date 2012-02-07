@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			SetOffset (triggerOffset);
 			var text = GetMemberTextToCaret ();
-			if (text.Item1.EndsWith ("(")) 
+			if (text.Item1.EndsWith ("(") || text.Item1.EndsWith ("<")) 
 				return 0;
 			var parameter = new Stack<int> ();
 			
@@ -277,6 +277,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					parameter.Push (0);
 					break;
 				case ')':
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					if (parameter.Count > 0)
+						parameter.Pop ();
+					break;
+				case '<':
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					parameter.Push (0);
+					break;
+				case '>':
 					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
 						break;
 					if (parameter.Count > 0)
