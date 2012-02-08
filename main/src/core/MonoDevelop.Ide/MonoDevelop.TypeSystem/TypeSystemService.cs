@@ -496,7 +496,7 @@ namespace MonoDevelop.TypeSystem
 			if (item is Workspace) {
 				var ws = (Workspace)item;
 				foreach (WorkspaceItem it in ws.Items)
-					Load (it);
+					InternalLoad (it);
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
