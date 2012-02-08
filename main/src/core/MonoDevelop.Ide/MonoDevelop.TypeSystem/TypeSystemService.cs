@@ -43,6 +43,8 @@ using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core.AddIns;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -395,7 +397,7 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static Dictionary<string, IProjectContent> solutionCache = new Dictionary<string, IProjectContent> ();
+		static ConcurrentDictionary<string, IProjectContent> projectCache = new ConcurrentDictionary<string, IProjectContent> ();
 		
 		/// <summary>
 		/// Removes all cache directories which are older than 30 days.
@@ -443,36 +445,29 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static void LoadSolutionCache (Solution solution)
+		static void LoadProjectCache (Project project)
 		{
-			string cacheDir = GetCacheDirectory (solution.FileName);
-			if (cacheDir == null) {
-				solutionCache = new Dictionary<string, IProjectContent> ();
+			string cacheDir = GetCacheDirectory (project.FileName);
+			if (cacheDir == null)
 				return;
-			}
+			
 			TouchCache (cacheDir);
-			solutionCache = DeserializeObject<Dictionary<string, IProjectContent>> (Path.Combine (cacheDir, "completion.cache")) ?? new Dictionary<string, IProjectContent> ();
-			if (solutionCache == null)
+			var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
+			if (projectCache == null) {
 				RemoveCache (cacheDir);
-			CleanupCache ();
+			} else {
+				projectCache[project.FileName] = cache;
+			}
 		}
 		
-		static void StoreSolutionCache (Solution solution)
+		static void StoreProjectCache (Project project, ProjectContentWrapper wrapper)
 		{
-			string cacheDir = GetCacheDirectory (solution.FileName) ?? CreateCacheDirectory (solution.FileName);
+			string cacheDir = GetCacheDirectory (project.FileName) ?? CreateCacheDirectory (project.FileName);
 			TouchCache (cacheDir);
-			
-			var cache = new Dictionary<string, IProjectContent> ();
-			foreach (var pair in projectContents) {
-				var key = pair.Key.FileName.ToString ();
-				if (string.IsNullOrEmpty (key))
-					continue;
-				cache [key] = pair.Value.Content;
-			}
 			
 			string fileName = Path.GetTempFileName ();
 			
-			SerializeObject (fileName, cache);
+			SerializeObject (fileName, wrapper.Content);
 			
 			string cacheFile = Path.Combine (cacheDir, "completion.cache");
 			
@@ -490,6 +485,14 @@ namespace MonoDevelop.TypeSystem
 		#region Project loading
 		public static void Load (WorkspaceItem item)
 		{
+			InternalLoad (item);
+			ReloadAllReferences ();
+			CleanupCache ();
+		}
+		
+		
+		static void InternalLoad (WorkspaceItem item)
+		{
 			if (item is Workspace) {
 				var ws = (Workspace)item;
 				foreach (WorkspaceItem it in ws.Items)
@@ -498,10 +501,7 @@ namespace MonoDevelop.TypeSystem
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
 				var solution = (Solution)item;
-				LoadSolutionCache (solution);
-				foreach (Project project in solution.GetAllProjects ())
-					Load (project);
-				ReloadAllReferences ();
+				Parallel.ForEach (solution.GetAllProjects (), project => Load (project));
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}
@@ -670,13 +670,14 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (IncLoadCount (project) != 1)
 				return;
+			LoadProjectCache (project);
 			lock (rwLock) {
 				if (projectContents.ContainsKey (project))
 					return;
 				try {
 					IProjectContent context = null;
-					if (solutionCache.ContainsKey (project.FileName))
-						context = solutionCache [project.FileName];
+					if (projectCache.ContainsKey (project.FileName))
+						context = projectCache [project.FileName];
 					
 					ProjectContentWrapper wrapper;
 					if (context == null) {
@@ -793,10 +794,7 @@ namespace MonoDevelop.TypeSystem
 				ws.ItemRemoved -= OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
 				Solution solution = (Solution)item;
-				StoreSolutionCache (solution);
-				foreach (var project in solution.GetAllProjects ()) {
-					Unload (project);
-				}
+				Parallel.ForEach (solution.GetAllProjects (), project => Unload (project));
 				solution.SolutionItemAdded -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 			}
@@ -817,6 +815,7 @@ namespace MonoDevelop.TypeSystem
 				var wrapper = projectContents [project];
 				projectContents.Remove (project);
 				referenceCounter.Remove (project);
+				StoreProjectCache (project, wrapper);
 				
 				OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
 			}
