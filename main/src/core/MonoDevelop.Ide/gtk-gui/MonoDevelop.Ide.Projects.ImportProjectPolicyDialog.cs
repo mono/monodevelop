@@ -59,7 +59,11 @@ namespace MonoDevelop.Ide.Projects
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.selector = null;
+			this.selector = new global::MonoDevelop.Ide.Gui.Components.ProjectSelectorWidget ();
+			this.selector.Events = ((global::Gdk.EventMask)(256));
+			this.selector.Name = "selector";
+			this.selector.ShowCheckboxes = false;
+			this.selector.CascadeCheckboxSelection = false;
 			this.vbox5.Add (this.selector);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.selector]));
 			w5.Position = 3;
@@ -104,6 +108,7 @@ namespace MonoDevelop.Ide.Projects
 			this.DefaultHeight = 447;
 			this.Show ();
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
+			this.selector.SelectionChanged += new global::System.EventHandler (this.OnSelectorSelectionChanged);
 		}
 	}
 }

@@ -143,7 +143,8 @@ namespace MonoDevelop.Ide.ExternalTools
 			w10.XOptions = ((global::Gtk.AttachOptions)(4));
 			w10.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table2.Gtk.Table+TableChild
-			this.browseButton = null;
+			this.browseButton = new global::MonoDevelop.Components.FileEntry ();
+			this.browseButton.Name = "browseButton";
 			this.table2.Add (this.browseButton);
 			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table2 [this.browseButton]));
 			w11.TopAttach = ((uint)(1));
@@ -179,7 +180,9 @@ namespace MonoDevelop.Ide.ExternalTools
 			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table3 [this.argumentTextBox]));
 			w13.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table3.Gtk.Table+TableChild
-			this.tagSelectorArgs = null;
+			this.tagSelectorArgs = new global::MonoDevelop.Ide.Gui.Components.StringTagSelectorButton ();
+			this.tagSelectorArgs.Events = ((global::Gdk.EventMask)(256));
+			this.tagSelectorArgs.Name = "tagSelectorArgs";
 			this.table3.Add (this.tagSelectorArgs);
 			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table3 [this.tagSelectorArgs]));
 			w14.LeftAttach = ((uint)(1));
@@ -199,7 +202,9 @@ namespace MonoDevelop.Ide.ExternalTools
 			this.table4.RowSpacing = ((uint)(6));
 			this.table4.ColumnSpacing = ((uint)(4));
 			// Container child table4.Gtk.Table+TableChild
-			this.tagSelectorPath = null;
+			this.tagSelectorPath = new global::MonoDevelop.Ide.Gui.Components.StringTagSelectorButton ();
+			this.tagSelectorPath.Events = ((global::Gdk.EventMask)(256));
+			this.tagSelectorPath.Name = "tagSelectorPath";
 			this.table4.Add (this.tagSelectorPath);
 			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table4 [this.tagSelectorPath]));
 			w16.LeftAttach = ((uint)(1));

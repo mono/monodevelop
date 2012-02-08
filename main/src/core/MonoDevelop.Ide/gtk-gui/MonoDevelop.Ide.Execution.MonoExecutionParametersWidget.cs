@@ -22,7 +22,10 @@ namespace MonoDevelop.Ide.Execution
 			this.hbox1.Spacing = 6;
 			this.hbox1.BorderWidth = ((uint)(6));
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.propertyGrid = null;
+			this.propertyGrid = new global::MonoDevelop.Components.PropertyGrid.PropertyGrid ();
+			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.ShowToolbar = false;
+			this.propertyGrid.ShowHelp = true;
 			this.hbox1.Add (this.propertyGrid);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.propertyGrid]));
 			w1.Position = 0;

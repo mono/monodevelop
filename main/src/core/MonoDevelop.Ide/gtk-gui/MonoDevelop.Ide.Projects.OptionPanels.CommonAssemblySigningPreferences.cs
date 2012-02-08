@@ -47,7 +47,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.strongNameFileEntry = null;
+			this.strongNameFileEntry = new global::MonoDevelop.Components.FileEntry ();
+			this.strongNameFileEntry.Name = "strongNameFileEntry";
 			this.hbox1.Add (this.strongNameFileEntry);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.strongNameFileEntry]));
 			w3.Position = 1;

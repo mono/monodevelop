@@ -150,7 +150,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.warningBox [this.label2]));
 			w11.Position = 1;
 			// Container child warningBox.Gtk.Box+BoxChild
-			this.conflicButton = null;
+			this.conflicButton = new global::MonoDevelop.Components.MenuButton ();
+			this.conflicButton.CanFocus = true;
+			this.conflicButton.Name = "conflicButton";
+			this.conflicButton.UseUnderline = false;
+			this.conflicButton.UseMarkup = false;
+			this.conflicButton.Label = null;
 			this.warningBox.Add (this.conflicButton);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.warningBox [this.conflicButton]));
 			w12.Position = 2;

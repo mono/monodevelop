@@ -172,7 +172,8 @@ namespace MonoDevelop.Ide.Projects
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.entry_location = null;
+			this.entry_location = new global::MonoDevelop.Components.FolderEntry ();
+			this.entry_location.Name = "entry_location";
 			this.table1.Add (this.entry_location);
 			global::Gtk.Table.TableChild w16 = ((global::Gtk.Table.TableChild)(this.table1 [this.entry_location]));
 			w16.TopAttach = ((uint)(1));

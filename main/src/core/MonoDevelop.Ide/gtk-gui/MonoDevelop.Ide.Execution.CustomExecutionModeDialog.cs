@@ -58,7 +58,9 @@ namespace MonoDevelop.Ide.Execution
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child hbox5.Gtk.Box+BoxChild
-			this.comboTargetMode = null;
+			this.comboTargetMode = new global::MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox ();
+			this.comboTargetMode.Events = ((global::Gdk.EventMask)(256));
+			this.comboTargetMode.Name = "comboTargetMode";
 			this.hbox5.Add (this.comboTargetMode);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.comboTargetMode]));
 			w3.Position = 1;
@@ -220,6 +222,7 @@ namespace MonoDevelop.Ide.Execution
 			this.boxName.Hide ();
 			this.checkPrompt.Hide ();
 			this.Hide ();
+			this.comboTargetMode.SelectionChanged += new global::System.EventHandler (this.OnComboTargetModeSelectionChanged);
 			this.checkSave.Toggled += new global::System.EventHandler (this.OnCheckSaveToggled);
 			this.entryModeName.Changed += new global::System.EventHandler (this.OnEntryModeNameChanged);
 		}

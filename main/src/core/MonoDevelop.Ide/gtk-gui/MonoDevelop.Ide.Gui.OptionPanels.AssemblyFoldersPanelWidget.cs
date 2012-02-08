@@ -29,7 +29,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.selector = null;
+			this.selector = new global::MonoDevelop.Components.FolderListSelector ();
+			this.selector.Events = ((global::Gdk.EventMask)(256));
+			this.selector.Name = "selector";
 			this.vbox1.Add (this.selector);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.selector]));
 			w2.Position = 1;

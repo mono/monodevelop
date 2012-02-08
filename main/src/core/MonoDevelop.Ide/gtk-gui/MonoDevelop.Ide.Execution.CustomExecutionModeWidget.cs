@@ -41,7 +41,8 @@ namespace MonoDevelop.Ide.Execution
 			w1.RightAttach = ((uint)(2));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.folderEntry = null;
+			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
+			this.folderEntry.Name = "folderEntry";
 			this.table1.Add (this.folderEntry);
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.folderEntry]));
 			w2.TopAttach = ((uint)(1));
@@ -85,7 +86,9 @@ namespace MonoDevelop.Ide.Execution
 			w6.Expand = false;
 			w6.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.envVarList = null;
+			this.envVarList = new global::MonoDevelop.Ide.Gui.Components.EnvVarList ();
+			this.envVarList.CanFocus = true;
+			this.envVarList.Name = "envVarList";
 			this.vbox2.Add (this.envVarList);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.envVarList]));
 			w7.Position = 2;

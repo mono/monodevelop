@@ -51,7 +51,8 @@ namespace MonoDevelop.Ide.Projects
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.folderEntry = null;
+			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
+			this.folderEntry.Name = "folderEntry";
 			this.table1.Add (this.folderEntry);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.folderEntry]));
 			w3.TopAttach = ((uint)(2));

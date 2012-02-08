@@ -80,7 +80,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox26.Gtk.Box+BoxChild
-			this.folderEntry = null;
+			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
+			this.folderEntry.Name = "folderEntry";
 			this.vbox26.Add (this.folderEntry);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox26 [this.folderEntry]));
 			w5.Position = 3;
