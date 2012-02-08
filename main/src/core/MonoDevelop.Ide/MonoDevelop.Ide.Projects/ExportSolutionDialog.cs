@@ -51,12 +51,29 @@ namespace MonoDevelop.Ide.Projects
 			if (sel == -1) sel = 0;
 			comboFormat.Active = sel;
 			
+			if (formats.Length < 2) {
+				table.Remove (newFormatLabel);
+				newFormatLabel.Destroy ();
+				newFormatLabel = null;
+				table.Remove (comboFormat);
+				comboFormat.Destroy ();
+				comboFormat = null;
+			}
+			
+			//auto height
+			folderEntry.WidthRequest = 380;
+			Resize (1, 1);
+			
 			folderEntry.Path = item.ItemDirectory;
 			UpdateControls ();
 		}
 		
 		public FileFormat Format {
-			get { return formats [comboFormat.Active]; }
+			get {
+				if (comboFormat == null)
+					return formats[0];
+				return formats [comboFormat.Active];
+			}
 		}
 		
 		public string TargetFolder {

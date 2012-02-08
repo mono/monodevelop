@@ -5,13 +5,13 @@ namespace MonoDevelop.Ide.Projects
 	public partial class ExportSolutionDialog
 	{
 		private global::Gtk.VBox vbox2;
-		private global::Gtk.Table table1;
+		private global::Gtk.Table table;
 		private global::Gtk.ComboBox comboFormat;
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
 		private global::Gtk.Label label2;
-		private global::Gtk.Label label3;
 		private global::Gtk.Label label4;
 		private global::Gtk.Label labelNewFormat;
+		private global::Gtk.Label newFormatLabel;
 		private global::Gtk.Button button51;
 		private global::Gtk.Button buttonOk;
 		
@@ -24,6 +24,7 @@ namespace MonoDevelop.Ide.Projects
 			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Export Solution");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
+			this.Resizable = false;
 			// Internal child MonoDevelop.Ide.Projects.ExportSolutionDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
 			w1.Events = ((global::Gdk.EventMask)(256));
@@ -36,74 +37,74 @@ namespace MonoDevelop.Ide.Projects
 			this.vbox2.Spacing = 12;
 			this.vbox2.BorderWidth = ((uint)(6));
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(2)), false);
-			this.table1.Name = "table1";
-			this.table1.RowSpacing = ((uint)(6));
-			this.table1.ColumnSpacing = ((uint)(6));
-			// Container child table1.Gtk.Table+TableChild
+			this.table = new global::Gtk.Table (((uint)(3)), ((uint)(2)), false);
+			this.table.Name = "table";
+			this.table.RowSpacing = ((uint)(6));
+			this.table.ColumnSpacing = ((uint)(6));
+			// Container child table.Gtk.Table+TableChild
 			this.comboFormat = global::Gtk.ComboBox.NewText ();
 			this.comboFormat.Name = "comboFormat";
-			this.table1.Add (this.comboFormat);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.comboFormat]));
+			this.table.Add (this.comboFormat);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table [this.comboFormat]));
 			w2.TopAttach = ((uint)(1));
 			w2.BottomAttach = ((uint)(2));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			// Container child table.Gtk.Table+TableChild
 			this.folderEntry = new global::MonoDevelop.Components.FolderEntry ();
 			this.folderEntry.Name = "folderEntry";
-			this.table1.Add (this.folderEntry);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.folderEntry]));
+			this.table.Add (this.folderEntry);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table [this.folderEntry]));
 			w3.TopAttach = ((uint)(2));
 			w3.BottomAttach = ((uint)(3));
 			w3.LeftAttach = ((uint)(1));
 			w3.RightAttach = ((uint)(2));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			// Container child table.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Target folder:");
-			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
+			this.table.Add (this.label2);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table [this.label2]));
 			w4.TopAttach = ((uint)(2));
 			w4.BottomAttach = ((uint)(3));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label3 = new global::Gtk.Label ();
-			this.label3.Name = "label3";
-			this.label3.Xalign = 0F;
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("New format:");
-			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
-			w5.TopAttach = ((uint)(1));
-			w5.BottomAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			// Container child table.Gtk.Table+TableChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0F;
 			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Current format:");
-			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			this.table.Add (this.label4);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table [this.label4]));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table.Gtk.Table+TableChild
 			this.labelNewFormat = new global::Gtk.Label ();
 			this.labelNewFormat.Name = "labelNewFormat";
 			this.labelNewFormat.Xalign = 0F;
-			this.table1.Add (this.labelNewFormat);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelNewFormat]));
-			w7.LeftAttach = ((uint)(1));
-			w7.RightAttach = ((uint)(2));
+			this.table.Add (this.labelNewFormat);
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table [this.labelNewFormat]));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table.Gtk.Table+TableChild
+			this.newFormatLabel = new global::Gtk.Label ();
+			this.newFormatLabel.Name = "newFormatLabel";
+			this.newFormatLabel.Xalign = 0F;
+			this.newFormatLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("New format:");
+			this.table.Add (this.newFormatLabel);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table [this.newFormatLabel]));
+			w7.TopAttach = ((uint)(1));
+			w7.BottomAttach = ((uint)(2));
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.vbox2.Add (this.table1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
+			this.vbox2.Add (this.table);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -146,8 +147,8 @@ namespace MonoDevelop.Ide.Projects
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 509;
-			this.DefaultHeight = 195;
+			this.DefaultWidth = 496;
+			this.DefaultHeight = 154;
 			this.Hide ();
 		}
 	}
