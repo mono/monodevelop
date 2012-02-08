@@ -42,6 +42,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Linq;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring
 {
@@ -52,14 +53,22 @@ namespace MonoDevelop.Refactoring
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (solution == null)
 				return;
+			
 			var sourceProject = TypeSystemService.GetProject (cls);
+			if (sourceProject == null)
+				return;
+			
 			var projects = ReferenceFinder.GetAllReferencingProjects (solution, sourceProject);
 			ThreadPool.QueueUserWorkItem (delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					var cache = new Dictionary<string, TextEditorData> ();
-					foreach (var p in projects) {
-						foreach (var type in TypeSystemService.GetCompilation (p).GetAllTypeDefinitions ()) {
-							if (!type.IsDerivedFrom (cls)) 
+					Parallel.ForEach (projects, p => {
+						var comp = TypeSystemService.GetCompilation (p);
+						if (comp == null)
+							return;
+						var importedType = comp.Import (cls);
+						foreach (var type in comp.MainAssembly.GetAllTypeDefinitions ()) {
+							if (!type.IsDerivedFrom (importedType)) 
 								continue;
 							TextEditorData textFile;
 							if (!cache.TryGetValue (type.Region.FileName, out textFile)) {
@@ -68,7 +77,7 @@ namespace MonoDevelop.Refactoring
 							int position = textFile.LocationToOffset (type.Region.BeginLine, type.Region.BeginColumn);
 							monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (type.Region.FileName, p), position, 0));
 						}
-					}
+					});
 					foreach (var tf in cache.Values) {
 						if (tf.Parent == null)
 							tf.Dispose ();

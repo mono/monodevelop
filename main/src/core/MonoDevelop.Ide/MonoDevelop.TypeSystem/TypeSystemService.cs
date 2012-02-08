@@ -52,12 +52,12 @@ namespace MonoDevelop.TypeSystem
 	{
 		public static Project GetProject (this IProjectContent content)
 		{
-			return TypeSystemService.GetProject (content.AssemblyName);
+			return TypeSystemService.GetProject (content.Location);
 		}
 		
 		public static Project GetSourceProject (this ITypeDefinition type)
 		{
-			return TypeSystemService.GetProject (type.Compilation.MainAssembly.AssemblyName);
+			return TypeSystemService.GetProject (type.Compilation.MainAssembly.UnresolvedAssembly.Location);
 		}
 		
 		public static Project GetSourceProject (this IType type)
@@ -719,14 +719,15 @@ namespace MonoDevelop.TypeSystem
 			}
 			if (def == null)
 				return null;
-			return GetProject (def.Compilation.MainAssembly.AssemblyName);
+			
+			return GetProject (def.Compilation.MainAssembly.UnresolvedAssembly.Location);
 				
 		}
 		
-		public static Project GetProject (string assemblyName)
+		public static Project GetProject (string location)
 		{
 			foreach (var wrapper in projectContents) 
-				if (wrapper.Value.Compilation.MainAssembly.AssemblyName == assemblyName)
+				if (wrapper.Value.Compilation.MainAssembly.UnresolvedAssembly.Location == location)
 					return wrapper.Key;
 			return null;
 		}
@@ -1059,7 +1060,7 @@ namespace MonoDevelop.TypeSystem
 				get {
 					if (assembly != null)
 						return assembly;
-					return assembly = LoadAssembly ();
+					return assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
 				}
 			}
 			
@@ -1175,9 +1176,12 @@ namespace MonoDevelop.TypeSystem
 			if (project == null)
 				return null;
 			ProjectContentWrapper content;
-			if (projectContents.TryGetValue (project, out content))
+			if (projectContents.TryGetValue (project, out content)) {
+				if (content.Content != null)
+					content.Content.Location = project.FileName;
 				return content;
-			return new ProjectContentWrapper (new CSharpProjectContent ());
+			}
+			return new ProjectContentWrapper (new CSharpProjectContent () { Location = project.FileName });
 		}
 		
 		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
