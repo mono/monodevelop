@@ -298,45 +298,60 @@ namespace MonoDevelop.TypeSystem
 		}
 		#region Parser Database Handling
 
-		static string GetWorkspacePath (string dataPath)
+		static string GetCacheDirectory (string filename)
 		{
+			string result;
+			var nameNoExtension = Path.GetFileNameWithoutExtension (filename);
+			var derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
+		
+			try {
+				// First try to access what we think could be the correct file directly
+				if (CheckCacheDirectoryIsCorrect (filename, derivedDataPath.Combine (nameNoExtension), out result))
+					return result;
+
+				if (Directory.Exists (derivedDataPath)) {
+					var subDirs = Directory.GetDirectories (derivedDataPath);
+					// next check any directory which contains the filename
+					foreach (var subDir in subDirs.Where (s=> s.Contains (nameNoExtension)))
+						if (CheckCacheDirectoryIsCorrect (filename, derivedDataPath.Combine (subDir), out result))
+							return result;
+
+					// Finally check every remaining directory
+					foreach (var subDir in subDirs.Where (s=> !s.Contains (nameNoExtension)))
+						if (CheckCacheDirectoryIsCorrect (filename, derivedDataPath.Combine (subDir), out result))
+							return result;
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting derived data directories.", e);
+			}
+			return null;
+		}
+		
+		static bool CheckCacheDirectoryIsCorrect (FilePath filename, FilePath candidate, out string result)
+		{
+			result = null;
+			var dataPath = candidate.Combine ("data.xml");
+			
 			try {
 				if (!File.Exists (dataPath))
-					return null;
+				    return false;
+				    
 				using (var reader = XmlReader.Create (dataPath)) {
 					while (reader.Read ()) {
-						if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File")
-							return reader.GetAttribute ("name");
+						if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File") {
+							if (reader.GetAttribute ("name") == filename) {
+								result = candidate;
+								return true;
+							}
+						}
 					}
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while reading derived data file " + dataPath, e);
 			}
-			return null;
-		}
-		
-		static string GetCacheDirectory (string fileName)
-		{
-			string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
-		
-			string[] subDirs;
 			
-			try {
-				if (!Directory.Exists (derivedDataPath))
-					return null;
-				subDirs = Directory.GetDirectories (derivedDataPath);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting derived data directories.", e);
-				return null;
-			}
-			
-			foreach (var subDir in subDirs) {
-				var dataPath = Path.Combine (subDir, "data.xml");
-				var workspacePath = GetWorkspacePath (dataPath);
-				if (workspacePath == fileName) 
-					return subDir;
-			}
-			return null;
+			result = null;
+			return false;
 		}
 		
 		static string GetName (string baseName, int i)
