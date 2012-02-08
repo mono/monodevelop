@@ -36,7 +36,7 @@ using System.IO;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public class LogView: Gtk.ScrolledWindow
+	public class LogView : MonoDevelop.Components.CompactScrolledWindow
 	{
 		Gtk.TextBuffer buffer;
 		Gtk.TextView textEditorControl;
