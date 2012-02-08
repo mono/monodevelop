@@ -80,10 +80,16 @@ namespace Mono.Debugging.Soft
 		{
 			MDB.MethodMirror method = frame.Method;
 			MDB.TypeMirror type = method.DeclaringType;
+			string fileName = frame.FileName;
 			string methodName = method.Name;
+			
+			if (fileName != null)
+				fileName = SoftDebuggerSession.NormalizePath (fileName);
+			
 			if (type != null)
 				methodName = type.FullName + "." + methodName;
-			var location = new DC.SourceLocation (methodName, SoftDebuggerSession.NormalizePath (frame.FileName), frame.LineNumber);
+			
+			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber);
 			var lang = frame.Method != null ? "Managed" : "Native";
 			return new DC.StackFrame (frame.ILOffset, method.FullName, location, lang, session.IsExternalCode (frame), true, type.Module.FullyQualifiedName, type.FullName);
 		}

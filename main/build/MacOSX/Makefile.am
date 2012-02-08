@@ -6,21 +6,23 @@ ADDINS=$(MACOS)/lib/monodevelop/AddIns
 EXTRAS=$(top_srcdir)/../extras
 ARTIFACTS=$(top_srcdir)/../../artifacts
 
-CLEANFILES = MonoDevelop.dmg MonoDevelop.app
+CLEANFILES = render.exe
 #DISTCLEANFILES = 
-EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh mdtool monodevelop 
+EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh mdtool monodevelop render.exe
 
-all: MonoDevelop.app
+all: app
 
-MonoDevelop.dmg: MonoDevelop.app
+render.exe: render.cs
+	gmcs -r:System.Drawing render.cs
+
+dmg: render.exe app
 	./make-dmg-bundle.sh
 
 clean-local:
 	rm -rf MonoDevelop.app
-	rm -f MonoDevelop.dmg
-	rm -f MonoDevelop.app.zip
+	rm -f MonoDevelop*.dmg
 
-MonoDevelop.app:
+app:
 	@echo ""
 	@echo "Creating directories in app bundle"
 	@echo ""
@@ -143,10 +145,4 @@ MonoDevelop.app:
 	@echo ""
 	@rm -f missing-stuff
 
-MonoDevelop.app.zip: MonoDevelop.app
-	zip -r9uyq MonoDevelop.app.zip MonoDevelop.app
-
-update-png:
-	/Applications/Inkscape.app/Contents/Resources/script --without-gui --export-png=`pwd`/dmg-bg.png `pwd`/dmg-bg.svg
-
-.PHONY: MonoDevelop.app
+.PHONY: app dmg
