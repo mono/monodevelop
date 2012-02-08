@@ -314,22 +314,22 @@ namespace Mono.TextEditor
 					bool flip_left = true;
 					bool flip_up   = false;
 					
-					if (x + request.Width > geometry.Right) {
+					if (x + request.Width > geometry.X + geometry.Width) {
 						if (flip_left) {
 							x -= request.Width;
 						} else {
-							x = geometry.Right - request.Width;
+							x = geometry.X + geometry.Width - request.Width;
 						}
 						
 						if (x < geometry.Left)
 							x = geometry.Left;
 					}
 					
-					if (y + request.Height > geometry.Bottom) {
+					if (y + request.Height > geometry.Y + geometry.Height) {
 						if (flip_up) {
 							y -= request.Height;
 						} else {
-							y = geometry.Bottom - request.Height;
+							y = geometry.Y + geometry.Height - request.Height;
 						}
 						
 						if (y < geometry.Top)
@@ -617,6 +617,20 @@ namespace Mono.TextEditor
 				}
 			}
 			ctx.CursorLocation = cursor;
+		}
+		
+		/// <summary>X coordinate of the pixels inside the right edge of the rectangle</summary>
+		/// <remarks>Workaround for inconsistency of Right property between GTK# versions</remarks>
+		public static int RightInside (this Gdk.Rectangle rect)
+		{
+			return rect.X + rect.Width - 1;
+		}
+		
+		/// <summary>Y coordinate of the pixels inside the bottom edge of the rectangle</summary>
+		/// <remarks>Workaround for inconsistency of Bottom property between GTK# versions#</remarks>
+		public static int BottomInside (this Gdk.Rectangle rect)
+		{
+			return rect.Y + rect.Height - 1;
 		}
 	}
 	

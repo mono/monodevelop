@@ -395,7 +395,6 @@ namespace Mono.TextEditor
 					preeditLayout.GetSize (out w, out h);
 					var calcHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
 					if (LineHeight != calcHeight) {
-						int line = OffsetToLineNumber (preeditOffset);
 						textEditorData.heightTree.SetLineHeight (preeditLine, calcHeight);
 						preeditHeightChange = true;
 						QueueDraw ();
@@ -2503,14 +2502,14 @@ namespace Mono.TextEditor
 			x -= (int) ((double) w * xalign);
 			y += 10;
 			
-			if (x + w >= geometry.Right)
-				x = geometry.Right - w;
+			if (x + w >= geometry.X + geometry.Width)
+				x = geometry.X + geometry.Width - w;
 			if (x < geometry.Left)
 				x = geometry.Left;
 			
 			int h = tipWindow.SizeRequest ().Height;
-			if (y + h >= geometry.Bottom)
-				y = geometry.Bottom - h;
+			if (y + h >= geometry.Y + geometry.Height)
+				y = geometry.Y + geometry.Height - h;
 			if (y < geometry.Top)
 				y = geometry.Top;
 			
