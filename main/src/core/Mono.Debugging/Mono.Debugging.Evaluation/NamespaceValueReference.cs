@@ -37,7 +37,6 @@ namespace Mono.Debugging.Evaluation
 	{
 		string name;
 		string namspace;
-		string[] namespaces;
 
 		public NamespaceValueReference (EvaluationContext ctx, string name)
 			: base (ctx)
@@ -95,15 +94,8 @@ namespace Mono.Debugging.Evaluation
 			object t = ctx.Adapter.GetType (ctx, newNs);
 			if (t != null)
 				return new TypeValueReference (ctx, t);
-
-			if (namespaces == null)
-				namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
 			
-			foreach (string ns in namespaces) {
-				if (ns == newNs || ns.StartsWith (newNs + "."))
-					return new NamespaceValueReference (ctx, newNs);
-			}
-			return null;
+			return new NamespaceValueReference (ctx, newNs);
 		}
 
 		public override ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
