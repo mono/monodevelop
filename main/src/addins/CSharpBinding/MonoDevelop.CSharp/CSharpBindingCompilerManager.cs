@@ -146,7 +146,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (configuration.DebugMode) {
-				sb.AppendLine ("/debug:+");
+//				sb.AppendLine ("/debug:+");
 				sb.AppendLine ("/debug:full");
 			}
 			
