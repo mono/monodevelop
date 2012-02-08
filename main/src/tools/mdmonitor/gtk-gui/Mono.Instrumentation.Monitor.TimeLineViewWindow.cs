@@ -86,12 +86,7 @@ namespace Mono.Instrumentation.Monitor
 			global::Gtk.Viewport w5 = new global::Gtk.Viewport ();
 			w5.ShadowType = ((global::Gtk.ShadowType)(0));
 			// Container child GtkViewport.Gtk.Container+ContainerChild
-			this.timeView = new global::Mono.Instrumentation.Monitor.TimeLineView ();
-			this.timeView.Name = "timeView";
-			this.timeView.SingleThread = false;
-			this.timeView.TimeScale = 0;
-			this.timeView.Zoom = 0;
-			this.timeView.Scale = 0;
+			this.timeView = null;
 			w5.Add (this.timeView);
 			this.GtkScrolledWindow.Add (w5);
 			this.hbox2.Add (this.GtkScrolledWindow);

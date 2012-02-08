@@ -40,9 +40,7 @@ namespace MonoDevelop.Ide.Projects
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.featureList = new global::MonoDevelop.Ide.Projects.CombineEntryFeatureSelector ();
-			this.featureList.Events = ((global::Gdk.EventMask)(256));
-			this.featureList.Name = "featureList";
+			this.featureList = null;
 			this.vbox5.Add (this.featureList);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.featureList]));
 			w3.Position = 1;

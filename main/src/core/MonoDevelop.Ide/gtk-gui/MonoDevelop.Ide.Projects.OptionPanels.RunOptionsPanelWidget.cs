@@ -99,9 +99,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child vbox69.Gtk.Box+BoxChild
-			this.envVarList = new global::MonoDevelop.Ide.Gui.Components.EnvVarList ();
-			this.envVarList.CanFocus = true;
-			this.envVarList.Name = "envVarList";
+			this.envVarList = null;
 			this.vbox69.Add (this.envVarList);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.envVarList]));
 			w8.Position = 5;

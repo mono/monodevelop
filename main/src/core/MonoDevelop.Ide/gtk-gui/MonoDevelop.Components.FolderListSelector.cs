@@ -31,8 +31,7 @@ namespace MonoDevelop.Components
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.folderentry = new global::MonoDevelop.Components.FolderEntry ();
-			this.folderentry.Name = "folderentry";
+			this.folderentry = null;
 			this.vbox1.Add (this.folderentry);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.folderentry]));
 			w1.Position = 0;

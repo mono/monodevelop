@@ -95,8 +95,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(0));
 			// Container child table10.Gtk.Table+TableChild
-			this.outputPathEntry = new global::MonoDevelop.Components.FolderEntry ();
-			this.outputPathEntry.Name = "outputPathEntry";
+			this.outputPathEntry = null;
 			this.table10.Add (this.outputPathEntry);
 			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table10 [this.outputPathEntry]));
 			w6.TopAttach = ((uint)(1));

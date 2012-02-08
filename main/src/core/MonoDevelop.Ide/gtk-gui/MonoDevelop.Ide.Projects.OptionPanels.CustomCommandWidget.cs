@@ -112,9 +112,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.hbox2.Name = "hbox2";
 			this.hbox2.Spacing = 6;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.tagSelectorDirectory = new global::MonoDevelop.Ide.Gui.Components.StringTagSelectorButton ();
-			this.tagSelectorDirectory.Events = ((global::Gdk.EventMask)(256));
-			this.tagSelectorDirectory.Name = "tagSelectorDirectory";
+			this.tagSelectorDirectory = null;
 			this.hbox2.Add (this.tagSelectorDirectory);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.tagSelectorDirectory]));
 			w7.Position = 0;
@@ -144,9 +142,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.tagSelectorCommand = new global::MonoDevelop.Ide.Gui.Components.StringTagSelectorButton ();
-			this.tagSelectorCommand.Events = ((global::Gdk.EventMask)(256));
-			this.tagSelectorCommand.Name = "tagSelectorCommand";
+			this.tagSelectorCommand = null;
 			this.hbox3.Add (this.tagSelectorCommand);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.tagSelectorCommand]));
 			w10.Position = 1;

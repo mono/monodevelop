@@ -45,13 +45,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.matchEntry = new global::MonoDevelop.Components.SearchEntry ();
-			this.matchEntry.Name = "matchEntry";
-			this.matchEntry.ForceFilterButtonVisible = false;
-			this.matchEntry.IsCheckMenu = false;
-			this.matchEntry.ActiveFilterID = 0;
-			this.matchEntry.Ready = false;
-			this.matchEntry.HasFocus = false;
+			this.matchEntry = null;
 			this.hbox1.Add (this.matchEntry);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.matchEntry]));
 			w3.Position = 1;

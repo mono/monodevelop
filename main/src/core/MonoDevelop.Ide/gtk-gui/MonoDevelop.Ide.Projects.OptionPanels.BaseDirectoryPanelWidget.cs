@@ -55,8 +55,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.folderentry = new global::MonoDevelop.Components.FolderEntry ();
-			this.folderentry.Name = "folderentry";
+			this.folderentry = null;
 			this.hbox1.Add (this.folderentry);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.folderentry]));
 			w4.Position = 2;
