@@ -118,10 +118,10 @@ run-gdb: $(PROGRAM)
 	rm -f gdb.commands
 
 run-profile: $(PROGRAM)
-	$(MD_LAUNCH) -O=inline --profile $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH) --profile=log:calls $(MD_BIN_PATH)/MonoDevelop.exe
 
 run-profile-stat: $(PROGRAM)
-	$(MD_LAUNCH) --profile=logging:stat $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH) --profile=log:sample $(MD_BIN_PATH)/MonoDevelop.exe
 
 run-trace: $(PROGRAM)
 	$(MD_LAUNCH_SETUP) MONODEVELOP_TRACE=1 exec strace -ttt -f -o md.strace mono $(MD_BIN_PATH)/MonoDevelop.exe
