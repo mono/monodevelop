@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 		
 		static IntPtr cls_NSScreen;
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
-			sel_activateIgnoringOtherApps, sel_isActive, sel_requestUserAttention;
+			sel_requestUserAttention;
 		static IntPtr sharedApp;
 		
 		const int NSCriticalRequest = 0;
@@ -116,8 +116,6 @@ namespace Mono.TextEditor
 			sel_nextObject = sel_registerName ("nextObject");
 			sel_visibleFrame = sel_registerName ("visibleFrame");
 			sel_frame = sel_registerName ("frame");
-			sel_activateIgnoringOtherApps = sel_registerName ("activateIgnoringOtherApps:");
-			sel_isActive = sel_registerName ("isActive");
 			sel_requestUserAttention = sel_registerName ("requestUserAttention:");
 			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
 		}
@@ -586,8 +584,6 @@ namespace Mono.TextEditor
 				this.Bottom = bottom;
 			}
 		}
-		
-		static int win32RectMarshalSize = Marshal.SizeOf (typeof (Win32Rect));
 		
 		[DllImport ("dwmapi.dll")]
 		static extern int DwmGetWindowAttribute (IntPtr hwnd, DwmWindowAttribute attribute, out Win32Rect value, int valueSize);
