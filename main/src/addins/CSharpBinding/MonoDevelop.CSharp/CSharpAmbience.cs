@@ -530,6 +530,66 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 		
+		static string GetOperator (string methodName)
+		{
+			switch (methodName) {
+			case "op_Subtraction":
+			case "op_UnaryNegation":
+				return "-";
+				
+			case "op_Addition":
+			case "op_UnaryPlus":
+				return "+";
+			case "op_Multiply":
+				return "*";
+			case "op_Division":
+				return "/";
+			case "op_Modulus":
+				return "%";
+			case "op_LogicalNot":
+				return "!";
+			case "op_OnesComplement":
+				return "~";
+			case "op_BitwiseAnd":
+				return "&";
+			case "op_BitwiseOr":
+				return "|";
+			case "op_ExclusiveOr":
+				return "^";
+			case "op_LeftShift":
+				return "<<";
+			case "op_RightShift":
+				return ">>";
+			case "op_GreaterThan":
+				return ">";
+			case "op_GreaterThanOrEqual":
+				return ">=";
+			case "op_Equality":
+				return "==";
+			case "op_Inequality":
+				return "!=";
+			case "op_LessThan":
+				return "<";
+			case "op_LessThanOrEqual":
+				return "<=";
+			case "op_Increment":
+				return "++";
+			case "op_Decrement":
+				return "--";
+				
+			case "op_True":
+				return "true";
+			case "op_False":
+				return "false";
+				
+			case "op_Implicit":
+				return "implicit";
+			case "op_Explicit":
+				return "explicit";
+			}
+			return methodName;
+		}
+		
 		string InternalGetMethodString (IMethod method, OutputSettings settings, string methodName, bool getReturnType)
 		{
 			if (method == null)
@@ -546,7 +606,12 @@ namespace MonoDevelop.CSharp
 				result.Append (settings.Markup ("."));
 			}
 			AppendExplicitInterfaces (result, method, settings);
-			result.Append (methodName);
+			if (method.EntityType == EntityType.Operator) {
+				result.Append ("operator ");
+				result.Append (settings.Markup (GetOperator (methodName)));
+			} else {
+				result.Append (methodName);
+			}
 			
 			if (settings.IncludeGenerics) {
 				if (method.TypeParameters.Count > 0) {
