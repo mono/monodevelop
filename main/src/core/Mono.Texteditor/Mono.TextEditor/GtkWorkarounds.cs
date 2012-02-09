@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 		
 		static IntPtr cls_NSScreen;
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
-			sel_activateIgnoringOtherApps, sel_isActive, sel_requestUserAttention;
+			sel_requestUserAttention;
 		static IntPtr sharedApp;
 		
 		const int NSCriticalRequest = 0;
@@ -116,8 +116,6 @@ namespace Mono.TextEditor
 			sel_nextObject = sel_registerName ("nextObject");
 			sel_visibleFrame = sel_registerName ("visibleFrame");
 			sel_frame = sel_registerName ("frame");
-			sel_activateIgnoringOtherApps = sel_registerName ("activateIgnoringOtherApps:");
-			sel_isActive = sel_registerName ("isActive");
 			sel_requestUserAttention = sel_registerName ("requestUserAttention:");
 			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
 		}
@@ -314,22 +312,22 @@ namespace Mono.TextEditor
 					bool flip_left = true;
 					bool flip_up   = false;
 					
-					if (x + request.Width > geometry.Right) {
+					if (x + request.Width > geometry.X + geometry.Width) {
 						if (flip_left) {
 							x -= request.Width;
 						} else {
-							x = geometry.Right - request.Width;
+							x = geometry.X + geometry.Width - request.Width;
 						}
 						
 						if (x < geometry.Left)
 							x = geometry.Left;
 					}
 					
-					if (y + request.Height > geometry.Bottom) {
+					if (y + request.Height > geometry.Y + geometry.Height) {
 						if (flip_up) {
 							y -= request.Height;
 						} else {
-							y = geometry.Bottom - request.Height;
+							y = geometry.Y + geometry.Height - request.Height;
 						}
 						
 						if (y < geometry.Top)
@@ -587,8 +585,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		static int win32RectMarshalSize = Marshal.SizeOf (typeof (Win32Rect));
-		
 		[DllImport ("dwmapi.dll")]
 		static extern int DwmGetWindowAttribute (IntPtr hwnd, DwmWindowAttribute attribute, out Win32Rect value, int valueSize);
 		
@@ -617,6 +613,20 @@ namespace Mono.TextEditor
 				}
 			}
 			ctx.CursorLocation = cursor;
+		}
+		
+		/// <summary>X coordinate of the pixels inside the right edge of the rectangle</summary>
+		/// <remarks>Workaround for inconsistency of Right property between GTK# versions</remarks>
+		public static int RightInside (this Gdk.Rectangle rect)
+		{
+			return rect.X + rect.Width - 1;
+		}
+		
+		/// <summary>Y coordinate of the pixels inside the bottom edge of the rectangle</summary>
+		/// <remarks>Workaround for inconsistency of Bottom property between GTK# versions#</remarks>
+		public static int BottomInside (this Gdk.Rectangle rect)
+		{
+			return rect.Y + rect.Height - 1;
 		}
 	}
 	
