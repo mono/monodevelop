@@ -234,7 +234,7 @@ namespace MonoDevelop.TypeSystem
 			try {
 				var result = parser.Parse (true, fileName, content);
 				if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
-					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result);
+					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result.ParsedFile);
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
@@ -267,7 +267,7 @@ namespace MonoDevelop.TypeSystem
 			try {
 				var result = parser.Parse (true, fileName, content);
 				if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
-					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result);
+					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result.ParsedFile);
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
@@ -1202,10 +1202,10 @@ namespace MonoDevelop.TypeSystem
 		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
 		{
 			using (var reader = new StringReader (text)) {
-				var parsedFile = ParseFile (file, mimeType, reader);
+				var parsedDocument = ParseFile (file, mimeType, reader);
 				
 				var content = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
-				return content.UpdateProjectContent (null, parsedFile);
+				return content.UpdateProjectContent (null, parsedDocument.ParsedFile);
 			}
 		}
 		
@@ -1269,8 +1269,8 @@ namespace MonoDevelop.TypeSystem
 					if (parser == null)
 						continue;
 					using (var stream = new System.IO.StreamReader (file.FilePath)) {
-						var parsedFile = parser.Parse (false, file.FilePath, stream);
-						Context.Content = Context.Content.UpdateProjectContent (Context.Content.GetFile (file.FilePath), parsedFile);
+						var parsedDocument = parser.Parse (false, file.FilePath, stream);
+						Context.Content = Context.Content.UpdateProjectContent (Context.Content.GetFile (file.FilePath), parsedDocument.ParsedFile);
 					}
 //					if (ParseCallback != null)
 //						ParseCallback (file.FilePath, monitor);
