@@ -1114,10 +1114,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				if (!IsLineEmptyUpToEol ())
 					return null;
-				var overrideCls = CSharpParsedFile.GetInnermostTypeDefinition (location);
-				if (overrideCls != null && (overrideCls.Kind == TypeKind.Class || overrideCls.Kind == TypeKind.Struct)) {
+				if (currentType != null && (currentType.Kind == TypeKind.Class || currentType.Kind == TypeKind.Struct)) {
 					string modifiers = document.GetText (firstMod, wordStart - firstMod);
-					return GetOverrideCompletionData (overrideCls, modifiers);
+					return GetOverrideCompletionData (currentType, modifiers);
 				}
 				return null;
 			case "partial":
