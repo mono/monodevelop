@@ -310,6 +310,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			vbox.Destroyed += delegate {
 				isDisposed = true;
+				RemoveErrorUndelinesResetTimerId ();
 				StopParseInfoThread ();
 				KillWidgets ();
 				

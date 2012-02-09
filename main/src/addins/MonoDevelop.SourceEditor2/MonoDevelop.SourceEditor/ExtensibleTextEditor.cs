@@ -135,7 +135,7 @@ namespace MonoDevelop.SourceEditor
 			set {
 				if (extensionContext != null) {
 					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-					TooltipProviders.Clear ();
+					ClearTooltipProviders ();
 				}
 				extensionContext = value;
 				if (extensionContext != null)
@@ -193,9 +193,9 @@ namespace MonoDevelop.SourceEditor
 				return;
 			}
 			if (a.Change == ExtensionChange.Add) {
-				TooltipProviders.Add (provider);
+				AddTooltipProvider (provider);
 			} else {
-				TooltipProviders.Remove (provider);
+				RemoveTooltipProvider (provider);
 			}
 		}
 		

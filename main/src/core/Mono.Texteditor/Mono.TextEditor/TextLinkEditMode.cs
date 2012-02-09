@@ -182,7 +182,7 @@ namespace Mono.TextEditor
 			this.baseOffset = baseOffset;
 			this.endOffset = editor.Caret.Offset;
 			tooltipProvider = new TextLinkTooltipProvider (this);
-			this.Editor.TooltipProviders.Insert (0, tooltipProvider);
+			this.Editor.tooltipProviders.Insert (0, tooltipProvider);
 			this.SetCaretPosition = true;
 			this.SelectPrimaryLink = true;
 		}
@@ -295,7 +295,7 @@ namespace Mono.TextEditor
 			
 			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged -= HandlePositionChanged;
-			this.Editor.TooltipProviders.Remove (tooltipProvider);
+			this.Editor.RemoveTooltipProvider (tooltipProvider);
 			if (undoDepth >= 0)
 				Editor.Document.StackUndoToDepth (undoDepth);
 			Editor.CurrentMode = OldMode;

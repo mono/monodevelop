@@ -37,16 +37,19 @@ using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class DebugValueTooltipProvider: ITooltipProvider
+	public class DebugValueTooltipProvider: ITooltipProvider, IDisposable
 	{
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
 		
 		public DebugValueTooltipProvider()
 		{
-			DebuggingService.CurrentFrameChanged += delegate {
-				// Clear the cached values every time the current frame changes
-				cachedValues.Clear ();
-			};
+			DebuggingService.CurrentFrameChanged += HandleCurrentFrameChanged;
+		}
+
+		void HandleCurrentFrameChanged (object sender, EventArgs e)
+		{
+			// Clear the cached values every time the current frame changes
+			cachedValues.Clear ();
 		}
 
 		#region ITooltipProvider implementation 
@@ -145,5 +148,11 @@ namespace MonoDevelop.SourceEditor
 		
 		#endregion 
 		
+		#region IDisposable implementation
+		public void Dispose ()
+		{
+			DebuggingService.CurrentFrameChanged -= HandleCurrentFrameChanged;
+		}
+		#endregion
 	}
 }

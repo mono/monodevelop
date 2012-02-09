@@ -743,12 +743,34 @@ namespace Mono.TextEditor
 				if (margin is IDisposable)
 					((IDisposable)margin).Dispose ();
 			}
+			ClearTooltipProviders ();
 			
 			this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged;
 			this.textEditorData.Dispose (); 
 			this.Realized -= OptionsChanged;
 			
 			base.OnDestroyed ();
+		}
+		
+		public void ClearTooltipProviders ()
+		{
+			foreach (var tp in tooltipProviders) {
+				var disposableProvider = tp as IDisposable;
+				if (disposableProvider == null)
+					continue;
+				disposableProvider.Dispose ();
+			}
+			tooltipProviders.Clear ();
+		}
+		
+		public void AddTooltipProvider (ITooltipProvider provider)
+		{
+			tooltipProviders.Add (provider);
+		}
+		
+		public void RemoveTooltipProvider (ITooltipProvider provider)
+		{
+			tooltipProviders.Remove (provider);
 		}
 		
 		internal void RedrawMargin (Margin margin)
@@ -2387,7 +2409,7 @@ namespace Mono.TextEditor
 		uint tipHideTimeoutId = 0;
 		uint tipShowTimeoutId = 0;
 		Gtk.Window tipWindow;
-		List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
+		internal List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
 		ITooltipProvider currentTooltipProvider;
 		
 		// Data for the next tooltip to be shown
@@ -2396,7 +2418,7 @@ namespace Mono.TextEditor
 		Gdk.ModifierType nextTipModifierState = ModifierType.None;
 		DateTime nextTipScheduledTime; // Time at which we want the tooltip to show
 		
-		public List<ITooltipProvider> TooltipProviders {
+		public IEnumerable<ITooltipProvider> TooltipProviders {
 			get { return tooltipProviders; }
 		}
 		
