@@ -339,7 +339,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendReturnType (result, options, method.ReturnType);
 			result.Append (" ");
 			if (options.ExplicitDeclaration) {
-				AppendReturnType (result, options, method.DeclaringTypeDefinition);
+				AppendReturnType (result, options, method.DeclaringType);
 				result.Append (".");
 			}
 			result.Append (method.Name);
