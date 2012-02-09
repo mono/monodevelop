@@ -33,7 +33,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
-			AstNode node = cu.GetNodeAt(location);
+			AstNode node;
+			return Resolve(compilation, parsedFile, cu, location, out node, cancellationToken);
+		}
+		
+		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
+		                                    CancellationToken cancellationToken = default(CancellationToken))
+		{
+			node = cu.GetNodeAt(location);
 			if (node == null)
 				return null;
 			AstNode resolvableNode;

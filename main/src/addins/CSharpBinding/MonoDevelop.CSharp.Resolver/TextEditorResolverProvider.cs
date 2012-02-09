@@ -89,15 +89,15 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-			var node = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc);
-			if (node == null) {
+			AstNode node;
+			var result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
+			if (result == null) {
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
 			
-			// TODO: Expression region ?
-			expressionRegion = DomRegion.Empty;
-			return node;
+			expressionRegion = new DomRegion (node.StartLocation, node.EndLocation);
+			return result;
 		}
 		
 		public ResolveResult GetLanguageItem (Mono.TextEditor.TextEditorData data, int offset, string expression)

@@ -88,6 +88,8 @@ namespace MonoDevelop.SourceEditor
 					if (mr != null && mr.Member == null && mr.Type != null)
 						expression = mr.Type.FullName;
 					else {
+						if (expressionRegion.IsEmpty)
+							return null;
 						var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
 						var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
 						expression = ed.GetTextBetween (start, end);
