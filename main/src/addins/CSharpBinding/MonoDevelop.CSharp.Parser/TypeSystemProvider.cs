@@ -61,6 +61,12 @@ namespace MonoDevelop.CSharp.Parser
 			
 			var unit = parser.Parse (content, fileName);
 			var pf = unit.ToTypeSystem ();
+			try {
+				pf.LastWriteTime = System.IO.File.GetLastWriteTime (fileName);
+			} catch (Exception) {
+				pf.LastWriteTime = DateTime.Now;
+			}
+			
 			result.ParsedFile = pf;
 			result.Add (GenerateFoldings (unit, result));
 			if (storeAst) {
