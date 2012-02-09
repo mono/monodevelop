@@ -121,7 +121,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			if (node is ParameterDeclaration && (searchedMembers.First () is IParameter)) 
 				node = ((ParameterDeclaration)node).NameToken;
-			
+			if (node is ConstructorDeclaration)
+				node = ((ConstructorDeclaration)node).IdentifierToken;
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 			
 			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.Begin), memberName.Length);

@@ -178,6 +178,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				var declaringPart = ((IType)member).GetDefinition ().Parts.FirstOrDefault ();
 				if (declaringPart != null)
 					unit = declaringPart.ParsedFile;
+				var nodes = new List<object> ();
+				nodes.Add (member);
+				nodes.AddRange (((IType)member).GetConstructors ());
+				searchNodes = nodes;
 			} else if (member is IEntity) {
 				var e = (IEntity)member;
 				var declaringPart = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ();
