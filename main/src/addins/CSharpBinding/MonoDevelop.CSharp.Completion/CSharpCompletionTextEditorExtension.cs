@@ -518,7 +518,19 @@ namespace MonoDevelop.CSharp.Completion
 
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
 		{
-			return new CompletionData (shortType, type.GetStockIcon ());
+			var result = new CompletionData (shortType, type.GetStockIcon ());
+			if (type.TypeParameterCount > 0) {
+				var sb = new StringBuilder (shortType);
+				sb.Append ("<");
+				for (int i = 0; i < type.TypeParameterCount; i++) {
+					if (i > 0)
+						sb.Append (", ");
+					sb.Append (GetAmbience ().GetString (type.GetDefinition ().TypeParameters[i], OutputFlags.ClassBrowserEntries));
+				}
+				sb.Append (">");
+				result.DisplayText = sb.ToString ();
+			}
+			return result;
 		}
 		
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IUnresolvedTypeDefinition type, string shortType)
