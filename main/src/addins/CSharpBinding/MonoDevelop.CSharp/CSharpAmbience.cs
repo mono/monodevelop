@@ -349,10 +349,20 @@ namespace MonoDevelop.CSharp
 					for (int i = 0; i < typeDef.TypeParameterCount; i++) {
 						if (i > 0)
 							sb.Append (settings.Markup (", "));
+						AppendVariance (sb, typeDef.TypeParameters [i].Variance);
 						AppendType (sb, typeDef.TypeParameters [i], settings);
 					}
 					sb.Append (settings.Markup (">"));
 				}
+			}
+		}
+
+		static void AppendVariance (StringBuilder sb, VarianceModifier variance)
+		{
+			if (variance  == VarianceModifier.Contravariant) {
+				sb.Append ("in ");
+			} else if (variance  == VarianceModifier.Covariant) {
+				sb.Append ("out ");
 			}
 		}
 		
@@ -496,6 +506,7 @@ namespace MonoDevelop.CSharp
 						if (t is ParameterizedType) {
 							result.Append (GetTypeReferenceString (((ParameterizedType)t).TypeArguments [i], settings));
 						} else {
+							AppendVariance (result, type.TypeParameters [i].Variance);
 							result.Append (NetToCSharpTypeName (type.TypeParameters [i].FullName));
 						}
 					}
@@ -620,6 +631,7 @@ namespace MonoDevelop.CSharp
 						if (i > 0)
 							result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
 						if (!settings.HideGenericParameterNames) {
+							AppendVariance (result, method.TypeParameters [i].Variance);
 							result.Append (NetToCSharpTypeName (method.TypeParameters [i].Name));
 						}
 					}
