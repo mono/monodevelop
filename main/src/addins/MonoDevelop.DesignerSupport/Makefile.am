@@ -41,6 +41,7 @@ FILES =  \
 	MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/ITextToolboxNode.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxConsumer.cs \
+	MonoDevelop.DesignerSupport.Toolbox/IToolboxCustomizer.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxLoader.cs \
 	MonoDevelop.DesignerSupport.Toolbox/IToolboxProvider.cs \
 	MonoDevelop.DesignerSupport.Toolbox/TemplateToolboxNode.cs \

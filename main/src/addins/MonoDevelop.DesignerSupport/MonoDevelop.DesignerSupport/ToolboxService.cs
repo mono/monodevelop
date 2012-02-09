@@ -60,6 +60,7 @@ namespace MonoDevelop.DesignerSupport
 		
 		IToolboxConsumer currentConsumer;
 		ItemToolboxNode selectedItem;
+		IToolboxCustomizer customizer;
 		
 		internal ToolboxService ()
 		{
@@ -200,6 +201,12 @@ namespace MonoDevelop.DesignerSupport
 				if (provider != null)
 					RegisterDefaultToolboxProvider (provider);
 			}
+		}
+		
+		internal void Customize (IPadWindow padWindow, IToolboxConfiguration config)
+		{
+			if (customizer != null)
+				customizer.Customize (padWindow, config);
 		}
 		
 		internal IList<ItemToolboxNode> GetFileItems (LoaderContext ctx, string fileName)
@@ -420,6 +427,7 @@ namespace MonoDevelop.DesignerSupport
 			if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.ActiveView != null) {
 				CurrentConsumer = IdeApp.Workbench.ActiveDocument.ActiveView.GetContent<IToolboxConsumer> ();
 				viewProvider    = IdeApp.Workbench.ActiveDocument.ActiveView.GetContent<IToolboxDynamicProvider> ();
+				customizer = IdeApp.Workbench.ActiveDocument.ActiveView.GetContent<IToolboxCustomizer> ();
 				if (viewProvider != null)  {
 					this.dynamicProviders.Add (viewProvider);
 					viewProvider.ItemsChanged += OnProviderItemsChanged;
@@ -428,6 +436,7 @@ namespace MonoDevelop.DesignerSupport
 			} else {
 				CurrentConsumer = null;
 				viewProvider = null;
+				customizer = null;
 			}
 		}
 		
