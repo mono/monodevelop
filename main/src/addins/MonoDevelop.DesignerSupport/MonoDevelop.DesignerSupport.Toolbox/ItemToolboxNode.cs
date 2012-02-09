@@ -85,6 +85,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			set { category = value; }
 		}
 		
+		public int CategoryPriority {
+			get; set;
+		}
+		
 		public virtual string Description {
 			get { return description; }
 			set { description = value; }

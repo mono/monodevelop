@@ -27,6 +27,8 @@
 //
 
 using System;
+using MonoDevelop.Components.PropertyGrid;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -62,5 +64,24 @@ namespace MonoDevelop.DesignerSupport
 	{
 		Gtk.Widget GetCustomPropertyWidget ();
 		void DisposeCustomPropertyWidget ();
+	}
+	
+	/// <summary>
+	/// Implement this interface if you need to customize the property grid
+	/// </summary>
+	public interface IPropertyPadCustomizer
+	{
+		/// <summary>
+		/// Called to customize the property pad. This method is called even
+		/// when using a custom property pad provided by ICustomPropertyPadProvider,
+		/// in which case propertyGrid is set to null.
+		/// </summary>
+		/// <param name='padWindow'>
+		/// Pad window.
+		/// </param>
+		/// <param name='propertyGrid'>
+		/// Property grid. It will be null when using a custom property pad.
+		/// </param>
+		void Customize (IPadWindow padWindow, PropertyGrid propertyGrid);
 	}
 }

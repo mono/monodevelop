@@ -914,6 +914,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 		
+		public int Priority {
+			get; set;
+		}
+		
 		public Category (string text) : base (text)
 		{
 		}

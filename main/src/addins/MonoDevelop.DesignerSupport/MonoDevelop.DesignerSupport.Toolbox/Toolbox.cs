@@ -29,6 +29,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Gtk;
 using System.Drawing.Design;
@@ -41,7 +42,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	public class Toolbox : VBox, IPropertyPadProvider
+	public class Toolbox : VBox, IPropertyPadProvider, IToolboxConfiguration
 	{
 		ToolboxService toolboxService;
 		
@@ -57,10 +58,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		Entry filterEntry;
 		bool filterVisible;
 		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
+		IPadWindow container;
+		Dictionary<string,int> categoryPriorities = new Dictionary<string, int> ();
+		Button toolboxAddButton;
 		
 		public Toolbox (ToolboxService toolboxService, IPadWindow container)
 		{			
 			this.toolboxService = toolboxService;
+			this.container = container;
 			
 			#region Toolbar
 			DockItemToolbar toolbar = container.GetToolbar (PositionType.Top);
@@ -86,7 +91,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			VSeparator sep = new VSeparator ();
 			toolbar.Add (sep);
 			
-			Button toolboxAddButton = new Button (new Gtk.Image (Gtk.Stock.Add, IconSize.Menu));
+			toolboxAddButton = new Button (new Gtk.Image (Gtk.Stock.Add, IconSize.Menu));
 			toolbar.Add (toolboxAddButton);
 			toolboxAddButton.TooltipText = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);
@@ -188,6 +193,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void ShowPopup (Gdk.EventButton evt)
 		{
+			if (!AllowEditingComponents)
+				return;
 			CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/DesignerSupport/ToolboxItemContextMenu");
 			IdeApp.CommandService.ShowContextMenu (this, evt, eset, this);
 		}
@@ -220,8 +227,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			foreach (ItemToolboxNode itbn in nodes) {
 				Item newItem = new Item (itbn.Icon, itbn.Name, String.IsNullOrEmpty (itbn.Description) ? itbn.Name : itbn.Description, itbn);
-				if (!categories.ContainsKey (itbn.Category))
-					categories[itbn.Category] = new Category (itbn.Category);
+				if (!categories.ContainsKey (itbn.Category)) {
+					var cat = new Category (itbn.Category);
+					int prio;
+					if (!categoryPriorities.TryGetValue (itbn.Category, out prio))
+						prio = -1;
+					cat.Priority = prio;
+					categories[itbn.Category] = cat;
+				}
 				if (newItem.Text != null)
 					categories[itbn.Category].Add (newItem);
 			}
@@ -237,6 +250,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				return;
 			}
 			
+			ConfigureToolbar ();
+			
 			toolboxWidget.CustomMessage = null;
 			
 			categories.Clear ();
@@ -244,7 +259,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			
 			Drag.SourceUnset (toolboxWidget);
 			toolboxWidget.ClearCategories ();
-			foreach (Category category in categories.Values) {
+			
+			var cats = categories.Values.ToList ();
+			cats.Sort ((a,b) => a.Priority != b.Priority ? a.Priority.CompareTo (b.Priority) : a.Text.CompareTo (b.Text));
+			cats.Reverse ();
+			foreach (Category category in cats) {
 				category.IsExpanded = true;
 				toolboxWidget.AddCategory (category);
 			}
@@ -253,6 +272,15 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			if (targetTable != null)
 				Drag.SourceSet (toolboxWidget, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			compactModeToggleButton.Visible = toolboxWidget.CanIconizeToolboxCategories;
+		}
+		
+		void ConfigureToolbar ()
+		{
+			// Default configuration
+			categoryPriorities.Clear ();
+			toolboxAddButton.Visible = true;
+			
+			toolboxService.Customize (container, this);
 		}
 		
 		protected override void OnDestroyed ()
@@ -286,6 +314,22 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 		}
 		
+		#endregion
+
+		#region IToolboxConfiguration implementation
+		public void SetCategoryPriority (string category, int priority)
+		{
+			categoryPriorities[category] = priority;
+		}
+
+		public bool AllowEditingComponents {
+			get {
+				return toolboxAddButton.Visible;
+			}
+			set {
+				toolboxAddButton.Visible = value;
+			}
+		}
 		#endregion
 	}
 }
