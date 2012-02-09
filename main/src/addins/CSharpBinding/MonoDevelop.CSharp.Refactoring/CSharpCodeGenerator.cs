@@ -361,7 +361,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var typeParameters = method.TypeParameters;
 			
-			if (typeParameters.Any (p => p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || p.HasValueTypeConstraint || p.DirectBaseTypes.Any ())) {
+			// This should also check the types are in the correct mscorlib
+			Func<IType, bool> validBaseType = t => t.FullName != "System.Object" && t.FullName != "System.ValueType";
+			if (!options.ExplicitDeclaration && typeParameters.Any (p => p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || p.HasValueTypeConstraint || p.DirectBaseTypes.Any (validBaseType))) {
 				result.Append (" where ");
 				int typeParameterCount = 0;
 				foreach (var p in typeParameters) {
@@ -392,11 +394,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						constraintCount++;
 					}
 					bool hadInterfaces = false;
-					foreach (var c in p.DirectBaseTypes) {
-						if (c.FullName == "System.Object" && (p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || hadInterfaces))
-							continue;
-						if (c.FullName == "System.ValueType" && p.HasValueTypeConstraint)
-							continue;
+					foreach (var c in p.DirectBaseTypes.Where (validBaseType)) {
 						if (constraintCount != 0)
 							result.Append (", ");
 						constraintCount++;
