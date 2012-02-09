@@ -579,7 +579,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 			}
 			categories.Sort (delegate (Category left, Category right) {
-				return right.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
+				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
 			});
 			
 			SelectFirstItemInCategory ();
