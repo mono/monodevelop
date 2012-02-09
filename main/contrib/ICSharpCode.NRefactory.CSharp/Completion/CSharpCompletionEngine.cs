@@ -1900,7 +1900,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				if (type != null) {
-					// insert target type into compilation unit, to respect the 
+					if (currentType == null) {
+						var tsvisitor2 = new TypeSystemConvertVisitor (this.CSharpParsedFile.FileName);
+						baseUnit.AcceptVisitor (tsvisitor2, null);
+						return Tuple.Create (tsvisitor2.ParsedFile, (AstNode)type.Target, baseUnit);
+					}
+					
 					var target = type.Target;
 					target.Remove ();
 					var node = Unit.GetNodeAt (location) ?? Unit;
