@@ -909,21 +909,23 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				if (this.currentMember != null && !(node is AstType)) {
 					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition (currentType);
-					foreach (var member in def.GetMembers ()) {
-						if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
-							continue;
-						if (member.EntityType == EntityType.Operator)
-							continue;
-						if (memberPred == null || memberPred (member))
-							wrapper.AddMember (member);
-					}
-					var declaring = def.DeclaringTypeDefinition;
-					while (declaring != null) {
-						foreach (var member in declaring.GetMembers (m => m.IsStatic)) {
+					if (def != null) {
+						foreach (var member in def.GetMembers ()) {
+							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
+								continue;
+							if (member.EntityType == EntityType.Operator)
+								continue;
 							if (memberPred == null || memberPred (member))
 								wrapper.AddMember (member);
 						}
-						declaring = declaring.DeclaringTypeDefinition;
+						var declaring = def.DeclaringTypeDefinition;
+						while (declaring != null) {
+							foreach (var member in declaring.GetMembers (m => m.IsStatic)) {
+								if (memberPred == null || memberPred (member))
+									wrapper.AddMember (member);
+							}
+							declaring = declaring.DeclaringTypeDefinition;
+						}
 					}
 				}
 				foreach (var p in currentType.TypeParameters) {
