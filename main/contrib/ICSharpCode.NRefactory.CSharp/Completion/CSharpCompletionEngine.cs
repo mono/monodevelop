@@ -1385,12 +1385,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null; // don't add override completion for static members
 				}
 			}
-			foreach (var baseType in type.Resolve (ctx).GetAllBaseTypeDefinitions ()) {
-				AddVirtuals (alreadyInserted, wrapper, type.Resolve (ctx).GetDefinition (), modifiers, baseType, declarationBegin);
-				addedVirtuals = true;
-			}
-			if (!addedVirtuals)
-				AddVirtuals (alreadyInserted, wrapper, type.Resolve (ctx).GetDefinition (), modifiers, Compilation.FindType (typeof(object)).GetDefinition (), declarationBegin);
+			AddVirtuals (alreadyInserted, wrapper, modifiers, type.Resolve (ctx), declarationBegin);
 			return wrapper.Result;
 		}
 		
@@ -1459,27 +1454,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return e.Name + "`" + e.TypeParameters.Count;
 		}
 		
-		void AddVirtuals (Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, ITypeDefinition type, string modifiers, ITypeDefinition curType, int declarationBegin)
+		void AddVirtuals (Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
 		{
 			if (curType == null)
 				return;
-			foreach (var m in curType.Methods.Where (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.Properties.Cast<IMember> ())) {
-				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !(m.IsVirtual || m.IsOverride || m.IsAbstract))
+			
+			foreach (var m in curType.GetMethods (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.GetProperties ().Cast<IMember> ())) {
+				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !m.IsOverridable)
 					continue;
 				// filter out the "Finalize" methods, because finalizers should be done with destructors.
 				if (m is IMethod && m.Name == "Finalize")
 					continue;
 				
-				var data = factory.CreateNewOverrideCompletionData (declarationBegin, type.Parts.First (), m);
+				var data = factory.CreateNewOverrideCompletionData (declarationBegin, currentType, m);
 				string text = GetNameWithParamCount (m);
 				
 				// check if the member is already implemented
-				bool foundMember = type.Members.Any (cm => GetNameWithParamCount (cm) == text);
-				if (!foundMember && !alreadyInserted.ContainsKey (text)) {
-					alreadyInserted [text] = true;
-					data.CompletionCategory = col.GetCompletionCategory (curType);
-					col.Add (data);
-				}
+				bool foundMember = curType.GetMembers ().Any (cm => GetNameWithParamCount (cm) == text && cm.DeclaringTypeDefinition == curType.GetDefinition ());
+				if (foundMember)
+					continue;
+					
+				alreadyInserted [text] = true;
+				data.CompletionCategory = col.GetCompletionCategory (curType);
+				col.Add (data);
 			}
 		}
 		
