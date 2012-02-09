@@ -62,7 +62,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 				return false;
 			var type = options.ResolveResult.Type;
 			var def = type.GetDefinition ();
-			if (def == null)
+			if (def == null || type.Kind == TypeKind.Interface)
 				return false;
 			if (!CurrentRefactoryOperationsHandler.ContainsAbstractMembers (type))
 				return false;

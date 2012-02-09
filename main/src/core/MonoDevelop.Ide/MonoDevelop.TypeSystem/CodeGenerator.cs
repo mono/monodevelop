@@ -138,7 +138,7 @@ namespace MonoDevelop.TypeSystem
 			SetIndentTo (implementingPart);
 			StringBuilder result = new StringBuilder ();
 			List<IMember> implementedMembers = new List<IMember> ();
-			foreach (var def in interfaceType.GetAllBaseTypeDefinitions ().Where (bt => bt.Kind == TypeKind.Interface)) {
+			foreach (var def in interfaceType.GetAllBaseTypes ().Where (bt => bt.Kind == TypeKind.Interface)) {
 				if (result.Length > 0) {
 					AppendLine (result);
 					AppendLine (result);
@@ -168,14 +168,13 @@ namespace MonoDevelop.TypeSystem
 			return true;
 		}
 		
-		public static List<KeyValuePair<IMember, bool>> CollectMembersToImplement (ITypeDefinition implementingType, ITypeDefinition interfaceType, bool explicitly)
+		public static List<KeyValuePair<IMember, bool>> CollectMembersToImplement (ITypeDefinition implementingType, IType interfaceType, bool explicitly)
 		{
-			Console.WriteLine (Environment.StackTrace);
 			List<KeyValuePair<IMember, bool>> toImplement = new List<KeyValuePair<IMember, bool>> ();
 			bool alreadyImplemented;
 			
 			// Stub out non-implemented events defined by @iface
-			foreach (var ev in interfaceType.Events) {
+			foreach (var ev in interfaceType.GetEvents ()) {
 				if (ev.IsSynthetic)
 					continue;
 				bool needsExplicitly = explicitly;
@@ -186,7 +185,7 @@ namespace MonoDevelop.TypeSystem
 			}
 			
 			// Stub out non-implemented methods defined by @iface
-			foreach (var method in interfaceType.Methods) {
+			foreach (var method in interfaceType.GetMethods ()) {
 				if (method.IsSynthetic)
 					continue;
 				bool needsExplicitly = explicitly;
@@ -208,7 +207,7 @@ namespace MonoDevelop.TypeSystem
 			}
 			
 			// Stub out non-implemented properties defined by @iface
-			foreach (var prop in interfaceType.Properties) {
+			foreach (var prop in interfaceType.GetProperties ()) {
 				if (prop.IsSynthetic)
 					continue;
 				bool needsExplicitly = explicitly;
@@ -231,7 +230,7 @@ namespace MonoDevelop.TypeSystem
 			return toImplement;
 		}
 
-		protected string InternalCreateInterfaceImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition part, ITypeDefinition interfaceType, bool explicitly, List<IMember> implementedMembers)
+		protected string InternalCreateInterfaceImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition part, IType interfaceType, bool explicitly, List<IMember> implementedMembers)
 		{
 			StringBuilder result = new StringBuilder ();
 			var toImplement = CollectMembersToImplement (implementingType, interfaceType, explicitly);

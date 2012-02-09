@@ -66,7 +66,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			
 			var declaringType = options.Document.ParsedDocument.GetInnermostTypeDefinition (loc.Line, loc.Column);
 			var type = declaringType.Resolve (options.Document.ParsedDocument.GetTypeResolveContext (options.Document.Compilation, loc)).GetDefinition ();
-			return CodeGenerator.CollectMembersToImplement (type, def, false).Any ();
+			return CodeGenerator.CollectMembersToImplement (type, interfaceType, false).Any ();
 		}
 		
 		public override bool IsValid (RefactoringOptions options)
