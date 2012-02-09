@@ -174,9 +174,7 @@ namespace MonoDevelop.TypeSystem
 			bool alreadyImplemented;
 			
 			// Stub out non-implemented events defined by @iface
-			foreach (var ev in interfaceType.GetEvents ()) {
-				if (ev.IsSynthetic)
-					continue;
+			foreach (var ev in interfaceType.GetEvents (e => !e.IsSynthetic)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = implementingType.GetAllBaseTypeDefinitions ().Any (x => x.Kind != TypeKind.Interface && x.Events.Any (y => y.Name == ev.Name));
 				
@@ -185,9 +183,7 @@ namespace MonoDevelop.TypeSystem
 			}
 			
 			// Stub out non-implemented methods defined by @iface
-			foreach (var method in interfaceType.GetMethods ()) {
-				if (method.IsSynthetic)
-					continue;
+			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic && d.DeclaringTypeDefinition.Kind == TypeKind.Interface)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
@@ -207,9 +203,7 @@ namespace MonoDevelop.TypeSystem
 			}
 			
 			// Stub out non-implemented properties defined by @iface
-			foreach (var prop in interfaceType.GetProperties ()) {
-				if (prop.IsSynthetic)
-					continue;
+			foreach (var prop in interfaceType.GetProperties (p => !p.IsSynthetic)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
