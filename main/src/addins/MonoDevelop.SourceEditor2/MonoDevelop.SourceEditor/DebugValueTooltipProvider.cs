@@ -83,7 +83,7 @@ namespace MonoDevelop.SourceEditor
 						expression = mr.ResolvedType.FullName;
 				}
 				if (expression == null)*/
-				if (!res.IsError) {
+				if (res != null && !res.IsError) {
 					var mr = res as MemberResolveResult;
 					if (mr != null && mr.Member == null && mr.Type != null)
 						expression = mr.Type.FullName;
