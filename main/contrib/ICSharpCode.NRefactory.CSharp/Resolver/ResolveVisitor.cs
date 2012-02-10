@@ -176,15 +176,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 					
 					// We shouldn't scan nodes that were already resolved.
-					Debug.Assert(!resolveResultCache.ContainsKey(node));
-					// Doing so should be harmless since we allow scanning twice, but it indicates
-					// a bug in the logic that causes the scan.
-					
-					bool oldResolverEnabled = resolverEnabled;
-					resolverEnabled = false;
-					StoreCurrentState(node);
-					node.AcceptVisitor(this, null);
-					resolverEnabled = oldResolverEnabled;
+					if (!resolveResultCache.ContainsKey(node)) {
+						// Doing so should be harmless since we allow scanning twice, but it indicates
+						// a bug in the logic that causes the scan.
+						
+						bool oldResolverEnabled = resolverEnabled;
+						resolverEnabled = false;
+						StoreCurrentState(node);
+						node.AcceptVisitor(this, null);
+						resolverEnabled = oldResolverEnabled;
+					}
 					break;
 				case ResolveVisitorNavigationMode.Resolve:
 					Resolve(node);
