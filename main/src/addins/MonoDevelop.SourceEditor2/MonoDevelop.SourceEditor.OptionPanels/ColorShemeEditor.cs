@@ -289,6 +289,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			} catch (Exception ex) {
 				MessageService.ShowException (ex);
 			}
+			
+			foreach (var doc in Ide.IdeApp.Workbench.Documents) {
+				var editor = doc.Editor;
+				if (editor == null)
+					continue;
+				Console.WriteLine ("refresh editor !!!");
+				editor.Parent.TextViewMargin.PurgeLayoutCache ();
+				editor.Document.CommitUpdateAll ();
+			}
 		}
 
 		void Stylechanged (object sender, EventArgs e)
@@ -369,6 +378,7 @@ class Example
 				colorStore.AppendValues (data.Description, style.GetChunkStyle (data.Name), data);
 			}
 			Stylechanged (null, null);
+			
 		}
 	}
 }
