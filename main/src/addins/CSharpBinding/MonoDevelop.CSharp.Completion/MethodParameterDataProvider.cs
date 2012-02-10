@@ -73,6 +73,17 @@ namespace MonoDevelop.CSharp.Completion
 				alreadyAdded.Add (str);
 				methods.Add (method);
 			}
+			
+			foreach (var extMethods in resolveResult.GetExtensionMethods ()) {
+				foreach (var method in extMethods) {
+					string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
+					if (alreadyAdded.Contains (str))
+						continue;
+					alreadyAdded.Add (str);
+					methods.Add (method);
+				}
+			}
+			
 			methods.Sort (MethodComparer);
 		}
 		
