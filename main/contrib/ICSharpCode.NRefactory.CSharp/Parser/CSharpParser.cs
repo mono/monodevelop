@@ -310,7 +310,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			AttributeSection ConvertAttributeSection (List<Mono.CSharp.Attribute> optAttributes)
 			{
-				if (optAttributes == null)
+				if (optAttributes == null || optAttributes.Count == 0)
 					return null;
 				AttributeSection result = new AttributeSection ();
 				var loc = LocationsBag.GetLocations (optAttributes);
