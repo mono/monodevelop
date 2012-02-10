@@ -374,12 +374,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return;
 				
 			//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, width, rowHeight);
-				
-				Gdk.Pixbuf icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
-				window.DrawPixbuf (fgGCNormal, icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+				int x = 2;
+				if (!string.IsNullOrEmpty (category.CompletionCategory.Icon)) {
+					var icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
+					window.DrawPixbuf (fgGCNormal, icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+					x = icon.Width + 4;
+				}
 				
 				layout.SetMarkup ("<span weight='bold'>" + category.CompletionCategory.DisplayText + "</span>");
-				window.DrawLayout (textGCInsensitive, icon.Width + 4, ypos, layout);
+				window.DrawLayout (textGCInsensitive, x, ypos, layout);
 				layout.SetMarkup ("");
 			}, delegate (Category curCategory, int item, int ypos) {
 				
