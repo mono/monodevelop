@@ -247,6 +247,10 @@ namespace MonoDevelop.CSharp
 				sb.Append (type.Name);
 				return;
 			}
+			if (type.Kind == TypeKind.TypeParameter) {
+				sb.Append (type.Name);
+				return;
+			}
 			if (type.DeclaringType != null) {
 				AppendType (sb, type.DeclaringType, settings);
 				sb.Append (settings.Markup ("."));
