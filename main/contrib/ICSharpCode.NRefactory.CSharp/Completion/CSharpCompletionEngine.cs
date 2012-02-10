@@ -171,7 +171,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
-				
 				if (resolveResult == null)
 					return null;
 				if (expr.Item2 is AstType)
@@ -1775,6 +1774,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				isProtectedAllowed = currentType != null && typeDef != null ? currentType.Resolve (ctx).GetDefinition ().GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (typeDef)) : false;
 			}
+			
 			if (resolveResult is TypeResolveResult && type.Kind == TypeKind.Enum) {
 				foreach (var field in type.GetFields ()) {
 					result.AddMember (field);
@@ -1790,27 +1790,34 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var mrr = (MemberResolveResult)resolveResult;
 				includeStaticMembers = mrr.Member.Name == mrr.Type.Name;
 			}
+			if (resolveResult is TypeResolveResult && (resolvedNode is IdentifierExpression || resolvedNode is MemberReferenceExpression))
+				includeStaticMembers = true;
 			
 //			Console.WriteLine ("type:" + type +"/"+type.GetType ());
-//			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
+//			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed + " static: "+ includeStaticMembers);
 //			Console.WriteLine (resolveResult);
+//			Console.WriteLine ("node:" + resolvedNode);
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
 				foreach (var member in type.GetMembers ()) {
+//					Console.WriteLine ("member:" + member);
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
-						//					Console.WriteLine ("skip access: " + member.FullName);
+//						Console.WriteLine ("skip access: " + member.FullName);
 						continue;
 					}
 					if (resolvedNode is BaseReferenceExpression && member.IsAbstract)
 						continue;
-					
-					if (!includeStaticMembers && member.IsStatic && !(resolveResult is TypeResolveResult)) {
-						//					Console.WriteLine ("skip static member: " + member.FullName);
+					bool memberIsStatic = member.IsStatic;
+					if (!includeStaticMembers && memberIsStatic && !(resolveResult is TypeResolveResult)) {
+//						Console.WriteLine ("skip static member: " + member.FullName);
 						continue;
 					}
-					if (!member.IsStatic && (resolveResult is TypeResolveResult)) {
-						//					Console.WriteLine ("skip non static member: " + member.FullName);
+					var field = member as IField;
+					if (field != null)
+						memberIsStatic |= field.IsConst;
+					
+					if (!memberIsStatic && (resolveResult is TypeResolveResult)) {
 						continue;
 					}
 					
@@ -1818,7 +1825,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						continue;
 					if (member.EntityType == EntityType.Operator)
 						continue;
-					//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
+					
+//					Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}
 			}
