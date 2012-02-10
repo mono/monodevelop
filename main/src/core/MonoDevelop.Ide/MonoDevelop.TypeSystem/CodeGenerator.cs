@@ -155,19 +155,13 @@ namespace MonoDevelop.TypeSystem
 			return result.ToString ();
 		}
 
-		static bool CompareParameters (IList<IParameter> parameters1, IList<IParameter> parameters2)
+		static bool CompareMethods (IMethod interfaceMethod, IMethod typeMethod)
 		{
-			if (parameters1.Count != parameters2.Count)
-				return false;
-			for (int i = 0; i < parameters1.Count; i++) {
-				var p1 = parameters1 [i];
-				var p2 = parameters2 [i];
-				if (!p1.Type.Equals (p2.Type))
-					return false;
-			}
-			return true;
+			if (typeMethod.IsExplicitInterfaceImplementation)
+				return typeMethod.InterfaceImplementations.Any (m => m.Equals (interfaceMethod));
+			return SignatureComparer.Ordinal.Equals (interfaceMethod, typeMethod);
 		}
-		
+
 		public static List<KeyValuePair<IMember, bool>> CollectMembersToImplement (ITypeDefinition implementingType, IType interfaceType, bool explicitly)
 		{
 			List<KeyValuePair<IMember, bool>> toImplement = new List<KeyValuePair<IMember, bool>> ();
@@ -186,16 +180,12 @@ namespace MonoDevelop.TypeSystem
 			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic && d.DeclaringTypeDefinition.Kind == TypeKind.Interface)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
-				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
-					if (t.Kind == TypeKind.Interface)
-						continue;
-					foreach (var cmet in t.Methods) {
-						if (cmet.Name == method.Name && CompareParameters (cmet.Parameters, method.Parameters)) {
-							if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
-								needsExplicitly = true;
-							else
-								alreadyImplemented |= !needsExplicitly /*|| cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Equals (interfaceType))*/;
-						}
+				foreach (var cmet in implementingType.GetMethods ()) {
+					if (CompareMethods (method, cmet)) {
+						if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
+							needsExplicitly = true;
+						else
+							alreadyImplemented |= !needsExplicitly /*|| cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Equals (interfaceType))*/;
 					}
 				}
 				if (!alreadyImplemented) 
@@ -221,6 +211,7 @@ namespace MonoDevelop.TypeSystem
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember, bool> (prop, needsExplicitly));
 			}
+			
 			return toImplement;
 		}
 
@@ -242,7 +233,7 @@ namespace MonoDevelop.TypeSystem
 					if (member is IMethod && pair.Key is IMethod) {
 						var method = (IMethod)member;
 						var othermethod = (IMethod)pair.Key;
-						isExplicit = !member.ReturnType.Equals (pair.Key.ReturnType) && CompareParameters (method.Parameters, ((IMethod)pair.Key).Parameters);
+						isExplicit = CompareMethods (othermethod, method);
 					} else {
 						isExplicit = true;
 					}
