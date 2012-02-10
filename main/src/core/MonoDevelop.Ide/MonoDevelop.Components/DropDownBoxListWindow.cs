@@ -53,8 +53,11 @@ namespace MonoDevelop.Components
 			hBox = new HBox ();
 			list = new ListWidget (this);
 			list.SelectItem += delegate {
-				DataProvider.ActivateItem (list.Selection);
-				Destroy ();
+				var sel = list.Selection;
+				if (sel >= 0 && sel < DataProvider.IconCount) {
+					DataProvider.ActivateItem (sel);
+					Destroy ();
+				}
 			};
 			
 			list.ScrollEvent += HandleListScrollEvent;
