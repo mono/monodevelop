@@ -423,7 +423,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords (dataList, linqKeywords);
 					return dataList.Result;
 				}
-				
 				if (currentType != null && currentType.Kind == TypeKind.Enum)
 					return HandleEnumContext ();
 				
@@ -446,7 +445,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
 					return null;
-				
 				// Do not pop up completion on identifier identifier (should be handled by keyword completion).
 				tokenIndex = offset - 1;
 				token = GetPreviousToken (ref tokenIndex, false);
@@ -487,12 +485,34 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				if (n != null && n.Parent is InvocationExpression) {
-					var invokeResult = ResolveExpression (identifierStart.Item1, ((InvocationExpression)n.Parent).Target, identifierStart.Item3);
+					var invokeParent = (InvocationExpression)n.Parent;
+					var invokeResult = ResolveExpression (identifierStart.Item1, invokeParent.Target, identifierStart.Item3);
 					var mgr = invokeResult != null ? invokeResult.Item1 as MethodGroupResolveResult : null;
 					if (mgr != null) {
+						int idx = 0;
+						foreach (var arg in invokeParent.Arguments) {
+							if (arg == n)
+								break;
+							idx++;
+						}
+						
 						foreach (var method in mgr.Methods) {
+							if (idx < method.Parameters.Count && method.Parameters[idx].Type.Kind == TypeKind.Delegate) {
+								AutoSelect = false;
+								AutoCompleteEmptyMatch = false;
+							}
 							foreach (var p in method.Parameters) {
 								contextList.AddVariable (p);
+							}
+						}
+						idx++;
+						foreach (var list in mgr.GetExtensionMethods ()) {
+							foreach (var method in list) {
+								if (idx < method.Parameters.Count && method.Parameters[idx].Type.Kind == TypeKind.Delegate) {
+									AutoSelect = false;
+									AutoCompleteEmptyMatch = false;
+								}
+								
 							}
 						}
 					}
