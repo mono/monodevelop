@@ -517,6 +517,8 @@ namespace MonoDevelop.Ide.Gui
 		bool wasEdited;
 		internal void OnDocumentAttached ()
 		{
+			window.Document = this;
+			
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor == null)
 				return;
@@ -565,8 +567,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
-			
-			window.Document = this;
 			
 			RunWhenLoaded (() => ReparseDocument ());
 			
