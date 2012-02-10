@@ -148,6 +148,8 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		string GetCorrectFileName (MDRefactoringContext context, TypeDeclaration type)
 		{
+			if (type == null)
+				return context.Document.FileName;
 			return Path.Combine (Path.GetDirectoryName (context.Document.FileName), type.Name + Path.GetExtension (context.Document.FileName));
 		}
 	}

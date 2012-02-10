@@ -284,6 +284,8 @@ namespace MonoDevelop.Refactoring
 					var loc = doc.Editor.Caret.Location;
 					bool first = true;
 					foreach (var fix in fixes) {
+						if (!fix.IsValid (doc, loc))
+							continue;
 						if (first) {
 							first = false;
 							if (ciset.CommandInfos.Count > 0)
