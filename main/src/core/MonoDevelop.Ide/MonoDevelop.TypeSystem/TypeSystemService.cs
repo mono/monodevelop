@@ -232,7 +232,7 @@ namespace MonoDevelop.TypeSystem
 			if (parser == null)
 				return null;
 			try {
-				var result = parser.Parse (true, fileName, content);
+				var result = parser.Parse (true, fileName, content, project);
 				if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
 					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result.ParsedFile);
 				return result;
@@ -1269,7 +1269,7 @@ namespace MonoDevelop.TypeSystem
 					if (parser == null)
 						continue;
 					using (var stream = new System.IO.StreamReader (file.FilePath)) {
-						var parsedDocument = parser.Parse (false, file.FilePath, stream);
+						var parsedDocument = parser.Parse (false, file.FilePath, stream, Project);
 						Context.Content = Context.Content.UpdateProjectContent (Context.Content.GetFile (file.FilePath), parsedDocument.ParsedFile);
 					}
 //					if (ParseCallback != null)
