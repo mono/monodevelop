@@ -188,7 +188,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			//	var timer = Counters.ResolveTime.BeginTiming ();
 			try {
-				if (char.IsLetterOrDigit (completionChar)) {
+				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
 					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (document.Editor.GetCharAt (completionContext.TriggerOffset - 2)))
 						return null;
 					triggerWordLength = 1;
