@@ -181,8 +181,11 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
-			if (!TextEditorProperties.EnableAutoCodeCompletion)
+			if (!TextEditorProperties.EnableCodeCompletion)
 				return null;
+			if (!TextEditorProperties.EnableAutoCodeCompletion && char.IsLetter (completionChar))
+				return null;
+
 			//	var timer = Counters.ResolveTime.BeginTiming ();
 			try {
 				if (char.IsLetterOrDigit (completionChar)) {
@@ -206,6 +209,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
+			
 			if (textEditorData.CurrentMode is CompletionTextLinkMode) {
 				if (!((CompletionTextLinkMode)textEditorData.CurrentMode).TriggerCodeCompletion)
 					return null;
