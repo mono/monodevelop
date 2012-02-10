@@ -3183,9 +3183,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult target;
 			if (memberType.IsDoubleColon && memberType.Target is SimpleType) {
 				SimpleType t = (SimpleType)memberType.Target;
-				StoreCurrentState(t);
+				bool storeResult = !resolveResultCache.ContainsKey(t);
+				if (storeResult) 
+					StoreCurrentState(t);
 				target = resolver.ResolveAlias(t.Identifier);
-				StoreResult(t, target);
+				if (storeResult) 
+					StoreResult(t, target);
 			} else {
 				target = Resolve(memberType.Target);
 			}
