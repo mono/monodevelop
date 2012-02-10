@@ -140,6 +140,8 @@ namespace MonoDevelop.CSharp
 			
 			public void ActivateItem (int n)
 			{
+				if (n < 0 || n >= memberList.Count)
+					return;
 				var member = memberList[n];
 				MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
 				if (extEditor != null)

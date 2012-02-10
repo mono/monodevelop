@@ -307,13 +307,10 @@ namespace MonoDevelop.Components
 				}
 				
 				set {
-					if (value < 0)
-						value = 0;
-					if (value >= win.DataProvider.IconCount)
-						value = win.DataProvider.IconCount - 1;
+					var newValue = Math.Max (0, Math.Min (value, win.DataProvider.IconCount - 1));
 					
-					if (value != selection) {
-						selection = value;
+					if (newValue != selection) {
+						selection = newValue;
 						UpdatePage ();
 						
 						if (SelectionChanged != null)
