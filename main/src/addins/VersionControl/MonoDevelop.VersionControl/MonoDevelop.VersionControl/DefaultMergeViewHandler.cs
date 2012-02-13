@@ -31,7 +31,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	public class DefaultMergeViewHandler : IMergeViewHandler
+	public class DefaultMergeViewHandler : IFastMergeViewHandler
 	{
 		public bool CanHandle (VersionControlItem item)
 		{
@@ -40,7 +40,12 @@ namespace MonoDevelop.VersionControl
 		
 		public IMergeView CreateView (VersionControlItem item, IViewContent primaryView)
 		{
-			return new MergeView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+			return CreateView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+		}
+
+		public IMergeView CreateView (VersionControlDocumentInfo info)
+		{
+			return new MergeView (info);
 		}
 	}
 }

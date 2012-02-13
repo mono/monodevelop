@@ -38,6 +38,33 @@ namespace MonoDevelop.VersionControl {
 		T CreateView (VersionControlItem item, IViewContent primaryView);
 	}
 	
+	public interface IFastVersionControlViewHandler<T> : IVersionControlViewHandler<T>
+		where T : IAttachableViewContent
+	{
+		T CreateView (VersionControlDocumentInfo info);
+	}
+	
+	
+	public interface IFastDiffViewHandler : IFastVersionControlViewHandler<IDiffView>
+	{
+		
+	}
+	
+	public interface IFastMergeViewHandler : IFastVersionControlViewHandler<IMergeView>
+	{
+		
+	}
+	
+	public interface IFastBlameViewHandler : IFastVersionControlViewHandler<IBlameView>
+	{
+		
+	}
+	
+	public interface IFastLogViewHandler : IFastVersionControlViewHandler<ILogView>
+	{
+		
+	}
+	
 	public interface IDiffViewHandler : IVersionControlViewHandler<IDiffView>
 	{
 		

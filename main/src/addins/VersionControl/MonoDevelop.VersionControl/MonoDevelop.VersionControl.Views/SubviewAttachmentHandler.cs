@@ -50,19 +50,22 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			
 			var item = new VersionControlItem (repo, document.Project, document.FileName, false, null);
-			TryAttachView <IDiffView> (document, item, DiffCommand.DiffViewHandlers);
-			TryAttachView <IBlameView> (document, item, BlameCommand.BlameViewHandlers);
-			TryAttachView <ILogView> (document, item, LogCommand.LogViewHandlers);
-			TryAttachView <IMergeView> (document, item, MergeCommand.MergeViewHandlers);
+			var vcInfo = new VersionControlDocumentInfo (document.PrimaryView, item, item.Repository);
+			TryAttachView <IDiffView> (document, vcInfo, DiffCommand.DiffViewHandlers);
+			TryAttachView <IBlameView> (document, vcInfo, BlameCommand.BlameViewHandlers);
+			TryAttachView <ILogView> (document, vcInfo, LogCommand.LogViewHandlers);
+			TryAttachView <IMergeView> (document, vcInfo, MergeCommand.MergeViewHandlers);
 		}
 		
-		void TryAttachView <T>(Document document, VersionControlItem item, string type)
+		void TryAttachView <T>(Document document, VersionControlDocumentInfo info, string type)
 			where T : IAttachableViewContent
 		{
-			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler<T>> (type).FirstOrDefault (h => h.CanHandle (item));
-			if (handler != null) {
-				document.Window.AttachViewContent (handler.CreateView (item, document.PrimaryView));
-			}
+			var handlers = AddinManager.GetExtensionObjects<IVersionControlViewHandler<T>> (type).Where (h => h.CanHandle (info.Item)).ToArray ();
+			var handler = handlers.OfType<IFastVersionControlViewHandler<T>> ().FirstOrDefault ();
+			if (handler != null)
+				document.Window.AttachViewContent (handler.CreateView (info));
+			else if (handlers.Length > 0)
+				document.Window.AttachViewContent (handlers [0].CreateView (info.Item, document.PrimaryView));
 		}
 	}
 }
