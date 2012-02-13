@@ -136,8 +136,10 @@ namespace MonoDevelop.CSharp.Completion
 			Document.DocumentParsed += HandleDocumentParsed; 
 		}
 		
-		public void Dispose ()
+		public override void Dispose ()
 		{
+			unit = null;
+			CSharpParsedFile = null;
 			Document.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
 		}

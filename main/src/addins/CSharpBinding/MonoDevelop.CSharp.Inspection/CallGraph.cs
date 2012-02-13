@@ -173,10 +173,10 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		class CallgraphVisitor : DepthFirstAstVisitor<object, object>
 		{
+			/*
 			Context curContext;
 			
 			
-			/*
 			public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 			{
 				curContext = new Context ();

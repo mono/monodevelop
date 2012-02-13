@@ -393,14 +393,14 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("class");
 						constraintCount++;
 					}
-					bool hadInterfaces = false;
+//					bool hadInterfaces = false;
 					foreach (var c in p.DirectBaseTypes.Where (validBaseType)) {
 						if (constraintCount != 0)
 							result.Append (", ");
 						constraintCount++;
 						AppendReturnType (result, options, c);
-						if (c.Kind == TypeKind.Interface)
-							hadInterfaces = true;
+//						if (c.Kind == TypeKind.Interface)
+//							hadInterfaces = true;
 					}
 				}
 			}

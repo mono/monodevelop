@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		string parameterList;
 		IUnresolvedMember callingMember;
-		CSharpCompletionTextEditorExtension ext;
+//		CSharpCompletionTextEditorExtension ext;
 		int initialOffset;
 		public bool AddSemicolon = true;
 		TextEditorData editor;

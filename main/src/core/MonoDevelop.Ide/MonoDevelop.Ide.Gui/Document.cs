@@ -454,6 +454,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				editorExtension = editorExtension.Next as TextEditorExtension;
 			}
+			editorExtension = null;
 			
 			// Parse the file when the document is closed. In this way if the document
 			// is closed without saving the changes, the saved compilation unit
@@ -467,6 +468,8 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.RemoveFileDom (FileName);
 				dom = null;
 			}*/
+			
+			parsedDocument = null;
 			data = null;
 			Counters.OpenDocuments--;
 		}
