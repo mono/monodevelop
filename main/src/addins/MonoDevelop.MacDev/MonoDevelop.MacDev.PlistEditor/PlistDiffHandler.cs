@@ -32,7 +32,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {	
-	public class PlistDiffViewHandler : IDiffViewHandler
+	public class PlistDiffViewHandler : IFastDiffViewHandler
 	{
 		public bool CanHandle (VersionControlItem item)
 		{
@@ -41,7 +41,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public IDiffView CreateView (VersionControlItem item, IViewContent primaryView)
 		{
-			return new DiffView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+			return CreateView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+		}
+
+		public IDiffView CreateView (VersionControlDocumentInfo info)
+		{
+			return new DiffView (info);
 		}
 	}
 }

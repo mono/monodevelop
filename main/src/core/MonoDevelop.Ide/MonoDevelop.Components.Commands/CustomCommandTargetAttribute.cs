@@ -29,6 +29,20 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
+	/// <summary>
+	/// Allows customizing the command execution behavior at class or method level
+	/// </summary>
+	/// <remarks>
+	/// This base class can be used to create attribute classes which provide custom
+	/// command execution behavior. It can be applied to classes or methods. The overriden Run method
+	/// will be called to execute commands.
+	/// 
+	/// When applied to a class, the Run method is called for all commands for which there is a command
+	/// handler in the class. 
+	/// 
+	/// When applied to a method, the method must be a command handler (it has to have a [CommandHandler] attribute),
+	/// and the Run method is called only for the command that this method handles.
+	/// </remarks>
 	public class CustomCommandTargetAttribute: Attribute, ICommandTargetHandler, ICommandArrayTargetHandler
 	{
 		ICommandTargetHandler next;
@@ -44,11 +58,44 @@ namespace MonoDevelop.Components.Commands
 			Run (target, cmd);
 		}
 
+		/// <summary>
+		/// Runs a command
+		/// </summary>
+		/// <param name='target'>
+		/// Object that implements the command handler
+		/// </param>
+		/// <param name='cmd'>
+		/// The command to be executed
+		/// </param>
+		/// <param name='data'>
+		/// Data item provided by the command update handler
+		/// </param>
+		/// <remarks>
+		/// The default implementation of this method runs the command handler method
+		/// to which this attribute is applied. A custom implementation of this method can call
+		/// base.Run at any point to run the method handler, or not call it at all if it
+		/// wants to provide a replacement implementation.
+		/// </remarks>
 		protected virtual void Run (object target, Command cmd, object data)
 		{
 			nextArray.Run (target, cmd, data);
 		}
 		
+		/// <summary>
+		/// Runs a command
+		/// </summary>
+		/// <param name='target'>
+		/// Object that implements the command handler
+		/// </param>
+		/// <param name='cmd'>
+		/// The command to be executed
+		/// </param>
+		/// <remarks>
+		/// The default implementation of this method runs the command handler method
+		/// to which this attribute is applied. A custom implementation of this method can call
+		/// base.Run at any point to run the method handler, or not call it at all if it
+		/// wants to provide a replacement implementation.
+		/// </remarks>
 		protected virtual void Run (object target, Command cmd)
 		{
 			next.Run (target, cmd);

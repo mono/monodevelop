@@ -141,6 +141,7 @@ namespace MonoDevelop.RegexToolkit
 			updateThread = new Thread (delegate() {
 				try {
 					Webservices services = new Webservices ();
+					services.AllowAutoRedirect = true;
 					this.expressions = services.ListAllAsXml (1230);
 					Gtk.Application.Invoke (delegate {
 						WriteRegexes ();

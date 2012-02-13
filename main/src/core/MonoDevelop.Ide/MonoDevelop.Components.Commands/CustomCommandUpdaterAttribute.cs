@@ -29,9 +29,20 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
-	// This base class can be used to create attribute classes which provide custom
-	// command updating behavior. When applied to a method, the overriden CommandUpdate method
-	// will be called to update the command status.
+	/// <summary>
+	/// Allows customizing the command update behavior at class or method level
+	/// </summary>
+	/// <remarks>
+	/// This base class can be used to create attribute classes which provide custom
+	/// command updating behavior. It can be applied to classes or methods. The overriden CommandUpdate method
+	/// will be called to update the command status.
+	/// 
+	/// When applied to a class, the CommandUpdate method is called for all commands for which there is a command
+	/// update handler in the class. 
+	/// 
+	/// When applied to a method, the method must be a command update handler (it has to have a [CommandUpdateHandler] attribute),
+	/// and the CommandUpdate method is called only for the command that this method handles.
+	/// </remarks>
 	public abstract class CustomCommandUpdaterAttribute: Attribute, ICommandUpdateHandler, ICommandArrayUpdateHandler
 	{
 		ICommandUpdateHandler next;
@@ -64,12 +75,40 @@ namespace MonoDevelop.Components.Commands
 				nextArray = value;
 			}
 		}
-
+		
+		/// <summary>
+		/// Updates the status of the command
+		/// </summary>
+		/// <param name='target'>
+		/// Object that implements the command handler
+		/// </param>
+		/// <param name='cinfo'>
+		/// Command info to be updated
+		/// </param>
+		/// <remarks>
+		/// The default implementation of this method calls the update handler implemented
+		/// in the target object. A custom implementation of this method can call
+		/// base.CommandUpdate at any point to get the result of the default implementation.
+		/// </remarks>
 		protected virtual void CommandUpdate (object target, CommandInfo cinfo)
 		{
 			next.CommandUpdate (target, cinfo);
 		}
-		
+
+		/// <summary>
+		/// Updates the status of the command
+		/// </summary>
+		/// <param name='target'>
+		/// Object that implements the command handler
+		/// </param>
+		/// <param name='cinfo'>
+		/// Command info to be updated
+		/// </param>
+		/// <remarks>
+		/// The default implementation of this method calls the update handler implemented
+		/// in the target object. A custom implementation of this method can call
+		/// base.CommandUpdate at any point to get the result of the default implementation.
+		/// </remarks>
 		protected virtual void CommandUpdate (object target, CommandArrayInfo cinfo)
 		{
 			nextArray.CommandUpdate (target, cinfo);

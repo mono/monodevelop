@@ -29,9 +29,21 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
+	/// <summary>
+	/// This interface can be used to create attribute classes which provide custom
+	/// command updating behavior. CustomCommandUpdaterAttribute is a
+	/// default implementation of this interface which may be more convenient to use.
+	/// </summary>
 	public interface ICommandUpdateHandler
 	{
+		/// <summary>
+		/// Next update handler. Set by the command manager.
+		/// </summary>
 		ICommandUpdateHandler Next { get; set; }
+		
+		/// <summary>
+		/// Called to update the command status. Can call Next.CommandUpdate to execute the default update handler.
+		/// </summary>
 		void CommandUpdate (object target, CommandInfo cinfo);
 	}
 	
@@ -41,9 +53,21 @@ namespace MonoDevelop.Components.Commands
 		void CommandUpdate (object target, CommandArrayInfo cinfo);
 	}
 
+	/// <summary>
+	/// This interface can be used to create attribute classes which provide custom
+	/// command execution behavior. CustomCommandTargetAttribute is a
+	/// default implementation of this interface which may be more convenient to use.
+	/// </summary>
 	public interface ICommandTargetHandler
 	{
+		/// <summary>
+		/// Next command handler. Set by the command manager.
+		/// </summary>
 		ICommandTargetHandler Next { get; set; }
+		
+		/// <summary>
+		/// Executes the command. Can call Next.Run to execute the default command handler.
+		/// </summary>
 		void Run (object target, Command cmd);
 	}
 

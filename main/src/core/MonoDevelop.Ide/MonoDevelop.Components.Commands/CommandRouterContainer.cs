@@ -30,6 +30,10 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
+	/// <summary>
+	/// A container which can be used to redirect the command
+	/// route to a different parent
+	/// </summary>
 	public class CommandRouterContainer: Gtk.HBox, ICommandDelegatorRouter
 	{
 		bool continueToParent;

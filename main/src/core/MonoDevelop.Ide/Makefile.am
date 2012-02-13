@@ -149,6 +149,7 @@ FILES =  \
 	MonoDevelop.Components.Commands/CommandToolbar.cs \
 	MonoDevelop.Components.Commands/CommandToolButton.cs \
 	MonoDevelop.Components.Commands/CustomCommand.cs \
+	MonoDevelop.Components.Commands/CustomCommandTargetAttribute.cs \
 	MonoDevelop.Components.Commands/CustomCommandUpdaterAttribute.cs \
 	MonoDevelop.Components.Commands/CustomItem.cs \
 	MonoDevelop.Components.Commands/CustomMenuItem.cs \
@@ -396,7 +397,6 @@ FILES =  \
 	MonoDevelop.Ide.Fonts/FontDescriptionCodon.cs \
 	MonoDevelop.Ide.Fonts/FontService.cs \
 	MonoDevelop.Ide.Gui.Components/CellRendererPixbuf.cs \
-	MonoDevelop.Ide.Gui.Components/CustomCommandTargetAttribute.cs \
 	MonoDevelop.Ide.Gui.Components/DragOperation.cs \
 	MonoDevelop.Ide.Gui.Components/EnvVarList.cs \
 	MonoDevelop.Ide.Gui.Components/ExecutionModeComboBox.cs \

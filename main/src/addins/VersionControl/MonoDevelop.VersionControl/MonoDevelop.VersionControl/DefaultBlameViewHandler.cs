@@ -31,7 +31,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	public class DefaultBlameViewHandler : IBlameViewHandler
+	public class DefaultBlameViewHandler : IFastBlameViewHandler
 	{
 		public bool CanHandle (VersionControlItem item)
 		{
@@ -40,7 +40,12 @@ namespace MonoDevelop.VersionControl
 		
 		public IBlameView CreateView (VersionControlItem item, IViewContent primaryView)
 		{
-			return new BlameView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+			return CreateView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+		}
+
+		public IBlameView CreateView (VersionControlDocumentInfo info)
+		{
+			return new BlameView (info);
 		}
 	}
 }

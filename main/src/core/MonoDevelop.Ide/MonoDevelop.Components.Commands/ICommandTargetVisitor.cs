@@ -30,6 +30,9 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
+	/// <summary>
+	/// A visitor for the command route
+	/// </summary>
 	public interface ICommandTargetVisitor
 	{
 		bool Visit (object ob);
