@@ -42,12 +42,10 @@ namespace MonoDevelop.AspNet.Parser
 	//purpose is to find all named tags for code completion and compilation of base class
 	public class MemberListVisitor : Visitor
 	{
-		AspNetParsedDocument doc;
 		DocumentReferenceManager refMan;
 		
-		public MemberListVisitor (AspNetParsedDocument doc, DocumentReferenceManager refMan)
+		public MemberListVisitor (DocumentReferenceManager refMan)
 		{
-			this.doc = doc;
 			this.refMan = refMan;
 			this.Errors = new List<Error> ();
 			this.Members = new Dictionary<string,CodeBehindMember> ();

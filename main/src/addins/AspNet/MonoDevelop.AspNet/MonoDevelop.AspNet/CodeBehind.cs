@@ -81,7 +81,7 @@ namespace MonoDevelop.AspNet
 				return null;
 			
 			var refman = new DocumentReferenceManager (project) { Doc = document };
-			var memberList = new MemberListVisitor (document, refman);
+			var memberList = new MemberListVisitor (refman);
 			document.RootNode.AcceptVisit (memberList);
 			
 			var err = memberList.Errors.Where (x => x.ErrorType == ErrorType.Error).FirstOrDefault ();
@@ -102,7 +102,6 @@ namespace MonoDevelop.AspNet
 			
 			//name the class and namespace
 			int namespaceSplit = className.LastIndexOf ('.');
-			string namespaceName = null;
 			if (namespaceSplit > -1) {
 				namespac.Name = project.StripImplicitNamespace (className.Substring (0, namespaceSplit));
 				typeDecl.Name = className.Substring (namespaceSplit + 1);

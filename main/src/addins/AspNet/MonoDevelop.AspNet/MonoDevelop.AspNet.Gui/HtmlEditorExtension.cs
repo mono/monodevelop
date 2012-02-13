@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNet.Gui
 			txtRenderer.Text = n.FriendlyPathRepresentation;
 		}
 		
-		void SelectNode (XNode n)
+		new void SelectNode (XNode n)
 		{
 			MonoDevelop.Projects.Dom.DomRegion region = n.Region;
 			

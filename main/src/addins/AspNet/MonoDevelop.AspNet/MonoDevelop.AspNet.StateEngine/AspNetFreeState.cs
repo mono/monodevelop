@@ -111,7 +111,6 @@ namespace MonoDevelop.AspNet.StateEngine
 				
 				case '-': // SERVER COMMENT: <%--
 					return ServerCommentState;
-					break;
 				
 				case '=': //RENDER EXPRESSION <%=
 				case '#': //DATABINDING EXPRESSION <%#

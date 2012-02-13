@@ -154,16 +154,12 @@ namespace Mono.Debugging.Evaluation
 	internal class RemoteRawValueString: RemoteFrameObject, IRawValueString
 	{
 		object targetObject;
-		EvaluationContext ctx;
-		IObjectSource source;
 		IStringAdaptor targetString;
 		
-		public RemoteRawValueString (EvaluationContext ctx, IObjectSource source, IStringAdaptor targetString, object targetObject)
+		public RemoteRawValueString (IStringAdaptor targetString, object targetObject)
 		{
-			this.ctx = ctx;
 			this.targetString = targetString;
 			this.targetObject = targetObject;
-			this.source = source;
 			Connect ();
 		}
 		

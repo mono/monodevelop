@@ -39,7 +39,6 @@ namespace MonoDevelop.AspNet.StateEngine
 	{
 		AspNetServerCommentState CommentState;
 		AspNetExpressionState ExpressionState;
-		XmlMalformedTagState MalformedTagState;
 		
 		public AspNetSpeculativeExpressionState () : this (
 			new AspNetServerCommentState (),

@@ -51,7 +51,6 @@ namespace MonoDevelop.AspNet.Gui
 	{
 		HtmlSchema schema;
 		bool resolvedDocType;
-		string docType;
 		
 		protected HtmlSchema Schema {
 			get {

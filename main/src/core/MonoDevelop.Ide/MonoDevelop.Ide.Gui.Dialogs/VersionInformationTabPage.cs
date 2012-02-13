@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 						SetText (text);
 					});
 				} catch (Exception ex) {
+					LoggingService.LogError ("Failed to load version information", ex);
 					Gtk.Application.Invoke (delegate {
 						if (destroyed)
 							return;

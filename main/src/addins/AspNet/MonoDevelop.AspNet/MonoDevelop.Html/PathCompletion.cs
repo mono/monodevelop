@@ -114,7 +114,7 @@ namespace MonoDevelop.Html
 				get { return GettextCatalog.GetString ("Choose a file from the project.");; }
 			}
 			
-			public string CompletionText {
+			public override string CompletionText {
 				get { throw new InvalidOperationException (); }
 			}
 			

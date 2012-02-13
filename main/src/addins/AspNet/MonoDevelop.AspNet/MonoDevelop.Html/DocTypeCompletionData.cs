@@ -32,13 +32,10 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Html
 {
-	
-	
 	public class DocTypeCompletionData : CompletionData
 	{
 		string name;
 		string text;
-		string description;
 		const string docTypeStart = "<!DOCTYPE ";
 		
 		public DocTypeCompletionData (string name, string text)
@@ -62,10 +59,6 @@ namespace MonoDevelop.Html
 		
 		public override string CompletionText {
 			get { return name; }
-		}
-
-		public override string Description {
-			get { return description; }
 		}
 		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)

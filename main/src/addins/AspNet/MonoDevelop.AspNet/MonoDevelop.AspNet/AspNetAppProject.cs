@@ -190,7 +190,6 @@ namespace MonoDevelop.AspNet
 				}
 			}
 			
-			BuildResult ret;
 			if (needsCompile)
 				return base.DoBuild (monitor, configuration);
 			else

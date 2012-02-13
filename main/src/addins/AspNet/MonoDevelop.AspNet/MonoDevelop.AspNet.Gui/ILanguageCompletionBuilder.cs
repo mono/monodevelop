@@ -107,8 +107,6 @@ namespace MonoDevelop.AspNet.Gui
 			aspNetParsedDocument.RootNode.AcceptVisit (new ExpressionCollector (this));
 		}
 		
-		IType codeBesideClass;
-		
 		public ProjectDom Dom { get; private set; }
 		public AspNetParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
