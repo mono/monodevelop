@@ -481,8 +481,8 @@ namespace MonoDevelop.VersionControl.Views
 						var rev = widget.info.History.FirstOrDefault (h => h.ToString () == highlightAnnotation.Revision);
 						if (rev == null)
 							return;
-						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, rev.GetPrevious ());
-						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, rev);
+						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.DiffEditor, rev.GetPrevious ());
+						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, rev);
 						break;
 					}
 					i++;
