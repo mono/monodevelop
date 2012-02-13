@@ -96,15 +96,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (navigator == null)
 				throw new ArgumentNullException("navigator");
 			
-			lock (resolveVisitor) {
-				if (resolverInitialized)
-					throw new InvalidOperationException("Applying a navigator is only valid as the first operation on the CSharpAstResolver.");
-				
-				resolverInitialized = true;
-				resolveVisitor.SetNavigator(navigator);
-				resolveVisitor.Scan(rootNode);
-				resolveVisitor.SetNavigator(null);
-			}
+			if (resolverInitialized)
+				throw new InvalidOperationException("Applying a navigator is only valid as the first operation on the CSharpAstResolver.");
+			
+			resolverInitialized = true;
+			resolveVisitor.SetNavigator(navigator);
+			resolveVisitor.Scan(rootNode);
+			resolveVisitor.SetNavigator(null);
 		}
 		
 		/// <summary>
@@ -112,14 +110,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult Resolve(AstNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (node == null || node.IsNull)
+			if (node == null || node.IsNull || IsUnresolvableNode(node))
 				return ErrorResolveResult.UnknownError;
-			lock (resolveVisitor) {
-				InitResolver();
-				ResolveResult rr = resolveVisitor.GetResolveResult(node);
-				Debug.Assert(rr != null || IsUnresolvableNode(node));
-				return rr;
-			}
+			InitResolver();
+			ResolveResult rr = resolveVisitor.GetResolveResult(node);
+			Debug.Assert(rr != null);
+			return rr;
 		}
 		
 		void InitResolver()
@@ -134,14 +130,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (node == null || node.IsNull)
 				throw new ArgumentNullException("node");
-			lock (resolveVisitor) {
-				InitResolver();
-				CSharpResolver resolver = resolveVisitor.GetResolverStateBefore(node);
-				Debug.Assert(resolver != null);
-				return resolver;
-			}
+			InitResolver();
+			CSharpResolver resolver = resolveVisitor.GetResolverStateBefore(node);
+			Debug.Assert(resolver != null);
+			return resolver;
 		}
 		
+		public CSharpResolver GetResolverStateAfter(AstNode node, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (node == null || node.IsNull)
+				throw new ArgumentNullException("node");
+			while (node != null && IsUnresolvableNode(node))
+				node = node.Parent;
+			if (node == null)
+				return initialResolverState;
+			InitResolver();
+			CSharpResolver resolver = resolveVisitor.GetResolverStateAfter(node);
+			Debug.Assert(resolver != null);
+			return resolver;
+		}
 		/// <summary>
 		/// Gets the expected type for the specified node. This is the type being that a node is being converted to.
 		/// </summary>
@@ -149,10 +156,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (expr == null || expr.IsNull)
 				throw new ArgumentNullException("expr");
-			lock (resolveVisitor) {
-				InitResolver();
-				return resolveVisitor.GetConversionWithTargetType(expr).TargetType;
-			}
+			InitResolver();
+			return resolveVisitor.GetConversionWithTargetType(expr).TargetType;
 		}
 		
 		/// <summary>
@@ -162,10 +167,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (expr == null || expr.IsNull)
 				throw new ArgumentNullException("expr");
-			lock (resolveVisitor) {
-				InitResolver();
-				return resolveVisitor.GetConversionWithTargetType(expr).Conversion;
-			}
+			InitResolver();
+			return resolveVisitor.GetConversionWithTargetType(expr).Conversion;
 		}
 		
 		/// <summary>

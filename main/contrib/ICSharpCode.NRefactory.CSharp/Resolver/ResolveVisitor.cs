@@ -67,6 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly CSharpParsedFile parsedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
+		readonly Dictionary<AstNode, CSharpResolver> resolverAfterDict = new Dictionary<AstNode, CSharpResolver>();
 		readonly Dictionary<Expression, ConversionWithTargetType> conversionDict = new Dictionary<Expression, ConversionWithTargetType>();
 		
 		internal struct ConversionWithTargetType
@@ -157,6 +158,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case NodeType.Whitespace:
 					return; // skip tokens, identifiers, comments, etc.
 			}
+			// don't Scan again if the node was already resolved
+			if (resolveResultCache.ContainsKey(node)) {
+				// Restore state change caused by this node:
+				CSharpResolver newResolver;
+				if (resolverAfterDict.TryGetValue(node, out newResolver))
+					resolver = newResolver;
+				return;
+			}
 			
 			var mode = navigator.Scan(node);
 			switch (mode) {
@@ -168,12 +177,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					StoreCurrentState(node);
 					break;
 				case ResolveVisitorNavigationMode.Scan:
-					// We shouldn't scan nodes that were already resolved.
-					Debug.Assert(!resolveResultCache.ContainsKey(node));
-					// Doing so should be harmless since we allow scanning twice, but it indicates
-					// a bug in the logic that causes the scan.
-					
 					bool oldResolverEnabled = resolverEnabled;
+					var oldResolver = resolver;
 					resolverEnabled = false;
 					StoreCurrentState(node);
 					ResolveResult result = node.AcceptVisitor(this, null);
@@ -183,6 +188,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						// guaranteed to get called only once.
 						// This is used for lambda registration.
 						StoreResult(node, result);
+						if (resolver != oldResolver) {
+							// The node changed the resolver state:
+							resolverAfterDict.Add(node, resolver);
+						}
 					}
 					resolverEnabled = oldResolverEnabled;
 					break;
@@ -192,13 +201,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException("Invalid value for ResolveVisitorNavigationMode");
 			}
-		}
-		
-		void ScanIfNotResolved(AstNode node)
-		{
-			if (node == null || node.IsNull || resolveResultCache.ContainsKey(node))
-				return;
-			Scan(node);
 		}
 		
 		/// <summary>
@@ -221,8 +223,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!resolveResultCache.TryGetValue(node, out result)) {
 				cancellationToken.ThrowIfCancellationRequested();
 				StoreCurrentState(node);
+				var oldResolver = resolver;
 				result = node.AcceptVisitor(this, null) ?? errorResult;
 				StoreResult(node, result);
+				if (resolver != oldResolver) {
+					// The node changed the resolver state:
+					resolverAfterDict.Add(node, resolver);
+				}
 			}
 			resolverEnabled = oldResolverEnabled;
 			return result;
@@ -404,8 +411,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult GetResolveResult(AstNode node)
 		{
-			if (CSharpAstResolver.IsUnresolvableNode(node))
-				return null;
+			Debug.Assert(!CSharpAstResolver.IsUnresolvableNode(node));
 			
 			MergeUndecidedLambdas();
 			ResolveResult result;
@@ -485,7 +491,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					navigator = new NodeListResolveVisitorNavigator(new[] { node }, scanOnly: true);
 					Debug.Assert(!resolverEnabled);
 					// parent might already be resolved if 'node' is an unresolvable node
-					ScanIfNotResolved(parent);
+					Scan(parent);
 					navigator = skipAllNavigator;
 				});
 			
@@ -496,6 +502,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				node = node.Parent;
 			}
 			return null;
+		}
+		
+		public CSharpResolver GetResolverStateAfter(AstNode node)
+		{
+			// Resolve the node to fill the resolverAfterDict
+			GetResolveResult(node);
+			CSharpResolver result;
+			if (resolverAfterDict.TryGetValue(node, out result))
+				return result;
+			else
+				return GetResolverStateBefore(node);
 		}
 		
 		public ConversionWithTargetType GetConversionWithTargetType(Expression expr)
@@ -676,15 +693,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					StoreResult(aie, arrayCreation);
 					ProcessConversionResults(initializerElements, arrayCreation.InitializerElements);
 				} else {
-					// Don't use ResolveAndProcessConversion() as that might decide to perform only a scan,
-					// but the initializer might have already been resolved by the parent VariableDeclarationStatement.
-					ProcessConversion(variableInitializer.Initializer, Resolve(variableInitializer.Initializer), result.Type);
+					ResolveAndProcessConversion(variableInitializer.Initializer, result.Type);
 				}
 				resolver = resolverWithVariable;
 				return result;
 			} else {
-				// The initializer might have already been resolved by the parent VariableDeclarationStatement.
-				ScanIfNotResolved(variableInitializer.Initializer);
+				Scan(variableInitializer.Initializer);
 				resolver = resolverWithVariable;
 				return null;
 			}
@@ -2153,7 +2167,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				visitor.MergeUndecidedLambdas();
 				Log.WriteLine("Merging " + ToString());
 				foreach (var pair in visitor.resolverBeforeDict) {
+					Debug.Assert(!parentVisitor.resolverBeforeDict.ContainsKey(pair.Key));
 					parentVisitor.resolverBeforeDict[pair.Key] = pair.Value;
+				}
+				foreach (var pair in visitor.resolverAfterDict) {
+					Debug.Assert(!parentVisitor.resolverAfterDict.ContainsKey(pair.Key));
+					parentVisitor.resolverAfterDict[pair.Key] = pair.Value;
 				}
 				foreach (var pair in visitor.resolveResultCache) {
 					parentVisitor.StoreResult(pair.Key, pair.Value);
