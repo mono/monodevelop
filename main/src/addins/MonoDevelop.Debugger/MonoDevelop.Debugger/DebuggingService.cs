@@ -70,7 +70,9 @@ namespace MonoDevelop.Debugger
 		static DebuggerSession session;
 		static Backtrace currentBacktrace;
 		static int currentFrame;
-
+		
+		static ExceptionCaughtDialog exceptionDialog;
+		
 		static BusyEvaluatorDialog busyDialog;
 		static bool isBusy;
 		static StatusBarIcon busyStatusIcon;
@@ -285,10 +287,13 @@ namespace MonoDevelop.Debugger
 			
 			ExceptionInfo val = CurrentFrame.GetException (ops);
 			if (val != null) {
-				ExceptionCaughtDialog dlg = new ExceptionCaughtDialog (val);
-				dlg.TransientFor = IdeApp.Workbench.RootWindow;
-				MessageService.PlaceDialog (dlg, IdeApp.Workbench.RootWindow);
-				dlg.Show ();
+				exceptionDialog = new ExceptionCaughtDialog (val);
+				exceptionDialog.TransientFor = IdeApp.Workbench.RootWindow;
+				MessageService.PlaceDialog (exceptionDialog, IdeApp.Workbench.RootWindow);
+				exceptionDialog.Destroyed += (o, args) => {
+					exceptionDialog = null;
+				};
+				exceptionDialog.Show ();
 			}
 		}
 
@@ -339,7 +344,12 @@ namespace MonoDevelop.Debugger
 			
 			if (!IsDebugging)
 				return;
-
+			
+			if (exceptionDialog != null) {
+				exceptionDialog.Destroy ();
+				exceptionDialog = null;
+			}
+			
 			if (busyStatusIcon != null) {
 				busyStatusIcon.Dispose ();
 				busyStatusIcon = null;
