@@ -117,7 +117,7 @@ namespace MonoDevelop.MacDev
 			PDictionary doc;
 			if (template != null) {
 				try {
-					doc = PDictionary.Load (template.FilePath);
+					doc = PDictionary.FromFile (template.FilePath);
 				} catch (Exception ex) {
 					result.AddError ("Error reading plist template: " + ex.Message, template.FilePath);
 					monitor.ReportError (string.Format ("Error reading plist template '{0}'", template.FilePath), ex);

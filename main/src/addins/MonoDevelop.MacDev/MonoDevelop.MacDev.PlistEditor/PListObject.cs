@@ -239,7 +239,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public byte[] ToByteArray (bool binary)
 		{
 			using (new NSAutoreleasePool ()) {
-				var errorPtr = IntPtr.Zero;
 				var pobject = Convert ();
 				NSPropertyListFormat format = binary? NSPropertyListFormat.Binary : NSPropertyListFormat.Xml;
 				var data = PObject.DataFromPropertyList (pobject, format, 0);
@@ -327,7 +326,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var data = PObject.DataFromPropertyList (obj, fmt, 0);
 				NSError error;
 				data.Save (filename, atomic, out error);
-				if (error == null)
+				if (error != null)
 					throw new Exception (error.LocalizedDescription);
 			}
 		}
