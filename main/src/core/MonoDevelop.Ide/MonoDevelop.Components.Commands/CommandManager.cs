@@ -84,11 +84,17 @@ namespace MonoDevelop.Components.Commands
 			RegisterCommand (c);
 		}
 		
+		/// <summary>
+		/// Loads command definitions from the provided extension path
+		/// </summary>
 		public void LoadCommands (string addinPath)
 		{
 			AddinManager.AddExtensionNodeHandler (addinPath, OnExtensionChange);
 		}
-		
+
+		/// <summary>
+		/// Loads key binding schemes from the provided extension path
+		/// </summary>
 		public void LoadKeyBindingSchemes (string addinPath)
 		{
 			KeyBindingService.LoadBindingsFromExtensionPath (addinPath);
@@ -111,12 +117,18 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		/// <summary>
+		/// Creates a menu bar from the menu definition at the provided extension path
+		/// </summary>
 		public Gtk.MenuBar CreateMenuBar (string addinPath)
 		{
 			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
 			return CreateMenuBar (addinPath, cset);
 		}
 		
+		/// <summary>
+		/// Creates a set of toolbars from the provided extension path
+		/// </summary>
 		public Gtk.Toolbar[] CreateToolbarSet (string addinPath)
 		{
 			ArrayList bars = new ArrayList ();
@@ -130,23 +142,56 @@ namespace MonoDevelop.Components.Commands
 			return (Gtk.Toolbar[]) bars.ToArray (typeof(Gtk.Toolbar));
 		}
 		
+		/// <summary>
+		/// Creates a toolbar from the provided extension path
+		/// </summary>
 		public Gtk.Toolbar CreateToolbar (string addinPath)
 		{
 			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
 			return CreateToolbar (addinPath, cset);
 		}
 		
+		/// <summary>
+		/// Creates a menu from the provided extension path
+		/// </summary>
 		public Gtk.Menu CreateMenu (string addinPath)
 		{
 			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
 			return CreateMenu (cset);
 		}
-		
+
+		/// <summary>
+		/// Shows a context menu.
+		/// </summary>
+		/// <param name='parent'>
+		/// Widget for which the context menu is being shown
+		/// </param>
+		/// <param name='evt'>
+		/// Current event object
+		/// </param>
+		/// <param name='addinPath'>
+		/// Extension path to the definition of the menu
+		/// </param>
 		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, string addinPath)
 		{
 			ShowContextMenu (parent, evt, CreateCommandEntrySet (addinPath));
 		}
 		
+		/// <summary>
+		/// Shows a context menu.
+		/// </summary>
+		/// <param name='parent'>
+		/// Widget for which the context menu is being shown
+		/// </param>
+		/// <param name='evt'>
+		/// Current event object
+		/// </param>
+		/// <param name='ctx'>
+		/// Extension context to use to query the extension path
+		/// </param>
+		/// <param name='addinPath'>
+		/// Extension path to the definition of the menu
+		/// </param>
 		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt,
 			ExtensionContext ctx, string addinPath)
 		{
@@ -165,6 +210,18 @@ namespace MonoDevelop.Components.Commands
 			ShowContextMenu (CreateCommandEntrySet (ctx, addinPath));
 		}
 		
+		/// <summary>
+		/// Creates a command entry set.
+		/// </summary>
+		/// <returns>
+		/// The command entry set.
+		/// </returns>
+		/// <param name='ctx'>
+		/// Extension context to use to query the extension path
+		/// </param>
+		/// <param name='addinPath'>
+		/// Extension path with the command definitions
+		/// </param>
 		public CommandEntrySet CreateCommandEntrySet (ExtensionContext ctx, string addinPath)
 		{
 			CommandEntrySet cset = new CommandEntrySet ();
@@ -174,6 +231,15 @@ namespace MonoDevelop.Components.Commands
 			return cset;
 		}
 		
+		/// <summary>
+		/// Creates a command entry set.
+		/// </summary>
+		/// <returns>
+		/// The command entry set.
+		/// </returns>
+		/// <param name='addinPath'>
+		/// Extension path with the command definitions
+		/// </param>
 		public CommandEntrySet CreateCommandEntrySet (string addinPath)
 		{
 			CommandEntrySet cset = new CommandEntrySet ();
@@ -197,6 +263,10 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		bool isEnabled = true;
+		
+		/// <summary>
+		/// Gets or sets a value indicating whether the command manager is enabled. When disabled, all commands are disabled.
+		/// </summary>
 		public bool IsEnabled {
 			get {
 				return isEnabled;
@@ -275,6 +345,9 @@ namespace MonoDevelop.Components.Commands
 				KeyPressed (this, new KeyPressArgs () { Key = e.Event.Key, Modifiers = e.Event.State });
 		}
 		
+		/// <summary>
+		/// Sets the root window. The manager will start the command route at this window, if no other is active.
+		/// </summary>
 		public void SetRootWindow (Gtk.Window root)
 		{
 			if (rootWidget != null)
@@ -312,6 +385,9 @@ namespace MonoDevelop.Components.Commands
 			lastFocused = null;
 		}
 		
+		/// <summary>
+		/// Disables all commands
+		/// </summary>
 		public void LockAll ()
 		{
 			guiLock++;
@@ -321,6 +397,9 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		/// <summary>
+		/// Unlocks the command manager
+		/// </summary>
 		public void UnlockAll ()
 		{
 			if (guiLock == 1) {
@@ -332,6 +411,10 @@ namespace MonoDevelop.Components.Commands
 				guiLock--;
 		}
 		
+		/// <summary>
+		/// When set to true, the toolbar status will be updated periodically while the gui is idle.
+		/// idle update.
+		/// </summary>
 		public bool EnableIdleUpdate {
 			get { return enableToolbarUpdate; }
 			set {
@@ -346,7 +429,13 @@ namespace MonoDevelop.Components.Commands
 				}
 			}
 		}
-		
+
+		/// <summary>
+		/// Registers a new command.
+		/// </summary>
+		/// <param name='cmd'>
+		/// The command.
+		/// </param>
 		public void RegisterCommand (Command cmd)
 		{
 			KeyBindingService.StoreDefaultBinding (cmd);
@@ -356,39 +445,90 @@ namespace MonoDevelop.Components.Commands
 			bindings.RegisterCommand (cmd);
 		}
 		
+		/// <summary>
+		/// Unregisters a command.
+		/// </summary>
+		/// <param name='cmd'>
+		/// The command.
+		/// </param>
 		public void UnregisterCommand (Command cmd)
 		{
 			bindings.UnregisterCommand (cmd);
 			cmds.Remove (cmd.Id);
 		}
-
+		
+		/// <summary>
+		/// Loads user defined key bindings.
+		/// </summary>
 		public void LoadUserBindings ()
 		{
 			foreach (Command cmd in cmds.Values)
 				KeyBindingService.LoadBinding (cmd);
 		}
 		
+		/// <summary>
+		/// Registers a global command handler.
+		/// </summary>
+		/// <param name='handler'>
+		/// The handler
+		/// </param>
+		/// <remarks>
+		/// Global command handler are added to the end of the command route.
+		/// </remarks>
 		public void RegisterGlobalHandler (object handler)
 		{
 			globalHandlerChain = CommandTargetChain.AddTarget (globalHandlerChain, handler);
 		}
-		
+
+		/// <summary>
+		/// Unregisters a global handler.
+		/// </summary>
+		/// <param name='handler'>
+		/// The handler.
+		/// </param>
 		public void UnregisterGlobalHandler (object handler)
 		{
 			globalHandlerChain = CommandTargetChain.RemoveTarget (globalHandlerChain, handler);
 		}
 		
+		/// <summary>
+		/// Registers a command target visitor.
+		/// </summary>
+		/// <param name='visitor'>
+		/// The visitor.
+		/// </param>
+		/// <remarks>
+		/// Command target visitors can be used to visit the whole active command route
+		/// to perform custom actions on the objects of the route. The command manager
+		/// periodically visits the command route. The visit frequency varies, but it
+		/// is usually at least once a second.
+		/// </remarks>
 		public void RegisterCommandTargetVisitor (ICommandTargetVisitor visitor)
 		{
 			visitors.Add (visitor);
 			StartStatusUpdater ();
 		}
 		
+		/// <summary>
+		/// Unregisters a command target visitor.
+		/// </summary>
+		/// <param name='visitor'>
+		/// The visitor.
+		/// </param>
 		public void UnregisterCommandTargetVisitor (ICommandTargetVisitor visitor)
 		{
 			visitors.Remove (visitor);
 		}
 		
+		/// <summary>
+		/// Gets a registered command.
+		/// </summary>
+		/// <returns>
+		/// The command.
+		/// </returns>
+		/// <param name='cmdId'>
+		/// The identifier of the command
+		/// </param>
 		public Command GetCommand (object cmdId)
 		{
 			// Include the type name when converting enum members to ids.
@@ -400,17 +540,41 @@ namespace MonoDevelop.Components.Commands
 			else
 				return null;
 		}
-		
+
+		/// <summary>
+		/// Gets all registered commands
+		/// </summary>
 		public IEnumerable<Command> GetCommands ()
 		{
 			return cmds.Values;
 		}
-		
+
+		/// <summary>
+		/// Gets an action command.
+		/// </summary>
+		/// <returns>
+		/// The action command.
+		/// </returns>
+		/// <param name='cmdId'>
+		/// The command identifier.
+		/// </param>
 		public ActionCommand GetActionCommand (object cmdId)
 		{
 			return GetCommand (cmdId) as ActionCommand;
 		}
 		
+		/// <summary>
+		/// Creates a menu bar.
+		/// </summary>
+		/// <returns>
+		/// The menu bar.
+		/// </returns>
+		/// <param name='name'>
+		/// Unused
+		/// </param>
+		/// <param name='entrySet'>
+		/// Entry set with the definition of the commands to be included in the menu bar
+		/// </param>
 		public Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
 		{
 			Gtk.MenuBar topMenu = new CommandMenuBar (this);
@@ -430,6 +594,18 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 */	
+		/// <summary>
+		/// Appends commands to a menu
+		/// </summary>
+		/// <returns>
+		/// The menu.
+		/// </returns>
+		/// <param name='entrySet'>
+		/// Entry set with the command definitions
+		/// </param>
+		/// <param name='menu'>
+		/// The menu where to add the commands
+		/// </param>
 		public Gtk.Menu CreateMenu (CommandEntrySet entrySet, CommandMenu menu)
 		{
 			foreach (CommandEntry entry in entrySet) {
@@ -442,11 +618,32 @@ namespace MonoDevelop.Components.Commands
 			return menu;
 		}
 		
+		/// <summary>
+		/// Creates a menu.
+		/// </summary>
+		/// <returns>
+		/// The menu.
+		/// </returns>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
 		public Gtk.Menu CreateMenu (CommandEntrySet entrySet)
 		{
 			return CreateMenu (entrySet, new CommandMenu (this));
 		}
 		
+		/// <summary>
+		/// Creates the menu.
+		/// </summary>
+		/// <returns>
+		/// The menu.
+		/// </returns>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
 		public Gtk.Menu CreateMenu (CommandEntrySet entrySet, object initialTarget)
 		{
 			var menu = (CommandMenu) CreateMenu (entrySet, new CommandMenu (this));
@@ -454,6 +651,7 @@ namespace MonoDevelop.Components.Commands
 			return menu;
 		}
 		
+		[Obsolete("Unused. To be removed")]
 		public void InsertOptions (Gtk.Menu menu, CommandEntrySet entrySet, int index)
 		{
 			CommandTargetRoute route = new CommandTargetRoute ();
@@ -472,6 +670,21 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
+		/// <summary>
+		/// Shows a context menu.
+		/// </summary>
+		/// <param name='parent'>
+		/// Widget for which the context menu is being shown
+		/// </param>
+		/// <param name='evt'>
+		/// Current event
+		/// </param>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
+		/// <param name='initialCommandTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
 		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
@@ -480,6 +693,21 @@ namespace MonoDevelop.Components.Commands
 				ShowContextMenu (parent, evt, menu, initialCommandTarget);
 		}
 		
+		/// <summary>
+		/// Shows a context menu.
+		/// </summary>
+		/// <param name='parent'>
+		/// Widget for which the context menu is being shown
+		/// </param>
+		/// <param name='evt'>
+		/// Current event
+		/// </param>
+		/// <param name='menu'>
+		/// Menu to be shown
+		/// </param>
+		/// <param name='initialCommandTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
 		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu,
 			object initialCommandTarget = null)
 		{
@@ -523,21 +751,69 @@ namespace MonoDevelop.Components.Commands
 			ShowContextMenu (menu, initialCommandTarget, null);
 		}
 		
+		/// <summary>
+		/// Creates a toolbar.
+		/// </summary>
+		/// <returns>
+		/// The toolbar.
+		/// </returns>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
 		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet)
 		{
 			return CreateToolbar ("", entrySet, null);
 		}
 		
+		/// <summary>
+		/// Creates a toolbar.
+		/// </summary>
+		/// <returns>
+		/// The toolbar.
+		/// </returns>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
 		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet, object initialTarget)
 		{
 			return CreateToolbar ("", entrySet, initialTarget);
 		}
 		
+		/// <summary>
+		/// Creates a toolbar.
+		/// </summary>
+		/// <returns>
+		/// The toolbar.
+		/// </returns>
+		/// <param name='id'>
+		/// Identifier of the toolbar
+		/// </param>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
 		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet)
 		{
 			return CreateToolbar (id, entrySet, null);
 		}
 		
+		/// <summary>
+		/// Creates a toolbar.
+		/// </summary>
+		/// <returns>
+		/// The toolbar.
+		/// </returns>
+		/// <param name='id'>
+		/// Identifier of the toolbar
+		/// </param>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
 		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet, object initialTarget)
 		{
 			CommandToolbar toolbar = new CommandToolbar (this, id, entrySet.Name);
@@ -555,31 +831,115 @@ namespace MonoDevelop.Components.Commands
 			return toolbar;
 		}
 		
+		/// <summary>
+		/// Dispatches a command.
+		/// </summary>
+		/// <returns>
+		/// True if a handler for the command was found
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command
+		/// </param>
+		/// <remarks>
+		/// This methods tries to execute a command by looking for a handler in the active command route.
+		/// </remarks>
 		public bool DispatchCommand (object commandId)
 		{
 			return DispatchCommand (commandId, null, null, CommandSource.Unknown);
 		}
 		
+		/// <summary>
+		/// Dispatches a command.
+		/// </summary>
+		/// <returns>
+		/// True if a handler for the command was found
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command
+		/// </param>
+		/// <param name='source'>
+		/// What is causing the command to be dispatched
+		/// </param>
 		public bool DispatchCommand (object commandId, CommandSource source)
 		{
 			return DispatchCommand (commandId, null, null, source);
 		}
 		
+		/// <summary>
+		/// Dispatches a command.
+		/// </summary>
+		/// <returns>
+		/// True if a handler for the command was found
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command
+		/// </param>
+		/// <param name='dataItem'>
+		/// Data item for the command. It must be one of the data items obtained by calling GetCommandInfo.
+		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem)
 		{
 			return DispatchCommand (commandId, dataItem, null, CommandSource.Unknown);
 		}
 		
+		/// <summary>
+		/// Dispatches a command.
+		/// </summary>
+		/// <returns>
+		/// True if a handler for the command was found
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command
+		/// </param>
+		/// <param name='dataItem'>
+		/// Data item for the command. It must be one of the data items obtained by calling GetCommandInfo.
+		/// </param>
+		/// <param name='source'>
+		/// What is causing the command to be dispatched
+		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem, CommandSource source)
 		{
 			return DispatchCommand (commandId, dataItem, null, source);
 		}
 
+		/// <summary>
+		/// Dispatches a command.
+		/// </summary>
+		/// <returns>
+		/// True if a handler for the command was found
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command
+		/// </param>
+		/// <param name='dataItem'>
+		/// Data item for the command. It must be one of the data items obtained by calling GetCommandInfo.
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget)
 		{
 			return DispatchCommand (commandId, dataItem, initialTarget, CommandSource.Unknown);
 		}
 		
+		/// <summary>
+		/// Dispatches a command.
+		/// </summary>
+		/// <returns>
+		/// True if a handler for the command was found
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command
+		/// </param>
+		/// <param name='dataItem'>
+		/// Data item for the command. It must be one of the data items obtained by calling GetCommandInfo.
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
+		/// <param name='source'>
+		/// What is causing the command to be dispatched
+		/// </param>
 		public bool DispatchCommand (object commandId, object dataItem, object initialTarget, CommandSource source)
 		{
 			RegisterUserInteraction ();
@@ -710,14 +1070,42 @@ namespace MonoDevelop.Components.Commands
 				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source));
 		}
 		
+		/// <summary>
+		/// Raised just before a command is executed
+		/// </summary>
 		public event EventHandler<CommandActivationEventArgs> CommandActivating;
+		
+		/// <summary>
+		/// Raised just after a command has been executed
+		/// </summary>
 		public event EventHandler<CommandActivationEventArgs> CommandActivated;
 		
+		/// <summary>
+		/// Retrieves status information about a command by looking for a handler in the active command route.
+		/// </summary>
+		/// <returns>
+		/// The command information.
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command.
+		/// </param>
 		public CommandInfo GetCommandInfo (object commandId)
 		{
 			return GetCommandInfo (commandId, new CommandTargetRoute ());
 		}
 		
+		/// <summary>
+		/// Retrieves status information about a command by looking for a handler in the active command route.
+		/// </summary>
+		/// <returns>
+		/// The command information.
+		/// </returns>
+		/// <param name='commandId'>
+		/// Identifier of the command.
+		/// </param>
+		/// <param name='targetRoute'>
+		/// Command route origin
+		/// </param>
 		public CommandInfo GetCommandInfo (object commandId, CommandTargetRoute targetRoute)
 		{
 			commandId = CommandManager.ToCommandId (commandId);
@@ -828,6 +1216,18 @@ namespace MonoDevelop.Components.Commands
 				cmd.DefaultHandler.InternalUpdate (info);
 		}
 		
+		/// <summary>
+		/// Visits the active command route
+		/// </summary>
+		/// <returns>
+		/// Visitor result
+		/// </returns>
+		/// <param name='visitor'>
+		/// Visitor.
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial target (provide null to use the default initial target)
+		/// </param>
 		public object VisitCommandTargets (ICommandTargetVisitor visitor, object initialTarget)
 		{
 			CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
@@ -1351,13 +1751,44 @@ namespace MonoDevelop.Components.Commands
 				CommandTargetScanFinished (this, EventArgs.Empty);
 		}
 		
+		/// <summary>
+		/// Raised when there is an exception while executing or updating the status of a command
+		/// </summary>
 		public event CommandErrorHandler CommandError;
+		
+		/// <summary>
+		/// Raised when a command is highligted in a menu
+		/// </summary>
 		public event EventHandler<CommandSelectedEventArgs> CommandSelected;
+		
+		/// <summary>
+		/// Raised when a command is deselected in a manu
+		/// </summary>
 		public event EventHandler CommandDeselected;
-		public event EventHandler ApplicationFocusIn; // Fired when the application gets the focus
-		public event EventHandler ApplicationFocusOut;  // Fired when the application loses the focus
+		
+		/// <summary>
+		/// Fired when the application gets the focus
+		/// </summary>
+		public event EventHandler ApplicationFocusIn;
+		
+		/// <summary>
+		/// Fired when the application loses the focus
+		/// </summary>
+		public event EventHandler ApplicationFocusOut;
+		
+		/// <summary>
+		/// Fired when the command route scan starts
+		/// </summary>
 		public event EventHandler CommandTargetScanStarted;
+		
+		/// <summary>
+		/// Fired when the command route scan ends
+		/// </summary>
 		public event EventHandler CommandTargetScanFinished;
+		
+		/// <summary>
+		/// Fired when a key is pressed
+		/// </summary>
 		public event EventHandler<KeyPressArgs> KeyPressed;
 	}
 	
