@@ -31,9 +31,9 @@ using System;
 namespace MonoDevelop.Components.Commands
 {
 	/// <summary>
-	// Redirects the command route to the object returned by
-	// GetDelegatedCommandTarget and when done, continues with
-	// GetNextCommandTarget.
+	/// Redirects the command route to the object returned by
+	/// GetDelegatedCommandTarget and when done, continues with
+	/// GetNextCommandTarget.
 	/// </summary>
 	public interface ICommandDelegatorRouter
 	{

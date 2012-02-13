@@ -1202,7 +1202,6 @@
     <Compile Include="MonoDevelop.Components.Theming\ThemeContext.cs" />
     <Compile Include="MonoDevelop.Components.Theming\ThemeEngine.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Components.FolderListSelector.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Components\CustomCommandTargetAttribute.cs" />
     <Compile Include="MonoDevelop.Components.Docking\AutoHideBox.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockBar.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockBarItem.cs" />
@@ -1474,6 +1473,7 @@
     <Compile Include="MonoDevelop.Ide\LogReportingStartup.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ExportSolutionDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ExportSolutionDialog.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

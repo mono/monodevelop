@@ -30,8 +30,14 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
+	/// <summary>
+	/// Redirects the command route to the object returned by GetNextCommandTarget.
+	/// </summary>
 	public interface ICommandRouter
 	{
+		/// <summary>
+		/// Gets the next command target.
+		/// </summary>
 		object GetNextCommandTarget (); 
 	}
 }
