@@ -29,6 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ICSharpCode.NRefactory.Editor;
 using Mono.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -308,7 +309,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			AttributeSection ConvertAttributeSection (List<Mono.CSharp.Attribute> optAttributes)
 			{
-				if (optAttributes == null || optAttributes.Count == 0)
+				if (optAttributes == null)
 					return null;
 				AttributeSection result = new AttributeSection ();
 				var loc = LocationsBag.GetLocations (optAttributes);
@@ -316,7 +317,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (loc != null)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.LBracket);
 				
-				string target = optAttributes.First ().ExplicitTarget;
+				var first = optAttributes.FirstOrDefault ();
+				string target = first != null ? first.ExplicitTarget : null;
 				
 				if (!string.IsNullOrEmpty (target)) {
 					if (loc != null && pos < loc.Count - 1) {
@@ -3545,6 +3547,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				return errorReportPrinter.WarningsCount > 0;
 			}
+		}
+		
+		public CompilationUnit Parse (ITextSource textSource, string fileName, int lineModifier = 0)
+		{
+			return Parse (textSource.CreateReader(), fileName, lineModifier);
 		}
 		
 		public CompilationUnit Parse (TextReader reader, string fileName, int lineModifier = 0)

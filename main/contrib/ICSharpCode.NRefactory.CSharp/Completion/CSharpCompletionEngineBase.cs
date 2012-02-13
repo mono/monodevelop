@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngineBase.cs
 //  
 // Author:
@@ -472,14 +472,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 //			var newContent = ProjectContent.UpdateProjectContent (CSharpParsedFile, file);
 			
-			var csResolver = new CSharpResolver (ctx);
+			var csResolver = new CSharpAstResolver(new CSharpResolver (ctx), unit, CSharpParsedFile);
 			
-			var navigator = new NodeListResolveVisitorNavigator (new[] { resolveNode });
-			var visitor = new ResolveVisitor (csResolver, CSharpParsedFile, navigator);
-			
-			visitor.Scan (unit);
-			var state = visitor.GetResolverStateBefore (resolveNode);
-			var result = visitor.GetResolveResult (resolveNode);
+			var result = csResolver.Resolve (resolveNode);
+			var state = csResolver.GetResolverStateBefore (resolveNode);
 			return Tuple.Create (result, state);
 		}
 		

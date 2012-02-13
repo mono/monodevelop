@@ -571,6 +571,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return new TypeResolveResult(resultGroup.NestedTypes[0]);
 			}
 			
+			if (resultGroup.NonMethod.IsStatic && targetResolveResult is ThisResolveResult) {
+				targetResolveResult = new TypeResolveResult(targetResolveResult.Type);
+			}
+			
 			if (lookupGroups.Count > 1) {
 				return new AmbiguousMemberResolveResult(targetResolveResult, resultGroup.NonMethod);
 			} else {

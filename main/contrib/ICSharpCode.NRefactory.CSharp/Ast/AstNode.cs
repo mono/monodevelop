@@ -135,6 +135,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		/// <summary>
+		/// Gets the region from StartLocation to EndLocation for this node.
+		/// The file name of the region is set based on the parent CompilationUnit's file name.
+		/// If this node is not connected to a whole compilation, the file name will be null.
+		/// </summary>
+		public ICSharpCode.NRefactory.TypeSystem.DomRegion GetRegion()
+		{
+			var cu = (this.Ancestors.LastOrDefault() ?? this) as CompilationUnit;
+			string fileName = (cu != null ? cu.FileName : null);
+			return new ICSharpCode.NRefactory.TypeSystem.DomRegion(fileName, this.StartLocation, this.EndLocation);
+		}
+		
 		public AstNode Parent {
 			get { return parent; }
 		}
@@ -537,7 +549,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
-		/// Gets the node specified by T at location. This is useful for getting a specific node from the tree. For example searching 
+		/// Gets the node specified by T at location. This is useful for getting a specific node from the tree. For example searching
 		/// the current method declaration.
 		/// </summary>
 		public T GetNodeAt<T> (TextLocation location) where T : AstNode
@@ -579,7 +591,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					yield return node;
 				} else {
 					if (node.EndLocation <= start) {
-						next = node.NextSibling; 
+						next = node.NextSibling;
 					} else {
 						next = node.FirstChild;
 					}

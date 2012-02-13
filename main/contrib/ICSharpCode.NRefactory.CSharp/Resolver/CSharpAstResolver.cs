@@ -33,7 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly CSharpResolver initialResolverState;
 		readonly AstNode rootNode;
 		readonly CSharpParsedFile parsedFile;
-		ResolveVisitor resolveVisitor;
+		readonly ResolveVisitor resolveVisitor;
+		bool resolverInitialized;
 		
 		/// <summary>
 		/// Creates a new C# AST resolver.
@@ -54,6 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.initialResolverState = new CSharpResolver(compilation);
 			this.rootNode = compilationUnit;
 			this.parsedFile = parsedFile;
+			this.resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
 		}
 		
 		/// <summary>
@@ -73,6 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.initialResolverState = resolver;
 			this.rootNode = rootNode;
 			this.parsedFile = parsedFile;
+			this.resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
 		}
 		
 		/// <summary>
@@ -92,11 +95,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (navigator == null)
 				throw new ArgumentNullException("navigator");
-			if (resolveVisitor != null)
-				throw new InvalidOperationException("Applying a navigator is only valid as the first operation on the CSharpAstResolver.");
-			resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile, navigator);
-			lock (resolveVisitor)
+			
+			lock (resolveVisitor) {
+				if (resolverInitialized)
+					throw new InvalidOperationException("Applying a navigator is only valid as the first operation on the CSharpAstResolver.");
+				
+				resolverInitialized = true;
+				resolveVisitor.SetNavigator(navigator);
 				resolveVisitor.Scan(rootNode);
+				resolveVisitor.SetNavigator(null);
+			}
 		}
 		
 		/// <summary>
@@ -106,18 +114,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (node == null || node.IsNull)
 				return ErrorResolveResult.UnknownError;
-			InitResolver(node);
 			lock (resolveVisitor) {
+				InitResolver();
 				ResolveResult rr = resolveVisitor.GetResolveResult(node);
-				Debug.Assert(rr != null);
+				Debug.Assert(rr != null || IsUnresolvableNode(node));
 				return rr;
 			}
 		}
 		
-		void InitResolver(AstNode firstNodeToResolve)
+		void InitResolver()
 		{
-			if (resolveVisitor == null) {
-				resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile, new NodeListResolveVisitorNavigator(firstNodeToResolve));
+			if (!resolverInitialized) {
+				resolverInitialized = true;
 				resolveVisitor.Scan(rootNode);
 			}
 		}
@@ -126,8 +134,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (node == null || node.IsNull)
 				throw new ArgumentNullException("node");
-			InitResolver(node);
 			lock (resolveVisitor) {
+				InitResolver();
 				CSharpResolver resolver = resolveVisitor.GetResolverStateBefore(node);
 				Debug.Assert(resolver != null);
 				return resolver;
@@ -141,8 +149,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (expr == null || expr.IsNull)
 				throw new ArgumentNullException("expr");
-			InitResolver(expr);
 			lock (resolveVisitor) {
+				InitResolver();
 				return resolveVisitor.GetConversionWithTargetType(expr).TargetType;
 			}
 		}
@@ -154,8 +162,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (expr == null || expr.IsNull)
 				throw new ArgumentNullException("expr");
-			InitResolver(expr);
 			lock (resolveVisitor) {
+				InitResolver();
 				return resolveVisitor.GetConversionWithTargetType(expr).Conversion;
 			}
 		}
@@ -165,6 +173,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public static bool IsUnresolvableNode(AstNode node)
 		{
+			if (node == null)
+				throw new ArgumentNullException("node");
+			if (node.NodeType == NodeType.Token) {
+				// Most tokens cannot be resolved, but there are a couple of special cases:
+				if (node.Parent is QueryClause && node is Identifier) {
+					return false;
+				} else if (node.Role == AstNode.Roles.Identifier) {
+					return !(node.Parent is ForeachStatement || node.Parent is CatchClause);
+				}
+				return true;
+			}
 			return (node.NodeType == NodeType.Whitespace || node is ArraySpecifier || node is NamedArgumentExpression);
 		}
 	}

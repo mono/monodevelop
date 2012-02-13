@@ -253,6 +253,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
+		/// Removes the variable that was just added.
+		/// </summary>
+		public CSharpResolver PopLastVariable()
+		{
+			if (localVariableStack.Peek() == null)
+				throw new InvalidOperationException("There is no variable within the current block.");
+			return WithLocalVariableStack(localVariableStack.Pop());
+		}
+		
+		/// <summary>
 		/// Gets all currently visible local variables and lambda parameters.
 		/// </summary>
 		public IEnumerable<IVariable> LocalVariables {
@@ -1395,7 +1405,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				ResolveResult r;
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
-					r = lookup.Lookup(new TypeResolveResult(t), identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
+					var targetResolveResult = (t == this.CurrentTypeDefinition ? ResolveThisReference() : new TypeResolveResult(t));
+					r = lookup.Lookup(targetResolveResult, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
 					r = lookup.LookupType(t, identifier, typeArguments, parameterizeResultType);
 				}
@@ -1631,6 +1642,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// An empty list will return all matching extension method definitions;
 		/// a non-empty list will return <see cref="SpecializedMethod"/>s for all extension methods
 		/// with the matching number of type parameters.</param>
+		/// <param name="substituteInferredTypes">
+		/// Specifies whether to produce a <see cref="SpecializedMethod"/>
+		/// when type arguments could be inferred from <paramref name="targetType"/>. This parameter
+		/// is only used for inferred types and has no effect if <paramref name="typeArguments"/> is non-empty.
+		/// </param>
 		/// <remarks>
 		/// The results are stored in nested lists because they are grouped by using scope.
 		/// That is, for "using SomeExtensions; namespace X { using MoreExtensions; ... }",
@@ -1640,7 +1656,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		///    new List { all extensions from SomeExtensions }
 		/// }
 		/// </remarks>
-		public List<List<IMethod>> GetExtensionMethods(IType targetType, string name = null, IList<IType> typeArguments = null)
+		public List<List<IMethod>> GetExtensionMethods(IType targetType, string name = null, IList<IType> typeArguments = null, bool substituteInferredTypes = false)
 		{
 			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
 			foreach (var inputGroup in GetAllExtensionMethods()) {
@@ -1649,15 +1665,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (name != null && method.Name != name)
 						continue;
 					
+					IType[] inferredTypes;
 					if (typeArguments != null && typeArguments.Count > 0) {
 						if (method.TypeParameters.Count != typeArguments.Count)
 							continue;
 						SpecializedMethod sm = new SpecializedMethod(method.DeclaringType, method, typeArguments);
-						if (IsEligibleExtensionMethod(targetType, method, false))
+						if (IsEligibleExtensionMethod(targetType, method, false, out inferredTypes))
 							outputGroup.Add(sm);
 					} else {
-						if (IsEligibleExtensionMethod(targetType, method, true))
-							outputGroup.Add(method);
+						if (IsEligibleExtensionMethod(targetType, method, true, out inferredTypes)) {
+							if (substituteInferredTypes && inferredTypes != null) {
+								outputGroup.Add(new SpecializedMethod(method.DeclaringType, method, inferredTypes));
+							} else {
+								outputGroup.Add(method);
+							}
+						}
 					}
 				}
 				if (outputGroup.Count > 0)
@@ -1666,8 +1688,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return extensionMethodGroups;
 		}
 		
-		bool IsEligibleExtensionMethod(IType targetType, IMethod method, bool useTypeInference)
+		internal bool IsEligibleExtensionMethod(IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
 		{
+			return IsEligibleExtensionMethod(compilation, conversions, targetType, method, useTypeInference, out outInferredTypes);
+		}
+		
+		internal static bool IsEligibleExtensionMethod(ICompilation compilation, Conversions conversions, IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
+		{
+			outInferredTypes = null;
 			if (targetType == null)
 				return true;
 			if (method.Parameters.Count == 0)
@@ -1679,15 +1707,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult[] arguments = { new ResolveResult(targetType) };
 				IType[] parameterTypes = { method.Parameters[0].Type };
 				bool success;
-				IType[] inferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, parameterTypes, out success);
+				var inferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, parameterTypes, out success);
 				var substitution = new TypeParameterSubstitution(null, inferredTypes);
 				// Validate that the types that could be inferred (aren't unknown) satisfy the constraints:
+				bool hasInferredTypes = false;
 				for (int i = 0; i < inferredTypes.Length; i++) {
 					if (inferredTypes[i].Kind != TypeKind.Unknown && inferredTypes[i].Kind != TypeKind.UnboundTypeArgument) {
+						hasInferredTypes = true;
 						if (!OverloadResolution.ValidateConstraints(method.TypeParameters[i], inferredTypes[i], substitution, conversions))
 							return false;
+					} else {
+						inferredTypes[i] = method.TypeParameters[i]; // do not substitute types that could not be inferred
 					}
 				}
+				if (hasInferredTypes)
+					outInferredTypes = inferredTypes;
 				thisParameterType = thisParameterType.AcceptVisitor(substitution);
 			}
 			Conversion c = conversions.ImplicitConversion(targetType, thisParameterType);

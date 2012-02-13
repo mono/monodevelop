@@ -65,6 +65,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				throw new ArgumentNullException ("factory");
 			this.document = document;
 			this.factory = factory;
+			// Set defaults for additional input properties
+			this.FormattingPolicy = new CSharpFormattingOptions();
+			this.EolMarker = Environment.NewLine;
+			this.IndentString = "\t";
 		}
 
 		public IEnumerable<ICompletionData> GetCompletionData (int offset, bool controlSpace)
@@ -593,17 +597,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					nodes.Add (n);
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
 						nodes.Add (n.Parent);
-					var navigator = new NodeListResolveVisitorNavigator (nodes);
-					var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
-					visitor.Scan (identifierStart.Item3);
+					var astResolver = new CSharpAstResolver (csResolver, identifierStart.Item3, identifierStart.Item1);
+					astResolver.ApplyNavigator (new NodeListResolveVisitorNavigator (nodes));
 					try {
-						csResolver = visitor.GetResolverStateBefore (n);
+						csResolver = astResolver.GetResolverStateBefore (n);
 					} catch (Exception) {
 						csResolver = GetState ();
 					}
 					// add attribute properties.
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
-						var resolved = visitor.GetResolveResult (n.Parent);
+						var resolved = astResolver.Resolve (n.Parent);
 						if (resolved != null && resolved.Type != null) {
 							foreach (var property in resolved.Type.GetProperties (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (property);
@@ -797,17 +800,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (csResolver == null) {
 				if (node != null) {
 					csResolver =  GetState ();
-					var nodes = new List<AstNode> ();
-					var n = node;
-					nodes.Add (n);
-					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
-						nodes.Add (n.Parent);
-					var navigator = new NodeListResolveVisitorNavigator (nodes);
-					var visitor = new ResolveVisitor (csResolver, xp != null ? xp.Item1 : CSharpParsedFile, navigator);
-					visitor.Scan (node);
+					//var astResolver = new CSharpAstResolver (csResolver, node, xp != null ? xp.Item1 : CSharpParsedFile);
 					
 					try {
-						csResolver = visitor.GetResolverStateBefore (node);
+						//csResolver = astResolver.GetResolverStateBefore (node);
 						Console.WriteLine (csResolver.LocalVariables.Count ());
 					} catch (Exception  e)  {
 						Console.WriteLine ("E!!!" + e);
@@ -849,7 +845,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			Predicate<IType> typePred = null;
 			if (node is Attribute) {
-				var attribute = Compilation.FindType (typeof(System.Attribute));
+				var attribute = Compilation.FindType (KnownTypeCode.Attribute);
 				typePred = t => {
 					return t.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (attribute));
 				};
@@ -1820,8 +1816,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
+				var filteredList = new List<IMember> ();
 				foreach (var member in type.GetMembers ()) {
-//					Console.WriteLine ("member:" + member);
+//					Console.WriteLine ("member:" + member + member.IsShadowing);
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
 //						Console.WriteLine ("skip access: " + member.FullName);
 						continue;
@@ -1845,7 +1842,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						continue;
 					if (member.EntityType == EntityType.Operator)
 						continue;
+					if (member.IsShadowing)
+						filteredList.RemoveAll (m => m.Name == member.Name);
 					
+					filteredList.Add (member);
+				}
+				
+				foreach (var member in filteredList) {
 //					Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}
