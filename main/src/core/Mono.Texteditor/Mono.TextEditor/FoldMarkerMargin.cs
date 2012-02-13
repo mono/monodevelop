@@ -272,7 +272,7 @@ namespace Mono.TextEditor
 			foldSegmentSize -= (foldSegmentSize) % 2;
 			
 			Cairo.Rectangle drawArea = new Cairo.Rectangle (x, y, marginWidth, lineHeight);
-			Document.LineState state = editor.Document.GetLineState (line);
+			Document.LineState state = editor.Document.GetLineState (lineSegment);
 			
 			bool isFoldStart = false;
 			bool isContaining = false;
