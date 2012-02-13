@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			MethodData md = methods [methods.Count - 1];
 			int cparam = ext.GetCurrentParameterIndex (md.CompletionContext);
 			
-			if (cparam > md.MethodProvider.GetParameterCount (md.CurrentOverload)) {
+			if (cparam > md.MethodProvider.GetParameterCount (md.CurrentOverload) && !md.MethodProvider.AllowParameterList (md.CurrentOverload)) {
 				// Look for an overload which has more parameters
 				int bestOverload = -1;
 				int bestParamCount = int.MaxValue;
@@ -165,6 +165,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (pc < bestParamCount && pc >= cparam) {
 						bestOverload = n;
 						bestParamCount = pc;
+					}
+				}
+				if (bestOverload == -1) {
+					for (int n=0; n<md.MethodProvider.OverloadCount; n++) {
+						if (md.MethodProvider.AllowParameterList (n)) {
+							bestOverload = n;
+							break;
+						}
 					}
 				}
 				if (bestOverload != -1)

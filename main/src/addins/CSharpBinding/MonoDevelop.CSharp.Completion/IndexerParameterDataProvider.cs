@@ -117,6 +117,14 @@ namespace MonoDevelop.CSharp.Completion
 			return indexer != null && indexer.Parameters != null ? indexer.Parameters.Count : 0;
 		}
 
+		public bool AllowParameterList (int overload)
+		{
+			if (overload >= OverloadCount)
+				return false;
+			var lastParam = indexers[overload].Parameters.LastOrDefault ();
+			return lastParam != null && lastParam.IsParams;
+		}
+		
 		public int OverloadCount {
 			get {
 				return indexers != null ? indexers.Count : 0;

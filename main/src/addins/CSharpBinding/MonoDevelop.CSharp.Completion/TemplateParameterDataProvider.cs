@@ -107,7 +107,12 @@ namespace MonoDevelop.CSharp.Completion
 			var type = types[overload];
 			return type != null ? type.TypeParameterCount : 0;
 		}
-		
+
+		public bool AllowParameterList (int overload)
+		{
+			return false;
+		}
+
 		public int OverloadCount {
 			get {
 				return types != null ? types.Count : 0;

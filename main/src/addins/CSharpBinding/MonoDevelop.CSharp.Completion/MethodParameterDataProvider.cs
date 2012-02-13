@@ -42,6 +42,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -307,6 +308,14 @@ namespace MonoDevelop.CSharp.Completion
 				return -1;
 			IMethod method = methods[overload];
 			return method != null && method.Parameters != null ? method.Parameters.Count : 0;
+		}
+		
+		public bool AllowParameterList (int overload)
+		{
+			if (overload >= OverloadCount)
+				return false;
+			var lastParam = methods[overload].Parameters.LastOrDefault ();
+			return lastParam != null && lastParam.IsParams;
 		}
 		
 		public int OverloadCount {

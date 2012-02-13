@@ -44,6 +44,9 @@ namespace ICSharpCode.NRefactory.Completion
 		
 		// Returns the number of parameters of the specified method
 		int GetParameterCount (int overload);
+		
+		// True, if the overload allows a 
+		bool AllowParameterList (int overload);
 	}
 }
 

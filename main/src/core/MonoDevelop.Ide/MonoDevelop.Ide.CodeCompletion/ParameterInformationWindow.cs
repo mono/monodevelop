@@ -72,12 +72,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			EnableTransparencyControl = true;
 		}
 		
-		public Gtk.Requisition ShowParameterInfo (IParameterDataProvider provider, int overload, int currentParam)
+		public Gtk.Requisition ShowParameterInfo (IParameterDataProvider provider, int overload, int _currentParam)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");
 			int numParams = System.Math.Max (0, provider.GetParameterCount (overload));
-			
+			var currentParam = System.Math.Min (_currentParam, numParams - 1);
 			string[] paramText = new string[numParams];
 			for (int i = 0; i < numParams; i++) {
 				string txt = provider.GetParameterMarkup (overload, i);

@@ -41,6 +41,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -147,6 +148,14 @@ namespace MonoDevelop.CSharp.Completion
 			if (overload >= OverloadCount)
 				return -1;
 			return delegateMethod.Parameters != null ? delegateMethod.Parameters.Count : 0;
+		}
+		
+		public bool AllowParameterList (int overload)
+		{
+			if (overload >= OverloadCount)
+				return false;
+			var lastParam = delegateMethod.Parameters.LastOrDefault ();
+			return lastParam != null && lastParam.IsParams;
 		}
 		
 		public int OverloadCount {

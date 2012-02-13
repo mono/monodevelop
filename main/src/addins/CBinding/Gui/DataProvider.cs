@@ -141,6 +141,11 @@ namespace CBinding
 		{
 			return functions[overload].Parameters.Length;
 		}
+		
+		public bool AllowParameterList (int overload)
+		{
+			return false;
+		}
 	}
 	
 	public class CompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
