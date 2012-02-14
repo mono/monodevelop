@@ -70,8 +70,11 @@ RES =  \
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	cp $(top_builddir)/contrib/bin/NGit.dll $(ADDIN_BUILD)
+	cp $(top_builddir)/contrib/bin/NGit.dll.mdb $(ADDIN_BUILD) || true 
 	cp $(top_builddir)/contrib/bin/NSch.dll $(ADDIN_BUILD)
+	cp $(top_builddir)/contrib/bin/NSch.dll.mdb $(ADDIN_BUILD) || true
 	cp $(top_builddir)/contrib/bin/Sharpen.dll $(ADDIN_BUILD)
+	cp $(top_builddir)/contrib/bin/Sharpen.dll.mdb $(ADDIN_BUILD) || true
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) $(build_deps) $(build_resources:%=/resource:%) -out:$@ -target:library
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
@@ -87,7 +90,7 @@ endif
 
 if ENABLE_GIT
 addindir = $(MD_ADDIN_DIR)/VersionControl
-addin_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/NGit.dll $(ADDIN_BUILD)/NSch.dll $(ADDIN_BUILD)/Sharpen.dll
+addin_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ADDIN_BUILD)/NGit.dll $(ADDIN_BUILD)/NGit.dll.mdb $(ADDIN_BUILD)/NSch.dll $(ADDIN_BUILD)/NSch.dll.mdb $(ADDIN_BUILD)/Sharpen.dll $(ADDIN_BUILD)/Sharpen.dll.mdb
 endif
 
 include $(top_srcdir)/Makefile.include
