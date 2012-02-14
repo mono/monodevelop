@@ -82,15 +82,15 @@ namespace MonoDevelop.VersionControl.Git
 					e.ActivatesDefault = true;
 					if (cred.IsValueSecure ())
 						e.Visibility = false;
-					if (c is CredentialItem.Username)
-						e.Text = uri.GetUser () ?? "";
-					
 					e.Changed += delegate {
 						if (cred is CredentialItem.StringType)
 							((CredentialItem.StringType)cred).SetValue (e.Text);
 						else
 							((CredentialItem.CharArrayType)cred).SetValue (e.Text.ToCharArray ());
 					};
+					
+					if (c is CredentialItem.Username)
+						e.Text = uri.GetUser () ?? "";
 				}
 				if (editor != null) {
 					table.Attach (editor, 1, 2, r, r + 1);
