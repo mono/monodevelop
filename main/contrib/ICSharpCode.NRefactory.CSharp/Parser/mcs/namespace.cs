@@ -725,6 +725,9 @@ namespace Mono.CSharp {
 		Dictionary<string, UsingAliasNamespace> aliases;
 		public readonly MemberName RealMemberName;
 
+#if FULL_AST
+		Attribute [] UnattachedAttributes;
+#endif
 		public NamespaceContainer (MemberName name, NamespaceContainer parent)
 			: base (parent, name, null, MemberKind.Namespace)
 		{

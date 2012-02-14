@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			this.parsedFile = new CSharpParsedFile(fileName, new UsingScope());
+			this.parsedFile = new CSharpParsedFile(fileName);
 			this.usingScope = parsedFile.RootUsingScope;
 		}
 		
@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public override IUnresolvedEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			TypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
+			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(SimpleNameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
 			if (u != null) {
 				if (interningProvider != null)
 					u = interningProvider.Intern(u);
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public override IUnresolvedEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
-			TypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, SimpleNameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
+			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(SimpleNameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
 			if (u != null) {
 				if (interningProvider != null)
 					u = interningProvider.Intern(u);
@@ -202,7 +202,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeParameters, typeDeclaration.Constraints, EntityType.TypeDefinition);
 			
 			foreach (AstType baseType in typeDeclaration.BaseTypes) {
-				td.BaseTypes.Add(ConvertType(baseType, SimpleNameLookupMode.BaseTypeReference));
+				td.BaseTypes.Add(baseType.ToTypeReference(SimpleNameLookupMode.BaseTypeReference));
 			}
 			
 			foreach (AttributedNode member in typeDeclaration.Members) {
@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			ConvertTypeParameters(td.TypeParameters, delegateDeclaration.TypeParameters, delegateDeclaration.Constraints, EntityType.TypeDefinition);
 			
-			ITypeReference returnType = ConvertType(delegateDeclaration.ReturnType);
+			ITypeReference returnType = delegateDeclaration.ReturnType.ToTypeReference();
 			List<IUnresolvedParameter> parameters = new List<IUnresolvedParameter>();
 			ConvertParameters(parameters, delegateDeclaration.Parameters);
 			AddDefaultMethodsToDelegate(td, returnType, parameters);
@@ -339,14 +339,13 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				field.IsVolatile = (modifiers & Modifiers.Volatile) != 0;
 				field.IsReadOnly = (modifiers & Modifiers.Readonly) != 0;
 				
-				field.ReturnType = ConvertType(fieldDeclaration.ReturnType);
+				field.ReturnType = fieldDeclaration.ReturnType.ToTypeReference();
 				
 				if ((modifiers & Modifiers.Const) != 0) {
 					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
 				}
 				
-				if (currentTypeDefinition != null)
-					currentTypeDefinition.Members.Add(field);
+				currentTypeDefinition.Members.Add(field);
 				if (interningProvider != null) {
 					field.ApplyInterningProvider(interningProvider);
 				}
@@ -380,8 +379,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				}
 			}
 			
-			if (currentTypeDefinition != null)
-				currentTypeDefinition.Members.Add(field);
+			currentTypeDefinition.Members.Add(field);
 			if (interningProvider != null) {
 				field.ApplyInterningProvider(interningProvider);
 			}
@@ -409,7 +407,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			} else {
 				ConvertTypeParameters(m.TypeParameters, methodDeclaration.TypeParameters, methodDeclaration.Constraints, EntityType.Method);
 			}
-			m.ReturnType = ConvertType(methodDeclaration.ReturnType);
+			m.ReturnType = methodDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(m.Attributes, methodDeclaration.Attributes.Where(s => s.AttributeTarget != "return"));
 			ConvertAttributes(m.ReturnTypeAttributes, methodDeclaration.Attributes.Where(s => s.AttributeTarget == "return"));
 			
@@ -424,12 +422,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				m.Accessibility = Accessibility.None;
 				m.IsExplicitInterfaceImplementation = true;
 				m.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
-					m.EntityType, ConvertType(methodDeclaration.PrivateImplementationType), m.Name,
+					m.EntityType, methodDeclaration.PrivateImplementationType.ToTypeReference(), m.Name,
 					m.TypeParameters.Count, GetParameterTypes(m.Parameters)));
 			}
 			
-			if (currentTypeDefinition != null)
-				currentTypeDefinition.Members.Add(m);
+			currentTypeDefinition.Members.Add(m);
 			currentMethod = null;
 			if (interningProvider != null) {
 				m.ApplyInterningProvider(interningProvider);
@@ -487,7 +484,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 									continue;
 								}
 							}
-							tp.Constraints.Add(ConvertType(type));
+							tp.Constraints.Add(type.ToTypeReference());
 						}
 						break;
 					}
@@ -497,7 +494,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		IMemberReference ConvertInterfaceImplementation(AstType interfaceType, AbstractUnresolvedMember unresolvedMember)
 		{
-			ITypeReference interfaceTypeReference = ConvertType(interfaceType);
+			ITypeReference interfaceTypeReference = interfaceType.ToTypeReference();
 			int typeParameterCount = 0;
 			IList<ITypeReference> parameterTypes = null;
 			if (unresolvedMember.EntityType == EntityType.Method) {
@@ -510,7 +507,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					parameterTypes[i] = parameterizedMember.Parameters[i].Type;
 				}
 			}
-			return new DefaultMemberReference(unresolvedMember.EntityType, ConvertType(interfaceType), unresolvedMember.Name, typeParameterCount, parameterTypes);
+			return new DefaultMemberReference(unresolvedMember.EntityType, interfaceTypeReference, unresolvedMember.Name, typeParameterCount, parameterTypes);
 		}
 		#endregion
 		
@@ -522,7 +519,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			m.Region = MakeRegion(operatorDeclaration);
 			m.BodyRegion = MakeRegion(operatorDeclaration.Body);
 			
-			m.ReturnType = ConvertType(operatorDeclaration.ReturnType);
+			m.ReturnType = operatorDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(m.Attributes, operatorDeclaration.Attributes.Where(s => s.AttributeTarget != "return"));
 			ConvertAttributes(m.ReturnTypeAttributes, operatorDeclaration.Attributes.Where(s => s.AttributeTarget == "return"));
 			
@@ -530,8 +527,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			ConvertParameters(m.Parameters, operatorDeclaration.Parameters);
 			
-			if (currentTypeDefinition != null)
-				currentTypeDefinition.Members.Add(m);
+			currentTypeDefinition.Members.Add(m);
 			if (interningProvider != null) {
 				m.ApplyInterningProvider(interningProvider);
 			}
@@ -562,8 +558,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			else
 				ApplyModifiers(ctor, modifiers);
 			
-			if (currentTypeDefinition != null)
-				currentTypeDefinition.Members.Add(ctor);
+			currentTypeDefinition.Members.Add(ctor);
 			if (interningProvider != null) {
 				ctor.ApplyInterningProvider(interningProvider);
 			}
@@ -584,8 +579,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
 			
-			if (currentTypeDefinition != null)
-				currentTypeDefinition.Members.Add(dtor);
+			currentTypeDefinition.Members.Add(dtor);
 			if (interningProvider != null) {
 				dtor.ApplyInterningProvider(interningProvider);
 			}
@@ -600,18 +594,17 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			p.Region = MakeRegion(propertyDeclaration);
 			p.BodyRegion = MakeBraceRegion(propertyDeclaration);
 			ApplyModifiers(p, propertyDeclaration.Modifiers);
-			p.ReturnType = ConvertType(propertyDeclaration.ReturnType);
+			p.ReturnType = propertyDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(p.Attributes, propertyDeclaration.Attributes);
 			if (!propertyDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
 				p.IsExplicitInterfaceImplementation = true;
 				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
-					p.EntityType, ConvertType(propertyDeclaration.PrivateImplementationType), p.Name));
+					p.EntityType, propertyDeclaration.PrivateImplementationType.ToTypeReference(), p.Name));
 			}
 			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p, "get_");
 			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p, "set_");
-			if (currentTypeDefinition != null)
-				currentTypeDefinition.Members.Add(p);
+			currentTypeDefinition.Members.Add(p);
 			if (interningProvider != null) {
 				p.ApplyInterningProvider(interningProvider);
 			}
@@ -625,22 +618,21 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			p.Region = MakeRegion(indexerDeclaration);
 			p.BodyRegion = MakeBraceRegion(indexerDeclaration);
 			ApplyModifiers(p, indexerDeclaration.Modifiers);
-			p.ReturnType = ConvertType(indexerDeclaration.ReturnType);
+			p.ReturnType = indexerDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(p.Attributes, indexerDeclaration.Attributes);
 			
+			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_");
 			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p, "set_");
-			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			
 			if (!indexerDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
 				p.IsExplicitInterfaceImplementation = true;
 				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
-					p.EntityType, ConvertType(indexerDeclaration.PrivateImplementationType), p.Name, 0, GetParameterTypes(p.Parameters)));
+					p.EntityType, indexerDeclaration.PrivateImplementationType.ToTypeReference(), p.Name, 0, GetParameterTypes(p.Parameters)));
 			}
 			
-			if (currentTypeDefinition != null)
-				currentTypeDefinition.Members.Add(p);
+			currentTypeDefinition.Members.Add(p);
 			if (interningProvider != null) {
 				p.ApplyInterningProvider(interningProvider);
 			}
@@ -654,7 +646,19 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			var a = new DefaultUnresolvedMethod(currentTypeDefinition, prefix + p.Name);
 			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? p.Accessibility;
 			a.Region = MakeRegion(accessor);
+			if (p.EntityType == EntityType.Indexer) {
+				foreach (var indexerParam in ((IUnresolvedProperty)p).Parameters)
+					a.Parameters.Add(indexerParam);
+			}
 			DefaultUnresolvedParameter param = null;
+			
+			// copy indexer parameters to the accessor
+			if (p is IUnresolvedParameterizedMember) {
+				foreach (var parameter in ((IUnresolvedParameterizedMember)p).Parameters) {
+					a.Parameters.Add (parameter);
+				}
+			}
+			
 			if (accessor.Role == PropertyDeclaration.GetterRole) {
 				a.ReturnType = p.ReturnType;
 			} else {
@@ -689,7 +693,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				
 				ApplyModifiers(ev, modifiers);
 				
-				ev.ReturnType = ConvertType(eventDeclaration.ReturnType);
+				ev.ReturnType = eventDeclaration.ReturnType.ToTypeReference();
 				
 				var valueParameter = new DefaultUnresolvedParameter(ev.ReturnType, "value");
 				ev.AddAccessor = CreateDefaultEventAccessor(ev, "get_" + ev.Name, valueParameter);
@@ -707,8 +711,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					}
 				}
 				
-				if (currentTypeDefinition != null)
-					currentTypeDefinition.Members.Add(ev);
+				currentTypeDefinition.Members.Add(ev);
 				if (interningProvider != null) {
 					ev.ApplyInterningProvider(interningProvider);
 				}
@@ -733,21 +736,20 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			e.Region = MakeRegion(eventDeclaration);
 			e.BodyRegion = MakeBraceRegion(eventDeclaration);
 			ApplyModifiers(e, eventDeclaration.Modifiers);
-			e.ReturnType = ConvertType(eventDeclaration.ReturnType);
+			e.ReturnType = eventDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(e.Attributes, eventDeclaration.Attributes);
 			
 			if (!eventDeclaration.PrivateImplementationType.IsNull) {
 				e.Accessibility = Accessibility.None;
 				e.IsExplicitInterfaceImplementation = true;
 				e.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
-					e.EntityType, ConvertType(eventDeclaration.PrivateImplementationType), e.Name));
+					e.EntityType, eventDeclaration.PrivateImplementationType.ToTypeReference(), e.Name));
 			}
 			
 			e.AddAccessor = ConvertAccessor(eventDeclaration.AddAccessor, e, "add_");
 			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e, "remove_");
 			
-			if (currentTypeDefinition != null)
-				currentTypeDefinition.Members.Add(e);
+			currentTypeDefinition.Members.Add(e);
 			if (interningProvider != null) {
 				e.ApplyInterningProvider(interningProvider);
 			}
@@ -767,7 +769,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		static void ApplyModifiers(AbstractUnresolvedMember m, Modifiers modifiers)
 		{
 			// members from interfaces are always Public+Abstract.
-			if (m.DeclaringTypeDefinition != null && m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
+			if (m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				m.Accessibility = Accessibility.Public;
 				m.IsAbstract = true;
 				return;
@@ -829,7 +831,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		internal static ITypeReference ConvertAttributeType(AstType type)
 		{
-			ITypeReference tr = ConvertType(type, SimpleNameLookupMode.Type);
+			ITypeReference tr = type.ToTypeReference();
 			if (!type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
 				// Try to add "Attribute" suffix, but only if the identifier
 				// (=last identifier in fully qualified name) isn't a verbatim identifier.
@@ -875,112 +877,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		#endregion
 		
 		#region Types
+		[Obsolete("Use AstType.ToTypeReference() instead.")]
 		public static ITypeReference ConvertType(AstType type, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
 		{
-			SimpleType s = type as SimpleType;
-			if (s != null) {
-				List<ITypeReference> typeArguments = new List<ITypeReference>();
-				foreach (var ta in s.TypeArguments) {
-					typeArguments.Add(ConvertType(ta, lookupMode));
-				}
-				if (typeArguments.Count == 0 && string.IsNullOrEmpty(s.Identifier)) {
-					// empty SimpleType is used for typeof(List<>).
-					return SpecialType.UnboundTypeArgument;
-				}
-				return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, lookupMode);
-			}
-			
-			PrimitiveType p = type as PrimitiveType;
-			if (p != null) {
-				return ConvertPrimitiveType(p.Keyword);
-			}
-			MemberType m = type as MemberType;
-			if (m != null) {
-				TypeOrNamespaceReference t;
-				if (m.IsDoubleColon) {
-					SimpleType st = m.Target as SimpleType;
-					if (st != null) {
-						t = new AliasNamespaceReference(st.Identifier);
-					} else {
-						t = null;
-					}
-				} else {
-					t = ConvertType(m.Target, lookupMode) as TypeOrNamespaceReference;
-				}
-				if (t == null)
-					return SpecialType.UnknownType;
-				List<ITypeReference> typeArguments = new List<ITypeReference>();
-				foreach (var ta in m.TypeArguments) {
-					typeArguments.Add(ConvertType(ta, lookupMode));
-				}
-				return new MemberTypeOrNamespaceReference(t, m.MemberName, typeArguments);
-			}
-			ComposedType c = type as ComposedType;
-			if (c != null) {
-				ITypeReference t = ConvertType(c.BaseType, lookupMode);
-				if (c.HasNullableSpecifier) {
-					t = NullableType.Create(t);
-				}
-				for (int i = 0; i < c.PointerRank; i++) {
-					t = new PointerTypeReference(t);
-				}
-				foreach (var a in c.ArraySpecifiers.Reverse()) {
-					t = new ArrayTypeReference(t, a.Dimensions);
-				}
-				return t;
-			}
-			if (!type.IsNull)
-				Debug.WriteLine("Unknown node used as type: " + type);
-			return SpecialType.UnknownType;
-		}
-		
-		public static ITypeReference ConvertPrimitiveType(string keyword)
-		{
-			KnownTypeCode typeCode = GetTypeCodeForPrimitiveType(keyword);
-			if (typeCode == KnownTypeCode.None)
-				return new UnknownType(null, keyword);
-			else
-				return KnownTypeReference.Get(typeCode);
-		}
-		
-		public static KnownTypeCode GetTypeCodeForPrimitiveType(string keyword)
-		{
-			switch (keyword) {
-				case "string":
-					return KnownTypeCode.String;
-				case "int":
-					return KnownTypeCode.Int32;
-				case "uint":
-					return KnownTypeCode.UInt32;
-				case "object":
-					return KnownTypeCode.Object;
-				case "bool":
-					return KnownTypeCode.Boolean;
-				case "sbyte":
-					return KnownTypeCode.SByte;
-				case "byte":
-					return KnownTypeCode.Byte;
-				case "short":
-					return KnownTypeCode.Int16;
-				case "ushort":
-					return KnownTypeCode.UInt16;
-				case "long":
-					return KnownTypeCode.Int64;
-				case "ulong":
-					return KnownTypeCode.UInt64;
-				case "float":
-					return KnownTypeCode.Single;
-				case "double":
-					return KnownTypeCode.Double;
-				case "decimal":
-					return KnownTypeCode.Decimal;
-				case "char":
-					return KnownTypeCode.Char;
-				case "void":
-					return KnownTypeCode.Void;
-				default:
-					return KnownTypeCode.None;
-			}
+			return type.ToTypeReference(lookupMode);
 		}
 		#endregion
 		
@@ -1046,7 +946,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				ITypeReference[] result = new ITypeReference[count];
 				int pos = 0;
 				foreach (AstType type in types) {
-					result[pos++] = ConvertType(type);
+					result[pos++] = type.ToTypeReference();
 				}
 				return result;
 			}
@@ -1062,7 +962,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				if (tre != null) {
 					// handle "int.MaxValue"
 					return new ConstantMemberReference(
-						ConvertType(tre.Type),
+						tre.Type.ToTypeReference(),
 						memberReferenceExpression.MemberName,
 						ConvertTypeArguments(memberReferenceExpression.TypeArguments));
 				}
@@ -1084,7 +984,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				ConstantExpression v = castExpression.Expression.AcceptVisitor(this, data);
 				if (v == null)
 					return null;
-				return new ConstantCast(ConvertType(castExpression.Type), v);
+				return new ConstantCast(castExpression.Type.ToTypeReference(), v);
 			}
 			
 			public override ConstantExpression VisitCheckedExpression(CheckedExpression checkedExpression, object data)
@@ -1107,7 +1007,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			public override ConstantExpression VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 			{
-				return new ConstantDefaultValue(ConvertType(defaultValueExpression.Type));
+				return new ConstantDefaultValue(defaultValueExpression.Type.ToTypeReference());
 			}
 			
 			public override ConstantExpression VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -1138,7 +1038,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			public override ConstantExpression VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 			{
 				if (isAttributeArgument) {
-					return new TypeOfConstantExpression(ConvertType(typeOfExpression.Type));
+					return new TypeOfConstantExpression(typeOfExpression.Type.ToTypeReference());
 				} else {
 					return null;
 				}
@@ -1153,7 +1053,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					if (arrayCreateExpression.Type.IsNull) {
 						type = null;
 					} else {
-						type = ConvertType(arrayCreateExpression.Type);
+						type = arrayCreateExpression.Type.ToTypeReference();
 						foreach (var spec in arrayCreateExpression.AdditionalArraySpecifiers.Reverse()) {
 							type = new ArrayTypeReference(type, spec.Dimensions);
 						}
@@ -1178,7 +1078,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		void ConvertParameters(IList<IUnresolvedParameter> outputList, IEnumerable<ParameterDeclaration> parameters)
 		{
 			foreach (ParameterDeclaration pd in parameters) {
-				DefaultUnresolvedParameter p = new DefaultUnresolvedParameter(ConvertType(pd.Type), pd.Name);
+				DefaultUnresolvedParameter p = new DefaultUnresolvedParameter(pd.Type.ToTypeReference(), pd.Name);
 				p.Region = MakeRegion(pd);
 				ConvertAttributes(p.Attributes, pd.Attributes);
 				switch (pd.ParameterModifier) {

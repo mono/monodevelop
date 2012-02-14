@@ -53,6 +53,11 @@ namespace Mono.CSharp
 
 		protected bool is_defined;
 
+#if FULL_AST
+		// Any unattached attributes during parsing get added here.
+		public Attribute [] UnattachedAttributes;
+#endif
+
 		public TypeContainer (TypeContainer parent, MemberName name, Attributes attrs, MemberKind kind)
 			: base (parent, name, attrs)
 		{
@@ -1326,7 +1331,9 @@ namespace Mono.CSharp
 					Modifiers.PRIVATE | Modifiers.COMPILER_GENERATED | Modifiers.DEBUGGER_HIDDEN,
 					member_name, cloned_params, null);
 
-				var block = new ToplevelBlock (Compiler, proxy_method.ParameterInfo, Location);
+				var block = new ToplevelBlock (Compiler, proxy_method.ParameterInfo, Location) {
+					IsCompilerGenerated = true
+				};
 
 				var mg = MethodGroupExpr.CreatePredefined (method, method.DeclaringType, Location);
 				mg.InstanceExpression = new BaseThis (method.DeclaringType, Location);

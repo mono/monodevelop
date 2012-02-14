@@ -2875,7 +2875,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (!resolverEnabled)
 				return null;
-			KnownTypeCode typeCode = TypeSystemConvertVisitor.GetTypeCodeForPrimitiveType(primitiveType.Keyword);
+			KnownTypeCode typeCode = primitiveType.KnownTypeCode;
 			if (typeCode == KnownTypeCode.None && primitiveType.Parent is Constraint && primitiveType.Role == Constraint.BaseTypeRole) {
 				switch (primitiveType.Keyword) {
 					case "class":

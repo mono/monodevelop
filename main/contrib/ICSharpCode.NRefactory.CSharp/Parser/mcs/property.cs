@@ -749,15 +749,19 @@ namespace Mono.CSharp
 			if ((field.ModFlags & Modifiers.STATIC) == 0)
 				fe.InstanceExpression = new CompilerGeneratedThis (Parent.CurrentType, Location);
 
-			// Create get block
-			Get.Block = new ToplevelBlock (Compiler, ParametersCompiled.EmptyReadOnlyParameters, Location);
-			Return r = new Return (fe, Location);
+			//
+			// Create get block but we careful with location to
+			// emit only single sequence point per accessor. This allow
+			// to set a breakpoint on it even with no user code
+			//
+			Get.Block = new ToplevelBlock (Compiler, ParametersCompiled.EmptyReadOnlyParameters, Location.Null);
+			Return r = new Return (fe, Get.Location);
 			Get.Block.AddStatement (r);
 
 			// Create set block
-			Set.Block = new ToplevelBlock (Compiler, Set.ParameterInfo, Location);
-			Assign a = new SimpleAssign (fe, new SimpleName ("value", Location));
-			Set.Block.AddStatement (new StatementExpression (a));
+			Set.Block = new ToplevelBlock (Compiler, Set.ParameterInfo, Location.Null);
+			Assign a = new SimpleAssign (fe, new SimpleName ("value", Location.Null), Location.Null);
+			Set.Block.AddStatement (new StatementExpression (a, Set.Location));
 		}
 		
 		public override bool Define ()
@@ -893,7 +897,9 @@ namespace Mono.CSharp
 			public override void Emit (TypeDefinition parent)
 			{
 				if ((method.ModFlags & (Modifiers.ABSTRACT | Modifiers.EXTERN)) == 0) {
-					block = new ToplevelBlock (Compiler, ParameterInfo, Location);
+					block = new ToplevelBlock (Compiler, ParameterInfo, Location) {
+						IsCompilerGenerated = true
+					};
 					FabricateBodyStatement ();
 				}
 

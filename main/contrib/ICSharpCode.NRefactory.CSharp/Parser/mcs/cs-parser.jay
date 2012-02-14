@@ -614,6 +614,13 @@ namespace_or_type_declaration
 	  {
 		current_namespace.DeclarationFound = true;
 	  }
+	| attribute_sections CLOSE_BRACE {
+#if FULL_AST
+		current_namespace.UnattachedAttributes = ((List<Attribute>) $1).ToArray ();
+#endif
+		report.Error (1518, lexer.Location, "Dangling attribute not attached to a type definition (class, delegate, enum, interface or struct).   Unexpected symbol `{0}'");
+		lexer.putback ('}');
+	  }
 	;
 
 type_declaration
@@ -908,6 +915,7 @@ class_member_declaration
 	| constructor_declaration
 	| destructor_declaration
 	| type_declaration
+	| attributes_without_members
 	| error
 	  {
 		report.Error (1519, lexer.Location, "Unexpected symbol `{0}' in class, struct, or interface member declaration",
@@ -2503,6 +2511,16 @@ event_accessor_block
 	| block;
 	;
 
+attributes_without_members
+	: attribute_sections CLOSE_BRACE {
+#if FULL_AST
+	        current_type.UnattachedAttributes = ((List<Attribute>) $1).ToArray ();
+#endif
+		report.Error (1519, lexer.Location, "Attribute not attached to any member.   Unexpected symbol `{0}' in class, struct, or interface member declaration. ");
+		lexer.putback ('}');
+	  }
+	;
+	  
 enum_declaration
 	: opt_attributes
 	  opt_modifiers
@@ -4176,11 +4194,11 @@ lambda_expression_body
 	
 lambda_expression_body_simple
 	: {
-		start_block (lexer.Location);
+		start_block (Location.Null);
 	  }
 	  expression_or_error	// Have to close block when error occurs
 	  {
-		Block b = end_block (lexer.Location);
+		Block b = end_block (Location.Null);
 		b.IsCompilerGenerated = true;
 		b.AddStatement (new ContextualReturn ((Expression) $2));
 		$$ = b;
@@ -5561,7 +5579,7 @@ try_statement
 	  }
 	| TRY block catch_clauses FINALLY block
 	  {
-		$$ = new TryFinally (new TryCatch ((Block) $2, (List<Catch>) $3, GetLocation ($1), true), (Block) $5, GetLocation ($1));
+		$$ = new TryFinally (new TryCatch ((Block) $2, (List<Catch>) $3, Location.Null, true), (Block) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($4));
 	  }
 	| TRY block error

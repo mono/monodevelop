@@ -372,7 +372,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §7.5.2.4 Output types
 			LambdaResolveResult lrr = e as LambdaResolveResult;
-			if (lrr != null && lrr.IsImplicitlyTyped || e is MethodGroupResolveResult) {
+			if (lrr != null || e is MethodGroupResolveResult) {
 				IMethod m = GetDelegateOrExpressionTreeSignature(t);
 				if (m != null) {
 					return new[] { m.ReturnType };

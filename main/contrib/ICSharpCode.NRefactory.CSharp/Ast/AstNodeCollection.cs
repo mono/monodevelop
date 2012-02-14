@@ -85,12 +85,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (nodes != null)
 				nodes = nodes.ToList();
 			Clear();
-			foreach (T node in nodes)
-				Add(node);
+			if (nodes != null) {
+				foreach (T node in nodes)
+					Add(node);
+			}
 		}
 		
 		public void MoveTo(ICollection<T> targetCollection)
 		{
+			if (targetCollection == null)
+				throw new ArgumentNullException("targetCollection");
 			foreach (T node in this) {
 				node.Remove();
 				targetCollection.Add(node);

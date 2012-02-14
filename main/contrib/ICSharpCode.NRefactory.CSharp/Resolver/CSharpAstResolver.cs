@@ -126,6 +126,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
+		/// <summary>
+		/// Gets the resolver state immediately before the specified node.
+		/// That is, if the node is a variable declaration, the returned state will not contain the newly declared variable.
+		/// </summary>
 		public CSharpResolver GetResolverStateBefore(AstNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (node == null || node.IsNull)
@@ -136,6 +140,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver;
 		}
 		
+		/// <summary>
+		/// Gets the resolver state immediately after the specified node.
+		/// That is, if the node is a variable declaration, the returned state will include the newly declared variable.
+		/// </summary>
 		public CSharpResolver GetResolverStateAfter(AstNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (node == null || node.IsNull)
@@ -149,6 +157,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.Assert(resolver != null);
 			return resolver;
 		}
+		
 		/// <summary>
 		/// Gets the expected type for the specified node. This is the type being that a node is being converted to.
 		/// </summary>

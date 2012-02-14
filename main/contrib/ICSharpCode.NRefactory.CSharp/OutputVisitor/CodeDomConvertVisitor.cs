@@ -1232,13 +1232,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		CodeObject IAstVisitor<object, CodeObject>.VisitPrimitiveType(PrimitiveType primitiveType, object data)
 		{
-			string keyword = primitiveType.Keyword;
-			KnownTypeCode typeCode = TypeSystemConvertVisitor.GetTypeCodeForPrimitiveType(keyword);
+			KnownTypeCode typeCode = primitiveType.KnownTypeCode;
 			if (typeCode != KnownTypeCode.None) {
 				KnownTypeReference ktr = KnownTypeReference.Get(typeCode);
 				return new CodeTypeReference(ktr.Namespace + "." + ktr.Name);
 			}
-			return new CodeTypeReference(keyword);
+			return new CodeTypeReference(primitiveType.Keyword);
 		}
 		
 		CodeObject IAstVisitor<object, CodeObject>.VisitComment (Comment comment, object data)

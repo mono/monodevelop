@@ -106,7 +106,9 @@ namespace ICSharpCode.NRefactory.CSharp
 							subContainer.Accept (this);
 						}
 					}
-					
+					if (nspace.UnattachedAttributes != null && nspace.UnattachedAttributes.Length > 0)
+						AddToNamespace (ConvertAttributeSection (nspace.UnattachedAttributes));
+						
 					if (nDecl != null) {
 						if (loc != null && loc.Count > 2)
 							nDecl.AddChild (new CSharpTokenNode (Convert (loc[2]), 1), NamespaceDeclaration.Roles.RBrace);
@@ -251,7 +253,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new SimpleType ("unknown");
 			}
 			
-			IEnumerable<Attribute> GetAttributes (List<Mono.CSharp.Attribute> optAttributes)
+			IEnumerable<Attribute> GetAttributes (IEnumerable<Mono.CSharp.Attribute> optAttributes)
 			{
 				if (optAttributes == null)
 					yield break;
@@ -307,7 +309,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			AttributeSection ConvertAttributeSection (List<Mono.CSharp.Attribute> optAttributes)
+			AttributeSection ConvertAttributeSection (IEnumerable<Mono.CSharp.Attribute> optAttributes)
 			{
 				if (optAttributes == null)
 					return null;
@@ -356,6 +358,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					AddToNamespace (nDecl);
 					namespaceStack.Push (nDecl);
 				}
+				
 				if (nspace.Usings != null) {
 					foreach (var us in nspace.Usings) {
 						us.Accept (this);
@@ -367,6 +370,9 @@ namespace ICSharpCode.NRefactory.CSharp
 						container.Accept (this);
 					}
 				}
+				
+				if (nspace.UnattachedAttributes != null && nspace.UnattachedAttributes.Length > 0)
+					AddToNamespace (ConvertAttributeSection (nspace.UnattachedAttributes));
 				
 				if (nDecl != null) {
 					if (loc != null && loc.Count > 2)
@@ -510,6 +516,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (c);
+				
+				if (c.UnattachedAttributes != null && c.UnattachedAttributes.Length > 0)
+					newType.AddChild (ConvertAttributeSection (c.UnattachedAttributes), TypeDeclaration.UnattachedAttributeRole);
+				
 				if (location != null && curLoc < location.Count) {
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
 					
@@ -1053,6 +1063,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				keywordTable [(int)BuiltinTypeSpec.Type.SByte] = "sbyte";
 				keywordTable [(int)BuiltinTypeSpec.Type.Decimal] = "decimal";
 				keywordTable [(int)BuiltinTypeSpec.Type.Char] = "char";
+				keywordTable [(int)BuiltinTypeSpec.Type.Bool] = "bool";
 			}
 			
 			void AddModifiers (AttributedNode parent, LocationsBag.MemberLocations location)

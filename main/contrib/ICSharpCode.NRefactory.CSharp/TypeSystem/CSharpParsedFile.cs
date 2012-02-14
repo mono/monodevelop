@@ -48,6 +48,14 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			usingScopes = FreezableHelper.FreezeListAndElements(usingScopes);
 		}
 		
+		public CSharpParsedFile(string fileName)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			this.fileName = fileName;
+			this.rootUsingScope = new UsingScope();
+		}
+		
 		public CSharpParsedFile(string fileName, UsingScope rootUsingScope)
 		{
 			if (fileName == null)
