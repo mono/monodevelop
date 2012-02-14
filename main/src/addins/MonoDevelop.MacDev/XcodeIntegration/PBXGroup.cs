@@ -28,6 +28,7 @@
 
 using System;
 using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.XcodeIntegration
@@ -51,9 +52,24 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			}
 		}
 
-		public void AddChild (XcodeObject file)
+		public void AddChild (XcodeObject child)
 		{
-			children.Add (file);
+			children.Add (child);
+		}
+		
+		public void InsertChild (int index, XcodeObject child)
+		{
+			children.Insert (index, child);
+		}
+		
+		public bool RemoveChild (XcodeObject child)
+		{
+			return children.Remove (child);
+		}
+		
+		public void RemoveChildAt (int index)
+		{
+			children.RemoveAt (index);
 		}
 		
 		public override XcodeType Type {

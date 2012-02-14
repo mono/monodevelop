@@ -133,42 +133,150 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		}
 		
 		public string Name { get { return name; } }
-
-		PBXBuildFile AddFile (string path, string tree, PBXGroup grp = null)
+		
+		PBXGroup CreateGroupFromPath (string path)
+		{
+			PBXGroup grp = projectGroup;
+			
+			var parts = path.Split (new [] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+			for (int i = 0; i < parts.Length - 1; i++)
+				grp = (PBXGroup) (grp.GetGroup (parts[i]) ?? AddGroup (grp, parts[i]));
+			
+			return grp;
+		}
+		
+		PBXBuildFile AddFile (string path, string tree, PBXGroup grp)
 		{
 			var fileref = new PBXFileReference (path, tree);
 			var buildfile = new PBXBuildFile (fileref);
-
+			
 			files.Add (fileref);
 			sources.Add (buildfile);
-			if (grp == null) {
-				grp = projectGroup;
-				
-				var parts = path.Split (new [] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
-				for (int i = 0; i < parts.Length - 1; i ++)
-					grp = (PBXGroup) (grp.GetGroup (parts [i]) ?? AddGroup (grp, parts [i]));
-			}
 			
-			grp.AddChild (fileref);
-
+			if (grp != null)
+				grp.AddChild (fileref);
+			
 			return buildfile;
 		}
-
-		public void AddResource (string path, PBXGroup grp = null)
+		
+		PBXVariantGroup MarkTranslatableResource (PBXGroup grp, string name)
 		{
-			resourcesBuildPhase.AddResource (AddFile (path, "\"<group>\"", grp));
+			PBXVariantGroup variant = new PBXVariantGroup (name);
+			PBXBuildFile buildfile = new PBXBuildFile (variant);
+			int index = 0;
+			
+			// Replace the PBXFileReference in grp with a PBXVariantGroup
+			foreach (var child in grp) {
+				if (child is PBXFileReference && child.Name == name) {
+					grp.InsertChild (index + 1, variant);
+					grp.RemoveChildAt (index);
+					break;
+				}
+				
+				index++;
+			}
+			
+			resourcesBuildPhase.AddResource (buildfile);
+			groups.Add (variant);
+			
+			return variant;
+		}
+		
+		void AddLocalizedResource (string path, string tree, PBXVariantGroup variant)
+		{
+			var fileref = new PBXFileReference (path, tree);
+			variant.AddChild (fileref);
+			files.Add (fileref);
+		}
+		
+		Dictionary<string, List<string>> localizedResources = new Dictionary<string, List<string>> ();
+		Dictionary<string, PBXGroup> translatableResources = new Dictionary<string, PBXGroup> ();
+		
+		void QueueLocalizedResource (string name, string path)
+		{
+			List<string> langs;
+			
+			if (!localizedResources.TryGetValue (name, out langs)) {
+				langs = new List<string> ();
+				localizedResources.Add (name, langs);
+			}
+			
+			langs.Add (path);
+		}
+		
+		public void AddResource (string path, bool isInterfaceDefinition, PBXGroup grp = null)
+		{
+			string dir = Path.GetDirectoryName (path);
+			
+			if (dir.EndsWith (".lproj")) {
+				string name = Path.GetFileName (path);
+				PBXVariantGroup variant = GetGroup (name) as PBXVariantGroup;
+				PBXFileReference fileref = null;
+				PBXGroup masterGroup;
+				string lang;
+				
+				if (variant == null) {
+					if (!translatableResources.TryGetValue (name, out masterGroup)) {
+						// Queue this localized resource until we get the master resource
+						QueueLocalizedResource (name, path);
+						return;
+					}
+					
+					variant = MarkTranslatableResource (masterGroup, name);
+					translatableResources.Remove (name);
+				}
+				
+				lang = dir.Substring (0, dir.LastIndexOf ('.'));
+				project.KnownRegions.Add (lang);
+				
+				AddLocalizedResource (path, "\"<group>\"", variant);
+			} else {
+				if (grp == null)
+					grp = CreateGroupFromPath (path);
+				
+				var buildFile = AddFile (path, "\"<group>\"", grp);
+				resourcesBuildPhase.AddResource (buildFile);
+				
+				// Interface Definition files are translatable and may have translations available.
+				if (isInterfaceDefinition) {
+					string name = Path.GetFileName (path);
+					List<string> langs;
+					
+					if (localizedResources.TryGetValue (name, out langs)) {
+						// We've already got some localized versions of this resource file.
+						PBXVariantGroup variant = MarkTranslatableResource (grp, name);
+						
+						for (int i = 0; i < langs.Count; i++) {
+							string lproj = Path.GetDirectoryName (langs[i]);
+							string lang = lproj.Substring (0, lproj.LastIndexOf ('.'));
+							
+							project.KnownRegions.Add (lang);
+							
+							AddLocalizedResource (langs[i], "\"<group>\"", variant);
+						}
+					} else {
+						// This is a translatable resource which we may later discover we've got translations for.
+						translatableResources.Add (name, grp);
+					}
+				}
+			}
 		}
 
-		public void AddPlist (string name)
+		public void AddPlist (string path)
 		{
-			var fileref = new PBXFileReference (name, "\"<group>\"");
+			var fileref = new PBXFileReference (path, "\"<group>\"");
 			files.Add (fileref);
 		}
 
-		public void AddSource (string name, PBXGroup grp = null)
+		public void AddSource (string path, PBXGroup grp = null)
 		{
-			//sourcesBuildPhase.AddSource (AddFile (Path.GetFileName (name), Path.GetDirectoryName (name), "\"<group>\""));
-			sourcesBuildPhase.AddSource (AddFile (name, "\"<group>\"", grp));
+			PBXBuildFile buildFile;
+			
+			if (grp == null)
+				grp = CreateGroupFromPath (path);
+			
+			buildFile = AddFile (path, "\"<group>\"", grp);
+			sourcesBuildPhase.AddSource (buildFile);
 		}
 		
 		public PBXGroup AddGroup (PBXGroup parent, string name)
@@ -193,7 +301,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			foreach (var obj in parent) {
 				var grp = obj as PBXGroup;
-				if (grp != null && grp.Name ==name)
+				if (grp != null && grp.Name == name)
 					return grp;
 			}
 			return null;
@@ -207,7 +315,11 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		public void AddFramework (string framework)
 		{
-			frameworksBuildPhase.AddFramework (AddFile (string.Format ("System/Library/Frameworks/{0}.framework", framework), "SDKROOT", frameworksGroup));
+			string path = string.Format ("System/Library/Frameworks/{0}.framework", framework);
+			PBXBuildFile buildFile;
+			
+			buildFile = AddFile (path, "SDKROOT", frameworksGroup);
+			frameworksBuildPhase.AddFramework (buildFile);
 		}
 
 		public void Generate (string outputPath)
@@ -301,8 +413,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.Append ("/* End PBXFrameworksBuildPhase section */\n\n");
 
 			sb.Append ("/* Begin PBXGroup section */\n");
-			foreach (var grp in groups)
-				sb.AppendFormat ("\t\t{0}\n", grp);
+			foreach (var grp in groups) {
+				if (grp.GetType () == typeof (PBXGroup))
+					sb.AppendFormat ("\t\t{0}\n", grp);
+			}
 			sb.Append ("/* End PBXGroup section */\n\n");
 
 			sb.Append ("/* Begin PBXNativeTarget section */\n");
@@ -322,7 +436,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.Append ("/* End PBXSourcesBuildPhase section */\n\n");
 
 			sb.Append ("/* Begin PBXVariantGroup section */\n");
-			// FIXME: add a PBXVariantGroup?
+			foreach (var grp in groups) {
+				if (grp.GetType () == typeof (PBXVariantGroup))
+					sb.AppendFormat ("\t\t{0}\n", grp);
+			}
 			sb.Append ("/* End PBXVariantGroup section */\n\n");
 
 			sb.Append ("/* Begin XCBuildConfiguration section */\n");

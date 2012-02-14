@@ -171,7 +171,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (!Directory.Exists (parent))
 					Directory.CreateDirectory (parent);
 				
-				File.Move (src, target);
+				if (File.Exists (src))
+					File.Move (src, target);
 			}
 		}
 		

@@ -106,7 +106,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public override void AddToProject (XcodeProject project, FilePath syncProjectDir)
 		{
-			project.AddResource (targetRelative);
+			project.AddResource (targetRelative, isInterfaceDefinition);
 		}
 		
 		public override string[] GetTargetRelativeFileNames ()

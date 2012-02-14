@@ -34,9 +34,21 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	class PBXFileReference : XcodeObject
 	{
-		public override string Name { get { return System.IO.Path.GetFileName (Path); } }
-		public string Path { get; private set; }
 		public string SourceTree { get; private set; }
+		public string Path { get; private set; }
+		
+		public override string Name {
+			get {
+				string dir = System.IO.Path.GetDirectoryName (Path);
+				
+				if (dir.EndsWith (".lproj")) {
+					int dot = dir.LastIndexOf ('.');
+					return dir.Substring (0, dot);
+				}
+				
+				return System.IO.Path.GetFileName (Path);
+			}
+		}
 
 		public PBXFileReference (string path, string sourceTree)
 		{
