@@ -1776,21 +1776,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			IType type = resolveResult.Type;
 			var typeDef = resolveResult.Type.GetDefinition ();
-			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			var result = new CompletionDataWrapper (this);
-			bool isProtectedAllowed = false;
 			bool includeStaticMembers = false;
 			
 			if (resolveResult is LocalResolveResult) {
-				isProtectedAllowed = currentType != null && typeDef != null ? typeDef.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (currentType)) : false;
 				if (resolvedNode is IdentifierExpression) {
 					var mrr = (LocalResolveResult)resolveResult;
 					includeStaticMembers = mrr.Variable.Name == mrr.Type.Name;
 				}
-			} else {
-				isProtectedAllowed = currentType != null && typeDef != null ? currentType.Resolve (ctx).GetDefinition ().GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (typeDef)) : false;
 			}
-			
 			if (resolveResult is TypeResolveResult && type.Kind == TypeKind.Enum) {
 				foreach (var field in type.GetFields ()) {
 					result.AddMember (field);
@@ -1810,12 +1804,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				includeStaticMembers = true;
 			
 //			Console.WriteLine ("type:" + type +"/"+type.GetType ());
+//			Console.WriteLine ("current:" + ctx.CurrentTypeDefinition);
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed + " static: "+ includeStaticMembers);
 //			Console.WriteLine (resolveResult);
 //			Console.WriteLine ("node:" + resolvedNode);
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
+				var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+				bool isProtectedAllowed = resolveResult is ThisResolveResult ? true : lookup.IsProtectedAccessAllowed (type);
+			
 				var filteredList = new List<IMember> ();
 				foreach (var member in type.GetMembers ()) {
 //					Console.WriteLine ("member:" + member + member.IsShadowing);
