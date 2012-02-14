@@ -89,6 +89,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			string target = context.ProjectDir.Combine (targetRelative);
 			
+			if (!File.Exists (target)) {
+				monitor.Log.WriteLine ("{0} has been removed since last sync.", targetRelative);
+				// FIXME: some day we should mirror this change back to MonoDevelop
+				return false;
+			}
+			
 			if (File.GetLastWriteTime (target) > context.GetSyncTime (targetRelative)) {
 				monitor.Log.WriteLine ("{0} has changed since last sync.", targetRelative);
 				return true;

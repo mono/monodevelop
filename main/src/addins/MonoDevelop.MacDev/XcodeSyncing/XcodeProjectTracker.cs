@@ -494,7 +494,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				FilePath path = context.ProjectDir.Combine (file.SyncedRelative);
 				
 				if (File.Exists (path)) {
-					File.Copy (context.ProjectDir.Combine (file.SyncedRelative), tempFile);
+					File.Copy (path, tempFile);
 					FileService.SystemRename (tempFile, file.Original);
 					
 					DateTime mtime = File.GetLastWriteTime (file.Original);
