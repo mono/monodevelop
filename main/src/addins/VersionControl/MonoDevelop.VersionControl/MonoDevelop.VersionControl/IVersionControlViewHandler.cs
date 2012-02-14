@@ -45,22 +45,22 @@ namespace MonoDevelop.VersionControl {
 	}
 	
 	
-	public interface IFastDiffViewHandler : IFastVersionControlViewHandler<IDiffView>
+	public interface IFastDiffViewHandler : IDiffViewHandler, IFastVersionControlViewHandler<IDiffView>
 	{
 		
 	}
 	
-	public interface IFastMergeViewHandler : IFastVersionControlViewHandler<IMergeView>
+	public interface IFastMergeViewHandler : IMergeViewHandler, IFastVersionControlViewHandler<IMergeView>
 	{
 		
 	}
 	
-	public interface IFastBlameViewHandler : IFastVersionControlViewHandler<IBlameView>
+	public interface IFastBlameViewHandler : IBlameViewHandler, IFastVersionControlViewHandler<IBlameView>
 	{
 		
 	}
 	
-	public interface IFastLogViewHandler : IFastVersionControlViewHandler<ILogView>
+	public interface IFastLogViewHandler : ILogViewHandler, IFastVersionControlViewHandler<ILogView>
 	{
 		
 	}
