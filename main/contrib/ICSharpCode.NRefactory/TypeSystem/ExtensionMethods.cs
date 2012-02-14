@@ -96,6 +96,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static bool IsDerivedFrom(this ITypeDefinition type, ITypeDefinition baseType)
 		{
+			if (type.Compilation != baseType.Compilation) {
+				throw new InvalidOperationException("Both arguments to IsDerivedFrom() must be from the same compilation.");
+			}
 			return GetAllBaseTypeDefinitions(type).Contains(baseType);
 		}
 		#endregion
@@ -252,9 +255,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region GetType/Member
+		/// <summary>
+		/// Gets all unresolved type definitions from the file.
+		/// For partial classes, each part is returned.
+		/// </summary>
 		public static IEnumerable<IUnresolvedTypeDefinition> GetAllTypeDefinitions (this IParsedFile file)
 		{
 			return TreeTraversal.PreOrder(file.TopLevelTypeDefinitions, t => t.NestedTypes);
+		}
+		
+		/// <summary>
+		/// Gets all unresolved type definitions from the assembly.
+		/// For partial classes, each part is returned.
+		/// </summary>
+		public static IEnumerable<IUnresolvedTypeDefinition> GetAllTypeDefinitions (this IUnresolvedAssembly assembly)
+		{
+			return TreeTraversal.PreOrder(assembly.TopLevelTypeDefinitions, t => t.NestedTypes);
 		}
 		
 		public static IEnumerable<ITypeDefinition> GetAllTypeDefinitions (this IAssembly assembly)
@@ -262,6 +278,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return TreeTraversal.PreOrder(assembly.TopLevelTypeDefinitions, t => t.NestedTypes);
 		}
 		
+		/// <summary>
+		/// Gets all type definitions in the compilation.
+		/// This may include types from referenced assemblies that are not accessible in the main assembly.
+		/// </summary>
 		public static IEnumerable<ITypeDefinition> GetAllTypeDefinitions (this ICompilation compilation)
 		{
 			return compilation.MainAssembly.GetAllTypeDefinitions()
@@ -359,6 +379,32 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (var contextType in baseType.Compilation.GetAllTypeDefinitions ()) {
 				if (contextType.IsDerivedFrom (baseType))
 					yield return contextType;
+			}
+		}
+		#endregion
+		
+		#region IAssembly.GetTypeDefinition()
+		/// <summary>
+		/// Gets the type definition for the specified unresolved type.
+		/// Returns null if the unresolved type does not belong to this assembly.
+		/// </summary>
+		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, IUnresolvedTypeDefinition unresolved)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			if (unresolved == null)
+				return null;
+			if (unresolved.DeclaringTypeDefinition != null) {
+				ITypeDefinition parentType = GetTypeDefinition(assembly, unresolved.DeclaringTypeDefinition);
+				if (parentType == null)
+					return null;
+				foreach (var nestedType in parentType.NestedTypes) {
+					if (nestedType.Name == unresolved.Name && nestedType.TypeParameterCount == unresolved.TypeParameters.Count)
+						return nestedType;
+				}
+				return null;
+			} else {
+				return assembly.GetTypeDefinition(unresolved.Namespace, unresolved.Name, unresolved.TypeParameters.Count);
 			}
 		}
 		#endregion

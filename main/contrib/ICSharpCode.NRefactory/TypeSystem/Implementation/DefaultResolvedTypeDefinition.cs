@@ -115,16 +115,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					LazyInit.ReadBarrier();
 					return result;
 				} else {
-					result = new List<ITypeDefinition>();
-					foreach (var part in parts) {
-						var context = part.CreateResolveContext(parentContext).WithCurrentTypeDefinition(this);
-						foreach (var nestedTypeRef in part.NestedTypes) {
-							ITypeDefinition nestedType = (ITypeDefinition)nestedTypeRef.Resolve(context);
-							if (!result.Contains(nestedType))
-								result.Add(nestedType);
-						}
-					}
-					return LazyInit.GetOrSet(ref this.nestedTypes, new ReadOnlyCollection<ITypeDefinition>(result));
+					result = (
+						from part in parts
+						from nestedTypeRef in part.NestedTypes
+						group nestedTypeRef by nestedTypeRef.Name into g
+						select new DefaultResolvedTypeDefinition(new SimpleTypeResolveContext(this), g.ToArray())
+					).ToList<ITypeDefinition>().AsReadOnly();
+					return LazyInit.GetOrSet(ref this.nestedTypes, result);
 				}
 			}
 		}

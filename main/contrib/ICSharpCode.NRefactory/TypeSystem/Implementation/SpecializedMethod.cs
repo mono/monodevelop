@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentNullException("methodDefinition");
 			
 			this.methodDefinition = methodDefinition;
-			this.typeArguments = typeArguments;
+			this.typeArguments = typeArguments ?? EmptyList<IType>.Instance;
 			
 			if (methodDefinition.TypeParameters.Any(ConstraintNeedsSpecialization)) {
 				// The method is generic, and we need to specialize the type parameters
@@ -170,7 +170,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			b.Append(this.DeclaringType.ToString());
 			b.Append('.');
 			b.Append(this.Name);
-			if (typeArguments != null && typeArguments.Count > 0) {
+			if (typeArguments.Count > 0) {
 				b.Append('[');
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (i > 0) b.Append(", ");

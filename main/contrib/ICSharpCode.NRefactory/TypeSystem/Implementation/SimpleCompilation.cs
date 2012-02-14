@@ -138,5 +138,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public ISolutionSnapshot SolutionSnapshot {
 			get { return solutionSnapshot; }
 		}
+		
+		public override string ToString()
+		{
+			return "[SimpleCompilation " + mainAssembly.AssemblyName + "]";
+		}
 	}
 }

@@ -70,6 +70,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// Gets the owning method/class.
+		/// This property may return null (for example for the dummy type parameters used by <see cref="ParameterListComparer.NormalizeMethodTypeParameters"/>).
 		/// </summary>
 		IEntity Owner { get; }
 		
