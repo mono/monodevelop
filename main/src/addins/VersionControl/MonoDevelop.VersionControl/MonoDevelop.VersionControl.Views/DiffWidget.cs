@@ -109,20 +109,26 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (notebook1.Page == 0) {
 				buttonDiff.Label = GettextCatalog.GetString ("_Compare");
-				diffTextEditor.Document.Text = Mono.TextEditor.Utils.Diff.GetDiffString (comparisonWidget.Diff,
-					comparisonWidget.DiffEditor.Document,
-					comparisonWidget.OriginalEditor.Document,
-					(info.Item.Path) + "\t\t"+ GetRevisionText (comparisonWidget.DiffEditor, comparisonWidget.diffRevision),
-					(info.Item.Path) + "\t\t"+ GetRevisionText (comparisonWidget.OriginalEditor, comparisonWidget.originalRevision)
-				);
-				
 				notebook1.Page = 1;
+				UpdatePatchView ();
 			} else {
 				buttonDiff.Label = GettextCatalog.GetString ("_Patch");
 				notebook1.Page = 0;
 			}
 			
 			SetButtonSensitivity ();
+		}
+		
+		public void UpdatePatchView ()
+		{
+			if (notebook1.Page == 1) {
+				diffTextEditor.Document.Text = Mono.TextEditor.Utils.Diff.GetDiffString (comparisonWidget.Diff,
+					comparisonWidget.DiffEditor.Document,
+					comparisonWidget.OriginalEditor.Document,
+					(info.Item.Path) + "\t\t"+ GetRevisionText (comparisonWidget.DiffEditor, comparisonWidget.diffRevision),
+					(info.Item.Path) + "\t\t"+ GetRevisionText (comparisonWidget.OriginalEditor, comparisonWidget.originalRevision)
+				);
+			}
 		}
 		
 		string GetRevisionText (Mono.TextEditor.TextEditor editor, Revision rev)
