@@ -151,114 +151,46 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			var buildfile = new PBXBuildFile (fileref);
 			
 			files.Add (fileref);
+			grp.AddChild (fileref);
 			sources.Add (buildfile);
-			
-			if (grp != null)
-				grp.AddChild (fileref);
 			
 			return buildfile;
 		}
 		
-		PBXVariantGroup MarkTranslatableResource (PBXGroup grp, string name)
-		{
-			PBXVariantGroup variant = new PBXVariantGroup (name);
-			PBXBuildFile buildfile = new PBXBuildFile (variant);
-			int index = 0;
-			
-			// Replace the PBXFileReference in grp with a PBXVariantGroup
-			foreach (var child in grp) {
-				if (child is PBXFileReference && child.Name == name) {
-					grp.InsertChild (index + 1, variant);
-					grp.RemoveChildAt (index);
-					break;
-				}
-				
-				index++;
-			}
-			
-			resourcesBuildPhase.AddResource (buildfile);
-			groups.Add (variant);
-			
-			return variant;
-		}
-		
-		void AddLocalizedResource (string path, string tree, PBXVariantGroup variant)
-		{
-			var fileref = new PBXFileReference (path, tree);
-			variant.AddChild (fileref);
-			files.Add (fileref);
-		}
-		
-		Dictionary<string, List<string>> localizedResources = new Dictionary<string, List<string>> ();
-		Dictionary<string, PBXGroup> translatableResources = new Dictionary<string, PBXGroup> ();
-		
-		void QueueLocalizedResource (string name, string path)
-		{
-			List<string> langs;
-			
-			if (!localizedResources.TryGetValue (name, out langs)) {
-				langs = new List<string> ();
-				localizedResources.Add (name, langs);
-			}
-			
-			langs.Add (path);
-		}
-		
-		public void AddResource (string path, bool isInterfaceDefinition, PBXGroup grp = null)
+		public void AddResource (string path, PBXGroup grp = null)
 		{
 			string dir = Path.GetDirectoryName (path);
+			PBXBuildFile buildFile;
 			
 			if (dir.EndsWith (".lproj")) {
 				string name = Path.GetFileName (path);
 				PBXVariantGroup variant = GetGroup (name) as PBXVariantGroup;
-				PBXFileReference fileref = null;
-				PBXGroup masterGroup;
-				string lang;
 				
 				if (variant == null) {
-					if (!translatableResources.TryGetValue (name, out masterGroup)) {
-						// Queue this localized resource until we get the master resource
-						QueueLocalizedResource (name, path);
-						return;
-					}
+					variant = new PBXVariantGroup (name);
+					groups.Add (variant);
 					
-					variant = MarkTranslatableResource (masterGroup, name);
-					translatableResources.Remove (name);
+					if (grp == null)
+						projectGroup.AddChild (variant);
+					else
+						grp.AddChild (variant);
+					
+					buildFile = new PBXBuildFile (variant);
+					resourcesBuildPhase.AddResource (buildFile);
 				}
 				
-				lang = dir.Substring (0, dir.LastIndexOf ('.'));
+				string lang = dir.Substring (0, dir.LastIndexOf ('.'));
 				project.KnownRegions.Add (lang);
 				
-				AddLocalizedResource (path, "\"<group>\"", variant);
+				var fileref = new PBXFileReference (path, "\"<group>\"");
+				variant.AddChild (fileref);
+				files.Add (fileref);
 			} else {
 				if (grp == null)
 					grp = CreateGroupFromPath (path);
 				
-				var buildFile = AddFile (path, "\"<group>\"", grp);
+				buildFile = AddFile (path, "\"<group>\"", grp);
 				resourcesBuildPhase.AddResource (buildFile);
-				
-				// Interface Definition files are translatable and may have translations available.
-				if (isInterfaceDefinition) {
-					string name = Path.GetFileName (path);
-					List<string> langs;
-					
-					if (localizedResources.TryGetValue (name, out langs)) {
-						// We've already got some localized versions of this resource file.
-						PBXVariantGroup variant = MarkTranslatableResource (grp, name);
-						
-						for (int i = 0; i < langs.Count; i++) {
-							string lproj = Path.GetDirectoryName (langs[i]);
-							string lang = lproj.Substring (0, lproj.LastIndexOf ('.'));
-							
-							project.KnownRegions.Add (lang);
-							
-							AddLocalizedResource (langs[i], "\"<group>\"", variant);
-						}
-					} else {
-						// This is a translatable resource which we may later discover we've got translations for.
-						translatableResources.Add (name, grp);
-					}
-				}
 			}
 		}
 

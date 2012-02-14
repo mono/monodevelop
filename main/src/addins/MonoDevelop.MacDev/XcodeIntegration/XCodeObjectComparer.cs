@@ -52,7 +52,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration {
 				default:
 					return sign;
 				}
-				break;
 			default:
 				switch (y.Type) {
 				case XcodeType.PBXGroup:
@@ -60,7 +59,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration {
 				default:
 					return x.Name.CompareTo (y.Name) * sign;
 				}
-				break;
 			}
 		}
 	}

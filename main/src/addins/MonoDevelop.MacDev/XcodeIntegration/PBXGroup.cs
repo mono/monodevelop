@@ -57,21 +57,6 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			children.Add (child);
 		}
 		
-		public void InsertChild (int index, XcodeObject child)
-		{
-			children.Insert (index, child);
-		}
-		
-		public bool RemoveChild (XcodeObject child)
-		{
-			return children.Remove (child);
-		}
-		
-		public void RemoveChildAt (int index)
-		{
-			children.RemoveAt (index);
-		}
-		
 		public override XcodeType Type {
 			get {
 				return XcodeType.PBXGroup;
