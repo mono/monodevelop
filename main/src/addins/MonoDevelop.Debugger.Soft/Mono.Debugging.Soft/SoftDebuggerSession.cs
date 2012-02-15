@@ -877,8 +877,8 @@ namespace Mono.Debugging.Soft
 			EventRequest request;
 			
 			request = vm.CreateExceptionRequest (excType, true, true);
+			request.Count = cp.HitCount; // Note: need to set HitCount *before* enabling
 			request.Enabled = cp.Enabled;
-			request.Count = cp.HitCount;
 			
 			bi.Requests.Add (request);
 		}
