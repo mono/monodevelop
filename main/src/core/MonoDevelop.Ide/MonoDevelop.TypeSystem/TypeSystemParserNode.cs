@@ -56,7 +56,7 @@ namespace MonoDevelop.TypeSystem
 		public bool CanParse (string mimeType)
 		{
 			if (mimeTypes == null)
-				mimeTypes  = new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ()));
+				mimeTypes  = this.mimeType != null ? new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ())) : new HashSet<string> ();
 			return mimeTypes.Contains (mimeType, StringComparer.Ordinal);
 		}
 	}
