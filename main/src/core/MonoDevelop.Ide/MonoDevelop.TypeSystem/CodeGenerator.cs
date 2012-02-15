@@ -138,19 +138,14 @@ namespace MonoDevelop.TypeSystem
 			SetIndentTo (implementingPart);
 			StringBuilder result = new StringBuilder ();
 			List<IMember> implementedMembers = new List<IMember> ();
-			foreach (var def in interfaceType.GetAllBaseTypes ().Where (bt => bt.Kind == TypeKind.Interface)) {
-				if (result.Length > 0) {
-					AppendLine (result);
-					AppendLine (result);
-				}
-				string implementation = InternalCreateInterfaceImplementation (implementingType, implementingPart, def, explicitly, implementedMembers);
-				if (string.IsNullOrWhiteSpace (implementation))
-					continue;
-				if (wrapRegions) {
-					result.Append (WrapInRegions (def.Name + " implementation", implementation));
-				} else {
-					result.Append (implementation);
-				}
+			var def = interfaceType.GetDefinition ();
+			string implementation = InternalCreateInterfaceImplementation (implementingType, implementingPart, def, explicitly, implementedMembers);
+			if (string.IsNullOrWhiteSpace (implementation))
+				return "";
+			if (wrapRegions) {
+				result.Append (WrapInRegions (def.Name + " implementation", implementation));
+			} else {
+				result.Append (implementation);
 			}
 			return result.ToString ();
 		}
@@ -178,6 +173,7 @@ namespace MonoDevelop.TypeSystem
 			
 			// Stub out non-implemented methods defined by @iface
 			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic && d.DeclaringTypeDefinition.Kind == TypeKind.Interface)) {
+				Console.WriteLine ("method:" +method);
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (var cmet in implementingType.GetMethods ()) {
@@ -211,7 +207,6 @@ namespace MonoDevelop.TypeSystem
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember, bool> (prop, needsExplicitly));
 			}
-			
 			return toImplement;
 		}
 
@@ -241,7 +236,8 @@ namespace MonoDevelop.TypeSystem
 				result.Append (CreateMemberImplementation (implementingType, part, pair.Key, isExplicit).Code);
 				implementedMembers.Add (pair.Key);
 			}
-			
+			Console.WriteLine ("result:");
+			Console.WriteLine (result);
 			return result.ToString ();
 		}
 		

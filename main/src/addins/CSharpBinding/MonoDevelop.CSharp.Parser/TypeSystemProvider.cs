@@ -295,7 +295,7 @@ namespace MonoDevelop.CSharp.Parser
 		CompilerSettings GetCompilerArguments (MonoDevelop.Projects.Project project)
 		{
 			var compilerArguments = new CompilerSettings ();
-			if (project == null)
+			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null)
 				return compilerArguments;
 
 			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;

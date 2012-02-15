@@ -72,7 +72,8 @@ namespace MonoDevelop.Refactoring
 			generated = generated.Substring (generated.IndexOf ("implementation") + "implementation".Length);
 			generated = generated.Substring (0, generated.LastIndexOf ("#"));
 			generated = generated.Trim ();
-			System.Console.WriteLine (generated);
+			if (outputString != generated)
+				Console.WriteLine (generated);
 			Assert.AreEqual (outputString, generated);
 		}
 		
@@ -163,6 +164,34 @@ interface ITest {
 	{
 		throw new System.NotImplementedException ();
 	}", "public void Method2 () {}");
+		}
+		
+		/// <summary>
+		/// Bug 3365 - MD cannot implement IEnumerable interface correctly  - MD cannot implement IEnumerable interface correctly 
+		/// </summary>
+		[Test()]
+		public void TestBug3365 ()
+		{
+			TestCreateInterface (@"using System;
+public interface IA
+{
+	bool GetEnumerator ();
+}
+
+public interface ITest : IA, IEnumerable
+{
+}
+", @"public bool IA.GetEnumerator ()
+		{
+			throw new System.NotImplementedException ();
+		}
+		#endregion
+
+		#region IEnumerable implementation
+		IEnumerator IEnumerable.GetEnumerator ()
+		{
+			throw new System.NotImplementedException ();
+		}");
 		}
 	}
 }
