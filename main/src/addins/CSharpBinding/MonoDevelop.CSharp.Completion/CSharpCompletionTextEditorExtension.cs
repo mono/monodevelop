@@ -534,7 +534,7 @@ namespace MonoDevelop.CSharp.Completion
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
 		{
 			var result = new CompletionData (shortType, type.GetStockIcon ());
-			if (type.TypeParameterCount > 0) {
+			if (!(type is ParameterizedType) && type.TypeParameterCount > 0) {
 				var sb = new StringBuilder (shortType);
 				sb.Append ("<");
 				for (int i = 0; i < type.TypeParameterCount; i++) {
