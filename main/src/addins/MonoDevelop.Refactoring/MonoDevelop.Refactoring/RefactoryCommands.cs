@@ -360,7 +360,6 @@ namespace MonoDevelop.Refactoring
 			
 			bool isInsideAttributeType = attribute != null && attribute.Type.IsInside (options.Document.Editor.Caret.Location);
 				
-			
 			if (resolveResult is UnknownIdentifierResolveResult) {
 				usedNamespaces = options.GetUsedNamespaces ();
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
@@ -390,7 +389,17 @@ namespace MonoDevelop.Refactoring
 				skipType:;
 				}
 				resolveDirect = false;
-				
+			} else if (resolveResult is ErrorResolveResult && unit != null) {
+				var identifier = unit != null ? unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Identifier> (options.Document.Editor.Caret.Location) : null;
+				if (identifier != null) {
+					usedNamespaces = options.GetUsedNamespaces ();
+					var uiResult = resolveResult as UnknownIdentifierResolveResult;
+					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
+					foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
+						if (identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName)
+							possibleNamespaces.Add (typeDefinition.Namespace);
+					}
+				}
 			}
 			
 			foreach (string ns in possibleNamespaces) {
