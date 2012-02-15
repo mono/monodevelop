@@ -82,16 +82,23 @@ namespace Mono.Debugging.Soft
 			MDB.TypeMirror type = method.DeclaringType;
 			string fileName = frame.FileName;
 			string methodName = method.Name;
+			string typeFullName = null;
+			string typeFQN = null;
 			
 			if (fileName != null)
 				fileName = SoftDebuggerSession.NormalizePath (fileName);
 			
-			if (type != null)
-				methodName = type.FullName + "." + methodName;
+			if (type != null) {
+				methodName = session.Adaptor.GetDisplayTypeName (type.FullName) + "." + methodName;
+				typeFQN = type.Module.FullyQualifiedName;
+				typeFullName = type.FullName;
+			}
 			
 			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber);
 			var lang = frame.Method != null ? "Managed" : "Native";
-			return new DC.StackFrame (frame.ILOffset, method.FullName, location, lang, session.IsExternalCode (frame), true, type.Module.FullyQualifiedName, type.FullName);
+			var external = session.IsExternalCode (frame);
+			
+			return new DC.StackFrame (frame.ILOffset, method.FullName, location, lang, external, true, typeFQN, typeFullName);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
