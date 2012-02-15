@@ -106,18 +106,20 @@ namespace ICSharpCode.NRefactory.CSharp
 							subContainer.Accept (this);
 						}
 					}
-					if (nspace.UnattachedAttributes != null && nspace.UnattachedAttributes.Length > 0)
-						AddToNamespace (ConvertAttributeSection (nspace.UnattachedAttributes));
 						
 					if (nDecl != null) {
+						AddAttributeSection (nDecl, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 						if (loc != null && loc.Count > 2)
 							nDecl.AddChild (new CSharpTokenNode (Convert (loc[2]), 1), NamespaceDeclaration.Roles.RBrace);
 						if (loc != null && loc.Count > 3)
 							nDecl.AddChild (new CSharpTokenNode (Convert (loc[3]), 1), NamespaceDeclaration.Roles.Semicolon);
 						
 						namespaceStack.Pop ();
+					} else {
+						AddAttributeSection (unit, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 					}
 				}
+				AddAttributeSection (unit, mc.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 			}
 			
 			#region Global
@@ -371,10 +373,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 				
-				if (nspace.UnattachedAttributes != null && nspace.UnattachedAttributes.Length > 0)
-					AddToNamespace (ConvertAttributeSection (nspace.UnattachedAttributes));
 				
 				if (nDecl != null) {
+					AddAttributeSection (nDecl, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 					if (loc != null && loc.Count > 2)
 						nDecl.AddChild (new CSharpTokenNode (Convert (loc[2]), 1), NamespaceDeclaration.Roles.RBrace);
 					if (loc != null && loc.Count > 3)
@@ -516,9 +517,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (c);
-				
-				if (c.UnattachedAttributes != null && c.UnattachedAttributes.Length > 0)
-					newType.AddChild (ConvertAttributeSection (c.UnattachedAttributes), TypeDeclaration.UnattachedAttributeRole);
+				AddAttributeSection (newType, c.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 				
 				if (location != null && curLoc < location.Count) {
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
@@ -913,13 +912,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (parent, a.OptAttributes);
 			}
 			
-			public void AddAttributeSection (AstNode parent, Attributes attrs)
+			public void AddAttributeSection (AstNode parent, Attributes attrs, Role role)
 			{
 				if (attrs == null)
 					return;
 				foreach (var attr in attrs.Sections) {
 					parent.AddChild (ConvertAttributeSection (attr), AttributedNode.AttributeRole);
 				}
+			}
+			public void AddAttributeSection (AstNode parent, Attributes attrs)
+			{
+				AddAttributeSection (parent, attrs, AttributedNode.AttributeRole);
 			}
 			
 			public override void Visit (Indexer indexer)
@@ -1696,10 +1699,27 @@ namespace ICSharpCode.NRefactory.CSharp
 						if (u.Variables.Initializer != null)
 							initializer.Initializer = u.Variables.Initializer.Accept (this) as Expression;
 						
+						
 						var varDec  = new VariableDeclarationStatement () {
 							Type = ConvertToType (u.Variables.TypeExpression),
 							Variables = { initializer }
 						};
+						
+						if (u.Variables.Declarators != null) {
+							foreach (var decl in u.Variables.Declarators) {
+								var declLoc = LocationsBag.GetLocations (decl);
+								var init = new VariableInitializer ();
+								if (declLoc != null && declLoc.Count > 0)
+									varDec.AddChild (new CSharpTokenNode (Convert (declLoc [0]), 1), VariableInitializer.Roles.Comma);
+								init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
+								if (decl.Initializer != null) {
+									if (declLoc != null && declLoc.Count > 1)
+										init.AddChild (new CSharpTokenNode (Convert (declLoc [1]), 1), VariableInitializer.Roles.Assign);
+									init.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
+								}
+								varDec.AddChild (init, UsingStatement.Roles.Variable);
+							}
+						}
 						usingResult.AddChild (varDec, UsingStatement.ResourceAcquisitionRole);
 					}
 					cur = u.Statement;
@@ -1883,7 +1903,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
 							if (decl.Initializer != null) {
 								if (loc != null && loc.Count > 1)
-									result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
+									init.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
 								init.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 							} else {
 							}
@@ -2857,7 +2877,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			#region Undocumented expressions
 			public override object Visit (Arglist argListExpression)
 			{
-				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.ArgListAccess };
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.ArgList };
 				result.AddChild (new CSharpTokenNode (Convert (argListExpression.Location), "__arglist".Length), UndocumentedExpression.Roles.Keyword);
 				var location = LocationsBag.GetLocations (argListExpression);
 				if (location != null)
@@ -2872,7 +2892,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (MakeRefExpr makeRefExpr)
 			{
-				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefValue };
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.MakeRef };
 				result.AddChild (new CSharpTokenNode (Convert (makeRefExpr.Location), "__makeref".Length), UndocumentedExpression.Roles.Keyword);
 				var location = LocationsBag.GetLocations (makeRefExpr);
 				if (location != null)
@@ -2886,7 +2906,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (RefTypeExpr refTypeExpr)
 			{
-				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefValue };
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefType };
 				result.AddChild (new CSharpTokenNode (Convert (refTypeExpr.Location), "__reftype".Length), UndocumentedExpression.Roles.Keyword);
 				var location = LocationsBag.GetLocations (refTypeExpr);
 				if (location != null)

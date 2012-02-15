@@ -855,10 +855,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Result.Add (factory.CreateLiteralCompletionData ("global"));
 			
 			if (!(node is AstType)) {
-				if (currentMember != null) {
-					AddKeywords (wrapper, statementStartKeywords);
-					AddKeywords (wrapper, expressionLevelKeywords);
-				} else if (currentType != null) {
+				AddKeywords (wrapper, statementStartKeywords);
+				AddKeywords (wrapper, expressionLevelKeywords);
+				if (currentType != null) {
 					AddKeywords (wrapper, typeLevelKeywords);
 				} else {
 					AddKeywords (wrapper, globalLevelKeywords);

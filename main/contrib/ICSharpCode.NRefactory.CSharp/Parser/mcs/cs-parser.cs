@@ -4221,9 +4221,9 @@ void case_41()
 #line 617 "cs-parser.jay"
 {
 #if FULL_AST
-		current_namespace.UnattachedAttributes = ((List<Attribute>) yyVals[-1+yyTop]).ToArray ();
+		current_namespace.UnattachedAttributes = (Attributes) yyVals[-1+yyTop];
 #endif
-		report.Error (1518, lexer.Location, "Dangling attribute not attached to a type definition (class, delegate, enum, interface or struct).   Unexpected symbol `{0}'");
+		report.Error (1518, lexer.Location, "Attributes must be attached to class, delegate, enum, interface or struct");
 		lexer.putback ('}');
 	  }
 
@@ -5757,9 +5757,9 @@ void case_306()
 #line 2515 "cs-parser.jay"
 {
 #if FULL_AST
-	        current_type.UnattachedAttributes = ((List<Attribute>) yyVals[-1+yyTop]).ToArray ();
+		current_type.UnattachedAttributes = (Attributes) yyVals[-1+yyTop];
 #endif
-		report.Error (1519, lexer.Location, "Attribute not attached to any member.   Unexpected symbol `{0}' in class, struct, or interface member declaration. ");
+		report.Error (1519, GetLocation (yyVals[-1+yyTop]), "An attribute is missing member declaration");
 		lexer.putback ('}');
 	  }
 
