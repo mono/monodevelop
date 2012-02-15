@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
@@ -81,12 +82,36 @@ namespace Mono.Debugging.Soft
 			MDB.MethodMirror method = frame.Method;
 			MDB.TypeMirror type = method.DeclaringType;
 			string fileName = frame.FileName;
-			string methodName = method.Name;
 			string typeFullName = null;
 			string typeFQN = null;
+			string methodName;
 			
 			if (fileName != null)
 				fileName = SoftDebuggerSession.NormalizePath (fileName);
+			
+			if (method.VirtualMachine.Version.AtLeast (2, 12) && method.IsGenericMethod) {
+				StringBuilder name = new StringBuilder (method.Name);
+				
+				name.Append ('<');
+				
+				if (method.VirtualMachine.Version.AtLeast (2, 15)) {
+					bool first = true;
+					
+					foreach (var argumentType in method.GetGenericArguments ()) {
+						if (!first)
+							name.Append (", ");
+						
+						name.Append (session.Adaptor.GetDisplayTypeName (argumentType.FullName));
+						first = false;
+					}
+				}
+				
+				name.Append ('>');
+				
+				methodName = name.ToString ();
+			} else {
+				methodName = method.Name;
+			}
 			
 			if (type != null) {
 				methodName = session.Adaptor.GetDisplayTypeName (type.FullName) + "." + methodName;
