@@ -76,7 +76,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.hbox.BorderWidth = 6;
 			
 			// Table 3.4
-			this.image.Yalign   = 0.00f;
+			if (this.image != null)
+				this.image.Yalign   = 0.00f;
 			//this.image.IconSize = Gtk.IconSize.Dialog;
 			
 			// Table 3.5
