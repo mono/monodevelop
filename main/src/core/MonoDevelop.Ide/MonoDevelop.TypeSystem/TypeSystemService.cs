@@ -150,23 +150,23 @@ namespace MonoDevelop.TypeSystem
 		
 		static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
-				if (parsers == null) {
-//					Counters.ParserServiceInitialization.BeginTiming ();
-					parsers = new List<TypeSystemParserNode> ();
-					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
-						switch (args.Change) {
-						case ExtensionChange.Add:
-							parsers.Add ((TypeSystemParserNode)args.ExtensionNode);
-							break;
-						case ExtensionChange.Remove:
-							parsers.Remove ((TypeSystemParserNode)args.ExtensionNode);
-							break;
-						}
-					});
-//					Counters.ParserServiceInitialization.EndTiming ();
-				}
 				return parsers;
 			}
+		}
+		
+		static TypeSystemService ()
+		{
+			parsers = new List<TypeSystemParserNode> ();
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					parsers.Add ((TypeSystemParserNode)args.ExtensionNode);
+					break;
+				case ExtensionChange.Remove:
+					parsers.Remove ((TypeSystemParserNode)args.ExtensionNode);
+					break;
+				}
+			});
 		}
 		
 		static ITypeSystemParser GetParser (string mimeType)

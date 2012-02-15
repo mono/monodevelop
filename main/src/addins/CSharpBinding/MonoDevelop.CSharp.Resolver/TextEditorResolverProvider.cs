@@ -63,6 +63,8 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			return data.GetTextBetween (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column);
 		}
+		
+		
 		public ResolveResult GetLanguageItem (Mono.TextEditor.TextEditorData data, int offset, out DomRegion expressionRegion)
 		{
 			if (offset < 0) {
@@ -91,11 +93,10 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 			AstNode node;
 			var result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
-			if (result == null) {
+			if (result == null || !(node is Expression)) {
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-			
 			expressionRegion = new DomRegion (node.StartLocation, node.EndLocation);
 			return result;
 		}
