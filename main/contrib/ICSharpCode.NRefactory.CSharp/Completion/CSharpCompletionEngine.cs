@@ -855,9 +855,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Result.Add (factory.CreateLiteralCompletionData ("global"));
 			
 			if (!(node is AstType)) {
-				AddKeywords (wrapper, statementStartKeywords);
-				AddKeywords (wrapper, expressionLevelKeywords);
-				if (currentType != null) {
+				if (currentMember != null) {
+					AddKeywords (wrapper, statementStartKeywords);
+					AddKeywords (wrapper, expressionLevelKeywords);
+				} else if (currentType != null) {
 					AddKeywords (wrapper, typeLevelKeywords);
 				} else {
 					AddKeywords (wrapper, globalLevelKeywords);
@@ -948,8 +949,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddTypeParameter (p);
 				}
 			}
+			var scope = CSharpParsedFile.GetUsingScope (location).Resolve (Compilation);
 			
-			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
+			for (var n = scope; n != null; n = n.Parent) {
 				foreach (var pair in n.UsingAliases) {
 					wrapper.AddNamespace (pair.Key);
 				}
