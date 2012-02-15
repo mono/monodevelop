@@ -980,7 +980,6 @@ namespace MonoDevelop.Refactoring
 	/*
 	public class Refactorer
 	{
-		MemberReferenceCollection references;
 		ISearchProgressMonitor monitor;
 		ICompilationUnit pinfo;
 		ProjectDom ctx;

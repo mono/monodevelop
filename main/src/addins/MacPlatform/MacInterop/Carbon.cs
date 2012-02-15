@@ -226,8 +226,10 @@ namespace MonoDevelop.MacInterop
 		}
 		
 		struct ProcessSerialNumber {
+#pragma warning disable 0169
 			ulong highLongOfPSN;
 			ulong lowLongOfPSN;
+#pragma warning restore 0169
 		}
 		
 		#endregion

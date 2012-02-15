@@ -262,10 +262,10 @@ namespace MonoDevelop.Ide
 		{
 			Gdk.Key key;
 			Gdk.ModifierType mod;
-			uint keyval;
-			Mono.TextEditor.GtkWorkarounds.MapRawKeys (evnt, out key, out mod, out keyval);
+			Mono.TextEditor.KeyboardShortcut[] accels;
+			Mono.TextEditor.GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
 			
-			switch (key) {
+			switch (accels[0].Key) {
 			case Gdk.Key.Left:
 				LeftItem ();
 				break;
@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide
 				NextItem (false);
 				break;
 			case Gdk.Key.Tab:
-				if ((mod & ModifierType.ShiftMask) == 0)
+				if ((accels[0].Modifier & ModifierType.ShiftMask) == 0)
 					NextItem (true);
 				else
 					PrevItem (true);

@@ -106,7 +106,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
 		{
-			var v = new MemberListVisitor (info.AspNetDocument, refman);
+			var v = new MemberListVisitor (refman);
 			info.AspNetDocument.RootNode.AcceptVisit (v);
 			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
 			var dom = refman.TypeCtx.Compilation;

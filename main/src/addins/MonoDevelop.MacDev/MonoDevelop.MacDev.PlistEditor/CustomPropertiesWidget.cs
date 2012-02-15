@@ -285,7 +285,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			});
 			treeview.AppendColumn (col);
 			
-			var iconSize = IconSize.Menu;
 			col = new TreeViewColumn { MinWidth = 25, Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Autosize };
 			
 			var removeRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-remove", IconSize.Menu));

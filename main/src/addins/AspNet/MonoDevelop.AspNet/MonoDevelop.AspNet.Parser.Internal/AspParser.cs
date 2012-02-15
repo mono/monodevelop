@@ -225,7 +225,7 @@ namespace MonoDevelop.AspNet.Parser.Internal
 				OnTextParsed (text.ToString ());
 			}
 			
-			} catch (System.Web.HttpException ex) {
+			} catch (System.Web.HttpException) {
 				OnError ("Malformed");
 			}
 		}

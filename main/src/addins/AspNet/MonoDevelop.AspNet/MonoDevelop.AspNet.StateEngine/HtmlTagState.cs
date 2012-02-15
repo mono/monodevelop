@@ -37,9 +37,6 @@ namespace MonoDevelop.AspNet.StateEngine
 	
 	public class HtmlTagState : XmlTagState
 	{
-		XmlAttributeState AttributeState;
-		XmlNameState NameState;
-		XmlMalformedTagState MalformedTagState;
 		HtmlScriptBodyState ScriptState;
 		bool warnAutoClose;
 		

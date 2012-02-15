@@ -44,26 +44,22 @@ namespace MonoDevelop.MacDev.XcodeIntegration {
 		
 		public int Compare (XcodeObject x, XcodeObject y)
 		{
-			if (x == null)
-				return y == null ? 0 : -1;
-			if (y == null)
-				return 1;
-			if (x.GetType () != y.GetType ())
-				return x.GetType ().Name.CompareTo (y.GetType ().Name) * sign;
-			
-			if (x is PBXFileReference) {
-				var left = (PBXFileReference) x;
-				var right = (PBXFileReference) y;
-				return left.Path.CompareTo (right.Path) * sign;
+			switch (x.Type) {
+			case XcodeType.PBXGroup:
+				switch (y.Type) {
+				case XcodeType.PBXGroup:
+					return x.Name.CompareTo (y.Name) * sign;
+				default:
+					return sign;
+				}
+			default:
+				switch (y.Type) {
+				case XcodeType.PBXGroup:
+					return -sign;
+				default:
+					return x.Name.CompareTo (y.Name) * sign;
+				}
 			}
-			
-			if (x is PBXGroup) {
-				var left = (PBXGroup) x;
-				var right = (PBXGroup) y;
-				return left.Name.CompareTo (right.Name) * sign;
-			}
-			
-			return 0;
 		}
 	}
 }

@@ -48,16 +48,12 @@ namespace MonoDevelop.Components.Commands
 {
 	public class KeyBindingManager : IDisposable
 	{
-		static bool isX11 = false;
-		
 		Dictionary<string, List<Command>> bindings = new Dictionary<string, List<Command>> ();
 		Dictionary<string, int> modes = new Dictionary<string, int> ();
 		List<Command> commands = new List<Command> ();
 		
 		static KeyBindingManager ()
 		{
-			isX11 = !isMac && System.Environment.OSVersion.Platform == PlatformID.Unix;
-			
 			if (isMac) {
 				SelectionModifierAlt = Gdk.ModifierType.Mod5Mask;
 				SelectionModifierControl = Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.MetaMask;
@@ -68,8 +64,6 @@ namespace MonoDevelop.Components.Commands
 				SelectionModifierSuper = Gdk.ModifierType.SuperMask;
 			}
 		}
-		
-		static Gdk.Keymap keymap = Gdk.Keymap.Default;
 		
 		static bool isMac {
 			get { return MonoDevelop.Core.Platform.IsMac; }
@@ -146,17 +140,11 @@ namespace MonoDevelop.Components.Commands
 		{
 			Gdk.Key key;
 			Gdk.ModifierType modifier;
-			uint keyVal;
-			Mono.TextEditor.GtkWorkarounds.MapRawKeys (raw, out key, out modifier, out keyVal);
+			Mono.TextEditor.KeyboardShortcut[] accels;
+			Mono.TextEditor.GtkWorkarounds.MapKeys (raw, out key, out modifier, out accels);
 			
-			//we restore shift modifier if it was consumed for a letter, as accelerators are always 
-			//displayed uppercase, so the shift key must be included in the binding
-			//Gdk.Keyval.IsUpper doesn't seem to work properly, so we use Char.IsUpper
-			bool shiftWasConsumed = ((raw.State ^ modifier) & Gdk.ModifierType.ShiftMask) != 0;
-			if (shiftWasConsumed && char.IsUpper ((char)Gdk.Keyval.ToUnicode ((uint)key)))
-				modifier |= Gdk.ModifierType.ShiftMask;
-			
-			return AccelFromKey (key, modifier, out complete);
+			//the first accel is the fully decomposed one
+			return AccelFromKey (accels[0].Key, accels[0].Modifier, out complete);
 		}
 		
 		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete)
@@ -484,7 +472,6 @@ namespace MonoDevelop.Components.Commands
 			return i < shortcut.Length && shortcut[i] == '|' && ModifierMask (shortcut.Substring (0, i)) != Gdk.ModifierType.None;
 		}
 		
-		//FIXME: run bindings through the keymap and MapRawKeys to consume shift modifier if possible
 		public static string CanonicalizeBinding (string binding)
 		{
 			Gdk.ModifierType modeMod, mod;

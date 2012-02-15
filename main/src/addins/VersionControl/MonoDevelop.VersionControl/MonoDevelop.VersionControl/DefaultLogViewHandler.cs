@@ -31,7 +31,7 @@ using MonoDevelop.VersionControl.Views;
 
 namespace MonoDevelop.VersionControl
 {
-	public class DefaultLogViewHandler : ILogViewHandler
+	public class DefaultLogViewHandler : IFastLogViewHandler
 	{
 		public bool CanHandle (VersionControlItem item)
 		{
@@ -40,7 +40,12 @@ namespace MonoDevelop.VersionControl
 		
 		public ILogView CreateView (VersionControlItem item, IViewContent primaryView)
 		{
-			return new LogView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+			return CreateView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+		}
+		
+		public ILogView CreateView (VersionControlDocumentInfo info)
+		{
+			return new LogView (info);
 		}
 	}
 }

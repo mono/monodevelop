@@ -43,9 +43,6 @@ namespace MonoDevelop.Html
 		
 		#region Service loading
 		
-		static object initLock = new object ();
-		static System.Threading.Thread loadingThread;
-		
 		public static void Initialise ()
 		{
 			if (schemas != null)

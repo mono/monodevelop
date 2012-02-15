@@ -730,7 +730,7 @@ namespace Mono.Debugging.Evaluation
 			
 			if (ctx.Options.ChunkRawStrings && IsString (ctx, obj)) {
 				IStringAdaptor adaptor = CreateStringAdaptor (ctx, obj);
-				return new RawValueString (new RemoteRawValueString (ctx, source, adaptor, obj));
+				return new RawValueString (new RemoteRawValueString (adaptor, obj));
 			}
 			
 			if (IsPrimitive (ctx, obj))

@@ -28,6 +28,7 @@
 
 using System;
 using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.XcodeIntegration
@@ -51,9 +52,9 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			}
 		}
 
-		public void AddChild (XcodeObject file)
+		public void AddChild (XcodeObject child)
 		{
-			children.Add (file);
+			children.Add (child);
 		}
 		
 		public override XcodeType Type {

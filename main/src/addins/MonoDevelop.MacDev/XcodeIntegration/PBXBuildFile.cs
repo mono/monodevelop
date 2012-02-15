@@ -33,19 +33,26 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 {
 	class PBXBuildFile : XcodeObject
 	{
-		PBXFileReference fileRef;
-
 		public PBXBuildFile (PBXFileReference fileRef)
 		{
-			this.fileRef = fileRef;
+			FileReference = fileRef;
+		}
+		
+		public PBXBuildFile (PBXVariantGroup fileRef)
+		{
+			FileReference = fileRef;
 		}
 
 		public XcodeObject BuildPhase {
 			get; set;
 		}
+		
+		public XcodeObject FileReference {
+			get; private set;
+		}
 
 		public override string Name {
-			get { return fileRef.Name; }
+			get { return FileReference.Name; }
 		}
 
 		public override XcodeType Type {
@@ -57,9 +64,9 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		public override string ToString ()
 		{
 			if (BuildPhase != null)
-				return string.Format ("{0} /* {1} in {2} */ = {{isa = {3}; fileRef = {4} /* {1} */; }};", Token, fileRef.Name, BuildPhase.Name, Type, fileRef.Token);
+				return string.Format ("{0} /* {1} in {2} */ = {{isa = {3}; fileRef = {4} /* {1} */; }};", Token, FileReference.Name, BuildPhase.Name, Type, FileReference.Token);
 			else
-				return string.Format ("{0} /* {1} */ = {{isa = {2}; fileRef = {3} /* {1} */; }};", Token, fileRef.Name, Type, fileRef.Token);
+				return string.Format ("{0} /* {1} */ = {{isa = {2}; fileRef = {3} /* {1} */; }};", Token, FileReference.Name, Type, FileReference.Token);
 		}
 	}
 }

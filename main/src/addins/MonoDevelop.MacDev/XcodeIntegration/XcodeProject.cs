@@ -133,42 +133,82 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		}
 		
 		public string Name { get { return name; } }
-
-		PBXBuildFile AddFile (string path, string tree, PBXGroup grp = null)
+		
+		PBXGroup CreateGroupFromPath (string path)
+		{
+			PBXGroup grp = projectGroup;
+			
+			var parts = path.Split (new [] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
+			for (int i = 0; i < parts.Length - 1; i++)
+				grp = (PBXGroup) (grp.GetGroup (parts[i]) ?? AddGroup (grp, parts[i]));
+			
+			return grp;
+		}
+		
+		PBXBuildFile AddFile (string path, string tree, PBXGroup grp)
 		{
 			var fileref = new PBXFileReference (path, tree);
 			var buildfile = new PBXBuildFile (fileref);
-
-			files.Add (fileref);
-			sources.Add (buildfile);
-			if (grp == null) {
-				grp = projectGroup;
-				
-				var parts = path.Split (new [] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
-				for (int i = 0; i < parts.Length - 1; i ++)
-					grp = (PBXGroup) (grp.GetGroup (parts [i]) ?? AddGroup (grp, parts [i]));
-			}
 			
+			files.Add (fileref);
 			grp.AddChild (fileref);
-
+			sources.Add (buildfile);
+			
 			return buildfile;
 		}
-
+		
 		public void AddResource (string path, PBXGroup grp = null)
 		{
-			resourcesBuildPhase.AddResource (AddFile (path, "\"<group>\"", grp));
+			string dir = Path.GetDirectoryName (path);
+			PBXBuildFile buildFile;
+			
+			if (dir.EndsWith (".lproj")) {
+				string name = Path.GetFileName (path);
+				PBXVariantGroup variant = GetGroup (name) as PBXVariantGroup;
+				
+				if (variant == null) {
+					variant = new PBXVariantGroup (name);
+					groups.Add (variant);
+					
+					if (grp == null)
+						projectGroup.AddChild (variant);
+					else
+						grp.AddChild (variant);
+					
+					buildFile = new PBXBuildFile (variant);
+					resourcesBuildPhase.AddResource (buildFile);
+				}
+				
+				string lang = dir.Substring (0, dir.LastIndexOf ('.'));
+				project.KnownRegions.Add (lang);
+				
+				var fileref = new PBXFileReference (path, "\"<group>\"");
+				variant.AddChild (fileref);
+				files.Add (fileref);
+			} else {
+				if (grp == null)
+					grp = CreateGroupFromPath (path);
+				
+				buildFile = AddFile (path, "\"<group>\"", grp);
+				resourcesBuildPhase.AddResource (buildFile);
+			}
 		}
 
-		public void AddPlist (string name)
+		public void AddPlist (string path)
 		{
-			var fileref = new PBXFileReference (name, "\"<group>\"");
+			var fileref = new PBXFileReference (path, "\"<group>\"");
 			files.Add (fileref);
 		}
 
-		public void AddSource (string name, PBXGroup grp = null)
+		public void AddSource (string path, PBXGroup grp = null)
 		{
-			//sourcesBuildPhase.AddSource (AddFile (Path.GetFileName (name), Path.GetDirectoryName (name), "\"<group>\""));
-			sourcesBuildPhase.AddSource (AddFile (name, "\"<group>\"", grp));
+			PBXBuildFile buildFile;
+			
+			if (grp == null)
+				grp = CreateGroupFromPath (path);
+			
+			buildFile = AddFile (path, "\"<group>\"", grp);
+			sourcesBuildPhase.AddSource (buildFile);
 		}
 		
 		public PBXGroup AddGroup (PBXGroup parent, string name)
@@ -193,7 +233,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 		{
 			foreach (var obj in parent) {
 				var grp = obj as PBXGroup;
-				if (grp != null && grp.Name ==name)
+				if (grp != null && grp.Name == name)
 					return grp;
 			}
 			return null;
@@ -207,7 +247,11 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 		public void AddFramework (string framework)
 		{
-			frameworksBuildPhase.AddFramework (AddFile (string.Format ("System/Library/Frameworks/{0}.framework", framework), "SDKROOT", frameworksGroup));
+			string path = string.Format ("System/Library/Frameworks/{0}.framework", framework);
+			PBXBuildFile buildFile;
+			
+			buildFile = AddFile (path, "SDKROOT", frameworksGroup);
+			frameworksBuildPhase.AddFramework (buildFile);
 		}
 
 		public void Generate (string outputPath)
@@ -301,8 +345,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.Append ("/* End PBXFrameworksBuildPhase section */\n\n");
 
 			sb.Append ("/* Begin PBXGroup section */\n");
-			foreach (var grp in groups)
-				sb.AppendFormat ("\t\t{0}\n", grp);
+			foreach (var grp in groups) {
+				if (grp.GetType () == typeof (PBXGroup))
+					sb.AppendFormat ("\t\t{0}\n", grp);
+			}
 			sb.Append ("/* End PBXGroup section */\n\n");
 
 			sb.Append ("/* Begin PBXNativeTarget section */\n");
@@ -322,7 +368,10 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.Append ("/* End PBXSourcesBuildPhase section */\n\n");
 
 			sb.Append ("/* Begin PBXVariantGroup section */\n");
-			// FIXME: add a PBXVariantGroup?
+			foreach (var grp in groups) {
+				if (grp.GetType () == typeof (PBXVariantGroup))
+					sb.AppendFormat ("\t\t{0}\n", grp);
+			}
 			sb.Append ("/* End PBXVariantGroup section */\n\n");
 
 			sb.Append ("/* Begin XCBuildConfiguration section */\n");

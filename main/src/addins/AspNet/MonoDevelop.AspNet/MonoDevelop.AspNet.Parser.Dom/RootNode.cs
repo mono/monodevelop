@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		public void Parse (string fileName, TextReader textStream)
 		{
 			var parser = new AspParser (fileName, textStream);
-			fileName = fileName;
+			this.fileName = fileName;
 			
 			parser.Error      += ParseError;
 			parser.TagParsed  += TagParsed;

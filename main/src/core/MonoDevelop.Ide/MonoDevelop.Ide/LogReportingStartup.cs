@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide
 				var sendOnce = new AlertButton (GettextCatalog.GetString ("_Send This Time"));
 				var alwaysSend = new AlertButton (GettextCatalog.GetString ("_Always Send"));
 				
-				AlertButton[] buttons = null;
 				string message = null;
 				string title = willShutdown
 					? GettextCatalog.GetString ("A fatal error has occurred")

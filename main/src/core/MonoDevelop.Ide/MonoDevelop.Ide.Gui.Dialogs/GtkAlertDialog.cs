@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		AlertButton[] buttons;
 		
 		Gtk.HBox  hbox  = new HBox ();
-		Gtk.Image image = new Image ();
+		Gtk.Image image;
 		Gtk.Label label = new Label ();
 		VBox labelsBox = new VBox (false, 6);
 		
@@ -58,7 +58,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void Init ()
 		{
 			VBox.PackStart (hbox);
-			hbox.PackStart (image, false, false, 0);
 			hbox.PackStart (labelsBox, true, true, 0);
 			labelsBox.PackStart (label, true, true, 0);
 				
@@ -103,7 +102,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				secondaryText = message.SecondaryText;
 			}
 			
-			image.Pixbuf = ImageService.GetPixbuf (message.Icon, IconSize.Dialog);
+			if (!string.IsNullOrEmpty (message.Icon)) {
+				image = new Image ();
+				image.Pixbuf = ImageService.GetPixbuf (message.Icon, IconSize.Dialog);
+				hbox.PackStart (image, false, false, 0);
+				hbox.ReorderChild (image, 0);
+			}
 			
 			StringBuilder markup = new StringBuilder (@"<span weight=""bold"" size=""larger"">");
 			markup.Append (GLib.Markup.EscapeText (primaryText));

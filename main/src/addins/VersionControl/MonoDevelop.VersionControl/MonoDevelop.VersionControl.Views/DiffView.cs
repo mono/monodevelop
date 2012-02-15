@@ -110,6 +110,8 @@ namespace MonoDevelop.VersionControl.Views
 			} else {
 				HandleComparisonWidgetSizeAllocated (null, new Gtk.SizeAllocatedArgs ());
 			}
+			
+			widget.UpdatePatchView ();
 		}
 
 		void HandleComparisonWidgetSizeAllocated (object o, Gtk.SizeAllocatedArgs args)

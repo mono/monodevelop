@@ -38,7 +38,6 @@ namespace MonoDevelop.AspNet
 	{
 		public static string GetXspName (AspNetExecutionCommand cmd)
 		{
-			string xspName;
 			switch (cmd.ClrVersion) {
 			case ClrVersion.Net_1_1:
 				return "xsp1";

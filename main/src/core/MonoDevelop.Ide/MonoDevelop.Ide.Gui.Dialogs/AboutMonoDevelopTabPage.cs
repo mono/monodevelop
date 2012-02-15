@@ -306,7 +306,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					this.scrolledUpPx += (int)(ticks * pixelsPerFrame * fps / TimeSpan.TicksPerSecond);
 				}
 				
-				int w, h;
 				this.QueueDrawArea (0, 0, Allocation.Width, imageHeight);
 				return true;
 			}
