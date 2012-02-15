@@ -40,58 +40,78 @@ namespace MonoDevelop.TypeSystem
 	public abstract class CodeGenerator
 	{
 		static Dictionary<string, MimeTypeExtensionNode> generators = new Dictionary<string, MimeTypeExtensionNode> ();
-		
+
 		public bool UseSpaceIndent {
 			get;
 			set;
 		}
-		
+
 		public string EolMarker {
 			get;
 			set;
 		}
-		
+
 		public int TabSize {
 			get;
 			set;
 		}
-		
+
 		public virtual PolicyContainer PolicyParent {
 			get;
 			set;
 		}
-		
-		public static CodeGenerator CreateGenerator (TextEditorData data)
+
+		public ICompilation Compilation {
+			get;
+			set;
+		}
+
+		public static CodeGenerator CreateGenerator (Ide.Gui.Document doc)
 		{
 			MimeTypeExtensionNode node;
-			if (!generators.TryGetValue (data.MimeType, out node))
+			if (!generators.TryGetValue (doc.Editor.MimeType, out node))
 				return null;
-			
+
 			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = data.Options.TabsToSpaces;
-			result.EolMarker = data.EolMarker;
-			result.TabSize = data.Options.TabSize;
+			result.UseSpaceIndent = doc.Editor.Options.TabsToSpaces;
+			result.EolMarker = doc.Editor.EolMarker;
+			result.TabSize = doc.Editor.Options.TabSize;
+			result.Compilation = doc.Compilation;
 			return result;
 		}
 		
+		public static CodeGenerator CreateGenerator (TextEditorData editor, ICompilation compilation)
+		{
+			MimeTypeExtensionNode node;
+			if (!generators.TryGetValue (editor.MimeType, out node))
+				return null;
+
+			var result = (CodeGenerator)node.CreateInstance ();
+			result.UseSpaceIndent = editor.Options.TabsToSpaces;
+			result.EolMarker = editor.EolMarker;
+			result.TabSize = editor.Options.TabSize;
+			result.Compilation = compilation;
+			return result;
+		}
+
 		protected void AppendLine (StringBuilder sb)
 		{
 			sb.Append (EolMarker);
 		}
-		
+
 		protected string GetIndent (int indentLevel)
 		{
 			if (UseSpaceIndent) 
 				return new string (' ', indentLevel * TabSize);
-				
+
 			return new string ('\t', indentLevel);
 		}
-		
+
 		public static bool HasGenerator (string mimeType)
 		{
 			return generators.ContainsKey (mimeType);
 		}
-		
+
 		static CodeGenerator ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/CodeGenerators", delegate (object sender, ExtensionNodeEventArgs args) {
@@ -106,46 +126,51 @@ namespace MonoDevelop.TypeSystem
 				}
 			});
 		}
-		
+
 		public int IndentLevel {
 			get;
 			set;
 		}
-		
+
 		public CodeGenerator ()
 		{
 			IndentLevel = -1;
 		}
-		
+
 		public static void AddGenerator (MimeTypeExtensionNode node)
 		{
 			generators [node.MimeType] = node;
 		}
-		
+
 		public static void RemoveGenerator (MimeTypeExtensionNode node)
 		{
 			generators.Remove (node.MimeType);
 		}
-		
+
 		protected void SetIndentTo (IUnresolvedTypeDefinition implementingType)
 		{
 			if (IndentLevel < 0)
 				IndentLevel = CodeGenerationService.CalculateBodyIndentLevel (implementingType);
 		}
-		
+
 		public string CreateInterfaceImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition implementingPart, IType interfaceType, bool explicitly, bool wrapRegions = true)
 		{
 			SetIndentTo (implementingPart);
 			StringBuilder result = new StringBuilder ();
 			List<IMember> implementedMembers = new List<IMember> ();
-			var def = interfaceType.GetDefinition ();
-			string implementation = InternalCreateInterfaceImplementation (implementingType, implementingPart, def, explicitly, implementedMembers);
-			if (string.IsNullOrWhiteSpace (implementation))
-				return "";
-			if (wrapRegions) {
-				result.Append (WrapInRegions (def.Name + " implementation", implementation));
-			} else {
-				result.Append (implementation);
+			foreach (var def in interfaceType.GetAllBaseTypes ().Where (bt => bt.Kind == TypeKind.Interface)) {
+				if (result.Length > 0) {
+					AppendLine (result);
+					AppendLine (result);
+				}
+				string implementation = InternalCreateInterfaceImplementation (implementingType, implementingPart, def, explicitly, implementedMembers);
+				if (string.IsNullOrWhiteSpace (implementation))
+					continue;
+				if (wrapRegions) {
+					result.Append (WrapInRegions (def.Name + " implementation", implementation));
+				} else {
+					result.Append (implementation);
+				}
 			}
 			return result.ToString ();
 		}
@@ -159,23 +184,23 @@ namespace MonoDevelop.TypeSystem
 
 		public static List<KeyValuePair<IMember, bool>> CollectMembersToImplement (ITypeDefinition implementingType, IType interfaceType, bool explicitly)
 		{
+			var def = interfaceType.GetDefinition ();
 			List<KeyValuePair<IMember, bool>> toImplement = new List<KeyValuePair<IMember, bool>> ();
 			bool alreadyImplemented;
-			
 			// Stub out non-implemented events defined by @iface
-			foreach (var ev in interfaceType.GetEvents (e => !e.IsSynthetic)) {
+			foreach (var ev in interfaceType.GetEvents (e => !e.IsSynthetic && e.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = implementingType.GetAllBaseTypeDefinitions ().Any (x => x.Kind != TypeKind.Interface && x.Events.Any (y => y.Name == ev.Name));
-				
+
 				if (!alreadyImplemented)
 					toImplement.Add (new KeyValuePair<IMember, bool> (ev, needsExplicitly));
 			}
-			
+
 			// Stub out non-implemented methods defined by @iface
-			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic && d.DeclaringTypeDefinition.Kind == TypeKind.Interface)) {
-				Console.WriteLine ("method:" +method);
+			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic && d.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
+				
 				foreach (var cmet in implementingType.GetMethods ()) {
 					if (CompareMethods (method, cmet)) {
 						if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
@@ -187,9 +212,9 @@ namespace MonoDevelop.TypeSystem
 				if (!alreadyImplemented) 
 					toImplement.Add (new KeyValuePair<IMember, bool> (method, needsExplicitly));
 			}
-			
+
 			// Stub out non-implemented properties defined by @iface
-			foreach (var prop in interfaceType.GetProperties (p => !p.IsSynthetic)) {
+			foreach (var prop in interfaceType.GetProperties (p => !p.IsSynthetic && p.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
@@ -214,7 +239,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			StringBuilder result = new StringBuilder ();
 			var toImplement = CollectMembersToImplement (implementingType, interfaceType, explicitly);
-			
+
 			bool first = true;
 			foreach (var pair in toImplement) {
 				if (!first) {
@@ -225,6 +250,7 @@ namespace MonoDevelop.TypeSystem
 				}
 				bool isExplicit = pair.Value;
 				foreach (var member in implementedMembers.Where (m => m.Name == pair.Key.Name && m.EntityType == pair.Key.EntityType)) {
+					
 					if (member is IMethod && pair.Key is IMethod) {
 						var method = (IMethod)member;
 						var othermethod = (IMethod)pair.Key;
@@ -236,17 +262,16 @@ namespace MonoDevelop.TypeSystem
 				result.Append (CreateMemberImplementation (implementingType, part, pair.Key, isExplicit).Code);
 				implementedMembers.Add (pair.Key);
 			}
-			Console.WriteLine ("result:");
-			Console.WriteLine (result);
+
 			return result.ToString ();
 		}
-		
+
 		public abstract string WrapInRegions (string regionName, string text);
 		public abstract CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition part, IUnresolvedMember member, bool explicitDeclaration);
 		public abstract CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition part, IMember member, bool explicitDeclaration);
-		
+
 		public abstract string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly);
-		
+
 		public abstract void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName);
 		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation);
 
@@ -254,13 +279,13 @@ namespace MonoDevelop.TypeSystem
 
 		public abstract void CompleteStatement (MonoDevelop.Ide.Gui.Document doc);
 	}
-	
+
 	public class CodeGeneratorMemberResult
 	{
 		public CodeGeneratorMemberResult (string code) : this (code, null)
 		{
 		}
-		
+
 		public CodeGeneratorMemberResult (string code, int bodyStartOffset, int bodyEndOffset)
 		{
 			this.Code = code;
@@ -268,18 +293,18 @@ namespace MonoDevelop.TypeSystem
 				new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset)
 			};
 		}
-		
+
 		public CodeGeneratorMemberResult (string code, IList<CodeGeneratorBodyRegion> bodyRegions)
 		{
 			this.Code = code;
 			this.BodyRegions = bodyRegions ?? new CodeGeneratorBodyRegion[0];
 		}
-		
+
 		public string Code { get; private set; }
 
 		public IList<CodeGeneratorBodyRegion> BodyRegions { get; private set; }
 	}
-	
+
 	public class CodeGeneratorBodyRegion
 	{
 		public CodeGeneratorBodyRegion (int startOffset, int endOffset)
@@ -291,13 +316,13 @@ namespace MonoDevelop.TypeSystem
 		public int StartOffset { get; private set; }
 
 		public int EndOffset { get; private set; }
-		
+
 		public int Length {
 			get {
 				return EndOffset - StartOffset;
 			}
 		}
-		
+
 		public bool IsValid {
 			get {
 				return StartOffset >= 0 && Length >= 0;

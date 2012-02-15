@@ -66,6 +66,12 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
+		public new MonoDevelop.Ide.Gui.Document Document {
+			get {
+				return base.document;
+			}
+		}
+		
 		CSharpParsedFile CSharpParsedFile {
 			get;
 			set;

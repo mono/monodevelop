@@ -111,7 +111,7 @@ namespace MonoDevelop.Refactoring
 		
 		public CodeGenerator CreateCodeGenerator ()
 		{
-			var result = CodeGenerator.CreateGenerator (Document.Editor);
+			var result = CodeGenerator.CreateGenerator (Document);
 			if (result == null)
 				LoggingService.LogError ("Generator can't be generated for : " + Document.Editor.MimeType);
 			return result;

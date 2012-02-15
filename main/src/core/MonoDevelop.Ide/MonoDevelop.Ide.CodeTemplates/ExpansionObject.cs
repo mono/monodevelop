@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (result != null) {
 					var componentType = GetElementType (result.Type);
 					if (componentType.Kind != TypeKind.Unknown) {
-						var generator = CodeGenerator.CreateGenerator (CurrentContext.Document.Editor);
+						var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
 						if (generator != null)
 							return generator.GetShortTypeString (CurrentContext.Document, componentType);
 					}
@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var type = CurrentContext.Compilation.LookupType (ns, name);
 			if (type == null || type.Kind == TypeKind.Unknown)
 				return fullTypeName;
-			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document.Editor);
+			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
 			if (generator != null)
 				return generator.GetShortTypeString (CurrentContext.Document, type) + member;
 			return fullTypeName;

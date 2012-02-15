@@ -91,7 +91,7 @@ namespace MonoDevelop.TypeSystem
 			
 			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, newMember);
 			
-			var generator = CreateCodeGenerator (data);
+			var generator = CreateCodeGenerator (data, type.Compilation);
 
 			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.Region.Begin));
 			var generatedCode = generator.CreateMemberImplementation (type, part, newMember, implementExplicit);
@@ -141,7 +141,7 @@ namespace MonoDevelop.TypeSystem
 			
 			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, firstNewMember);
 			
-			var generator = CreateCodeGenerator (data);
+			var generator = CreateCodeGenerator (data, type.Compilation);
 			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (part.Region.Begin));
 			StringBuilder sb = new StringBuilder ();
 			foreach (var newMember in newMembers) {
@@ -162,9 +162,14 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static CodeGenerator CreateCodeGenerator (TextEditorData data)
+		static CodeGenerator CreateCodeGenerator (Ide.Gui.Document doc)
 		{
-			return CodeGenerator.CreateGenerator (data);
+			return CodeGenerator.CreateGenerator (doc);
+		}
+		
+		static CodeGenerator CreateCodeGenerator (TextEditorData data, ICompilation compilation)
+		{
+			return CodeGenerator.CreateGenerator (data, compilation);
 		}
 		
 		protected static IUnresolvedTypeDefinition GetMainPart (IType t)

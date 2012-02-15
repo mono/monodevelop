@@ -211,7 +211,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (type == null)
 				throw new ArgumentNullException ("type");
 			var implementingType = options.Part;
-			var loc = implementingType.Region.Begin;
+			var loc = implementingType.Region.End;
 			
 			var pf = implementingType.ParsedFile;
 			var file = pf as CSharpParsedFile;
@@ -225,9 +225,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				using (var stringWriter = new System.IO.StringWriter ()) {
 					var formatter = new TextWriterOutputFormatter (stringWriter);
 					stringWriter.NewLine = EolMarker; 
-						var visitor = new CSharpOutputVisitor (formatter, new CSharpFormattingOptions ());
-						var shortType = CreateShortType (def.Compilation, file, loc, resolved);
-						shortType.AcceptVisitor (visitor, null);
+					var visitor = new CSharpOutputVisitor (formatter, new CSharpFormattingOptions ());
+					var shortType = CreateShortType (def.Compilation, file, loc, resolved);
+					shortType.AcceptVisitor (visitor, null);
 					
 					var typeString = stringWriter.ToString ();
 					if (typeString.StartsWith ("global::"))

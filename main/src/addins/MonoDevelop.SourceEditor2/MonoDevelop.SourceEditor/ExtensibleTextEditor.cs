@@ -977,9 +977,9 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.CompleteStatement)]
 		internal void OnCompleteStatement ()
 		{
-			var generator = CodeGenerator.CreateGenerator (GetTextEditorData ());
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var generator = CodeGenerator.CreateGenerator (doc);
 			if (generator != null) {
-				var doc = IdeApp.Workbench.ActiveDocument;
 				generator.CompleteStatement (doc);
 			}
 		}

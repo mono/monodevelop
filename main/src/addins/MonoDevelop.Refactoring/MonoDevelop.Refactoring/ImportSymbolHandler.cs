@@ -140,7 +140,7 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (!window.WasShiftPressed && generateUsing) {
-				var generator = CodeGenerator.CreateGenerator (doc.Editor);
+				var generator = CodeGenerator.CreateGenerator (doc);
 				if (generator != null) {
 					generator.AddGlobalNamespaceImport (doc, type.Namespace);
 					// reparse

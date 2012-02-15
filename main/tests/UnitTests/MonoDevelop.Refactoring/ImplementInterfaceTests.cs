@@ -66,6 +66,7 @@ namespace MonoDevelop.Refactoring
 			
 			var gen = new CSharpCodeGenerator ();
 			gen.EolMarker = "\n";
+			gen.Compilation = pctx;
 			string generated = gen.CreateInterfaceImplementation (stubType, stubType.Parts.First (), iface, false);
 			Assert.IsNotEmpty (generated);
 			// crop #region
@@ -173,6 +174,8 @@ interface ITest {
 		public void TestBug3365 ()
 		{
 			TestCreateInterface (@"using System;
+using System.Collections;
+
 public interface IA
 {
 	bool GetEnumerator ();
@@ -181,17 +184,17 @@ public interface IA
 public interface ITest : IA, IEnumerable
 {
 }
-", @"public bool IA.GetEnumerator ()
-		{
-			throw new System.NotImplementedException ();
-		}
-		#endregion
+", @"public bool GetEnumerator ()
+	{
+		throw new System.NotImplementedException ();
+	}
+	#endregion
 
-		#region IEnumerable implementation
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			throw new System.NotImplementedException ();
-		}");
+	#region IEnumerable implementation
+	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+	{
+		throw new System.NotImplementedException ();
+	}");
 		}
 	}
 }
