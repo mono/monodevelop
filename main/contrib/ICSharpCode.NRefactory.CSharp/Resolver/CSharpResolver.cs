@@ -1354,10 +1354,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			if (context.CurrentUsingScope != null) {
 				if (k == 0 && lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration) {
-					if (!context.CurrentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
+//					if (!context.CurrentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
 						r = LookInCurrentUsingScope(identifier, typeArguments, false, false);
-						r = context.CurrentUsingScope.ResolveCache.GetOrAdd(identifier, r);
-					}
+//						r = context.CurrentUsingScope.ResolveCache.GetOrAdd(identifier, r);
+//					}
 				} else {
 					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == SimpleNameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
 				}
