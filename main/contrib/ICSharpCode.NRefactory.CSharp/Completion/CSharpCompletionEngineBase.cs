@@ -225,48 +225,80 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var bracketStack = new Stack<Tuple<char, int>> ();
 			
-			bool isInString = false, isInChar = false;
-			bool isInLineComment = false, isInBlockComment = false;
+			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
 			
-			for (int pos = 0; pos < memberText.Length; pos++) {
-				char ch = memberText [pos];
+			for (int i = 0; i < memberText.Length; i++) {
+				char ch = memberText [i];
+				char nextCh = i + 1 < memberText.Length ? memberText [i + 1] : '\0';
 				switch (ch) {
 				case '(':
 				case '[':
 				case '{':
-					if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
-						bracketStack.Push (Tuple.Create (ch, pos));
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					bracketStack.Push (Tuple.Create (ch, i));
 					break;
 				case ')':
 				case ']':
 				case '}':
-					if (!isInString && !isInChar && !isInLineComment && !isInBlockComment)
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
 					if (bracketStack.Count > 0)
 						bracketStack.Pop ();
 					break;
-				case '\r':
-				case '\n':
-					isInLineComment = false;
-					break;
 				case '/':
-					if (isInBlockComment) {
-						if (pos > 0 && memberText [pos - 1] == '*') 
-							isInBlockComment = false;
-					} else if (!isInString && !isInChar && pos + 1 < memberText.Length) {
-						char nextChar = memberText [pos + 1];
-						if (nextChar == '/')
-							isInLineComment = true;
-						if (!isInLineComment && nextChar == '*')
-							isInBlockComment = true;
+					if (inString || inChar || inVerbatimString)
+						break;
+					if (nextCh == '/') {
+						i++;
+						inSingleComment = true;
+					}
+					if (nextCh == '*')
+						inMultiLineComment = true;
+					break;
+				case '*':
+					if (inString || inChar || inVerbatimString || inSingleComment)
+						break;
+					if (nextCh == '/') {
+						i++;
+						inMultiLineComment = false;
 					}
 					break;
+				case '@':
+					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
+						break;
+					if (nextCh == '"') {
+						i++;
+						inVerbatimString = true;
+					}
+					break;
+				case '\n':
+				case '\r':
+					inSingleComment = false;
+					inString = false;
+					inChar = false;
+					break;
+				case '\\':
+					if (inString || inChar)
+						i++;
+					break;
 				case '"':
-					if (!(isInChar || isInLineComment || isInBlockComment)) 
-						isInString = !isInString;
+					if (inSingleComment || inMultiLineComment || inChar)
+						break;
+					if (inVerbatimString) {
+						if (nextCh == '"') {
+							i++;
+							break;
+						}
+						inVerbatimString = false;
+						break;
+					}
+					inString = !inString;
 					break;
 				case '\'':
-					if (!(isInString || isInLineComment || isInBlockComment)) 
-						isInChar = !isInChar;
+					if (inSingleComment || inMultiLineComment || inString || inVerbatimString)
+						break;
+					inChar = !inChar;
 					break;
 				default :
 					break;
@@ -369,6 +401,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
+			                   
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
