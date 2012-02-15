@@ -49,10 +49,6 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="ICSharpCode.NRefactory, Version=0.0.0.0, Culture=neutral, PublicKeyToken=efe927acf176eea2">
-      <Private>False</Private>
-      <Package>monodevelop</Package>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -151,6 +147,10 @@
       <Project>{0EA3AD14-404A-4D3F-979B-F087E2E70C82}</Project>
       <Name>MonoDevelop.AssemblyBrowser</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>
