@@ -215,6 +215,7 @@ namespace MonoDevelop.Projects.Gui
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
 				DefaultCompletionString = settings.DefaultCompletionString
 			};
+			listWindow.List.FilterWords ();
 			listWindow.UpdateWordSelection ();
 			listWindow.ResetSizes ();
 			return listWindow;

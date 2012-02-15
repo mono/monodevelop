@@ -508,11 +508,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			int idx = -1;
 			var matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
-			
 			string bestWord = null;
 			int bestRank = int.MinValue;
 			int bestIndex = 0;
-			
 			if (!string.IsNullOrEmpty (partialWord)) {
 				for (int i = 0; i < list.filteredItems.Count; i++) {
 					int index = list.filteredItems[i];
@@ -527,7 +525,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			
 			if (bestWord != null) {
 				idx = bestIndex;
 				hasMismatches = false;
@@ -585,8 +582,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual void SelectEntry (string s)
 		{
-			list.FilterWords ();
-			/* // disable this, because we select now the last selected entry by default (word history mode)
+			/*list.FilterWords ();
+			 // disable this, because we select now the last selected entry by default (word history mode)
 			//when the list is empty, disable the selection or users get annoyed by it accepting
 			//the top entry automatically
 			if (string.IsNullOrEmpty (s)) {

@@ -263,13 +263,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				initialWordLength = text.Length /*+ completionWidget.SelectedLength*/;
 				StartOffset = completionWidget.CaretOffset - initialWordLength;
 				HideWhenWordDeleted = initialWordLength != 0;
+				ResetSizes ();
 				UpdateWordSelection ();
 				//if there is only one matching result we take it by default
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 					CompleteWord ();
 					CompletionWindowManager.HideWindow ();
 				} else {
-					ResetSizes ();
 					ShowAll ();
 					UpdateDeclarationView ();
 				}
@@ -302,10 +302,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			//which makes completion triggering noticeably more responsive
 			if (!completionDataList.IsSorted)
 				completionDataList.Sort (new DataItemComparer ());
-			List.FilterWords ();
 			
 			Reposition (true);
-			
 			return true;
 		}
 		
