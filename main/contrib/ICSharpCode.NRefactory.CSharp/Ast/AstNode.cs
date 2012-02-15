@@ -136,6 +136,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
+		/// Returns true, if the given coordinates are in the node.
+		/// </summary>
+		public bool IsInside (TextLocation location)
+		{
+			return StartLocation <= location && location <= EndLocation;
+		}
+		
+		/// <summary>
+		/// Returns true, if the given coordinates (line, column) are in the node.
+		/// </summary>
+		public bool IsInside(int line, int column)
+		{
+			return IsInside(new TextLocation (line, column));
+		}
+		
+		/// <summary>
 		/// Gets the region from StartLocation to EndLocation for this node.
 		/// The file name of the region is set based on the parent CompilationUnit's file name.
 		/// If this node is not connected to a whole compilation, the file name will be null.

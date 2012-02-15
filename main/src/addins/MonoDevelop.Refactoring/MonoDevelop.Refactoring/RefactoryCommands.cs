@@ -352,25 +352,33 @@ namespace MonoDevelop.Refactoring
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
 			bool resolveDirect = true;
-			
 			HashSet<string> possibleNamespaces = new HashSet<string> ();
 			List<string> usedNamespaces = new List<string> ();
+			
+			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var attribute = unit != null ? unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (options.Document.Editor.Caret.Location) : null;
+			
+			bool isInsideAttributeType = attribute != null && attribute.Type.IsInside (options.Document.Editor.Caret.Location);
+				
+			
 			if (resolveResult is UnknownIdentifierResolveResult) {
 				usedNamespaces = options.GetUsedNamespaces ();
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
+				string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
 				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
-					if (typeDefinition.Name == uiResult.Identifier) {
+					if (typeDefinition.Name == uiResult.Identifier || typeDefinition.Name == possibleAttributeName)
 						possibleNamespaces.Add (typeDefinition.Namespace);
-					}
+					
 				}
 			} else if (resolveResult is UnknownMemberResolveResult) {
 				usedNamespaces = options.GetUsedNamespaces ();
 				var umResult = (UnknownMemberResolveResult)resolveResult;
 				var conv = new Conversions (options.Document.Compilation);
 				var baseTypes = new List<IType> (umResult.TargetType.GetAllBaseTypes ());
+				string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : null;
 				
 				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ().Where (t => t.HasExtensionMethods && !usedNamespaces.Contains (t.Namespace))) {
-					foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod && m.Name == umResult.MemberName)) {
+					foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == umResult.MemberName || m.Name == possibleAttributeName))) {
 						var pType = m.Parameters.First ().Type;
 						foreach (var baseType in baseTypes) {
 							if (conv.ImplicitConversion (pType, baseType) != Conversion.None) {
