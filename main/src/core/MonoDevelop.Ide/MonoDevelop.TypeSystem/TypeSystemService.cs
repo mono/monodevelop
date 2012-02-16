@@ -1423,11 +1423,10 @@ namespace MonoDevelop.TypeSystem
 				if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 					continue;
 				var fileName = file.Name;
+				if (!IsFileModified (file, content.Content.GetFile (fileName)))
+					continue;
 				var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName));
 				if (parser == null)
-					continue;
-				
-				if (!IsFileModified (file, content.Content.GetFile (fileName)))
 					continue;
 				if (modifiedFiles == null)
 					modifiedFiles = new List<ProjectFile> ();
