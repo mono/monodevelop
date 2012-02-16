@@ -1,5 +1,5 @@
 DLLNAME = MonoDevelop.SourceEditor2.dll
-ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
+ASSEMBLY = $(top_builddir)/build/AddIns/DisplayBindings/SourceEditor/$(DLLNAME)
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -79,7 +79,7 @@ REFS =  \
 	-r:System.Core \
 	-r:System.Xml
 
-ADDIN_BUILD = $(top_builddir)/build/AddIns
+ADDIN_BUILD = $(top_builddir)/build/AddIns/DisplayBindings/SourceEditor
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
