@@ -2111,7 +2111,7 @@ namespace Mono.TextEditor
 			int caretOffset = Caret.Offset;
 			bool isEolFolded = false;
 		restart:
-			int logicalRulerColumn = line.GetLogicalColumn(textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
+			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 			
 			foreach (FoldSegment folding in foldings) {
 				int foldOffset = folding.StartLine.Offset + folding.Column - 1;
@@ -2149,7 +2149,6 @@ namespace Mono.TextEditor
 
 					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
 						SetVisibleCaretPosition ((int)(pangoPosition / Pango.Scale.PangoScale), y);
-
 					pangoPosition += width;
 
 					if (folding.EndLine != line) {
@@ -2202,11 +2201,19 @@ namespace Mono.TextEditor
 
 			if (!isSelectionDrawn) {
 				if (isEolSelected) {
-					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
-					lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale - 1,
+					if (Platform.IsWindows) {
+						// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
+						lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale,
 						lineArea.Y,
 						textEditor.Allocation.Width - pangoPosition / Pango.Scale.PangoScale + 1,
 						lineArea.Height);
+					} else {
+						// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
+						lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale - 1,
+						lineArea.Y,
+						textEditor.Allocation.Width - pangoPosition / Pango.Scale.PangoScale + 1,
+						lineArea.Height);
+					}
 					
 					DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.CairoBackgroundColor, false);
 				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
