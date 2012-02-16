@@ -454,6 +454,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				token = GetPreviousToken (ref tokenIndex, false);
 				if (token == "class" || token == "interface" || token == "struct" || token == "enum" || token == "namespace") // after these always follows a name
 					return null;
+				var keywordresult = HandleKeywordCompletion (tokenIndex, token);
+				if (keywordresult != null)
+					return keywordresult;
 				int prevTokenIndex = tokenIndex;
 				var prevToken2 = GetPreviousToken (ref prevTokenIndex, false);
 				if (prevToken2 == "delegate") // after these always follows a name
@@ -464,6 +467,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return HandleKeywordCompletion (tokenIndex, token);
 					}
 				}
+				
 				if (identifierStart == null) {
 					var accCtx = HandleAccessorContext ();
 					if (accCtx != null)
@@ -1067,7 +1071,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				var isAsWrapper = new CompletionDataWrapper (this);
-				AddTypesAndNamespaces (isAsWrapper, GetState (), null, t => isAsType == null || t.GetDefinition ().IsDerivedFrom (isAsType.GetDefinition ()));
+				AddTypesAndNamespaces (isAsWrapper, GetState (), null, t => isAsType == null || t.GetDefinition ().IsDerivedFrom (isAsType.GetDefinition ()), m => false);
 				return isAsWrapper.Result;
 //					{
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();
@@ -1174,9 +1178,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return accessorContext;
 				wrapper = new CompletionDataWrapper (this);
 				state = GetState ();
-				AddTypesAndNamespaces (wrapper, state, null, null, m => false);
+				if (currentType != null) {
+					AddTypesAndNamespaces (wrapper, state, null, null, m => false);
+					AddKeywords (wrapper, primitiveTypesKeywords);
+				}
 				AddKeywords (wrapper, typeLevelKeywords);
-				AddKeywords (wrapper, primitiveTypesKeywords);
 				return wrapper.Result;
 			case "new":
 				int j = offset - 4;
