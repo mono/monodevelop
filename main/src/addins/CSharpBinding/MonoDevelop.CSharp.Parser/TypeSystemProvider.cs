@@ -104,70 +104,70 @@ namespace MonoDevelop.CSharp.Parser
 			public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 			{
 				if (!typeDeclaration.RBraceToken.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (typeDeclaration.LBraceToken.GetPrevNode ().EndLocation, typeDeclaration.RBraceToken.EndLocation), FoldType.Type));
+					Foldings.Add (new FoldingRegion (new DomRegion (typeDeclaration.LBraceToken.GetPrevNode ().EndLocation, typeDeclaration.RBraceToken.StartLocation), FoldType.Type));
 				return base.VisitTypeDeclaration (typeDeclaration, data);
 			}
 			
 			public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 			{
 				if (!methodDeclaration.Body.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (methodDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, methodDeclaration.Body.RBraceToken.EndLocation), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (methodDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, methodDeclaration.Body.RBraceToken.StartLocation), FoldType.Member));
 				return base.VisitMethodDeclaration (methodDeclaration, data);
 			}
 			
 			public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
 			{
 				if (!constructorDeclaration.Body.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (constructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, constructorDeclaration.Body.RBraceToken.EndLocation), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (constructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, constructorDeclaration.Body.RBraceToken.StartLocation), FoldType.Member));
 				return base.VisitConstructorDeclaration (constructorDeclaration, data);
 			}
 			
 			public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
 			{
 				if (!destructorDeclaration.Body.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (destructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, destructorDeclaration.Body.RBraceToken.EndLocation), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (destructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, destructorDeclaration.Body.RBraceToken.StartLocation), FoldType.Member));
 				return base.VisitDestructorDeclaration (destructorDeclaration, data);
 			}
 			
 			public override object VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, object data)
 			{
 				if (!operatorDeclaration.Body.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (operatorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, operatorDeclaration.Body.RBraceToken.EndLocation), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (operatorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, operatorDeclaration.Body.RBraceToken.StartLocation), FoldType.Member));
 				return base.VisitOperatorDeclaration (operatorDeclaration, data);
 			}
 			
 			public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 			{
 				if (!propertyDeclaration.LBraceToken.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (propertyDeclaration.LBraceToken.GetPrevNode ().EndLocation, propertyDeclaration.RBraceToken.EndLocation), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (propertyDeclaration.LBraceToken.GetPrevNode ().EndLocation, propertyDeclaration.RBraceToken.StartLocation), FoldType.Member));
 				return base.VisitPropertyDeclaration (propertyDeclaration, data);
 			}
 			
 			public override object VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, object data)
 			{
 				if (!indexerDeclaration.LBraceToken.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (indexerDeclaration.LBraceToken.GetPrevNode ().EndLocation, indexerDeclaration.RBraceToken.EndLocation), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (indexerDeclaration.LBraceToken.GetPrevNode ().EndLocation, indexerDeclaration.RBraceToken.StartLocation), FoldType.Member));
 				return base.VisitIndexerDeclaration (indexerDeclaration, data);
 			}
 			
 			public override object VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, object data)
 			{
 				if (!eventDeclaration.LBraceToken.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (eventDeclaration.LBraceToken.GetPrevNode ().EndLocation, eventDeclaration.RBraceToken.EndLocation), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (eventDeclaration.LBraceToken.GetPrevNode ().EndLocation, eventDeclaration.RBraceToken.StartLocation), FoldType.Member));
 				return base.VisitCustomEventDeclaration (eventDeclaration, data);
 			}
 			
 			public override object VisitSwitchStatement (SwitchStatement switchStatement, object data)
 			{
 				if (!switchStatement.RBraceToken.IsNull)
-					Foldings.Add (new FoldingRegion (new DomRegion (switchStatement.LBraceToken.GetPrevNode ().EndLocation, switchStatement.RBraceToken.EndLocation), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (switchStatement.LBraceToken.GetPrevNode ().EndLocation, switchStatement.RBraceToken.StartLocation), FoldType.Member));
 				return base.VisitSwitchStatement (switchStatement, data);
 			}
 			
 			public override object VisitBlockStatement (BlockStatement blockStatement, object data)
 			{
 				if (!(blockStatement.Parent is AttributedNode) && blockStatement.EndLocation.Line - blockStatement.StartLocation.Line > 2) {
-					Foldings.Add (new FoldingRegion (new DomRegion (blockStatement.GetPrevNode ().EndLocation, blockStatement.EndLocation), FoldType.Undefined));
+					Foldings.Add (new FoldingRegion (new DomRegion (blockStatement.GetPrevNode ().EndLocation, blockStatement.RBraceToken.StartLocation), FoldType.Undefined));
 				}
 				
 				return base.VisitBlockStatement (blockStatement, data);
