@@ -130,9 +130,45 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			get { return compilation; }
 		}
 		
-		bool IAssembly.InternalsVisibleTo(IAssembly assembly)
+		public bool InternalsVisibleTo(IAssembly assembly)
 		{
-			return this == assembly;
+			if (this == assembly)
+				return true;
+			foreach (string shortName in GetInternalsVisibleTo()) {
+				if (assembly.AssemblyName == shortName)
+					return true;
+			}
+			return false;
+		}
+		
+		volatile string[] internalsVisibleTo;
+		
+		string[] GetInternalsVisibleTo()
+		{
+			var result = this.internalsVisibleTo;
+			if (result != null) {
+				return result;
+			} else {
+				internalsVisibleTo = (
+					from attr in this.AssemblyAttributes
+					where attr.AttributeType.Name == "InternalsVisibleToAttribute"
+					&& attr.AttributeType.Namespace == "System.Runtime.CompilerServices"
+					&& attr.PositionalArguments.Count == 1
+					select GetShortName(attr.PositionalArguments.Single().ConstantValue as string)
+				).ToArray();
+				return internalsVisibleTo;
+			}
+		}
+		
+		static string GetShortName(string fullAssemblyName)
+		{
+			if (fullAssemblyName == null)
+				return null;
+			int pos = fullAssemblyName.IndexOf(',');
+			if (pos < 0)
+				return fullAssemblyName;
+			else
+				return fullAssemblyName.Substring(0, pos);
 		}
 		
 		Dictionary<FullNameAndTypeParameterCount, DefaultResolvedTypeDefinition> typeDict;

@@ -301,20 +301,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		internal void LogCandidateAddingResult(string text, IParameterizedMember method, OverloadResolutionErrors errors)
 		{
 			#if DEBUG
-			StringBuilder b = new StringBuilder(text);
-			b.Append(' ');
-			b.Append(method);
-			b.Append(" = ");
-			if (errors == OverloadResolutionErrors.None)
-				b.Append("Success");
-			else
-				b.Append(errors);
-			if (this.BestCandidate == method) {
-				b.Append(" (best candidate so far)");
-			} else if (this.BestCandidateAmbiguousWith == method) {
-				b.Append(" (ambiguous)");
-			}
-			Log.WriteLine(b.ToString());
+			Log.WriteLine(string.Format("{0} {1} = {2}{3}",
+			                            text, method,
+			                            errors == OverloadResolutionErrors.None ? "Success" : errors.ToString(),
+			                            this.BestCandidate == method ? " (best candidate so far)" :
+			                            this.BestCandidateAmbiguousWith == method ? " (ambiguous)" : ""
+			                           ));
 			#endif
 		}
 		#endregion

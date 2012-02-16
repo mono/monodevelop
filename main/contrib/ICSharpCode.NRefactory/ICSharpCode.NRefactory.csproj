@@ -241,6 +241,8 @@
     <Compile Include="IAnnotatable.cs" />
     <Compile Include="Semantics\Conversion.cs" />
     <Compile Include="Semantics\ConversionResolveResult.cs" />
+    <Compile Include="TypeSystem\Implementation\ExplicitInterfaceImplementationMemberReference.cs" />
+    <Compile Include="TypeSystem\Implementation\SpecializingMemberReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />

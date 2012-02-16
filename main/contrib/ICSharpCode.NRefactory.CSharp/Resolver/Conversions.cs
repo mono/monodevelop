@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
@@ -55,13 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public static Conversions Get(ICompilation compilation)
 		{
-			CacheManager cache = compilation.CacheManager;
-			Conversions conversions = (Conversions)cache.GetThreadLocal(typeof(Conversions));
-			if (conversions == null) {
-				conversions = new Conversions(compilation);
-				cache.SetThreadLocal(typeof(Conversions), conversions);
-			}
-			return conversions;
+			return new Conversions(compilation);
 		}
 		
 		#region TypePair (for caching)
@@ -388,7 +383,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool NullLiteralConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.5
-			if (SpecialType.NullType.Equals(fromType)) {
+			if (fromType.Kind == TypeKind.Null) {
 				return NullableType.IsNullable(toType) || toType.IsReferenceType == true;
 			} else {
 				return false;
@@ -438,7 +433,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool IsSubtypeOf(IType s, IType t)
 		{
 			// conversion to dynamic + object are always possible
-			if (t.Equals(SpecialType.Dynamic) || t.Equals(objectType))
+			if (t.Kind == TypeKind.Dynamic || t.Equals(objectType))
 				return true;
 			try {
 				if (++subtypeCheckNestingDepth > 10) {
@@ -594,7 +589,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §18.4 Pointer conversions
 			if (fromType is PointerType && toType is PointerType && toType.ReflectionName == "System.Void*")
 				return true;
-			if (SpecialType.NullType.Equals(fromType) && toType is PointerType)
+			if (fromType.Kind == TypeKind.Null && toType is PointerType)
 				return true;
 			return false;
 		}
@@ -849,9 +844,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IType ret1 = m1.ReturnType;
 				IType ret2 = m2.ReturnType;
 				if (ret1.Kind == TypeKind.Void && ret2.Kind != TypeKind.Void)
-					return 1;
-				if (ret1.Kind != TypeKind.Void && ret2.Kind == TypeKind.Void)
 					return 2;
+				if (ret1.Kind != TypeKind.Void && ret2.Kind == TypeKind.Void)
+					return 1;
 				
 				IType inferredRet = lambda.GetInferredReturnType(parameterTypes);
 				r = BetterConversion(inferredRet, ret1, ret2);

@@ -73,23 +73,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			result.Add (Factory.CreateNamespaceCompletionData (name));
 		}
 			
-		HashSet<Tuple<string, int>> usedTypes = new HashSet<Tuple<string, int>> ();
+		HashSet<string> usedTypes = new HashSet<string> ();
 
 		public void AddType (IType type, string shortType)
 		{
-			var tuple = Tuple.Create (shortType, type.TypeParameterCount);
-			if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (tuple))
+			if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (shortType))
 				return;
-			usedTypes.Add (tuple);
+			usedTypes.Add (shortType);
 			result.Add (Factory.CreateTypeCompletionData (type, shortType));
 		}
 		
 		public void AddType (IUnresolvedTypeDefinition type, string shortType)
 		{
-			var tuple = Tuple.Create (shortType, type.TypeParameters.Count);
-			if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (tuple))
+			if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (shortType))
 				return;
-			usedTypes.Add (tuple);
+			usedTypes.Add (shortType);
 			result.Add (Factory.CreateTypeCompletionData (type, shortType));
 		}
 			

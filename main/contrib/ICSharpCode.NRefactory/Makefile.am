@@ -109,6 +109,7 @@ FILES =  \
 	TypeSystem/Implementation/DefaultUnresolvedTypeDefinition.cs \
 	TypeSystem/Implementation/DefaultUnresolvedTypeParameter.cs \
 	TypeSystem/Implementation/DummyTypeParameter.cs \
+	TypeSystem/Implementation/ExplicitInterfaceImplementationMemberReference.cs \
 	TypeSystem/Implementation/FullNameAndTypeParameterCount.cs \
 	TypeSystem/Implementation/GetClassTypeReference.cs \
 	TypeSystem/Implementation/GetMembersHelper.cs \
@@ -125,6 +126,7 @@ FILES =  \
 	TypeSystem/Implementation/SpecializedMember.cs \
 	TypeSystem/Implementation/SpecializedMethod.cs \
 	TypeSystem/Implementation/SpecializedProperty.cs \
+	TypeSystem/Implementation/SpecializingMemberReference.cs \
 	TypeSystem/Implementation/TypeParameterReference.cs \
 	TypeSystem/Implementation/TypeParameterSubstitution.cs \
 	TypeSystem/Implementation/TypeWithElementType.cs \

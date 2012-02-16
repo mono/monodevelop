@@ -128,6 +128,31 @@ namespace ICSharpCode.NRefactory.CSharp
 				item.Remove();
 		}
 		
+		/// <summary>
+		/// Returns the first element for which the predicate returns true,
+		/// or the null node (AstNode with IsNull=true) if no such object is found.
+		/// </summary>
+		public T FirstOrNullObject(Func<T, bool> predicate = null)
+		{
+			foreach (T item in this)
+				if (predicate == null || predicate(item))
+					return item;
+			return role.NullObject;
+		}
+		
+		/// <summary>
+		/// Returns the last element for which the predicate returns true,
+		/// or the null node (AstNode with IsNull=true) if no such object is found.
+		/// </summary>
+		public T LastOrNullObject(Func<T, bool> predicate = null)
+		{
+			T result = role.NullObject;
+			foreach (T item in this)
+				if (predicate == null || predicate(item))
+					result = item;
+			return result;
+		}
+		
 		bool ICollection<T>.IsReadOnly {
 			get { return false; }
 		}

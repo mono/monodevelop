@@ -65,6 +65,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public bool IsProtectedAccessAllowed(IType targetType)
 		{
+			if (targetType.Kind == TypeKind.TypeParameter)
+				targetType = ((ITypeParameter)targetType).EffectiveBaseClass;
 			ITypeDefinition typeDef = targetType.GetDefinition();
 			if (typeDef == null)
 				return false;

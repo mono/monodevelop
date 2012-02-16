@@ -334,7 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveUnaryOperator method
 		public ResolveResult ResolveUnaryOperator(UnaryOperatorType op, ResolveResult expression)
 		{
-			if (SpecialType.Dynamic.Equals(expression.Type))
+			if (expression.Type.Kind == TypeKind.Dynamic)
 				return UnaryOperatorResolveResult(SpecialType.Dynamic, op, expression);
 			
 			// C# 4.0 spec: §7.3.3 Unary operator overload resolution
@@ -388,7 +388,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// C# 4.0 spec: §7.6.9 Postfix increment and decrement operators
 					// C# 4.0 spec: §7.7.5 Prefix increment and decrement operators
 					TypeCode code = ReflectionHelper.GetTypeCode(type);
-					if ((code >= TypeCode.SByte && code <= TypeCode.Decimal) || type.Kind == TypeKind.Enum || type.Kind == TypeKind.Pointer)
+					if ((code >= TypeCode.Char && code <= TypeCode.Decimal) || type.Kind == TypeKind.Enum || type.Kind == TypeKind.Pointer)
 						return UnaryOperatorResolveResult(expression.Type, op, expression);
 					else
 						return new ErrorResolveResult(expression.Type);
@@ -461,7 +461,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §7.3.6.1
 			TypeCode code = ReflectionHelper.GetTypeCode(type);
-			if (isNullable && SpecialType.NullType.Equals(type))
+			if (isNullable && type.Kind == TypeKind.Null)
 				code = TypeCode.SByte; // cause promotion of null to int32
 			switch (op) {
 				case UnaryOperatorType.Minus:
@@ -513,7 +513,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveBinaryOperator method
 		public ResolveResult ResolveBinaryOperator(BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
 		{
-			if (SpecialType.Dynamic.Equals(lhs.Type) || SpecialType.Dynamic.Equals(rhs.Type)) {
+			if (lhs.Type.Kind == TypeKind.Dynamic || rhs.Type.Kind == TypeKind.Dynamic) {
 				lhs = Convert(lhs, SpecialType.Dynamic);
 				rhs = Convert(rhs, SpecialType.Dynamic);
 				return BinaryOperatorResolveResult(SpecialType.Dynamic, lhs, op, rhs);
@@ -556,14 +556,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow));
 			}
 			
-			if (SpecialType.NullType.Equals(lhsType) && rhsType.IsReferenceType == false
-			    || lhsType.IsReferenceType == false && SpecialType.NullType.Equals(rhsType))
+			if (lhsType.Kind == TypeKind.Null && rhsType.IsReferenceType == false
+			    || lhsType.IsReferenceType == false && rhsType.Kind == TypeKind.Null)
 			{
 				isNullable = true;
 			}
 			if (op == BinaryOperatorType.ShiftLeft || op == BinaryOperatorType.ShiftRight) {
 				// special case: the shift operators allow "var x = null << null", producing int?.
-				if (SpecialType.NullType.Equals(lhsType) && SpecialType.NullType.Equals(rhsType))
+				if (lhsType.Kind == TypeKind.Null && rhsType.Kind == TypeKind.Null)
 					isNullable = true;
 				// for shift operators, do unary promotion independently on both arguments
 				lhs = UnaryNumericPromotion(UnaryOperatorType.Plus, ref lhsType, isNullable, lhs);
@@ -628,7 +628,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								PointerArithmeticOperator(rhsType, KnownTypeCode.UInt64, rhsType)
 							};
 						}
-						if (SpecialType.NullType.Equals(lhsType) && SpecialType.NullType.Equals(rhsType))
+						if (lhsType.Kind == TypeKind.Null && rhsType.Kind == TypeKind.Null)
 							return new ErrorResolveResult(SpecialType.NullType);
 					}
 					break;
@@ -676,7 +676,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							};
 						}
 						
-						if (SpecialType.NullType.Equals(lhsType) && SpecialType.NullType.Equals(rhsType))
+						if (lhsType.Kind == TypeKind.Null && rhsType.Kind == TypeKind.Null)
 							return new ErrorResolveResult(SpecialType.NullType);
 					}
 					break;
@@ -703,21 +703,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return BinaryOperatorResolveResult(compilation.FindType(KnownTypeCode.Boolean), lhs, op, rhs);
 						}
 						if (op == BinaryOperatorType.Equality || op == BinaryOperatorType.InEquality) {
-							if (lhsType.Kind == TypeKind.Null && NullableType.IsNullable(rhs.Type)
-							    || rhsType.Kind == TypeKind.Null && NullableType.IsNullable(lhs.Type))
-							{
-								// §7.10.9 Equality operators and null
-								// "x == null", "null == x", "x != null" and "null != x" are valid
-								// even if the struct does not define operator ==.
+							if (lhsType.IsReferenceType == true && rhsType.IsReferenceType == true) {
+								// If it's a reference comparison
+								if (op == BinaryOperatorType.Equality)
+									methodGroup = operators.ReferenceEqualityOperators;
+								else
+									methodGroup = operators.ReferenceInequalityOperators;
+								break;
+							} else if (lhsType.Kind == TypeKind.Null && IsNullableTypeOrNonValueType(rhs.Type)
+							           || IsNullableTypeOrNonValueType(lhs.Type) && rhsType.Kind == TypeKind.Null) {
+								// compare type parameter or nullable type with the null literal
 								return BinaryOperatorResolveResult(compilation.FindType(KnownTypeCode.Boolean), lhs, op, rhs);
 							}
 						}
 						switch (op) {
 							case BinaryOperatorType.Equality:
-								methodGroup = operators.EqualityOperators;
+								methodGroup = operators.ValueEqualityOperators;
 								break;
 							case BinaryOperatorType.InEquality:
-								methodGroup = operators.InequalityOperators;
+								methodGroup = operators.ValueInequalityOperators;
 								break;
 							case BinaryOperatorType.LessThan:
 								methodGroup = operators.LessThanOperators;
@@ -798,6 +802,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				rhs = Convert(rhs, m.Parameters[1].Type, builtinOperatorOR.ArgumentConversions[1]);
 				return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 			}
+		}
+		
+		bool IsNullableTypeOrNonValueType(IType type)
+		{
+			return NullableType.IsNullable(type) || type.IsReferenceType != false;
 		}
 		
 		ResolveResult BinaryOperatorResolveResult(IType resultType, ResolveResult lhs, BinaryOperatorType op, ResolveResult rhs)
@@ -920,10 +929,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			TypeCode lhsCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(lhs.Type));
 			TypeCode rhsCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(rhs.Type));
 			// if one of the inputs is the null literal, promote that to the type of the other operand
-			if (isNullable && SpecialType.NullType.Equals(lhs.Type) && rhsCode >= TypeCode.Boolean && rhsCode <= TypeCode.Decimal) {
+			if (isNullable && lhs.Type.Kind == TypeKind.Null && rhsCode >= TypeCode.Boolean && rhsCode <= TypeCode.Decimal) {
 				lhs = CastTo(rhsCode, isNullable, lhs, allowNullableConstants);
 				lhsCode = rhsCode;
-			} else if (isNullable && SpecialType.NullType.Equals(rhs.Type) && lhsCode >= TypeCode.Boolean && lhsCode <= TypeCode.Decimal) {
+			} else if (isNullable && rhs.Type.Kind == TypeKind.Null && lhsCode >= TypeCode.Boolean && lhsCode <= TypeCode.Decimal) {
 				rhs = CastTo(lhsCode, isNullable, rhs, allowNullableConstants);
 				rhsCode = lhsCode;
 			}
@@ -1352,7 +1361,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return r;
 			}
 			
-			if (context.CurrentUsingScope != null) {
+			if (context.CurrentUsingScope == null) {
+				// If no using scope was specified, we still need to look in the global namespace:
+				r = LookInUsingScopeNamespace(null, compilation.RootNamespace, identifier, typeArguments, parameterizeResultType);
+			} else {
 				if (k == 0 && lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration) {
 //					if (!context.CurrentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
 						r = LookInCurrentUsingScope(identifier, typeArguments, false, false);
@@ -1361,9 +1373,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				} else {
 					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == SimpleNameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
 				}
-				if (r != null)
-					return r;
 			}
+			if (r != null)
+				return r;
 			
 			if (typeArguments.Count == 0 && identifier == "dynamic") {
 				return new TypeResolveResult(SpecialType.Dynamic);
@@ -1418,36 +1430,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult LookInCurrentUsingScope(string identifier, IList<IType> typeArguments, bool isInUsingDeclaration, bool parameterizeResultType)
 		{
-			int k = typeArguments.Count;
 			// look in current namespace definitions
 			ResolvedUsingScope currentUsingScope = this.CurrentUsingScope;
 			for (ResolvedUsingScope u = currentUsingScope; u != null; u = u.Parent) {
-				INamespace n = u.Namespace;
-				// first look for a namespace
-				if (k == 0 && n != null) {
-					INamespace childNamespace = n.GetChildNamespace(identifier);
-					if (childNamespace != null) {
-						if (u.HasAlias(identifier))
-							return new AmbiguousTypeResolveResult(new UnknownType(null, identifier));
-						return new NamespaceResolveResult(childNamespace);
-					}
-				}
-				// then look for a type
-				if (n != null) {
-					ITypeDefinition def = n.GetTypeDefinition(identifier, k);
-					if (def != null) {
-						IType result = def;
-						if (parameterizeResultType && k > 0) {
-							result = new ParameterizedType(def, typeArguments);
-						}
-						if (u.HasAlias(identifier))
-							return new AmbiguousTypeResolveResult(result);
-						else
-							return new TypeResolveResult(result);
-					}
-				}
+				var resultInNamespace = LookInUsingScopeNamespace(u, u.Namespace, identifier, typeArguments, parameterizeResultType);
+				if (resultInNamespace != null)
+					return resultInNamespace;
 				// then look for aliases:
-				if (k == 0) {
+				if (typeArguments.Count == 0) {
 					if (u.ExternAliases.Contains(identifier)) {
 						return ResolveExternAlias(identifier);
 					}
@@ -1463,10 +1453,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (!(isInUsingDeclaration && u == currentUsingScope)) {
 					IType firstResult = null;
 					foreach (var importedNamespace in u.Usings) {
-						ITypeDefinition def = importedNamespace.GetTypeDefinition(identifier, k);
+						ITypeDefinition def = importedNamespace.GetTypeDefinition(identifier, typeArguments.Count);
 						if (def != null) {
 							IType resultType;
-							if (parameterizeResultType && k > 0)
+							if (parameterizeResultType && typeArguments.Count > 0)
 								resultType = new ParameterizedType(def, typeArguments);
 							else
 								resultType = def;
@@ -1482,6 +1472,35 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return new TypeResolveResult(firstResult);
 				}
 				// if we didn't find anything: repeat lookup with parent namespace
+			}
+			return null;
+		}
+
+		ResolveResult LookInUsingScopeNamespace(ResolvedUsingScope usingScope, INamespace n, string identifier, IList<IType> typeArguments, bool parameterizeResultType)
+		{
+			if (n == null)
+				return null;
+			// first look for a namespace
+			int k = typeArguments.Count;
+			if (k == 0) {
+				INamespace childNamespace = n.GetChildNamespace(identifier);
+				if (childNamespace != null) {
+					if (usingScope != null && usingScope.HasAlias(identifier))
+						return new AmbiguousTypeResolveResult(new UnknownType(null, identifier));
+					return new NamespaceResolveResult(childNamespace);
+				}
+			}
+			// then look for a type
+			ITypeDefinition def = n.GetTypeDefinition(identifier, k);
+			if (def != null) {
+				IType result = def;
+				if (parameterizeResultType && k > 0) {
+					result = new ParameterizedType(def, typeArguments);
+				}
+				if (usingScope != null && usingScope.HasAlias(identifier))
+					return new AmbiguousTypeResolveResult(result);
+				else
+					return new TypeResolveResult(result);
 			}
 			return null;
 		}
@@ -1535,7 +1554,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments, typeArguments.Count > 0);
 			}
 			
-			if (SpecialType.Dynamic.Equals(target.Type))
+			if (target.Type.Kind == TypeKind.Dynamic)
 				return DynamicResult;
 			
 			MemberLookup lookup = CreateMemberLookup();
@@ -1791,7 +1810,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §7.6.5
 			
-			if (SpecialType.Dynamic.Equals(target.Type))
+			if (target.Type.Kind == TypeKind.Dynamic)
 				return DynamicResult;
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
@@ -2076,13 +2095,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveConditional
+		/// <summary>
+		/// Converts the input to <c>bool</c> using the rules for boolean expressions.
+		/// That is, <c>operator true</c> is used if a regular conversion to <c>bool</c> is not possible.
+		/// </summary>
+		public ResolveResult ResolveCondition(ResolveResult input)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			IType boolean = compilation.FindType(KnownTypeCode.Boolean);
+			Conversion c = conversions.ImplicitConversion(input, boolean);
+			if (!c.IsValid) {
+				var opTrue = input.Type.GetMethods(m => m.IsOperator && m.Name == "op_True").FirstOrDefault();
+				if (opTrue != null) {
+					c = Conversion.UserDefinedImplicitConversion(opTrue, false);
+				}
+			}
+			return Convert(input, boolean, c);
+		}
+		
 		public ResolveResult ResolveConditional(ResolveResult condition, ResolveResult trueExpression, ResolveResult falseExpression)
 		{
 			// C# 4.0 spec §7.14: Conditional operator
 			
 			bool isValid;
 			IType resultType;
-			if (SpecialType.Dynamic.Equals(trueExpression.Type) || SpecialType.Dynamic.Equals(falseExpression.Type)) {
+			if (trueExpression.Type.Kind == TypeKind.Dynamic || falseExpression.Type.Kind == TypeKind.Dynamic) {
 				resultType = SpecialType.Dynamic;
 				isValid = TryConvert(ref trueExpression, resultType) & TryConvert(ref falseExpression, resultType);
 			} else if (HasType(trueExpression) && HasType(falseExpression)) {
@@ -2091,11 +2129,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// The operator is valid:
 				// a) if there's a conversion in one direction but not the other
 				// b) if there are conversions in both directions, and the types are equivalent
-				if (t2f.IsValid && !f2t.IsValid) {
+				if (IsBetterConditionalConversion(t2f, f2t)) {
 					resultType = falseExpression.Type;
 					isValid = true;
 					trueExpression = Convert(trueExpression, resultType, t2f);
-				} else if (f2t.IsValid && !t2f.IsValid) {
+				} else if (IsBetterConditionalConversion(f2t, t2f)) {
 					resultType = trueExpression.Type;
 					isValid = true;
 					falseExpression = Convert(falseExpression, resultType, f2t);
@@ -2112,7 +2150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				return ErrorResult;
 			}
-			isValid &= TryConvert(ref condition, compilation.FindType(KnownTypeCode.Boolean));
+			condition = ResolveCondition(condition);
 			if (isValid) {
 				if (condition.IsCompileTimeConstant && trueExpression.IsCompileTimeConstant && falseExpression.IsCompileTimeConstant) {
 					bool? val = condition.ConstantValue as bool?;
@@ -2126,6 +2164,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				return new ErrorResolveResult(resultType);
 			}
+		}
+		
+		bool IsBetterConditionalConversion(Conversion c1, Conversion c2)
+		{
+			// Valid is better than ImplicitConstantExpressionConversion is better than invalid
+			if (!c1.IsValid)
+				return false;
+			if (c1 != Conversion.ImplicitConstantExpressionConversion && c2 == Conversion.ImplicitConstantExpressionConversion)
+				return true;
+			return !c2.IsValid;
 		}
 		
 		bool HasType(ResolveResult r)

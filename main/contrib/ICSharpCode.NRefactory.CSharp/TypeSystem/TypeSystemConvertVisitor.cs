@@ -365,15 +365,23 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			field.Region = field.BodyRegion = MakeRegion(enumMemberDeclaration);
 			ConvertAttributes(field.Attributes, enumMemberDeclaration.Attributes);
 			
-			field.ReturnType = currentTypeDefinition;
+			if (currentTypeDefinition.TypeParameters.Count == 0) {
+				field.ReturnType = currentTypeDefinition;
+			} else {
+				ITypeReference[] typeArgs = new ITypeReference[currentTypeDefinition.TypeParameters.Count];
+				for (int i = 0; i < typeArgs.Length; i++) {
+					typeArgs[i] = new TypeParameterReference(EntityType.TypeDefinition, i);
+				}
+				field.ReturnType = new ParameterizedTypeReference(currentTypeDefinition, typeArgs);
+			}
 			field.Accessibility = Accessibility.Public;
 			field.IsStatic = true;
 			if (!enumMemberDeclaration.Initializer.IsNull) {
-				field.ConstantValue = ConvertConstantValue(currentTypeDefinition, enumMemberDeclaration.Initializer);
+				field.ConstantValue = ConvertConstantValue(field.ReturnType, enumMemberDeclaration.Initializer);
 			} else {
 				DefaultUnresolvedField prevField = currentTypeDefinition.Members.LastOrDefault() as DefaultUnresolvedField;
 				if (prevField == null || prevField.ConstantValue == null) {
-					field.ConstantValue = ConvertConstantValue(currentTypeDefinition, new PrimitiveExpression(0));
+					field.ConstantValue = ConvertConstantValue(field.ReturnType, new PrimitiveExpression(0));
 				} else {
 					field.ConstantValue = new IncrementConstantValue(prevField.ConstantValue);
 				}
@@ -651,14 +659,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					a.Parameters.Add(indexerParam);
 			}
 			DefaultUnresolvedParameter param = null;
-			
-			// copy indexer parameters to the accessor
-			if (p is IUnresolvedParameterizedMember) {
-				foreach (var parameter in ((IUnresolvedParameterizedMember)p).Parameters) {
-					a.Parameters.Add (parameter);
-				}
-			}
-			
 			if (accessor.Role == PropertyDeclaration.GetterRole) {
 				a.ReturnType = p.ReturnType;
 			} else {

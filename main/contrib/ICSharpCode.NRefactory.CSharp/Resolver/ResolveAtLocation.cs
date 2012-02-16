@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, 
+		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			AstNode node;
@@ -47,13 +47,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (node is Identifier) {
 					node = node.Parent;
 				} else if (node.NodeType == NodeType.Token) {
-					if (node.Parent is ConstructorInitializer) {
+					if (node.Parent is IndexerExpression || node.Parent is ConstructorInitializer) {
+						// There's no other place where one could hover to see the indexer's tooltip,
+						// so we need to resolve it when hovering over the '[' or ']'.
+						// For constructor initializer, the same applies to the 'base'/'this' token.
 						node = node.Parent;
 					} else {
 						return null;
 					}
 				} else {
 					// don't resolve arbitrary nodes - we don't want to show tooltips for everything
+					return null;
+				}
+			} else {
+				// It's a resolvable node.
+				// However, we usually don't want to show the tooltip everywhere
+				// For example, hovering with the mouse over an empty line between two methods causes
+				// node==TypeDeclaration, but we don't want to show any tooltip.
+				
+				if (!node.GetChildByRole(AstNode.Roles.Identifier).IsNull) {
+					// We'll suppress the tooltip for resolvable nodes if there is an identifier that
+					// could be hovered over instead:
 					return null;
 				}
 			}

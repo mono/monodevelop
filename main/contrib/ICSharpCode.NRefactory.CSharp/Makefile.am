@@ -14,6 +14,7 @@ SIGNING_KEY=$(srcdir)/../ICSharpCode.NRefactory/ICSharpCode.NRefactory.snk
 FILES =  \
 	Analysis/ControlFlow.cs \
 	Analysis/DefiniteAssignmentAnalysis.cs \
+	Analysis/ReachabilityAnalysis.cs \
 	Ast/AstNode.cs \
 	Ast/AstNodeCollection.cs \
 	Ast/AstType.cs \
@@ -256,8 +257,8 @@ FILES =  \
 	Resolver/OverloadResolutionErrors.cs \
 	Resolver/ResolveAtLocation.cs \
 	Resolver/ResolveVisitor.cs \
-	Resolver/SimpleNameLookupMode.cs \
 	Resolver/TypeInference.cs \
+	SimpleNameLookupMode.cs \
 	TypeSystem/AliasNamespaceReference.cs \
 	TypeSystem/AttributeTypeReference.cs \
 	TypeSystem/ConstantValues.cs \
