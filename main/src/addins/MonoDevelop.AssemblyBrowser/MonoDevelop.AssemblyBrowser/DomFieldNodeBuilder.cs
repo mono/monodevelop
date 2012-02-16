@@ -57,7 +57,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var field = (IUnresolvedField)dataObject;
-			return field.FullName;
+			return field.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
@@ -72,9 +72,9 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is IMethod)
+			if (otherNode.DataItem is IUnresolvedMethod)
 				return 1;
-			if (otherNode.DataItem is IProperty)
+			if (otherNode.DataItem is IUnresolvedProperty)
 				return 1;
 			if (otherNode.DataItem is BaseTypeFolder)
 				return 1;

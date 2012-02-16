@@ -56,7 +56,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var evt = (IUnresolvedEvent)dataObject;
-			return evt.FullName;
+			return evt.Name;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)

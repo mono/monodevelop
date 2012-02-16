@@ -61,7 +61,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var method = (IUnresolvedMethod)dataObject;
-			return method.FullName;
+			return method.Name;
 		}
 		
 		public static string FormatPrivate (string label)

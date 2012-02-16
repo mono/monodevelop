@@ -73,12 +73,12 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is MethodDefinition)
+			if (otherNode.DataItem is IUnresolvedMethod)
 				return 1;
 			if (otherNode.DataItem is BaseTypeFolder)
 				return 1;
-			if (otherNode.DataItem is PropertyDefinition)
-				return ((PropertyDefinition)thisNode.DataItem).Name.CompareTo (((PropertyDefinition)otherNode.DataItem).Name);
+			if (otherNode.DataItem is IUnresolvedProperty)
+				return ((IUnresolvedProperty)thisNode.DataItem).Name.CompareTo (((IUnresolvedProperty)otherNode.DataItem).Name);
 			return -1;
 		}
 		
