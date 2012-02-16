@@ -166,6 +166,8 @@ namespace MonoDevelop.CSharp.Completion
 			var textEditor = Editor.Parent;
 			if (textEditor != null) {
 				Gtk.Application.Invoke (delegate {
+					if (unit == null) // check, if we're disposed.
+						return;
 					textEditor.TextViewMargin.PurgeLayoutCache ();
 					textEditor.RedrawMarginLines (textEditor.TextViewMargin, 1, Editor.LineCount);
 				});
