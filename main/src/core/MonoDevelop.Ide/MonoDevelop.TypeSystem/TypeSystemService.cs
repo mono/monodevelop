@@ -1422,12 +1422,12 @@ namespace MonoDevelop.TypeSystem
 			foreach (var file in project.Files) {
 				if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 					continue;
-					
-				var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.FilePath));
+				var fileName = file.Name;
+				var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName));
 				if (parser == null)
 					continue;
 				
-				if (!IsFileModified (file, content.Content.GetFile (file.FilePath)))
+				if (!IsFileModified (file, content.Content.GetFile (fileName)))
 					continue;
 				if (modifiedFiles == null)
 					modifiedFiles = new List<ProjectFile> ();
