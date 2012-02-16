@@ -255,6 +255,12 @@ namespace Mono.TextEditor
 				throw new NotImplementedException ();
 			}
 		}
+		
+		bool ICSharpCode.NRefactory.Editor.IDocumentLine.IsDeleted {
+			get {
+				return false;
+			} 
+		}
 		#endregion
 
 		#region ISegment implementation
