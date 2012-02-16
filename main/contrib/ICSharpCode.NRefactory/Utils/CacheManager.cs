@@ -23,17 +23,16 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory.Utils
 {
-/*
 	/// <summary>
 	/// Allows caching values for a specific compilation.
-	/// A CacheManager consists of two dictionaries: one for shared instances (shared among all threads working with that resolve context),
-	/// and one for thread-local instances.
+	/// A CacheManager consists of a for shared instances (shared among all threads working with that resolve context).
 	/// </summary>
 	/// <remarks>This class is thread-safe</remarks>
 	public sealed class CacheManager
 	{
 		readonly ConcurrentDictionary<object, object> sharedDict = new ConcurrentDictionary<object, object>(ReferenceComparer.Instance);
-		readonly ThreadLocal<Dictionary<object, object>> localDict = new ThreadLocal<Dictionary<object, object>>(() => new Dictionary<object, object>(ReferenceComparer.Instance));
+		// There used to be a thread-local dictionary here, but I removed it as it was causing memory
+		// leaks in some use cases.
 		
 		public object GetShared(object key)
 		{
@@ -56,50 +55,5 @@ namespace ICSharpCode.NRefactory.Utils
 		{
 			sharedDict[key] = val;
 		}
-		
-		public object GetThreadLocal(object key)
-		{
-			object val;
-			localDict.Value.TryGetValue(key, out val);
-			return val;
-		}
-		
-		public void SetThreadLocal(object key, object val)
-		{
-			localDict.Value[key] = val;
-		}
-	}*/
-	
-	
-	// TODO: Cache strategy causes a memory leak, therefore caching is disabled.
-	public sealed class CacheManager
-	{
-		public object GetShared(object key)
-		{
-			return null;
-		}
-		
-		public object GetOrAddShared(object key, Func<object, object> valueFactory)
-		{
-			return valueFactory (key);
-		}
-		
-		public object GetOrAddShared(object key, object val)
-		{
-			return val;
-		}
-		
-		public void SetShared(object key, object val)
-		{
-		}
-		
-		public object GetThreadLocal(object key)
-		{
-			return null;
-		}
-		
-		public void SetThreadLocal(object key, object val)
-		{
-		}
-	}	
+	}
 }

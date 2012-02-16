@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -50,7 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IMemberReference ToMemberReference()
 		{
-			return new DefaultMemberReference(this.EntityType, this.DeclaringType.ToTypeReference(), this.Name);
+			return new SpecializingMemberReference(declaringType.ToTypeReference(), memberDefinition.ToMemberReference());
 		}
 		
 		internal static TypeVisitor GetSubstitution(IType declaringType)
@@ -127,8 +129,30 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition.Attributes; }
 		}
 		
-		IList<IMember> IMember.InterfaceImplementations {
-			get { return memberDefinition.InterfaceImplementations; }
+		IList<IMember> interfaceImplementations;
+		
+		public IList<IMember> InterfaceImplementations {
+			get {
+				return LazyInitializer.EnsureInitialized(ref interfaceImplementations, FindInterfaceImplementations);
+			}
+		}
+		
+		IList<IMember> FindInterfaceImplementations()
+		{
+			var definitionImplementations = memberDefinition.InterfaceImplementations;
+			IMember[] result = new IMember[definitionImplementations.Count];
+			for (int i = 0; i < result.Length; i++) {
+				result[i] = Specialize(definitionImplementations[i]);
+			}
+			return result;
+		}
+		
+		/// <summary>
+		/// Specialize another member using the same type arguments as this member.
+		/// </summary>
+		protected virtual IMember Specialize(IMember otherMember)
+		{
+			return SpecializingMemberReference.CreateSpecializedMember(declaringType, memberDefinition, null);
 		}
 		
 		public bool IsExplicitInterfaceImplementation {
@@ -273,13 +297,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IParameter> Parameters {
 			get { return parameters; }
-		}
-		
-		public override IMemberReference ToMemberReference()
-		{
-			return new DefaultMemberReference(
-				this.EntityType, this.DeclaringType.ToTypeReference(), this.Name, 0,
-				this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 		}
 		
 		public override string ToString()

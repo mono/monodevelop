@@ -97,14 +97,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override IMemberReference ToMemberReference()
 		{
-			if (this.TypeParameters.Count == 0)
-				return base.ToMemberReference();
-			// TODO: Implement SpecializedMethod.ToMemberReference()
-			throw new NotImplementedException();
+			return new SpecializingMemberReference(
+				this.DeclaringType.ToTypeReference(),
+				this.MemberDefinition.ToMemberReference(),
+				typeArguments.Select(ta => ta.ToTypeReference()).ToList()
+			);
+		}
+		
+		protected override IMember Specialize(IMember otherMember)
+		{
+			return SpecializingMemberReference.CreateSpecializedMember(this.DeclaringType, this.MemberDefinition, typeArguments);
 		}
 		
 		/// <summary>
 		/// Gets the type arguments passed to this method.
+		/// If only the type parameters for the class were specified and the generic method
+		/// itself is not specialized yet, this property will return an empty list.
 		/// </summary>
 		public IList<IType> TypeArguments {
 			get { return typeArguments; }

@@ -181,6 +181,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
+		/// Imports an entity from another compilation.
+		/// </summary>
+		public static IEntity Import(this ICompilation compilation, IEntity entity)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			if (entity == null)
+				return null;
+			if (entity.Compilation == compilation)
+				return entity;
+			if (entity is IMember)
+				return ((IMember)entity).ToMemberReference().Resolve(compilation.TypeResolveContext);
+			else if (entity is ITypeDefinition)
+				return ((ITypeDefinition)entity).ToTypeReference().Resolve(compilation.TypeResolveContext).GetDefinition();
+			else
+				throw new NotSupportedException("Unknown entity type");
+		}
+		
+		/// <summary>
 		/// Imports a member from another compilation.
 		/// </summary>
 		public static IMember Import(this ICompilation compilation, IMember member)

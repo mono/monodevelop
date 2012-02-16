@@ -98,7 +98,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IMemberReference ToMemberReference()
 		{
-			return new DefaultMemberReference(this.EntityType, this.DeclaringType.ToTypeReference(), this.Name);
+			var declTypeRef = this.DeclaringType.ToTypeReference();
+			if (IsExplicitInterfaceImplementation && InterfaceImplementations.Count == 1) {
+				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, InterfaceImplementations[0].ToMemberReference());
+			} else {
+				return new DefaultMemberReference(this.EntityType, declTypeRef, this.Name);
+			}
 		}
 		
 		internal IMethod GetAccessor(ref IMethod accessorField, IUnresolvedMethod unresolvedAccessor)

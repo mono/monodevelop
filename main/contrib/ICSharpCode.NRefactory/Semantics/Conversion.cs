@@ -403,7 +403,7 @@ namespace ICSharpCode.NRefactory.Semantics
 		}
 		
 		/// <summary>
-		/// Gets whether this conversion is an unboxing conversion.
+		/// Gets whether this conversion is a pointer conversion.
 		/// </summary>
 		public virtual bool IsPointerConversion {
 			get { return false; }

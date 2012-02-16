@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			List<IAssembly> referencedAssemblies = new List<IAssembly>();
 			foreach (var asmRef in assemblyReferences) {
 				IAssembly asm = asmRef.Resolve(context);
-				if (asm != null)
+				if (asm != null && !referencedAssemblies.Contains(asm))
 					referencedAssemblies.Add(asm);
 			}
 			this.referencedAssemblies = referencedAssemblies.AsReadOnly();

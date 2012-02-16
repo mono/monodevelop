@@ -211,11 +211,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <remarks>
 		/// If the type is open (contains type parameters '`0' or '``0'),
 		/// an <see cref="ITypeResolveContext"/> with the appropriate CurrentTypeDefinition/CurrentMember is required
-		/// to resolve the type reference.
+		/// to resolve the reference to the ITypeParameter.
 		/// For looking up closed, assembly qualified type names, the root type resolve context for the compilation
 		/// is sufficient.
-		/// When looking up a type name that isn't assembly qualified, the type reference only looks
-		/// in the <see cref="ITypeResolveContext.CurrentAssembly"/>.
+		/// When looking up a type name that isn't assembly qualified, the type reference will look in
+		/// <see cref="ITypeResolveContext.CurrentAssembly"/> first, and .
 		/// </remarks>
 		public static ITypeReference ParseReflectionName(string reflectionTypeName)
 		{
@@ -354,7 +354,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (assemblyName != null) {
 				assemblyReference = new DefaultAssemblyReference(assemblyName);
 			} else {
-				assemblyReference = DefaultAssemblyReference.CurrentAssembly;
+				assemblyReference = null;
 			}
 			int pos = typeName.LastIndexOf('.');
 			if (pos < 0)
