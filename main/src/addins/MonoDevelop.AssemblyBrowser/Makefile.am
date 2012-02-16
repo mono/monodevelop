@@ -1,5 +1,5 @@
 DLLNAME = MonoDevelop.AssemblyBrowser.dll
-ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
+ASSEMBLY = $(top_builddir)/build/AddIns/DisplayBindings/AssemblyBrowser/$(DLLNAME)
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -60,7 +60,7 @@ REFS =  \
 	-r:System.Core \
 	-r:System.Xml
 
-ADDIN_BUILD = $(top_builddir)/build/AddIns
+ADDIN_BUILD = $(top_builddir)/build/AddIns/DisplayBindings/AssemblyBrowser
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
