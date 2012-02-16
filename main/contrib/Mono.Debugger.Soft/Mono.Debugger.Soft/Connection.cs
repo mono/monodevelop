@@ -34,11 +34,16 @@ namespace Mono.Debugger.Soft
 		}
 	}
 
+	struct SourceInfo {
+		public string source_file;
+		public byte[] guid, hash;
+	}
+
 	class DebugInfo {
 		public int max_il_offset;
 		public int[] il_offsets;
 		public int[] line_numbers;
-		public string[] source_files;
+		public SourceInfo[] source_files;
 	}
 
 	struct FrameInfo {
@@ -56,6 +61,7 @@ namespace Mono.Debugger.Soft
 		public bool is_gtd, is_generic_type;
 		public long[] nested;
 		public long gtd;
+		public long[] type_args;
 	}
 
 	struct IfaceMapInfo {
@@ -68,6 +74,7 @@ namespace Mono.Debugger.Soft
 		public int attributes, iattributes, token;
 		public bool is_gmd, is_generic_method;
 		public long gmd;
+		public long[] type_args;
 	}
 
 	class MethodBodyInfo {
@@ -363,7 +370,7 @@ namespace Mono.Debugger.Soft
 		 * with newer runtimes, and vice versa.
 		 */
 		internal const int MAJOR_VERSION = 2;
-		internal const int MINOR_VERSION = 13;
+		internal const int MINOR_VERSION = 15;
 
 		enum WPSuspendPolicy {
 			NONE = 0,
@@ -1636,29 +1643,35 @@ namespace Mono.Debugger.Soft
 			DebugInfo info = new DebugInfo ();
 			info.max_il_offset = res.ReadInt ();
 
-			string[] filenames = null;
-			if (Version.AtLeast (2, 12)) {
+			SourceInfo[] sources = null;
+			if (Version.AtLeast (2, 13)) {
 				int n = res.ReadInt ();
-				filenames = new string [n];
-				for (int i = 0; i < n; ++i)
-					filenames [i] = res.ReadString ();
+				sources = new SourceInfo [n];
+				for (int i = 0; i < n; ++i) {
+					sources [i].source_file = res.ReadString ();
+					if (Version.AtLeast (2, 14)) {
+						sources [i].hash = new byte [16];
+						for (int j = 0; j < 16; ++j)
+							sources [i].hash [j] = (byte)res.ReadByte ();
+					}
+				}
 			} else {
-				filenames = new string [1];
-				filenames [0] = res.ReadString ();
+				sources = new SourceInfo [1];
+				sources [0].source_file = res.ReadString ();
 			}
 
 			int n_il_offsets = res.ReadInt ();
 			info.il_offsets = new int [n_il_offsets];
 			info.line_numbers = new int [n_il_offsets];
-			info.source_files = new string [n_il_offsets];
+			info.source_files = new SourceInfo [n_il_offsets];
 			for (int i = 0; i < n_il_offsets; ++i) {
 				info.il_offsets [i] = res.ReadInt ();
 				info.line_numbers [i] = res.ReadInt ();
 				if (Version.AtLeast (2, 12)) {
 					int idx = res.ReadInt ();
-					info.source_files [i] = idx >= 0 ? filenames [idx] : null;
+					info.source_files [i] = idx >= 0 ? sources [idx] : default (SourceInfo);
 				} else {
-					info.source_files [i] = filenames [0];
+					info.source_files [i] = sources [0];
 				}
 			}
 
@@ -1718,6 +1731,12 @@ namespace Mono.Debugger.Soft
 				if ((attrs & (1 << 1)) != 0)
 					info.is_generic_method = true;
 				info.gmd = res.ReadId ();
+				if (Version.AtLeast (2, 15)) {
+					if (info.is_generic_method) {
+						int n = res.ReadInt ();
+						info.type_args = res.ReadIds (n);
+					}
+				}
 			}
 			return info;
 		}
@@ -1865,6 +1884,10 @@ namespace Mono.Debugger.Soft
 
 			if (Version.AtLeast (2, 12))
 				res.gtd = r.ReadId ();
+			if (Version.AtLeast (2, 15) && res.is_generic_type) {
+				int n = r.ReadInt ();
+				res.type_args = r.ReadIds (n);
+			}
 
 			return res;
 		}

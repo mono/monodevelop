@@ -877,8 +877,8 @@ namespace Mono.Debugging.Soft
 			EventRequest request;
 			
 			request = vm.CreateExceptionRequest (excType, true, true);
+			request.Count = cp.HitCount; // Note: need to set HitCount *before* enabling
 			request.Enabled = cp.Enabled;
-			request.Count = cp.HitCount;
 			
 			bi.Requests.Add (request);
 		}
@@ -907,6 +907,11 @@ namespace Mono.Debugging.Soft
 			return i == paramTypes.Length;
 		}
 		
+		bool IsGenericMethod (MethodMirror method)
+		{
+			return vm.Version.AtLeast (2, 12) && method.IsGenericMethod;
+		}
+		
 		Location FindLocationByFunction (string function, string[] paramTypes, int line, out bool genericTypeOrMethod)
 		{
 			genericTypeOrMethod = false;
@@ -931,7 +936,7 @@ namespace Mono.Debugging.Soft
 						
 						Location location = GetLocFromMethod (method);
 						if (location != null) {
-							genericTypeOrMethod = type.IsGenericType || method.IsGenericMethod;
+							genericTypeOrMethod = type.IsGenericType || IsGenericMethod (method);
 							return location;
 						}
 					}
@@ -1557,7 +1562,7 @@ namespace Mono.Debugging.Soft
 								ResolvePendingBreakpoint (bi, loc);
 								
 								// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
-								if (!type.IsGenericType && !method.IsGenericMethod)
+								if (!type.IsGenericType && !IsGenericMethod (method))
 									resolved.Add (bi);
 								break;
 							}
@@ -1580,7 +1585,7 @@ namespace Mono.Debugging.Soft
 								ResolvePendingBreakpoint (bi, loc);
 								
 								// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
-								if (!type.IsGenericType && !method.IsGenericMethod)
+								if (!type.IsGenericType /* && !IsGenericMethod (method)*/)
 									resolved.Add (bi);
 								break;
 							}
@@ -1701,7 +1706,7 @@ namespace Mono.Debugging.Soft
 				}
 				
 				if (target_loc != null) {
-					genericMethod = method.IsGenericMethod;
+					genericMethod = IsGenericMethod (method);
 					break;
 				}
 				

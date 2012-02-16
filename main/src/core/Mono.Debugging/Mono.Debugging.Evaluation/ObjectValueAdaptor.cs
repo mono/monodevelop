@@ -72,7 +72,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public virtual string GetDisplayTypeName (string typeName)
 		{
-			return GetDisplayTypeName (typeName.Replace ('+','.'), 0, typeName.Length);
+			return GetDisplayTypeName (typeName.Replace ('+', '.'), 0, typeName.Length);
 		}
 		
 		public string GetDisplayTypeName (EvaluationContext ctx, object type)
