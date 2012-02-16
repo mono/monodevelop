@@ -65,7 +65,7 @@ ADDIN_BUILD = $(top_builddir)/build/AddIns/DisplayBindings/AssemblyBrowser
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
-	mkdir -p $(top_builddir)/build/bin
+	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) --unsafe -out:$@ -t:library $(REFS) $(build_deps)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)

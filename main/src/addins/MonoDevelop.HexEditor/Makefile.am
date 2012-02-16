@@ -44,11 +44,11 @@ RES =  \
 	MonoDevelop.HexEditor.addin.xml  
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/MonoDevelop.AssemblyBrowser.dll \
+	$(top_builddir)/build/AddIns/DisplayBindings/AssemblyBrowser/MonoDevelop.AssemblyBrowser.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
-	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll
+	$(top_builddir)/build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
@@ -64,7 +64,7 @@ REFS =  \
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
-	mkdir -p $(top_builddir)/build/bin
+	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) $(build_deps)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
