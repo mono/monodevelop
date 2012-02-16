@@ -74,11 +74,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Table 3.3
 			this.hbox.Spacing     = 12;
 			this.hbox.BorderWidth = 6;
-			
-			// Table 3.4
-			this.image.Yalign   = 0.00f;
-			//this.image.IconSize = Gtk.IconSize.Dialog;
-			
+
 			// Table 3.5
 			this.label.UseMarkup = true;
 			this.label.Wrap      = true;
@@ -104,6 +100,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			if (!string.IsNullOrEmpty (message.Icon)) {
 				image = new Image ();
+				image.Yalign   = 0.00f;
 				image.Pixbuf = ImageService.GetPixbuf (message.Icon, IconSize.Dialog);
 				hbox.PackStart (image, false, false, 0);
 				hbox.ReorderChild (image, 0);
@@ -161,8 +158,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				buttonNumber = ActionArea.Children.Length - 1;
 			ActionArea.Children[buttonNumber].GrabFocus ();
 		}
-			
-		
+
 		void ButtonClicked (object sender, EventArgs e) 
 		{
 			Gtk.Button clickButton = (Gtk.Button)sender;
