@@ -249,6 +249,12 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
+		public bool IncludeAccessor {
+			get {
+				return (OutputFlags & OutputFlags.IncludeAccessor) == OutputFlags.IncludeAccessor;
+			}
+		}
+
 		public MarkupText EmitModifiersCallback;
 		public MarkupText EmitKeywordCallback;
 		public MarkupText MarkupCallback;

@@ -1476,8 +1476,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (curType == null)
 				return;
-			
-			foreach (var m in curType.GetMethods (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.GetProperties ().Cast<IMember> ())) {
+			foreach (var m in curType.GetMethods (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.GetProperties ().Cast<IMember> ()).Reverse ()) {
 				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !m.IsOverridable)
 					continue;
 				// filter out the "Finalize" methods, because finalizers should be done with destructors.
@@ -1491,7 +1490,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				bool foundMember = curType.GetMembers ().Any (cm => GetNameWithParamCount (cm) == text && cm.DeclaringTypeDefinition == curType.GetDefinition ());
 				if (foundMember)
 					continue;
-					
+				if (alreadyInserted.ContainsKey (text))
+					continue;
 				alreadyInserted [text] = true;
 				data.CompletionCategory = col.GetCompletionCategory (curType);
 				col.Add (data);

@@ -536,7 +536,8 @@ namespace MonoDevelop.CSharp.Refactoring
 //					}
 //				}
 			}
-			if (!isFromInterface && (member.IsVirtual || member.IsAbstract))
+			
+			if (!isFromInterface && member.IsOverridable)
 				result.Append ("override ");
 		}
 		
@@ -574,9 +575,16 @@ namespace MonoDevelop.CSharp.Refactoring
 					} else {
 						AppendIndent (result);
 						bodyStartOffset = result.Length;
-						result.Append ("return base.");
-						result.Append (property.Name);
-						result.Append (";");
+						if (property.EntityType == EntityType.Indexer) {
+							result.Append ("return base[");
+							if (property.Parameters.Count > 0)
+								result.Append (property.Parameters.First ().Name);
+							result.Append ("];");
+						} else {
+							result.Append ("return base.");
+							result.Append (property.Name);
+							result.Append (";");
+						}
 						bodyEndOffset = result.Length;
 						AppendLine (result);
 					}
@@ -601,9 +609,16 @@ namespace MonoDevelop.CSharp.Refactoring
 					} else {
 						AppendIndent (result);
 						bodyStartOffset = result.Length;
-						result.Append ("base.");
-						result.Append (property.Name);
-						result.Append (" = value;");
+						if (property.EntityType == EntityType.Indexer) {
+							result.Append ("base[");
+							if (property.Parameters.Count > 0)
+								result.Append (property.Parameters.First ().Name);
+							result.Append ("] = value;");
+						} else { 
+							result.Append ("base.");
+							result.Append (property.Name);
+							result.Append (" = value;");
+						}
 						bodyEndOffset = result.Length;
 						AppendLine (result);
 					}

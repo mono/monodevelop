@@ -754,12 +754,32 @@ namespace MonoDevelop.CSharp
 			
 			AppendExplicitInterfaces (result, property, settings);
 			
-			result.Append (settings.EmitName (property, Format (FilterName (property.Name))));
+			if (property.EntityType == EntityType.Indexer) {
+				result.Append (settings.EmitName (property, "this"));
+			} else {
+				result.Append (settings.EmitName (property, Format (FilterName (property.Name))));
+			}
 			
+			if (settings.IncludeParameters && property.Parameters.Count > 0) {
+				result.Append (settings.Markup ("["));
+				AppendParameterList (result, settings, property.Parameters);
+				result.Append (settings.Markup ("]"));
+			}
+						
 			if (settings.CompletionListFomat && settings.IncludeReturnType) {
 				result.Append (settings.Markup (" : "));
 				result.Append (GetTypeReferenceString (property.ReturnType, settings));
 			}
+			
+			if (settings.IncludeAccessor) {
+				result.Append (settings.Markup (" {"));
+				if (property.CanGet)
+					result.Append (settings.Markup (" get;"));
+				if (property.CanSet)
+					result.Append (settings.Markup (" set;"));
+				result.Append (settings.Markup (" }"));
+			}
+			
 			return result.ToString ();
 		}
 
@@ -785,10 +805,18 @@ namespace MonoDevelop.CSharp
 			
 			result.Append (settings.EmitName (property, Format ("this")));
 			
-			if (settings.IncludeParameters && property.Parameters.Count > 0) {
+			if (settings.IncludeParameters && property.Getter.Parameters.Count > 0) {
 				result.Append (settings.Markup ("["));
-				AppendParameterList (result, settings, property.Parameters);
+				AppendParameterList (result, settings, property.Getter.Parameters);
 				result.Append (settings.Markup ("]"));
+			}
+			if (settings.IncludeAccessor) {
+				result.Append (settings.Markup (" {"));
+				if (property.CanGet)
+					result.Append (settings.Markup (" get;"));
+				if (property.CanSet)
+					result.Append (settings.Markup (" set;"));
+				result.Append (settings.Markup (" }"));
 			}
 			return result.ToString ();
 		}

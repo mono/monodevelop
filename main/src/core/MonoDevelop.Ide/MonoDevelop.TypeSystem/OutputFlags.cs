@@ -57,6 +57,7 @@ namespace MonoDevelop.TypeSystem
 		IncludeConstraints       = 0x80000,
 		ReturnTypesLast          = 0x100000,
 		CompletionListFomat      = 0x200000, // print "Name : type" instead of "type : Name" 
+		IncludeAccessor          = 0x400000, // print {get;set;} after property name.
 		
 		ClassBrowserEntries        = IncludeReturnType | IncludeParameters | IncludeGenerics,
 		AssemblyBrowserDescription = IncludeGenerics | IncludeBaseTypes | IncludeReturnType | IncludeParameters | IncludeParameterName | IncludeMarkup | IncludeKeywords | IncludeModifiers
