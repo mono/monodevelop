@@ -62,13 +62,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.vboxExtensions = new global::Gtk.VBox ();
 			this.vboxExtensions.Name = "vboxExtensions";
 			this.vboxExtensions.Spacing = 6;
-			this.mainBox.Add (this.vboxExtensions);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.vboxExtensions]));
-			w5.PackType = ((global::Gtk.PackType)(1));
-			w5.Position = 2;
-			w5.Expand = false;
-			w5.Fill = false;
-			// Container child mainBox.Gtk.Box+BoxChild
+			// Container child vboxExtensions.Gtk.Box+BoxChild
 			this.scrolledwindow2 = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow2.CanFocus = true;
 			this.scrolledwindow2.Name = "scrolledwindow2";
@@ -78,12 +72,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.textview.CanFocus = true;
 			this.textview.Name = "textview";
 			this.scrolledwindow2.Add (this.textview);
-			this.mainBox.Add (this.scrolledwindow2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.scrolledwindow2]));
+			this.vboxExtensions.Add (this.scrolledwindow2);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vboxExtensions [this.scrolledwindow2]));
+			w6.Position = 0;
+			this.mainBox.Add (this.vboxExtensions);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.vboxExtensions]));
 			w7.PackType = ((global::Gtk.PackType)(1));
-			w7.Position = 3;
-			w7.Expand = false;
-			w7.Fill = false;
+			w7.Position = 2;
 			// Container child mainBox.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
@@ -93,7 +88,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.mainBox.Add (this.label2);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.label2]));
 			w8.PackType = ((global::Gtk.PackType)(1));
-			w8.Position = 4;
+			w8.Position = 3;
 			w8.Expand = false;
 			w8.Fill = false;
 			w1.Add (this.mainBox);
