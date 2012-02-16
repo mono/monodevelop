@@ -1,5 +1,5 @@
 
-ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.Gettext
+ADDIN_BUILD = $(top_builddir)/build/AddIns/DisplayBindings/Gettext
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Gettext.dll
 
 DEPS =  \
