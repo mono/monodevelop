@@ -525,9 +525,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Gdk.Rectangle rect = List.GetRowArea (List.Selection);
 			if (rect.IsEmpty)
 				return false;
-			int listpos_x = 0, listpos_y = 0;
-			while (listpos_x == 0 || listpos_y == 0)
+			int listpos_x = 0, listpos_y = 0, i = 0;
+			while ((listpos_x == 0 || listpos_y == 0) && (i++ < 10))
 				GetPosition (out listpos_x, out listpos_y);
+			if (i >= 10)
+				return false;
 			int vert = listpos_y + rect.Y;
 			int lvWidth = 0, lvHeight = 0;
 			while (lvWidth == 0)
