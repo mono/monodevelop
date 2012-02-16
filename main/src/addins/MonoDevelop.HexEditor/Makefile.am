@@ -1,5 +1,6 @@
 DLLNAME = MonoDevelop.HexEditor.dll
-ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
+ADDIN_BUILD = $(top_builddir)/build/AddIns/DisplayBindings/HexEditor
+ASSEMBLY = $(ADDIN_BUILD)/$(DLLNAME)
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -59,7 +60,6 @@ REFS =  \
 	-r:System \
 	-r:System.Core
 
-ADDIN_BUILD = $(top_builddir)/build/AddIns
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
