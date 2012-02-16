@@ -175,6 +175,11 @@ namespace MonoDevelop.TypeSystem
 			return provider != null ? provider.Parser : null;
 		}
 		
+		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType)
+		{
+			return Parsers.FirstOrDefault (p => p.CanParse (mimeType));
+		}
+		
 		static List<MimeTypeExtensionNode> foldingParsers;
 
 		static IEnumerable<MimeTypeExtensionNode> FoldingParsers {
@@ -1261,16 +1266,23 @@ namespace MonoDevelop.TypeSystem
 			
 			public void Run (IProgressMonitor monitor)
 			{
+				TypeSystemParserNode node = null;
+				ITypeSystemParser parser = null;
 				foreach (var file in (FileList ?? Project.Files)) {
 					if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 						continue;
 					
-					var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.FilePath));
+					var fileName = file.FilePath;
+					if (node == null || !node.CanParse (fileName)) {
+						node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName));
+						parser = node != null ? node.Parser : null;
+					}
 					if (parser == null)
 						continue;
-					using (var stream = new System.IO.StreamReader (file.FilePath)) {
-						var parsedDocument = parser.Parse (false, file.FilePath, stream, Project);
-						Context.Content = Context.Content.UpdateProjectContent (Context.Content.GetFile (file.FilePath), parsedDocument.ParsedFile);
+					
+					using (var stream = new System.IO.StreamReader (fileName)) {
+						var parsedDocument = parser.Parse (false, fileName, stream, Project);
+						Context.Content = Context.Content.UpdateProjectContent (Context.Content.GetFile (fileName), parsedDocument.ParsedFile);
 					}
 //					if (ParseCallback != null)
 //						ParseCallback (file.FilePath, monitor);
