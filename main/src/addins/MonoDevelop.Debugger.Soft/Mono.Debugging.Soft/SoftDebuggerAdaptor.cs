@@ -49,7 +49,7 @@ namespace Mono.Debugging.Soft
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			
 			if (obj == null)
-				return string.Empty;
+				return null;
 			
 			if (obj is StringMirror)
 				return ((StringMirror)obj).Value;
@@ -70,7 +70,7 @@ namespace Mono.Debugging.Soft
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
 				if (method != null && method.DeclaringType.FullName != "System.Object") {
 					StringMirror res = cx.RuntimeInvoke (method, obj, new Value[0]) as StringMirror;
-					return res != null ? res.Value : string.Empty;
+					return res != null ? res.Value : null;
 				}
 			}
 			else if ((obj is StructMirror) && cx.Options.AllowTargetInvoke) {
@@ -78,7 +78,7 @@ namespace Mono.Debugging.Soft
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
 				if (method != null && method.DeclaringType.FullName != "System.ValueType") {
 					StringMirror res = cx.RuntimeInvoke (method, obj, new Value[0]) as StringMirror;
-					return res != null ? res.Value : string.Empty;
+					return res != null ? res.Value : null;
 				}
 			}
 			
