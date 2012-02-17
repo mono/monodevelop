@@ -1685,15 +1685,24 @@ namespace Mono.Debugging.Soft
 					if (srcFile != null && PathComparer.Compare (PathToFileName (NormalizePath (srcFile)), file) == 0) {
 						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
 						// pick the L+1 location, since that's where the debugger is going to stop.
-						if (target_loc != null) {
-							if (target_loc.ILOffset == location.ILOffset)
+						if (location.LineNumber >= line) {
+							if (target_loc != null) {
+								if (location.LineNumber > line) {
+									if (target_loc.LineNumber - line > location.LineNumber - line) {
+										// Grab the location closest to the requested line...
+										target_loc = location;
+									} else if (location.ILOffset == target_loc.ILOffset) {
+										// Grab the last location with the same ILOffset
+										target_loc = location;
+									}
+								} else {
+									target_loc = location;
+								}
+							} else {
 								target_loc = location;
-							else
-								break;
-						} else if (location.LineNumber >= line) {
-							if (target_loc == null)
-								target_loc = location;
+							}
 						}
+						
 						rangeLastLine = location.LineNumber;
 						if (rangeFirstLine == -1)
 							rangeFirstLine = location.LineNumber;
