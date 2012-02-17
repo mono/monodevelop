@@ -114,7 +114,19 @@ namespace Mono.Debugging.Soft
 			}
 			
 			if (type != null) {
-				methodName = session.Adaptor.GetDisplayTypeName (type.FullName) + "." + methodName;
+				string typeDisplayName = session.Adaptor.GetDisplayTypeName (type.FullName);
+				
+				if (SoftDebuggerAdaptor.IsGeneratedIteratorType (type)) {
+					// The user-friendly method name is embedded in the generated iterator type name.
+					methodName = SoftDebuggerAdaptor.GetNameFromGeneratedIteratorType (type);
+					
+					// Strip off the generated iterator type name
+					int dot = typeDisplayName.LastIndexOf ('.');
+					typeDisplayName = typeDisplayName.Substring (0, dot);
+				}
+				
+				methodName = typeDisplayName + "." + methodName;
+				
 				typeFQN = type.Module.FullyQualifiedName;
 				typeFullName = type.FullName;
 			}

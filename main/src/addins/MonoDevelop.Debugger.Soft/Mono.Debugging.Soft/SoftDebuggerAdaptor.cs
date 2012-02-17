@@ -280,13 +280,18 @@ namespace Mono.Debugging.Soft
 			return tm.Name.IndexOf (">c__") != -1;
 		}
 		
-		static bool IsGeneratedIteratorType (TypeMirror tm)
+		internal static bool IsGeneratedIteratorType (TypeMirror tm)
 		{
-			return
-				//mcs
-				tm.Name.IndexOf (">c__Iterator") != -1
-				//csc is of form <NAME>d__NUMBER
-				|| (tm.Name.StartsWith ("<") && tm.Name.IndexOf (">d__") > -1);
+			return tm.Name[0] == '<' &&
+				// mcs is of the form <${NAME}>.c__Iterator${NUMBER}
+				(tm.Name.IndexOf (">c__Iterator") != -1 ||
+				// csc is of form <${NAME}>d__${NUMBER}
+				 tm.Name.IndexOf (">d__") != -1);
+		}
+		
+		internal static string GetNameFromGeneratedIteratorType (TypeMirror tm)
+		{
+			return tm.Name.Substring (1, tm.Name.IndexOf ('>') - 1);
 		}
 		
 		static bool IsHoistedThisReference (FieldInfoMirror field)
@@ -310,7 +315,7 @@ namespace Mono.Debugging.Soft
 			
 			return
 				// mcs
-				local.Name.Length == 0 || local.Name.StartsWith ("<") || local.Name.StartsWith ("$locvar")
+				local.Name.Length == 0 || local.Name[0] == '<' || local.Name.StartsWith ("$locvar")
 				// csc
 				|| local.Name.StartsWith ("CS$<>");
 		}
