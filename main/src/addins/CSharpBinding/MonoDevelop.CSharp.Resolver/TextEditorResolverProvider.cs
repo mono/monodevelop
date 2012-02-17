@@ -93,7 +93,7 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 			AstNode node;
 			var result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
-			if (result == null || !(node is Expression || node is AstType)) {
+			if (result == null || node is Statement) {
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
