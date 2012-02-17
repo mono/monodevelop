@@ -39,6 +39,7 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/CredentialsDialog.cs \
 	MonoDevelop.VersionControl.Git/EditBranchDialog.cs \
 	MonoDevelop.VersionControl.Git/EditRemoteDialog.cs \
+	MonoDevelop.VersionControl.Git/FilteredStatus.cs \
 	MonoDevelop.VersionControl.Git/GitClient.cs \
 	MonoDevelop.VersionControl.Git/GitCommitDialogExtension.cs \
 	MonoDevelop.VersionControl.Git/GitCommitDialogExtensionWidget.cs \
@@ -55,7 +56,6 @@ FILES =  \
 	MonoDevelop.VersionControl.Git/MergeDialog.cs \
 	MonoDevelop.VersionControl.Git/NewStashDialog.cs \
 	MonoDevelop.VersionControl.Git/PushDialog.cs \
-	MonoDevelop.VersionControl.Git/RepositoryStatus.cs \
 	MonoDevelop.VersionControl.Git/Stash.cs \
 	MonoDevelop.VersionControl.Git/StashManagerDialog.cs \
 	MonoDevelop.VersionControl.Git/UserInfoConflictDialog.cs
