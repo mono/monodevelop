@@ -51,7 +51,7 @@ namespace MonoDevelop.MacDev
 		
 		// Put newer SDKs at the top as we scan from 0 -> List.Count
 		static readonly IList<string> DefaultRoots = new List<string> {
-			"/Applications/Xcode.app/Contents/Developer",
+			"/Applications/Xcode.app",
 			"/Developer"
 		};
 		static DateTime lastWritten;
@@ -61,20 +61,41 @@ namespace MonoDevelop.MacDev
 			return Environment.GetEnvironmentVariable ("MD_APPLE_SDK_ROOT");
 		}
 		
-		internal static bool ValidateSdkLocation (FilePath location, out FilePath versionPlist)
+		static void GetNewPaths (FilePath root, out FilePath xcode, out FilePath vplist, out FilePath devroot)
 		{
-			versionPlist = location.Combine ("..", "version.plist");
-			if (System.IO.File.Exists (versionPlist))
+			xcode = root;
+			vplist = root.Combine ("Contents", "version.plist");
+			devroot = root.Combine ("Contents", "Developer");
+		}
+		
+		static void GetOldPaths (FilePath root, out FilePath xcode, out FilePath vplist, out FilePath devroot)
+		{
+			xcode = root.Combine ("Applications", "Xcode.app");
+			vplist = root.Combine ("Library", "version.plist");
+			devroot = root;
+		}
+		
+		static bool ValidatePaths (FilePath xcode, FilePath vplist, FilePath devroot)
+		{
+			return Directory.Exists (xcode)
+				&& Directory.Exists (devroot)
+				&& File.Exists (vplist)
+				&& File.Exists (xcode.Combine ("Contents", "Info.plist"));
+		}
+		
+		internal static bool ValidateSdkLocation (FilePath location, out FilePath xcode, out FilePath vplist, out FilePath devroot)
+		{
+			GetNewPaths (location, out xcode, out vplist, out devroot);
+			if (ValidatePaths (xcode, vplist, devroot))
 				return true;
 			
-			versionPlist = location.Combine ("Library", "version.plist");
-			if (System.IO.File.Exists (versionPlist))
+			GetOldPaths (location, out xcode, out vplist, out devroot);
+			if (ValidatePaths (xcode, vplist, devroot))
 				return true;
 			
-			versionPlist = FilePath.Empty;
 			return false;
 		}
-
+		
 		internal static void SetConfiguredSdkLocation (FilePath location)
 		{
 			if (location.IsNullOrEmpty || location == DefaultRoots.First ())
@@ -114,43 +135,33 @@ namespace MonoDevelop.MacDev
 		{
 			SetInvalid ();
 			
-			var versionInfo = FilePath.Empty;
 			DeveloperRoot = Environment.GetEnvironmentVariable ("MD_APPLE_SDK_ROOT");
 			if (DeveloperRoot.IsNullOrEmpty) {
 				DeveloperRoot = GetConfiguredSdkLocation ();
 			}
 			
+			bool foundSdk = false;
+			FilePath xcode, vplist, devroot;
+			
 			if (DeveloperRoot.IsNullOrEmpty) {
 				foreach (var v in DefaultRoots)  {
-					if (ValidateSdkLocation (v, out versionInfo)) {
-						DeveloperRootVersionPlist = versionInfo;
-						DeveloperRoot = v;
+					if (ValidateSdkLocation (v, out xcode, out vplist, out devroot)) {
+						foundSdk = true;
 						break;
 					} else {
-						LoggingService.LogDebug ("Apple iOS Sdk not found at '{0}'", v);
+						LoggingService.LogDebug ("Apple iOS SDK not found at '{0}'", v);
 					}
 				}
-			} else  if (DeveloperRoot.FileName == "Xcode.app") {
-				// If the user supplied path ends with 'Xcode.app' then we should assume
-				// it's the standard one and so need to append 'Contents/Developer'
-				DeveloperRoot = DeveloperRoot.Combine ("Contents", "Developer");
+			} else {
+				foundSdk = ValidateSdkLocation (DeveloperRoot, out xcode, out vplist, out devroot);
 			}
-
-			var parent = DeveloperRoot;
-			while (!parent.IsNullOrEmpty) {
-				if (parent.FileName == "Xcode.app") {
-					XcodePath =  parent;
-					break;
-				}
-				parent = parent.ParentDirectory;
-			}
-	
-			if (XcodePath.IsNullOrEmpty) {
-				XcodePath = DeveloperRoot.Combine ("Applications", "Xcode.app");
-			}
-
-			if (DeveloperRoot.IsNullOrEmpty || !ValidateSdkLocation (DeveloperRoot, out versionInfo)) {
-				DeveloperRootVersionPlist = versionInfo;
+			
+			if (foundSdk) {
+				XcodePath = xcode;
+				DeveloperRoot = devroot;
+				DeveloperRootVersionPlist = vplist;
+			} else {
+				SetInvalid ();
 				return;
 			}
 
