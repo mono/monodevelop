@@ -317,17 +317,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				switch (t.Item1) {
 				case '(':
 					wrapper.Append (')');
-					didAppendSemicolon = false;
+					if (appendSemicolon)
+						didAppendSemicolon = false;
 					lastBracket = ')';
 					break;
 				case '[':
 					wrapper.Append (']');
-					didAppendSemicolon = false;
+					if (appendSemicolon)
+						didAppendSemicolon = false;
 					lastBracket = ']';
 					break;
 				case '<':
 					wrapper.Append ('>');
-					didAppendSemicolon = false;
+					if (appendSemicolon)
+						didAppendSemicolon = false;
 					lastBracket = '>';
 					break;
 				case '{':
@@ -443,7 +446,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return Tuple.Create (cachedText, startOffset != 0);
 		}
 		
-		protected Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetInvocationBeforeCursor (bool afterBracket)
+		protected ExpressionResult GetInvocationBeforeCursor (bool afterBracket)
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null) {
@@ -455,7 +458,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					attr.Remove ();
 					var node = Unit.GetNodeAt (location) ?? Unit;
 					node.AddChild (attr, AttributeSection.AttributeRole);
-					return Tuple.Create (CSharpParsedFile, (AstNode)attr, Unit);
+					return new ExpressionResult ((AstNode)attr, Unit);
 				}
 			}
 			if (currentMember == null && currentType == null) {
@@ -485,12 +488,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
-			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
-			Unit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
+			return new ExpressionResult ((AstNode)expr, Unit);
 		}
 		
-		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (CSharpParsedFile file, AstNode expr, CompilationUnit unit)
+		public class ExpressionResult
+		{
+			public AstNode Node;
+			public CompilationUnit Unit;
+			
+			public ExpressionResult (AstNode item2, CompilationUnit item3)
+			{
+				this.Node = item2;
+				this.Unit = item3;
+			}
+		}
+		
+		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (ExpressionResult tuple)
+		{
+			return ResolveExpression (tuple.Node, tuple.Unit);
+		}
+
+		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (AstNode expr, CompilationUnit unit)
 		{
 			if (expr == null)
 				return null;
@@ -503,9 +521,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				resolveNode = expr;
 			}
 			
-//			var newContent = ProjectContent.UpdateProjectContent (CSharpParsedFile, file);
-			
-			var csResolver = new CSharpAstResolver(new CSharpResolver (ctx), unit, CSharpParsedFile);
+			var csResolver = new CSharpAstResolver(GetState (), unit, CSharpParsedFile);
 			
 			var result = csResolver.Resolve (resolveNode);
 			var state = csResolver.GetResolverStateBefore (resolveNode);
