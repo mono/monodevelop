@@ -1544,16 +1544,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return ie != null && ie.Target == node;
 		}
 		
-		bool IsVariableReferenceWithSameType(ResolveResult rr, string identifier, out TypeResolveResult trr)
-		{
-			if (!(rr is MemberResolveResult || rr is LocalResolveResult)) {
-				trr = null;
-				return false;
-			}
-			trr = resolver.LookupSimpleNameOrTypeName(identifier, EmptyList<IType>.Instance, SimpleNameLookupMode.Type) as TypeResolveResult;
-			return trr != null && trr.Type.Equals(rr.Type);
-		}
-		
+
 		/// <summary>
 		/// Gets whether 'rr' is considered a static access on the target identifier.
 		/// </summary>
@@ -1593,7 +1584,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				StoreCurrentState(identifierExpression);
 				ResolveResult target = resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance);
 				TypeResolveResult trr;
-				if (IsVariableReferenceWithSameType(target, identifierExpression.Identifier, out trr)) {
+				if (resolver.IsVariableReferenceWithSameType(target, identifierExpression.Identifier, out trr)) {
 					// It's ambiguous
 					ResolveResult rr = ResolveMemberReferenceOnGivenTarget(target, memberReferenceExpression);
 					ResolveResult simpleNameRR = IsStaticResult(rr, null) ? trr : target;
@@ -1646,7 +1637,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.WriteLine("Member reference '{0}' on potentially-ambiguous simple-name was resolved to {1}", mre, target);
 				StoreResult(mre, target);
 				TypeResolveResult trr;
-				if (IsVariableReferenceWithSameType(idRR, identifierExpression.Identifier, out trr)) {
+				if (resolver.IsVariableReferenceWithSameType(idRR, identifierExpression.Identifier, out trr)) {
 					// It's ambiguous
 					ResolveResult rr = ResolveInvocationOnGivenTarget(target, invocationExpression);
 					ResolveResult simpleNameRR = IsStaticResult(target, rr) ? trr : idRR;

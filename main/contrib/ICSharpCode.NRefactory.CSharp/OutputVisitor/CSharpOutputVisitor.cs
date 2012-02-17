@@ -77,38 +77,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		#region StartNode/EndNode
-		public event EventHandler<AstNodeEventArgs> OutputStarted;
-		
-		protected virtual void OnOutputStarted (AstNodeEventArgs e)
-		{
-			EventHandler<AstNodeEventArgs> handler = this.OutputStarted;
-			if (handler != null)
-				handler (this, e);
-		}
-		
-		public event EventHandler<AstNodeEventArgs> OutputFinished;
-		
-		protected virtual void OnOutputFinished (AstNodeEventArgs e)
-		{
-			EventHandler<AstNodeEventArgs> handler = this.OutputFinished;
-			if (handler != null)
-				handler (this, e);
-		}
-		
-		[Serializable]
-		public sealed class AstNodeEventArgs : EventArgs
-		{
-			public AstNode AstNode {
-				get;
-				private set;
-			}
-			
-			public AstNodeEventArgs (AstNode node)
-			{
-				this.AstNode = node;
-			}
-		}
-		
 		void StartNode (AstNode node)
 		{
 			// Ensure that nodes are visited in the proper nested order.
@@ -118,8 +86,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				WriteSpecialsUpToNode (node);
 			containerStack.Push (node);
 			positionStack.Push (node.FirstChild);
-			formatter.WriteToken (""); // force indentation, if required
-			OnOutputStarted (new AstNodeEventArgs (node));
 			formatter.StartNode (node);
 		}
 		
@@ -130,7 +96,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			Debug.Assert (pos == null || pos.Parent == node);
 			WriteSpecials (pos, null);
 			containerStack.Pop ();
-			OnOutputFinished (new AstNodeEventArgs (node));
 			formatter.EndNode (node);
 			return null;
 		}

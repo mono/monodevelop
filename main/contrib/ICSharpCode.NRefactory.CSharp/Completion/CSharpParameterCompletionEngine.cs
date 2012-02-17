@@ -88,22 +88,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var expr = baseUnit.GetNodeAt <ConstructorInitializer> (location); 
 			if (expr == null)
 				return null;
-/*			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
-			
-			AstNode expr;
-			if (mref is IndexerExpression) {
-				expr = ((IndexerExpression)mref).Target;
-			} else {
-				return null;
-			}
-			
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
-			if (member == null || member2 == null)
-				return null;
-			member2.Remove ();
-			member.ReplaceWith (member2);*/
-			
 			return new ExpressionResult ((AstNode)expr, Unit);
 		}
 		

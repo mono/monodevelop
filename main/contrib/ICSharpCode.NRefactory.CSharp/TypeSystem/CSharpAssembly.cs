@@ -17,9 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -94,11 +95,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					return root;
 				} else {
 					root = new NS(this);
-					Dictionary<string, NS> dict = new Dictionary<string, NS>();
+					Dictionary<string, NS> dict = new Dictionary<string, NS>(compilation.NameComparer);
 					dict.Add(string.Empty, root);
 					foreach (var pair in GetTypes()) {
 						NS ns = GetOrAddNamespace(dict, pair.Key.Namespace);
-						ns.types[pair.Key] = pair.Value;
+						if (ns.types != null)
+							ns.types[pair.Key] = pair.Value;
 					}
 					return LazyInit.GetOrSet(ref this.rootNamespace, root);
 				}
@@ -171,36 +173,46 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				return fullAssemblyName.Substring(0, pos);
 		}
 		
-		Dictionary<FullNameAndTypeParameterCount, DefaultResolvedTypeDefinition> typeDict;
+		Dictionary<FullNameAndTypeParameterCount, Lazy<ITypeDefinition>> typeDict;
 		
-		Dictionary<FullNameAndTypeParameterCount, DefaultResolvedTypeDefinition> GetTypes()
+		Dictionary<FullNameAndTypeParameterCount, Lazy<ITypeDefinition>> GetTypes()
 		{
 			var dict = this.typeDict;
 			if (dict != null) {
 				LazyInit.ReadBarrier();
 				return dict;
 			} else {
+				// Always use the ordinal comparer for the main dictionary so that partial classes
+				// get merged correctly.
+				// The compilation's comparer will be used for the per-namespace dictionaries.
 				var comparer = FullNameAndTypeParameterCountComparer.Ordinal;
 				dict = projectContent.TopLevelTypeDefinitions
 					.GroupBy(t => new FullNameAndTypeParameterCount(t.Namespace, t.Name, t.TypeParameters.Count), comparer)
-					.ToDictionary(g => g.Key, g => new DefaultResolvedTypeDefinition(context, g.ToArray()), comparer);
+					.ToDictionary(g => g.Key, g => CreateResolvedTypeDefinition(g.ToArray()), comparer);
 				return LazyInit.GetOrSet(ref this.typeDict, dict);
 			}
+		}
+		
+		Lazy<ITypeDefinition> CreateResolvedTypeDefinition(IUnresolvedTypeDefinition[] parts)
+		{
+			return new Lazy<ITypeDefinition>(
+				() => new DefaultResolvedTypeDefinition(context, parts),
+				LazyThreadSafetyMode.PublicationOnly);
 		}
 		
 		public ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount)
 		{
 			var key = new FullNameAndTypeParameterCount(ns ?? string.Empty, name, typeParameterCount);
-			DefaultResolvedTypeDefinition def;
+			Lazy<ITypeDefinition> def;
 			if (GetTypes().TryGetValue(key, out def))
-				return def;
+				return def.Value;
 			else
 				return null;
 		}
 		
 		public IEnumerable<ITypeDefinition> TopLevelTypeDefinitions {
 			get {
-				return GetTypes().Values;
+				return GetTypes().Values.Select(t => t.Value);
 			}
 		}
 		
@@ -216,14 +228,18 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			readonly string fullName;
 			readonly string name;
 			internal readonly List<NS> childNamespaces = new List<NS>();
-			internal readonly Dictionary<FullNameAndTypeParameterCount, ITypeDefinition> types;
+			internal readonly Dictionary<FullNameAndTypeParameterCount, Lazy<ITypeDefinition>> types;
 			
 			public NS(CSharpAssembly assembly)
 			{
 				this.assembly = assembly;
 				this.fullName = string.Empty;
 				this.name = string.Empty;
-				this.types = new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>(new FullNameAndTypeParameterCountComparer(assembly.compilation.NameComparer));
+				// Our main dictionary for the CSharpAssembly is using an ordinal comparer.
+				// If the compilation's comparer isn't ordinal, we need to create a new dictionary with the compilation's comparer.
+				if (assembly.compilation.NameComparer != StringComparer.Ordinal) {
+					this.types = new Dictionary<FullNameAndTypeParameterCount, Lazy<ITypeDefinition>>(new FullNameAndTypeParameterCountComparer(assembly.compilation.NameComparer));
+				}
 			}
 			
 			public NS(NS parentNamespace, string fullName, string name)
@@ -232,7 +248,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				this.parentNamespace = parentNamespace;
 				this.fullName = fullName;
 				this.name = name;
-				this.types = new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>(parentNamespace.types.Comparer);
+				if (parentNamespace.types != null)
+					this.types = new Dictionary<FullNameAndTypeParameterCount, Lazy<ITypeDefinition>>(parentNamespace.types.Comparer);
 			}
 			
 			string INamespace.ExternAlias {
@@ -256,7 +273,16 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 			
 			IEnumerable<ITypeDefinition> INamespace.Types {
-				get { return types.Values; }
+				get {
+					if (types != null)
+						return types.Values.Select(t => t.Value);
+					else
+						return (
+							from t in assembly.GetTypes()
+							where t.Key.Namespace == fullName
+							select t.Value.Value
+						);
+				}
 			}
 			
 			ICompilation IResolved.Compilation {
@@ -275,7 +301,16 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			ITypeDefinition INamespace.GetTypeDefinition(string name, int typeParameterCount)
 			{
-				return assembly.GetTypeDefinition(this.fullName, name, typeParameterCount);
+				if (types != null) {
+					var key = new FullNameAndTypeParameterCount(fullName, name, typeParameterCount);
+					Lazy<ITypeDefinition> typeDef;
+					if (types.TryGetValue(key, out typeDef))
+						return typeDef.Value;
+					else
+						return null;
+				} else {
+					return assembly.GetTypeDefinition(fullName, name, typeParameterCount);
+				}
 			}
 		}
 	}

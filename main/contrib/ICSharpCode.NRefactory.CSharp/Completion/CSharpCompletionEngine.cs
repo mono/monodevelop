@@ -1803,10 +1803,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return result.Result;
 			}
 			
+			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+			bool isProtectedAllowed = resolveResult is ThisResolveResult ? true : lookup.IsProtectedAccessAllowed (type);
+			bool skipNonStaticMembers = (resolveResult is TypeResolveResult);
+			
 			if (resolveResult is MemberResolveResult && resolvedNode is IdentifierExpression) {
 				var mrr = (MemberResolveResult)resolveResult;
 				includeStaticMembers = mrr.Member.Name == mrr.Type.Name;
 				
+				TypeResolveResult trr;
+				if (state.IsVariableReferenceWithSameType (resolveResult, ((IdentifierExpression)resolvedNode).Identifier, out trr)) {
+					if (mrr.Member.IsStatic ^ currentMember.IsStatic)
+						skipNonStaticMembers = true;
+				}
 				// ADD Aliases
 				var scope = CSharpParsedFile.GetUsingScope (location).Resolve (Compilation);
 			
@@ -1838,9 +1847,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
-				var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
-				bool isProtectedAllowed = resolveResult is ThisResolveResult ? true : lookup.IsProtectedAccessAllowed (type);
-			
+				
 				var filteredList = new List<IMember> ();
 				foreach (var member in type.GetMembers ()) {
 //					Console.WriteLine ("member:" + member + member.IsShadowing);
@@ -1859,7 +1866,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (field != null)
 						memberIsStatic |= field.IsConst;
 					
-					if (!memberIsStatic && (resolveResult is TypeResolveResult)) {
+					if (!memberIsStatic && skipNonStaticMembers) {
 						continue;
 					}
 					
@@ -1874,7 +1881,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var member in filteredList) {
-//					Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}
 			}

@@ -1384,6 +1384,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
+		public bool IsVariableReferenceWithSameType (ResolveResult rr, string identifier, out TypeResolveResult trr)
+		{
+			if (!(rr is MemberResolveResult || rr is LocalResolveResult)) {
+				trr = null;
+				return false;
+			}
+			trr = LookupSimpleNameOrTypeName (identifier, EmptyList<IType>.Instance, SimpleNameLookupMode.Type) as TypeResolveResult;
+			return trr != null && trr.Type.Equals (rr.Type);
+		}
+		
 		ResolveResult LookInCurrentType(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode, bool parameterizeResultType)
 		{
 			int k = typeArguments.Count;
