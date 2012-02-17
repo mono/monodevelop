@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
@@ -75,6 +76,37 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return new ExpressionResult ((AstNode)expr, Unit);
 		}
 		
+		public ExpressionResult GetConstructorInitializerBeforeCursor ()
+		{
+			CompilationUnit baseUnit;
+			if (currentMember == null && currentType == null) 
+				return null;
+			if (Unit == null)
+				return null;
+			baseUnit = ParseStub ("a) {}", false);
+			
+			var expr = baseUnit.GetNodeAt <ConstructorInitializer> (location); 
+			if (expr == null)
+				return null;
+/*			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			
+			AstNode expr;
+			if (mref is IndexerExpression) {
+				expr = ((IndexerExpression)mref).Target;
+			} else {
+				return null;
+			}
+			
+			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			if (member == null || member2 == null)
+				return null;
+			member2.Remove ();
+			member.ReplaceWith (member2);*/
+			
+			return new ExpressionResult ((AstNode)expr, Unit);
+		}
+		
 		public ExpressionResult GetTypeBeforeCursor ()
 		{
 			CompilationUnit baseUnit;
@@ -110,9 +142,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			ResolveResult resolveResult;
 			switch (completionChar) {
 			case '(':
-				var invoke = GetInvocationBeforeCursor (true) ?? GetIndexerBeforeCursor ();
+				var invoke = GetInvocationBeforeCursor (true) ?? GetConstructorInitializerBeforeCursor ();
 				if (invoke == null)
 					return null;
+				if (invoke.Node is ConstructorInitializer) {
+					var init = (ConstructorInitializer)invoke.Node;
+					if (init.ConstructorInitializerType == ConstructorInitializerType.This) {
+						return factory.CreateConstructorProvider (ctx.CurrentTypeDefinition);
+					} else {
+						var baseType = ctx.CurrentTypeDefinition.DirectBaseTypes.FirstOrDefault (bt => bt.Kind != TypeKind.Interface);
+						if (baseType == null)
+							return null;
+						return factory.CreateConstructorProvider (baseType);
+					}
+				}
 				if (invoke.Node is ObjectCreateExpression) {
 					var createType = ResolveExpression (((ObjectCreateExpression)invoke.Node).Type, invoke.Unit);
 					return factory.CreateConstructorProvider (createType.Item1.Type);
@@ -155,7 +198,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				invoke = GetInvocationBeforeCursor (true) ?? GetIndexerBeforeCursor ();
 				if (invoke == null) {
 					invoke = GetTypeBeforeCursor ();
-					if (invoke !=null) {
+					if (invoke != null) {
 						var typeExpression = ResolveExpression (invoke);
 						if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError)
 							return null;
