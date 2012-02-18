@@ -56,6 +56,7 @@ namespace MonoDevelop.Debugger
 			this.Build ();
 			options = DebuggingService.GetUserOptions ();
 			projectCodeOnly.Active = options.ProjectAssembliesOnly;
+			stepOverPropertiesAndOperators.Active = options.StepOverPropertiesAndOperators;
 			checkAllowEval.Active = options.EvaluationOptions.AllowTargetInvoke;
 			checkToString.Active = options.EvaluationOptions.AllowToStringCalls;
 			checkShowBaseGroup.Active = !options.EvaluationOptions.FlattenHierarchy;
@@ -83,7 +84,8 @@ namespace MonoDevelop.Debugger
 			ops.GroupStaticMembers = checkGroupStatic.Active;
 			int t = (int) spinTimeout.Value;
 			ops.EvaluationTimeout = t;
-
+			
+			options.StepOverPropertiesAndOperators = stepOverPropertiesAndOperators.Active;
 			options.ProjectAssembliesOnly = projectCodeOnly.Active;
 			options.EvaluationOptions = ops;
 

@@ -32,6 +32,7 @@ namespace Mono.Debugging.Client
 	public class DebuggerSessionOptions
 	{
 		public EvaluationOptions EvaluationOptions { get; set; }
+		public bool StepOverPropertiesAndOperators { get; set; }
 		public bool ProjectAssembliesOnly { get; set; }
 	}
 }

@@ -35,6 +35,18 @@ using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Soft
 {
+	internal class SoftDebuggerStackFrame : Mono.Debugging.Client.StackFrame {
+		public Mono.Debugger.Soft.StackFrame StackFrame {
+			get; private set;
+		}
+		
+		public SoftDebuggerStackFrame (Mono.Debugger.Soft.StackFrame frame, string addressSpace, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo, string fullModuleName, string fullTypeName)
+			: base (frame.ILOffset, addressSpace, location, language, isExternalCode, hasDebugInfo, fullModuleName, fullTypeName)
+		{
+			StackFrame = frame;
+		}
+	}
+	
 	public class SoftDebuggerBacktrace: BaseBacktrace
 	{
 		MDB.StackFrame[] frames;
@@ -132,10 +144,9 @@ namespace Mono.Debugging.Soft
 			}
 			
 			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber);
-			var lang = frame.Method != null ? "Managed" : "Native";
 			var external = session.IsExternalCode (frame);
 			
-			return new DC.StackFrame (frame.ILOffset, method.FullName, location, lang, external, true, typeFQN, typeFullName);
+			return new SoftDebuggerStackFrame (frame, method.FullName, location, "Managed", external, true, typeFQN, typeFullName);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)

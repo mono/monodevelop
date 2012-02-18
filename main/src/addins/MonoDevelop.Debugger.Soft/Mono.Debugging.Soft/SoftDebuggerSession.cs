@@ -57,6 +57,7 @@ namespace Mono.Debugging.Soft
 		ThreadInfo[] current_threads;
 		bool exited;
 		bool started;
+		bool autoStepInto;
 		internal int StackVersion;
 		StepEventRequest currentStepRequest;
 		ExceptionEventRequest unhandledExceptionRequest;
@@ -1125,12 +1126,31 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
+		static bool IsStepIntoRequest (StepEventRequest stepRequest)
+		{
+			return stepRequest.Depth == StepDepth.Into;
+		}
+		
+		static bool IsStepOutRequest (StepEventRequest stepRequest)
+		{
+			return stepRequest.Depth == StepDepth.Out;
+		}
+		
+		static bool IsPropertyOrOperatorMethod (MDB.MethodMirror method)
+		{
+			string name = method.Name;
+			
+			return method.IsSpecialName && name.StartsWith ("get_") || name.StartsWith ("set_") || name.StartsWith ("op_");
+		}
+		
 		void HandleBreakEventSet (Event[] es, bool dequeuing)
 		{
 			if (dequeuing && exited)
 				return;
 			
 			bool resume = true;
+			bool steppedOut = false;
+			bool steppedInto = false;
 			ObjectMirror exception = null;
 			TargetEventType etype = TargetEventType.TargetStopped;
 			BreakEvent breakEvent = null;
@@ -1158,13 +1178,18 @@ namespace Mono.Debugging.Soft
 							BreakInfo binfo;
 							if (breakpoints.TryGetValue (be.Request, out binfo))
 								breakEvent = binfo.BreakEvent;
+							autoStepInto = false;
 							resume = false;
 						}
 					} else if (e.EventType == EventType.Step) {
+						var stepRequest = e.Request as StepEventRequest;
+						steppedInto = IsStepIntoRequest (stepRequest);
+						steppedOut = IsStepOutRequest (stepRequest);
 						etype = TargetEventType.TargetStopped;
 						resume = false;
 					} else if (e.EventType == EventType.UserBreak) {
 						etype = TargetEventType.TargetStopped;
+						autoStepInto = false;
 						resume = false;
 					} else {
 						throw new Exception ("Break eventset had unexpected event type " + e.GetType ());
@@ -1181,17 +1206,37 @@ namespace Mono.Debugging.Soft
 					currentStepRequest.Enabled = false;
 					currentStepRequest = null;
 				}
+				
 				current_thread = recent_thread = es[0].Thread;
-				var args = new TargetEventArgs (etype);
-				args.Process = OnGetProcesses () [0];
-				args.Thread = GetThread (args.Process, current_thread);
-				args.Backtrace = GetThreadBacktrace (current_thread);
-				args.BreakEvent = breakEvent;
 				
 				if (exception != null)
 					activeExceptionsByThread [current_thread.ThreadId] = exception;
 				
-				OnTargetEvent (args);
+				var backtrace = GetThreadBacktrace (current_thread);
+				bool stepOut = false;
+				
+				if (steppedInto && Options.StepOverPropertiesAndOperators && backtrace.FrameCount > 0) {
+					var frame = backtrace.GetFrame (0) as SoftDebuggerStackFrame;
+					
+					stepOut = frame != null && IsPropertyOrOperatorMethod (frame.StackFrame.Method);
+				}
+				
+				if (stepOut) {
+					// We will want to call StepInto once StepOut returns...
+					autoStepInto = true;
+					Step (StepDepth.Out, StepSize.Min);
+				} else if (steppedOut && autoStepInto) {
+					autoStepInto = false;
+					Step (StepDepth.Into, StepSize.Min);
+				} else {
+					var args = new TargetEventArgs (etype);
+					args.Process = OnGetProcesses () [0];
+					args.Thread = GetThread (args.Process, current_thread);
+					args.Backtrace = backtrace;
+					args.BreakEvent = breakEvent;
+					
+					OnTargetEvent (args);
+				}
 			}
 		}
 		
