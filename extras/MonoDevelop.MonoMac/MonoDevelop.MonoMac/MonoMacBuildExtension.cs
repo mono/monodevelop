@@ -263,7 +263,8 @@ namespace MonoDevelop.MonoMac
 					args.AddQuoted (file.Input);
 					args.Add ("--compile");
 					args.AddQuoted (file.Output);
-					var psi = new ProcessStartInfo ("ibtool", args.ToString ());
+					var ibtoolPath = AppleSdkSettings.DeveloperRoot.Combine ("usr", "bin", "ibtool");
+					var psi = new ProcessStartInfo (ibtoolPath, args.ToString ());
 					monitor.Log.WriteLine (psi.FileName + " " + psi.Arguments);
 					int code;
 					try {
