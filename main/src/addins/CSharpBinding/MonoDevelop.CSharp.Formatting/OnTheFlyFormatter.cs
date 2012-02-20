@@ -67,7 +67,6 @@ namespace MonoDevelop.CSharp.Formatting
 			if (data.ParsedDocument == null)
 				return;
 			var ext = data.GetContent<CSharpCompletionTextEditorExtension> ();
-			Console.WriteLine ("EXT:" + ext);
 			if (ext == null)
 				return;
 			

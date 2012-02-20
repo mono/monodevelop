@@ -133,24 +133,24 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (member == null)
 				return null;
-			string documentation = "";// member.ProjectContent.GetDocumentation (member);
-//			
-//			if (!string.IsNullOrEmpty (documentation)) {
-//				int idx1 = documentation.IndexOf ("<summary>");
-//				int idx2 = documentation.IndexOf ("</summary>");
-//				string result;
-//				if (idx2 >= 0 && idx1 >= 0) {
-//					result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
-//				} else if (idx1 >= 0) {
-//					result = documentation.Substring (idx1 + "<summary>".Length);
-//				} else if (idx2 >= 0) {
-//					result = documentation.Substring (0, idx2 - 1);
-//				} else {
-//					result = documentation;
-//				}
-//				
-//				return CleanEmpty (result);
-//			}
+			string documentation = member.Documentation;
+			
+			if (!string.IsNullOrEmpty (documentation)) {
+				int idx1 = documentation.IndexOf ("<summary>");
+				int idx2 = documentation.IndexOf ("</summary>");
+				string result;
+				if (idx2 >= 0 && idx1 >= 0) {
+					result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
+				} else if (idx1 >= 0) {
+					result = documentation.Substring (idx1 + "<summary>".Length);
+				} else if (idx2 >= 0) {
+					result = documentation.Substring (0, idx2 - 1);
+				} else {
+					result = documentation;
+				}
+				
+				return CleanEmpty (result);
+			}
 			
 			return CleanEmpty (documentation);
 		}

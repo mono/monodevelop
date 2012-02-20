@@ -45,6 +45,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core.AddIns;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using ICSharpCode.NRefactory.Documentation;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -75,23 +76,12 @@ namespace MonoDevelop.TypeSystem
 			return type.GetDefinition ().Region.Begin;
 		}
 		
-		public static string GetDocumentation (this IType type)
-		{
-			return "TODO";
-		}
-		
 		public static bool IsBaseType (this IType type, IType potentialBase)
 		{
 			return type.GetAllBaseTypes ().Any (t => t.Equals (potentialBase));
 		}
 		
 		public static bool IsObsolete (this IEntity member)
-		{
-			// TODO: Implement me!
-			return false;
-		}
-		
-		public static bool IsObsolete (this IUnresolvedEntity member)
 		{
 			// TODO: Implement me!
 			return false;
@@ -994,22 +984,70 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static bool GetXml (string baseName, out FilePath xmlFileName)
+		static bool GetXml (string baseName, MonoDevelop.Core.Assemblies.TargetRuntime runtime, out FilePath xmlFileName)
 		{
 			string filePattern = Path.GetFileNameWithoutExtension (baseName) + ".*";
 			try {
 				foreach (string fileName in Directory.EnumerateFileSystemEntries (Path.GetDirectoryName (baseName), filePattern)) {
 					if (fileName.ToLower ().EndsWith (".xml")) {
-						xmlFileName = fileName;
+						xmlFileName = LookupLocalizedXmlDoc (fileName);
 						return true;
 					}
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while retrieving file system entries.", e);
 			}
+			
+			if (MonoDevelop.Core.Platform.IsWindows) {
+				string windowsFileName = FindXmlDocumentation (baseName, runtime);
+				if (File.Exists (windowsFileName)) {
+					xmlFileName = windowsFileName;
+					return true;
+				}
+			}
+			
 			xmlFileName = "";
 			return false;
 		}
+		
+		#region Lookup XML documentation
+		static readonly string referenceAssembliesPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\\Framework");
+		static readonly string frameworkPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework");
+		
+		static string FindXmlDocumentation (string assemblyFileName, MonoDevelop.Core.Assemblies.TargetRuntime runtime)
+		{
+			string fileName;
+			ClrVersion version = runtime != null && runtime.CustomFrameworks.Any () ? runtime.CustomFrameworks.First ().ClrVersion : ClrVersion.Default;
+			switch (version) {
+//			case "1.0":
+//				fileName = LookupLocalizedXmlDoc (Path.Combine (frameworkPath, "v1.0.3705", assemblyFileName));
+//				break;
+			case ClrVersion.Net_1_1:
+				fileName = LookupLocalizedXmlDoc (Path.Combine (frameworkPath, "v1.1.4322", assemblyFileName));
+				break;
+			case ClrVersion.Net_2_0:
+			case ClrVersion.Clr_2_1:
+				fileName = LookupLocalizedXmlDoc (Path.Combine (frameworkPath, "v2.0.50727", assemblyFileName))
+						?? LookupLocalizedXmlDoc (Path.Combine (referenceAssembliesPath, "v3.5"))
+						?? LookupLocalizedXmlDoc (Path.Combine (referenceAssembliesPath, "v3.0"))
+						?? LookupLocalizedXmlDoc (Path.Combine (referenceAssembliesPath, @".NETFramework\v3.5\Profile\Client"));
+				break;
+			case ClrVersion.Net_4_0:
+			case ClrVersion.Default:
+			default:
+				fileName = LookupLocalizedXmlDoc (Path.Combine (referenceAssembliesPath, @".NETFramework\v4.0", assemblyFileName))
+						?? LookupLocalizedXmlDoc (Path.Combine (frameworkPath, "v4.0.30319", assemblyFileName));
+				break;
+			}
+			return fileName;
+		}
+		
+		static string LookupLocalizedXmlDoc (string fileName)
+		{
+			return XmlDocumentationProvider.LookupLocalizedXmlDoc (fileName);
+		}
+		#endregion
+
 		
 		[Serializable]
 		class AssemblyContext : IUnresolvedAssembly
@@ -1105,12 +1143,14 @@ namespace MonoDevelop.TypeSystem
 				
 				var loader = new CecilLoader ();
 				FilePath xmlDocFile;
-				if (GetXml (fileName, out xmlDocFile)) {
+				if (GetXml (fileName, null, out xmlDocFile)) {
 					try {
 						loader.DocumentationProvider = new ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider (xmlDocFile);
 					} catch (Exception ex) {
 						LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
-					}
+					} 
+				} else {
+					Console.WriteLine ("no loader for;" + fileName);
 				}
 				
 				var assembly = loader.LoadAssembly (asm);
@@ -1169,8 +1209,20 @@ namespace MonoDevelop.TypeSystem
 			
 			var mscorlibAsm = loc != fileName ? ReadAssembly (loc) : asm;
 			
-			var unresolvedAssembly = new CecilLoader ().LoadAssembly (asm);
-			var mscorlib = new CecilLoader ().LoadAssembly (mscorlibAsm);
+			var loader = new CecilLoader ();
+			FilePath xmlDocFile;
+			if (GetXml (fileName, runtime, out xmlDocFile)) {
+				try {
+					loader.DocumentationProvider = new ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider (xmlDocFile);
+				} catch (Exception ex) {
+					LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
+				}
+			}
+			
+			var unresolvedAssembly = loader.LoadAssembly (asm);
+			var corLibLoader = new CecilLoader ();
+			
+			var mscorlib = corLibLoader.LoadAssembly (mscorlibAsm);
 			
 			return new SimpleCompilation (unresolvedAssembly, mscorlib);
 		}

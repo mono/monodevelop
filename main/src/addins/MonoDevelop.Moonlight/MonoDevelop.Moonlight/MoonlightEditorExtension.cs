@@ -118,7 +118,7 @@ namespace MonoDevelop.Moonlight
 		string[] namespaces = { "System.Windows.Media", "System.Windows.Media.Animation",
 			"System.Windows.Controls", "System.Windows.Shapes" };
 		
-		protected override void GetElementCompletions(CompletionDataList list)
+		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			base.GetElementCompletions (list);
 			var database = GetDb ();
@@ -135,7 +135,7 @@ namespace MonoDevelop.Moonlight
 					ns = ns.GetChildNamespace (sn);
 				}
 				foreach (IType t in ListControlClasses (database, ns))
-					list.Add (t.Name, Gtk.Stock.GoForward, t.GetDocumentation ());
+					list.Add (t.Name, Gtk.Stock.GoForward, t.GetDefinition ().Documentation);
 			}
 		}
 		
