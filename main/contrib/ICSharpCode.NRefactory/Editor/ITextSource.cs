@@ -120,6 +120,8 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <param name="count">Length of the area to search.</param>
 		/// <param name="comparisonType">String comparison to use.</param>
 		/// <returns>The last index where the search term was found; or -1 if no occurrence was found.</returns>
+		/// <remarks>The search proceeds backwards from (startIndex+count) to startIndex.
+		/// This is different than the meaning of the parameters on string.LastIndexOf!</remarks>
 		int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType);
 		
 		/* What about:

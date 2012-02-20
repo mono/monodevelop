@@ -18,6 +18,10 @@ FILES =  \
 	Completion/IEntityCompletionData.cs \
 	Completion/IParameterDataProvider.cs \
 	Completion/IVariableCompletionData.cs \
+	Documentation/DocumentationComment.cs \
+	Documentation/GetPotentiallyNestedClassTypeReference.cs \
+	Documentation/IDocumentationProvider.cs \
+	Documentation/IDStringMemberReference.cs \
 	Documentation/IDStringProvider.cs \
 	Documentation/XmlDocumentationProvider.cs \
 	Editor/IDocument.cs \
@@ -73,7 +77,6 @@ FILES =  \
 	TypeSystem/IAttribute.cs \
 	TypeSystem/ICompilation.cs \
 	TypeSystem/IConstantValue.cs \
-	TypeSystem/IDocumentationProvider.cs \
 	TypeSystem/IEntity.cs \
 	TypeSystem/IEvent.cs \
 	TypeSystem/IField.cs \

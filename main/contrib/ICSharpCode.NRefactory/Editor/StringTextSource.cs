@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <inheritdoc/>
 		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
-			return text.LastIndexOf(searchText, startIndex, count, comparisonType);
+			return text.LastIndexOf(searchText, startIndex + count - 1, count, comparisonType);
 		}
 	}
 }

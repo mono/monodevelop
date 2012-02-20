@@ -126,7 +126,6 @@
     <Compile Include="TypeSystem\ExtensionMethods.cs" />
     <Compile Include="TypeSystem\IAttribute.cs" />
     <Compile Include="TypeSystem\IConstantValue.cs" />
-    <Compile Include="TypeSystem\IDocumentationProvider.cs" />
     <Compile Include="TypeSystem\IEntity.cs" />
     <Compile Include="TypeSystem\IEvent.cs" />
     <Compile Include="TypeSystem\IField.cs" />
@@ -243,6 +242,10 @@
     <Compile Include="Semantics\ConversionResolveResult.cs" />
     <Compile Include="TypeSystem\Implementation\ExplicitInterfaceImplementationMemberReference.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializingMemberReference.cs" />
+    <Compile Include="Documentation\DocumentationComment.cs" />
+    <Compile Include="Documentation\GetPotentiallyNestedClassTypeReference.cs" />
+    <Compile Include="Documentation\IDocumentationProvider.cs" />
+    <Compile Include="Documentation\IDStringMemberReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />

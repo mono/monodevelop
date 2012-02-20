@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			IType type = null;
 			if (assembly == null) {
 				var compilation = context.Compilation;
-				foreach (var asm in new[] { context.CurrentAssembly, compilation.MainAssembly }.Concat(compilation.ReferencedAssemblies)) {
+				foreach (var asm in new[] { context.CurrentAssembly }.Concat(compilation.Assemblies)) {
 					if (asm != null) {
 						type = asm.GetTypeDefinition(nameSpace, name, typeParameterCount);
 						if (type != null)

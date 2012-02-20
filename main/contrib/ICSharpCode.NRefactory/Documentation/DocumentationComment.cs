@@ -17,18 +17,51 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Documentation
 {
 	/// <summary>
-	/// Provides XML documentation for members.
+	/// Represents a documentation comment.
 	/// </summary>
-	public interface IDocumentationProvider
+	public class DocumentationComment
 	{
+		string xml;
+		protected readonly ITypeResolveContext context;
+		
 		/// <summary>
-		/// Gets the XML documentation for the specified entity.
+		/// Gets the XML code for this documentation comment.
 		/// </summary>
-		string GetDocumentation(IEntity entity);
+		public string Xml {
+			get { return xml; }
+		}
+		
+		/// <summary>
+		/// Creates a new DocumentationComment.
+		/// </summary>
+		/// <param name="xml">The XML text.</param>
+		/// <param name="context">Context for resolving cref attributes.</param>
+		public DocumentationComment(string xml, ITypeResolveContext context)
+		{
+			if (xml == null)
+				throw new ArgumentNullException("xml");
+			if (context == null)
+				throw new ArgumentNullException("context");
+			this.xml = xml;
+			this.context = context;
+		}
+		
+		/// <summary>
+		/// Resolves the given cref value to an entity.
+		/// Returns null if the entity is not found, or if the cref attribute is syntactically invalid.
+		/// </summary>
+		public virtual IEntity ResolveCref(string cref)
+		{
+			try {
+				return IDStringProvider.FindEntity(cref, context);
+			} catch (ReflectionNameParseException) {
+				return null;
+			}
+		}
 	}
 }

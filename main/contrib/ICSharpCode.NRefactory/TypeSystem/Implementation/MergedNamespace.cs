@@ -129,9 +129,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			foreach (var ns in namespaces) {
 				ITypeDefinition typeDef = ns.GetTypeDefinition(name, typeParameterCount);
 				if (typeDef != null) {
-					if (typeDef.IsPublic || (typeDef.IsInternal && typeDef.ParentAssembly.InternalsVisibleTo(compilation.MainAssembly))) {
+					if (typeDef.IsPublic) {
 						// Prefer accessible types over non-accessible types.
 						return typeDef;
+						// || (typeDef.IsInternal && typeDef.ParentAssembly.InternalsVisibleTo(...))
+						// We can't call InternalsVisibleTo() here as we don't know the correct 'current' assembly,
+						// and using the main assembly can cause a stack overflow if there
+						// are internal assembly attributes.
 					}
 					anyTypeDef = typeDef;
 				}

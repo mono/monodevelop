@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -385,8 +386,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parentContext.CurrentAssembly; }
 		}
 		
-		public virtual string Documentation {
+		public virtual DocumentationComment Documentation {
 			get {
+				foreach (var part in parts) {
+					var unresolvedProvider = part.ParsedFile as IUnresolvedDocumentationProvider;
+					if (unresolvedProvider != null) {
+						var doc = unresolvedProvider.GetDocumentation(part, this);
+						if (doc != null)
+							return doc;
+					}
+				}
 				IDocumentationProvider provider = AbstractResolvedEntity.FindDocumentation(parentContext);
 				if (provider != null)
 					return provider.GetDocumentation(this);
@@ -493,6 +502,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		#region GetMembers()
+		IEnumerable<IMember> GetFilteredMembers(Predicate<IUnresolvedMember> filter)
+		{
+			for (int i = 0; i < unresolvedMembers.Count; i++) {
+				if (filter == null || filter(unresolvedMembers[i])) {
+					yield return resolvedMembers[i];
+				}
+			}
+		}
+		
 		IEnumerable<TResolved> GetFilteredMembers<TUnresolved, TResolved>(Predicate<TUnresolved> filter) where TUnresolved : class, IUnresolvedMember where TResolved : class, IMember
 		{
 			for (int i = 0; i < unresolvedMembers.Count; i++) {
@@ -556,7 +574,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IMember> GetMembers(Predicate<IUnresolvedMember> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				return GetFilteredMembers<IUnresolvedMember, IMember>(filter);
+				return GetFilteredMembers(filter);
 			} else {
 				return GetMembersHelper.GetMembers(this, filter, options);
 			}

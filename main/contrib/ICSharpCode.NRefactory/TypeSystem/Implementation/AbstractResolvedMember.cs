@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -62,6 +63,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				} else {
 					return LazyInit.GetOrSet(ref interfaceImplementations, FindInterfaceImplementations());
 				}
+			}
+		}
+		
+		public override DocumentationComment Documentation {
+			get {
+				IUnresolvedDocumentationProvider docProvider = unresolved.ParsedFile as IUnresolvedDocumentationProvider;
+				if (docProvider != null) {
+					var doc = docProvider.GetDocumentation(unresolved, this);
+					if (doc != null)
+						return doc;
+				}
+				return base.Documentation;
 			}
 		}
 		

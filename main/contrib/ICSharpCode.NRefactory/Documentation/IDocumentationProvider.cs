@@ -17,44 +17,35 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.Utils;
+using System.IO;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+namespace ICSharpCode.NRefactory.Documentation
 {
 	/// <summary>
-	/// Cache for KnownTypeReferences.
+	/// Provides XML documentation for entities.
 	/// </summary>
-	sealed class KnownTypeCache
+	public interface IDocumentationProvider
 	{
-		readonly ICompilation compilation;
-		readonly IType[] knownTypes = new IType[KnownTypeReference.KnownTypeCodeCount];
+		/// <summary>
+		/// Gets the XML documentation for the specified entity.
+		/// </summary>
+		DocumentationComment GetDocumentation(IEntity entity);
+	}
+	
+	/// <summary>
+	/// Provides XML documentation for entities.
+	/// </summary>
+	public interface IUnresolvedDocumentationProvider
+	{
+		/// <summary>
+		/// Gets the XML documentation for the specified entity.
+		/// </summary>
+		string GetDocumentation(IUnresolvedEntity entity);
 		
-		public KnownTypeCache(ICompilation compilation)
-		{
-			this.compilation = compilation;
-		}
-		
-		public IType FindType(KnownTypeCode typeCode)
-		{
-			IType type = knownTypes[(int)typeCode];
-			if (type != null) {
-				LazyInit.ReadBarrier();
-				return type;
-			}
-			return LazyInit.GetOrSet(ref knownTypes[(int)typeCode], SearchType(typeCode));
-		}
-		
-		IType SearchType(KnownTypeCode typeCode)
-		{
-			KnownTypeReference typeRef = KnownTypeReference.Get(typeCode);
-			if (typeRef == null)
-				return SpecialType.UnknownType;
-			foreach (IAssembly asm in compilation.Assemblies) {
-				var typeDef = asm.GetTypeDefinition(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);
-				if (typeDef != null)
-					return typeDef;
-			}
-			return new UnknownType(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);
-		}
+		/// <summary>
+		/// Gets the XML documentation for the specified entity.
+		/// </summary>
+		DocumentationComment GetDocumentation(IUnresolvedEntity entity, IEntity resolvedEntity);
 	}
 }

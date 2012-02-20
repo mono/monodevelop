@@ -23,6 +23,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.Documentation
 {
@@ -32,6 +33,8 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// <remarks>
 	/// This class first creates an in-memory index of the .xml file, and then uses that to read only the requested members.
 	/// This way, we avoid keeping all the documentation in memory.
+	/// The .xml file is only opened when necessary, the file handle is not kept open all the time.
+	/// If the .xml file is changed, the index will automatically be recreated.
 	/// </remarks>
 	[Serializable]
 	public class XmlDocumentationProvider : IDocumentationProvider, IDeserializationCallback
@@ -262,12 +265,6 @@ namespace ICSharpCode.NRefactory.Documentation
 		#endregion
 		
 		#region GetDocumentation
-		/// <inheritdoc/>
-		public string GetDocumentation(IEntity entity)
-		{
-			return GetDocumentation(IDStringProvider.GetIDString(entity));
-		}
-		
 		/// <summary>
 		/// Get the documentation for the member with the specified documentation key.
 		/// </summary>
@@ -300,6 +297,19 @@ namespace ICSharpCode.NRefactory.Documentation
 					cache.Add(key, val);
 				}
 				return val;
+			}
+		}
+		#endregion
+		
+		#region GetDocumentation for entity
+		/// <inheritdoc/>
+		public DocumentationComment GetDocumentation(IEntity entity)
+		{
+			string xmlDoc = GetDocumentation(IDStringProvider.GetIDString(entity));
+			if (xmlDoc != null) {
+				return new DocumentationComment(xmlDoc, new SimpleTypeResolveContext(entity));
+			} else {
+				return null;
 			}
 		}
 		#endregion

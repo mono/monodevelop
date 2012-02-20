@@ -26,6 +26,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -177,7 +178,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				this.documentationProvider = documentationProvider;
 			}
 			
-			string IDocumentationProvider.GetDocumentation(IEntity entity)
+			DocumentationComment IDocumentationProvider.GetDocumentation(IEntity entity)
 			{
 				if (documentationProvider != null)
 					return documentationProvider.GetDocumentation(entity);

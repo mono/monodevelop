@@ -31,8 +31,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		string AssemblyName { get; }
 		
-		string Location { get; set; }
-		
 		/// <summary>
 		/// Gets the list of all assembly attributes in the project.
 		/// </summary>

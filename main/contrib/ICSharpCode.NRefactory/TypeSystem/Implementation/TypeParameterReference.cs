@@ -39,13 +39,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (method != null && index < method.TypeParameters.Count) {
 					return method.TypeParameters[index];
 				}
+				return DummyTypeParameter.GetMethodTypeParameter(index);
 			} else if (ownerType == EntityType.TypeDefinition) {
 				ITypeDefinition typeDef = context.CurrentTypeDefinition;
 				if (typeDef != null && index < typeDef.TypeParameters.Count) {
 					return typeDef.TypeParameters[index];
 				}
+				return DummyTypeParameter.GetClassTypeParameter(index);
+			} else {
+				return SpecialType.UnknownType;
 			}
-			return SpecialType.UnknownType;
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
