@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		/// <summary>
 		/// Gets the ID string (C# 4.0 spec, §A.3.1) for the specified entity.
 		/// </summary>
-		public static string GetIDString(IEntity entity)
+		public static string GetIDString (this IEntity entity)
 		{
 			StringBuilder b = new StringBuilder();
 			switch (entity.EntityType) {
@@ -90,51 +90,54 @@ namespace ICSharpCode.NRefactory.Documentation
 			return b.ToString();
 		}
 		
-		static void AppendTypeName(StringBuilder b, IType type)
+		static void AppendTypeName (StringBuilder b, IType type)
 		{
+			if (type == null)
+				return;
 			switch (type.Kind) {
-				case TypeKind.Dynamic:
-					b.Append("System.Object");
-					break;
-				case TypeKind.TypeParameter:
-					ITypeParameter tp = (ITypeParameter)type;
-					b.Append('`');
-					if (tp.OwnerType == EntityType.Method)
-						b.Append('`');
-					b.Append(tp.Index);
-					break;
-				case TypeKind.Array:
-					ArrayType array = (ArrayType)type;
-					AppendTypeName(b, array.ElementType);
-					b.Append('[');
-					if (array.Dimensions > 1) {
-						for (int i = 0; i < array.Dimensions; i++) {
-							if (i > 0) b.Append(',');
-							b.Append("0:");
-						}
+			case TypeKind.Dynamic:
+				b.Append ("System.Object");
+				break;
+			case TypeKind.TypeParameter:
+				ITypeParameter tp = (ITypeParameter)type;
+				b.Append ('`');
+				if (tp.OwnerType == EntityType.Method)
+					b.Append ('`');
+				b.Append (tp.Index);
+				break;
+			case TypeKind.Array:
+				ArrayType array = (ArrayType)type;
+				AppendTypeName (b, array.ElementType);
+				b.Append ('[');
+				if (array.Dimensions > 1) {
+					for (int i = 0; i < array.Dimensions; i++) {
+						if (i > 0)
+							b.Append (',');
+						b.Append ("0:");
 					}
-					b.Append(']');
-					break;
-				case TypeKind.Pointer:
-					AppendTypeName(b, ((PointerType)type).ElementType);
-					b.Append('*');
-					break;
-				case TypeKind.ByReference:
-					AppendTypeName(b, ((ByReferenceType)type).ElementType);
-					b.Append('@');
-					break;
-				default:
-					IType declType = type.DeclaringType;
-					if (declType != null) {
-						AppendTypeName(b, declType);
-						b.Append('.');
-						b.Append(type.Name);
-						AppendTypeParameters(b, type, declType.TypeParameterCount);
-					} else {
-						b.Append(type.FullName);
-						AppendTypeParameters(b, type, 0);
-					}
-					break;
+				}
+				b.Append (']');
+				break;
+			case TypeKind.Pointer:
+				AppendTypeName (b, ((PointerType)type).ElementType);
+				b.Append ('*');
+				break;
+			case TypeKind.ByReference:
+				AppendTypeName (b, ((ByReferenceType)type).ElementType);
+				b.Append ('@');
+				break;
+			default:
+				IType declType = type.DeclaringType;
+				if (declType != null) {
+					AppendTypeName (b, declType);
+					b.Append ('.');
+					b.Append (type.Name);
+					AppendTypeParameters (b, type, declType.TypeParameterCount);
+				} else {
+					b.Append (type.FullName);
+					AppendTypeParameters (b, type, 0);
+				}
+				break;
 			}
 		}
 		

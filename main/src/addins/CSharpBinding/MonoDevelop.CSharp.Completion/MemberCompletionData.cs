@@ -40,6 +40,7 @@ using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.Documentation;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -368,7 +369,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 				
-				string MemberId = (overload.Entity as IMember).GetHelpUrl ();
+				string MemberId = (overload.Entity as IMember).GetIDString ();
 				if (Entity is IMethod && overload.Entity is IMethod) {
 					string signature1 = ambience.GetString (Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
 					string signature2 = ambience.GetString (overload.Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
@@ -376,7 +377,7 @@ namespace MonoDevelop.CSharp.Completion
 						return;
 				}
 				
-				if (MemberId != (this.Entity as IMember).GetHelpUrl () && !overloads.ContainsKey (MemberId)) {
+				if (MemberId != (this.Entity as IMember).GetIDString () && !overloads.ContainsKey (MemberId)) {
 //					if (((IMethod)overload.Member).IsPartial)
 //						return;
 					overloads[MemberId] = overload;

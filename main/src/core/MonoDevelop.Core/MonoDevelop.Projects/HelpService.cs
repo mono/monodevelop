@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.Text;
 using System.Xml;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.Documentation;
 
 namespace MonoDevelop.Projects
 {
@@ -151,11 +152,11 @@ namespace MonoDevelop.Projects
 //			if (result is MethodGroupResolveResult)
 //				member = ((MethodGroupResolveResult)result).Methods.FirstOrDefault ();
 //			else 
-				if (result is MemberResolveResult)
+			if (result is MemberResolveResult)
 				member = ((MemberResolveResult)result).Member;
 			
 			if (member != null && member.GetMonodocDocumentation () != null)
-				return member.GetHelpUrl ();
+				return member.GetIDString ();
 			
 			var type = result.Type;
 			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
@@ -229,120 +230,6 @@ namespace MonoDevelop.Projects
 			result.Append (')');
 		}
 		
-		public static string GetHelpUrl (this IType type)
-		{
-			if (type.TypeParameterCount == 0)
-				return "T:" + type.FullName;
-			return "T:" + type.FullName + "`" + type.TypeParameterCount;
-		}
-		
-		public static string GetHelpUrl (this ITypeDefinition type)
-		{
-			if (type.TypeParameterCount == 0)
-				return "T:" + type.FullName;
-			return "T:" + type.FullName + "`" + type.TypeParameterCount;
-		}
-		
-		public static string GetHelpUrl (this IEntity member)
-		{
-			StringBuilder sb;
-			
-			switch (member.EntityType) {
-			case EntityType.TypeDefinition:
-				var type = member as ITypeDefinition;
-				if (type.TypeParameterCount == 0)
-					return "T:" + type.FullName;
-				return "T:" + type.FullName + "`" + type.TypeParameterCount;
-			case EntityType.Method:
-				var method = (IMethod)member;
-				sb = new StringBuilder ();
-				sb.Append ("M:");
-				sb.Append (method.FullName);
-				if (method.TypeParameters.Count > 0) {
-					sb.Append ("`");
-					sb.Append (method.TypeParameters.Count);
-				}
-				AppendHelpParameterList (sb, method.Parameters);
-				return sb.ToString ();
-			case EntityType.Constructor:
-				var constructor = (IMethod)member;
-				sb = new StringBuilder ();
-				sb.Append ("M:");
-				sb.Append (constructor.DeclaringType.FullName);
-				sb.Append (".#ctor");
-				AppendHelpParameterList (sb, constructor.Parameters);
-				return sb.ToString ();
-			case EntityType.Destructor: // todo
-				return "todo";
-			case EntityType.Property:
-				return "P:" + member.FullName;
-			case EntityType.Indexer:
-				var indexer = (IProperty)member;
-				sb = new StringBuilder ();
-				sb.Append ("P:");
-				sb.Append (indexer.DeclaringType.FullName);
-				sb.Append (".Item");
-				AppendHelpParameterList (sb, indexer.Parameters);
-				return sb.ToString ();
-			case EntityType.Field:
-			case EntityType.Event:
-				return "F:" + member.FullName;
-			case EntityType.Operator: // todo
-				return "todo";
-			}
-			return "unknown entity: " + member;
-		}
-		
-		public static string GetHelpUrl (this IUnresolvedEntity member)
-		{
-			StringBuilder sb;
-			
-			switch (member.EntityType) {
-			case EntityType.TypeDefinition:
-				var type = member as IUnresolvedTypeDefinition;
-				if (type.TypeParameters.Count == 0)
-					return "T:" + type.FullName;
-				return "T:" + type.FullName + "`" + type.TypeParameters.Count;
-			case EntityType.Method:
-				var method = (IUnresolvedMethod)member;
-				sb = new StringBuilder ();
-				sb.Append ("M:");
-				sb.Append (method.FullName);
-				if (method.TypeParameters.Count > 0) {
-					sb.Append ("`");
-					sb.Append (method.TypeParameters.Count);
-				}
-				AppendHelpParameterList (sb, method.Parameters);
-				return sb.ToString ();
-			case EntityType.Constructor:
-				var constructor = (IUnresolvedMethod)member;
-				sb = new StringBuilder ();
-				sb.Append ("M:");
-				sb.Append (constructor.DeclaringTypeDefinition.FullName);
-				sb.Append (".#ctor");
-				AppendHelpParameterList (sb, constructor.Parameters);
-				return sb.ToString ();
-			case EntityType.Destructor: // todo
-				return "todo";
-			case EntityType.Property:
-				return "P:" + member.FullName;
-			case EntityType.Indexer:
-				var indexer = (IUnresolvedProperty)member;
-				sb = new StringBuilder ();
-				sb.Append ("P:");
-				sb.Append (indexer.DeclaringTypeDefinition.FullName);
-				sb.Append (".Item");
-				AppendHelpParameterList (sb, indexer.Parameters);
-				return sb.ToString ();
-			case EntityType.Field:
-			case EntityType.Event:
-				return "F:" + member.FullName;
-			case EntityType.Operator: // todo
-				return "todo";
-			}
-			return "unknown entity: " + member;
-		}
-		
 		static XmlNode FindMatch (IMethod method, XmlNodeList nodes)
 		{
 			foreach (XmlNode node in nodes) {
@@ -365,24 +252,16 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		public static XmlNode GetMonodocDocumentation (this IType member)
-		{
-			var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ()) : null;
-			if (helpXml == null)
-				return null;
-			return helpXml.SelectSingleNode ("/Type/Docs");
-		}
-		
 		public static XmlNode GetMonodocDocumentation (this IEntity member)
 		{
 			if (member.EntityType == EntityType.TypeDefinition) {
-				var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetHelpUrl ()) : null;
+				var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetIDString ()) : null;
 				if (helpXml == null)
 					return null;
 				return helpXml.SelectSingleNode ("/Type/Docs");
 			}
 			
-			var declaringXml = HelpService.HelpTree != null && member.DeclaringTypeDefinition != null ? HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetHelpUrl ()) : null;
+			var declaringXml = HelpService.HelpTree != null && member.DeclaringTypeDefinition != null ? HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetIDString ()) : null;
 			if (declaringXml == null)
 				return null;
 			

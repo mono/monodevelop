@@ -42,8 +42,10 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -319,7 +321,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		ITreeNavigator SearchMember (IEntity member)
 		{
-			return SearchMember (member.GetHelpUrl ());
+			return SearchMember (member.GetIDString ());
 		}
 			
 		ITreeNavigator SearchMember (string helpUrl)
@@ -327,18 +329,120 @@ namespace MonoDevelop.AssemblyBrowser
 			return SearchMember (TreeView.GetRootNode (), helpUrl);
 		}
 		
-		static bool IsMatch (ITreeNavigator nav, string helpUrl)
+		static void AppendTypeReference (StringBuilder result, ITypeReference type)
+		{
+			if (type is ArrayTypeReference) {
+				var array = (ArrayTypeReference)type;
+				AppendTypeReference (result, array.ElementType);
+				result.Append ("[");
+				result.Append (new string (',', array.Dimensions));
+				result.Append ("]");
+				return;
+			}
+			
+			if (type is PointerTypeReference) {
+				var ptr = (PointerTypeReference)type;
+				AppendTypeReference (result, ptr.ElementType);
+				result.Append ("*");
+				return;
+			}
+			
+			if (type is IUnresolvedTypeDefinition)
+				result.Append (((IUnresolvedTypeDefinition)type).FullName);
+		}
+		
+		static void AppendHelpParameterList (StringBuilder result, IList<IUnresolvedParameter> parameters)
+		{
+			result.Append ('(');
+			if (parameters != null) {
+				for (int i = 0; i < parameters.Count; i++) {
+					if (i > 0)
+						result.Append (',');
+					var p = parameters [i];
+					if (p == null)
+						continue;
+					if (p.IsRef || p.IsOut)
+						result.Append ("&");
+					AppendTypeReference (result, p.Type);
+				}
+			}
+			result.Append (')');
+		}
+		
+		static string GetIdString (IUnresolvedEntity member)
+		{
+			StringBuilder sb;
+			
+			switch (member.EntityType) {
+			case EntityType.TypeDefinition:
+				var type = member as IUnresolvedTypeDefinition;
+				if (type.TypeParameters.Count == 0)
+					return "T:" + type.FullName;
+				return "T:" + type.FullName + "`" + type.TypeParameters.Count;
+			case EntityType.Method:
+				var method = (IUnresolvedMethod)member;
+				sb = new StringBuilder ();
+				sb.Append ("M:");
+				sb.Append (method.FullName);
+				if (method.TypeParameters.Count > 0) {
+					sb.Append ("`");
+					sb.Append (method.TypeParameters.Count);
+				}
+				AppendHelpParameterList (sb, method.Parameters);
+				return sb.ToString ();
+			case EntityType.Constructor:
+				var constructor = (IUnresolvedMethod)member;
+				sb = new StringBuilder ();
+				sb.Append ("M:");
+				sb.Append (constructor.DeclaringTypeDefinition.FullName);
+				sb.Append (".#ctor");
+				AppendHelpParameterList (sb, constructor.Parameters);
+				return sb.ToString ();
+			case EntityType.Destructor: // todo
+				return "todo";
+			case EntityType.Property:
+				return "P:" + member.FullName;
+			case EntityType.Indexer:
+				var indexer = (IUnresolvedProperty)member;
+				sb = new StringBuilder ();
+				sb.Append ("P:");
+				sb.Append (indexer.DeclaringTypeDefinition.FullName);
+				sb.Append (".Item");
+				AppendHelpParameterList (sb, indexer.Parameters);
+				return sb.ToString ();
+			case EntityType.Field:
+			case EntityType.Event:
+				return "F:" + member.FullName;
+			case EntityType.Operator: // todo
+				return "todo";
+			}
+			return "unknown entity: " + member;
+		}
+		
+		bool IsMatch (ITreeNavigator nav, string helpUrl, bool searchType)
 		{
 			var member = nav.DataItem as IUnresolvedEntity;
 			if (member == null)
 				return false;
-			return member != null && member.GetHelpUrl () == helpUrl;
+			
+			if (searchType) {
+				if (member is IUnresolvedTypeDefinition)
+					return GetIdString (member) == helpUrl;
+			} else {
+				if (member is IUnresolvedMember)
+					return GetIdString (member) == helpUrl;
+			}
+			return false;
 		}
 			
-		static bool SkipChildren (ITreeNavigator nav, string helpUrl)
+		static bool SkipChildren (ITreeNavigator nav, string helpUrl, bool searchType)
 		{
+			if (nav.DataItem is IUnresolvedMember)
+				return true;
+			if (nav.DataItem is BaseTypeFolder)
+				return true;
 			string strippedUrl = helpUrl;
-			if (strippedUrl.Length > 2 && strippedUrl[1] == ':')
+			if (strippedUrl.Length > 2 && strippedUrl [1] == ':')
 				strippedUrl = strippedUrl.Substring (2);
 			int idx = strippedUrl.IndexOf ('~');
 			if (idx > 0) 
@@ -354,11 +458,12 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl)
 		{
+			bool searchType = helpUrl.StartsWith ("T:");
+			
 			do {
-				if (IsMatch (nav, helpUrl))
+				if (IsMatch (nav, helpUrl, searchType))
 					return nav;
-				if (!SkipChildren (nav, helpUrl) && nav.HasChildren ()) {
-					DispatchService.RunPendingEvents ();
+				if (!SkipChildren (nav, helpUrl, searchType) && nav.HasChildren ()) {
 					nav.MoveToFirstChild ();
 					ITreeNavigator result = SearchMember (nav, helpUrl);
 					if (result != null)
@@ -377,6 +482,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					} catch (Exception) {
 					}
+					break;
 				}
 			} while (nav.MoveNext());
 			return null;

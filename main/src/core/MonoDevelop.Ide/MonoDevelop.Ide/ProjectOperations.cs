@@ -49,6 +49,7 @@ using MonoDevelop.Core.Instrumentation;
 using Mono.TextEditor;
 using System.Diagnostics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Documentation;
 
 namespace MonoDevelop.Ide
 {
@@ -281,7 +282,7 @@ namespace MonoDevelop.Ide
 				doc.RunWhenLoaded (delegate {
 					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
 					if (handler != null)
-						handler.Open (entity.GetHelpUrl ());
+						handler.Open (entity.GetIDString ());
 				});
 			}
 			
