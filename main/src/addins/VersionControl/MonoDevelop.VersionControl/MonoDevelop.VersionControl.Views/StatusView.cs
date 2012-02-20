@@ -446,12 +446,17 @@ namespace MonoDevelop.VersionControl.Views
 			diffRenderer.Reset ();
 			
 			if (statuses.Count > 0) {
-				foreach (VersionInfo n in statuses) {
-					if (FileVisible (n)) {
-						if (firstLoad)
-							changeSet.AddFile (n);
-						AppendFileInfo (n);
+				try {
+					filelist.FreezeChildNotify ();
+					foreach (VersionInfo n in statuses) {
+						if (FileVisible (n)) {
+							if (firstLoad)
+								changeSet.AddFile (n);
+							AppendFileInfo (n);
+						}
 					}
+				} finally {
+					filelist.ThawChildNotify ();
 				}
 			}
 			UpdateControlStatus ();

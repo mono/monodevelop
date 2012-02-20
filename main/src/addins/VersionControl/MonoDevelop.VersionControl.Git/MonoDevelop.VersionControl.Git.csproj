@@ -61,7 +61,6 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.EditRemoteDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.MergeDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\Change.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Git\RepositoryStatus.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\MergeDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\Stash.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitUtil.cs" />
@@ -79,6 +78,7 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtension.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitSupportFeature.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\FilteredStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

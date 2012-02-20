@@ -27,6 +27,10 @@ BUNDLE_MONOMAC = $(APP_BUNDLE_RESOURCES)/MonoMac.dll
 BUNDLE_CRASHLOG = $(APP_BUNDLE_RESOURCES)/MonoDevelop.CrashLog.dll
 BUNDLE_MONO = $(APP_BUNDLE)/$(APP_NAME)
 
+#after upgrading to xcode 4.3, the /usr/bin/ibtool link is broken, so override PATH
+XC43_TOOLS=/Applications/Xcode.app/Contents/Developer/usr/bin
+IBTOOL=PATH='$(XC43_TOOLS):$(PATH)' ibtool
+
 INFOPLIST = $(srcdir)/Info.plist
 MAINXIB = $(srcdir)/MainMenu.xib
 SCRIPT = $(srcdir)/MonoMacLaunchScript.sh
@@ -43,7 +47,7 @@ $(ASSEMBLY): $(build_sources) $(DEPS)
 
 $(BUNDLE_MAINNIB): $(MAINXIB)
 	mkdir -p $(APP_BUNDLE_RESOURCES)
-	ibtool "$^" --compile "$@"
+	$(IBTOOL) "$^" --compile "$@"
 
 $(BUNDLE_INFOPLIST): $(INFOPLIST)
 	mkdir -p $(APP_BUNDLE_MACOS)

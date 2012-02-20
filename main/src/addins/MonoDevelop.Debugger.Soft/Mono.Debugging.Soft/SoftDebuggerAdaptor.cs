@@ -49,7 +49,7 @@ namespace Mono.Debugging.Soft
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			
 			if (obj == null)
-				return string.Empty;
+				return null;
 			
 			if (obj is StringMirror)
 				return ((StringMirror)obj).Value;
@@ -70,7 +70,7 @@ namespace Mono.Debugging.Soft
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
 				if (method != null && method.DeclaringType.FullName != "System.Object") {
 					StringMirror res = cx.RuntimeInvoke (method, obj, new Value[0]) as StringMirror;
-					return res != null ? res.Value : string.Empty;
+					return res != null ? res.Value : null;
 				}
 			}
 			else if ((obj is StructMirror) && cx.Options.AllowTargetInvoke) {
@@ -78,7 +78,7 @@ namespace Mono.Debugging.Soft
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
 				if (method != null && method.DeclaringType.FullName != "System.ValueType") {
 					StringMirror res = cx.RuntimeInvoke (method, obj, new Value[0]) as StringMirror;
-					return res != null ? res.Value : string.Empty;
+					return res != null ? res.Value : null;
 				}
 			}
 			
@@ -267,26 +267,30 @@ namespace Mono.Debugging.Soft
 			if (cx.Frame.Method.IsStatic)
 				return false;
 			TypeMirror tm = cx.Frame.Method.DeclaringType;
-			return IsGeneratedClosureOrIteratorType (tm);
+			return IsGeneratedType (tm);
 		}
 		
-		static bool IsGeneratedClosureOrIteratorType (TypeMirror tm)
+		internal static bool IsGeneratedType (TypeMirror tm)
 		{
-			return IsGeneratedClosureType (tm) || IsGeneratedIteratorType (tm);
+			//
+			// This should cover all C# generated special containers
+			// - anonymous methods
+			// - lambdas
+			// - iterators
+			// - async methods
+			//
+			// which allow stepping into
+			//
+			return tm.Name[0] == '<' &&
+				// mcs is of the form <${NAME}>.c__{KIND}${NUMBER}
+				(tm.Name.IndexOf (">c__") > 0 ||
+				// csc is of form <${NAME}>d__${NUMBER}
+				 tm.Name.IndexOf (">d__") > 0);
 		}
-		
-		static bool IsGeneratedClosureType (TypeMirror tm)
+
+		internal static string GetNameFromGeneratedType (TypeMirror tm)
 		{
-			return tm.Name.IndexOf (">c__") != -1;
-		}
-		
-		static bool IsGeneratedIteratorType (TypeMirror tm)
-		{
-			return
-				//mcs
-				tm.Name.IndexOf (">c__Iterator") != -1
-				//csc is of form <NAME>d__NUMBER
-				|| (tm.Name.StartsWith ("<") && tm.Name.IndexOf (">d__") > -1);
+			return tm.Name.Substring (1, tm.Name.IndexOf ('>') - 1);
 		}
 		
 		static bool IsHoistedThisReference (FieldInfoMirror field)
@@ -310,7 +314,7 @@ namespace Mono.Debugging.Soft
 			
 			return
 				// mcs
-				local.Name.Length == 0 || local.Name.StartsWith ("<") || local.Name.StartsWith ("$locvar")
+				local.Name.Length == 0 || local.Name[0] == '<' || local.Name.StartsWith ("$locvar")
 				// csc
 				|| local.Name.StartsWith ("CS$<>");
 		}
@@ -347,7 +351,7 @@ namespace Mono.Debugging.Soft
 				return new ValueReference [0];
 			
 			TypeMirror tm = (TypeMirror) vthis.Type;
-			bool isIterator = IsGeneratedIteratorType (tm);
+			bool isIterator = IsGeneratedType (tm);
 			
 			var list = new List<ValueReference> ();
 			TypeMirror type = (TypeMirror) vthis.Type;
@@ -457,7 +461,7 @@ namespace Mono.Debugging.Soft
 			foreach (LocalVariable local in locals) {
 				if (local.IsArg)
 					continue;
-				if (IsClosureReferenceLocal (local) && IsGeneratedClosureType (local.Type)) {
+				if (IsClosureReferenceLocal (local) && IsGeneratedType (local.Type)) {
 					foreach (var gv in GetHoistedLocalVariables (cx, new VariableValueReference (cx, local.Name, local))) {
 						yield return gv;
 					}

@@ -82,8 +82,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.scrolledwindow2]));
 			w7.PackType = ((global::Gtk.PackType)(1));
 			w7.Position = 3;
-			w7.Expand = false;
-			w7.Fill = false;
 			// Container child mainBox.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";

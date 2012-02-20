@@ -1,10 +1,10 @@
 // 
-// AppleSdkSettingsPanel.cs
+// SpecificStatus.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutch@xamarin.com>
+//       Alan McGovern <alan@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,36 +25,56 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui.OptionPanels;
-using MonoMac.Foundation;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace MonoDevelop.MacDev
+using NGit;
+using NGit.Treewalk;
+using NGit.Treewalk.Filter;
+
+namespace MonoDevelop.VersionControl.Git
 {
-	class AppleSdkSettingsPanel : SdkLocationPanel
+	class FilteredStatus : NGit.Api.StatusCommand
 	{
-		public override string Label {
-			get { return GettextCatalog.GetString ("Apple SDK"); }
+		WorkingTreeIterator iter;
+
+		IEnumerable<string> Files {
+			get; set;
 		}
 		
-		public override FilePath DefaultSdkLocation {
-			get { return AppleSdkSettings.DefaultRoot; }
-		}
-		
-		public override bool ValidateSdkLocation (FilePath location)
+		public FilteredStatus (NGit.Repository repository)
+			: base (repository)
 		{
-			FilePath xcode, vplist, devroot;
-			return AppleSdkSettings.ValidateSdkLocation (location, out xcode, out vplist, out devroot);
+			
 		}
 		
-		public override FilePath LoadSdkLocationSetting ()
+		public FilteredStatus (NGit.Repository repository, IEnumerable<string> files)
+			: base (repository)
 		{
-			return AppleSdkSettings.GetConfiguredSdkLocation ();
+			Files = files;
 		}
 		
-		public override void SaveSdkLocationSetting (FilePath location)
+		public override NGit.Api.StatusCommand SetWorkingTreeIt (WorkingTreeIterator workingTreeIt)
 		{
-			AppleSdkSettings.SetConfiguredSdkLocation (location);
+			iter = workingTreeIt;
+			return this;
+		}
+		
+		public override NGit.Api.Status Call ()
+		{
+			if (iter == null)
+				iter = new FileTreeIterator(repo);
+			
+			IndexDiff diff = new IndexDiff(repo, Constants.HEAD, iter);
+			if (Files != null) {
+				var filters = Files.Where (f => f != ".").ToArray ();
+				if (filters.Length > 0)
+					diff.SetFilter (PathFilterGroup.CreateFromStrings (filters));
+			}
+			
+			diff.Diff ();
+			return new NGit.Api.Status(diff);
 		}
 	}
 }
+

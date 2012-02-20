@@ -851,7 +851,7 @@ namespace Mono.Debugging.Evaluation
 				if (ctx.Options.AllowToStringCalls) {
 					string res = CallToString (ctx, obj);
 					
-					if (string.IsNullOrEmpty (res))
+					if (res == null)
 						return new EvaluationResult ("null");
 					
 					return new EvaluationResult ("{" + res + "}");

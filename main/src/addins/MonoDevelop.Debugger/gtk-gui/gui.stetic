@@ -1275,7 +1275,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.DebuggerOptionsPanelWidget" design-size="523 250">
+  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.DebuggerOptionsPanelWidget" design-size="523 270">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1306,6 +1306,23 @@
               </packing>
             </child>
             <child>
+              <widget class="Gtk.CheckButton" id="stepOverPropertiesAndOperators">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Label" translatable="yes">Step over properties and operators</property>
+                <property name="Active">True</property>
+                <property name="DrawIndicator">True</property>
+                <property name="HasLabel">True</property>
+                <property name="UseUnderline">True</property>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
               <widget class="Gtk.CheckButton" id="checkAllowEval">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
@@ -1317,7 +1334,7 @@
                 <signal name="Toggled" handler="OnCheckAllowEvalToggled" />
               </widget>
               <packing>
-                <property name="Position">1</property>
+                <property name="Position">2</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -1333,7 +1350,7 @@
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
-                <property name="Position">2</property>
+                <property name="Position">3</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -1349,7 +1366,7 @@
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
-                <property name="Position">3</property>
+                <property name="Position">4</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -1365,7 +1382,7 @@
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
-                <property name="Position">4</property>
+                <property name="Position">5</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -1381,7 +1398,7 @@
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
-                <property name="Position">5</property>
+                <property name="Position">6</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -1456,7 +1473,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="Position">6</property>
+                <property name="Position">7</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>

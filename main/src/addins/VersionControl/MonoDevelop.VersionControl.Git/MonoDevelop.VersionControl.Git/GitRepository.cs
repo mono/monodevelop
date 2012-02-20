@@ -266,12 +266,18 @@ namespace MonoDevelop.VersionControl.Git
 			else
 				rev = null;
 			
-			RepositoryStatus status;
-			if (localFileNames != null)
-				status = GitUtil.GetFileStatus (repo, localFileNames);
-			else
-				status = GitUtil.GetDirectoryStatus (repo, localDirectory, recursive);
-			
+			IEnumerable<string> paths;
+			if (localFileNames == null) {
+				if (recursive)
+					paths = new [] { (string) localDirectory };
+				else
+					paths = Directory.GetFiles (localDirectory);
+			} else {
+				paths = localFileNames.Select (f => (string)f);
+			}
+			paths = paths.Select (f => ToGitPath (f));
+
+			var status = new FilteredStatus (repo, paths).Call (); 
 			HashSet<string> added = new HashSet<string> ();
 			Action<IEnumerable<string>, VersionStatus> AddFiles = delegate(IEnumerable<string> files, VersionStatus fstatus) {
 				foreach (string file in files) {
@@ -284,13 +290,14 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			};
 			
-			AddFiles (status.Added, VersionStatus.Versioned | VersionStatus.ScheduledAdd);
-			AddFiles (status.Modified, VersionStatus.Versioned | VersionStatus.Modified);
-			AddFiles (status.Removed, VersionStatus.Versioned | VersionStatus.ScheduledDelete);
-			AddFiles (status.Missing, VersionStatus.Versioned | VersionStatus.ScheduledDelete);
-			AddFiles (status.MergeConflict, VersionStatus.Versioned | VersionStatus.Conflicted);
-			AddFiles (status.Untracked, VersionStatus.Unversioned);
-			
+			AddFiles (status.GetAdded (), VersionStatus.Versioned | VersionStatus.ScheduledAdd);
+			AddFiles (status.GetChanged (), VersionStatus.Versioned | VersionStatus.Modified);
+			AddFiles (status.GetModified (), VersionStatus.Versioned | VersionStatus.Modified);
+			AddFiles (status.GetRemoved (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
+			AddFiles (status.GetMissing (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
+			AddFiles (status.GetConflicting (), VersionStatus.Versioned | VersionStatus.Conflicted);
+			AddFiles (status.GetUntracked (), VersionStatus.Unversioned);
+
 			// Existing files for which git did not report an status are supposed to be tracked
 			foreach (FilePath file in existingFiles) {
 				VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null);
