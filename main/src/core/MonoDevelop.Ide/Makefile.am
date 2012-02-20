@@ -721,6 +721,7 @@ FILES =  \
 	MonoDevelop.TypeSystem/FoldingRegion.cs \
 	MonoDevelop.TypeSystem/ITypeSystemParser.cs \
 	MonoDevelop.TypeSystem/MarkupUtilities.cs \
+	MonoDevelop.TypeSystem/MonoDocDocumentationProvider.cs \
 	MonoDevelop.TypeSystem/NetAmbience.cs \
 	MonoDevelop.TypeSystem/OutputFlags.cs \
 	MonoDevelop.TypeSystem/OutputSettings.cs \

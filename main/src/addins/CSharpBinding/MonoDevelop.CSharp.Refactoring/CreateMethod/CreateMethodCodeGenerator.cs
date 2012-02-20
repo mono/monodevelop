@@ -350,7 +350,8 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 		{
 			var result = new DefaultUnresolvedMethod (declaringType, methodName);
 			result.Accessibility = accessibility;
-			result.ReturnType = returnType.ToTypeReference ();
+			if (returnType != null)
+				result.ReturnType = returnType.ToTypeReference ();
 			int i = 1;
 			foreach (var argument in invocation.Arguments) {
 				string name;

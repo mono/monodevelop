@@ -1507,6 +1507,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\ExportSolutionDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ExportSolutionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
+    <Compile Include="MonoDevelop.TypeSystem\MonoDocDocumentationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

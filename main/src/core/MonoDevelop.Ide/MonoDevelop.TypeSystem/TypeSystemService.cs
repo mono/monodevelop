@@ -1132,8 +1132,11 @@ namespace MonoDevelop.TypeSystem
 			{
 				var assemblyPath = Path.Combine (cache, "assembly.data");
 				try {
-					if (File.Exists (assemblyPath))
-						return DeserializeObject <IUnresolvedAssembly> (assemblyPath);
+					if (File.Exists (assemblyPath)) {
+						var deserializedAssembly = DeserializeObject <IUnresolvedAssembly> (assemblyPath);
+						if (deserializedAssembly != null)
+							return deserializedAssembly;
+					}
 				} catch (Exception) {
 				}
 				
@@ -1150,7 +1153,8 @@ namespace MonoDevelop.TypeSystem
 						LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
 					} 
 				} else {
-					Console.WriteLine ("no loader for;" + fileName);
+					if (!MonoDevelop.Core.Platform.IsWindows)
+						loader.DocumentationProvider = new MonoDocDocumentationProvider ();
 				}
 				
 				var assembly = loader.LoadAssembly (asm);

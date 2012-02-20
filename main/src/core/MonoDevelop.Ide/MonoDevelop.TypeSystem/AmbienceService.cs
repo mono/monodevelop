@@ -169,7 +169,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (member == null)
 				return null;
-			if (!string.IsNullOrEmpty (member.Documentation.Xml))
+			if (member.Documentation != null)
 				return CleanEmpty (member.Documentation.Xml);
 			return null;
 		}
