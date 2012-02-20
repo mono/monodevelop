@@ -67,12 +67,15 @@ namespace MonoDevelop.Refactoring
 						if (comp == null)
 							return;
 						var importedType = comp.Import (cls);
+						if (importedType == null) {
+							return;
+						}
 						foreach (var type in comp.MainAssembly.GetAllTypeDefinitions ()) {
 							if (!type.IsDerivedFrom (importedType)) 
 								continue;
 							TextEditorData textFile;
 							if (!cache.TryGetValue (type.Region.FileName, out textFile)) {
-								cache[type.Region.FileName] = textFile = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName);
+								cache [type.Region.FileName] = textFile = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName);
 							}
 							int position = textFile.LocationToOffset (type.Region.BeginLine, type.Region.BeginColumn);
 							monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (type.Region.FileName, p), position, 0));
