@@ -63,5 +63,12 @@ namespace ICSharpCode.NRefactory.Documentation
 				return null;
 			}
 		}
+		
+		public static implicit operator string (DocumentationComment cmt)
+		{
+			if (cmt != null)
+				return cmt.Xml;
+			return null;
+		}
 	}
 }

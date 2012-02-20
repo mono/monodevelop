@@ -131,7 +131,7 @@ namespace MonoDevelop.TypeSystem
 		
 		public static string GetDocumentationSummary (IEntity member)
 		{
-			if (member == null)
+			if (member == null || member.Documentation == null)
 				return null;
 			string documentation = member.Documentation.Xml;
 			
