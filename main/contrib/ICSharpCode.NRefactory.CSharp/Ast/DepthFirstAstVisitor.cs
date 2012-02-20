@@ -55,6 +55,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (comment, data);
 		}
 		
+		public virtual S VisitDocumentationReference (DocumentationReference documentationReference, T data)
+		{
+			return VisitChildren (documentationReference, data);
+		}
+		
 		public virtual S VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective, T data)
 		{
 			return VisitChildren (preProcessorDirective, data);

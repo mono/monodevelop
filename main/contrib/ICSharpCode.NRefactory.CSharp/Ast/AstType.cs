@@ -154,6 +154,26 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
+		/// Builds an expression that can be used to access a static member on this type.
+		/// </summary>
+		public MemberType MemberType(string memberName, params AstType[] typeArguments)
+		{
+			var memberType = new MemberType(this, memberName);
+			memberType.TypeArguments.AddRange(typeArguments);
+			return memberType;
+		}
+		
+		/// <summary>
+		/// Builds an expression that can be used to access a static member on this type.
+		/// </summary>
+		public MemberType MemberType(string memberName, IEnumerable<AstType> typeArguments)
+		{
+			var memberType = new MemberType(this, memberName);
+			memberType.TypeArguments.AddRange(typeArguments);
+			return memberType;
+		}
+		
+		/// <summary>
 		/// Builds an invocation expression using this type as target.
 		/// </summary>
 		public InvocationExpression Invoke(string methodName, IEnumerable<Expression> arguments)

@@ -3726,5 +3726,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			// TODO: add support for parsing a part of a file
 			throw new NotImplementedException();
 		}
+		
+		public DocumentationReference ParseDocumentationReference(string cref)
+		{
+			if (cref == null)
+				throw new ArgumentNullException("cref");
+			cref = cref.Replace('{', '<').Replace('}', '>');
+			// TODO: add support for parsing cref attributes
+			// (documentation_parsing production, see DocumentationBuilder.HandleXrefCommon)
+			throw new NotImplementedException();
+		}
 	}
 }

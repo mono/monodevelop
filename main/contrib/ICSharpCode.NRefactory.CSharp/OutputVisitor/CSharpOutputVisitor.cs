@@ -2459,5 +2459,52 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		#endregion
+		
+		#region Documentation Reference
+		public object VisitDocumentationReference(DocumentationReference documentationReference, object data)
+		{
+			StartNode(documentationReference);
+			if (!documentationReference.DeclaringType.IsNull) {
+				documentationReference.DeclaringType.AcceptVisitor(this, data);
+				if (documentationReference.EntityType != EntityType.TypeDefinition)
+					WriteToken(".", AstNode.Roles.Dot);
+			}
+			switch (documentationReference.EntityType) {
+				case EntityType.TypeDefinition:
+					// we already printed the DeclaringType
+					break;
+				case EntityType.Indexer:
+					WriteKeyword("this");
+					break;
+				case EntityType.Operator:
+					var opType = documentationReference.OperatorType;
+					if (opType == OperatorType.Explicit) {
+						WriteKeyword ("explicit", OperatorDeclaration.OperatorTypeRole);
+					} else if (opType == OperatorType.Implicit) {
+						WriteKeyword ("implicit", OperatorDeclaration.OperatorTypeRole);
+					}
+					WriteKeyword ("operator", OperatorDeclaration.OperatorKeywordRole);
+					Space ();
+					if (opType == OperatorType.Explicit || opType == OperatorType.Implicit) {
+						documentationReference.ConversionOperatorReturnType.AcceptVisitor (this, data);
+					} else {
+						WriteToken (OperatorDeclaration.GetToken (opType), OperatorDeclaration.OperatorTypeRole);
+					}
+					break;
+				default:
+					WriteIdentifier(documentationReference.MemberName);
+					break;
+			}
+			WriteTypeArguments(documentationReference.TypeArguments);
+			if (documentationReference.HasParameterList) {
+				Space(policy.SpaceBeforeMethodDeclarationParentheses);
+				if (documentationReference.EntityType == EntityType.Indexer)
+					WriteCommaSeparatedListInBrackets(documentationReference.Parameters, policy.SpaceWithinMethodDeclarationParentheses);
+				else
+					WriteCommaSeparatedListInParenthesis(documentationReference.Parameters, policy.SpaceWithinMethodDeclarationParentheses);
+			}
+			return EndNode(documentationReference);
+		}
+		#endregion
 	}
 }

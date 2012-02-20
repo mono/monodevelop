@@ -138,6 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		S VisitComment(Comment comment, T data);
 		S VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective, T data);
+		S VisitDocumentationReference(DocumentationReference documentationReference, T data);
 		
 		S VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, T data);
 		S VisitConstraint(Constraint constraint, T data);

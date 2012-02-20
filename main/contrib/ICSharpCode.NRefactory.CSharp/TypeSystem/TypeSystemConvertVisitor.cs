@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
@@ -181,6 +182,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			var td = currentTypeDefinition = CreateTypeDefinition(typeDeclaration.Name);
 			td.Region = MakeRegion(typeDeclaration);
 			td.BodyRegion = MakeBraceRegion(typeDeclaration);
+			AddXmlDocumentation(td, typeDeclaration);
 			
 			ApplyModifiers(td, typeDeclaration.Modifiers);
 			switch (typeDeclaration.ClassType) {
@@ -222,6 +224,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			td.Kind = TypeKind.Delegate;
 			td.Region = MakeRegion(delegateDeclaration);
 			td.BaseTypes.Add(KnownTypeReference.MulticastDelegate);
+			AddXmlDocumentation(td, delegateDeclaration);
 			
 			ApplyModifiers(td, delegateDeclaration.Modifiers);
 			td.IsSealed = true; // delegates are implicitly sealed
@@ -334,6 +337,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				field.Region = isSingleField ? MakeRegion(fieldDeclaration) : MakeRegion(vi);
 				field.BodyRegion = MakeRegion(vi);
 				ConvertAttributes(field.Attributes, fieldDeclaration.Attributes);
+				AddXmlDocumentation(field, fieldDeclaration);
 				
 				ApplyModifiers(field, modifiers);
 				field.IsVolatile = (modifiers & Modifiers.Volatile) != 0;
@@ -364,6 +368,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			DefaultUnresolvedField field = new DefaultUnresolvedField(currentTypeDefinition, enumMemberDeclaration.Name);
 			field.Region = field.BodyRegion = MakeRegion(enumMemberDeclaration);
 			ConvertAttributes(field.Attributes, enumMemberDeclaration.Attributes);
+			AddXmlDocumentation(field, enumMemberDeclaration);
 			
 			if (currentTypeDefinition.TypeParameters.Count == 0) {
 				field.ReturnType = currentTypeDefinition;
@@ -402,6 +407,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			currentMethod = m; // required for resolving type parameters
 			m.Region = MakeRegion(methodDeclaration);
 			m.BodyRegion = MakeRegion(methodDeclaration.Body);
+			AddXmlDocumentation(m, methodDeclaration);
 			
 			if (InheritsConstraints(methodDeclaration) && methodDeclaration.Constraints.Count == 0) {
 				int index = 0;
@@ -526,6 +532,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			m.EntityType = EntityType.Operator;
 			m.Region = MakeRegion(operatorDeclaration);
 			m.BodyRegion = MakeRegion(operatorDeclaration.Body);
+			AddXmlDocumentation(m, operatorDeclaration);
 			
 			m.ReturnType = operatorDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(m.Attributes, operatorDeclaration.Attributes.Where(s => s.AttributeTarget != "return"));
@@ -560,6 +567,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			ConvertAttributes(ctor.Attributes, constructorDeclaration.Attributes);
 			ConvertParameters(ctor.Parameters, constructorDeclaration.Parameters);
+			AddXmlDocumentation(ctor, constructorDeclaration);
 			
 			if (isStatic)
 				ctor.IsStatic = true;
@@ -586,6 +594,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			dtor.ReturnType = KnownTypeReference.Void;
 			
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
+			AddXmlDocumentation(dtor, destructorDeclaration);
 			
 			currentTypeDefinition.Members.Add(dtor);
 			if (interningProvider != null) {
@@ -604,6 +613,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ApplyModifiers(p, propertyDeclaration.Modifiers);
 			p.ReturnType = propertyDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(p.Attributes, propertyDeclaration.Attributes);
+			AddXmlDocumentation(p, propertyDeclaration);
 			if (!propertyDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
 				p.IsExplicitInterfaceImplementation = true;
@@ -628,6 +638,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ApplyModifiers(p, indexerDeclaration.Modifiers);
 			p.ReturnType = indexerDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(p.Attributes, indexerDeclaration.Attributes);
+			AddXmlDocumentation(p, indexerDeclaration);
 			
 			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_");
@@ -692,6 +703,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				ev.BodyRegion = MakeRegion(vi);
 				
 				ApplyModifiers(ev, modifiers);
+				AddXmlDocumentation(ev, eventDeclaration);
 				
 				ev.ReturnType = eventDeclaration.ReturnType.ToTypeReference();
 				
@@ -738,6 +750,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ApplyModifiers(e, eventDeclaration.Modifiers);
 			e.ReturnType = eventDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(e.Attributes, eventDeclaration.Attributes);
+			AddXmlDocumentation(e, eventDeclaration);
 			
 			if (!eventDeclaration.PrivateImplementationType.IsNull) {
 				e.Accessibility = Accessibility.None;
@@ -1097,6 +1110,25 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				if (!pd.DefaultExpression.IsNull)
 					p.DefaultValue = ConvertConstantValue(p.Type, pd.DefaultExpression);
 				outputList.Add(p);
+			}
+		}
+		#endregion
+		
+		#region XML Documentation
+		void AddXmlDocumentation(IUnresolvedEntity entity, AstNode entityDeclaration)
+		{
+			List<string> documentation = null;
+			for (AstNode node = entityDeclaration.PrevSibling; node != null && node.NodeType == NodeType.Whitespace; node = node.PrevSibling) {
+				Comment c = node as Comment;
+				if (c != null && c.CommentType == CommentType.Documentation) {
+					if (documentation == null)
+						documentation = new List<string>();
+					documentation.Add(c.Content);
+				}
+			}
+			if (documentation != null) {
+				documentation.Reverse(); // bring docu in correct order
+				parsedFile.AddDocumentation(entity, string.Join(Environment.NewLine, documentation));
 			}
 		}
 		#endregion

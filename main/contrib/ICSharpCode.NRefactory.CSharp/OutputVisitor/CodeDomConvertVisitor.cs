@@ -1298,5 +1298,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return null;
 		}
+		
+		CodeObject IAstVisitor<object, CodeObject>.VisitDocumentationReference(DocumentationReference documentationReference, object data)
+		{
+			return null;
+		}
 	}
 }

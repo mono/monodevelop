@@ -18,9 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -151,13 +151,19 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			if (result != null) {
 				return result;
 			} else {
-				internalsVisibleTo = (
-					from attr in this.AssemblyAttributes
-					where attr.AttributeType.Name == "InternalsVisibleToAttribute"
-					&& attr.AttributeType.Namespace == "System.Runtime.CompilerServices"
-					&& attr.PositionalArguments.Count == 1
-					select GetShortName(attr.PositionalArguments.Single().ConstantValue as string)
-				).ToArray();
+				using (var busyLock = BusyManager.Enter(this)) {
+					Debug.Assert(busyLock.Success);
+					if (!busyLock.Success) {
+						return new string[0];
+					}
+					internalsVisibleTo = (
+						from attr in this.AssemblyAttributes
+						where attr.AttributeType.Name == "InternalsVisibleToAttribute"
+						&& attr.AttributeType.Namespace == "System.Runtime.CompilerServices"
+						&& attr.PositionalArguments.Count == 1
+						select GetShortName(attr.PositionalArguments.Single().ConstantValue as string)
+					).ToArray();
+				}
 				return internalsVisibleTo;
 			}
 		}

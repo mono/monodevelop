@@ -61,18 +61,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public AstType CreateShortType (string ns, string name, int typeParameterCount = 0)
 		{
-			var def = Compilation.MainAssembly.GetTypeDefinition (ns, name, typeParameterCount);
-			if (def == null) {
-				foreach (var asm in Compilation.ReferencedAssemblies) {
-					def = asm.GetTypeDefinition (ns, name, typeParameterCount);
-					if (def != null)
-						break;
-				}
-				
+			foreach (var asm in Compilation.Assemblies) {
+				var def = asm.GetTypeDefinition (ns, name, typeParameterCount);
+				if (def != null)
+					return CreateShortType (def);
 			}
-			if (def == null)
-				return new MemberType (new SimpleType (ns), name);
-			return CreateShortType (def);
+			
+			return new MemberType (new SimpleType (ns), name);
 		}
 		
 		public virtual AstType CreateShortType (AstType fullType)

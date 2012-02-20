@@ -321,6 +321,8 @@
     <Compile Include="Parser\mcs\settings.cs" />
     <Compile Include="Analysis\ReachabilityAnalysis.cs" />
     <Compile Include="SimpleNameLookupMode.cs" />
+    <Compile Include="Ast\DocumentationReference.cs" />
+    <Compile Include="TypeSystem\CSharpDocumentationComment.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

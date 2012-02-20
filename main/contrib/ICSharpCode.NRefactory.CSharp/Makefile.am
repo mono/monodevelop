@@ -24,6 +24,7 @@ FILES =  \
 	Ast/CSharpTokenNode.cs \
 	Ast/CSharpUtil.cs \
 	Ast/DepthFirstAstVisitor.cs \
+	Ast/DocumentationReference.cs \
 	Ast/ErrorNode.cs \
 	Ast/Expressions/AnonymousMethodExpression.cs \
 	Ast/Expressions/AnonymousTypeCreateExpression.cs \
@@ -264,6 +265,7 @@ FILES =  \
 	TypeSystem/ConstantValues.cs \
 	TypeSystem/CSharpAssembly.cs \
 	TypeSystem/CSharpAttribute.cs \
+	TypeSystem/CSharpDocumentationComment.cs \
 	TypeSystem/CSharpParsedFile.cs \
 	TypeSystem/CSharpTypeResolveContext.cs \
 	TypeSystem/CSharpUnresolvedTypeDefinition.cs \

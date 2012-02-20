@@ -3559,5 +3559,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		#endregion
+		
+		#region Documentation Reference
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitDocumentationReference(DocumentationReference documentationReference, object data)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
 	}
 }
