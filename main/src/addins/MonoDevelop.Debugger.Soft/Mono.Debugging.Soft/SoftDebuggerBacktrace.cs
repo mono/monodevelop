@@ -125,16 +125,36 @@ namespace Mono.Debugging.Soft
 				methodName = method.Name;
 			}
 			
+			// Compiler generated anonymous/lambda methods
+			bool special_method = false;
+			if (methodName [0] == '<' && methodName.Contains (">m__")) {
+				int nidx = methodName.IndexOf (">m__") + 2;
+				methodName = "AnonymousMethod" + methodName.Substring (nidx, method.Name.Length - nidx);
+				special_method = true;
+			}
+			
 			if (type != null) {
 				string typeDisplayName = session.Adaptor.GetDisplayTypeName (type.FullName);
 				
-				if (SoftDebuggerAdaptor.IsGeneratedIteratorType (type)) {
-					// The user-friendly method name is embedded in the generated iterator type name.
-					methodName = SoftDebuggerAdaptor.GetNameFromGeneratedIteratorType (type);
+				if (SoftDebuggerAdaptor.IsGeneratedType (type)) {
+					// The user-friendly method name is embedded in the generated type name
+					var mn = SoftDebuggerAdaptor.GetNameFromGeneratedType (type);
 					
-					// Strip off the generated iterator type name
+					// Strip off the generated type name
 					int dot = typeDisplayName.LastIndexOf ('.');
-					typeDisplayName = typeDisplayName.Substring (0, dot);
+					var tname = typeDisplayName.Substring (0, dot);
+
+					// Keep any type arguments
+					int targs = typeDisplayName.LastIndexOf ('<');
+					if (targs > dot + 1)
+						mn += typeDisplayName.Substring (targs, typeDisplayName.Length - targs);
+					
+					typeDisplayName = tname;
+					
+					if (special_method)
+						typeDisplayName += "." + mn;
+					else
+						methodName = mn;
 				}
 				
 				methodName = typeDisplayName + "." + methodName;
