@@ -268,7 +268,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		public bool IsDocumented {
 			get {
-				if (Class.Documentation != "")
+				if (Class.Documentation.Xml != "")
 					return true;
 				else
 					return false;

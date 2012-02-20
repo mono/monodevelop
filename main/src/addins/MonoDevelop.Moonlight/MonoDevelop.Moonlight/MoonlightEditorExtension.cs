@@ -85,14 +85,14 @@ namespace MonoDevelop.Moonlight
 			//add atts only if they're not already in the tag
 			foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 				if (prop.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
-					list.Add (prop.Name, prop.GetStockIcon (), prop.Documentation);
+					list.Add (prop.Name, prop.GetStockIcon (), prop.Documentation.Xml);
 			
 			//similarly add events
 			foreach (var eve 
 			    in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
 				string eveName = eve.Name;
 				if (eve.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
-					list.Add (eveName, eve.GetStockIcon (), eve.Documentation);
+					list.Add (eveName, eve.GetStockIcon (), eve.Documentation.Xml);
 			}
 		}
 		
@@ -135,7 +135,7 @@ namespace MonoDevelop.Moonlight
 					ns = ns.GetChildNamespace (sn);
 				}
 				foreach (IType t in ListControlClasses (database, ns))
-					list.Add (t.Name, Gtk.Stock.GoForward, t.GetDefinition ().Documentation);
+					list.Add (t.Name, Gtk.Stock.GoForward, t.GetDefinition ().Documentation.Xml);
 			}
 		}
 		
@@ -190,7 +190,7 @@ namespace MonoDevelop.Moonlight
 					if (retCls != null && retCls.Kind == TypeKind.Enum) {
 						foreach (var enumVal in retCls.GetFields ())
 							if (enumVal.IsPublic && enumVal.IsStatic)
-								list.Add (enumVal.Name, "md-literal", enumVal.Documentation);
+								list.Add (enumVal.Name, "md-literal", enumVal.Documentation.Xml);
 						return;
 					}
 				}
