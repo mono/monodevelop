@@ -676,7 +676,7 @@ namespace CBinding
 		// Yoinked from C# binding
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
-			var unit = Document.ParsedDocument;
+	/*		var unit = Document.ParsedDocument;
 			if (unit == null)
 				return;
 			
@@ -710,7 +710,7 @@ namespace CBinding
 				result.Add (noSelection);
 			var prev = CurrentPath;
 			CurrentPath = result.ToArray ();
-			OnPathChanged (new DocumentPathChangedEventArgs (prev));
+			OnPathChanged (new DocumentPathChangedEventArgs (prev));*/
 		}
 		
 		public override void Initialize ()

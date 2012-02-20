@@ -95,8 +95,8 @@ namespace CBinding.Parser
 		public string GetMarkup (int n)
 		{
 			var m = memberList[n];
-			if (m.IsObsolete ())
-				return "<s>" + GLib.Markup.EscapeText (GetString (amb, m)) + "</s>";
+//			if (m.IsObsolete ())
+//				return "<s>" + GLib.Markup.EscapeText (GetString (amb, m)) + "</s>";
 			return GLib.Markup.EscapeText (GetString (amb, m));
 		}
 		
