@@ -267,29 +267,28 @@ namespace Mono.Debugging.Soft
 			if (cx.Frame.Method.IsStatic)
 				return false;
 			TypeMirror tm = cx.Frame.Method.DeclaringType;
-			return IsGeneratedClosureOrIteratorType (tm);
+			return IsGeneratedType (tm);
 		}
 		
-		static bool IsGeneratedClosureOrIteratorType (TypeMirror tm)
+		internal static bool IsGeneratedType (TypeMirror tm)
 		{
-			return IsGeneratedClosureType (tm) || IsGeneratedIteratorType (tm);
-		}
-		
-		static bool IsGeneratedClosureType (TypeMirror tm)
-		{
-			return tm.Name.IndexOf (">c__") != -1;
-		}
-		
-		internal static bool IsGeneratedIteratorType (TypeMirror tm)
-		{
+			//
+			// This should cover all C# generated special containers
+			// - anonymous methods
+			// - lambdas
+			// - iterators
+			// - async methods
+			//
+			// which allow stepping into
+			//
 			return tm.Name[0] == '<' &&
-				// mcs is of the form <${NAME}>.c__Iterator${NUMBER}
-				(tm.Name.IndexOf (">c__Iterator") != -1 ||
+				// mcs is of the form <${NAME}>.c__{KIND}${NUMBER}
+				(tm.Name.IndexOf (">c__") > 0 ||
 				// csc is of form <${NAME}>d__${NUMBER}
-				 tm.Name.IndexOf (">d__") != -1);
+				 tm.Name.IndexOf (">d__") > 0);
 		}
-		
-		internal static string GetNameFromGeneratedIteratorType (TypeMirror tm)
+
+		internal static string GetNameFromGeneratedType (TypeMirror tm)
 		{
 			return tm.Name.Substring (1, tm.Name.IndexOf ('>') - 1);
 		}
@@ -352,7 +351,7 @@ namespace Mono.Debugging.Soft
 				return new ValueReference [0];
 			
 			TypeMirror tm = (TypeMirror) vthis.Type;
-			bool isIterator = IsGeneratedIteratorType (tm);
+			bool isIterator = IsGeneratedType (tm);
 			
 			var list = new List<ValueReference> ();
 			TypeMirror type = (TypeMirror) vthis.Type;
@@ -462,7 +461,7 @@ namespace Mono.Debugging.Soft
 			foreach (LocalVariable local in locals) {
 				if (local.IsArg)
 					continue;
-				if (IsClosureReferenceLocal (local) && IsGeneratedClosureType (local.Type)) {
+				if (IsClosureReferenceLocal (local) && IsGeneratedType (local.Type)) {
 					foreach (var gv in GetHoistedLocalVariables (cx, new VariableValueReference (cx, local.Name, local))) {
 						yield return gv;
 					}
