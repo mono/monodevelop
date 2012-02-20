@@ -133,7 +133,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (member == null)
 				return null;
-			string documentation = member.Documentation;
+			string documentation = member.Documentation.Xml;
 			
 			if (!string.IsNullOrEmpty (documentation)) {
 				int idx1 = documentation.IndexOf ("<summary>");
@@ -169,8 +169,8 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (member == null)
 				return null;
-			if (!string.IsNullOrEmpty (member.Documentation))
-				return CleanEmpty (member.Documentation);
+			if (!string.IsNullOrEmpty (member.Documentation.Xml))
+				return CleanEmpty (member.Documentation.Xml);
 			return null;
 		}
 		
