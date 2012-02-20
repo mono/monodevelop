@@ -280,7 +280,7 @@ namespace MonoDevelop.Refactoring
 			var ext = doc.GetContent<ContextActionEditorExtension> ();
 			if (ext != null) {
 				var fixes = ext.Fixes;
-				if (fixes != null){
+				if (fixes != null) {
 					var loc = doc.Editor.Caret.Location;
 					bool first = true;
 					foreach (var fix in fixes) {
@@ -331,7 +331,7 @@ namespace MonoDevelop.Refactoring
 					added = true;
 				}
 			} else if (item is ITypeDefinition) {
-				ITypeDefinition cls = (ITypeDefinition) item;
+				ITypeDefinition cls = (ITypeDefinition)item;
 				foreach (var bc in cls.DirectBaseTypes) {
 					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
 						ainfo.Add (GettextCatalog.GetString ("Go to _base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
@@ -386,7 +386,8 @@ namespace MonoDevelop.Refactoring
 							}
 						}
 					}
-				skipType:;
+				skipType:
+					;
 				}
 				resolveDirect = false;
 			} else if (resolveResult is ErrorResolveResult && unit != null) {
@@ -394,10 +395,12 @@ namespace MonoDevelop.Refactoring
 				if (identifier != null) {
 					usedNamespaces = options.GetUsedNamespaces ();
 					var uiResult = resolveResult as UnknownIdentifierResolveResult;
-					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
-					foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
-						if (identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName)
-							possibleNamespaces.Add (typeDefinition.Namespace);
+					if (uiResult != null) {
+						string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
+						foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
+							if (identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName)
+								possibleNamespaces.Add (typeDefinition.Namespace);
+						}
 					}
 				}
 			}
