@@ -2388,7 +2388,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			yield return factory.CreateLiteralCompletionData ("description", "Describes a list item");
 			yield return factory.CreateLiteralCompletionData ("para", "Permit structure to be added to text");
 			
-			yield return factory.CreateLiteralCompletionData ("param", "Describe a parameter for a method or constructor", "param name=\"|\">");
+			yield return factory.CreateLiteralCompletionData ("param", "Describe a parameter for a method or constructor", "param name=\"|\"></param>");
 			yield return factory.CreateLiteralCompletionData ("paramref", "Identify that a word is a parameter name", "paramref name=\"|\"/>");
 			
 			yield return factory.CreateLiteralCompletionData ("permission", "Document the security accessibility of a member", "permission cref=\"|\"");

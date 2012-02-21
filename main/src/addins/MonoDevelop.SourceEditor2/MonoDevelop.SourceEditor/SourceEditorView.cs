@@ -1535,8 +1535,6 @@ namespace MonoDevelop.SourceEditor
 			int idx = complete_word.IndexOf ('|');
 			if (idx >= 0) {
 				complete_word = complete_word.Remove (idx, 1);
-			} else {
-				idx = wordOffset;
 			}
 			
 			triggerOffset += data.EnsureCaretIsNotVirtual ();
@@ -1553,7 +1551,8 @@ namespace MonoDevelop.SourceEditor
 						int offset = lineSegment.Offset + column;
 						data.Replace (offset, length, complete_word);
 					}
-					data.Caret.Offset = triggerOffset + idx;
+					if (triggerOffset <= data.Caret.Offset)
+						data.Caret.Offset = data.Caret.Offset - length + complete_word.Length;
 					int minColumn = System.Math.Min (data.MainSelection.Anchor.Column, data.MainSelection.Lead.Column);
 					data.MainSelection.Anchor = new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn);
 					data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, TextEditor.Caret.Column);
@@ -1563,8 +1562,12 @@ namespace MonoDevelop.SourceEditor
 				}
 			} else {
 				data.Replace (triggerOffset, length, complete_word);
-				if (triggerOffset <= data.Caret.Offset)
-					data.Caret.Offset = data.Caret.Offset - length + complete_word.Length;
+				if (idx >= 0) {
+					data.Caret.Offset = triggerOffset + idx;
+				} else {
+					if (triggerOffset <= data.Caret.Offset)
+						data.Caret.Offset = data.Caret.Offset - length + complete_word.Length;
+				}
 			}
 			
 			data.Document.CommitLineUpdate (data.Caret.Line);
