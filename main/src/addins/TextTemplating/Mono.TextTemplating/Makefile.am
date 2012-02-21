@@ -23,6 +23,7 @@ FILES =  \
 	Mono.TextTemplating/CompiledTemplate.cs \
 	Mono.TextTemplating/CrossAppDomainAssemblyResolver.cs \
 	Mono.TextTemplating/ParsedTemplate.cs \
+	Mono.TextTemplating/RecyclableAppDomain.cs \
 	Mono.TextTemplating/TemplateGenerator.cs \
 	Mono.TextTemplating/TemplateSettings.cs \
 	Mono.TextTemplating/TemplatingEngine.cs \
