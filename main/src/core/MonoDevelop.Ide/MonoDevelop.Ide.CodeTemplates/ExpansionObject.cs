@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public string GetSimpleTypeName (string fullTypeName)
 		{
 			if (CurrentContext.ParsedDocument == null)
-				return fullTypeName;
+				return fullTypeName.Replace ("#", ".");
 			string ns = "";
 			string name = "";
 			string member = "";
