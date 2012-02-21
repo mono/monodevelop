@@ -1155,27 +1155,31 @@ namespace Mono.TextEditor
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			RemoveScrollWindowTimer ();
-			double x = e.X;
-			double y = e.Y;
-			Gdk.ModifierType mod = e.State;
-			double startPos;
-			Margin margin = GetMarginAtX (x, out startPos);
-			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, (int)pressPositionX, (int)pressPositionY, (int)x, (int)y)) {
-				dragContents = new ClipboardActions.CopyOperation ();
-				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Move | DragAction.Copy, 1, e);
-				if (!Platform.IsMac) {
-					CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, true, textEditorData.SelectionRange, 300, 300);
-					Gtk.Drag.SetIconWidget (context, window, 0, 0);
+			try {
+				RemoveScrollWindowTimer ();
+				double x = e.X;
+				double y = e.Y;
+				Gdk.ModifierType mod = e.State;
+				double startPos;
+				Margin margin = GetMarginAtX (x, out startPos);
+				if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, (int)pressPositionX, (int)pressPositionY, (int)x, (int)y)) {
+					dragContents = new ClipboardActions.CopyOperation ();
+					dragContents.CopyData (textEditorData);
+					DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Move | DragAction.Copy, 1, e);
+					if (!Platform.IsMac) {
+						CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, true, textEditorData.SelectionRange, 300, 300);
+						Gtk.Drag.SetIconWidget (context, window, 0, 0);
+					}
+					selection = Selection.Clone (MainSelection);
+					textViewMargin.inDrag = false;
+				} else {
+					FireMotionEvent (x, y, mod);
+					if (mouseButtonPressed != 0) {
+						UpdateScrollWindowTimer (x, y, mod);
+					}
 				}
-				selection = Selection.Clone (MainSelection);
-				textViewMargin.inDrag = false;
-			} else {
-				FireMotionEvent (x, y, mod);
-				if (mouseButtonPressed != 0) {
-					UpdateScrollWindowTimer (x, y, mod);
-				}
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
 			}
 			return base.OnMotionNotifyEvent (e);
 		}
