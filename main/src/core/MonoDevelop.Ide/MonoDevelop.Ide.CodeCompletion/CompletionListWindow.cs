@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Linq;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -69,8 +70,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		public CompletionListWindow ()
+		public CompletionListWindow (CompletionTextEditorExtension ext)
 		{
+			Ext = ext;
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
 			Events = Gdk.EventMask.PropertyChangeMask;
 			WindowTransparencyDecorator.Attach (this);
@@ -137,7 +139,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if ((ka & KeyActions.Complete) != 0)
 				CompleteWord (ref ka, key, keyChar, modifier);
 			if ((ka & KeyActions.CloseWindow) != 0)
-				CompletionWindowManager.HideWindow ();
+				CompletionWindowManager.DestroyWindow (Ext);
 		}
 		
 		public void ToggleCategoryMode ()
@@ -164,7 +166,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				CompleteWord (ref ka, key, keyChar, modifier);
 
 			if ((ka & KeyActions.CloseWindow) != 0)
-				CompletionWindowManager.HideWindow ();
+				CompletionWindowManager.DestroyWindow (Ext);
 
 			if ((ka & KeyActions.Ignore) != 0)
 				return true;
@@ -180,7 +182,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					// this version doesn't work for my system - seems that I've a modifier active
 					// that gdk doesn't know about. How about the 2nd version - should close on left/rigt + shift/mod1/control/meta/super
 					if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)) != 0) {
-						CompletionWindowManager.HideWindow ();
+						CompletionWindowManager.DestroyWindow (Ext);
 						return false;
 					}
 					
@@ -191,7 +193,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							declarationviewwindow.OverloadRight ();
 						UpdateDeclarationView ();
 					} else {
-						CompletionWindowManager.HideWindow ();
+						CompletionWindowManager.DestroyWindow (Ext);
 						return false;
 					}
 					return true;
@@ -255,7 +257,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					//if there is only one matching result we take it by default
 					if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 						CompleteWord ();
-						CompletionWindowManager.HideWindow ();
+						CompletionWindowManager.DestroyWindow (Ext);
 					}
 					return true;
 				}
@@ -268,14 +270,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				//if there is only one matching result we take it by default
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 					CompleteWord ();
-					CompletionWindowManager.HideWindow ();
+					CompletionWindowManager.DestroyWindow (Ext);
 				} else {
 					ShowAll ();
 					UpdateDeclarationView ();
 				}
 				return true;
 			}
-			CompletionWindowManager.HideWindow ();
+			CompletionWindowManager.DestroyWindow (Ext);
 			
 			return false;
 		}
@@ -348,7 +350,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			curYPos = Y;
 			Move (X, Y);
 			UpdateDeclarationView ();
-			ParameterInformationWindowManager.UpdateWindow (null, CompletionWidget);
 		}
 		
 		//smaller lists get size reallocated after FillList, so we have to reposition them
@@ -398,7 +399,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void DoubleClick ()
 		{
 			CompleteWord ();
-			CompletionWindowManager.HideWindow ();
+			CompletionWindowManager.DestroyWindow (Ext);
 		}
 		
 		protected override void OnSelectionChanged ()

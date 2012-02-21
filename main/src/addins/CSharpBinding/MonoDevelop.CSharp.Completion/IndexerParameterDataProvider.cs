@@ -60,11 +60,11 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		#region IParameterDataProvider implementation
-		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			StringBuilder result = new StringBuilder ();
 //			int curLen = 0;
-			result.Append (ambience.GetString (indexers[overload].ReturnType, OutputFlags.ClassBrowserEntries));
+			result.Append (ambience.GetString (indexers [overload].ReturnType, OutputFlags.ClassBrowserEntries));
 			result.Append (' ');
 			result.Append ("<b>");
 			result.Append (resolvedExpression);
@@ -78,16 +78,22 @@ namespace MonoDevelop.CSharp.Completion
 				parameterCount++;
 			}
 			result.Append (']');
-			var curParameter = currentParameter >= 0 && currentParameter < indexers[overload].Parameters.Count ? indexers[overload].Parameters[currentParameter] : null;
+			return result.ToString ();
+		}
+		
+		public string GetDescription (int overload, int currentParameter)
+		{
+			StringBuilder result = new StringBuilder ();
+			var curParameter = currentParameter >= 0 && currentParameter < indexers [overload].Parameters.Count ? indexers [overload].Parameters [currentParameter] : null;
 			if (curParameter != null) {
-				string docText = AmbienceService.GetDocumentation (indexers[overload]);
+				string docText = AmbienceService.GetDocumentation (indexers [overload]);
 				if (!string.IsNullOrEmpty (docText)) {
 					var paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
 					var match = paramRegex.Match (docText);
 					if (match.Success) {
 						result.AppendLine ();
-						string text = match.Groups[1].Value;
-						text = "<summary>" + AmbienceService.GetDocumentationSummary (indexers[overload]) + "</summary>" + text;
+						string text = match.Groups [1].Value;
+						text = "<summary>" + AmbienceService.GetDocumentationSummary (indexers [overload]) + "</summary>" + text;
 						result.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
 							HighlightParameter = curParameter.Name,
 							MaxLineLength = 60
@@ -98,8 +104,8 @@ namespace MonoDevelop.CSharp.Completion
 			
 			return result.ToString ();
 		}
-
-		public string GetParameterMarkup (int overload, int paramIndex)
+		
+		public string GetParameterDescription (int overload, int paramIndex)
 		{
 			var indexer = indexers[overload];
 			
@@ -111,7 +117,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public int GetParameterCount (int overload)
 		{
-			if (overload >= OverloadCount)
+			if (overload >= Count)
 				return -1;
 			var indexer = indexers[overload];
 			return indexer != null && indexer.Parameters != null ? indexer.Parameters.Count : 0;
@@ -119,13 +125,13 @@ namespace MonoDevelop.CSharp.Completion
 
 		public bool AllowParameterList (int overload)
 		{
-			if (overload >= OverloadCount)
+			if (overload >= Count)
 				return false;
 			var lastParam = indexers[overload].Parameters.LastOrDefault ();
 			return lastParam != null && lastParam.IsParams;
 		}
 		
-		public int OverloadCount {
+		public int Count {
 			get {
 				return indexers != null ? indexers.Count : 0;
 			}

@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		#region IParameterDataProvider implementation
-		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
 			
@@ -92,6 +92,18 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append ("</b> (");
 			sb.Append (parameters.ToString ());
 			sb.Append (")");
+			return sb.ToString ();
+		}
+		
+		public string GetDescription (int overload, int currentParameter)
+		{
+			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
+			
+			string name = delegateType.Name;
+			var parameters = new StringBuilder ();
+			int curLen = 0;
+			
+			var sb = new StringBuilder ();
 			
 			if (delegateType.GetDefinition ().IsObsolete ()) {
 				sb.AppendLine ();
@@ -117,7 +129,8 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
 					HighlightParameter = curParameter != null ? curParameter.Name : null,
 					Ambience = ambience,
-					SmallText = true
+					SmallText = true,
+					BoldHeadings = false
 				}));
 			}
 			
@@ -135,7 +148,7 @@ namespace MonoDevelop.CSharp.Completion
 			return sb.ToString ();
 		}
 		
-		public string GetParameterMarkup (int overload, int paramIndex)
+		public string GetParameterDescription (int overload, int paramIndex)
 		{
 			if (paramIndex < 0 || paramIndex >= delegateMethod.Parameters.Count)
 				return "";
@@ -145,20 +158,20 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public int GetParameterCount (int overload)
 		{
-			if (overload >= OverloadCount)
+			if (overload >= Count)
 				return -1;
 			return delegateMethod.Parameters != null ? delegateMethod.Parameters.Count : 0;
 		}
 		
 		public bool AllowParameterList (int overload)
 		{
-			if (overload >= OverloadCount)
+			if (overload >= Count)
 				return false;
 			var lastParam = delegateMethod.Parameters.LastOrDefault ();
 			return lastParam != null && lastParam.IsParams;
 		}
 		
-		public int OverloadCount {
+		public int Count {
 			get {
 				return 1;
 			}
