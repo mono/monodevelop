@@ -52,133 +52,16 @@ namespace MonoDevelop.TextTemplating
 			TaskService.ShowErrors ();
 		}
 		
-		static RecyclableAppDomain domain;
+		static TemplatingAppDomainRecycler recycler;
 		
-		public static RecyclableAppDomain.Handle GetTemplatingDomain ()
+		public static TemplatingAppDomainRecycler.Handle GetTemplatingDomain ()
 		{
-			if (domain == null || domain.Used) {
-				var info = new AppDomainSetup () {
-					ApplicationBase = System.IO.Path.GetDirectoryName (typeof (RecyclableAppDomain).Assembly.Location),
-					DisallowBindingRedirects = false,
-					DisallowCodeDownload = true,
-					ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
-				};
-				domain = new RecyclableAppDomain ("T4Domain", info);
-				var handle = domain.GetHandle ();
-				handle.AddAssembly (typeof (TemplatingEngine).Assembly);
-				handle.AddAssembly (typeof (TextTemplatingService).Assembly);
-				return handle;
+			if (recycler == null) {
+				recycler = new TemplatingAppDomainRecycler ("T4Domain");
 			}
-			return domain.GetHandle ();
-		}
-	}
-	
-	public class RecyclableAppDomain
-	{
-		const int DOMAIN_TIMEOUT = 2 * 60 * 1000;
-		const int DOMAIN_RECYCLE_AFTER = 25;
-		
-		int handleCount = 0;
-		int uses = 0;
-		AppDomain domain;
-		CrossDomainAssemblyMap assemblyMap = new CrossDomainAssemblyMap ();
-		
-		public RecyclableAppDomain (string name, AppDomainSetup info)
-		{
-			domain = AppDomain.CreateDomain (name, null, info);
-			domain.AssemblyResolve += new DomainAssemblyLoader (assemblyMap).Resolve;
-		}
-		
-		public bool Used { get; private set; }
-		
-		~RecyclableAppDomain ()
-		{
-			if (handleCount != 0)
-				Console.WriteLine ("WARNING: RecyclableAppDomain's handles were not all disposed");
-		}
-		
-		void Kill ()
-		{
-			if (domain != null) {
-				AppDomain.Unload (domain);
-				domain = null;
-				GC.SuppressFinalize (this);
-			}
-		}
-		
-		public RecyclableAppDomain.Handle GetHandle ()
-		{
-			return new RecyclableAppDomain.Handle (this);
-		}
-		
-		public class Handle : IDisposable
-		{
-			RecyclableAppDomain parent;
-			
-			internal Handle (RecyclableAppDomain parent)
-			{
-				this.parent = parent;
-				parent.handleCount++;
-				parent.uses++;
-				if (parent.uses > DOMAIN_RECYCLE_AFTER)
-					parent.Used = true;
-			}
-			
-			public AppDomain Domain {
-				get { return parent.domain; }
-			}
-			
-			public void Dispose ()
-			{
-				if (parent != null) {
-					parent.handleCount--;
-					if (parent.Used && parent.handleCount == 0)
-						parent.Kill ();
-					parent = null;
-				}
-			}
-			
-			public void AddAssembly (System.Reflection.Assembly assembly)
-			{
-				parent.assemblyMap.Add (assembly.FullName, assembly.Location);
-			}
-		}
-		
-		[Serializable]
-		class DomainAssemblyLoader
-		{
-			CrossDomainAssemblyMap map;
-			
-			public DomainAssemblyLoader (CrossDomainAssemblyMap map)
-			{
-				this.map = map;
-			}
-			
-			public System.Reflection.Assembly Resolve (object sender, ResolveEventArgs args)
-			{
-				var assemblyFile = map.ResolveAssembly (args.Name);
-				if (assemblyFile != null)
-					return System.Reflection.Assembly.LoadFrom (assemblyFile);
-				return null;
-			}
-		}
-		
-		class CrossDomainAssemblyMap : MarshalByRefObject
-		{
-			Dictionary<string, string> maps = new Dictionary<string, string> ();
-			
-			public string ResolveAssembly (string name)
-			{
-				string result;
-				if (maps.TryGetValue (name, out result))
-					return result;
-				return null;
-			}
-				
-			public void Add (string name, string location)
-			{
-				maps.Add (name, location);
-			}
+			var handle = recycler.GetHandle ();
+			handle.AddAssembly (typeof (TextTemplatingService).Assembly);
+			return handle;
 		}
 	}
 }

@@ -144,8 +144,8 @@ namespace Mono.TextTemplating
 			var domain = host.ProvideTemplatingAppDomain (content);
 			if (domain != null) {
 				var type = typeof (CompiledTemplate);
-				var obj = domain.CreateInstanceAndUnwrap (type.Assembly.FullName, type.FullName, false,
-					BindingFlags.CreateInstance, null,
+				var obj = domain.CreateInstanceFromAndUnwrap (type.Assembly.Location, type.FullName, false,
+					BindingFlags.Default, null,
 					new object[] { host, results, templateClassFullName, settings.Culture, references.ToArray () },
 					null, null);
 				return (CompiledTemplate) obj;
