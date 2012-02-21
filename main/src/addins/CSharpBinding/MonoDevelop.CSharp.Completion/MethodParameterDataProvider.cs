@@ -278,7 +278,6 @@ namespace MonoDevelop.CSharp.Completion
 				} else {
 					text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>";
 				}
-				sb.AppendLine ();
 				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
 					HighlightParameter = curParameter != null ? curParameter.Name : null,
 					Ambience = ambience,
@@ -290,8 +289,11 @@ namespace MonoDevelop.CSharp.Completion
 			if (curParameter != null) {
 				var returnType = curParameter.Type;
 				if (returnType.Kind == TypeKind.Delegate) {
-					sb.AppendLine ();
-					sb.AppendLine ();
+					Console.WriteLine (sb.ToString());
+					if (sb.Length > 0) {
+						sb.AppendLine ();
+						sb.AppendLine ();
+					}
 					sb.Append ("<small>");
 					sb.AppendLine (GettextCatalog.GetString ("Delegate information:"));
 					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));

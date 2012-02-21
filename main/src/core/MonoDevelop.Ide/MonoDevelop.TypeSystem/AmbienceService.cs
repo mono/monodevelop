@@ -179,7 +179,7 @@ namespace MonoDevelop.TypeSystem
 
 		static bool IsEmptyDocumentation (string documentation)
 		{
-			return string.IsNullOrEmpty (documentation) || documentation.StartsWith ("To be added") || documentation == "we have not entered docs yet";
+			return string.IsNullOrWhiteSpace (documentation) || documentation.StartsWith ("To be added") || documentation == "we have not entered docs yet";
 		}
 		
 		public static string GetDocumentation (IEntity member)
@@ -414,10 +414,13 @@ namespace MonoDevelop.TypeSystem
 								summaryEnd = ret.Length;
 							break;
 						case "summary":
-//							ret.AppendLine (GetHeading ("Summary:", options));
-							ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
-							if (summaryEnd < 0)
-								summaryEnd = ret.Length;
+							var summary = ParseBody (xml, xml.Name, options);
+							if (!IsEmptyDocumentation (summary)) {
+	//							ret.AppendLine (GetHeading ("Summary:", options));
+								ret.Append (options.FormatBody (summary));
+								if (summaryEnd < 0)
+									summaryEnd = ret.Length;
+							}
 							break;
 						case "remarks":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
@@ -456,20 +459,23 @@ namespace MonoDevelop.TypeSystem
 							}
 							break;
 						case "param":
-							paramCount++;
-							string paramName = xml ["name"].Trim ();
-							parameterBuilder.Append ("<i>");
-							if (options.HighlightParameter == paramName)
-								parameterBuilder.Append ("<b>");
-							if (options.SmallText)
-								parameterBuilder.Append ("<small>");
-							parameterBuilder.Append (EscapeText (paramName));
-							if (options.SmallText)
-								parameterBuilder.Append ("</small>");
-							if (options.HighlightParameter == paramName)
-								parameterBuilder.Append ("</b>");
-							parameterBuilder.Append (":</i> ");
-							parameterBuilder.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
+							var body = ParseBody (xml, xml.Name, options);
+							if (!IsEmptyDocumentation (body)) {
+								paramCount++;
+								string paramName = xml ["name"].Trim ();
+								parameterBuilder.Append ("<i>");
+								if (options.HighlightParameter == paramName)
+									parameterBuilder.Append ("<b>");
+								if (options.SmallText)
+									parameterBuilder.Append ("<small>");
+								parameterBuilder.Append (EscapeText (paramName));
+								if (options.SmallText)
+									parameterBuilder.Append ("</small>");
+								if (options.HighlightParameter == paramName)
+									parameterBuilder.Append ("</b>");
+								parameterBuilder.Append (":</i> ");
+								parameterBuilder.Append (options.FormatBody (body));
+							}
 							break;
 						case "value":
 							ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Value:")));
@@ -489,7 +495,7 @@ namespace MonoDevelop.TypeSystem
 				MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
 				return EscapeText (doc);
 			}
-			if (IsEmptyDocumentation (ret.ToString ()))
+			if (IsEmptyDocumentation (ret.ToString ()) && IsEmptyDocumentation (parameterBuilder.ToString ()))
 				return null;
 			if (string.IsNullOrEmpty (options.HighlightParameter) && exceptionCount > 0)
 				ret.Append (exceptions.ToString ());
@@ -499,14 +505,14 @@ namespace MonoDevelop.TypeSystem
 				summaryEnd = result.Length;
 			if (paramCount > 0) {
 				var paramSb = new StringBuilder ();
-				paramSb.AppendLine ();
+				if (result.Length > 0)
+					paramSb.AppendLine ();
 				paramSb.Append ("<small>");
 				paramSb.AppendLine (options.FormatHeading (GettextCatalog.GetPluralString ("Parameter:", "Parameters:", paramCount)));
 				paramSb.Append ("</small>");
 				paramSb.Append (parameterBuilder.ToString ());
 				result = result.Insert (summaryEnd, paramSb.ToString ());
 			}
-		
 			result = result.Trim ();
 			if (result.EndsWith (Environment.NewLine + "</small>"))
 				result = result.Substring (0, result.Length - (Environment.NewLine + "</small>").Length) + "</small>";

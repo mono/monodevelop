@@ -150,6 +150,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				set {
 					markup = value;
+					Visible = !string.IsNullOrWhiteSpace (value);
 					QueueResize ();
 				}
 			}
