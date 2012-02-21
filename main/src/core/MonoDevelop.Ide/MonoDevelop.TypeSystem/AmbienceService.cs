@@ -414,10 +414,10 @@ namespace MonoDevelop.TypeSystem
 								summaryEnd = ret.Length;
 							break;
 						case "summary":
-							var summary = ParseBody (xml, xml.Name, options);
+							var summary = options.FormatBody (ParseBody (xml, xml.Name, options));
 							if (!IsEmptyDocumentation (summary)) {
-	//							ret.AppendLine (GetHeading ("Summary:", options));
-								ret.Append (options.FormatBody (summary));
+								//							ret.AppendLine (GetHeading ("Summary:", options));
+								ret.Append (summary);
 								if (summaryEnd < 0)
 									summaryEnd = ret.Length;
 							}
@@ -459,10 +459,11 @@ namespace MonoDevelop.TypeSystem
 							}
 							break;
 						case "param":
-							var body = ParseBody (xml, xml.Name, options);
+							string paramName = xml.GetAttribute ("name") != null ? xml ["name"].Trim (): "";
+								
+							var body = options.FormatBody (ParseBody (xml, xml.Name, options));
 							if (!IsEmptyDocumentation (body)) {
 								paramCount++;
-								string paramName = xml ["name"].Trim ();
 								parameterBuilder.Append ("<i>");
 								if (options.HighlightParameter == paramName)
 									parameterBuilder.Append ("<b>");
@@ -474,7 +475,7 @@ namespace MonoDevelop.TypeSystem
 								if (options.HighlightParameter == paramName)
 									parameterBuilder.Append ("</b>");
 								parameterBuilder.Append (":</i> ");
-								parameterBuilder.Append (options.FormatBody (body));
+								parameterBuilder.Append (body);
 							}
 							break;
 						case "value":

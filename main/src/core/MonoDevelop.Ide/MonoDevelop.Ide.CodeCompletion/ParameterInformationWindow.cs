@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var vBox2 = new VBox ();
 			vBox2.BorderWidth = 3;
 			vBox2.PackStart (mainBox, false, false, 0);
-			vBox2.PackStart (desc, true, true, 0);
+			vBox2.PackStart (desc, true, true, 4);
 			Add (vBox2);
 			ShowAll ();
 			EnableTransparencyControl = true;
