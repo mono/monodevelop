@@ -210,7 +210,7 @@ namespace MonoDevelop.Refactoring
 			public void Run ()
 			{
 				if (!addUsing) {
-					var unit  = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+					var unit  = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 					var node = unit.GetNodeAt (options.Location, n => n is Expression || n is AstType);
 					int offset = options.Document.Editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
 					options.Document.Editor.Insert (offset, ns + ".");
@@ -355,7 +355,7 @@ namespace MonoDevelop.Refactoring
 			HashSet<string> possibleNamespaces = new HashSet<string> ();
 			List<string> usedNamespaces = new List<string> ();
 			
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			var attribute = unit != null ? unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (options.Document.Editor.Caret.Location) : null;
 			
 			bool isInsideAttributeType = attribute != null && attribute.Type.IsInside (options.Document.Editor.Caret.Location);

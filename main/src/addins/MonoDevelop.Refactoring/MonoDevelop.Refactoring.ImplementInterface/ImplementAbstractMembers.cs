@@ -47,7 +47,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 		
 		public override bool IsValid (RefactoringOptions options)
 		{
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			if (unit == null)
 				return false;
 			var generator = options.CreateCodeGenerator ();

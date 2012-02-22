@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			if (buffer.IsSomethingSelected) {
 				var doc = options.Document.ParsedDocument;
 				if (doc != null) {
-					var member = doc.GetMember (buffer.Caret.Line, buffer.Caret.Column);
+					var member = doc.GetMember (buffer.Caret.Location);
 					if (member == null)
 						return false;
 					if (!member.BodyRegion.IsInside (buffer.Caret.Line, buffer.Caret.Column))

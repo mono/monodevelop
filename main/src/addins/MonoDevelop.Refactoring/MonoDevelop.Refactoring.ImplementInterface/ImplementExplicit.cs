@@ -45,7 +45,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 		
 		internal static bool InternalIsValid (RefactoringOptions options, out IType interfaceType)
 		{
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			interfaceType = null;
 			if (unit == null)
 				return false;
@@ -64,8 +64,8 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			if (def.Kind != TypeKind.Interface)
 				return false;
 			
-			var declaringType = options.Document.ParsedDocument.GetInnermostTypeDefinition (loc.Line, loc.Column);
-			var type = declaringType.Resolve (options.Document.ParsedDocument.GetTypeResolveContext (options.Document.Compilation, loc)).GetDefinition ();
+			var declaringType = options.Document.ParsedDocument.GetInnermostTypeDefinition (loc);
+			var type = declaringType.Resolve (options.Document.ParsedDocument.ParsedFile.GetTypeResolveContext (options.Document.Compilation, loc)).GetDefinition ();
 			return interfaceType.GetAllBaseTypes ().Any (bt => CodeGenerator.CollectMembersToImplement (type, bt, false).Any ());
 		}
 		
@@ -82,7 +82,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			if (!InternalIsValid (options, out interfaceType))
 				return;
 			var loc = options.Document.Editor.Caret.Location;
-			var declaringType = options.Document.ParsedDocument.GetInnermostTypeDefinition (loc.Line, loc.Column);
+			var declaringType = options.Document.ParsedDocument.GetInnermostTypeDefinition (loc);
 			if (declaringType == null)
 				return;
 			

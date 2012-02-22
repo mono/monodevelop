@@ -268,8 +268,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					tags.Add (tag.Tag);
 				}
 				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
-					unit = document.ParsedDocument.Annotation<CompilationUnit> ();
-					visitor = new CSharpAstResolver (document.Compilation, unit, document.ParsedDocument.Annotation <CSharpParsedFile> ());
+					unit = document.ParsedDocument.GetAst<CompilationUnit> ();
+					var parsedFile = document.ParsedDocument.ParsedFile as CSharpParsedFile;
+					if (unit != null && parsedFile != null)
+						visitor = new CSharpAstResolver (document.Compilation, unit, parsedFile);
 				}
 			}
 			

@@ -57,14 +57,14 @@ namespace MonoDevelop.SourceEditor
 		
 		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
-			var ed = (ExtensibleTextEditor) editor;
+			var ed = (ExtensibleTextEditor)editor;
 			var doc = ed.ParsedDocument;
 			
 			var resolveResult = (ResolveResult)item.Item;
 			if (lastResult != null && !lastResult.IsError && lastWindow.IsRealized && 
-			    resolveResult != null && !resolveResult.IsError &&  lastResult.Type.Equals (resolveResult.Type))
+			    resolveResult != null && !resolveResult.IsError && lastResult.Type.Equals (resolveResult.Type))
 				return lastWindow;
-			var result = new LanguageItemWindow (ed, modifierState, resolveResult, null, doc);
+			var result = new LanguageItemWindow (ed, modifierState, resolveResult, null, doc.ParsedFile);
 			lastWindow = result;
 			lastResult = resolveResult;
 			if (result.IsEmpty)

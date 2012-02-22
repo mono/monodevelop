@@ -169,7 +169,7 @@ namespace MonoDevelop.Refactoring
 		public ResolveResult Resolve (AstNode node)
 		{
 			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
-			var cu = Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var cu = Document.ParsedDocument.GetAst<CompilationUnit> ();
 			
 			var resolver = new CSharpAstResolver (Document.Compilation, cu, parsedFile);
 			return resolver.Resolve (node);

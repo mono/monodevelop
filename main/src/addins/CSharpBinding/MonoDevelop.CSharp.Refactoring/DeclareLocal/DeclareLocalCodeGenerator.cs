@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			
 			if (options.Document.ParsedDocument == null)
 				return false;
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			if (unit == null)
 				return false;
 			
@@ -111,7 +111,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		{
 			var parser = new CSharpParser ();
 			var data = options.GetTextEditorData ();
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			if (unit != null) {
 				var node = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
 				while (node != null && !(node is BlockStatement)) {
@@ -203,7 +203,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			}
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			var visitor = new VariableLookupVisitor (options, new TextLocation (endPoint.Line, endPoint.Column));
 			
 			var callingMember = options.Document.ParsedDocument.GetMember (options.Location);

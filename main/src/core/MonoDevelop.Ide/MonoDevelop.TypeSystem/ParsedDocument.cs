@@ -44,8 +44,7 @@ namespace MonoDevelop.TypeSystem
 		NonSerializable = 1
 	}
 	
-	[Serializable]
-	public class ParsedDocument : AbstractAnnotatable, IParsedFile
+	public abstract class ParsedDocument
 	{
 		DateTime lastWriteTime = DateTime.Now;
 		public DateTime LastWriteTime {
@@ -56,7 +55,7 @@ namespace MonoDevelop.TypeSystem
 		List<Comment> comments = new List<Comment> ();
 		
 		public virtual IParsedFile ParsedFile {
-			get { return this; }
+			get { return null; }
 			set { throw new InvalidOperationException (); }
 		}
 
@@ -110,6 +109,42 @@ namespace MonoDevelop.TypeSystem
 				flags = value;
 			}
 		}
+
+		string fileName;
+		public virtual string FileName {
+			get {
+				return fileName;
+			}
+			protected set {
+				fileName = value;
+			}
+		}
+		
+		List<Error> errors = new List<Error> ();
+		public virtual IList<Error> Errors {
+			get {
+				return errors;
+			}
+		}
+
+		public bool HasErrors {
+			get {
+				return Errors.Any (e => e.ErrorType == ErrorType.Error);
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the language ast used by specific language backends.
+		/// </summary>
+		public object Ast {
+			get;
+			set;
+		}
+		
+		public T GetAst<T> () where T : class
+		{
+			return Ast as T;
+		}
 		
 		public ParsedDocument ()
 		{
@@ -120,89 +155,6 @@ namespace MonoDevelop.TypeSystem
 			this.fileName = fileName;
 		}
 		
-		#region IParsedFile implementation
-		public virtual IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
-		{
-			return null;
-		}
-		
-		public virtual IUnresolvedTypeDefinition GetInnermostTypeDefinition (TextLocation location)
-		{
-			return null;
-		}
-
-		public virtual IUnresolvedMember GetMember (TextLocation location)
-		{
-			return null;
-		}
-
-		public virtual IProjectContent ProjectContent {
-			get {
-				return null;
-			}
-		}
-		
-		string fileName;
-		public virtual string FileName {
-			get {
-				return fileName;
-			}
-			protected set {
-				fileName = value;
-			}
-		}
-
-		public virtual IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
-			get {
-				return new List<IUnresolvedTypeDefinition> ();
-			}
-		}
-
-		public virtual IList<IUnresolvedAttribute> AssemblyAttributes {
-			get {
-				return new List<IUnresolvedAttribute> ();
-			}
-		}
-		
-		public virtual IList<IUnresolvedAttribute> ModuleAttributes  {
-			get {
-				return new List<IUnresolvedAttribute> ();
-			}
-		}
-
-		
-		[NonSerialized]
-		List<Error> errors = new List<Error> ();
-		
-		public virtual IList<Error> Errors {
-			get {
-				return errors;
-			}
-		}
-		
-		public bool HasErrors {
-			get {
-				return Errors.Any (e => e.ErrorType == ErrorType.Error);
-			}
-		}
-		
-		public virtual ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
-		{
-			return null;
-		}
-		#endregion
-
-		#region IFreezable implementation
-		public virtual void Freeze ()
-		{
-		}
-
-		public virtual bool IsFrozen {
-			get {
-				return false;
-			}
-		}
-		#endregion
 		
 		public void Add (Error error)
 		{
@@ -265,10 +217,42 @@ namespace MonoDevelop.TypeSystem
 		{
 			this.conditionalRegions.AddRange (conditionalRegions);
 		}
+		
+		#region IParsedFile delegation
+		public virtual IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
+		{
+			return null;
+		}
+		
+		public virtual IUnresolvedTypeDefinition GetInnermostTypeDefinition (TextLocation location)
+		{
+			return null;
+		}
+
+		public virtual IUnresolvedMember GetMember (TextLocation location)
+		{
+			return null;
+		}
+
+		public virtual IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
+			get {
+				return new List<IUnresolvedTypeDefinition> ();
+			}
+		}
+
+		public virtual ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		{
+			return null;
+		}
+		#endregion
 	}
 	
-	public class DefaultParsedDocument : ParsedDocument
+	public class DefaultParsedDocument : ParsedDocument, IParsedFile
 	{
+		public override IParsedFile ParsedFile {
+			get { return this; }
+		}
+
 		public DefaultParsedDocument (string fileName) : base (fileName)
 		{
 		}
@@ -306,9 +290,20 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		List<IUnresolvedAttribute> attributes = new List<IUnresolvedAttribute> ();
-		public override IList<IUnresolvedAttribute> AssemblyAttributes {
+		public IList<IUnresolvedAttribute> AssemblyAttributes {
 			get {
 				return attributes;
+			}
+		}
+		
+		public ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		{
+			return null;
+		}
+
+		public IList<IUnresolvedAttribute> ModuleAttributes {
+			get {
+				return new List<IUnresolvedAttribute> ();
 			}
 		}
 		#endregion
@@ -332,7 +327,7 @@ namespace MonoDevelop.TypeSystem
 		public ParsedDocumentDecorator () : base ("")
 		{
 		}
-	
+		
 		#region IParsedFile implementation
 		public override IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
 		{
@@ -349,54 +344,17 @@ namespace MonoDevelop.TypeSystem
 			return parsedFile.GetMember (location);
 		}
 
-		public override System.Collections.Generic.IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
+		public override IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
 			get {
 				return parsedFile.TopLevelTypeDefinitions;
 			}
 		}
-
-		public override System.Collections.Generic.IList<IUnresolvedAttribute> AssemblyAttributes {
-			get {
-				return parsedFile.AssemblyAttributes;
-			}
-		}
-
-		public override System.Collections.Generic.IList<Error> Errors {
-			get {
-				return parsedFile.Errors;
-			}
-		}
-		#endregion
 		
-		/*
-		IEnumerable<FoldingRegion> AddFolds ()
-		{
-			IEnumerable<FoldingRegion> commentFolds = Comments.ToFolds ();
-			if (parsedFile != null) {
-				commentFolds = commentFolds.FlagIfInsideMembers (TopLevelTypeDefinitions, delegate (FoldingRegion f) {
-					f.Type = FoldType.CommentInsideMember;
-				});
-			}
-			
-			foreach (FoldingRegion fold in commentFolds)
-				yield return fold;
-			
-			if (parsedFile is CSharpParsedFile) {
-				var pf = (CSharpParsedFile)parsedFile;
-				foreach (var scope in pf.UsingScopes)
-					yield return new FoldingRegion (scope.Region);
-			}
-			
-		}
-		public override IEnumerable<FoldingRegion> GenerateFolds ()
-		{
-			return base.GenerateFolds ().Concat (AddFolds ());
-		}*/
-			
 		public override ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
 		{
 			return parsedFile.GetTypeResolveContext (compilation, loc);
-		} 
+		}
+		#endregion
 	}
 	
 	public static class FoldingUtilities

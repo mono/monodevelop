@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 		
 		AstNode GetMemberBodyNode (MonoDevelop.Refactoring.RefactoringOptions options)
 		{
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			if (unit == null)
 				return null;
 			

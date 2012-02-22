@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					searchNodes = CollectMembers (solution, (IMethod)member);
 			} else if (member is IVariable) { 
 				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).Region.FileName);
-				unit = doc.ParsedDocument;
+				unit = doc.ParsedDocument.ParsedFile;
 			}
 			
 			// prepare references finder

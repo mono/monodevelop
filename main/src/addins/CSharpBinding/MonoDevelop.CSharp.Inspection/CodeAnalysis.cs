@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public static IEnumerable<Result> Check (Document input)
 		{
-			var unit = input.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = input.ParsedDocument.GetAst<CompilationUnit> ();
 			if (unit == null)
 				return Enumerable.Empty<Result> ();
 			var oldSrc = input.Annotation<CancellationTokenSource> ();

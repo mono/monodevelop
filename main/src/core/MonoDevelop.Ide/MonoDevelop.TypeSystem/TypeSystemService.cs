@@ -233,7 +233,7 @@ namespace MonoDevelop.TypeSystem
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
-				return new ParsedDocument (fileName) { Flags = ParsedDocumentFlags.NonSerializable };
+				return null;
 			}
 		}
 		
@@ -266,7 +266,7 @@ namespace MonoDevelop.TypeSystem
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
-				return new ParsedDocument (fileName) { Flags = ParsedDocumentFlags.NonSerializable };
+				return null;
 			}
 		}
 		

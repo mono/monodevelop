@@ -135,8 +135,8 @@ namespace MonoDevelop.CSharp.Completion
 			textEditorData = Document.Editor;
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument != null) {
-				this.Unit = parsedDocument.Annotation<CompilationUnit> ();
-				this.CSharpParsedFile = parsedDocument.Annotation<CSharpParsedFile> ();
+				this.Unit = parsedDocument.GetAst<CompilationUnit> ();
+				this.CSharpParsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
 			}
 			
 			Document.DocumentParsed += HandleDocumentParsed; 
@@ -161,8 +161,8 @@ namespace MonoDevelop.CSharp.Completion
 			typeSystemSegmentTree = newTree;
 			typeSystemSegmentTree.InstallListener (document.Editor.Document);
 			
-			this.Unit = newDocument.Annotation<CompilationUnit> ();
-			this.CSharpParsedFile = newDocument.Annotation<CSharpParsedFile> ();
+			this.Unit = newDocument.GetAst<CompilationUnit> ();
+			this.CSharpParsedFile = newDocument.ParsedFile as CSharpParsedFile;
 			var textEditor = Editor.Parent;
 			if (textEditor != null) {
 				Gtk.Application.Invoke (delegate {
