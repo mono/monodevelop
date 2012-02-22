@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.document = document;
 			this.factory = factory;
 			// Set defaults for additional input properties
-			this.FormattingPolicy = new CSharpFormattingOptions();
+			this.FormattingPolicy = new CSharpFormattingOptions ();
 			this.EolMarker = Environment.NewLine;
 			this.IndentString = "\t";
 		}
@@ -803,13 +803,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				csResolver = rr.Item2;
 			if (csResolver == null) {
 				if (node != null) {
-					csResolver =  GetState ();
+					csResolver = GetState ();
 					//var astResolver = new CSharpAstResolver (csResolver, node, xp != null ? xp.Item1 : CSharpParsedFile);
 					
 					try {
 						//csResolver = astResolver.GetResolverStateBefore (node);
 						Console.WriteLine (csResolver.LocalVariables.Count ());
-					} catch (Exception  e)  {
+					} catch (Exception  e) {
 						Console.WriteLine ("E!!!" + e);
 					}
 					
@@ -2062,13 +2062,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = location;
 			}
-			var baseUnit = ParseStub ("");
+			var baseUnit = ParseStub ("a");
 			var tmpUnit = baseUnit;
-			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1);
-			if (expr == null)
-				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
-			if (expr == null)
+			AstNode expr = baseUnit.GetNodeAt (location, n => n is IdentifierExpression || n is MemberReferenceExpression);
+			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column - 1);
+				if (expr is AstType && expr.Parent is Attribute)
+					expr = expr.Parent;
+			}
 			
 			// try insertStatement
 			if (expr == null && baseUnit.GetNodeAt<EmptyStatement> (location.Line, location.Column) != null) {
@@ -2139,7 +2140,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (expr != null)
 					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 
 				if (expr == null)
-					expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column); 
+					expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column); 
+				if (expr is AstType && expr.Parent is Attribute)
+					expr = expr.Parent;
 			}
 			if (expr == null)
 				return null;
@@ -2388,7 +2391,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			yield return factory.CreateLiteralCompletionData ("description", "Describes a list item");
 			yield return factory.CreateLiteralCompletionData ("para", "Permit structure to be added to text");
 			
-			yield return factory.CreateLiteralCompletionData ("param", "Describe a parameter for a method or constructor", "param name=\"|\"></param>");
+			yield return factory.CreateLiteralCompletionData ("param", "Describe a parameter for a method or constructor", "param name=\"|\">");
 			yield return factory.CreateLiteralCompletionData ("paramref", "Identify that a word is a parameter name", "paramref name=\"|\"/>");
 			
 			yield return factory.CreateLiteralCompletionData ("permission", "Document the security accessibility of a member", "permission cref=\"|\"");
