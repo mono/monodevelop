@@ -138,7 +138,7 @@ namespace MonoDevelop.AspNet
 			
 			protected override void ScanSpan (ref int i)
 			{
-				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) &&  i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
+				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) &&  i + 4 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetTextAt (i, 4) != "<%--" && doc.GetCharAt (i + 2) != '@') {
 					var span = new CodeExpressionSpan (GetDefaultMime ());
 					FoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0? 3 : 2);
 					return;

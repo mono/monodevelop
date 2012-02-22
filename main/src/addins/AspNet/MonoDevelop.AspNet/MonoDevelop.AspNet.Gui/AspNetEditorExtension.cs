@@ -79,9 +79,10 @@ namespace MonoDevelop.AspNet.Gui
 			base.OnParsedDocumentUpdated ();
 			aspDoc = CU as AspNetParsedDocument;
 			
-			var newProj = (AspNetAppProject)base.Document.Project;
+			var newProj = base.Document.Project as AspNetAppProject;
 			if (newProj == null)
-				throw new InvalidOperationException ("Document has no project");
+				return;
+				//throw new InvalidOperationException ("Document has no project");
 			
 			if (project != newProj) {
 				project = newProj;
