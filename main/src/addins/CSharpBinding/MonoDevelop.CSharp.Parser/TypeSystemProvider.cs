@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Parser
 			result.ParsedFile = pf;
 			result.Add (GenerateFoldings (unit, result));
 			if (storeAst) {
-				result.LanguageAst = unit;
+				result.Ast = unit;
 			}
 			return result;
 		}
