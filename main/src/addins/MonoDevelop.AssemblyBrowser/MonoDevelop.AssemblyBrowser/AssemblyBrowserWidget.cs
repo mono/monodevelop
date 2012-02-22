@@ -89,6 +89,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new DomEventNodeBuilder (this),
 				new DomPropertyNodeBuilder (this),
 				new BaseTypeFolderNodeBuilder (this),
+				new BaseTypeNodeBuilder (this),
 				new ReferenceNodeBuilder (this),
 				}, new TreePadOption [] {
 				new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), true)
