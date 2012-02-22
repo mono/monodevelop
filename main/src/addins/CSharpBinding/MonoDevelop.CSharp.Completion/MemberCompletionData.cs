@@ -155,7 +155,30 @@ namespace MonoDevelop.CSharp.Completion
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 			
-			if (keyChar == '(' && !IsDelegateExpected && Entity is IMethod  && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
+			if (keyChar == '(' && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
+				
+				var line = Editor.GetLine (Editor.Caret.Line);
+				var method = (IMethod)Entity;
+				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
+				var end = line.Offset + line.EditableLength;
+				string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
+				if (Policy.BeforeMethodCallParentheses)
+					text += " ";
+				
+				int exprStart = window.CodeCompletionContext.TriggerOffset - 1;
+				while (exprStart > line.Offset) {
+					char ch = Editor.GetCharAt (exprStart);
+					if (ch != '.' && ch != '_' && /*ch != '<' && ch != '>' && */!char.IsLetterOrDigit (ch))
+						break;
+					exprStart--;
+				}
+				string textBefore = Editor.GetTextBetween (line.Offset, exprStart);
+				bool insertSemicolon = false;
+				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
+					insertSemicolon = true;
+			
+			
+				
 				int pos;
 				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
 					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
@@ -177,28 +200,18 @@ namespace MonoDevelop.CSharp.Completion
 							}
 						}
 					}
-					
 					Editor.Caret.Offset = bracketOffset;
+					if (insertSemicolon && Editor.GetCharAt (bracketOffset) == ')') {
+						Editor.Insert (bracketOffset + 1, ";");
+						// Need to reinsert the ')' as skip char because we inserted the ';' after the ')' and skip chars get deleted 
+						// when an insert after the skip char position occur.
+						Editor.SetSkipChar (bracketOffset, ')');
+						Editor.SetSkipChar (bracketOffset + 1, ';');
+					}
+					if (runParameterCompletionCommand)
+						editorCompletion.RunParameterCompletionCommand ();
 					return;
 				}
-				
-				var method = (IMethod)Entity;
-				var line = Editor.GetLine (Editor.Caret.Line);
-				string textToEnd = Editor.GetTextBetween (window.CodeCompletionContext.TriggerOffset + partialWord.Length, line.Offset + line.EditableLength);
-				if (Policy.BeforeMethodCallParentheses)
-					text += " ";
-				int exprStart = window.CodeCompletionContext.TriggerOffset;
-				while (exprStart > line.Offset) {
-					char ch = Editor.GetCharAt (exprStart);
-					if (ch != '.' && ch != '_' && /*ch != '<' && ch != '>' && */!char.IsLetterOrDigit (ch))
-						break;
-					exprStart--;
-				}
-				string textBefore = Editor.GetTextBetween (line.Offset, exprStart);
-				
-				bool insertSemicolon = false;
-				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
-					insertSemicolon = true;
 				
 				if (HasAnyOverloadWithParameters (method)) {
 					if (insertSemicolon) {
