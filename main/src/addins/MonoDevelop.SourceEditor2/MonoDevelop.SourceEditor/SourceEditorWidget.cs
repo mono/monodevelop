@@ -25,6 +25,7 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using Gtk;
 using Mono.TextEditor;
@@ -1004,7 +1005,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetSearchPattern ()
 		{
-			string selectedText = this.TextEditor.SelectedText;
+			string selectedText = FormatPatternToSelectionOption (this.TextEditor.SelectedText);
 			
 			if (!String.IsNullOrEmpty (selectedText)) {
 				this.SetSearchPattern (selectedText);
@@ -1274,12 +1275,19 @@ namespace MonoDevelop.SourceEditor
 			}
 			return result;
 		}
+
+		string FormatPatternToSelectionOption (string pattern)
+		{
+			return MonoDevelop.Ide.FindInFiles.FindInFilesDialog.FormatPatternToSelectionOption (pattern, SearchAndReplaceWidget.SearchEngine == SearchAndReplaceWidget.RegexSearchEngine);
+		}
 		
 		void SetSearchPatternToSelection ()
 		{
 			SetSearchPattern ();
 			if (TextEditor.IsSomethingSelected) {
-				TextEditor.SearchPattern = TextEditor.SelectedText;
+				var pattern = FormatPatternToSelectionOption (TextEditor.SelectedText);
+					
+				TextEditor.SearchPattern = pattern;
 				SearchAndReplaceWidget.UpdateSearchHistory (TextEditor.SearchPattern);
 			}
 			if (searchAndReplaceWidget != null)
