@@ -79,16 +79,6 @@ namespace MonoDevelop.AssemblyBrowser
 			icon = ImageService.GetPixbuf (resolved.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			if (!(otherNode.DataItem is IUnresolvedMethod))
-				return 1;
-			if (otherNode.DataItem is IUnresolvedMethod)
-				return ((IUnresolvedMethod)thisNode.DataItem).Name.CompareTo (((IUnresolvedMethod)otherNode.DataItem).Name);
-			
-			return -1;
-		}
-		
 		#region IAssemblyBrowserNodeBuilder
 		internal static void PrintDeclaringType (StringBuilder result, ITreeNavigator navigator)
 		{

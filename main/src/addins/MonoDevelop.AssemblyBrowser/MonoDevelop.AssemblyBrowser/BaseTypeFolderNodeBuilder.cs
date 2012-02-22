@@ -71,6 +71,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return true;
 		}
+		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			return -1;
