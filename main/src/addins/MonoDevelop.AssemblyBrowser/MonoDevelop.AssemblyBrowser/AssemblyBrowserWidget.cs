@@ -74,6 +74,8 @@ namespace MonoDevelop.AssemblyBrowser
 		public AssemblyBrowserWidget ()
 		{
 			this.Build ();
+			loader = new CecilLoader (true);
+			loader.IncludeInternalMembers = true;
 			TreeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
 				new AssemblyNodeBuilder (this),
@@ -198,7 +200,7 @@ namespace MonoDevelop.AssemblyBrowser
 			comboboxVisibilty.Active = 0;
 			comboboxVisibilty.Changed += delegate {
 				PublicApiOnly = comboboxVisibilty.Active == 0;
-				this.TreeView.GetRootNode ().Options[ "PublicApiOnly"] = PublicApiOnly;
+				this.TreeView.GetRootNode ().Options ["PublicApiOnly"] = PublicApiOnly;
 				FillInspectLabel ();
 			};
 			/*
@@ -210,18 +212,18 @@ namespace MonoDevelop.AssemblyBrowser
 			this.notebook1.SetTabLabel (this.searchWidget, new Label (GettextCatalog.GetString ("Search")));
 			//this.searchWidget.Visible = false;
 				
-			typeListStore = new Gtk.ListStore (typeof (Gdk.Pixbuf), // type image
-			                                   typeof (string),     // name
-			                                   typeof (string),     // namespace
-			                                   typeof (string),     // assembly
-				                               typeof (IMember)
+			typeListStore = new Gtk.ListStore (typeof(Gdk.Pixbuf), // type image
+			                                   typeof(string), // name
+			                                   typeof(string), // namespace
+			                                   typeof(string), // assembly
+				                               typeof(IMember)
 			                                  );
 			
-			memberListStore = new Gtk.ListStore (typeof (Gdk.Pixbuf), // member image
-			                                   typeof (string),     // name
-			                                   typeof (string),     // Declaring type full name
-			                                   typeof (string),     // assembly
-				                               typeof (IMember)
+			memberListStore = new Gtk.ListStore (typeof(Gdk.Pixbuf), // member image
+			                                   typeof(string), // name
+			                                   typeof(string), // Declaring type full name
+			                                   typeof(string), // assembly
+				                               typeof(IMember)
 			                                  );
 			CreateColumns ();
 			SetInspectWidget ();
@@ -1169,7 +1171,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		CecilLoader loader = new CecilLoader (true);
+		CecilLoader loader;
 		internal CecilLoader CecilLoader {
 			get {
 				return loader;
