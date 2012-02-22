@@ -192,6 +192,13 @@ namespace MonoDevelop.Projects.Text
 		{
 			if (nread > int.MaxValue)
 				throw new Exception ("Content too large.");
+			if (toEncoding == fromEncoding) {
+				if (content.LongLength == nread)
+					return content;
+				byte[] result = new byte[nread];
+				Array.Copy (content, result, nread);
+				return result;
+			}
 			
 			IntPtr nr = IntPtr.Zero, nw = IntPtr.Zero;
 			IntPtr clPtr = new IntPtr (nread);
@@ -206,7 +213,7 @@ namespace MonoDevelop.Projects.Text
 				g_free (cc);
 				return buf;
 			} else {
-				GError err = (GError) Marshal.PtrToStructure (errptr, typeof (GError));
+				GError err = (GError)Marshal.PtrToStructure (errptr, typeof(GError));
 				string reason = Utf8PtrToString (err.Msg);
 				string message = string.Format ("Failed to convert content from {0} to {1}: {2}.", fromEncoding, toEncoding, reason);
 				InvalidEncodingException ex = new InvalidEncodingException (message);
