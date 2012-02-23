@@ -18,6 +18,7 @@
 
 using System;
 using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.TypeSystem
@@ -27,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	/// </summary>
 	sealed class CSharpDocumentationComment : DocumentationComment
 	{
-		public CSharpDocumentationComment(string xmlDoc, ITypeResolveContext context) : base(xmlDoc, context)
+		public CSharpDocumentationComment(ITextSource xmlDoc, ITypeResolveContext context) : base(xmlDoc, context)
 		{
 		}
 		

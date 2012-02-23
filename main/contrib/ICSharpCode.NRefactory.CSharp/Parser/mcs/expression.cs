@@ -6059,18 +6059,11 @@ namespace Mono.CSharp
 
 		Dictionary<int, int> bounds;
 
+#if STATIC
 		// The number of constants in array initializers
 		int const_initializers_count;
 		bool only_constant_initializers;
-		
-		public List<Expression> Arguments {
-			get { return this.arguments; }
-		}
-		
-		public FullNamedExpression NewType {
-			get { return this.requested_base_type; }
-		}
-		
+#endif
 		public ArrayCreation (FullNamedExpression requested_base_type, List<Expression> exprs, ComposedTypeSpecifier rank, ArrayInitializer initializers, Location l)
 			: this (requested_base_type, rank, initializers, l)
 		{
@@ -6125,7 +6118,11 @@ namespace Mono.CSharp
 				return this.initializers;
 			}
 		}
-
+		
+		public List<Expression> Arguments {
+			get { return this.arguments; }
+		}
+		
 		bool CheckIndices (ResolveContext ec, ArrayInitializer probe, int idx, bool specified_dims, int child_bounds)
 		{
 			if (initializers != null && bounds == null) {
@@ -6198,7 +6195,7 @@ namespace Mono.CSharp
 					Expression element = ResolveArrayElement (ec, o);
 					if (element == null)
 						continue;
-
+#if STATIC
 					// Initializers with the default values can be ignored
 					Constant c = element as Constant;
 					if (c != null) {
@@ -6208,7 +6205,7 @@ namespace Mono.CSharp
 					} else {
 						only_constant_initializers = false;
 					}
-					
+#endif					
 					array_data.Add (element);
 				}
 			}
@@ -6311,7 +6308,9 @@ namespace Mono.CSharp
 
 		protected bool ResolveInitializers (ResolveContext ec)
 		{
+#if STATIC
 			only_constant_initializers = true;
+#endif
 
 			if (arguments != null) {
 				bool res = true;
@@ -7429,9 +7428,7 @@ namespace Mono.CSharp
 				if (typearg == null)
 					return null;
 
-				if (typearg.Kind == MemberKind.Void && !(QueriedType is TypeExpression)) {
-					ec.Report.Error (673, loc, "System.Void cannot be used from C#. Use typeof (void) to get the void type object");
-				} else if (typearg.BuiltinType == BuiltinTypeSpec.Type.Dynamic) {
+				if (typearg.BuiltinType == BuiltinTypeSpec.Type.Dynamic) {
 					ec.Report.Error (1962, QueriedType.Location,
 						"The typeof operator cannot be used on the dynamic type");
 				}

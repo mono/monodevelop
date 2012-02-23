@@ -1830,11 +1830,21 @@ namespace Mono.TextEditor
 			throw new NotImplementedException ();
 		}
 
+		int ICSharpCode.NRefactory.Editor.ITextSource.IndexOf(char c, int startIndex, int count)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		int ICSharpCode.NRefactory.Editor.ITextSource.IndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
 			throw new NotImplementedException ();
 		}
 
+		int ICSharpCode.NRefactory.Editor.ITextSource.LastIndexOf(char c, int startIndex, int count)
+		{
+			throw new NotImplementedException ();
+		}
+		
 		int ICSharpCode.NRefactory.Editor.ITextSource.LastIndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
 			throw new NotImplementedException ();
@@ -1857,6 +1867,7 @@ namespace Mono.TextEditor
 				return Text;
 			}
 		}
+		
 		#endregion
 	}
 	

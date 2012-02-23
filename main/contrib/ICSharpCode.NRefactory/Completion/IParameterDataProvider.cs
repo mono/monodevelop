@@ -69,3 +69,4 @@ namespace ICSharpCode.NRefactory.Completion
 	}
 }
 
+

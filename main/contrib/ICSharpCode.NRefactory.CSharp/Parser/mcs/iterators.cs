@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using Mono.CompilerServices.SymbolWriter;
 
 #if STATIC
 using IKVM.Reflection.Emit;
@@ -587,9 +588,9 @@ namespace Mono.CSharp
 			Block = new ToplevelBlock (host.Compiler, ParametersCompiled.EmptyReadOnlyParameters, Location.Null);
 		}
 
-		public override EmitContext CreateEmitContext (ILGenerator ig)
+		public override EmitContext CreateEmitContext (ILGenerator ig, SourceMethodBuilder sourceMethod)
 		{
-			EmitContext ec = new EmitContext (this, ig, MemberType);
+			EmitContext ec = new EmitContext (this, ig, MemberType, sourceMethod);
 			ec.CurrentAnonymousMethod = expr;
 
 			if (expr is AsyncInitializer)
@@ -624,6 +625,12 @@ namespace Mono.CSharp
 			protected override void DoEmit (EmitContext ec)
 			{
 				state_machine.EmitMoveNext (ec);
+			}
+
+			public override void Emit (EmitContext ec)
+			{
+				// Don't create sequence point
+				DoEmit (ec);
 			}
 		}
 
