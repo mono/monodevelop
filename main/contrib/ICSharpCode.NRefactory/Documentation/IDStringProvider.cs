@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		/// <summary>
 		/// Gets the ID string (C# 4.0 spec, §A.3.1) for the specified entity.
 		/// </summary>
-		public static string GetIDString(this IEntity entity)
+		public static string GetIDString(IEntity entity)
 		{
 			StringBuilder b = new StringBuilder();
 			switch (entity.EntityType) {
