@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public VariableInitializer GetVariable (string name)
 		{
-			return Variables.FirstOrDefault (vi => vi.Name == name);
+			return Variables.FirstOrNullObject (vi => vi.Name == name);
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))

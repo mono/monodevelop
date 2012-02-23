@@ -28,6 +28,29 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class VariableInitializer : AstNode
 	{
+		#region Null
+		public new static readonly VariableInitializer Null = new NullVariableInitializer ();
+		
+		sealed class NullVariableInitializer : VariableInitializer
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+			{
+				return default (S);
+			}
+			
+			protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
+			{
+				return other == null || other.IsNull;
+			}
+		}
+		#endregion
+
 		#region PatternPlaceholder
 		public static implicit operator VariableInitializer(PatternMatching.Pattern pattern)
 		{

@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.document = document;
 			this.factory = factory;
 			// Set defaults for additional input properties
-			this.FormattingPolicy = new CSharpFormattingOptions ();
+			this.FormattingPolicy = new CSharpFormattingOptions();
 			this.EolMarker = Environment.NewLine;
 			this.IndentString = "\t";
 		}
@@ -803,13 +803,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				csResolver = rr.Item2;
 			if (csResolver == null) {
 				if (node != null) {
-					csResolver = GetState ();
+					csResolver =  GetState ();
 					//var astResolver = new CSharpAstResolver (csResolver, node, xp != null ? xp.Item1 : CSharpParsedFile);
 					
 					try {
 						//csResolver = astResolver.GetResolverStateBefore (node);
 						Console.WriteLine (csResolver.LocalVariables.Count ());
-					} catch (Exception  e) {
+					} catch (Exception  e)  {
 						Console.WriteLine ("E!!!" + e);
 					}
 					
@@ -1813,7 +1813,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				TypeResolveResult trr;
 				if (state.IsVariableReferenceWithSameType (resolveResult, ((IdentifierExpression)resolvedNode).Identifier, out trr)) {
-					if (mrr.Member.IsStatic ^ currentMember.IsStatic) {
+					if (currentMember != null && mrr.Member.IsStatic ^ currentMember.IsStatic) {
 						skipNonStaticMembers = true;
 						
 						if (trr.Type.Kind == TypeKind.Enum) {

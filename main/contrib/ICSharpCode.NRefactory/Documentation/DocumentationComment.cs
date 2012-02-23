@@ -79,5 +79,17 @@ namespace ICSharpCode.NRefactory.Documentation
 				return null;
 			}
 		}
+		
+		public override string ToString ()
+		{
+			return Xml.Text;
+		}
+		
+		public static implicit operator string (DocumentationComment cmt)
+		{
+			if (cmt != null)
+				return cmt.ToString ();
+			return null;
+		}
 	}
 }

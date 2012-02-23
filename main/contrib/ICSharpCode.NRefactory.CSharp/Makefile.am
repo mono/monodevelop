@@ -197,6 +197,7 @@ FILES =  \
 	Parser/mcs/reflection.cs \
 	Parser/mcs/report.cs \
 	Parser/mcs/settings.cs \
+	Parser/mcs/SourceMethodBuilder.cs \
 	Parser/mcs/statement.cs \
 	Parser/mcs/support.cs \
 	Parser/mcs/symbolwriter.cs \
