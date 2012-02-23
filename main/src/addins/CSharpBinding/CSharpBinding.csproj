@@ -255,6 +255,10 @@
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantNamespaceUsageInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\TemplateParameterDataProvider.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ReorderParameters.ReorderParametersDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ReorderParameters\ReorderParametersDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ReorderParameters\ReorderParametersHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ReorderParameters\ReorderParametersRefactoring.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -294,5 +298,6 @@
     <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\RefactorImports\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring\ReorderParameters\" />
   </ItemGroup>
 </Project>

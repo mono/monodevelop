@@ -67,7 +67,8 @@ namespace MonoDevelop.Refactoring
 		IntroduceConstant,
 		IntegrateTemporaryVariable,
 		ImportSymbol,
-		QuickFix
+		QuickFix,
+		ReorderParameters,
 	}
 	
 	public class CurrentRefactoryOperationsHandler: CommandHandler

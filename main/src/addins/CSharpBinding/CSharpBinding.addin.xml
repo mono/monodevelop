@@ -333,6 +333,7 @@
 		<Class id="CreateMethod" class = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 		<Class id="ExtractMethod" class = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
 		<Class id="DeclareLocal" class = "MonoDevelop.CSharp.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
+		<Class id="ReorderParameters" class = "MonoDevelop.CSharp.Refactoring.ReorderParameters.ReorderParametersRefactoring" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
@@ -347,6 +348,9 @@
 				defaultHandler = "MonoDevelop.CSharp.Refactoring.DeclareLocal.DeclareLocalHandler"
 				_label = "_Declare Local" 
 				shortcut = "Control+dead_circumflex"/> 
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ReorderParameters"
+				defaultHandler = "MonoDevelop.CSharp.Refactoring.ReorderParameters.ReorderParametersHandler"
+				_label = "Reorder Parameters"/>
 	</Extension>
 <!--
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">

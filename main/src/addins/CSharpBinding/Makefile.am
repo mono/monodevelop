@@ -41,6 +41,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
+	gtk-gui/MonoDevelop.CSharp.Refactoring.ReorderParameters.ReorderParametersDialog.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/ConstructorParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/CSharpCompletionTextEditorExtension.cs \
@@ -111,6 +112,9 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/RefactorImports/RefactorImportsHandler.cs \
 	MonoDevelop.CSharp.Refactoring/RefactorImports/RemoveUnusedImportsRefactoring.cs \
 	MonoDevelop.CSharp.Refactoring/RefactorImports/SortImportsRefactoring.cs \
+	MonoDevelop.CSharp.Refactoring/ReorderParameters/ReorderParametersDialog.cs \
+	MonoDevelop.CSharp.Refactoring/ReorderParameters/ReorderParametersHandler.cs \
+	MonoDevelop.CSharp.Refactoring/ReorderParameters/ReorderParametersRefactoring.cs \
 	MonoDevelop.CSharp.Refactoring/VisitNamespaceNodesNavigator.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
