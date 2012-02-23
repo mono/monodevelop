@@ -801,7 +801,7 @@ namespace Mono.Debugging.Soft
 							sourceFileList[originalCount + i] = char.ToLower (n[0]) + n.Substring (1);
 						}
 					}
-						     
+					
 					if (typeLoadReq == null) {
 						typeLoadReq = vm.CreateTypeLoadRequest ();
 					}

@@ -237,25 +237,31 @@ namespace Mono.Debugging.Client
 		
 		public void UpdateBreakpointLine (Breakpoint bp, int newLine)
 		{
-			Remove (bp);
+			if (IsReadOnly)
+				return;
+			
 			bp.SetLine (newLine);
-			Add (bp);
+			NotifyBreakEventChanged (bp);
 		}
 		
 		internal void AdjustBreakpointLine (Breakpoint bp, int newLine)
 		{
-			Remove (bp);
+			if (IsReadOnly)
+				return;
+			
 			bp.SetAdjustedLine (newLine);
-			Add (bp);
+			NotifyBreakEventChanged (bp);
 		}
 		
 		internal void ResetAdjustedBreakpoints ()
 		{
+			if (IsReadOnly)
+				return;
+			
 			foreach (Breakpoint bp in breakpoints.Where (b => b is Breakpoint).ToArray ()) {
 				if (bp.HasAdjustedLine) {
-					Remove (bp);
 					bp.ResetAdjustedLine ();
-					Add (bp);
+					NotifyBreakEventChanged (bp);
 				}
 			}
 		}
@@ -368,7 +374,7 @@ namespace Mono.Debugging.Client
 		internal void NotifyBreakEventChanged (BreakEvent be)
 		{
 			try {
-				EventHandler<BreakEventArgs > breakEventModified = BreakEventModified;
+				EventHandler<BreakEventArgs> breakEventModified = BreakEventModified;
 				if (breakEventModified != null)
 					breakEventModified (this, new BreakEventArgs ((BreakEvent)be));
 				if (be is Breakpoint) {
