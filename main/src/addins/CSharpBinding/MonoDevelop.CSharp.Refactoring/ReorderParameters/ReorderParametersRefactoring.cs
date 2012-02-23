@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharp.Refactoring.ReorderParameters
 		/// <summary>
 		/// Reorders the parameters/arguments given by nodes and adds the change to result
 		/// </summary>
-		void ReorderParameters (IList<Change> result, ReorderParametersProperties properties,
+		static void ReorderParameters (IList<Change> result, ReorderParametersProperties properties,
 		                        IList<AstNode> nodes, TextEditorData editor)
 		{
 			StringBuilder newList = new StringBuilder ();
@@ -123,6 +123,15 @@ namespace MonoDevelop.CSharp.Refactoring.ReorderParameters
 			result.Add (replace);
 		}
 		
+		/// <summary>
+		/// Checks if the signatures of the two methods are the same, only check parameters
+		/// </summary>
+		static bool CheckSignature(IMethod a, IMethod b)
+		{
+			if (a == b) return true;
+			return ParameterListComparer.Instance.Equals(a.Parameters, b.Parameters);
+		}
+		
 		public override List<Change> PerformChanges (RefactoringOptions options, object properties)
 		{
 			var result = new List<Change> ();
@@ -139,7 +148,8 @@ namespace MonoDevelop.CSharp.Refactoring.ReorderParameters
 					var references = ReferenceFinder.FindReferences (method, monitor);
 					foreach (var methodRef in references) {
 						//filter overloads
-						if (methodRef.Entity != method)
+						var entity = methodRef.Entity as IMethod;
+						if (entity == null || !CheckSignature (entity, method))
 							continue;
 						
 						TextEditorData editor;
