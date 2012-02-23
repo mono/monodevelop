@@ -129,7 +129,6 @@ namespace MonoDevelop.CSharp.Refactoring.ReorderParameters
 		static bool CheckSignature(IMethod a, IMethod b)
 		{
 			if (a == b) return true;
-			
 			return ParameterListComparer.Instance.Equals(a.Parameters, b.Parameters);
 		}
 		
