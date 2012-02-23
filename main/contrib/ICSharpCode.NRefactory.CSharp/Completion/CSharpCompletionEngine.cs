@@ -1813,7 +1813,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				TypeResolveResult trr;
 				if (state.IsVariableReferenceWithSameType (resolveResult, ((IdentifierExpression)resolvedNode).Identifier, out trr)) {
-					if (mrr.Member.IsStatic ^ currentMember.IsStatic) {
+					if (currentMember != null && mrr.Member.IsStatic ^ currentMember.IsStatic) {
 						skipNonStaticMembers = true;
 						
 						if (trr.Type.Kind == TypeKind.Enum) {
