@@ -49,6 +49,7 @@ namespace MonoDevelop.TypeSystem
 		DateTime lastWriteTime = DateTime.Now;
 		public DateTime LastWriteTime {
 			get { return lastWriteTime; }
+			set { lastWriteTime = value; }
 		}
 		
 		[NonSerialized]
@@ -255,6 +256,7 @@ namespace MonoDevelop.TypeSystem
 
 		public DefaultParsedDocument (string fileName) : base (fileName)
 		{
+			
 		}
 		
 		#region IParsedFile implementation
