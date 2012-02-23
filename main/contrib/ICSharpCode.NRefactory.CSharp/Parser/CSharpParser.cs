@@ -999,11 +999,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddTypeParameters (newMethod, m.MemberName);
 				
 				if (location != null)
-					newMethod.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LPar);
+					newMethod.AddChild (new CSharpTokenNode (Convert (location [0]), 1), MethodDeclaration.Roles.LPar);
 				AddParameter (newMethod, m.ParameterInfo);
 				
-				if (location != null)
-					newMethod.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RPar);
+				if (location != null && location.Count > 1)
+					newMethod.AddChild (new CSharpTokenNode (Convert (location [1]), 1), MethodDeclaration.Roles.RPar);
 				
 				AddConstraints (newMethod, m.CurrentTypeParameters);
 				
@@ -1019,7 +1019,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						// parser error, set end node to max value.
 						newMethod.AddChild (new ErrorNode (), AstNode.Roles.Error);
 					} else {
-						newMethod.AddChild (new CSharpTokenNode (Convert (location[2]), 1), MethodDeclaration.Roles.Semicolon);
+						newMethod.AddChild (new CSharpTokenNode (Convert (location [2]), 1), MethodDeclaration.Roles.Semicolon);
 					}
 				}
 				typeStack.Peek ().AddChild (newMethod, TypeDeclaration.MemberRole);
@@ -2458,7 +2458,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (p.Name != null)
 						parameterDeclarationExpression.AddChild (Identifier.Create (p.Name, Convert (p.Location)), ParameterDeclaration.Roles.Identifier);
 					if (p.HasDefaultValue) {
-						if (location != null)
+						if (location != null && location.Count > 1)
 							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location [1]), 1), ParameterDeclaration.Roles.Assign);
 						parameterDeclarationExpression.AddChild ((Expression)p.DefaultValue.Accept (this), ParameterDeclaration.Roles.Expression);
 					}
