@@ -208,7 +208,9 @@ namespace MonoDevelop.CSharp.Refactoring.ReorderParameters
 				signatureFormatBuilder.AppendFormat ("{{{0}}}", i);
 				signatureTextBegin = param.Region.End;
 			}
-			signatureFormatBuilder.Append (editor.GetTextBetween (signatureTextBegin, method.BodyRegion.Begin));
+			TextLocation signatureTextEnd = 
+				method.BodyRegion.BeginLine == 0 ? method.Region.End : method.BodyRegion.Begin;
+			signatureFormatBuilder.Append (editor.GetTextBetween (signatureTextBegin, signatureTextEnd));
 			
 			signaturePreviewText.Document.Text = signatureFormatBuilder.ToString ().TrimEnd ();
 			//remove unnecessary leading spaces to get correct identation
