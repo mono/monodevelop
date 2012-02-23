@@ -779,20 +779,22 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		static XC4Debug ()
 		{
 			FilePath logDir = UserProfile.Current.LogDir;
-			FilePath logFile = logDir.Combine (GetTimestampFileName (DateTime.Now));
+			FilePath logFile = logDir.Combine (UniqueLogFile);
 			
 			FileService.EnsureDirectoryExists (logDir);
 			
 			try {
-				writer = new StreamWriter (logFile) { AutoFlush = true };
+				var stream = File.Open (logFile, FileMode.Create, FileAccess.Write, FileShare.Read);
+				writer = new StreamWriter (stream) { AutoFlush = true };
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not create Xcode sync logging file", ex);
 			}
 		}
 		
-		static string GetTimestampFileName (DateTime time)
-		{
-			return string.Format ("Xcode4Sync-{0}.log", time.ToString ("yyyy-MM-dd__HH-mm-ss"));
+		static string UniqueLogFile {
+			get {
+				return string.Format ("Xcode4Sync-{0}.log", LoggingService.LogTimestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
+			}
 		}
 		
 		static string TimeStamp {

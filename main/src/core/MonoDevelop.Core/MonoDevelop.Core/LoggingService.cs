@@ -40,6 +40,7 @@ namespace MonoDevelop.Core
 	{
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
+		static DateTime timestamp;
 		
 		static LoggingService ()
 		{
@@ -77,10 +78,16 @@ namespace MonoDevelop.Core
 		static string GenericLogFile {
 			get { return "MonoDevelop.log"; }
 		}
+		
+		public static DateTime LogTimestamp {
+			get { return timestamp; }
+		}
 
 		static string UniqueLogFile {
 			get {
-				return string.Format ("MonoDevelop.{0}.log", DateTime.Now.ToString ("yyyy-MM-dd__HH-mm-ss"));
+				timestamp = DateTime.Now;
+				
+				return string.Format ("MonoDevelop.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
 			}
 		}
 		
