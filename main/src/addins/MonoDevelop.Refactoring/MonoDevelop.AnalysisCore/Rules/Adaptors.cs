@@ -36,7 +36,7 @@ namespace MonoDevelop.AnalysisCore.Rules
 	{
 		public static IParsedFile GetCompilationUnit (Document input)
 		{
-			return input.ParsedDocument;
+			return input.ParsedDocument.ParsedFile;
 		}
 	}
 }

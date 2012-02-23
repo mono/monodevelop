@@ -671,7 +671,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public static readonly Role<TypeParameterDeclaration> TypeParameter = new Role<TypeParameterDeclaration> ("TypeParameter");
 			public static readonly Role<AstType> TypeArgument = new Role<AstType> ("TypeArgument", CSharp.AstType.Null);
 			public readonly static Role<Constraint> Constraint = new Role<Constraint> ("Constraint");
-			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer> ("Variable");
+			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer> ("Variable", VariableInitializer.Null);
 			public static readonly Role<Statement> EmbeddedStatement = new Role<Statement> ("EmbeddedStatement", CSharp.Statement.Null);
 			public static readonly Role<CSharpTokenNode> Keyword = new Role<CSharpTokenNode> ("Keyword", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> InKeyword = new Role<CSharpTokenNode> ("InKeyword", CSharpTokenNode.Null);

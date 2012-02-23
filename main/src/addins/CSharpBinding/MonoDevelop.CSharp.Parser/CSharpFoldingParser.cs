@@ -37,7 +37,7 @@ namespace MonoDevelop.CSharp.Parser
 		#region IFoldingParser implementation
 		public unsafe ParsedDocument Parse (string fileName, string content)
 		{
-			var result = new ParsedDocument (fileName);
+			var result = new DefaultParsedDocument (fileName);
 			bool inSingleComment = false, inMultiLineComment = false;
 			bool inString = false, inVerbatimString = false;
 			bool inChar = false;

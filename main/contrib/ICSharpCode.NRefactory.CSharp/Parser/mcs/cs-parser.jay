@@ -1356,6 +1356,23 @@ method_header
 
 		$$ = method;
 	  }
+	| opt_attributes
+	  opt_modifiers
+	  member_type
+	  method_declaration_name error
+	  {
+		Error_SyntaxError (yyToken);
+		current_local_parameters = ParametersCompiled.Undefined;
+
+		MemberName name = (MemberName) $4;
+		var method = Method.Create (current_type, (FullNamedExpression) $3, (Modifiers) $2,
+									name, current_local_parameters, (Attributes) $1, false);
+
+		if (doc_support)
+			method.DocComment = Lexer.consume_doc_comment ();
+
+		$$ = method;
+	  }
 	;
 
 method_body
@@ -3003,11 +3020,6 @@ base_type_name
 		}
 		$$ = $1;
 	  }
-	| error
-	  {
-	  	Error_TypeExpected (lexer.Location);
-		$$ = null;
-	  }
 	;
 	
 /*
@@ -4071,7 +4083,7 @@ null_coalescing_expression
 
 conditional_expression
 	: null_coalescing_expression
-	| null_coalescing_expression INTERR expression COLON expression 
+	| null_coalescing_expression INTERR expression COLON expression_or_error
 	  {
 		$$ = new Conditional (new BooleanExpression ((Expression) $1), (Expression) $3, (Expression) $5, GetLocation ($2));
 		lbag.AddLocation ($$, GetLocation ($4));
@@ -4494,6 +4506,12 @@ opt_class_base
 		current_type.AddBasesForPart ((List<FullNamedExpression>) $2);
 		lbag.AppendToMember (current_type, GetLocation ($1));
 	 }
+	| COLON type_list error
+	  {
+		Error_SyntaxError (yyToken);
+
+		current_type.AddBasesForPart ((List<FullNamedExpression>) $2);
+	  }
 	;
 
 opt_type_parameter_constraints_clauses
@@ -4502,11 +4520,6 @@ opt_type_parameter_constraints_clauses
 	  {
 		$$ = $1;
 	  }
-	| error
-	 {
-		Error_SyntaxError (yyToken);
-		$$ = null;
-	 }
 	;
 
 type_parameter_constraints_clauses
@@ -4540,6 +4553,13 @@ type_parameter_constraints_clause
 		var lt = (Tokenizer.LocatedToken) $2;
 		$$ = new Constraints (new SimpleMemberName (lt.Value, lt.Location), (List<FullNamedExpression>) $4, GetLocation ($1));
 		lbag.AddLocation ($$, GetLocation ($3));
+	  }
+	| WHERE IDENTIFIER error
+	  {
+		Error_SyntaxError (yyToken);
+	  
+		var lt = (Tokenizer.LocatedToken) $2;
+		$$ = new Constraints (new SimpleMemberName (lt.Value, lt.Location), null, GetLocation ($1));
 	  }
 	; 
 
@@ -5079,10 +5099,10 @@ expression_statement
 		lbag.AddStatement ($$, GetLocation ($2));
 	  }
 	| statement_expression COMPLETE_COMPLETION { $$ = $1; }
-	| statement_expression CLOSE_BRACE {
-        $$ = $1;
-		lbag.AddStatement ($$, GetLocation ($2));
-		report.Error (1525, "Unexpected symbol '}' after statement, expecting ';'");
+	| statement_expression CLOSE_BRACE
+	  {
+		$$ = $1;
+		report.Error (1002, GetLocation ($2), "; expected");
 		lexer.putback ('}');
 	  }
 	;

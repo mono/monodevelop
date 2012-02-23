@@ -32,7 +32,7 @@ namespace MonoDevelop.TextTemplating
 {
 	class MonoDevelopTemplatingHost : TemplateGenerator, IDisposable
 	{
-		RecyclableAppDomain.Handle domainHandle;
+		TemplatingAppDomainRecycler.Handle domainHandle;
 		
 		public override AppDomain ProvideTemplatingAppDomain (string content)
 		{

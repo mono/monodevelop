@@ -206,7 +206,7 @@ namespace MonoDevelop.Projects.Gui
 			dataList.AddRange (settings.CompletionData);
 			dataList.DefaultCompletionString = settings.DefaultCompletionString;
 			ListWindow.ClearHistory ();
-			CompletionListWindow listWindow = new CompletionListWindow {
+			CompletionListWindow listWindow = new CompletionListWindow (null) {
 				CompletionDataList = dataList,
 				CompletionWidget = new TestCompletionWidget (),
 				AutoSelect = settings.AutoSelect,

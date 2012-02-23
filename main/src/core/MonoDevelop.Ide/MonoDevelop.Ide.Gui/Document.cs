@@ -251,35 +251,48 @@ namespace MonoDevelop.Ide.Gui
 		
 		public virtual void Save ()
 		{
-			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
-				return;
-
-			if (!Window.ViewContent.IsFile) {
-				Window.ViewContent.Save ();
-				return;
-			}
-			
-			if (Window.ViewContent.ContentName == null) {
-				SaveAs ();
-			} else {
-				if (!FileService.RequestFileEdit (Window.ViewContent.ContentName))
-					MessageService.ShowMessage (GettextCatalog.GetString ("The file could not be saved. Write permission has not been granted."));
+			// suspend type service "check all file loop" since we have already a parsed document.
+			// Or at least one that updates "soon".
+			TypeSystemService.TrackFileChanges = false;
+			try {
+				if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
+					return;
+	
+				if (!Window.ViewContent.IsFile) {
+					Window.ViewContent.Save ();
+					return;
+				}
 				
-				FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
-
-				if (!File.Exists (Window.ViewContent.ContentName) || (File.GetAttributes(window.ViewContent.ContentName) & attr) != 0) {
+				if (Window.ViewContent.ContentName == null) {
 					SaveAs ();
 				} else {
-					string fileName = Window.ViewContent.ContentName;
-					// save backup first						
-					if((bool) PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
-						Window.ViewContent.Save (fileName + "~");
+					if (!FileService.RequestFileEdit (Window.ViewContent.ContentName))
+						MessageService.ShowMessage (GettextCatalog.GetString ("The file could not be saved. Write permission has not been granted."));
+					
+					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
+	
+					if (!File.Exists (Window.ViewContent.ContentName) || (File.GetAttributes (window.ViewContent.ContentName) & attr) != 0) {
+						SaveAs ();
+					} else {
+						string fileName = Window.ViewContent.ContentName;
+						// save backup first						
+						if ((bool)PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
+							Window.ViewContent.Save (fileName + "~");
+							FileService.NotifyFileChanged (fileName);
+						}
+						Window.ViewContent.Save (fileName);
 						FileService.NotifyFileChanged (fileName);
+						OnSaved (EventArgs.Empty);
 					}
-					Window.ViewContent.Save (fileName);
-					FileService.NotifyFileChanged (fileName);
-					OnSaved (EventArgs.Empty);
 				}
+			} finally {
+				// Set the file time of the current document after the file time of the written file, to prevent double file updates.
+				// Note that the parsed document may be overwritten by a background thread to a more recent one.
+				var doc = parsedDocument;
+				if (doc != null && doc.ParsedFile != null) {
+					doc.ParsedFile.LastWriteTime = DateTime.Now;
+				}
+				TypeSystemService.TrackFileChanges = true;
 			}
 		}
 		
@@ -328,13 +341,13 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			// detect preexisting file
-			if(File.Exists(filename)){
+			if (File.Exists (filename)) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", filename), AlertButton.OverwriteFile))
 					return;
 			}
 			
 			// save backup first
-			if((bool) PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
+			if ((bool)PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
 				if (tbuffer != null && encoding != null)
 					tbuffer.Save (filename + "~", encoding);
 				else
@@ -351,6 +364,7 @@ namespace MonoDevelop.Ide.Gui
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
 			OnSaved (EventArgs.Empty);
+			UpdateParseDocument ();
 		}
 		
 		public virtual bool IsBuildTarget
@@ -426,9 +440,6 @@ namespace MonoDevelop.Ide.Gui
 //			TypeSystemService.DomRegistered -= UpdateRegisteredDom;
 			CancelParseTimeout ();
 			ClearTasks ();
-			
-			if (parsedDocument != null)
-				parsedDocument.RemoveAnnotations ();
 			
 			string currentParseFile = FileName;
 			Project curentParseProject = Project;

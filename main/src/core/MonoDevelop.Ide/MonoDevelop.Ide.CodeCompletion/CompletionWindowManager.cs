@@ -86,14 +86,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			try {
 				if (wnd == null) {
-					wnd = new CompletionListWindow ();
+					wnd = new CompletionListWindow (ext);
 					wnd.WordCompleted += HandleWndWordCompleted;
 				}
 				try {
 					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext, closedDelegate)) {
 						if (list is IDisposable)
 							((IDisposable)list).Dispose ();
-						DestroyWindow ();
+						DestroyWindow (ext);
 						return false;
 					}
 					
@@ -121,11 +121,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static event EventHandler<CodeCompletionContextEventArgs> WordCompleted;
 		
 		
-		static void DestroyWindow ()
+		internal static void DestroyWindow (CompletionTextEditorExtension ext)
 		{
 			if (wnd != null) {
 				wnd.Destroy ();
-				ParameterInformationWindowManager.UpdateWindow (null, wnd.CompletionWidget);
+				ParameterInformationWindowManager.UpdateWindow (ext, wnd.CompletionWidget);
 				wnd = null;
 			}
 			OnWindowClosed (EventArgs.Empty);
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static void HideWindow ()
 		{
-			DestroyWindow ();
+			DestroyWindow (null);
 		}
 		
 		

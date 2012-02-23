@@ -35,9 +35,46 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
+	class BaseTypeNodeBuilder : AssemblyBrowserTypeNodeBuilder
+	{
+		public override Type NodeDataType {
+			get { return typeof(ITypeReference); }
+		}
+		
+		public BaseTypeNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
+		{
+		}
+		
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		{
+			var reference = dataObject as ITypeReference;
+			return reference.ToString ();
+		}
+
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		{
+			var reference = dataObject as ITypeReference;
+			label = reference.ToString ();
+			icon = Context.GetIcon (Stock.Class);
+		}
+		
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
+		{
+			return false;
+		}
+		
+		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			var r1 = thisNode.DataItem as ITypeReference;
+			var r2 = thisNode.DataItem as ITypeReference;
+			return r1.ToString ().CompareTo (r2.ToString ());
+		}
+	}
+	
 	class BaseTypeFolderNodeBuilder : AssemblyBrowserTypeNodeBuilder
 	{
 		public override Type NodeDataType {
@@ -71,6 +108,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return true;
 		}
+		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
 			return -1;

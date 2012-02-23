@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System;
 using Mono.Cecil;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -51,6 +52,31 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
+		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			try {
+				if (thisNode == null || otherNode == null)
+					return -1;
+				var e1 = thisNode.DataItem as IUnresolvedEntity;
+				var e2 = otherNode.DataItem as IUnresolvedEntity;
+				Console.WriteLine (thisNode.DataItem + " --- " + otherNode.DataItem);
+				if (e1 == null && e2 == null)
+					return 0;
+				if (e1 == null)
+					return -1;
+				if (e2 == null)
+					return 1;
+				
+				if (e1.EntityType != e2.EntityType)
+					return e2.EntityType.CompareTo (e1.EntityType);
+				
+				return e1.Name.CompareTo (e2.Name);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception in assembly browser sort function.", e);
+				return -1;
+			}
+		}
+
 		public AssemblyBrowserTypeNodeBuilder (AssemblyBrowserWidget assemblyBrowserWidget)
 		{
 			this.Widget = assemblyBrowserWidget;

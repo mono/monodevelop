@@ -323,6 +323,7 @@
     <Compile Include="SimpleNameLookupMode.cs" />
     <Compile Include="Ast\DocumentationReference.cs" />
     <Compile Include="TypeSystem\CSharpDocumentationComment.cs" />
+    <Compile Include="Parser\mcs\SourceMethodBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

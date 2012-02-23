@@ -114,7 +114,7 @@ namespace MonoDevelop.SourceEditor
 			var skipChars = GetTextEditorData ().SkipChars;
 			for (int i = 0; i < skipChars.Count; i++) {
 				var sc = skipChars [i];
-				if (args.Offset < sc.Start || args.Offset > sc.Offset) {
+				if (args.Offset > sc.Offset) {
 					skipChars.RemoveAt (i);
 					i--;
 					continue;

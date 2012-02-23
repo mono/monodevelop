@@ -78,7 +78,7 @@ namespace MonoDevelop.TypeSystem
 				}
 			}
 			var newDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
-			return newDocument.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
+			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
 		}
 		
 		public static void AddNewMember (ITypeDefinition type, IUnresolvedTypeDefinition part, IUnresolvedMember newMember, bool implementExplicit = false)

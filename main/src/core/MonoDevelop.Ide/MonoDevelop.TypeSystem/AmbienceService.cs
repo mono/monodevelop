@@ -35,6 +35,7 @@ using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -103,6 +104,11 @@ namespace MonoDevelop.TypeSystem
 				set;
 			}
 			
+			public bool BoldHeadings {
+				get;
+				set;
+			}
+			
 			public bool SmallText {
 				get;
 				set;
@@ -113,9 +119,20 @@ namespace MonoDevelop.TypeSystem
 				set;
 			}
 			
+			
+			public DocumentationFormatOptions ()
+			{
+				BoldHeadings = true;
+			}
+			
 			public string FormatHeading (string heading)
 			{
-				return BigHeadings ? "<b><big>" + heading + "</big></b>" : "<b>" + heading + "</b>";
+				string result = heading;
+				if (BigHeadings)
+					result = "<big>" + result + "</big>";
+				if (BoldHeadings)
+					result = "<b>" + result + "</b>";
+				return result;
 			}
 			
 			public string FormatBody (string body)
@@ -133,7 +150,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (member == null || member.Documentation == null)
 				return null;
-			string documentation = member.Documentation.Xml;
+			string documentation = member.Documentation.Xml.Text;
 			
 			if (!string.IsNullOrEmpty (documentation)) {
 				int idx1 = documentation.IndexOf ("<summary>");
@@ -162,7 +179,7 @@ namespace MonoDevelop.TypeSystem
 
 		static bool IsEmptyDocumentation (string documentation)
 		{
-			return string.IsNullOrEmpty (documentation) || documentation.StartsWith ("To be added") || documentation == "we have not entered docs yet";
+			return string.IsNullOrWhiteSpace (documentation) || documentation.StartsWith ("To be added") || documentation == "we have not entered docs yet";
 		}
 		
 		public static string GetDocumentation (IEntity member)
@@ -170,7 +187,7 @@ namespace MonoDevelop.TypeSystem
 			if (member == null)
 				return null;
 			if (member.Documentation != null)
-				return CleanEmpty (member.Documentation.Xml);
+				return CleanEmpty (member.Documentation);
 			return null;
 		}
 		
@@ -316,57 +333,60 @@ namespace MonoDevelop.TypeSystem
 		static string ParseBody (XmlTextReader xml, string endTagName, DocumentationFormatOptions options)
 		{
 			StringBuilder result = new StringBuilder (); 
+			bool wasWhiteSpace = true;
+			
 			while (xml.Read ()) {
 				switch (xml.NodeType) {
 				case XmlNodeType.EndElement:
 					if (xml.Name == endTagName) 
-						return result.ToString ();
+						goto end;
 					break;
 				case XmlNodeType.Element:
 					switch (xml.Name.ToLower ()) {
-						case "para":
-							result.AppendLine (ParseBody (xml, xml.Name, options));
-							break;
-						case "see":
+					case "para":
+						result.AppendLine (ParseBody (xml, xml.Name, options));
+						break;
+					case "see":
+						if (!wasWhiteSpace) {
 							result.Append (' ');
-							result.Append ("<i>");
-							string name = (GetCref (xml["cref"]) + xml["langword"]).Trim ();
-							if (options.Ambience != null)
-								name = options.Ambience.GetIntrinsicTypeName (name);
-							result.Append (EscapeText (name));
-							result.Append ("</i>");
-							break;
-						case "paramref":
+							wasWhiteSpace = true;
+						}
+						result.Append ("<i>");
+						string name = (GetCref (xml ["cref"]) + xml ["langword"]).Trim ();
+						if (options.Ambience != null)
+							name = options.Ambience.GetIntrinsicTypeName (name);
+						result.Append (EscapeText (name));
+						result.Append ("</i>");
+						break;
+					case "paramref":
+						if (!wasWhiteSpace) {
 							result.Append (' ');
-							result.Append ("<i>");
-							result.Append (EscapeText (xml["name"].Trim ()));
-							result.Append ("</i>");
-							break;
+							wasWhiteSpace = true;
+						}
+						result.Append ("<i>");
+						result.Append (EscapeText (xml ["name"].Trim ()));
+						result.Append ("</i>");
+						break;
 					}
 					break;
 				case XmlNodeType.Text:
-					StringBuilder textBuilder = new StringBuilder ();
-					bool wasWhiteSpace = true;
 					if (IsEmptyDocumentation (xml.Value))
 						break;
 					foreach (char ch in xml.Value) {
-						if (Char.IsWhiteSpace (ch)) {
-							if (!wasWhiteSpace)
-								textBuilder.Append (' ');
-							wasWhiteSpace = true;
+						if (Char.IsWhiteSpace (ch) || ch == '\n' || ch == '\r') {
+							if (!wasWhiteSpace) {
+								result.Append (' ');
+								wasWhiteSpace = true;
+							}
 							continue;
 						}
 						wasWhiteSpace = false;
-						textBuilder.Append (ch);
+						result.Append (EscapeText (ch.ToString ()));
 					}
-					string text = BreakLines (EscapeText (textBuilder.ToString ()), options.MaxLineLength);
-					text = text.Trim ();
-					if (text.Length > 0 && char.IsLetter (text[0]))
-						result.Append (" ");
-					result.Append (text.Trim ());
 					break;
 				}
 			}
+		end:
 			return result.ToString ();
 		}
 		
@@ -377,12 +397,11 @@ namespace MonoDevelop.TypeSystem
 			System.IO.StringReader reader = new System.IO.StringReader ("<docroot>" + doc + "</docroot>");
 			XmlTextReader xml = new XmlTextReader (reader);
 			StringBuilder ret = new StringBuilder (70);
-			StringBuilder parameters = new StringBuilder ();
+			StringBuilder parameterBuilder = new StringBuilder ();
 			StringBuilder exceptions = new StringBuilder ();
-			parameters.AppendLine (options.FormatHeading ("Parameters:"));
 			
-			exceptions.AppendLine (options.FormatHeading ("Exceptions:"));
-	//		ret.Append ("<small>");
+			exceptions.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Exceptions:")));
+			//		ret.Append ("<small>");
 			int paramCount = 0, exceptionCount = 0, summaryEnd = -1;
 			try {
 				xml.Read ();
@@ -395,14 +414,17 @@ namespace MonoDevelop.TypeSystem
 								summaryEnd = ret.Length;
 							break;
 						case "summary":
-//							ret.AppendLine (GetHeading ("Summary:", options));
-							ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
-							if (summaryEnd < 0)
-								summaryEnd = ret.Length;
+							var summary = options.FormatBody (ParseBody (xml, xml.Name, options));
+							if (!IsEmptyDocumentation (summary)) {
+								//							ret.AppendLine (GetHeading ("Summary:", options));
+								ret.Append (summary);
+								if (summaryEnd < 0)
+									summaryEnd = ret.Length;
+							}
 							break;
 						case "remarks":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
-								ret.AppendLine (options.FormatHeading ("Remarks:"));
+								ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Remarks:")));
 								ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
 								if (summaryEnd < 0)
 									summaryEnd = ret.Length;
@@ -420,7 +442,7 @@ namespace MonoDevelop.TypeSystem
 							if (options.SmallText)
 								exceptions.Append ("<small>");
 							exceptions.Append ("<b>");
-							exceptions.Append (EscapeText (GetCref (xml["cref"])));
+							exceptions.Append (EscapeText (GetCref (xml ["cref"])));
 							exceptions.Append (": ");
 							exceptions.Append ("</b>");
 							if (options.SmallText)
@@ -430,36 +452,40 @@ namespace MonoDevelop.TypeSystem
 							break;
 						case "returns":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
-								ret.AppendLine (options.FormatHeading ("Returns:"));
+								ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Returns:")));
 								ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
 							} else {
 								options.FormatBody (ParseBody (xml, xml.Name, options));
 							}
 							break;
 						case "param":
-							paramCount++;
-							string paramName = xml["name"].Trim ();
-							parameters.Append ("<i>");
-							if (options.HighlightParameter == paramName)
-								parameters.Append ("<b>");
-							if (options.SmallText)
-								parameters.Append ("<small>");
-							parameters.Append (EscapeText (paramName));
-							if (options.SmallText)
-								parameters.Append ("</small>");
-							if (options.HighlightParameter == paramName)
-								parameters.Append ("</b>");
-							parameters.Append (":</i> ");
-							parameters.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
+							string paramName = xml.GetAttribute ("name") != null ? xml ["name"].Trim (): "";
+								
+							var body = options.FormatBody (ParseBody (xml, xml.Name, options));
+							if (!IsEmptyDocumentation (body)) {
+								paramCount++;
+								parameterBuilder.Append ("<i>");
+								if (options.HighlightParameter == paramName)
+									parameterBuilder.Append ("<b>");
+								if (options.SmallText)
+									parameterBuilder.Append ("<small>");
+								parameterBuilder.Append (EscapeText (paramName));
+								if (options.SmallText)
+									parameterBuilder.Append ("</small>");
+								if (options.HighlightParameter == paramName)
+									parameterBuilder.Append ("</b>");
+								parameterBuilder.Append (":</i> ");
+								parameterBuilder.Append (body);
+							}
 							break;
 						case "value":
-							ret.AppendLine (options.FormatHeading ("Value:"));
+							ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Value:")));
 							ret.AppendLine (options.FormatBody (ParseBody (xml, xml.Name, options)));
 							break;
 						case "seealso":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
-								ret.Append (options.FormatHeading ("See also:"));
-								ret.Append (" " + EscapeText (GetCref (xml["cref"]) + xml["langword"]));
+								ret.Append (options.FormatHeading (GettextCatalog.GetString ("See also:")));
+								ret.Append (" " + EscapeText (GetCref (xml ["cref"]) + xml ["langword"]));
 							}
 							break;
 						}
@@ -470,7 +496,7 @@ namespace MonoDevelop.TypeSystem
 				MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
 				return EscapeText (doc);
 			}
-			if (IsEmptyDocumentation (ret.ToString ()))
+			if (IsEmptyDocumentation (ret.ToString ()) && IsEmptyDocumentation (parameterBuilder.ToString ()))
 				return null;
 			if (string.IsNullOrEmpty (options.HighlightParameter) && exceptionCount > 0)
 				ret.Append (exceptions.ToString ());
@@ -478,12 +504,19 @@ namespace MonoDevelop.TypeSystem
 			string result = ret.ToString ();
 			if (summaryEnd < 0)
 				summaryEnd = result.Length;
-			if (paramCount > 0)
-				result = result.Insert (summaryEnd, parameters.ToString ());
-		
+			if (paramCount > 0) {
+				var paramSb = new StringBuilder ();
+				if (result.Length > 0)
+					paramSb.AppendLine ();
+				paramSb.Append ("<small>");
+				paramSb.AppendLine (options.FormatHeading (GettextCatalog.GetPluralString ("Parameter:", "Parameters:", paramCount)));
+				paramSb.Append ("</small>");
+				paramSb.Append (parameterBuilder.ToString ());
+				result = result.Insert (summaryEnd, paramSb.ToString ());
+			}
 			result = result.Trim ();
-			if (result.EndsWith (Environment.NewLine +"</small>"))
-				result = result.Substring (0, result.Length - (Environment.NewLine +"</small>").Length) + "</small>";
+			if (result.EndsWith (Environment.NewLine + "</small>"))
+				result = result.Substring (0, result.Length - (Environment.NewLine + "</small>").Length) + "</small>";
 			return result;
 		}
 		#endregion

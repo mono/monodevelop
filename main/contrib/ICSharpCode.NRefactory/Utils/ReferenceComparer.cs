@@ -22,7 +22,7 @@ using System.Runtime.CompilerServices;
 
 namespace ICSharpCode.NRefactory.Utils
 {
-	sealed class ReferenceComparer : IEqualityComparer<object>
+	public sealed class ReferenceComparer : IEqualityComparer<object>
 	{
 		public readonly static ReferenceComparer Instance = new ReferenceComparer();
 		

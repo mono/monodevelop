@@ -72,7 +72,7 @@ namespace CBinding
 		}
 		
 		// Returns the number of methods
-		public int OverloadCount {
+		public int Count {
 			get { return functions.Count; }
 		}
 		
@@ -109,7 +109,7 @@ namespace CBinding
 		
 		// Returns the markup to use to represent the specified method overload
 		// in the parameter information window.
-		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			Function function = functions[overload];
 			string paramTxt = string.Join (", ", parameterMarkup);
@@ -128,8 +128,13 @@ namespace CBinding
 			return prename + "<b>" + function.Name + "</b>" + " (" + paramTxt + ")" + cons;
 		}
 		
+		public string GetDescription (int overload, int currentParameter)
+		{
+			return "";
+		}
+		
 		// Returns the text to use to represent the specified parameter
-		public string GetParameterMarkup (int overload, int paramIndex)
+		public string GetParameterDescription (int overload, int paramIndex)
 		{
 			Function function = functions[overload];
 			

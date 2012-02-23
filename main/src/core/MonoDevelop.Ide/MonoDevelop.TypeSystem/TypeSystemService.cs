@@ -233,7 +233,7 @@ namespace MonoDevelop.TypeSystem
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
-				return new ParsedDocument (fileName) { Flags = ParsedDocumentFlags.NonSerializable };
+				return null;
 			}
 		}
 		
@@ -266,7 +266,7 @@ namespace MonoDevelop.TypeSystem
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
-				return new ParsedDocument (fileName) { Flags = ParsedDocumentFlags.NonSerializable };
+				return null;
 			}
 		}
 		
@@ -1146,16 +1146,6 @@ namespace MonoDevelop.TypeSystem
 				
 				var loader = new CecilLoader ();
 				FilePath xmlDocFile;
-				if (GetXml (fileName, null, out xmlDocFile)) {
-					try {
-						loader.DocumentationProvider = new ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider (xmlDocFile);
-					} catch (Exception ex) {
-						LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
-					} 
-				} else {
-					if (!MonoDevelop.Core.Platform.IsWindows)
-						loader.DocumentationProvider = new MonoDocDocumentationProvider ();
-				}
 				
 				var assembly = loader.LoadAssembly (asm);
 				assembly.Location = fileName;
@@ -1164,6 +1154,46 @@ namespace MonoDevelop.TypeSystem
 					SerializeObject (assemblyPath, assembly);
 				return assembly;
 			}
+		}
+		
+		[Serializable]
+		class CombinedDocumentationProvider : IDocumentationProvider
+		{
+			string fileName;
+			
+			[NonSerialized]
+			IDocumentationProvider baseProvider = null;
+
+			public IDocumentationProvider BaseProvider {
+				get {
+					if (baseProvider == null) {
+						FilePath xmlDocFile;
+						if (GetXml (fileName, null, out xmlDocFile)) {
+							try {
+								baseProvider = new ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider (xmlDocFile);
+							} catch (Exception ex) {
+								LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
+							} 
+						}
+						if (baseProvider == null)
+							baseProvider = new MonoDocDocumentationProvider ();
+					}
+					return baseProvider;
+				}
+			}
+			
+			public CombinedDocumentationProvider (string fileName)
+			{
+				this.fileName = fileName;
+			}
+
+			#region IDocumentationProvider implementation
+			public DocumentationComment GetDocumentation (IEntity entity)
+			{
+				var provider = BaseProvider;
+				return provider != null ? provider.GetDocumentation (entity) : null;
+			}
+			#endregion
 		}
 		
 		static AssemblyContext LoadAssemblyContext (string fileName)
@@ -1214,14 +1244,7 @@ namespace MonoDevelop.TypeSystem
 			var mscorlibAsm = loc != fileName ? ReadAssembly (loc) : asm;
 			
 			var loader = new CecilLoader ();
-			FilePath xmlDocFile;
-			if (GetXml (fileName, runtime, out xmlDocFile)) {
-				try {
-					loader.DocumentationProvider = new ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider (xmlDocFile);
-				} catch (Exception ex) {
-					LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
-				}
-			}
+			loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
 			
 			var unresolvedAssembly = loader.LoadAssembly (asm);
 			var corLibLoader = new CecilLoader ();

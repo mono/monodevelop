@@ -53,6 +53,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		}
 		
 		/// <summary>
+		/// Gets/Sets whether to ignore XML documentation.
+		/// The default value is false.
+		/// </summary>
+		public bool SkipXmlDocumentation { get; set; }
+		
+		/// <summary>
 		/// Creates a new TypeSystemConvertVisitor.
 		/// </summary>
 		/// <param name="fileName">The file name (used for DomRegions).</param>
@@ -1117,6 +1123,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		#region XML Documentation
 		void AddXmlDocumentation(IUnresolvedEntity entity, AstNode entityDeclaration)
 		{
+			if (this.SkipXmlDocumentation)
+				return;
 			List<string> documentation = null;
 			for (AstNode node = entityDeclaration.PrevSibling; node != null && node.NodeType == NodeType.Whitespace; node = node.PrevSibling) {
 				Comment c = node as Comment;

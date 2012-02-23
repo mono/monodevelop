@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
@@ -111,9 +112,25 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		FindInFilesDialog (bool showReplace, string directory) : this (showReplace)
 		{
-			comboboxScope.Active = (int) SearchScope.Directories;
+			comboboxScope.Active = (int)SearchScope.Directories;
 			comboboxentryPath.Entry.Text = directory;
 			writeScope = false;
+		}
+		
+		public static string FormatPatternToSelectionOption (string pattern, bool regex)
+		{
+			if (pattern == null)
+				return null;
+			if (regex) {
+				var sb = new StringBuilder ();
+				foreach (var ch in pattern) {
+					if (!char.IsLetterOrDigit (ch))
+						sb.Append ('\\');
+					sb.Append (ch);
+				}
+				return sb.ToString ();
+			}
+			return pattern;
 		}
 
 		FindInFilesDialog (bool showReplace)
@@ -170,7 +187,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				var view = IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer> ();
 				if (view != null) {
-					string selectedText = view.SelectedText;
+					string selectedText = FormatPatternToSelectionOption (view.SelectedText, properties.Get ("RegexSearch", false));
 					if (!string.IsNullOrEmpty (selectedText)) {
 						if (selectedText.Any (c => c == '\n' || c == '\r')) {
 //							comboboxScope.Active = ScopeSelection; 

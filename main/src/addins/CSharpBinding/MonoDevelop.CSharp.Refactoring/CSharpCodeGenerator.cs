@@ -720,7 +720,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
 		{
 			var parsedDocument = doc.ParsedDocument;
-			var unit = parsedDocument.Annotation<CompilationUnit> ();
+			var unit = parsedDocument.GetAst<CompilationUnit> ();
 			if (unit == null)
 				return;
 			
@@ -769,7 +769,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation)
 		{
 			var parsedDocument = doc.ParsedDocument;
-			var unit = parsedDocument.Annotation<CompilationUnit> ();
+			var unit = parsedDocument.GetAst<CompilationUnit> ();
 			if (unit == null)
 				return;
 			
@@ -829,7 +829,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)
 		{
-			var shortType = CreateShortType (doc.Compilation, doc.ParsedDocument.Annotation<CSharpParsedFile> (), doc.Editor.Caret.Location, type);
+			var shortType = CreateShortType (doc.Compilation, doc.ParsedDocument.ParsedFile as CSharpParsedFile, doc.Editor.Caret.Location, type);
 			return OutputNode (doc, shortType);
 		}
 		

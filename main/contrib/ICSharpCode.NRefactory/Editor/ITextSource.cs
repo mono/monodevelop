@@ -94,6 +94,15 @@ namespace ICSharpCode.NRefactory.Editor
 		string GetText(ISegment segment);
 		
 		/// <summary>
+		/// Gets the index of the first occurrence of the character in the specified array.
+		/// </summary>
+		/// <param name="c">Character to search for</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The first index where the character was found; or -1 if no occurrence was found.</returns>
+		int IndexOf(char c, int startIndex, int count);
+		
+		/// <summary>
 		/// Gets the index of the first occurrence of any character in the specified array.
 		/// </summary>
 		/// <param name="anyOf">Characters to search for</param>
@@ -111,6 +120,17 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <param name="comparisonType">String comparison to use.</param>
 		/// <returns>The first index where the search term was found; or -1 if no occurrence was found.</returns>
 		int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType);
+		
+		/// <summary>
+		/// Gets the index of the last occurrence of the specified character in this text source.
+		/// </summary>
+		/// <param name="c">The search character</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The last index where the search term was found; or -1 if no occurrence was found.</returns>
+		/// <remarks>The search proceeds backwards from (startIndex+count) to startIndex.
+		/// This is different than the meaning of the parameters on string.LastIndexOf!</remarks>
+		int LastIndexOf(char c, int startIndex, int count);
 		
 		/// <summary>
 		/// Gets the index of the last occurrence of the specified search text in this text source.

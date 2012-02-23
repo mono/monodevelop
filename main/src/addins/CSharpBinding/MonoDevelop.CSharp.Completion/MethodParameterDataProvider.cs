@@ -210,7 +210,7 @@ namespace MonoDevelop.CSharp.Completion
 			return ambience.GetString (method.ReturnType, flags) + " ";
 		}
 		
-		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
 			if (staticResolve)
@@ -218,7 +218,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			var m = methods [overload];
 			
-			string name =  m.EntityType == EntityType.Constructor || m.EntityType == EntityType.Destructor ? m.DeclaringType.Name : m.Name;
+			string name = m.EntityType == EntityType.Constructor || m.EntityType == EntityType.Destructor ? m.DeclaringType.Name : m.Name;
 			var parameters = new StringBuilder ();
 			int curLen = 0;
 			string prefix = GetPrefix (m);
@@ -230,11 +230,6 @@ namespace MonoDevelop.CSharp.Completion
 				Pango.AttrList attrs;
 				char ch;
 				Pango.Global.ParseMarkup (parameter, '_', out attrs, out text, out ch);
-				if (curLen > 80) {
-					parameters.AppendLine ();
-					parameters.Append (new string (' ', (prefix != null ? prefix.Length : 0) + name.Length + 4));
-					curLen = 0;
-				}
 				if (text != null)
 					curLen += text.Length + 2;
 				parameters.Append (parameter);
@@ -249,20 +244,33 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (parameters.ToString ());
 			sb.Append (")");
 			
+			return sb.ToString ();
+		}
+		
+		public string GetDescription (int overload, int currentParameter)
+		{
+			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
+			if (staticResolve)
+				flags |= OutputFlags.StaticUsage;
+			
+			var m = methods [overload];
+			
+			var sb = new StringBuilder ();
+	
+			
 			if (m.IsObsolete ()) {
 				sb.AppendLine ();
 				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 			}
 			
 			var curParameter = currentParameter >= 0 && currentParameter < m.Parameters.Count ? m.Parameters [currentParameter] : null;
-			
 			string docText = AmbienceService.GetDocumentation (methods [overload]);
-			
 			if (!string.IsNullOrEmpty (docText)) {
 				string text = docText;
 				if (curParameter != null) {
 					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
 					Match match = paramRegex.Match (docText);
+					
 					if (match.Success) {
 						text = match.Groups [1].Value;
 						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>" + text;
@@ -270,21 +278,24 @@ namespace MonoDevelop.CSharp.Completion
 				} else {
 					text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>";
 				}
-				sb.AppendLine ();
 				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
 					HighlightParameter = curParameter != null ? curParameter.Name : null,
 					Ambience = ambience,
-					SmallText = true
+					SmallText = true,
+					BoldHeadings = false
 				}));
 			}
 			
 			if (curParameter != null) {
 				var returnType = curParameter.Type;
 				if (returnType.Kind == TypeKind.Delegate) {
-					sb.AppendLine ();
-					sb.AppendLine ();
+					Console.WriteLine (sb.ToString());
+					if (sb.Length > 0) {
+						sb.AppendLine ();
+						sb.AppendLine ();
+					}
 					sb.Append ("<small>");
-					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
+					sb.AppendLine (GettextCatalog.GetString ("Delegate information:"));
 					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
 					sb.Append ("</small>");
 				}
@@ -292,7 +303,7 @@ namespace MonoDevelop.CSharp.Completion
 			return sb.ToString ();
 		}
 		
-		public string GetParameterMarkup (int overload, int paramIndex)
+		public string GetParameterDescription (int overload, int paramIndex)
 		{
 			IMethod method = methods[overload];
 			
@@ -304,7 +315,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public int GetParameterCount (int overload)
 		{
-			if (overload >= OverloadCount)
+			if (overload >= Count)
 				return -1;
 			IMethod method = methods[overload];
 			return method != null && method.Parameters != null ? method.Parameters.Count : 0;
@@ -312,13 +323,13 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public bool AllowParameterList (int overload)
 		{
-			if (overload >= OverloadCount)
+			if (overload >= Count)
 				return false;
 			var lastParam = methods[overload].Parameters.LastOrDefault ();
 			return lastParam != null && lastParam.IsParams;
 		}
 		
-		public int OverloadCount {
+		public int Count {
 			get {
 				return methods != null ? methods.Count : 0;
 			}

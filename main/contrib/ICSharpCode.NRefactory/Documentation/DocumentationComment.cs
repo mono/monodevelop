@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Documentation
@@ -26,14 +27,29 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// </summary>
 	public class DocumentationComment
 	{
-		string xml;
+		ITextSource xml;
 		protected readonly ITypeResolveContext context;
 		
 		/// <summary>
 		/// Gets the XML code for this documentation comment.
 		/// </summary>
-		public string Xml {
+		public ITextSource Xml {
 			get { return xml; }
+		}
+		
+		/// <summary>
+		/// Creates a new DocumentationComment.
+		/// </summary>
+		/// <param name="xml">The XML text.</param>
+		/// <param name="context">Context for resolving cref attributes.</param>
+		public DocumentationComment(ITextSource xml, ITypeResolveContext context)
+		{
+			if (xml == null)
+				throw new ArgumentNullException("xml");
+			if (context == null)
+				throw new ArgumentNullException("context");
+			this.xml = xml;
+			this.context = context;
 		}
 		
 		/// <summary>
@@ -47,7 +63,7 @@ namespace ICSharpCode.NRefactory.Documentation
 				throw new ArgumentNullException("xml");
 			if (context == null)
 				throw new ArgumentNullException("context");
-			this.xml = xml;
+			this.xml = new StringTextSource(xml);
 			this.context = context;
 		}
 		
@@ -64,10 +80,15 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 		}
 		
+		public override string ToString ()
+		{
+			return Xml.Text;
+		}
+		
 		public static implicit operator string (DocumentationComment cmt)
 		{
 			if (cmt != null)
-				return cmt.Xml;
+				return cmt.ToString ();
 			return null;
 		}
 	}

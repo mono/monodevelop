@@ -956,8 +956,14 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void CreateBranch (string name, string trackSource)
 		{
-			ObjectId headId = repo.Resolve (Constants.HEAD);
-			RefUpdate updateRef = repo.UpdateRef ("refs/heads/" + name);
+			// If the user did not specify a branch to base the new local
+			// branch off, assume they want to create the new branch based
+			// on the current HEAD.
+			if (string.IsNullOrEmpty (trackSource))
+				trackSource = Constants.HEAD;
+
+			ObjectId headId = repo.Resolve (trackSource);
+			RefUpdate updateRef = repo.UpdateRef (Constants.R_HEADS + name);
 			updateRef.SetNewObjectId(headId);
 			updateRef.Update();
 			GitUtil.SetUpstreamSource (repo, name, trackSource);

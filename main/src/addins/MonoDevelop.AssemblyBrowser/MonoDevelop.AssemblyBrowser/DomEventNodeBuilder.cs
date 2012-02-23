@@ -69,13 +69,6 @@ namespace MonoDevelop.AssemblyBrowser
 			icon = ImageService.GetPixbuf (evt.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			if (otherNode.DataItem is IUnresolvedEvent)
-				return ((IUnresolvedEvent)thisNode.DataItem).Name.CompareTo (((IUnresolvedEvent)otherNode.DataItem).Name);
-			return 1;
-		}
-		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			var evt = (IUnresolvedEvent)dataObject;

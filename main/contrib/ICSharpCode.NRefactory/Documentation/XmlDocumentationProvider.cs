@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -307,7 +308,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		{
 			string xmlDoc = GetDocumentation(IDStringProvider.GetIDString(entity));
 			if (xmlDoc != null) {
-				return new DocumentationComment(xmlDoc, new SimpleTypeResolveContext(entity));
+				return new DocumentationComment(new StringTextSource(xmlDoc), new SimpleTypeResolveContext(entity));
 			} else {
 				return null;
 			}

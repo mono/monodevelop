@@ -71,11 +71,11 @@ namespace MonoDevelop.CSharp.Completion
 			return ambience.GetString (method.ReturnType, flags) + " ";
 		}
 		
-		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			var result = new StringBuilder ();
 			result.Append ("<b>");
-			result.Append (ambience.GetString (types[overload], OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
+			result.Append (ambience.GetString (types [overload], OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
 			result.Append ("</b>");
 			result.Append ("&lt;");
 			int parameterCount = 0;
@@ -90,7 +90,12 @@ namespace MonoDevelop.CSharp.Completion
 			return result.ToString ();
 		}
 		
-		public string GetParameterMarkup (int overload, int paramIndex)
+		public string GetDescription (int overload, int currentParameter)
+		{
+			return "";
+		}
+		
+		public string GetParameterDescription (int overload, int paramIndex)
 		{
 			var type = types[overload];
 			
@@ -102,7 +107,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public int GetParameterCount (int overload)
 		{
-			if (overload >= OverloadCount)
+			if (overload >= Count)
 				return -1;
 			var type = types[overload];
 			return type != null ? type.TypeParameterCount : 0;
@@ -113,7 +118,7 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 
-		public int OverloadCount {
+		public int Count {
 			get {
 				return types != null ? types.Count : 0;
 			}

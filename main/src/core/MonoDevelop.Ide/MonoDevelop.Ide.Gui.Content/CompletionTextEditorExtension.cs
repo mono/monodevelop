@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		protected void OnCompletionContextChanged (object o, EventArgs a)
 		{
 			if (autoHideCompletionWindow) {
-				CompletionWindowManager.HideWindow ();
+				CompletionWindowManager.DestroyWindow (this);
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 			}
 		}

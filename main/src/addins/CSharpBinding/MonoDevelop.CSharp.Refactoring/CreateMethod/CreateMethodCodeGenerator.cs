@@ -185,7 +185,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var data = options.GetTextEditorData ();
 			if (data.Document.MimeType != CSharpFormatter.MimeType)
 				return false;
-			var unit = options.Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			
 			if (!AnalyzeTargetExpression (options, unit))
 				return false;

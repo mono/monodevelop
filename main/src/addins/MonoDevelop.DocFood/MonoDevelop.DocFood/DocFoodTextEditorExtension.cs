@@ -110,7 +110,7 @@ namespace MonoDevelop.DocFood
 		{
 			var parsedDocument = Document.UpdateParseDocument ();
 			
-			var type = parsedDocument.GetInnermostTypeDefinition (textEditorData.Caret.Line, textEditorData.Caret.Column);
+			var type = parsedDocument.GetInnermostTypeDefinition (textEditorData.Caret.Location);
 			if (type == null) {
 				foreach (var t in parsedDocument.TopLevelTypeDefinitions) {
 					if (t.Region.BeginLine > textEditorData.Caret.Line) {

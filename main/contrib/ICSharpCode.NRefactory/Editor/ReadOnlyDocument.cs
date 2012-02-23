@@ -355,6 +355,12 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 		
 		/// <inheritdoc/>
+		public int IndexOf(char c, int startIndex, int count)
+		{
+			return textSource.IndexOf(c, startIndex, count);
+		}
+		
+		/// <inheritdoc/>
 		public int IndexOfAny(char[] anyOf, int startIndex, int count)
 		{
 			return textSource.IndexOfAny(anyOf, startIndex, count);
@@ -364,6 +370,12 @@ namespace ICSharpCode.NRefactory.Editor
 		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
 			return textSource.IndexOf(searchText, startIndex, count, comparisonType);
+		}
+		
+		/// <inheritdoc/>
+		public int LastIndexOf(char c, int startIndex, int count)
+		{
+			return textSource.LastIndexOf(c, startIndex, count);
 		}
 		
 		/// <inheritdoc/>

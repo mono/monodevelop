@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Linq;
@@ -215,9 +216,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				var context = unresolvedTypeDef.CreateResolveContext(new SimpleTypeResolveContext(resolvedTypeDef));
 				if (resolvedEntity is IMember)
 					context = context.WithCurrentMember((IMember)resolvedEntity);
-				return new CSharpDocumentationComment(xmlDoc, context);
+				return new CSharpDocumentationComment(new StringTextSource(xmlDoc), context);
 			} else {
-				return new DocumentationComment(xmlDoc, new SimpleTypeResolveContext(resolvedEntity));
+				return new DocumentationComment(new StringTextSource(xmlDoc), new SimpleTypeResolveContext(resolvedEntity));
 			}
 		}
 	}

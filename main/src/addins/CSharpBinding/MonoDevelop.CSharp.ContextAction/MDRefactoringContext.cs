@@ -219,7 +219,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void Perform (Script script)
 			{
 				ctx.Document.UpdateParseDocument ();
-				ctx.Unit = ctx.Document.ParsedDocument.Annotation<CompilationUnit> ();
+				ctx.Unit = ctx.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			
 				var node = Callback (ctx);
 				if (node != null)
@@ -324,7 +324,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
 			{
 				var editor = ctx.Document.Editor;
-				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedDocument.GetInnermostTypeDefinition (ctx.Location.Line, ctx.Location.Column)));
+				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (ctx.Document, ctx.Document.ParsedDocument.GetInnermostTypeDefinition (ctx.Location)));
 				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
@@ -383,8 +383,8 @@ namespace MonoDevelop.CSharp.ContextAction
 			this.Document = document;
 			this.Compilation = document.Compilation;
 			this.Location = new TextLocation (loc.Line, loc.Column);
-			this.Unit = document.ParsedDocument.Annotation<CompilationUnit> ();
-			this.CSharpParsedFile = document.ParsedDocument.Annotation<CSharpParsedFile> ();
+			this.Unit = document.ParsedDocument.GetAst<CompilationUnit> ();
+			this.CSharpParsedFile = document.ParsedDocument.ParsedFile as CSharpParsedFile;
 		}
 		
 		public override AstType CreateShortType (IType fullType)
@@ -416,7 +416,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		public override ResolveResult Resolve (AstNode node)
 		{
 			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
-			var cu = Document.ParsedDocument.Annotation<CompilationUnit> ();
+			var cu = Document.ParsedDocument.GetAst<CompilationUnit> ();
 			
 			var resolver = new CSharpAstResolver (Document.Compilation, cu, parsedFile);
 			return resolver.Resolve (node);

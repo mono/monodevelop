@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Text;
 using ICSharpCode.NRefactory.Completion;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -55,6 +56,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		ListWidget list;
 		Widget footer;
 		VBox vbox;
+		
+		protected CompletionTextEditorExtension Ext { get; set; }
 		
 		public List<int> FilteredItems {
 			get {

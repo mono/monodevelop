@@ -123,7 +123,7 @@ namespace MonoDevelop.Refactoring
 			initialized = true;
 			if (string.IsNullOrEmpty (type.Namespace)) 
 				return;
-			var result = cache.GetResult (unit, type, doc);
+			var result = cache.GetResult (unit.ParsedFile, type, doc);
 			generateUsing = result.GenerateUsing;
 			insertNamespace = result.InsertNamespace;
 		}
