@@ -148,7 +148,7 @@ namespace MonoDevelop.CSharp.Refactoring.ReorderParameters
 					
 					if (doc != null) {
 						editor = doc.Editor;
-						unit = doc.ParsedDocument.Annotation<CompilationUnit> ();
+						unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
 					} else if (cachedEditors.TryGetValue (filename, out editor)) {
 						unit = cachedUnits [filename];
 					} else {
