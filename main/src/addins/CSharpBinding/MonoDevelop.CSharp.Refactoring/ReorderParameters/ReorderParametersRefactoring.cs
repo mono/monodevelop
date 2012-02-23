@@ -38,6 +38,7 @@ using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Ide.ProgressMonitoring;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
@@ -134,52 +135,54 @@ namespace MonoDevelop.CSharp.Refactoring.ReorderParameters
 			var cachedUnits = new Dictionary<string, CompilationUnit> ();
 			
 			try {
-				var references = ReferenceFinder.FindReferences (method);
-				foreach (var methodRef in references) {
-					//filter overloads
-					if (methodRef.Entity != method)
-						continue;
-					
-					TextEditorData editor;
-					CompilationUnit unit;
-					
-					var filename = methodRef.FileName;
-					var doc = IdeApp.Workbench.GetDocument (filename);
-					
-					if (doc != null) {
-						editor = doc.Editor;
-						unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
-					} else if (cachedEditors.TryGetValue (filename, out editor)) {
-						unit = cachedUnits [filename];
-					} else {
-						editor = new TextEditorData ();
-						editor.Document.FileName = filename;
-						editor.Text = File.ReadAllText (filename);
+				using (var monitor = new MessageDialogProgressMonitor (true, false, false, true)) {
+					var references = ReferenceFinder.FindReferences (method, monitor);
+					foreach (var methodRef in references) {
+						//filter overloads
+						if (methodRef.Entity != method)
+							continue;
 						
-						unit = new CSharpParser ().Parse (editor);
-						if (unit == null) {
-							editor.Dispose ();
+						TextEditorData editor;
+						CompilationUnit unit;
+						
+						var filename = methodRef.FileName;
+						var doc = IdeApp.Workbench.GetDocument (filename);
+						
+						if (doc != null) {
+							editor = doc.Editor;
+							unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
+						} else if (cachedEditors.TryGetValue (filename, out editor)) {
+							unit = cachedUnits [filename];
+						} else {
+							editor = new TextEditorData ();
+							editor.Document.FileName = filename;
+							editor.Text = File.ReadAllText (filename);
+							
+							unit = new CSharpParser ().Parse (editor);
+							if (unit == null) {
+								editor.Dispose ();
+								continue;
+							}
+							cachedEditors [filename] = editor;
+							cachedUnits [filename] = unit;
+						}
+						
+						var node = unit.GetNodeAt (methodRef.Region.Begin);
+						node = node.Parent;
+						if (node is MethodDeclaration) {
+							ReorderParameters (result, reorderProperties, 
+							                   ((MethodDeclaration)node).Parameters.ToList<AstNode> (), 
+							                   editor);
 							continue;
 						}
-						cachedEditors [filename] = editor;
-						cachedUnits [filename] = unit;
+						
+						while (node != null && !(node is InvocationExpression))
+							node = node.Parent;
+						if (node != null)
+							ReorderParameters (result, reorderProperties, 
+							                   ((InvocationExpression)node).Arguments.ToList<AstNode> (), 
+							                   editor);
 					}
-					
-					var node = unit.GetNodeAt (methodRef.Region.Begin);
-					node = node.Parent;
-					if (node is MethodDeclaration) {
-						ReorderParameters (result, reorderProperties, 
-						                   ((MethodDeclaration)node).Parameters.ToList<AstNode> (), 
-						                   editor);
-						continue;
-					}
-					
-					while (node != null && !(node is InvocationExpression))
-						node = node.Parent;
-					if (node != null)
-						ReorderParameters (result, reorderProperties, 
-						                   ((InvocationExpression)node).Arguments.ToList<AstNode> (), 
-						                   editor);
 				}
 			} finally {
 				foreach (var editor in cachedEditors.Values)
