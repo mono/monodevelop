@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			int endOffset = segment.EndOffset;
 			for (int i = segment.Offset; i < endOffset; i++) {
-				if (!IsSpacing(document.GetCharAt(i)))
+				if (!IsSpacing (document.GetCharAt (i)))
 					return false;
 			}
 			return true;
@@ -996,7 +996,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				}
 			}
-			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."));
+			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}, removedText={3}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."), removedChars > 0 ? document.GetText (offset, removedChars).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", ".") : "null");
 			//Console.WriteLine (Environment.StackTrace);
 			
 			changes.Add (factory.CreateTextReplaceAction (offset, removedChars, insertedText));
@@ -1211,7 +1211,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixEmbeddedStatment (policy.StatementBraceStyle, BraceForcement.DoNotChange, tryCatchStatement.FinallyBlock);
 			}
 			
-			return VisitChildren (tryCatchStatement, data);
+			return null;
 		}
 
 		public override object VisitCatchClause (CatchClause catchClause, object data)
@@ -1569,7 +1569,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (offset < endOffset) {
 				AddChange (offset, endOffset - offset, null);
 			}
-		}	
+		}
 
 		void PlaceOnNewLine (bool newLine, AstNode keywordNode)
 		{
@@ -1642,18 +1642,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		string GetIndentation(int lineNumber)
+		string GetIndentation (int lineNumber)
 		{
-			IDocumentLine line = document.GetLineByNumber(lineNumber);
-			StringBuilder b = new StringBuilder();
+			IDocumentLine line = document.GetLineByNumber (lineNumber);
+			StringBuilder b = new StringBuilder ();
 			int endOffset = line.EndOffset;
 			for (int i = line.Offset; i < endOffset; i++) {
-				char c = document.GetCharAt(i);
-				if (!IsSpacing(c))
+				char c = document.GetCharAt (i);
+				if (!IsSpacing (c))
 					break;
-				b.Append(c);
+				b.Append (c);
 			}
-			return b.ToString();
+			return b.ToString ();
 		}
 	}
 }
