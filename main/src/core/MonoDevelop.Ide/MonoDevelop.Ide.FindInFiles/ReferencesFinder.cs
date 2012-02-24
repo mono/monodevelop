@@ -237,12 +237,16 @@ namespace MonoDevelop.Ide.FindInFiles
 				return new IEntity[] { member };
 			
 			// For renaming interface members search for all methods implementing the interface method.
+			// also search for overrides of the method
 			var declaringType = member.DeclaringType.GetDefinition ();
 			var methods = new List<IMethod> (declaringType.GetMethods (m => m.Name == member.Name));
 			var result = new List<IEntity> (methods);
-			if (declaringType.Kind == TypeKind.Interface) {
+			if (declaringType.Kind == TypeKind.Interface || (member.IsOverridable && declaringType.Kind == TypeKind.Class)) {
 				foreach (var p in solution.GetAllSolutionItems<Project> ()) {
 					foreach (var type in TypeSystemService.GetCompilation (p).GetAllTypeDefinitions ()) {
+						//avoid possible exception in IsDerivedFrom
+						if (type.Compilation != declaringType.Compilation)
+							continue;
 						if (!type.IsDerivedFrom (declaringType)) 
 							continue;
 						if (type.ReflectionName == declaringType.ReflectionName)
