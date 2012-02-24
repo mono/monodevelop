@@ -88,8 +88,8 @@ namespace Mono.TextEditor.Highlighting
 
 		public virtual Chunk GetChunks (ColorSheme style, LineSegment line, int offset, int length)
 		{
-			SpanParser spanParser = CreateSpanParser (doc, this, line, null);
-			ChunkParser chunkParser = CreateChunkParser (spanParser, doc, style, this, line);
+			SpanParser spanParser = CreateSpanParser (line, null);
+			ChunkParser chunkParser = CreateChunkParser (spanParser, style, line);
 			Chunk result = chunkParser.GetChunks (chunkParser.lineOffset, line.EditableLength);
 			if (SemanticRules != null) {
 				foreach (SemanticRule sematicRule in SemanticRules) {
@@ -231,14 +231,14 @@ namespace Mono.TextEditor.Highlighting
 			return indentLength == int.MaxValue ? 0 : indentLength;
 		}
 
-		public virtual SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
+		public virtual SpanParser CreateSpanParser (LineSegment line, CloneableStack<Span> spanStack)
 		{
-			return new SpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
+			return new SpanParser (doc, this, spanStack ?? line.StartSpan.Clone ());
 		}
 
-		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, Document doc, ColorSheme style, SyntaxMode mode, LineSegment line)
+		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, ColorSheme style, LineSegment line)
 		{
-			return new ChunkParser (spanParser, doc, style, mode, line);
+			return new ChunkParser (doc, this, spanParser, style, line);
 		}
 
 		public class SpanParser
@@ -489,7 +489,7 @@ namespace Mono.TextEditor.Highlighting
 			internal int lineOffset;
 			protected SyntaxMode mode;
 
-			public ChunkParser (SpanParser spanParser, Document doc, ColorSheme style, SyntaxMode mode, LineSegment line)
+			public ChunkParser (Document doc, SyntaxMode mode, SpanParser spanParser, ColorSheme style, LineSegment line)
 			{
 				this.mode = mode;
 				this.doc = doc;

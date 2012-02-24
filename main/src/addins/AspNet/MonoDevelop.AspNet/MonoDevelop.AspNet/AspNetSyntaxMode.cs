@@ -55,9 +55,9 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
+		public override SpanParser CreateSpanParser (LineSegment line, CloneableStack<Span> spanStack)
 		{
-			return new ASPNetSpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
+			return new ASPNetSpanParser (doc, this, spanStack ?? line.StartSpan.Clone ());
 		}
 
 		protected class ASPNetSpanParser : SpanParser

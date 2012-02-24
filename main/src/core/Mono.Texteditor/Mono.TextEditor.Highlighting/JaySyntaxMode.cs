@@ -51,9 +51,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public override SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
+		public override SpanParser CreateSpanParser (LineSegment line, CloneableStack<Span> spanStack)
 		{
-			return new JaySpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
+			return new JaySpanParser (doc, this, spanStack ?? line.StartSpan.Clone ());
 		}
 		
 		class JayBlockSpan : Span

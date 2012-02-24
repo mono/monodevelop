@@ -117,14 +117,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
 		}
 		
-		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
+		public override SpanParser CreateSpanParser (LineSegment line, CloneableStack<Span> spanStack)
 		{
-			return new CSharpSpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
+			return new CSharpSpanParser (doc, this, spanStack ?? line.StartSpan.Clone ());
 		}
 		
-		public override ChunkParser CreateChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, ColorSheme style, SyntaxMode mode, LineSegment line)
+		public override ChunkParser CreateChunkParser (SpanParser spanParser, ColorSheme style, LineSegment line)
 		{
-			return new CSharpChunkParser (spanParser, doc, style, mode, line);
+			return new CSharpChunkParser (doc, this, spanParser, style, line);
 		}
 		
 		abstract class AbstractBlockSpan : Span
@@ -259,7 +259,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}*/
 			CSharpAstResolver visitor;
 			
-			public CSharpChunkParser (SpanParser spanParser, Mono.TextEditor.Document doc, ColorSheme style, SyntaxMode mode, LineSegment line) : base (spanParser, doc, style, mode, line)
+			public CSharpChunkParser (Mono.TextEditor.Document doc, SyntaxMode mode, SpanParser spanParser, ColorSheme style, LineSegment line) : base (doc, mode, spanParser, style, line)
 			{
 				document = IdeApp.Workbench.GetDocument (doc.FileName);
 				

@@ -203,7 +203,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void ScanSpans (Document doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
 		{
-			SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
+			SyntaxMode.SpanParser parser = mode.CreateSpanParser (null, spanStack);
 			parser.ParseSpans (start, end - start);
 		}
 		
@@ -260,7 +260,7 @@ namespace Mono.TextEditor.Highlighting
 					if (span == null)
 						return;
 					var spanStack = span.Clone ();
-					SyntaxMode.SpanParser parser = mode.CreateSpanParser(doc, mode, null, spanStack);
+					SyntaxMode.SpanParser parser = mode.CreateSpanParser(null, spanStack);
 					foreach (var line in doc.GetLinesStartingAt (startLine)) {
 						if (line == null)
 							return;
