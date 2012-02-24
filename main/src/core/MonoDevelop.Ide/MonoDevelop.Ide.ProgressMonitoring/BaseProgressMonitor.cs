@@ -283,7 +283,10 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		}
 		
 		protected double GlobalWork {
-			get { return progressTracker.GlobalWork; }
+			get {
+                MonoDevelop.Ide.DesktopService.SetGlobalProgress(progressTracker.GlobalWork);
+                
+                return progressTracker.GlobalWork; }
 		}
 		
 		protected bool UnknownWork {
@@ -294,6 +297,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 			if (completedEvent != null)
 				completedEvent (AsyncOperation);
+            MonoDevelop.Ide.DesktopService.SetGlobalProgress(1);
 		}
 
 		protected virtual void OnCancelRequested ()

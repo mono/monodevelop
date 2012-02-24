@@ -55,7 +55,10 @@ namespace MonoDevelop.Ide
 			FileService.FileRenamed += DispatchService.GuiDispatch (
 				new EventHandler<FileCopyEventArgs> (NotifyFileRenamed));
 		}
-		
+        public static void SetGlobalProgress(double progress)
+        {
+            platformService.SetGlobalProgressBar(progress);
+        }
 		public static IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
 			return platformService.GetApplications (filename);
