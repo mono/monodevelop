@@ -38,8 +38,8 @@ namespace Mono.TextEditor.Highlighting
 {
 	public static class SyntaxModeService
 	{
-		static Dictionary<string, SyntaxMode> syntaxModes = new Dictionary<string, SyntaxMode> ();
-		static Dictionary<string, ColorSheme>      styles      = new Dictionary<string, ColorSheme> ();
+		static Dictionary<string, ISyntaxModeProvider> syntaxModes = new Dictionary<string, ISyntaxModeProvider> ();
+		static Dictionary<string, ColorSheme> styles      = new Dictionary<string, ColorSheme> ();
 		static Dictionary<string, IXmlProvider> syntaxModeLookup = new Dictionary<string, IXmlProvider> ();
 		static Dictionary<string, IXmlProvider> styleLookup      = new Dictionary<string, IXmlProvider> ();
 		static Dictionary<string, string> isLoadedFromFile = new Dictionary<string, string> ();
@@ -67,11 +67,11 @@ namespace Mono.TextEditor.Highlighting
 			return result;
 		}
 		
-		public static void InstallSyntaxMode (string mimeType, SyntaxMode mode)
+		public static void InstallSyntaxMode (string mimeType, ISyntaxModeProvider modeProvider)
 		{
 			if (syntaxModeLookup.ContainsKey (mimeType))
 				syntaxModeLookup.Remove (mimeType);
-			syntaxModes[mimeType] = mode;
+			syntaxModes[mimeType] = modeProvider;
 		}
 		
 		public static ColorSheme GetColorStyle (Gtk.Style widgetStyle, string name)
@@ -121,9 +121,9 @@ namespace Mono.TextEditor.Highlighting
 				throw new System.ArgumentException ("Syntax mode for mime:" + mimeType + " not found", "mimeType");
 			XmlReader reader = syntaxModeLookup [mimeType].Open ();
 			try {
-				SyntaxMode mode = SyntaxMode.Read (reader);
+				var mode = SyntaxMode.Read (reader);
 				foreach (string mime in mode.MimeType.Split (';')) {
-					syntaxModes [mime] = mode;
+					syntaxModes [mime] = new SharedInstanceSyntaxModeProvider (mode);
 				}
 			} catch (Exception e) {
 				throw new IOException ("Error while syntax mode for mime:" + mimeType, e);
@@ -135,7 +135,7 @@ namespace Mono.TextEditor.Highlighting
 		public static SyntaxMode GetSyntaxMode (string mimeType)
 		{
 			if (syntaxModes.ContainsKey (mimeType))
-				return syntaxModes[mimeType];
+				return syntaxModes[mimeType].Create ();
 			if (syntaxModeLookup.ContainsKey (mimeType)) {
 				LoadSyntaxMode (mimeType);
 				syntaxModeLookup.Remove (mimeType);
@@ -156,12 +156,12 @@ namespace Mono.TextEditor.Highlighting
 			styleLookup.Clear ();
 			bool result = true;
 			foreach (KeyValuePair<string, ColorSheme> style in styles) {
-				HashSet<SyntaxMode> checkedModes = new HashSet<SyntaxMode> ();
-				foreach (KeyValuePair<string, SyntaxMode> mode in syntaxModes) {
+				var checkedModes = new HashSet<ISyntaxModeProvider> ();
+				foreach (var mode in syntaxModes) {
 					if (checkedModes.Contains (mode.Value))
 						continue;
-					if (!mode.Value.Validate (style.Value)) {
-						System.Console.WriteLine(mode.Key + " failed to validate against:" + style.Key);
+					if (!mode.Value.Create ().Validate (style.Value)) {
+						System.Console.WriteLine (mode.Key + " failed to validate against:" + style.Key);
 						result = false;
 					}
 					checkedModes.Add (mode.Value);
@@ -477,12 +477,12 @@ namespace Mono.TextEditor.Highlighting
 		static SyntaxModeService ()
 		{
 			StartUpdateThread ();
-			LoadStylesAndModes (typeof (SyntaxModeService).Assembly);
+			LoadStylesAndModes (typeof(SyntaxModeService).Assembly);
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
 			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
 			
-			InstallSyntaxMode ("text/x-jay", new JaySyntaxMode ());
+			InstallSyntaxMode ("text/x-jay", new SharedInstanceSyntaxModeProvider (new JaySyntaxMode ()));
 		}
 	}
 }

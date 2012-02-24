@@ -766,4 +766,39 @@ namespace Mono.TextEditor.Highlighting
 			return result;
 		}
 	}
+
+	public interface ISyntaxModeProvider
+	{
+		SyntaxMode Create ();
+	}
+	
+	public class SharedInstanceSyntaxModeProvider : ISyntaxModeProvider
+	{
+		SyntaxMode mode;
+		
+		public SharedInstanceSyntaxModeProvider (SyntaxMode mode)
+		{
+			this.mode = mode;
+		}
+		
+		public SyntaxMode Create ()
+		{
+			return mode;
+		}
+	}
+	
+	public class SyntaxModeProvider : ISyntaxModeProvider
+	{
+		Func<SyntaxMode> createFunction;
+		
+		public SyntaxModeProvider (Func<SyntaxMode> createFunction)
+		{
+			this.createFunction = createFunction;
+		}
+		
+		public SyntaxMode Create ()
+		{
+			return createFunction ();
+		}
+	}
 }
