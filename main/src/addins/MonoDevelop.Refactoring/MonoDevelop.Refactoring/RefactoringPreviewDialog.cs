@@ -133,9 +133,14 @@ namespace MonoDevelop.Refactoring
 				if (replaceChange == null) 
 					return;
 			
+				var openDocument = IdeApp.Workbench.GetDocument (replaceChange.FileName);
 				Mono.TextEditor.Document originalDocument = new Mono.TextEditor.Document ();
 				originalDocument.FileName = replaceChange.FileName;
-				originalDocument.Text = System.IO.File.ReadAllText (replaceChange.FileName);
+				if (openDocument == null) {
+					originalDocument.Text = System.IO.File.ReadAllText (replaceChange.FileName);
+				} else {
+					originalDocument.Text = openDocument.Editor.Document.Text;
+				}
 				
 				Mono.TextEditor.Document changedDocument = new Mono.TextEditor.Document ();
 				changedDocument.FileName = replaceChange.FileName;
