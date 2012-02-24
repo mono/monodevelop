@@ -64,8 +64,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return false;
 			return true;
 		}
-	}		
-
+	}
 	
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{

@@ -37,12 +37,22 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class SyntaxMode : Rule
 	{
-		public static readonly SyntaxMode Default = new SyntaxMode ();
-		protected List<Rule> rules = new List<Rule> ();
+		protected Document doc;
+
+		public Document Document {
+			get {
+				return doc;
+			}
+			set {
+				doc = value;
+			}
+		}		
+		
+		internal protected List<Rule> rules = new List<Rule> ();
 
 		public string MimeType {
 			get;
-			private set;
+			internal set;
 		}
 
 		public IEnumerable<Rule> Rules {
@@ -50,12 +60,17 @@ namespace Mono.TextEditor.Highlighting
 				return rules;
 			}
 		}
-
-		public SyntaxMode() : base (null)
+		
+		protected SyntaxMode () : base (null)
 		{
 			DefaultColor = "text";
 			Name = "<root>";
 			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
+		}
+		
+		public SyntaxMode (Document doc) : this ()
+		{
+			this.doc = doc;
 		}
 
 		public bool Validate (ColorSheme style)
@@ -71,7 +86,7 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 
-		public virtual Chunk GetChunks (Document doc, ColorSheme style, LineSegment line, int offset, int length)
+		public virtual Chunk GetChunks (ColorSheme style, LineSegment line, int offset, int length)
 		{
 			SpanParser spanParser = CreateSpanParser (doc, this, line, null);
 			ChunkParser chunkParser = CreateChunkParser (spanParser, doc, style, this, line);
@@ -109,22 +124,18 @@ namespace Mono.TextEditor.Highlighting
 			return result;
 		}
 
-		public virtual string GetTextWithoutMarkup (Document doc, ColorSheme style, int offset, int length)
+		public virtual string GetTextWithoutMarkup (ColorSheme style, int offset, int length)
 		{
 			return doc.GetTextAt (offset, length);
 		}
 
-		public string GetMarkup (Document doc, ITextEditorOptions options, ColorSheme style, int offset, int length, bool removeIndent)
-		{
-			return GetMarkup (doc, options, style, offset, length, removeIndent, true, true);
-		}
 
 		public static string ColorToPangoMarkup (Gdk.Color color)
 		{
 			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
 		}
 
-		public string GetMarkup (Document doc, ITextEditorOptions options, ColorSheme style, int offset, int length, bool removeIndent, bool useColors, bool replaceTabs)
+		public string GetMarkup (ITextEditorOptions options, ColorSheme style, int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true)
 		{
 			int indentLength = GetIndentLength (doc, offset, length, false);
 			int curOffset = offset;
@@ -134,7 +145,7 @@ namespace Mono.TextEditor.Highlighting
 				LineSegment line = doc.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
 				Stack<ChunkStyle> styleStack = new Stack<ChunkStyle> ();
-				for (Chunk chunk = GetChunks (doc, style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
+				for (var chunk = GetChunks (style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
 
 					ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
 					bool setBold = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold) ||
@@ -275,7 +286,7 @@ namespace Mono.TextEditor.Highlighting
 				Rule rule = mode;
 				result.Push (mode);
 				foreach (Span span in this.spanStack.Reverse ()) {
-					Rule tmp = rule.GetRule (span.Rule) ?? this.CurRule;
+					Rule tmp = rule.GetRule (doc, span.Rule) ?? this.CurRule;
 					result.Push (tmp);
 					rule = tmp;
 				}
@@ -331,7 +342,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 				if (string.IsNullOrEmpty (span.Rule))
 					return new Rule (mode);
-				return CurRule.GetRule (span.Rule);
+				return CurRule.GetRule (doc, span.Rule);
 			}
 
 			public delegate void CharParser (ref int i, char ch);
@@ -676,13 +687,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public override Rule GetRule (string name)
+		public override Rule GetRule (Document doc, string name)
 		{
 			if (name == null || name == "<root>") {
 				return this;
 			}
 			if (name.StartsWith ("mode:"))
-				return SyntaxModeService.GetSyntaxMode (name.Substring ("mode:".Length));
+				return SyntaxModeService.GetSyntaxMode (doc, name.Substring ("mode:".Length));
 
 			foreach (Rule rule in rules) {
 				if (rule.Name == name)
@@ -704,7 +715,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public void AddSemanticRule (string addToRuleName, SemanticRule semanticRule)
 		{
-			AddSemanticRule (GetRule (addToRuleName), semanticRule);
+			AddSemanticRule (GetRule (doc, addToRuleName), semanticRule);
 		}
 
 		void RemoveSemanticRule (Rule rule, Type type)
@@ -724,7 +735,7 @@ namespace Mono.TextEditor.Highlighting
 		}
 		public void RemoveSemanticRule (string removeFromRuleName, Type type)
 		{
-			RemoveSemanticRule (GetRule (removeFromRuleName), type);
+			RemoveSemanticRule (GetRule (doc, removeFromRuleName), type);
 		}
 
 		public override string ToString ()
@@ -738,19 +749,21 @@ namespace Mono.TextEditor.Highlighting
 
 		public static SyntaxMode Read (XmlReader reader)
 		{
-			SyntaxMode result = new SyntaxMode ();
+			var result = new SyntaxMode (null);
 			List<Match> matches = new List<Match> ();
 			List<Span> spanList = new List<Span> ();
 			List<Marker> prevMarkerList = new List<Marker> ();
 			XmlReadHelper.ReadList (reader, Node, delegate () {
+				if (reader == null)
+					return true;
 				switch (reader.LocalName) {
 				case Node:
 					string extends = reader.GetAttribute ("extends");
 					if (!String.IsNullOrEmpty (extends)) {
-						result = (SyntaxMode)SyntaxModeService.GetSyntaxMode (extends).MemberwiseClone ();
+						result = (SyntaxMode)SyntaxModeService.GetSyntaxMode (null, extends).MemberwiseClone ();
 					}
-					result.Name       = reader.GetAttribute ("name");
-					result.MimeType   = reader.GetAttribute (MimeTypesAttribute);
+					result.Name = reader.GetAttribute ("name");
+					result.MimeType = reader.GetAttribute (MimeTypesAttribute);
 					if (!String.IsNullOrEmpty (reader.GetAttribute ("ignorecase")))
 						result.IgnoreCase = Boolean.Parse (reader.GetAttribute ("ignorecase"));
 					return true;
@@ -760,7 +773,7 @@ namespace Mono.TextEditor.Highlighting
 				}
 				return result.ReadNode (reader, matches, spanList, prevMarkerList);
 			});
-			result.spans   = spanList.ToArray ();
+			result.spans = spanList.ToArray ();
 			result.prevMarker = prevMarkerList.ToArray ();
 			result.matches = matches.ToArray ();
 			return result;
@@ -769,36 +782,54 @@ namespace Mono.TextEditor.Highlighting
 
 	public interface ISyntaxModeProvider
 	{
-		SyntaxMode Create ();
+		SyntaxMode Create (Document doc);
 	}
 	
-	public class SharedInstanceSyntaxModeProvider : ISyntaxModeProvider
+	public class ProtoTypeSyntaxModeProvider : ISyntaxModeProvider
 	{
-		SyntaxMode mode;
+		SyntaxMode prototype;
 		
-		public SharedInstanceSyntaxModeProvider (SyntaxMode mode)
+		public ProtoTypeSyntaxModeProvider (SyntaxMode prototype)
 		{
-			this.mode = mode;
+			this.prototype = prototype;
 		}
 		
-		public SyntaxMode Create ()
+		SyntaxMode DeepCopy (Document doc, SyntaxMode mode)
 		{
-			return mode;
+			SyntaxMode newMode = new SyntaxMode (doc);
+			
+			newMode.MimeType = mode.MimeType;
+			newMode.spans = mode.Spans;
+			newMode.matches = mode.Matches;
+			newMode.prevMarker = mode.PrevMarker;
+			foreach (var rule in mode.Rules) {
+				if (rule is SyntaxMode) {
+					newMode.rules.Add (DeepCopy (doc, (SyntaxMode)rule));
+				} else {
+					newMode.rules.Add (rule);
+				}
+			}
+			return newMode;
+		}
+		
+		public SyntaxMode Create (Document doc)
+		{
+			return DeepCopy (doc, prototype);
 		}
 	}
 	
 	public class SyntaxModeProvider : ISyntaxModeProvider
 	{
-		Func<SyntaxMode> createFunction;
+		Func<Document, SyntaxMode> createFunction;
 		
-		public SyntaxModeProvider (Func<SyntaxMode> createFunction)
+		public SyntaxModeProvider (Func<Document, SyntaxMode> createFunction)
 		{
 			this.createFunction = createFunction;
 		}
 		
-		public SyntaxMode Create ()
+		public SyntaxMode Create (Document doc)
 		{
-			return createFunction ();
+			return createFunction (doc);
 		}
 	}
 }

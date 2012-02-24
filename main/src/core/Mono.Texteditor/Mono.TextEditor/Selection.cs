@@ -94,7 +94,7 @@ namespace Mono.TextEditor
 			LineSegment line = data.GetLine (loc.Line);
 			if (line == null)
 				return 0;
-			Chunk startChunk = data.Document.SyntaxMode.GetChunks (data.Document, data.Parent.ColorStyle, line, line.Offset, line.Length);
+			Chunk startChunk = data.GetChunks (line, line.Offset, line.Length);
 			int col = 1;
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 				if (col <= loc.Column && loc.Column < col + chunk.Length)
@@ -106,15 +106,11 @@ namespace Mono.TextEditor
 		
 		public int GetAnchorOffset (TextEditorData data)
 		{
-			if (data.Document.SyntaxMode is MarkupSyntaxMode)
-				return PosToOffset (data, Anchor);
 			return data.Document.LocationToOffset (Anchor);
 		}
 		
 		public int GetLeadOffset (TextEditorData data)
 		{
-			if (data.Document.SyntaxMode is MarkupSyntaxMode)
-				return PosToOffset (data, Lead);
 			return data.Document.LocationToOffset (Lead);
 		}
 		

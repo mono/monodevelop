@@ -217,6 +217,15 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public string GetMarkup (int offset, int length, bool removeIndent)
+		{
+			return document.SyntaxMode.GetMarkup (Options, ColorStyle, offset, length, removeIndent);
+		}
+
+		public Chunk GetChunks (LineSegment line, int offset, int length)
+		{
+			return document.SyntaxMode.GetChunks (ColorStyle, line, offset, length);
+		}		
 	
 		public int Insert (int offset, string value)
 		{
@@ -766,6 +775,7 @@ namespace Mono.TextEditor
 				SelectionChanged (this, args);
 		}
 		#endregion
+
 		
 		#region Search & Replace
 		ISearchEngine searchEngine;

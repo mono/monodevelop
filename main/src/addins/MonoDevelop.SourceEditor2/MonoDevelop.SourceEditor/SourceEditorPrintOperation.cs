@@ -121,7 +121,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				}
 					
-				Chunk startChunk = doc.SyntaxMode.GetChunks (doc, style, line, line.Offset, line.Length);
+				Chunk startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.Length);
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (style) : null;
 					string text = chunk.GetText (doc);

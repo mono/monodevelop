@@ -36,9 +36,9 @@ namespace Mono.TextEditor.Highlighting
 	public class Rule
 	{
 		protected List<Keywords> keywords = new List<Keywords> ();
-		protected Span[] spans = new Span[0];
-		protected Match[] matches = new Match[0];
-		protected Marker[] prevMarker = new Marker[0];
+		internal protected Span[] spans = new Span[0];
+		internal protected Match[] matches = new Match[0];
+		internal protected Marker[] prevMarker = new Marker[0];
 		
 		public List<SemanticRule> SemanticRules = new List<SemanticRule> ();
 		
@@ -139,9 +139,9 @@ namespace Mono.TextEditor.Highlighting
 			this.mode = mode;
 		}
 		
-		public virtual Rule GetRule (string name)
+		public virtual Rule GetRule (Document doc, string name)
 		{
-			return mode.GetRule (name);
+			return mode.GetRule (doc, name);
 		}
 		
 		public override string ToString ()

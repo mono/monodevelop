@@ -78,7 +78,7 @@ namespace MonoDevelop.XmlEditor
 			
 			var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (view != null && string.IsNullOrEmpty (view.Document.SyntaxMode.MimeType)) {
-				var mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (ApplicationXmlMimeType);
+				var mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (view.Document, ApplicationXmlMimeType);
 				if (mode != null)
 					view.Document.SyntaxMode = mode;
 				else

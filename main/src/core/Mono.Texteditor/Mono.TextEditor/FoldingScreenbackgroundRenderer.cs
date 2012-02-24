@@ -60,24 +60,24 @@ namespace Mono.TextEditor
 			int foundSegment = -1;
 			if (lineSegment != null) {
 				for (int i = 0; i < foldSegments.Count; i++) {
-					FoldSegment segment = foldSegments[i];
+					FoldSegment segment = foldSegments [i];
 					if (segment.StartLine.Offset <= lineSegment.Offset && lineSegment.EndOffset <= segment.EndLine.EndOffset) {
 						foundSegment = i;
-						roles[i] = Roles.Between;
+						roles [i] = Roles.Between;
 						if (segment.StartLine.Offset == lineSegment.Offset) {
-							roles[i] |= Roles.Start;
+							roles [i] |= Roles.Start;
 							if (segment.IsFolded)
-								roles[i] |= Roles.End;
+								roles [i] |= Roles.End;
 						}
 						if (segment.EndLine.Offset == lineSegment.Offset) 
-							roles[i] |= Roles.End;
+							roles [i] |= Roles.End;
 					}
 				}
 			}
 			TextViewMargin textViewMargin = editor.TextViewMargin;
-			SyntaxMode mode = Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			SyntaxMode mode = Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			
-		//	Gdk.Rectangle lineArea = new Gdk.Rectangle (textViewMargin.XOffset, y, editor.Allocation.Width - textViewMargin.XOffset, editor.LineHeight);
+			//	Gdk.Rectangle lineArea = new Gdk.Rectangle (textViewMargin.XOffset, y, editor.Allocation.Width - textViewMargin.XOffset, editor.LineHeight);
 			//	Gdk.GC gc = new Gdk.GC (drawable);
 			TextViewMargin.LayoutWrapper lineLayout = null;
 			double brightness = HslColor.Brightness (editor.ColorStyle.Default.BackgroundColor);
@@ -98,27 +98,27 @@ namespace Mono.TextEditor
 				double xPos = textViewMargin.XOffset;
 				double rectangleWidth = editor.Allocation.Width - xPos;
 				if (segment >= 0) {
-					LineSegment segmentStartLine = foldSegments[segment].StartLine;
+					LineSegment segmentStartLine = foldSegments [segment].StartLine;
 					lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentStartLine, segmentStartLine.Offset, segmentStartLine.EditableLength, -1, -1);
 					Pango.Rectangle rectangle = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
 					xPos = System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value));
 					
-					LineSegment segmentEndLine = foldSegments[segment].EndLine;
+					LineSegment segmentEndLine = foldSegments [segment].EndLine;
 					lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentEndLine, segmentEndLine.Offset, segmentEndLine.EditableLength, -1, -1);
 					rectangle = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
-					xPos = System.Math.Min (xPos ,System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));
+					xPos = System.Math.Min (xPos, System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));
 					
 					int width = editor.Allocation.Width;
 					if (editor.HAdjustment.Upper > width) {
 						width = (int)(textViewMargin.XOffset + editor.HAdjustment.Upper - editor.HAdjustment.Value);
 					}
 					rectangleWidth = (int)(width - xPos - 6 * (segment + 1));
-					role = roles[segment];
+					role = roles [segment];
 				}
 				DrawRoundRectangle (cr, (role & Roles.Start) == Roles.Start, (role & Roles.End) == Roles.End, xPos, y, editor.LineHeight / 2, rectangleWidth, lineHeight);
 				cr.Color = ColorSheme.ToCairoColor (hslColor);
 				cr.Fill ();
-		/*		if (segment == foldSegments.Count - 1) {
+				/*		if (segment == foldSegments.Count - 1) {
 					cr.Color = new Cairo.Color (0.5, 0.5, 0.5, 1);
 					cr.Stroke ();
 				}*/

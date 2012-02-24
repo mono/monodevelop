@@ -142,7 +142,7 @@ namespace Mono.TextEditor
 
 				foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
 					bool appendSpace = false;
-					for (Chunk chunk = mode.GetChunks (doc, style, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
+					for (Chunk chunk = mode.GetChunks (style, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
 						int start = System.Math.Max (selection.Offset, chunk.Offset);
 						int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);
 						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
@@ -274,13 +274,13 @@ namespace Mono.TextEditor
 					monoDocument = new Document ();
 					this.docStyle = data.ColorStyle;
 					this.options = data.Options;
-					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode.Default;
+					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : new SyntaxMode (data.Document);
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
 						isBlockMode = false;
 						ISegment segment = selection.GetSelectionRange (data);
-						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
-						monoDocument.Text = this.mode.GetTextWithoutMarkup (data.Document, data.ColorStyle, segment.Offset, segment.Length);
+						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.ColorStyle, segment.Offset, segment.Length);
+						monoDocument.Text = this.mode.GetTextWithoutMarkup (data.ColorStyle, segment.Offset, segment.Length);
 						LineSegment line = data.Document.GetLineByOffset (segment.Offset);
 						var spanStack = line.StartSpan.Clone ();
 						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
@@ -307,7 +307,7 @@ namespace Mono.TextEditor
 								((IBuffer)monoDocument).Insert (monoDocument.Length, "\r");
 							}
 						}
-						line    = data.Document.GetLine (selection.MinLine);
+						line = data.Document.GetLine (selection.MinLine);
 						spanStack = line.StartSpan.Clone ();
 						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, line.Offset + startCol);
 						this.copiedDocument.GetLine (DocumentLocation.MinLine).StartSpan = spanStack;

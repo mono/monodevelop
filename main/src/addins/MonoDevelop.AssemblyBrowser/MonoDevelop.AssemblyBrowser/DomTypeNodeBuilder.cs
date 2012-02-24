@@ -68,7 +68,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.widget = widget;
 		}*/
 		internal static OutputSettings settings;
-		static SyntaxMode mode = SyntaxModeService.GetSyntaxMode ("text/x-csharp");
+		static SyntaxMode mode = SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
 
 		internal static string MarkupKeyword (string text)
 		{

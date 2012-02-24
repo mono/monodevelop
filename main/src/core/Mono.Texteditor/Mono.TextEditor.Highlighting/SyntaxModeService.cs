@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Threading;
 using System.Xml;
 using System.Xml.Schema;
+using System.Linq;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -123,7 +124,7 @@ namespace Mono.TextEditor.Highlighting
 			try {
 				var mode = SyntaxMode.Read (reader);
 				foreach (string mime in mode.MimeType.Split (';')) {
-					syntaxModes [mime] = new SharedInstanceSyntaxModeProvider (mode);
+					syntaxModes [mime] = new ProtoTypeSyntaxModeProvider (mode);
 				}
 			} catch (Exception e) {
 				throw new IOException ("Error while syntax mode for mime:" + mimeType, e);
@@ -132,22 +133,34 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static SyntaxMode GetSyntaxMode (string mimeType)
+		public static SyntaxMode GetSyntaxMode (Document doc)
 		{
-			if (syntaxModes.ContainsKey (mimeType))
-				return syntaxModes[mimeType].Create ();
-			if (syntaxModeLookup.ContainsKey (mimeType)) {
+			return GetSyntaxMode (doc, doc.MimeType);
+		}
+		
+		public static SyntaxMode GetSyntaxMode (Document doc, string mimeType)
+		{
+			SyntaxMode result = null;
+			if (syntaxModes.ContainsKey (mimeType)) {
+				result = syntaxModes [mimeType].Create (doc);
+			} else if (syntaxModeLookup.ContainsKey (mimeType)) {
 				LoadSyntaxMode (mimeType);
 				syntaxModeLookup.Remove (mimeType);
-				return GetSyntaxMode (mimeType);
+				result = GetSyntaxMode (doc, mimeType);
 			}
-			return null;
+			if (result != null) {
+				foreach (var rule in semanticRules.Where (r => r.Item1 == mimeType)) {
+					result.AddSemanticRule (rule.Item2, rule.Item3);
+				}
+			}
+			return result;
 		}
 		
 		public static bool ValidateAllSyntaxModes ()
 		{
+			Document doc = new Document ();
 			foreach (string mime in new List<string> (syntaxModeLookup.Keys)) {
-				GetSyntaxMode (mime);
+				GetSyntaxMode (doc, mime);
 			}
 			syntaxModeLookup.Clear ();
 			foreach (string style in new List<string> (styleLookup.Keys)) {
@@ -160,7 +173,7 @@ namespace Mono.TextEditor.Highlighting
 				foreach (var mode in syntaxModes) {
 					if (checkedModes.Contains (mode.Value))
 						continue;
-					if (!mode.Value.Create ().Validate (style.Value)) {
+					if (!mode.Value.Create (doc).Validate (style.Value)) {
 						System.Console.WriteLine (mode.Key + " failed to validate against:" + style.Key);
 						result = false;
 					}
@@ -474,15 +487,22 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
+		static List<Tuple<string, string, SemanticRule>> semanticRules = new List<Tuple<string, string, SemanticRule>> ();
+		
+		public static void AddSemanticRule (string mime, string ruleName, SemanticRule rule)
+		{
+			semanticRules.Add (Tuple.Create (mime, ruleName, rule));
+		}
+		
 		static SyntaxModeService ()
 		{
 			StartUpdateThread ();
 			LoadStylesAndModes (typeof(SyntaxModeService).Assembly);
-			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
-			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
-			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
+			SyntaxModeService.AddSemanticRule ("text/x-csharp", "Comment", new HighlightUrlSemanticRule ("comment"));
+			SyntaxModeService.AddSemanticRule ("text/x-csharp", "XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
+			SyntaxModeService.AddSemanticRule ("text/x-csharp", "String", new HighlightUrlSemanticRule ("string"));
 			
-			InstallSyntaxMode ("text/x-jay", new SharedInstanceSyntaxModeProvider (new JaySyntaxMode ()));
+			InstallSyntaxMode ("text/x-jay", new SyntaxModeProvider (doc => new JaySyntaxMode (doc)));
 		}
 	}
 }

@@ -737,7 +737,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Mono.TextEditor.Highlighting.SyntaxMode mode = null;
 			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
-				mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (mt);
+				mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
 				if (mode != null)
 					break;
 			}

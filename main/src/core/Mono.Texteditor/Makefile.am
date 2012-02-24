@@ -29,7 +29,6 @@ FILES =  \
 	Mono.TextEditor.Highlighting/JaySyntaxMode.cs \
 	Mono.TextEditor.Highlighting/Keywords.cs \
 	Mono.TextEditor.Highlighting/Marker.cs \
-	Mono.TextEditor.Highlighting/MarkupSyntaxMode.cs \
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/ReferencedChunkStyle.cs \
 	Mono.TextEditor.Highlighting/Rule.cs \

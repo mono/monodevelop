@@ -99,12 +99,7 @@ namespace Mono.TextEditor
 			if (pushedLineLimit)
 				segment = new Segment (segment.Offset, editor.Document.GetLine (startLine + maxLines).Offset - segment.Offset);
 			layout.Ellipsize = Pango.EllipsizeMode.End;
-			layout.SetMarkup (editor.Document.SyntaxMode.GetMarkup (editor.Document,
-			                                                        editor.Options,
-			                                                        editor.ColorStyle,
-			                                                        segment.Offset,
-			                                                        segment.Length,
-			                                                        removeIndent) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
+			layout.SetMarkup (editor.GetTextEditorData ().GetMarkup (segment.Offset, segment.Length, removeIndent) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
 			QueueDraw ();
 		}
 		

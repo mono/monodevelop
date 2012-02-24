@@ -47,9 +47,9 @@ namespace Mono.TextEditor.Tests
 		public static string GetMarkup (string input, string syntaxMode)
 		{
 			Document doc = new Document ();
-			doc.SyntaxMode = SyntaxModeService.GetSyntaxMode (syntaxMode);
+			doc.SyntaxMode = SyntaxModeService.GetSyntaxMode (doc, syntaxMode);
 			doc.Text = input;
-			return doc.SyntaxMode.GetMarkup (doc, TextEditorOptions.DefaultOptions, SyntaxModeService.GetColorStyle (null, "TangoLight"), 0, doc.Length, false);
+			return doc.SyntaxMode.GetMarkup (TextEditorOptions.DefaultOptions, SyntaxModeService.GetColorStyle (null, "TangoLight"), 0, doc.Length, false);
 		}
 
 		static void TestOutput (string input, string expectedMarkup, string syntaxMode)

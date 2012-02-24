@@ -2297,9 +2297,9 @@ namespace Mono.TextEditor
 			{
 				LineSegment line = Editor.Document.GetLineByOffset (Result.Offset);
 				int lineNr = Editor.Document.OffsetToLineNumber (Result.Offset);
-				SyntaxMode mode = Editor.Document.SyntaxMode != null && Editor.Options.EnableSyntaxHighlighting ? Editor.Document.SyntaxMode : SyntaxMode.Default;
-				int logicalRulerColumn = line.GetLogicalColumn(Editor.GetTextEditorData(), Editor.Options.RulerColumn);
-				var lineLayout = Editor.textViewMargin.CreateLinePartLayout(mode, line, logicalRulerColumn, line.Offset, line.EditableLength, -1, -1);
+				SyntaxMode mode = Editor.Document.SyntaxMode != null && Editor.Options.EnableSyntaxHighlighting ? Editor.Document.SyntaxMode : new SyntaxMode (Editor.Document);
+				int logicalRulerColumn = line.GetLogicalColumn (Editor.GetTextEditorData (), Editor.Options.RulerColumn);
+				var lineLayout = Editor.textViewMargin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, line.EditableLength, -1, -1);
 				if (lineLayout == null)
 					return Gdk.Rectangle.Zero;
 				
@@ -2319,7 +2319,7 @@ namespace Mono.TextEditor
 					Console.WriteLine ("Invalid end index :" + index);
 				}
 				
-				double y = Editor.LineToY (lineNr) - Editor.VAdjustment.Value ;
+				double y = Editor.LineToY (lineNr) - Editor.VAdjustment.Value;
 				double w = (x2 - x1) / Pango.Scale.PangoScale;
 				double spaceX = System.Math.Ceiling (w / 3);
 				double spaceY = Editor.LineHeight;
@@ -2349,7 +2349,7 @@ namespace Mono.TextEditor
 						if (layout == null) {
 							layout = cr.CreateLayout ();
 							layout.FontDescription = Editor.Options.Font;
-							string markup = Editor.Document.SyntaxMode.GetMarkup (Editor.Document, Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true);
+							string markup = Editor.Document.SyntaxMode.GetMarkup (Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true);
 							layout.SetMarkup (markup);
 							layout.GetPixelSize (out layoutWidth, out layoutHeight);
 						}

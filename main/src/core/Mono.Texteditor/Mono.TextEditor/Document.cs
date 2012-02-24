@@ -53,7 +53,7 @@ namespace Mono.TextEditor
 			set {
 				if (mimeType != value) {
 					mimeType = value;
-					this.SyntaxMode = SyntaxModeService.GetSyntaxMode (value);
+					this.SyntaxMode = SyntaxModeService.GetSyntaxMode (this);
 				}
 			}
 		}
@@ -70,7 +70,7 @@ namespace Mono.TextEditor
 		
 		public SyntaxMode SyntaxMode {
 			get {
-				return syntaxMode ?? new SyntaxMode ();
+				return syntaxMode ?? new SyntaxMode (this);
 			}
 			set {
 				syntaxMode = value;

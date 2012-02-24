@@ -468,7 +468,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 			int indent = line.GetIndentation (doc).Length;
 			string markup = doc.SyntaxMode != null ? 
-				doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), highlightStyle, line.Offset + indent, line.EditableLength - indent, true, !isSelected, false) : 
+				doc.SyntaxMode.GetMarkup (new TextEditorOptions (), highlightStyle, line.Offset + indent, line.EditableLength - indent, true, !isSelected, false) : 
 				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
 			
 			if (!isSelected) {

@@ -860,7 +860,7 @@ namespace Mono.TextEditor
 				chunkDict.Remove (line);
 			}
 
-			Chunk chunk = mode.GetChunks (doc, style, line, offset, length);
+			Chunk chunk = mode.GetChunks (style, line, offset, length);
 			descriptor = new ChunkDescriptor (line, offset, length, chunk);
 			chunkDict[line] = descriptor;
 			return chunk;
@@ -1258,7 +1258,7 @@ namespace Mono.TextEditor
 
 		public LayoutWrapper GetLayout (LineSegment line)
 		{
-			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			return CreateLinePartLayout (mode, line, line.Offset, line.EditableLength, -1, -1);
 		}
 
@@ -1279,7 +1279,7 @@ namespace Mono.TextEditor
 
 		void DrawLinePart (Cairo.Context cr, LineSegment line, int lineNumber, int logicalRulerColumn, int offset, int length, ref double pangoPosition, ref bool isSelectionDrawn, double y, double maxX)
 		{
-			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			int selectionStart;
 			int selectionEnd;
 			if (this.HideSelection) {
@@ -2320,7 +2320,7 @@ namespace Mono.TextEditor
 				if (xp < 0)
 					return new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
 				int column = DocumentLocation.MinColumn;
-				SyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : SyntaxMode.Default;
+				SyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : new SyntaxMode (margin.Document);
 				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
 				bool done = false;
 				Pango.Layout measueLayout = null;
@@ -2432,7 +2432,7 @@ namespace Mono.TextEditor
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
 			int lineOffset = line.Offset;
 			StringBuilder textBuilder = new StringBuilder ();
-			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : SyntaxMode.Default;
+			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, lineOffset, line.EditableLength);
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 				try {
