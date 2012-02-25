@@ -149,7 +149,7 @@ namespace MonoDevelop.Refactoring
 						if (def != null && def.Kind != TypeKind.Interface && !def.GetDefinition ().Region.IsEmpty) {
 							IMethod baseMethod = null;
 							foreach (var m in def.GetMethods ()) {
-								if (m.Name == method.Name && m.Parameters.Count == m.Parameters.Count) {
+								if (m.Name == method.Name && ParameterListComparer.Instance.Equals (m.Parameters, method.Parameters)) {
 									baseMethod = m;
 									break;
 								}
