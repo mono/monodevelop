@@ -30,9 +30,9 @@ type FSharpInteractivePad() =
 
   let AddSourceToSelection selection =
      let stap = IdeApp.Workbench.ActiveDocument.Editor.SelectionRange.Offset
-     let line = IdeApp.Workbench.ActiveDocument.Editor.GetLineByOffset(stap)
+     let line = IdeApp.Workbench.ActiveDocument.Editor.OffsetToLineNumber(stap)
      let file = IdeApp.Workbench.ActiveDocument.FileName
-     String.Format("# {0} \"{1}\"\n{2}" ,line ,file.FullPath,selection)  
+     String.Format("# {0} \"{1}\"\n{2}" ,line,file.FullPath,selection)  
 
   let rec setupReleaseHandler (ea:Gtk.KeyReleaseEventArgs) =
     enterHandler.Dispose()
