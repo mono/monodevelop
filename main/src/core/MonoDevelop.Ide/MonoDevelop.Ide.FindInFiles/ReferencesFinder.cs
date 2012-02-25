@@ -243,10 +243,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			var result = new List<IEntity> (methods);
 			if (declaringType.Kind == TypeKind.Interface || (member.IsOverridable && declaringType.Kind == TypeKind.Class)) {
 				foreach (var p in solution.GetAllSolutionItems<Project> ()) {
-					foreach (var type in TypeSystemService.GetCompilation (p).GetAllTypeDefinitions ()) {
-						//avoid possible exception in IsDerivedFrom
-						if (type.Compilation != declaringType.Compilation)
-							continue;
+					var compilation = TypeSystemService.GetCompilation (p);
+					//skip projects that are not in the same compilation
+					//and avoid possible exception in IsDerivedFrom
+					if (compilation != declaringType.Compilation) 
+						continue;
+					foreach (var type in compilation.GetAllTypeDefinitions ()) {
 						if (!type.IsDerivedFrom (declaringType)) 
 							continue;
 						if (type.ReflectionName == declaringType.ReflectionName)
