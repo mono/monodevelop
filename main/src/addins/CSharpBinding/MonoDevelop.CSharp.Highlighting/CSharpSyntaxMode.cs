@@ -364,7 +364,7 @@ namespace MonoDevelop.CSharp.Highlighting
 							return "keyword.semantic.type";
 						}
 						
-						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration || node.Parent is FixedVariableInitializer || node.Parent is EnumMemberDeclaration) {
+						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration || node.Parent is FixedVariableInitializer /*|| node.Parent is EnumMemberDeclaration*/) {
 							endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
 							return "keyword.semantic.field";
 						}
@@ -374,7 +374,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						var result = visitor.Resolve (id);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
-							if (member is IField) {
+							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
 								endOffset = doc.LocationToOffset (id.EndLocation.Line, id.EndLocation.Column);
 								return "keyword.semantic.field";
 							}
@@ -395,7 +395,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						var result = visitor.Resolve (memberReferenceExpression);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
-							if (member is IField) {
+							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
 								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
 								return "keyword.semantic.field";
 							}
