@@ -80,6 +80,3 @@ namespace ICSharpCode.NRefactory
 		}
 	}
 }
-}
-	}
-}
