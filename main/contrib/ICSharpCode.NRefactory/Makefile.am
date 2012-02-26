@@ -21,8 +21,8 @@ FILES =  \
 	Documentation/DocumentationComment.cs \
 	Documentation/GetPotentiallyNestedClassTypeReference.cs \
 	Documentation/IDocumentationProvider.cs \
-	Documentation/IDStringMemberReference.cs \
-	Documentation/IDStringProvider.cs \
+	Documentation/IdStringMemberReference.cs \
+	Documentation/IdStringProvider.cs \
 	Documentation/XmlDocumentationProvider.cs \
 	Editor/IDocument.cs \
 	Editor/IDocumentLine.cs \

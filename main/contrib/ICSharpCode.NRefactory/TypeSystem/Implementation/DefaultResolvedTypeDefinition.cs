@@ -33,8 +33,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly ITypeResolveContext parentContext;
 		readonly IUnresolvedTypeDefinition[] parts;
 		Accessibility accessibility = Accessibility.Internal;
-		List<IUnresolvedMember> unresolvedMembers = new List<IUnresolvedMember>();
-		ProjectedListWithContextPerElement<ITypeResolveContext, IUnresolvedMember, IMember> resolvedMembers;
 		bool isAbstract, isSealed, isShadowing;
 		bool isSynthetic = true; // true if all parts are synthetic
 		
@@ -46,68 +44,70 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentException("No parts were specified", "parts");
 			this.parentContext = parentContext;
 			this.parts = parts;
-			ITypeResolveContext contextForTypeParameters = parts[0].CreateResolveContext(parentContext);
-			contextForTypeParameters = contextForTypeParameters.WithCurrentTypeDefinition(this);
-			if (parentContext.CurrentTypeDefinition == null || parentContext.CurrentTypeDefinition.TypeParameterCount == 0) {
-				this.TypeParameters = parts[0].TypeParameters.CreateResolvedTypeParameters(contextForTypeParameters);
-			} else {
-				// This is a nested class inside a generic class; copy type parameters from outer class if we can:
-				var outerClass = parentContext.CurrentTypeDefinition;
-				ITypeParameter[] typeParameters = new ITypeParameter[parts[0].TypeParameters.Count];
-				for (int i = 0; i < typeParameters.Length; i++) {
-					var unresolvedTP = parts[0].TypeParameters[i];
-					if (i < outerClass.TypeParameterCount && outerClass.TypeParameters[i].Name == unresolvedTP.Name)
-						typeParameters[i] = outerClass.TypeParameters[i];
-					else
-						typeParameters[i] = unresolvedTP.CreateResolvedTypeParameter(contextForTypeParameters);
-				}
-				this.TypeParameters = Array.AsReadOnly(typeParameters);
-			}
-			List<IUnresolvedAttribute> unresolvedAttributes = new List<IUnresolvedAttribute>();
-			List<ITypeResolveContext> contextPerAttribute = new List<ITypeResolveContext>();
-			List<ITypeResolveContext> contextPerMember = new List<ITypeResolveContext>();
-			bool addDefaultConstructorIfRequired = false;
+			
 			foreach (IUnresolvedTypeDefinition part in parts) {
-				ITypeResolveContext parentContextForPart = part.CreateResolveContext(parentContext);
-				ITypeResolveContext contextForPart = parentContextForPart.WithCurrentTypeDefinition(this);
-				foreach (var attr in part.Attributes) {
-					unresolvedAttributes.Add(attr);
-					contextPerAttribute.Add(parentContextForPart);
-				}
-				foreach (var member in part.Members) {
-					unresolvedMembers.Add(member);
-					contextPerMember.Add(contextForPart);
-				}
-				
 				isAbstract  |= part.IsAbstract;
 				isSealed    |= part.IsSealed;
 				isShadowing |= part.IsShadowing;
 				isSynthetic &= part.IsSynthetic; // true if all parts are synthetic
 				
-				DefaultUnresolvedTypeDefinition dutd = part as DefaultUnresolvedTypeDefinition;
-				if (dutd != null) {
-					addDefaultConstructorIfRequired |= dutd.AddDefaultConstructorIfRequired;
-				}
-				
 				// internal is the default, so use another part's accessibility until we find a non-internal accessibility
 				if (accessibility == Accessibility.Internal)
 					accessibility = part.Accessibility;
 			}
-			if (addDefaultConstructorIfRequired) {
-				TypeKind kind = this.Kind;
-				if (kind == TypeKind.Class && !this.IsStatic && !unresolvedMembers.Any(m => m.EntityType == EntityType.Constructor && !m.IsStatic)
-				    || kind == TypeKind.Enum || kind == TypeKind.Struct)
-				{
-					contextPerMember.Add(parts[0].CreateResolveContext(parentContext).WithCurrentTypeDefinition(this));
-					unresolvedMembers.Add(DefaultUnresolvedMethod.CreateDefaultConstructor(parts[0]));
-				}
-			}
-			this.Attributes = new ProjectedListWithContextPerElement<ITypeResolveContext, IUnresolvedAttribute, IAttribute>(contextPerAttribute, unresolvedAttributes, (c, a) => a.CreateResolvedAttribute(c));
-			this.resolvedMembers = new ProjectedListWithContextPerElement<ITypeResolveContext, IUnresolvedMember, IMember>(contextPerMember, unresolvedMembers, (c, m) => m.CreateResolved(c));
 		}
 		
-		public IList<ITypeParameter> TypeParameters { get; private set; }
-		public IList<IAttribute> Attributes { get; private set; }
+		IList<ITypeParameter> typeParameters;
+		
+		public IList<ITypeParameter> TypeParameters {
+			get {
+				var result = this.typeParameters;
+				if (result != null) {
+					LazyInit.ReadBarrier();
+					return result;
+				}
+				ITypeResolveContext contextForTypeParameters = parts[0].CreateResolveContext(parentContext);
+				contextForTypeParameters = contextForTypeParameters.WithCurrentTypeDefinition(this);
+				if (parentContext.CurrentTypeDefinition == null || parentContext.CurrentTypeDefinition.TypeParameterCount == 0) {
+					result = parts[0].TypeParameters.CreateResolvedTypeParameters(contextForTypeParameters);
+				} else {
+					// This is a nested class inside a generic class; copy type parameters from outer class if we can:
+					var outerClass = parentContext.CurrentTypeDefinition;
+					ITypeParameter[] typeParameters = new ITypeParameter[parts[0].TypeParameters.Count];
+					for (int i = 0; i < typeParameters.Length; i++) {
+						var unresolvedTP = parts[0].TypeParameters[i];
+						if (i < outerClass.TypeParameterCount && outerClass.TypeParameters[i].Name == unresolvedTP.Name)
+							typeParameters[i] = outerClass.TypeParameters[i];
+						else
+							typeParameters[i] = unresolvedTP.CreateResolvedTypeParameter(contextForTypeParameters);
+					}
+					result = Array.AsReadOnly(typeParameters);
+				}
+				return LazyInit.GetOrSet(ref this.typeParameters, result);
+			}
+		}
+		
+		IList<IAttribute> attributes;
+		
+		public IList<IAttribute> Attributes {
+			get {
+				var result = this.attributes;
+				if (result != null) {
+					LazyInit.ReadBarrier();
+					return result;
+				}
+				result = new List<IAttribute>();
+				foreach (IUnresolvedTypeDefinition part in parts) {
+					ITypeResolveContext parentContextForPart = part.CreateResolveContext(parentContext);
+					foreach (var attr in part.Attributes) {
+						result.Add(attr.CreateResolvedAttribute(parentContextForPart));
+					}
+				}
+				if (result.Count == 0)
+					result = EmptyList<IAttribute>.Instance;
+				return LazyInit.GetOrSet(ref this.attributes, result);
+			}
+		}
 		
 		public IList<IUnresolvedTypeDefinition> Parts {
 			get { return parts; }
@@ -121,6 +121,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parts[0].Kind; }
 		}
 		
+		#region NestedTypes
 		IList<ITypeDefinition> nestedTypes;
 		
 		public IList<ITypeDefinition> NestedTypes {
@@ -140,37 +141,170 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 			}
 		}
+		#endregion
 		
 		#region Members
+		sealed class MemberList : IList<IMember>
+		{
+			internal readonly ITypeResolveContext[] contextPerMember;
+			internal readonly IUnresolvedMember[] unresolvedMembers;
+			internal readonly IMember[] resolvedMembers;
+			
+			public MemberList(ITypeResolveContext[] contextPerMember, IUnresolvedMember[] unresolvedMembers)
+			{
+				this.contextPerMember = contextPerMember;
+				this.unresolvedMembers = unresolvedMembers;
+				this.resolvedMembers = new IMember[unresolvedMembers.Length];
+			}
+			
+			public IMember this[int index] {
+				get {
+					IMember output = resolvedMembers[index];
+					if (output != null) {
+						LazyInit.ReadBarrier();
+						return output;
+					}
+					return LazyInit.GetOrSet(ref resolvedMembers[index], unresolvedMembers[index].CreateResolved(contextPerMember[index]));
+				}
+				set { throw new NotSupportedException(); }
+			}
+			
+			public int Count {
+				get { return unresolvedMembers.Length; }
+			}
+			
+			bool ICollection<IMember>.IsReadOnly {
+				get { return true; }
+			}
+			
+			public int IndexOf(IMember item)
+			{
+				for (int i = 0; i < this.Count; i++) {
+					if (this[i].Equals(item))
+						return i;
+				}
+				return -1;
+			}
+			
+			void IList<IMember>.Insert(int index, IMember item)
+			{
+				throw new NotSupportedException();
+			}
+			
+			void IList<IMember>.RemoveAt(int index)
+			{
+				throw new NotSupportedException();
+			}
+			
+			void ICollection<IMember>.Add(IMember item)
+			{
+				throw new NotSupportedException();
+			}
+			
+			void ICollection<IMember>.Clear()
+			{
+				throw new NotSupportedException();
+			}
+			
+			bool ICollection<IMember>.Contains(IMember item)
+			{
+				return IndexOf(item) >= 0;
+			}
+			
+			void ICollection<IMember>.CopyTo(IMember[] array, int arrayIndex)
+			{
+				for (int i = 0; i < this.Count; i++) {
+					array[arrayIndex + i] = this[i];
+				}
+			}
+			
+			bool ICollection<IMember>.Remove(IMember item)
+			{
+				throw new NotSupportedException();
+			}
+			
+			public IEnumerator<IMember> GetEnumerator()
+			{
+				for (int i = 0; i < this.Count; i++) {
+					yield return this[i];
+				}
+			}
+			
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+		}
+		
+		MemberList memberList;
+		
+		MemberList GetMemberList()
+		{
+			var result = this.memberList;
+			if (result != null) {
+				LazyInit.ReadBarrier();
+				return result;
+			}
+			List<IUnresolvedMember> unresolvedMembers = new List<IUnresolvedMember>();
+			List<ITypeResolveContext> contextPerMember = new List<ITypeResolveContext>();
+			bool addDefaultConstructorIfRequired = false;
+			foreach (IUnresolvedTypeDefinition part in parts) {
+				ITypeResolveContext parentContextForPart = part.CreateResolveContext(parentContext);
+				ITypeResolveContext contextForPart = parentContextForPart.WithCurrentTypeDefinition(this);
+				foreach (var member in part.Members) {
+					unresolvedMembers.Add(member);
+					contextPerMember.Add(contextForPart);
+				}
+				
+				DefaultUnresolvedTypeDefinition dutd = part as DefaultUnresolvedTypeDefinition;
+				if (dutd != null) {
+					addDefaultConstructorIfRequired |= dutd.AddDefaultConstructorIfRequired;
+				}
+			}
+			if (addDefaultConstructorIfRequired) {
+				TypeKind kind = this.Kind;
+				if (kind == TypeKind.Class && !this.IsStatic && !unresolvedMembers.Any(m => m.EntityType == EntityType.Constructor && !m.IsStatic)
+				    || kind == TypeKind.Enum || kind == TypeKind.Struct)
+				{
+					contextPerMember.Add(parts[0].CreateResolveContext(parentContext).WithCurrentTypeDefinition(this));
+					unresolvedMembers.Add(DefaultUnresolvedMethod.CreateDefaultConstructor(parts[0]));
+				}
+			}
+			return LazyInit.GetOrSet(ref this.memberList, new MemberList(contextPerMember.ToArray(), unresolvedMembers.ToArray()));
+		}
+		
 		public IList<IMember> Members {
-			get { return resolvedMembers; }
+			get { return GetMemberList(); }
 		}
 		
 		public IEnumerable<IField> Fields {
 			get {
-				for (int i = 0; i < unresolvedMembers.Count; i++) {
-					if (unresolvedMembers[i].EntityType == EntityType.Field)
-						yield return (IField)resolvedMembers[i];
+				var members = GetMemberList();
+				for (int i = 0; i < members.Count; i++) {
+					if (members.unresolvedMembers[i].EntityType == EntityType.Field)
+						yield return (IField)members[i];
 				}
 			}
 		}
 		
 		public IEnumerable<IMethod> Methods {
 			get {
-				for (int i = 0; i < unresolvedMembers.Count; i++) {
-					if (unresolvedMembers[i] is IUnresolvedMethod)
-						yield return (IMethod)resolvedMembers[i];
+				var members = GetMemberList();
+				for (int i = 0; i < members.Count; i++) {
+					if (members.unresolvedMembers[i] is IUnresolvedMethod)
+						yield return (IMethod)members[i];
 				}
 			}
 		}
 		
 		public IEnumerable<IProperty> Properties {
 			get {
-				for (int i = 0; i < unresolvedMembers.Count; i++) {
-					switch (unresolvedMembers[i].EntityType) {
+				var members = GetMemberList();
+				for (int i = 0; i < members.Count; i++) {
+					switch (members.unresolvedMembers[i].EntityType) {
 						case EntityType.Property:
 						case EntityType.Indexer:
-							yield return (IProperty)resolvedMembers[i];
+							yield return (IProperty)members[i];
 							break;
 					}
 				}
@@ -179,9 +313,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IEvent> Events {
 			get {
-				for (int i = 0; i < unresolvedMembers.Count; i++) {
-					if (unresolvedMembers[i].EntityType == EntityType.Event)
-						yield return (IEvent)resolvedMembers[i];
+				var members = GetMemberList();
+				for (int i = 0; i < members.Count; i++) {
+					if (members.unresolvedMembers[i].EntityType == EntityType.Event)
+						yield return (IEvent)members[i];
 				}
 			}
 		}
@@ -289,7 +424,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public int TypeParameterCount {
-			get { return this.TypeParameters.Count; }
+			get { return parts[0].TypeParameters.Count; }
 		}
 		
 		#region DirectBaseTypes
@@ -504,19 +639,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#region GetMembers()
 		IEnumerable<IMember> GetFilteredMembers(Predicate<IUnresolvedMember> filter)
 		{
-			for (int i = 0; i < unresolvedMembers.Count; i++) {
-				if (filter == null || filter(unresolvedMembers[i])) {
-					yield return resolvedMembers[i];
+			var members = GetMemberList();
+			for (int i = 0; i < members.Count; i++) {
+				if (filter == null || filter(members.unresolvedMembers[i])) {
+					yield return members[i];
 				}
 			}
 		}
 		
 		IEnumerable<TResolved> GetFilteredMembers<TUnresolved, TResolved>(Predicate<TUnresolved> filter) where TUnresolved : class, IUnresolvedMember where TResolved : class, IMember
 		{
-			for (int i = 0; i < unresolvedMembers.Count; i++) {
-				TUnresolved unresolved = unresolvedMembers[i] as TUnresolved;
+			var members = GetMemberList();
+			for (int i = 0; i < members.Count; i++) {
+				TUnresolved unresolved = members.unresolvedMembers[i] as TUnresolved;
 				if (unresolved != null && (filter == null || filter(unresolved))) {
-					yield return (TResolved)resolvedMembers[i];
+					yield return (TResolved)members[i];
 				}
 			}
 		}

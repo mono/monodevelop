@@ -130,17 +130,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition.Attributes; }
 		}
 		
-		IList<IMember> interfaceImplementations;
+		IList<IMember> implementedInterfaceMembers;
 		
-		public IList<IMember> InterfaceImplementations {
+		public IList<IMember> ImplementedInterfaceMembers {
 			get {
-				return LazyInitializer.EnsureInitialized(ref interfaceImplementations, FindInterfaceImplementations);
+				return LazyInitializer.EnsureInitialized(ref implementedInterfaceMembers, FindImplementedInterfaceMembers);
 			}
 		}
 		
-		IList<IMember> FindInterfaceImplementations()
+		IList<IMember> FindImplementedInterfaceMembers()
 		{
-			var definitionImplementations = memberDefinition.InterfaceImplementations;
+			var definitionImplementations = memberDefinition.ImplementedInterfaceMembers;
 			IMember[] result = new IMember[definitionImplementations.Count];
 			for (int i = 0; i < result.Length; i++) {
 				result[i] = Specialize(definitionImplementations[i]);

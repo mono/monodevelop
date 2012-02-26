@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory
 	/// Represents the role a node plays within its parent.
 	/// All nodes with this role have type T.
 	/// </summary>
-	public sealed class Role<T> : Role where T : class
+	public class Role<T> : Role where T : class
 	{
 		readonly string name; // helps with debugging the AST
 		readonly T nullObject;
@@ -78,5 +78,8 @@ namespace ICSharpCode.NRefactory
 		{
 			return name;
 		}
+	}
+}
+}
 	}
 }

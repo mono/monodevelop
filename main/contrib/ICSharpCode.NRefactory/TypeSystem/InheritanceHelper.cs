@@ -51,6 +51,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("member");
 			
 			member = member.MemberDefinition;
+			if (member.IsExplicitInterfaceImplementation && member.ImplementedInterfaceMembers.Count == 1) {
+				// C#-style explicit interface implementation
+				yield return member.ImplementedInterfaceMembers[0];
+				member = member.ImplementedInterfaceMembers[0].MemberDefinition;
+			}
 			
 			IEnumerable<IType> allBaseTypes;
 			if (includeImplementedInterfaces) {

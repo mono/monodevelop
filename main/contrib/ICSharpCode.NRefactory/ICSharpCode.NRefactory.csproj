@@ -82,7 +82,6 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="Editor\IDocument.cs" />
     <Compile Include="Editor\IDocumentLine.cs" />
     <Compile Include="Editor\ISegment.cs" />
@@ -245,7 +244,8 @@
     <Compile Include="Documentation\DocumentationComment.cs" />
     <Compile Include="Documentation\GetPotentiallyNestedClassTypeReference.cs" />
     <Compile Include="Documentation\IDocumentationProvider.cs" />
-    <Compile Include="Documentation\IDStringMemberReference.cs" />
+    <Compile Include="Documentation\IdStringMemberReference.cs" />
+    <Compile Include="Documentation\IdStringProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
