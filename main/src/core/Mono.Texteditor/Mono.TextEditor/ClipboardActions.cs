@@ -371,8 +371,6 @@ namespace Mono.TextEditor
 						string text = System.Text.Encoding.UTF8.GetString (selBytes, 1, selBytes.Length - 1);
 						bool pasteBlock = (selBytes [0] & 1) == 1;
 						bool pasteLine = (selBytes [0] & 2) == 2;
-						if (!pasteBlock && !pasteLine)
-							return;
 						
 						using (var undo = data.OpenUndoGroup ()) {
 							if (preserveSelection && data.IsSomethingSelected)
@@ -411,6 +409,10 @@ namespace Mono.TextEditor
 								data.Insert (curLine.Offset, text + data.EolMarker);
 								if (!preserveState)
 									data.Caret.Offset += text.Length + data.EolMarker.Length;
+							} else {
+								int offset = data.Caret.Offset;
+								data.InsertAtCaret (text);
+								data.PasteText (offset, text, data.Caret.Offset - offset);
 							}
 							/*				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
 							                                    data.Caret.Location,
