@@ -202,7 +202,9 @@ namespace Mono.Debugger.Soft
 	}
 
 	enum StackFrameFlags {
-		DEBUGGER_INVOKE = 1
+		NONE = 0,
+		DEBUGGER_INVOKE = 1,
+		NATIVE_TRANSITION = 2
 	}
 
 	class ResolvedToken {
@@ -374,7 +376,7 @@ namespace Mono.Debugger.Soft
 		 * with newer runtimes, and vice versa.
 		 */
 		internal const int MAJOR_VERSION = 2;
-		internal const int MINOR_VERSION = 16;
+		internal const int MINOR_VERSION = 17;
 
 		enum WPSuspendPolicy {
 			NONE = 0,
@@ -1788,11 +1790,14 @@ namespace Mono.Debugger.Soft
 
 			var frames = new FrameInfo [count];
 			for (int i = 0; i < count; ++i) {
-				frames [i].id = res.ReadInt ();
-				frames [i].method = res.ReadId ();
-				frames [i].il_offset = res.ReadInt ();
-				frames [i].flags = (StackFrameFlags)res.ReadByte ();
+				var f = new FrameInfo ();
+				f.id = res.ReadInt ();
+				f.method = res.ReadId ();
+				f.il_offset = res.ReadInt ();
+				f.flags = (StackFrameFlags)res.ReadByte ();
+				frames [i] = f;
 			}
+
 			return frames;
 		}
 

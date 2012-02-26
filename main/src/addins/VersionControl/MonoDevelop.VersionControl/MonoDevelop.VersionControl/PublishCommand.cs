@@ -12,11 +12,11 @@ namespace MonoDevelop.VersionControl
 	{
 		public static bool Publish (IWorkspaceObject entry, FilePath localPath, bool test)
 		{
-			if (test)
-				return true;
-
 			if (!VersionControlService.CheckVersionControlInstalled ())
 				return false;
+
+			if (test)
+				return VersionControlService.GetRepository (entry) == null;
 
 			List<FilePath> files = new List<FilePath> ();
 

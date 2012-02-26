@@ -49,7 +49,7 @@ ln -s /Applications Applications
 popd &>/dev/null
 
 mkdir -p "$MOUNT_POINT/.background"
-mono render.exe "$NAME $VERSION"
+DYLD_FALLBACK_LIBRARY_PATH="/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib" mono render.exe "$NAME $VERSION"
 mv dmg-bg-with-version.png "$MOUNT_POINT/.background/dmg-bg.png"
 cp DS_Store "$MOUNT_POINT/.DS_Store"
 cp VolumeIcon.icns "$MOUNT_POINT/.VolumeIcon.icns"

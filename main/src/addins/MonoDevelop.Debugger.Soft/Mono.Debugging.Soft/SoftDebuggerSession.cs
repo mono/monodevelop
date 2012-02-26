@@ -801,7 +801,7 @@ namespace Mono.Debugging.Soft
 							sourceFileList[originalCount + i] = char.ToLower (n[0]) + n.Substring (1);
 						}
 					}
-						     
+					
 					if (typeLoadReq == null) {
 						typeLoadReq = vm.CreateTypeLoadRequest ();
 					}
@@ -1655,7 +1655,7 @@ namespace Mono.Debugging.Soft
 						loc = GetLocFromType (type, s, bp.Line, out genericMethod, out insideLoadedRange);
 						if (loc != null) {
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2} [0x{3:x5}].\n",
-							                                        s, loc.LineNumber, loc.Method.FullName, loc.ILOffset));
+							                                        s, bp.Line, loc.Method.FullName, loc.ILOffset));
 							ResolvePendingBreakpoint (bi, loc);
 							
 							// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
@@ -1721,17 +1721,25 @@ namespace Mono.Debugging.Soft
 			insideTypeRange = false;
 			genericMethod = false;
 			
+			//Console.WriteLine ("Trying to resolve {0}:{1} in type {2}", file, line, type.Name);
 			foreach (MethodMirror method in type.GetMethods ()) {
-				int rangeFirstLine = -1;
+				int rangeFirstLine = int.MaxValue;
 				int rangeLastLine = -1;
 				
 				foreach (Location location in method.Locations) {
 					string srcFile = location.SourceFile;
 					
+					//Console.WriteLine ("\tExamining {0}:{1}...", srcFile, location.LineNumber);
+					
 					if (srcFile != null && PathComparer.Compare (PathToFileName (NormalizePath (srcFile)), file) == 0) {
-						rangeLastLine = location.LineNumber;
-						if (rangeFirstLine == -1)
+						if (location.LineNumber < rangeFirstLine)
 							rangeFirstLine = location.LineNumber;
+						
+						if (location.LineNumber > rangeLastLine)
+							rangeLastLine = location.LineNumber;
+						
+						if (line >= rangeFirstLine && line <= rangeLastLine)
+							insideTypeRange = true;
 						
 						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
 						// pick the L+1 location, since that's where the debugger is going to stop.
@@ -1740,23 +1748,26 @@ namespace Mono.Debugging.Soft
 								if (location.LineNumber > line) {
 									if (target_loc.LineNumber - line > location.LineNumber - line) {
 										// Grab the location closest to the requested line
+										//Console.WriteLine ("\t\tLocation is closest match");
 										target_loc = location;
 									} else if (location.ILOffset == target_loc.ILOffset) {
 										// Grab the last location with the same ILOffset
+										//Console.WriteLine ("\t\tLocation has same ILOffset");
 										target_loc = location;
 									}
 								} else {
 									// Line number matches exactly
+									//Console.WriteLine ("\t\tLocation matches exactly.");
 									target_loc = location;
 								}
 							} else {
+								//Console.WriteLine ("\t\tLocation is first possible match");
 								target_loc = location;
 							}
 						}
 					} else {
-						if (rangeFirstLine != -1 && line >= rangeFirstLine && line <= rangeLastLine)
-							insideTypeRange = true;
-						rangeFirstLine = -1;
+						rangeFirstLine = int.MaxValue;
+						rangeLastLine = -1;
 					}
 				}
 				
@@ -1764,9 +1775,6 @@ namespace Mono.Debugging.Soft
 					genericMethod = IsGenericMethod (method);
 					break;
 				}
-				
-				if (rangeFirstLine != -1 && line >= rangeFirstLine && line <= rangeLastLine)
-					insideTypeRange = true;
 			}
 			
 			return target_loc;

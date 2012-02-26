@@ -6,7 +6,6 @@
        url         = "http://monodevelop.com/"
        description = "Windows Platform Support for MonoDevelop"
        category    = "Platform Support"
-
       version     = "2.9.1">
 
 	<Runtime>
