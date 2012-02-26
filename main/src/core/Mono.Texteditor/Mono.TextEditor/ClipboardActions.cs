@@ -97,13 +97,13 @@ namespace Mono.TextEditor
 					break;
 				case MonoTextType:
 					byte[] rawText = System.Text.Encoding.UTF8.GetBytes (monoDocument.Text);
-					byte[] data    = new byte [rawText.Length + 1];
+					byte[] data = new byte [rawText.Length + 1];
 					rawText.CopyTo (data, 1);
-					data[0] = 0;
+					data [0] = 0;
 					if (isBlockMode)
-						data[0] |= 1;
+						data [0] |= 1;
 					if (isLineSelectionMode)
-						data[0] |= 2;
+						data [0] |= 2;
 					selection_data.Set (MD_ATOM, UTF8_FORMAT, data);
 					break;
 				}
@@ -278,10 +278,11 @@ namespace Mono.TextEditor
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
 						isBlockMode = false;
-						ISegment segment = selection.GetSelectionRange (data);
-						copiedDocument.Text = this.mode.GetTextWithoutMarkup (data.ColorStyle, segment.Offset, segment.Length);
-						monoDocument.Text = this.mode.GetTextWithoutMarkup (data.ColorStyle, segment.Offset, segment.Length);
-						LineSegment line = data.Document.GetLineByOffset (segment.Offset);
+						var segment = selection.GetSelectionRange (data);
+						var text = this.mode.GetTextWithoutMarkup (data.ColorStyle, segment.Offset, segment.Length);
+						copiedDocument.Text = text;
+						monoDocument.Text = text;
+						var line = data.Document.GetLineByOffset (segment.Offset);
 						var spanStack = line.StartSpan.Clone ();
 						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
 						this.copiedDocument.GetLine (DocumentLocation.MinLine).StartSpan = spanStack;
@@ -325,7 +326,8 @@ namespace Mono.TextEditor
 				if (data.IsSomethingSelected) {
 					selection = data.MainSelection;
 				} else {
-					selection = new Selection (new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn), new DocumentLocation (data.Caret.Line, data.Document.GetLine (data.Caret.Line).Length));
+					selection = new Selection (new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn),
+					                           new DocumentLocation (data.Caret.Line, data.Document.GetLine (data.Caret.Line).Length));
 				}
 				CopyData (data, selection);
 				
@@ -350,10 +352,12 @@ namespace Mono.TextEditor
 			Clipboard clipboard = Clipboard.Get (CopyOperation.PRIMARYCLIPBOARD_ATOM);
 			clipboard.Clear ();
 		}
+		
 		static int PasteFrom (Clipboard clipboard, TextEditorData data, bool preserveSelection, int insertionOffset)
 		{
 			return PasteFrom (clipboard, data, preserveSelection, insertionOffset, false);
 		}
+		
 		static int PasteFrom (Clipboard clipboard, TextEditorData data, bool preserveSelection, int insertionOffset, bool preserveState)
 		{
 			int result = -1;
@@ -417,6 +421,8 @@ namespace Mono.TextEditor
 						}
 					}
 				});
+				// we got MD_ATOM text - no need to request text. (otherwise buffer may get copied twice).
+				return result;
 			}
 			
 			if (result < 0 && clipboard.WaitIsTextAvailable ()) {
