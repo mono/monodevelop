@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			// TODO: RefactoringsScope.Hierarchy
 			if ((node.Accessibility & Accessibility.Protected) == Accessibility.Protected)
 				return RefactoryScope.Solution;
-			if ((node.Accessibility & Accessibility.Internal) == Accessibility.Protected)
+			if ((node.Accessibility & Accessibility.Internal) == Accessibility.Internal)
 				return RefactoryScope.Project;
 			return RefactoryScope.DeclaringType;
 		}
