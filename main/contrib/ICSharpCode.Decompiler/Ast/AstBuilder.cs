@@ -135,7 +135,7 @@ namespace ICSharpCode.Decompiler.Ast
 			if (!transformationsHaveRun)
 				RunTransformations();
 			
-			astCompileUnit.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true }, null);
+			astCompileUnit.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
 			var outputFormatter = new TextOutputFormatter(output);
 			if (formattingPolicy == null)  {
 					
@@ -146,7 +146,7 @@ namespace ICSharpCode.Decompiler.Ast
 				formattingPolicy.SpaceBeforeConstructorDeclarationParentheses = false;
 				formattingPolicy.SpaceBeforeDelegateDeclarationParentheses = false;
 			}
-			astCompileUnit.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy), null);
+			astCompileUnit.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy));
 		}
 		
 		public void AddAssembly(AssemblyDefinition assemblyDefinition, bool onlyAssemblyLevel = false)
