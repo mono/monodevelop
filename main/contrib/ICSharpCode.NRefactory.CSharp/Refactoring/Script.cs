@@ -186,7 +186,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (startWithNewLine)
 				formatter.NewLine ();
 			var visitor = new CSharpOutputVisitor (formatter, Context.FormattingOptions);
-			node.AcceptVisitor (visitor, null);
+			node.AcceptVisitor (visitor);
 			result.Text = stringWriter.ToString ().TrimEnd ();
 			if (node is FieldDeclaration)
 				result.Text += Context.EolMarker;

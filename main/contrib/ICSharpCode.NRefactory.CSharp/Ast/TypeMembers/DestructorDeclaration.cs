@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class DestructorDeclaration : AttributedNode
 	{
-		public static readonly Role<CSharpTokenNode> TildeRole = new Role<CSharpTokenNode>("Tilde", CSharpTokenNode.Null);
+		public static readonly TokenRole TildeRole = new TokenRole ("~");
 		
 		public CSharpTokenNode TildeToken {
 			get { return GetChildByRole (TildeRole); }
@@ -62,7 +62,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return NodeType.Member; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitDestructorDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitDestructorDeclaration (this);
+		}
+
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDestructorDeclaration (this, data);
 		}

@@ -531,7 +531,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		protected static void Print (AstNode node)
 		{
 			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
-			node.AcceptVisitor (v, null);
+			node.AcceptVisitor (v);
 		}
 		
 		#endregion

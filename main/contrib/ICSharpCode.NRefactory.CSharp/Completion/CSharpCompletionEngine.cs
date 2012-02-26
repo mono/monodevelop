@@ -392,13 +392,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					return null;
 				case ":":
-					
-/* Breaks constructor initializer case:
-					 * if (currentMember == null) {
+					if (currentMember == null) {
 						var wrapper = new CompletionDataWrapper (this);
-						AddTypesAndNamespaces (wrapper, GetState (), null, t => currentType != null ? !currentType.Equals (t) : true);
+						AddTypesAndNamespaces (wrapper, GetState (), null, t => currentType != null ? !currentType.ReflectionName.Equals (t.ReflectionName) : true);
 						return wrapper.Result;
-					}*/
+					}
 					return null;
 				}
 				
@@ -1741,11 +1739,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			var shortType = builder.ConvertType (type);
-			using (var w = new System.IO.StringWriter ()) {
-				var visitor = new CSharpOutputVisitor (w, FormattingPolicy);
-				shortType.AcceptVisitor (visitor, null);
-				return w.ToString ();
-			}
+			return shortType.GetText (FormattingPolicy);
 		}
 		
 		void AddEnumMembers (CompletionDataWrapper completionList, IType resolvedType, CSharpResolver state)

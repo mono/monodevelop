@@ -35,12 +35,18 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class NamespaceDeclaration : AstNode
 	{
+		public static readonly TokenRole NamespaceKeywordRole = new TokenRole ("namespace");
+		
 		public static readonly Role<AstNode> MemberRole = CompilationUnit.MemberRole;
 		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
 			}
+		}
+		
+		public CSharpTokenNode NamespaceToken {
+			get { return GetChildByRole (NamespaceKeywordRole); }
 		}
 		
 		public string Name {
@@ -109,7 +115,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChild (child, MemberRole);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitNamespaceDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitNamespaceDeclaration (this);
+		}
+		
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitNamespaceDeclaration (this, data);
 		}

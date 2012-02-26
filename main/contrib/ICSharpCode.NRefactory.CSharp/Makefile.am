@@ -112,6 +112,7 @@ FILES =  \
 	Ast/Statements/WhileStatement.cs \
 	Ast/Statements/YieldBreakStatement.cs \
 	Ast/Statements/YieldReturnStatement.cs \
+	Ast/TokenRole.cs \
 	Ast/TypeMembers/Accessor.cs \
 	Ast/TypeMembers/AttributedNode.cs \
 	Ast/TypeMembers/ConstructorDeclaration.cs \

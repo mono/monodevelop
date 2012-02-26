@@ -29,6 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class FixedFieldDeclaration : AttributedNode
 	{
+		public static readonly TokenRole FixedKeywordRole = new TokenRole ("fixed");
 		public static readonly Role<FixedVariableInitializer> VariableRole = new Role<FixedVariableInitializer> ("FixedVariable");
 		
 		public override NodeType NodeType {
@@ -36,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode FixedToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (FixedKeywordRole); }
 		}
 
 		public AstType ReturnType {
@@ -48,7 +49,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (VariableRole); }
 		}
 
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitFixedFieldDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitFixedFieldDeclaration (this);
+		}
+
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitFixedFieldDeclaration (this, data);
 		}

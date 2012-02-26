@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class AstFormattingVisitor : DepthFirstAstVisitor<object, object>
+	public class AstFormattingVisitor : DepthFirstAstVisitor
 	{
 		CSharpFormattingOptions policy;
 		IDocument document;
@@ -85,10 +85,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			CorrectBlankLines = true;
 		}
 
-		public override object VisitCompilationUnit (CompilationUnit unit, object data)
+		public override void VisitCompilationUnit (CompilationUnit unit)
 		{
-			base.VisitCompilationUnit (unit, data);
-			return null;
+			base.VisitCompilationUnit (unit);
 		}
 
 		public void EnsureBlankLinesAfter (AstNode node, int blankLines)
@@ -136,26 +135,23 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChange (start, end - start, sb.ToString ());
 		}
 
-		public override object VisitUsingDeclaration (UsingDeclaration usingDeclaration, object data)
+		public override void VisitUsingDeclaration (UsingDeclaration usingDeclaration)
 		{
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) 
 				EnsureBlankLinesBefore (usingDeclaration, policy.BlankLinesBeforeUsings);
 			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
 				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
-
-			return null;
 		}
 
-		public override object VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, object data)
+		public override void VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration)
 		{
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) 
 				EnsureBlankLinesBefore (usingDeclaration, policy.BlankLinesBeforeUsings);
 			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
 				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
-			return null;
 		}
 
-		public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
+		public override void VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration)
 		{
 			var firstNsMember = namespaceDeclaration.Members.FirstOrDefault ();
 			if (firstNsMember != null)
@@ -164,14 +160,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			EnforceBraceStyle (policy.NamespaceBraceStyle, namespaceDeclaration.LBraceToken, namespaceDeclaration.RBraceToken);
 			if (policy.IndentNamespaceBody)
 				IndentLevel++;
-			object result = base.VisitNamespaceDeclaration (namespaceDeclaration, data);
+			base.VisitNamespaceDeclaration (namespaceDeclaration);
 			if (policy.IndentNamespaceBody)
 				IndentLevel--;
 			FixIndentation (namespaceDeclaration.RBraceToken.StartLocation);
-			return result;
 		}
 
-		public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
+		public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 		{
 			FormatAttributedNode (typeDeclaration);
 			BraceStyle braceStyle;
@@ -200,13 +195,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			if (indentBody)
 				IndentLevel++;
-			object result = base.VisitTypeDeclaration (typeDeclaration, data);
+			base.VisitTypeDeclaration (typeDeclaration);
 			if (indentBody)
 				IndentLevel--;
 			
 			if (typeDeclaration.NextSibling is TypeDeclaration || typeDeclaration.NextSibling is DelegateDeclaration)
 				EnsureBlankLinesAfter (typeDeclaration, policy.BlankLinesBetweenTypes);
-			return result;
 		}
 
 		bool IsSimpleAccessor (Accessor accessor)
@@ -228,7 +222,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			int endOffset = segment.EndOffset;
 			for (int i = segment.Offset; i < endOffset; i++) {
-				if (!IsSpacing (document.GetCharAt (i)))
+				if (!IsSpacing(document.GetCharAt(i)))
 					return false;
 			}
 			return true;
@@ -332,7 +326,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return i;
 		}
 
-		public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
+		public override void VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration)
 		{
 			FormatAttributedNode (propertyDeclaration);
 			bool oneLine = false;
@@ -398,7 +392,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						nextStatementIndent = " ";
 					}
-					VisitBlockWithoutFixIndentation (propertyDeclaration.Getter.Body, policy.IndentBlocks, data);
+					VisitBlockWithoutFixIndentation (propertyDeclaration.Getter.Body, policy.IndentBlocks);
 				}
 			}
 			
@@ -426,7 +420,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						nextStatementIndent = " ";
 					}
-					VisitBlockWithoutFixIndentation (propertyDeclaration.Setter.Body, policy.IndentBlocks, data);
+					VisitBlockWithoutFixIndentation (propertyDeclaration.Setter.Body, policy.IndentBlocks);
 				}
 			}
 			
@@ -434,10 +428,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				IndentLevel--;
 			if (IsMember (propertyDeclaration.NextSibling))
 				EnsureBlankLinesAfter (propertyDeclaration, policy.BlankLinesBetweenMembers);
-			return null;
 		}
 
-		public override object VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, object data)
+		public override void VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration)
 		{
 			ForceSpacesBefore (indexerDeclaration.LBracketToken, policy.SpaceBeforeIndexerDeclarationBracket);
 			ForceSpacesAfter (indexerDeclaration.LBracketToken, policy.SpaceWithinIndexerDeclarationBracket);
@@ -459,7 +452,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						nextStatementIndent = " ";
 					}
-					VisitBlockWithoutFixIndentation (indexerDeclaration.Getter.Body, policy.IndentBlocks, data);
+					VisitBlockWithoutFixIndentation (indexerDeclaration.Getter.Body, policy.IndentBlocks);
 				}
 			}
 			
@@ -471,14 +464,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						nextStatementIndent = " ";
 					}
-					VisitBlockWithoutFixIndentation (indexerDeclaration.Setter.Body, policy.IndentBlocks, data);
+					VisitBlockWithoutFixIndentation (indexerDeclaration.Setter.Body, policy.IndentBlocks);
 				}
 			}
 			if (policy.IndentPropertyBody)
 				IndentLevel--;
 			if (IsMember (indexerDeclaration.NextSibling))
 				EnsureBlankLinesAfter (indexerDeclaration, policy.BlankLinesBetweenMembers);
-			return null;
 		}
 
 		static bool IsSimpleEvent (AstNode node)
@@ -486,7 +478,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return node is EventDeclaration;
 		}
 
-		public override object VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, object data)
+		public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
 		{
 			FormatAttributedNode (eventDeclaration);
 			EnforceBraceStyle (policy.EventBraceStyle, eventDeclaration.LBraceToken, eventDeclaration.RBraceToken);
@@ -502,7 +494,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						nextStatementIndent = " ";
 					}
 					
-					VisitBlockWithoutFixIndentation (eventDeclaration.AddAccessor.Body, policy.IndentBlocks, data);
+					VisitBlockWithoutFixIndentation (eventDeclaration.AddAccessor.Body, policy.IndentBlocks);
 				}
 			}
 			
@@ -514,7 +506,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						nextStatementIndent = " ";
 					}
-					VisitBlockWithoutFixIndentation (eventDeclaration.RemoveAccessor.Body, policy.IndentBlocks, data);
+					VisitBlockWithoutFixIndentation (eventDeclaration.RemoveAccessor.Body, policy.IndentBlocks);
 				}
 			}
 			
@@ -526,10 +518,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else if (IsMember (eventDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenMembers);
 			}
-			return null;
 		}
 
-		public override object VisitEventDeclaration (EventDeclaration eventDeclaration, object data)
+		public override void VisitEventDeclaration (EventDeclaration eventDeclaration)
 		{
 			FormatAttributedNode (eventDeclaration);
 			if (eventDeclaration.NextSibling is EventDeclaration && IsSimpleEvent (eventDeclaration) && IsSimpleEvent (eventDeclaration.NextSibling)) {
@@ -537,17 +528,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else if (IsMember (eventDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenMembers);
 			}
-			return null;
 		}
 
-		public override object VisitAccessor (Accessor accessor, object data)
+		public override void VisitAccessor (Accessor accessor)
 		{
 			FixIndentationForceNewLine (accessor.StartLocation);
-			object result = base.VisitAccessor (accessor, data);
-			return result;
+			base.VisitAccessor (accessor);
 		}
 
-		public override object VisitFieldDeclaration (FieldDeclaration fieldDeclaration, object data)
+		public override void VisitFieldDeclaration (FieldDeclaration fieldDeclaration)
 		{
 			FormatAttributedNode (fieldDeclaration);
 			FormatCommas (fieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
@@ -556,10 +545,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else if (IsMember (fieldDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenMembers);
 			}
-			return base.VisitFieldDeclaration (fieldDeclaration, data);
+			base.VisitFieldDeclaration (fieldDeclaration);
 		}
 
-		public override object VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration, object data)
+		public override void VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration)
 		{
 			FormatAttributedNode (fixedFieldDeclaration);
 			FormatCommas (fixedFieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
@@ -568,16 +557,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else if (IsMember (fixedFieldDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenMembers);
 			}
-			return base.VisitFixedFieldDeclaration (fixedFieldDeclaration, data);
+			base.VisitFixedFieldDeclaration (fixedFieldDeclaration);
 		}
 
-		public override object VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, object data)
+		public override void VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration)
 		{
 			FormatAttributedNode (enumMemberDeclaration);
-			return base.VisitEnumMemberDeclaration (enumMemberDeclaration, data);
+			base.VisitEnumMemberDeclaration (enumMemberDeclaration);
 		}
 
-		public override object VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, object data)
+		public override void VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration)
 		{
 			FormatAttributedNode (delegateDeclaration);
 			
@@ -597,7 +586,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnsureBlankLinesAfter (delegateDeclaration, policy.BlankLinesBetweenMembers);
 			}
 
-			return base.VisitDelegateDeclaration (delegateDeclaration, data);
+			base.VisitDelegateDeclaration (delegateDeclaration);
 		}
 
 		static bool IsMember (AstNode nextSibling)
@@ -618,7 +607,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixIndentationForceNewLine (child.StartLocation);
 		}
 		
-		public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
+		public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
 		{
 			FormatAttributedNode (methodDeclaration);
 			
@@ -636,17 +625,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnforceBraceStyle (policy.MethodBraceStyle, methodDeclaration.Body.LBraceToken, methodDeclaration.Body.RBraceToken);
 				if (policy.IndentMethodBody)
 					IndentLevel++;
-				base.VisitBlockStatement (methodDeclaration.Body, data);
+				base.VisitBlockStatement (methodDeclaration.Body);
 				if (policy.IndentMethodBody)
 					IndentLevel--;
 			}
 			if (IsMember (methodDeclaration.NextSibling))
 				EnsureBlankLinesAfter (methodDeclaration, policy.BlankLinesBetweenMembers);
-
-			return null;
 		}
 
-		public override object VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, object data)
+		public override void VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration)
 		{
 			FormatAttributedNode (operatorDeclaration);
 			
@@ -664,17 +651,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnforceBraceStyle (policy.MethodBraceStyle, operatorDeclaration.Body.LBraceToken, operatorDeclaration.Body.RBraceToken);
 				if (policy.IndentMethodBody)
 					IndentLevel++;
-				base.VisitBlockStatement (operatorDeclaration.Body, data);
+				base.VisitBlockStatement (operatorDeclaration.Body);
 				if (policy.IndentMethodBody)
 					IndentLevel--;
 			}
 			if (IsMember (operatorDeclaration.NextSibling))
 				EnsureBlankLinesAfter (operatorDeclaration, policy.BlankLinesBetweenMembers);
-			
-			return null;
 		}
 
-		public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
+		public override void VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration)
 		{
 			FormatAttributedNode (constructorDeclaration);
 			
@@ -693,16 +678,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnforceBraceStyle (policy.ConstructorBraceStyle, constructorDeclaration.Body.LBraceToken, constructorDeclaration.Body.RBraceToken);
 				if (policy.IndentMethodBody)
 					IndentLevel++;
-				result = base.VisitBlockStatement (constructorDeclaration.Body, data);
+				base.VisitBlockStatement (constructorDeclaration.Body);
 				if (policy.IndentMethodBody)
 					IndentLevel--;
 			}
 			if (IsMember (constructorDeclaration.NextSibling))
 				EnsureBlankLinesAfter (constructorDeclaration, policy.BlankLinesBetweenMembers);
-			return result;
 		}
 
-		public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
+		public override void VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration)
 		{
 			FormatAttributedNode (destructorDeclaration);
 			
@@ -715,79 +699,72 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnforceBraceStyle (policy.DestructorBraceStyle, destructorDeclaration.Body.LBraceToken, destructorDeclaration.Body.RBraceToken);
 				if (policy.IndentMethodBody)
 					IndentLevel++;
-				result = base.VisitBlockStatement (destructorDeclaration.Body, data);
+				base.VisitBlockStatement (destructorDeclaration.Body);
 				if (policy.IndentMethodBody)
 					IndentLevel--;
 			}
 			if (IsMember (destructorDeclaration.NextSibling))
 				EnsureBlankLinesAfter (destructorDeclaration, policy.BlankLinesBetweenMembers);
-			return result;
 		}
 
 		#region Statements
-		public override object VisitExpressionStatement (ExpressionStatement expressionStatement, object data)
+		public override void VisitExpressionStatement (ExpressionStatement expressionStatement)
 		{
 			FixStatementIndentation (expressionStatement.StartLocation);
 			FixSemicolon (expressionStatement.SemicolonToken);
-			return base.VisitExpressionStatement (expressionStatement, data);
+			base.VisitExpressionStatement (expressionStatement);
 		}
 
-		object VisitBlockWithoutFixIndentation (BlockStatement blockStatement, bool indent, object data)
+		void VisitBlockWithoutFixIndentation (BlockStatement blockStatement, bool indent)
 		{
 			if (indent)
 				IndentLevel++;
-			object result = base.VisitBlockStatement (blockStatement, data);
+			base.VisitBlockStatement (blockStatement);
 			if (indent)
 				IndentLevel--;
-			return result;
 		}
 
-		public override object VisitBlockStatement (BlockStatement blockStatement, object data)
+		public override void VisitBlockStatement (BlockStatement blockStatement)
 		{
 			FixIndentation (blockStatement.StartLocation);
-			object result = VisitBlockWithoutFixIndentation (blockStatement, policy.IndentBlocks, data);
+			VisitBlockWithoutFixIndentation (blockStatement, policy.IndentBlocks);
 			FixIndentation (blockStatement.EndLocation, -1);
-			return result;
 		}
 
-		public override object VisitComment (Comment comment, object data)
+		public override void VisitComment (Comment comment)
 		{
 			if (comment.StartsLine && !HadErrors && comment.StartLocation.Column > 1)
 				FixIndentation (comment.StartLocation);
-			return null;
 		}
 
-		public override object VisitBreakStatement (BreakStatement breakStatement, object data)
+		public override void VisitBreakStatement (BreakStatement breakStatement)
 		{
 			FixStatementIndentation (breakStatement.StartLocation);
-			return null;
 		}
 
-		public override object VisitCheckedStatement (CheckedStatement checkedStatement, object data)
+		public override void VisitCheckedStatement (CheckedStatement checkedStatement)
 		{
 			FixStatementIndentation (checkedStatement.StartLocation);
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, checkedStatement.Body);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, checkedStatement.Body);
 		}
 
-		public override object VisitContinueStatement (ContinueStatement continueStatement, object data)
+		public override void VisitContinueStatement (ContinueStatement continueStatement)
 		{
 			FixStatementIndentation (continueStatement.StartLocation);
-			return null;
 		}
 
-		public override object VisitEmptyStatement (EmptyStatement emptyStatement, object data)
+		public override void VisitEmptyStatement (EmptyStatement emptyStatement)
 		{
 			FixStatementIndentation (emptyStatement.StartLocation);
-			return null;
 		}
 
-		public override object VisitFixedStatement (FixedStatement fixedStatement, object data)
+		public override void VisitFixedStatement (FixedStatement fixedStatement)
 		{
 			FixStatementIndentation (fixedStatement.StartLocation);
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, fixedStatement.EmbeddedStatement);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, fixedStatement.EmbeddedStatement);
 		}
 
-		public override object VisitForeachStatement (ForeachStatement foreachStatement, object data)
+		public override void VisitForeachStatement (ForeachStatement foreachStatement)
 		{
 			FixStatementIndentation (foreachStatement.StartLocation);
 			ForceSpacesBefore (foreachStatement.LParToken, policy.SpaceBeforeForeachParentheses);
@@ -795,18 +772,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter (foreachStatement.LParToken, policy.SpacesWithinForeachParentheses);
 			ForceSpacesBefore (foreachStatement.RParToken, policy.SpacesWithinForeachParentheses);
 
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.ForEachBraceForcement, foreachStatement.EmbeddedStatement);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.ForEachBraceForcement, foreachStatement.EmbeddedStatement);
 		}
 
-		object FixEmbeddedStatment (BraceStyle braceStyle, BraceForcement braceForcement, AstNode node)
+		void FixEmbeddedStatment (BraceStyle braceStyle, BraceForcement braceForcement, AstNode node)
 		{
-			return FixEmbeddedStatment (braceStyle, braceForcement, null, false, node);
+			FixEmbeddedStatment (braceStyle, braceForcement, null, false, node);
 		}
 
-		object FixEmbeddedStatment (BraceStyle braceStyle, BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, AstNode node)
+		void FixEmbeddedStatment (BraceStyle braceStyle, BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, AstNode node)
 		{
 			if (node == null)
-				return null;
+				return;
 			int originalLevel = curIndent.Level;
 			bool isBlock = node is BlockStatement;
 			switch (braceForcement) {
@@ -877,7 +854,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				!(policy.AlignEmbeddedIfStatements && node is IfElseStatement && node.Parent is IfElseStatement || 
 				policy.AlignEmbeddedUsingStatements && node is UsingStatement && node.Parent is UsingStatement)) 
 				curIndent.Level++;
-			object result = isBlock ? base.VisitBlockStatement ((BlockStatement)node, null) : node.AcceptVisitor (this, null);
+			if (isBlock) {
+				base.VisitBlockStatement ((BlockStatement)node);
+			} else {
+				node.AcceptVisitor (this);
+			}
 			curIndent.Level = originalLevel;
 			switch (braceForcement) {
 			case BraceForcement.DoNotChange:
@@ -911,7 +892,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				break;
 			}
-			return result;
 		}
 
 		void EnforceBraceStyle (BraceStyle braceStyle, AstNode lbrace, AstNode rbrace)
@@ -1056,7 +1036,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return 0;
 		}
 
-		public override object VisitForStatement (ForStatement forStatement, object data)
+		public override void VisitForStatement (ForStatement forStatement)
 		{
 			FixStatementIndentation (forStatement.StartLocation);
 			foreach (AstNode node in forStatement.Children) {
@@ -1073,16 +1053,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter (forStatement.LParToken, policy.SpacesWithinForParentheses);
 			ForceSpacesBefore (forStatement.RParToken, policy.SpacesWithinForParentheses);
 
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.ForBraceForcement, forStatement.EmbeddedStatement);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.ForBraceForcement, forStatement.EmbeddedStatement);
 		}
 
-		public override object VisitGotoStatement (GotoStatement gotoStatement, object data)
+		public override void VisitGotoStatement (GotoStatement gotoStatement)
 		{
 			FixStatementIndentation (gotoStatement.StartLocation);
-			return VisitChildren (gotoStatement, data);
+			VisitChildren (gotoStatement);
 		}
 
-		public override object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
+		public override void VisitIfElseStatement (IfElseStatement ifElseStatement)
 		{
 			ForceSpacesBefore (ifElseStatement.LParToken, policy.SpaceBeforeIfParentheses);
 
@@ -1093,7 +1073,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixStatementIndentation (ifElseStatement.StartLocation);
 			
 			if (!ifElseStatement.Condition.IsNull)
-				ifElseStatement.Condition.AcceptVisitor (this, data);
+				ifElseStatement.Condition.AcceptVisitor (this);
 			
 			if (!ifElseStatement.TrueStatement.IsNull)
 				FixEmbeddedStatment (policy.StatementBraceStyle, policy.IfElseBraceForcement, ifElseStatement.IfToken, policy.AllowIfBlockInline, ifElseStatement.TrueStatement);
@@ -1107,17 +1087,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				FixEmbeddedStatment (policy.StatementBraceStyle, forcement, ifElseStatement.ElseToken, policy.AllowIfBlockInline, ifElseStatement.FalseStatement);
 			}
-			
-			return null;
 		}
 
-		public override object VisitLabelStatement (LabelStatement labelStatement, object data)
+		public override void VisitLabelStatement (LabelStatement labelStatement)
 		{
 			// TODO
-			return VisitChildren (labelStatement, data);
+			VisitChildren (labelStatement);
 		}
 
-		public override object VisitLockStatement (LockStatement lockStatement, object data)
+		public override void VisitLockStatement (LockStatement lockStatement)
 		{
 			FixStatementIndentation (lockStatement.StartLocation);
 			ForceSpacesBefore (lockStatement.LParToken, policy.SpaceBeforeLockParentheses);
@@ -1125,16 +1103,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter (lockStatement.LParToken, policy.SpacesWithinLockParentheses);
 			ForceSpacesBefore (lockStatement.RParToken, policy.SpacesWithinLockParentheses);
 
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, lockStatement.EmbeddedStatement);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, lockStatement.EmbeddedStatement);
 		}
 
-		public override object VisitReturnStatement (ReturnStatement returnStatement, object data)
+		public override void VisitReturnStatement (ReturnStatement returnStatement)
 		{
 			FixStatementIndentation (returnStatement.StartLocation);
-			return VisitChildren (returnStatement, data);
+			VisitChildren (returnStatement);
 		}
 
-		public override object VisitSwitchStatement (SwitchStatement switchStatement, object data)
+		public override void VisitSwitchStatement (SwitchStatement switchStatement)
 		{
 			FixStatementIndentation (switchStatement.StartLocation);
 			ForceSpacesBefore (switchStatement.LParToken, policy.SpaceBeforeSwitchParentheses);
@@ -1143,11 +1121,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesBefore (switchStatement.RParToken, policy.SpacesWithinSwitchParentheses);
 
 			EnforceBraceStyle (policy.StatementBraceStyle, switchStatement.LBraceToken, switchStatement.RBraceToken);
-			object result = VisitChildren (switchStatement, data);
-			return result;
+			VisitChildren (switchStatement);
 		}
 
-		public override object VisitSwitchSection (SwitchSection switchSection, object data)
+		public override void VisitSwitchSection (SwitchSection switchSection)
 		{
 			if (policy.IndentSwitchBody)
 				curIndent.Level++;
@@ -1161,33 +1138,32 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (var stmt in switchSection.Statements) {
 				if (stmt is BreakStatement && !policy.IndentBreakStatements && policy.IndentCaseBody) {
 					curIndent.Level--;
-					stmt.AcceptVisitor (this, null);
+					stmt.AcceptVisitor (this);
 					curIndent.Level++;
 					continue;
 				}
-				stmt.AcceptVisitor (this, null);
+				stmt.AcceptVisitor (this);
 			}
 			if (policy.IndentCaseBody)
 				curIndent.Level--;
 				
 			if (policy.IndentSwitchBody)
 				curIndent.Level--;
-			return null;
 		}
 
-		public override object VisitCaseLabel (CaseLabel caseLabel, object data)
+		public override void VisitCaseLabel (CaseLabel caseLabel)
 		{
 			// handled in switchsection
-			return null;
+			return;
 		}
 
-		public override object VisitThrowStatement (ThrowStatement throwStatement, object data)
+		public override void VisitThrowStatement (ThrowStatement throwStatement)
 		{
 			FixStatementIndentation (throwStatement.StartLocation);
-			return VisitChildren (throwStatement, data);
+			VisitChildren (throwStatement);
 		}
 
-		public override object VisitTryCatchStatement (TryCatchStatement tryCatchStatement, object data)
+		public override void VisitTryCatchStatement (TryCatchStatement tryCatchStatement)
 		{
 			FixStatementIndentation (tryCatchStatement.StartLocation);
 			
@@ -1211,28 +1187,26 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixEmbeddedStatment (policy.StatementBraceStyle, BraceForcement.DoNotChange, tryCatchStatement.FinallyBlock);
 			}
 			
-			return null;
 		}
 
-		public override object VisitCatchClause (CatchClause catchClause, object data)
+		public override void VisitCatchClause (CatchClause catchClause)
 		{
 			// Handled in TryCatchStatement
-			return null;
 		}
 
-		public override object VisitUncheckedStatement (UncheckedStatement uncheckedStatement, object data)
+		public override void VisitUncheckedStatement (UncheckedStatement uncheckedStatement)
 		{
 			FixStatementIndentation (uncheckedStatement.StartLocation);
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, uncheckedStatement.Body);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.FixedBraceForcement, uncheckedStatement.Body);
 		}
 
-		public override object VisitUnsafeStatement (UnsafeStatement unsafeStatement, object data)
+		public override void VisitUnsafeStatement (UnsafeStatement unsafeStatement)
 		{
 			FixStatementIndentation (unsafeStatement.StartLocation);
-			return FixEmbeddedStatment (policy.StatementBraceStyle, BraceForcement.DoNotChange, unsafeStatement.Body);
+			FixEmbeddedStatment (policy.StatementBraceStyle, BraceForcement.DoNotChange, unsafeStatement.Body);
 		}
 
-		public override object VisitUsingStatement (UsingStatement usingStatement, object data)
+		public override void VisitUsingStatement (UsingStatement usingStatement)
 		{
 			FixStatementIndentation (usingStatement.StartLocation);
 			ForceSpacesBefore (usingStatement.LParToken, policy.SpaceBeforeUsingParentheses);
@@ -1240,10 +1214,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter (usingStatement.LParToken, policy.SpacesWithinUsingParentheses);
 			ForceSpacesBefore (usingStatement.RParToken, policy.SpacesWithinUsingParentheses);
 
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.UsingBraceForcement, usingStatement.EmbeddedStatement);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.UsingBraceForcement, usingStatement.EmbeddedStatement);
 		}
 
-		public override object VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, object data)
+		public override void VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement)
 		{
 			if (!variableDeclarationStatement.SemicolonToken.IsNull)
 				FixStatementIndentation (variableDeclarationStatement.StartLocation);
@@ -1254,21 +1228,20 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesAfter (variableDeclarationStatement.Type, true);
 			}
 			foreach (var initializer in variableDeclarationStatement.Variables) {
-				initializer.AcceptVisitor (this, data);
+				initializer.AcceptVisitor (this);
 			}
 			FormatCommas (variableDeclarationStatement, policy.SpaceBeforeLocalVariableDeclarationComma, policy.SpaceAfterLocalVariableDeclarationComma);
 			FixSemicolon (variableDeclarationStatement.SemicolonToken);
-			return null;
 		}
 
-		public override object VisitDoWhileStatement (DoWhileStatement doWhileStatement, object data)
+		public override void VisitDoWhileStatement (DoWhileStatement doWhileStatement)
 		{
 			FixStatementIndentation (doWhileStatement.StartLocation);
 			PlaceOnNewLine (policy.PlaceWhileOnNewLine, doWhileStatement.WhileToken);
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.WhileBraceForcement, doWhileStatement.EmbeddedStatement);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.WhileBraceForcement, doWhileStatement.EmbeddedStatement);
 		}
 
-		public override object VisitWhileStatement (WhileStatement whileStatement, object data)
+		public override void VisitWhileStatement (WhileStatement whileStatement)
 		{
 			FixStatementIndentation (whileStatement.StartLocation);
 			ForceSpacesBefore (whileStatement.LParToken, policy.SpaceBeforeWhileParentheses);
@@ -1276,49 +1249,46 @@ namespace ICSharpCode.NRefactory.CSharp
 			ForceSpacesAfter (whileStatement.LParToken, policy.SpacesWithinWhileParentheses);
 			ForceSpacesBefore (whileStatement.RParToken, policy.SpacesWithinWhileParentheses);
 
-			return FixEmbeddedStatment (policy.StatementBraceStyle, policy.WhileBraceForcement, whileStatement.EmbeddedStatement);
+			FixEmbeddedStatment (policy.StatementBraceStyle, policy.WhileBraceForcement, whileStatement.EmbeddedStatement);
 		}
 
-		public override object VisitYieldBreakStatement (YieldBreakStatement yieldBreakStatement, object data)
+		public override void VisitYieldBreakStatement (YieldBreakStatement yieldBreakStatement)
 		{
 			FixStatementIndentation (yieldBreakStatement.StartLocation);
-			return null;
 		}
 
-		public override object VisitYieldReturnStatement (YieldReturnStatement yieldStatement, object data)
+		public override void VisitYieldReturnStatement (YieldReturnStatement yieldStatement)
 		{
 			FixStatementIndentation (yieldStatement.StartLocation);
-			return null;
 		}
 
-		public override object VisitVariableInitializer (VariableInitializer variableInitializer, object data)
+		public override void VisitVariableInitializer (VariableInitializer variableInitializer)
 		{
 			if (!variableInitializer.AssignToken.IsNull)
 				ForceSpacesAround (variableInitializer.AssignToken, policy.SpaceAroundAssignment);
 			if (!variableInitializer.Initializer.IsNull)
-				variableInitializer.Initializer.AcceptVisitor (this, data);
-			return data;
+				variableInitializer.Initializer.AcceptVisitor (this);
 		}
 
 		#endregion
 		
 		#region Expressions
-		public override object VisitComposedType (ComposedType composedType, object data)
+		public override void VisitComposedType (ComposedType composedType)
 		{
 			var spec = composedType.ArraySpecifiers.FirstOrDefault ();
 			if (spec != null)
 				ForceSpacesBefore (spec.LBracketToken, policy.SpaceBeforeArrayDeclarationBrackets);
 
-			return base.VisitComposedType (composedType, data);
+			base.VisitComposedType (composedType);
 		}
 
-		public override object VisitAssignmentExpression (AssignmentExpression assignmentExpression, object data)
+		public override void VisitAssignmentExpression (AssignmentExpression assignmentExpression)
 		{
 			ForceSpacesAround (assignmentExpression.OperatorToken, policy.SpaceAroundAssignment);
-			return base.VisitAssignmentExpression (assignmentExpression, data);
+			base.VisitAssignmentExpression (assignmentExpression);
 		}
 
-		public override object VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
+		public override void VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression)
 		{
 			bool forceSpaces = false;
 			switch (binaryOperatorExpression.Operator) {
@@ -1360,19 +1330,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			ForceSpacesAround (binaryOperatorExpression.OperatorToken, forceSpaces);
 
-			return base.VisitBinaryOperatorExpression (binaryOperatorExpression, data);
+			base.VisitBinaryOperatorExpression (binaryOperatorExpression);
 		}
 
-		public override object VisitConditionalExpression (ConditionalExpression conditionalExpression, object data)
+		public override void VisitConditionalExpression (ConditionalExpression conditionalExpression)
 		{
 			ForceSpacesBefore (conditionalExpression.QuestionMarkToken, policy.SpaceBeforeConditionalOperatorCondition);
 			ForceSpacesAfter (conditionalExpression.QuestionMarkToken, policy.SpaceAfterConditionalOperatorCondition);
 			ForceSpacesBefore (conditionalExpression.ColonToken, policy.SpaceBeforeConditionalOperatorSeparator);
 			ForceSpacesAfter (conditionalExpression.ColonToken, policy.SpaceAfterConditionalOperatorSeparator);
-			return base.VisitConditionalExpression (conditionalExpression, data);
+			base.VisitConditionalExpression (conditionalExpression);
 		}
 
-		public override object VisitCastExpression (CastExpression castExpression, object data)
+		public override void VisitCastExpression (CastExpression castExpression)
 		{
 			if (castExpression.RParToken != null) {
 				ForceSpacesAfter (castExpression.LParToken, policy.SpacesWithinCastParentheses);
@@ -1380,7 +1350,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 				ForceSpacesAfter (castExpression.RParToken, policy.SpaceAfterTypecast);
 			}
-			return base.VisitCastExpression (castExpression, data);
+			base.VisitCastExpression (castExpression);
 		}
 
 		void ForceSpacesAround (AstNode node, bool forceSpaces)
@@ -1401,7 +1371,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public override object VisitInvocationExpression (InvocationExpression invocationExpression, object data)
+		public override void VisitInvocationExpression (InvocationExpression invocationExpression)
 		{
 			ForceSpacesBefore (invocationExpression.LParToken, policy.SpaceBeforeMethodCallParentheses);
 			if (invocationExpression.Arguments.Any ()) {
@@ -1413,57 +1383,57 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			FormatCommas (invocationExpression, policy.SpaceBeforeMethodCallParameterComma, policy.SpaceAfterMethodCallParameterComma);
 
-			return base.VisitInvocationExpression (invocationExpression, data);
+			base.VisitInvocationExpression (invocationExpression);
 		}
 
-		public override object VisitIndexerExpression (IndexerExpression indexerExpression, object data)
+		public override void VisitIndexerExpression (IndexerExpression indexerExpression)
 		{
 			ForceSpacesBefore (indexerExpression.LBracketToken, policy.SpacesBeforeBrackets);
 			ForceSpacesAfter (indexerExpression.LBracketToken, policy.SpacesWithinBrackets);
 			ForceSpacesBefore (indexerExpression.RBracketToken, policy.SpacesWithinBrackets);
 			FormatCommas (indexerExpression, policy.SpaceBeforeBracketComma, policy.SpaceAfterBracketComma);
 
-			return base.VisitIndexerExpression (indexerExpression, data);
+			base.VisitIndexerExpression (indexerExpression);
 		}
 
-		public override object VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, object data)
+		public override void VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression)
 		{
 			ForceSpacesAfter (parenthesizedExpression.LParToken, policy.SpacesWithinParentheses);
 			ForceSpacesBefore (parenthesizedExpression.RParToken, policy.SpacesWithinParentheses);
-			return base.VisitParenthesizedExpression (parenthesizedExpression, data);
+			base.VisitParenthesizedExpression (parenthesizedExpression);
 		}
 
-		public override object VisitSizeOfExpression (SizeOfExpression sizeOfExpression, object data)
+		public override void VisitSizeOfExpression (SizeOfExpression sizeOfExpression)
 		{
 			ForceSpacesBefore (sizeOfExpression.LParToken, policy.SpaceBeforeSizeOfParentheses);
 			ForceSpacesAfter (sizeOfExpression.LParToken, policy.SpacesWithinSizeOfParentheses);
 			ForceSpacesBefore (sizeOfExpression.RParToken, policy.SpacesWithinSizeOfParentheses);
-			return base.VisitSizeOfExpression (sizeOfExpression, data);
+			base.VisitSizeOfExpression (sizeOfExpression);
 		}
 
-		public override object VisitTypeOfExpression (TypeOfExpression typeOfExpression, object data)
+		public override void VisitTypeOfExpression (TypeOfExpression typeOfExpression)
 		{
 			ForceSpacesBefore (typeOfExpression.LParToken, policy.SpaceBeforeTypeOfParentheses);
 			ForceSpacesAfter (typeOfExpression.LParToken, policy.SpacesWithinTypeOfParentheses);
 			ForceSpacesBefore (typeOfExpression.RParToken, policy.SpacesWithinTypeOfParentheses);
-			return base.VisitTypeOfExpression (typeOfExpression, data);
+			base.VisitTypeOfExpression (typeOfExpression);
 		}
 
-		public override object VisitCheckedExpression (CheckedExpression checkedExpression, object data)
+		public override void VisitCheckedExpression (CheckedExpression checkedExpression)
 		{
 			ForceSpacesAfter (checkedExpression.LParToken, policy.SpacesWithinCheckedExpressionParantheses);
 			ForceSpacesBefore (checkedExpression.RParToken, policy.SpacesWithinCheckedExpressionParantheses);
-			return base.VisitCheckedExpression (checkedExpression, data);
+			base.VisitCheckedExpression (checkedExpression);
 		}
 
-		public override object VisitUncheckedExpression (UncheckedExpression uncheckedExpression, object data)
+		public override void VisitUncheckedExpression (UncheckedExpression uncheckedExpression)
 		{
 			ForceSpacesAfter (uncheckedExpression.LParToken, policy.SpacesWithinCheckedExpressionParantheses);
 			ForceSpacesBefore (uncheckedExpression.RParToken, policy.SpacesWithinCheckedExpressionParantheses);
-			return base.VisitUncheckedExpression (uncheckedExpression, data);
+			base.VisitUncheckedExpression (uncheckedExpression);
 		}
 
-		public override object VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, object data)
+		public override void VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression)
 		{
 			ForceSpacesBefore (objectCreateExpression.LParToken, policy.SpaceBeforeNewParentheses);
 			
@@ -1480,21 +1450,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			FormatCommas (objectCreateExpression, policy.SpaceBeforeNewParameterComma, policy.SpaceAfterNewParameterComma);
 			
-			return base.VisitObjectCreateExpression (objectCreateExpression, data);
+			base.VisitObjectCreateExpression (objectCreateExpression);
 		}
 
-		public override object VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, object data)
+		public override void VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression)
 		{
 			FormatCommas (arrayObjectCreateExpression, policy.SpaceBeforeMethodCallParameterComma, policy.SpaceAfterMethodCallParameterComma);
-			return base.VisitArrayCreateExpression (arrayObjectCreateExpression, data);
+			base.VisitArrayCreateExpression (arrayObjectCreateExpression);
 		}
 
-		public override object VisitLambdaExpression (LambdaExpression lambdaExpression, object data)
+		public override void VisitLambdaExpression (LambdaExpression lambdaExpression)
 		{
 			ForceSpacesAfter (lambdaExpression.ArrowToken, true);
 			ForceSpacesBefore (lambdaExpression.ArrowToken, true);
 
-			return base.VisitLambdaExpression (lambdaExpression, data);
+			base.VisitLambdaExpression (lambdaExpression);
 		}
 
 		#endregion
@@ -1569,7 +1539,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (offset < endOffset) {
 				AddChange (offset, endOffset - offset, null);
 			}
-		}
+		}	
 
 		void PlaceOnNewLine (bool newLine, AstNode keywordNode)
 		{
@@ -1642,18 +1612,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		string GetIndentation (int lineNumber)
+		string GetIndentation(int lineNumber)
 		{
-			IDocumentLine line = document.GetLineByNumber (lineNumber);
-			StringBuilder b = new StringBuilder ();
+			IDocumentLine line = document.GetLineByNumber(lineNumber);
+			StringBuilder b = new StringBuilder();
 			int endOffset = line.EndOffset;
 			for (int i = line.Offset; i < endOffset; i++) {
-				char c = document.GetCharAt (i);
-				if (!IsSpacing (c))
+				char c = document.GetCharAt(i);
+				if (!IsSpacing(c))
 					break;
-				b.Append (c);
+				b.Append(c);
 			}
-			return b.ToString ();
+			return b.ToString();
 		}
 	}
 }

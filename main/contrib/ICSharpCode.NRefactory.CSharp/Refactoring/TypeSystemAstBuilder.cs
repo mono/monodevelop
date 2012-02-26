@@ -367,7 +367,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Entity
-		public AstNode ConvertEntity(IEntity entity)
+		public AttributedNode ConvertEntity(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
@@ -415,12 +415,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			switch (typeDefinition.Kind) {
 				case TypeKind.Struct:
 					classType = ClassType.Struct;
+					modifiers &= ~Modifiers.Sealed;
 					break;
 				case TypeKind.Enum:
 					classType = ClassType.Enum;
+					modifiers &= ~Modifiers.Sealed;
 					break;
 				case TypeKind.Interface:
 					classType = ClassType.Interface;
+					modifiers &= ~Modifiers.Abstract;
 					break;
 				case TypeKind.Delegate:
 					IMethod invoke = typeDefinition.GetDelegateInvokeMethod();
@@ -467,7 +470,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			ITypeDefinition d = invokeMethod.DeclaringTypeDefinition;
 			
 			DelegateDeclaration decl = new DelegateDeclaration();
-			decl.Modifiers = modifiers;
+			decl.Modifiers = modifiers & ~Modifiers.Sealed;
 			decl.ReturnType = ConvertType(invokeMethod.ReturnType);
 			decl.Name = d.Name;
 			
@@ -491,7 +494,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return decl;
 		}
 		
-		AstNode ConvertField(IField field)
+		FieldDeclaration ConvertField(IField field)
 		{
 			FieldDeclaration decl = new FieldDeclaration();
 			if (ShowModifiers) {
@@ -572,6 +575,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (IParameter p in method.Parameters) {
 				decl.Parameters.Add(ConvertParameter(p));
 			}
+			if (method.IsExtensionMethod && decl.Parameters.Any() && decl.Parameters.First().ParameterModifier == ParameterModifier.None)
+				decl.Parameters.First().ParameterModifier = ParameterModifier.This;
 			
 			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints && !method.IsOverride && !method.IsExplicitInterfaceImplementation) {
 				foreach (ITypeParameter tp in method.TypeParameters) {
@@ -583,7 +588,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return decl;
 		}
 		
-		AstNode ConvertOperator(IMethod op)
+		AttributedNode ConvertOperator(IMethod op)
 		{
 			OperatorType? opType = OperatorDeclaration.GetOperatorType(op.Name);
 			if (opType == null)

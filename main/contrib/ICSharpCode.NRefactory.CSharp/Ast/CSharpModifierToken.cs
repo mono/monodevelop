@@ -36,10 +36,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Modifiers Modifier {
 			get { return modifier; }
-			set {
-				this.tokenLength = GetModifierName(value).Length;
-				this.modifier = value;
+			set { this.modifier = value; }
+		}
+		
+		protected override int TokenLength {
+			get {
+				return GetModifierName (modifier).Length;
 			}
+		}
+		
+		public override string GetText (CSharpFormattingOptions formattingOptions = null)
+		{
+			return GetModifierName (Modifier);
 		}
 		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
@@ -65,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return allModifiers; }
 		}
 		
-		public CSharpModifierToken (TextLocation location, Modifiers modifier) : base (location, 0)
+		public CSharpModifierToken (TextLocation location, Modifiers modifier) : base (location)
 		{
 			this.Modifier = modifier;
 		}

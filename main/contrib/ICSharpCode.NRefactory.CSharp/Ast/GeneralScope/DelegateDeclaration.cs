@@ -34,10 +34,16 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class DelegateDeclaration : AttributedNode
 	{
+		public readonly static TokenRole DelegateKeywordRole = new TokenRole ("delegate");
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.TypeDeclaration;
 			}
+		}
+		
+		public CSharpTokenNode DelegateToken {
+			get { return GetChildByRole (DelegateKeywordRole); }
 		}
 		
 		public AstType ReturnType {
@@ -83,7 +89,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (Roles.Constraint); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitDelegateDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitDelegateDeclaration (this);
+		}
+		
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDelegateDeclaration (this, data);
 		}

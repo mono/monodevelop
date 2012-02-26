@@ -30,6 +30,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class EventDeclaration : AttributedNode
 	{
+		public static readonly TokenRole EventKeywordRole = new TokenRole ("event");
+		
 		public override NodeType NodeType {
 			get { return NodeType.Member; }
 		}
@@ -43,7 +45,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (Roles.Variable); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitEventDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitEventDeclaration (this);
+		}
+
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitEventDeclaration (this, data);
 		}
@@ -58,6 +70,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class CustomEventDeclaration : MemberDeclaration
 	{
+		public static readonly TokenRole EventKeywordRole = new TokenRole ("event");
+		public static readonly TokenRole AddKeywordRole = new TokenRole ("add");
+		public static readonly TokenRole RemoveKeywordRole = new TokenRole ("remove");
+		
 		public static readonly Role<Accessor> AddAccessorRole = new Role<Accessor>("AddAccessor", Accessor.Null);
 		public static readonly Role<Accessor> RemoveAccessorRole = new Role<Accessor>("RemoveAccessor", Accessor.Null);
 		
@@ -79,7 +95,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitCustomEventDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitCustomEventDeclaration (this);
+		}
+
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCustomEventDeclaration (this, data);
 		}

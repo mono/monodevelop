@@ -43,7 +43,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TypeDeclaration : AttributedNode
 	{
-		public readonly static Role<CSharpTokenNode> ColonRole = Roles.Colon;
+		public static readonly TokenRole EnumKeywordRole = new TokenRole ("enum");
+		public static readonly TokenRole InterfaceKeywordRole = new TokenRole ("interface");
+		public static readonly TokenRole StructKeywordRole = new TokenRole ("struct");
+		public static readonly TokenRole ClassKeywordRole = new TokenRole ("class");
+		
+		public readonly static TokenRole ColonRole = Roles.Colon;
 		public readonly static Role<AstType> BaseTypeRole = new Role<AstType>("BaseType", AstType.Null);
 		public readonly static Role<AttributedNode> MemberRole = new Role<AttributedNode>("Member");
 		
@@ -100,7 +105,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitTypeDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitTypeDeclaration (this);
+		}
+		
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitTypeDeclaration (this, data);
 		}

@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return null; }
 			}
 			
-			IList<IMember> IMember.InterfaceImplementations {
+			IList<IMember> IMember.ImplementedInterfaceMembers {
 				get { return EmptyList<IMember>.Instance; }
 			}
 			

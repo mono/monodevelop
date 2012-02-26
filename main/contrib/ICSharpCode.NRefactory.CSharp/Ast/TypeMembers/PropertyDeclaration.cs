@@ -28,6 +28,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class PropertyDeclaration : MemberDeclaration
 	{
+		public static readonly TokenRole GetKeywordRole = new TokenRole ("get");
+		public static readonly TokenRole SetKeywordRole = new TokenRole ("set");
 		public static readonly Role<Accessor> GetterRole = new Role<Accessor>("Getter", Accessor.Null);
 		public static readonly Role<Accessor> SetterRole = new Role<Accessor>("Setter", Accessor.Null);
 		
@@ -49,7 +51,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitPropertyDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitPropertyDeclaration (this);
+		}
+		
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPropertyDeclaration (this, data);
 		}
