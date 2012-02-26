@@ -324,7 +324,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		ITreeNavigator SearchMember (IEntity member)
 		{
-			return SearchMember (member.GetIDString ());
+			return SearchMember (member.GetIdString ());
 		}
 			
 		ITreeNavigator SearchMember (string helpUrl)

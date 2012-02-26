@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharp.Formatting
 				HadErrors = hadErrors,
 				EolMarker = stubData.EolMarker
 			};
-			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
+			compilationUnit.AcceptVisitor (domSpacingVisitor);
 			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));

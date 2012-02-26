@@ -282,7 +282,7 @@ namespace MonoDevelop.Ide
 				doc.RunWhenLoaded (delegate {
 					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
 					if (handler != null)
-						handler.Open (entity.GetIDString ());
+						handler.Open (entity.GetIdString ());
 				});
 			}
 			

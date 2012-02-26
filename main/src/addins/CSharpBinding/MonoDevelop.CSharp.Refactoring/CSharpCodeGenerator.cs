@@ -227,7 +227,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					stringWriter.NewLine = EolMarker; 
 					var visitor = new CSharpOutputVisitor (formatter, new CSharpFormattingOptions ());
 					var shortType = CreateShortType (def.Compilation, file, loc, resolved);
-					shortType.AcceptVisitor (visitor, null);
+					shortType.AcceptVisitor (visitor);
 					
 					var typeString = stringWriter.ToString ();
 					if (typeString.StartsWith ("global::"))
@@ -841,7 +841,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				stringWriter.NewLine = doc.Editor.EolMarker;
 				
 				var visitor = new CSharpOutputVisitor (formatter, doc.GetFormattingOptions ());
-				node.AcceptVisitor (visitor, null);
+				node.AcceptVisitor (visitor);
 				return stringWriter.ToString ();
 			}
 		}

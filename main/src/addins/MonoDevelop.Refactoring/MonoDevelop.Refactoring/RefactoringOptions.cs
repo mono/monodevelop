@@ -104,7 +104,7 @@ namespace MonoDevelop.Refactoring
 				stringWriter.NewLine = Document.Editor.EolMarker;
 				
 				var visitor = new CSharpOutputVisitor (formatter, new CSharpFormattingOptions ());
-				node.AcceptVisitor (visitor, null);
+				node.AcceptVisitor (visitor);
 				return stringWriter.ToString ();
 			}
 		}

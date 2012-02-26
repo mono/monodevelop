@@ -156,7 +156,7 @@ namespace MonoDevelop.Projects
 				member = ((MemberResolveResult)result).Member;
 			
 			if (member != null && member.GetMonodocDocumentation () != null)
-				return member.GetIDString ();
+				return member.GetIdString ();
 			
 			var type = result.Type;
 			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
@@ -255,13 +255,13 @@ namespace MonoDevelop.Projects
 		public static XmlNode GetMonodocDocumentation (this IEntity member)
 		{
 			if (member.EntityType == EntityType.TypeDefinition) {
-				var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetIDString ()) : null;
+				var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetIdString ()) : null;
 				if (helpXml == null)
 					return null;
 				return helpXml.SelectSingleNode ("/Type/Docs");
 			}
 			
-			var declaringXml = HelpService.HelpTree != null && member.DeclaringTypeDefinition != null ? HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetIDString ()) : null;
+			var declaringXml = HelpService.HelpTree != null && member.DeclaringTypeDefinition != null ? HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetIdString ()) : null;
 			if (declaringXml == null)
 				return null;
 			

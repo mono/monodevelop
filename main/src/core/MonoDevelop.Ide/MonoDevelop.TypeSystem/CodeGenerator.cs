@@ -178,7 +178,7 @@ namespace MonoDevelop.TypeSystem
 		static bool CompareMethods (IMethod interfaceMethod, IMethod typeMethod)
 		{
 			if (typeMethod.IsExplicitInterfaceImplementation)
-				return typeMethod.InterfaceImplementations.Any (m => m.Equals (interfaceMethod));
+				return typeMethod.ImplementedInterfaceMembers.Any (m => m.Equals (interfaceMethod));
 			return SignatureComparer.Ordinal.Equals (interfaceMethod, typeMethod);
 		}
 

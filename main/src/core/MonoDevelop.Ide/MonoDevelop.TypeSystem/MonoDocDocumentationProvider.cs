@@ -57,10 +57,10 @@ namespace MonoDevelop.TypeSystem
 			XmlDocument doc = null;
 			try {
 				if (entity.EntityType == EntityType.TypeDefinition) {
-					var idString = entity.GetIDString ();
+					var idString = entity.GetIdString ();
 					doc = MonoDevelop.Projects.HelpService.HelpTree.GetHelpXml (idString);
 				} else {
-					var parentId = entity.DeclaringTypeDefinition.GetIDString ();
+					var parentId = entity.DeclaringTypeDefinition.GetIdString ();
 					doc = MonoDevelop.Projects.HelpService.HelpTree.GetHelpXml (parentId);
 					if (doc == null)
 						return null;

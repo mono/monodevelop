@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharp.Formatting
 				EolMarker = data.EolMarker
 			};
 			
-			compilationUnit.AcceptVisitor (formattingVisitor, null);
+			compilationUnit.AcceptVisitor (formattingVisitor);
 			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (formattingVisitor.Changes.
@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.Formatting
 				EolMarker = data.EolMarker
 			};
 			
-			compilationUnit.AcceptVisitor (formattingVisitor, null);
+			compilationUnit.AcceptVisitor (formattingVisitor);
 			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (formattingVisitor.Changes.
