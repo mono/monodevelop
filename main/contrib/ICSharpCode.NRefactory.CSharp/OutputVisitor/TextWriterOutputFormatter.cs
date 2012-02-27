@@ -15,7 +15,6 @@
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-
 using System;
 using System.IO;
 
@@ -42,191 +41,193 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string IndentationString { get; set; }
 		
-		public TextWriterOutputFormatter(TextWriter textWriter)
+		public TextWriterOutputFormatter (TextWriter textWriter)
 		{
 			if (textWriter == null)
-				throw new ArgumentNullException("textWriter");
+				throw new ArgumentNullException ("textWriter");
 			this.textWriter = textWriter;
 			this.IndentationString = "\t";
 		}
 		
-		public void WriteIdentifier(string ident)
+		public void WriteIdentifier (string ident)
 		{
-			WriteIndentation();
-			textWriter.Write(ident);
+			WriteIndentation ();
+			textWriter.Write (ident);
 			isAtStartOfLine = false;
 		}
 		
-		public void WriteKeyword(string keyword)
+		public void WriteKeyword (string keyword)
 		{
-			WriteIndentation();
-			textWriter.Write(keyword);
+			WriteIndentation ();
+			textWriter.Write (keyword);
 			isAtStartOfLine = false;
 		}
 		
-		public void WriteToken(string token)
+		public void WriteToken (string token)
 		{
-			WriteIndentation();
-			textWriter.Write(token);
+			WriteIndentation ();
+			textWriter.Write (token);
 			isAtStartOfLine = false;
 		}
 		
-		public void Space()
+		public void Space ()
 		{
-			WriteIndentation();
-			textWriter.Write(' ');
+			WriteIndentation ();
+			textWriter.Write (' ');
 		}
 		
-		public void OpenBrace(BraceStyle style)
+		public void OpenBrace (BraceStyle style)
 		{
 			switch (style) {
-				case BraceStyle.DoNotChange:
-				case BraceStyle.EndOfLine:
-					WriteIndentation();
-					if (!isAtStartOfLine)
-						textWriter.Write(' ');
-					textWriter.Write('{');
-					break;
-				case BraceStyle.EndOfLineWithoutSpace:
-					WriteIndentation();
-					textWriter.Write('{');
-					break;
-				case BraceStyle.NextLine:
-					if (!isAtStartOfLine)
-						NewLine();
-					WriteIndentation();
-					textWriter.Write('{');
-					break;
+			case BraceStyle.DoNotChange:
+			case BraceStyle.EndOfLine:
+			case BraceStyle.BannerStyle:
+				WriteIndentation ();
+				if (!isAtStartOfLine)
+					textWriter.Write (' ');
+				textWriter.Write ('{');
+				break;
+			case BraceStyle.EndOfLineWithoutSpace:
+				WriteIndentation ();
+				textWriter.Write ('{');
+				break;
+			case BraceStyle.NextLine:
+				if (!isAtStartOfLine)
+					NewLine ();
+				WriteIndentation ();
+				textWriter.Write ('{');
+				break;
 					
-				case BraceStyle.NextLineShifted:
-					NewLine ();
-					Indent();
-					WriteIndentation();
-					textWriter.Write('{');
-					NewLine();
-					return;
-				case BraceStyle.NextLineShifted2:
-					NewLine ();
-					Indent();
-					WriteIndentation();
-					textWriter.Write('{');
-					break;
-				default:
-					throw new ArgumentOutOfRangeException ();
+			case BraceStyle.NextLineShifted:
+				NewLine ();
+				Indent ();
+				WriteIndentation ();
+				textWriter.Write ('{');
+				NewLine ();
+				return;
+			case BraceStyle.NextLineShifted2:
+				NewLine ();
+				Indent ();
+				WriteIndentation ();
+				textWriter.Write ('{');
+				break;
+			default:
+				throw new ArgumentOutOfRangeException ();
 			}
-			Indent();
-			NewLine();
+			Indent ();
+			NewLine ();
 		}
 		
-		public void CloseBrace(BraceStyle style)
+		public void CloseBrace (BraceStyle style)
 		{
 			switch (style) {
-				case BraceStyle.DoNotChange:
-				case BraceStyle.EndOfLine:
-				case BraceStyle.EndOfLineWithoutSpace:
-				case BraceStyle.NextLine:
-					Unindent();
-					WriteIndentation();
-					textWriter.Write('}');
-					isAtStartOfLine = false;
-					break;
-				case BraceStyle.NextLineShifted:
-					WriteIndentation();
-					textWriter.Write('}');
-					isAtStartOfLine = false;
-					Unindent();
-					break;
-				case BraceStyle.NextLineShifted2:
-					Unindent();
-					WriteIndentation();
-					textWriter.Write('}');
-					isAtStartOfLine = false;
-					Unindent();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException ();
+			case BraceStyle.DoNotChange:
+			case BraceStyle.EndOfLine:
+			case BraceStyle.EndOfLineWithoutSpace:
+			case BraceStyle.NextLine:
+				Unindent ();
+				WriteIndentation ();
+				textWriter.Write ('}');
+				isAtStartOfLine = false;
+				break;
+			case BraceStyle.BannerStyle:
+			case BraceStyle.NextLineShifted:
+				WriteIndentation ();
+				textWriter.Write ('}');
+				isAtStartOfLine = false;
+				Unindent ();
+				break;
+			case BraceStyle.NextLineShifted2:
+				Unindent ();
+				WriteIndentation ();
+				textWriter.Write ('}');
+				isAtStartOfLine = false;
+				Unindent ();
+				break;
+			default:
+				throw new ArgumentOutOfRangeException ();
 			}
 		}
 		
-		protected void WriteIndentation()
+		protected void WriteIndentation ()
 		{
 			if (needsIndent) {
 				needsIndent = false;
 				for (int i = 0; i < indentation; i++) {
-					textWriter.Write(this.IndentationString);
+					textWriter.Write (this.IndentationString);
 				}
 			}
 		}
 		
-		public void NewLine()
+		public void NewLine ()
 		{
-			textWriter.WriteLine();
+			textWriter.WriteLine ();
 			needsIndent = true;
 			isAtStartOfLine = true;
 		}
 		
-		public void Indent()
+		public void Indent ()
 		{
 			indentation++;
 		}
 		
-		public void Unindent()
+		public void Unindent ()
 		{
 			indentation--;
 		}
 		
-		public void WriteComment(CommentType commentType, string content)
+		public void WriteComment (CommentType commentType, string content)
 		{
-			WriteIndentation();
+			WriteIndentation ();
 			switch (commentType) {
-				case CommentType.SingleLine:
-					textWriter.Write("//");
-					textWriter.WriteLine(content);
-					needsIndent = true;
-					isAtStartOfLine = true;
-					break;
-				case CommentType.MultiLine:
-					textWriter.Write("/*");
-					textWriter.Write(content);
-					textWriter.Write("*/");
-					isAtStartOfLine = false;
-					break;
-				case CommentType.Documentation:
-					textWriter.Write("///");
-					textWriter.WriteLine(content);
-					needsIndent = true;
-					isAtStartOfLine = true;
-					break;
-				default:
-					textWriter.Write(content);
-					break;
+			case CommentType.SingleLine:
+				textWriter.Write ("//");
+				textWriter.WriteLine (content);
+				needsIndent = true;
+				isAtStartOfLine = true;
+				break;
+			case CommentType.MultiLine:
+				textWriter.Write ("/*");
+				textWriter.Write (content);
+				textWriter.Write ("*/");
+				isAtStartOfLine = false;
+				break;
+			case CommentType.Documentation:
+				textWriter.Write ("///");
+				textWriter.WriteLine (content);
+				needsIndent = true;
+				isAtStartOfLine = true;
+				break;
+			default:
+				textWriter.Write (content);
+				break;
 			}
 		}
 		
-		public void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument)
+		public void WritePreProcessorDirective (PreProcessorDirectiveType type, string argument)
 		{
 			// pre-processor directive must start on its own line
 			if (!isAtStartOfLine)
-				NewLine();
-			WriteIndentation();
-			textWriter.Write('#');
-			textWriter.Write(type.ToString().ToLowerInvariant());
-			if (!string.IsNullOrEmpty(argument)) {
-				textWriter.Write(' ');
-				textWriter.Write(argument);
+				NewLine ();
+			WriteIndentation ();
+			textWriter.Write ('#');
+			textWriter.Write (type.ToString ().ToLowerInvariant ());
+			if (!string.IsNullOrEmpty (argument)) {
+				textWriter.Write (' ');
+				textWriter.Write (argument);
 			}
-			NewLine();
+			NewLine ();
 		}
 		
-		public virtual void StartNode(AstNode node)
+		public virtual void StartNode (AstNode node)
 		{
 			// Write out the indentation, so that overrides of this method
 			// can rely use the current output length to identify the position of the node
 			// in the output.
-			WriteIndentation();
+			WriteIndentation ();
 		}
 		
-		public virtual void EndNode(AstNode node)
+		public virtual void EndNode (AstNode node)
 		{
 		}
 	}

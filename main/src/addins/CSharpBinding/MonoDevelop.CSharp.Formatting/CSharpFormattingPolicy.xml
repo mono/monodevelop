@@ -7,6 +7,7 @@
 		<Value _displayName="Next line">NextLine</Value>
 		<Value _displayName="Next line shifted">NextLineShifted</Value>
 		<Value _displayName="Next line shifted2">NextLineShifted2</Value>
+		<Value _displayName="Banner Style">BannerStyle</Value>
 	</Type>
 	
 	<Type name = "BraceForcement">

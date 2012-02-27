@@ -46,23 +46,24 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		static CSharpFormattingProfileDialog ()
 		{
-			braceStyleTranslationDictionary[BraceStyle.DoNotChange] = GettextCatalog.GetString ("Do not change");
-			braceStyleTranslationDictionary[BraceStyle.EndOfLine] = GettextCatalog.GetString ("End of line");
-			braceStyleTranslationDictionary[BraceStyle.EndOfLineWithoutSpace] = GettextCatalog.GetString ("End of line without space");
-			braceStyleTranslationDictionary[BraceStyle.NextLine] =  GettextCatalog.GetString ("Next line");
-			braceStyleTranslationDictionary[BraceStyle.NextLineShifted] = GettextCatalog.GetString ("Next line shifted");
-			braceStyleTranslationDictionary[BraceStyle.NextLineShifted2] = GettextCatalog.GetString ("Next line shifted2");
+			braceStyleTranslationDictionary [BraceStyle.DoNotChange] = GettextCatalog.GetString ("Do not change");
+			braceStyleTranslationDictionary [BraceStyle.EndOfLine] = GettextCatalog.GetString ("End of line");
+			braceStyleTranslationDictionary [BraceStyle.EndOfLineWithoutSpace] = GettextCatalog.GetString ("End of line without space");
+			braceStyleTranslationDictionary [BraceStyle.NextLine] = GettextCatalog.GetString ("Next line");
+			braceStyleTranslationDictionary [BraceStyle.NextLineShifted] = GettextCatalog.GetString ("Next line shifted");
+			braceStyleTranslationDictionary [BraceStyle.NextLineShifted2] = GettextCatalog.GetString ("Next line shifted2");
+			braceStyleTranslationDictionary [BraceStyle.BannerStyle] = GettextCatalog.GetString ("Banner style");
 			
-			braceForcementTranslationDictionary[BraceForcement.DoNotChange] = GettextCatalog.GetString ("Do not change");
-			braceForcementTranslationDictionary[BraceForcement.AddBraces] = GettextCatalog.GetString ("Add braces");
-			braceForcementTranslationDictionary[BraceForcement.RemoveBraces] = GettextCatalog.GetString ("Remove braces");
+			braceForcementTranslationDictionary [BraceForcement.DoNotChange] = GettextCatalog.GetString ("Do not change");
+			braceForcementTranslationDictionary [BraceForcement.AddBraces] = GettextCatalog.GetString ("Add braces");
+			braceForcementTranslationDictionary [BraceForcement.RemoveBraces] = GettextCatalog.GetString ("Remove braces");
 			
-			propertyFormattingTranslationDictionary[PropertyFormatting.AllowOneLine] = GettextCatalog.GetString ("Allow one line");
-			propertyFormattingTranslationDictionary[PropertyFormatting.ForceOneLine] = GettextCatalog.GetString ("Force one line");
-			propertyFormattingTranslationDictionary[PropertyFormatting.ForceNewLine] = GettextCatalog.GetString ("Force new line");
+			propertyFormattingTranslationDictionary [PropertyFormatting.AllowOneLine] = GettextCatalog.GetString ("Allow one line");
+			propertyFormattingTranslationDictionary [PropertyFormatting.ForceOneLine] = GettextCatalog.GetString ("Force one line");
+			propertyFormattingTranslationDictionary [PropertyFormatting.ForceNewLine] = GettextCatalog.GetString ("Force new line");
 			
-			arrayInitializerTranslationDictionary[ArrayInitializerPlacement.AlwaysNewLine] = GettextCatalog.GetString ("Always new line");
-			arrayInitializerTranslationDictionary[ArrayInitializerPlacement.AlwaysSameLine] = GettextCatalog.GetString ("Always same line");
+			arrayInitializerTranslationDictionary [ArrayInitializerPlacement.AlwaysNewLine] = GettextCatalog.GetString ("Always new line");
+			arrayInitializerTranslationDictionary [ArrayInitializerPlacement.AlwaysSameLine] = GettextCatalog.GetString ("Always same line");
 		}
 		
 		public static string TranslateValue (object value)

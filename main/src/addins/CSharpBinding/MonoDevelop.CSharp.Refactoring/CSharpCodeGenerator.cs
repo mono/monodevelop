@@ -142,6 +142,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
 		{
 			switch (braceStyle) {
+			case BraceStyle.BannerStyle:
 			case BraceStyle.EndOfLine:
 				result.Append (" {");
 				AppendLine (result);
@@ -185,6 +186,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				AppendIndent (result);
 				result.Append ("}");
 				break;
+			case BraceStyle.BannerStyle:
 			case BraceStyle.NextLineShifted:
 				AppendIndent (result);
 				result.Append ("}");
