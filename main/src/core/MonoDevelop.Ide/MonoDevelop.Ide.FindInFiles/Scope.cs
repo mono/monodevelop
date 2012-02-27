@@ -78,9 +78,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public override IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions)
 		{
-			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName, null,
-				IdeApp.Workbench.ActiveDocument.Editor.SelectionRange.Offset,
-				IdeApp.Workbench.ActiveDocument.Editor.SelectionRange.EndOffset);
+			var selection = IdeApp.Workbench.ActiveDocument.Editor.SelectionRange;
+			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName, null, selection.Offset, selection.EndOffset);
 		}
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
