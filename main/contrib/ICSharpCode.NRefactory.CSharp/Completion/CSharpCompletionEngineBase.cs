@@ -358,7 +358,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			if (currentMember == null && lastBracket == ']') {
 				// attribute context
-				wrapper.Append ("class GenAttr {}");
 			} else {
 				if (!didAppendSemicolon)
 					wrapper.Append (';');
@@ -492,13 +491,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		public class ExpressionResult
 		{
-			public AstNode Node;
-			public CompilationUnit Unit;
+			public AstNode Node { get; private set; }
+
+			public CompilationUnit Unit  { get; private set; }
 			
 			public ExpressionResult (AstNode item2, CompilationUnit item3)
 			{
 				this.Node = item2;
 				this.Unit = item3;
+			}
+			
+			public override string ToString ()
+			{
+				return string.Format ("[ExpressionResult: Node={0}, Unit={1}]", Node, Unit);
 			}
 		}
 		

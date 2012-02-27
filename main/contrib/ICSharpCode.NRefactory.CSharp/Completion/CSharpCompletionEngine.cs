@@ -158,13 +158,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		IEnumerable<ICompletionData> MagicKeyCompletion (char completionChar, bool controlSpace)
 		{
+			ExpressionResult expr;
+			Tuple<ResolveResult, CSharpResolver> resolveResult;
+			
 			switch (completionChar) {
 			// Magic key completion
 			case ':':
 			case '.':
 				if (IsInsideCommentOrString ())
 					return Enumerable.Empty<ICompletionData> ();
-				var expr = GetExpressionBeforeCursor ();
+				expr = GetExpressionBeforeCursor ();
 				if (expr == null)
 					return null;
 				// do not complete <number>. (but <number>.<number>.)
@@ -174,7 +177,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 				}
 				
-				var resolveResult = ResolveExpression (expr);
+				resolveResult = ResolveExpression (expr);
 				if (resolveResult == null)
 					return null;
 				if (expr.Node is AstType)
@@ -439,9 +442,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Node.Parent is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
 				}
+				
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : ';';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
-				const string allowedChars = ";,[](){}+-*/%^?:&|~!<>=";
+				const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
 				if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
 					return null;
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
@@ -610,6 +614,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					return DefaultControlSpaceItems ();
 				}
+				if (IsAttributeContext (n)) {
+					// add attribute targets
+					if (currentType == null) {
+						contextList.AddCustom ("assembly");
+						contextList.AddCustom ("module");
+						contextList.AddCustom ("type");
+					} else {
+						contextList.AddCustom ("param");
+						contextList.AddCustom ("field");
+						contextList.AddCustom ("property");
+						contextList.AddCustom ("method");
+						contextList.AddCustom ("event");
+					}
+					contextList.AddCustom ("return");
+				}
+				if (n is MemberType) {
+					resolveResult = ResolveExpression (((MemberType)n).Target, identifierStart.Unit);
+					return CreateTypeAndNamespaceCompletionData (location, resolveResult.Item1, ((MemberType)n).Target, resolveResult.Item2);
+				}
 				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
 					csResolver = new CSharpResolver (ctx);
 					var nodes = new List<AstNode> ();
@@ -777,8 +800,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = unit.GetNodeAt (location);
 				rr = ResolveExpression (node, unit);
 			}
-			Console.WriteLine ("!!!!!!!!!");
-			Console.WriteLine (Environment.StackTrace);
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -864,7 +885,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			Predicate<IType> typePred = null;
-			if (node is Attribute) {
+			if (IsAttributeContext (node)) {
 				var attribute = Compilation.FindType (KnownTypeCode.Attribute);
 				typePred = t => {
 					return t.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (attribute));
@@ -892,8 +913,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (IsInSwitchContext (node)) {
 					wrapper.AddCustom ("case"); 
 				}
-				
 			}
+			
 			AddKeywords (wrapper, primitiveTypesKeywords);
 			if (currentMember != null)
 				wrapper.AddCustom ("var"); 
@@ -938,7 +959,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					foreach (var nestedType in ct.NestedTypes) {
 						if (typePred == null || typePred (nestedType.Resolve (ctx))) {
 							string name = nestedType.Name;
-							if (node is Attribute && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
+							if (IsAttributeContext (node) && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
 								name = name.Substring (0, name.Length - "Attribute".Length);
 							wrapper.AddType (nestedType, name);
 						}
@@ -979,7 +1000,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					foreach (var type in u.Types) {
 						if (typePred == null || typePred (type)) {
 							string name = type.Name;
-							if (node is Attribute && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
+							if (IsAttributeContext (node) && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
 								name = name.Substring (0, name.Length - "Attribute".Length);
 							wrapper.AddType (type, name);
 						}
@@ -1666,6 +1687,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return currentMember.DeclaringTypeDefinition != null && member.DeclaringTypeDefinition.FullName == currentMember.DeclaringTypeDefinition.FullName;
 		}
 		
+		static bool IsAttributeContext (AstNode node)
+		{
+			AstNode n = node;
+			while (n is AstType)
+				n = n.Parent;
+			return n is Attribute;
+		}
+		
 		IEnumerable<ICompletionData> CreateTypeAndNamespaceCompletionData (TextLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
 		{
 			if (resolveResult == null || resolveResult.IsError)
@@ -1674,7 +1703,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				foreach (var cl in nr.Namespace.Types) {
-					result.AddType (cl, cl.Name);
+					string name = cl.Name;
+					
+					if (IsAttributeContext (resolvedNode) && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
+						name = name.Substring (0, name.Length - "Attribute".Length);
+					result.AddType (cl, name);
 				}
 				foreach (var ns in nr.Namespace.ChildNamespaces) {
 					result.AddNamespace (ns.Name);
@@ -1976,7 +2009,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null) {
-				baseUnit = ParseStub ("st {}", false);
+				baseUnit = ParseStub ("a", false);
 				var type = baseUnit.GetNodeAt<MemberType> (location);
 				if (type == null) {
 					baseUnit = ParseStub ("a;", false);
@@ -2080,8 +2113,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AstNode expr = baseUnit.GetNodeAt (location, n => n is IdentifierExpression || n is MemberReferenceExpression);
 			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column - 1);
-				if (expr is AstType && expr.Parent is Attribute)
-					expr = expr.Parent;
 			}
 			
 			// try insertStatement
@@ -2098,6 +2129,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				baseUnit = ParseStub ("a", false);
 				expr = baseUnit.GetNodeAt (location, n => n is IdentifierExpression || n is MemberReferenceExpression);
+			
 			}
 			
 			// try statement 
@@ -2153,11 +2185,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 
 				if (expr == null)
 					expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column); 
-				if (expr is AstType && expr.Parent is Attribute)
-					expr = expr.Parent;
 			}
 			if (expr == null)
 				return null;
+			
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			if (member != null && member2 != null) {
