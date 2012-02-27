@@ -85,7 +85,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.CSharpParsedFile = parsedFile;
 		}
 		
-		
 		public IMemberProvider MemberProvider {
 			get;
 			set;
@@ -404,7 +403,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
-			                   
+			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
@@ -520,12 +519,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				resolveNode = expr;
 			}
-			
-			var csResolver = new CSharpAstResolver(GetState (), unit, CSharpParsedFile);
-			
-			var result = csResolver.Resolve (resolveNode);
-			var state = csResolver.GetResolverStateBefore (resolveNode);
-			return Tuple.Create (result, state);
+			try {
+				var csResolver = new CSharpAstResolver (GetState (), unit, CSharpParsedFile);
+				var result = csResolver.Resolve (resolveNode);
+				var state = csResolver.GetResolverStateBefore (resolveNode);
+				return Tuple.Create (result, state);
+			} catch (Exception e) {
+				return null;
+			}
 		}
 		
 		protected static void Print (AstNode node)
@@ -537,81 +538,80 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		#endregion
 		
 		class DefaultMemberProvider : IMemberProvider
-	{
-		CSharpCompletionEngineBase engine;
-		
-		
-		public DefaultMemberProvider (CSharpCompletionEngineBase engine)
 		{
-			this.engine = engine;
-		}
+			CSharpCompletionEngineBase engine;
 		
-		public void GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember)
-		{
-			var document = engine.document;
-			var location = engine.location;
-			
-			currentType = null;
-			
-			foreach (var type in engine.CSharpParsedFile.TopLevelTypeDefinitions) {
-				if (type.Region.Begin < location)
-					currentType = type;
+			public DefaultMemberProvider (CSharpCompletionEngineBase engine)
+			{
+				this.engine = engine;
 			}
-			currentType = FindInnerType (currentType, location);
+		
+			public void GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember)
+			{
+				var document = engine.document;
+				var location = engine.location;
 			
-			// location is beyond last reported end region, now we need to check, if the end region changed
-			if (currentType != null && currentType.Region.End < location) {
-				if (!IsInsideType (currentType, location))
-					currentType = null;
-			}
-			currentMember = null;
-			if (currentType != null) {
-				foreach (var member in currentType.Members) {
-					if (member.Region.Begin < location && (currentMember == null || currentMember.Region.Begin < member.Region.Begin))
-						currentMember = member;
+				currentType = null;
+			
+				foreach (var type in engine.CSharpParsedFile.TopLevelTypeDefinitions) {
+					if (type.Region.Begin < location)
+						currentType = type;
 				}
-			}
+				currentType = FindInnerType (currentType, location);
 			
-			// location is beyond last reported end region, now we need to check, if the end region changed
-			// NOTE: Enums are a special case, there the "last" field needs to be treated as current member
-			if (currentMember != null && currentMember.Region.End < location && currentType.Kind != TypeKind.Enum) {
-				if (!IsInsideType (currentMember, location))
+				// location is beyond last reported end region, now we need to check, if the end region changed
+				if (currentType != null && currentType.Region.End < location) {
+					if (!IsInsideType (currentType, location))
+						currentType = null;
+				}
+				currentMember = null;
+				if (currentType != null) {
+					foreach (var member in currentType.Members) {
+						if (member.Region.Begin < location && (currentMember == null || currentMember.Region.Begin < member.Region.Begin))
+							currentMember = member;
+					}
+				}
+			
+				// location is beyond last reported end region, now we need to check, if the end region changed
+				// NOTE: Enums are a special case, there the "last" field needs to be treated as current member
+				if (currentMember != null && currentMember.Region.End < location && currentType.Kind != TypeKind.Enum) {
+					if (!IsInsideType (currentMember, location))
+						currentMember = null;
+				}
+				var stack = engine.GetBracketStack (engine.GetMemberTextToCaret ().Item1);
+				if (stack.Count == 0)
 					currentMember = null;
 			}
-			var stack = engine.GetBracketStack (engine.GetMemberTextToCaret ().Item1);
-			if (stack.Count == 0)
-				currentMember = null;
-		}
 
-		IUnresolvedTypeDefinition FindInnerType (IUnresolvedTypeDefinition parent, TextLocation location)
-		{
-			if (parent == null)
-				return null;
-			var currentType = parent;
-			foreach (var type in parent.NestedTypes) {
-				if (type.Region.Begin < location  && location < type.Region.End)
-					currentType = FindInnerType (type, location);
+			IUnresolvedTypeDefinition FindInnerType (IUnresolvedTypeDefinition parent, TextLocation location)
+			{
+				if (parent == null)
+					return null;
+				var currentType = parent;
+				foreach (var type in parent.NestedTypes) {
+					if (type.Region.Begin < location && location < type.Region.End)
+						currentType = FindInnerType (type, location);
+				}
+			
+				return currentType;
 			}
-			
-			return currentType;
-		}
 		
-		bool IsInsideType (IUnresolvedEntity currentType, TextLocation location)
-		{
-			var document = engine.document;
+			bool IsInsideType (IUnresolvedEntity currentType, TextLocation location)
+			{
+				var document = engine.document;
 			
-			int startOffset = document.GetOffset (currentType.Region.Begin);
-			int endOffset = document.GetOffset (location);
-			bool foundEndBracket = false;
+				int startOffset = document.GetOffset (currentType.Region.Begin);
+				int endOffset = document.GetOffset (location);
+				bool foundEndBracket = false;
 		
-			var bracketStack = new Stack<char> ();
+				var bracketStack = new Stack<char> ();
 		
-			bool isInString = false, isInChar = false;
-			bool isInLineComment = false, isInBlockComment = false;
+				bool isInString = false, isInChar = false;
+				bool isInLineComment = false, isInBlockComment = false;
 			
-			for (int i = startOffset; i < endOffset; i++) {
-				char ch = document.GetCharAt (i);
-				switch (ch) {
+				for (int i = startOffset; i < endOffset; i++) {
+					char ch = document.GetCharAt (i);
+					switch (ch) {
 					case '(':
 					case '[':
 					case '{':
@@ -653,9 +653,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						break;
 					}
 				}
-			return bracketStack.Any (t => t == '{');
-		}		
-	}
+				return bracketStack.Any (t => t == '{');
+			}		
+		}
 	
 	}
 }
