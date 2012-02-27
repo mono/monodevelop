@@ -61,6 +61,7 @@ FILES =  \
 	MonoDevelop.MacDev.PlistEditor/PListEditorWidget.cs \
 	MonoDevelop.MacDev.PlistEditor/PListObject.cs \
 	MonoDevelop.MacDev.PlistEditor/PListScheme.cs \
+	MonoDevelop.MacDev.PlistEditor/StringListWidget.cs \
 	NativeReferences/NativeReference.cs \
 	NativeReferences/NativeReferenceCommandHandler.cs \
 	NativeReferences/NativeReferenceFolderNodeBuilder.cs \
