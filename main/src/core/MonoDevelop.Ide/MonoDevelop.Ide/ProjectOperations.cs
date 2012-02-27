@@ -227,21 +227,6 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 		
-		public void JumpToDeclaration (INamedElement visitable, bool askIfMultipleLocations)
-		{
-			if (askIfMultipleLocations) {
-				var type = visitable as ITypeDefinition;
-				if (type != null && type.Parts.Count > 1) {
-					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-						foreach (var part in type.Parts)
-							monitor.ReportResult (GetJumpTypePartSearchResult (part));
-					}
-					return;
-				}
-			}
-			
-			JumpToDeclaration (visitable);
-		}
 		
 		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (IUnresolvedTypeDefinition part)
 		{
@@ -257,7 +242,23 @@ namespace MonoDevelop.Ide
 			return new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length);
 		}
 		
-		public void JumpToDeclaration (INamedElement element)
+		public void JumpToDeclaration (INamedElement visitable, bool askIfMultipleLocations = true)
+		{
+			if (askIfMultipleLocations) {
+				var type = visitable as IType;
+				if (type != null && type.GetDefinition () != null && type.GetDefinition ().Parts.Count > 1) {
+					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+						foreach (var part in type.GetDefinition ().Parts)
+							monitor.ReportResult (GetJumpTypePartSearchResult (part));
+					}
+					return;
+				}
+			}
+			
+			JumpToDeclaration (visitable);
+		}
+
+		void JumpToDeclaration (INamedElement element)
 		{
 			IEntity entity = element as IEntity;
 			

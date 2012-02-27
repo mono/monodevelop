@@ -117,6 +117,11 @@ namespace MonoDevelop.Refactoring
 			
 			public void Run ()
 			{
+				if (el is IUnresolvedEntity) {
+					var e = (IUnresolvedEntity)el;
+					IdeApp.Workbench.OpenDocument (e.Region.FileName, e.Region.BeginLine, e.Region.BeginColumn);
+					return;
+				} 
 				IdeApp.ProjectOperations.JumpToDeclaration (el);
 			}
 		}
