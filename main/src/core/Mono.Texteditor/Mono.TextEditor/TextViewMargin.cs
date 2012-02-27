@@ -2201,7 +2201,7 @@ namespace Mono.TextEditor
 
 			if (!isSelectionDrawn) {
 				if (isEolSelected) {
-					if (Platform.IsWindows) {
+					if (!Platform.IsMac) {
 						// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
 						lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale,
 						lineArea.Y,
