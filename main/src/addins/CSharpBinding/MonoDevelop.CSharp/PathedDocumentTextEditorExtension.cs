@@ -263,93 +263,93 @@ namespace MonoDevelop.CSharp
 			
 			var unresolvedType = ext.GetTypeAt (offset);
 			var unresolvedMember = ext.GetMemberAt (offset);
-			if (unresolvedType == lastType  && lastMember == unresolvedMember)
+			if (unresolvedType == lastType && lastMember == unresolvedMember)
 				return;
 			lastType = unresolvedType;
 			lastMember = unresolvedMember;
 			
 			if (unresolvedType == null) {
-				if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath[0].Tag is IParsedFile)
+				if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is IParsedFile)
 					return;
 				var prevPath = CurrentPath;
-				CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit } };
+				CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit.ParsedFile } };
 				OnPathChanged (new DocumentPathChangedEventArgs (prevPath));	
 				return;
 			}
 			
-		//	ThreadPool.QueueUserWorkItem (delegate {
-				var result = new List<PathEntry> ();
-				var amb = GetAmbience ();
-				var resolveCtx = unit.GetTypeResolveContext (document.Compilation, loc);
-				ITypeDefinition typeDef;
+			//	ThreadPool.QueueUserWorkItem (delegate {
+			var result = new List<PathEntry> ();
+			var amb = GetAmbience ();
+			var resolveCtx = unit.GetTypeResolveContext (document.Compilation, loc);
+			ITypeDefinition typeDef;
+			try {
+				var resolved = unresolvedType.Resolve (resolveCtx);
+				if (resolved == null) {
+					ClearPath ();
+					return;
+				}
+				typeDef = resolved.GetDefinition ();
+			} catch (Exception) {
+				ClearPath ();
+				return;
+			}
+			if (typeDef != null) {
+				var curType = typeDef;
+				while (curType != null) {
+					var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
+					if (curType.DeclaringTypeDefinition == null)
+						flags |= OutputFlags.UseFullInnerTypeName;
+					var markup = amb.GetString ((IEntity)curType, flags);
+					result.Insert (0, new PathEntry (ImageService.GetPixbuf (curType.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)curType.DeclaringTypeDefinition ?? unit.ParsedFile });
+					curType = curType.DeclaringTypeDefinition;
+				}
+			}
+			IMember member = null;
+			if (ext.typeSystemSegmentTree != null) {
 				try {
-					var resolved = unresolvedType.Resolve (resolveCtx);
-					if (resolved == null) {
-						ClearPath ();
-						return;
-					}
-					typeDef = resolved.GetDefinition ();
+					if (unresolvedMember != null)
+						member = unresolvedMember.CreateResolved (resolveCtx);
 				} catch (Exception) {
 					ClearPath ();
 					return;
 				}
-				if (typeDef != null) {
-					var curType = typeDef;
-					while (curType != null) {
-						var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
-						if (curType.DeclaringTypeDefinition == null)
-							flags |= OutputFlags.UseFullInnerTypeName;
-						var markup = amb.GetString ((IEntity)curType, flags);
-						result.Insert (0, new PathEntry (ImageService.GetPixbuf (curType.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)curType.DeclaringTypeDefinition ?? unit });
-						curType = curType.DeclaringTypeDefinition;
+			} else {
+				member = typeDef != null && typeDef.Kind != TypeKind.Delegate ? typeDef.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (loc)) : null;
+			}
+				
+			if (member != null) {
+				var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
+				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member });
+			}
+				
+			var entry = GetRegionEntry (unit, loc);
+			if (entry != null)
+				result.Add (entry);
+				
+			PathEntry noSelection = null;
+			if (typeDef == null) {
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit.ParsedFile };
+			} else if (member == null && typeDef.Kind != TypeKind.Delegate) 
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = typeDef };
+			if (noSelection != null) 
+				result.Add (noSelection);
+			var prev = CurrentPath;
+			if (prev != null && prev.Length == result.Count) {
+				bool equals = true;
+				for (int i = 0; i < prev.Length; i++) {
+					if (prev [i].Markup != result [i].Markup) {
+						equals = false;
+						break;
 					}
 				}
-				IMember member = null;
-				if (ext.typeSystemSegmentTree != null) {
-					try {
-						if (unresolvedMember != null)
-							member = unresolvedMember.CreateResolved (resolveCtx);
-					} catch (Exception) {
-						ClearPath ();
-						return;
-					}
-				} else {
-					member = typeDef != null && typeDef.Kind != TypeKind.Delegate ? typeDef.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (loc)) : null;
-				}
-				
-				if (member != null) {
-					var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
-					result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member });
-				}
-				
-				var entry = GetRegionEntry (unit, loc);
-				if (entry != null)
-					result.Add (entry);
-				
-				PathEntry noSelection = null;
-				if (typeDef == null) {
-					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
-				} else if (member == null && typeDef.Kind != TypeKind.Delegate) 
-					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = typeDef };
-				if (noSelection != null) 
-					result.Add (noSelection);
-				var prev = CurrentPath;
-				if (prev != null && prev.Length == result.Count) {
-					bool equals = true;
-					for (int i = 0; i < prev.Length; i++) {
-						if (prev [i].Markup != result [i].Markup) {
-							equals = false;
-							break;
-						}
-					}
-					if (equals)
-						return;
-				}
-		//		Gtk.Application.Invoke (delegate {
-					CurrentPath = result.ToArray ();
-					OnPathChanged (new DocumentPathChangedEventArgs (prev));	
-		//		});
-		//	});
+				if (equals)
+					return;
+			}
+			//		Gtk.Application.Invoke (delegate {
+			CurrentPath = result.ToArray ();
+			OnPathChanged (new DocumentPathChangedEventArgs (prev));	
+			//		});
+			//	});
 		}
 		#endregion
 	}
