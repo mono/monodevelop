@@ -23,9 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
-using MonoDevelop.MacDev.Plist;
 using MonoDevelop.Core;
 using System.Linq;
 using MonoMac.Foundation;
@@ -115,7 +115,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public abstract NSObject Convert ();
 		
-		public abstract void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer);
+		public abstract void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer);
 		
 		public abstract void SetValue (string text);
 		
@@ -216,7 +216,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
+		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = true;
 			renderer.Text = Value.ToString ();
@@ -396,7 +396,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
+		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
 			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", dict.Count), dict.Count);
@@ -673,7 +673,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSArray.FromNSObjects (list.Select (x => x.Convert ()).ToArray ());
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
+		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
 			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Count), Count);
@@ -747,7 +747,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSNumber.FromBoolean (Value);
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
+		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = true;
 			renderer.Text = Value ? GettextCatalog.GetString ("Yes") : GettextCatalog.GetString ("No");
@@ -783,7 +783,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			throw new NotSupportedException ();
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
+		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
 		{
 			renderer.Sensitive = false;
 			renderer.Text = string.Format ("byte[{0}]", Value.Length);
@@ -867,18 +867,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return new NSString (Value);
 		}
 		
-		public override void RenderValue (CustomPropertiesWidget widget, CellRendererCombo renderer)
+		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
 		{
+			var key = display.ShowDescriptions && Parent != null ? display.Scheme.GetKey (Parent.Key) : null;
+			
 			renderer.Sensitive = true;
-			var key = Parent != null? widget.Scheme.GetKey (Parent.Key) : null;
 			if (key != null) {
 				var val = key.Values.FirstOrDefault (v => v.Identifier == Value);
-				if (val != null && widget.ShowDescriptions) {
+				if (val != null) {
 					renderer.Text = GettextCatalog.GetString (val.Description);
 					return;
 				}
 			}
-			base.RenderValue (widget, renderer);
+			
+			base.RenderValue (display, renderer);
 		}
 	}
 	

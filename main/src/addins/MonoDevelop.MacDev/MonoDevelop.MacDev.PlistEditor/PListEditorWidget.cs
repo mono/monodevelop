@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[System.ComponentModel.ToolboxItem (false)]
-	public partial class PListEditorWidget : Notebook, IPListDisplayWidget
+	public class PListEditorWidget : Notebook, IPListDisplayWidget
 	{
 		Project proj;
 		IPlistEditingHandler handler;

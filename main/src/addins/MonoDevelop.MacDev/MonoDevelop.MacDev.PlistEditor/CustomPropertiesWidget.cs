@@ -36,7 +36,7 @@ using Mono.TextEditor;
 namespace MonoDevelop.MacDev.PlistEditor
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CustomPropertiesWidget : VBox, IPListDisplayWidget
+	public class CustomPropertiesWidget : VBox, IRawPListDisplayWidget
 	{
 		const string AddKeyNode = "Add new entry";
 		
@@ -50,10 +50,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public bool ShowDescriptions {
 			get { return showDescriptions; }
-			set {
-				showDescriptions = value;
-				QueueDraw ();
-			}
+		}
+		
+		void SetShowDescriptions (bool value)
+		{
+			showDescriptions = value;
+			QueueDraw ();
 		}
 		
 		public PListScheme Scheme {
@@ -71,7 +73,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			};
 			RefreshTree ();
 		}
-
+		
 		public static PObject CreateNewObject (string type)
 		{
 			switch (type) {
@@ -103,6 +105,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				this.widget = widget;
 				this.DoPopupMenu += ShowPopup;
 			}
+			
 			void ShowPopup (Gdk.EventButton evnt)
 			{
 				Gtk.TreeIter iter;
@@ -162,7 +165,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					var showDescItem = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Show descriptions"));
 					showDescItem.Active = widget.ShowDescriptions;
 					showDescItem.Activated += delegate {
-						widget.ShowDescriptions = !widget.ShowDescriptions;
+						widget.SetShowDescriptions (!widget.ShowDescriptions);
 					};
 					menu.Append (showDescItem);
 				}
