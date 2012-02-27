@@ -236,7 +236,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					original = ctx.Project.BaseDirectory.Combine (relative);
 					
 					monitor.Log.WriteLine ("New content file found: {0}", relative);
-					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, true));
+					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, XcodeSyncFileStatus.Added));
 				}
 			}
 			

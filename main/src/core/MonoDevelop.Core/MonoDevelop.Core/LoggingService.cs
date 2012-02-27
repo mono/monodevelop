@@ -48,6 +48,8 @@ namespace MonoDevelop.Core
 			loggers.Add (consoleLogger);
 			loggers.Add (new InstrumentationLogger ());
 			
+			timestamp = DateTime.Now;
+			
 			string consoleLogLevelEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL");
 			if (!string.IsNullOrEmpty (consoleLogLevelEnv)) {
 				try {
@@ -85,8 +87,6 @@ namespace MonoDevelop.Core
 
 		static string UniqueLogFile {
 			get {
-				timestamp = DateTime.Now;
-				
 				return string.Format ("MonoDevelop.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
 			}
 		}
