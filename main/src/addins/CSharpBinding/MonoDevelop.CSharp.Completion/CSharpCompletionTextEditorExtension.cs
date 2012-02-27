@@ -617,16 +617,11 @@ namespace MonoDevelop.CSharp.Completion
 			return new ConstructorParameterDataProvider (this, type);
 		}
 
-		IParameterDataProvider IParameterCompletionDataFactory.CreateMethodDataProvider (MethodGroupResolveResult par1)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateMethodDataProvider (IEnumerable<IMethod> methods)
 		{
-			return new MethodParameterDataProvider (this, par1);
+			return new MethodParameterDataProvider (this, methods);
 		}
 		
-		public IParameterDataProvider CreateMethodDataProvider (IMethod method)
-		{
-			return new MethodParameterDataProvider (this, method);
-		}
-
 		IParameterDataProvider IParameterCompletionDataFactory.CreateDelegateDataProvider (IType type)
 		{
 			return new DelegateDataProvider (this, type);

@@ -60,12 +60,12 @@ namespace MonoDevelop.CSharp.Completion
 			this.ext = ext;	
 		}
 		
-		public MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext, MethodGroupResolveResult resolveResult)
+		public MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext, IEnumerable<IMethod> m)
 		{
 			this.ext = ext;
 			
 			HashSet<string> alreadyAdded = new HashSet<string> ();
-			foreach (var method in resolveResult.Methods) {
+			foreach (var method in m) {
 				if (method.IsConstructor)
 					continue;
 				string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
@@ -73,16 +73,6 @@ namespace MonoDevelop.CSharp.Completion
 					continue;
 				alreadyAdded.Add (str);
 				methods.Add (method);
-			}
-			
-			foreach (var extMethods in resolveResult.GetExtensionMethods ()) {
-				foreach (var method in extMethods) {
-					string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
-					if (alreadyAdded.Contains (str))
-						continue;
-					alreadyAdded.Add (str);
-					methods.Add (method);
-				}
 			}
 			
 			methods.Sort (MethodComparer);

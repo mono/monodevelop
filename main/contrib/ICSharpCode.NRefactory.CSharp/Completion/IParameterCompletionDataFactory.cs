@@ -35,9 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	{
 		IParameterDataProvider CreateConstructorProvider (IType type);
 
-		IParameterDataProvider CreateMethodDataProvider (MethodGroupResolveResult par1);
-
-		IParameterDataProvider CreateMethodDataProvider (IMethod method);
+		IParameterDataProvider CreateMethodDataProvider (IEnumerable<IMethod> methods);
 
 		IParameterDataProvider CreateDelegateDataProvider (IType type);
 		

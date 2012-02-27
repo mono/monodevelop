@@ -110,6 +110,31 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			member.ReplaceWith (member2);
 			return new ExpressionResult ((AstNode)expr, Unit);
 		}
+
+		IEnumerable<IMethod> CollectMethods (AstNode resolvedNode, MethodGroupResolveResult resolveResult)
+		{
+//			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+			bool onlyStatic = false;
+			if (resolvedNode is IdentifierExpression && currentMember != null && currentMember.IsStatic) {
+				onlyStatic = true;
+			}
+			
+			foreach (var method in resolveResult.Methods) {
+				if (method.IsConstructor)
+					continue;
+//				if (!lookup.IsAccessible (member, true))
+//					continue;
+				if (onlyStatic && !method.IsStatic)
+					continue;
+				yield return method;	
+			}
+				
+			foreach (var extMethods in resolveResult.GetExtensionMethods ()) {
+				foreach (var method in extMethods) {
+					yield return method;
+				}
+			}
+		}
 		
 		public IParameterDataProvider GetParameterDataProvider (int offset, char completionChar)
 		{
@@ -156,11 +181,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				resolveResult = invocationExpression.Item1;
 				if (resolveResult is MethodGroupResolveResult)
-					return factory.CreateMethodDataProvider (resolveResult as MethodGroupResolveResult);
+					return factory.CreateMethodDataProvider (CollectMethods (invoke.Node, resolveResult as MethodGroupResolveResult));
 				if (resolveResult is MemberResolveResult) {
 					var mr = resolveResult as MemberResolveResult;
 					if (mr.Member is IMethod)
-						return factory.CreateMethodDataProvider ((IMethod)mr.Member);
+						return factory.CreateMethodDataProvider (new [] { (IMethod)mr.Member });
 				}
 				
 				if (resolveResult.Type.Kind == TypeKind.Delegate)
@@ -210,13 +235,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				resolveResult = invocationExpression.Item1;
 				if (resolveResult is MethodGroupResolveResult)
-					return factory.CreateMethodDataProvider (resolveResult as MethodGroupResolveResult);
+					return factory.CreateMethodDataProvider (CollectMethods (invoke.Node, resolveResult as MethodGroupResolveResult));
 				if (resolveResult is MemberResolveResult) {
 					if (resolveResult.Type.Kind == TypeKind.Delegate)
 						return factory.CreateDelegateDataProvider (resolveResult.Type);
 					var mr = resolveResult as MemberResolveResult;
 					if (mr.Member is IMethod)
-						return factory.CreateMethodDataProvider ((IMethod)mr.Member);
+						return factory.CreateMethodDataProvider (new [] { (IMethod)mr.Member });
 				}
 				if (resolveResult != null)
 					return factory.CreateIndexerParameterDataProvider (resolveResult.Type, invoke.Node);
