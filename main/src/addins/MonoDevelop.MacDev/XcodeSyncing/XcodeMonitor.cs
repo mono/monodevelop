@@ -220,20 +220,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (knownFiles.Contains (file))
 					continue;
 				
+				FilePath relative;
+				if (relativePath != null)
+					relative = new FilePath (Path.Combine (relativePath, Path.GetFileName (file)));
+				else
+					relative = new FilePath (Path.GetFileName (file));
+				
 				if (file.EndsWith (".h")) {
 					NSObjectTypeInfo parsed = NSObjectInfoService.ParseHeader (file);
 					
-					monitor.Log.WriteLine ("New Objective-C header file found: {0}", Path.Combine (relativePath, Path.GetFileName (file)));
+					monitor.Log.WriteLine ("New Objective-C header file found: {0}", relative);
 					ctx.TypeSyncJobs.Add (XcodeSyncObjcBackJob.NewType (parsed, relativePath));
 				} else {
-					FilePath original, relative;
-					
-					if (relativePath != null)
-						relative = new FilePath (Path.Combine (relativePath, Path.GetFileName (file)));
-					else
-						relative = new FilePath (Path.GetFileName (file));
-					
-					original = ctx.Project.BaseDirectory.Combine (relative);
+					FilePath original = ctx.Project.BaseDirectory.Combine (relative);
 					
 					monitor.Log.WriteLine ("New content file found: {0}", relative);
 					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, XcodeSyncFileStatus.Added));
