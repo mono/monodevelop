@@ -65,8 +65,8 @@ namespace MonoDevelop.Ide.Templates
 			if (String.IsNullOrEmpty (projectDescriptor.type))
 				projectDescriptor.type = "DotNet";
 			
-            if (xmlElement.Attributes["directory"] != null)
-                projectDescriptor.directory = xmlElement.Attributes["directory"].Value;
+			if (xmlElement.Attributes["directory"] != null)
+				projectDescriptor.directory = xmlElement.Attributes["directory"].Value;
 			
 			if (xmlElement["Files"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Files"].ChildNodes)
@@ -117,21 +117,21 @@ namespace MonoDevelop.Ide.Templates
 		
 		ProjectCreateInformation GetCreateInformation(ProjectCreateInformation projectCreateInformation)
 		{
-            ProjectCreateInformation localProjectCI;
-            localProjectCI = new ProjectCreateInformation (projectCreateInformation);
+			ProjectCreateInformation localProjectCI;
+			localProjectCI = new ProjectCreateInformation (projectCreateInformation);
 			localProjectCI.ProjectName = ParseAttribute (projectCreateInformation, name);
 
-            if (!string.IsNullOrEmpty (directory) && directory != ".") {
+			if (!string.IsNullOrEmpty (directory) && directory != ".") {
 				var dir = ParseAttribute (projectCreateInformation, directory);
-                localProjectCI.SolutionPath = Path.Combine (projectCreateInformation.SolutionPath, dir);
-                localProjectCI.ProjectBasePath = Path.Combine (projectCreateInformation.SolutionPath, dir);
+				localProjectCI.SolutionPath = Path.Combine (projectCreateInformation.SolutionPath, dir);
+				localProjectCI.ProjectBasePath = Path.Combine (projectCreateInformation.SolutionPath, dir);
 				
-                if (!Directory.Exists (localProjectCI.SolutionPath))
-                    Directory.CreateDirectory (localProjectCI.SolutionPath);
+				if (!Directory.Exists (localProjectCI.SolutionPath))
+					Directory.CreateDirectory (localProjectCI.SolutionPath);
 				
-                if (!Directory.Exists (localProjectCI.ProjectBasePath))
-                    Directory.CreateDirectory (localProjectCI.ProjectBasePath);
-            }
+				if (!Directory.Exists (localProjectCI.ProjectBasePath))
+					Directory.CreateDirectory (localProjectCI.ProjectBasePath);
+			}
 			return localProjectCI;
 		}
 
