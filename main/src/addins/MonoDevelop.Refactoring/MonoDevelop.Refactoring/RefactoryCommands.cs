@@ -363,7 +363,7 @@ namespace MonoDevelop.Refactoring
 			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			var attribute = unit != null ? unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (options.Document.Editor.Caret.Location) : null;
 			
-			bool isInsideAttributeType = attribute != null && attribute.Type.IsInside (options.Document.Editor.Caret.Location);
+			bool isInsideAttributeType = attribute != null && attribute.Type.Contains (options.Document.Editor.Caret.Location);
 				
 			if (resolveResult is UnknownIdentifierResolveResult) {
 				usedNamespaces = options.GetUsedNamespaces ();
