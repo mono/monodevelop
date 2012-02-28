@@ -127,7 +127,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole (Roles.Identifier, Identifier.Create (value, TextLocation.Empty));
+				SetChildByRole (Roles.Identifier, Identifier.Create (value));
 			}
 		}
 		

@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (AliasRole).Name;
 			}
 			set {
-				SetChildByRole(AliasRole, Identifier.Create (value, TextLocation.Empty));
+				SetChildByRole(AliasRole, Identifier.Create (value));
 			}
 		}
 		
@@ -73,13 +73,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public UsingAliasDeclaration (string alias, string nameSpace)
 		{
-			AddChild (Identifier.Create (alias, TextLocation.Empty), AliasRole);
+			AddChild (Identifier.Create (alias), AliasRole);
 			AddChild (new SimpleType (nameSpace), ImportRole);
 		}
 		
 		public UsingAliasDeclaration (string alias, AstType import)
 		{
-			AddChild (Identifier.Create (alias, TextLocation.Empty), AliasRole);
+			AddChild (Identifier.Create (alias), AliasRole);
 			AddChild (import, ImportRole);
 		}
 		

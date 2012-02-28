@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (string.IsNullOrEmpty(value))
 					SetChildByRole(Roles.Identifier, null);
 				else
-					SetChildByRole(Roles.Identifier, Identifier.Create (value, TextLocation.Empty));
+					SetChildByRole(Roles.Identifier, Identifier.Create (value));
 			}
 		}
 		
