@@ -8272,7 +8272,8 @@ void case_847()
 void case_848()
 #line 5601 "cs-parser.jay"
 {
-		yyVal = new TryFinally (new TryCatch ((Block) yyVals[-3+yyTop], (List<Catch>) yyVals[-2+yyTop], Location.Null, true), (Block) yyVals[0+yyTop], GetLocation (yyVals[-4+yyTop]));
+		var loc = GetLocation (yyVals[-4+yyTop]);
+		yyVal = new TryFinally (new TryCatch ((Block) yyVals[-3+yyTop], (List<Catch>) yyVals[-2+yyTop], loc, true), (Block) yyVals[0+yyTop], loc);
 		lbag.AddStatement (yyVal, GetLocation (yyVals[-1+yyTop]));
 	  }
 
