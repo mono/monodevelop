@@ -3652,7 +3652,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
 				var driver = new Driver (ctx);
-				var parser = driver.Parse (reader, file, module);
+				var parser = Driver.Parse (reader, file, module);
 				
 				var top = new CompilerCompilationUnit () { 
 					ModuleCompiled = module,
