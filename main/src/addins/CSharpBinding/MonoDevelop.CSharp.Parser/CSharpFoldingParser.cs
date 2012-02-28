@@ -83,6 +83,7 @@ namespace MonoDevelop.CSharp.Parser
 								inMultiLineComment = false;
 								result.Add (new MonoDevelop.TypeSystem.Comment () {
 									Region = new DomRegion (startLoc, new TextLocation (line, column)),
+									OpenTag = "/*",
 									CommentType = CommentType.MultiLine,
 									Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
 									CommentStartsLine = hasStartedAtLine
@@ -109,6 +110,7 @@ namespace MonoDevelop.CSharp.Parser
 							result.Add (new MonoDevelop.TypeSystem.Comment () { 
 								Region = new DomRegion (startLoc, new TextLocation (line, column)),
 								CommentType = CommentType.SingleLine, 
+								OpenTag = "//",
 								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
 								CommentStartsLine = hasStartedAtLine,
 								IsDocumentation = isDocumentation
