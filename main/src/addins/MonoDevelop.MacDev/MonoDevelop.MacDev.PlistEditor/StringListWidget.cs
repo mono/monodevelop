@@ -152,36 +152,34 @@ namespace MonoDevelop.MacDev.PlistEditor
 			valueRenderer.Edited += delegate (object o, EditedArgs args) {
 				TreeIter iter;
 				
-				if (!treeStore.GetIterFromString (out iter, args.Path)) 
+				if (!treeStore.GetIterFromString (out iter, args.Path))
 					return;
 				
 				var pObject = (PObject) treeStore.GetValue (iter, (int) ListColumn.Object);
 				if (pObject == null)
 					return;
 				
-				string newText = args.NewText;
-				pObject.SetValue (newText);
+				string newValue = !string.IsNullOrEmpty (ValuePrefix) ? ValuePrefix + args.NewText : args.NewText;
+				
+				pObject.SetValue (newValue);
 			};
 			
 			treeview.AppendColumn (GettextCatalog.GetString ("Value"), valueRenderer, delegate (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
+				var text     = (string) tree_model.GetValue (iter, (int) ListColumn.DisplayValue);
 				var obj      = (PObject) tree_model.GetValue (iter, (int) ListColumn.Object);
 				var renderer = (CellRendererCombo) cell;
 				
-				if (obj == null) {
-					renderer.Text = GettextCatalog.GetString (AddNewEntry);
-					renderer.Sensitive = false;
-					renderer.Editable = false;
-					return;
-				}
-				
-				renderer.Sensitive = true;
-				renderer.Editable = true;
-				
-				obj.RenderValue (this, renderer);
+				renderer.Sensitive = obj != null;
+				renderer.Editable = obj != null;
+				renderer.Text = text;
 			});
 			
 			treeview.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview.Model = treeStore;
+		}
+		
+		public string ValuePrefix {
+			get; set;
 		}
 		
 		public bool ShowDescriptions {
@@ -226,7 +224,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (str == null)
 					continue;
 				
-				treeStore.AppendValues (str.Value, item);
+				string value = str.Value;
+				if (!string.IsNullOrEmpty (ValuePrefix) && value.StartsWith (ValuePrefix))
+					value = value.Substring (ValuePrefix.Length);
+				
+				treeStore.AppendValues (value, item);
 			}
 			
 			AppendCreateNewEntry ();
