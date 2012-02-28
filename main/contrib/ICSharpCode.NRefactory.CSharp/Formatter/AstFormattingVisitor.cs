@@ -1348,8 +1348,18 @@ namespace ICSharpCode.NRefactory.CSharp
 				break;
 			}
 			ForceSpacesAround (binaryOperatorExpression.OperatorToken, forceSpaces);
-
+			
 			base.VisitBinaryOperatorExpression (binaryOperatorExpression);
+			// Handle line breaks in binary opeartor expression.
+			if (binaryOperatorExpression.Left.StartLocation.Line != binaryOperatorExpression.Right.StartLocation.Line) {
+				IndentLevel++;
+				if (binaryOperatorExpression.OperatorToken.StartLocation.Line == binaryOperatorExpression.Right.StartLocation.Line) {
+					FixStatementIndentation (binaryOperatorExpression.OperatorToken.StartLocation);
+				} else {
+					FixStatementIndentation (binaryOperatorExpression.Right.StartLocation);
+				}
+				IndentLevel--;
+			}
 		}
 
 		public override void VisitConditionalExpression (ConditionalExpression conditionalExpression)
