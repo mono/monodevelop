@@ -528,6 +528,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else if (IsMember (eventDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenMembers);
 			}
+			
+			var lastLoc = eventDeclaration.StartLocation;
+			IndentLevel++;
+			foreach (var initializer in eventDeclaration.Variables) {
+				if (lastLoc.Line != initializer.StartLocation.Line) {
+					FixStatementIndentation (initializer.StartLocation);
+					lastLoc = initializer.StartLocation;
+				}
+				initializer.AcceptVisitor (this);
+			}
+			IndentLevel--;			
 		}
 
 		public override void VisitAccessor (Accessor accessor)
@@ -545,7 +556,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else if (IsMember (fieldDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenMembers);
 			}
-			base.VisitFieldDeclaration (fieldDeclaration);
+			
+			var lastLoc = fieldDeclaration.StartLocation;
+			IndentLevel++;
+			foreach (var initializer in fieldDeclaration.Variables) {
+				if (lastLoc.Line != initializer.StartLocation.Line) {
+					FixStatementIndentation (initializer.StartLocation);
+					lastLoc = initializer.StartLocation;
+				}
+				initializer.AcceptVisitor (this);
+			}
+			IndentLevel--;
 		}
 
 		public override void VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration)
@@ -557,7 +578,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else if (IsMember (fixedFieldDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenMembers);
 			}
-			base.VisitFixedFieldDeclaration (fixedFieldDeclaration);
+			
+			var lastLoc = fixedFieldDeclaration.StartLocation;
+			IndentLevel++;
+			foreach (var initializer in fixedFieldDeclaration.Variables) {
+				if (lastLoc.Line != initializer.StartLocation.Line) {
+					FixStatementIndentation (initializer.StartLocation);
+					lastLoc = initializer.StartLocation;
+				}
+				initializer.AcceptVisitor (this);
+			}
+			IndentLevel--;			
 		}
 
 		public override void VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration)
@@ -1246,9 +1277,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			} else {
 				ForceSpacesAfter (variableDeclarationStatement.Type, true);
 			}
+			var lastLoc = variableDeclarationStatement.StartLocation;
+			IndentLevel++;
 			foreach (var initializer in variableDeclarationStatement.Variables) {
+				if (lastLoc.Line != initializer.StartLocation.Line) {
+					FixStatementIndentation (initializer.StartLocation);
+					lastLoc = initializer.StartLocation;
+				}
 				initializer.AcceptVisitor (this);
 			}
+			IndentLevel--;
+			
 			FormatCommas (variableDeclarationStatement, policy.SpaceBeforeLocalVariableDeclarationComma, policy.SpaceAfterLocalVariableDeclarationComma);
 			FixSemicolon (variableDeclarationStatement.SemicolonToken);
 		}
