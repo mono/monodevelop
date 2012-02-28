@@ -395,10 +395,9 @@ namespace MonoDevelop.Projects.Dom.Parser
 						ProjectDom dom = GetProjectDom (project);
 						// referenced by main project - prevents the removal if a project is referenced one time inside the solution
 						// and the project that references it is reloaded.
-						if (dom != null) {
-							dom.ReferenceCount++;
+						dom.ReferenceCount++; 
+						if (dom != null)
 							dom.UpdateReferences ();
-						}
 					}
 					solution.SolutionItemAdded += OnSolutionItemAdded;
 					solution.SolutionItemRemoved += OnSolutionItemRemoved;
