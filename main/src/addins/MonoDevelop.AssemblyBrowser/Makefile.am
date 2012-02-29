@@ -5,35 +5,35 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs \
-	MonoDevelop.AssemblyBrowser/AssemblyBrowserTypeNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/AssemblyBrowserView.cs \
+	MonoDevelop.AssemblyBrowser/AssemblyBrowserHandler.cs \
+	MonoDevelop.AssemblyBrowser/AssemblyBrowserViewContent.cs \
 	MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs \
-	MonoDevelop.AssemblyBrowser/AssemblyNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/AssemblyLoader.cs \
+	MonoDevelop.AssemblyBrowser/AssemblyReferenceFolder.cs \
+	MonoDevelop.AssemblyBrowser/AssemblyResourceFolder.cs \
 	MonoDevelop.AssemblyBrowser/BaseTypeFolder.cs \
-	MonoDevelop.AssemblyBrowser/BaseTypeFolderNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/ColoredCSharpFormatter.cs \
-	MonoDevelop.AssemblyBrowser/Decompiler.cs \
 	MonoDevelop.AssemblyBrowser/DisplayBinding.cs \
 	MonoDevelop.AssemblyBrowser/DocumentationPanel.cs \
-	MonoDevelop.AssemblyBrowser/DomEventNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/DomFieldNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/DomMethodNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/DomPropertyNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/DomTypeNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/Error.cs \
-	MonoDevelop.AssemblyBrowser/ErrorNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/IAssemblyBrowserNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/ModuleDefinitionNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/ModuleReferenceNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/Namespace.cs \
-	MonoDevelop.AssemblyBrowser/NamespaceBuilder.cs \
-	MonoDevelop.AssemblyBrowser/Reference.cs \
-	MonoDevelop.AssemblyBrowser/ReferenceFolder.cs \
-	MonoDevelop.AssemblyBrowser/ReferenceFolderNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/ReferenceNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/ResourceFolder.cs \
-	MonoDevelop.AssemblyBrowser/ResourceFolderNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/ResourceNodeBuilder.cs
+	MonoDevelop.AssemblyBrowser/TreeNodes/AssemblyBrowserTypeNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/AssemblyNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/AssemblyReferenceFolderNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/AssemblyReferenceNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/AssemblyResourceFolderNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/BaseTypeFolderNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/DomEventNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/DomFieldNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/DomMethodNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/DomPropertyNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/DomTypeNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/ErrorNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/ModuleReferenceNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/NamespaceBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/ProjectNodeBuilder.cs \
+	MonoDevelop.AssemblyBrowser/TreeNodes/ResourceNodeBuilder.cs 
 
 RES =  \
 	gtk-gui/gui.stetic \
