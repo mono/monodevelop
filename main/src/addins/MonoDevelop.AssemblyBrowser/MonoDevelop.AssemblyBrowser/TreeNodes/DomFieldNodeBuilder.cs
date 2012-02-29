@@ -87,12 +87,16 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+				return null;
 			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleField (field));
 		}
 		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+				return null;
 			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
 		}

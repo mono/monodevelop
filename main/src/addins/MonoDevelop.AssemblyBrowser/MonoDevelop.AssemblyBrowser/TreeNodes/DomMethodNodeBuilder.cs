@@ -44,6 +44,7 @@ using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using System.IO;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -173,8 +174,13 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var method = CecilLoader.GetCecilObject ((IUnresolvedMethod)navigator.DataItem);
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), method.DeclaringType, b => b.AddMethod (method));
+			var method = (IUnresolvedMethod)navigator.DataItem;
+			if (HandleSourceCodeEntity (navigator, data)) 
+				return null;
+			var cecilMethod = CecilLoader.GetCecilObject (method);
+			if (cecilMethod == null)
+				return null;
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
 		}
 		
 		static void AppendLink (StringBuilder sb, string link, string text)
@@ -196,18 +202,36 @@ namespace MonoDevelop.AssemblyBrowser
 			return output.ReferencedSegments;
 		}
 		
+		internal static bool HandleSourceCodeEntity (ITreeNavigator navigator, TextEditorData data)
+		{
+			if (IsFromAssembly (navigator))
+				return false;
+			
+			var method = (IUnresolvedEntity)navigator.DataItem;
+			data.Text = File.ReadAllText (method.Region.FileName);
+			data.Caret.Location = method.Region.Begin;
+			data.CenterToCaret ();
+			return true;
+		}
+		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var method = CecilLoader.GetCecilObject ((IUnresolvedMethod)navigator.DataItem);
-			if (method == null)
+			var method = (IUnresolvedMethod)navigator.DataItem;
+			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			return Disassemble (data, rd => rd.DisassembleMethod (method));
+			var cecilMethod = CecilLoader.GetCecilObject (method);
+			if (cecilMethod == null)
+				return null;
+			return Disassemble (data, rd => rd.DisassembleMethod (cecilMethod));
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			var resolved = Resolve (navigator, method);
+			if (GetMainAssembly (navigator) == null) {
+				return System.IO.File.ReadAllText (method.Region.FileName);
+			}
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
 			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));

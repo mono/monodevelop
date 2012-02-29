@@ -28,25 +28,25 @@
 
 using System;
 using Mono.Cecil;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ResourceFolder : IDisposable
+	public class AssemblyResourceFolder
 	{
-		public ModuleDefinition ModuleDefinition {
-			get;
-			set;
+		AssemblyDefinition definition;
+		
+		public IEnumerable<Resource> Resources {
+			get {
+				return definition.MainModule.Resources;
+			}
 		}
 		
-		public ResourceFolder (ModuleDefinition moduleDefinition)
+		public AssemblyResourceFolder (AssemblyDefinition definition)
 		{
-			this.ModuleDefinition = moduleDefinition;
+			if (definition == null)
+				throw new ArgumentNullException ("definition");
+			this.definition = definition;
 		}
-		
-		public void Dispose ()
-		{
-			ModuleDefinition = null;
-		}
-		
 	}
 }

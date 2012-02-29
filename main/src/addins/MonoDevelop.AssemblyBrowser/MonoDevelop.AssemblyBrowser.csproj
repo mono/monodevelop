@@ -112,36 +112,36 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DisplayBinding.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserView.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserWidget.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ModuleDefinitionNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\DomTypeNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\DomEventNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\DomFieldNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\DomPropertyNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\Namespace.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\NamespaceBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceFolder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ResourceFolder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceFolderNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ResourceFolderNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ResourceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\Error.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ErrorNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ModuleReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\BaseTypeFolderNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\IAssemblyBrowserNodeBuilder.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\Decompiler.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\DomMethodNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\Reference.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\ReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\DocumentationPanel.cs" />
-    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserTypeNodeBuilder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\ColoredCSharpFormatter.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomEventNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomFieldNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomMethodNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomPropertyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\DomTypeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyBrowserTypeNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\BaseTypeFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\NamespaceBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ResourceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ErrorNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ModuleReferenceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyReferenceNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyReferenceFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\AssemblyResourceFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserHandler.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyResourceFolder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyBrowserViewContent.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyReferenceFolder.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyLoader.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ProjectNodeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -167,4 +167,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.AssemblyBrowser\TreeNodes\" />
+  </ItemGroup>
 </Project>

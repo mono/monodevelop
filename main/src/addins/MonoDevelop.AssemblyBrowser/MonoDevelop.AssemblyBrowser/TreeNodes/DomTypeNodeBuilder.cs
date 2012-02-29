@@ -61,12 +61,6 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		}
 		
-/*		AssemblyBrowserWidget widget;
-		
-		public DomTypeNodeBuilder (AssemblyBrowserWidget widget)
-		{
-			this.widget = widget;
-		}*/
 		internal static OutputSettings settings;
 		static SyntaxMode mode = SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
 
@@ -122,7 +116,6 @@ namespace MonoDevelop.AssemblyBrowser
 			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.UseNETTypeNames);
 			if (type.IsPrivate)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			
 			icon = ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
@@ -174,13 +167,22 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var type =  CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+				return null;
+			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
+			if (type == null)
+				return null;
+			
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type));
 		}
 		
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
 		{
-			var type =  CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+				return null;
+			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
+			if (type == null)
+				return null;
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, b => b.AddType (type));
 		}
 		

@@ -33,10 +33,10 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ResourceFolderNodeBuilder : TypeNodeBuilder
+	public class AssemblyResourceFolderNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(ResourceFolder); }
+			get { return typeof(AssemblyResourceFolder); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -53,11 +53,9 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			ResourceFolder resourceFolder = (ResourceFolder)dataObject;
-			if (resourceFolder.ModuleDefinition != null) {
-				foreach (object resource in resourceFolder.ModuleDefinition.Resources) {
-					ctx.AddChild (resource);
-				}
+			var resourceFolder = (AssemblyResourceFolder)dataObject;
+			foreach (object resource in resourceFolder.Resources) {
+				ctx.AddChild (resource);
 			}
 		}
 		
@@ -68,7 +66,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
 		{
-			if (otherNode.DataItem is ReferenceFolder)
+			if (otherNode.DataItem is AssemblyReferenceFolder)
 				return 1;
 			return -1;
 		}

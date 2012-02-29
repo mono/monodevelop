@@ -78,11 +78,12 @@ namespace MonoDevelop.AssemblyBrowser
 			loader.IncludeInternalMembers = true;
 			TreeView = new ExtensibleTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
+				new ProjectNodeBuilder (this),
 				new AssemblyNodeBuilder (this),
 				new ModuleReferenceNodeBuilder (),
-//				new ModuleDefinitionNodeBuilder (this),
-				new ReferenceFolderNodeBuilder (this),
-				new ResourceFolderNodeBuilder (),
+				new AssemblyReferenceNodeBuilder (this),
+				new AssemblyReferenceFolderNodeBuilder (this),
+				new AssemblyResourceFolderNodeBuilder (),
 				new ResourceNodeBuilder (),
 				new NamespaceBuilder (this),
 				new DomTypeNodeBuilder (this),
@@ -91,8 +92,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new DomEventNodeBuilder (this),
 				new DomPropertyNodeBuilder (this),
 				new BaseTypeFolderNodeBuilder (this),
-				new BaseTypeNodeBuilder (this),
-				new ReferenceNodeBuilder (this),
+				new BaseTypeNodeBuilder (this)
 				}, new TreePadOption [] {
 				new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), true)
 			});
@@ -263,12 +263,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Gtk.TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-				var member = (IEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+				var member = (IUnresolvedEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+				
 				var nav = SearchMember (member);
-				if (nav != null) {
-					nav.ExpandToNode ();
-					nav.Selected = true;
-				}
 				if (searchMode == SearchMode.Disassembler) {
 					this.notebook1.Page = 0;
 //						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
@@ -302,7 +299,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
 				AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
 				foreach (var cu in definitions) {
-					assemblyBrowserView.Load (cu.AssemblyName);
+					assemblyBrowserView.Load (cu.UnresolvedAssembly.AssemblyName);
 				}
 				IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
 				((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
@@ -322,9 +319,9 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.GrabFocus ();
 		}
 		
-		ITreeNavigator SearchMember (IEntity member)
+		ITreeNavigator SearchMember (IUnresolvedEntity member)
 		{
-			return SearchMember (member.GetIdString ());
+			return SearchMember (GetIdString (member));
 		}
 			
 		ITreeNavigator SearchMember (string helpUrl)
@@ -444,6 +441,12 @@ namespace MonoDevelop.AssemblyBrowser
 				return true;
 			if (nav.DataItem is BaseTypeFolder)
 				return true;
+			if (nav.DataItem is Project)
+				return true;
+			if (nav.DataItem is AssemblyReferenceFolder)
+				return true;
+			if (nav.DataItem is AssemblyResourceFolder)
+				return true;
 			string strippedUrl = helpUrl;
 			if (strippedUrl.Length > 2 && strippedUrl [1] == ':')
 				strippedUrl = strippedUrl.Substring (2);
@@ -462,18 +465,21 @@ namespace MonoDevelop.AssemblyBrowser
 		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl)
 		{
 			bool searchType = helpUrl.StartsWith ("T:");
-			
 			do {
-				if (IsMatch (nav, helpUrl, searchType))
+				if (IsMatch (nav, helpUrl, searchType)) {
+					nav.ExpandToNode ();
+					nav.Selected = nav.Expanded = true;
 					return nav;
+				}
 				if (!SkipChildren (nav, helpUrl, searchType) && nav.HasChildren ()) {
 					nav.MoveToFirstChild ();
 					ITreeNavigator result = SearchMember (nav, helpUrl);
 					if (result != null)
 						return result;
 					
-					if (!nav.MoveToParent ())
+					if (!nav.MoveToParent ()) {
 						return null;
+					}
 					try {
 						if (nav.DataItem is TypeDefinition && nav.Options ["PublicApiOnly"]) {
 							nav.Options ["PublicApiOnly"] = false;
@@ -485,7 +491,6 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					} catch (Exception) {
 					}
-					break;
 				}
 			} while (nav.MoveNext());
 			return null;
@@ -498,6 +503,7 @@ namespace MonoDevelop.AssemblyBrowser
 			Disassembler = 2,
 			Decompiler = 3
 		}
+		
 		SearchMode searchMode = SearchMode.Type;
 		Gtk.ListStore memberListStore;
 		Gtk.ListStore typeListStore;
@@ -598,13 +604,13 @@ namespace MonoDevelop.AssemblyBrowser
 				string pattern = e.Argument.ToString ().ToUpper ();
 				int types = 0, curType = 0;
 				foreach (var unit in this.definitions) {
-						types += unit.TopLevelTypeDefinitions.Count ();
+					types += unit.UnresolvedAssembly.TopLevelTypeDefinitions.Count ();
 				}
 				var members = new List<IUnresolvedMember> ();
 				switch (searchMode) {
 				case SearchMode.Member:
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.TopLevelTypeDefinitions) {
+						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
@@ -635,7 +641,7 @@ namespace MonoDevelop.AssemblyBrowser
 						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 					});
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.TopLevelTypeDefinitions) {
+						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
@@ -663,7 +669,7 @@ namespace MonoDevelop.AssemblyBrowser
 					break;
 				case SearchMode.Decompiler:
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.TopLevelTypeDefinitions) {
+						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
 							curType++;
@@ -691,7 +697,7 @@ namespace MonoDevelop.AssemblyBrowser
 				case SearchMode.Type:
 					var typeList = new List<IUnresolvedTypeDefinition> ();
 					foreach (var unit in this.definitions) {
-						foreach (var type in unit.TopLevelTypeDefinitions) {
+						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
 							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
@@ -987,7 +993,7 @@ namespace MonoDevelop.AssemblyBrowser
 			case 2:
 				inspectEditor.Options.ShowFoldMargin = true;
 				this.inspectEditor.Document.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.Decompile (inspectEditor.GetTextEditorData (),  nav));
+				SetReferencedSegments (builder.Decompile (inspectEditor.GetTextEditorData (), nav));
 				break;
 			default:
 				inspectEditor.Options.ShowFoldMargin = false;
@@ -1057,18 +1063,13 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			if (nav == null) {
 				foreach (var definition in definitions.ToArray ()) {
-					foreach (var assemblyNameReference in loader.GetCecilObject (definition).MainModule.AssemblyReferences) {
-						string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyNameReference.FullName, null);
-						if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
-							AddReference (assemblyFile);
+					foreach (var assemblyNameReference in loader.GetCecilObject (definition.UnresolvedAssembly).MainModule.AssemblyReferences) {
+						AddReferenceByAssemblyName (assemblyNameReference);
 					}
 				}
 				nav = SearchMember (url);
 			}
-			if (nav != null) {
-				nav.ExpandToNode ();
-				nav.Selected = true;
-			} else {
+			if (nav == null) {
 				LoggingService.LogError ("Can't open: " + url + " (not found).");
 			}
 		}
@@ -1077,8 +1078,8 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			AssemblyDefinition cu = null;
 			foreach (var unit in definitions) {
-				if (unit.AssemblyName == fileName)
-					cu = loader.GetCecilObject (unit);
+				if (unit.UnresolvedAssembly.AssemblyName == fileName)
+					cu = loader.GetCecilObject (unit.UnresolvedAssembly);
 			}
 			if (cu == null)
 				return;
@@ -1178,31 +1179,63 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		} 
 		
-		List<IUnresolvedAssembly> definitions = new List<IUnresolvedAssembly> ();
+		List<AssemblyLoader> definitions = new List<AssemblyLoader> ();
+		List<Project> projects = new List<Project> ();
 		
-		public IUnresolvedAssembly AddReference (string fileName)
+		public AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference, bool selectReference = false)
 		{
-			IUnresolvedAssembly result;
-			if (definitions.Any (d => d.AssemblyName == fileName))
-				return definitions.First (d => d.AssemblyName == fileName);
-			try {
-				var assembly = ReadAssembly (fileName);
-				result = loader.LoadAssembly (assembly);
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't add reference to:" + fileName, e);
-				return null;
+			return AddReferenceByAssemblyName (reference.Name, selectReference);
+		}
+		
+		public AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool selectReference = false)
+		{
+			string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyFullName, null);
+			
+			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile)) {
+				foreach (var wrapper in definitions) {
+					assemblyFile = wrapper.LookupAssembly (assemblyFullName);
+					if (assemblyFile != null && System.IO.File.Exists (assemblyFile))
+						break;
+				}
 			}
-				
+			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile))
+				return null;
+			
+			return AddReferenceByFileName (assemblyFile, selectReference);
+		}
+		
+		public AssemblyLoader AddReferenceByFileName (string fileName, bool selectReference = false)
+		{
+			var result = definitions.FirstOrDefault (d => d.FileName == fileName);
+			if (result != null)
+				return result;
+			result = new AssemblyLoader (this, fileName);
+			
 			definitions.Add (result);
 			ITreeBuilder builder;
-			if (definitions.Count == 1) {
+			if (definitions.Count + projects.Count == 1) {
 				builder = TreeView.LoadTree (result);
 			} else {
 				builder = TreeView.AddChild (result);
 			}
-			builder.MoveToFirstChild ();
-			builder.Expanded = true;
+			builder.Selected = builder.Expanded = selectReference;
 			return result;
+		}
+		
+		public void AddProject (Project project, bool selectReference = false)
+		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			if (projects.Contains (project))
+				return;
+			projects.Add (project);
+			ITreeBuilder builder;
+			if (definitions.Count + projects.Count == 1) {
+				builder = TreeView.LoadTree (project);
+			} else {
+				builder = TreeView.AddChild (project);
+			}
+			builder.Selected = builder.Expanded = selectReference;
 		}
 		
 		[CommandHandler (SearchCommands.Find)]

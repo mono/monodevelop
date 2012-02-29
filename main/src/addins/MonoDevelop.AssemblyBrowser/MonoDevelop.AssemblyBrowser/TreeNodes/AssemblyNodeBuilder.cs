@@ -39,13 +39,14 @@ using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.IO;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	class AssemblyNodeBuilder : AssemblyBrowserTypeNodeBuilder, IAssemblyBrowserNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IUnresolvedAssembly); }
+			get { return typeof(AssemblyLoader); }
 		}
 		
 		public AssemblyNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
@@ -54,30 +55,41 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var compilationUnit = (IUnresolvedAssembly)dataObject;
-			return compilationUnit.AssemblyName;
+			var loader = (AssemblyLoader)dataObject;
+			return Path.GetFileNameWithoutExtension (loader.FileName);
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			var compilationUnit = (IUnresolvedAssembly)dataObject;
-			label = compilationUnit.AssemblyName;
+			var compilationUnit = (AssemblyLoader)dataObject;
+			
+			label = Path.GetFileNameWithoutExtension (compilationUnit.FileName);
 			icon = Context.GetIcon (Stock.Reference);
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var compilationUnit = (IUnresolvedAssembly)dataObject;
+			var compilationUnit = (AssemblyLoader)dataObject;
+			
+			var references = new AssemblyReferenceFolder (compilationUnit.Assembly);
+			if (references.AssemblyReferences.Any () || references.ModuleReferences.Any ())
+				builder.AddChild (references);
+			
+			var resources = new AssemblyResourceFolder (compilationUnit.Assembly);
+			if (resources.Resources.Any ())
+				builder.AddChild (resources);
 			
 			var namespaces = new Dictionary<string, Namespace> ();
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
-			foreach (var type in compilationUnit.TopLevelTypeDefinitions) {
+			foreach (var type in compilationUnit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 				if (publicOnly && !type.IsPublic)
 					continue;
-				if (!namespaces.ContainsKey (type.Namespace))
-					namespaces[type.Namespace] = new Namespace (type.Namespace);
-				var ns = namespaces[type.Namespace];
+				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
+				if (!namespaces.ContainsKey (namespaceName))
+					namespaces [namespaceName] = new Namespace (namespaceName);
+				
+				var ns = namespaces [namespaceName];
 				ns.Types.Add (type);
 			}
 			
@@ -88,8 +100,30 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var compilationUnit = (IUnresolvedAssembly)dataObject;
-			return compilationUnit.TopLevelTypeDefinitions.Any ();
+			var compilationUnit = (AssemblyLoader)dataObject;
+			return compilationUnit.Assembly.MainModule.HasTypes;
+		}
+		
+		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			try {
+				if (thisNode == null || otherNode == null)
+					return -1;
+				var e1 = thisNode.DataItem as AssemblyLoader;
+				var e2 = otherNode.DataItem as AssemblyLoader;
+				
+				if (e1 == null && e2 == null)
+					return 0;
+				if (e1 == null)
+					return 1;
+				if (e2 == null)
+					return -1;
+				
+				return e1.Assembly.Name.Name.CompareTo (e2.Assembly.Name.Name);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception in assembly browser sort function.", e);
+				return -1;
+			}
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
@@ -119,7 +153,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
 		{
-			var compilationUnit = Widget.CecilLoader.GetCecilObject ((IUnresolvedAssembly)navigator.DataItem);
+			var compilationUnit = Widget.CecilLoader.GetCecilObject (((AssemblyLoader)navigator.DataItem).UnresolvedAssembly);
 			StringBuilder result = new StringBuilder ();
 			PrintAssemblyHeader (result, compilationUnit);
 			
@@ -134,7 +168,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var compilationUnit = Widget.CecilLoader.GetCecilObject ((IUnresolvedAssembly)navigator.DataItem);
+			var compilationUnit = Widget.CecilLoader.GetCecilObject (((AssemblyLoader)navigator.DataItem).UnresolvedAssembly);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => b.AddAssembly (compilationUnit, true));
 		}
 		

@@ -32,7 +32,6 @@ using MonoDevelop.Refactoring;
 using System;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
- 
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -41,6 +40,12 @@ namespace MonoDevelop.AssemblyBrowser
 		AssemblyBrowserWidget widget;
 		
 		public override Gtk.Widget Control {
+			get {
+				return widget;
+			}
+		}
+		
+		internal AssemblyBrowserWidget Widget {
 			get {
 				return widget;
 			}
@@ -55,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void Load (string fileName)
 		{
 			this.ContentName = MonoDevelop.Core.GettextCatalog.GetString ("Assembly Browser");
-			widget.AddReference (fileName);
+			widget.AddReferenceByFileName (fileName);
 		}
 		
 		public override bool IsFile {

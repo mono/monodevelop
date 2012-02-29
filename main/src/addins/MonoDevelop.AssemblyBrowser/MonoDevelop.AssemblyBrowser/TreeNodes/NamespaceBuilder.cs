@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Ide.Gui.Components;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -45,6 +46,28 @@ namespace MonoDevelop.AssemblyBrowser
 		public NamespaceBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{
 			
+		}
+		
+		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			try {
+				if (thisNode == null || otherNode == null)
+					return -1;
+				var e1 = thisNode.DataItem as Namespace;
+				var e2 = otherNode.DataItem as Namespace;
+				
+				if (e1 == null && e2 == null)
+					return 0;
+				if (e1 == null)
+					return -1;
+				if (e2 == null)
+					return 1;
+				
+				return e1.Name.CompareTo (e2.Name);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception in assembly browser sort function.", e);
+				return -1;
+			}
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

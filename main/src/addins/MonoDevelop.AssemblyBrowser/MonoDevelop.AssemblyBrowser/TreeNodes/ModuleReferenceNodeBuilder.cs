@@ -1,5 +1,5 @@
 //
-// ReferenceFolder.cs
+// ModuleReferenceNodeBuilder.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -29,24 +29,52 @@
 using System;
 using Mono.Cecil;
 
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ReferenceFolder : IDisposable
+	public class ModuleReferenceNodeBuilder : TypeNodeBuilder
 	{
-		public ModuleDefinition ModuleDefinition {
-			get;
-			set;
+		public override Type NodeDataType {
+			get { return typeof(ModuleReference); }
 		}
 		
-		public ReferenceFolder (ModuleDefinition moduleDefinition)
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			this.ModuleDefinition = moduleDefinition;
+			var reference = (ModuleReference)dataObject;
+			return reference.Name;
 		}
 		
-		public void Dispose ()
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			ModuleDefinition = null;
+			var reference = (ModuleReference)dataObject;
+			label = reference.Name;
+			icon = Context.GetIcon (Stock.MiscFiles);
 		}
 		
+		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
+		{
+			try {
+				if (thisNode == null || otherNode == null)
+					return -1;
+				var e1 = thisNode.DataItem as ModuleReference;
+				var e2 = otherNode.DataItem as ModuleReference;
+				
+				if (e1 == null && e2 == null)
+					return 0;
+				if (e1 == null)
+					return -1;
+				if (e2 == null)
+					return 1;
+				
+				return e1.Name.CompareTo (e2.Name);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception in assembly browser sort function.", e);
+				return -1;
+			}
+		}
+
 	}
 }

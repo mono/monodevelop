@@ -30,6 +30,7 @@ using System;
 using Mono.Cecil;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -59,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 					return -1;
 				var e1 = thisNode.DataItem as IUnresolvedEntity;
 				var e2 = otherNode.DataItem as IUnresolvedEntity;
-				Console.WriteLine (thisNode.DataItem + " --- " + otherNode.DataItem);
+				
 				if (e1 == null && e2 == null)
 					return 0;
 				if (e1 == null)
@@ -76,28 +77,47 @@ namespace MonoDevelop.AssemblyBrowser
 				return -1;
 			}
 		}
-
+		
 		public AssemblyBrowserTypeNodeBuilder (AssemblyBrowserWidget assemblyBrowserWidget)
 		{
 			this.Widget = assemblyBrowserWidget;
 		}
 		
-		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member)
+		protected static bool IsFromAssembly (ITreeNavigator treeBuilder)
 		{
-			var mainAssembly = (IUnresolvedAssembly)treeBuilder.GetParentDataItem (typeof(IUnresolvedAssembly), true);
-			if (mainAssembly == null)
-				throw new NullReferenceException ("mainAssembly not found");
-			var simpleCompilation = new SimpleCompilation (mainAssembly);
-			return member.CreateResolved (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
+			return treeBuilder.GetParentDataItem (typeof(AssemblyLoader), true) != null;
+		}
+
+		protected IUnresolvedAssembly GetMainAssembly (ITreeNavigator treeBuilder)
+		{
+			var loader = (AssemblyLoader)treeBuilder.GetParentDataItem (typeof(AssemblyLoader), true);
+			if (loader != null)
+				return loader.UnresolvedAssembly;
+			return null;
 		}
 		
-		protected IType Resolve (ITreeNavigator treeBuilder, IUnresolvedTypeDefinition member)
+		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member)
 		{
-			var mainAssembly = (IUnresolvedAssembly)treeBuilder.GetParentDataItem (typeof(IUnresolvedAssembly), true);
-			if (mainAssembly == null)
-				throw new NullReferenceException ("mainAssembly not found");
-			var simpleCompilation = new SimpleCompilation (mainAssembly);
-			return member.Resolve (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
+			var mainAssembly = GetMainAssembly (treeBuilder);
+			if (mainAssembly != null) {
+				var simpleCompilation = new SimpleCompilation (mainAssembly);
+				return member.CreateResolved (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
+			}
+			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
+			var ctx = TypeSystem.TypeSystemService.GetCompilation (project);
+			return member.CreateResolved (ctx.TypeResolveContext);
+		}
+		
+		protected IType Resolve (ITreeNavigator treeBuilder, IUnresolvedTypeDefinition type)
+		{
+			var mainAssembly = GetMainAssembly (treeBuilder);
+			if (mainAssembly != null) {
+				var simpleCompilation = new SimpleCompilation (mainAssembly);
+				return type.Resolve (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
+			}
+			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
+			var ctx = TypeSystem.TypeSystemService.GetCompilation (project);
+			return ctx.MainAssembly.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameters.Count);
 		}
 	}
 }
