@@ -47,7 +47,9 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			try {
 				using (var stream = BrandingService.GetStream ("WelcomePageContent.xml")) {
-					Content = XDocument.Load (stream);
+					if (stream != null) {
+						Content = XDocument.Load (stream);
+					}
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while reading welcome page contents.", ex);
