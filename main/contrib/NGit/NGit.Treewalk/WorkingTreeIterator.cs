@@ -462,7 +462,6 @@ namespace NGit.Treewalk
 				}
 
 				case CoreConfig.AutoCRLF.TRUE:
-				case CoreConfig.AutoCRLF.INPUT:
 				{
 					return true;
 				}
