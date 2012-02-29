@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			var parent = member.DeclaringTypeDefinition;
 			while (parent != null) {
-				sb.Append ("class " + parent.Name +" {");
+				sb.Append ("class " + parent.Name + " {");
 				sb.Append (data.Editor.EolMarker);
 				closingBrackets++;
 				parent = parent.DeclaringTypeDefinition;
@@ -106,7 +106,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int startOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
 			
-			int endOffset = sb.Length;
+			int endOffset = sb.Length - data.Editor.Caret.Offset - seg.Offset;
 			sb.Append (data.Editor.EolMarker);
 			sb.Append (new string ('}', closingBrackets));
 			
@@ -129,7 +129,6 @@ namespace MonoDevelop.CSharp.Formatting
 				EolMarker = stubData.EolMarker
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor);
-			
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
 			
