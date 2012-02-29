@@ -35,7 +35,7 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Rule
 	{
-		protected List<Keywords> keywords = new List<Keywords> ();
+		internal protected List<Keywords> keywords = new List<Keywords> ();
 		internal protected Span[] spans = new Span[0];
 		internal protected Match[] matches = new Match[0];
 		internal protected Marker[] prevMarker = new Marker[0];

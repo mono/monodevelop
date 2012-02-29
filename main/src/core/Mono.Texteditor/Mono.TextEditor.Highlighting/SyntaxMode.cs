@@ -802,6 +802,9 @@ namespace Mono.TextEditor.Highlighting
 			newMode.spans = mode.Spans;
 			newMode.matches = mode.Matches;
 			newMode.prevMarker = mode.PrevMarker;
+			newMode.keywords = mode.keywords;
+			newMode.keywordTable = mode.keywordTable;
+			newMode.keywordTableIgnoreCase = mode.keywordTableIgnoreCase;
 			foreach (var rule in mode.Rules) {
 				if (rule is SyntaxMode) {
 					newMode.rules.Add (DeepCopy (doc, (SyntaxMode)rule));
