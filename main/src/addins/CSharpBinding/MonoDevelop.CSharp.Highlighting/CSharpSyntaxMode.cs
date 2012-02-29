@@ -261,7 +261,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			public CSharpChunkParser (Mono.TextEditor.Document doc, SyntaxMode mode, SpanParser spanParser, ColorSheme style, LineSegment line) : base (doc, mode, spanParser, style, line)
 			{
-				document = IdeApp.Workbench.GetDocument (doc.FileName);
+				try {
+					if (File.Exists (doc.FileName))
+						document = IdeApp.Workbench.GetDocument (doc.FileName);
+				} catch (Exception) {
+					document = null;
+				}
 				
 				foreach (var tag in CommentTag.SpecialCommentTags) {
 					tags.Add (tag.Tag);
