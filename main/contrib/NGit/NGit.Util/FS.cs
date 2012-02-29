@@ -288,10 +288,14 @@ namespace NGit.Util
 			{
 				foreach (string command in lookFor)
 				{
-					FilePath e = new FilePath(p, command);
-					if (e.IsFile())
-					{
-						return e.GetAbsoluteFile();
+					try {
+						FilePath e = new FilePath(p, command);
+						if (e.IsFile())
+						{
+							return e.GetAbsoluteFile();
+						}
+					} catch {
+						Console.WriteLine ("NGit Error: Could not combine: {0} and {1}", p, command);
 					}
 				}
 			}
