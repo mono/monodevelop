@@ -20,6 +20,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		ProgressTracker tracker = new ProgressTracker ();
 		Gdk.Pixbuf bitmap;
 		static Gtk.Label label;
+		bool showVersionInfo;
 		
 		public static SplashScreenForm SplashScreen {
 			get {
@@ -36,6 +37,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			this.Decorated = false;
 			this.WindowPosition = WindowPosition.Center;
 			this.TypeHint = Gdk.WindowTypeHint.Splashscreen;
+			this.showVersionInfo = BrandingService.GetBool ("SplashScreen", "ShowVersionInfo") ?? true;
 			try {
 				using (var stream = BrandingService.GetStream ("SplashScreen.png", true))
 					bitmap = new Gdk.Pixbuf (stream);
@@ -85,15 +87,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 					// Render the image first.
 					bitmap.RenderToDrawable (GdkWindow, new Gdk.GC (GdkWindow), 0, 0, 0, 0, bitmap.Width, bitmap.Height, Gdk.RgbDither.None, 0, 0);
 					
-					var bottomRight = new Cairo.PointD (bitmap.Width - 12, bitmap.Height - 25);
-					// Render the alpha/beta text if we're an alpha or beta. If this
-					// is rendered, the bottomRight point will be shifted upwards to
-					// allow the MonoDevelop version to be rendered above the alpha marker
-					if (!string.IsNullOrEmpty (build))
-						DrawAlphaBetaMarker (context, ref bottomRight, build);
-						
-					// Render the MonoDevelop version
-					DrawVersionNumber (context, ref bottomRight, version);
+					if (showVersionInfo) {
+						var bottomRight = new Cairo.PointD (bitmap.Width - 12, bitmap.Height - 25);
+						// Render the alpha/beta text if we're an alpha or beta. If this
+						// is rendered, the bottomRight point will be shifted upwards to
+						// allow the MonoDevelop version to be rendered above the alpha marker
+						if (!string.IsNullOrEmpty (build)) {
+							DrawAlphaBetaMarker (context, ref bottomRight, build);
+						}
+						// Render the MonoDevelop version
+						DrawVersionNumber (context, ref bottomRight, version);
+					}
 				}
 			}
 
