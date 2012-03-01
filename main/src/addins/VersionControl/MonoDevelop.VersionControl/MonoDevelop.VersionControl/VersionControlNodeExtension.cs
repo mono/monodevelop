@@ -51,7 +51,7 @@ namespace MonoDevelop.VersionControl
 				ClearDirCache (ce.BaseDirectory);
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null)
-					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon);
+					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon, false);
 				return;
 			} else if (dataObject is ProjectFolder) {
 				ProjectFolder ce = (ProjectFolder) dataObject;
@@ -59,7 +59,7 @@ namespace MonoDevelop.VersionControl
 					ClearDirCache (ce.Path);
 					Repository rep = VersionControlService.GetRepository (ce.ParentWorkspaceObject);
 					if (rep != null)
-						AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon);
+						AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon, true);
 				}
 				return;
 			}
@@ -93,14 +93,15 @@ namespace MonoDevelop.VersionControl
 				AddOverlay (ref icon, overlay);
 		}
 		
-		void AddFolderOverlay (Repository rep, string folder, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		void AddFolderOverlay (Repository rep, string folder, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon, bool skipVersionedOverlay)
 		{
 			Gdk.Pixbuf overlay = null;
 			VersionInfo vinfo = rep.GetVersionInfo (folder, false);
 			if (vinfo == null || !vinfo.IsVersioned) {
 				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
 			} else if (vinfo.IsVersioned && !vinfo.HasLocalChanges) {
-				overlay = VersionControlService.overlay_controled;
+				if (!skipVersionedOverlay)
+					overlay = VersionControlService.overlay_controled;
 			} else {
 				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
 			}
