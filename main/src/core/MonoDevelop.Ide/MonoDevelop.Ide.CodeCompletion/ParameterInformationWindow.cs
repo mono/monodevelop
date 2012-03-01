@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					layout.SetMarkup (Markup);
 					int w, h;
 					layout.GetPixelSize (out w, out h);
-					if (h != allocation.Height) {
+					if (h > 0 && h != allocation.Height) {
 						HeightRequest = h;
 						QueueResize ();
 					}
