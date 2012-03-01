@@ -1243,7 +1243,7 @@ namespace MonoDevelop.Ide
 						monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
 					}
 					tt.Trace ("End build event");
-					OnEndBuild (monitor, lastResult.FailedBuildCount == 0);
+					OnEndBuild (monitor, lastResult.FailedBuildCount == 0, lastResult);
 				} else {
 					tt.Trace ("End build event");
 					OnEndBuild (monitor, false);
@@ -1824,11 +1824,19 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		void OnEndBuild (IProgressMonitor monitor, bool success)
+		void OnEndBuild (IProgressMonitor monitor, bool success, BuildResult result = null)
 		{
-			if (EndBuild != null) {
-				EndBuild (this, new BuildEventArgs (monitor, success));
+			if (EndBuild == null)
+				return;
+					
+			var args = new BuildEventArgs (monitor, success);
+			if (result != null) {
+				args.WarningCount = result.WarningCount;
+				args.ErrorCount = result.ErrorCount;
+				args.BuildCount = result.BuildCount;
+				args.FailedBuildCount = result.FailedBuildCount;
 			}
+			EndBuild (this, args);
 		}
 		
 		void OnStartClean (IProgressMonitor monitor, ITimeTracker tt)
