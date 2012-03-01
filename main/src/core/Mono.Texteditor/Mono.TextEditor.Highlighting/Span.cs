@@ -138,8 +138,13 @@ namespace Mono.TextEditor.Highlighting
 		{
 			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", Color, Rule, Begin, End, String.IsNullOrEmpty (Escape) ? "not set" : "'" + Escape +"'", StopAtEol);
 		}
-
-		static void AddFlags (HashSet<string> hashSet, string flags)
+		
+		public Span Clone ()
+		{
+			return (Span)MemberwiseClone ();
+		}
+		
+ 		static void AddFlags (HashSet<string> hashSet, string flags)
 		{
 			if (String.IsNullOrEmpty (flags))
 				return;

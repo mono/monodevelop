@@ -799,20 +799,45 @@ namespace Mono.TextEditor.Highlighting
 			SyntaxMode newMode = new SyntaxMode (doc);
 			
 			newMode.MimeType = mode.MimeType;
-			newMode.spans = mode.Spans;
+			newMode.spans = new Span[mode.Spans.Length];
+			for( int i = 0; i < mode.Spans.Length; i++) {
+				newMode.spans [i] = mode.Spans [i].Clone ();
+			}
+			
 			newMode.matches = mode.Matches;
 			newMode.prevMarker = mode.PrevMarker;
 			newMode.keywords = mode.keywords;
 			newMode.keywordTable = mode.keywordTable;
 			newMode.keywordTableIgnoreCase = mode.keywordTableIgnoreCase;
+			foreach (var pair in mode.Properties)
+				newMode.Properties.Add (pair.Key, pair.Value);
+			
 			foreach (var rule in mode.Rules) {
 				if (rule is SyntaxMode) {
 					newMode.rules.Add (DeepCopy (doc, (SyntaxMode)rule));
 				} else {
-					newMode.rules.Add (rule);
+					newMode.rules.Add (DeepCopy (doc, newMode, rule));
 				}
 			}
 			return newMode;
+		}
+		
+		Rule DeepCopy (Document doc, SyntaxMode mode, Rule rule)
+		{
+			Rule newRule = new Rule (mode);
+			newRule.spans = new Span[rule.Spans.Length];
+			for( int i = 0; i < rule.Spans.Length; i++) {
+				newRule.spans [i] = rule.Spans [i].Clone ();
+			}
+			
+			newRule.matches = rule.Matches;
+			newRule.prevMarker = rule.PrevMarker;
+			newRule.keywords = rule.keywords;
+			newRule.keywordTable = rule.keywordTable;
+			newRule.keywordTableIgnoreCase = rule.keywordTableIgnoreCase;
+			foreach (var pair in rule.Properties)
+				newRule.Properties.Add (pair.Key, pair.Value);
+			return newRule;
 		}
 		
 		public SyntaxMode Create (Document doc)
