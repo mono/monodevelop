@@ -47,9 +47,17 @@ namespace CBinding
 	{
 		private Mono.TextEditor.TextEditorData editor;
 		private List<Function> functions = new List<Function> ();
+		int startOffset;
+
+		public int StartOffset {
+			get {
+				return startOffset;
+			}
+		}	
 		
-		public ParameterDataProvider (Document document, ProjectInformation info, string functionName)
+		public ParameterDataProvider (int startOffset, Document document, ProjectInformation info, string functionName)
 		{
+			this.startOffset = startOffset;
 			this.editor = document.Editor;
 			
 			foreach (Function f in info.Functions) {

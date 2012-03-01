@@ -587,7 +587,7 @@ namespace CBinding
 			if (string.IsNullOrEmpty (functionName))
 				return null;
 			
-			return new ParameterDataProvider (Document, info, functionName);
+			return new ParameterDataProvider (nameStart, Document, info, functionName);
 		}
 		
 		private bool AllWhiteSpace (string lineText)

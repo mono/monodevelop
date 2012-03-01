@@ -50,9 +50,17 @@ namespace MonoDevelop.CSharp.Completion
 		static CSharpAmbience ambience = new CSharpAmbience ();
 		CSharpCompletionTextEditorExtension ext;
 		List<IProperty> indexers;
+		int startOffset;
+
+		public int StartOffset {
+			get {
+				return startOffset;
+			}
+		}
 		
-		public IndexerParameterDataProvider (CSharpCompletionTextEditorExtension ext, IType type, AstNode resolvedExpression)
+		public IndexerParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type, AstNode resolvedExpression)
 		{
+			this.startOffset = startOffset;
 			this.ext = ext;
 		
 			this.resolvedExpression = resolvedExpression;

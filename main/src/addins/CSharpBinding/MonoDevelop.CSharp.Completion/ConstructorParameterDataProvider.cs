@@ -33,7 +33,8 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		IType type;
 		
-		public ConstructorParameterDataProvider (CSharpCompletionTextEditorExtension ext, IType type) : base (ext)
+		
+		public ConstructorParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type) : base (startOffset, ext)
 		{
 			this.type = type;
 			foreach (var method in type.GetConstructors (m => m.IsPublic)) {

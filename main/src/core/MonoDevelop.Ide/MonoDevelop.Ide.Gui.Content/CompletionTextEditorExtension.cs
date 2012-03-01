@@ -93,7 +93,6 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			var ignoreMods = Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
 				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask;
-			
 			// Handle parameter completion
 			if (ParameterInformationWindowManager.IsWindowVisible) {
 				ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, key, modifier);
@@ -171,7 +170,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			autoHideCompletionWindow = true;
 		}
 		
-		public virtual int GetCurrentParameterIndex (CodeCompletionContext completionContext)
+		public virtual int GetCurrentParameterIndex (int startOffset)
 		{
 			return -1;
 		}

@@ -443,7 +443,7 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}*/
 
-		public override int GetCurrentParameterIndex (CodeCompletionContext completionCtx)
+		public override int GetCurrentParameterIndex (int startOffset)
 		{
 			var engine = new CSharpParameterCompletionEngine (
 				textEditorData.Document,
@@ -454,7 +454,7 @@ namespace MonoDevelop.CSharp.Completion
 				CSharpParsedFile
 			);
 			engine.MemberProvider = typeSystemSegmentTree;
-			return engine.GetCurrentParameterIndex (document.Editor.Caret.Offset);
+			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset);
 		}
 		/*
 		internal int GetCurrentParameterIndex (ICompletionWidget widget, int offset, int memberStart)
@@ -612,29 +612,29 @@ namespace MonoDevelop.CSharp.Completion
 		#endregion
 
 		#region IParameterCompletionDataFactory implementation
-		IParameterDataProvider IParameterCompletionDataFactory.CreateConstructorProvider (IType type)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateConstructorProvider (int startOffset, IType type)
 		{
-			return new ConstructorParameterDataProvider (this, type);
+			return new ConstructorParameterDataProvider (startOffset, this, type);
 		}
 
-		IParameterDataProvider IParameterCompletionDataFactory.CreateMethodDataProvider (IEnumerable<IMethod> methods)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateMethodDataProvider (int startOffset, IEnumerable<IMethod> methods)
 		{
-			return new MethodParameterDataProvider (this, methods);
+			return new MethodParameterDataProvider (startOffset, this, methods);
 		}
 		
-		IParameterDataProvider IParameterCompletionDataFactory.CreateDelegateDataProvider (IType type)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateDelegateDataProvider (int startOffset, IType type)
 		{
-			return new DelegateDataProvider (this, type);
+			return new DelegateDataProvider (startOffset, this, type);
 		}
 		
-		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (IType type, AstNode resolvedNode)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (int startOffset, IType type, AstNode resolvedNode)
 		{
-			return new IndexerParameterDataProvider (this, type, resolvedNode);
+			return new IndexerParameterDataProvider (startOffset, this, type, resolvedNode);
 		}
 		
-		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider (IEnumerable<IType> types)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider (int startOffset, IEnumerable<IType> types)
 		{
-			return new TemplateParameterDataProvider (this, types);
+			return new TemplateParameterDataProvider (startOffset, this, types);
 		}
 		#endregion
 		

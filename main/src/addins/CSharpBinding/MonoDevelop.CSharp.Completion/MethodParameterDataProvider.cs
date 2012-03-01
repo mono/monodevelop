@@ -52,16 +52,24 @@ namespace MonoDevelop.CSharp.Completion
 		
 		protected List<IMethod> methods = new List<IMethod> ();
 		protected CSharpAmbience ambience = new CSharpAmbience ();
-		
+		int startOffset;
 		protected bool staticResolve = false;
+
+		public int StartOffset {
+			get {
+				return startOffset;
+			}
+		}
 		
-		protected MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext)
+		protected MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext)
 		{
+			this.startOffset = startOffset;
 			this.ext = ext;	
 		}
 		
-		public MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext, IEnumerable<IMethod> m)
+		public MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IMethod> m)
 		{
+			this.startOffset = startOffset;
 			this.ext = ext;
 			
 			HashSet<string> alreadyAdded = new HashSet<string> ();

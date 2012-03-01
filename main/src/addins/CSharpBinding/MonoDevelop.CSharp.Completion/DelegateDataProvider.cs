@@ -49,12 +49,20 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		CSharpCompletionTextEditorExtension ext;
 		
+		int startOffset;
 		IType delegateType;
 		IMethod delegateMethod;
 		CSharpAmbience ambience = new CSharpAmbience ();
+
+		public int StartOffset {
+			get {
+				return startOffset;
+			}
+		}
 		
-		public DelegateDataProvider (CSharpCompletionTextEditorExtension ext, IType delegateType)
+		public DelegateDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType delegateType)
 		{
+			this.startOffset = startOffset;
 			this.ext = ext;
 			this.delegateType = delegateType;
 			this.delegateMethod = delegateType.GetDelegateInvokeMethod ();

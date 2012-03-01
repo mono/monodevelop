@@ -88,12 +88,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (methods.Count == 0)
 				return;
 				
-			for (int n=0; n<methods.Count; n++) {
+			for (int n=0; n< methods.Count; n++) {
 				// If the cursor is outside of any of the methods parameter list, discard the
 				// information window for that method.
 				
 				MethodData md = methods [n];
-				int pos = ext.GetCurrentParameterIndex (md.CompletionContext);
+				int pos = ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset);
 				if (pos == -1) {
 					methods.RemoveAt (n);
 					n--;
@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// look for another overload with more parameters.
 			
 			MethodData md = methods [methods.Count - 1];
-			int cparam = ext.GetCurrentParameterIndex (md.CompletionContext);
+			int cparam = ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset);
 			
 			if (cparam > md.MethodProvider.GetParameterCount (md.CurrentOverload) && !md.MethodProvider.AllowParameterList (md.CurrentOverload)) {
 				// Look for an overload which has more parameters
@@ -201,7 +201,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					
 					var ctx = widget.CurrentCodeCompletionContext;
 					MethodData md = methods [methods.Count - 1];
-					int cparam = ext != null ? ext.GetCurrentParameterIndex (md.CompletionContext) : 0;
+					int cparam = ext != null ? ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
 					Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 					Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
 					X = md.CompletionContext.TriggerXCoord;
@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (window != null) {
 				var ctx = widget.CurrentCodeCompletionContext;
 				MethodData md = methods [methods.Count - 1];
-				int cparam = ext != null ? ext.GetCurrentParameterIndex (md.CompletionContext) : 0;
+				int cparam = ext != null ? ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
 				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 				window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
 				window.QueueResize ();

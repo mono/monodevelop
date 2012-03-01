@@ -157,39 +157,39 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (invoke.Node is ConstructorInitializer) {
 					var init = (ConstructorInitializer)invoke.Node;
 					if (init.ConstructorInitializerType == ConstructorInitializerType.This) {
-						return factory.CreateConstructorProvider (ctx.CurrentTypeDefinition);
+						return factory.CreateConstructorProvider (document.GetOffset (invoke.Node.StartLocation), ctx.CurrentTypeDefinition);
 					} else {
 						var baseType = ctx.CurrentTypeDefinition.DirectBaseTypes.FirstOrDefault (bt => bt.Kind != TypeKind.Interface);
 						if (baseType == null)
 							return null;
-						return factory.CreateConstructorProvider (baseType);
+						return factory.CreateConstructorProvider (document.GetOffset (invoke.Node.StartLocation), baseType);
 					}
 				}
 				if (invoke.Node is ObjectCreateExpression) {
 					var createType = ResolveExpression (((ObjectCreateExpression)invoke.Node).Type, invoke.Unit);
-					return factory.CreateConstructorProvider (createType.Item1.Type);
+					return factory.CreateConstructorProvider (document.GetOffset (invoke.Node.StartLocation), createType.Item1.Type);
 				}
 				
 				if (invoke.Node is ICSharpCode.NRefactory.CSharp.Attribute) {
 					var attribute = ResolveExpression (invoke);
 					if (attribute == null || attribute.Item1 == null)
 						return null;
-					return factory.CreateConstructorProvider (attribute.Item1.Type);
+					return factory.CreateConstructorProvider (document.GetOffset (invoke.Node.StartLocation), attribute.Item1.Type);
 				}
 				var invocationExpression = ResolveExpression (invoke);
 				if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError)
 					return null;
 				resolveResult = invocationExpression.Item1;
 				if (resolveResult is MethodGroupResolveResult)
-					return factory.CreateMethodDataProvider (CollectMethods (invoke.Node, resolveResult as MethodGroupResolveResult));
+					return factory.CreateMethodDataProvider (document.GetOffset (invoke.Node.StartLocation), CollectMethods (invoke.Node, resolveResult as MethodGroupResolveResult));
 				if (resolveResult is MemberResolveResult) {
 					var mr = resolveResult as MemberResolveResult;
 					if (mr.Member is IMethod)
-						return factory.CreateMethodDataProvider (new [] { (IMethod)mr.Member });
+						return factory.CreateMethodDataProvider (document.GetOffset (invoke.Node.StartLocation), new [] { (IMethod)mr.Member });
 				}
 				
 				if (resolveResult.Type.Kind == TypeKind.Delegate)
-					return factory.CreateDelegateDataProvider (resolveResult.Type);
+					return factory.CreateDelegateDataProvider (document.GetOffset (invoke.Node.StartLocation), resolveResult.Type);
 				
 //				
 //				if (result.ExpressionContext == ExpressionContext.BaseConstructorCall) {
@@ -212,20 +212,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError)
 							return null;
 						
-						return factory.CreateTypeParameterDataProvider (CollectAllTypes (typeExpression.Item1.Type));
+						return factory.CreateTypeParameterDataProvider (document.GetOffset (invoke.Node.StartLocation), CollectAllTypes (typeExpression.Item1.Type));
 					}
 					return null;
 				}
 				if (invoke.Node is ObjectCreateExpression) {
 					var createType = ResolveExpression (((ObjectCreateExpression)invoke.Node).Type, invoke.Unit);
-					return factory.CreateConstructorProvider (createType.Item1.Type);
+					return factory.CreateConstructorProvider (document.GetOffset (invoke.Node.StartLocation), createType.Item1.Type);
 				}
 				
 				if (invoke.Node is ICSharpCode.NRefactory.CSharp.Attribute) {
 					var attribute = ResolveExpression (invoke);
 					if (attribute == null || attribute.Item1 == null)
 						return null;
-					return factory.CreateConstructorProvider (attribute.Item1.Type);
+					return factory.CreateConstructorProvider (document.GetOffset (invoke.Node.StartLocation), attribute.Item1.Type);
 				}
 				
 				invocationExpression = ResolveExpression (invoke);
@@ -235,16 +235,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				resolveResult = invocationExpression.Item1;
 				if (resolveResult is MethodGroupResolveResult)
-					return factory.CreateMethodDataProvider (CollectMethods (invoke.Node, resolveResult as MethodGroupResolveResult));
+					return factory.CreateMethodDataProvider (document.GetOffset (invoke.Node.StartLocation), CollectMethods (invoke.Node, resolveResult as MethodGroupResolveResult));
 				if (resolveResult is MemberResolveResult) {
 					if (resolveResult.Type.Kind == TypeKind.Delegate)
-						return factory.CreateDelegateDataProvider (resolveResult.Type);
+						return factory.CreateDelegateDataProvider (document.GetOffset (invoke.Node.StartLocation), resolveResult.Type);
 					var mr = resolveResult as MemberResolveResult;
 					if (mr.Member is IMethod)
-						return factory.CreateMethodDataProvider (new [] { (IMethod)mr.Member });
+						return factory.CreateMethodDataProvider (document.GetOffset (invoke.Node.StartLocation), new [] { (IMethod)mr.Member });
 				}
 				if (resolveResult != null)
-					return factory.CreateIndexerParameterDataProvider (resolveResult.Type, invoke.Node);
+					return factory.CreateIndexerParameterDataProvider (document.GetOffset (invoke.Node.StartLocation), resolveResult.Type, invoke.Node);
 				break;
 			case '<':
 				invoke = GetTypeBeforeCursor ();
@@ -254,7 +254,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (tExpr == null || tExpr.Item1 == null || tExpr.Item1.IsError)
 					return null;
 				
-				return factory.CreateTypeParameterDataProvider (CollectAllTypes (tExpr.Item1.Type));
+				return factory.CreateTypeParameterDataProvider (document.GetOffset (invoke.Node.StartLocation), CollectAllTypes (tExpr.Item1.Type));
 			case '[':
 				invoke = GetIndexerBeforeCursor ();
 				if (invoke == null)
@@ -262,7 +262,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var indexerExpression = ResolveExpression (invoke);
 				if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError)
 					return null;
-				return factory.CreateIndexerParameterDataProvider (indexerExpression.Item1.Type, invoke.Node);
+				return factory.CreateIndexerParameterDataProvider (document.GetOffset (invoke.Node.StartLocation), indexerExpression.Item1.Type, invoke.Node);
 			}
 			return null;
 		}
@@ -304,20 +304,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return result;
 		}
 		
-		public int GetCurrentParameterIndex (int triggerOffset)
+		public int GetCurrentParameterIndex (int triggerOffset, int endOffset)
 		{
-			SetOffset (triggerOffset);
+/*			SetOffset (triggerOffset);
 			var text = GetMemberTextToCaret ();
 			if (text.Item1.EndsWith ("(") || text.Item1.EndsWith ("<")) 
-				return 0;
+				return 0;*/
 			var parameter = new Stack<int> ();
-			
 			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
-			
-			for (int i = 0; i < text.Item1.Length; i++) {
-				char ch = text.Item1 [i];
-				char nextCh = i + 1 < text.Item1.Length ? text.Item1 [i + 1] : '\0';
-				
+			for (int i = triggerOffset; i < endOffset; i++) {
+				char ch = document.GetCharAt (i);
+				char nextCh = i + 1 < document.TextLength ? document.GetCharAt (i + 1) : '\0';
 				switch (ch) {
 				case '(':
 					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
@@ -327,8 +324,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				case ')':
 					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
 						break;
-					if (parameter.Count > 0)
+					if (parameter.Count > 0) {
 						parameter.Pop ();
+					} else {
+						return -1;
+					}
 					break;
 				case '<':
 					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
@@ -407,6 +407,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return -1;
 			return parameter.Pop () + 1;
 		}
+
 		
 		/*
 		public override bool GetParameterCompletionCommandOffset (out int cpos)

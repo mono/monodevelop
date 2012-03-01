@@ -40,6 +40,10 @@ namespace ICSharpCode.NRefactory.Completion
 			get; 
 		}
 		
+		int StartOffset  { 
+			get; 
+		}
+		
 		/// <summary>
 		/// Returns the markup to use to represent the specified method overload
 		/// in the parameter information window.
