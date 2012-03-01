@@ -140,6 +140,7 @@ namespace MonoDevelop.TypeSystem
 		public CodeGenerator ()
 		{
 			IndentLevel = -1;
+			AutoIndent = true;
 		}
 
 		public static void AddGenerator (MimeTypeExtensionNode node)
