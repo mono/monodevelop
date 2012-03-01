@@ -1604,7 +1604,7 @@ namespace MonoDevelop.Ide
 							filesToRemove.Add (folder);
 					} else {
 						filesToRemove = new List<ProjectFile> ();
-						var pf = sourceProject.GetProjectFile (sourcePath);
+						var pf = sourceProject.Files.GetFileWithVirtualPath (sourceProject.GetRelativeChildPath (sourcePath));
 						if (pf != null)
 							filesToRemove.Add (pf);
 					}
@@ -1701,7 +1701,7 @@ namespace MonoDevelop.Ide
 				
 				if (sourceProject != null) {
 					if (fileIsLink) {
-						var linkFile = (sourceProject == targetProject)? file : (ProjectFile) file.Clone ();
+						var linkFile = (ProjectFile) file.Clone ();
 						if (movingFolder) {
 							var abs = linkFile.Link.ToAbsolute (sourceProject.BaseDirectory);
 							var relSrc = abs.ToRelative (sourcePath);
