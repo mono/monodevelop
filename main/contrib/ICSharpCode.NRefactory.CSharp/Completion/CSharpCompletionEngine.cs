@@ -1911,6 +1911,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var filteredList = new List<IMember> ();
 				foreach (var member in type.GetMembers ()) {
+					if (member.EntityType == EntityType.Indexer || member.EntityType == EntityType.Operator || member.EntityType == EntityType.Constructor  || member.EntityType == EntityType.Destructor)
+						continue;
 //					Console.WriteLine ("member:" + member + member.IsShadowing);
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
 //						Console.WriteLine ("skip access: " + member.FullName);
