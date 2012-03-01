@@ -296,7 +296,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			this.Style = CompletionWidget.GtkStyle;
 			
-			if (PropertyService.Get ("HideObsoleteItems", true))
+			if (PropertyService.Get ("HideObsoleteItems", false))
 				foreach (var item in completionDataList.Where (x => (DisplayFlags.Obsolete == (DisplayFlags.Obsolete & x.DisplayFlags))).ToList ())
 					completionDataList.Remove (item);
 			
@@ -440,7 +440,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IList<CompletionData> overloads;
 			if (data.IsOverloaded) {
 				var filteredOverloads = data.OverloadedData;
-				if (PropertyService.Get ("HideObsoleteItems", true))
+				if (PropertyService.Get ("HideObsoleteItems", false))
 					filteredOverloads = filteredOverloads.Where (x => (DisplayFlags.Obsolete != (DisplayFlags.Obsolete & x.DisplayFlags)));
 				overloads = new List<CompletionData> (filteredOverloads);
 			} else {

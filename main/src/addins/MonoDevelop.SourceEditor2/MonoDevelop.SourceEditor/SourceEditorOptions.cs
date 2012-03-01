@@ -247,7 +247,7 @@ namespace MonoDevelop.SourceEditor
 			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", false);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
-			this.hideObsoleteItems = PropertyService.Get ("HideObsoleteItems", true);
+			this.hideObsoleteItems = PropertyService.Get ("HideObsoleteItems", false);
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
