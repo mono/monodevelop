@@ -143,6 +143,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			string markup;
 			bool inUpdate;
+			bool resizeRequested = true;
 			
 			public string Markup {
 				get {
@@ -151,6 +152,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				set {
 					markup = value;
 					Visible = !string.IsNullOrWhiteSpace (value);
+					resizeRequested = true;
 					QueueResize ();
 				}
 			}
@@ -170,7 +172,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 			{
 				base.OnSizeAllocated (allocation);
-				
+				if (!resizeRequested)
+					return;
 				using (var layout = new Pango.Layout (this.PangoContext)) {
 					layout.Width = (int)(allocation.Width * Pango.Scale.PangoScale);
 					layout.Wrap = Pango.WrapMode.Word;
@@ -180,6 +183,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					layout.GetPixelSize (out w, out h);
 					if (h > 0 && h != allocation.Height) {
 						HeightRequest = h;
+						resizeRequested = false;
 						QueueResize ();
 					}
 				}
