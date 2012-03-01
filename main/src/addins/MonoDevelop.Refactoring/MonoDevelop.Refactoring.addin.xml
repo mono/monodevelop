@@ -54,13 +54,6 @@
 		<Class id="ImplementAbstract" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
-		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
-		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
-	</Extension>
 	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
@@ -118,11 +111,6 @@
 				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"
 				_label = "Refactory Operations" /> 
-		
-		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
-				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
-				_label = "S_how Code Generation Window" 
-				shortcut = "Alt|Insert" />
 		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntroduceConstant"
 					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.IntroduceConstantHandler"

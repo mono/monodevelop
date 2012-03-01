@@ -33,6 +33,7 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
+	gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs \
 	gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs \
@@ -41,6 +42,17 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
+	MonoDevelop.CSharp.CodeGeneration/AbstractGenerateAction.cs \
+	MonoDevelop.CSharp.CodeGeneration/CodeGenerationCommands.cs \
+	MonoDevelop.CSharp.CodeGeneration/CodeGenerationOptions.cs \
+	MonoDevelop.CSharp.CodeGeneration/CreateConstructorGenerator.cs \
+	MonoDevelop.CSharp.CodeGeneration/EqualityMembersGenerator.cs \
+	MonoDevelop.CSharp.CodeGeneration/GenerateCodeWindow.cs \
+	MonoDevelop.CSharp.CodeGeneration/ICodeGenerator.cs \
+	MonoDevelop.CSharp.CodeGeneration/OverrideMembersGenerator.cs \
+	MonoDevelop.CSharp.CodeGeneration/PropertyGenerator.cs \
+	MonoDevelop.CSharp.CodeGeneration/ToStringGenerator.cs \
+	MonoDevelop.CSharp.CodeGeneration/WriteLineGenerator.cs \
 	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/ConstructorParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/CSharpCompletionTextEditorExtension.cs \

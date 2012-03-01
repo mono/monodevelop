@@ -1,5 +1,5 @@
 // 
-// PropertyGenerator.cs
+// OverrideMethodsGenerator.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,89 +24,79 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
-using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using Gtk;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using System.Text;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
-using System.Linq;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class PropertyGenerator : ICodeGenerator
+	public class OverrideMembersGenerator : ICodeGenerator
 	{
 		public string Icon {
 			get {
-				return "md-property";
+				return "md-method";
 			}
 		}
 		
 		public string Text {
 			get {
-				return GettextCatalog.GetString ("Properties");
+				return GettextCatalog.GetString ("Override members");
 			}
 		}
 		
 		public string GenerateDescription {
 			get {
-				return GettextCatalog.GetString ("Select members which should be exposed.");
+				return GettextCatalog.GetString ("Select members to be overridden.");
 			}
 		}
 		
 		public bool IsValid (CodeGenerationOptions options)
 		{
-			return new CreateProperty (options).IsValid ();
+			return new OverrideMethods (options).IsValid ();
 		}
-		
 		
 		public IGenerateAction InitalizeSelection (CodeGenerationOptions options, Gtk.TreeView treeView)
 		{
-			CreateProperty createProperty = new CreateProperty (options);
-			createProperty.Initialize (treeView);
-			return createProperty;
+			OverrideMethods overrideMethods = new OverrideMethods (options);
+			overrideMethods.Initialize (treeView);
+			return overrideMethods;
 		}
 		
-		internal class CreateProperty : AbstractGenerateAction
+		class OverrideMethods : AbstractGenerateAction
 		{
-			public bool ReadOnly {
-				get;
-				set;
-			}
-			
-			public CreateProperty (CodeGenerationOptions options) : base (options)
+			public OverrideMethods (CodeGenerationOptions options) : base (options)
 			{
 			}
 			
-			protected override IEnumerable<IEntity> GetValidMembers ()
+			protected override IEnumerable<object> GetValidMembers ()
 			{
-				if (Options.EnclosingType == null || Options.EnclosingMember != null)
+				var type = Options.EnclosingType;
+				if (type == null || Options.EnclosingMember != null)
 					yield break;
-				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSynthetic)
+				HashSet<string> memberName = new HashSet<string> ();
+				foreach (var member in Options.EnclosingType.GetMembers ()) {
+					if (member.IsSynthetic)
 						continue;
-					var list = Options.EnclosingType.Fields.Where (f => f.Name == CreatePropertyName (field));;
-					if (!list.Any ())
-						yield return field;
+					if (member.IsOverridable) {
+						string id = AmbienceService.DefaultAmbience.GetString (member, OutputFlags.ClassBrowserEntries);
+						if (memberName.Contains (id))
+							continue;
+						memberName.Add (id);
+						yield return member;
+					}
 				}
 			}
 			
-			static string CreatePropertyName (IMember member)
+			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				return char.ToUpper (member.Name[0]) + member.Name.Substring (1);
-			}
-			
-			protected override IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers)
-			{
-				yield return "todo";
-				
-//				CodeGenerator generator = Options.Document.CreateCodeGenerator ();
-//				foreach (IField field in includedMembers)
-//					yield return generator.CreateFieldEncapsulation (Options.EnclosingType, field, CreatePropertyName (field), MonoDevelop.Projects.Dom.Modifiers.Public, ReadOnly);
+				var generator = Options.CreateCodeGenerator ();
+				generator.AutoIndent = false;
+				foreach (IMember member in includedMembers) 
+					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member, false).Code;
 			}
 		}
 	}

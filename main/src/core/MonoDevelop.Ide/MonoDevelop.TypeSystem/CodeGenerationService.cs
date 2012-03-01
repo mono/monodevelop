@@ -108,6 +108,8 @@ namespace MonoDevelop.TypeSystem
 		
 		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
 		{
+			if (declaringType == null)
+				return 0;
 			int indentLevel = 1;
 			while (declaringType.DeclaringTypeDefinition != null) {
 				indentLevel++;

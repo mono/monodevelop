@@ -32,23 +32,29 @@
     <Reference Include="System" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -86,18 +92,6 @@
     <Compile Include="MonoDevelop.Inspection\InspectionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Inspection.InspectionPanelWidget.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\GenerateCodeWindow.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\CodeGenerationCommands.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\ICodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\CreateConstructorGenerator.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\PropertyGenerator.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\CodeGenerationOptions.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\ToStringGenerator.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\EqualityMembersGenerator.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\WriteLineGenerator.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\AbstractGenerateAction.cs" />
-    <Compile Include="MonoDevelop.CodeGeneration\OverrideMembersGenerator.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoryCommands.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOperation.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
@@ -119,15 +113,12 @@
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\HelperMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Refactoring.Rename\" />
     <Folder Include="MonoDevelop.Refactoring.IntroduceConstant\" />
     <Folder Include="MonoDevelop.Refactoring.CreateClass\" />
-    <Folder Include="MonoDevelop.CodeGeneration\" />
-    <Folder Include="MonoDevelop.Refactoring.RefactorImports\" />
     <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />
     <Folder Include="MonoDevelop.AnalysisCore\" />
     <Folder Include="MonoDevelop.ContextAction\" />

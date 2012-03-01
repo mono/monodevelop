@@ -72,7 +72,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IEntity> GetValidMembers ()
+			protected override IEnumerable<object> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
@@ -98,25 +98,23 @@ namespace MonoDevelop.CodeGeneration
 				return member.Name;
 			}
 			
-			protected override IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers)
+			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				yield return "todo";
-//				var parameters = new List<ParameterDeclaration> ();
-//				foreach (var member in includedMembers) {
-//					parameters.Add (new ParameterDeclaration (member.ReturnType.ConvertToTypeReference (), CreateParameterName (member)));
-//				}
-//
-//				var constructorDeclaration = new ConstructorDeclaration ();
-//				constructorDeclaration.Name = Options.EnclosingType.Name;
-//				constructorDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public;
-//				constructorDeclaration.Parameters.AddRange (parameters);
-//				constructorDeclaration.Body = new BlockStatement ();
-//				foreach (IMember member in includedMembers) {
-//					MemberReferenceExpression memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
-//					AssignmentExpression assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
-//					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
-//				}
-//				yield return astProvider.OutputNode (this.Options.Dom, constructorDeclaration, indent);
+				var constructorDeclaration = new ConstructorDeclaration () {
+					Name = Options.EnclosingType.Name,
+					Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public,
+					Body = new BlockStatement ()
+				};
+				
+				foreach (IMember member in includedMembers) {
+					constructorDeclaration.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (member.ReturnType), CreateParameterName (member)));
+					
+					var memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
+					var assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
+					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
+				}
+				
+				yield return constructorDeclaration.GetText (Options.FormattingOptions);
 			}
 		}
 	}

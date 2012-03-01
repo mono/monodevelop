@@ -178,7 +178,7 @@ namespace MonoDevelop.CodeGeneration
 			var options = CodeGenerationOptions.CreateCodeGenerationOptions (document);
 			
 			var validGenerators = new List<ICodeGenerator> ();
-			foreach (ICodeGenerator generator in RefactoringService.CodeGenerators) {
+			foreach (var generator in CodeGenerationService.CodeGenerators) {
 				if (generator.IsValid (options))
 					validGenerators.Add (generator);
 			}

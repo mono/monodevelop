@@ -99,21 +99,27 @@
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
@@ -255,6 +261,18 @@
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantNamespaceUsageInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\TemplateParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\CodeGenerationCommands.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\CodeGenerationOptions.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\CreateConstructorGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\EqualityMembersGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\GenerateCodeWindow.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\ICodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\OverrideMembersGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\PropertyGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\ToStringGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\WriteLineGenerator.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -294,5 +312,6 @@
     <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\RefactorImports\" />
+    <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
   </ItemGroup>
 </Project>

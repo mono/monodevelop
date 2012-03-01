@@ -40,7 +40,12 @@ namespace MonoDevelop.TypeSystem
 	public abstract class CodeGenerator
 	{
 		static Dictionary<string, MimeTypeExtensionNode> generators = new Dictionary<string, MimeTypeExtensionNode> ();
-
+		
+		public bool AutoIndent {
+			get;
+			set;
+		}
+		
 		public bool UseSpaceIndent {
 			get;
 			set;
@@ -150,7 +155,7 @@ namespace MonoDevelop.TypeSystem
 		protected void SetIndentTo (IUnresolvedTypeDefinition implementingType)
 		{
 			if (IndentLevel < 0)
-				IndentLevel = CodeGenerationService.CalculateBodyIndentLevel (implementingType);
+				IndentLevel = AutoIndent ? CodeGenerationService.CalculateBodyIndentLevel (implementingType) : 0;
 		}
 
 		public string CreateInterfaceImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition implementingPart, IType interfaceType, bool explicitly, bool wrapRegions = true)

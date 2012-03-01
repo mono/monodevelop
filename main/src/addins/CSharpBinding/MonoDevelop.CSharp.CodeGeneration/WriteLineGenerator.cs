@@ -64,7 +64,7 @@ namespace MonoDevelop.CodeGeneration
 		
 		public IGenerateAction InitalizeSelection (CodeGenerationOptions options, Gtk.TreeView treeView)
 		{
-			CreateWriteLine createToString = new CreateWriteLine (options);
+			var createToString = new CreateWriteLine (options);
 			createToString.Initialize (treeView);
 			return createToString;
 		}
@@ -75,7 +75,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IEntity> GetValidMembers ()
+			protected override IEnumerable<object> GetValidMembers ()
 			{
 				if (Options == null || Options.EnclosingType == null || Options.EnclosingMember == null || Options.Document == null)
 					yield break;
@@ -83,25 +83,19 @@ namespace MonoDevelop.CodeGeneration
 				if (editor == null)
 					yield break;
 				
+				
 				// add local variables
-// TODO !!!!
-//				LookupTableVisitor visitor = new LookupTableVisitor (ICSharpCode.OldNRefactory.SupportedLanguage.CSharp);
-//				var location = new TextLocation (editor.Caret.Line, editor.Caret.Column);
-//				var result = provider.ParseFile (editor.Text);
-//				result.AcceptVisitor (visitor, null);
-//				
-//				foreach (var pair in visitor.Variables) {
-//					foreach (LocalLookupVariable varDescr in pair.Value) {
-//						if (varDescr.StartPos <= location && location <= varDescr.EndPos)
-//							yield return new LocalVariable (Options.EnclosingMember, varDescr.Name, varDescr.TypeRef.ConvertToReturnType (), DomRegion.Empty);
-//					}
-//				}
+				var state = Options.CurrentState;
+				if (state != null) {
+					foreach (var v in state.LocalVariables) 
+						yield return v;
+				}
 				
 				// add parameters
-//				if (Options.EnclosingMember is IParameterizedMember) {
-//					foreach (IParameter param in ((IParameterizedMember)Options.EnclosingMember).Parameters)
-//						yield return param;
-//				}
+				if (Options.EnclosingMember is IParameterizedMember) {
+					foreach (IParameter param in ((IParameterizedMember)Options.EnclosingMember).Parameters)
+						yield return param;
+				}
 				
 				// add type members
 				foreach (IField field in Options.EnclosingType.Fields) {
@@ -118,26 +112,34 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<string> GenerateCode ( string indent, List<IEntity> includedMembers)
+			static string GetName (object m)
 			{
-				yield return "todo";
-//				StringBuilder format = new StringBuilder ();
-//				int i = 0;
-//				foreach (var member in includedMembers) {
-//					if (i > 0)
-//						format.Append (", ");
-//					format.Append (member.Name);
-//					format.Append ("={");
-//					format.Append (i++);
-//					format.Append ("}");
-//				}
-//
-//				InvocationExpression invocationExpression = new InvocationExpression (new MemberReferenceExpression (new IdentifierExpression ("Console"), "WriteLine"));
-//				invocationExpression.Arguments.Add (new PrimitiveExpression (format.ToString ()));
-//				foreach (var member in includedMembers) {
-//					invocationExpression.Arguments.Add (new IdentifierExpression (member.Name));
-//				}
-//				yield return indent + astProvider.OutputNode (this.Options.Dom, new ExpressionStatement (invocationExpression), indent);
+				var e = m as IEntity;
+				if (e != null)
+					return e.Name;
+				return ((IVariable)m).Name;
+			}
+			
+			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
+			{
+				StringBuilder format = new StringBuilder ();
+				int i = 0;
+				foreach (var member in includedMembers) {
+					if (i > 0)
+						format.Append (", ");
+					format.Append (GetName (member));
+					format.Append ("={");
+					format.Append (i++);
+					format.Append ("}");
+				}
+				
+				var consoleType = typeof (Console).ToTypeReference ().Resolve (Options.Document.Compilation.TypeResolveContext);
+				var invocationExpression = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (Options.CreateShortType (consoleType)), "WriteLine"));
+				invocationExpression.Arguments.Add (new PrimitiveExpression (format.ToString ()));
+				foreach (var member in includedMembers) {
+					invocationExpression.Arguments.Add (new IdentifierExpression (GetName (member)));
+				}
+				yield return new ExpressionStatement (invocationExpression).GetText (Options.FormattingOptions);
 			}
 		}
 	}

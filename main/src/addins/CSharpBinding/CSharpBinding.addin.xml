@@ -15,6 +15,13 @@
 		<Addin id="Refactoring" version="2.9.2"/>
 	</Dependencies>
 	
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
+				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
+				_label = "S_how Code Generation Window" 
+				shortcut = "Alt|Insert" />
+	</Extension>
+		
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProject 
 			language="C#" 
@@ -348,6 +355,15 @@
 				_label = "_Declare Local" 
 				shortcut = "Control+dead_circumflex"/> 
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
+		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
+	</Extension>
+	
 <!--
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Rule _name="C# Code Analysis" input="Document" 

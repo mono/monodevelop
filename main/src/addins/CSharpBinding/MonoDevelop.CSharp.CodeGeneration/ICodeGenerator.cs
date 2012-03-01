@@ -1,5 +1,5 @@
 // 
-// CodeGenerationOptions.cs
+// ICodeGenerator.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,58 +24,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Refactoring;
-using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Collections.Generic;
+using Mono.Addins;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class CodeGenerationOptions
+	public interface ICodeGenerator
 	{
-		public ITypeResolveContext Dom {
+		string Icon {
 			get;
-			set;
 		}
 		
-		public Document Document {
+		string Text {
 			get;
-			set;
 		}
 		
-		public ITypeDefinition EnclosingType {
+		string GenerateDescription {
 			get;
-			set;
 		}
 		
-		public IMember EnclosingMember {
-			get;
-			set;
-		}
+		bool IsValid (CodeGenerationOptions options);
 		
-		public string MimeType {
+		IGenerateAction InitalizeSelection (CodeGenerationOptions options, Gtk.TreeView treeView);
+	}
+	
+	public interface IGenerateAction 
+	{
+		void GenerateCode ();
+	}
+	
+	public static class CodeGenerationService
+	{
+		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
+		
+		static CodeGenerationService ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeGenerators", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					codeGenerators.Add ((ICodeGenerator)args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					codeGenerators.Remove ((ICodeGenerator)args.ExtensionObject);
+					break;
+				}
+			});
+		}
+
+		public static IEnumerable<ICodeGenerator> CodeGenerators {
 			get {
-				return DesktopService.GetMimeTypeForUri (Document.FileName);
+				return codeGenerators;
 			}
 		}
-//		
-//		public ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (ICSharpCode.NRefactory.CSharp.AstType typeReference)
-//		{
-//			return Document.CompilationUnit.ShortenTypeName (typeReference.ConvertToReturnType (), Document.Editor.Caret.Line, Document.Editor.Caret.Column).ConvertToTypeReference ();
-//		}
-//		
-		public static CodeGenerationOptions CreateCodeGenerationOptions (Document document)
-		{
-			var options = new CodeGenerationOptions () {
-//				Dom = document.Dom,
-				Document = document,
-			};
-//			if (document.ParsedDocument != null && document.ParsedDocument.CompilationUnit != null) {
-//				options.EnclosingType = document.ParsedDocument.GetType (document.Editor.Caret.Line, document.Editor.Caret.Column);
-//				options.EnclosingMember = document.ParsedDocument.CompilationUnit.GetMemberAt (document.Editor.Caret.Line, document.Editor.Caret.Column);
-//			}
-			return options;
-		}
-		
 	}
 }

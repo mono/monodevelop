@@ -34,6 +34,7 @@ using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -75,7 +76,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 			
-			protected override IEnumerable<IEntity> GetValidMembers ()
+			protected override IEnumerable<object> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
@@ -93,39 +94,40 @@ namespace MonoDevelop.CodeGeneration
 				}
 			}
 			
-			protected override IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers)
+			string GetFormatString (IEnumerable<object> includedMembers)
 			{
-				yield return "";
-//				StringBuilder format = new StringBuilder ();
-//				format.Append ("[");
-//				format.Append (Options.EnclosingType.Name);
-//				format.Append (": ");
-//				int i = 0;
-//				foreach (IMember member in includedMembers) {
-//					if (i > 0)
-//						format.Append (", ");
-//					format.Append (member.Name);
-//					format.Append ("={");
-//					format.Append (i++);
-//					format.Append ("}");
-//				}
-//				format.Append ("]");
-//
-//				MethodDeclaration methodDeclaration = new MethodDeclaration ();
-//				methodDeclaration.Name = "ToString";
-//				methodDeclaration.ReturnType = DomReturnType.String.ConvertToTypeReference ();
-//				methodDeclaration.Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Public | ICSharpCode.NRefactory.CSharp.Modifiers.Override;
-//				methodDeclaration.Body = new BlockStatement ();
-//				MemberReferenceExpression formatReference = new MemberReferenceExpression (new TypeReferenceExpression (methodDeclaration.ReturnType.Clone ()), "Format");
-//				List<Expression> arguments = new List<Expression> ();
-//				arguments.Add (new PrimitiveExpression (format.ToString ()));
-//
-//				foreach (IMember member in includedMembers) {
-//					arguments.Add (new IdentifierExpression (member.Name));
-//				}
-//
-//				methodDeclaration.Body.Statements.Add (new ReturnStatement (new InvocationExpression (formatReference, arguments)));
-//				yield return astProvider.OutputNode (this.Options.Dom, methodDeclaration, indent);
+				var format = new StringBuilder ();
+				format.Append ("[");
+				format.Append (Options.EnclosingType.Name);
+				format.Append (": ");
+				int i = 0;
+				foreach (IEntity member in includedMembers) {
+					if (i > 0)
+						format.Append (", ");
+					format.Append (member.Name);
+					format.Append ("={");
+					format.Append (i++);
+					format.Append ("}");
+				}
+				format.Append ("]");
+				return format.ToString ();
+			}
+			
+			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
+			{
+				yield return new MethodDeclaration () {
+					Name = "ToString",
+					ReturnType = new PrimitiveType ("string"),
+					Modifiers = Modifiers.Public | Modifiers.Override,
+					Body = new BlockStatement () {
+						new ReturnStatement (
+							new InvocationExpression (
+								new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "Format"), 
+								new Expression [] { new PrimitiveExpression (GetFormatString (includedMembers)) }.Concat (includedMembers.Select (member => new IdentifierExpression (((IEntity)member).Name)))
+							)
+						)
+					} 
+				}.GetText (Options.FormattingOptions);
 			}
 		}
 	}

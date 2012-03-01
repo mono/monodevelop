@@ -24,7 +24,6 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.CodeGeneration.GenerateCodeWindow.cs \
 	gtk-gui/MonoDevelop.ContextAction.ContextActionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Inspection.InspectionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
@@ -47,17 +46,6 @@ FILES =  \
 	MonoDevelop.AnalysisCore/Rules/Adaptors.cs \
 	MonoDevelop.AnalysisCore/RuleTree.cs \
 	MonoDevelop.AnalysisCore/RuleTreeType.cs \
-	MonoDevelop.CodeGeneration/AbstractGenerateAction.cs \
-	MonoDevelop.CodeGeneration/CodeGenerationCommands.cs \
-	MonoDevelop.CodeGeneration/CodeGenerationOptions.cs \
-	MonoDevelop.CodeGeneration/CreateConstructorGenerator.cs \
-	MonoDevelop.CodeGeneration/EqualityMembersGenerator.cs \
-	MonoDevelop.CodeGeneration/GenerateCodeWindow.cs \
-	MonoDevelop.CodeGeneration/ICodeGenerator.cs \
-	MonoDevelop.CodeGeneration/OverrideMembersGenerator.cs \
-	MonoDevelop.CodeGeneration/PropertyGenerator.cs \
-	MonoDevelop.CodeGeneration/ToStringGenerator.cs \
-	MonoDevelop.CodeGeneration/WriteLineGenerator.cs \
 	MonoDevelop.ContextAction/AnalysisContextAction.cs \
 	MonoDevelop.ContextAction/ContextAction.cs \
 	MonoDevelop.ContextAction/ContextActionAddinNode.cs \

@@ -77,8 +77,17 @@ namespace MonoDevelop.CodeGeneration
 
 			treeView.AppendColumn (column);
 			Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
-			foreach (var member in GetValidMembers ()) {
-				Store.AppendValues (false, ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member,/* member.EntityType == EntityType. ? OutputFlags.IncludeParameterName :*/ OutputFlags.ClassBrowserEntries), member);
+			foreach (object obj in GetValidMembers ()) {
+				var member = obj as IEntity;
+				if (member != null) {
+					Store.AppendValues (false, ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member, OutputFlags.ClassBrowserEntries), member);
+					continue;
+				}
+				
+				var variable = obj as IVariable;
+				if (variable != null)
+					Store.AppendValues (false, ImageService.GetPixbuf (variable.GetStockIcon (), IconSize.Menu), variable.Name, variable);
+				
 			}
 			
 			treeView.Model = store;
@@ -93,43 +102,55 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		protected abstract IEnumerable<IEntity> GetValidMembers ();
+		protected abstract IEnumerable<object> GetValidMembers ();
 		
 		public bool IsValid ()
 		{
 			return GetValidMembers ().Any ();
 		}
 		
-		protected abstract IEnumerable<string> GenerateCode (string indent, List<IEntity> includedMembers);
+		protected abstract IEnumerable<string> GenerateCode (List<object> includedMembers);
 		
+		static string AddIndent (string text, string indent)
+		{
+			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			doc.Text = text;
+			StringBuilder result = new StringBuilder ();
+			foreach (var line in doc.Lines) {
+				result.Append (indent);
+				result.Append (doc.GetTextAt (line));
+			}
+			return result.ToString ();
+		}
+
 		public void GenerateCode ()
 		{
-//			TreeIter iter;
-//			if (!store.GetIterFirst (out iter))
-//				return;
-//			var includedMembers = new List<IEntity> ();
-//			do {
-//				bool include = (bool)store.GetValue (iter, 0);
-//				if (include)
-//					includedMembers.Add ((IEntity)store.GetValue (iter, 3));
-//			} while (store.IterNext (ref iter));
-//
-//			var output = new StringBuilder ();
-//			string indent = RefactoringOptions.GetIndent (options.Document, options.EnclosingMember != null ? options.EnclosingMember : options.EnclosingType) + "\t";
-//			foreach (string nodeText in GenerateCode (astProvider, indent, includedMembers)) {
-//				if (output.Length > 0) {
-//					output.AppendLine ();
-//					output.AppendLine ();
-//				}
-//				output.Append (nodeText);
-//			}
-//			
-//			if (output.Length > 0) {
-//				var data = options.Document.Editor;
-//				int offset = data.Caret.Offset - indent.Length;
-//				data.Replace (offset, indent.Length, output.ToString ());
-//				data.Caret.Offset = offset + output.Length;
-//			}
+			TreeIter iter;
+			if (!store.GetIterFirst (out iter))
+				return;
+			var includedMembers = new List<object> ();
+			do {
+				bool include = (bool)store.GetValue (iter, 0);
+				if (include)
+					includedMembers.Add (store.GetValue (iter, 3));
+			} while (store.IterNext (ref iter));
+
+			var output = new StringBuilder ();
+			string indent = RefactoringOptions.GetIndent (options.Document, options.EnclosingMember != null ? (IEntity)options.EnclosingMember : options.EnclosingType) + "\t";
+			foreach (string nodeText in GenerateCode (includedMembers)) {
+				if (output.Length > 0) {
+					output.AppendLine ();
+					output.AppendLine ();
+				}
+				output.Append (AddIndent (nodeText, indent));
+			}
+			
+			if (output.Length > 0) {
+				var data = options.Document.Editor;
+				int offset = data.Caret.Offset - indent.Length;
+				data.Replace (offset, indent.Length, output.ToString ());
+				data.Caret.Offset = offset + output.Length;
+			}
 		}
 	}
 }

@@ -34,7 +34,6 @@ using MonoDevelop.AnalysisCore;
 using MonoDevelop.Inspection;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.CodeGeneration;
 using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Refactoring
@@ -43,7 +42,6 @@ namespace MonoDevelop.Refactoring
 	public static class RefactoringService
 	{
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
 		static List<ContextActionAddinNode> contextActions = new List<ContextActionAddinNode> ();
 		static List<InspectorAddinNode> inspectors = new List<InspectorAddinNode> ();
 		
@@ -66,16 +64,6 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeGenerators", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					codeGenerators.Add ((ICodeGenerator)args.ExtensionObject);
-					break;
-				case ExtensionChange.Remove:
-					codeGenerators.Remove ((ICodeGenerator)args.ExtensionObject);
-					break;
-				}
-			});
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
@@ -104,12 +92,6 @@ namespace MonoDevelop.Refactoring
 		public static IEnumerable<RefactoringOperation> Refactorings {
 			get {
 				return refactorings;
-			}
-		}
-		
-		public static IEnumerable<ICodeGenerator> CodeGenerators {
-			get {
-				return codeGenerators;
 			}
 		}
 		
