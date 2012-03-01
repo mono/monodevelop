@@ -181,23 +181,34 @@ namespace MonoDevelop.Core
 			return Parse (input, tags);
 		}
 		
+		static string OpenBraces  = "{(";
+		static string CloseBraces = "})";
+		
 		public static string Parse (string input, IStringTagModel customTags)
 		{
 			StringBuilder result = new StringBuilder (input.Length);
+			int brace;
 			int i = 0;
+			
 			while (i < input.Length) {
 				if (input [i] == '$') {
 					i++;
-					if (i >= input.Length || input[i] != '{') {
+					
+					if (i >= input.Length || (brace = OpenBraces.IndexOf (input[i])) == -1) {
 						result.Append ('$');
 						continue;
 					}
+					
 					i++;
 					int start = i;
-					while (i < input.Length && input [i] != '}')
+					while (i < input.Length && input [i] != CloseBraces[brace])
 						i++;
+					
 					string tag      = input.Substring (start, i - start);
-					string tagValue = Replace (tag, customTags) ?? "${" + tag + (i < input.Length ? "}" : "");
+					char close      = CloseBraces[brace];
+					char open       = OpenBraces[brace];
+					
+					string tagValue = Replace (tag, customTags) ?? string.Format ("${0}{1}{2}", open, tag, i < input.Length ? close.ToString () : "");
 					result.Append (tagValue);
 				} else {
 					result.Append (input [i]);

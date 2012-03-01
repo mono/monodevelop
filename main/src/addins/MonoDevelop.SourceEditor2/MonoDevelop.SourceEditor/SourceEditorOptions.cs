@@ -200,6 +200,9 @@ namespace MonoDevelop.SourceEditor
 			case "CompleteWithSpaceOrPunctuation":
 				this.CompleteWithSpaceOrPunctuation = (bool) args.NewValue;
 				break;
+			case "HideObsoleteItems":
+				this.HideObsoleteItems = (bool) args.NewValue;
+				break;
 			case "ControlLeftRightMode":
 				this.ControlLeftRightMode = (ControlLeftRightMode) args.NewValue;
 				break;
@@ -244,6 +247,7 @@ namespace MonoDevelop.SourceEditor
 			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", true);
 			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
 			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
+			this.hideObsoleteItems = PropertyService.Get ("HideObsoleteItems", true);
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
@@ -276,6 +280,19 @@ namespace MonoDevelop.SourceEditor
 				if (value != completeWithSpaceOrPunctuation) {
 					completeWithSpaceOrPunctuation = value;
 					PropertyService.Set ("CompleteWithSpaceOrPunctuation", value);
+				}
+			}
+		}
+		
+		bool hideObsoleteItems;
+		public bool HideObsoleteItems {
+			get {
+				return hideObsoleteItems;
+			}
+			set {
+				if (value != hideObsoleteItems) {
+					hideObsoleteItems = value;
+					PropertyService.Set ("HideObsoleteItems", value);
 				}
 			}
 		}

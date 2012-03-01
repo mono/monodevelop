@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			if (!keyHandled)
 				ka = PostProcessKey (key, keyChar, modifier);
-			if ((ka & KeyActions.Complete) != 0)
+			if ((ka & KeyActions.Complete) != 0) 
 				CompleteWord (ref ka, key, keyChar, modifier);
 			if ((ka & KeyActions.CloseWindow) != 0)
 				CompletionWindowManager.DestroyWindow (Ext);
@@ -261,7 +261,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 					return true;
 				}
-				
+
 				initialWordLength = text.Length /*+ completionWidget.SelectedLength*/;
 				StartOffset = completionWidget.CaretOffset - initialWordLength;
 				HideWhenWordDeleted = initialWordLength != 0;

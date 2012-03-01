@@ -129,7 +129,7 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
 		<Action mimeType="text/x-csharp"
 			_title = "Create event invocator"
@@ -328,7 +328,7 @@
 		         macShortcut = "Alt|Shift|Down"
 		         _label = "_Expand selection"/>
 	</Extension>
-
+	
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="CreateMethod" class = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
 		<Class id="ExtractMethod" class = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
@@ -352,8 +352,8 @@
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Rule _name="C# Code Analysis" input="Document" 
 			func="MonoDevelop.CSharp.Inspection.CodeAnalysis.Check" />
-	</Extension> -->
-
+	</Extension>-->
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>

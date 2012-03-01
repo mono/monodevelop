@@ -33,7 +33,7 @@
 		<Description>Context menu for the navigation bar.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar" name = "Scroll bar context menu">
 		<Description>Context menu for the navigation bar.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />

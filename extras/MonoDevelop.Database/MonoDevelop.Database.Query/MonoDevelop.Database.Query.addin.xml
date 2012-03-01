@@ -7,7 +7,7 @@
 	description	= "Database Query Module"
 	category    = "Database"
 	version		= "2.9.2">
-   
+    
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Query.dll"/>
 	</Runtime>
