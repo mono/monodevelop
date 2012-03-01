@@ -83,8 +83,9 @@ namespace MonoDevelop.TypeSystem
 		
 		public static bool IsObsolete (this IEntity member)
 		{
-			// TODO: Implement me!
-			return false;
+			if (member == null)
+				return false;
+			return member.Attributes.Any (a => a.AttributeType.FullName == "System.ObsoleteAttribute");
 		}
 		
 		public static IType Resolve (this IUnresolvedTypeDefinition def, Project project)
