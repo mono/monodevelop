@@ -97,6 +97,7 @@ THE SOFTWARE.
 		</Style>
 		<Style name="invalidline" color="orange"/>
 		<Style name="bracket" color="orange" bgColor="base02"/>
+		<Style name="usages" color="orange" bgColor="base02"/>
 		
 		<Style name="bookmark.color1" color="base3"/>
 		<Style name="bookmark.color2" color="blue"/>

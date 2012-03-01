@@ -59,6 +59,7 @@
   <Style name="text.background.searchresult" color="#FFE2B9" />
   <Style name="text.background.searchresult-main" color="#F3DD48" />
   <Style name="marker.bracket" color="#D3D7CE" bgColor="#EEEEEC" />
+  <Style name="marker.usages" color="#D3D7CE" bgColor="#EEEEEC"/>
   <Style name="marker.bookmark.color1" color="#FFFFFF" />
   <Style name="marker.bookmark.color2" color="#689BEB" />
   <Style name="marker.underline.error" color="#FF0000" />

@@ -171,9 +171,17 @@ namespace Mono.TextEditor.Highlighting
 		}
 		
 		public const string BracketHighlightRectangleString = "marker.bracket";
+
 		public virtual ChunkStyle BracketHighlightRectangle {
 			get {
 				return GetChunkStyle (BracketHighlightRectangleString);
+			}
+		}
+		
+		public const string UsagesHighlightRectangleString = "marker.usages";
+		public virtual ChunkStyle UsagesHighlightRectangle {
+			get {
+				return GetChunkStyle (UsagesHighlightRectangleString);
 			}
 		}
 		
@@ -476,6 +484,7 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (SearchTextMainBgString, 243, 221, 72);
 			
 			SetStyle (BracketHighlightRectangleString, 0xd3, 0xd7, 0xcf, 0xee, 0xee, 0xec);
+			SetStyle (UsagesHighlightRectangleString, 0xd3, 0xd7, 0xcf, 0xee, 0xee, 0xec);
 			
 			SetStyle (BookmarkColor1String, 255, 255, 255);
 			SetStyle (BookmarkColor2String, 105, 156, 235);

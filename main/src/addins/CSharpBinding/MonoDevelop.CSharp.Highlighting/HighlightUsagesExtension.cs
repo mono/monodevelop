@@ -279,13 +279,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 					to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 					if (@from < to) {
-						cr.Color = (HslColor)editor.ColorStyle.BracketHighlightRectangle.BackgroundColor;
+						cr.Color = (HslColor)editor.ColorStyle.UsagesHighlightRectangle.BackgroundColor;
 						cr.Rectangle (@from + 1, y + 1, to - @from - 1, editor.LineHeight - 2);
 						cr.Fill ();
 						
-						cr.Color = (HslColor)editor.ColorStyle.BracketHighlightRectangle.Color;
-						cr.Rectangle (@from, y, to - @from, editor.LineHeight - 1);
-						cr.Fill ();
+						cr.Color = (HslColor)editor.ColorStyle.UsagesHighlightRectangle.Color;
+						cr.Rectangle (@from + 0.5, y + 0.5, to - @from, editor.LineHeight - 1);
+						cr.Stroke ();
 					}
 				}
 				return true;

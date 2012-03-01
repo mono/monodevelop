@@ -114,6 +114,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 			new ColorMetaData ("marker.bracket", GettextCatalog.GetString ("Bracket marker"), ColorsAvailable.FgBg),
 			
+			new ColorMetaData ("marker.usages", GettextCatalog.GetString ("Usages marker"), ColorsAvailable.FgBg),
 			
 			new ColorMetaData ("marker.bookmark.color1", GettextCatalog.GetString ("Bookmark marker color 1"), ColorsAvailable.Fg),
 			new ColorMetaData ("marker.bookmark.color2", GettextCatalog.GetString ("Bookmark marker color 2"), ColorsAvailable.Fg),
