@@ -80,29 +80,31 @@ namespace MonoDevelop.Ide
 			
 			// Feedback button
 			
-			CustomFrame fr = new CustomFrame (0, 0, 1, 1);
-			Gdk.Pixbuf px = Gdk.Pixbuf.LoadFromResource ("balloon.png");
-			HBox b = new HBox (false, 3);
-			b.PackStart (new Gtk.Image (px));
-			b.PackStart (new Gtk.Label ("Feedback"));
-			Gtk.Alignment al = new Gtk.Alignment (0f, 0f, 1f, 1f);
-			al.RightPadding = 5;
-			al.LeftPadding = 3;
-			al.Add (b);
-			feedbackButton = new MiniButton (al);
-			//feedbackButton.BackroundColor = new Gdk.Color (200, 200, 255);
-			fr.Add (feedbackButton);
-			PackStart (fr, false, false, 0);
-			feedbackButton.Clicked += HandleFeedbackButtonClicked;
-			feedbackButton.ButtonPressEvent += HandleFeedbackButtonButtonPressEvent;;
-			feedbackButton.ClickOnRelease = true;
-			FeedbackService.FeedbackPositionGetter = delegate {
-				int x, y;
-				feedbackButton.GdkWindow.GetOrigin (out x, out y);
-				x += feedbackButton.Allocation.Width;
-				y -= 6;
-				return new Gdk.Point (x, y);
-			};
+			if (FeedbackService.Enabled) {
+				CustomFrame fr = new CustomFrame (0, 0, 1, 1);
+				Gdk.Pixbuf px = Gdk.Pixbuf.LoadFromResource ("balloon.png");
+				HBox b = new HBox (false, 3);
+				b.PackStart (new Gtk.Image (px));
+				b.PackStart (new Gtk.Label ("Feedback"));
+				Gtk.Alignment al = new Gtk.Alignment (0f, 0f, 1f, 1f);
+				al.RightPadding = 5;
+				al.LeftPadding = 3;
+				al.Add (b);
+				feedbackButton = new MiniButton (al);
+				//feedbackButton.BackroundColor = new Gdk.Color (200, 200, 255);
+				fr.Add (feedbackButton);
+				PackStart (fr, false, false, 0);
+				feedbackButton.Clicked += HandleFeedbackButtonClicked;
+				feedbackButton.ButtonPressEvent += HandleFeedbackButtonButtonPressEvent;;
+				feedbackButton.ClickOnRelease = true;
+				FeedbackService.FeedbackPositionGetter = delegate {
+					int x, y;
+					feedbackButton.GdkWindow.GetOrigin (out x, out y);
+					x += feedbackButton.Allocation.Width;
+					y -= 6;
+					return new Gdk.Point (x, y);
+				};
+			}
 			
 			// Dock area
 			

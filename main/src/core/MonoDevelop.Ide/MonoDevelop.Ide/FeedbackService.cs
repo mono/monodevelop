@@ -32,7 +32,7 @@ using System.Xml;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Extensions;
 using System.Reflection;
-
+using System.Linq;
 namespace MonoDevelop.Ide
 {
 	static class FeedbackService
@@ -40,6 +40,16 @@ namespace MonoDevelop.Ide
 		static bool sending;
 		static object sendingLock = new object ();
 		static FeedbackDialog currentFeedbackDialog;
+		static Lazy<string> feedbackUrl;
+
+		internal static bool Enabled {
+			get { return !string.IsNullOrEmpty (feedbackUrl.Value); }
+		}
+
+		static FeedbackService ()
+		{
+			 feedbackUrl = new Lazy<string> (() => Mono.Addins.AddinManager.GetExtensionObjects<FeedbackUrlProvider> ("/MonoDevelop/Ide/FeedbackUrlProviders").Select (f => f.Url).FirstOrDefault ());
+		}
 		
 		public static bool IsFeedbackWindowVisible {
 			get { return currentFeedbackDialog != null && currentFeedbackDialog.Visible; }
@@ -47,6 +57,9 @@ namespace MonoDevelop.Ide
 		
 		public static void ShowFeedbackWindow ()
 		{
+			if (string.IsNullOrEmpty (feedbackUrl.Value))
+				return;
+
 			if (currentFeedbackDialog == null) {
 				var p = FeedbackPositionGetter ();
 				currentFeedbackDialog = new FeedbackDialog (p.X, p.Y);
@@ -121,6 +134,9 @@ namespace MonoDevelop.Ide
 		
 		public static void SendPendingFeedback ()
 		{
+			if (string.IsNullOrEmpty (feedbackUrl.Value))
+				return;
+
 			lock (sendingLock) {
 				if (sending)
 					return;
@@ -152,7 +168,7 @@ namespace MonoDevelop.Ide
 		{
 			string email = feedbackElem.GetAttribute ("email");
 			string body = feedbackElem.InnerText;
-			var request = (HttpWebRequest) HttpWebRequest.Create ("http://software.xamarin.com/Service/Feedback?m=" + email);
+			var request = (HttpWebRequest) HttpWebRequest.Create (feedbackUrl.Value + "?m=" + email);
 			request.Method = "POST";
 			request.BeginGetRequestStream (delegate (IAsyncResult res) {
 				HandleGetRequestStream (res, request, body);

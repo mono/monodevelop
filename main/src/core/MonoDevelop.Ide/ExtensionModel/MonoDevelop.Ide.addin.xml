@@ -136,6 +136,11 @@
 		<Description>Addins can register own fonts to be configured.</Description>
 		<ExtensionNode name="Font" type="MonoDevelop.Ide.Fonts.FontDescriptionCodon"/>
 	</ExtensionPoint>
+		
+	<ExtensionPoint path = "/MonoDevelop/Ide/FeedbackUrlProviders" name = "Feedback url handlers">
+		<Description>Provides the webservice url which MonoDevelop Feedback items will be sent to</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Ide.FeedbackUrlProvider" /><
+	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeFormatters" name = "Code formatters">
 		<ExtensionNode name="Formatter" type="MonoDevelop.Ide.CodeFormatting.CodeFormatterExtensionNode" />
