@@ -137,9 +137,9 @@
 		<ExtensionNode name="Font" type="MonoDevelop.Ide.Fonts.FontDescriptionCodon"/>
 	</ExtensionPoint>
 		
-	<ExtensionPoint path = "/MonoDevelop/Ide/FeedbackUrlProviders" name = "Feedback url handlers">
-		<Description>Provides the webservice url which MonoDevelop Feedback items will be sent to</Description>
-		<ExtensionNode name="Class" type="MonoDevelop.Ide.FeedbackUrlProvider" /><
+	<ExtensionPoint path = "/MonoDevelop/Ide/FeedbackService" name = "Feedback reporting service">
+		<Description>Provides the webservice url to which MonoDevelop will send user feedback.</Description>
+		<ExtensionNode name="Service" type="MonoDevelop.Ide.Extensions.ServiceUrlExtensionNode" />
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeFormatters" name = "Code formatters">

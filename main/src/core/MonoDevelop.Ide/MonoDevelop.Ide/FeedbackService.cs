@@ -33,6 +33,8 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Extensions;
 using System.Reflection;
 using System.Linq;
+using Mono.Addins;
+
 namespace MonoDevelop.Ide
 {
 	static class FeedbackService
@@ -48,7 +50,11 @@ namespace MonoDevelop.Ide
 
 		static FeedbackService ()
 		{
-			 feedbackUrl = new Lazy<string> (() => Mono.Addins.AddinManager.GetExtensionObjects<FeedbackUrlProvider> ("/MonoDevelop/Ide/FeedbackUrlProviders").Select (f => f.Url).FirstOrDefault ());
+			feedbackUrl = new Lazy<string> (() => {
+				var node = AddinManager.GetExtensionNodes<ServiceUrlExtensionNode> ("/MonoDevelop/Ide/FeedbackService")
+					.FirstOrDefault ();
+				return node != null? node.Url : null;
+			});
 		}
 		
 		public static bool IsFeedbackWindowVisible {

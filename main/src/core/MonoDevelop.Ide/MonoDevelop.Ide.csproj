@@ -1474,7 +1474,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\ExportSolutionDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ExportSolutionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
-    <Compile Include="MonoDevelop.Ide\FeedbackUrlProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\ServiceUrlExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -373,6 +373,7 @@ FILES =  \
 	MonoDevelop.Ide.Extensions/MimeTypeOptionsPanelNode.cs \
 	MonoDevelop.Ide.Extensions/OptionsDialogSection.cs \
 	MonoDevelop.Ide.Extensions/OptionsPanelNode.cs \
+	MonoDevelop.Ide.Extensions/ServiceUrlExtensionNode.cs \
 	MonoDevelop.Ide.Extensions/StartupHandlerExtensionAttribute.cs \
 	MonoDevelop.Ide.Extensions/StockIconCodon.cs \
 	MonoDevelop.Ide.Extensions/TextEditorExtensionNode.cs \
@@ -696,7 +697,6 @@ FILES =  \
 	MonoDevelop.Ide/DispatchService.cs \
 	MonoDevelop.Ide/ExitEventHandler.cs \
 	MonoDevelop.Ide/FeedbackService.cs \
-	MonoDevelop.Ide/FeedbackUrlProvider.cs \
 	MonoDevelop.Ide/GLibLogging.cs \
 	MonoDevelop.Ide/HelpOperations.cs \
 	MonoDevelop.Ide/Ide.cs \
