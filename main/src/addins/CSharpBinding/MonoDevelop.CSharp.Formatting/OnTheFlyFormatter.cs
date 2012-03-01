@@ -105,8 +105,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			int startOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
-			
-			int endOffset = sb.Length - data.Editor.Caret.Offset - seg.Offset;
+			int endOffset = startOffset + data.Editor.Caret.Offset - seg.Offset;
 			sb.Append (data.Editor.EolMarker);
 			sb.Append (new string ('}', closingBrackets));
 			
@@ -131,7 +130,6 @@ namespace MonoDevelop.CSharp.Formatting
 			compilationUnit.AcceptVisitor (domSpacingVisitor);
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
-			
 			int delta = seg.Offset - startOffset;
 			
 			HashSet<int> lines = new HashSet<int> ();
