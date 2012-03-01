@@ -106,30 +106,36 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		
 		List<AstNode> matches = new List<AstNode> ();
 		bool replaceAll = false;
-
+		
+		class SearchNodeVisitior : DepthFirstAstVisitor
+		{
+			readonly AstNode searchForNode;
+			public readonly List<AstNode> Matches = new List<AstNode> ();
+			
+			public SearchNodeVisitior (AstNode searchForNode)
+			{
+				this.searchForNode = searchForNode;
+				Matches.Add (searchForNode);
+			}
+			
+			protected override void VisitChildren (AstNode node)
+			{
+				if (node.StartLocation > searchForNode.StartLocation && node.IsMatch (searchForNode))
+					Matches.Add (node);
+				base.VisitChildren (node);
+			}
+		}
+		
 		void SearchMatchingExpressions (RefactoringOptions options)
 		{
-			var parser = new CSharpParser ();
 			var data = options.GetTextEditorData ();
 			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
 			if (unit != null) {
-				var node = unit.GetNodeAt (data.Caret.Line, data.Caret.Column);
-				while (node != null && !(node is BlockStatement)) {
-					node = node.Parent;
-				}
+				var node = unit.GetNodeAt<BlockStatement> (data.Caret.Location);
 				if (node != null) {
-					var nodeStack = new Stack<AstNode> ();
-					nodeStack.Push (node);
-					var minLoc = new TextLocation (data.Caret.Line, data.Caret.Column);
-					while (nodeStack.Count > 0) {
-						var curNode = nodeStack.Pop ();
-						
-						if (curNode.StartLocation > minLoc && curNode.IsMatch (selectedExpression)) {
-							matches.Add (curNode);
-						}
-						foreach (var child in curNode.Children)
-							nodeStack.Push (child);
-					}
+					var visitor = new SearchNodeVisitior (selectedExpression);
+					node.AcceptVisitor (visitor);
+					matches = visitor.Matches;
 				}
 			}
 			
@@ -223,7 +229,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			}
 			
 			// insert local variable declaration
-			TextReplaceChange insert = new TextReplaceChange ();
+			var insert = new TextReplaceChange ();
 			insert.FileName = options.Document.FileName;
 			insert.Description = GettextCatalog.GetString ("Insert variable declaration");
 			
@@ -266,6 +272,8 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			if (replaceAll) {
 				matches.Sort ((x, y) => x.StartLocation.CompareTo (y.StartLocation));
 				foreach (var match in matches) {
+					if (match == selectedExpression)
+						continue;
 					replace = new TextReplaceChange ();
 					replace.FileName = options.Document.FileName;
 					int start = data.LocationToOffset (match.StartLocation);
@@ -280,39 +288,6 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 				}
 			}
 			return result;
-		}
-
-		static bool SearchSubExpression (string expression, string subexpression, int startOffset, out int offset, out int length)
-		{
-			length = -1;
-			for (offset = startOffset; offset < expression.Length; offset++) {
-				if (Char.IsWhiteSpace (expression[offset])) 
-					continue;
-				
-				bool mismatch = false;
-				int i = offset, j = 0;
-				while (i < expression.Length && j < subexpression.Length) {
-					if (Char.IsWhiteSpace (expression[i])) {
-						i++;
-						continue;
-					}
-					if (Char.IsWhiteSpace (subexpression[j])) {
-						j++;
-						continue;
-					}
-					if (expression[i] != subexpression[j]) {
-						mismatch = true;
-						break;
-					}
-					i++;
-					j++;
-				}
-				if (!mismatch && j > 0) {
-					length = j;
-					return true;
-				}
-			}
-			return false;
 		}
 		
 		static string[] GetPossibleName (IType returnType)
