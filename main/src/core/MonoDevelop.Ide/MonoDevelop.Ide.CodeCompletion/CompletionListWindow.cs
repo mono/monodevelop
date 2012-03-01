@@ -299,6 +299,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			this.Style = CompletionWidget.GtkStyle;
 			
+			if (PropertyService.Get ("HideObsoleteItems", false))
+				foreach (var item in completionDataList.Where (x => x.DisplayFlags.HasFlag (DisplayFlags.Obsolete)).ToList ())
+					completionDataList.Remove (item);
+			
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
@@ -433,12 +437,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var data = completionDataList[List.SelectionIndex];
 			
-			IList<ICompletionData> overloads;
+			IEnumerable<ICompletionData> filteredOverloads;
 			if (data.HasOverloads) {
-				overloads = new List<ICompletionData> (data.OverloadedData);
+				filteredOverloads = data.OverloadedData;
+				if (PropertyService.Get ("HideObsoleteItems", false))
+					filteredOverloads = filteredOverloads.Where (x => !x.DisplayFlags.HasFlag (DisplayFlags.Obsolete));
 			} else {
-				overloads = new ICompletionData[] { data };
+				filteredOverloads = new ICompletionData[] { data };
 			}
+			
+			var overloads = new List<ICompletionData> (filteredOverloads);
 			
 			if (data != currentData) {
 				HideDeclarationView ();
@@ -455,7 +463,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				currentData = data;
 				if (data.HasOverloads) {
 					for (int i = 0; i < overloads.Count; i++) {
-						if ((overloads[i].DisplayFlags & DisplayFlags.Obsolete) != DisplayFlags.Obsolete) {
+						if (!overloads[i].DisplayFlags.HasFlag (DisplayFlags.Obsolete)) {
 							declarationviewwindow.CurrentOverload = i;
 							break;
 						}
@@ -607,15 +615,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		bool IListDataProvider.HasMarkup (int n)
 		{
-			return (completionDataList[n].DisplayFlags & DisplayFlags.Obsolete) != 0;
+			return completionDataList[n].DisplayFlags.HasFlag (DisplayFlags.Obsolete);
 		}
 		
 		//NOTE: we only ever return markup for items marked as obsolete
 		string IListDataProvider.GetMarkup (int n)
 		{
 			var completionData = completionDataList[n];
-			if (!completionData.HasOverloads && (completionData.DisplayFlags & DisplayFlags.Obsolete) == DisplayFlags.Obsolete || 
-			    completionData.OverloadedData.All (data => (data.DisplayFlags & DisplayFlags.Obsolete) == DisplayFlags.Obsolete))
+			if (!completionData.HasOverloads && completionData.DisplayFlags.HasFlag (DisplayFlags.Obsolete) || 
+			    completionData.OverloadedData.All (data => data.DisplayFlags.HasFlag (DisplayFlags.Obsolete)))
 				return "<s>" + GLib.Markup.EscapeText (completionDataList[n].DisplayText) + "</s>";
 			return GLib.Markup.EscapeText (completionDataList[n].DisplayText);
 		}
