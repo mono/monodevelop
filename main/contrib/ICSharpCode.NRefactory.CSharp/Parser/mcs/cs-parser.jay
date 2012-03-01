@@ -4945,7 +4945,7 @@ block_variable_declaration
 		current_block.AddLocalName (li);
 		current_variable = new BlockVariableDeclaration ((FullNamedExpression) $1, li);
 	  }
-	  opt_local_variable_initializer opt_variable_declarators SEMICOLON
+	  opt_local_variable_initializer opt_variable_declarators semicolon_or_handle_error_close_brace
 	  {
 		$$ = current_variable;
 		current_variable = null;
@@ -4967,6 +4967,16 @@ block_variable_declaration
 		}
 		$$ = current_variable;;
 		current_variable = null;
+	  }
+	;
+
+semicolon_or_handle_error_close_brace 
+	: SEMICOLON
+	| CLOSE_BRACE {
+		// Redundant, but wont regress
+		report.Error (1525, lexer.Location, "Unexpected symbol }");
+		lexer.putback ('}');
+		$$ = $1;
 	  }
 	;
 
@@ -5323,6 +5333,7 @@ for_statement
 		current_block.IsCompilerGenerated = true;
 		For f = new For (GetLocation ($1));
 		current_block.AddStatement (f);
+		lbag.AddStatement (f, current_block.StartLocation, GetLocation ($2));
 		$$ = f;
 	  }
 	  for_statement_cont
@@ -5335,24 +5346,57 @@ for_statement
 for_statement_cont
 	: opt_for_initializer SEMICOLON
 	  {
-		((For) $0).Initializer = (Statement) $1;
+		For f =  (For) $0;
+		f.Initializer = (Statement) $1;
+		lbag.AppendTo (f, GetLocation ($2));
+		$$ = f;
 	  }
-	  opt_for_condition SEMICOLON
+	  for_statement_condition
 	  {
-		((For) $0).Condition = (BooleanExpression) $4;
+		$$ = $4;
 	  }
-	  opt_for_iterator CLOSE_PARENS
+	| opt_for_initializer CLOSE_PARENS {
+		report.Error (1525, GetLocation ($2), "Unexpected symbol ')', expected ';'");
+		For f =  (For) $0;
+		f.Initializer = (Statement) $1;
+		lbag.AppendTo (f, GetLocation ($2));
+		$$ = end_block (GetLocation ($2));
+	}
+	;
+
+for_statement_condition
+	: opt_for_condition SEMICOLON
 	  {
-		((For) $0).Iterator = (Statement) $7;
+		For f =  (For) $0;
+		f.Condition = (BooleanExpression) $1;
+		lbag.AppendTo (f, GetLocation ($2));
+		$$ = f;
 	  }
+	  for_statement_end
+	  {
+		$$ = $4;
+	  }
+	| opt_for_condition CLOSE_PARENS {
+		report.Error (1525, GetLocation ($2), "Unexpected symbol ')', expected ';'");
+		For f =  (For) $0;
+		f.Condition = (BooleanExpression) $1;
+		lbag.AppendTo (f, GetLocation ($2));
+		$$ = end_block (GetLocation ($2));
+	}
+	;
+
+for_statement_end
+	: opt_for_iterator CLOSE_PARENS
 	  embedded_statement
 	  {
-		if ($10 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
-			Warning_EmptyStatement (GetLocation ($10));
+		For f =  (For) $0;
+		f.Iterator = (Statement) $1;
+		
+		if ($3 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
+			Warning_EmptyStatement (GetLocation ($3));
 	  
-		For f = ((For) $0);
-		f.Statement = (Statement) $10;
-		lbag.AddStatement (f, current_block.StartLocation, GetLocation ($2), GetLocation ($5), GetLocation ($8));
+		f.Statement = (Statement) $3;
+		lbag.AppendTo (f, GetLocation ($2));
 
 		$$ = end_block (GetLocation ($2));
 	  }

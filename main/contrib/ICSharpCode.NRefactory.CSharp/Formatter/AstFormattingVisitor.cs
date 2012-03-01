@@ -222,7 +222,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			int endOffset = segment.EndOffset;
 			for (int i = segment.Offset; i < endOffset; i++) {
-				if (!IsSpacing(document.GetCharAt(i)))
+				if (!IsSpacing (document.GetCharAt (i)))
 					return false;
 			}
 			return true;
@@ -1607,7 +1607,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (offset < endOffset) {
 				AddChange (offset, endOffset - offset, null);
 			}
-		}	
+		}
 
 		void PlaceOnNewLine (bool newLine, AstNode keywordNode)
 		{
@@ -1680,18 +1680,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		string GetIndentation(int lineNumber)
+		string GetIndentation (int lineNumber)
 		{
-			IDocumentLine line = document.GetLineByNumber(lineNumber);
-			StringBuilder b = new StringBuilder();
+			IDocumentLine line = document.GetLineByNumber (lineNumber);
+			StringBuilder b = new StringBuilder ();
 			int endOffset = line.EndOffset;
 			for (int i = line.Offset; i < endOffset; i++) {
-				char c = document.GetCharAt(i);
-				if (!IsSpacing(c))
+				char c = document.GetCharAt (i);
+				if (!IsSpacing (c))
 					break;
-				b.Append(c);
+				b.Append (c);
 			}
-			return b.ToString();
+			return b.ToString ();
 		}
 	}
 }
