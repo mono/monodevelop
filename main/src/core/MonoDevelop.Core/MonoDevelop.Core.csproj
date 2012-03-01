@@ -524,6 +524,7 @@
     <Compile Include="MonoDevelop.Core\PasswordService.cs" />
     <Compile Include="MonoDevelop.Core\IPasswordProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Utility\ByteOrderMark.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\IInstrumentationConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
