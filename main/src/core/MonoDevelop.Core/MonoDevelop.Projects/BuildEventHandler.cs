@@ -71,5 +71,9 @@ namespace MonoDevelop.Projects
 		public int FailedBuildCount {
 			get; set;
 		}
+		
+		public SolutionItem SolutionItem {
+			get; set;
+		}
 	}
 }
