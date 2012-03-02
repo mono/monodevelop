@@ -237,6 +237,10 @@
 			_title = "Insert anonymous method signature"
 			_description = "Inserts a signature to parameterless anonymous methods."
 			class = "MonoDevelop.CSharp.ContextAction.InsertAnonymousMethodSignature" /> 
+		<Action mimeType="text/x-csharp"
+			_title = "Remove region"
+			_description = "Removes a pre processor #region/#endregion directive."
+			class = "MonoDevelop.CSharp.ContextAction.RemoveRegion" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/Inspectors">

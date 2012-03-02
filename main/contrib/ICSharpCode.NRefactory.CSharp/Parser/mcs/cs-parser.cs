@@ -8064,7 +8064,7 @@ void case_806()
 		current_block.IsCompilerGenerated = true;
 		For f = new For (GetLocation (yyVals[-1+yyTop]));
 		current_block.AddStatement (f);
-		lbag.AddStatement (f, current_block.StartLocation, GetLocation (yyVals[0+yyTop]));
+		lbag.AddStatement (f, current_block.StartLocation);
 		yyVal = f;
 	  }
 

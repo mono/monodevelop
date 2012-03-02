@@ -1390,7 +1390,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			base.VisitBinaryOperatorExpression (binaryOperatorExpression);
 			// Handle line breaks in binary opeartor expression.
-			if (binaryOperatorExpression.Left.StartLocation.Line != binaryOperatorExpression.Right.StartLocation.Line) {
+			if (binaryOperatorExpression.Left.EndLocation.Line != binaryOperatorExpression.Right.StartLocation.Line) {
 				IndentLevel++;
 				if (binaryOperatorExpression.OperatorToken.StartLocation.Line == binaryOperatorExpression.Right.StartLocation.Line) {
 					FixStatementIndentation (binaryOperatorExpression.OperatorToken.StartLocation);

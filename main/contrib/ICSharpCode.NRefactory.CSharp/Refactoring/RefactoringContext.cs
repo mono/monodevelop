@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -93,18 +94,31 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		#region Text stuff
 		public abstract string EolMarker { get; }
+
 		public abstract bool IsSomethingSelected { get; }
+
 		public abstract string SelectedText { get; }
+
 		public abstract int SelectionStart { get; }
+
 		public abstract int SelectionEnd { get; }
+
 		public abstract int SelectionLength { get; }
+
 		public abstract int GetOffset (TextLocation location);
+
+		public abstract IDocumentLine GetLineByOffset (int offset);
+		
 		public int GetOffset (int line, int col)
 		{
 			return GetOffset (new TextLocation (line, col));
 		}
+
 		public abstract TextLocation GetLocation (int offset);
+
 		public abstract string GetText (int offset, int length);
+
+		public abstract string GetText (ISegment segment);
 		#endregion
 		
 		#region Resolving

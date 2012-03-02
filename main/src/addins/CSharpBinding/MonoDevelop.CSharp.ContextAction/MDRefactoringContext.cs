@@ -125,6 +125,16 @@ namespace MonoDevelop.CSharp.ContextAction
 			return Document.Editor.GetTextAt (offset, length);
 		}
 		
+		public override string GetText (ICSharpCode.NRefactory.Editor.ISegment segment)
+		{
+			return Document.Editor.GetTextAt (segment.Offset, segment.Length);
+		}
+		
+		public override ICSharpCode.NRefactory.Editor.IDocumentLine GetLineByOffset (int offset)
+		{
+			return Document.Editor.GetLineByOffset (offset);
+		}
+		
 		#region IChangeFactory implementation
 		
 		class MdTextReplaceAction : TextReplaceAction

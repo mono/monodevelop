@@ -99,6 +99,10 @@ namespace MonoDevelop.CSharp.ContextAction
 	{
 	}
 	
+	public class RemoveRegion : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegion>
+	{
+	}
+	
 	public class SplitString : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.SplitString>
 	{
 	}

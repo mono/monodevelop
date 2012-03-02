@@ -90,10 +90,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			Queue (Context.CreateLinkAction (nodes));
 		}
 		
-		public void Remove (AstNode node)
+		public void Remove (AstNode node, bool removeEmptyLine = true)
 		{
 			var startOffset = Context.GetOffset (node.StartLocation);
 			var endOffset = Context.GetOffset (node.EndLocation);
+			
+			var startLine = Context.GetLineByOffset (startOffset);
+			var endLine = Context.GetLineByOffset (endOffset);
+			
+			if (startLine != null && endLine != null) {
+				bool removeStart = string.IsNullOrWhiteSpace (Context.GetText (startLine.Offset, startOffset - startLine.Offset));
+				if (removeStart)
+					startOffset = startLine.Offset;
+				bool removeEnd = string.IsNullOrWhiteSpace (Context.GetText (endOffset, endLine.EndOffset - endOffset));
+				if (removeEnd)
+					endOffset = endLine.EndOffset;
+				
+				// Remove delimiter if the whole line get's removed.
+				if (removeStart && removeEnd)
+					endOffset += endLine.DelimiterLength;
+			}
+			
 			Remove (startOffset, endOffset - startOffset);
 		}
 		
@@ -129,7 +146,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			Queue (Context.CreateNodeSelectionAction (node));
 		}
 		
-		public enum InsertPosition {
+		public enum InsertPosition
+		{
 			Start,
 			Before,
 			After,
@@ -143,10 +161,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var node = Context.Unit.GetNodeAt (Context.GetLocation (offset));
 			int level = 0;
 			while (node != null) {
-					if (node is BlockStatement || node is TypeDeclaration || node is NamespaceDeclaration)
-						level++;
-					node = node.Parent;
-				}
+				if (node is BlockStatement || node is TypeDeclaration || node is NamespaceDeclaration)
+					level++;
+				node = node.Parent;
+			}
 			return level;
 		}
 		
@@ -155,24 +173,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			readonly NodeOutput result;
 			readonly StringWriter stringWriter;
 			
-			public SegmentTrackingOutputFormatter(NodeOutput result, StringWriter stringWriter)
+			public SegmentTrackingOutputFormatter (NodeOutput result, StringWriter stringWriter)
 				: base(stringWriter)
 			{
 				this.result = result;
 				this.stringWriter = stringWriter;
 			}
 			
-			public override void StartNode(AstNode node)
+			public override void StartNode (AstNode node)
 			{
-				base.StartNode(node);
+				base.StartNode (node);
 				result.NodeSegments [node] = new NodeOutput.Segment (stringWriter.GetStringBuilder ().Length);
 			}
 			
-			public override void EndNode(AstNode node)
+			public override void EndNode (AstNode node)
 			{
 				var nodeSegment = result.NodeSegments [node];
 				nodeSegment.Length = stringWriter.GetStringBuilder ().Length - nodeSegment.Offset;
-				base.EndNode(node);
+				base.EndNode (node);
 			}
 		}
 		

@@ -225,6 +225,7 @@ FILES =  \
 	Refactoring/ContextAction/InvertIf.cs \
 	Refactoring/ContextAction/RemoveBackingStore.cs \
 	Refactoring/ContextAction/RemoveBraces.cs \
+	Refactoring/ContextAction/RemoveRegion.cs \
 	Refactoring/ContextAction/ReplaceEmptyString.cs \
 	Refactoring/ContextAction/SplitDeclarationAndAssignment.cs \
 	Refactoring/ContextAction/SplitString.cs \
