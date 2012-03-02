@@ -70,7 +70,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public NSObjectProjectInfo ProjectInfo {
 			get {
-				return pinfo ?? (pinfo = InfoService.GetProjectInfo (Project));
+				if (pinfo == null)
+					pinfo = InfoService.GetProjectInfo (Project);
+				
+				if (pinfo != null)
+					pinfo.Update (true);
+				
+				return pinfo;
 			}
 		}
 		
