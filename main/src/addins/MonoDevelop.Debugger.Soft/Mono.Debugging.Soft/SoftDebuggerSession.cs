@@ -30,6 +30,8 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
+using Mono.Cecil.Mdb;
+using Mono.CompilerServices.SymbolWriter;
 using Mono.Debugging.Client;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Evaluation;
@@ -78,6 +80,7 @@ namespace Mono.Debugging.Soft
 		
 		List<string> userAssemblyNames;
 		List<AssemblyMirror> assemblyFilters;
+		Dictionary<string, string> assemblyPathMap;
 		
 		bool loggedSymlinkedRuntimesBug = false;
 
@@ -120,7 +123,7 @@ namespace Mono.Debugging.Soft
 		{
 			this.startArgs = dsi.StartArgs;
 			
-			RegisterUserAssemblies (dsi.UserAssemblyNames);
+			RegisterUserAssemblies (dsi);
 			
 			if (!String.IsNullOrEmpty (dsi.LogMessage))
 				LogWriter (false, dsi.LogMessage + "\n");
@@ -165,7 +168,7 @@ namespace Mono.Debugging.Soft
 		{
 			var args = (SoftDebuggerLaunchArgs) dsi.StartArgs;
 			var runtime = Path.Combine (Path.Combine (args.MonoRuntimePrefix, "bin"), "mono");
-			RegisterUserAssemblies (dsi.UserAssemblyNames);
+			RegisterUserAssemblies (dsi);
 			
 			var psi = new System.Diagnostics.ProcessStartInfo (runtime) {
 				Arguments = string.Format ("\"{0}\" {1}", dsi.Command, dsi.Arguments),
@@ -295,7 +298,7 @@ namespace Mono.Debugging.Soft
 			
 			remoteProcessName = args.AppName;
 			
-			RegisterUserAssemblies (dsi.UserAssemblyNames);
+			RegisterUserAssemblies (dsi);
 			
 			dbgEP = new IPEndPoint (args.Address, args.DebugPort);
 			conEP = args.RedirectOutput? new IPEndPoint (args.Address, args.OutputPort) : null;
@@ -446,12 +449,16 @@ namespace Mono.Debugging.Soft
 			eventHandler.Start ();
 		}
 		
-		protected void RegisterUserAssemblies (List<AssemblyName> userAssemblyNames)
+		void RegisterUserAssemblies (SoftDebuggerStartInfo dsi)
 		{
-			if (Options.ProjectAssembliesOnly && userAssemblyNames != null) {
+			if (Options.ProjectAssembliesOnly && dsi.UserAssemblyNames != null) {
 				assemblyFilters = new List<AssemblyMirror> ();
-				this.userAssemblyNames = userAssemblyNames.Select (x => x.ToString ()).ToList ();
+				userAssemblyNames = dsi.UserAssemblyNames.Select (x => x.ToString ()).ToList ();
 			}
+			
+			assemblyPathMap = dsi.AssemblyPathMap;
+			if (assemblyPathMap == null)
+				assemblyPathMap = new Dictionary<string, string> ();
 		}
 		
 		protected bool SetSocketTimeouts (int send_timeout, int receive_timeout, int keepalive_interval)
@@ -1714,9 +1721,65 @@ namespace Mono.Debugging.Soft
 			return method.Locations.Count > 0 ? method.Locations[0] : null;
 		}
 		
+		
+		Dictionary<string, MonoSymbolFile> symbolFiles = new Dictionary<string, MonoSymbolFile> ();
+		
+		bool CheckBetterMatch (TypeMirror type, string file, int line, Location found)
+		{
+			if (type.Assembly == null)
+				return false;
+			
+			string assemblyFileName;
+			if (!assemblyPathMap.TryGetValue (type.Assembly.GetName ().FullName, out assemblyFileName))
+				assemblyFileName = type.Assembly.Location;
+			
+			if (assemblyFileName == null)
+				return false;
+			
+			string mdbFileName = assemblyFileName + ".mdb";
+			int foundDelta = found.LineNumber - line;
+			MonoSymbolFile mdb;
+			int fileId = -1;
+			
+			try {
+				if (!symbolFiles.TryGetValue (mdbFileName, out mdb)) {
+					if (!File.Exists (mdbFileName))
+						return false;
+					
+					mdb = MonoSymbolFile.ReadSymbolFile (mdbFileName);
+					symbolFiles.Add (mdbFileName, mdb);
+				}
+				
+				foreach (var src in mdb.Sources) {
+					if (src.FileName == file) {
+						fileId = src.Index;
+						break;
+					}
+				}
+				
+				if (fileId == -1)
+					return false;
+				
+				foreach (var method in mdb.Methods) {
+					var table = method.GetLineNumberTable ();
+					foreach (var entry in table.LineNumbers) {
+						if (entry.File != fileId)
+							continue;
+						
+						if (entry.Row >= line && (entry.Row - line) < foundDelta)
+							return true;
+					}
+				}
+			} catch {
+			}
+			
+			return false;
+		}
+		
 		Location GetLocFromType (TypeMirror type, string file, int line, out bool genericMethod, out bool insideTypeRange)
 		{
 			Location target_loc = null;
+			bool fuzzy = true;
 			
 			insideTypeRange = false;
 			genericMethod = false;
@@ -1759,9 +1822,11 @@ namespace Mono.Debugging.Soft
 									// Line number matches exactly
 									//Console.WriteLine ("\t\tLocation matches exactly.");
 									target_loc = location;
+									fuzzy = false;
 								}
 							} else {
 								//Console.WriteLine ("\t\tLocation is first possible match");
+								fuzzy = location.LineNumber != line;
 								target_loc = location;
 							}
 						}
@@ -1773,9 +1838,17 @@ namespace Mono.Debugging.Soft
 				
 				if (target_loc != null) {
 					genericMethod = IsGenericMethod (method);
-					break;
+					
+					// If we got a fuzzy match, then we need to make sure that there isn't a better
+					// match in another method (e.g. code might have been extracted out into another
+					// method by the compiler.
+					if (!fuzzy)
+						return target_loc;
 				}
 			}
+			
+			if (target_loc != null && fuzzy && CheckBetterMatch (type, file, line, target_loc))
+				return null;
 			
 			return target_loc;
 		}
