@@ -688,8 +688,12 @@ namespace MonoDevelop.Ide
 		{
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
 			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
-			if (MessageService.ShowCustomDialog (npdlg) == (int)Gtk.ResponseType.Ok)
-				return npdlg.NewItem as SolutionItem;
+			if (MessageService.ShowCustomDialog (npdlg) == (int)Gtk.ResponseType.Ok) {
+				var item = npdlg.NewItem as SolutionItem;
+				if ((item is Project) && ProjectCreated != null)
+					ProjectCreated (this, new ProjectCreatedEventArgs (item as Project));
+				return item;
+			}
 			return null;
 		}
 
@@ -1906,6 +1910,7 @@ namespace MonoDevelop.Ide
 		
 		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
 		public event ProjectEventHandler CurrentProjectChanged;
+		public event EventHandler<ProjectCreatedEventArgs> ProjectCreated;
 		
 		// Fired just before an entry is added to a combine
 		public event AddEntryEventHandler AddingEntryToCombine;
