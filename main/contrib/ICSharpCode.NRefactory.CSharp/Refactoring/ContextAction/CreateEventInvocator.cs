@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				initializer = null;
 				return null;
 			}
-			initializer = result.Variables.First (v => v.NameToken.Contains (context.Location));
+			initializer = result.Variables.FirstOrDefault (v => v.NameToken.Contains (context.Location));
 			return initializer != null ? result : null;
 		}
 	}
