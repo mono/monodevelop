@@ -263,11 +263,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		void Read (bool verify)
 		{
-			if (!File.Exists (dataFile)) return;
+			if (!File.Exists (dataFile))
+				return;
 			ITimeTracker timer = Counters.DatabasesRead.BeginTiming ("Reading Parser Database " + dataFile);
 				
-			lock (rwlock)
-			{
+			lock (rwlock) {
 				timer.Trace ("Clearing");
 				Clear ();
 			
@@ -283,8 +283,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					return;
 				}
 					
-				try 
-				{
+				try {
 					Modified = false;
 					currentGetTime = 0;
 					
@@ -293,8 +292,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					timer.Trace ("Read headers");
 					
 					// Read the headers
-					headers = (Hashtable) bf.Deserialize (dataFileStream);
-					int ver = (int) headers["Version"];
+					headers = (Hashtable)bf.Deserialize (dataFileStream);
+					int ver = (int)headers ["Version"];
 					if (ver != FORMAT_VERSION)
 						throw new OldPidbVersionException (ver, FORMAT_VERSION);
 					
@@ -306,10 +305,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					dataFileStream.Position = indexOffset;
 
 					object oo = bf.Deserialize (dataFileStream);
-					object[] data = (object[]) oo;
+					object[] data = (object[])oo;
 					Queue dataQueue = new Queue (data);
-					references = (List<ReferenceEntry>) dataQueue.Dequeue () ?? new List<ReferenceEntry> ();
-					typeEntries = (ConcurrentDictionary<string, ClassEntry>) dataQueue.Dequeue () ?? new ConcurrentDictionary<string, ClassEntry> ();
+					references = (List<ReferenceEntry>)dataQueue.Dequeue () ?? new List<ReferenceEntry> ();
+					KeyValuePair<string, ClassEntry>[] entries = (KeyValuePair<string, ClassEntry>[])dataQueue.Dequeue () ?? new KeyValuePair<string, ClassEntry>[0]; 
+					typeEntries = new ConcurrentDictionary<string, ClassEntry> (entries);
 					files = (Dictionary<string, FileEntry>) dataQueue.Dequeue () ?? new Dictionary<string, FileEntry> ();
 					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue () ?? new Hashtable ();
 					
@@ -533,7 +533,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					
 					Queue dataQueue = new Queue ();
 					dataQueue.Enqueue (references);
-					dataQueue.Enqueue (typeEntries);
+					dataQueue.Enqueue (typeEntries.ToArray ());
 					dataQueue.Enqueue (files);
 					dataQueue.Enqueue (unresolvedSubclassTable);
 					SerializeData (dataQueue);
