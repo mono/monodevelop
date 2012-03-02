@@ -306,10 +306,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		public int GetCurrentParameterIndex (int triggerOffset, int endOffset)
 		{
-/*			SetOffset (triggerOffset);
-			var text = GetMemberTextToCaret ();
-			if (text.Item1.EndsWith ("(") || text.Item1.EndsWith ("<")) 
-				return 0;*/
+			char lastChar = document.GetCharAt (endOffset - 1);
+			if (lastChar == '('|| lastChar  == '<') 
+				return 0;
 			var parameter = new Stack<int> ();
 			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
 			for (int i = triggerOffset; i < endOffset; i++) {
