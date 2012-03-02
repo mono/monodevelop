@@ -77,6 +77,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					info.Update ();
 			}
 			
+			dom.ForceUpdate (true);
 			objcTypes.Clear ();
 			cliTypes.Clear ();
 			
