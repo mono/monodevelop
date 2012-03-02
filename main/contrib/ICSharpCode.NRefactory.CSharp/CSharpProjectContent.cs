@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.assemblyName = pc.assemblyName;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles);
-			this._assemblyReferences = new List<IAssemblyReference>(pc._assemblyReferences);
+			this._assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
 		}
 		
 		public IEnumerable<IParsedFile> Files {
