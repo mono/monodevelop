@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -37,48 +38,59 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public void Run (RefactoringContext context)
 		{
 			var directive = GetDirective (context);
-			var visitor = new DirectiveVisitor (directive);
-			context.Unit.AcceptVisitor (visitor);
-			Console.WriteLine ("directive:" + directive + "/" + visitor.Endregion);
-			if (visitor.Endregion == null)
+			var endDirective = DirectiveSearcher.GetEndRegion (context.Unit, directive);
+			if (endDirective == null)
 				return;
 			using (var script = context.StartScript ()) {
 				script.Remove (directive);
-				script.Remove (visitor.Endregion);
+				script.Remove (endDirective);
 			}
 		}
 		
-		class DirectiveVisitor : DepthFirstAstVisitor
+		class DirectiveSearcher : DepthFirstAstVisitor
 		{
-			readonly PreProcessorDirective startDirective;
+			readonly PreProcessorDirective regionDirective;
+			
 			bool searchDirectives = false;
 			int depth;
+			PreProcessorDirective endregion;
 			
-			public PreProcessorDirective Endregion {
-				get;
-				set;
+			DirectiveSearcher (PreProcessorDirective regionDirective)
+			{
+				if (regionDirective == null)
+					throw new ArgumentNullException ("regionDirective");
+				this.regionDirective = regionDirective;
 			}
 			
-			public DirectiveVisitor (PreProcessorDirective startDirective)
+			public static PreProcessorDirective GetEndRegion (CompilationUnit unit, PreProcessorDirective regionDirective)
 			{
-				this.startDirective = startDirective;
+				var visitor = new DirectiveSearcher (regionDirective);
+				unit.AcceptVisitor (visitor);
+				return visitor.endregion;
+			}
+			
+			protected override void VisitChildren (AstNode node)
+			{
+				if (endregion != null)
+					return;
+				if (!searchDirectives && !regionDirective.Ancestors.Any (a => a == node))
+					return;
+				base.VisitChildren (node);
 			}
 			
 			public override void VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective)
 			{
 				if (searchDirectives) {
-					if (preProcessorDirective.Type == PreProcessorDirectiveType.Region)
+					if (preProcessorDirective.Type == PreProcessorDirectiveType.Region) {
 						depth++;
-					if (preProcessorDirective.Type == PreProcessorDirectiveType.Endregion) {
+					} else if (preProcessorDirective.Type == PreProcessorDirectiveType.Endregion) {
 						depth--;
 						if (depth == 0) {
-							Endregion = preProcessorDirective;
+							endregion = preProcessorDirective;
 							searchDirectives = false;
 						}
 					}
-				}
-				
-				if (preProcessorDirective == startDirective) {
+				} else if (preProcessorDirective == regionDirective) {
 					searchDirectives = true;
 					depth = 1;
 				}
