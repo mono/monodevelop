@@ -479,7 +479,7 @@ namespace MonoDevelop.TypeSystem
 			TouchCache (cacheDir);
 			string fileName = Path.GetTempFileName ();
 			
-			SerializeObject (fileName, wrapper.Content);
+			SerializeObject (fileName, wrapper.Content.RemoveAssemblyReferences (wrapper.Content.AssemblyReferences));
 			
 			string cacheFile = Path.Combine (cacheDir, "completion.cache");
 			
