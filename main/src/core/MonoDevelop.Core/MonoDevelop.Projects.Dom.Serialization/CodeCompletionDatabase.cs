@@ -54,8 +54,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
 		static protected readonly int FORMAT_VERSION   = 86;
 		
-		ConcurrentDictionary<string, ClassEntry> typeEntries = new ConcurrentDictionary<string, ClassEntry> ();
-		ConcurrentDictionary<string, ClassEntry> typeEntriesIgnoreCase = new ConcurrentDictionary<string, ClassEntry> (StringComparer.InvariantCultureIgnoreCase);
+		Dictionary<string, ClassEntry> typeEntries = new Dictionary<string, ClassEntry> ();
+		Dictionary<string, ClassEntry> typeEntriesIgnoreCase = new Dictionary<string, ClassEntry> (StringComparer.InvariantCultureIgnoreCase);
 		
 		Dictionary<string, List<ClassEntry>> classEntries = new Dictionary<string, List<ClassEntry>> ();
 		Dictionary<string, List<ClassEntry>> classEntriesIgnoreCase = new Dictionary<string, List<ClassEntry>> (StringComparer.InvariantCultureIgnoreCase);
@@ -106,11 +106,11 @@ namespace MonoDevelop.Projects.Dom.Serialization
 			classEntriesIgnoreCase.Clear ();
 			namespaceEntries.Clear ();
 			namespaceEntriesIgnoreCase.Clear ();
-			namespaceEntriesIgnoreCase[""] = namespaceEntries[""] = new List<Namespace> ();
+			namespaceEntriesIgnoreCase [""] = namespaceEntries [""] = new List<Namespace> ();
 			foreach (ClassEntry ce in typeEntries.Values) {
 				if (!classEntries.ContainsKey (ce.Namespace))
-					classEntriesIgnoreCase[ce.Namespace] = classEntries[ce.Namespace] = new List<ClassEntry> ();
-				classEntries[ce.Namespace].Add (ce);
+					classEntriesIgnoreCase [ce.Namespace] = classEntries [ce.Namespace] = new List<ClassEntry> ();
+				classEntries [ce.Namespace].Add (ce);
 				AddNamespace (ce.Namespace);
 			}
 		}
@@ -303,24 +303,24 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					BinaryReader br = new BinaryReader (dataFileStream);
 					long indexOffset = br.ReadInt64 ();
 					dataFileStream.Position = indexOffset;
-
+					
 					object oo = bf.Deserialize (dataFileStream);
 					object[] data = (object[])oo;
 					Queue dataQueue = new Queue (data);
 					references = (List<ReferenceEntry>)dataQueue.Dequeue () ?? new List<ReferenceEntry> ();
 					KeyValuePair<string, ClassEntry>[] entries = (KeyValuePair<string, ClassEntry>[])dataQueue.Dequeue () ?? new KeyValuePair<string, ClassEntry>[0]; 
-					typeEntries = new ConcurrentDictionary<string, ClassEntry> (entries);
-					files = (Dictionary<string, FileEntry>) dataQueue.Dequeue () ?? new Dictionary<string, FileEntry> ();
-					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue () ?? new Hashtable ();
+					typeEntries = new Dictionary<string, ClassEntry> ();
+					foreach (var entry in entries)
+						typeEntries [entry.Key] = entry.Value;
+					files = (Dictionary<string, FileEntry>)dataQueue.Dequeue () ?? new Dictionary<string, FileEntry> ();
+					unresolvedSubclassTable = (Hashtable)dataQueue.Dequeue () ?? new Hashtable ();
 					
 					// Read the global attributes position
 					globalAttributesPosition = br.ReadInt64 ();
 					
 					DeserializeData (dataQueue);
 					UpdateClassEntries ();
-				}
-				catch (Exception ex)
-				{
+				} catch (Exception ex) {
 					OldPidbVersionException opvEx = ex as OldPidbVersionException;
 					if (opvEx != null)
 						LoggingService.LogWarning ("PIDB file '{0}' could not be loaded. Expected version {1}, found version {2}'. The file will be recreated.", dataFile, opvEx.ExpectedVersion, opvEx.FoundVersion);
@@ -353,7 +353,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' could not be deserialized: " + ex.Message);
 						}
 					}
-	/*				foreach (FileEntry fe in files.Values) {
+					/*				foreach (FileEntry fe in files.Values) {
 						foreach (ClassEntry ce in fe.ClassEntries) {
 							if (!classes.Contains (ce))
 								LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' from file '" + fe.FileName + "' not found in main index.");
@@ -363,15 +363,15 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					}
 					foreach (ClassEntry ce in classes)
 						LoggingService.LogWarning ("PIDB file verification failed. Class '" + ce.Name + "' not found in file index.");
-	*/			}
+	*/
+				}
 				
 				timer.Trace ("Notify tag changes");
 				// Update comments if needed...
 				CommentTagSet lastTags = new CommentTagSet (LastValidTaskListTokens);
 				if (!lastTags.Equals (ProjectDomService.SpecialCommentTags))
 					OnSpecialTagsChanged (null, null);
-			}
-			finally {
+			} finally {
 				timer.End ();
 			}
 		}
@@ -611,8 +611,12 @@ namespace MonoDevelop.Projects.Dom.Serialization
 
 		internal IEnumerable<ClassEntry> GetAllClasses ()
 		{
-			// ensure that the GetAllClasses methods is save of type entry changes
-			return this.typeEntries.Values.Where (ce => ce != null).ToArray ();
+			var entries = this.typeEntries.ToArray ();
+			foreach (var entry in entries) {
+				if (entry.Value == null)
+					continue;
+				yield return entry.Value;
+			}
 		}
 		
 		public void Flush ()
@@ -1042,9 +1046,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						classInfo.Removed.Add (ce.Class);
 						RemoveSubclassReferences (ce);
 						UnresolveSubclasses (ce);
-						ClassEntry value;
-						typeEntries.TryRemove (ce.Class.DecoratedFullName, out value);
-						typeEntriesIgnoreCase.TryRemove (ce.Class.DecoratedFullName, out value);
+						typeEntries.Remove (ce.Class.DecoratedFullName);
+						typeEntriesIgnoreCase.Remove (ce.Class.DecoratedFullName);
 						te++;
 					} else
 						ce.Class = c;
@@ -1133,9 +1136,8 @@ namespace MonoDevelop.Projects.Dom.Serialization
 									UnresolveSubclasses (ce);
 									res.Removed.Add (c);
 									string name = c.DecoratedFullName;
-									ClassEntry value;
-									typeEntries.TryRemove (name, out value);
-									typeEntriesIgnoreCase.TryRemove (name, out value);
+									typeEntries.Remove (name);
+									typeEntriesIgnoreCase.Remove (name);
 								}
 								SourceProjectDom.ResetInstantiatedTypes (c);
 							} else {
