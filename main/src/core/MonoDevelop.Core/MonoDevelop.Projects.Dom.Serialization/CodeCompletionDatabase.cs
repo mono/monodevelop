@@ -44,6 +44,7 @@ using Mono.Addins;
 using System.Reflection;
 using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core.Instrumentation;
+using System.Collections.Concurrent;
 
 namespace MonoDevelop.Projects.Dom.Serialization
 {
@@ -51,10 +52,10 @@ namespace MonoDevelop.Projects.Dom.Serialization
 	{
 		static protected readonly int MAX_ACTIVE_COUNT = 100;
 		static protected readonly int MIN_ACTIVE_COUNT = 10;
-		static protected readonly int FORMAT_VERSION   = 85;
+		static protected readonly int FORMAT_VERSION   = 86;
 		
-		Dictionary<string, ClassEntry> typeEntries = new Dictionary<string, ClassEntry> ();
-		Dictionary<string, ClassEntry> typeEntriesIgnoreCase = new Dictionary<string, ClassEntry> (StringComparer.InvariantCultureIgnoreCase);
+		ConcurrentDictionary<string, ClassEntry> typeEntries = new ConcurrentDictionary<string, ClassEntry> ();
+		ConcurrentDictionary<string, ClassEntry> typeEntriesIgnoreCase = new ConcurrentDictionary<string, ClassEntry> (StringComparer.InvariantCultureIgnoreCase);
 		
 		Dictionary<string, List<ClassEntry>> classEntries = new Dictionary<string, List<ClassEntry>> ();
 		Dictionary<string, List<ClassEntry>> classEntriesIgnoreCase = new Dictionary<string, List<ClassEntry>> (StringComparer.InvariantCultureIgnoreCase);
@@ -308,7 +309,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 					object[] data = (object[]) oo;
 					Queue dataQueue = new Queue (data);
 					references = (List<ReferenceEntry>) dataQueue.Dequeue () ?? new List<ReferenceEntry> ();
-					typeEntries = (Dictionary<string, ClassEntry>) dataQueue.Dequeue () ?? new Dictionary<string, ClassEntry> ();
+					typeEntries = (ConcurrentDictionary<string, ClassEntry>) dataQueue.Dequeue () ?? new ConcurrentDictionary<string, ClassEntry> ();
 					files = (Dictionary<string, FileEntry>) dataQueue.Dequeue () ?? new Dictionary<string, FileEntry> ();
 					unresolvedSubclassTable = (Hashtable) dataQueue.Dequeue () ?? new Hashtable ();
 					
@@ -1024,14 +1025,14 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public void RemoveFile (string fileName)
 		{
-			lock (rwlock)
-			{
+			lock (rwlock) {
 				TypeUpdateInformation classInfo = new TypeUpdateInformation ();
 				
 				FileEntry fe;
-				if (!files.TryGetValue (fileName, out fe)) return;
+				if (!files.TryGetValue (fileName, out fe))
+					return;
 				
-				int te=0, tc=0;
+				int te = 0, tc = 0;
 				
 				foreach (ClassEntry ce in fe.ClassEntries) {
 					LoadClass (ce);
@@ -1041,8 +1042,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 						classInfo.Removed.Add (ce.Class);
 						RemoveSubclassReferences (ce);
 						UnresolveSubclasses (ce);
-						typeEntries.Remove (ce.Class.DecoratedFullName);
-						typeEntriesIgnoreCase.Remove (ce.Class.DecoratedFullName);
+						ClassEntry value;
+						typeEntries.TryRemove (ce.Class.DecoratedFullName, out value);
+						typeEntriesIgnoreCase.TryRemove (ce.Class.DecoratedFullName, out value);
 						te++;
 					} else
 						ce.Class = c;
@@ -1064,8 +1066,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 		
 		public TypeUpdateInformation UpdateTypeInformation (IList<IType> newClasses, IEnumerable<IAttribute> fileAttributes, string fileName)
 		{
-			lock (rwlock)
-			{
+			lock (rwlock) {
 				TypeUpdateInformation res = new TypeUpdateInformation ();
 				FileEntry fe;
 				if (!files.TryGetValue (fileName, out fe))
@@ -1085,20 +1086,18 @@ namespace MonoDevelop.Projects.Dom.Serialization
 				// Update types
 				
 				bool[] added = new bool [newClasses.Count];
-				for (int n = 0; n < newClasses.Count; n++) {
-					((DomType)newClasses[n]).SourceProjectDom = sourceProjectDom;
+				for( int n = 0; n < newClasses.Count; n++) {
+					((DomType)newClasses [n]).SourceProjectDom = sourceProjectDom;
 				}
 				List<ClassEntry> newFileClasses = new List<ClassEntry> ();
-				if (fe != null)
-				{
-					foreach (ClassEntry ce in fe.ClassEntries)
-					{
+				if (fe != null) {
+					foreach (ClassEntry ce in fe.ClassEntries) {
 						IType newClass = null;
-						for (int n=0; n<newClasses.Count && newClass == null; n++) {
+						for( int n=0; n<newClasses.Count && newClass == null; n++) {
 							IType uc = newClasses [n];
-							if (uc.Name == ce.Name  && uc.TypeParameters.Count == ce.TypeParameterCount && uc.Namespace == ce.Namespace) {
+							if (uc.Name == ce.Name && uc.TypeParameters.Count == ce.TypeParameterCount && uc.Namespace == ce.Namespace) {
 								newClass = newClass == null ? uc : CompoundType.Merge (newClass, uc);
-								added[n] = true;
+								added [n] = true;
 							}
 						}
 						
@@ -1111,7 +1110,7 @@ namespace MonoDevelop.Projects.Dom.Serialization
 							ce.Class = tp != null ? CompoundType.Merge (tp, newClass) : newClass;
 							AddSubclassReferences (ce);
 							string name = ce.Class.DecoratedFullName;
-							typeEntriesIgnoreCase[name] = typeEntries[name] = ce;
+							typeEntriesIgnoreCase [name] = typeEntries [name] = ce;
 							ce.LastGetTime = currentGetTime++;
 							newFileClasses.Add (ce);
 							res.Modified.Add (ce.Class);
@@ -1134,8 +1133,9 @@ namespace MonoDevelop.Projects.Dom.Serialization
 									UnresolveSubclasses (ce);
 									res.Removed.Add (c);
 									string name = c.DecoratedFullName;
-									typeEntries.Remove (name);
-									typeEntriesIgnoreCase.Remove (name);
+									ClassEntry value;
+									typeEntries.TryRemove (name, out value);
+									typeEntriesIgnoreCase.TryRemove (name, out value);
 								}
 								SourceProjectDom.ResetInstantiatedTypes (c);
 							} else {
