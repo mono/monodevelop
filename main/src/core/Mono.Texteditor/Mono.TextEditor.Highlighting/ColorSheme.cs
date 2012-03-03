@@ -801,7 +801,6 @@ namespace Mono.TextEditor.Highlighting
 		{
 			ColorSheme clone = (ColorSheme)MemberwiseClone ();
 			clone.styleLookupTable = new Dictionary<string, ChunkStyle> (styleLookupTable);
-			clone.customPalette = new Dictionary<string, string> (customPalette);
 			return clone;
 		}
 		
