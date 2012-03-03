@@ -807,7 +807,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		SyntaxMode DeepCopy (Document doc, SyntaxMode mode)
 		{
-			SyntaxMode newMode = new SyntaxMode (doc);
+			var newMode = new SyntaxMode (doc);
 			
 			newMode.MimeType = mode.MimeType;
 			newMode.spans = new Span[mode.Spans.Length];
@@ -837,10 +837,13 @@ namespace Mono.TextEditor.Highlighting
 		{
 			Rule newRule = new Rule (mode);
 			newRule.spans = new Span[rule.Spans.Length];
-			for( int i = 0; i < rule.Spans.Length; i++) {
+			for (int i = 0; i < rule.Spans.Length; i++) {
 				newRule.spans [i] = rule.Spans [i].Clone ();
 			}
-			
+			newRule.Delimiter = rule.Delimiter;
+			newRule.IgnoreCase = rule.IgnoreCase;
+			newRule.Name = rule.Name;
+			newRule.DefaultColor = rule.DefaultColor;
 			newRule.matches = rule.Matches;
 			newRule.prevMarker = rule.PrevMarker;
 			newRule.keywords = rule.keywords;

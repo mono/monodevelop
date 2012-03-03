@@ -81,7 +81,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string Name {
 			get;
-			protected set;
+			internal protected set;
 		}
 		
 		public IEnumerable<Keywords> Keywords {
@@ -110,12 +110,12 @@ namespace Mono.TextEditor.Highlighting
 		
 		public bool IgnoreCase {
 			get;
-			protected set;
+			internal protected set;
 		}
 		
 		public string DefaultColor {
 			get;
-			protected set;
+			internal protected set;
 		}
 		
 		string delimiter;
@@ -123,7 +123,7 @@ namespace Mono.TextEditor.Highlighting
 			get { 
 				return string.IsNullOrEmpty (delimiter) ? mode.Delimiter : delimiter; 
 			}
-			protected set { delimiter = value; }
+			internal protected set { delimiter = value; }
 		}
 
 		public Marker[] PrevMarker {

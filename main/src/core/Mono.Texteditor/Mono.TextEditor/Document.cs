@@ -76,7 +76,8 @@ namespace Mono.TextEditor
 				if (syntaxMode != null)
 					syntaxMode.Document = null;
 				syntaxMode = value;
-				syntaxMode.Document = this;
+				if (syntaxMode != null)
+					syntaxMode.Document = this;
 				UpdateHighlighting ();
 			}
 		}

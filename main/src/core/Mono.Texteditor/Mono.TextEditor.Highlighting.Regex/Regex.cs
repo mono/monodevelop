@@ -11,10 +11,22 @@ namespace Mono.TextEditor.Highlighting
 		}
 		string[] patterns;
 		
+		Regex ()
+		{
+		}
+		
 		public Regex (string pattern)
 		{
 			this.Pattern = pattern;
 			this.patterns = pattern.Split ('|');
+		}
+		
+		public Regex Clone ()
+		{
+			var newRegex = new Regex ();
+			newRegex.Pattern = Pattern;
+			newRegex.patterns = patterns;
+			return newRegex;
 		}
 		
 		public RegexMatch TryMatch (string doc, int offset)
