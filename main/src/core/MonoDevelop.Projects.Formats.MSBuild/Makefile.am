@@ -1,5 +1,8 @@
 FILES =  \
 	AssemblyInfo.cs \
+	AssemblyInfo.v2.0.cs \
+	AssemblyInfo.v3.5.cs \
+	AssemblyInfo.v4.0.cs \
 	Main.cs \
 	MonoDevelop.Projects.Formats.MSBuild/BuildEngine.cs \
 	MonoDevelop.Projects.Formats.MSBuild/ConsoleLogger.cs \
