@@ -799,7 +799,10 @@ namespace Mono.TextEditor.Highlighting
 		
 		public ColorSheme Clone ()
 		{
-			return (ColorSheme)MemberwiseClone ();
+			ColorSheme clone = (ColorSheme)MemberwiseClone ();
+			clone.styleLookupTable = new Dictionary<string, ChunkStyle> (styleLookupTable);
+			clone.customPalette = new Dictionary<string, string> (customPalette);
+			return clone;
 		}
 		
 		public virtual void UpdateFromGtkStyle (Gtk.Style style)
