@@ -89,18 +89,18 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			public string GetStyle (Chunk chunk, ref int endOffset)
 			{
-				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault (s => s.Offset == chunk.Offset && s.EndOffset == chunk.EndOffset);
+				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault (s => s.Offset == chunk.Offset);
 				if (segment == null)
 					return null;
 				endOffset = segment.EndOffset;
 				return segment.Style;
 			}
 			
-			public void AddStyle (Chunk chunk, string style)
+			public void AddStyle (int startOffset, int endOffset, string style)
 			{
 				if (IsDirty)
 					return;
-				Add (new StyledTreeSegment (chunk.Offset, chunk.Length, style));
+				Add (new StyledTreeSegment (startOffset, endOffset - startOffset, style));
 			}
 		}
 		
@@ -378,7 +378,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (style == null && !csharpSyntaxMode.highlightedSegmentCache.IsDirty) {
 					style = GetSemanticStyleFromAst (parsedDocument, chunk, ref endOffset);
 					if (style != null)
-						csharpSyntaxMode.highlightedSegmentCache.AddStyle (chunk, style);
+						csharpSyntaxMode.highlightedSegmentCache.AddStyle (chunk.Offset, endOffset, style);
 				}
 				return style;
 			}
