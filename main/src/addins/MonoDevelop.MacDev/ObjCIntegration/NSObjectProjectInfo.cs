@@ -77,7 +77,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		{
 			if (!needsUpdating)
 				return;
-			foreach (var r in dom.GetReferencedProjects (dom.Project)) {
+			foreach (DotNetProject r in dom.GetReferencedProjects ((DotNetProject)dom.Project)) {
 				var info = infoService.GetProjectInfo (r);
 				if (info != null)
 					info.Update ();
