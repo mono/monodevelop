@@ -79,6 +79,7 @@ FILES =  \
 	MonoDevelop.Core.FileSystem/UnixFileSystemExtension.cs \
 	MonoDevelop.Core.Instrumentation/Counter.cs \
 	MonoDevelop.Core.Instrumentation/CounterCategory.cs \
+	MonoDevelop.Core.Instrumentation/IInstrumentationConsumer.cs \
 	MonoDevelop.Core.Instrumentation/InstrumentationService.cs \
 	MonoDevelop.Core.Instrumentation/MemoryProbe.cs \
 	MonoDevelop.Core.Instrumentation/TimeCounter.cs \

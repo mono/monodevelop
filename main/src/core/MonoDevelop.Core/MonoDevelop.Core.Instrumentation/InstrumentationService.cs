@@ -40,6 +40,7 @@ using System.Threading;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using MonoDevelop.Core.Execution;
+using Mono.Addins;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -53,12 +54,54 @@ namespace MonoDevelop.Core.Instrumentation
 		static Thread autoSaveThread;
 		static bool stopping;
 		static int autoSaveInterval;
+		static List<IInstrumentationConsumer> handlers = new List<IInstrumentationConsumer> ();
+		static bool handlersLoaded;
 		
 		static InstrumentationService ()
 		{
 			counters = new Dictionary <string, Counter> ();
 			categories = new List<CounterCategory> ();
 			startTime = DateTime.Now;
+		}
+		
+		static void InitializeHandlers ()
+		{
+			if (!handlersLoaded && AddinManager.IsInitialized) {
+				lock (counters) {
+					handlersLoaded = true;
+					AddinManager.AddExtensionNodeHandler (typeof(IInstrumentationConsumer), HandleInstrumentationHandlerExtension);
+				}
+			}
+		}
+		
+		static void UpdateCounterStatus ()
+		{
+			lock (counters) {
+				foreach (var c in counters.Values)
+					c.UpdateStatus ();
+			}
+		}
+		
+		static void HandleInstrumentationHandlerExtension (object sender, ExtensionNodeEventArgs args)
+		{
+			var handler = (IInstrumentationConsumer)args.ExtensionObject;
+			if (args.Change == ExtensionChange.Add) {
+				handlers.Add (handler);
+				lock (counters) {
+					foreach (var c in counters.Values) {
+						if (handler.SupportsCounter (c))
+							c.Handlers.Add (handler);
+					}
+				}
+			}
+			else {
+				handlers.Remove (handler);
+				lock (counters) {
+					foreach (var c in counters.Values)
+						c.Handlers.Remove (handler);
+				}
+			}
+			UpdateCounterStatus ();
 		}
 		
 		public static int PublishService ()
@@ -156,7 +199,10 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public static bool Enabled {
 			get { return enabled; }
-			set { enabled = value; }
+			set {
+				enabled = value;
+				UpdateCounterStatus ();
+			}
 		}
 		
 		public static DateTime StartTime {
@@ -180,6 +226,8 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		static Counter CreateCounter (string name, string category, bool logMessages, bool isTimer)
 		{
+			InitializeHandlers ();
+			
 			if (category == null)
 				category = "Global";
 				
@@ -198,6 +246,13 @@ namespace MonoDevelop.Core.Instrumentation
 				if (counters.TryGetValue (name, out old))
 					old.Disposed = true;
 				counters [name] = c;
+				
+				foreach (var h in handlers) {
+					if (h.SupportsCounter (c))
+						c.Handlers.Add (h);
+				}
+				c.UpdateStatus ();
+				
 				return c;
 			}
 		}

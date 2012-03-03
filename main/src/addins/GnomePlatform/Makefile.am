@@ -2,9 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 ASSEMBLY = $(ADDIN_BUILD)/GnomePlatform.dll
 
-DEPS =  \
-	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
+DEPS = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 REFS =  \
 	$(GCONF_SHARP_LIBS) \
@@ -12,6 +10,7 @@ REFS =  \
 	$(GNOME_SHARP_LIBS) \
 	$(GNOME_VFS_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:System
 
 FILES =  \

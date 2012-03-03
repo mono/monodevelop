@@ -1508,6 +1508,8 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ExportSolutionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
     <Compile Include="MonoDevelop.TypeSystem\MonoDocDocumentationProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\ServiceUrlExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide\ProjectCreatedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -81,7 +81,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			var dom = TypeSystemService.GetProjectContentWrapper (project);
 			if (dom == null)
 				return null;
-			TypeSystemService.ForceUpdate (dom);
 			project.ReferenceAddedToProject += HandleDomReferencesUpdated;
 			project.ReferenceRemovedFromProject += HandleDomReferencesUpdated;
 			return GetProjectInfo (dom, lookinAssembly);

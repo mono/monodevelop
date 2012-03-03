@@ -7,10 +7,11 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll
 
-REFS = -r:System
+REFS =  \
+	-r:../../../../build/bin/MonoDevelop.Ide.dll \
+	-r:System
 
 FILES = CSharpAutotoolsSetup.cs
 

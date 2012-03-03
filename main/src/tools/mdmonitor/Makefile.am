@@ -34,15 +34,14 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
 	-r:System.Xml
 
-DEPS =  \
-	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
+DEPS = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)

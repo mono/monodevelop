@@ -1,10 +1,10 @@
 // 
-// AssemblyInfo.cs
+// IInstrumentationConsumer.cs
 //  
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+//       Lluis Sanchez <lluis@xamarin.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using System;
 
-// Information about this assembly is defined by the following attributes. 
-// Change them to the values specific to your project.
+namespace MonoDevelop.Core.Instrumentation
+{
+	[Mono.Addins.TypeExtensionPoint]
+	public interface IInstrumentationConsumer
+	{
+		bool SupportsCounter (Counter counter);
+		void ConsumeValue (Counter counter, CounterValue value);
+	}
+}
 
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
-// The form "{Major}.{Minor}.*" will automatically update the build and revision,
-// and "{Major}.{Minor}.{Build}.*" will update just the revision.
-
-[assembly: AssemblyVersion("1.0.0.0")]
-
-// The following attributes are used to specify the signing key for the assembly, 
-// if desired. See the Mono documentation for more information about signing.
-
-//[assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("")]

@@ -8,14 +8,14 @@ DEPS =  \
 	../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
 	../../../build/bin/ICSharpCode.NRefactory.dll \
 	../../../build/bin/Mono.TextEditor.dll \
-	../../../build/bin/MonoDevelop.Core.dll \
-	../../../build/bin/MonoDevelop.Ide.dll
+	../../../build/bin/MonoDevelop.Core.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	-r:../../../../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll \
+	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \

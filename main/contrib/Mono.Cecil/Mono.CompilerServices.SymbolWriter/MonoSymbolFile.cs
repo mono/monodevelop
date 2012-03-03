@@ -485,7 +485,7 @@ namespace Mono.CompilerServices.SymbolWriter
 
 		public static MonoSymbolFile ReadSymbolFile (string mdbFilename)
 		{
-			return new MonoSymbolFile (mdbFilename, null);
+			return new MonoSymbolFile (mdbFilename);
 		}
 
 		public int CompileUnitCount {

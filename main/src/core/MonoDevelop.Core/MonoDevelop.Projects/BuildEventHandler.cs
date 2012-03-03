@@ -42,6 +42,10 @@ namespace MonoDevelop.Projects
 		{
 			this.monitor = monitor;
 			this.success = success;
+			this.WarningCount = -1;
+			this.ErrorCount = -1;
+			this.BuildCount = -1;
+			this.FailedBuildCount = -1;
 		}
 		
 		public IProgressMonitor ProgressMonitor {
@@ -50,6 +54,26 @@ namespace MonoDevelop.Projects
 		
 		public bool Success {
 			get { return success; }
+		}
+		
+		public int WarningCount {
+			get; set;
+		}
+		
+		public int ErrorCount {
+			get; set;
+		}
+		
+		public int BuildCount {
+			get; set;
+		}
+		
+		public int FailedBuildCount {
+			get; set;
+		}
+		
+		public SolutionItem SolutionItem {
+			get; set;
 		}
 	}
 }
