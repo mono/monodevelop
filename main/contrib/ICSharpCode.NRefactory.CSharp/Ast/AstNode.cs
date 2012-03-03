@@ -662,11 +662,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Returns true, if the given coordinates are in the node.
 		/// </summary>
 		/// <returns>
-		/// True, if location is between StartLocation and EndLocation (inclusive); otherwise, false.
+		/// True, if location is between StartLocation and EndLocation (exclusive); otherwise, false.
 		/// </returns>
 		public bool Contains (TextLocation location)
 		{
-			return this.StartLocation <= location && location <= this.EndLocation;
+			return this.StartLocation <= location && location < this.EndLocation;
 		}
 		
 		public override void AddAnnotation (object annotation)
