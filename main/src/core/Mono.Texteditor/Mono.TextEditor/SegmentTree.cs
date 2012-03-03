@@ -44,6 +44,11 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public bool IsDirty {
+			get;
+			set;
+		}
+		
 		public IEnumerable<T> Segments {
 			get {
 				var root = tree.Root;
@@ -66,9 +71,16 @@ namespace Mono.TextEditor
 		{
 			doc.TextReplaced -= UpdateOnTextReplace;
 		}
-
+		
+		public void Clear ()
+		{
+			IsDirty = false;
+			tree.Clear ();
+		}
+		
 		public void UpdateOnTextReplace (object sender, ReplaceEventArgs e)
 		{
+			IsDirty = true;
 			if (e.Count == 0) {
 				var length = (e.Value != null ? e.Value.Length : 0);
 				foreach (var segment in GetSegmentsAt (e.Offset).Where (s => s.Offset < e.Offset && e.Offset < s.EndOffset)) {

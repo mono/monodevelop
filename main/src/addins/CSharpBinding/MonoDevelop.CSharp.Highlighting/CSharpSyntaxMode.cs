@@ -68,9 +68,70 @@ namespace MonoDevelop.CSharp.Highlighting
 	
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
+		MonoDevelop.Ide.Gui.Document guiDocument;
+		CompilationUnit unit;
+		CSharpParsedFile parsedFile;
+		
+		internal class StyledTreeSegment : TreeSegment
+		{
+			public string Style {
+				get;
+				private set;
+			}
+			
+			public StyledTreeSegment (int offset, int length, string style) : base (offset, length)
+			{
+				this.Style = style;
+			}
+		}
+		
+		class HighlightingSegmentTree : SegmentTree<StyledTreeSegment>
+		{
+			public string GetStyle (Chunk chunk, ref int endOffset)
+			{
+				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault (s => s.Offset == chunk.Offset && s.EndOffset == chunk.EndOffset);
+				if (segment == null)
+					return null;
+				endOffset = segment.EndOffset;
+				return segment.Style;
+			}
+			
+			public void AddStyle (Chunk chunk, string style)
+			{
+				if (IsDirty)
+					return;
+				Add (new StyledTreeSegment (chunk.Offset, chunk.Length, style));
+			}
+		}
+		
+		HighlightingSegmentTree highlightedSegmentCache = new HighlightingSegmentTree ();
+		
 		public bool DisableConditionalHighlighting {
 			get;
 			set;
+		}
+		
+		protected override void OnDocumentSet (EventArgs e)
+		{
+			if (guiDocument != null) {
+				guiDocument.DocumentParsed -= HandleDocumentParsed;
+				highlightedSegmentCache.RemoveListener (guiDocument.Editor.Document);
+			}
+			guiDocument = null;
+			
+			base.OnDocumentSet (e);
+		}
+		
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			highlightedSegmentCache.Clear ();
+			if (guiDocument != null) {
+				var parsedDocument = guiDocument.ParsedDocument;
+				if (parsedDocument != null) {
+					unit = parsedDocument.GetAst<CompilationUnit> ();
+					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+				}
+			}
 		}
 		
 		static CSharpSyntaxMode ()
@@ -81,7 +142,6 @@ namespace MonoDevelop.CSharp.Highlighting
 					TextEditorData data = doc.Editor;
 					if (data == null)
 						continue;
-					Mono.TextEditor.Document document = data.Document;
 					doc.ReparseDocument ();
 				}
 			};
@@ -117,14 +177,33 @@ namespace MonoDevelop.CSharp.Highlighting
 			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
 		}
 		
+		void EnsureGuiDocument ()
+		{
+			if (guiDocument != null)
+				return;
+			try {
+				if (File.Exists (Document.FileName))
+					guiDocument = IdeApp.Workbench.GetDocument (Document.FileName);
+			} catch (Exception) {
+				guiDocument = null;
+			}
+			if (guiDocument != null) {
+				guiDocument.DocumentParsed += HandleDocumentParsed;
+				highlightedSegmentCache = new HighlightingSegmentTree ();
+				highlightedSegmentCache.InstallListener (guiDocument.Editor.Document);
+			}
+		}
+		
 		public override SpanParser CreateSpanParser (LineSegment line, CloneableStack<Span> spanStack)
 		{
-			return new CSharpSpanParser (doc, this, spanStack ?? line.StartSpan.Clone ());
+			EnsureGuiDocument ();
+			return new CSharpSpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 		
 		public override ChunkParser CreateChunkParser (SpanParser spanParser, ColorSheme style, LineSegment line)
 		{
-			return new CSharpChunkParser (doc, this, spanParser, style, line);
+			EnsureGuiDocument ();
+			return new CSharpChunkParser (this, spanParser, style, line);
 		}
 		
 		abstract class AbstractBlockSpan : Span
@@ -203,8 +282,6 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected class CSharpChunkParser : ChunkParser, IResolveVisitorNavigator
 		{
 			HashSet<string> tags = new HashSet<string> ();
-			MonoDevelop.Ide.Gui.Document document;
-			CompilationUnit unit;
 			static HashSet<string> contextualKeywords = new HashSet<string> ();
 			
 			static CSharpChunkParser ()
@@ -258,25 +335,16 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}*/
 			CSharpAstResolver visitor;
+			CSharpSyntaxMode csharpSyntaxMode;
 			
-			public CSharpChunkParser (Mono.TextEditor.Document doc, SyntaxMode mode, SpanParser spanParser, ColorSheme style, LineSegment line) : base (doc, mode, spanParser, style, line)
+			public CSharpChunkParser (CSharpSyntaxMode csharpSyntaxMode, SpanParser spanParser, ColorSheme style, LineSegment line) : base (csharpSyntaxMode, spanParser, style, line)
 			{
-				try {
-					if (File.Exists (doc.FileName))
-						document = IdeApp.Workbench.GetDocument (doc.FileName);
-				} catch (Exception) {
-					document = null;
-				}
-				
+				this.csharpSyntaxMode = csharpSyntaxMode;
 				foreach (var tag in CommentTag.SpecialCommentTags) {
 					tags.Add (tag.Tag);
 				}
-				if (document != null && document.ParsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
-					unit = document.ParsedDocument.GetAst<CompilationUnit> ();
-					var parsedFile = document.ParsedDocument.ParsedFile as CSharpParsedFile;
-					if (unit != null && parsedFile != null)
-						visitor = new CSharpAstResolver (document.Compilation, unit, parsedFile);
-				}
+				if (csharpSyntaxMode.unit != null && csharpSyntaxMode.parsedFile != null)
+					visitor = new CSharpAstResolver (csharpSyntaxMode.guiDocument.Compilation, csharpSyntaxMode.unit, csharpSyntaxMode.parsedFile);
 			}
 			
 			#region IResolveVisitorNavigator implementation
@@ -306,8 +374,21 @@ namespace MonoDevelop.CSharp.Highlighting
 			#endregion
 			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
 			{
+				string style = csharpSyntaxMode.highlightedSegmentCache.GetStyle (chunk, ref endOffset);
+				if (style == null && !csharpSyntaxMode.highlightedSegmentCache.IsDirty) {
+					style = GetSemanticStyleFromAst (parsedDocument, chunk, ref endOffset);
+					if (style != null)
+						csharpSyntaxMode.highlightedSegmentCache.AddStyle (chunk, style);
+				}
+				return style;
+			}
+			
+			string GetSemanticStyleFromAst (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
+			{
+				var unit = csharpSyntaxMode.unit;
 				if (unit == null || visitor == null)
 					return null;
+				
 				var loc = doc.OffsetToLocation (chunk.Offset);
 				var node = unit.GetNodeAt (new TextLocation (loc.Line, loc.Column), n => n is Identifier || n is AstType);
 				
@@ -419,6 +500,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			protected override void AddRealChunk (Chunk chunk)
 			{
+				var document = csharpSyntaxMode.guiDocument;
 				var parsedDocument = document != null ? document.ParsedDocument : null;
 				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
 					int endLoc = -1;
@@ -736,7 +818,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	//		Span preprocessorSpan;
 	//		Rule preprocessorRule;
 			
-			public CSharpSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, CloneableStack<Span> spanStack) : base (doc, mode, spanStack)
+			public CSharpSpanParser (CSharpSyntaxMode mode, CloneableStack<Span> spanStack) : base (mode, spanStack)
 			{
 //				foreach (Span span in mode.Spans) {
 //					if (span.Rule == "text.preprocessor") {

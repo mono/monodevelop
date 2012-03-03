@@ -45,11 +45,22 @@ namespace Mono.TextEditor.Highlighting
 			}
 			set {
 				doc = value;
+				OnDocumentSet (EventArgs.Empty);
 			}
-		}		
+		}
+		
+		public event EventHandler DocumentSet;
+		
+		protected virtual void OnDocumentSet (EventArgs e)
+		{
+			EventHandler handler = this.DocumentSet;
+			if (handler != null)
+				handler (this, e);
+		}	
 		
 		internal protected List<Rule> rules = new List<Rule> ();
-
+		
+	
 		public string MimeType {
 			get;
 			internal set;
@@ -233,12 +244,12 @@ namespace Mono.TextEditor.Highlighting
 
 		public virtual SpanParser CreateSpanParser (LineSegment line, CloneableStack<Span> spanStack)
 		{
-			return new SpanParser (doc, this, spanStack ?? line.StartSpan.Clone ());
+			return new SpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 
 		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, ColorSheme style, LineSegment line)
 		{
-			return new ChunkParser (doc, this, spanParser, style, line);
+			return new ChunkParser (this, spanParser, style, line);
 		}
 
 		public class SpanParser
@@ -293,11 +304,11 @@ namespace Mono.TextEditor.Highlighting
 				return result;
 			}
 
-			public SpanParser (Document doc, SyntaxMode mode, CloneableStack<Span> spanStack)
+			public SpanParser (SyntaxMode mode, CloneableStack<Span> spanStack)
 			{
-				if (doc == null)
-					throw new ArgumentNullException ("doc");
-				this.doc  = doc;
+				if (mode == null)
+					throw new ArgumentNullException ("mode");
+				this.doc  = mode.Document;
 				this.mode = mode;
 				this.SpanStack = spanStack;
 				this.CurRule = mode;
@@ -489,10 +500,10 @@ namespace Mono.TextEditor.Highlighting
 			internal int lineOffset;
 			protected SyntaxMode mode;
 
-			public ChunkParser (Document doc, SyntaxMode mode, SpanParser spanParser, ColorSheme style, LineSegment line)
+			public ChunkParser (SyntaxMode mode, SpanParser spanParser, ColorSheme style, LineSegment line)
 			{
 				this.mode = mode;
-				this.doc = doc;
+				this.doc = mode.Document;
 				this.line = line;
 				this.lineOffset = line.Offset;
 				this.spanParser = spanParser;
