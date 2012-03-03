@@ -156,6 +156,15 @@ namespace MonoDevelop.CSharp.Highlighting
 			e.Document.Editor.Document.CommitUpdateAll ();
 		}
 		
+		Dictionary<string, string> contextualHighlightKeywords = new Dictionary<string, string> ();
+		static readonly string[] contextualHighlightKeywordList = new string[] {
+			"value"
+		};
+		
+		static HashSet<string> contextualDehighlightKeywordList = new HashSet<string> (new string[] {
+			"get", "set", "add", "remove", "var", "global", "partial", "where"
+		});
+		
 		public CSharpSyntaxMode ()
 		{
 			var provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
@@ -170,6 +179,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				this.keywordTable = baseMode.keywordTable;
 				this.keywordTableIgnoreCase = baseMode.keywordTableIgnoreCase;
 				this.properties = baseMode.Properties;
+			}
+			
+			foreach (var word in contextualHighlightKeywordList) {
+				contextualHighlightKeywords[word] = keywordTable[word].Color;
+				keywordTable.Remove (word);
 			}
 			
 			AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
@@ -282,23 +296,6 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected class CSharpChunkParser : ChunkParser, IResolveVisitorNavigator
 		{
 			HashSet<string> tags = new HashSet<string> ();
-			static HashSet<string> contextualKeywords = new HashSet<string> ();
-			
-			static CSharpChunkParser ()
-			{
-				contextualKeywords.Add ("get");
-				contextualKeywords.Add ("set");
-				contextualKeywords.Add ("value");
-				
-				contextualKeywords.Add ("add");
-				contextualKeywords.Add ("remove");
-				
-				contextualKeywords.Add ("var");
-				
-				contextualKeywords.Add ("where");
-				contextualKeywords.Add ("global");
-				contextualKeywords.Add ("partial");
-			}
 			/*
 			sealed class SemanticResolveVisitorNavigator : IResolveVisitorNavigator
 			{
@@ -390,20 +387,36 @@ namespace MonoDevelop.CSharp.Highlighting
 					return null;
 				
 				var loc = doc.OffsetToLocation (chunk.Offset);
-				var node = unit.GetNodeAt (new TextLocation (loc.Line, loc.Column), n => n is Identifier || n is AstType);
+				var node = unit.GetNodeAt (new TextLocation (loc.Line, loc.Column), n => n is Identifier || n is AstType || n is CSharpTokenNode);
+				var word = wordbuilder.ToString ();
+				string color;
+				if (csharpSyntaxMode.contextualHighlightKeywords.TryGetValue (word, out color)) {
+					if (node == null)
+						return null;
+					switch (word) {
+					case "value":
+						// highlight 'value' in property setters and event add/remove
+						var n = node.Parent;
+						while (n != null) {
+							if (n is Accessor && n.Role == PropertyDeclaration.SetterRole) {
+								endOffset = chunk.Offset + "value".Length;
+								return color;
+							}
+							n = n.Parent;
+						}
+						return null;
+					}
+					endOffset = chunk.Offset + word.Length;
+					if (node is CSharpTokenNode)
+						return color;
+					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
+				}
 				
-				if (contextualKeywords.Contains (wordbuilder.ToString ())) {
+				if (contextualDehighlightKeywordList.Contains (word)) {
+					if (node == null)
+						return null;
 					if (node is Identifier) {
 						switch (((Identifier)node).Name) {
-						case "value":
-							// highlight 'value' in property setters and event add/remove
-							var n = node.Parent;
-							while (n != null) {
-								if (n is Accessor && n.Role != PropertyDeclaration.GetterRole)
-									return null;
-								n = n.Parent;
-							}
-							break;
 						case "var": 
 							if (node.Parent != null) {
 								var vds = node.Parent.Parent as VariableDeclarationStatement;
@@ -411,12 +424,12 @@ namespace MonoDevelop.CSharp.Highlighting
 									vds != null && node.StartLocation == vds.Type.StartLocation)
 									return null;
 							}
-							break;
+							endOffset = chunk.Offset + "var".Length;
+							return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
 						}
-					}
-					if (node == null)
-						return null;
-					endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+					} else if (node is CSharpTokenNode)
+						return color;
+					endOffset = chunk.Offset + word.Length;
 					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
 				}
 				
@@ -426,8 +439,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						
 						var result = visitor.Resolve (st);
 						
-						if (result is TypeResolveResult && st.IdentifierToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
-							endOffset = doc.LocationToOffset (st.IdentifierToken.EndLocation.Line, st.IdentifierToken.EndLocation.Column);
+						if (result is TypeResolveResult && st.IdentifierToken.Contains (loc) && unit.GetNodeAt<UsingDeclaration> (loc) == null) {
+							endOffset = chunk.Offset + st.Identifier.Length;
 							return "keyword.semantic.type";
 						}
 						return null;
@@ -437,8 +450,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						
 						var result = visitor.Resolve (mt);
 						
-						if (result is TypeResolveResult && mt.MemberNameToken.Contains (loc.Line, loc.Column) && unit.GetNodeAt<UsingDeclaration> (loc.Line, loc.Column) == null) {
-							endOffset = doc.LocationToOffset (mt.MemberNameToken.EndLocation.Line, mt.MemberNameToken.EndLocation.Column);
+						if (result is TypeResolveResult && mt.MemberNameToken.Contains (loc) && unit.GetNodeAt<UsingDeclaration> (loc) == null) {
+							endOffset = chunk.Offset + mt.MemberName.Length;
 							return "keyword.semantic.type";
 						}
 						return null;
@@ -446,28 +459,29 @@ namespace MonoDevelop.CSharp.Highlighting
 					
 					if (node is Identifier) {
 						if (node.Parent is TypeDeclaration && node.Role == TypeDeclaration.Roles.Identifier) {
-							endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+							endOffset = chunk.Offset + ((Identifier)node).Name.Length;
 							return "keyword.semantic.type";
 						}
 						
 						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration || node.Parent is FixedVariableInitializer /*|| node.Parent is EnumMemberDeclaration*/) {
-							endOffset = doc.LocationToOffset (node.EndLocation.Line, node.EndLocation.Column);
+							endOffset = chunk.Offset + ((Identifier)node).Name.Length;
 							return "keyword.semantic.field";
 						}
 					}
+					
 					var id = node as IdentifierExpression;
 					if (id != null) {
 						var result = visitor.Resolve (id);
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
 							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
-								endOffset = doc.LocationToOffset (id.EndLocation.Line, id.EndLocation.Column);
+								endOffset = chunk.Offset + id.Identifier.Length;
 								return "keyword.semantic.field";
 							}
 						}
 						if (result is TypeResolveResult) {
 							if (!result.IsError) {
-								endOffset = doc.LocationToOffset (id.EndLocation.Line, id.EndLocation.Column);
+								endOffset = chunk.Offset + id.Identifier.Length;
 								return "keyword.semantic.type";
 							}
 						}
@@ -482,13 +496,13 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
 							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
-								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
+								endOffset = chunk.Offset + memberReferenceExpression.MemberName.Length;
 								return "keyword.semantic.field";
 							}
 						}
 						if (result is TypeResolveResult) {
 							if (!result.IsError) {
-								endOffset = doc.LocationToOffset (memberReferenceExpression.MemberNameToken.EndLocation.Line, memberReferenceExpression.MemberNameToken.EndLocation.Column);
+								endOffset = chunk.Offset + memberReferenceExpression.MemberName.Length;
 								return "keyword.semantic.type";
 							}
 						}
