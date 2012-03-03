@@ -62,6 +62,7 @@ namespace Mono.Debugging.Soft
 		bool autoStepInto;
 		internal int StackVersion;
 		StepEventRequest currentStepRequest;
+		long currentAddress = -1;
 		ExceptionEventRequest unhandledExceptionRequest;
 		string remoteProcessName;
 		Dictionary<long,long> localThreadIds = new Dictionary<long, long> ();
@@ -1159,6 +1160,7 @@ namespace Mono.Debugging.Soft
 			bool resume = true;
 			bool steppedOut = false;
 			bool steppedInto = false;
+			bool redoCurrentStep = false;
 			ObjectMirror exception = null;
 			TargetEventType etype = TargetEventType.TargetStopped;
 			BreakEvent breakEvent = null;
@@ -1179,15 +1181,21 @@ namespace Mono.Debugging.Soft
 			else {
 				//always need to evaluate all breakpoints, some might be tracepoints or conditional bps with counters
 				foreach (Event e in es) {
-					var be = e as BreakpointEvent;
-					if (be != null) {
+					if (e.EventType == EventType.Breakpoint) {
+						var be = e as BreakpointEvent;
+						BreakInfo binfo;
+						
 						if (!HandleBreakpoint (e.Thread, be.Request)) {
 							etype = TargetEventType.TargetHitBreakpoint;
-							BreakInfo binfo;
-							if (breakpoints.TryGetValue (be.Request, out binfo))
-								breakEvent = binfo.BreakEvent;
 							autoStepInto = false;
 							resume = false;
+						}
+						
+						if (breakpoints.TryGetValue (be.Request, out binfo)) {
+							if (binfo.Location.ILOffset == currentAddress && e.Thread.Id == currentStepRequest.Thread.Id)
+								redoCurrentStep = true;
+							
+							breakEvent = binfo.BreakEvent;
 						}
 					} else if (e.EventType == EventType.Step) {
 						var stepRequest = e.Request as StepEventRequest;
@@ -1205,7 +1213,16 @@ namespace Mono.Debugging.Soft
 				}
 			}
 			
-			if (resume) {
+			if (redoCurrentStep) {
+				StepDepth depth = currentStepRequest.Depth;
+				StepSize size = currentStepRequest.Size;
+				
+				current_thread = recent_thread = es[0].Thread;
+				currentStepRequest.Enabled = false;
+				currentStepRequest = null;
+				
+				Step (depth, size);
+			} else if (resume) {
 				//all breakpoints were conditional and evaluated as false
 				vm.Resume ();
 				DequeueEventsForFirstThread ();
@@ -1223,10 +1240,12 @@ namespace Mono.Debugging.Soft
 				var backtrace = GetThreadBacktrace (current_thread);
 				bool stepOut = false;
 				
-				if (steppedInto && Options.StepOverPropertiesAndOperators && backtrace.FrameCount > 0) {
+				if (backtrace.FrameCount > 0) {
 					var frame = backtrace.GetFrame (0) as SoftDebuggerStackFrame;
+					currentAddress = frame != null ? frame.Address : -1;
 					
-					stepOut = frame != null && IsPropertyOrOperatorMethod (frame.StackFrame.Method);
+					if (steppedInto && Options.StepOverPropertiesAndOperators)
+						stepOut = frame != null && IsPropertyOrOperatorMethod (frame.StackFrame.Method);
 				}
 				
 				if (stepOut) {
