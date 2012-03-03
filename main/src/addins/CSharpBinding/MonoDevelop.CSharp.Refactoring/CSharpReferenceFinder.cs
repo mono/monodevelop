@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
 			var file = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
 			if (compilation == null)
-                compilation = doc.Compilation;
+				compilation = doc.Compilation;
 			var result = new List<MemberReference> ();
 			
 			foreach (var obj in searchedMembers) {
