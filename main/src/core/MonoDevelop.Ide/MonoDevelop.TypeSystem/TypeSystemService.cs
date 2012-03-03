@@ -616,26 +616,27 @@ namespace MonoDevelop.TypeSystem
 			}
 			
 			public Project Project {
-				get {
-					foreach (var pair in projectContents) {
-						if (pair.Value == this)
-							return pair.Key;
-					}
-					return null;
-				}
+				get;
+				private set;
 			}
 			
-			public ProjectContentWrapper (IProjectContent content)
+			public ProjectContentWrapper (Project project, IProjectContent content)
 			{
+				if (project == null)
+					throw new ArgumentNullException ("project");
+				if (content == null)
+					throw new ArgumentNullException ("content");
+				this.Project = project;
 				this.content = content;
 			}
 			
-			public IEnumerable<Project> GetReferencedProjects (Project project)
-			{
-				foreach (var pr in project.GetReferencedItems (ConfigurationSelector.Default)) {
-					var referencedProject = pr as Project;
-					if (referencedProject != null)
-						yield return referencedProject;
+			public IEnumerable<Project> ReferencedProjects {
+				get {
+					foreach (var pr in Project.GetReferencedItems (ConfigurationSelector.Default)) {
+						var referencedProject = pr as Project;
+						if (referencedProject != null)
+							yield return referencedProject;
+					}
 				}
 			}
 
@@ -646,7 +647,7 @@ namespace MonoDevelop.TypeSystem
 					return;
 				var contexts = new List<IAssemblyReference> ();
 		
-				foreach (var referencedProject in GetReferencedProjects (project)) {
+				foreach (var referencedProject in ReferencedProjects) {
 					ProjectContentWrapper wrapper;
 					if (projectContents.TryGetValue (referencedProject, out wrapper))
 						contexts.Add (new UnresolvedAssemblyDecorator (wrapper));
@@ -698,10 +699,10 @@ namespace MonoDevelop.TypeSystem
 					ProjectContentWrapper wrapper;
 					if (context == null) {
 						context = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
-						projectContents [project] = wrapper = new ProjectContentWrapper (context);
-						QueueParseJob (projectContents [project], project);
+						projectContents [project] = wrapper = new ProjectContentWrapper (project, context);
+						QueueParseJob (projectContents [project]);
 					} else {
-						projectContents [project] = wrapper = new ProjectContentWrapper (context);
+						projectContents [project] = wrapper = new ProjectContentWrapper (project, context);
 					}
 					
 					referenceCounter [project] = 1;
@@ -748,7 +749,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			var project = (Project)sender;
 			foreach (ProjectFileEventInfo fargs in args) {
-				QueueParseJob (projectContents [project], project, new [] { fargs.ProjectFile });
+				QueueParseJob (projectContents [project], new [] { fargs.ProjectFile });
 			}
 		}
 		
@@ -756,7 +757,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			var project = (Project)sender;
 			foreach (ProjectFileEventInfo fargs in args) {
-				QueueParseJob (projectContents [project], project, new [] { fargs.ProjectFile });
+				QueueParseJob (projectContents [project], new [] { fargs.ProjectFile });
 			}
 		}
 
@@ -773,7 +774,7 @@ namespace MonoDevelop.TypeSystem
 			var project = (Project)sender;
 			foreach (ProjectFileRenamedEventInfo fargs in args) {
 				projectContents [project].Content = projectContents [project].Content.UpdateProjectContent (projectContents [project].Content.GetFile (fargs.OldName), null);
-				QueueParseJob (projectContents [project], project, new [] { fargs.ProjectFile });
+				QueueParseJob (projectContents [project], new [] { fargs.ProjectFile });
 			}
 		}
 		
@@ -1281,7 +1282,7 @@ namespace MonoDevelop.TypeSystem
 					content.Content.Location = project.FileName;
 				return content;
 			}
-			return new ProjectContentWrapper (new CSharpProjectContent () { Location = project.FileName });
+			return new ProjectContentWrapper (project, new CSharpProjectContent () { Location = project.FileName });
 		}
 		
 		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
@@ -1340,7 +1341,6 @@ namespace MonoDevelop.TypeSystem
 		class ParsingJob
 		{
 			public ProjectContentWrapper Context;
-			public Project Project;
 			public IEnumerable<ProjectFile> FileList;
 //			public Action<string, IProgressMonitor> ParseCallback;
 			
@@ -1348,7 +1348,7 @@ namespace MonoDevelop.TypeSystem
 			{
 				TypeSystemParserNode node = null;
 				ITypeSystemParser parser = null;
-				foreach (var file in (FileList ?? Project.Files)) {
+				foreach (var file in (FileList ?? Context.Project.Files)) {
 					if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 						continue;
 					
@@ -1361,7 +1361,7 @@ namespace MonoDevelop.TypeSystem
 						continue;
 					
 					using (var stream = new System.IO.StreamReader (fileName)) {
-						var parsedDocument = parser.Parse (false, fileName, stream, Project);
+						var parsedDocument = parser.Parse (false, fileName, stream, Context.Project);
 						Context.Content = Context.Content.UpdateProjectContent (Context.Content.GetFile (fileName), parsedDocument.ParsedFile);
 					}
 //					if (ParseCallback != null)
@@ -1395,7 +1395,7 @@ namespace MonoDevelop.TypeSystem
 			get { return parseStatus > 0; }
 		}
 		
-		static Dictionary<Project, ParsingJob> parseQueueIndex = new Dictionary<Project,ParsingJob> ();
+		static Dictionary<ProjectContentWrapper, ParsingJob> parseQueueIndex = new Dictionary<ProjectContentWrapper, ParsingJob> ();
 
 		internal static int PendingJobCount {
 			get {
@@ -1405,18 +1405,16 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static void QueueParseJob (ProjectContentWrapper context, /* Action<string, IProgressMonitor> callback,*/ Project project, IEnumerable<ProjectFile> fileList = null)
+		static void QueueParseJob (ProjectContentWrapper context, IEnumerable<ProjectFile> fileList = null)
 		{
 			var job = new ParsingJob () {
 				Context = context,
-//				ParseCallback = callback,
-				Project = project,
 				FileList = fileList
 			};
 			
 			lock (parseQueueLock) {
-				RemoveParseJob (project);
-				parseQueueIndex [project] = job;
+				RemoveParseJob (context);
+				parseQueueIndex [context] = job;
 				parseQueue.Enqueue (job);
 				parseEvent.Set ();
 				
@@ -1435,7 +1433,7 @@ namespace MonoDevelop.TypeSystem
 			lock (parseQueueLock) {
 				if (parseQueue.Count > 0) {
 					var job = parseQueue.Dequeue ();
-					parseQueueIndex.Remove (job.Project);
+					parseQueueIndex.Remove (job.Context);
 					return job;
 				}
 				return null;
@@ -1447,7 +1445,7 @@ namespace MonoDevelop.TypeSystem
 			queueEmptied.WaitOne ();
 		}
 		
-		static void RemoveParseJob (Project project)
+		static void RemoveParseJob (ProjectContentWrapper project)
 		{
 			lock (parseQueueLock) {
 				ParsingJob job;
@@ -1462,7 +1460,7 @@ namespace MonoDevelop.TypeSystem
 			lock (parseQueueLock) {
 				foreach (var pj in parseQueue) {
 					if (pj.Context == context) {
-						parseQueueIndex.Remove (pj.Project);
+						parseQueueIndex.Remove (pj.Context);
 					}
 				}
 			}
@@ -1537,7 +1535,7 @@ namespace MonoDevelop.TypeSystem
 			
 			if (modifiedFiles == null)
 				return;
-			QueueParseJob (content, project, modifiedFiles);
+			QueueParseJob (content, modifiedFiles);
 		}
 
 		static void CheckModifiedFile (AssemblyContext context)
