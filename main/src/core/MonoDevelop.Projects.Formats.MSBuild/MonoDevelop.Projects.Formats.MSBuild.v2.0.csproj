@@ -5,16 +5,18 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</ProjectGuid>
+    <ProjectGuid>{01206ab0-8871-42e7-9355-52e4cf1b7b9a}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <BaseIntermediateOutputPath>obj\2.0</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
+    <OutputPath>..\..\..\build\bin\MSBuild\2.0</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -23,17 +25,18 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\build\bin</OutputPath>
+    <OutputPath>..\..\..\build\bin\MSBuild\2.0</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <Reference Include="System">
+    </Reference>
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="Microsoft.Build.Utilities" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -67,6 +70,9 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="MonoDevelop.Projects.Formats.MSBuild.v2.0.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>
+    </None>
   </ItemGroup>
 </Project>
