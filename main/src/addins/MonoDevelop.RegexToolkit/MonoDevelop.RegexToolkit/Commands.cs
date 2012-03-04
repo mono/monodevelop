@@ -64,6 +64,28 @@ namespace MonoDevelop.RegexToolkit
 		
 	}
 	
+	class DefaultAttachableViewContent : AbstractAttachableViewContent
+	{
+		Widget widget;
+		
+		public override Widget Control {
+			get {
+				return widget;
+			}
+		}
+		string tabPageLabel;
+		public override string TabPageLabel {
+			get {
+				return tabPageLabel;
+			}
+		}
+		
+		public DefaultAttachableViewContent (Widget widget, string contentName)
+		{
+			this.widget = widget;
+			this.tabPageLabel = contentName;
+		}
+	}
 	
 	public class ShowRegexToolkitHandler : CommandHandler
 	{
@@ -76,7 +98,11 @@ namespace MonoDevelop.RegexToolkit
 				}
 			}
 			var regexToolkit = new RegexToolkitWidget ();
-			IdeApp.Workbench.OpenDocument (new ViewOnlyContent (regexToolkit, GettextCatalog.GetString ("Regex Toolkit")), true);
+			var newDocument = IdeApp.Workbench.OpenDocument (new ViewOnlyContent (regexToolkit, GettextCatalog.GetString ("Regex Toolkit")), true);
+			
+			var elementHelp = new ElementHelpWidget (newDocument.Window, regexToolkit);
+			
+			newDocument.Window.AttachViewContent (new DefaultAttachableViewContent (elementHelp, GettextCatalog.GetString ("Elements")));
 		}
 	}
 	

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../../MonoDevelop.RegexToolkit</images-root-path>
+    <images-root-path>..\..\MonoDevelop.RegexToolkit</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
@@ -138,41 +138,6 @@
                             <property name="Fill">False</property>
                           </packing>
                         </child>
-                        <child>
-                          <widget class="Gtk.ScrolledWindow" id="scrolledwindow5">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="ShadowType">In</property>
-                            <child>
-                              <widget class="Gtk.TreeView" id="optionsTreeview">
-                                <property name="MemberName" />
-                                <property name="CanFocus">True</property>
-                              </widget>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="PackType">End</property>
-                            <property name="Position">3</property>
-                            <property name="AutoSize">True</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label10">
-                            <property name="MemberName" />
-                            <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">_Options:</property>
-                            <property name="UseMarkup">True</property>
-                            <property name="UseUnderline">True</property>
-                            <property name="MnemonicWidget">optionsTreeview</property>
-                          </widget>
-                          <packing>
-                            <property name="PackType">End</property>
-                            <property name="Position">4</property>
-                            <property name="AutoSize">True</property>
-                            <property name="Expand">False</property>
-                            <property name="Fill">False</property>
-                          </packing>
-                        </child>
                       </widget>
                       <packing>
                         <property name="Position">0</property>
@@ -184,13 +149,13 @@
                         <property name="MemberName" />
                         <property name="Spacing">6</property>
                         <child>
-                          <widget class="Gtk.Label" id="label11">
+                          <widget class="Gtk.Label" id="label10">
                             <property name="MemberName" />
                             <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">_Elements:</property>
+                            <property name="LabelProp" translatable="yes">_Options:</property>
                             <property name="UseMarkup">True</property>
                             <property name="UseUnderline">True</property>
-                            <property name="MnemonicWidget">elementsTreeview</property>
+                            <property name="MnemonicWidget">optionsTreeview</property>
                           </widget>
                           <packing>
                             <property name="Position">0</property>
@@ -200,12 +165,12 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.ScrolledWindow" id="elementsscrolledwindow">
+                          <widget class="Gtk.ScrolledWindow" id="scrolledwindow5">
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="ShadowType">In</property>
                             <child>
-                              <widget class="Gtk.TreeView" id="elementsTreeview">
+                              <widget class="Gtk.TreeView" id="optionsTreeview">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
                               </widget>
@@ -228,6 +193,8 @@
                   <packing>
                     <property name="Position">0</property>
                     <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
                   </packing>
                 </child>
                 <child>
@@ -360,6 +327,49 @@
           </widget>
           <packing>
             <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="MonoDevelop.RegexToolkit.ElementHelpWidget" design-size="300 300">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.VBox" id="vbox4">
+        <property name="MemberName" />
+        <property name="Spacing">6</property>
+        <child>
+          <widget class="Gtk.Label" id="label11">
+            <property name="MemberName" />
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes">_Elements:</property>
+            <property name="UseMarkup">True</property>
+            <property name="UseUnderline">True</property>
+            <property name="MnemonicWidget">elementsTreeview</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ScrolledWindow" id="elementsscrolledwindow">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="ShadowType">In</property>
+            <child>
+              <widget class="Gtk.TreeView" id="elementsTreeview">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
             <property name="AutoSize">True</property>
           </packing>
         </child>

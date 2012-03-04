@@ -39,7 +39,6 @@ namespace MonoDevelop.RegexToolkit
 	{
 		ListStore optionsStore;
 		TreeStore resultStore;
-		TreeStore elementsStore;
 		
 		Thread regexThread;
 		
@@ -80,7 +79,6 @@ namespace MonoDevelop.RegexToolkit
 			
 			var cellRendText = new CellRendererText ();
 			cellRendText.Ellipsize = Pango.EllipsizeMode.End;
-			var pix = new CellRendererPixbuf ();
 			
 			this.optionsTreeview.Model = this.optionsStore;
 			this.optionsTreeview.HeadersVisible = false;
@@ -95,6 +93,8 @@ namespace MonoDevelop.RegexToolkit
 			this.resultsTreeview.HeadersVisible = false;
 			var col = new TreeViewColumn ();
 			this.resultsTreeview.AppendColumn (col);
+			var pix = new CellRendererPixbuf ();
+			
 			col.PackStart (pix, false);
 			col.AddAttribute (pix, "stock_id", 0);
 			col.PackStart (cellRendText, true);
@@ -114,43 +114,6 @@ namespace MonoDevelop.RegexToolkit
 				}
 			};
 			
-			elementsStore = new Gtk.TreeStore (typeof(string), typeof(string), typeof(string), typeof(string));
-			this.elementsTreeview.Model = this.elementsStore;
-			this.elementsTreeview.HeadersVisible = false;
-			this.elementsTreeview.Selection.Mode = SelectionMode.Browse;
-			
-			col = new TreeViewColumn ();
-			this.elementsTreeview.AppendColumn (col);
-			col.PackStart (pix, false);
-			col.AddAttribute (pix, "stock_id", 0);
-			col.PackStart (cellRendText, true);
-			
-			col.AddAttribute (cellRendText, "text", 1);
-			
-			var cellRendText2 = new CellRendererText ();
-			col.PackStart (cellRendText2, false);
-			col.SetCellDataFunc (cellRendText2, ElementDescriptionFunc);
-			
-			this.elementsTreeview.Selection.Changed += delegate {
-				ShowTooltipForSelectedEntry ();
-			};
-			
-			this.LeaveNotifyEvent += delegate {
-				this.HideTooltipWindow ();
-			};
-			
-			
-			this.elementsTreeview.MotionNotifyEvent += HandleMotionNotifyEvent;
-			
-			this.elementsTreeview.RowActivated += delegate (object sender, RowActivatedArgs e) {
-				Gtk.TreeIter iter;
-				if (elementsStore.GetIter (out iter, e.Path)) {
-					string text = elementsStore.GetValue (iter, 3) as string;
-					if (!System.String.IsNullOrEmpty (text)) {
-						this.entryRegEx.InsertText (text);
-					}
-				}
-			};
 			this.entryReplace.Sensitive = this.checkbuttonReplace.Active = false;
 			this.checkbuttonReplace.Toggled += delegate {
 				this.entryReplace.Sensitive = this.checkbuttonReplace.Active;
@@ -158,160 +121,12 @@ namespace MonoDevelop.RegexToolkit
 			this.vbox4.WidthRequest = 380;
 			this.scrolledwindow5.HeightRequest = 150;
 			this.scrolledwindow1.HeightRequest = 150;
-			FillElementsBox ();
 			Show ();
 		}
-		
-		void SetButtonStart (string text, string icon)
-		{
-			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).Text = text;
-			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).UseUnderline = true;
-			((Gtk.Image)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [0]).Pixbuf = global::Stetic.IconLoader.LoadIcon (this, icon, global::Gtk.IconSize.Menu);
-		}
-		
-		void ElementDescriptionFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
-		{
-			string str = (string)model.GetValue (iter, 2);
-			if (string.IsNullOrEmpty (str)) {
-				cell.Visible = false;
-				return;
-			}
-			CellRendererText txtRenderer = (CellRendererText)cell;
-			txtRenderer.Visible = true;
-			txtRenderer.Text = str;
-		}
-		
-		int ox = -1, oy = -1;
-		
-		[GLib.ConnectBefore]
-		void HandleMotionNotifyEvent (object o, MotionNotifyEventArgs args)
-		{
-			TreeIter iter;
-				
-			if (!elementsTreeview.Selection.GetSelected (out iter))
-				return;
-			Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsStore.GetPath (iter), elementsTreeview.GetColumn (0));
-			int x, y;
-			this.GdkWindow.GetOrigin (out x, out y);
-			x += rect.X;
-			y += rect.Y;
-			if (this.tooltipWindow == null || ox != x || oy != y) {
-				ShowTooltipForSelectedEntry ();
-				ox = x;
-				oy = y;
-			}
-		}
-		
-		void SetFindMode (bool findMode)
-		{
-			this.notebook2.ShowTabs = !findMode;
-			if (findMode)
-				this.notebook2.Page = 0;
-		}
-		
-		void UpdateStartButtonSensitivity (object sender, EventArgs args)
-		{
-			this.buttonStart.Sensitive = this.entryRegEx.Text.Length > 0 && inputTextview.Buffer.CharCount > 0;
-			Ide.IdeApp.Workbench.StatusBar.ShowReady ();
-		}
-		
-		void ShowTooltipForSelectedEntry ()
-		{
-			TreeIter iter;
-			if (elementsTreeview.Selection.GetSelected (out iter)) {
-				string description = elementsStore.GetValue (iter, 2) as string;
-				if (!String.IsNullOrEmpty (description)) {
-					Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsStore.GetPath (iter), elementsTreeview.GetColumn (0));
-					int wx, wy, wy2; 
-					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Bottom, out wx, out wy);
-					elementsTreeview.TranslateCoordinates (this, rect.X, rect.Y, out wx, out wy2);
-					ShowTooltip (description, wx, wy, wy2);
-				} else {
-					HideTooltipWindow ();
-				}
-			} else {
-				HideTooltipWindow ();
-			}
-		}
-		
-		protected override void OnDestroyed ()
-		{
-			base.OnDestroyed ();
-			if (optionsStore != null) {
-				optionsStore.Dispose ();
-				optionsStore = null;
-			}
-			if (resultStore != null) {
-				resultStore.Dispose ();
-				resultStore = null;
-			}
-			if (elementsStore != null) {
-				elementsStore.Dispose ();
-				elementsStore = null;
-			}
-			
-			HideTooltipWindow ();
-		}
-		
-		CustomTooltipWindow tooltipWindow = null;
 
-		public void HideTooltipWindow ()
+		public void InsertText (string text)
 		{
-			if (tooltipWindow != null) {
-				tooltipWindow.Destroy ();
-				tooltipWindow = null;
-			}
-		}
-
-		const int tooltipXOffset = 100;
-
-		public void ShowTooltip (string text, int x, int y, int altY)
-		{
-			if (tooltipWindow != null) {
-				tooltipWindow.Hide ();
-			} else {
-				tooltipWindow = new CustomTooltipWindow ();
-				tooltipWindow.DestroyWithParent = true;
-			}
-			tooltipWindow.Tooltip = text;
-			int ox, oy;
-			this.GdkWindow.GetOrigin (out ox, out oy);
-			int w = tooltipWindow.Child.SizeRequest ().Width;
-			int h = tooltipWindow.Child.SizeRequest ().Height;
-			
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (this.GdkWindow));
-			
-			if (ox + x + w + tooltipXOffset >= geometry.Right ||
-				oy + y + h >= geometry.Bottom) {
-				tooltipWindow.Move (ox + x - w, oy + altY - h);
-			} else 
-				tooltipWindow.Move (ox + x + tooltipXOffset, oy + y);
-			tooltipWindow.ShowAll ();
-		}
-			
-		public class CustomTooltipWindow : MonoDevelop.Components.TooltipWindow
-		{
-			string tooltip;
-
-			public string Tooltip {
-				get {
-					return tooltip;
-				}
-				set {
-					tooltip = value;
-					label.Text = tooltip;
-				}
-			}
-			
-			Label label = new Label ();
-
-			public CustomTooltipWindow ()
-			{
-				label.Xalign = 0;
-				label.Xpad = 3;
-				label.Ypad = 3;
-				Add (label);
-			}
+			this.entryRegEx.InsertText (text);
 		}
 		
 		void PerformQuery (string input, string pattern, string replacement, RegexOptions options)
@@ -352,6 +167,41 @@ namespace MonoDevelop.RegexToolkit
 				});
 			}
 		}
+
+		void SetButtonStart (string text, string icon)
+		{
+			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).Text = text;
+			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).UseUnderline = true;
+			((Gtk.Image)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [0]).Pixbuf = global::Stetic.IconLoader.LoadIcon (this, icon, global::Gtk.IconSize.Menu);
+		}
+		
+		
+		void SetFindMode (bool findMode)
+		{
+			this.notebook2.ShowTabs = !findMode;
+			if (findMode)
+				this.notebook2.Page = 0;
+		}
+		
+		void UpdateStartButtonSensitivity (object sender, EventArgs args)
+		{
+			this.buttonStart.Sensitive = this.entryRegEx.Text.Length > 0 && inputTextview.Buffer.CharCount > 0;
+			Ide.IdeApp.Workbench.StatusBar.ShowReady ();
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (optionsStore != null) {
+				optionsStore.Dispose ();
+				optionsStore = null;
+			}
+			if (resultStore != null) {
+				resultStore.Dispose ();
+				resultStore = null;
+			}
+		}
+		
 		
 		RegexOptions GetOptions ()
 		{
@@ -416,35 +266,6 @@ namespace MonoDevelop.RegexToolkit
 			}
 		}
 		
-		void FillElementsBox ()
-		{
-			Stream stream = typeof(RegexToolkitWidget).Assembly.GetManifestResourceStream ("RegexElements.xml");
-			if (stream == null)
-				return;
-			XmlReader reader = new XmlTextReader (stream);
-			while (reader.Read ()) {
-				if (reader.NodeType != XmlNodeType.Element)
-					continue;
-				switch (reader.LocalName) {
-				case "Group":
-					TreeIter groupIter = this.elementsStore.AppendValues (Stock.Info,
-						GettextCatalog.GetString (reader.GetAttribute ("_name")), "", "");
-					while (reader.Read ()) {
-						if (reader.NodeType == XmlNodeType.EndElement && reader.LocalName == "Group") 
-							break;
-						switch (reader.LocalName) {
-						case "Element":
-							this.elementsStore.AppendValues (groupIter, null, 
-							        	GettextCatalog.GetString (reader.GetAttribute ("_name")),
-									GettextCatalog.GetString (reader.GetAttribute ("_description")),
-									reader.ReadElementString ());
-							break;
-						}
-					}
-					break;
-				}
-			}
-		}
 	}
 }
 
