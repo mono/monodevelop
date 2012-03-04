@@ -1192,7 +1192,9 @@ namespace Mono.Debugging.Soft
 						}
 						
 						if (breakpoints.TryGetValue (be.Request, out binfo)) {
-							if (binfo.Location.ILOffset == currentAddress && e.Thread.Id == currentStepRequest.Thread.Id)
+							if (currentStepRequest != null &&
+							    binfo.Location.ILOffset == currentAddress && 
+							    e.Thread.Id == currentStepRequest.Thread.Id)
 								redoCurrentStep = true;
 							
 							breakEvent = binfo.BreakEvent;
