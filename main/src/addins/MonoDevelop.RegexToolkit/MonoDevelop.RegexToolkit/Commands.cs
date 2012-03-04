@@ -29,6 +29,9 @@
 using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using Gtk;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.RegexToolkit
 {
@@ -37,13 +40,43 @@ namespace MonoDevelop.RegexToolkit
 		ShowRegexToolkit
 	}
 	
+	class ViewOnlyContent : AbstractViewContent
+	{
+		Widget widget;
+		
+		public override Widget Control {
+			get {
+				return widget;
+			}
+		}
+		
+		public ViewOnlyContent (Widget widget, string contentName)
+		{
+			this.widget = widget;
+			this.ContentName = contentName;
+			IsViewOnly = true;
+		}
+		
+		public override void Load (string fileName)
+		{
+			throw new System.NotImplementedException ();
+		}
+		
+	}
+	
+	
 	public class ShowRegexToolkitHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			var regexToolkit = new RegexToolkitWindow ();
-			MessageService.PlaceDialog (regexToolkit, null);
-			regexToolkit.Show ();
+			foreach (var document in IdeApp.Workbench.Documents) {
+				if (document.Window.ViewContent.Control is RegexToolkitWidget) {
+					document.Window.SelectWindow ();
+					return;
+				}
+			}
+			var regexToolkit = new RegexToolkitWidget ();
+			IdeApp.Workbench.OpenDocument (new ViewOnlyContent (regexToolkit, GettextCatalog.GetString ("Regex Toolkit")), true);
 		}
 	}
 	

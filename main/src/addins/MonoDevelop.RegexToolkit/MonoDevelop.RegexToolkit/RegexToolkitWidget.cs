@@ -1,68 +1,56 @@
-//
-// RegexToolkitWindow.cs
-//
+// 
+// RegexToolkitWidget.cs
+//  
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
-//
-// Copyright (C) 2007 Novell, Inc (http://www.novell.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining
-// a copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to
-// permit persons to whom the Software is furnished to do so, subject to
-// the following conditions:
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
-
-using Gdk;
-using Gtk;
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 using System;
-using System.IO;
+using Gtk;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-
+using System.IO;
+using System.Xml;
 
 namespace MonoDevelop.RegexToolkit
 {
-	public partial class RegexToolkitWindow : Gtk.Window
+	[System.ComponentModel.ToolboxItem(true)]
+	public partial class RegexToolkitWidget : Gtk.Bin
 	{
 		ListStore optionsStore;
 		TreeStore resultStore;
 		TreeStore elementsStore;
-		RegexLibraryWindow regexLib;
+		
 		Thread regexThread;
-			
-			
-		public RegexToolkitWindow () : base(Gtk.WindowType.Toplevel)
+		
+		public RegexToolkitWidget ()
 		{
 			this.Build ();
-			this.TransientFor = IdeApp.Workbench.RootWindow;
 			optionsStore = new ListStore (typeof(bool), typeof(string), typeof(Options));
 			resultStore = new Gtk.TreeStore (typeof(string), typeof(string), typeof(int), typeof(int));
 			
 			FillOptionsBox ();
 			
-			this.buttonCancel.Clicked += delegate {
-				this.Destroy ();
-			};
-			
-			var isWindows = System.IO.Path.DirectorySeparatorChar == '\\';
-			this.buttonLibrary.Visible = !isWindows;
 			this.buttonStart.Sensitive = false;
 			this.entryRegEx.Changed += UpdateStartButtonSensitivity;
 			this.inputTextview.Buffer.Changed += UpdateStartButtonSensitivity;
@@ -86,17 +74,6 @@ namespace MonoDevelop.RegexToolkit
 				SetButtonStart (GettextCatalog.GetString ("_Stop execution"), "gtk-media-stop");
 				
 				SetFindMode (!checkbuttonReplace.Active);
-			};
-			
-			this.buttonLibrary.Clicked += delegate {
-				if (regexLib == null) {
-					regexLib = new RegexLibraryWindow ();
-					regexLib.TransientFor = this;
-					regexLib.Destroyed += delegate {
-						regexLib = null;
-					};
-					regexLib.Show ();
-				}
 			};
 			
 			SetFindMode (true);
@@ -178,17 +155,19 @@ namespace MonoDevelop.RegexToolkit
 			this.checkbuttonReplace.Toggled += delegate {
 				this.entryReplace.Sensitive = this.checkbuttonReplace.Active;
 			};
+			this.vbox4.WidthRequest = 380;
+			this.scrolledwindow5.HeightRequest = 150;
+			this.scrolledwindow1.HeightRequest = 150;
 			FillElementsBox ();
-			this.vbox4.Hide ();
+			Show ();
 		}
-
+		
 		void SetButtonStart (string text, string icon)
 		{
-			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children[1]).Text = text;
-			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children[1]).UseUnderline = true;
-			((Gtk.Image)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children[0]).Pixbuf = global::Stetic.IconLoader.LoadIcon (this, icon, global::Gtk.IconSize.Menu);
+			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).Text = text;
+			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).UseUnderline = true;
+			((Gtk.Image)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [0]).Pixbuf = global::Stetic.IconLoader.LoadIcon (this, icon, global::Gtk.IconSize.Menu);
 		}
-
 		
 		void ElementDescriptionFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
@@ -202,25 +181,25 @@ namespace MonoDevelop.RegexToolkit
 			txtRenderer.Text = str;
 		}
 		
-		int ox = -1 , oy = -1;
+		int ox = -1, oy = -1;
 		
 		[GLib.ConnectBefore]
-		void HandleMotionNotifyEvent(object o, MotionNotifyEventArgs args)
+		void HandleMotionNotifyEvent (object o, MotionNotifyEventArgs args)
 		{
 			TreeIter iter;
 				
-				if (!elementsTreeview.Selection.GetSelected (out iter))
-					return;
-				Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsStore.GetPath (iter), elementsTreeview.GetColumn (0));
-				int x, y;
-				this.GdkWindow.GetOrigin (out x, out y);
-				x += rect.X;
-				y += rect.Y;
-				if (this.tooltipWindow == null || ox != x || oy != y) {
-					ShowTooltipForSelectedEntry ();
-					ox = x;
-					oy = y;
-				}
+			if (!elementsTreeview.Selection.GetSelected (out iter))
+				return;
+			Gdk.Rectangle rect = elementsTreeview.GetCellArea (elementsStore.GetPath (iter), elementsTreeview.GetColumn (0));
+			int x, y;
+			this.GdkWindow.GetOrigin (out x, out y);
+			x += rect.X;
+			y += rect.Y;
+			if (this.tooltipWindow == null || ox != x || oy != y) {
+				ShowTooltipForSelectedEntry ();
+				ox = x;
+				oy = y;
+			}
 		}
 		
 		void SetFindMode (bool findMode)
@@ -233,7 +212,7 @@ namespace MonoDevelop.RegexToolkit
 		void UpdateStartButtonSensitivity (object sender, EventArgs args)
 		{
 			this.buttonStart.Sensitive = this.entryRegEx.Text.Length > 0 && inputTextview.Buffer.CharCount > 0;
-			labelStatus.Text = string.Empty;
+			Ide.IdeApp.Workbench.StatusBar.ShowReady ();
 		}
 		
 		void ShowTooltipForSelectedEntry ()
@@ -273,9 +252,9 @@ namespace MonoDevelop.RegexToolkit
 			
 			HideTooltipWindow ();
 		}
-
 		
 		CustomTooltipWindow tooltipWindow = null;
+
 		public void HideTooltipWindow ()
 		{
 			if (tooltipWindow != null) {
@@ -283,26 +262,27 @@ namespace MonoDevelop.RegexToolkit
 				tooltipWindow = null;
 			}
 		}
+
 		const int tooltipXOffset = 100;
+
 		public void ShowTooltip (string text, int x, int y, int altY)
 		{
 			if (tooltipWindow != null) {
 				tooltipWindow.Hide ();
 			} else {
 				tooltipWindow = new CustomTooltipWindow ();
-				tooltipWindow.TransientFor = this;
 				tooltipWindow.DestroyWithParent = true;
 			}
 			tooltipWindow.Tooltip = text;
 			int ox, oy;
 			this.GdkWindow.GetOrigin (out ox, out oy);
-			int w = tooltipWindow.Child.SizeRequest().Width;
-			int h = tooltipWindow.Child.SizeRequest().Height;
+			int w = tooltipWindow.Child.SizeRequest ().Width;
+			int h = tooltipWindow.Child.SizeRequest ().Height;
 			
 			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (this.GdkWindow));
 			
 			if (ox + x + w + tooltipXOffset >= geometry.Right ||
-			    oy + y + h >= geometry.Bottom) {
+				oy + y + h >= geometry.Bottom) {
 				tooltipWindow.Move (ox + x - w, oy + altY - h);
 			} else 
 				tooltipWindow.Move (ox + x + tooltipXOffset, oy + y);
@@ -312,6 +292,7 @@ namespace MonoDevelop.RegexToolkit
 		public class CustomTooltipWindow : MonoDevelop.Components.TooltipWindow
 		{
 			string tooltip;
+
 			public string Tooltip {
 				get {
 					return tooltip;
@@ -323,6 +304,7 @@ namespace MonoDevelop.RegexToolkit
 			}
 			
 			Label label = new Label ();
+
 			public CustomTooltipWindow ()
 			{
 				label.Xalign = 0;
@@ -339,17 +321,17 @@ namespace MonoDevelop.RegexToolkit
 				Application.Invoke (delegate {
 					this.resultStore.Clear ();
 					foreach (Match match in regex.Matches (input)) {
-						TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format (GettextCatalog.GetString("Match '{0}'"), match.Value), match.Index, match.Length);
+						TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format (GettextCatalog.GetString ("Match '{0}'"), match.Value), match.Index, match.Length);
 						int i = 0;
 						foreach (Group group in match.Groups) {
 							TreeIter groupIter;
 							if (group.Success) {
-								groupIter = this.resultStore.AppendValues (iter, Stock.Apply, String.Format (GettextCatalog.GetString("Group '{0}':'{1}'"), regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
+								groupIter = this.resultStore.AppendValues (iter, Stock.Apply, String.Format (GettextCatalog.GetString ("Group '{0}':'{1}'"), regex.GroupNameFromNumber (i), group.Value), group.Index, group.Length);
 								foreach (Capture capture in match.Captures) {
-									this.resultStore.AppendValues (groupIter, null, String.Format (GettextCatalog.GetString("Capture '{0}'"), capture.Value), capture.Index, capture.Length);
+									this.resultStore.AppendValues (groupIter, null, String.Format (GettextCatalog.GetString ("Capture '{0}'"), capture.Value), capture.Index, capture.Length);
 								}
 							} else {
-								groupIter = this.resultStore.AppendValues (iter, Stock.Cancel, String.Format (GettextCatalog.GetString("Group '{0}' not found"), regex.GroupNameFromNumber (i)), -1, -1);
+								groupIter = this.resultStore.AppendValues (iter, Stock.Cancel, String.Format (GettextCatalog.GetString ("Group '{0}' not found"), regex.GroupNameFromNumber (i)), -1, -1);
 							}
 							i++;
 						}
@@ -361,7 +343,7 @@ namespace MonoDevelop.RegexToolkit
 				Thread.ResetAbort ();
 			} catch (ArgumentException) {
 				Application.Invoke (delegate {
-					labelStatus.Text = GettextCatalog.GetString ("Invalid expression");
+					Ide.IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Invalid expression"));
 				});
 			} finally {
 				regexThread = null;
@@ -395,7 +377,7 @@ namespace MonoDevelop.RegexToolkit
 			}
 		}
 		
-		class Options 
+		class Options
 		{
 			RegexOptions options;
 			string       name;
@@ -415,19 +397,19 @@ namespace MonoDevelop.RegexToolkit
 			public Options (RegexOptions options, string name)
 			{
 				this.options = options;
-				this.name    = name;
+				this.name = name;
 			}
 		}
 		
 		void FillOptionsBox ()
 		{
 			Options[] options = {
-				new Options (RegexOptions.IgnorePatternWhitespace, GettextCatalog.GetString("Ignore Whitespace")),
-				new Options (RegexOptions.IgnoreCase, GettextCatalog.GetString("Ignore case")),
-				new Options (RegexOptions.Singleline, GettextCatalog.GetString("Single line")),
-				new Options (RegexOptions.Multiline, GettextCatalog.GetString("Multi line")),
-				new Options (RegexOptions.ExplicitCapture, GettextCatalog.GetString("Explicit Capture")),
-				new Options (RegexOptions.RightToLeft, GettextCatalog.GetString("Right to left"))
+				new Options (RegexOptions.IgnorePatternWhitespace, GettextCatalog.GetString ("Ignore Whitespace")),
+				new Options (RegexOptions.IgnoreCase, GettextCatalog.GetString ("Ignore case")),
+				new Options (RegexOptions.Singleline, GettextCatalog.GetString ("Single line")),
+				new Options (RegexOptions.Multiline, GettextCatalog.GetString ("Multi line")),
+				new Options (RegexOptions.ExplicitCapture, GettextCatalog.GetString ("Explicit Capture")),
+				new Options (RegexOptions.RightToLeft, GettextCatalog.GetString ("Right to left"))
 			};
 			foreach (Options option in options) {
 				this.optionsStore.AppendValues (false, option.Name, option);
@@ -436,7 +418,7 @@ namespace MonoDevelop.RegexToolkit
 		
 		void FillElementsBox ()
 		{
-			Stream stream = typeof (RegexToolkitWindow).Assembly.GetManifestResourceStream ("RegexElements.xml");
+			Stream stream = typeof(RegexToolkitWidget).Assembly.GetManifestResourceStream ("RegexElements.xml");
 			if (stream == null)
 				return;
 			XmlReader reader = new XmlTextReader (stream);
@@ -451,12 +433,12 @@ namespace MonoDevelop.RegexToolkit
 						if (reader.NodeType == XmlNodeType.EndElement && reader.LocalName == "Group") 
 							break;
 						switch (reader.LocalName) {
-							case "Element":
-								this.elementsStore.AppendValues (groupIter, null, 
+						case "Element":
+							this.elementsStore.AppendValues (groupIter, null, 
 							        	GettextCatalog.GetString (reader.GetAttribute ("_name")),
 									GettextCatalog.GetString (reader.GetAttribute ("_description")),
 									reader.ReadElementString ());
-								break;
+							break;
 						}
 					}
 					break;
@@ -465,3 +447,4 @@ namespace MonoDevelop.RegexToolkit
 		}
 	}
 }
+
