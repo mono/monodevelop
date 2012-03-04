@@ -121,13 +121,12 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		List<Error> errors = new List<Error> ();
 		public virtual IList<Error> Errors {
 			get {
-				return errors;
+				return new Error[0];
 			}
 		}
-
+		
 		public bool HasErrors {
 			get {
 				return Errors.Any (e => e.ErrorType == ErrorType.Error);
@@ -157,11 +156,6 @@ namespace MonoDevelop.TypeSystem
 		}
 		
 		
-		public void Add (Error error)
-		{
-			errors.Add (error);
-		}
-		
 		public void Add (Comment comment)
 		{
 			comments.Add (comment);
@@ -185,13 +179,6 @@ namespace MonoDevelop.TypeSystem
 		public void Add (FoldingRegion region)
 		{
 			foldings.Add (region);
-		}
-		
-		public void Add (IEnumerable<Error> errors)
-		{
-			foreach (Error error in errors) {
-				this.errors.Add (error);
-			}
 		}
 		
 		public void Add (IEnumerable<Comment> comments)
@@ -253,6 +240,14 @@ namespace MonoDevelop.TypeSystem
 		public override IParsedFile ParsedFile {
 			get { return this; }
 		}
+		
+		List<Error> errors = new List<Error> ();
+		
+		public override IList<Error> Errors {
+			get {
+				return errors;
+			} 
+		}
 
 		public DefaultParsedDocument (string fileName) : base (fileName)
 		{
@@ -309,6 +304,16 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		#endregion
+		
+		public void Add (Error error)
+		{
+			errors.Add (error);
+		}
+		
+		public void Add (IEnumerable<Error> errors)
+		{
+			this.errors.AddRange (errors);
+		}
 	}
 	
 	[Serializable]
@@ -319,6 +324,12 @@ namespace MonoDevelop.TypeSystem
 		public override IParsedFile ParsedFile {
 			get { return parsedFile; }
 			set { parsedFile = value; FileName = parsedFile.FileName; }
+		}
+		
+		public override IList<Error> Errors {
+			get {
+				return parsedFile.Errors;
+			}
 		}
 		
 		public ParsedDocumentDecorator (IParsedFile parsedFile) : base (parsedFile.FileName)

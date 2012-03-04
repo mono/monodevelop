@@ -124,10 +124,11 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			highlightedSegmentCache.Clear ();
 			if (guiDocument != null) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {
+					if (!parsedDocument.HasErrors)
+						highlightedSegmentCache.Clear ();
 					unit = parsedDocument.GetAst<CompilationUnit> ();
 					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
 				}

@@ -34,7 +34,7 @@ using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	public class AspNetParsedDocument : ParsedDocument
+	public class AspNetParsedDocument : DefaultParsedDocument
 	{
 		
 		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)

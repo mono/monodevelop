@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	public class XmlParsedDocument : ParsedDocument
+	public class XmlParsedDocument : DefaultParsedDocument
 	{
 		public XmlParsedDocument (string fileName) : base (fileName)
 		{
