@@ -23,7 +23,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs \
-	gtk-gui/MonoDevelop.RegexToolkit.ElementHelpWidget..cs \
+	gtk-gui/MonoDevelop.RegexToolkit.ElementHelpWidget.cs \
 	MonoDevelop.RegexToolkit/Commands.cs \
 	MonoDevelop.RegexToolkit/RegexToolkitWidget.cs \
 	MonoDevelop.RegexToolkit/ElementHelpWidget.cs
