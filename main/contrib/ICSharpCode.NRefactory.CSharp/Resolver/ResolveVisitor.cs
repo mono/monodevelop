@@ -1307,10 +1307,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolvePrimitive(null);
 		}
 		
-		ResolveResult IAstVisitor<ResolveResult>.VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression)
+		ResolveResult IAstVisitor<ResolveResult>.VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression)
 		{
 			if (resolverEnabled || !objectCreateExpression.Initializer.IsNull) {
-				IType type = ResolveType(objectCreateExpression.Type);
+				var typeResolveResult = Resolve(objectCreateExpression.Type);
+				if (typeResolveResult.IsError)
+					return typeResolveResult;
+				IType type = typeResolveResult.Type;
 				
 				var initializer = objectCreateExpression.Initializer;
 				if (!initializer.IsNull) {
