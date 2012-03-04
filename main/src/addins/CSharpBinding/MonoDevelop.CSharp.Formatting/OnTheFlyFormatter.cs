@@ -69,7 +69,6 @@ namespace MonoDevelop.CSharp.Formatting
 			var ext = data.GetContent<CSharpCompletionTextEditorExtension> ();
 			if (ext == null)
 				return;
-			
 			var offset = data.Editor.LocationToOffset (location);
 			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (offset);
 			if (seg == null)
@@ -106,9 +105,13 @@ namespace MonoDevelop.CSharp.Formatting
 			int startOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
 			int endOffset = startOffset + data.Editor.Caret.Offset - seg.Offset;
+			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
+			// could interfere with the current indentation.
+			for (int i = 0; i <= data.Editor.Caret.Column; i++) {
+				sb.Append (data.Editor.EolMarker);
+			}
 			sb.Append (data.Editor.EolMarker);
 			sb.Append (new string ('}', closingBrackets));
-			
 			var stubData = new TextEditorData () { Text = sb.ToString () };
 			stubData.Document.FileName = data.FileName;
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
