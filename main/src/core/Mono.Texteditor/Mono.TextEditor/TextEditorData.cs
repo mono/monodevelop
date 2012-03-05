@@ -149,7 +149,7 @@ namespace Mono.TextEditor
 				this.document = value;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
-				
+
 				this.document.Undone += DocumentHandleUndone;
 				this.document.Redone += DocumentHandleRedone;
 				this.document.LineChanged += HandleDocLineChanged;
@@ -354,21 +354,24 @@ namespace Mono.TextEditor
 		public void Dispose ()
 		{
 			options = options.Kill ();
-			
+
 			DetachDocument ();
 		}
-		
+
+		void FixVirtualIndentation ()
+		{
+			if (!HasIndentationTracker)
+				return;
+			var line = Document.GetLine (Caret.Line);
+			if (line != null && line.EditableLength > 0 && GetIndentationString (Caret.Location) == Document.GetTextAt (line.Offset, line.EditableLength))
+				Remove (line.Offset, line.EditableLength);
+		}
+
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
 		{
 			if (!caret.PreserveSelection)
 				this.ClearSelection ();
-			if (Options.IndentStyle == IndentStyle.Virtual) {
-				if (HasIndentationTracker) {
-					var line = Document.GetLine (args.Location.Line);
-					if (line != null && line.EditableLength > 0 && GetIndentationString (args.Location) == Document.GetTextAt (line.Offset, line.EditableLength))
-						Remove (line.Offset, line.EditableLength);
-				}
-			} else if (Options.RemoveTrailingWhitespaces && args.Location.Line != Caret.Line) {
+			if (Options.RemoveTrailingWhitespaces && args.Location.Line != Caret.Line) {
 				LineSegment line = Document.GetLine (args.Location.Line);
 				if (line != null && line.WasChanged)
 					Document.RemoveTrailingWhitespaces (this, line);
@@ -396,7 +399,7 @@ namespace Mono.TextEditor
 		{
 			return this.options.WordFindStrategy.FindNextSubwordOffset (this.Document, offset);
 		}
-		
+
 		public int FindPrevSubwordOffset (int offset)
 		{
 			return this.options.WordFindStrategy.FindPrevSubwordOffset (this.Document, offset);
@@ -435,6 +438,7 @@ namespace Mono.TextEditor
 		
 		void OnEndUndo (object sender, Document.UndoOperationEventArgs e)
 		{
+			FixVirtualIndentation ();
 			if (e == null)
 				return;
 			e.Operation.Tag = new TextEditorDataState (this, savedCaretPos, savedSelection);
@@ -453,12 +457,12 @@ namespace Mono.TextEditor
 			if (state != null)
 				state.RedoState ();
 		}
-		
+
 		class TextEditorDataState
 		{
 			int      undoCaretPos;
 			Selection undoSelection;
-			
+
 			int      redoCaretPos;
 			Selection redoSelection;
 			
