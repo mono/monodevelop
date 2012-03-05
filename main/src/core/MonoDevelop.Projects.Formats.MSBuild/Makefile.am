@@ -25,7 +25,7 @@ all:
 	for p in $(PROJECTS); do xbuild $$p; done
 
 clean-local:
-	for p in $(PROJECTS); do xbuild -t:Clean $$p; done
+	for p in $(PROJECTS); do xbuild /t:Clean $$p; done
 
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
 assemblydir = $(MD_ASSEMBLY_DIR)
