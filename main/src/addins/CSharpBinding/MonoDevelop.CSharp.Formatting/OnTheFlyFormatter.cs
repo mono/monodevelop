@@ -73,18 +73,20 @@ namespace MonoDevelop.CSharp.Formatting
 			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (offset);
 			if (seg == null)
 				return;
+
 			var member = seg.Entity;
 			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
 				return;
-			
+
 //			var unit = data.ParsedDocument.Annotation<CompilationUnit> ();
 			var pf = data.ParsedDocument.ParsedFile as CSharpParsedFile;
-			
+
 			StringBuilder sb = new StringBuilder ();
 			int closingBrackets = 0;
-//			DomRegion validRegion = DomRegion.Empty;
-			var scope = pf.GetUsingScope (location);
-			
+			// use the member start location to determine the using scope, because this information is in sync, the position in
+			// the file may have changed since last parse run (we have up 2 date locations from the type segment tree).
+			var scope = pf.GetUsingScope (member.Region.Begin);
+
 			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				sb.Append ("namespace Stub {");
 				sb.Append (data.Editor.EolMarker);
@@ -93,7 +95,7 @@ namespace MonoDevelop.CSharp.Formatting
 					scope = scope.Parent;
 				scope = scope.Parent;
 			}
-			
+
 			var parent = member.DeclaringTypeDefinition;
 			while (parent != null) {
 				sb.Append ("class " + parent.Name + " {");
