@@ -38,8 +38,11 @@ namespace Mono.TextEditor
 		void ZoomIn ();
 		void ZoomOut ();
 		void ZoomReset ();
+		
 		string IndentationString { get; }
+		
 		IWordFindStrategy WordFindStrategy { get; set; }
+		
 		bool AllowTabsAfterNonTabs { get; set; }
 		bool HighlightMatchingBracket { get; set; }
 		bool RemoveTrailingWhitespaces { get; set; }
@@ -56,7 +59,7 @@ namespace Mono.TextEditor
 		bool ShowSpaces { get; set; }
 		int RulerColumn { get; set; }
 		bool ShowRuler { get; set; }
-		bool AutoIndent { get; set; }
+		IndentStyle IndentStyle { get; set; }
 		bool OverrideDocumentEolMarker { get; set; }
 		bool EnableSyntaxHighlighting { get; set; }
 		bool EnableAnimations { get; }

@@ -103,7 +103,9 @@ FILES =  \
 	Mono.TextEditor/IBuffer.cs \
 	Mono.TextEditor/IconMargin.cs \
 	Mono.TextEditor/IDocumentPartitioner.cs \
+	Mono.TextEditor/IIndentationTracker.cs \
 	Mono.TextEditor/ILineSplitter.cs \
+	Mono.TextEditor/IndentStyle.cs \
 	Mono.TextEditor/InsertionCursorEditMode.cs \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ISegment.cs \

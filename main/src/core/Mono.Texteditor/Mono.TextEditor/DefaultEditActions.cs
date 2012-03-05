@@ -264,6 +264,14 @@ namespace Mono.TextEditor
 			InsertNewLine (data);
 		}
 		
+		static void NewLineSmartIndent (TextEditorData data)
+		{
+			data.EnsureCaretIsNotVirtual ();
+			data.Insert (data.Caret.Offset, data.EolMarker);
+			data.Caret.Offset += data.EolMarker.Length;
+			data.InsertAtCaret (data.GetIndentationString (data.Caret.Location));
+		}
+		
 		public static void InsertNewLine (TextEditorData data)
 		{
 			if (!data.CanEditSelection)
@@ -272,14 +280,42 @@ namespace Mono.TextEditor
 			using (var undo = data.OpenUndoGroup ()) {
 				if (data.IsSomethingSelected)
 					data.DeleteSelectedText ();
-				
-				data.EnsureCaretIsNotVirtual ();
-				StringBuilder sb = new StringBuilder (data.EolMarker);
-				if (data.Options.AutoIndent)
+				switch (data.Options.IndentStyle) {
+				case IndentStyle.None:
+					data.Insert (data.Caret.Offset, data.EolMarker);
+					data.Caret.Offset += data.EolMarker.Length;
+					break;
+				case IndentStyle.Auto:
+					data.EnsureCaretIsNotVirtual ();
+					var sb = new StringBuilder (data.EolMarker);
 					sb.Append (data.Document.GetLineIndent (data.Caret.Line));
-				int offset = data.Caret.Offset;
-				data.Insert (offset, sb.ToString ());
-				data.Caret.Offset = offset + sb.Length;
+					int offset = data.Caret.Offset;
+					data.Insert (offset, sb.ToString ());
+					data.Caret.Offset = offset + sb.Length;
+					break;
+				case IndentStyle.Smart:
+					if (!data.HasIndentationTracker)
+						goto case IndentStyle.Auto;
+					NewLineSmartIndent (data);
+					break;
+				case IndentStyle.Virtual:
+					if (!data.HasIndentationTracker)
+						goto case IndentStyle.Auto;
+					var curLine = data.GetLine (data.Caret.Line);
+					var indentCol = data.GetVirtualIndentationColumn (data.Caret.Location);
+					if (curLine.EditableLength >= data.Caret.Column) {
+						NewLineSmartIndent (data);
+						if (curLine.EditableLength == curLine.GetIndentation (data.Document).Length)
+							data.Remove (curLine.Offset, curLine.EditableLength);
+						break;
+					}
+					data.Insert (data.Caret.Offset, data.EolMarker);
+					data.Caret.Offset += data.EolMarker.Length;
+					data.Caret.Column = indentCol;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException ();
+				}
 			}
 		}
 		

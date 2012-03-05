@@ -508,8 +508,8 @@ namespace Mono.TextEditor
 			if (!data.CanEditSelection)
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			if (data.Caret.Column > line.EditableLength + 1) {
-				string text = data.GetVirtualSpaces (data.Caret.Line, data.Caret.Column);
+			if (data.Caret.Column > line.EditableLength + 1 && data.HasIndentationTracker) {
+				string text = data.GetIndentationString (data.Caret.Location);
 				int offset = data.Caret.Offset;
 				int textLength = data.Insert (offset, text);
 				data.Caret.Offset = offset + textLength;

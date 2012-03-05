@@ -198,10 +198,14 @@ namespace Mono.TextEditor
 		{
 			DocumentLocation old = Location;
 			
-			int line   = TextEditorData.Document.OffsetToLineNumber (desiredOffset);
-			int column = desiredOffset - TextEditorData.Document.GetLine (line).Offset + 1;
-			location = new DocumentLocation (line, column);
-			SetColumn ();
+			int desiredLineNumber = TextEditorData.Document.OffsetToLineNumber (desiredOffset);
+			var desiredLine = TextEditorData.Document.GetLine (desiredLineNumber);
+			int column = desiredOffset - desiredLine.Offset + 1;
+			if (TextEditorData.HasIndentationTracker && desiredLine.EditableLength + 1 < this.Column && column == 1)
+ 				column = TextEditorData.GetVirtualIndentationColumn (desiredLineNumber, 1);
+			location = new DocumentLocation (desiredLineNumber, column);
+			
+//			SetColumn ();
 			OnPositionChanged (new DocumentLocationEventArgs (old));
 		}
 		
@@ -222,13 +226,11 @@ namespace Mono.TextEditor
 			if (curLine == null)
 				return;
 			this.location.Column = curLine.GetLogicalColumn (TextEditorData, this.DesiredColumn);
-			if (curLine.GetVisualColumn (TextEditorData, this.location.Column) < this.DesiredColumn) {
-				this.location.Column = TextEditorData.GetNextVirtualColumn (Line, this.location.Column);
+			if (TextEditorData.HasIndentationTracker && curLine.GetVisualColumn (TextEditorData, this.location.Column) < this.DesiredColumn) {
+				this.location.Column = TextEditorData.GetVirtualIndentationColumn (Line, this.location.Column);
 			} else {
 				if (this.Column > curLine.EditableLength + 1) {
 					this.location.Column = System.Math.Min (curLine.EditableLength + 1, System.Math.Max (DocumentLocation.MinColumn, this.Column));
-					if (AllowCaretBehindLineEnd)
-						this.location.Column = TextEditorData.GetNextVirtualColumn (Line, this.location.Column);
 				}
 			}
 		}

@@ -1387,7 +1387,7 @@ namespace Mono.TextEditor
 					int index = caretOffset- offset;
 
 					if (Caret.Column > line.EditableLength + 1) {
-						string virtualSpace = this.textEditor.GetTextEditorData ().GetVirtualSpaces (Caret.Line, Caret.Column);
+						string virtualSpace = this.textEditor.GetTextEditorData ().GetIndentationString (Caret.Location);
 						LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
 						wrapper.LineChars = virtualSpace.ToCharArray ();
 						wrapper.Layout.SetText (virtualSpace);
@@ -1567,8 +1567,12 @@ namespace Mono.TextEditor
 				if (isHandled)
 					return;
 				if (line != null && clickLocation.Column >= line.EditableLength + 1 && GetWidth (Document.GetTextAt (line) + "-") < args.X) {
-					int nextColumn = this.textEditor.GetTextEditorData ().GetNextVirtualColumn (clickLocation.Line, clickLocation.Column);
-					clickLocation.Column = nextColumn;
+						clickLocation.Column = line.EditableLength + 1;
+						if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual) {
+							int indentationColumn = this.textEditor.GetTextEditorData ().GetVirtualIndentationColumn (clickLocation);
+							if (indentationColumn > clickLocation.Column)
+								clickLocation.Column = indentationColumn;
+						}
 				}
 
 				int offset = Document.LocationToOffset (clickLocation);

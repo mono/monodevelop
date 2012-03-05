@@ -98,8 +98,8 @@ namespace Mono.TextEditor
 			}
 			if (data.Caret.Column < line.EditableLength + 1 || data.Caret.AllowCaretBehindLineEnd) {
 				if (data.Caret.Column >= line.EditableLength + 1) {
-					int nextColumn = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
-					if (data.Caret.Column != nextColumn) {
+					int nextColumn = data.HasIndentationTracker ? data.GetVirtualIndentationColumn (data.Caret.Location) : line.EditableLength + 1;
+					if (data.Caret.Column < nextColumn) {
 						data.Caret.Column = nextColumn;
 					} else {
 						data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, DocumentLocation.MinColumn);
@@ -141,11 +141,7 @@ namespace Mono.TextEditor
 				int visualLine = data.LogicalToVisualLine (data.Caret.Line);
 				int line = data.VisualToLogicalLine (visualLine - 1);
 				int offset = MoveCaretOutOfFolding (data, data.Document.LocationToOffset (line, data.Caret.Column), false);
-				if (!IsFolded (data, line, data.Caret.DesiredColumn)) {
-					data.Caret.SetToOffsetWithDesiredColumn (offset);
-				} else {
-					data.Caret.Offset = offset;
-				}
+				data.Caret.SetToOffsetWithDesiredColumn (offset);
 			} else {
 				ToDocumentStart (data);
 			}
@@ -195,11 +191,7 @@ namespace Mono.TextEditor
 				int nextLine = data.LogicalToVisualLine (data.Caret.Line) + 1;
 				int line = data.VisualToLogicalLine (nextLine);
 				int offset = MoveCaretOutOfFolding (data, data.LocationToOffset (line, data.Caret.Column), true);
-				if (!IsFolded (data, line, data.Caret.DesiredColumn)) {
-					data.Caret.SetToOffsetWithDesiredColumn (offset);
-				} else {
-					data.Caret.Offset = offset;
-				}
+				data.Caret.SetToOffsetWithDesiredColumn (offset);
 			} else {
 				ToDocumentEnd (data);
 			}
@@ -291,9 +283,9 @@ namespace Mono.TextEditor
 			if (newLocation != data.Caret.Location)
 				data.Caret.Location = newLocation;
 			
-			if (data.Caret.AllowCaretBehindLineEnd) {
-				int nextColumn = data.GetNextVirtualColumn (data.Caret.Line, data.Caret.Column);
-				if (nextColumn != data.Caret.Column)
+			if (data.Caret.AllowCaretBehindLineEnd && data.HasIndentationTracker) {
+				int nextColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
+				if (nextColumn > data.Caret.Column)
 					data.Caret.Column = nextColumn;
 			}
 			

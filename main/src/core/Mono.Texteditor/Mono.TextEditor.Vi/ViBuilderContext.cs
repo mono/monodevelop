@@ -92,7 +92,12 @@ namespace Mono.TextEditor.Vi
 			if (!char.IsControl (ch) && data.CanEdit (caret.Line)) {
 				LineSegment line = doc.GetLine (caret.Line);
 				if (caret.IsInInsertMode || caret.Column >= line.EditableLength + 1) {
-					string text = caret.Column > line.EditableLength + 1 ? data.GetVirtualSpaces (caret.Line, caret.Column) + ch.ToString () : ch.ToString ();
+					string text;
+					if (data.HasIndentationTracker) {
+						text = caret.Column > line.EditableLength + 1 ? data.GetIndentationString (caret.Location) + ch.ToString () : ch.ToString ();
+					} else {
+						text = ch.ToString ();
+					}
 					if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
 						int length = 0;
 						for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {

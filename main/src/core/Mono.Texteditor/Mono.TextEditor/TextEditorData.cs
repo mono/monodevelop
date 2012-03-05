@@ -362,8 +362,13 @@ namespace Mono.TextEditor
 		{
 			if (!caret.PreserveSelection)
 				this.ClearSelection ();
-			
-			if (Options.RemoveTrailingWhitespaces && args.Location.Line != Caret.Line) {
+			if (Options.IndentStyle == IndentStyle.Virtual) {
+				if (HasIndentationTracker) {
+					var line = Document.GetLine (args.Location.Line);
+					if (line != null && line.EditableLength > 0 && GetIndentationString (args.Location) == Document.GetTextAt (line.Offset, line.EditableLength))
+						Remove (line.Offset, line.EditableLength);
+				}
+			} else if (Options.RemoveTrailingWhitespaces && args.Location.Line != Caret.Line) {
 				LineSegment line = Document.GetLine (args.Location.Line);
 				if (line != null && line.WasChanged)
 					Document.RemoveTrailingWhitespaces (this, line);
@@ -911,54 +916,51 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region VirtualSpace Manager
-		IVirtualSpaceManager virtualSpaceManager = null;
-		public IVirtualSpaceManager VirtualSpaceManager {
+		IIndentationTracker indentationTracker = null;
+		public bool HasIndentationTracker {
 			get {
-				if (virtualSpaceManager == null)
-					virtualSpaceManager = new DefaultVirtualSpaceManager (this.document);
-				return virtualSpaceManager;
+				return indentationTracker != null;	
+			}	
+		}
+		public IIndentationTracker IndentationTracker {
+			private get {
+				if (!HasIndentationTracker)
+					throw new InvalidOperationException ("Indentation tracker not installed.");
+				return indentationTracker;
 			}
 			set {
-				virtualSpaceManager = value;
+				indentationTracker = value;
 			}
 		}
 		
-		public interface IVirtualSpaceManager
+		public string GetIndentationString (DocumentLocation loc)
 		{
-			string GetVirtualSpaces (int lineNumber, int column);
-			int GetNextVirtualColumn (int lineNumber, int column);
+			return IndentationTracker.GetIndentationString (loc.Line, loc.Column);
 		}
 		
-		class DefaultVirtualSpaceManager : IVirtualSpaceManager
+		public string GetIndentationString (int lineNumber, int column)
 		{
-			Document doc;
-			public DefaultVirtualSpaceManager (Document doc)
-			{
-				this.doc = doc;
-			}
-			public string GetVirtualSpaces (int lineNumber, int column)
-			{
-				LineSegment line = doc.GetLine (lineNumber);
-				if (line == null)
-					return "";
-				int count = column - 1 - line.EditableLength;
-				return new string (' ', System.Math.Max (0, count));
-			}
-			
-			public int GetNextVirtualColumn (int lineNumber, int column)
-			{
-				return column + 1;
-			}
+			return IndentationTracker.GetIndentationString (lineNumber, column);
 		}
 		
-		public string GetVirtualSpaces (int lineNumber, int column)
+		public string GetIndentationString (int offset)
 		{
-			return VirtualSpaceManager.GetVirtualSpaces (lineNumber, column);
+			return IndentationTracker.GetIndentationString (offset);
 		}
 		
-		public int GetNextVirtualColumn (int lineNumber, int column)
+		public int GetVirtualIndentationColumn (DocumentLocation loc)
 		{
-			return VirtualSpaceManager.GetNextVirtualColumn (lineNumber, column);
+			return IndentationTracker.GetVirtualIndentationColumn (loc.Line, loc.Column);
+		}
+		
+		public int GetVirtualIndentationColumn (int lineNumber, int column)
+		{
+			return IndentationTracker.GetVirtualIndentationColumn (lineNumber, column);
+		}
+		
+		public int GetVirtualIndentationColumn (int offset)
+		{
+			return IndentationTracker.GetVirtualIndentationColumn (offset);
 		}
 		
 		public int EnsureCaretIsNotVirtual ()
@@ -967,14 +969,16 @@ namespace Mono.TextEditor
 			if (line == null)
 				return 0;
 			
-			if (Caret.Column > line.EditableLength + 1) {
-				string virtualSpace = GetVirtualSpaces (Caret.Line, Caret.Column);
-				if (!string.IsNullOrEmpty (virtualSpace))
-					Insert (Caret.Offset, virtualSpace);
-				
-				// No need to reposition the caret, because it's already at the correct position
-				// The only difference is that the position is not virtual anymore.
-				return virtualSpace.Length;
+			if (HasIndentationTracker && Caret.Column > line.EditableLength + 1) {
+				string virtualSpace = GetIndentationString (Caret.Location);
+				if (!string.IsNullOrEmpty (virtualSpace)) {
+					int offset = Caret.Offset;
+					Insert (offset, virtualSpace);
+					// No need to reposition the caret, because it's already at the correct position
+					// The only difference is that the position is not virtual anymore.
+					return virtualSpace.Length;
+				}
+				return 0;
 			}
 			return 0;
 		}
