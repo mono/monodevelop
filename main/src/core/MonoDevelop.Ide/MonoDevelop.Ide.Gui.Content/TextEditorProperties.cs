@@ -4,6 +4,7 @@ using System.Text;
 using Pango;
 
 using MonoDevelop.Core;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.Content {
 	public enum LineViewerStyle {
@@ -119,11 +120,11 @@ namespace MonoDevelop.Ide.Gui.Content {
 		public static IndentStyle IndentStyle {
 			get {
 				try {
-					return PropertyService.Get ("IndentStyle", IndentStyle.Smart);
+					return PropertyService.Get ("IndentStyle", IndentStyle.Virtual);
 				} catch {
 					// invalid indent style -> setting to smart for default
 					// fixes: Bug 446871 - [Regression] Autoindent doesn't indent far enough
-					PropertyService.Set ("IndentStyle", IndentStyle.Smart);
+					PropertyService.Set ("IndentStyle", IndentStyle.Virtual);
 					return IndentStyle.Smart;
 				}
 			}
