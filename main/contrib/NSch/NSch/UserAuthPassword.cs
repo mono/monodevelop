@@ -52,6 +52,10 @@ namespace NSch
 			{
 				while (true)
 				{
+					if (session.auth_failures >= session.max_auth_tries)
+					{
+						return false;
+					}
 					if (password == null)
 					{
 						if (userinfo == null)
@@ -172,6 +176,7 @@ namespace NSch
 							{
 								throw new JSchPartialAuthException(Util.Byte2str(foo));
 							}
+							session.auth_failures++;
 							break;
 						}
 						else

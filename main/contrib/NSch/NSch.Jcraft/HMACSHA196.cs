@@ -34,7 +34,7 @@ using Sharpen;
 
 namespace NSch.Jcraft
 {
-	public class HMACSHA196 : HMACSHA1
+	class HMACSHA196 : HMACSHA1
 	{
 		private static readonly string name = "hmac-sha1-96";
 

@@ -43,21 +43,39 @@ namespace NSch
 
 		private const int LOCAL_MAXIMUM_PACKET_SIZE = unchecked((int)(0x4000));
 
-		private readonly int SSH2_AGENTC_REQUEST_IDENTITIES = 11;
+		private readonly byte SSH_AGENTC_REQUEST_RSA_IDENTITIES = 1;
 
-		private readonly int SSH2_AGENT_IDENTITIES_ANSWER = 12;
+		private readonly byte SSH_AGENT_RSA_IDENTITIES_ANSWER = 2;
 
-		private readonly int SSH2_AGENTC_SIGN_REQUEST = 13;
+		private readonly byte SSH_AGENTC_RSA_CHALLENGE = 3;
 
-		private readonly int SSH2_AGENT_SIGN_RESPONSE = 14;
+		private readonly byte SSH_AGENT_RSA_RESPONSE = 4;
 
-		private readonly int SSH2_AGENTC_ADD_IDENTITY = 17;
+		private readonly byte SSH_AGENT_FAILURE = 5;
 
-		private readonly int SSH2_AGENTC_REMOVE_IDENTITY = 18;
+		private readonly byte SSH_AGENT_SUCCESS = 6;
 
-		private readonly int SSH2_AGENTC_REMOVE_ALL_IDENTITIES = 19;
+		private readonly byte SSH_AGENTC_ADD_RSA_IDENTITY = 7;
 
-		private readonly int SSH2_AGENT_FAILURE = 30;
+		private readonly byte SSH_AGENTC_REMOVE_RSA_IDENTITY = 8;
+
+		private readonly byte SSH_AGENTC_REMOVE_ALL_RSA_IDENTITIES = 9;
+
+		private readonly byte SSH2_AGENTC_REQUEST_IDENTITIES = 11;
+
+		private readonly byte SSH2_AGENT_IDENTITIES_ANSWER = 12;
+
+		private readonly byte SSH2_AGENTC_SIGN_REQUEST = 13;
+
+		private readonly byte SSH2_AGENT_SIGN_RESPONSE = 14;
+
+		private readonly byte SSH2_AGENTC_ADD_IDENTITY = 17;
+
+		private readonly byte SSH2_AGENTC_REMOVE_IDENTITY = 18;
+
+		private readonly byte SSH2_AGENTC_REMOVE_ALL_IDENTITIES = 19;
+
+		private readonly byte SSH2_AGENT_FAILURE = 30;
 
 		internal bool init = true;
 
@@ -128,12 +146,13 @@ namespace NSch
 			{
 				throw new IOException(e.ToString());
 			}
-			ArrayList identities = _session.jsch.identities;
+			IdentityRepository irepo = _session.jsch.GetIdentityRepository();
 			UserInfo userinfo = _session.GetUserInfo();
+			mbuf.Reset();
 			if (typ == SSH2_AGENTC_REQUEST_IDENTITIES)
 			{
-				mbuf.Reset();
-				mbuf.PutByte(unchecked((byte)SSH2_AGENT_IDENTITIES_ANSWER));
+				mbuf.PutByte(SSH2_AGENT_IDENTITIES_ANSWER);
+				ArrayList identities = irepo.GetIdentities();
 				lock (identities)
 				{
 					int count = 0;
@@ -158,92 +177,137 @@ namespace NSch
 						mbuf.PutString(Util.empty);
 					}
 				}
-				byte[] bar = new byte[mbuf.GetLength()];
-				mbuf.GetByte(bar);
-				Send(bar);
 			}
 			else
 			{
-				if (typ == SSH2_AGENTC_SIGN_REQUEST)
+				if (typ == SSH_AGENTC_REQUEST_RSA_IDENTITIES)
 				{
-					byte[] blob = rbuf.GetString();
-					byte[] data = rbuf.GetString();
-					int flags = rbuf.GetInt();
-					//      if((flags & 1)!=0){ //SSH_AGENT_OLD_SIGNATURE // old OpenSSH 2.0, 2.1
-					//        datafellows = SSH_BUG_SIGBLOB;
-					//      }
-					Identity identity = null;
-					lock (identities)
+					mbuf.PutByte(SSH_AGENT_RSA_IDENTITIES_ANSWER);
+					mbuf.PutInt(0);
+				}
+				else
+				{
+					if (typ == SSH2_AGENTC_SIGN_REQUEST)
 					{
-						for (int i = 0; i < identities.Count; i++)
+						byte[] blob = rbuf.GetString();
+						byte[] data = rbuf.GetString();
+						int flags = rbuf.GetInt();
+						//      if((flags & 1)!=0){ //SSH_AGENT_OLD_SIGNATURE // old OpenSSH 2.0, 2.1
+						//        datafellows = SSH_BUG_SIGBLOB;
+						//      }
+						ArrayList identities = irepo.GetIdentities();
+						Identity identity = null;
+						lock (identities)
 						{
-							Identity _identity = (Identity)(identities[i]);
-							if (_identity.GetPublicKeyBlob() == null)
+							for (int i = 0; i < identities.Count; i++)
 							{
-								continue;
-							}
-							if (!Util.Array_equals(blob, _identity.GetPublicKeyBlob()))
-							{
-								continue;
-							}
-							if (_identity.IsEncrypted())
-							{
-								if (userinfo == null)
+								Identity _identity = (Identity)(identities[i]);
+								if (_identity.GetPublicKeyBlob() == null)
 								{
 									continue;
 								}
-								while (_identity.IsEncrypted())
+								if (!Util.Array_equals(blob, _identity.GetPublicKeyBlob()))
 								{
-									if (!userinfo.PromptPassphrase("Passphrase for " + _identity.GetName()))
+									continue;
+								}
+								if (_identity.IsEncrypted())
+								{
+									if (userinfo == null)
 									{
-										break;
+										continue;
 									}
-									string _passphrase = userinfo.GetPassphrase();
-									if (_passphrase == null)
+									while (_identity.IsEncrypted())
 									{
-										break;
-									}
-									byte[] passphrase = Util.Str2byte(_passphrase);
-									try
-									{
-										if (_identity.SetPassphrase(passphrase))
+										if (!userinfo.PromptPassphrase("Passphrase for " + _identity.GetName()))
+										{
+											break;
+										}
+										string _passphrase = userinfo.GetPassphrase();
+										if (_passphrase == null)
+										{
+											break;
+										}
+										byte[] passphrase = Util.Str2byte(_passphrase);
+										try
+										{
+											if (_identity.SetPassphrase(passphrase))
+											{
+												break;
+											}
+										}
+										catch (JSchException)
 										{
 											break;
 										}
 									}
-									catch (JSchException)
-									{
-										break;
-									}
+								}
+								if (!_identity.IsEncrypted())
+								{
+									identity = _identity;
+									break;
 								}
 							}
-							if (!_identity.IsEncrypted())
-							{
-								identity = _identity;
-								break;
-							}
 						}
-					}
-					byte[] signature = null;
-					if (identity != null)
-					{
-						signature = identity.GetSignature(data);
-					}
-					mbuf.Reset();
-					if (signature == null)
-					{
-						mbuf.PutByte(unchecked((byte)SSH2_AGENT_FAILURE));
+						byte[] signature = null;
+						if (identity != null)
+						{
+							signature = identity.GetSignature(data);
+						}
+						if (signature == null)
+						{
+							mbuf.PutByte(SSH2_AGENT_FAILURE);
+						}
+						else
+						{
+							mbuf.PutByte(SSH2_AGENT_SIGN_RESPONSE);
+							mbuf.PutString(signature);
+						}
 					}
 					else
 					{
-						mbuf.PutByte(unchecked((byte)SSH2_AGENT_SIGN_RESPONSE));
-						mbuf.PutString(signature);
+						if (typ == SSH2_AGENTC_REMOVE_IDENTITY)
+						{
+							byte[] blob = rbuf.GetString();
+							irepo.Remove(blob);
+							mbuf.PutByte(SSH_AGENT_SUCCESS);
+						}
+						else
+						{
+							if (typ == SSH_AGENTC_REMOVE_ALL_RSA_IDENTITIES)
+							{
+								mbuf.PutByte(SSH_AGENT_SUCCESS);
+							}
+							else
+							{
+								if (typ == SSH2_AGENTC_REMOVE_ALL_IDENTITIES)
+								{
+									irepo.RemoveAll();
+									mbuf.PutByte(SSH_AGENT_SUCCESS);
+								}
+								else
+								{
+									if (typ == SSH2_AGENTC_ADD_IDENTITY)
+									{
+										int fooo = rbuf.GetLength();
+										byte[] tmp = new byte[fooo];
+										rbuf.GetByte(tmp);
+										bool result = irepo.Add(tmp);
+										mbuf.PutByte(result ? SSH_AGENT_SUCCESS : SSH_AGENT_FAILURE);
+									}
+									else
+									{
+										rbuf.Skip(rbuf.GetLength() - 1);
+										mbuf.PutByte(SSH_AGENT_FAILURE);
+									}
+								}
+							}
+						}
 					}
-					byte[] bar = new byte[mbuf.GetLength()];
-					mbuf.GetByte(bar);
-					Send(bar);
 				}
 			}
+			byte[] response = new byte[mbuf.GetLength()];
+			mbuf.GetByte(response);
+			Send(response);
 		}
 
 		private void Send(byte[] message)
@@ -260,6 +324,12 @@ namespace NSch
 			catch (Exception)
 			{
 			}
+		}
+
+		internal override void Eof_remote()
+		{
+			base.Eof_remote();
+			Eof();
 		}
 	}
 }

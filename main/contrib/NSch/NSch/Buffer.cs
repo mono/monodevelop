@@ -222,6 +222,14 @@ namespace NSch
 		public virtual byte[] GetMPInt()
 		{
 			int i = GetInt();
+			// uint32
+			if (i < 0 || i > 8 * 1024)
+			{
+				// bigger than 0x7fffffff
+				// TODO: an exception should be thrown.
+				i = 8 * 1024;
+			}
+			// the session will be broken, but working around OOME.
 			byte[] foo = new byte[i];
 			GetByte(foo, 0, i);
 			return foo;
@@ -248,6 +256,13 @@ namespace NSch
 		{
 			int i = GetInt();
 			// uint32
+			if (i < 0 || i > 256 * 1024)
+			{
+				// bigger than 0x7fffffff
+				// TODO: an exception should be thrown.
+				i = 256 * 1024;
+			}
+			// the session will be broken, but working around OOME.
 			byte[] foo = new byte[i];
 			GetByte(foo, 0, i);
 			return foo;
@@ -286,6 +301,16 @@ namespace NSch
 		internal virtual byte GetCommand()
 		{
 			return buffer[5];
+		}
+
+		internal virtual void CheckFreeSize(int n)
+		{
+			if (buffer.Length < index + n)
+			{
+				byte[] tmp = new byte[buffer.Length * 2];
+				System.Array.Copy(buffer, 0, tmp, 0, index);
+				buffer = tmp;
+			}
 		}
 	}
 }

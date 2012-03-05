@@ -42,7 +42,7 @@ namespace NSch
 
 		public abstract void Init(int type, int level);
 
-		public abstract int Compress(byte[] buf, int start, int len);
+		public abstract byte[] Compress(byte[] buf, int start, int[] len);
 
 		public abstract byte[] Uncompress(byte[] buf, int start, int[] len);
 	}

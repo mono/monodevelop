@@ -17,6 +17,15 @@ namespace Sharpen
 		private object thisLock;
 		private bool allowGrow = false;
 		
+		public int @in {
+			get { return start; }
+			set { start = value; }
+		}
+		
+		public int @out {
+			get { return end; }
+			set { end = value; }
+		}
 
 		public PipedInputStream ()
 		{

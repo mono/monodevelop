@@ -29,23 +29,100 @@ This code is based on jsch (http://www.jcraft.com/jsch).
 All credit should go to the authors of jsch.
 */
 
+using System.Collections;
 using NSch;
 using Sharpen;
 
 namespace NSch
 {
-	public abstract class SftpProgressMonitor
+	internal class LocalIdentityRepository : IdentityRepository
 	{
-		public const int PUT = 0;
+		private ArrayList identities = new ArrayList();
 
-		public const int GET = 1;
+		private JSch jsch;
 
-		public const long UNKNOWN_SIZE = -1L;
+		internal LocalIdentityRepository(JSch jsch)
+		{
+			this.jsch = jsch;
+		}
 
-		public abstract void Init(int op, string src, string dest, long max);
+		public virtual ArrayList GetIdentities()
+		{
+			lock (this)
+			{
+				ArrayList v = new ArrayList();
+				for (int i = 0; i < identities.Count; i++)
+				{
+					v.Add(identities[i]);
+				}
+				return v;
+			}
+		}
 
-		public abstract bool Count(long count);
+		public virtual void Add(Identity identity)
+		{
+			lock (this)
+			{
+				if (!identities.Contains(identity))
+				{
+					identities.Add(identity);
+				}
+			}
+		}
 
-		public abstract void End();
+		public virtual bool Add(byte[] identity)
+		{
+			lock (this)
+			{
+				try
+				{
+					Identity _identity = IdentityFile.NewInstance("from remote:", identity, null, jsch
+						);
+					identities.Add(_identity);
+					return true;
+				}
+				catch (JSchException)
+				{
+					return false;
+				}
+			}
+		}
+
+		public virtual bool Remove(byte[] blob)
+		{
+			lock (this)
+			{
+				if (blob == null)
+				{
+					return false;
+				}
+				for (int i = 0; i < identities.Count; i++)
+				{
+					Identity _identity = (Identity)(identities[i]);
+					byte[] _blob = _identity.GetPublicKeyBlob();
+					if (_blob == null || !Util.Array_equals(blob, _blob))
+					{
+						continue;
+					}
+					identities.RemoveElement(_identity);
+					_identity.Clear();
+					return true;
+				}
+				return false;
+			}
+		}
+
+		public virtual void RemoveAll()
+		{
+			lock (this)
+			{
+				for (int i = 0; i < identities.Count; i++)
+				{
+					Identity identity = (Identity)(identities[i]);
+					identity.Clear();
+				}
+				identities.Clear();
+			}
+		}
 	}
 }

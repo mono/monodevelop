@@ -107,25 +107,28 @@ namespace NSch
 			int i = 0;
 			try
 			{
+				Session _session = GetSession();
 				while (thread != null && io != null && io.@in != null)
 				{
-					i = io.@in.Read(buf.buffer, 14, buf.buffer.Length - 14 - 32 - 20);
-					// padding and mac
+					i = io.@in.Read(buf.buffer, 14, buf.buffer.Length - 14 - Session.buffer_margin);
 					if (i <= 0)
 					{
 						Eof();
 						break;
 					}
 					packet.Reset();
-					if (close)
-					{
-						break;
-					}
 					buf.PutByte(unchecked((byte)Session.SSH_MSG_CHANNEL_DATA));
 					buf.PutInt(recipient);
 					buf.PutInt(i);
 					buf.Skip(i);
-					GetSession().Write(packet, this, i);
+					lock (this)
+					{
+						if (close)
+						{
+							break;
+						}
+						_session.Write(packet, this, i);
+					}
 				}
 			}
 			catch (Exception)

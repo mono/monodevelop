@@ -35,7 +35,7 @@ using Sharpen;
 
 namespace NSch
 {
-	public class ChannelSubsystem : ChannelSession
+	class ChannelSubsystem : ChannelSession
 	{
 		internal bool xforwading = false;
 
@@ -47,7 +47,7 @@ namespace NSch
 
 		public override void SetXForwarding(bool foo)
 		{
-			xforwading = true;
+			xforwading = foo;
 		}
 
 		public override void SetPty(bool foo)
