@@ -195,25 +195,21 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				return false;
 			}
+			if ((key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) && !(textEditorData.CurrentMode is TextLinkEditMode)) {
+				RunFormatter ();
+				stateTracker.UpdateEngine ();
+			}
 
 			//do the smart indent
 			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
 				bool retval;
-				
-				if (keyChar == '\n' && !(textEditorData.CurrentMode is TextLinkEditMode)) {
-					using (var undo2 = textEditorData.OpenUndoGroup ()) {
-						RunFormatter ();
-						stateTracker.UpdateEngine ();
-					}
-				}
-					
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					//capture some of the current state
 					int oldBufLen = textEditorData.Length;
 					int oldLine = textEditorData.Caret.Line + 1;
 					bool hadSelection = textEditorData.IsSomethingSelected;
 
-					
+
 					//pass through to the base class, which actually inserts the character
 					//and calls HandleCodeCompletion etc to handles completion
 					DoPreInsertionSmartIndent (key);
@@ -468,13 +464,8 @@ namespace MonoDevelop.CSharp.Formatting
 		void RunFormatter ()
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
-				//		textEditorData.Document.TextReplaced -= TextCut;
-				
 				TextLocation location = new TextLocation (textEditorData.Caret.Location.Line + (lastCharInserted == '\n' ? -1 : 0), textEditorData.Caret.Location.Column);
-				//				CSharpFormatter.Format (textEditorData, dom, Document.CompilationUnit, location);
 				OnTheFlyFormatter.Format (Document, location, lastCharInserted == '\n');
-
-				//		textEditorData.Document.TextReplaced += TextCut;
 			}
 		}
 
