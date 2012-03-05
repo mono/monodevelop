@@ -1271,23 +1271,26 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (!variableDeclarationStatement.SemicolonToken.IsNull)
 				FixStatementIndentation (variableDeclarationStatement.StartLocation);
-			
+
 			if ((variableDeclarationStatement.Modifiers & Modifiers.Const) == Modifiers.Const) {
 				ForceSpacesAround (variableDeclarationStatement.Type, true);
 			} else {
 				ForceSpacesAfter (variableDeclarationStatement.Type, true);
 			}
 			var lastLoc = variableDeclarationStatement.StartLocation;
-			IndentLevel++;
 			foreach (var initializer in variableDeclarationStatement.Variables) {
+				var indent = !(initializer.Initializer is AnonymousMethodExpression);
+				if (indent)
+					IndentLevel++;
 				if (lastLoc.Line != initializer.StartLocation.Line) {
 					FixStatementIndentation (initializer.StartLocation);
 					lastLoc = initializer.StartLocation;
 				}
 				initializer.AcceptVisitor (this);
+				if (indent)
+					IndentLevel--;
 			}
-			IndentLevel--;
-			
+
 			FormatCommas (variableDeclarationStatement, policy.SpaceBeforeLocalVariableDeclarationComma, policy.SpaceAfterLocalVariableDeclarationComma);
 			FixSemicolon (variableDeclarationStatement.SemicolonToken);
 		}
@@ -1338,6 +1341,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesBefore (spec.LBracketToken, policy.SpaceBeforeArrayDeclarationBrackets);
 
 			base.VisitComposedType (composedType);
+		}
+
+		public override void VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression)
+		{
+			if (!anonymousMethodExpression.Body.IsNull)
+				EnforceBraceStyle (policy.AnonymousMethodBraceStyle, anonymousMethodExpression.Body.LBraceToken, anonymousMethodExpression.Body.RBraceToken);
+			base.VisitAnonymousMethodExpression (anonymousMethodExpression);
 		}
 
 		public override void VisitAssignmentExpression (AssignmentExpression assignmentExpression)
