@@ -30,6 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -135,13 +136,6 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region ITextEditorOptions implementation
-
-		public bool AutoIndent {
-			get { return DefaultSourceEditorOptions.Instance.AutoIndent; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
 
 		public bool CanResetZoom {
 			get { return DefaultSourceEditorOptions.Instance.CanResetZoom; }
@@ -318,6 +312,9 @@ namespace MonoDevelop.SourceEditor
 
 		public IndentStyle IndentStyle {
 			get { return DefaultSourceEditorOptions.Instance.IndentStyle; }
+			set {
+				throw new NotSupportedException ("Use property 'IndentStyle' instead.");
+			}
 		}
 
 		public bool TabIsReindent {

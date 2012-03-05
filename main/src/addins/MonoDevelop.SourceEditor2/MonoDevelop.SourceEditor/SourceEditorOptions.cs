@@ -140,11 +140,11 @@ namespace MonoDevelop.SourceEditor
 			case "IndentStyle":
 				if (args.NewValue == null) {
 					LoggingService.LogWarning ("tried to set indent style == null");
-				} else if (!(args.NewValue is MonoDevelop.Ide.Gui.Content.IndentStyle)) {
+				} else if (!(args.NewValue is IndentStyle)) {
 					LoggingService.LogWarning ("tried to set indent style to " + args.NewValue + " which isn't from type IndentStyle instead it is from:" +  args.NewValue.GetType ());
-					this.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)Enum.Parse (typeof (MonoDevelop.Ide.Gui.Content.IndentStyle), args.NewValue.ToString ());
+					this.IndentStyle = (IndentStyle)Enum.Parse (typeof (IndentStyle), args.NewValue.ToString ());
 				} else 
-					this.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle) args.NewValue;
+					this.IndentStyle = (IndentStyle) args.NewValue;
 				break;
 			case "ShowLineNumberMargin":
 				base.ShowLineNumberMargin = (bool) args.NewValue;
@@ -228,7 +228,7 @@ namespace MonoDevelop.SourceEditor
 			this.enableCodeCompletion = PropertyService.Get ("EnableCodeCompletion", true);
 			this.enableParameterInsight = PropertyService.Get ("EnableParameterInsight", true);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
-			this.indentStyle = PropertyService.Get ("IndentStyle", MonoDevelop.Ide.Gui.Content.IndentStyle.Smart);
+			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Auto);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
 			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", false);
@@ -706,15 +706,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override bool AutoIndent {
-			get {
-				return IndentStyle != MonoDevelop.Ide.Gui.Content.IndentStyle.None;
-			}
-			set {
-				throw new NotSupportedException ("Use property 'IndentStyle' instead.");
-			}
-		}
-		
 		public override string FontName {
 			get {
 				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
