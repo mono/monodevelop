@@ -31,6 +31,7 @@ using Gtk;
 namespace Mono.TextEditor.Tests
 {
 	
+	[Ignore("AllowCaretBehindLineEnd")]
 	[TestFixture()]
 	public class VirtualSpacesTests : UnitTests.TestBase
 	{
@@ -69,7 +70,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 		}
 		
-		
+		[Ignore("AllowCaretBehindLineEnd")]
 		[Test()]
 		public void TestReturnKeyBehavior ()
 		{

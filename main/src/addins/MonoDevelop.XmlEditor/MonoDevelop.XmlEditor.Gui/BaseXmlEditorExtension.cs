@@ -45,6 +45,7 @@ using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory;
+using Mono.TextEditor;
 
 namespace MonoDevelop.XmlEditor.Gui
 {

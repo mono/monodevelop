@@ -42,6 +42,7 @@ using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
+using Mono.TextEditor;
 
 namespace MonoDevelop.XmlEditor
 {
