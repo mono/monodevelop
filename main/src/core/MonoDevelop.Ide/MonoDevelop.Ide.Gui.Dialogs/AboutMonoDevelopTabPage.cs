@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Gdk.GC backGc;
 			
 			int scrollHeightPx, scrollStartPx, scrolledUpPx;
-			long lastFrameTicks;
+			long startTicks;
 			const int fps = 20;
 			const int pixelsPerFrame = 1;
 			const int pauseSeconds = 5;
@@ -107,6 +107,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				"Lluis Sanchez Gual",
 				"Michael Hutchinson",
 				"Mike Krüger",
+				"Jeff Stedfast",
+				"Alan McGovern",
 				"Mike Kestner",
 				"Ankit Jain",
 				"Jonathan Pobst",
@@ -122,6 +124,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				"Andrea Krüger",
 				"Jakub Steiner"
 			};
+			
 			string[] oldAuthors = new string[] {
 				"Aaron Bockover",
 				"Alberto Paro",
@@ -151,7 +154,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				"Jacob Ilsø Christensen",
 				"Jakub Steiner",
 				"James Fitzsimons",
-				"Jeff Stedfast",
 				"Jérémie Laval",
 				"Jeroen Zwartepoorte",
 				"John BouAnton",
@@ -246,7 +248,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				monoPowered = Gdk.Pixbuf.LoadFromResource ("mono-powered.png");
 				this.SetSizeRequest (imageWidth, imageHeight - 1);
 				
-				TimerHandle = GLib.Timeout.Add (50, new TimeoutHandler (ScrollDown));
+				uint timeout = 1000 / (uint)fps;
+				TimerHandle = GLib.Timeout.Add (timeout, delegate {
+					this.QueueDrawArea (0, 0, Allocation.Width, imageHeight);
+					return true;
+				});
+				
+				this.startTicks = DateTime.Now.Ticks;
 			}
 			
 			string CreditText {
@@ -285,29 +293,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 			
-			bool ScrollDown ()
+			void UpdateScrollPosition ()
 			{
-				long oldTicks = this.lastFrameTicks;
-				long newTicks = DateTime.Now.Ticks;
-				
-				if (scrolledUpPx >= scrollHeightPx) {
-					scrolledUpPx = scrollHeightPx;
-					if ((newTicks - oldTicks) > (pauseSeconds * TimeSpan.TicksPerSecond)) {
-						scrolledUpPx = 0;
-						this.lastFrameTicks = newTicks;
-					} else {
-						return true;
-					}
-				} else if (oldTicks == 0) {
-					this.lastFrameTicks = newTicks;
-				} else {
-					this.lastFrameTicks = newTicks;
-					int ticks = (int)(lastFrameTicks - oldTicks);
-					this.scrolledUpPx += (int)(ticks * pixelsPerFrame * fps / TimeSpan.TicksPerSecond);
-				}
-				
-				this.QueueDrawArea (0, 0, Allocation.Width, imageHeight);
-				return true;
+				long elapsed = DateTime.Now.Ticks - startTicks;
+				long pauseTicks = pauseSeconds * TimeSpan.TicksPerSecond;
+				long ticksPerPixel = TimeSpan.TicksPerSecond / (pixelsPerFrame * fps);
+				long totalScrollTicks = scrollHeightPx * ticksPerPixel  + pauseTicks;
+				long tickPosition = elapsed % totalScrollTicks;
+				scrolledUpPx = (int) Math.Min ((tickPosition / ticksPerPixel), scrollHeightPx);
 			}
 			
 			void DrawText (Drawable window)
@@ -322,6 +315,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 			{
+				UpdateScrollPosition ();
+				
 				var alloc = this.Allocation;
 				if (imageBg != null) {
 					evnt.Window.DrawPixbuf (backGc, imageBg, 0, 0,
