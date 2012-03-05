@@ -80,16 +80,18 @@ namespace NSch
 		}
 
 		//buffer.putPad(pad);
-		internal virtual int Shift(int len, int mac)
+		internal virtual int Shift(int len, int bsize, int mac)
 		{
 			int s = len + 5 + 9;
-			int pad = (-s) & 15;
-			if (pad < 16)
+			int pad = (-s) & (bsize - 1);
+			if (pad < bsize)
 			{
-				pad += 16;
+				pad += bsize;
 			}
 			s += pad;
 			s += mac;
+			s += 32;
+			// margin for deflater; deflater may inflate data
 			if (buffer.buffer.Length < s + buffer.index - 5 - 9 - len)
 			{
 				byte[] foo = new byte[s + buffer.index - 5 - 9 - len];

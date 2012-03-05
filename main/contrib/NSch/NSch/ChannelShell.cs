@@ -35,7 +35,7 @@ using Sharpen;
 
 namespace NSch
 {
-	public class ChannelShell : ChannelSession
+	class ChannelShell : ChannelSession
 	{
 		public ChannelShell() : base()
 		{

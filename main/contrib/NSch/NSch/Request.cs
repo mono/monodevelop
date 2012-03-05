@@ -35,7 +35,7 @@ using Sharpen;
 
 namespace NSch
 {
-	public abstract class Request
+	internal abstract class Request
 	{
 		private bool reply = false;
 

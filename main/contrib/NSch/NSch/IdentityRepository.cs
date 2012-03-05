@@ -29,23 +29,20 @@ This code is based on jsch (http://www.jcraft.com/jsch).
 All credit should go to the authors of jsch.
 */
 
+using System.Collections;
 using NSch;
 using Sharpen;
 
 namespace NSch
 {
-	public abstract class SftpProgressMonitor
+	public interface IdentityRepository
 	{
-		public const int PUT = 0;
+		ArrayList GetIdentities();
 
-		public const int GET = 1;
+		bool Add(byte[] identity);
 
-		public const long UNKNOWN_SIZE = -1L;
+		bool Remove(byte[] blob);
 
-		public abstract void Init(int op, string src, string dest, long max);
-
-		public abstract bool Count(long count);
-
-		public abstract void End();
+		void RemoveAll();
 	}
 }

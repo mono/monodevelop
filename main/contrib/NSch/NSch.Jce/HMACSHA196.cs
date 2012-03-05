@@ -89,7 +89,7 @@ namespace NSch.Jce
 			catch (ShortBufferException)
 			{
 			}
-			System.Array.Copy(_buf20, 0, buf, 0, 12);
+			System.Array.Copy(_buf20, 0, buf, offset, 12);
 		}
 
 		public virtual string GetName()

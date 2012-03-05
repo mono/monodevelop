@@ -192,6 +192,9 @@
     <Compile Include="NSch\Sharpen\GSSException.cs" />
     <Compile Include="NSch\Sharpen\MessageProp.cs" />
     <Compile Include="NSch\Sharpen\DHPrivateKey.cs" />
+    <Compile Include="NSch\DHG14.cs" />
+    <Compile Include="NSch\IdentityRepository.cs" />
+    <Compile Include="NSch\LocalIdentityRepository.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

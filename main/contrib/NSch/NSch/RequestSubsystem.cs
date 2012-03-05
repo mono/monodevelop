@@ -34,7 +34,7 @@ using Sharpen;
 
 namespace NSch
 {
-	public class RequestSubsystem : NSch.Request
+	class RequestSubsystem : NSch.Request
 	{
 		private string subsystem = null;
 

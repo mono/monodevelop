@@ -34,7 +34,7 @@ using Sharpen;
 
 namespace NSch
 {
-	public class RequestSftp : Request
+	class RequestSftp : Request
 	{
 		public RequestSftp()
 		{

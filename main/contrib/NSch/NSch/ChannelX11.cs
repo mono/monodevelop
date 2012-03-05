@@ -129,6 +129,15 @@ namespace NSch
 			}
 		}
 
+		internal static void RemoveFakedCookie(Session session)
+		{
+			lock (faked_cookie_hex_pool)
+			{
+				faked_cookie_hex_pool.Remove(session);
+				faked_cookie_pool.Remove(session);
+			}
+		}
+
 		public ChannelX11() : base()
 		{
 			SetLocalWindowSizeMax(LOCAL_WINDOW_SIZE_MAX);
@@ -164,8 +173,7 @@ namespace NSch
 			{
 				while (thread != null && io != null && io.@in != null)
 				{
-					i = io.@in.Read(buf.buffer, 14, buf.buffer.Length - 14 - 32 - 20);
-					// padding and mac
+					i = io.@in.Read(buf.buffer, 14, buf.buffer.Length - 14 - Session.buffer_margin);
 					if (i <= 0)
 					{
 						Eof();

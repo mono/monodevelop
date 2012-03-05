@@ -39,12 +39,14 @@ namespace NSch
 {
 	public class JSch
 	{
+		public static readonly string VERSION = "0.1.46";
+
 		internal static Hashtable config = new Hashtable();
 
 		static JSch()
 		{
 			//  config.put("kex", "diffie-hellman-group-exchange-sha1");
-			config.Put("kex", "diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1"
+			config.Put("kex", "diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1"
 				);
 			config.Put("server_host_key", "ssh-rsa,ssh-dss");
 			//    config.put("server_host_key", "ssh-dss,ssh-rsa");
@@ -63,6 +65,7 @@ namespace NSch
 			config.Put("compression_level", "6");
 			config.Put("diffie-hellman-group-exchange-sha1", "com.jcraft.jsch.DHGEX");
 			config.Put("diffie-hellman-group1-sha1", "com.jcraft.jsch.DHG1");
+			config.Put("diffie-hellman-group14-sha1", "com.jcraft.jsch.DHG14");
 			config.Put("dh", "com.jcraft.jsch.jce.DH");
 			config.Put("3des-cbc", "com.jcraft.jsch.jce.TripleDESCBC");
 			config.Put("blowfish-cbc", "com.jcraft.jsch.jce.BlowfishCBC");
@@ -104,17 +107,35 @@ namespace NSch
 				);
 			config.Put("CheckCiphers", "aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc,aes128-cbc,3des-ctr,arcfour,arcfour128,arcfour256"
 				);
+			config.Put("CheckKexes", "diffie-hellman-group14-sha1");
+			config.Put("MaxAuthTries", "6");
 		}
 
-		internal ArrayList pool = new ArrayList();
+		private ArrayList sessionPool = new ArrayList();
 
-		internal ArrayList identities = new ArrayList();
+		private IdentityRepository identityRepository;
+
+		public virtual void SetIdentityRepository(IdentityRepository identityRepository)
+		{
+			lock (this)
+			{
+				this.identityRepository = identityRepository;
+			}
+		}
+
+		internal virtual IdentityRepository GetIdentityRepository()
+		{
+			lock (this)
+			{
+				return this.identityRepository;
+			}
+		}
 
 		private HostKeyRepository known_hosts = null;
 
-		private sealed class _Logger_115 : Logger
+		private sealed class _Logger_134 : Logger
 		{
-			public _Logger_115()
+			public _Logger_134()
 			{
 			}
 
@@ -128,12 +149,13 @@ namespace NSch
 			}
 		}
 
-		private static readonly Logger DEVNULL = new _Logger_115();
+		private static readonly Logger DEVNULL = new _Logger_134();
 
 		internal static Logger logger = DEVNULL;
 
 		public JSch()
 		{
+			identityRepository = new LocalIdentityRepository(this);
 			try
 			{
 				string osname = (string)(Runtime.GetProperties()["os.name"]);
@@ -171,23 +193,22 @@ namespace NSch
 			s.SetUserName(username);
 			s.SetHost(host);
 			s.SetPort(port);
-			//pool.addElement(s);
 			return s;
 		}
 
 		protected internal virtual void AddSession(Session session)
 		{
-			lock (pool)
+			lock (sessionPool)
 			{
-				pool.Add(session);
+				sessionPool.Add(session);
 			}
 		}
 
 		protected internal virtual bool RemoveSession(Session session)
 		{
-			lock (pool)
+			lock (sessionPool)
 			{
-				return pool.RemoveElement(session);
+				return sessionPool.RemoveElement(session);
 			}
 		}
 
@@ -297,45 +318,45 @@ namespace NSch
 					Util.Bzero(passphrase);
 				}
 			}
-			lock (identities)
+			if (identityRepository is LocalIdentityRepository)
 			{
-				if (!identities.Contains(identity))
+				((LocalIdentityRepository)identityRepository).Add(identity);
+			}
+		}
+
+		// TODO
+		/// <exception cref="NSch.JSchException"></exception>
+		[System.ObsoleteAttribute(@"use JSch#removeIdentity(Identity identity)")]
+		public virtual void RemoveIdentity(string name)
+		{
+			ArrayList identities = identityRepository.GetIdentities();
+			for (int i = 0; i < identities.Count; i++)
+			{
+				Identity identity = (Identity)(identities[i]);
+				if (!identity.GetName().Equals(name))
 				{
-					identities.Add(identity);
+					continue;
 				}
+				identityRepository.Remove(identity.GetPublicKeyBlob());
+				break;
 			}
 		}
 
 		/// <exception cref="NSch.JSchException"></exception>
-		public virtual void RemoveIdentity(string name)
+		public virtual void RemoveIdentity(Identity identity)
 		{
-			lock (identities)
-			{
-				for (int i = 0; i < identities.Count; i++)
-				{
-					Identity identity = (Identity)(identities[i]);
-					if (!identity.GetName().Equals(name))
-					{
-						continue;
-					}
-					identities.RemoveElement(identity);
-					identity.Clear();
-					break;
-				}
-			}
+			identityRepository.Remove(identity.GetPublicKeyBlob());
 		}
 
 		/// <exception cref="NSch.JSchException"></exception>
 		public virtual ArrayList GetIdentityNames()
 		{
 			ArrayList foo = new ArrayList();
-			lock (identities)
+			ArrayList identities = identityRepository.GetIdentities();
+			for (int i = 0; i < identities.Count; i++)
 			{
-				for (int i = 0; i < identities.Count; i++)
-				{
-					Identity identity = (Identity)(identities[i]);
-					foo.Add(identity.GetName());
-				}
+				Identity identity = (Identity)(identities[i]);
+				foo.Add(identity.GetName());
 			}
 			return foo;
 		}
@@ -343,15 +364,7 @@ namespace NSch
 		/// <exception cref="NSch.JSchException"></exception>
 		public virtual void RemoveAllIdentity()
 		{
-			lock (identities)
-			{
-				ArrayList foo = GetIdentityNames();
-				for (int i = 0; i < foo.Count; i++)
-				{
-					string name = ((string)foo[i]);
-					RemoveIdentity(name);
-				}
-			}
+			identityRepository.RemoveAll();
 		}
 
 		public static string GetConfig(string key)
@@ -371,9 +384,9 @@ namespace NSch
 		{
 			lock (config)
 			{
-				for (IEnumerator e = newconf.Keys.GetEnumerator (); e.MoveNext(); )
+				foreach (var e in newconf.Keys)
 				{
-					string key = (string)(e.Current);
+					string key = (string)(e);
 					config.Put(key, (string)(newconf[key]));
 				}
 			}
@@ -388,7 +401,7 @@ namespace NSch
 		{
 			if (logger == null)
 			{
-				NSch.JSch.logger = DEVNULL;
+				logger = DEVNULL;
 			}
 			NSch.JSch.logger = logger;
 		}

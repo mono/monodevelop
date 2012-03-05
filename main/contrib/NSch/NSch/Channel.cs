@@ -124,37 +124,39 @@ namespace NSch
 
 		internal int id;
 
-		internal int recipient = -1;
+		internal volatile int recipient = -1;
 
-		internal byte[] type = Util.Str2byte("foo");
+		protected internal byte[] type = Util.Str2byte("foo");
 
-		internal int lwsize_max = unchecked((int)(0x100000));
+		internal volatile int lwsize_max = unchecked((int)(0x100000));
 
-		internal int lwsize;
+		internal volatile int lwsize;
 
-		internal int lmpsize = unchecked((int)(0x4000));
+		internal volatile int lmpsize = unchecked((int)(0x4000));
 
 		internal long rwsize = 0;
 
-		internal int rmpsize = 0;
+		internal volatile int rmpsize = 0;
 
 		internal IO io = null;
 
 		internal Sharpen.Thread thread = null;
 
-		internal bool eof_local = false;
+		internal volatile bool eof_local = false;
 
-		internal bool eof_remote = false;
+		internal volatile bool eof_remote = false;
 
-		internal bool close = false;
+		internal volatile bool close = false;
 
-		internal bool connected = false;
+		internal volatile bool connected = false;
 
-		internal int exitstatus = -1;
+		internal volatile bool open_confirmation = false;
 
-		internal int reply = 0;
+		internal volatile int exitstatus = -1;
 
-		internal int connectTimeout = 0;
+		internal volatile int reply = 0;
+
+		internal volatile int connectTimeout = 0;
 
 		private Session session;
 
@@ -163,10 +165,8 @@ namespace NSch
 		public Channel()
 		{
 			lwsize = lwsize_max;
-			//int lwsize_max=0x20000;  // 32*1024*4
 			// local initial window size
 			// local maximum packet size
-			//int lmpsize=0x8000;     // local maximum packet size
 			// remote initial window size
 			// remote maximum packet size
 			lock (pool)
@@ -178,7 +178,14 @@ namespace NSch
 
 		internal virtual void SetRecipient(int foo)
 		{
-			this.recipient = foo;
+			lock (this)
+			{
+				this.recipient = foo;
+				if (notifyme > 0)
+				{
+					Sharpen.Runtime.NotifyAll(this);
+				}
+			}
 		}
 
 		internal virtual int GetRecipient()
@@ -200,64 +207,10 @@ namespace NSch
 		/// <exception cref="NSch.JSchException"></exception>
 		public virtual void Connect(int connectTimeout)
 		{
-			Session _session = GetSession();
-			if (!_session.IsConnected())
-			{
-				throw new JSchException("session is down");
-			}
 			this.connectTimeout = connectTimeout;
 			try
 			{
-				Buffer buf = new Buffer(100);
-				Packet packet = new Packet(buf);
-				// send
-				// byte   SSH_MSG_CHANNEL_OPEN(90)
-				// string channel type         //
-				// uint32 sender channel       // 0
-				// uint32 initial window size  // 0x100000(65536)
-				// uint32 maxmum packet size   // 0x4000(16384)
-				packet.Reset();
-				buf.PutByte(unchecked((byte)90));
-				buf.PutString(this.type);
-				buf.PutInt(this.id);
-				buf.PutInt(this.lwsize);
-				buf.PutInt(this.lmpsize);
-				_session.Write(packet);
-				int retry = 1000;
-				long start = Runtime.CurrentTimeMillis();
-				long timeout = connectTimeout;
-				while (this.GetRecipient() == -1 && _session.IsConnected() && retry > 0)
-				{
-					if (timeout > 0L)
-					{
-						if ((Runtime.CurrentTimeMillis() - start) > timeout)
-						{
-							retry = 0;
-							continue;
-						}
-					}
-					try
-					{
-						Sharpen.Thread.Sleep(50);
-					}
-					catch (Exception)
-					{
-					}
-					retry--;
-				}
-				if (!_session.IsConnected())
-				{
-					throw new JSchException("session is down");
-				}
-				if (retry == 0)
-				{
-					throw new JSchException("channel is not opened.");
-				}
-				if (this.IsClosed())
-				{
-					throw new JSchException("channel is not opened.");
-				}
-				connected = true;
+				SendChannelOpen();
 				Start();
 			}
 			catch (Exception e)
@@ -345,14 +298,14 @@ namespace NSch
 		public virtual OutputStream GetOutputStream()
 		{
 			NSch.Channel channel = this;
-			OutputStream @out = new _OutputStream_268(this, channel);
+			OutputStream @out = new _OutputStream_220(this, channel);
 			// close should be finished silently.
 			return @out;
 		}
 
-		private sealed class _OutputStream_268 : OutputStream
+		private sealed class _OutputStream_220 : OutputStream
 		{
-			public _OutputStream_268(Channel _enclosing, NSch.Channel channel)
+			public _OutputStream_220(Channel _enclosing, NSch.Channel channel)
 			{
 				this._enclosing = _enclosing;
 				this.channel = channel;
@@ -379,7 +332,7 @@ namespace NSch
 					this.buffer = new Buffer(this._enclosing.rmpsize);
 					this.packet = new Packet(this.buffer);
 					byte[] _buf = this.buffer.buffer;
-					if (_buf.Length - (14 + 0) - 32 - 20 <= 0)
+					if (_buf.Length - (14 + 0) - Session.buffer_margin <= 0)
 					{
 						this.buffer = null;
 						this.packet = null;
@@ -413,9 +366,9 @@ namespace NSch
 				while (l > 0)
 				{
 					int _l = l;
-					if (l > _bufl - (14 + this.dataLen) - 32 - 20)
+					if (l > _bufl - (14 + this.dataLen) - Session.buffer_margin)
 					{
-						_l = _bufl - (14 + this.dataLen) - 32 - 20;
+						_l = _bufl - (14 + this.dataLen) - Session.buffer_margin;
 					}
 					if (_l <= 0)
 					{
@@ -449,7 +402,13 @@ namespace NSch
 				{
 					int foo = this.dataLen;
 					this.dataLen = 0;
-					this._enclosing.GetSession().Write(this.packet, channel, foo);
+					lock (channel)
+					{
+						if (!channel.close)
+						{
+							this._enclosing.GetSession().Write(this.packet, channel, foo);
+						}
+					}
 				}
 				catch (Exception e)
 				{
@@ -517,6 +476,23 @@ namespace NSch
 			{
 				this._enclosing = _enclosing;
 				this.buffer = new byte[size];
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			public virtual void UpdateReadSide()
+			{
+				lock (this)
+				{
+					if (this.Available() != 0)
+					{
+						// not empty
+						return;
+					}
+					this.@in = 0;
+					this.@out = 0;
+					this.buffer[this.@in++] = 0;
+					this.Read();
+				}
 			}
 
 			private readonly Channel _enclosing;
@@ -859,6 +835,86 @@ namespace NSch
 			catch (Exception)
 			{
 			}
+		}
+
+		protected internal virtual Packet GenChannelOpenPacket()
+		{
+			Buffer buf = new Buffer(100);
+			Packet packet = new Packet(buf);
+			// byte   SSH_MSG_CHANNEL_OPEN(90)
+			// string channel type         //
+			// uint32 sender channel       // 0
+			// uint32 initial window size  // 0x100000(65536)
+			// uint32 maxmum packet size   // 0x4000(16384)
+			packet.Reset();
+			buf.PutByte(unchecked((byte)90));
+			buf.PutString(this.type);
+			buf.PutInt(this.id);
+			buf.PutInt(this.lwsize);
+			buf.PutInt(this.lmpsize);
+			return packet;
+		}
+
+		/// <exception cref="System.Exception"></exception>
+		protected internal virtual void SendChannelOpen()
+		{
+			Session _session = GetSession();
+			if (!_session.IsConnected())
+			{
+				throw new JSchException("session is down");
+			}
+			Packet packet = GenChannelOpenPacket();
+			_session.Write(packet);
+			int retry = 10;
+			long start = Runtime.CurrentTimeMillis();
+			long timeout = connectTimeout;
+			if (timeout != 0L)
+			{
+				retry = 1;
+			}
+			lock (this)
+			{
+				while (this.GetRecipient() == -1 && _session.IsConnected() && retry > 0)
+				{
+					if (timeout > 0L)
+					{
+						if ((Runtime.CurrentTimeMillis() - start) > timeout)
+						{
+							retry = 0;
+							continue;
+						}
+					}
+					try
+					{
+						long t = timeout == 0L ? 5000L : timeout;
+						this.notifyme = 1;
+						Sharpen.Runtime.Wait(this, t);
+					}
+					catch (Exception)
+					{
+					}
+					finally
+					{
+						this.notifyme = 0;
+					}
+					retry--;
+				}
+			}
+			if (!_session.IsConnected())
+			{
+				throw new JSchException("session is down");
+			}
+			if (this.GetRecipient() == -1)
+			{
+				// timeout
+				throw new JSchException("channel is not opened.");
+			}
+			if (this.open_confirmation == false)
+			{
+				// SSH_MSG_CHANNEL_OPEN_FAILURE
+				throw new JSchException("channel is not opened.");
+			}
+			connected = true;
 		}
 	}
 }

@@ -76,6 +76,7 @@ namespace NSch.Jce
 				Sharpen.KeyPair myKpair = myKpairGen.GenerateKeyPair();
 				myKeyAgree.Init(myKpair.GetPrivate());
 				//    BigInteger x=((javax.crypto.interfaces.DHPrivateKey)(myKpair.getPrivate())).getX();
+				//byte[] myPubKeyEnc = myKpair.GetPublic().GetEncoded();
 				e = ((DHPublicKey)(myKpair.GetPublic())).GetY();
 				e_array = e.GetBytes();
 			}
