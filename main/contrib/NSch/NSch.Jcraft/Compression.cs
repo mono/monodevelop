@@ -38,6 +38,8 @@ namespace NSch.Jcraft
 	{
 		private const int BUF_SIZE = 4096;
 
+		private readonly int buffer_margin = 32 + 20;
+
 		private int type;
 
 		private ZStream stream;
@@ -46,6 +48,7 @@ namespace NSch.Jcraft
 
 		public Compression()
 		{
+			// AES256 + HMACSHA1
 			stream = new ZStream();
 		}
 
@@ -69,13 +72,15 @@ namespace NSch.Jcraft
 
 		private byte[] inflated_buf;
 
-		public override int Compress(byte[] buf, int start, int len)
+		public override byte[] Compress(byte[] buf, int start, int[] len)
 		{
 			stream.next_in = buf;
 			stream.next_in_index = start;
-			stream.avail_in = len - start;
+			stream.avail_in = len[0] - start;
 			int status;
 			int outputlen = start;
+			byte[] outputbuf = buf;
+			int tmp = 0;
 			do
 			{
 				stream.next_out = tmpbuf;
@@ -86,8 +91,15 @@ namespace NSch.Jcraft
 				{
 					case JZlib.Z_OK:
 					{
-						System.Array.Copy(tmpbuf, 0, buf, outputlen, BUF_SIZE - stream.avail_out);
-						outputlen += (BUF_SIZE - stream.avail_out);
+						tmp = BUF_SIZE - stream.avail_out;
+						if (outputbuf.Length < outputlen + tmp + buffer_margin)
+						{
+							byte[] foo = new byte[(outputlen + tmp + buffer_margin) * 2];
+							System.Array.Copy(outputbuf, 0, foo, 0, outputbuf.Length);
+							outputbuf = foo;
+						}
+						System.Array.Copy(tmpbuf, 0, outputbuf, outputlen, tmp);
+						outputlen += tmp;
 						break;
 					}
 
@@ -99,7 +111,8 @@ namespace NSch.Jcraft
 				}
 			}
 			while (stream.avail_out == 0);
-			return outputlen;
+			len[0] = outputlen;
+			return outputbuf;
 		}
 
 		public override byte[] Uncompress(byte[] buffer, int start, int[] length)
@@ -120,7 +133,12 @@ namespace NSch.Jcraft
 					{
 						if (inflated_buf.Length < inflated_end + BUF_SIZE - stream.avail_out)
 						{
-							byte[] foo = new byte[inflated_end + BUF_SIZE - stream.avail_out];
+							int len = inflated_buf.Length * 2;
+							if (len < inflated_end + BUF_SIZE - stream.avail_out)
+							{
+								len = inflated_end + BUF_SIZE - stream.avail_out;
+							}
+							byte[] foo = new byte[len];
 							System.Array.Copy(inflated_buf, 0, foo, 0, inflated_end);
 							inflated_buf = foo;
 						}

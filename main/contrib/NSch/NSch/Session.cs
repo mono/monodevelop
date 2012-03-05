@@ -42,8 +42,6 @@ namespace NSch
 {
 	public class Session : Runnable
 	{
-		private static readonly string version = "JSCH-0.1.43";
-
 		internal const int SSH_MSG_DISCONNECT = 1;
 
 		internal const int SSH_MSG_IGNORE = 2;
@@ -104,7 +102,7 @@ namespace NSch
 
 		private byte[] V_S;
 
-		private byte[] V_C = Util.Str2byte("SSH-2.0-" + version);
+		private byte[] V_C = Util.Str2byte("SSH-2.0-JSCH-" + JSch.VERSION);
 
 		private byte[] I_C;
 
@@ -154,7 +152,7 @@ namespace NSch
 
 		private int timeout = 0;
 
-		private bool isConnected = false;
+		private volatile bool isConnected = false;
 
 		private bool isAuthed = false;
 
@@ -178,6 +176,8 @@ namespace NSch
 
 		internal SocketFactory socket_factory = null;
 
+		internal const int buffer_margin = 32 + 20 + 32;
+
 		private Hashtable config = null;
 
 		private Proxy proxy = null;
@@ -193,6 +193,10 @@ namespace NSch
 		protected internal bool daemon_thread = false;
 
 		private long kex_start_time = 0L;
+
+		internal int max_auth_tries = 6;
+
+		internal int auth_failures = 0;
 
 		internal string host = "127.0.0.1";
 
@@ -215,6 +219,9 @@ namespace NSch
 			// the payload of the server's SSH_MSG_KEXINIT
 			// the host key
 			//private byte[] mac_buf;
+			// maximum padding length
+			// maximum mac length
+			// margin for deflater; deflater may inflate data
 			this.jsch = jsch;
 			buf = new Buffer();
 			packet = new Packet(buf);
@@ -421,6 +428,18 @@ namespace NSch
 					in_kex = false;
 					throw new JSchException("invalid protocol(newkyes): " + buf.GetCommand());
 				}
+				try
+				{
+					string s = GetConfig("MaxAuthTries");
+					if (s != null)
+					{
+						max_auth_tries = System.Convert.ToInt32(s);
+					}
+				}
+				catch (FormatException e)
+				{
+					throw new JSchException("MaxAuthTries: " + GetConfig("MaxAuthTries"), e);
+				}
 				bool auth = false;
 				bool auth_cancel = false;
 				UserAuth ua = null;
@@ -455,7 +474,6 @@ namespace NSch
 				int methodi = 0;
 				while (true)
 				{
-					//System.err.println("methods: "+methods);
 					while (!auth && cmethoda != null && methodi < cmethoda.Length)
 					{
 						string method = cmethoda[methodi++];
@@ -549,6 +567,13 @@ loop_continue: ;
 loop_break: ;
 				if (!auth)
 				{
+					if (auth_failures >= max_auth_tries)
+					{
+						if (JSch.GetLogger().IsEnabled(Logger.INFO))
+						{
+							JSch.GetLogger().Log(Logger.INFO, "Login trials exceeds " + max_auth_tries);
+						}
+					}
 					if (auth_cancel)
 					{
 						throw new JSchException("Auth cancel");
@@ -677,14 +702,24 @@ loop_break: ;
 			}
 			string cipherc2s = GetConfig("cipher.c2s");
 			string ciphers2c = GetConfig("cipher.s2c");
-			string[] not_available = CheckCiphers(GetConfig("CheckCiphers"));
-			if (not_available != null && not_available.Length > 0)
+			string[] not_available_ciphers = CheckCiphers(GetConfig("CheckCiphers"));
+			if (not_available_ciphers != null && not_available_ciphers.Length > 0)
 			{
-				cipherc2s = Util.DiffString(cipherc2s, not_available);
-				ciphers2c = Util.DiffString(ciphers2c, not_available);
+				cipherc2s = Util.DiffString(cipherc2s, not_available_ciphers);
+				ciphers2c = Util.DiffString(ciphers2c, not_available_ciphers);
 				if (cipherc2s == null || ciphers2c == null)
 				{
 					throw new JSchException("There are not any available ciphers.");
+				}
+			}
+			string kex = GetConfig("kex");
+			string[] not_available_kexes = CheckKexes(GetConfig("CheckKexes"));
+			if (not_available_kexes != null && not_available_kexes.Length > 0)
+			{
+				kex = Util.DiffString(kex, not_available_kexes);
+				if (kex == null)
+				{
+					throw new JSchException("There are not any available kexes.");
 				}
 			}
 			in_kex = true;
@@ -712,7 +747,7 @@ loop_break: ;
 				random.Fill(buf.buffer, buf.index, 16);
 				buf.Skip(16);
 			}
-			buf.PutString(Util.Str2byte(GetConfig("kex")));
+			buf.PutString(Util.Str2byte(kex));
 			buf.PutString(Util.Str2byte(GetConfig("server_host_key")));
 			buf.PutString(Util.Str2byte(cipherc2s));
 			buf.PutString(Util.Str2byte(ciphers2c));
@@ -909,8 +944,9 @@ loop_break: ;
 			//}
 			if (deflater != null)
 			{
-				packet.buffer.index = deflater.Compress(packet.buffer.buffer, 5, packet.buffer.index
-					);
+				compress_len[0] = packet.buffer.index;
+				packet.buffer.buffer = deflater.Compress(packet.buffer.buffer, 5, compress_len);
+				packet.buffer.index = compress_len[0];
 			}
 			if (c2scipher != null)
 			{
@@ -944,6 +980,8 @@ loop_break: ;
 		}
 
 		internal int[] uncompress_len = new int[1];
+
+		internal int[] compress_len = new int[1];
 
 		private int s2ccipher_size = 8;
 
@@ -1288,6 +1326,21 @@ loop_break: ;
 				}
 				lock (c)
 				{
+					if (c.rwsize < length)
+					{
+						try
+						{
+							c.notifyme++;
+							Sharpen.Runtime.Wait(c, 100);
+						}
+						catch (Exception)
+						{
+						}
+						finally
+						{
+							c.notifyme--;
+						}
+					}
 					if (c.rwsize >= length)
 					{
 						c.rwsize -= length;
@@ -1313,7 +1366,8 @@ loop_break: ;
 						}
 						if (len != length)
 						{
-							s = packet.Shift((int)len, (c2smac != null ? c2smac.GetBlockSize() : 0));
+							s = packet.Shift((int)len, (c2scipher != null ? c2scipher_size : 8), (c2smac != null
+								 ? c2smac.GetBlockSize() : 0));
 						}
 						command = packet.buffer.GetCommand();
 						recipient = c.GetRecipient();
@@ -1342,20 +1396,18 @@ loop_break: ;
 						c.rwsize -= length;
 						break;
 					}
-					try
-					{
-						c.notifyme++;
-						Sharpen.Runtime.Wait(c, 100);
-					}
-					catch (Exception)
-					{
-					}
-					finally
-					{
-						c.notifyme--;
-					}
 				}
 			}
+			//try{ 
+			//System.out.println("1wait: "+c.rwsize);
+			//  c.notifyme++;
+			//  c.wait(100); 
+			//}
+			//catch(java.lang.InterruptedException e){
+			//}
+			//finally{
+			//  c.notifyme--;
+			//}
 			_write(packet);
 		}
 
@@ -1435,6 +1487,14 @@ loop_break: ;
 							stimeout++;
 							continue;
 						}
+						else
+						{
+							if (in_kex && stimeout < serverAliveCountMax)
+							{
+								stimeout++;
+								continue;
+							}
+						}
 						throw;
 					}
 					int msgType = buf.GetCommand() & unchecked((int)(0xff));
@@ -1506,7 +1566,13 @@ loop_break: ;
 								buf.PutByte(unchecked((byte)SSH_MSG_CHANNEL_WINDOW_ADJUST));
 								buf.PutInt(channel.GetRecipient());
 								buf.PutInt(channel.lwsize_max - channel.lwsize);
-								Write(packet);
+								lock (channel)
+								{
+									if (!channel.close)
+									{
+										Write(packet);
+									}
+								}
 								channel.SetLocalWindowSize(channel.lwsize_max);
 							}
 							break;
@@ -1539,7 +1605,13 @@ loop_break: ;
 								buf.PutByte(unchecked((byte)SSH_MSG_CHANNEL_WINDOW_ADJUST));
 								buf.PutInt(channel.GetRecipient());
 								buf.PutInt(channel.lwsize_max - channel.lwsize);
-								Write(packet);
+								lock (channel)
+								{
+									if (!channel.close)
+									{
+										Write(packet);
+									}
+								}
 								channel.SetLocalWindowSize(channel.lwsize_max);
 							}
 							break;
@@ -1603,6 +1675,7 @@ loop_break: ;
 							int rps = buf.GetInt();
 							channel.SetRemoteWindowSize(rws);
 							channel.SetRemotePacketSize(rps);
+							channel.open_confirmation = true;
 							channel.SetRecipient(r);
 							break;
 						}
@@ -1620,7 +1693,7 @@ loop_break: ;
 							int reason_code = buf.GetInt();
 							//foo=buf.getString();  // additional textual information
 							//foo=buf.getString();  // language tag 
-							channel.exitstatus = reason_code;
+							channel.SetExitStatus(reason_code);
 							channel.close = true;
 							channel.eof_remote = true;
 							channel.SetRecipient(0);
@@ -1801,6 +1874,7 @@ loop_break: ;
 			isConnected = false;
 			PortWatcher.DelPort(this);
 			ChannelForwardedTCPIP.DelPort(this);
+			ChannelX11.RemoveFakedCookie(this);
 			lock (Lock)
 			{
 				if (connectThread != null)
@@ -1997,6 +2071,7 @@ loop_break: ;
 				// ??
 				Packet packet = new Packet(buf);
 				string address_to_bind = ChannelForwardedTCPIP.Normalize(bind_address);
+				grr.SetThread(Sharpen.Thread.CurrentThread());
 				try
 				{
 					// byte SSH_MSG_GLOBAL_REQUEST 80
@@ -2007,7 +2082,6 @@ loop_break: ;
 					packet.Reset();
 					buf.PutByte(unchecked((byte)SSH_MSG_GLOBAL_REQUEST));
 					buf.PutString(Util.Str2byte("tcpip-forward"));
-					//      buf.putByte((byte)0);
 					buf.PutByte(unchecked((byte)1));
 					buf.PutString(Util.Str2byte(address_to_bind));
 					buf.PutInt(rport);
@@ -2015,23 +2089,29 @@ loop_break: ;
 				}
 				catch (Exception e)
 				{
+					grr.SetThread(null);
 					if (e is Exception)
 					{
 						throw new JSchException(e.ToString(), (Exception)e);
 					}
 					throw new JSchException(e.ToString());
 				}
-				grr.SetThread(Sharpen.Thread.CurrentThread());
-				try
-				{
-					Sharpen.Thread.Sleep(10000);
-				}
-				catch (Exception)
-				{
-				}
+				int count = 0;
 				int reply = grr.GetReply();
+				while (count < 10 && reply == -1)
+				{
+					try
+					{
+						Sharpen.Thread.Sleep(1000);
+					}
+					catch (Exception)
+					{
+					}
+					count++;
+					reply = grr.GetReply();
+				}
 				grr.SetThread(null);
-				if (reply == 0)
+				if (reply != 1)
 				{
 					throw new JSchException("remote port forwarding failed for listen port " + rport);
 				}
@@ -2198,9 +2278,9 @@ loop_break: ;
 				{
 					config = new Hashtable();
 				}
-				for (IEnumerator e = newconf.Keys.GetEnumerator (); e.MoveNext(); )
+				foreach (var e in newconf.Keys)
 				{
-					string key = (string)(e.Current);
+					string key = (string)(e);
 					config.Put(key, (string)(newconf[key]));
 				}
 			}
@@ -2421,6 +2501,56 @@ loop_break: ;
 				NSch.Cipher _c = (NSch.Cipher)(System.Activator.CreateInstance(c));
 				_c.Init(NSch.Cipher.ENCRYPT_MODE, new byte[_c.GetBlockSize()], new byte[_c.GetIVSize
 					()]);
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+		}
+
+		private string[] CheckKexes(string kexes)
+		{
+			if (kexes == null || kexes.Length == 0)
+			{
+				return null;
+			}
+			if (JSch.GetLogger().IsEnabled(Logger.INFO))
+			{
+				JSch.GetLogger().Log(Logger.INFO, "CheckKexes: " + kexes);
+			}
+			ArrayList result = new ArrayList();
+			string[] _kexes = Util.Split(kexes, ",");
+			for (int i = 0; i < _kexes.Length; i++)
+			{
+				if (!CheckKex(this, GetConfig(_kexes[i])))
+				{
+					result.Add(_kexes[i]);
+				}
+			}
+			if (result.Count == 0)
+			{
+				return null;
+			}
+			string[] foo = new string[result.Count];
+			System.Array.Copy(Sharpen.Collections.ToArray(result), 0, foo, 0, result.Count);
+			if (JSch.GetLogger().IsEnabled(Logger.INFO))
+			{
+				for (int i_1 = 0; i_1 < foo.Length; i_1++)
+				{
+					JSch.GetLogger().Log(Logger.INFO, foo[i_1] + " is not available.");
+				}
+			}
+			return foo;
+		}
+
+		internal static bool CheckKex(Session s, string kex)
+		{
+			try
+			{
+				Type c = Sharpen.Runtime.GetType(kex);
+				KeyExchange _c = (KeyExchange)(System.Activator.CreateInstance(c));
+				_c.Init(s, null, null, null, null);
 				return true;
 			}
 			catch (Exception)

@@ -558,7 +558,7 @@ namespace NSch.ZLib
 				max_count = 138;
 				min_count = 3;
 			}
-			tree[(max_code + 1) * 2 + 1] = unchecked((short)(0xffff));
+			tree[(max_code + 1) * 2 + 1] = unchecked((short)0xffff);
 			// guard
 			for (n = 0; n <= max_code; n++)
 			{
@@ -572,7 +572,7 @@ namespace NSch.ZLib
 				{
 					if (count < min_count)
 					{
-						bl_tree[curlen * 2] += (short)count;
+						bl_tree[curlen * 2] += (short) count;
 					}
 					else
 					{
@@ -802,7 +802,7 @@ namespace NSch.ZLib
 			{
 				int val = value;
 				//      bi_buf |= (val << bi_valid);
-				bi_buf |= (short)((val << bi_valid) & 0xffff);
+				bi_buf |= (short)((val << bi_valid) & unchecked((int)(0xffff)));
 				Put_short(bi_buf);
 				bi_buf = (short)((int)(((uint)val) >> (Buf_size - bi_valid)));
 				bi_valid += len - Buf_size;
@@ -810,7 +810,7 @@ namespace NSch.ZLib
 			else
 			{
 				//      bi_buf |= (value) << bi_valid;
-				bi_buf |= (short)((value << bi_valid) & 0xffff);
+				bi_buf |= (short)(((value) << bi_valid) & unchecked((int)(0xffff)));
 				bi_valid += len;
 			}
 		}

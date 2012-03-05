@@ -18,6 +18,9 @@ PROJECTS = \
 	MonoDevelop.Projects.Formats.MSBuild.v2.0.csproj \
 	MonoDevelop.Projects.Formats.MSBuild.v3.5.csproj
 
+REFS = 
+RES = 
+
 all:
 	for p in $(PROJECTS); do xbuild $$p; done
 

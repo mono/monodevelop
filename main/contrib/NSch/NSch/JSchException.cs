@@ -47,6 +47,8 @@ namespace NSch
 
 		public JSchException(string s, Exception e) : base(s, e)
 		{
+			//private static final long serialVersionUID=-1319309923966731989L;
 		}
+
 	}
 }

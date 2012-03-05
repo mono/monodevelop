@@ -35,7 +35,7 @@ using Sharpen;
 
 namespace NSch
 {
-	public class DHG1 : KeyExchange
+	public class DHG14 : KeyExchange
 	{
 		internal static readonly byte[] g = new byte[] { 2 };
 
@@ -99,8 +99,72 @@ namespace NSch
 			)(0xE6))), unchecked((byte)unchecked((int)(0x49))), unchecked((byte)unchecked((int
 			)(0x28))), unchecked((byte)unchecked((int)(0x66))), unchecked((byte)unchecked((int
 			)(0x51))), unchecked((byte)unchecked((int)(0xEC))), unchecked((byte)unchecked((int
-			)(0xE6))), unchecked((byte)unchecked((int)(0x53))), unchecked((byte)unchecked((int
-			)(0x81))), unchecked((byte)unchecked((int)(0xFF))), unchecked((byte)unchecked((int
+			)(0xE4))), unchecked((byte)unchecked((int)(0x5B))), unchecked((byte)unchecked((int
+			)(0x3D))), unchecked((byte)unchecked((int)(0xC2))), unchecked((byte)unchecked((int
+			)(0x00))), unchecked((byte)unchecked((int)(0x7C))), unchecked((byte)unchecked((int
+			)(0xB8))), unchecked((byte)unchecked((int)(0xA1))), unchecked((byte)unchecked((int
+			)(0x63))), unchecked((byte)unchecked((int)(0xBF))), unchecked((byte)unchecked((int
+			)(0x05))), unchecked((byte)unchecked((int)(0x98))), unchecked((byte)unchecked((int
+			)(0xDA))), unchecked((byte)unchecked((int)(0x48))), unchecked((byte)unchecked((int
+			)(0x36))), unchecked((byte)unchecked((int)(0x1C))), unchecked((byte)unchecked((int
+			)(0x55))), unchecked((byte)unchecked((int)(0xD3))), unchecked((byte)unchecked((int
+			)(0x9A))), unchecked((byte)unchecked((int)(0x69))), unchecked((byte)unchecked((int
+			)(0x16))), unchecked((byte)unchecked((int)(0x3F))), unchecked((byte)unchecked((int
+			)(0xA8))), unchecked((byte)unchecked((int)(0xFD))), unchecked((byte)unchecked((int
+			)(0x24))), unchecked((byte)unchecked((int)(0xCF))), unchecked((byte)unchecked((int
+			)(0x5F))), unchecked((byte)unchecked((int)(0x83))), unchecked((byte)unchecked((int
+			)(0x65))), unchecked((byte)unchecked((int)(0x5D))), unchecked((byte)unchecked((int
+			)(0x23))), unchecked((byte)unchecked((int)(0xDC))), unchecked((byte)unchecked((int
+			)(0xA3))), unchecked((byte)unchecked((int)(0xAD))), unchecked((byte)unchecked((int
+			)(0x96))), unchecked((byte)unchecked((int)(0x1C))), unchecked((byte)unchecked((int
+			)(0x62))), unchecked((byte)unchecked((int)(0xF3))), unchecked((byte)unchecked((int
+			)(0x56))), unchecked((byte)unchecked((int)(0x20))), unchecked((byte)unchecked((int
+			)(0x85))), unchecked((byte)unchecked((int)(0x52))), unchecked((byte)unchecked((int
+			)(0xBB))), unchecked((byte)unchecked((int)(0x9E))), unchecked((byte)unchecked((int
+			)(0xD5))), unchecked((byte)unchecked((int)(0x29))), unchecked((byte)unchecked((int
+			)(0x07))), unchecked((byte)unchecked((int)(0x70))), unchecked((byte)unchecked((int
+			)(0x96))), unchecked((byte)unchecked((int)(0x96))), unchecked((byte)unchecked((int
+			)(0x6D))), unchecked((byte)unchecked((int)(0x67))), unchecked((byte)unchecked((int
+			)(0x0C))), unchecked((byte)unchecked((int)(0x35))), unchecked((byte)unchecked((int
+			)(0x4E))), unchecked((byte)unchecked((int)(0x4A))), unchecked((byte)unchecked((int
+			)(0xBC))), unchecked((byte)unchecked((int)(0x98))), unchecked((byte)unchecked((int
+			)(0x04))), unchecked((byte)unchecked((int)(0xF1))), unchecked((byte)unchecked((int
+			)(0x74))), unchecked((byte)unchecked((int)(0x6C))), unchecked((byte)unchecked((int
+			)(0x08))), unchecked((byte)unchecked((int)(0xCA))), unchecked((byte)unchecked((int
+			)(0x18))), unchecked((byte)unchecked((int)(0x21))), unchecked((byte)unchecked((int
+			)(0x7C))), unchecked((byte)unchecked((int)(0x32))), unchecked((byte)unchecked((int
+			)(0x90))), unchecked((byte)unchecked((int)(0x5E))), unchecked((byte)unchecked((int
+			)(0x46))), unchecked((byte)unchecked((int)(0x2E))), unchecked((byte)unchecked((int
+			)(0x36))), unchecked((byte)unchecked((int)(0xCE))), unchecked((byte)unchecked((int
+			)(0x3B))), unchecked((byte)unchecked((int)(0xE3))), unchecked((byte)unchecked((int
+			)(0x9E))), unchecked((byte)unchecked((int)(0x77))), unchecked((byte)unchecked((int
+			)(0x2C))), unchecked((byte)unchecked((int)(0x18))), unchecked((byte)unchecked((int
+			)(0x0E))), unchecked((byte)unchecked((int)(0x86))), unchecked((byte)unchecked((int
+			)(0x03))), unchecked((byte)unchecked((int)(0x9B))), unchecked((byte)unchecked((int
+			)(0x27))), unchecked((byte)unchecked((int)(0x83))), unchecked((byte)unchecked((int
+			)(0xA2))), unchecked((byte)unchecked((int)(0xEC))), unchecked((byte)unchecked((int
+			)(0x07))), unchecked((byte)unchecked((int)(0xA2))), unchecked((byte)unchecked((int
+			)(0x8F))), unchecked((byte)unchecked((int)(0xB5))), unchecked((byte)unchecked((int
+			)(0xC5))), unchecked((byte)unchecked((int)(0x5D))), unchecked((byte)unchecked((int
+			)(0xF0))), unchecked((byte)unchecked((int)(0x6F))), unchecked((byte)unchecked((int
+			)(0x4C))), unchecked((byte)unchecked((int)(0x52))), unchecked((byte)unchecked((int
+			)(0xC9))), unchecked((byte)unchecked((int)(0xDE))), unchecked((byte)unchecked((int
+			)(0x2B))), unchecked((byte)unchecked((int)(0xCB))), unchecked((byte)unchecked((int
+			)(0xF6))), unchecked((byte)unchecked((int)(0x95))), unchecked((byte)unchecked((int
+			)(0x58))), unchecked((byte)unchecked((int)(0x17))), unchecked((byte)unchecked((int
+			)(0x18))), unchecked((byte)unchecked((int)(0x39))), unchecked((byte)unchecked((int
+			)(0x95))), unchecked((byte)unchecked((int)(0x49))), unchecked((byte)unchecked((int
+			)(0x7C))), unchecked((byte)unchecked((int)(0xEA))), unchecked((byte)unchecked((int
+			)(0x95))), unchecked((byte)unchecked((int)(0x6A))), unchecked((byte)unchecked((int
+			)(0xE5))), unchecked((byte)unchecked((int)(0x15))), unchecked((byte)unchecked((int
+			)(0xD2))), unchecked((byte)unchecked((int)(0x26))), unchecked((byte)unchecked((int
+			)(0x18))), unchecked((byte)unchecked((int)(0x98))), unchecked((byte)unchecked((int
+			)(0xFA))), unchecked((byte)unchecked((int)(0x05))), unchecked((byte)unchecked((int
+			)(0x10))), unchecked((byte)unchecked((int)(0x15))), unchecked((byte)unchecked((int
+			)(0x72))), unchecked((byte)unchecked((int)(0x8E))), unchecked((byte)unchecked((int
+			)(0x5A))), unchecked((byte)unchecked((int)(0x8A))), unchecked((byte)unchecked((int
+			)(0xAC))), unchecked((byte)unchecked((int)(0xAA))), unchecked((byte)unchecked((int
+			)(0x68))), unchecked((byte)unchecked((int)(0xFF))), unchecked((byte)unchecked((int
 			)(0xFF))), unchecked((byte)unchecked((int)(0xFF))), unchecked((byte)unchecked((int
 			)(0xFF))), unchecked((byte)unchecked((int)(0xFF))), unchecked((byte)unchecked((int
 			)(0xFF))), unchecked((byte)unchecked((int)(0xFF))), unchecked((byte)unchecked((int
@@ -134,21 +198,16 @@ namespace NSch
 
 		private Packet packet;
 
-		//  HASH sha;
-		//  byte[] K;
-		//  byte[] H;
-		//  byte[] K_S;
 		/// <exception cref="System.Exception"></exception>
 		public override void Init(Session session, byte[] V_S, byte[] V_C, byte[] I_S, byte
 			[] I_C)
 		{
+			throw new NotSupportedException (); // The crypto for this method is unusably slow
 			this.session = session;
 			this.V_S = V_S;
 			this.V_C = V_C;
 			this.I_S = I_S;
 			this.I_C = I_C;
-			//    sha=new SHA1();
-			//    sha.init();
 			try
 			{
 				Type c = Sharpen.Runtime.GetType(session.GetConfig("sha-1"));
@@ -182,6 +241,11 @@ namespace NSch
 			packet.Reset();
 			buf.PutByte(unchecked((byte)SSH_MSG_KEXDH_INIT));
 			buf.PutMPInt(e);
+			if (V_S == null)
+			{
+				// This is a really ugly hack for Session.checkKexes ;-(
+				return;
+			}
 			session.Write(packet);
 			if (JSch.GetLogger().IsEnabled(Logger.INFO))
 			{
@@ -279,8 +343,6 @@ namespace NSch
 						System.Array.Copy(K_S, i, tmp, 0, j);
 						i += j;
 						n = tmp;
-						//	SignatureRSA sig=new SignatureRSA();
-						//	sig.init();
 						NSch.SignatureRSA sig = null;
 						try
 						{
@@ -337,8 +399,6 @@ namespace NSch
 							System.Array.Copy(K_S, i, tmp, 0, j);
 							i += j;
 							f = tmp;
-							//	SignatureDSA sig=new SignatureDSA();
-							//	sig.init();
 							NSch.SignatureDSA sig = null;
 							try
 							{

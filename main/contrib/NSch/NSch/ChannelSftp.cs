@@ -40,6 +40,10 @@ namespace NSch
 {
 	public class ChannelSftp : ChannelSession
 	{
+		private const int LOCAL_MAXIMUM_PACKET_SIZE = 32 * 1024;
+
+		private const int LOCAL_WINDOW_SIZE_MAX = (64 * LOCAL_MAXIMUM_PACKET_SIZE);
+
 		private const byte SSH_FXP_INIT = 1;
 
 		private const byte SSH_FXP_VERSION = 2;
@@ -152,11 +156,15 @@ namespace NSch
 
 		private Packet packet;
 
+		private Buffer obuf;
+
+		private Packet opacket;
+
 		private int client_version = 3;
 
 		private int server_version = 3;
 
-		private string version;
+		//private string version = client_version.ToString();
 
 		private Hashtable extensions = null;
 
@@ -180,7 +188,37 @@ namespace NSch
 
 		private bool fEncoding_is_utf8 = true;
 
+		private ChannelSftp.RequestQueue rq;
+
 		// pflags
+		// The followings will be used in file uploading.
+		/// <exception cref="NSch.JSchException"></exception>
+		public virtual void SetBulkRequests(int bulk_requests)
+		{
+			if (bulk_requests > 0)
+			{
+				rq = new ChannelSftp.RequestQueue(this, bulk_requests);
+			}
+			else
+			{
+				throw new JSchException("setBulkRequests: " + bulk_requests + " must be greater than 0."
+					);
+			}
+		}
+
+		public virtual int GetBulkRequests()
+		{
+			return rq.Size();
+		}
+
+		public ChannelSftp() : base()
+		{
+			rq = new ChannelSftp.RequestQueue(this, 10);
+			SetLocalWindowSizeMax(LOCAL_WINDOW_SIZE_MAX);
+			SetLocalWindowSize(LOCAL_WINDOW_SIZE_MAX);
+			SetLocalPacketSize(LOCAL_MAXIMUM_PACKET_SIZE);
+		}
+
 		internal override void Init()
 		{
 		}
@@ -192,7 +230,7 @@ namespace NSch
 			{
 				PipedOutputStream pos = new PipedOutputStream();
 				io.SetOutputStream(pos);
-				PipedInputStream pis = new Channel.MyPipedInputStream(this, pos, 32 * 1024);
+				PipedInputStream pis = new Channel.MyPipedInputStream(this, pos, rmpsize);
 				io.SetInputStream(pis);
 				io_in = io.@in;
 				if (io_in == null)
@@ -201,8 +239,10 @@ namespace NSch
 				}
 				Request request = new RequestSftp();
 				request.DoRequest(GetSession(), this);
-				buf = new Buffer(rmpsize);
+				buf = new Buffer(lmpsize);
 				packet = new Packet(buf);
+				obuf = new Buffer(rmpsize);
+				opacket = new Packet(obuf);
 				int i = 0;
 				int length;
 				int type;
@@ -289,6 +329,7 @@ namespace NSch
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				path = IsUnique(path);
 				byte[] str = _realpath(path);
@@ -339,10 +380,11 @@ namespace NSch
 		public virtual void Put(string src, string dst, SftpProgressMonitor monitor, int 
 			mode)
 		{
-			src = LocalAbsolutePath(src);
-			dst = RemoteAbsolutePath(dst);
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
+				src = LocalAbsolutePath(src);
+				dst = RemoteAbsolutePath(dst);
 				ArrayList v = Glob_remote(dst);
 				int vsize = v.Count;
 				if (vsize != 1)
@@ -498,6 +540,7 @@ namespace NSch
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				dst = RemoteAbsolutePath(dst);
 				ArrayList v = Glob_remote(dst);
 				int vsize = v.Count;
@@ -524,6 +567,10 @@ namespace NSch
 				{
 					throw new SftpException(SSH_FX_FAILURE, dst + " is a directory");
 				}
+				if (monitor != null)
+				{
+					monitor.Init(SftpProgressMonitor.PUT, "-", dst, SftpProgressMonitor.UNKNOWN_SIZE);
+				}
 				_put(src, dst, monitor, mode);
 			}
 			catch (Exception e)
@@ -546,6 +593,7 @@ namespace NSch
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				byte[] dstb = Util.Str2byte(dst, fEncoding);
 				long skip = 0;
 				if (mode == RESUME || mode == APPEND)
@@ -596,36 +644,39 @@ namespace NSch
 				bool dontcopy = true;
 				if (!dontcopy)
 				{
-					data = new byte[buf.buffer.Length - (5 + 13 + 21 + handle.Length + 32 + 20)];
+					// This case will not work anymore.
+					data = new byte[obuf.buffer.Length - (5 + 13 + 21 + handle.Length + Session.buffer_margin
+						)];
 				}
-				// padding and mac
 				long offset = 0;
 				if (mode == RESUME || mode == APPEND)
 				{
 					offset += skip;
 				}
 				int startid = seq;
-				int _ackid = seq;
 				int ackcount = 0;
+				int _s = 0;
+				int _datalen = 0;
+				if (!dontcopy)
+				{
+					// This case will not work anymore.
+					_datalen = data.Length;
+				}
+				else
+				{
+					data = obuf.buffer;
+					_s = 5 + 13 + 21 + handle.Length;
+					_datalen = obuf.buffer.Length - _s - Session.buffer_margin;
+				}
+				int bulk_requests = rq.Size();
 				while (true)
 				{
 					int nread = 0;
-					int s = 0;
-					int datalen = 0;
 					int count = 0;
-					if (!dontcopy)
-					{
-						datalen = data.Length - s;
-					}
-					else
-					{
-						data = buf.buffer;
-						s = 5 + 13 + 21 + handle.Length;
-						datalen = buf.buffer.Length - s - 32 - 20;
-					}
+					int s = _s;
+					int datalen = _datalen;
 					do
 					{
-						// padding and mac
 						nread = src.Read(data, s, datalen);
 						if (nread > 0)
 						{
@@ -639,17 +690,20 @@ namespace NSch
 					{
 						break;
 					}
-					int _i = count;
-					while (_i > 0)
+					int foo = count;
+					while (foo > 0)
 					{
-						_i -= SendWRITE(handle, offset, data, 0, _i);
-						if ((seq - 1) == startid || io_in.Available() >= 1024)
+						if ((seq - 1) == startid || ((seq - startid) - ackcount) >= bulk_requests)
 						{
-							while (io_in.Available() > 0)
+							while (((seq - startid) - ackcount) >= bulk_requests)
 							{
+								if (this.rwsize >= foo)
+								{
+									break;
+								}
 								if (CheckStatus(ackid, header))
 								{
-									_ackid = ackid[0];
+									int _ackid = ackid[0];
 									if (startid > _ackid || _ackid > seq - 1)
 									{
 										if (_ackid == seq)
@@ -659,7 +713,6 @@ namespace NSch
 										}
 										else
 										{
-											//throw new SftpException(SSH_FX_FAILURE, "ack error:");
 											throw new SftpException(SSH_FX_FAILURE, "ack error: startid=" + startid + " seq="
 												 + seq + " _ackid=" + _ackid);
 										}
@@ -672,6 +725,7 @@ namespace NSch
 								}
 							}
 						}
+						foo -= SendWRITE(handle, offset, data, 0, foo);
 					}
 					offset += count;
 					if (monitor != null && !monitor.Count(count))
@@ -731,9 +785,10 @@ namespace NSch
 		public virtual OutputStream Put(string dst, SftpProgressMonitor monitor, int mode
 			, long offset)
 		{
-			dst = RemoteAbsolutePath(dst);
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
+				dst = RemoteAbsolutePath(dst);
 				dst = IsUnique(dst);
 				if (IsRemoteDir(dst))
 				{
@@ -783,7 +838,7 @@ namespace NSch
 				}
 				long[] _offset = new long[1];
 				_offset[0] = offset;
-				OutputStream @out = new _OutputStream_639(this, handle, _offset, monitor);
+				OutputStream @out = new _OutputStream_686(this, handle, _offset, monitor);
 				return @out;
 			}
 			catch (Exception e)
@@ -800,9 +855,9 @@ namespace NSch
 			}
 		}
 
-		private sealed class _OutputStream_639 : OutputStream
+		private sealed class _OutputStream_686 : OutputStream
 		{
-			public _OutputStream_639(ChannelSftp _enclosing, byte[] handle, long[] _offset, SftpProgressMonitor
+			public _OutputStream_686(ChannelSftp _enclosing, byte[] handle, long[] _offset, SftpProgressMonitor
 				 monitor)
 			{
 				this._enclosing = _enclosing;
@@ -875,7 +930,7 @@ namespace NSch
 									this._ackid = this.ackid[0];
 									if (this.startid > this._ackid || this._ackid > this._enclosing.seq - 1)
 									{
-										throw new SftpException(ChannelSftp.SSH_FX_FAILURE, string.Empty);
+										throw new SftpException(NSch.ChannelSftp.SSH_FX_FAILURE, string.Empty);
 									}
 									this.ackcount++;
 								}
@@ -991,10 +1046,13 @@ namespace NSch
 			mode)
 		{
 			// System.out.println("get: "+src+" "+dst);
-			src = RemoteAbsolutePath(src);
-			dst = LocalAbsolutePath(dst);
+			bool _dstExist = false;
+			string _dst = null;
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
+				src = RemoteAbsolutePath(src);
+				dst = LocalAbsolutePath(dst);
 				ArrayList v = Glob_remote(src);
 				int vsize = v.Count;
 				if (vsize == 0)
@@ -1028,7 +1086,7 @@ namespace NSch
 					{
 						throw new SftpException(SSH_FX_FAILURE, "not supported to get directory " + _src);
 					}
-					string _dst = null;
+					_dst = null;
 					if (isDstDir)
 					{
 						int i = _src.LastIndexOf('/');
@@ -1047,10 +1105,11 @@ namespace NSch
 					{
 						_dst = dst;
 					}
+					FilePath _dstFile = new FilePath(_dst);
 					if (mode == RESUME)
 					{
 						long size_of_src = attr.GetSize();
-						long size_of_dst = new FilePath(_dst).Length();
+						long size_of_dst = _dstFile.Length();
 						if (size_of_dst > size_of_src)
 						{
 							throw new SftpException(SSH_FX_FAILURE, "failed to resume for " + _dst);
@@ -1065,10 +1124,11 @@ namespace NSch
 						monitor.Init(SftpProgressMonitor.GET, _src, _dst, attr.GetSize());
 						if (mode == RESUME)
 						{
-							monitor.Count(new FilePath(_dst).Length());
+							monitor.Count(_dstFile.Length());
 						}
 					}
 					FileOutputStream fos = null;
+					_dstExist = _dstFile.Exists();
 					try
 					{
 						if (mode == OVERWRITE)
@@ -1094,6 +1154,14 @@ namespace NSch
 			}
 			catch (Exception e)
 			{
+				if (!_dstExist && _dst != null)
+				{
+					FilePath _dstFile = new FilePath(_dst);
+					if (_dstFile.Exists() && _dstFile.Length() == 0)
+					{
+						_dstFile.Delete();
+					}
+				}
 				if (e is SftpException)
 				{
 					throw (SftpException)e;
@@ -1126,6 +1194,7 @@ namespace NSch
 			//System.err.println("get: "+src+", "+dst);
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				src = RemoteAbsolutePath(src);
 				src = IsUnique(src);
 				if (monitor != null)
@@ -1183,18 +1252,25 @@ namespace NSch
 				{
 					offset += skip;
 				}
-				int request_len = 0;
+				int request_max = 1;
+				rq.Init();
+				long request_offset = offset;
+				int request_len = buf.buffer.Length - 13;
+				if (server_version == 0)
+				{
+					request_len = 1024;
+				}
 				while (true)
 				{
-					request_len = buf.buffer.Length - 13;
-					if (server_version == 0)
+					while (rq.Count() < request_max)
 					{
-						request_len = 1024;
+						SendREAD(handle, request_offset, request_len, rq);
+						request_offset += request_len;
 					}
-					SendREAD(handle, offset, request_len);
 					header = Header(buf, header);
 					length = header.length;
 					type = header.type;
+					ChannelSftp.RequestQueue.Request rr = rq.Get(header.rid);
 					if (type == SSH_FXP_STATUS)
 					{
 						Fill(buf, length);
@@ -1212,9 +1288,10 @@ namespace NSch
 					buf.Rewind();
 					Fill(buf.buffer, 0, 4);
 					length -= 4;
-					int i_1 = buf.GetInt();
+					int length_of_data = buf.GetInt();
 					// length of data 
-					int foo = i_1;
+					int optional_data = length - length_of_data;
+					int foo = length_of_data;
 					while (foo > 0)
 					{
 						int bar = foo;
@@ -1222,12 +1299,11 @@ namespace NSch
 						{
 							bar = buf.buffer.Length;
 						}
-						i_1 = io_in.Read(buf.buffer, 0, bar);
-						if (i_1 < 0)
+						int data_len = io_in.Read(buf.buffer, 0, bar);
+						if (data_len < 0)
 						{
 							goto loop_break;
 						}
-						int data_len = i_1;
 						dst.Write(buf.buffer, 0, data_len);
 						offset += data_len;
 						foo -= data_len;
@@ -1235,29 +1311,41 @@ namespace NSch
 						{
 							if (!monitor.Count(data_len))
 							{
-								while (foo > 0)
+								Skip(foo);
+								if (optional_data > 0)
 								{
-									i_1 = io_in.Read(buf.buffer, 0, (buf.buffer.Length < foo ? buf.buffer.Length : foo
-										));
-									if (i_1 <= 0)
-									{
-										break;
-									}
-									foo -= i_1;
+									Skip(optional_data);
 								}
 								goto loop_break;
 							}
 						}
 					}
+					//System.err.println("length: "+length);  // length should be 0
+					if (optional_data > 0)
+					{
+						Skip(optional_data);
+					}
+					if (length_of_data < rr.length)
+					{
+						//
+						rq.Cancel(header, buf);
+						SendREAD(handle, rr.offset + length_of_data, (int)(rr.length - length_of_data), rq
+							);
+						request_offset = rr.offset + rr.length;
+					}
+					if (request_max < rq.Size())
+					{
+						request_max++;
+					}
 loop_continue: ;
 				}
 loop_break: ;
-				//System.err.println("length: "+length);  // length should be 0
 				dst.Flush();
 				if (monitor != null)
 				{
 					monitor.End();
 				}
+				rq.Cancel(header, buf);
 				_sendCLOSE(handle, header);
 			}
 			catch (Exception e)
@@ -1272,6 +1360,106 @@ loop_break: ;
 				}
 				throw new SftpException(SSH_FX_FAILURE, string.Empty);
 			}
+		}
+
+		private class RequestQueue
+		{
+			internal class Request
+			{
+				internal int id;
+
+				internal long offset;
+
+				internal long length;
+
+				internal Request(RequestQueue _enclosing)
+				{
+					this._enclosing = _enclosing;
+				}
+
+				private readonly RequestQueue _enclosing;
+			}
+
+			internal ChannelSftp.RequestQueue.Request[] rrq = null;
+
+			internal int head;
+
+			internal int count;
+
+			internal RequestQueue(ChannelSftp _enclosing, int size)
+			{
+				this._enclosing = _enclosing;
+				this.rrq = new ChannelSftp.RequestQueue.Request[size];
+				for (int i = 0; i < this.rrq.Length; i++)
+				{
+					this.rrq[i] = new ChannelSftp.RequestQueue.Request(this);
+				}
+				this.Init();
+			}
+
+			internal virtual void Init()
+			{
+				this.head = this.count = 0;
+			}
+
+			internal virtual void Add(int id, long offset, int length)
+			{
+				if (this.count == 0)
+				{
+					this.head = 0;
+				}
+				int tail = this.head + this.count;
+				if (tail >= this.rrq.Length)
+				{
+					tail -= this.rrq.Length;
+				}
+				this.rrq[tail].id = id;
+				this.rrq[tail].offset = offset;
+				this.rrq[tail].length = length;
+				this.count++;
+			}
+
+			internal virtual ChannelSftp.RequestQueue.Request Get(int id)
+			{
+				this.count -= 1;
+				int i = this.head;
+				this.head++;
+				if (this.head == this.rrq.Length)
+				{
+					this.head = 0;
+				}
+				if (this.rrq[i].id != id)
+				{
+					System.Console.Error.WriteLine("The request is not in order.");
+				}
+				this.rrq[i].id = 0;
+				return this.rrq[i];
+			}
+
+			internal virtual int Count()
+			{
+				return this.count;
+			}
+
+			internal virtual int Size()
+			{
+				return this.rrq.Length;
+			}
+
+			/// <exception cref="System.IO.IOException"></exception>
+			internal virtual void Cancel(ChannelHeader header, Buffer buf)
+			{
+				int _count = this.count;
+				for (int i = 0; i < _count; i++)
+				{
+					header = this._enclosing.Header(buf, header);
+					int length = header.length;
+					this.Get(header.rid);
+					this._enclosing.Skip(length);
+				}
+			}
+
+			private readonly ChannelSftp _enclosing;
 		}
 
 		/// <exception cref="NSch.SftpException"></exception>
@@ -1304,9 +1492,10 @@ loop_break: ;
 		public virtual InputStream Get(string src, SftpProgressMonitor monitor, long skip
 			)
 		{
-			src = RemoteAbsolutePath(src);
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
+				src = RemoteAbsolutePath(src);
 				src = IsUnique(src);
 				byte[] srcb = Util.Str2byte(src, fEncoding);
 				SftpATTRS attr = _stat(srcb);
@@ -1331,7 +1520,7 @@ loop_break: ;
 				}
 				byte[] handle = buf.GetString();
 				// handle
-				InputStream @in = new _InputStream_1034(this, skip, monitor, handle);
+				InputStream @in = new _InputStream_1195(this, skip, monitor, handle);
 				//throwStatusError(buf, i);
 				// ??
 				return @in;
@@ -1350,9 +1539,9 @@ loop_break: ;
 			}
 		}
 
-		private sealed class _InputStream_1034 : InputStream
+		private sealed class _InputStream_1195 : InputStream
 		{
-			public _InputStream_1034(ChannelSftp _enclosing, long skip, SftpProgressMonitor monitor
+			public _InputStream_1195(ChannelSftp _enclosing, long skip, SftpProgressMonitor monitor
 				, byte[] handle)
 			{
 				this._enclosing = _enclosing;
@@ -1487,31 +1676,33 @@ loop_break: ;
 				}
 				this._enclosing.buf.Rewind();
 				this._enclosing.Fill(this._enclosing.buf.buffer, 0, 4);
-				int i_1 = this._enclosing.buf.GetInt();
+				int length_of_data = this._enclosing.buf.GetInt();
 				this.rest_length -= 4;
-				this.offset += this.rest_length;
-				int foo_1 = i_1;
+				int optional_data = this.rest_length - length_of_data;
+				this.offset += length_of_data;
+				int foo_1 = length_of_data;
 				if (foo_1 > 0)
 				{
-					int bar = this.rest_length;
+					int bar = foo_1;
 					if (bar > len)
 					{
 						bar = len;
 					}
-					i_1 = this._enclosing.io_in.Read(d, s, bar);
-					if (i_1 < 0)
+					int i = this._enclosing.io_in.Read(d, s, bar);
+					if (i < 0)
 					{
 						return -1;
 					}
-					this.rest_length -= i_1;
-					if (this.rest_length > 0)
+					foo_1 -= i;
+					this.rest_length = foo_1;
+					if (foo_1 > 0)
 					{
-						if (this.rest_byte.Length < this.rest_length)
+						if (this.rest_byte.Length < foo_1)
 						{
-							this.rest_byte = new byte[this.rest_length];
+							this.rest_byte = new byte[foo_1];
 						}
 						int _s = 0;
-						int _len = this.rest_length;
+						int _len = foo_1;
 						int j;
 						while (_len > 0)
 						{
@@ -1524,15 +1715,19 @@ loop_break: ;
 							_len -= j;
 						}
 					}
+					if (optional_data > 0)
+					{
+						this._enclosing.io_in.Skip(optional_data);
+					}
 					if (monitor != null)
 					{
-						if (!monitor.Count(i_1))
+						if (!monitor.Count(i))
 						{
 							this.Close();
 							return -1;
 						}
 					}
-					return i_1;
+					return i;
 				}
 				return 0;
 			}
@@ -1574,6 +1769,7 @@ loop_break: ;
 			//System.out.println("ls: "+path);
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				byte[] pattern = null;
 				ArrayList v = new ArrayList();
@@ -1747,6 +1943,7 @@ loop_break: ;
 					throw new SftpException(SSH_FX_OP_UNSUPPORTED, "The remote sshd is too old to support symlink operation."
 						);
 				}
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				path = IsUnique(path);
 				SendREADLINK(Util.Str2byte(path, fEncoding));
@@ -1803,6 +2000,7 @@ loop_break: ;
 			}
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				oldpath = RemoteAbsolutePath(oldpath);
 				newpath = RemoteAbsolutePath(newpath);
 				oldpath = IsUnique(oldpath);
@@ -1852,6 +2050,7 @@ loop_break: ;
 			}
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				oldpath = RemoteAbsolutePath(oldpath);
 				newpath = RemoteAbsolutePath(newpath);
 				oldpath = IsUnique(oldpath);
@@ -1910,6 +2109,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				ArrayList v = Glob_remote(path);
 				int vsize = v.Count;
@@ -1975,6 +2175,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				ArrayList v = Glob_remote(path);
 				int vsize = v.Count;
@@ -2006,6 +2207,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				ArrayList v = Glob_remote(path);
 				int vsize = v.Count;
@@ -2037,6 +2239,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				ArrayList v = Glob_remote(path);
 				int vsize = v.Count;
@@ -2068,6 +2271,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				ArrayList v = Glob_remote(path);
 				int vsize = v.Count;
@@ -2099,6 +2303,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				ArrayList v = Glob_remote(path);
 				int vsize = v.Count;
@@ -2141,6 +2346,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				SendMKDIR(Util.Str2byte(path, fEncoding), null);
 				ChannelHeader header = new ChannelHeader(this);
@@ -2178,6 +2384,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				path = IsUnique(path);
 				return _stat(path);
@@ -2246,6 +2453,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				path = IsUnique(path);
 				return _lstat(path);
@@ -2345,6 +2553,7 @@ loop_break: ;
 		{
 			try
 			{
+				((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 				path = RemoteAbsolutePath(path);
 				ArrayList v = Glob_remote(path);
 				int vsize = v.Count;
@@ -2414,10 +2623,10 @@ loop_break: ;
 			return lcwd;
 		}
 
-		public virtual string Version()
-		{
-			return version;
-		}
+//		public virtual string Version()
+//		{
+//			return version;
+//		}
 
 		/// <exception cref="NSch.SftpException"></exception>
 		public virtual string GetHome()
@@ -2426,6 +2635,7 @@ loop_break: ;
 			{
 				try
 				{
+					((Channel.MyPipedInputStream)io_in).UpdateReadSide();
 					byte[] _home = _realpath(string.Empty);
 					home = Util.Byte2str(_home, fEncoding);
 				}
@@ -2680,38 +2890,45 @@ loop_break: ;
 			)
 		{
 			int _length = length;
-			packet.Reset();
-			if (buf.buffer.Length < buf.index + 13 + 21 + handle.Length + length + 32 + 20)
+			opacket.Reset();
+			if (obuf.buffer.Length < obuf.index + 13 + 21 + handle.Length + length + Session.
+				buffer_margin)
 			{
-				// padding and mac
-				_length = buf.buffer.Length - (buf.index + 13 + 21 + handle.Length + 32 + 20);
+				_length = obuf.buffer.Length - (obuf.index + 13 + 21 + handle.Length + Session.buffer_margin
+					);
 			}
-			// padding and mac
-			//System.err.println("_length="+_length+" length="+length);
-			PutHEAD(SSH_FXP_WRITE, 21 + handle.Length + _length);
+			// System.err.println("_length="+_length+" length="+length);
+			PutHEAD(obuf, SSH_FXP_WRITE, 21 + handle.Length + _length);
 			// 14
-			buf.PutInt(seq++);
+			obuf.PutInt(seq++);
 			//  4
-			buf.PutString(handle);
+			obuf.PutString(handle);
 			//  4+handle.length
-			buf.PutLong(offset);
+			obuf.PutLong(offset);
 			//  8
-			if (buf.buffer != data)
+			if (obuf.buffer != data)
 			{
-				buf.PutString(data, start, _length);
+				obuf.PutString(data, start, _length);
 			}
 			else
 			{
 				//  4+_length
-				buf.PutInt(_length);
-				buf.Skip(_length);
+				obuf.PutInt(_length);
+				obuf.Skip(_length);
 			}
-			GetSession().Write(packet, this, 21 + handle.Length + _length + 4);
+			GetSession().Write(opacket, this, 21 + handle.Length + _length + 4);
 			return _length;
 		}
 
 		/// <exception cref="System.Exception"></exception>
 		private void SendREAD(byte[] handle, long offset, int length)
+		{
+			SendREAD(handle, offset, length, null);
+		}
+
+		/// <exception cref="System.Exception"></exception>
+		private void SendREAD(byte[] handle, long offset, int length, ChannelSftp.RequestQueue
+			 rrq)
 		{
 			packet.Reset();
 			PutHEAD(SSH_FXP_READ, 21 + handle.Length);
@@ -2720,16 +2937,26 @@ loop_break: ;
 			buf.PutLong(offset);
 			buf.PutInt(length);
 			GetSession().Write(packet, this, 21 + handle.Length + 4);
+			if (rrq != null)
+			{
+				rrq.Add(seq - 1, offset, length);
+			}
 		}
 
 		/// <exception cref="System.Exception"></exception>
-		private void PutHEAD(byte type, int length)
+		private void PutHEAD(Buffer buf, byte type, int length)
 		{
 			buf.PutByte(unchecked((byte)Session.SSH_MSG_CHANNEL_DATA));
 			buf.PutInt(recipient);
 			buf.PutInt(length + 4);
 			buf.PutInt(length);
 			buf.PutByte(type);
+		}
+
+		/// <exception cref="System.Exception"></exception>
+		private void PutHEAD(byte type, int length)
+		{
+			PutHEAD(buf, type, length);
 		}
 
 		/// <exception cref="System.Exception"></exception>
@@ -2861,29 +3088,21 @@ loop_break: ;
 
 		private bool IsPattern(byte[] path)
 		{
-			int i = path.Length - 1;
-			while (i >= 0)
+			int length = path.Length;
+			int i = 0;
+			while (i < length)
 			{
 				if (path[i] == '*' || path[i] == '?')
 				{
-					if (i > 0 && path[i - 1] == '\\')
-					{
-						i--;
-						if (i > 0 && path[i - 1] == '\\')
-						{
-							// \\* or \\?
-							break;
-						}
-					}
-					else
-					{
-						break;
-					}
+					return true;
 				}
-				i--;
+				if (path[i] == '\\' && (i + 1) < length)
+				{
+					i++;
+				}
+				i++;
 			}
-			// System.err.println("isPattern: ["+(new String(path))+"] "+(!(i<0)));
-			return !(i < 0);
+			return false;
 		}
 
 		/// <exception cref="System.Exception"></exception>
@@ -3122,7 +3341,7 @@ loop_break: ;
 		public virtual void SetFilenameEncoding(string encoding)
 		{
 			int sversion = GetServerVersion();
-			if (sversion > 3 && !encoding.Equals(UTF8))
+			if (3 <= sversion && sversion <= 5 && !encoding.Equals(UTF8))
 			{
 				throw new SftpException(SSH_FX_FAILURE, "The encoding can not be changed for this sftp server."
 					);
@@ -3230,12 +3449,6 @@ loop_break: ;
 			}
 
 			private readonly ChannelSftp _enclosing;
-		}
-
-		public ChannelSftp()
-		{
-			version = client_version.ToString();
-			packet = new Packet(buf);
 		}
 	}
 

@@ -35,7 +35,7 @@ using Sharpen;
 
 namespace NSch.Jcraft
 {
-	public class HMAC
+	internal class HMAC
 	{
 		private const int B = 64;
 

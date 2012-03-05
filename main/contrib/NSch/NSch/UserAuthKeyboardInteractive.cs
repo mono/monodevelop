@@ -55,6 +55,10 @@ namespace NSch
 			_username = Util.Str2byte(username);
 			while (true)
 			{
+				if (session.auth_failures >= session.max_auth_tries)
+				{
+					return false;
+				}
 				// send
 				// byte      SSH_MSG_USERAUTH_REQUEST(50)
 				// string    user name (ISO-10646 UTF-8, as defined in [RFC-2279])
@@ -113,6 +117,7 @@ namespace NSch
 						}
 						//throw new JSchException("USERAUTH KI is not supported");
 						//cancel=true;  // ??
+						session.auth_failures++;
 						break;
 					}
 					if (command == SSH_MSG_USERAUTH_INFO_REQUEST)
