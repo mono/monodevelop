@@ -15,6 +15,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/OldNRefactory.dll
 
 
@@ -22,7 +23,6 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
@@ -77,6 +77,7 @@ FILES =  \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingProperties.cs \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngine.cs \
 	MonoDevelop.CSharp.Formatting/CSharpIndentEngineStack.cs \
+	MonoDevelop.CSharp.Formatting/CSharpIndentVirtualSpaceManager.cs \
 	MonoDevelop.CSharp.Formatting/CSharpTextEditorIndentation.cs \
 	MonoDevelop.CSharp.Formatting/Indent.cs \
 	MonoDevelop.CSharp.Formatting/NewFormattingProfileDialog.cs \
