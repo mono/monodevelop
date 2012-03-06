@@ -360,7 +360,7 @@ namespace Mono.TextEditor
 
 		void FixVirtualIndentation ()
 		{
-			if (!HasIndentationTracker)
+			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
 				return;
 			var line = Document.GetLine (Caret.Line);
 			if (line != null && line.EditableLength > 0 && GetIndentationString (Caret.Location) == Document.GetTextAt (line.Offset, line.EditableLength))
