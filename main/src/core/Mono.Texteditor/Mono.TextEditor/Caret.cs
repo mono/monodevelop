@@ -201,7 +201,7 @@ namespace Mono.TextEditor
 			int desiredLineNumber = TextEditorData.Document.OffsetToLineNumber (desiredOffset);
 			var desiredLine = TextEditorData.Document.GetLine (desiredLineNumber);
 			int column = desiredOffset - desiredLine.Offset + 1;
-			if (TextEditorData.HasIndentationTracker && desiredLine.EditableLength + 1 < this.Column && column == 1)
+			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && desiredLine.EditableLength + 1 < this.Column && column == 1)
  				column = TextEditorData.GetVirtualIndentationColumn (desiredLineNumber, 1);
 			location = new DocumentLocation (desiredLineNumber, column);
 			
@@ -226,7 +226,7 @@ namespace Mono.TextEditor
 			if (curLine == null)
 				return;
 			this.location.Column = curLine.GetLogicalColumn (TextEditorData, this.DesiredColumn);
-			if (TextEditorData.HasIndentationTracker && curLine.GetVisualColumn (TextEditorData, this.location.Column) < this.DesiredColumn) {
+			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.GetVisualColumn (TextEditorData, this.location.Column) < this.DesiredColumn) {
 				this.location.Column = TextEditorData.GetVirtualIndentationColumn (Line, this.location.Column);
 			} else {
 				if (this.Column > curLine.EditableLength + 1) {

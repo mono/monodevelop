@@ -98,7 +98,7 @@ namespace Mono.TextEditor
 			}
 			if (data.Caret.Column < line.EditableLength + 1 || data.Caret.AllowCaretBehindLineEnd) {
 				if (data.Caret.Column >= line.EditableLength + 1) {
-					int nextColumn = data.HasIndentationTracker ? data.GetVirtualIndentationColumn (data.Caret.Location) : line.EditableLength + 1;
+					int nextColumn = data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Auto ? data.GetVirtualIndentationColumn (data.Caret.Location) : line.EditableLength + 1;
 					if (data.Caret.Column < nextColumn) {
 						data.Caret.Column = nextColumn;
 					} else {
@@ -283,7 +283,7 @@ namespace Mono.TextEditor
 			if (newLocation != data.Caret.Location)
 				data.Caret.Location = newLocation;
 			
-			if (data.Caret.AllowCaretBehindLineEnd && data.HasIndentationTracker) {
+			if (data.Caret.AllowCaretBehindLineEnd && data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual) {
 				int nextColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
 				if (nextColumn > data.Caret.Column)
 					data.Caret.Column = nextColumn;
