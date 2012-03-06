@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharp.Inspection
 		public string AppliedAttributeType { get; set; }
 		public string BaseType { get; set; }
 		
-		bool CheckAttributedNode (ICS.AttributedNode node, ICS.Modifiers defaultVisibility)
+		bool CheckAttributedNode (ICS.EntityDeclaration node, ICS.Modifiers defaultVisibility)
 		{
 			if (!CheckModifiers (node.Modifiers, defaultVisibility))
 				return false;

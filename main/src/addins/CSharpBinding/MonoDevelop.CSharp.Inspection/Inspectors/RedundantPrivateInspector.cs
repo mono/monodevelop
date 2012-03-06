@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Inspection
 			};
 		}
 		
-		void CheckNode (AttributedNode node, InspectionData data)
+		void CheckNode (EntityDeclaration node, InspectionData data)
 		{
 			foreach (var token in node.ModifierTokens) {
 				if (token.Modifier == Modifiers.Private) {

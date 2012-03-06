@@ -431,12 +431,12 @@ namespace MonoDevelop.CSharp.ContextAction
 			var resolver = new CSharpAstResolver (Document.Compilation, cu, parsedFile);
 			return resolver.Resolve (node);
 		}
-		
-		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, MemberDeclaration replaceWidth)
+
+		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, EntityDeclaration replaceWidth)
 		{
 			// TODO
 		}
-		
+
 		/*
 		public bool IsValid {
 			get {
@@ -499,7 +499,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 		}
 		*/
-		
-		
+
+
 	}
 }
