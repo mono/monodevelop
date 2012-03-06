@@ -8,5 +8,11 @@ namespace Sharpen
 		public FileWriter (FilePath path) : base(path.GetPath ())
 		{
 		}
+		
+		public FileWriter Append (string sequence)
+		{
+			Write (sequence);
+			return this;
+		}
 	}
 }

@@ -70,6 +70,10 @@ namespace NGit.Util
 		/// <summary>Option to skip deletion if file doesn't exist</summary>
 		public const int SKIP_MISSING = 4;
 
+		/// <summary>Option not to throw exceptions when a deletion finally doesn't succeed.</summary>
+		/// <remarks>Option not to throw exceptions when a deletion finally doesn't succeed.</remarks>
+		public const int IGNORE_ERRORS = 8;
+
 		/// <summary>Delete file or empty folder</summary>
 		/// <param name="f">
 		/// <code>File</code>
@@ -111,7 +115,8 @@ namespace NGit.Util
 		/// <code>f</code>
 		/// didn't exist when the method was called. This can therefore
 		/// cause IOExceptions during race conditions when multiple
-		/// concurrent threads all try to delete the same file.
+		/// concurrent threads all try to delete the same file. This
+		/// exception is not thrown when IGNORE_ERRORS is set.
 		/// </exception>
 		public static void Delete(FilePath f, int options)
 		{
@@ -150,8 +155,11 @@ namespace NGit.Util
 						}
 					}
 				}
-				throw new IOException(MessageFormat.Format(JGitText.Get().deleteFileFailed, f.GetAbsolutePath
-					()));
+				if ((options & IGNORE_ERRORS) == 0)
+				{
+					throw new IOException(MessageFormat.Format(JGitText.Get().deleteFileFailed, f.GetAbsolutePath
+						()));
+				}
 			}
 		}
 

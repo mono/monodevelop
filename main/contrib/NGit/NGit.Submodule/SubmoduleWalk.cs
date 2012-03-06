@@ -141,29 +141,35 @@ namespace NGit.Submodule
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		public static Repository GetSubmoduleRepository(Repository parent, string path)
 		{
-			FilePath directory = GetSubmoduleGitDirectory(parent, path);
-			if (!directory.IsDirectory())
+			return GetSubmoduleRepository(parent.WorkTree, path);
+		}
+
+		/// <summary>Get submodule repository at path</summary>
+		/// <param name="parent"></param>
+		/// <param name="path"></param>
+		/// <returns>repository or null if repository doesn't exist</returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public static Repository GetSubmoduleRepository(FilePath parent, string path)
+		{
+			FilePath subWorkTree = new FilePath(parent, path);
+			if (!subWorkTree.IsDirectory())
 			{
 				return null;
 			}
+			FilePath workTree = new FilePath(parent, path);
 			try
 			{
-				return new RepositoryBuilder().SetMustExist(true).SetFS(FS.DETECTED).SetGitDir(directory
-					).Build();
+				return new RepositoryBuilder().SetMustExist(true).SetFS(FS.DETECTED).SetWorkTree(
+					workTree).Build();
 			}
 			catch (RepositoryNotFoundException)
 			{
+				//
+				//
+				//
+				//
 				return null;
 			}
-		}
-
-		/// <summary>Get the .git directory for a repository submodule path</summary>
-		/// <param name="parent"></param>
-		/// <param name="path"></param>
-		/// <returns>.git for submodule repository</returns>
-		public static FilePath GetSubmoduleGitDirectory(Repository parent, string path)
-		{
-			return new FilePath(GetSubmoduleDirectory(parent, path), Constants.DOT_GIT);
 		}
 
 		/// <summary>Resolve submodule repository URL.</summary>
@@ -343,13 +349,6 @@ namespace NGit.Submodule
 			return GetSubmoduleDirectory(repository, path);
 		}
 
-		/// <summary>Get the .git directory for the current submodule entry</summary>
-		/// <returns>.git for submodule repository</returns>
-		public virtual FilePath GetGitDirectory()
-		{
-			return GetSubmoduleGitDirectory(repository, path);
-		}
-
 		/// <summary>Advance to next submodule in the index tree.</summary>
 		/// <remarks>
 		/// Advance to next submodule in the index tree.
@@ -468,18 +467,7 @@ namespace NGit.Submodule
 				.CONFIG_KEY_UPDATE);
 		}
 
-		/// <summary>
-		/// Does the current submodule entry have a .git directory in the parent
-		/// repository's working tree?
-		/// </summary>
-		/// <returns>true if .git directory exists, false otherwise</returns>
-		public virtual bool HasGitDirectory()
-		{
-			return GetGitDirectory().IsDirectory();
-		}
-
 		/// <summary>Get repository for current submodule entry</summary>
-		/// <seealso cref="HasGitDirectory()">HasGitDirectory()</seealso>
 		/// <returns>repository or null if non-existent</returns>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
 		public virtual Repository GetRepository()

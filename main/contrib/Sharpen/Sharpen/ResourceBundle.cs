@@ -59,7 +59,7 @@ namespace Sharpen
 				while ((str = reader.ReadLine ()) != null) {
 					int index = str.IndexOf ('=');
 					if (index != -1) {
-						this.strings[str.Substring (0, index)] = str.Substring (index + 1).Replace (@"\n", "\n");
+						this.strings[str.Substring (0, index).Trim ()] = str.Substring (index + 1).Replace (@"\n", "\n").Trim ();
 					}
 				}
 			}

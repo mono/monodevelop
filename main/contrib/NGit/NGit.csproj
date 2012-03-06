@@ -559,6 +559,17 @@
     <Compile Include="NGit.Transport\WalkEncryption.cs" />
     <Compile Include="NGit\BranchConfig.cs" />
     <Compile Include="NGit\BranchTrackingStatus.cs" />
+    <Compile Include="NGit.Transport\AbstractAdvertiseRefsHook.cs" />
+    <Compile Include="NGit.Transport\AdvertiseRefsHook.cs" />
+    <Compile Include="NGit.Transport\AdvertiseRefsHookChain.cs" />
+    <Compile Include="NGit.Transport\ServiceMayNotContinueException.cs" />
+    <Compile Include="NGit.Api\ApplyCommand.cs" />
+    <Compile Include="NGit.Api\ApplyResult.cs" />
+    <Compile Include="NGit.Api\StashApplyCommand.cs" />
+    <Compile Include="NGit.Api\StashCreateCommand.cs" />
+    <Compile Include="NGit.Util\GitDateFormatter.cs" />
+    <Compile Include="NGit.Api.Errors\PatchApplyException.cs" />
+    <Compile Include="NGit.Api.Errors\PatchFormatException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

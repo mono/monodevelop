@@ -49,6 +49,7 @@ using NGit.Diff;
 using NGit.Dircache;
 using NGit.Errors;
 using NGit.Ignore;
+using NGit.Submodule;
 using NGit.Treewalk;
 using NGit.Util;
 using NGit.Util.IO;
@@ -332,20 +333,16 @@ namespace NGit.Treewalk
 		protected internal virtual byte[] IdSubmodule(FilePath directory, WorkingTreeIterator.Entry
 			 e)
 		{
-			string gitDirPath = e.GetName() + "/" + Constants.DOT_GIT;
-			FilePath submoduleGitDir = new FilePath(directory, gitDirPath);
-			if (!submoduleGitDir.IsDirectory())
-			{
-				return zeroid;
-			}
 			Repository submoduleRepo;
 			try
 			{
-				FS fs = repository != null ? repository.FileSystem : FS.DETECTED;
-				submoduleRepo = new RepositoryBuilder().SetGitDir(submoduleGitDir).SetMustExist(true
-					).SetFS(fs).Build();
+				submoduleRepo = SubmoduleWalk.GetSubmoduleRepository(directory, e.GetName());
 			}
 			catch (IOException)
+			{
+				return zeroid;
+			}
+			if (submoduleRepo == null)
 			{
 				return zeroid;
 			}
@@ -705,9 +702,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		private sealed class _IComparer_575 : IComparer<WorkingTreeIterator.Entry>
+		private sealed class _IComparer_573 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_575()
+			public _IComparer_573()
 			{
 			}
 
@@ -741,7 +738,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_575
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_573
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)

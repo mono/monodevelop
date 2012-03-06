@@ -62,9 +62,9 @@ namespace NGit.Util
 	/// </remarks>
 	public abstract class SystemReader
 	{
-		private sealed class _SystemReader_66 : SystemReader
+		private sealed class _SystemReader_69 : SystemReader
 		{
-			public _SystemReader_66()
+			public _SystemReader_69()
 			{
 			}
 
@@ -85,7 +85,7 @@ namespace NGit.Util
 				FilePath prefix = fs.GitPrefix();
 				if (prefix == null)
 				{
-					return new _FileBasedConfig_80(null, fs);
+					return new _FileBasedConfig_83(null, fs);
 				}
 				// empty, do not load
 				// regular class would bomb here
@@ -94,9 +94,9 @@ namespace NGit.Util
 				return new FileBasedConfig(parent, config, fs);
 			}
 
-			private sealed class _FileBasedConfig_80 : FileBasedConfig
+			private sealed class _FileBasedConfig_83 : FileBasedConfig
 			{
-				public _FileBasedConfig_80(FilePath baseArg1, FS baseArg2) : base(baseArg1, baseArg2
+				public _FileBasedConfig_83(FilePath baseArg1, FS baseArg2) : base(baseArg1, baseArg2
 					)
 				{
 				}
@@ -146,7 +146,7 @@ namespace NGit.Util
 			}
 		}
 
-		private static SystemReader INSTANCE = new _SystemReader_66();
+		private static SystemReader INSTANCE = new _SystemReader_69();
 
 		/// <returns>the live instance to read system properties.</returns>
 		public static SystemReader GetInstance()
@@ -218,6 +218,41 @@ namespace NGit.Util
 		public virtual CultureInfo GetLocale()
 		{
 			return CultureInfo.CurrentCulture;
+		}
+
+		/// <summary>Returns a simple date format instance as specified by the given pattern.
+		/// 	</summary>
+		/// <remarks>Returns a simple date format instance as specified by the given pattern.
+		/// 	</remarks>
+		/// <param name="pattern">
+		/// the pattern as defined in
+		/// <see cref="Sharpen.SimpleDateFormat.SimpleDateFormat(string)">Sharpen.SimpleDateFormat.SimpleDateFormat(string)
+		/// 	</see>
+		/// </param>
+		/// <returns>the simple date format</returns>
+		/// <since>2.0</since>
+		public virtual SimpleDateFormat GetSimpleDateFormat(string pattern)
+		{
+			return new SimpleDateFormat(pattern);
+		}
+
+		/// <summary>Returns a date/time format instance for the given styles.</summary>
+		/// <remarks>Returns a date/time format instance for the given styles.</remarks>
+		/// <param name="dateStyle">
+		/// the date style as specified in
+		/// <see cref="Sharpen.DateFormat.GetDateTimeInstance(int, int)">Sharpen.DateFormat.GetDateTimeInstance(int, int)
+		/// 	</see>
+		/// </param>
+		/// <param name="timeStyle">
+		/// the time style as specified in
+		/// <see cref="Sharpen.DateFormat.GetDateTimeInstance(int, int)">Sharpen.DateFormat.GetDateTimeInstance(int, int)
+		/// 	</see>
+		/// </param>
+		/// <returns>the date format</returns>
+		/// <since>2.0</since>
+		public virtual DateFormat GetDateTimeInstance(int dateStyle, int timeStyle)
+		{
+			return DateFormat.GetDateTimeInstance(dateStyle, timeStyle);
 		}
 	}
 }

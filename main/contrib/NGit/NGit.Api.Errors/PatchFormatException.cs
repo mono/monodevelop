@@ -41,32 +41,34 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using NGit.Transport;
+using System.Collections.Generic;
+using NGit;
+using NGit.Api.Errors;
+using NGit.Patch;
 using Sharpen;
 
-namespace NGit.Transport
+namespace NGit.Api.Errors
 {
-	/// <summary>Indicates UploadPack may not continue execution.</summary>
-	/// <remarks>Indicates UploadPack may not continue execution.</remarks>
+	/// <summary>Exception thrown when applying a patch fails due to an invalid format</summary>
+	/// <since>2.0</since>
 	[System.Serializable]
-	[System.ObsoleteAttribute(@"use ServiceMayNotContinueException instead.")]
-	public class UploadPackMayNotContinueException : ServiceMayNotContinueException
+	public class PatchFormatException : GitAPIException
 	{
 		private const long serialVersionUID = 1L;
 
-		/// <summary>Initialize with no message.</summary>
-		/// <remarks>Initialize with no message.</remarks>
-		public UploadPackMayNotContinueException()
+		private IList<FormatError> errors;
+
+		/// <param name="errors"></param>
+		public PatchFormatException(IList<FormatError> errors) : base(MessageFormat.Format
+			(JGitText.Get().patchFormatException, errors))
 		{
+			this.errors = errors;
 		}
 
-		/// <param name="msg">
-		/// a message explaining why it cannot continue. This message may
-		/// be shown to an end-user.
-		/// </param>
-		public UploadPackMayNotContinueException(string msg) : base(msg)
+		/// <returns>all the errors where unresolved conflicts have been detected</returns>
+		public virtual IList<FormatError> GetErrors()
 		{
+			return errors;
 		}
-		// Do not set a message.
 	}
 }

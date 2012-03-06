@@ -239,6 +239,14 @@ namespace NGit.Diff
 			oldPrefix = prefix;
 		}
 
+		/// <summary>Get the prefix applied in front of old file paths.</summary>
+		/// <remarks>Get the prefix applied in front of old file paths.</remarks>
+		/// <returns>the prefix</returns>
+		public virtual string GetOldPrefix()
+		{
+			return this.oldPrefix;
+		}
+
 		/// <summary>Set the prefix applied in front of new file paths.</summary>
 		/// <remarks>Set the prefix applied in front of new file paths.</remarks>
 		/// <param name="prefix">
@@ -252,6 +260,14 @@ namespace NGit.Diff
 		public virtual void SetNewPrefix(string prefix)
 		{
 			newPrefix = prefix;
+		}
+
+		/// <summary>Get the prefix applied in front of new file paths.</summary>
+		/// <remarks>Get the prefix applied in front of new file paths.</remarks>
+		/// <returns>the prefix</returns>
+		public virtual string GetNewPrefix()
+		{
+			return this.newPrefix;
 		}
 
 		/// <returns>true if rename detection is enabled.</returns>
