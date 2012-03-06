@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide
 			}
 			return new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length);
 		}
-		
+
 		public void JumpToDeclaration (INamedElement visitable, bool askIfMultipleLocations = true)
 		{
 			if (askIfMultipleLocations) {
@@ -254,14 +254,14 @@ namespace MonoDevelop.Ide
 					return;
 				}
 			}
-			
+
 			JumpToDeclaration (visitable);
 		}
 
 		void JumpToDeclaration (INamedElement element)
 		{
 			IEntity entity = element as IEntity;
-			
+
 			if (entity == null && element is IType)
 				entity = ((IType)element).GetDefinition ();
 			if (entity == null) {
@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide
 			var doc = IdeApp.Workbench.OpenDocument (fileName,
 			                               entity.Region.BeginLine,
 			                               entity.Region.BeginColumn);
-			
+
 			if (isCecilProjectContent && doc != null) {
 				doc.RunWhenLoaded (delegate {
 					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
@@ -286,9 +286,16 @@ namespace MonoDevelop.Ide
 						handler.Open (entity.GetIdString ());
 				});
 			}
-			
 		}
-		
+
+		public void JumpToDeclaration (IVariable entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException ("entity");
+			string fileName = entity.Region.FileName;
+			var doc = IdeApp.Workbench.OpenDocument (fileName, entity.Region.BeginLine, entity.Region.BeginColumn);
+		}
+
 		public void RenameItem (IWorkspaceFileObject item, string newName)
 		{
 			ProjectOptionsDialog.RenameItem (item, newName);

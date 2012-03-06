@@ -47,8 +47,13 @@ namespace MonoDevelop.Refactoring
 			ResolveResult resolveResoult;
 			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
 			var entity = item as INamedElement;
-			if (entity != null)
+			if (entity != null) {
 				IdeApp.ProjectOperations.JumpToDeclaration (entity);
+			} else {
+				var v = item as IVariable;
+				if (v != null)
+					IdeApp.ProjectOperations.JumpToDeclaration (v);
+			}
 		}
 	}
 }
