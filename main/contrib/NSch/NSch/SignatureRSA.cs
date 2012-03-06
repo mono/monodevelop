@@ -42,7 +42,7 @@ namespace NSch
 		void SetPubKey(byte[] e, byte[] n);
 
 		/// <exception cref="System.Exception"></exception>
-		void SetPrvKey(byte[] d, byte[] n);
+		void SetPrvKey(byte[] d, byte[] n, byte[] e);
 
 		/// <exception cref="System.Exception"></exception>
 		void Update(byte[] H);

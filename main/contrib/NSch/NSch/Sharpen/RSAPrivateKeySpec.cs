@@ -30,12 +30,19 @@ namespace Sharpen
 	public class RSAPrivateKeySpec: KeySpec
 	{
 		BigInteger modulus;
+		BigInteger publicExponent;
 		BigInteger privateExponent;
 
-		public RSAPrivateKeySpec (BigInteger modulus, BigInteger privateExponent)
+		public RSAPrivateKeySpec (BigInteger modulus, BigInteger privateExponent, BigInteger publicExponent)
 		{
 			this.modulus = modulus;
 			this.privateExponent = privateExponent;
+			this.publicExponent = publicExponent;
+		}
+		
+		public BigInteger GetPublicExponent ()
+		{
+			return publicExponent;
 		}
 		
 		public BigInteger GetModulus ()
