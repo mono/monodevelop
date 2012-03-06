@@ -4,7 +4,7 @@ EXTRA_DIST =  $(srcdir)/extract_makefile_variable.sh
 
 update-ngit:
 	rm -rf ngit-source
-	git clone --depth=1 git://github.com/slluis/ngit.git ngit-source
+	git clone --depth=1 git://github.com/mono/ngit.git ngit-source
 	cp NGit/Makefile Makefile.tmp
 	cp NGit/Makefile.in Makefile.tmp.in
 	cp NGit/Makefile.am Makefile.tmp.am
