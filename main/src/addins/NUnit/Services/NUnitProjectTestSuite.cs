@@ -42,7 +42,13 @@ namespace MonoDevelop.NUnit
 		DotNetProject project;
 		string resultsPath;
 		string storeId;
-		
+
+		public override IList<string> UserAssemblyPaths {
+			get {
+				return project.GetUserAssemblyPaths (project.ParentSolution.DefaultConfigurationSelector);
+			}
+		}
+
 		public NUnitProjectTestSuite (DotNetProject project): base (project.Name, project)
 		{
 			storeId = Path.GetFileName (project.FileName);
