@@ -107,15 +107,6 @@ namespace MonoDevelop.CSharp.Formatting
 			RunFormatterAt (e.Offset);
 		}*/
 
-		void RunFormatterAt (int offset)
-		{
-			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && Document != null) {
-				//	textEditorData.Document.TextReplaced -= TextCut;
-				var loc = textEditorData.Document.OffsetToLocation (offset);
-				OnTheFlyFormatter.Format (Document, loc);
-				//	textEditorData.Document.TextReplaced += TextCut;
-			}
-		}
 
 		#region Sharing the tracker
 
@@ -194,10 +185,6 @@ namespace MonoDevelop.CSharp.Formatting
 					DoReSmartIndent ();
 				}
 				return false;
-			}
-			if ((key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) && !(textEditorData.CurrentMode is TextLinkEditMode)) {
-				RunFormatter ();
-				stateTracker.UpdateEngine ();
 			}
 
 			//do the smart indent
@@ -394,10 +381,6 @@ namespace MonoDevelop.CSharp.Formatting
 			stateTracker.UpdateEngine ();
 			reIndent = false;
 			switch (charInserted) {
-			case ';':
-			case '}':
-				RunFormatter ();
-				break;
 			case '\n':
 				if (FixLineStart (stateTracker.Engine.LineNumber)) 
 					return;
@@ -459,14 +442,6 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			}
 			return false;
-		}
-
-		void RunFormatter ()
-		{
-			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
-				TextLocation location = new TextLocation (textEditorData.Caret.Location.Line + (lastCharInserted == '\n' ? -1 : 0), textEditorData.Caret.Location.Column);
-				OnTheFlyFormatter.Format (Document, location, lastCharInserted == '\n');
-			}
 		}
 
 		//does re-indenting and cursor positioning
