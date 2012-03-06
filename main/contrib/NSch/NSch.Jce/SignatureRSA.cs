@@ -57,10 +57,10 @@ namespace NSch.Jce
 		}
 
 		/// <exception cref="System.Exception"></exception>
-		public virtual void SetPrvKey(byte[] d, byte[] n)
+		public virtual void SetPrvKey(byte[] d, byte[] n, byte[] e)
 		{
 			RSAPrivateKeySpec rsaPrivKeySpec = new RSAPrivateKeySpec(new BigInteger(n), new BigInteger
-				(d));
+				(d), new BigInteger (e));
 			PrivateKey prvKey = keyFactory.GeneratePrivate(rsaPrivKeySpec);
 			signature.InitSign(prvKey);
 		}

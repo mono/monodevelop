@@ -107,7 +107,7 @@ namespace Sharpen
 			RSAParameters dparams = new RSAParameters ();
 			dparams.Modulus = spec.GetModulus ().GetBytes ();
 			dparams.D = spec.GetPrivateExponent ().GetBytes ();
-			dparams.Exponent = new BigInteger (35).GetBytes ();
+			dparams.Exponent = spec.GetPublicExponent ().GetBytes ();
 			return new RSAPrivateKey (dparams);
 		}
 	}

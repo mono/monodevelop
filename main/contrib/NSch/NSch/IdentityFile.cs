@@ -753,7 +753,7 @@ namespace NSch
 				Type c = Sharpen.Runtime.GetType((string)JSch.GetConfig("signature.rsa"));
 				NSch.SignatureRSA rsa = (NSch.SignatureRSA)(System.Activator.CreateInstance(c));
 				rsa.Init();
-				rsa.SetPrvKey(d_array, n_array);
+				rsa.SetPrvKey(d_array, n_array, e_array);
 				rsa.Update(data);
 				byte[] sig = rsa.Sign();
 				Buffer buf = new Buffer("ssh-rsa".Length + 4 + sig.Length + 4);
