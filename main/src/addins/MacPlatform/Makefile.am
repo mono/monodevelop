@@ -5,13 +5,14 @@ ASSEMBLY = $(ADDIN_BUILD)/MacPlatform.dll
 MONOMAC_SRC = $(top_srcdir)/../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll
 MONOMAC = $(ADDIN_BUILD)/MonoMac.dll
 
-DEPS = $(top_builddir)/build/bin/MonoDevelop.Core.dll
+DEPS =  \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:../../../../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll \
-	-r:../../../build/bin/MonoDevelop.Ide.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

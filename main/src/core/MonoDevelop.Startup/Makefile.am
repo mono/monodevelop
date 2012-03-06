@@ -9,11 +9,11 @@ RES =
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
-DEPS = $(top_builddir)/build/bin/MonoDevelop.Core.dll
+DEPS =  \
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
-REFS =  \
-	$(MONO_ADDINS_LIBS) \
-	-r:../../../build/bin/MonoDevelop.Ide.dll
+REFS = $(MONO_ADDINS_LIBS)
 
 ICON = $(top_builddir)/theme-icons/Windows/monodevelop.ico
 

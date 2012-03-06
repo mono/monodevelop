@@ -7,14 +7,14 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/NUnit/NUnitRunner.dll \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
-	$(top_builddir)/build/bin/MonoDevelop.Core.dll
+	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
+	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:$(top_srcdir)/build/bin/MonoDevelop.Ide.dll \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.core.dll \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.core.interfaces.dll \
 	-r:$(top_srcdir)/src/addins/NUnit/lib/nunit.framework.dll \
