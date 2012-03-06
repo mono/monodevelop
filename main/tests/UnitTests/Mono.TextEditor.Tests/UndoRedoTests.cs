@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSimpleUndo ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
 			data.Document.Text = "Hello";
 			Assert.IsFalse (data.Document.CanUndo);
 			data.Caret.Offset = data.Document.Length;
@@ -66,17 +66,6 @@ namespace Mono.TextEditor.Tests
 			
 			Assert.AreEqual (data.Document.Text, "HelloWorld");
 			Assert.AreEqual (data.Document.Length, data.Caret.Offset);
-		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
 		}
 	}
 }

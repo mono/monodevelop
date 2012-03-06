@@ -33,6 +33,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor.Tests
 {
+	[Ignore()]
 	[TestFixture()]
 	public class TextBreakerTests
 	{
@@ -107,12 +108,6 @@ namespace Mono.TextEditor.Tests
 		public List<ISegment> BreakAllLines (TextEditor editor)
 		{
 			return TextBreaker.BreakLinesIntoWords (editor.Document, 1, editor.LineCount, false);
-		}
-
-		[TestFixtureSetUp] 
-		public void SetUp ()
-		{
-			Gtk.Application.Init ();
 		}
 	}
 }

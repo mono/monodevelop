@@ -32,6 +32,7 @@ using System.Text;
 
 namespace Mono.TextEditor.Tests
 {
+	[Ignore("")]
 	[TestFixture]
 	public class ViTests
 	{

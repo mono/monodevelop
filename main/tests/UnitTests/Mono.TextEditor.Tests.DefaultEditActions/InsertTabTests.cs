@@ -196,7 +196,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestInsertTabLineCase4 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
 			data.Document.Text = 
 @"123d456789
 [123456789
@@ -219,17 +219,6 @@ namespace Mono.TextEditor.Tests
 			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 3).Length > data.Document.GetLine (DocumentLocation.MinLine + 0).Length);
 			
 			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
 		}
 	}
 }

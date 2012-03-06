@@ -212,7 +212,7 @@ namespace Mono.TextEditor
 
 			if (logicalDesiredColumn <= desiredLine.EditableLength) {
 				int possibleOffset = TextEditorData.LocationToOffset (desiredLineNumber, logicalDesiredColumn);
-				if (!TextEditorData.Document.GetFoldingsFromOffset (logicalDesiredColumn).Any (f => f.IsFolded))
+				if (!TextEditorData.Document.GetFoldingsFromOffset (possibleOffset).Any (f => f.IsFolded))
 					location = new DocumentLocation (desiredLineNumber, logicalDesiredColumn);
 			}
 
