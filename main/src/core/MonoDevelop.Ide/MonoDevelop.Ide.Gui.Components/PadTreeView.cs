@@ -65,5 +65,32 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 			base.Dispose ();
 		}
+		
+		// Workaround for Bug 1698 - Error list scroll position doesn't reset when list changes, hides items
+		// If the store of a pad treeview is modified while the pad is unrealized (autohidden), the treeview
+		// doesn't update its internal vertical offset. This can lead to items becoming offset outside the 
+		// visible area and therefore becoming unreachable. The only way to force the treeview to recalculate
+		// this offset is by setting the Vadjustment.Value, but it ignores values the same as the current value.
+		// Therefore we simply set it to something slightly different then back again.
+		
+		bool forceInternalOffsetUpdate;
+		
+		protected override void OnUnrealized ()
+		{
+			base.OnUnrealized ();
+			forceInternalOffsetUpdate = true;
+		}
+		
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			if (forceInternalOffsetUpdate && IsRealized) {
+				forceInternalOffsetUpdate = false;
+				var v = Vadjustment.Value;
+				int delta = v > 2? 0 : 1;
+				Vadjustment.Value = v + delta;
+				Vadjustment.Value = v;
+			}
+		}
 	}
 }
