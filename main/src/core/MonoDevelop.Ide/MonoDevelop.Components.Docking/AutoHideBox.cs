@@ -100,17 +100,23 @@ namespace MonoDevelop.Components.Docking
 			ShowAll ();
 			Hide ();
 			
-			scrollable = new ScrollableContainer ();
-			scrollable.ScrollMode = false;
-			scrollable.Show ();
+			if (ANIMATE) {
+				scrollable = new ScrollableContainer ();
+				scrollable.ScrollMode = false;
+				scrollable.Show ();
+			}
 
 			if (item.Widget.Parent != null) {
 				((Gtk.Container)item.Widget.Parent).Remove (item.Widget);
 			}
 
 			item.Widget.Show ();
-			scrollable.Add (item.Widget);
-			fr.PackStart (scrollable, true, true, 0);
+			if (ANIMATE) {
+				scrollable.Add (item.Widget);
+				fr.PackStart (scrollable, true, true, 0);
+			} else {
+				fr.PackStart (item.Widget, true, true, 0);
+			}
 			
 			sepBox.ButtonPressEvent += OnSizeButtonPress;
 			sepBox.ButtonReleaseEvent += OnSizeButtonRelease;
