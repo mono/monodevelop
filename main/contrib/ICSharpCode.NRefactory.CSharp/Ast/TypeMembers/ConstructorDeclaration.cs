@@ -31,37 +31,37 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class ConstructorDeclaration : EntityDeclaration
 	{
 		public static readonly Role<ConstructorInitializer> InitializerRole = new Role<ConstructorInitializer>("Initializer", ConstructorInitializer.Null);
-
+		
 		public override EntityType EntityType {
 			get { return EntityType.Constructor; }
 		}
-
+		
 		public CSharpTokenNode LParToken {
 			get { return GetChildByRole (Roles.LPar); }
 		}
-
+		
 		public AstNodeCollection<ParameterDeclaration> Parameters {
 			get { return GetChildrenByRole (Roles.Parameter); }
 		}
-
+		
 		public CSharpTokenNode RParToken {
 			get { return GetChildByRole (Roles.RPar); }
 		}
-
+		
 		public CSharpTokenNode ColonToken {
 			get { return GetChildByRole (Roles.Colon); }
 		}
-
+		
 		public ConstructorInitializer Initializer {
 			get { return GetChildByRole (InitializerRole); }
 			set { SetChildByRole( InitializerRole, value); }
 		}
-
+		
 		public BlockStatement Body {
 			get { return GetChildByRole (Roles.Body); }
 			set { SetChildByRole (Roles.Body, value); }
 		}
-
+		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitConstructorDeclaration (this);
@@ -71,12 +71,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitConstructorDeclaration (this);
 		}
-
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorDeclaration (this, data);
 		}
-
+		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			ConstructorDeclaration o = other as ConstructorDeclaration;

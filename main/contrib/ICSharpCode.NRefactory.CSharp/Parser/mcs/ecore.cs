@@ -398,7 +398,7 @@ namespace Mono.CSharp {
 
 				return e;
 			} catch (Exception ex) {
-				if (loc.IsNull || ec.Module.Compiler.Settings.DebugFlags > 0 || ex is CompletionResult || ec.Report.IsDisabled)
+				if (loc.IsNull || ec.Module.Compiler.Settings.DebugFlags > 0 || ex is CompletionResult || ec.Report.IsDisabled || ex is FatalException)
 					throw;
 
 				ec.Report.Error (584, loc, "Internal compiler error: {0}", ex.Message);
@@ -2513,8 +2513,8 @@ namespace Mono.CSharp {
 				return null;
 
 			if (right_side != null) {
-				if (e is TypeExpr) {
-				    e.Error_UnexpectedKind (ec, ResolveFlags.VariableOrValue, loc);
+				if (e is FullNamedExpression && e.eclass != ExprClass.Unresolved) {
+					e.Error_UnexpectedKind (ec, e, "variable", e.ExprClassName, loc);
 				    return null;
 				}
 
@@ -2523,7 +2523,6 @@ namespace Mono.CSharp {
 				e = e.Resolve (ec);
 			}
 
-			//if (ec.CurrentBlock == null || ec.CurrentBlock.CheckInvariantMeaningInBlock (Name, e, Location))
 			return e;
 		}
 		

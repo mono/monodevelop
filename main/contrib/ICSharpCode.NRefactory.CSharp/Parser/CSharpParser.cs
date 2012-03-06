@@ -3544,9 +3544,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				this.fileName = fileName;
 			}
 			
-			public override void Print (AbstractMessage msg)
+			public override void Print (AbstractMessage msg, bool showFullPath)
 			{
-				base.Print (msg);
+				base.Print (msg, showFullPath);
 				var newError = new Error (msg.IsWarning ? ErrorType.Warning : ErrorType.Error, msg.Text, new DomRegion (fileName, msg.Location.Row, msg.Location.Column));
 				Errors.Add (newError);
 			}
@@ -3561,7 +3561,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public bool HasErrors {
 			get {
-				return errorReportPrinter.ErrorsCount + errorReportPrinter.FatalCounter > 0;
+				return errorReportPrinter.ErrorsCount > 0;
 			}
 		}
 		

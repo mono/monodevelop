@@ -2877,7 +2877,7 @@ namespace Mono.CSharp {
 					unreachable = top_level.End ();
 				}
 			} catch (Exception e) {
-				if (e is CompletionResult || rc.Report.IsDisabled)
+				if (e is CompletionResult || rc.Report.IsDisabled || e is FatalException)
 					throw;
 
 				if (rc.CurrentBlock != null) {
@@ -5482,7 +5482,7 @@ namespace Mono.CSharp {
 
 				// Add conditional call when disposing possible null variable
 				if (!type.IsStruct || type.IsNullableType)
-					dispose = new If (new Binary (Binary.Operator.Inequality, lvr, new NullLiteral (loc), loc), dispose, loc);
+					dispose = new If (new Binary (Binary.Operator.Inequality, lvr, new NullLiteral (loc), loc), dispose, dispose.loc);
 
 				return dispose;
 			}

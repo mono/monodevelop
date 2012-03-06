@@ -31,33 +31,32 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class DestructorDeclaration : EntityDeclaration
 	{
 		public static readonly TokenRole TildeRole = new TokenRole ("~");
-
-		public override EntityType EntityType {
-			get { return EntityType.Destructor; }
-		}
-
+		
 		public CSharpTokenNode TildeToken {
 			get { return GetChildByRole (TildeRole); }
 		}
-
+		
+		public override EntityType EntityType {
+			get { return EntityType.Destructor; }
+		}
+		
 		public CSharpTokenNode LParToken {
 			get { return GetChildByRole (Roles.LPar); }
 		}
-
+		
 		public CSharpTokenNode RParToken {
 			get { return GetChildByRole (Roles.RPar); }
 		}
-
 		public BlockStatement Body {
 			get { return GetChildByRole (Roles.Body); }
 			set { SetChildByRole (Roles.Body, value); }
 		}
-
+		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitDestructorDeclaration (this);
 		}
-
+			
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitDestructorDeclaration (this);
@@ -67,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitDestructorDeclaration (this, data);
 		}
-
+		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			DestructorDeclaration o = other as DestructorDeclaration;
