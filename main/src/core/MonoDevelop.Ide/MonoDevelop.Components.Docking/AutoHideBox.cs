@@ -37,6 +37,8 @@ namespace MonoDevelop.Components.Docking
 {
 	class AutoHideBox: DockFrameTopLevel
 	{
+		const bool ANIMATE = false;
+		
 		static Gdk.Cursor resizeCursorW = new Gdk.Cursor (Gdk.CursorType.SbHDoubleArrow);
 		static Gdk.Cursor resizeCursorH = new Gdk.Cursor (Gdk.CursorType.SbVDoubleArrow);
 		
@@ -125,6 +127,10 @@ namespace MonoDevelop.Components.Docking
 		
 		public void AnimateShow ()
 		{
+			if (!ANIMATE) {
+				Show ();
+				return;
+			}
 			animating = true;
 			scrollable.ScrollMode = true;
 			scrollable.SetSize (position, targetSize);
@@ -149,14 +155,12 @@ namespace MonoDevelop.Components.Docking
 			GLib.Timeout.Add (10, RunAnimateShow);
 		}
 		
-		protected override void OnShown ()
-		{
-			base.OnShown ();
-		}
-
-		
 		public void AnimateHide ()
 		{
+			if (!ANIMATE) {
+				Hide ();
+				return;
+			}
 			animating = true;
 			scrollable.ScrollMode = true;
 			scrollable.SetSize (position, targetSize);
