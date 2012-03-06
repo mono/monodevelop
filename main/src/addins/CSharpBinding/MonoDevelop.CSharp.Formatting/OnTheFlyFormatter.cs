@@ -120,11 +120,11 @@ namespace MonoDevelop.CSharp.Formatting
 			var compilationUnit = parser.Parse (stubData);
 			bool hadErrors = parser.HasErrors;
 			// try it out, if the behavior is better when working only with correct code.
-			if (hadErrors) {
+//			if (hadErrors) {
 /*				Console.WriteLine (sb);
 				parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));*/
-				return;
-			}
+//				return;
+//			}
 			
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 			

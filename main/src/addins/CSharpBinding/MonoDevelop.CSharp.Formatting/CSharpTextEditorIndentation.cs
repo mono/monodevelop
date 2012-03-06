@@ -188,43 +188,43 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			//do the smart indent
-			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
+			if (TextEditorProperties.IndentStyle == IndentStyle.Smart || TextEditorProperties.IndentStyle == IndentStyle.Virtual) {
 				bool retval;
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					//capture some of the current state
 					int oldBufLen = textEditorData.Length;
 					int oldLine = textEditorData.Caret.Line + 1;
 					bool hadSelection = textEditorData.IsSomethingSelected;
-
+					bool reIndent = false;
 
 					//pass through to the base class, which actually inserts the character
 					//and calls HandleCodeCompletion etc to handles completion
 					DoPreInsertionSmartIndent (key);
 					retval = base.KeyPress (key, keyChar, modifier);
-					/*
+					if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
+						DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
+
 					//handle inserted characters
 					if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
 						return retval;
-	
+
 					lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
 					if (lastCharInserted == '\0')
 						return retval;
 					stateTracker.UpdateEngine ();
-	
-					bool reIndent = false;
+
 					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
 						FixLineStart (textEditorData.Caret.Line + 1);
-					} else {
-						if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
-							DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
 					}
+
 					//reindent the line after the insertion, if needed
 					//N.B. if the engine says we need to reindent, make sure that it's because a char was 
 					//inserted rather than just updating the stack due to moving around
+
 					stateTracker.UpdateEngine ();
 					bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
 					if (reIndent || automaticReindent)
-						DoReSmartIndent ();*/
+						DoReSmartIndent ();
 				}
 
 				stateTracker.UpdateEngine ();
@@ -381,6 +381,10 @@ namespace MonoDevelop.CSharp.Formatting
 			stateTracker.UpdateEngine ();
 			reIndent = false;
 			switch (charInserted) {
+			case '}':
+			case ';':
+				reIndent = true;
+				break;
 			case '\n':
 				if (FixLineStart (stateTracker.Engine.LineNumber)) 
 					return;

@@ -64,13 +64,13 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			bool run = (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) && !(textEditorData.CurrentMode is TextLinkEditMode);
-			bool runAfter = keyChar == '}' || keyChar == ';';
-			if (run && !runAfter)
+			bool runBefore = key == Gdk.Key.Return || key == Gdk.Key.KP_Enter;
+			if (runBefore)
 				RunFormatter ();
 			var result = base.KeyPress (key, keyChar, modifier);
 
-			if (run && runAfter)
+			bool runAfter = keyChar == '}' || keyChar == ';';
+			if (runAfter)
 				RunFormatter ();
 			return result;
 		}
