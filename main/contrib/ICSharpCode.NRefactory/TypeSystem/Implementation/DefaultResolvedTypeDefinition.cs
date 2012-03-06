@@ -674,6 +674,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IEnumerable<IMethod> GetConstructors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
 		{
+			if (ComHelper.IsComImport(this)) {
+				IType coClass = ComHelper.GetCoClass(this);
+				using (var busyLock = BusyManager.Enter(this)) {
+					if (busyLock.Success) {
+						return coClass.GetConstructors(filter, options).Select(m => new SpecializedMethod(this, m));
+					}
+				}
+				return EmptyList<IMethod>.Instance;
+			}
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
 				return GetFilteredMembers<IUnresolvedMethod, IMethod>(Utils.ExtensionMethods.And(m => m.IsConstructor && !m.IsStatic, filter));
 			} else {

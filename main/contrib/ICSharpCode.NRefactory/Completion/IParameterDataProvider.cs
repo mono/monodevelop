@@ -40,7 +40,10 @@ namespace ICSharpCode.NRefactory.Completion
 			get; 
 		}
 		
-		int StartOffset  { 
+		/// <summary>
+		/// Gets the start offset of the parameter expression node.
+		/// </summary>
+		int StartOffset { 
 			get; 
 		}
 		

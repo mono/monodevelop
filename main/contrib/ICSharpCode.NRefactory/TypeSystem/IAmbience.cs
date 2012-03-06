@@ -44,9 +44,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		ShowDefinitionKeyWord  = 8,
 		/// <summary>
-		/// Show the fully qualified name for the member
+		/// Show the declaring type for the member
 		/// </summary>
-		UseFullyQualifiedMemberNames = 0x10,
+		ShowDeclaringType = 0x10,
 		/// <summary>
 		/// Show modifiers (virtual, override, etc.)
 		/// </summary>
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		ShowReturnType = 0x40,
 		/// <summary>
-		/// Use fully qualified names for return type and parameters.
+		/// Use fully qualified names for types.
 		/// </summary>
 		UseFullyQualifiedTypeNames = 0x80,
 		/// <summary>
@@ -90,7 +90,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		string ConvertType(IType type);
 		string ConvertVariable(IVariable variable);
 		
-		string WrapAttribute(string attribute);
 		string WrapComment(string comment);
 	}
 }

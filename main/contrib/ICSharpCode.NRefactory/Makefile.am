@@ -43,6 +43,7 @@ FILES =  \
 	PatternMatching/OptionalNode.cs \
 	PatternMatching/Pattern.cs \
 	PatternMatching/Repeat.cs \
+	Properties/AssemblyInfo.cs \
 	Role.cs \
 	Semantics/AmbiguousResolveResult.cs \
 	Semantics/ArrayAccessResolveResult.cs \
@@ -68,6 +69,7 @@ FILES =  \
 	TypeSystem/ArrayType.cs \
 	TypeSystem/ByReferenceType.cs \
 	TypeSystem/CecilLoader.cs \
+	TypeSystem/ComHelper.cs \
 	TypeSystem/DomRegion.cs \
 	TypeSystem/EntityType.cs \
 	TypeSystem/Error.cs \
@@ -171,6 +173,7 @@ FILES =  \
 	Utils/FastSerializer.cs \
 	Utils/GraphVizGraph.cs \
 	Utils/ImmutableStack.cs \
+	Utils/KeyComparer.cs \
 	Utils/LazyInit.cs \
 	Utils/Platform.cs \
 	Utils/ProjectedList.cs \
