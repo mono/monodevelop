@@ -47,26 +47,28 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	
 	public abstract class XcodeProjectTracker : IDisposable
 	{
-		NSObjectInfoService infoService;
-		DotNetProject dnp;
+		readonly NSObjectInfoService infoService;
+		readonly DotNetProject dnp;
 		List<NSObjectTypeInfo> userTypes;
 		XcodeMonitor xcode;
-		
+
 		bool updatingProjectFiles;
 		bool disposed;
-		
+
 		public XcodeProjectTracker (DotNetProject dnp, NSObjectInfoService infoService)
 		{
+			if (dnp == null)
+				throw new ArgumentNullException ("dnp");
 			this.dnp = dnp;
 			this.infoService = infoService;
 			AppleSdkSettings.Changed += DisableSyncing;
 		}
-		
+
 		public bool ShouldOpenInXcode (FilePath fileName)
 		{
 			if (!HasInterfaceDefinitionExtension (fileName))
 				return false;
-			
+
 			var file = dnp.Files.GetFile (fileName);
 			return file != null && (file.BuildAction == BuildAction.InterfaceDefinition);
 		}
