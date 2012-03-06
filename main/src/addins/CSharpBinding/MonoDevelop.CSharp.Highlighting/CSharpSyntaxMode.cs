@@ -520,10 +520,12 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
 					int endLoc = -1;
 					string semanticStyle = null;
-					try {
-						semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
-					} catch (Exception e) {
-						Console.WriteLine ("Error in semantic highlighting: " + e);
+					if (spanParser.CurSpan == null) {
+						try {
+							semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
+						} catch (Exception e) {
+							Console.WriteLine ("Error in semantic highlighting: " + e);
+						}
 					}
 					if (semanticStyle != null) {
 						if (endLoc < chunk.EndOffset) {
