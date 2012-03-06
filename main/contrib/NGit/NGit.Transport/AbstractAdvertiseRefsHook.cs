@@ -43,90 +43,65 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System.Collections.Generic;
 using NGit;
+using NGit.Revwalk;
 using NGit.Transport;
 using Sharpen;
 
 namespace NGit.Transport
 {
 	/// <summary>
-	/// <see cref="PreUploadHook">PreUploadHook</see>
-	/// that delegates to a list of other hooks.
-	/// <p>
-	/// Hooks are run in the order passed to the constructor. If running a method on
-	/// one hook throws an exception, execution of remaining hook methods is aborted.
+	/// Implementation of
+	/// <see cref="AdvertiseRefsHook">AdvertiseRefsHook</see>
+	/// that advertises the same refs for
+	/// upload-pack and receive-pack.
 	/// </summary>
-	public class PreUploadHookChain : PreUploadHook
+	public abstract class AbstractAdvertiseRefsHook : AdvertiseRefsHook
 	{
-		private readonly PreUploadHook[] hooks;
-
-		private readonly int count;
-
-		/// <summary>Create a new hook chaining the given hooks together.</summary>
-		/// <remarks>Create a new hook chaining the given hooks together.</remarks>
-		/// <param name="hooks">hooks to execute, in order.</param>
-		/// <returns>a new hook chain of the given hooks.</returns>
-		public static PreUploadHook NewChain<_T0>(IList<_T0> hooks) where _T0:PreUploadHook
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
+		public override void AdvertiseRefs(UploadPack uploadPack)
 		{
-			PreUploadHook[] newHooks = new PreUploadHook[hooks.Count];
-			int i = 0;
-			foreach (PreUploadHook hook in hooks)
-			{
-				if (hook != PreUploadHook.NULL)
-				{
-					newHooks[i++] = hook;
-				}
-			}
-			if (i == 0)
-			{
-				return PreUploadHook.NULL;
-			}
-			else
-			{
-				if (i == 1)
-				{
-					return newHooks[0];
-				}
-				else
-				{
-					return new NGit.Transport.PreUploadHookChain(newHooks, i);
-				}
-			}
+			uploadPack.SetAdvertisedRefs(GetAdvertisedRefs(uploadPack.GetRepository(), uploadPack
+				.GetRevWalk()));
 		}
 
 		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
-		public override void OnBeginNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
-			, int cntOffered)
+		public override void AdvertiseRefs(ReceivePack receivePack)
 		{
-			for (int i = 0; i < count; i++)
-			{
-				hooks[i].OnBeginNegotiateRound(up, wants, cntOffered);
-			}
+			IDictionary<string, Ref> refs = GetAdvertisedRefs(receivePack.GetRepository(), receivePack
+				.GetRevWalk());
+			ICollection<ObjectId> haves = GetAdvertisedHaves(receivePack.GetRepository(), receivePack
+				.GetRevWalk());
+			receivePack.SetAdvertisedRefs(refs, haves);
 		}
 
+		/// <summary>Get the refs to advertise.</summary>
+		/// <remarks>Get the refs to advertise.</remarks>
+		/// <param name="repository">repository instance.</param>
+		/// <param name="revWalk">open rev walk on the repository.</param>
+		/// <returns>set of refs to advertise.</returns>
+		/// <exception cref="ServiceMayNotContinueException">abort; the message will be sent to the user.
+		/// 	</exception>
 		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
-		public override void OnEndNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
-			, int cntCommon, int cntNotFound, bool ready)
-		{
-			for (int i = 0; i < count; i++)
-			{
-				hooks[i].OnEndNegotiateRound(up, wants, cntCommon, cntNotFound, ready);
-			}
-		}
+		protected internal abstract IDictionary<string, Ref> GetAdvertisedRefs(Repository
+			 repository, RevWalk revWalk);
 
+		/// <summary>Get the additional haves to advertise.</summary>
+		/// <remarks>Get the additional haves to advertise.</remarks>
+		/// <param name="repository">repository instance.</param>
+		/// <param name="revWalk">open rev walk on the repository.</param>
+		/// <returns>
+		/// set of additional haves; see
+		/// <see cref="ReceivePack.GetAdvertisedObjects()">ReceivePack.GetAdvertisedObjects()
+		/// 	</see>
+		/// .
+		/// </returns>
+		/// <exception cref="ServiceMayNotContinueException">abort; the message will be sent to the user.
+		/// 	</exception>
 		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
-		public override void OnSendPack<_T0, _T1>(UploadPack up, ICollection<_T0> wants, 
-			ICollection<_T1> haves)
+		protected internal virtual ICollection<ObjectId> GetAdvertisedHaves(Repository repository
+			, RevWalk revWalk)
 		{
-			for (int i = 0; i < count; i++)
-			{
-				hooks[i].OnSendPack(up, wants, haves);
-			}
-		}
-
-		private PreUploadHookChain(PreUploadHook[] hooks, int count)
-		{
-			this.hooks = hooks;
-			this.count = count;
+			return null;
 		}
 	}
 }

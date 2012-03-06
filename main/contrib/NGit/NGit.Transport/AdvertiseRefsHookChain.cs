@@ -42,22 +42,28 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System.Collections.Generic;
-using NGit;
 using NGit.Transport;
 using Sharpen;
 
 namespace NGit.Transport
 {
 	/// <summary>
-	/// <see cref="PreUploadHook">PreUploadHook</see>
+	/// <see cref="AdvertiseRefsHook">AdvertiseRefsHook</see>
 	/// that delegates to a list of other hooks.
 	/// <p>
-	/// Hooks are run in the order passed to the constructor. If running a method on
-	/// one hook throws an exception, execution of remaining hook methods is aborted.
+	/// Hooks are run in the order passed to the constructor. A hook may inspect or
+	/// modify the results of the previous hooks in the chain by calling
+	/// <see cref="UploadPack.GetAdvertisedRefs()">UploadPack.GetAdvertisedRefs()</see>
+	/// , or
+	/// <see cref="ReceivePack.GetAdvertisedRefs()">ReceivePack.GetAdvertisedRefs()</see>
+	/// or
+	/// <see cref="ReceivePack.GetAdvertisedObjects()">ReceivePack.GetAdvertisedObjects()
+	/// 	</see>
+	/// .
 	/// </summary>
-	public class PreUploadHookChain : PreUploadHook
+	public class AdvertiseRefsHookChain : AdvertiseRefsHook
 	{
-		private readonly PreUploadHook[] hooks;
+		private readonly AdvertiseRefsHook[] hooks;
 
 		private readonly int count;
 
@@ -65,20 +71,20 @@ namespace NGit.Transport
 		/// <remarks>Create a new hook chaining the given hooks together.</remarks>
 		/// <param name="hooks">hooks to execute, in order.</param>
 		/// <returns>a new hook chain of the given hooks.</returns>
-		public static PreUploadHook NewChain<_T0>(IList<_T0> hooks) where _T0:PreUploadHook
+		public static AdvertiseRefsHook NewChain<_T0>(IList<_T0> hooks) where _T0:AdvertiseRefsHook
 		{
-			PreUploadHook[] newHooks = new PreUploadHook[hooks.Count];
+			AdvertiseRefsHook[] newHooks = new AdvertiseRefsHook[hooks.Count];
 			int i = 0;
-			foreach (PreUploadHook hook in hooks)
+			foreach (AdvertiseRefsHook hook in hooks)
 			{
-				if (hook != PreUploadHook.NULL)
+				if (hook != AdvertiseRefsHook.DEFAULT)
 				{
 					newHooks[i++] = hook;
 				}
 			}
 			if (i == 0)
 			{
-				return PreUploadHook.NULL;
+				return AdvertiseRefsHook.DEFAULT;
 			}
 			else
 			{
@@ -88,42 +94,30 @@ namespace NGit.Transport
 				}
 				else
 				{
-					return new NGit.Transport.PreUploadHookChain(newHooks, i);
+					return new NGit.Transport.AdvertiseRefsHookChain(newHooks, i);
 				}
 			}
 		}
 
 		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
-		public override void OnBeginNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
-			, int cntOffered)
+		public override void AdvertiseRefs(ReceivePack rp)
 		{
 			for (int i = 0; i < count; i++)
 			{
-				hooks[i].OnBeginNegotiateRound(up, wants, cntOffered);
+				hooks[i].AdvertiseRefs(rp);
 			}
 		}
 
 		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
-		public override void OnEndNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
-			, int cntCommon, int cntNotFound, bool ready)
+		public override void AdvertiseRefs(UploadPack rp)
 		{
 			for (int i = 0; i < count; i++)
 			{
-				hooks[i].OnEndNegotiateRound(up, wants, cntCommon, cntNotFound, ready);
+				hooks[i].AdvertiseRefs(rp);
 			}
 		}
 
-		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
-		public override void OnSendPack<_T0, _T1>(UploadPack up, ICollection<_T0> wants, 
-			ICollection<_T1> haves)
-		{
-			for (int i = 0; i < count; i++)
-			{
-				hooks[i].OnSendPack(up, wants, haves);
-			}
-		}
-
-		private PreUploadHookChain(PreUploadHook[] hooks, int count)
+		private AdvertiseRefsHookChain(AdvertiseRefsHook[] hooks, int count)
 		{
 			this.hooks = hooks;
 			this.count = count;

@@ -120,6 +120,46 @@ namespace NGit
 			return tempBuffer;
 		}
 
+		private static readonly int tempBufSize;
+
+		static ObjectInserter()
+		{
+			string s = Runtime.GetProperty("jgit.tempbufmaxsize");
+			if (s != null)
+			{
+				tempBufSize = System.Convert.ToInt32(s);
+			}
+			else
+			{
+				tempBufSize = 1000000;
+			}
+		}
+
+		/// <param name="hintSize"></param>
+		/// <returns>a temporary byte array for use by the caller</returns>
+		protected internal virtual byte[] Buffer(long hintSize)
+		{
+			if (hintSize >= tempBufSize)
+			{
+				tempBuffer = new byte[0];
+			}
+			else
+			{
+				if (tempBuffer == null)
+				{
+					tempBuffer = new byte[(int)hintSize];
+				}
+				else
+				{
+					if (tempBuffer.Length < hintSize)
+					{
+						tempBuffer = new byte[(int)hintSize];
+					}
+				}
+			}
+			return tempBuffer;
+		}
+
 		/// <returns>digest to help compute an ObjectId</returns>
 		protected internal virtual MessageDigest Digest()
 		{
@@ -184,7 +224,7 @@ namespace NGit
 			md.Update(unchecked((byte)' '));
 			md.Update(Constants.EncodeASCII(length));
 			md.Update(unchecked((byte)0));
-			byte[] buf = Buffer();
+			byte[] buf = Buffer(length);
 			while (length > 0)
 			{
 				int n = @in.Read(buf, 0, (int)Math.Min(length, buf.Length));

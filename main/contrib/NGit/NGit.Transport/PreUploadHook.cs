@@ -54,7 +54,7 @@ namespace NGit.Transport
 	/// before during critical phases.
 	/// <p>
 	/// If any hook function throws
-	/// <see cref="UploadPackMayNotContinueException">UploadPackMayNotContinueException</see>
+	/// <see cref="ServiceMayNotContinueException">ServiceMayNotContinueException</see>
 	/// then
 	/// processing stops immediately and the exception is thrown up the call stack.
 	/// Most phases of UploadPack will try to report the exception's message text to
@@ -68,27 +68,21 @@ namespace NGit.Transport
 			{
 			}
 
-			/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
-			public override void OnPreAdvertiseRefs(UploadPack up)
-			{
-			}
-
-			// Do nothing.
-			/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+			/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 			public override void OnBeginNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
 				, int cntOffered)
 			{
 			}
 
 			// Do nothing.
-			/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+			/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 			public override void OnEndNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
 				, int cntCommon, int cntNotFound, bool ready)
 			{
 			}
 
 			// Do nothing.
-			/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+			/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 			public override void OnSendPack<_T0, _T1>(UploadPack up, ICollection<_T0> wants, 
 				ICollection<_T1> haves)
 			{
@@ -100,26 +94,14 @@ namespace NGit.Transport
 		public static readonly PreUploadHook NULL = new _PreUploadHook_60();
 
 		// Do nothing.
-		/// <summary>
-		/// Invoked just before
-		/// <see cref="UploadPack.SendAdvertisedRefs(RefAdvertiser)">UploadPack.SendAdvertisedRefs(RefAdvertiser)
-		/// 	</see>
-		/// .
-		/// </summary>
-		/// <param name="up">the upload pack instance handling the connection.</param>
-		/// <exception cref="UploadPackMayNotContinueException">abort; the message will be sent to the user.
-		/// 	</exception>
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
-		public abstract void OnPreAdvertiseRefs(UploadPack up);
-
 		/// <summary>Invoked before negotiation round is started.</summary>
 		/// <remarks>Invoked before negotiation round is started.</remarks>
 		/// <param name="up">the upload pack instance handling the connection.</param>
 		/// <param name="wants">the list of wanted objects.</param>
 		/// <param name="cntOffered">number of objects the client has offered.</param>
-		/// <exception cref="UploadPackMayNotContinueException">abort; the message will be sent to the user.
+		/// <exception cref="ServiceMayNotContinueException">abort; the message will be sent to the user.
 		/// 	</exception>
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		public abstract void OnBeginNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
 			, int cntOffered) where _T0:ObjectId;
 
@@ -140,9 +122,9 @@ namespace NGit.Transport
 		/// true if a pack is ready to be sent (the commit graph was
 		/// successfully cut).
 		/// </param>
-		/// <exception cref="UploadPackMayNotContinueException">abort; the message will be sent to the user.
+		/// <exception cref="ServiceMayNotContinueException">abort; the message will be sent to the user.
 		/// 	</exception>
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		public abstract void OnEndNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
 			, int cntCommon, int cntNotFound, bool ready) where _T0:ObjectId;
 
@@ -159,9 +141,9 @@ namespace NGit.Transport
 		/// These may be RevObject or RevCommit if the processed parsed
 		/// them. Implementors should not rely on the values being parsed.
 		/// </param>
-		/// <exception cref="UploadPackMayNotContinueException">abort; the message will be sent to the user.
+		/// <exception cref="ServiceMayNotContinueException">abort; the message will be sent to the user.
 		/// 	</exception>
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		public abstract void OnSendPack<_T0, _T1>(UploadPack up, ICollection<_T0> wants, 
 			ICollection<_T1> haves) where _T0:ObjectId where _T1:ObjectId;
 	}

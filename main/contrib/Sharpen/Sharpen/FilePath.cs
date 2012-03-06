@@ -111,9 +111,16 @@ namespace Sharpen
 				try {
 					if (RunningOnLinux) {
 						var info = UnixFileSystemInfo.GetFileSystemEntry (path);
-						if (info.Exists)
-							info.Delete ();
-						return true;
+						if (info.Exists) {
+							try {
+								info.Delete ();
+								return true;
+							} catch {
+								// If the directory is not empty we return false. JGit relies on this
+								return false;
+							}
+						}
+						return false;
 					}
 				} catch (EntryPointNotFoundException) {
 					RunningOnLinux = false;
@@ -201,6 +208,11 @@ namespace Sharpen
 					var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
 					return info.Exists && info.FileType == FileTypes.Directory;
 				}
+			} catch (DirectoryNotFoundException) {
+				// If the file /foo/bar exists and we query to see if /foo/bar/baz exists, we get a
+				// DirectoryNotFound exception for Mono.Unix. In this case the directory definitely
+				// does not exist.
+				return false;
 			} catch (EntryPointNotFoundException) {
 				RunningOnLinux = false;
 			}
@@ -214,6 +226,10 @@ namespace Sharpen
 					var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
 					return info.Exists && (info.FileType == FileTypes.RegularFile || info.FileType == FileTypes.SymbolicLink);
 				}
+			} catch (DirectoryNotFoundException) {
+				// If we have a file /foo/bar and probe the path /foo/bar/baz, we get a DirectoryNotFound exception
+				// because 'bar' is a file and therefore 'baz' cannot possibly exist. This is annoying.
+				return false;
 			} catch (EntryPointNotFoundException) {
 				RunningOnLinux = false;
 			}

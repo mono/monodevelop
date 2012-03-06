@@ -470,6 +470,8 @@ namespace NGit
 
 		public string funnyRefname;
 
+		public string headRequiredToStash;
+
 		public string hoursAgo;
 
 		public string hugeIndexesAreNotSupportedByJgitYet;
@@ -527,6 +529,8 @@ namespace NGit
 		public string invalidCommitParentNumber;
 
 		public string invalidEncryption;
+
+		public string invalidGitdirRef;
 
 		public string invalidGitType;
 
@@ -750,6 +754,10 @@ namespace NGit
 
 		public string packWriterStatistics;
 
+		public string patchApplyException;
+
+		public string patchFormatException;
+
 		public string pathIsNotInWorkingDir;
 
 		public string pathNotConfigured;
@@ -811,6 +819,8 @@ namespace NGit
 		public string renameBranchFailedUnknownReason;
 
 		public string renameBranchUnexpectedResult;
+
+		public string renameFileFailed;
 
 		public string renamesAlreadyFound;
 
@@ -901,6 +911,16 @@ namespace NGit
 		public string staleRevFlagsOn;
 
 		public string startingReadStageWithoutWrittenRequestDataPendingIsNotSupported;
+
+		public string stashApplyFailed;
+
+		public string stashApplyOnUnsafeRepository;
+
+		public string stashCommitMissingTwoParents;
+
+		public string stashFailed;
+
+		public string stashResolveFailed;
 
 		public string statelessRPCRequiresOptionToBeEnabled;
 

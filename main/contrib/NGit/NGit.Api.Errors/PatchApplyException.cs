@@ -41,32 +41,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using NGit.Transport;
+using System;
+using NGit.Api.Errors;
 using Sharpen;
 
-namespace NGit.Transport
+namespace NGit.Api.Errors
 {
-	/// <summary>Indicates UploadPack may not continue execution.</summary>
-	/// <remarks>Indicates UploadPack may not continue execution.</remarks>
+	/// <summary>Exception thrown when applying a patch fails</summary>
+	/// <since>2.0</since>
 	[System.Serializable]
-	[System.ObsoleteAttribute(@"use ServiceMayNotContinueException instead.")]
-	public class UploadPackMayNotContinueException : ServiceMayNotContinueException
+	public class PatchApplyException : GitAPIException
 	{
 		private const long serialVersionUID = 1L;
 
-		/// <summary>Initialize with no message.</summary>
-		/// <remarks>Initialize with no message.</remarks>
-		public UploadPackMayNotContinueException()
+		/// <param name="message"></param>
+		/// <param name="cause"></param>
+		public PatchApplyException(string message, Exception cause) : base(message, cause
+			)
 		{
 		}
 
-		/// <param name="msg">
-		/// a message explaining why it cannot continue. This message may
-		/// be shown to an end-user.
-		/// </param>
-		public UploadPackMayNotContinueException(string msg) : base(msg)
+		/// <param name="message"></param>
+		public PatchApplyException(string message) : base(message)
 		{
 		}
-		// Do not set a message.
 	}
 }

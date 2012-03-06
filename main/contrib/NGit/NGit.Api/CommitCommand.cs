@@ -383,9 +383,7 @@ namespace NGit.Api
 						{
 							if (FileMode.GITLINK.Equals(dcEntry.FileMode))
 							{
-								// Do not check the content of submodule entries
-								// Use the old entry information instead.
-								dcEntry.CopyMetaData(index.GetEntry(dcEntry.PathString));
+								dcEntry.SetObjectId(fTree.EntryObjectId);
 							}
 							else
 							{
@@ -407,7 +405,7 @@ namespace NGit.Api
 							}
 						}
 						// update index
-						dcEditor.Add(new _PathEdit_376(dcEntry, path));
+						dcEditor.Add(new _PathEdit_373(dcEntry, path));
 						// add to temporary in-core index
 						dcBuilder.Add(dcEntry);
 						if (emptyCommit && (hTree == null || !hTree.IdEqual(fTree) || hTree.EntryRawMode 
@@ -467,9 +465,9 @@ namespace NGit.Api
 			return inCoreIndex;
 		}
 
-		private sealed class _PathEdit_376 : DirCacheEditor.PathEdit
+		private sealed class _PathEdit_373 : DirCacheEditor.PathEdit
 		{
-			public _PathEdit_376(DirCacheEntry dcEntry, string baseArg1) : base(baseArg1)
+			public _PathEdit_373(DirCacheEntry dcEntry, string baseArg1) : base(baseArg1)
 			{
 				this.dcEntry = dcEntry;
 			}

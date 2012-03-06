@@ -41,22 +41,23 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using NGit.Transport;
+using System.IO;
 using Sharpen;
 
 namespace NGit.Transport
 {
-	/// <summary>Indicates UploadPack may not continue execution.</summary>
-	/// <remarks>Indicates UploadPack may not continue execution.</remarks>
+	/// <summary>Indicates a transport service may not continue execution.</summary>
+	/// <remarks>Indicates a transport service may not continue execution.</remarks>
 	[System.Serializable]
-	[System.ObsoleteAttribute(@"use ServiceMayNotContinueException instead.")]
-	public class UploadPackMayNotContinueException : ServiceMayNotContinueException
+	public class ServiceMayNotContinueException : IOException
 	{
 		private const long serialVersionUID = 1L;
 
+		private bool output;
+
 		/// <summary>Initialize with no message.</summary>
 		/// <remarks>Initialize with no message.</remarks>
-		public UploadPackMayNotContinueException()
+		public ServiceMayNotContinueException()
 		{
 		}
 
@@ -64,9 +65,22 @@ namespace NGit.Transport
 		/// a message explaining why it cannot continue. This message may
 		/// be shown to an end-user.
 		/// </param>
-		public UploadPackMayNotContinueException(string msg) : base(msg)
+		public ServiceMayNotContinueException(string msg) : base(msg)
 		{
 		}
+
 		// Do not set a message.
+		/// <returns>true if the message was already output to the client.</returns>
+		public virtual bool IsOutput()
+		{
+			return output;
+		}
+
+		/// <summary>Mark this message has being sent to the client.</summary>
+		/// <remarks>Mark this message has being sent to the client.</remarks>
+		public virtual void SetOutput()
+		{
+			output = true;
+		}
 	}
 }
