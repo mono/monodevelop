@@ -166,7 +166,7 @@ namespace ICSharpCode.Decompiler.Ast
 								}
 							}
 						}
-					}, AttributedNode.AttributeRole);
+					}, EntityDeclaration.AttributeRole);
 			}
 			
 			ConvertCustomAttributes(astCompileUnit, assemblyDefinition, "assembly");
@@ -206,7 +206,7 @@ namespace ICSharpCode.Decompiler.Ast
 									Arguments = { forwardedType }
 								}
 							}
-						}, AttributedNode.AttributeRole);
+						}, EntityDeclaration.AttributeRole);
 				}
 			}
 		}
@@ -264,7 +264,7 @@ namespace ICSharpCode.Decompiler.Ast
 		/// </summary>
 		/// <param name="typeDef"></param>
 		/// <returns>TypeDeclaration or DelegateDeclaration.</returns>
-		public AttributedNode CreateType(TypeDefinition typeDef)
+		public EntityDeclaration CreateType(TypeDefinition typeDef)
 		{
 			// create type
 			TypeDefinition oldCurrentType = context.CurrentType;
@@ -294,7 +294,7 @@ namespace ICSharpCode.Decompiler.Ast
 			astType.TypeParameters.AddRange(MakeTypeParameters(genericParameters));
 			astType.Constraints.AddRange(MakeConstraints(genericParameters));
 			
-			AttributedNode result = astType;
+			EntityDeclaration result = astType;
 			if (typeDef.IsEnum) {
 				long expectedEnumMemberValue = 0;
 				bool forcePrintingInitializers = IsFlagsEnum(typeDef);
@@ -305,7 +305,7 @@ namespace ICSharpCode.Decompiler.Ast
 							astType.AddChild(ConvertType(field.FieldType), TypeDeclaration.BaseTypeRole);
 						}
 					} else {
-						EnumMemberDeclaration enumMember = new EnumMemberDeclaration();
+						var enumMember = new EnumMemberDeclaration();
 						enumMember.AddAnnotation(field);
 						enumMember.Name = CleanName(field.Name);
 						long memberValue = (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, field.Constant, false);
@@ -737,7 +737,7 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 		}
 
-		AttributedNode CreateMethod(MethodDefinition methodDef)
+		EntityDeclaration CreateMethod(MethodDefinition methodDef)
 		{
 			MethodDeclaration astMethod = new MethodDeclaration();
 			astMethod.AddAnnotation(methodDef);
@@ -859,7 +859,7 @@ namespace ICSharpCode.Decompiler.Ast
 			return m & ~Modifiers.Private;
 		}
 
-		MemberDeclaration CreateProperty(PropertyDefinition propDef)
+		EntityDeclaration CreateProperty(PropertyDefinition propDef)
 		{
 			PropertyDeclaration astProp = new PropertyDeclaration();
 			astProp.AddAnnotation(propDef);
@@ -918,7 +918,7 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 			ConvertCustomAttributes(astProp, propDef);
 
-			MemberDeclaration member = astProp;
+			EntityDeclaration member = astProp;
 			if(propDef.IsIndexer())
 				member = ConvertPropertyToIndexer(astProp, propDef);
 			if(!accessor.HasOverrides && !accessor.DeclaringType.IsInterface)
@@ -942,7 +942,7 @@ namespace ICSharpCode.Decompiler.Ast
 			return astIndexer;
 		}
 		
-		AttributedNode CreateEvent(EventDefinition eventDef)
+		EntityDeclaration CreateEvent(EventDefinition eventDef)
 		{
 			if (eventDef.AddMethod != null && eventDef.AddMethod.IsAbstract) {
 				// An abstract event cannot be custom
@@ -1011,7 +1011,7 @@ namespace ICSharpCode.Decompiler.Ast
 			return astField;
 		}
 		
-		static Expression CreateExpressionForConstant(object constant, TypeReference type, bool isEnumMemberDeclaration = false)
+		static Expression CreateExpressionForConstant(object constant, TypeReference type, bool isEnumEntityDeclaration = false)
 		{
 			if (constant == null) {
 				if (type.IsValueType && !(type.Namespace == "System" && type.Name == "Nullable`1"))
@@ -1020,7 +1020,7 @@ namespace ICSharpCode.Decompiler.Ast
 					return new NullReferenceExpression();
 			} else {
 				TypeCode c = Type.GetTypeCode(constant.GetType());
-				if (c >= TypeCode.SByte && c <= TypeCode.UInt64 && !isEnumMemberDeclaration) {
+				if (c >= TypeCode.SByte && c <= TypeCode.UInt64 && !isEnumEntityDeclaration) {
 					return MakePrimitive((long)CSharpPrimitiveCast.Cast(TypeCode.Int64, constant, false), type);
 				} else {
 					return new PrimitiveExpression(constant);
@@ -1080,7 +1080,7 @@ namespace ICSharpCode.Decompiler.Ast
 		}
 		
 		#region ConvertAttributes
-		void ConvertAttributes(AttributedNode attributedNode, TypeDefinition typeDefinition)
+		void ConvertAttributes(EntityDeclaration attributedNode, TypeDefinition typeDefinition)
 		{
 			ConvertCustomAttributes(attributedNode, typeDefinition);
 			ConvertSecurityAttributes(attributedNode, typeDefinition);
@@ -1136,7 +1136,7 @@ namespace ICSharpCode.Decompiler.Ast
 			#endregion
 		}
 		
-		void ConvertAttributes(AttributedNode attributedNode, MethodDefinition methodDefinition)
+		void ConvertAttributes(EntityDeclaration attributedNode, MethodDefinition methodDefinition)
 		{
 			ConvertCustomAttributes(attributedNode, methodDefinition);
 			ConvertSecurityAttributes(attributedNode, methodDefinition);
@@ -1236,7 +1236,7 @@ namespace ICSharpCode.Decompiler.Ast
 			ConvertAttributes(attributedNode, methodDefinition.MethodReturnType, methodDefinition.Module);
 		}
 		
-		void ConvertAttributes(AttributedNode attributedNode, MethodReturnType methodReturnType, ModuleDefinition module)
+		void ConvertAttributes(EntityDeclaration attributedNode, MethodReturnType methodReturnType, ModuleDefinition module)
 		{
 			ConvertCustomAttributes(attributedNode, methodReturnType, "return");
 			if (methodReturnType.HasMarshalInfo) {
@@ -1245,7 +1245,7 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 		}
 		
-		internal static void ConvertAttributes(AttributedNode attributedNode, FieldDefinition fieldDefinition, string attributeTarget = null)
+		internal static void ConvertAttributes(EntityDeclaration attributedNode, FieldDefinition fieldDefinition, string attributeTarget = null)
 		{
 			ConvertCustomAttributes(attributedNode, fieldDefinition);
 			
@@ -1384,14 +1384,14 @@ namespace ICSharpCode.Decompiler.Ast
 						var section = new AttributeSection();
 						section.AttributeTarget = attributeTarget;
 						section.Attributes.Add(attribute);
-						attributedNode.AddChild(section, AttributedNode.AttributeRole);
+						attributedNode.AddChild(section, EntityDeclaration.AttributeRole);
 					}
 				} else if (attributes.Count > 0) {
 					// use single section for all attributes
 					var section = new AttributeSection();
 					section.AttributeTarget = attributeTarget;
 					section.Attributes.AddRange(attributes);
-					attributedNode.AddChild(section, AttributedNode.AttributeRole);
+					attributedNode.AddChild(section, EntityDeclaration.AttributeRole);
 				}
 			}
 		}
@@ -1444,14 +1444,14 @@ namespace ICSharpCode.Decompiler.Ast
 					var section = new AttributeSection();
 					section.AttributeTarget = attributeTarget;
 					section.Attributes.Add(attribute);
-					attributedNode.AddChild(section, AttributedNode.AttributeRole);
+					attributedNode.AddChild(section, EntityDeclaration.AttributeRole);
 				}
 			} else if (attributes.Count > 0) {
 				// use single section for all attributes
 				var section = new AttributeSection();
 				section.AttributeTarget = attributeTarget;
 				section.Attributes.AddRange(attributes);
-				attributedNode.AddChild(section, AttributedNode.AttributeRole);
+				attributedNode.AddChild(section, EntityDeclaration.AttributeRole);
 			}
 		}
 		
@@ -1576,7 +1576,7 @@ namespace ICSharpCode.Decompiler.Ast
 		/// Sets new modifier if the member hides some other member from a base type.
 		/// </summary>
 		/// <param name="member">The node of the member which new modifier state should be determined.</param>
-		static void SetNewModifier(AttributedNode member)
+		static void SetNewModifier(EntityDeclaration member)
 		{
 			try {
 				bool addNewModifier = false;
@@ -1596,7 +1596,7 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 		}
 
-		private static bool HidesBaseMember(AttributedNode member)
+		private static bool HidesBaseMember(EntityDeclaration member)
 		{
 			var memberDefinition = member.Annotation<IMemberDefinition>();
 			bool addNewModifier = false;
