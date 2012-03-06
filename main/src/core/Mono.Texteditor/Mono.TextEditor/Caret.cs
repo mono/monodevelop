@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -193,33 +194,42 @@ namespace Mono.TextEditor
 		{
 			autoScrollToCaret = true;
 		}
-		
+
 		public void SetToOffsetWithDesiredColumn (int desiredOffset)
 		{
 			DocumentLocation old = Location;
-			
+
 			int desiredLineNumber = TextEditorData.Document.OffsetToLineNumber (desiredOffset);
 			var desiredLine = TextEditorData.Document.GetLine (desiredLineNumber);
 			int column = desiredOffset - desiredLine.Offset + 1;
-			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && desiredLine.EditableLength + 1 < this.Column && column == 1)
- 				column = TextEditorData.GetVirtualIndentationColumn (desiredLineNumber, 1);
+			if (desiredLine.EditableLength + 1 < this.Column && column == 1) {
+				if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual)
+					column = TextEditorData.GetVirtualIndentationColumn (desiredLineNumber, 1);
+			}
 			location = new DocumentLocation (desiredLineNumber, column);
-			
-//			SetColumn ();
+
+			var logicalDesiredColumn = desiredLine.GetLogicalColumn (TextEditorData, this.DesiredColumn);
+
+			if (logicalDesiredColumn <= desiredLine.EditableLength) {
+				int possibleOffset = TextEditorData.LocationToOffset (desiredLineNumber, logicalDesiredColumn);
+				if (!TextEditorData.Document.GetFoldingsFromOffset (logicalDesiredColumn).Any (f => f.IsFolded))
+					location = new DocumentLocation (desiredLineNumber, logicalDesiredColumn);
+			}
+
 			OnPositionChanged (new DocumentLocationEventArgs (old));
 		}
-		
+
 		void SetDesiredColumn ()
 		{
 			LineSegment curLine = TextEditorData.Document.GetLine (this.Line);
 			if (curLine == null)
 				return;
-			
+
 			if (!AllowCaretBehindLineEnd)
 				this.Column = System.Math.Min (curLine.EditableLength + 1, System.Math.Max (DocumentLocation.MinColumn, this.Column));
 			this.DesiredColumn = curLine.GetVisualColumn (TextEditorData, this.Column);
 		}
-		
+
 		void SetColumn ()
 		{
 			LineSegment curLine = TextEditorData.Document.GetLine (this.Line);

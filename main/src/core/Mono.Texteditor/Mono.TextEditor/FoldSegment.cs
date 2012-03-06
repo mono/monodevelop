@@ -45,7 +45,7 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		
+
 		public HeightTree.FoldMarker Marker { get; set;}
 		
 		public string Description { get; set; }

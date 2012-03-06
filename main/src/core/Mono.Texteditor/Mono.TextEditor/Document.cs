@@ -827,7 +827,7 @@ namespace Mono.TextEditor
 		public event EventHandler<UndoOperationEventArgs> Redone;
 		
 		int atomicUndoLevel;
-		
+
 		public bool IsInAtomicUndo {
 			get {
 				return atomicUndoLevel > 0;
@@ -845,7 +845,7 @@ namespace Mono.TextEditor
 				this.doc = doc;
 				doc.BeginAtomicUndo ();
 			}
-			
+
 			public void Dispose ()
 			{
 				if (doc != null) {
@@ -873,7 +873,7 @@ namespace Mono.TextEditor
 			}
 			atomicUndoLevel++;
 		}
-		
+
 		internal void EndAtomicUndo ()
 		{
 			if (atomicUndoLevel <= 0)
@@ -913,7 +913,7 @@ namespace Mono.TextEditor
 		public sealed class UndoOperationEventArgs : EventArgs
 		{
 			public UndoOperation Operation { get; private set; }
-			
+
 			public UndoOperationEventArgs (UndoOperation operation)
 			{
 				this.Operation = operation;

@@ -395,7 +395,7 @@ namespace Mono.TextEditor
 			
 			return line <= preeditOffset && preeditOffset <= line + length;
 		}
-		
+
 		void PreeditStringChanged (object sender, EventArgs e)
 		{
 			imContext.GetPreeditString (out preeditString, out preeditAttrs, out preeditCursorCharIndex);

@@ -126,7 +126,7 @@ namespace Mono.TextEditor
 		public static void Up (TextEditorData data)
 		{
 			int desiredColumn = data.Caret.DesiredColumn;
-			
+
 			//on Mac, when deselecting and moving up/down a line, column is always the column of the selection's start
 			if (Platform.IsMac && data.IsSomethingSelected && !data.Caret.PreserveSelection) {
 				int col = data.MainSelection.Anchor > data.MainSelection.Lead ? data.MainSelection.Lead.Column : data.MainSelection.Anchor.Column;
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 				data.Caret.SetToDesiredColumn (desiredColumn);
 				return;
 			}
-			
+
 			if (data.Caret.Line > DocumentLocation.MinLine) {
 				int visualLine = data.LogicalToVisualLine (data.Caret.Line);
 				int line = data.VisualToLogicalLine (visualLine - 1);
@@ -146,7 +146,7 @@ namespace Mono.TextEditor
 				ToDocumentStart (data);
 			}
 		}
-		
+
 		static int MoveCaretOutOfFolding (TextEditorData data, int offset, bool moveToEnd = true)
 		{
 			IEnumerable<FoldSegment > foldings = data.Document.GetFoldingsFromOffset (offset);

@@ -94,22 +94,22 @@ namespace Mono.TextEditor
 				return Document.MimeType;
 			}
 		}
-		
+
 		public TextEditorData () : this (new Document ())
 		{
 		}
-		
+
 		public TextEditorData (Document doc)
 		{
 			LineHeight = 16;
-			
+
 			caret = new Caret (this);
 			caret.PositionChanged += CaretPositionChanged;
-			
+
 			options = TextEditorOptions.DefaultOptions;
 			Document = doc;
 			this.SearchEngine = new BasicSearchEngine ();
-			
+
 			this.heightTree = new HeightTree (this);
 			this.heightTree.Rebuild ();
 		}
@@ -153,15 +153,16 @@ namespace Mono.TextEditor
 				this.document.Undone += DocumentHandleUndone;
 				this.document.Redone += DocumentHandleRedone;
 				this.document.LineChanged += HandleDocLineChanged;
-				
+
 				this.document.TextSet += HandleDocTextSet;
 				this.document.Folded += HandleTextEditorDataDocumentFolded;
 				this.document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
-				
+
 				this.document.splitter.LineInserted += HandleDocumentsplitterhandleLineInserted;
 				this.document.splitter.LineRemoved += HandleDocumentsplitterhandleLineRemoved;
 			}
 		}
+
 
 		void HandleDocumentsplitterhandleLineRemoved (object sender, LineEventArgs e)
 		{
@@ -336,7 +337,8 @@ namespace Mono.TextEditor
 			
 			document.BeginUndo -= OnBeginUndo;
 			document.EndUndo -= OnEndUndo;
-			
+			document.TextReplaced -= HandleTextReplaced;
+
 			document.Undone -= DocumentHandleUndone;
 			document.Redone -= DocumentHandleRedone;
 			document.LineChanged -= HandleDocLineChanged;
@@ -428,20 +430,29 @@ namespace Mono.TextEditor
 		#region undo/redo handling
 		int       savedCaretPos;
 		Selection savedSelection;
+		bool hasChangedInUndo = false;
 		//List<TextEditorDataState> states = new List<TextEditorDataState> ();
-		
+
 		void OnBeginUndo (object sender, EventArgs args)
 		{
+			if (!document.IsInAtomicUndo)
+				hasChangedInUndo = false;
 			savedCaretPos  = Caret.Offset;
 			savedSelection = Selection.Clone (MainSelection);
 		}
-		
+
 		void OnEndUndo (object sender, Document.UndoOperationEventArgs e)
 		{
-			FixVirtualIndentation ();
+			if (!document.IsInAtomicUndo && hasChangedInUndo)
+				FixVirtualIndentation ();
 			if (e == null)
 				return;
 			e.Operation.Tag = new TextEditorDataState (this, savedCaretPos, savedSelection);
+		}
+
+		void HandleTextReplaced (object sender, ReplaceEventArgs e)
+		{
+			hasChangedInUndo = true;
 		}
 
 		void DocumentHandleUndone (object sender, Document.UndoOperationEventArgs e)
@@ -504,7 +515,7 @@ namespace Mono.TextEditor
 				return IsSomethingSelected && MainSelection.Anchor.Line - MainSelection.Lead.Line != 0;
 			}
 		}
-		
+
 		public bool CanEditSelection {
 			get {
 				// To be improved when we support read-only regions
@@ -710,7 +721,7 @@ namespace Mono.TextEditor
 			MainSelection = new Selection (document.OffsetToLocation (Document.GetLine (from).Offset), 
 			                               document.OffsetToLocation (Document.GetLine (to).EndOffset));
 		}
-		
+
 		internal void DeleteSelection (Selection selection)
 		{
 			if (selection == null)
@@ -809,7 +820,7 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler SearchChanged;
-		
+
 		SearchRequest currentSearchRequest;
 		
 		public SearchRequest SearchRequest {
@@ -972,7 +983,7 @@ namespace Mono.TextEditor
 			LineSegment line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return 0;
-			
+
 			if (HasIndentationTracker && Caret.Column > line.EditableLength + 1) {
 				string virtualSpace = GetIndentationString (Caret.Location);
 				if (!string.IsNullOrEmpty (virtualSpace)) {
@@ -1070,7 +1081,7 @@ namespace Mono.TextEditor
 		{
 			return Document.GetLineText (line, includeDelimiter);
 		}
-		
+
 		public IEnumerable<LineSegment> Lines {
 			get {
 				return Document.Lines;
@@ -1299,7 +1310,7 @@ namespace Mono.TextEditor
 				Char = ch
 			});
 		}
-		
+
 		#endregion
 	}
 }
