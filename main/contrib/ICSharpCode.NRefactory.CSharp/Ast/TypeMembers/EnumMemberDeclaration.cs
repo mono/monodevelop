@@ -23,39 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EnumMemberDeclaration : AttributedNode
+	public class EnumMemberDeclaration : EntityDeclaration
 	{
 		public static readonly Role<Expression> InitializerRole = new Role<Expression>("Initializer", Expression.Null);
 		
-		public string Name {
-			get {
-				return GetChildByRole (Roles.Identifier).Name;
-			}
-			set {
-				SetChildByRole (Roles.Identifier, Identifier.Create (value));
-			}
-		}
-		
-		public Identifier NameToken {
-			get {
-				return GetChildByRole (Roles.Identifier);
-			}
-			set {
-				SetChildByRole (Roles.Identifier, value);
-			}
+		public override EntityType EntityType {
+			get { return EntityType.Field; }
 		}
 		
 		public Expression Initializer {
 			get { return GetChildByRole (InitializerRole); }
 			set { SetChildByRole (InitializerRole, value); }
-		}
-		
-		public override NodeType NodeType {
-			get { return NodeType.Member; }
 		}
 		
 		public override void AcceptVisitor (IAstVisitor visitor)

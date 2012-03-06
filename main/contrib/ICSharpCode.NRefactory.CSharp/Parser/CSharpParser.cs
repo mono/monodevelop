@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 						
 					if (nDecl != null) {
-						AddAttributeSection (nDecl, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
+						AddAttributeSection (nDecl, nspace.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 						if (loc != null && loc.Count > 2)
 							nDecl.AddChild (new CSharpTokenNode (Convert (loc [2])), NamespaceDeclaration.Roles.RBrace);
 						if (loc != null && loc.Count > 3)
@@ -115,10 +115,10 @@ namespace ICSharpCode.NRefactory.CSharp
 						
 						namespaceStack.Pop ();
 					} else {
-						AddAttributeSection (unit, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
+						AddAttributeSection (unit, nspace.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 					}
 				}
-				AddAttributeSection (unit, mc.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
+				AddAttributeSection (unit, mc.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 			}
 			
 			#region Global
@@ -374,7 +374,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				
 				if (nDecl != null) {
-					AddAttributeSection (nDecl, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
+					AddAttributeSection (nDecl, nspace.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 					if (loc != null && loc.Count > 2)
 						nDecl.AddChild (new CSharpTokenNode (Convert (loc [2])), NamespaceDeclaration.Roles.RBrace);
 					if (loc != null && loc.Count > 3)
@@ -516,7 +516,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (c);
-				AddAttributeSection (newType, c.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
+				AddAttributeSection (newType, c.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 				
 				if (location != null && curLoc < location.Count) {
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), AstNode.Roles.RBrace);
@@ -648,7 +648,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddType (newDelegate);
 			}
 			
-			void AddType (AttributedNode child)
+			void AddType (EntityDeclaration child)
 			{
 				if (typeStack.Count > 0) {
 					typeStack.Peek ().AddChild (child, TypeDeclaration.MemberRole);
@@ -823,7 +823,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (newField, f);
 				AddModifiers (newField, location);
 				if (location != null)
-					newField.AddChild (new CSharpModifierToken (Convert (location [0]), Modifiers.Const), AttributedNode.ModifierRole);
+					newField.AddChild (new CSharpModifierToken (Convert (location [0]), Modifiers.Const), EntityDeclaration.ModifierRole);
 				newField.AddChild (ConvertToType (f.TypeExpression), FieldDeclaration.Roles.Type);
 				
 				VariableInitializer variable = new VariableInitializer ();
@@ -915,13 +915,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (attrs == null)
 					return;
 				foreach (var attr in attrs.Sections) {
-					parent.AddChild (ConvertAttributeSection (attr), AttributedNode.AttributeRole);
+					parent.AddChild (ConvertAttributeSection (attr), EntityDeclaration.AttributeRole);
 				}
 			}
 
 			public void AddAttributeSection (AstNode parent, Attributes attrs)
 			{
-				AddAttributeSection (parent, attrs, AttributedNode.AttributeRole);
+				AddAttributeSection (parent, attrs, EntityDeclaration.AttributeRole);
 			}
 			
 			public override void Visit (Indexer indexer)
@@ -1068,7 +1068,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				keywordTable [(int)BuiltinTypeSpec.Type.Bool] = "bool";
 			}
 			
-			void AddModifiers (AttributedNode parent, LocationsBag.MemberLocations location)
+			void AddModifiers (EntityDeclaration parent, LocationsBag.MemberLocations location)
 			{
 				if (location == null || location.Modifiers == null)
 					return;
@@ -1078,7 +1078,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						Console.WriteLine ("modifier " + modifier.Item1 + " can't be converted,");
 					}
 					
-					parent.AddChild (new CSharpModifierToken (Convert (modifier.Item2), mod), AttributedNode.ModifierRole);
+					parent.AddChild (new CSharpModifierToken (Convert (modifier.Item2), mod), EntityDeclaration.ModifierRole);
 				}
 			}
 			
@@ -1258,7 +1258,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (memberName == null || memberName.ExplicitInterface == null)
 					return;
 				
-				parent.AddChild (ConvertToType (memberName.ExplicitInterface), MemberDeclaration.PrivateImplementationTypeRole);
+				parent.AddChild (ConvertToType (memberName.ExplicitInterface), EntityDeclaration.PrivateImplementationTypeRole);
 				var privateImplTypeLoc = LocationsBag.GetLocations (memberName.ExplicitInterface);
 				if (privateImplTypeLoc != null)
 					parent.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc [0])), MethodDeclaration.Roles.Dot);
@@ -3666,16 +3666,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public IEnumerable<AttributedNode> ParseTypeMembers (TextReader reader, int lineModifier = 0)
+		public IEnumerable<EntityDeclaration> ParseTypeMembers (TextReader reader, int lineModifier = 0)
 		{
 			string code = "unsafe partial class MyClass { " + Environment.NewLine + reader.ReadToEnd () + "}";
 			var cu = Parse (new StringReader (code), "parsed.cs", lineModifier - 1);
 			if (cu == null)
-				return Enumerable.Empty<AttributedNode> ();
+				return Enumerable.Empty<EntityDeclaration> ();
 			var td = cu.Children.FirstOrDefault () as TypeDeclaration;
 			if (td != null)
 				return td.Members;
-			return Enumerable.Empty<AttributedNode> ();
+			return Enumerable.Empty<EntityDeclaration> ();
 		}
 		
 		public IEnumerable<Statement> ParseStatements (TextReader reader, int lineModifier = 0)

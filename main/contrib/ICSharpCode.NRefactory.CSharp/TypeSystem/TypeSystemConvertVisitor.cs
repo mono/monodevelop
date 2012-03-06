@@ -214,7 +214,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				td.BaseTypes.Add(baseType.ToTypeReference(SimpleNameLookupMode.BaseTypeReference));
 			}
 			
-			foreach (AttributedNode member in typeDeclaration.Members) {
+			foreach (EntityDeclaration member in typeDeclaration.Members) {
 				member.AcceptVisitor(this);
 			}
 			

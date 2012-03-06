@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains ('.'))
 						return null;
 				}
-				
+
 				resolveResult = ResolveExpression (expr);
 				if (resolveResult == null)
 					return null;
@@ -942,7 +942,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		static bool IsInSwitchContext (AstNode node)
 		{
 			var n = node;
-			while (n != null && !(n is MemberDeclaration)) {
+			while (n != null && !(n is EntityDeclaration)) {
 				if (n is SwitchStatement)
 					return true;
 				if (n is BlockStatement)
@@ -1252,7 +1252,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				
+
 				if (newParentNode is ObjectCreateExpression) {
 					var invoke = (ObjectCreateExpression)newParentNode;
 					var resolved = ResolveExpression (invoke, expressionOrVariableDeclaration.Unit);
@@ -1271,7 +1271,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				
+
 				if (newParentNode is AssignmentExpression) {
 					var assign = (AssignmentExpression)newParentNode;
 					var resolved = ResolveExpression (assign.Left, expressionOrVariableDeclaration.Unit);
@@ -1279,7 +1279,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						hintType = resolved.Item1.Type;
 					}
 				}
-				
+
 				if (newParentNode is VariableDeclarationStatement) {
 					var varDecl = (VariableDeclarationStatement)newParentNode;
 					hintTypeAst = varDecl.Type;
@@ -1288,7 +1288,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						hintType = resolved.Item1.Type;
 					}
 				}
-				
+
 				if (newParentNode is FieldDeclaration) {
 					var varDecl = (FieldDeclaration)newParentNode;
 					hintTypeAst = varDecl.ReturnType;
@@ -1389,32 +1389,40 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return "";
 		}
-		
+
 		IEnumerable<ICompletionData> CreateTypeCompletionData (IType hintType, AstType hintTypeAst)
 		{
 			var wrapper = new CompletionDataWrapper (this);
 			var state = GetState ();
 			Predicate<IType> pred = null;
 			if (hintType != null) {
-				
 				if (hintType.Kind != TypeKind.Unknown) {
 					var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 					pred = t => {
+						if (t.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array)
+							return false;
 						// check if type is in inheritance tree.
 						if (hintType.GetDefinition () != null && !t.GetDefinition ().IsDerivedFrom (hintType.GetDefinition ()))
 							return false;
-						
 						// check for valid constructors
 						if (t.GetConstructors ().Count () == 0)
 							return true;
 						bool isProtectedAllowed = currentType != null ? currentType.Resolve (ctx).GetDefinition ().IsDerivedFrom (t.GetDefinition ()) : false;
 						return t.GetConstructors ().Any (m => lookup.IsAccessible (m, isProtectedAllowed));
 					};
-					DefaultCompletionString = GetShortType (hintType, GetState ());
-					wrapper.AddType (hintType, DefaultCompletionString);
+					if (hintType.Kind != TypeKind.Interface) {
+						DefaultCompletionString = GetShortType (hintType, GetState ());
+						wrapper.AddType (hintType, DefaultCompletionString);
+					}
 				} else {
-					DefaultCompletionString = hintTypeAst.ToString ();
-					wrapper.AddType (hintType, DefaultCompletionString);
+					string astTypeString = hintTypeAst.GetText ();
+					if (astTypeString != "var") {
+						DefaultCompletionString = astTypeString;
+						wrapper.AddType (hintType, DefaultCompletionString);
+					}
+					pred = t => {
+						return t.Kind != TypeKind.Interface;
+					};
 				}
 			} 
 			AddTypesAndNamespaces (wrapper, state, null, pred, m => false);
@@ -1423,7 +1431,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AutoCompleteEmptyMatch = true;
 			return wrapper.Result;
 		}
-		
+
 		IEnumerable<ICompletionData> GetOverrideCompletionData (IUnresolvedTypeDefinition type, string modifiers)
 		{
 			var wrapper = new CompletionDataWrapper (this);
@@ -1699,14 +1707,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (resolveResult == null || resolveResult.IsError)
 				return null;
+			bool inObjectCreation = resolvedNode.Ancestors.Any (n => n is ObjectCreateExpression);
+
 			var result = new CompletionDataWrapper (this);
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				if (!(resolvedNode.Parent is UsingDeclaration || resolvedNode.Parent != null && resolvedNode.Parent.Parent is UsingDeclaration)) {
-					Console.WriteLine ("fooo");
 					foreach (var cl in nr.Namespace.Types) {
 						string name = cl.Name;
-						
+						if (inObjectCreation && cl.Kind == TypeKind.Interface)
+							continue;
 						if (IsAttributeContext (resolvedNode) && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
 							name = name.Substring (0, name.Length - "Attribute".Length);
 						result.AddType (cl, name);
@@ -1718,12 +1728,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else if (resolveResult is TypeResolveResult) {
 				var type = resolveResult.Type;
 				foreach (var nested in type.GetNestedTypes ()) {
+					if (inObjectCreation && nested.Kind == TypeKind.Interface)
+						continue;
 					result.AddType (nested, nested.Name);
 				}
 			}
 			return result.Result;
 		}
-		
+
 		IEnumerable<ICompletionData> CreateTypeList ()
 		{
 			foreach (var cl in Compilation.RootNamespace.Types) {
@@ -1809,28 +1821,31 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			DefaultCompletionString = typeString;
 		}
-		
+
 		IEnumerable<ICompletionData> CreateCompletionData (TextLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
 		{
 			if (resolveResult == null /*|| resolveResult.IsError*/)
 				return null;
-			
+
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				var namespaceContents = new CompletionDataWrapper (this);
-				
+				var insideObjectCreation = resolvedNode.Ancestors.Any (t => t is ObjectCreateExpression);
+				Console.WriteLine ("parent:" + resolvedNode.Parent.GetText ());
 				foreach (var cl in nr.Namespace.Types) {
+					if (insideObjectCreation && cl.Kind == TypeKind.Interface)
+						continue;
 					namespaceContents.AddType (cl, cl.Name);
 				}
-				
+
 				foreach (var ns in nr.Namespace.ChildNamespaces) {
 					namespaceContents.AddNamespace (ns.Name);
 				}
 				return namespaceContents.Result;
 			}
-			
+
 			IType type = resolveResult.Type;
-			var typeDef = resolveResult.Type.GetDefinition ();
+//			var typeDef = resolveResult.Type.GetDefinition ();
 			var result = new CompletionDataWrapper (this);
 			bool includeStaticMembers = false;
 			
@@ -2008,7 +2023,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AutoCompleteEmptyMatch = false;
 			return wrapper.Result;
 		}
-		
+
 		#region Parsing methods
 		ExpressionResult GetExpressionBeforeCursor ()
 		{
@@ -2020,7 +2035,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					baseUnit = ParseStub ("a;", false);
 					type = baseUnit.GetNodeAt<MemberType> (location);
 				}
-				
+
 				if (type == null) {
 					baseUnit = ParseStub ("A a;", false);
 					type = baseUnit.GetNodeAt<MemberType> (location);
@@ -2029,7 +2044,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (currentType == null) {
 						return new ExpressionResult ((AstNode)type.Target, baseUnit);
 					}
-					
+
 					var target = type.Target;
 					target.Remove ();
 					var node = Unit.GetNodeAt (location) ?? Unit;
@@ -2037,18 +2052,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return new ExpressionResult ((AstNode)target, Unit);
 				}
 			}
-			
 			baseUnit = ParseStub ("a()", false);
 			var curNode = baseUnit.GetNodeAt (location);
-			
+
 			// hack for local variable declaration missing ';' issue - remove that if it works.
-			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
+			if (curNode is EntityDeclaration || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()");
 				curNode = baseUnit.GetNodeAt (location);
 			}
-			
+
 			// Hack for handle object initializer continuation expressions
-			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
+			if (curNode is EntityDeclaration || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()};");
 			}
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
@@ -2063,7 +2077,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (invoke != null)
 					mref = invoke.Target as MemberReferenceExpression;
 			}
-			Expression expr = null;
+			AstNode expr = null;
 			if (mref != null) {
 				expr = mref.Target.Clone ();
 				mref.Parent.ReplaceWith (expr);
@@ -2083,22 +2097,28 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						expr = new TypeReferenceExpression (memberType.Target.Clone ());
 						expr.AddAnnotation (new ObjectCreateExpression ());
 					}
+				
 				}
-					
 				if (memberType == null)
 					return null;
 				if (expr == null)
 					expr = new TypeReferenceExpression (memberType.Target.Clone ());
 				tref.ReplaceWith (expr);
+				if (tref is ObjectCreateExpression && expr is TypeReferenceExpression) {
+					var type = ((TypeReferenceExpression)expr).Type.Clone ();
+					expr.ReplaceWith (new ObjectCreateExpression (type));
+					expr = type;
+				}
 			}
-			
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
+
 			return new ExpressionResult ((AstNode)expr, Unit);
 		}
-		
+
 		ExpressionResult GetExpressionAtCursor ()
 		{
 //			if (currentMember == null && currentType == null)
@@ -2194,8 +2214,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null)
 				return null;
 			
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			if (member != null && member2 != null) {
 				member2.Remove ();
 				

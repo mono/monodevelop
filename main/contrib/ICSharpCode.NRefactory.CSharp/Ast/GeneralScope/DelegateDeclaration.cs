@@ -24,49 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
 	/// delegate ReturnType Name&lt;TypeParameters&gt;(Parameters) where Constraints;
 	/// </summary>
-	public class DelegateDeclaration : AttributedNode
+	public class DelegateDeclaration : EntityDeclaration
 	{
 		public readonly static TokenRole DelegateKeywordRole = new TokenRole ("delegate");
 		
 		public override NodeType NodeType {
-			get {
-				return NodeType.TypeDeclaration;
-			}
+			get { return NodeType.TypeDeclaration; }
+		}
+		
+		public override EntityType EntityType {
+			get { return EntityType.TypeDefinition; }
 		}
 		
 		public CSharpTokenNode DelegateToken {
 			get { return GetChildByRole (DelegateKeywordRole); }
-		}
-		
-		public AstType ReturnType {
-			get { return GetChildByRole (Roles.Type); }
-			set { SetChildByRole (Roles.Type, value); }
-		}
-		
-		public string Name {
-			get {
-				return GetChildByRole (Roles.Identifier).Name;
-			}
-			set {
-				SetChildByRole (Roles.Identifier, Identifier.Create (value));
-			}
-		}
-		
-		public Identifier NameToken {
-			get {
-				return GetChildByRole (Roles.Identifier);
-			}
-			set {
-				SetChildByRole (Roles.Identifier, value);
-			}
 		}
 		
 		public AstNodeCollection<TypeParameterDeclaration> TypeParameters {
@@ -107,8 +85,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			DelegateDeclaration o = other as DelegateDeclaration;
-			return o != null && this.MatchAttributesAndModifiers(o, match)
-				&& this.ReturnType.DoMatch(o.ReturnType, match) && MatchString(this.Name, o.Name)
+			return o != null && MatchString(this.Name, o.Name) 
+				&& this.MatchAttributesAndModifiers(o, match) && this.ReturnType.DoMatch(o.ReturnType, match)
 				&& this.TypeParameters.DoMatch(o.TypeParameters, match) && this.Parameters.DoMatch(o.Parameters, match)
 				&& this.Constraints.DoMatch(o.Constraints, match);
 		}

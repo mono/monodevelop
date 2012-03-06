@@ -630,7 +630,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return VisitFieldOrEventDeclaration(eventDeclaration);
 		}
 		
-		ResolveResult VisitFieldOrEventDeclaration(AttributedNode fieldOrEventDeclaration)
+		ResolveResult VisitFieldOrEventDeclaration(EntityDeclaration fieldOrEventDeclaration)
 		{
 			//int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count;
 			CSharpResolver oldResolver = resolver;
@@ -735,7 +735,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult VisitMethodMember(AttributedNode member)
+		ResolveResult VisitMethodMember(EntityDeclaration member)
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
@@ -773,7 +773,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		// handle properties/indexers
-		ResolveResult VisitPropertyMember(MemberDeclaration propertyOrIndexerDeclaration)
+		ResolveResult VisitPropertyMember(EntityDeclaration propertyOrIndexerDeclaration)
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
@@ -1307,7 +1307,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolvePrimitive(null);
 		}
 		
-		ResolveResult IAstVisitor<ResolveResult>.VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression)
+		ResolveResult IAstVisitor<ResolveResult>.VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression)
 		{
 			if (resolverEnabled || !objectCreateExpression.Initializer.IsNull) {
 				var typeResolveResult = Resolve(objectCreateExpression.Type);
@@ -2615,7 +2615,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled && !resolver.IsWithinLambdaExpression && resolver.CurrentMember != null) {
 				IType type = resolver.CurrentMember.ReturnType;
 				if (IsTask(type)) {
-					var methodDecl = returnStatement.Ancestors.OfType<AttributedNode>().FirstOrDefault();
+					var methodDecl = returnStatement.Ancestors.OfType<EntityDeclaration>().FirstOrDefault();
 					if (methodDecl != null && (methodDecl.Modifiers & Modifiers.Async) == Modifiers.Async)
 						type = UnpackTask(type);
 				}

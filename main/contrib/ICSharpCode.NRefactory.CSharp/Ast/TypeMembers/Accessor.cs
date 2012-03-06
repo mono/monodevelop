@@ -1,6 +1,6 @@
 ﻿// 
 // PropertyDeclaration.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -25,13 +25,14 @@
 // THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
 	/// get/set/add/remove
 	/// </summary>
-	public class Accessor : AttributedNode
+	public class Accessor : EntityDeclaration
 	{
 		public static readonly new Accessor Null = new NullAccessor ();
 		sealed class NullAccessor : Accessor
@@ -45,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void AcceptVisitor (IAstVisitor visitor)
 			{
 			}
-				
+			
 			public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 			{
 				return default (T);
@@ -66,6 +67,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return NodeType.Unknown; }
 		}
 		
+		public override EntityType EntityType {
+			get { return EntityType.Method; }
+		}
+		
 		public BlockStatement Body {
 			get { return GetChildByRole (Roles.Body); }
 			set { SetChildByRole (Roles.Body, value); }
@@ -75,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitAccessor (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitAccessor (this);

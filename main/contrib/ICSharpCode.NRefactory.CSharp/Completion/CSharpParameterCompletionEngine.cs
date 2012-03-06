@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpParameterCompletionEngine.cs
 //  
 // Author:
@@ -67,8 +67,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			if (member == null || member2 == null)
 				return null;
 			member2.Remove ();
@@ -102,8 +102,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column + 1); // '>' position
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			if (member == null || member2 == null)
 				return null;
 			member2.Remove ();
@@ -270,7 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IEnumerable<IType> CollectAllTypes (IType baseType)
 		{
 			var state = GetState ();
-			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
+			for( var n = state.CurrentUsingScope; n != null; n = n.Parent) {
 				foreach (var u in n.Usings) {
 					foreach (var type in u.Types) {
 						if (type.TypeParameterCount > 0 && type.Name == baseType.Name)
@@ -307,11 +307,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public int GetCurrentParameterIndex (int triggerOffset, int endOffset)
 		{
 			char lastChar = document.GetCharAt (endOffset - 1);
-			if (lastChar == '('|| lastChar  == '<') 
+			if (lastChar == '(' || lastChar == '<') 
 				return 0;
 			var parameter = new Stack<int> ();
 			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
-			for (int i = triggerOffset; i < endOffset; i++) {
+			for( int i = triggerOffset; i < endOffset; i++) {
 				char ch = document.GetCharAt (i);
 				char nextCh = i + 1 < document.TextLength ? document.GetCharAt (i + 1) : '\0';
 				switch (ch) {

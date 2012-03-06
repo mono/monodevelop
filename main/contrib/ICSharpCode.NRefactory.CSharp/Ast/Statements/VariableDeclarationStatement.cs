@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class VariableDeclarationStatement : Statement
 	{
-		public static readonly Role<CSharpModifierToken> ModifierRole = AttributedNode.ModifierRole;
+		public static readonly Role<CSharpModifierToken> ModifierRole = EntityDeclaration.ModifierRole;
 		
 		public VariableDeclarationStatement()
 		{
@@ -44,8 +44,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public Modifiers Modifiers {
-			get { return AttributedNode.GetModifiers(this); }
-			set { AttributedNode.SetModifiers(this, value); }
+			get { return EntityDeclaration.GetModifiers(this); }
+			set { EntityDeclaration.SetModifiers(this, value); }
 		}
 		
 		public AstType Type {

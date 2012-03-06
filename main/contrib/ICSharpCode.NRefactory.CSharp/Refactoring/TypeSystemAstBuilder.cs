@@ -58,43 +58,57 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		/// <summary>
+		/// Specifies whether the ast builder should add annotations to type references.
+		/// The default value is <c>false</c>.
+		/// </summary>
+		public bool AddAnnotations { get; set; }
+		
+		/// <summary>
 		/// Controls the accessibility modifiers are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowAccessibility { get; set; }
 		
 		/// <summary>
 		/// Controls the non-accessibility modifiers are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowModifiers { get; set; }
 		
 		/// <summary>
 		/// Controls whether base type references are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowBaseTypes { get; set; }
 		
 		/// <summary>
 		/// Controls whether type parameter declarations are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowTypeParameters { get; set; }
 		
 		/// <summary>
 		/// Controls whether contraints on type parameter declarations are shown.
 		/// Has no effect if ShowTypeParameters is false.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowTypeParameterConstraints { get; set; }
 		
 		/// <summary>
 		/// Controls whether the names of parameters are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowParameterNames { get; set; }
 		
 		/// <summary>
 		/// Controls whether to show default values of optional parameters, and the values of constant fields.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowConstantValues { get; set; }
 		
 		/// <summary>
 		/// Controls whether to use fully-qualified type names or short type names.
+		/// The default value is <c>false</c>.
 		/// </summary>
 		public bool AlwaysUseShortTypeNames { get; set; }
 		#endregion
@@ -104,6 +118,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
+			AstType astType = ConvertTypeHelper(type);
+			if (AddAnnotations)
+				astType.AddAnnotation(type);
+			return astType;
+		}
+		
+		AstType ConvertTypeHelper(IType type)
+		{
 			TypeWithElementType typeWithElementType = type as TypeWithElementType;
 			if (typeWithElementType != null) {
 				if (typeWithElementType is PointerType) {
@@ -316,8 +338,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return new TypeOfExpression(ConvertType(((TypeOfResolveResult)rr).Type));
 			} else if (rr is ArrayCreateResolveResult) {
 				ArrayCreateResolveResult acrr = (ArrayCreateResolveResult)rr;
-				AstType type = ConvertType(acrr.Type);
-				throw new NotImplementedException();
+				ArrayCreateExpression ace = new ArrayCreateExpression();
+				ace.Type = ConvertType(acrr.Type);
+				ComposedType composedType = ace.Type as ComposedType;
+				if (composedType != null) {
+					composedType.ArraySpecifiers.MoveTo(ace.AdditionalArraySpecifiers);
+					if (!composedType.HasNullableSpecifier && composedType.PointerRank == 0)
+						ace.Type = composedType.BaseType;
+				}
+				
+				if (acrr.SizeArguments != null && acrr.InitializerElements == null) {
+					ace.AdditionalArraySpecifiers.FirstOrNullObject().Remove();
+					ace.Arguments.AddRange(acrr.SizeArguments.Select(ConvertConstantValue));
+				}
+				if (acrr.InitializerElements != null) {
+					ArrayInitializerExpression initializer = new ArrayInitializerExpression();
+					initializer.Elements.AddRange(acrr.InitializerElements.Select(ConvertConstantValue));
+					ace.Initializer = initializer;
+				}
+				return ace;
 			} else if (rr.IsCompileTimeConstant) {
 				return ConvertConstantValue(rr.Type, rr.ConstantValue);
 			} else {
@@ -367,7 +406,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Entity
-		public AttributedNode ConvertEntity(IEntity entity)
+		public EntityDeclaration ConvertEntity(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
@@ -395,7 +434,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		AttributedNode ConvertTypeDefinition(ITypeDefinition typeDefinition)
+		EntityDeclaration ConvertTypeDefinition(ITypeDefinition typeDefinition)
 		{
 			Modifiers modifiers = ModifierFromAccessibility(typeDefinition.Accessibility);
 			if (this.ShowModifiers) {
@@ -588,7 +627,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return decl;
 		}
 		
-		AttributedNode ConvertOperator(IMethod op)
+		EntityDeclaration ConvertOperator(IMethod op)
 		{
 			OperatorType? opType = OperatorDeclaration.GetOperatorType(op.Name);
 			if (opType == null)

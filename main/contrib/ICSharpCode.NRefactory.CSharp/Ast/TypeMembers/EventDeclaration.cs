@@ -25,20 +25,16 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EventDeclaration : AttributedNode
+	public class EventDeclaration : EntityDeclaration
 	{
 		public static readonly TokenRole EventKeywordRole = new TokenRole ("event");
 		
-		public override NodeType NodeType {
-			get { return NodeType.Member; }
-		}
-		
-		public AstType ReturnType {
-			get { return GetChildByRole (Roles.Type); }
-			set { SetChildByRole(Roles.Type, value); }
+		public override EntityType EntityType {
+			get { return EntityType.Event; }
 		}
 		
 		public AstNodeCollection<VariableInitializer> Variables {
@@ -68,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 	}
 	
-	public class CustomEventDeclaration : MemberDeclaration
+	public class CustomEventDeclaration : EntityDeclaration
 	{
 		public static readonly TokenRole EventKeywordRole = new TokenRole ("event");
 		public static readonly TokenRole AddKeywordRole = new TokenRole ("add");
@@ -76,6 +72,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public static readonly Role<Accessor> AddAccessorRole = new Role<Accessor>("AddAccessor", Accessor.Null);
 		public static readonly Role<Accessor> RemoveAccessorRole = new Role<Accessor>("RemoveAccessor", Accessor.Null);
+		
+		public override EntityType EntityType {
+			get { return EntityType.Event; }
+		}
+		
+		/// <summary>
+		/// Gets/Sets the type reference of the interface that is explicitly implemented.
+		/// Null node if this member is not an explicit interface implementation.
+		/// </summary>
+		public AstType PrivateImplementationType {
+			get { return GetChildByRole (PrivateImplementationTypeRole); }
+			set { SetChildByRole (PrivateImplementationTypeRole, value); }
+		}
 		
 		public CSharpTokenNode LBraceToken {
 			get { return GetChildByRole (Roles.LBrace); }
@@ -113,7 +122,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			CustomEventDeclaration o = other as CustomEventDeclaration;
-			return o != null && this.MatchMember(o, match)
+			return o != null && MatchString(this.Name, o.Name)
+				&& this.MatchAttributesAndModifiers(o, match) && this.ReturnType.DoMatch(o.ReturnType, match)
+				&& this.PrivateImplementationType.DoMatch(o.PrivateImplementationType, match)
 				&& this.AddAccessor.DoMatch(o.AddAccessor, match) && this.RemoveAccessor.DoMatch(o.RemoveAccessor, match);
 		}
 	}

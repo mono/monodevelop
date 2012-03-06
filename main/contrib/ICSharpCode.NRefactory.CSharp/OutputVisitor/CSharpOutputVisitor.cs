@@ -438,8 +438,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						return ((LambdaExpression)ancestor).IsAsync;
 					if (ancestor is AnonymousMethodExpression)
 						return ((AnonymousMethodExpression)ancestor).IsAsync;
-					if (ancestor is AttributedNode)
-						return (((AttributedNode)ancestor).Modifiers & Modifiers.Async) == Modifiers.Async;
+					if (ancestor is EntityDeclaration)
+						return (((EntityDeclaration)ancestor).Modifiers & Modifiers.Async) == Modifiers.Async;
 				}
 			}
 			return false;

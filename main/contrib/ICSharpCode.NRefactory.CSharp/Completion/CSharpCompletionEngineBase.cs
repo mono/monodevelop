@@ -483,8 +483,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (expr == null)
 					return null;
 			}
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
 			return new ExpressionResult ((AstNode)expr, Unit);

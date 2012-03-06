@@ -50,7 +50,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		class DirectiveSearcher : DepthFirstAstVisitor
 		{
 			readonly PreProcessorDirective regionDirective;
-			
 			bool searchDirectives = false;
 			int depth;
 			PreProcessorDirective endregion;

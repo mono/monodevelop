@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				handler (preProcessorDirective, data);
 			return VisitChildren (preProcessorDirective, data);
 		}
-		
+
 		public event Action<DocumentationReference, T> DocumentationReferenceVisited;
 
 		S IAstVisitor<T, S>.VisitDocumentationReference (DocumentationReference documentationReference, T data)
@@ -660,7 +660,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				handler (usingStatement, data);
 			return VisitChildren (usingStatement, data);
 		}
-		
+
 		public event Action<VariableDeclarationStatement, T> VariableDeclarationStatementVisited;
 
 		S IAstVisitor<T, S>.VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, T data)
@@ -700,7 +700,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				handler (yieldStatement, data);
 			return VisitChildren (yieldStatement, data);
 		}
-		
+
 		public event Action<AnonymousMethodExpression, T> AnonymousMethodExpressionVisited;
 
 		S IAstVisitor<T, S>.VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, T data)

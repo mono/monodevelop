@@ -24,57 +24,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ConstructorDeclaration : AttributedNode
+	public class ConstructorDeclaration : EntityDeclaration
 	{
 		public static readonly Role<ConstructorInitializer> InitializerRole = new Role<ConstructorInitializer>("Initializer", ConstructorInitializer.Null);
-		
-		/// <summary>
-		/// Gets/Sets the name of the class containing the constructor.
-		/// This property can be used to inform the output visitor about the class name when writing a constructor declaration
-		/// without writing the complete type declaration. It is ignored when the constructor has a type declaration as parent.
-		/// </summary>
-		public string Name { get; set; }
-		
-		public Identifier IdentifierToken {
-			get { return GetChildByRole (Roles.Identifier); }
-			set { SetChildByRole (Roles.Identifier, value); }
+
+		public override EntityType EntityType {
+			get { return EntityType.Constructor; }
 		}
-		
+
 		public CSharpTokenNode LParToken {
 			get { return GetChildByRole (Roles.LPar); }
 		}
-		
+
 		public AstNodeCollection<ParameterDeclaration> Parameters {
 			get { return GetChildrenByRole (Roles.Parameter); }
 		}
-		
+
 		public CSharpTokenNode RParToken {
 			get { return GetChildByRole (Roles.RPar); }
 		}
-		
+
 		public CSharpTokenNode ColonToken {
 			get { return GetChildByRole (Roles.Colon); }
 		}
-		
+
 		public ConstructorInitializer Initializer {
 			get { return GetChildByRole (InitializerRole); }
 			set { SetChildByRole( InitializerRole, value); }
 		}
-		
+
 		public BlockStatement Body {
 			get { return GetChildByRole (Roles.Body); }
 			set { SetChildByRole (Roles.Body, value); }
 		}
-		
-		public override NodeType NodeType {
-			get { return NodeType.Member; }
-		}
-		
+
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitConstructorDeclaration (this);
@@ -84,12 +71,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitConstructorDeclaration (this);
 		}
-		
+
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorDeclaration (this, data);
 		}
-		
+
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
 			ConstructorDeclaration o = other as ConstructorDeclaration;

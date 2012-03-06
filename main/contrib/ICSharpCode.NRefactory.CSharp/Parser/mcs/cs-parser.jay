@@ -5333,7 +5333,7 @@ for_statement
 		current_block.IsCompilerGenerated = true;
 		For f = new For (GetLocation ($1));
 		current_block.AddStatement (f);
-		lbag.AddStatement (f, current_block.StartLocation,, GetLocation ($2));
+		lbag.AddStatement (f, current_block.StartLocation);
 		$$ = f;
 	  }
 	  for_statement_cont

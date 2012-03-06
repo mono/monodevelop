@@ -32,78 +32,106 @@ namespace ICSharpCode.NRefactory.CSharp
 		public ConversionFlags ConversionFlags { get; set; }
 		
 		#region ConvertEntity
-		public string ConvertEntity(IEntity e)
+		public string ConvertEntity(IEntity entity)
 		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			
 			StringWriter writer = new StringWriter();
+			ConvertEntity(entity, new TextWriterOutputFormatter(writer), new CSharpFormattingOptions());
+			return writer.ToString();
+		}
+		
+		public void ConvertEntity(IEntity entity, IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			if (formatter == null)
+				throw new ArgumentNullException("formatter");
+			if (formattingPolicy == null)
+				throw new ArgumentNullException("options");
+			
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			AttributedNode node = astBuilder.ConvertEntity(e);
-			PrintModifiers(node.Modifiers, writer);
+			EntityDeclaration node = astBuilder.ConvertEntity(entity);
+			PrintModifiers(node.Modifiers, formatter);
 			
 			if ((ConversionFlags & ConversionFlags.ShowDefinitionKeyWord) == ConversionFlags.ShowDefinitionKeyWord) {
 				if (node is TypeDeclaration) {
 					switch (((TypeDeclaration)node).ClassType) {
 						case ClassType.Class:
-							writer.Write("class");
+							formatter.WriteKeyword("class");
 							break;
 						case ClassType.Struct:
-							writer.Write("struct");
+							formatter.WriteKeyword("struct");
 							break;
 						case ClassType.Interface:
-							writer.Write("interface");
+							formatter.WriteKeyword("interface");
 							break;
 						case ClassType.Enum:
-							writer.Write("enum");
+							formatter.WriteKeyword("enum");
 							break;
 						default:
 							throw new Exception("Invalid value for ClassType");
 					}
-					writer.Write(' ');
+					formatter.Space();
 				} else if (node is DelegateDeclaration) {
-					writer.Write("delegate ");
+					formatter.WriteKeyword("delegate");
+					formatter.Space();
+				} else if (node is EventDeclaration) {
+					formatter.WriteKeyword("event");
+					formatter.Space();
 				}
 			}
 			
 			if ((ConversionFlags & ConversionFlags.ShowReturnType) == ConversionFlags.ShowReturnType) {
 				var rt = node.GetChildByRole(AstNode.Roles.Type);
 				if (!rt.IsNull) {
-					rt.AcceptVisitor(CreatePrinter(writer));
-					writer.Write(' ');
+					rt.AcceptVisitor(new CSharpOutputVisitor(formatter, formattingPolicy));
+					formatter.Space();
 				}
 			}
 			
-			if (e is ITypeDefinition)
-				WriteTypeDeclarationName((ITypeDefinition)e, writer);
+			if (entity is ITypeDefinition)
+				WriteTypeDeclarationName((ITypeDefinition)entity, formatter, formattingPolicy);
 			else
-				WriteMemberDeclarationName((IMember)e, writer);
+				WriteMemberDeclarationName((IMember)entity, formatter, formattingPolicy);
 			
-			if ((ConversionFlags & ConversionFlags.ShowParameterList) == ConversionFlags.ShowParameterList && HasParameters(e)) {
-				writer.Write(e.EntityType == EntityType.Indexer ? '[' : '(');
+			if ((ConversionFlags & ConversionFlags.ShowParameterList) == ConversionFlags.ShowParameterList && HasParameters(entity)) {
+				formatter.WriteToken(entity.EntityType == EntityType.Indexer ? "[" : "(");
 				bool first = true;
 				foreach (var param in node.GetChildrenByRole(AstNode.Roles.Parameter)) {
-					if (first)
+					if (first) {
 						first = false;
-					else
-						writer.Write(", ");
-					param.AcceptVisitor(CreatePrinter(writer));
+					} else {
+						formatter.WriteToken(",");
+						formatter.Space();
+					}
+					param.AcceptVisitor(new CSharpOutputVisitor(formatter, formattingPolicy));
 				}
-				writer.Write(e.EntityType == EntityType.Indexer ? ']' : ')');
+				formatter.WriteToken(entity.EntityType == EntityType.Indexer ? "]" : ")");
 			}
 			
 			if ((ConversionFlags & ConversionFlags.ShowBody) == ConversionFlags.ShowBody && !(node is TypeDeclaration)) {
-				IProperty property = e as IProperty;
+				IProperty property = entity as IProperty;
 				if (property != null) {
-					writer.Write(" { ");
-					if (property.CanGet)
-						writer.Write("get; ");
-					if (property.CanSet)
-						writer.Write("set; ");
-					writer.Write('}');
+					formatter.Space();
+					formatter.WriteToken("{");
+					formatter.Space();
+					if (property.CanGet) {
+						formatter.WriteKeyword("get");
+						formatter.WriteToken(";");
+						formatter.Space();
+					}
+					if (property.CanSet) {
+						formatter.WriteKeyword("set");
+						formatter.WriteToken(";");
+						formatter.Space();
+					}
+					formatter.WriteToken("}");
 				} else {
-					writer.Write(';');
+					formatter.WriteToken(";");
 				}
 			}
-			
-			return writer.ToString().TrimEnd();
 		}
 		
 		bool HasParameters(IEntity e)
@@ -125,6 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		TypeSystemAstBuilder CreateAstBuilder()
 		{
 			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder();
+			astBuilder.AddAnnotations = true;
 			astBuilder.ShowModifiers = (ConversionFlags & ConversionFlags.ShowModifiers) == ConversionFlags.ShowModifiers;
 			astBuilder.ShowAccessibility = (ConversionFlags & ConversionFlags.ShowAccessibility) == ConversionFlags.ShowAccessibility;
 			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) != ConversionFlags.UseFullyQualifiedTypeNames;
@@ -132,108 +161,84 @@ namespace ICSharpCode.NRefactory.CSharp
 			return astBuilder;
 		}
 		
-		void ConvertTypeDeclaration(ITypeDefinition typeDef, StringWriter writer)
-		{
-			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			var declaration = astBuilder.ConvertEntity(typeDef);
-			TypeDeclaration typeDeclaration = (TypeDeclaration)declaration;
-			PrintModifiers(typeDeclaration.Modifiers, writer);
-			if ((ConversionFlags & ConversionFlags.ShowDefinitionKeyWord) == ConversionFlags.ShowDefinitionKeyWord) {
-				switch (typeDeclaration.ClassType) {
-					case ClassType.Class:
-						writer.Write("class");
-						break;
-					case ClassType.Struct:
-						writer.Write("struct");
-						break;
-					case ClassType.Interface:
-						writer.Write("interface");
-						break;
-					case ClassType.Enum:
-						writer.Write("enum");
-						break;
-					default:
-						throw new Exception("Invalid value for ClassType");
-				}
-				writer.Write(' ');
-			}
-			WriteTypeDeclarationName(typeDef, writer);
-		}
-
-		void WriteTypeDeclarationName(ITypeDefinition typeDef, StringWriter writer)
+		void WriteTypeDeclarationName(ITypeDefinition typeDef, IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			if (typeDef.DeclaringTypeDefinition != null) {
-				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, writer);
-				writer.Write('.');
-			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
-				writer.Write(typeDef.Namespace);
-				writer.Write('.');
+				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, formatter, formattingPolicy);
+				formatter.WriteToken(".");
+			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) == ConversionFlags.UseFullyQualifiedTypeNames) {
+				formatter.WriteIdentifier(typeDef.Namespace);
+				formatter.WriteToken(".");
 			}
-			writer.Write(typeDef.Name);
+			formatter.WriteIdentifier(typeDef.Name);
 			if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList) {
-				CreatePrinter(writer).WriteTypeParameters(astBuilder.ConvertEntity(typeDef).GetChildrenByRole(AstNode.Roles.TypeParameter));
+				var outputVisitor = new CSharpOutputVisitor(formatter, formattingPolicy);
+				outputVisitor.WriteTypeParameters(astBuilder.ConvertEntity(typeDef).GetChildrenByRole(AstNode.Roles.TypeParameter));
 			}
 		}
 		
-		void WriteMemberDeclarationName(IMember member, StringWriter writer)
+		void WriteMemberDeclarationName(IMember member, IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
-				writer.Write(ConvertType(member.DeclaringType));
-				writer.Write('.');
+			if ((ConversionFlags & ConversionFlags.ShowDeclaringType) == ConversionFlags.ShowDeclaringType) {
+				ConvertType(member.DeclaringType, formatter, formattingPolicy);
+				formatter.WriteToken(".");
 			}
 			switch (member.EntityType) {
 				case EntityType.Indexer:
-					writer.Write("this");
+					formatter.WriteKeyword("this");
 					break;
 				case EntityType.Constructor:
-					writer.Write(member.DeclaringType.Name);
+					formatter.WriteIdentifier(member.DeclaringType.Name);
 					break;
 				case EntityType.Destructor:
-					writer.Write('~');
-					writer.Write(member.DeclaringType.Name);
+					formatter.WriteToken("~");
+					formatter.WriteIdentifier(member.DeclaringType.Name);
 					break;
 				case EntityType.Operator:
 					switch (member.Name) {
 						case "op_Implicit":
-							writer.Write("implicit operator ");
-							writer.Write(ConvertType(member.ReturnType));
+							formatter.WriteKeyword("implicit");
+							formatter.Space();
+							formatter.WriteKeyword("operator");
+							formatter.Space();
+							ConvertType(member.ReturnType, formatter, formattingPolicy);
 							break;
 						case "op_Explicit":
-							writer.Write("explicit operator ");
-							writer.Write(ConvertType(member.ReturnType));
+							formatter.WriteKeyword("explicit");
+							formatter.Space();
+							formatter.WriteKeyword("operator");
+							formatter.Space();
+							ConvertType(member.ReturnType, formatter, formattingPolicy);
 							break;
 						default:
-							writer.Write("operator ");
+							formatter.WriteKeyword("operator");
+							formatter.Space();
 							var operatorType = OperatorDeclaration.GetOperatorType(member.Name);
 							if (operatorType.HasValue)
-								writer.Write(OperatorDeclaration.GetToken(operatorType.Value));
+								formatter.WriteToken(OperatorDeclaration.GetToken(operatorType.Value));
 							else
-								writer.Write(member.Name);
+								formatter.WriteIdentifier(member.Name);
 							break;
 					}
 					break;
 				default:
-					writer.Write(member.Name);
+					formatter.WriteIdentifier(member.Name);
 					break;
 			}
 			if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList && member.EntityType == EntityType.Method) {
-				CreatePrinter(writer).WriteTypeParameters(astBuilder.ConvertEntity(member).GetChildrenByRole(AstNode.Roles.TypeParameter));
+				var outputVisitor = new CSharpOutputVisitor(formatter, formattingPolicy);
+				outputVisitor.WriteTypeParameters(astBuilder.ConvertEntity(member).GetChildrenByRole(AstNode.Roles.TypeParameter));
 			}
 		}
 		
-		CSharpOutputVisitor CreatePrinter(StringWriter writer)
-		{
-			return new CSharpOutputVisitor(writer, new CSharpFormattingOptions());
-		}
-		
-		void PrintModifiers(Modifiers modifiers, StringWriter writer)
+		void PrintModifiers(Modifiers modifiers, IOutputFormatter formatter)
 		{
 			foreach (var m in CSharpModifierToken.AllModifiers) {
 				if ((modifiers & m) == m) {
-					writer.Write(CSharpModifierToken.GetModifierName(m));
-					writer.Write(' ');
+					formatter.WriteKeyword(CSharpModifierToken.GetModifierName(m));
+					formatter.Space();
 				}
 			}
 		}
@@ -248,14 +253,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string ConvertType(IType type)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			AstType astType = astBuilder.ConvertType(type);
 			return astType.GetText();
 		}
 		
-		public string WrapAttribute(string attribute)
+		public void ConvertType(IType type, IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
 		{
-			return "[" + attribute + "]";
+			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
+			AstType astType = astBuilder.ConvertType(type);
+			astType.AcceptVisitor(new CSharpOutputVisitor(formatter, formattingPolicy));
 		}
 		
 		public string WrapComment(string comment)

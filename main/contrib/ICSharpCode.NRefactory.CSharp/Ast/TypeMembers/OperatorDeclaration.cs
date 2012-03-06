@@ -23,8 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Collections.Generic;
-using System.Linq;
+
+using System;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -69,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		Explicit = Mono.CSharp.Operator.OpType.Explicit
 	}
 	
-	public class OperatorDeclaration : AttributedNode
+	public class OperatorDeclaration : EntityDeclaration
 	{
 		public static readonly TokenRole OperatorKeywordRole = new TokenRole ("operator");
 		
@@ -104,15 +105,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly TokenRole ExplicitRole = new TokenRole ("explicit");
 		public static readonly TokenRole ImplicitRole = new TokenRole ("implicit");
 		
+		public override EntityType EntityType {
+			get { return EntityType.Operator; }
+		}
+		
 		public OperatorType OperatorType {
 			get;
 			set;
-		}
-		
-		
-		public AstType ReturnType {
-			get { return GetChildByRole (Roles.Type); }
-			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public CSharpTokenNode OperatorToken {
@@ -226,10 +225,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Mono.CSharp.Operator.GetName ((Mono.CSharp.Operator.OpType)type);
 		}
 		
-		public override NodeType NodeType {
-			get { return NodeType.Member; }
-		}
-		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitOperatorDeclaration (this);
@@ -245,8 +240,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitOperatorDeclaration (this, data);
 		}
 		
-		public string Name {
+		public override string Name {
 			get { return GetName (this.OperatorType); }
+			set { throw new NotSupportedException(); }
+		}
+		
+		public override Identifier NameToken {
+			get { return Identifier.Null; }
+			set { throw new NotSupportedException(); }
 		}
 		
 		protected internal override bool DoMatch (AstNode other, PatternMatching.Match match)

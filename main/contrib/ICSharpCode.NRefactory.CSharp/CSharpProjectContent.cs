@@ -32,33 +32,22 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		string assemblyName;
 		Dictionary<string, IParsedFile> parsedFiles;
-		
-		[NonSerialized]
-		List<IAssemblyReference> _assemblyReferences;
-		
-		List<IAssemblyReference> assemblyReferences {
-			get {
-				if (_assemblyReferences == null)
-					_assemblyReferences = new List<IAssemblyReference>();
-				return _assemblyReferences;
-			}
-			
-		}
+		List<IAssemblyReference> assemblyReferences;
 		
 		public CSharpProjectContent()
 		{
 			this.assemblyName = string.Empty;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
-			this._assemblyReferences = new List<IAssemblyReference>();
+			this.assemblyReferences = new List<IAssemblyReference>();
 		}
 		
 		protected CSharpProjectContent(CSharpProjectContent pc)
 		{
 			this.assemblyName = pc.assemblyName;
-			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles);
-			this._assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
+			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles, Platform.FileNameComparer);
+			this.assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
 		}
-		
+		public string Location { get; set; }
 		public IEnumerable<IParsedFile> Files {
 			get { return parsedFiles.Values; }
 		}
@@ -70,8 +59,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string AssemblyName {
 			get { return assemblyName; }
 		}
-
-		public string Location { get; set; }
 		
 		public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
 			get {

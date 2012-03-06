@@ -117,6 +117,7 @@ FILES =  \
 	Ast/TypeMembers/AttributedNode.cs \
 	Ast/TypeMembers/ConstructorDeclaration.cs \
 	Ast/TypeMembers/DestructorDeclaration.cs \
+	Ast/TypeMembers/EntityDeclaration.cs \
 	Ast/TypeMembers/EnumMemberDeclaration.cs \
 	Ast/TypeMembers/EventDeclaration.cs \
 	Ast/TypeMembers/FieldDeclaration.cs \

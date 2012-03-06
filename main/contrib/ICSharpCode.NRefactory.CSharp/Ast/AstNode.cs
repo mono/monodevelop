@@ -651,7 +651,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Returns true, if the given coordinates (line, column) are in the node.
 		/// </summary>
 		/// <returns>
-		/// True, if the given coordinates are between StartLocation and EndLocation (inclusive); otherwise, false.
+		/// True, if the given coordinates are between StartLocation and EndLocation (exclusive); otherwise, false.
 		/// </returns>
 		public bool Contains (int line, int column)
 		{
@@ -667,6 +667,28 @@ namespace ICSharpCode.NRefactory.CSharp
 		public bool Contains (TextLocation location)
 		{
 			return this.StartLocation <= location && location < this.EndLocation;
+		}
+		
+		/// <summary>
+		/// Returns true, if the given coordinates (line, column) are in the node.
+		/// </summary>
+		/// <returns>
+		/// True, if the given coordinates are between StartLocation and EndLocation (inclusive); otherwise, false.
+		/// </returns>
+		public bool IsInside (int line, int column)
+		{
+			return IsInside (new TextLocation (line, column));
+		}
+		
+		/// <summary>
+		/// Returns true, if the given coordinates are in the node.
+		/// </summary>
+		/// <returns>
+		/// True, if location is between StartLocation and EndLocation (inclusive); otherwise, false.
+		/// </returns>
+		public bool IsInside (TextLocation location)
+		{
+			return this.StartLocation <= location && location <= this.EndLocation;
 		}
 		
 		public override void AddAnnotation (object annotation)
