@@ -221,15 +221,11 @@ namespace MonoDevelop.CSharp.Formatting
 					lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
 					if (lastCharInserted == '\0')
 						return retval;
-					if (key == Gdk.Key.Return) {
-						if (FixLineStart (textEditorData.Caret.Line))
-							return retval;
-					}
 
 					stateTracker.UpdateEngine ();
 
 					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
-						FixLineStart (textEditorData.Caret.Line + 1);
+						FixLineStart (textEditorData, stateTracker, textEditorData.Caret.Line + 1);
 					} else {
 						if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
 							DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
@@ -403,7 +399,7 @@ namespace MonoDevelop.CSharp.Formatting
 				reIndent = true;
 				break;
 			case '\n':
-				if (FixLineStart (stateTracker.Engine.LineNumber)) 
+				if (FixLineStart (textEditorData, stateTracker, stateTracker.Engine.LineNumber)) 
 					return;
 				//newline always reindents unless it's had special handling
 				reIndent = true;
@@ -411,26 +407,30 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		bool FixLineStart (int lineNumber)
+		public static bool FixLineStart (TextEditorData textEditorData, DocumentStateTracker<CSharpIndentEngine> stateTracker, int lineNumber)
 		{
 			if (lineNumber > DocumentLocation.MinLine) {
-				stateTracker.UpdateEngine ();
 				LineSegment line = textEditorData.Document.GetLine (lineNumber);
+				if (line == null)
+					return false;
 
 				LineSegment prevLine = textEditorData.Document.GetLine (lineNumber - 1);
+				if (prevLine == null)
+					return false;
 				string trimmedPreviousLine = textEditorData.Document.GetTextAt (prevLine).TrimStart ();
 
 				//xml doc comments
 				//check previous line was a doc comment
 				//check there's a following line?
-				if (trimmedPreviousLine.StartsWith ("/// ") && lineNumber + 1 < textEditorData.Document.LineCount) {
+				if (trimmedPreviousLine.StartsWith ("///") && lineNumber + 1 < textEditorData.Document.LineCount) {
 					if (textEditorData.GetTextAt (line.Offset, line.EditableLength).TrimStart ().StartsWith ("///"))
 						return false;
 					//check that the newline command actually inserted a newline
 					textEditorData.EnsureCaretIsNotVirtual ();
 					int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
 					string nextLine = textEditorData.Document.GetTextAt (textEditorData.Document.GetLine (lineNumber + 1)).TrimStart ();
-					if (trimmedPreviousLine.Length > "/// ".Length || nextLine.StartsWith ("/// ")) {
+
+					if (trimmedPreviousLine.Length > "///".Length || nextLine.StartsWith ("///")) {
 						textEditorData.Insert (insertionPoint, "/// ");
 						if (textEditorData.Caret.Offset >= insertionPoint)
 							textEditorData.Caret.Offset += "/// ".Length;
