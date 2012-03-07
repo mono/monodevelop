@@ -388,10 +388,13 @@ namespace MonoDevelop.Components.Docking
 		{
 			Gdk.Rectangle rect = Allocation;
 			
+			//Gdk.Rectangle.Right and Bottom are inconsistent
+			int right = rect.X + rect.Width, bottom = rect.Y + rect.Height;
+			
 			if (GradientBackround) {
 				HslColor gcol = Style.Background (Gtk.StateType.Normal);
 				
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 					cr.NewPath ();
 					cr.MoveTo (rect.X, rect.Y);
 					cr.RelLineTo (rect.Width, 0);
@@ -399,7 +402,7 @@ namespace MonoDevelop.Components.Docking
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
-					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Bottom);
+					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom);
 					Cairo.Color color1 = gcol;
 					pat.AddColorStop (0, color1);
 					gcol.L -= 0.1;
@@ -412,32 +415,27 @@ namespace MonoDevelop.Components.Docking
 			
 			bool res = base.OnExposeEvent (evnt);
 			
-			//for some reason we seem to need to paint a sightly bigger box to align with the header
-			//even though the allocation appears to be the same
-			rect.Width += 1;
-			rect.Height += 1;
-			
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Color = (HslColor) Style.Dark (Gtk.StateType.Normal);
 				
 				double y = rect.Y + topMargin / 2d;
 				cr.LineWidth = topMargin;
-				cr.Line (rect.X, y, rect.Right, y);
+				cr.Line (rect.X, y, right, y);
 				cr.Stroke ();
 				
-				y = rect.Bottom - bottomMargin / 2d;
+				y = bottom - bottomMargin / 2d;
 				cr.LineWidth = bottomMargin;
-				cr.Line (rect.X, y, rect.Right, y);
+				cr.Line (rect.X, y, right, y);
 				cr.Stroke ();
 				
 				double x = rect.X + leftMargin / 2d;
 				cr.LineWidth = leftMargin;
-				cr.Line (x, rect.Y, x, rect.Bottom);
+				cr.Line (x, rect.Y, x, bottom);
 				cr.Stroke ();
 				
-				x = rect.Right - rightMargin / 2d;
+				x = right - rightMargin / 2d;
 				cr.LineWidth = rightMargin;
-				cr.Line (x, rect.Y, x, rect.Bottom);
+				cr.Line (x, rect.Y, x, bottom);
 				cr.Stroke ();
 			}
 			
