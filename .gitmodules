@@ -1,0 +1,3 @@
+[submodule "main/contrib/Mono.Cecil/src"]
+	path = main/contrib/Mono.Cecil/src
+	url = git://github.com/jbevain/cecil.git
