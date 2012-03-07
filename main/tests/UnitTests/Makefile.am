@@ -57,9 +57,11 @@ FILES =  \
 	Mono.TextEditor.Tests/SearchTests.cs \
 	Mono.TextEditor.Tests/SegmentTreeTests.cs \
 	Mono.TextEditor.Tests/SelectionTests.cs \
+	Mono.TextEditor.Tests/SmartIndentModeTests.cs \
 	Mono.TextEditor.Tests/SyntaxHighlightingTests.cs \
 	Mono.TextEditor.Tests/TextBreakerTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
+	Mono.TextEditor.Tests/VirtualIndentModeTests.cs \
 	Mono.TextEditor.Tests/VirtualSpacesTests.cs \
 	Mono.TextEditor.Tests/ViTests.cs \
 	MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs \

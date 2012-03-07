@@ -33,9 +33,8 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor.Tests
 {
-	[Ignore()]
 	[TestFixture()]
-	public class TextBreakerTests
+	public class TextBreakerTests : TextEditorTestBase
 	{
 		[Test()]
 		public void TestTextBreakerWithSingleWord ()

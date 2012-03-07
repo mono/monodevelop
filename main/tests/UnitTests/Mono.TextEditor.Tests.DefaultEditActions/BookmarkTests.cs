@@ -29,9 +29,29 @@ using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests
 {
-	[TestFixture()]
-	public class BookmarkTests
+	public class TextEditorTestBase
 	{
+		static bool firstRun = true;
+		
+		[TestFixtureSetUp]
+		public virtual void Setup ()
+		{
+			if (firstRun) {
+				Gtk.Application.Init ();
+				firstRun = false;
+			}
+		}
+
+		[TestFixtureTearDown]
+		public virtual void TearDown ()
+		{
+		}
+	}
+
+	[TestFixture()]
+	public class BookmarkTests : TextEditorTestBase
+	{
+
 		internal static TextEditorData Create (string text)
 		{
 			TextEditorData result = new TextEditorData ();

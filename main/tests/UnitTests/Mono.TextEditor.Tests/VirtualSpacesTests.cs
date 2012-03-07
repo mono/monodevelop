@@ -30,17 +30,17 @@ using Gtk;
 
 namespace Mono.TextEditor.Tests
 {
-	[Ignore("AllowCaretBehindLineEnd")]
 	[TestFixture()]
-	public class VirtualSpacesTests : UnitTests.TestBase
+	public class VirtualSpacesTests : TextEditorTestBase
 	{
+
 		/// <summary>
 		/// Bug 615196 - Pasting a chunk of text into the virtual whitespace fracks everything up
 		/// </summary>
 		[Test()]
 		public void TestBug615196 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
 			data.Document.Text = "\n\nHello World\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
@@ -69,11 +69,10 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 		}
 		
-		[Ignore("AllowCaretBehindLineEnd")]
 		[Test()]
 		public void TestReturnKeyBehavior ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
