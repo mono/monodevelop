@@ -723,8 +723,8 @@ namespace MonoDevelop.TypeSystem
 		public static Project GetProject (IEntity entity)
 		{
 			if (entity == null)
-				return null;
-			
+				throw new ArgumentNullException ("entity");
+
 			ITypeDefinition def;
 			if (entity is IType) {
 				def = ((IType)entity).GetDefinition ();
@@ -1261,7 +1261,7 @@ namespace MonoDevelop.TypeSystem
 		public static IProjectContent GetProjectContext (Project project)
 		{
 			if (project == null)
-				return null;
+				throw new ArgumentNullException ("project");
 			var content = GetProjectContentWrapper (project);
 			return content.Content;
 		}
@@ -1269,7 +1269,7 @@ namespace MonoDevelop.TypeSystem
 		public static ICompilation GetCompilation (Project project)
 		{
 			if (project == null)
-				return null;
+				throw new ArgumentNullException ("project");
 			var content = GetProjectContentWrapper (project);
 			return content.Compilation;
 		}
@@ -1277,7 +1277,7 @@ namespace MonoDevelop.TypeSystem
 		public static ProjectContentWrapper GetProjectContentWrapper (Project project)
 		{
 			if (project == null)
-				return null;
+				throw new ArgumentNullException ("project");
 			ProjectContentWrapper content;
 			if (projectContents.TryGetValue (project, out content)) {
 				if (content.Content != null)
