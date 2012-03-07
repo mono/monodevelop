@@ -658,9 +658,11 @@ namespace MonoDevelop.TypeSystem
 					// Add mscorlib reference
 					if (netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
 						var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
-						ctx = LoadAssemblyContext (corLibRef.Location);
-						if (ctx != null)
-							contexts.Add (ctx);
+						if (corLibRef != null) {
+							ctx = LoadAssemblyContext (corLibRef.Location);
+							if (ctx != null)
+								contexts.Add (ctx);
+						}
 					}
 					
 					// Get the assembly references throught the project, since it may have custom references
@@ -681,6 +683,11 @@ namespace MonoDevelop.TypeSystem
 					Content = Content.AddAssemblyReferences (contexts);
 					WasChanged = changed;
 				} catch (Exception e) {
+					if (netProject.TargetRuntime == null) {
+						LoggingService.LogError ("Target runtime was null:" + Project);
+					} else if (netProject.TargetRuntime.AssemblyContext == null) {
+						LoggingService.LogError ("Target runtime assambly context was null:" + Project);
+					}
 					LoggingService.LogError ("Error while reloading all references of project:" + Project, e);
 				}
 			}
