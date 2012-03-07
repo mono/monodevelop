@@ -655,10 +655,12 @@ namespace MonoDevelop.TypeSystem
 				
 				AssemblyContext ctx;
 				// Add mscorlib reference
-				var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
-				ctx = LoadAssemblyContext (corLibRef.Location);
-				if (ctx != null)
-					contexts.Add (ctx);
+				if (netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
+					var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
+					ctx = LoadAssemblyContext (corLibRef.Location);
+					if (ctx != null)
+						contexts.Add (ctx);
+				}
 				
 				// Get the assembly references throught the project, since it may have custom references
 				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
