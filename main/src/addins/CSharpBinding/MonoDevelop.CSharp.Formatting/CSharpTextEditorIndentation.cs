@@ -93,7 +93,6 @@ namespace MonoDevelop.CSharp.Formatting
 			textEditorData = Document.Editor;
 			if (textEditorData != null) {
 				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData));
-				textEditorData.Caret.AllowCaretBehindLineEnd = true;
 			}
 
 			InitTracker ();

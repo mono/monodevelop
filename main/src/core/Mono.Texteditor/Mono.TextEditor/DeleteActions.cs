@@ -98,7 +98,7 @@ namespace Mono.TextEditor
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.Remove (line.Offset, line.Length);
 			data.Document.CommitLineToEndUpdate (data.Caret.Line);
-			data.Caret.CheckCaretPosition ();
+			data.Caret.Column = DocumentLocation.MinColumn;
 		}
 		
 		public static void CaretLineToEnd (TextEditorData data)

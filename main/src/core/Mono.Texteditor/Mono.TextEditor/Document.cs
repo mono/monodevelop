@@ -1522,8 +1522,10 @@ namespace Mono.TextEditor
 			}
 			
 			if (whitespaces > 0) {
-				data.Remove (line.Offset + line.EditableLength - whitespaces, whitespaces);
-				data.Caret.CheckCaretPosition ();
+				var removeOffset = line.Offset + line.EditableLength - whitespaces;
+				data.Remove (removeOffset, whitespaces);
+				if (data.Caret.Offset < removeOffset)
+					data.Caret.Offset -= whitespaces;
 			}
 		}
 		#endregion

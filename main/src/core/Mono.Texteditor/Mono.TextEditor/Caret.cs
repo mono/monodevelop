@@ -49,6 +49,7 @@ namespace Mono.TextEditor
 						throw new ArgumentException ("Line < MinLine");
 					DocumentLocation old = location;
 					location.Line = value;
+					CheckLine ();
 					SetColumn ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
@@ -65,6 +66,7 @@ namespace Mono.TextEditor
 						throw new ArgumentException ("Column < MinColumn");
 					DocumentLocation old = location;
 					location.Column = value;
+					CheckColumn ();
 					SetDesiredColumn ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
@@ -77,10 +79,12 @@ namespace Mono.TextEditor
 			}
 			set {
 				if (location != value) {
-					if (value.Line < DocumentLocation.MinLine || value.Column < DocumentLocation.MinColumn)
-						throw new ArgumentException ("invalid location: " + value);
+					if (value.Line < DocumentLocation.MinLine || value.Column < DocumentLocation.MinColumn)
+						throw new ArgumentException ("invalid location: " + value);
 					DocumentLocation old = location;
 					location = value;
+					CheckLine ();
+					CheckColumn ();
 					SetDesiredColumn ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
@@ -178,21 +182,37 @@ namespace Mono.TextEditor
 			this.DesiredColumn = DocumentLocation.MinColumn;
 		}
 		
-		public void CheckCaretPosition ()
-		{
-			this.Line = System.Math.Min (this.Line, TextEditorData.Document.LineCount);
-			if (!AllowCaretBehindLineEnd) {
-				LineSegment curLine = TextEditorData.Document.GetLine (this.Line);
-				this.Column = System.Math.Min (curLine.EditableLength + 1, this.Column);
-			}
-		}
-		
 		/// <summary>
 		/// Activates auto scroll to caret on next caret move.
 		/// </summary>
 		public void ActivateAutoScrollWithoutMove ()
 		{
 			autoScrollToCaret = true;
+		}
+
+		void CheckLine ()
+		{
+			this.location.Line = System.Math.Min (this.location.Line, TextEditorData.Document.LineCount);
+		}
+
+		void CheckColumn ()
+		{
+			var curLine = TextEditorData.Document.GetLine (this.Line);
+
+			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.EditableLength == 0) {
+				if (location.Column > DocumentLocation.MinColumn) {
+					var indentColumn = TextEditorData.GetVirtualIndentationColumn (location);
+					if (location.Column < indentColumn) {
+						location.Column = indentColumn;
+						return;
+					}
+					if (location.Column == indentColumn)
+						return;
+				}
+			}
+
+			if (!AllowCaretBehindLineEnd)
+				this.location.Column = System.Math.Min (curLine.EditableLength + 1, this.location.Column);
 		}
 
 		public void SetToOffsetWithDesiredColumn (int desiredOffset)

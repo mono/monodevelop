@@ -65,7 +65,6 @@ namespace MonoDevelop.Ide.CodeFormatting
 				if (text != null) {
 					doc.Editor.Replace (0, doc.Editor.Length, text);
 					doc.Editor.Caret.Location = loc;
-					doc.Editor.Caret.CheckCaretPosition ();
 				}
 			}
 		}

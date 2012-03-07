@@ -114,6 +114,19 @@ namespace Mono.TextEditor.Tests
 		}
 
 		[Test()]
+		public void TestCaretRightBehaviorInNonEmptyLines ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "12\n\n\n";
+			CaretMoveActions.Right (data);
+			CaretMoveActions.Right (data);
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (new DocumentLocation (2, 1), data.Caret.Location);
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
+		}
+
+		[Test()]
 		public void TestBackspaceRightBehavior ()
 		{
 			var data = CreateData ();
