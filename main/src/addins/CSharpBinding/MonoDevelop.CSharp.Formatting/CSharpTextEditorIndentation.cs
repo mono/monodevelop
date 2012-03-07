@@ -55,6 +55,8 @@ namespace MonoDevelop.CSharp.Formatting
 		int cursorPositionBeforeKeyPress;
 		TextEditorData textEditorData;
 		CSharpFormattingPolicy policy;
+		TextStylePolicy textStylePolicy;
+
 		char lastCharInserted;
 
 		static CSharpTextEditorIndentation ()
@@ -80,6 +82,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+			textStylePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
 		}
 
 		public override void Initialize ()
@@ -87,12 +90,14 @@ namespace MonoDevelop.CSharp.Formatting
 			base.Initialize ();
 
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			if (base.Document.Project != null && base.Document.Project.Policies != null)
+			if (base.Document.Project != null && base.Document.Project.Policies != null) {
 				policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
+				textStylePolicy = base.Document.Project.Policies.Get<TextStylePolicy> (types);
+			}
 
 			textEditorData = Document.Editor;
 			if (textEditorData != null) {
-				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData));
+				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textStylePolicy), textEditorData));
 			}
 
 			InitTracker ();
@@ -111,7 +116,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void InitTracker ()
 		{
-			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), textEditorData);
+			stateTracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textStylePolicy), textEditorData);
 		}
 
 		internal DocumentStateTracker<CSharpIndentEngine> StateTracker { get { return stateTracker; } }

@@ -74,12 +74,17 @@ namespace MonoDevelop.CSharp.Formatting
 		int curLineNr;
 		int cursor;
 		CSharpFormattingPolicy policy;
+		TextStylePolicy textPolicy;
 		// Constructors
-		public CSharpIndentEngine (CSharpFormattingPolicy policy)
+
+		public CSharpIndentEngine (CSharpFormattingPolicy policy, TextStylePolicy textPolicy)
 		{
 			if (policy == null)
 				throw new ArgumentNullException ("policy");
+			if (textPolicy == null)
+				throw new ArgumentNullException ("textPolicy");
 			this.policy = policy;
+			this.textPolicy = textPolicy;
 			stack = new IndentStack (this);
 			linebuf = new StringBuilder ();
 			Reset ();
@@ -147,26 +152,24 @@ namespace MonoDevelop.CSharp.Formatting
 		string TabsToSpaces (string indent)
 		{
 			StringBuilder builder;
-			int width;
-			
+
 			if (indent == String.Empty)
 				return String.Empty;
 			
 			builder = new StringBuilder ();
-			width = TextEditorProperties.TabIndent;
 			for (int i = 0; i < indent.Length; i++) {
 				if (indent[i] == '\t')
-					builder.Append (' ', width);
+					builder.Append (' ', textPolicy.TabWidth);
 				else
 					builder.Append (indent[i]);
 			}
 			
 			return builder.ToString ();
 		}
-		
+
 		public string ThisLineIndent {
 			get {
-				if (TextEditorProperties.ConvertTabsToSpaces)
+				if (textPolicy.TabsToSpaces)
 					return TabsToSpaces (curIndent);
 				
 				return curIndent;
@@ -175,7 +178,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public string NewLineIndent {
 			get {
-				if (TextEditorProperties.ConvertTabsToSpaces)
+				if (textPolicy.TabsToSpaces)
 					return TabsToSpaces (stack.PeekIndent (0));
 				
 				return stack.PeekIndent (0);
@@ -215,7 +218,7 @@ namespace MonoDevelop.CSharp.Formatting
 		// to test things w/o changing the real indent engine state
 		public object Clone ()
 		{
-			CSharpIndentEngine engine = new CSharpIndentEngine (policy);
+			CSharpIndentEngine engine = new CSharpIndentEngine (policy, textPolicy);
 			
 			engine.stack = (IndentStack) stack.Clone ();
 			engine.linebuf = new StringBuilder (linebuf.ToString (), linebuf.Capacity);

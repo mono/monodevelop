@@ -97,7 +97,8 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), data);
+			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+			var tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textPolicy), data);
 			tracker.UpdateEngine (lineSegment.Offset);
 			for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.EditableLength; i++) {
 				tracker.Engine.Push (data.Document.GetCharAt (i));
