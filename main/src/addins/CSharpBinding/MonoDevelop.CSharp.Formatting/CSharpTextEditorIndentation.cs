@@ -453,7 +453,7 @@ namespace MonoDevelop.CSharp.Formatting
 					int indentSize = line.GetIndentation (textEditorData.Document).Length;
 					var insertedText = prevLine.GetIndentation (textEditorData.Document) + commentPrefix;
 					textEditorData.Replace (line.Offset, indentSize, insertedText);
-					textEditorData.Caret.Offset += insertedText.Length - indentSize;
+					textEditorData.Caret.Offset = line.Offset + insertedText.Length;
 					return true;
 				} else if (stateTracker.Engine.IsInsideStringLiteral) {
 					textEditorData.EnsureCaretIsNotVirtual ();
@@ -462,7 +462,7 @@ namespace MonoDevelop.CSharp.Formatting
 					int indentSize = line.GetIndentation (textEditorData.Document).Length;
 					var insertedText = prevLine.GetIndentation (textEditorData.Document) + (trimmedPreviousLine.StartsWith ("\"") ? "" : "\t") + "\"";
 					textEditorData.Replace (line.Offset, indentSize, insertedText);
-					textEditorData.Caret.Column += insertedText.Length - indentSize;
+					textEditorData.Caret.Offset = line.Offset + insertedText.Length;
 					return true;
 				}
 			}
