@@ -196,17 +196,21 @@ namespace MonoDevelop.CSharp.Formatting
 				bool retval;
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					//capture some of the current state
-					int oldBufLen = textEditorData.Length;
-					int oldLine = textEditorData.Caret.Line + 1;
-					bool hadSelection = textEditorData.IsSomethingSelected;
+//					int oldBufLen = textEditorData.Length;
+//					int oldLine = textEditorData.Caret.Line + 1;
+//					bool hadSelection = textEditorData.IsSomethingSelected;
 					bool reIndent = false;
 
 					//pass through to the base class, which actually inserts the character
 					//and calls HandleCodeCompletion etc to handles completion
 					DoPreInsertionSmartIndent (key);
+					stateTracker.UpdateEngine ();
 					retval = base.KeyPress (key, keyChar, modifier);
-					if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
-						DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
+
+					if (key == Gdk.Key.Return) {
+						if (FixLineStart (textEditorData.Caret.Line))
+							return retval;
+					}
 
 					//handle inserted characters
 					if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
@@ -215,11 +219,11 @@ namespace MonoDevelop.CSharp.Formatting
 					lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
 					if (lastCharInserted == '\0')
 						return retval;
+
 					stateTracker.UpdateEngine ();
 
-					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
+					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask)
 						FixLineStart (textEditorData.Caret.Line + 1);
-					}
 
 					//reindent the line after the insertion, if needed
 					//N.B. if the engine says we need to reindent, make sure that it's because a char was 
@@ -402,7 +406,6 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (lineNumber > DocumentLocation.MinLine) {
 				LineSegment line = textEditorData.Document.GetLine (lineNumber);
-				int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
 
 				LineSegment prevLine = textEditorData.Document.GetLine (lineNumber - 1);
 				string trimmedPreviousLine = textEditorData.Document.GetTextAt (prevLine).TrimStart ();
@@ -412,6 +415,8 @@ namespace MonoDevelop.CSharp.Formatting
 				//check there's a following line?
 				if (trimmedPreviousLine.StartsWith ("/// ") && lineNumber + 1 < textEditorData.Document.LineCount) {
 					//check that the newline command actually inserted a newline
+					textEditorData.EnsureCaretIsNotVirtual ();
+					int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
 					string nextLine = textEditorData.Document.GetTextAt (textEditorData.Document.GetLine (lineNumber + 1)).TrimStart ();
 					if (trimmedPreviousLine.Length > "/// ".Length || nextLine.StartsWith ("/// ")) {
 						textEditorData.Insert (insertionPoint, "/// ");
@@ -421,6 +426,8 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 					//multi-line comments
 				} else if (stateTracker.Engine.IsInsideMultiLineComment) {
+					textEditorData.EnsureCaretIsNotVirtual ();
+					int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
 					string commentPrefix = string.Empty;
 					if (trimmedPreviousLine.StartsWith ("* ")) {
 						commentPrefix = "* ";
@@ -434,6 +441,8 @@ namespace MonoDevelop.CSharp.Formatting
 						textEditorData.Caret.Offset += commentPrefix.Length;
 					return true;
 				} else if (stateTracker.Engine.IsInsideStringLiteral) {
+					textEditorData.EnsureCaretIsNotVirtual ();
+					int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
 					textEditorData.Insert (prevLine.Offset + prevLine.EditableLength, "\" +");
 
 					if (!trimmedPreviousLine.StartsWith ("\"")) {
