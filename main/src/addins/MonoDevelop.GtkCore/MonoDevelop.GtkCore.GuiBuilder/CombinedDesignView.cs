@@ -48,11 +48,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public CombinedDesignView (IViewContent content)
 		{
 			this.content = content;
-			if (content is IEditableTextBuffer) {
+	/* This code causes that chagnes in a version control view always select the source code view.
+				if (content is IEditableTextBuffer) {
 				((IEditableTextBuffer)content).CaretPositionSet += delegate {
 					ShowPage (0);
 				};
-			}
+			}*/
 			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			
