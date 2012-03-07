@@ -36,16 +36,6 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class FoldingTests
 	{
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}		
 		static List<FoldSegment> GetFoldSegments (Document doc)
 		{
 			List<FoldSegment> result = new List<FoldSegment> ();

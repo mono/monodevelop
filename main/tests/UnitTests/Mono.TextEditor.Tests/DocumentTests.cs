@@ -163,18 +163,6 @@ namespace Mono.TextEditor.Tests
 			}
 			Assert.AreEqual (1, document.LineCount);
 		}
-				
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
-		
 		
 	}
 }

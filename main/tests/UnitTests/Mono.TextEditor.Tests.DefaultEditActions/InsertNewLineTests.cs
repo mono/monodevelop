@@ -45,17 +45,5 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (1, data.Caret.Column);
 			Assert.AreEqual ("Hello" + Environment.NewLine + " World!", data.Document.Text);
 		}
-		
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
 	}
 }

@@ -186,17 +186,5 @@ data.Document.Text =
 			Assert.AreEqual (0, data.SelectionRange.Offset);
 			Assert.AreEqual (data.Document.Length, data.SelectionRange.EndOffset);
 		}
-		
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
 	}
 }

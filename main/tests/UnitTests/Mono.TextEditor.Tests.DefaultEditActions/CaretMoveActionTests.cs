@@ -211,16 +211,5 @@ $1234567890
 			CaretMoveActions.ToDocumentEnd (data);
 			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
 	}
 }

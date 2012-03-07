@@ -159,17 +159,6 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
 			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
 	}
 }
 

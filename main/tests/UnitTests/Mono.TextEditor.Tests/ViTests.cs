@@ -258,17 +258,6 @@ kkk lll", mode.Text);
 			var s = ViKeyNotation.ToString (keys);
 			Assert.AreEqual (command, s);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
 	}
 	
 	class TestViEditMode : ViEditMode

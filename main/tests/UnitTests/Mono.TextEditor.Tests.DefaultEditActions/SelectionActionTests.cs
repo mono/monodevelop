@@ -164,16 +164,5 @@ namespace Mono.TextEditor.Tests
 			data.Caret.Offset = 0;
 			Assert.IsFalse (data.IsSomethingSelected);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
 	}
 }

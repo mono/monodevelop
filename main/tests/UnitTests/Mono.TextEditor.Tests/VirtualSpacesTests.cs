@@ -30,7 +30,6 @@ using Gtk;
 
 namespace Mono.TextEditor.Tests
 {
-	
 	[Ignore("AllowCaretBehindLineEnd")]
 	[TestFixture()]
 	public class VirtualSpacesTests : UnitTests.TestBase

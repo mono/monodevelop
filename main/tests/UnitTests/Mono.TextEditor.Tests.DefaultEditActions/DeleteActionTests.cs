@@ -92,16 +92,5 @@ namespace Mono.TextEditor.Tests
 1234
 1234567890", data.Document.Text);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}		
 	}
 }
