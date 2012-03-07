@@ -48,14 +48,15 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
+
 	class FormattingActionFactory : AbstractActionFactory
 	{
 		Mono.TextEditor.TextEditorData data;
-		
+
 		class ConcreteTextReplaceAction : TextReplaceAction
 		{
 			Mono.TextEditor.TextEditorData data;
-			
+
 			public ConcreteTextReplaceAction (Mono.TextEditor.TextEditorData data, int offset, int removedChars, string insertedText) : base (offset, removedChars, insertedText)
 			{
 				this.data = data;
@@ -66,7 +67,7 @@ namespace MonoDevelop.CSharp.Formatting
 				data.Replace (Offset, RemovedChars, InsertedText);
 			}
 		}
-		
+
 		public FormattingActionFactory (Mono.TextEditor.TextEditorData data)
 		{
 			if (data == null)
@@ -172,7 +173,7 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Document.FileName = "toformat.cs";
 			if (textPolicy != null) {
 				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
-				data.Options.TabSize = textPolicy.TabWidth;
+				data.Options.IndentationSize = data.Options.TabSize = textPolicy.TabWidth;
 			}
 			data.Text = input;
 
