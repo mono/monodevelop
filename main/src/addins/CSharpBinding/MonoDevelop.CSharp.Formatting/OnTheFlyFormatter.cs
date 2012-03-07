@@ -134,7 +134,15 @@ namespace MonoDevelop.CSharp.Formatting
 			};
 			compilationUnit.AcceptVisitor (domSpacingVisitor);
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
+			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ());
+			var newList = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> (); 
+			for (int i = 0; i < changes.Count; i++) {
+				var c = (TextReplaceAction)changes [i];
+				if (startOffset < c.Offset && c.Offset < endOffset || c.DependsOn != null && newList.Contains (c.DependsOn)) {
+					newList.Add (c);
+				}
+			}
+			changes = newList;
 			int delta = seg.Offset - startOffset;
 			
 			HashSet<int> lines = new HashSet<int> ();
@@ -145,7 +153,17 @@ namespace MonoDevelop.CSharp.Formatting
 			// be sensible in documents with parser errors - only correct up to the caret position.
 			if (hadErrors || data.ParsedDocument.Errors.Any (e => e.ErrorType == ErrorType.Error)) {
 				var lastOffset = data.Editor.Caret.Offset;
-				changes.RemoveAll (c => ((TextReplaceAction)c).Offset > lastOffset);
+				newList = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> (); 
+
+				for (int i = 0; i < changes.Count; i++) {
+					var tra = (TextReplaceAction)changes [i];
+					if (tra.Offset < lastOffset || tra.DependsOn != null && newList.Contains (tra.DependsOn)) {
+						newList.Add (tra);
+					} else {
+						Console.WriteLine (tra);
+					}
+				}
+				changes = newList;
 			}
 			
 			var caretEndOffset = data.Editor.Caret.Offset;

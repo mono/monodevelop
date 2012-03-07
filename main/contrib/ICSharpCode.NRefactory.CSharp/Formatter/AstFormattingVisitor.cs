@@ -817,6 +817,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				return;
 			int originalLevel = curIndent.Level;
 			bool isBlock = node is BlockStatement;
+			TextReplaceAction beginBraceAction = null;
+			TextReplaceAction endBraceAction = null;
+
 			switch (braceForcement) {
 			case BraceForcement.DoNotChange:
 				//nothing
@@ -846,7 +849,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					if (IsLineIsEmptyUpToEol (document.GetOffset (node.StartLocation)))
 						startBrace += this.EolMarker + GetIndentation (node.StartLocation.Line);
-					AddChange (start, offset - start, startBrace);
+					beginBraceAction = AddChange (start, offset - start, startBrace);
 				}
 				break;
 			case BraceForcement.RemoveBraces:
@@ -859,8 +862,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						int offset2 = document.GetOffset (node.EndLocation);
 						int end = SearchWhitespaceStart (offset2 - 1);
 						
-						AddChange (start, offset1 - start + 1, null);
-						AddChange (end + 1, offset2 - end, null);
+						beginBraceAction = AddChange (start, offset1 - start + 1, null);
+						endBraceAction = AddChange (end + 1, offset2 - end, null);
 						node = block.FirstChild;
 						isBlock = false;
 					}
@@ -921,9 +924,13 @@ namespace ICSharpCode.NRefactory.CSharp
 						break;
 					}
 					if (startBrace != null)
-						AddChange (offset, 0, startBrace);
+						endBraceAction = AddChange (offset, 0, startBrace);
 				}
 				break;
+			}
+			if (beginBraceAction != null && endBraceAction != null) {
+				beginBraceAction.DependsOn = endBraceAction;
+				endBraceAction.DependsOn = beginBraceAction;
 			}
 		}
 
@@ -1000,14 +1007,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddChange (whitespaceEnd, rbraceOffset - whitespaceEnd, endIndent);
 		}
 
-		void AddChange (int offset, int removedChars, string insertedText)
+		TextReplaceAction AddChange (int offset, int removedChars, string insertedText)
 		{
 			if (changes.Any (c => c.Offset == offset && c.RemovedChars == removedChars 
 				&& c.InsertedText == insertedText))
-				return;
+				return null;
 			string currentText = document.GetText (offset, removedChars);
 			if (currentText == insertedText)
-				return;
+				return null;
 			if (currentText.Any (c => !(char.IsWhiteSpace (c) || c == '\r' || c == '\t' || c == '{' || c == '}')))
 				throw new InvalidOperationException ("Tried to remove non ws chars: '" + currentText + "'");
 			foreach (var change in changes) {
@@ -1015,7 +1022,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (removedChars > 0 && insertedText == change.InsertedText) {
 						change.RemovedChars = removedChars;
 //						change.InsertedText = insertedText;
-						return;
+						return null;
 					}
 					if (!string.IsNullOrEmpty (change.InsertedText)) {
 						change.InsertedText += insertedText;
@@ -1023,13 +1030,14 @@ namespace ICSharpCode.NRefactory.CSharp
 						change.InsertedText = insertedText;
 					}
 					change.RemovedChars = System.Math.Max (removedChars, change.RemovedChars);
-					return;
+					return null;
 				}
 			}
 			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}, removedText={3}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."), removedChars > 0 ? document.GetText (offset, removedChars).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", ".") : "null");
 			//Console.WriteLine (Environment.StackTrace);
-			
-			changes.Add (factory.CreateTextReplaceAction (offset, removedChars, insertedText));
+			var result = factory.CreateTextReplaceAction (offset, removedChars, insertedText);
+			changes.Add (result);
+			return result;
 		}
 
 		public bool IsLineIsEmptyUpToEol (TextLocation startLocation)

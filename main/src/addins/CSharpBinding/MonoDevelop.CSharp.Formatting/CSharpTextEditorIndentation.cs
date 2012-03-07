@@ -414,6 +414,7 @@ namespace MonoDevelop.CSharp.Formatting
 		bool FixLineStart (int lineNumber)
 		{
 			if (lineNumber > DocumentLocation.MinLine) {
+				stateTracker.UpdateEngine ();
 				LineSegment line = textEditorData.Document.GetLine (lineNumber);
 
 				LineSegment prevLine = textEditorData.Document.GetLine (lineNumber - 1);
