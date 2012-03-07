@@ -387,10 +387,12 @@ namespace MonoDevelop.Components.Docking
 			if (evnt.TriggersContextMenu ()) {
 				it.ShowDockPopupMenu (evnt.Time);
 			} else if (evnt.Button == 1) {
-				if (evnt.Type == Gdk.EventType.TwoButtonPress)
+				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
 					it.Status = DockItemStatus.Dockable;
-				else
+				} else {
 					AutoShow ();
+					it.Present (true);
+				}
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
