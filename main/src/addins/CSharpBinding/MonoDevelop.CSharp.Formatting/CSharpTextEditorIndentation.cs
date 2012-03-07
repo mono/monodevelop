@@ -164,6 +164,14 @@ namespace MonoDevelop.CSharp.Formatting
 				return retval;
 			}
 			
+			if (key == Gdk.Key.Tab) {
+				stateTracker.UpdateEngine ();
+				if (stateTracker.Engine.IsInsideStringLiteral) {
+					textEditorData.InsertAtCaret ("\\t");
+					return false;
+				}
+			}
+
 			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !CompletionWindowManager.IsVisible && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = textEditorData.Caret.Offset;
 
@@ -415,7 +423,7 @@ namespace MonoDevelop.CSharp.Formatting
 				//check previous line was a doc comment
 				//check there's a following line?
 				if (trimmedPreviousLine.StartsWith ("/// ") && lineNumber + 1 < textEditorData.Document.LineCount) {
-					if (textEditorData.GetTextAt (line.Offset, line.EditableLength).TrimStart ().StartsWith("///"))
+					if (textEditorData.GetTextAt (line.Offset, line.EditableLength).TrimStart ().StartsWith ("///"))
 						return false;
 					//check that the newline command actually inserted a newline
 					textEditorData.EnsureCaretIsNotVirtual ();
@@ -429,8 +437,9 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 					//multi-line comments
 				} else if (stateTracker.Engine.IsInsideMultiLineComment) {
+					if (textEditorData.GetTextAt (line.Offset, line.EditableLength).TrimStart ().StartsWith ("*"))
+						return false;
 					textEditorData.EnsureCaretIsNotVirtual ();
-					int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
 					string commentPrefix = string.Empty;
 					if (trimmedPreviousLine.StartsWith ("* ")) {
 						commentPrefix = "* ";
@@ -439,25 +448,20 @@ namespace MonoDevelop.CSharp.Formatting
 					} else if (trimmedPreviousLine.StartsWith ("*")) {
 						commentPrefix = "*";
 					}
-					textEditorData.Insert (insertionPoint, commentPrefix);
-					if (textEditorData.Caret.Offset >= insertionPoint)
-						textEditorData.Caret.Offset += commentPrefix.Length;
+
+					int indentSize = line.GetIndentation (textEditorData.Document).Length;
+					var insertedText = prevLine.GetIndentation (textEditorData.Document) + commentPrefix;
+					textEditorData.Replace (line.Offset, indentSize, insertedText);
+					textEditorData.Caret.Offset += insertedText.Length - indentSize;
 					return true;
 				} else if (stateTracker.Engine.IsInsideStringLiteral) {
 					textEditorData.EnsureCaretIsNotVirtual ();
-					int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
 					textEditorData.Insert (prevLine.Offset + prevLine.EditableLength, "\" +");
 
-					if (!trimmedPreviousLine.StartsWith ("\"")) {
-						int offset = insertionPoint++ + 3; 
-						textEditorData.Insert (offset, "\t");
-						if (textEditorData.Caret.Offset >= offset)
-							textEditorData.Caret.Offset ++;
-					}
-					textEditorData.Insert (insertionPoint + 3, "\"");
-					if (textEditorData.Caret.Offset >= insertionPoint + 3)
-						textEditorData.Caret.Offset += "\"".Length;
-
+					int indentSize = line.GetIndentation (textEditorData.Document).Length;
+					var insertedText = prevLine.GetIndentation (textEditorData.Document) + (trimmedPreviousLine.StartsWith ("\"") ? "" : "\t") + "\"";
+					textEditorData.Replace (line.Offset, indentSize, insertedText);
+					textEditorData.Caret.Column += insertedText.Length - indentSize;
 					return true;
 				}
 			}
