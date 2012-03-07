@@ -163,11 +163,32 @@
     <EmbeddedResource Include="icons\csharp-project-16.png">
       <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoCSharpPolicy.xml">
-      <LogicalName>MonoCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.xml">
       <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\AllmanCSharpPolicy.xml">
+      <LogicalName>AllmanCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\InvariantTextStylePolicy.xml">
+      <LogicalName>InvariantTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\KRCSharpPolicy.xml">
+      <LogicalName>KRCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoCSharpPolicy.xml">
+      <LogicalName>MonoCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\SharpDevelopCSharpPolicy.xml">
+      <LogicalName>SharpDevelopCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\WhitesmithsCSharpPolicy.xml">
+      <LogicalName>WhitesmithsCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUCSharpPolicy.xml">
+      <LogicalName>GNUCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUTextStylePolicy.xml">
+      <LogicalName>GNUTextStylePolicy.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -314,5 +335,6 @@
     <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\RefactorImports\" />
     <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
+    <Folder Include="MonoDevelop.CSharp.Formatting\policies\" />
   </ItemGroup>
 </Project>
