@@ -645,40 +645,44 @@ namespace MonoDevelop.TypeSystem
 				var netProject = project as DotNetProject;
 				if (netProject == null)
 					return;
-				var contexts = new List<IAssemblyReference> ();
-		
-				foreach (var referencedProject in ReferencedProjects) {
-					ProjectContentWrapper wrapper;
-					if (projectContents.TryGetValue (referencedProject, out wrapper))
-						contexts.Add (new UnresolvedAssemblyDecorator (wrapper));
-				}
-				
-				AssemblyContext ctx;
-				// Add mscorlib reference
-				if (netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
-					var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
-					ctx = LoadAssemblyContext (corLibRef.Location);
-					if (ctx != null)
-						contexts.Add (ctx);
-				}
-				
-				// Get the assembly references throught the project, since it may have custom references
-				foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
-					string fileName;
-					if (!Path.IsPathRooted (file)) {
-						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-					} else {
-						fileName = Path.GetFullPath (file);
+				try {
+					var contexts = new List<IAssemblyReference> ();
+			
+					foreach (var referencedProject in ReferencedProjects) {
+						ProjectContentWrapper wrapper;
+						if (projectContents.TryGetValue (referencedProject, out wrapper))
+							contexts.Add (new UnresolvedAssemblyDecorator (wrapper));
 					}
-					ctx = LoadAssemblyContext (fileName);
 					
-					if (ctx != null)
-						contexts.Add (ctx);
+					AssemblyContext ctx;
+					// Add mscorlib reference
+					if (netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
+						var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
+						ctx = LoadAssemblyContext (corLibRef.Location);
+						if (ctx != null)
+							contexts.Add (ctx);
+					}
+					
+					// Get the assembly references throught the project, since it may have custom references
+					foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+						string fileName;
+						if (!Path.IsPathRooted (file)) {
+							fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
+						} else {
+							fileName = Path.GetFullPath (file);
+						}
+						ctx = LoadAssemblyContext (fileName);
+						
+						if (ctx != null)
+							contexts.Add (ctx);
+					}
+					bool changed = WasChanged;
+					Content = Content.RemoveAssemblyReferences (Content.AssemblyReferences);
+					Content = Content.AddAssemblyReferences (contexts);
+					WasChanged = changed;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while reloading all references of project:" + Project, e);
 				}
-				bool changed = WasChanged;
-				Content = Content.RemoveAssemblyReferences (Content.AssemblyReferences);
-				Content = Content.AddAssemblyReferences (contexts);
-				WasChanged = changed;
 			}
 		}
 		
