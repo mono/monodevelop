@@ -51,7 +51,11 @@ namespace Mono.TextEditor
 			if (data.Caret.Column > DocumentLocation.MinColumn) {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column > line.EditableLength + 1) {
-					data.Caret.Column = line.EditableLength + 1;
+					if (data.Caret.AllowCaretBehindLineEnd) {
+						data.Caret.Column--;
+					} else {
+						data.Caret.Column = line.EditableLength + 1;
+					}
 				} else {
 					int offset = data.Caret.Offset - 1;
 					foreach (var folding in data.Document.GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset)) {
@@ -96,20 +100,24 @@ namespace Mono.TextEditor
 				data.Caret.Offset = segment.EndOffset; 
 				return;
 			}
-			if (data.Caret.Column < line.EditableLength + 1 || data.Caret.AllowCaretBehindLineEnd) {
-				if (data.Caret.Column >= line.EditableLength + 1) {
-					int nextColumn = data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Auto ? data.GetVirtualIndentationColumn (data.Caret.Location) : line.EditableLength + 1;
-					if (data.Caret.Column < nextColumn) {
-						data.Caret.Column = nextColumn;
-					} else {
-						data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, DocumentLocation.MinColumn);
-						data.Caret.CheckCaretPosition ();
-					}
+			if (data.Caret.Column >= line.EditableLength + 1) {
+				int nextColumn;
+				if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual && data.Caret.Column == DocumentLocation.MinColumn) {
+					nextColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
+				} else if (data.Caret.AllowCaretBehindLineEnd) {
+					nextColumn = data.Caret.Column + 1;
 				} else {
-					data.Caret.Column++;
+					nextColumn = line.EditableLength + 1;
 				}
-			} else if (data.Caret.Line + 1 <= data.Document.LineCount) {
-				data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, DocumentLocation.MinColumn);
+
+				if (data.Caret.Column < nextColumn) {
+					data.Caret.Column = nextColumn;
+				} else {
+					data.Caret.Location = new DocumentLocation (data.Caret.Line + 1, DocumentLocation.MinColumn);
+					data.Caret.CheckCaretPosition ();
+				}
+			} else {
+				data.Caret.Column++;
 			}
 		}
 		
@@ -283,10 +291,10 @@ namespace Mono.TextEditor
 			if (newLocation != data.Caret.Location)
 				data.Caret.Location = newLocation;
 			
-			if (data.Caret.AllowCaretBehindLineEnd && data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual) {
-				int nextColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
-				if (nextColumn > data.Caret.Column)
-					data.Caret.Column = nextColumn;
+			if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual) {
+				int virtualIndentColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
+				if (virtualIndentColumn > data.Caret.Column)
+					data.Caret.Column = virtualIndentColumn;
 			}
 			
 		}

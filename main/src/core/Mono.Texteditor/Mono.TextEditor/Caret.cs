@@ -224,9 +224,6 @@ namespace Mono.TextEditor
 			LineSegment curLine = TextEditorData.Document.GetLine (this.Line);
 			if (curLine == null)
 				return;
-
-			if (!AllowCaretBehindLineEnd)
-				this.Column = System.Math.Min (curLine.EditableLength + 1, System.Math.Max (DocumentLocation.MinColumn, this.Column));
 			this.DesiredColumn = curLine.GetVisualColumn (TextEditorData, this.Column);
 		}
 
@@ -235,13 +232,13 @@ namespace Mono.TextEditor
 			LineSegment curLine = TextEditorData.Document.GetLine (this.Line);
 			if (curLine == null)
 				return;
+			this.location.Column = System.Math.Max (DocumentLocation.MinColumn, this.Column);
 			this.location.Column = curLine.GetLogicalColumn (TextEditorData, this.DesiredColumn);
 			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.GetVisualColumn (TextEditorData, this.location.Column) < this.DesiredColumn) {
 				this.location.Column = TextEditorData.GetVirtualIndentationColumn (Line, this.location.Column);
 			} else {
-				if (this.Column > curLine.EditableLength + 1) {
-					this.location.Column = System.Math.Min (curLine.EditableLength + 1, System.Math.Max (DocumentLocation.MinColumn, this.Column));
-				}
+				if (!AllowCaretBehindLineEnd && this.Column > curLine.EditableLength + 1)
+					this.location.Column = System.Math.Min (curLine.EditableLength + 1, this.location.Column);
 			}
 		}
 		

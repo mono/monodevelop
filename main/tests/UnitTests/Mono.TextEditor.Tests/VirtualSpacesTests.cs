@@ -89,7 +89,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug615624 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
 			data.Document.Text = "\n \n\n";
 			data.Caret.AllowCaretBehindLineEnd = true;
 			data.Caret.Offset = 2; // 2nd.Line
@@ -97,6 +97,35 @@ namespace Mono.TextEditor.Tests
 			Document.RemoveTrailingWhitespaces (data, data.Document.GetLine (2));
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 			Assert.AreEqual (DocumentLocation.MinColumn + 1, data.Caret.Column);
+		}
+
+		[Test()]
+		public void TestCaretRightBehavior ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Document.Text = "\n\n\n";
+			data.Caret.AllowCaretBehindLineEnd = true;
+
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (2, data.Caret.Column);
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (3, data.Caret.Column);
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
+		}
+
+		[Test()]
+		public void TestCaretLeftBehavior ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Document.Text = "\n\n\n";
+			data.Caret.AllowCaretBehindLineEnd = true;
+			data.Caret.Column = 4;
+
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (3, data.Caret.Column);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (2, data.Caret.Column);
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
 		}
 		
 	}

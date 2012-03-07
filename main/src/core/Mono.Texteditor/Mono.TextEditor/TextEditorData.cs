@@ -149,6 +149,7 @@ namespace Mono.TextEditor
 				this.document = value;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
+				this.document.TextReplaced += HandleTextReplaced;
 
 				this.document.Undone += DocumentHandleUndone;
 				this.document.Redone += DocumentHandleRedone;
@@ -452,7 +453,11 @@ namespace Mono.TextEditor
 
 		void HandleTextReplaced (object sender, ReplaceEventArgs e)
 		{
-			hasChangedInUndo = true;
+			if (document.IsInAtomicUndo) {
+				hasChangedInUndo = true;
+			} else {
+				FixVirtualIndentation ();
+			}
 		}
 
 		void DocumentHandleUndone (object sender, Document.UndoOperationEventArgs e)
@@ -937,8 +942,9 @@ namespace Mono.TextEditor
 				return indentationTracker != null;	
 			}	
 		}
+
 		public IIndentationTracker IndentationTracker {
-			private get {
+			get {
 				if (!HasIndentationTracker)
 					throw new InvalidOperationException ("Indentation tracker not installed.");
 				return indentationTracker;
@@ -983,17 +989,18 @@ namespace Mono.TextEditor
 			LineSegment line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return 0;
-
-			if (HasIndentationTracker && Caret.Column > line.EditableLength + 1) {
-				string virtualSpace = GetIndentationString (Caret.Location);
-				if (!string.IsNullOrEmpty (virtualSpace)) {
-					int offset = Caret.Offset;
-					Insert (offset, virtualSpace);
-					// No need to reposition the caret, because it's already at the correct position
-					// The only difference is that the position is not virtual anymore.
-					return virtualSpace.Length;
+			if (Caret.Column > line.EditableLength + 1) {
+				string virtualSpace;
+				if (HasIndentationTracker && line.EditableLength == 0) {
+					virtualSpace = GetIndentationString (Caret.Location);
+				} else {
+					virtualSpace = new string (' ', Caret.Column - 1 - line.EditableLength);
 				}
-				return 0;
+				Insert (Caret.Offset, virtualSpace);
+				// No need to reposition the caret, because it's already at the correct position
+				// The only difference is that the position is not virtual anymore.
+				return virtualSpace.Length;
+
 			}
 			return 0;
 		}
