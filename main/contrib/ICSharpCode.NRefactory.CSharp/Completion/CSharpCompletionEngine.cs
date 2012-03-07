@@ -468,7 +468,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var prevToken2 = GetPreviousToken (ref prevTokenIndex, false);
 				if (prevToken2 == "delegate") // after these always follows a name
 					return null;
-				if (identifierStart == null && !string.IsNullOrEmpty (token) && !(IsInsideComment (tokenIndex) || IsInsideString (tokenIndex)) && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
+				if (identifierStart == null && !string.IsNullOrEmpty (token) && !IsInsideCommentOrString () && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
 					char last = token [token.Length - 1];
 					if (char.IsLetterOrDigit (last) || last == '_' || token == ">") {
 						return HandleKeywordCompletion (tokenIndex, token);
@@ -752,7 +752,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		bool IsInLinqContext (int offset)
 		{
 			string token;
-			while (null != (token = GetPreviousToken (ref offset, true)) && !IsInsideComment (offset) && !IsInsideString (offset)) {
+			while (null != (token = GetPreviousToken (ref offset, true)) && !IsInsideCommentOrString ()) {
 				if (token == "from")
 					return true;
 				if (token == ";" || token == "{")

@@ -196,21 +196,15 @@ namespace MonoDevelop.CSharp.Formatting
 				bool retval;
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					//capture some of the current state
-//					int oldBufLen = textEditorData.Length;
-//					int oldLine = textEditorData.Caret.Line + 1;
-//					bool hadSelection = textEditorData.IsSomethingSelected;
+					int oldBufLen = textEditorData.Length;
+					int oldLine = textEditorData.Caret.Line + 1;
+					bool hadSelection = textEditorData.IsSomethingSelected;
 					bool reIndent = false;
 
 					//pass through to the base class, which actually inserts the character
 					//and calls HandleCodeCompletion etc to handles completion
 					DoPreInsertionSmartIndent (key);
-					stateTracker.UpdateEngine ();
 					retval = base.KeyPress (key, keyChar, modifier);
-
-					if (key == Gdk.Key.Return) {
-						if (FixLineStart (textEditorData.Caret.Line))
-							return retval;
-					}
 
 					//handle inserted characters
 					if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
@@ -219,12 +213,19 @@ namespace MonoDevelop.CSharp.Formatting
 					lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
 					if (lastCharInserted == '\0')
 						return retval;
+					if (key == Gdk.Key.Return) {
+						if (FixLineStart (textEditorData.Caret.Line))
+							return retval;
+					}
 
 					stateTracker.UpdateEngine ();
 
-					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask)
+					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
 						FixLineStart (textEditorData.Caret.Line + 1);
-
+					} else {
+						if (!(oldLine == textEditorData.Caret.Line + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0'))
+							DoPostInsertionSmartIndent (lastCharInserted, hadSelection, out reIndent);
+					}
 					//reindent the line after the insertion, if needed
 					//N.B. if the engine says we need to reindent, make sure that it's because a char was 
 					//inserted rather than just updating the stack due to moving around
@@ -414,6 +415,8 @@ namespace MonoDevelop.CSharp.Formatting
 				//check previous line was a doc comment
 				//check there's a following line?
 				if (trimmedPreviousLine.StartsWith ("/// ") && lineNumber + 1 < textEditorData.Document.LineCount) {
+					if (textEditorData.GetTextAt (line.Offset, line.EditableLength).TrimStart ().StartsWith("///"))
+						return false;
 					//check that the newline command actually inserted a newline
 					textEditorData.EnsureCaretIsNotVirtual ();
 					int insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
