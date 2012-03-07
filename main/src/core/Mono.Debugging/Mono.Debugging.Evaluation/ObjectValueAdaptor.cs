@@ -157,7 +157,7 @@ namespace Mono.Debugging.Evaluation
 				// Append the next generic type component
 				sb.Append (typeName.Substring (i, next - i));
 				
-				i = next;
+				i = next + 1;
 			}
 			
 			return sb.ToString ();
