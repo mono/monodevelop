@@ -53,7 +53,8 @@ namespace NGit.Api
 	/// <remarks>
 	/// Offers a "GitPorcelain"-like API to interact with a git repository.
 	/// <p>
-	/// The GitPorcelain commands are described in the &lt;a href="http://www.kernel.org/pub/software/scm/git/docs/git.html#_high_level_commands_porcelain"
+	/// The GitPorcelain commands are described in the &lt;a href=
+	/// "http://www.kernel.org/pub/software/scm/git/docs/git.html#_high_level_commands_porcelain"
 	/// &gt;Git Documentation</a>.
 	/// <p>
 	/// This class only offers methods to construct so-called command classes. Each
@@ -346,8 +347,8 @@ namespace NGit.Api
 		/// <returns>
 		/// a
 		/// <see cref="AddCommand">AddCommand</see>
-		/// used to collect all optional parameters
-		/// and to finally execute the
+		/// used to collect all optional parameters and
+		/// to finally execute the
 		/// <code>Add</code>
 		/// command
 		/// </returns>
@@ -367,8 +368,8 @@ namespace NGit.Api
 		/// <returns>
 		/// a
 		/// <see cref="TagCommand">TagCommand</see>
-		/// used to collect all optional parameters
-		/// and to finally execute the
+		/// used to collect all optional parameters and
+		/// to finally execute the
 		/// <code>Tag</code>
 		/// command
 		/// </returns>
@@ -451,8 +452,8 @@ namespace NGit.Api
 		/// <returns>
 		/// a
 		/// <see cref="RevertCommand">RevertCommand</see>
-		/// used to collect all optional
-		/// parameters and to finally execute the
+		/// used to collect all optional parameters
+		/// and to finally execute the
 		/// <code>cherry-pick</code>
 		/// command
 		/// </returns>
@@ -810,6 +811,47 @@ namespace NGit.Api
 		public virtual StashListCommand StashList()
 		{
 			return new StashListCommand(repo);
+		}
+
+		/// <summary>Returns a command object used to create a stashed commit</summary>
+		/// <returns>
+		/// a
+		/// <see cref="StashCreateCommand">StashCreateCommand</see>
+		/// </returns>
+		public virtual StashCreateCommand StashCreate()
+		{
+			return new StashCreateCommand(repo);
+		}
+
+		/// <summary>Returns a command object used to apply a stashed commit</summary>
+		/// <returns>
+		/// a
+		/// <see cref="StashApplyCommand">StashApplyCommand</see>
+		/// </returns>
+		public virtual StashApplyCommand StashApply()
+		{
+			return new StashApplyCommand(repo);
+		}
+
+		/// <summary>
+		/// Returns a command object to execute a
+		/// <code>apply</code>
+		/// command
+		/// </summary>
+		/// <seealso><a
+		/// *      href="http://www.kernel.org/pub/software/scm/git/docs/git-apply.html"
+		/// *      >Git documentation about apply</a></seealso>
+		/// <returns>
+		/// a
+		/// <see cref="ApplyCommand">ApplyCommand</see>
+		/// used to collect all optional parameters
+		/// and to finally execute the
+		/// <code>apply</code>
+		/// command
+		/// </returns>
+		public virtual ApplyCommand Apply()
+		{
+			return new ApplyCommand(repo);
 		}
 
 		/// <returns>the git repository this class is interacting with</returns>

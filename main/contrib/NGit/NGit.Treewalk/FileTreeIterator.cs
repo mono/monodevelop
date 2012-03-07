@@ -162,7 +162,7 @@ namespace NGit.Treewalk
 				file = f;
 				if (f.IsDirectory())
 				{
-					if (new FilePath(f, Constants.DOT_GIT).IsDirectory())
+					if (new FilePath(f, Constants.DOT_GIT).Exists())
 					{
 						mode = FileMode.GITLINK;
 					}

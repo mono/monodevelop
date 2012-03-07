@@ -61,9 +61,9 @@ namespace NGit.Util
 	/// </remarks>
 	public class GitDateFormatter
 	{
-		private DateTimeFormatInfo dateTimeInstance;
+		private DateFormat dateTimeInstance;
 
-		private DateTimeFormatInfo dateTimeInstance2;
+		private DateFormat dateTimeInstance2;
 
 		private readonly GitDateFormatter.Format format;
 
@@ -133,10 +133,10 @@ namespace NGit.Util
 				case GitDateFormatter.Format.LOCALE:
 				case GitDateFormatter.Format.LOCALELOCAL:
 				{
-					CultureInfo locale = SystemReader.GetInstance().GetLocale();
-					dateTimeInstance = DateFormat.GetDateTimeInstance(DateFormat.DEFAULT, DateFormat.
-						DEFAULT, locale);
-					dateTimeInstance2 = new SimpleDateFormat("Z", locale);
+					SystemReader systemReader = SystemReader.GetInstance();
+					dateTimeInstance = systemReader.GetDateTimeInstance(DateFormat.DEFAULT, DateFormat
+						.DEFAULT);
+					dateTimeInstance2 = systemReader.GetSimpleDateFormat("Z");
 					break;
 				}
 			}
@@ -154,6 +154,7 @@ namespace NGit.Util
 		/// <returns>formatted version of date, time and time zone</returns>
 		public virtual string FormatDate(PersonIdent ident)
 		{
+			TimeZoneInfo tz;
 			switch (format)
 			{
 				case GitDateFormatter.Format.RAW:
@@ -189,7 +190,7 @@ namespace NGit.Util
 
 				case GitDateFormatter.Format.LOCALE:
 				{
-					TimeZoneInfo tz = ident.GetTimeZone();
+					tz = ident.GetTimeZone();
 					if (tz == null)
 					{
 						tz = SystemReader.GetInstance().GetTimeZone();

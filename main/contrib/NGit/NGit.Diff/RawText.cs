@@ -318,5 +318,30 @@ namespace NGit.Diff
 			}
 			return false;
 		}
+
+		/// <summary>Get the line delimiter for the first line.</summary>
+		/// <remarks>Get the line delimiter for the first line.</remarks>
+		/// <since>2.0</since>
+		/// <returns>the line delimiter or <code>null</code></returns>
+		public virtual string GetLineDelimiter()
+		{
+			if (Size() == 0)
+			{
+				return null;
+			}
+			int e = GetEnd(0);
+			if (content[e - 1] != '\n')
+			{
+				return null;
+			}
+			if (content.Length > 1 && content[e - 2] == '\r')
+			{
+				return "\r\n";
+			}
+			else
+			{
+				return "\n";
+			}
+		}
 	}
 }

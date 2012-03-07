@@ -77,6 +77,8 @@ namespace NGit.Api
 
 		private IList<string> paths;
 
+		private bool checkoutAllPaths;
+
 		/// <param name="repo"></param>
 		protected internal CheckoutCommand(Repository repo) : base(repo)
 		{
@@ -101,7 +103,7 @@ namespace NGit.Api
 			ProcessOptions();
 			try
 			{
-				if (!paths.IsEmpty())
+				if (checkoutAllPaths || !paths.IsEmpty())
 				{
 					CheckoutPaths();
 					status = CheckoutResult.OK_RESULT;
@@ -239,6 +241,26 @@ namespace NGit.Api
 			return this;
 		}
 
+		/// <summary>
+		/// Set whether to checkout all paths
+		/// <p>
+		/// This options should be used when you want to do a path checkout on the
+		/// entire repository and so calling
+		/// <see cref="AddPath(string)">AddPath(string)</see>
+		/// is not possible
+		/// since empty paths are not allowed.
+		/// </summary>
+		/// <param name="all">true to checkout all paths, false otherwise</param>
+		/// <returns>
+		/// 
+		/// <code>this</code>
+		/// </returns>
+		public virtual NGit.Api.CheckoutCommand SetAllPaths(bool all)
+		{
+			checkoutAllPaths = all;
+			return this;
+		}
+
 		/// <summary>Checkout paths into index and working directory</summary>
 		/// <returns>this instance</returns>
 		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
@@ -253,7 +275,10 @@ namespace NGit.Api
 				DirCacheEditor editor = dc.Editor();
 				TreeWalk startWalk = new TreeWalk(revWalk.GetObjectReader());
 				startWalk.Recursive = true;
-				startWalk.Filter = PathFilterGroup.CreateFromStrings(paths);
+				if (!checkoutAllPaths)
+				{
+					startWalk.Filter = PathFilterGroup.CreateFromStrings(paths);
+				}
 				bool checkoutIndex = startCommit == null && startPoint == null;
 				if (!checkoutIndex)
 				{
@@ -271,7 +296,7 @@ namespace NGit.Api
 					{
 						ObjectId blobId = startWalk.GetObjectId(0);
 						FileMode mode = startWalk.GetFileMode(0);
-						editor.Add(new _PathEdit_266(this, blobId, mode, workTree, r, startWalk.PathString
+						editor.Add(new _PathEdit_285(this, blobId, mode, workTree, r, startWalk.PathString
 							));
 					}
 					editor.Commit();
@@ -290,9 +315,9 @@ namespace NGit.Api
 			return this;
 		}
 
-		private sealed class _PathEdit_266 : DirCacheEditor.PathEdit
+		private sealed class _PathEdit_285 : DirCacheEditor.PathEdit
 		{
-			public _PathEdit_266(CheckoutCommand _enclosing, ObjectId blobId, FileMode mode, 
+			public _PathEdit_285(CheckoutCommand _enclosing, ObjectId blobId, FileMode mode, 
 				FilePath workTree, ObjectReader r, string baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;
@@ -358,8 +383,8 @@ namespace NGit.Api
 		/// <exception cref="NGit.Api.Errors.InvalidRefNameException"></exception>
 		private void ProcessOptions()
 		{
-			if (paths.IsEmpty() && (name == null || !Repository.IsValidRefName(Constants.R_HEADS
-				 + name)))
+			if ((!checkoutAllPaths && paths.IsEmpty()) && (name == null || !Repository.IsValidRefName
+				(Constants.R_HEADS + name)))
 			{
 				throw new InvalidRefNameException(MessageFormat.Format(JGitText.Get().branchNameInvalid
 					, name == null ? "<null>" : name));

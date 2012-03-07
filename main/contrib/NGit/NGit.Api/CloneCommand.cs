@@ -288,6 +288,14 @@ namespace NGit.Api
 				, ConfigConstants.CONFIG_KEY_REMOTE, remote);
 			clonedRepo.GetConfig().SetString(ConfigConstants.CONFIG_BRANCH_SECTION, branchName
 				, ConfigConstants.CONFIG_KEY_MERGE, head.GetName());
+			string autosetupRebase = clonedRepo.GetConfig().GetString(ConfigConstants.CONFIG_BRANCH_SECTION
+				, null, ConfigConstants.CONFIG_KEY_AUTOSETUPREBASE);
+			if (ConfigConstants.CONFIG_KEY_ALWAYS.Equals(autosetupRebase) || ConfigConstants.
+				CONFIG_KEY_REMOTE.Equals(autosetupRebase))
+			{
+				clonedRepo.GetConfig().SetBoolean(ConfigConstants.CONFIG_BRANCH_SECTION, branchName
+					, ConfigConstants.CONFIG_KEY_REBASE, true);
+			}
 			clonedRepo.GetConfig().Save();
 		}
 

@@ -41,32 +41,32 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using NGit.Transport;
+using System.Collections.Generic;
+using NGit.Api;
 using Sharpen;
 
-namespace NGit.Transport
+namespace NGit.Api
 {
-	/// <summary>Indicates UploadPack may not continue execution.</summary>
-	/// <remarks>Indicates UploadPack may not continue execution.</remarks>
-	[System.Serializable]
-	[System.ObsoleteAttribute(@"use ServiceMayNotContinueException instead.")]
-	public class UploadPackMayNotContinueException : ServiceMayNotContinueException
+	/// <summary>
+	/// Encapsulates the result of a
+	/// <see cref="ApplyCommand">ApplyCommand</see>
+	/// </summary>
+	public class ApplyResult
 	{
-		private const long serialVersionUID = 1L;
+		private IList<FilePath> updatedFiles = new AList<FilePath>();
 
-		/// <summary>Initialize with no message.</summary>
-		/// <remarks>Initialize with no message.</remarks>
-		public UploadPackMayNotContinueException()
+		/// <param name="f">an updated file</param>
+		/// <returns>this instance</returns>
+		public virtual ApplyResult AddUpdatedFile(FilePath f)
 		{
+			updatedFiles.AddItem(f);
+			return this;
 		}
 
-		/// <param name="msg">
-		/// a message explaining why it cannot continue. This message may
-		/// be shown to an end-user.
-		/// </param>
-		public UploadPackMayNotContinueException(string msg) : base(msg)
+		/// <returns>updated files</returns>
+		public virtual IList<FilePath> GetUpdatedFiles()
 		{
+			return updatedFiles;
 		}
-		// Do not set a message.
 	}
 }

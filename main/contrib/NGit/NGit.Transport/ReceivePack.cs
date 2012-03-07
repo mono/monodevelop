@@ -107,6 +107,10 @@ namespace NGit.Transport
 		/// <remarks>Identity to record action as within the reflog.</remarks>
 		private PersonIdent refLogIdent;
 
+		/// <summary>Hook used while advertising the refs to the client.</summary>
+		/// <remarks>Hook used while advertising the refs to the client.</remarks>
+		private AdvertiseRefsHook advertiseRefsHook;
+
 		/// <summary>Filter used while advertising the refs to the client.</summary>
 		/// <remarks>Filter used while advertising the refs to the client.</remarks>
 		private RefFilter refFilter;
@@ -137,6 +141,8 @@ namespace NGit.Transport
 		private OutputStream rawOut;
 
 		private OutputStream msgOut;
+
+		private readonly ReceivePack.MessageOutputWrapper msgOutWrapper;
 
 		private PacketLineIn pckIn;
 
@@ -198,6 +204,7 @@ namespace NGit.Transport
 		/// <param name="into">the destination repository.</param>
 		public ReceivePack(Repository into)
 		{
+			msgOutWrapper = new ReceivePack.MessageOutputWrapper(this);
 			db = into;
 			walk = new RevWalk(db);
 			ReceivePack.ReceiveConfig cfg = db.GetConfig().Get(ReceivePack.ReceiveConfig.KEY);
@@ -206,6 +213,7 @@ namespace NGit.Transport
 			allowDeletes = cfg.allowDeletes;
 			allowNonFastForwards = cfg.allowNonFastForwards;
 			allowOfsDelta = cfg.allowOfsDelta;
+			advertiseRefsHook = AdvertiseRefsHook.DEFAULT;
 			refFilter = RefFilter.DEFAULT;
 			preReceive = PreReceiveHook.NULL;
 			postReceive = PostReceiveHook.NULL;
@@ -214,10 +222,10 @@ namespace NGit.Transport
 
 		private class ReceiveConfig
 		{
-			private sealed class _SectionParser_222 : Config.SectionParser<ReceivePack.ReceiveConfig
+			private sealed class _SectionParser_227 : Config.SectionParser<ReceivePack.ReceiveConfig
 				>
 			{
-				public _SectionParser_222()
+				public _SectionParser_227()
 				{
 				}
 
@@ -228,7 +236,7 @@ namespace NGit.Transport
 			}
 
 			internal static readonly Config.SectionParser<ReceivePack.ReceiveConfig> KEY = new 
-				_SectionParser_222();
+				_SectionParser_227();
 
 			internal readonly bool checkReceivedObjects;
 
@@ -251,6 +259,76 @@ namespace NGit.Transport
 			}
 		}
 
+		/// <summary>
+		/// Output stream that wraps the current
+		/// <see cref="ReceivePack.msgOut">ReceivePack.msgOut</see>
+		/// .
+		/// <p>
+		/// We don't want to expose
+		/// <see cref="ReceivePack.msgOut">ReceivePack.msgOut</see>
+		/// directly because it can change
+		/// several times over the course of a session.
+		/// </summary>
+		private class MessageOutputWrapper : OutputStream
+		{
+			public override void Write(int ch)
+			{
+				if (this._enclosing.msgOut != null)
+				{
+					try
+					{
+						this._enclosing.msgOut.Write(ch);
+					}
+					catch (IOException)
+					{
+					}
+				}
+			}
+
+			// Ignore write failures.
+			public override void Write(byte[] b, int off, int len)
+			{
+				if (this._enclosing.msgOut != null)
+				{
+					try
+					{
+						this._enclosing.msgOut.Write(b, off, len);
+					}
+					catch (IOException)
+					{
+					}
+				}
+			}
+
+			// Ignore write failures.
+			public override void Write(byte[] b)
+			{
+				this.Write(b, 0, b.Length);
+			}
+
+			public override void Flush()
+			{
+				if (this._enclosing.msgOut != null)
+				{
+					try
+					{
+						this._enclosing.msgOut.Flush();
+					}
+					catch (IOException)
+					{
+					}
+				}
+			}
+
+			internal MessageOutputWrapper(ReceivePack _enclosing)
+			{
+				this._enclosing = _enclosing;
+			}
+
+			private readonly ReceivePack _enclosing;
+			// Ignore write failures.
+		}
+
 		/// <returns>the repository this receive completes into.</returns>
 		public Repository GetRepository()
 		{
@@ -263,33 +341,82 @@ namespace NGit.Transport
 			return walk;
 		}
 
-		/// <returns>all refs which were advertised to the client.</returns>
+		/// <summary>Get refs which were advertised to the client.</summary>
+		/// <remarks>Get refs which were advertised to the client.</remarks>
+		/// <returns>
+		/// all refs which were advertised to the client, or null if
+		/// <see cref="SetAdvertisedRefs(System.Collections.Generic.IDictionary{K, V}, System.Collections.Generic.ICollection{E})
+		/// 	">SetAdvertisedRefs(System.Collections.Generic.IDictionary&lt;K, V&gt;, System.Collections.Generic.ICollection&lt;E&gt;)
+		/// 	</see>
+		/// has not been called yet.
+		/// </returns>
 		public IDictionary<string, Ref> GetAdvertisedRefs()
 		{
-			if (refs == null)
-			{
-				refs = refFilter.Filter(db.GetAllRefs());
-				Ref head = refs.Get(Constants.HEAD);
-				if (head != null && head.IsSymbolic())
-				{
-					Sharpen.Collections.Remove(refs, Constants.HEAD);
-				}
-				foreach (Ref @ref in refs.Values)
-				{
-					if (@ref.GetObjectId() != null)
-					{
-						advertisedHaves.AddItem(@ref.GetObjectId());
-					}
-				}
-				Sharpen.Collections.AddAll(advertisedHaves, db.GetAdditionalHaves());
-			}
 			return refs;
 		}
 
-		/// <returns>the set of objects advertised as present in this repository.</returns>
+		/// <summary>Set the refs advertised by this ReceivePack.</summary>
+		/// <remarks>
+		/// Set the refs advertised by this ReceivePack.
+		/// <p>
+		/// Intended to be called from a
+		/// <see cref="PreReceiveHook">PreReceiveHook</see>
+		/// .
+		/// </remarks>
+		/// <param name="allRefs">
+		/// explicit set of references to claim as advertised by this
+		/// ReceivePack instance. This overrides any references that
+		/// may exist in the source repository. The map is passed
+		/// to the configured
+		/// <see cref="GetRefFilter()">GetRefFilter()</see>
+		/// . If null, assumes
+		/// all refs were advertised.
+		/// </param>
+		/// <param name="additionalHaves">
+		/// explicit set of additional haves to claim as advertised. If
+		/// null, assumes the default set of additional haves from the
+		/// repository.
+		/// </param>
+		public virtual void SetAdvertisedRefs(IDictionary<string, Ref> allRefs, ICollection
+			<ObjectId> additionalHaves)
+		{
+			refs = allRefs != null ? allRefs : db.GetAllRefs();
+			refs = refFilter.Filter(refs);
+			Ref head = refs.Get(Constants.HEAD);
+			if (head != null && head.IsSymbolic())
+			{
+				Sharpen.Collections.Remove(refs, Constants.HEAD);
+			}
+			foreach (Ref @ref in refs.Values)
+			{
+				if (@ref.GetObjectId() != null)
+				{
+					advertisedHaves.AddItem(@ref.GetObjectId());
+				}
+			}
+			if (additionalHaves != null)
+			{
+				Sharpen.Collections.AddAll(advertisedHaves, additionalHaves);
+			}
+			else
+			{
+				Sharpen.Collections.AddAll(advertisedHaves, db.GetAdditionalHaves());
+			}
+		}
+
+		/// <summary>Get objects advertised to the client.</summary>
+		/// <remarks>Get objects advertised to the client.</remarks>
+		/// <returns>
+		/// the set of objects advertised to the as present in this repository,
+		/// or null if
+		/// <see cref="SetAdvertisedRefs(System.Collections.Generic.IDictionary{K, V}, System.Collections.Generic.ICollection{E})
+		/// 	">SetAdvertisedRefs(System.Collections.Generic.IDictionary&lt;K, V&gt;, System.Collections.Generic.ICollection&lt;E&gt;)
+		/// 	</see>
+		/// has not been called
+		/// yet.
+		/// </returns>
 		public ICollection<ObjectId> GetAdvertisedObjects()
 		{
-			GetAdvertisedRefs();
 			return advertisedHaves;
 		}
 
@@ -309,10 +436,7 @@ namespace NGit.Transport
 		/// <p>
 		/// If enabled, this instance will verify that references to objects not
 		/// contained within the received pack are already reachable through at least
-		/// one other reference selected by the
-		/// <see cref="GetRefFilter()">GetRefFilter()</see>
-		/// and displayed
-		/// as part of
+		/// one other reference displayed as part of
 		/// <see cref="GetAdvertisedRefs()">GetAdvertisedRefs()</see>
 		/// .
 		/// <p>
@@ -320,6 +444,8 @@ namespace NGit.Transport
 		/// not provide a forged SHA-1 reference to an object, in an attempt to
 		/// access parts of the DAG that they aren't allowed to see and which have
 		/// been hidden from them via the configured
+		/// <see cref="AdvertiseRefsHook">AdvertiseRefsHook</see>
+		/// or
 		/// <see cref="RefFilter">RefFilter</see>
 		/// .
 		/// <p>
@@ -445,10 +571,51 @@ namespace NGit.Transport
 			refLogIdent = pi;
 		}
 
+		/// <returns>the hook used while advertising the refs to the client</returns>
+		public virtual AdvertiseRefsHook GetAdvertiseRefsHook()
+		{
+			return advertiseRefsHook;
+		}
+
 		/// <returns>the filter used while advertising the refs to the client</returns>
 		public virtual RefFilter GetRefFilter()
 		{
 			return refFilter;
+		}
+
+		/// <summary>Set the hook used while advertising the refs to the client.</summary>
+		/// <remarks>
+		/// Set the hook used while advertising the refs to the client.
+		/// <p>
+		/// If the
+		/// <see cref="AdvertiseRefsHook">AdvertiseRefsHook</see>
+		/// chooses to call
+		/// <see cref="SetAdvertisedRefs(System.Collections.Generic.IDictionary{K, V}, System.Collections.Generic.ICollection{E})
+		/// 	">SetAdvertisedRefs(System.Collections.Generic.IDictionary&lt;K, V&gt;, System.Collections.Generic.ICollection&lt;E&gt;)
+		/// 	</see>
+		/// , only refs set by this hook
+		/// <em>and</em> selected by the
+		/// <see cref="RefFilter">RefFilter</see>
+		/// will be shown to the client.
+		/// Clients may still attempt to create or update a reference not advertised by
+		/// the configured
+		/// <see cref="AdvertiseRefsHook">AdvertiseRefsHook</see>
+		/// . These attempts should be rejected
+		/// by a matching
+		/// <see cref="PreReceiveHook">PreReceiveHook</see>
+		/// .
+		/// </remarks>
+		/// <param name="advertiseRefsHook">the hook; may be null to show all refs.</param>
+		public virtual void SetAdvertiseRefsHook(AdvertiseRefsHook advertiseRefsHook)
+		{
+			if (advertiseRefsHook != null)
+			{
+				this.advertiseRefsHook = advertiseRefsHook;
+			}
+			else
+			{
+				this.advertiseRefsHook = AdvertiseRefsHook.DEFAULT;
+			}
 		}
 
 		/// <summary>Set the filter used while advertising the refs to the client.</summary>
@@ -456,13 +623,9 @@ namespace NGit.Transport
 		/// Set the filter used while advertising the refs to the client.
 		/// <p>
 		/// Only refs allowed by this filter will be shown to the client.
-		/// Clients may still attempt to create or update a reference hidden
-		/// by the configured
-		/// <see cref="RefFilter">RefFilter</see>
-		/// . These attempts should be
-		/// rejected by a matching
-		/// <see cref="PreReceiveHook">PreReceiveHook</see>
-		/// .
+		/// The filter is run against the refs specified by the
+		/// <see cref="AdvertiseRefsHook">AdvertiseRefsHook</see>
+		/// (if applicable).
 		/// </remarks>
 		/// <param name="refFilter">the filter; may be null to show all refs.</param>
 		public virtual void SetRefFilter(RefFilter refFilter)
@@ -470,7 +633,7 @@ namespace NGit.Transport
 			this.refFilter = refFilter != null ? refFilter : RefFilter.DEFAULT;
 		}
 
-		/// <returns>get the hook invoked before updates occur.</returns>
+		/// <returns>the hook invoked before updates occur.</returns>
 		public virtual PreReceiveHook GetPreReceiveHook()
 		{
 			return preReceive;
@@ -495,7 +658,7 @@ namespace NGit.Transport
 			preReceive = h != null ? h : PreReceiveHook.NULL;
 		}
 
-		/// <returns>get the hook invoked after updates occur.</returns>
+		/// <returns>the hook invoked after updates occur.</returns>
 		public virtual PostReceiveHook GetPostReceiveHook()
 		{
 			return postReceive;
@@ -594,20 +757,10 @@ namespace NGit.Transport
 			}
 			else
 			{
-				try
-				{
-					if (msgOut != null)
-					{
-						msgOut.Write(Constants.Encode("error: " + what + "\n"));
-					}
-				}
-				catch (IOException)
-				{
-				}
+				msgOutWrapper.Write(Constants.Encode("error: " + what + "\n"));
 			}
 		}
 
-		// Ignore write failures.
 		/// <summary>Send a message to the client, if it supports receiving them.</summary>
 		/// <remarks>
 		/// Send a message to the client, if it supports receiving them.
@@ -621,19 +774,15 @@ namespace NGit.Transport
 		/// </param>
 		public virtual void SendMessage(string what)
 		{
-			try
-			{
-				if (msgOut != null)
-				{
-					msgOut.Write(Constants.Encode(what + "\n"));
-				}
-			}
-			catch (IOException)
-			{
-			}
+			msgOutWrapper.Write(Constants.Encode(what + "\n"));
 		}
 
-		// Ignore write failures.
+		/// <returns>an underlying stream for sending messages to the client.</returns>
+		public virtual OutputStream GetMessageOutputStream()
+		{
+			return msgOutWrapper;
+		}
+
 		/// <summary>Execute the receive task on the socket.</summary>
 		/// <remarks>Execute the receive task on the socket.</remarks>
 		/// <param name="input">
@@ -738,6 +887,15 @@ namespace NGit.Transport
 			}
 		}
 
+		private IDictionary<string, Ref> GetAdvertisedOrDefaultRefs()
+		{
+			if (refs == null)
+			{
+				SetAdvertisedRefs(null, null);
+			}
+			return refs;
+		}
+
 		/// <exception cref="System.IO.IOException"></exception>
 		private void Service()
 		{
@@ -748,7 +906,7 @@ namespace NGit.Transport
 			}
 			else
 			{
-				GetAdvertisedRefs();
+				GetAdvertisedOrDefaultRefs();
 			}
 			if (advertiseError != null)
 			{
@@ -791,17 +949,18 @@ namespace NGit.Transport
 				UnlockPack();
 				if (reportStatus)
 				{
-					SendStatusReport(true, new _Reporter_702(this));
+					SendStatusReport(true, new _Reporter_810(this));
 					pckOut.End();
 				}
 				else
 				{
 					if (msgOut != null)
 					{
-						SendStatusReport(false, new _Reporter_709(this));
+						SendStatusReport(false, new _Reporter_817(this));
 					}
 				}
-				postReceive.OnPostReceive(this, FilterCommands(ReceiveCommand.Result.OK));
+				postReceive.OnPostReceive(this, ReceiveCommand.Filter(commands, ReceiveCommand.Result
+					.OK));
 				if (unpackError != null)
 				{
 					throw new UnpackException(unpackError);
@@ -809,9 +968,9 @@ namespace NGit.Transport
 			}
 		}
 
-		private sealed class _Reporter_702 : ReceivePack.Reporter
+		private sealed class _Reporter_810 : ReceivePack.Reporter
 		{
-			public _Reporter_702(ReceivePack _enclosing)
+			public _Reporter_810(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -825,9 +984,9 @@ namespace NGit.Transport
 			private readonly ReceivePack _enclosing;
 		}
 
-		private sealed class _Reporter_709 : ReceivePack.Reporter
+		private sealed class _Reporter_817 : ReceivePack.Reporter
 		{
-			public _Reporter_709(ReceivePack _enclosing)
+			public _Reporter_817(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -856,12 +1015,27 @@ namespace NGit.Transport
 		/// <param name="adv">the advertisement formatter.</param>
 		/// <exception cref="System.IO.IOException">the formatter failed to write an advertisement.
 		/// 	</exception>
+		/// <exception cref="ServiceMayNotContinueException">the hook denied advertisement.</exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		public virtual void SendAdvertisedRefs(RefAdvertiser adv)
 		{
 			if (advertiseError != null)
 			{
 				adv.WriteOne("ERR " + advertiseError);
 				return;
+			}
+			try
+			{
+				advertiseRefsHook.AdvertiseRefs(this);
+			}
+			catch (ServiceMayNotContinueException fail)
+			{
+				if (fail.Message != null)
+				{
+					adv.WriteOne("ERR " + fail.Message);
+					fail.SetOutput();
+				}
+				throw;
 			}
 			adv.Init(db);
 			adv.AdvertiseCapability(BasePackPushConnection.CAPABILITY_SIDE_BAND_64K);
@@ -871,7 +1045,7 @@ namespace NGit.Transport
 			{
 				adv.AdvertiseCapability(BasePackPushConnection.CAPABILITY_OFS_DELTA);
 			}
-			adv.Send(GetAdvertisedRefs());
+			adv.Send(GetAdvertisedOrDefaultRefs());
 			foreach (ObjectId obj in advertisedHaves)
 			{
 				adv.AdvertiseHave(obj);
@@ -1244,10 +1418,10 @@ namespace NGit.Transport
 
 		private void ExecuteCommands()
 		{
-			preReceive.OnPreReceive(this, FilterCommands(ReceiveCommand.Result.NOT_ATTEMPTED)
-				);
-			IList<ReceiveCommand> toApply = FilterCommands(ReceiveCommand.Result.NOT_ATTEMPTED
-				);
+			preReceive.OnPreReceive(this, ReceiveCommand.Filter(commands, ReceiveCommand.Result
+				.NOT_ATTEMPTED));
+			IList<ReceiveCommand> toApply = ReceiveCommand.Filter(commands, ReceiveCommand.Result
+				.NOT_ATTEMPTED);
 			ProgressMonitor updating = NullProgressMonitor.INSTANCE;
 			if (sideBand)
 			{
@@ -1259,112 +1433,9 @@ namespace NGit.Transport
 			foreach (ReceiveCommand cmd in toApply)
 			{
 				updating.Update(1);
-				Execute(cmd);
+				cmd.Execute(this);
 			}
 			updating.EndTask();
-		}
-
-		private void Execute(ReceiveCommand cmd)
-		{
-			try
-			{
-				RefUpdate ru = db.UpdateRef(cmd.GetRefName());
-				ru.SetRefLogIdent(GetRefLogIdent());
-				switch (cmd.GetType())
-				{
-					case ReceiveCommand.Type.DELETE:
-					{
-						if (!ObjectId.ZeroId.Equals(cmd.GetOldId()))
-						{
-							// We can only do a CAS style delete if the client
-							// didn't bork its delete request by sending the
-							// wrong zero id rather than the advertised one.
-							//
-							ru.SetExpectedOldObjectId(cmd.GetOldId());
-						}
-						ru.SetForceUpdate(true);
-						Status(cmd, ru.Delete(walk));
-						break;
-					}
-
-					case ReceiveCommand.Type.CREATE:
-					case ReceiveCommand.Type.UPDATE:
-					case ReceiveCommand.Type.UPDATE_NONFASTFORWARD:
-					{
-						ru.SetForceUpdate(IsAllowNonFastForwards());
-						ru.SetExpectedOldObjectId(cmd.GetOldId());
-						ru.SetNewObjectId(cmd.GetNewId());
-						ru.SetRefLogMessage("push", true);
-						Status(cmd, ru.Update(walk));
-						break;
-					}
-				}
-			}
-			catch (IOException err)
-			{
-				cmd.SetResult(ReceiveCommand.Result.REJECTED_OTHER_REASON, MessageFormat.Format(JGitText
-					.Get().lockError, err.Message));
-			}
-		}
-
-		private void Status(ReceiveCommand cmd, RefUpdate.Result result)
-		{
-			switch (result)
-			{
-				case RefUpdate.Result.NOT_ATTEMPTED:
-				{
-					cmd.SetResult(ReceiveCommand.Result.NOT_ATTEMPTED);
-					break;
-				}
-
-				case RefUpdate.Result.LOCK_FAILURE:
-				case RefUpdate.Result.IO_FAILURE:
-				{
-					cmd.SetResult(ReceiveCommand.Result.LOCK_FAILURE);
-					break;
-				}
-
-				case RefUpdate.Result.NO_CHANGE:
-				case RefUpdate.Result.NEW:
-				case RefUpdate.Result.FORCED:
-				case RefUpdate.Result.FAST_FORWARD:
-				{
-					cmd.SetResult(ReceiveCommand.Result.OK);
-					break;
-				}
-
-				case RefUpdate.Result.REJECTED:
-				{
-					cmd.SetResult(ReceiveCommand.Result.REJECTED_NONFASTFORWARD);
-					break;
-				}
-
-				case RefUpdate.Result.REJECTED_CURRENT_BRANCH:
-				{
-					cmd.SetResult(ReceiveCommand.Result.REJECTED_CURRENT_BRANCH);
-					break;
-				}
-
-				default:
-				{
-					cmd.SetResult(ReceiveCommand.Result.REJECTED_OTHER_REASON, result.ToString());
-					break;
-					break;
-				}
-			}
-		}
-
-		private IList<ReceiveCommand> FilterCommands(ReceiveCommand.Result want)
-		{
-			IList<ReceiveCommand> r = new AList<ReceiveCommand>(commands.Count);
-			foreach (ReceiveCommand cmd in commands)
-			{
-				if (cmd.GetResult() == want)
-				{
-					r.AddItem(cmd);
-				}
-			}
-			return r;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>

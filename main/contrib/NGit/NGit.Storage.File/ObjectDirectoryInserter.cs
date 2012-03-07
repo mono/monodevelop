@@ -89,9 +89,9 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		public override ObjectId Insert(int type, long len, InputStream @is)
 		{
-			if (len <= Buffer().Length)
+			byte[] buf = Buffer(len);
+			if (len <= buf.Length)
 			{
-				byte[] buf = Buffer();
 				int actLen = IOUtil.ReadFully(@is, buf, 0);
 				return Insert(type, buf, 0, actLen);
 			}

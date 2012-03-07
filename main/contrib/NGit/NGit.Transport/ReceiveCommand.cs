@@ -41,6 +41,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System.Collections.Generic;
+using System.IO;
 using NGit;
 using NGit.Transport;
 using Sharpen;
@@ -82,6 +84,29 @@ namespace NGit.Transport
 			REJECTED_OTHER_REASON,
 			LOCK_FAILURE,
 			OK
+		}
+
+		/// <summary>Filter a list of commands according to result.</summary>
+		/// <remarks>Filter a list of commands according to result.</remarks>
+		/// <param name="commands">commands to filter.</param>
+		/// <param name="want">desired status to filter by.</param>
+		/// <returns>
+		/// a copy of the command list containing only those commands with the
+		/// desired status.
+		/// </returns>
+		public static IList<NGit.Transport.ReceiveCommand> Filter(IList<NGit.Transport.ReceiveCommand
+			> commands, ReceiveCommand.Result want)
+		{
+			IList<NGit.Transport.ReceiveCommand> r = new AList<NGit.Transport.ReceiveCommand>
+				(commands.Count);
+			foreach (NGit.Transport.ReceiveCommand cmd in commands)
+			{
+				if (cmd.GetResult() == want)
+				{
+					r.AddItem(cmd);
+				}
+			}
+			return r;
 		}
 
 		private readonly ObjectId oldId;
@@ -129,6 +154,32 @@ namespace NGit.Transport
 				type = ReceiveCommand.Type.DELETE;
 			}
 			status = ReceiveCommand.Result.NOT_ATTEMPTED;
+		}
+
+		/// <summary>
+		/// Create a new command for
+		/// <see cref="ReceivePack">ReceivePack</see>
+		/// .
+		/// </summary>
+		/// <param name="oldId">
+		/// the old object id; must not be null. Use
+		/// <see cref="NGit.ObjectId.ZeroId()">NGit.ObjectId.ZeroId()</see>
+		/// to indicate a ref creation.
+		/// </param>
+		/// <param name="newId">
+		/// the new object id; must not be null. Use
+		/// <see cref="NGit.ObjectId.ZeroId()">NGit.ObjectId.ZeroId()</see>
+		/// to indicate a ref deletion.
+		/// </param>
+		/// <param name="name">name of the ref being affected.</param>
+		/// <param name="type">type of the command.</param>
+		public ReceiveCommand(ObjectId oldId, ObjectId newId, string name, ReceiveCommand.Type
+			 type)
+		{
+			this.oldId = oldId;
+			this.newId = newId;
+			this.name = name;
+			this.type = type;
 		}
 
 		/// <returns>the old value the client thinks the ref has.</returns>
@@ -195,6 +246,56 @@ namespace NGit.Transport
 			message = m;
 		}
 
+		/// <summary>Execute this command during a receive-pack session.</summary>
+		/// <remarks>
+		/// Execute this command during a receive-pack session.
+		/// <p>
+		/// Sets the status of the command as a side effect.
+		/// </remarks>
+		/// <param name="rp">receive-pack session.</param>
+		public virtual void Execute(ReceivePack rp)
+		{
+			try
+			{
+				RefUpdate ru = rp.GetRepository().UpdateRef(GetRefName());
+				ru.SetRefLogIdent(rp.GetRefLogIdent());
+				switch (GetType())
+				{
+					case ReceiveCommand.Type.DELETE:
+					{
+						if (!ObjectId.ZeroId.Equals(GetOldId()))
+						{
+							// We can only do a CAS style delete if the client
+							// didn't bork its delete request by sending the
+							// wrong zero id rather than the advertised one.
+							//
+							ru.SetExpectedOldObjectId(GetOldId());
+						}
+						ru.SetForceUpdate(true);
+						SetResult(ru.Delete(rp.GetRevWalk()));
+						break;
+					}
+
+					case ReceiveCommand.Type.CREATE:
+					case ReceiveCommand.Type.UPDATE:
+					case ReceiveCommand.Type.UPDATE_NONFASTFORWARD:
+					{
+						ru.SetForceUpdate(rp.IsAllowNonFastForwards());
+						ru.SetExpectedOldObjectId(GetOldId());
+						ru.SetNewObjectId(GetNewId());
+						ru.SetRefLogMessage("push", true);
+						SetResult(ru.Update(rp.GetRevWalk()));
+						break;
+					}
+				}
+			}
+			catch (IOException err)
+			{
+				SetResult(ReceiveCommand.Result.REJECTED_OTHER_REASON, MessageFormat.Format(JGitText
+					.Get().lockError, err.Message));
+			}
+		}
+
 		internal virtual void SetRef(Ref r)
 		{
 			@ref = r;
@@ -203,6 +304,53 @@ namespace NGit.Transport
 		internal virtual void SetType(ReceiveCommand.Type t)
 		{
 			type = t;
+		}
+
+		private void SetResult(RefUpdate.Result r)
+		{
+			switch (r)
+			{
+				case RefUpdate.Result.NOT_ATTEMPTED:
+				{
+					SetResult(ReceiveCommand.Result.NOT_ATTEMPTED);
+					break;
+				}
+
+				case RefUpdate.Result.LOCK_FAILURE:
+				case RefUpdate.Result.IO_FAILURE:
+				{
+					SetResult(ReceiveCommand.Result.LOCK_FAILURE);
+					break;
+				}
+
+				case RefUpdate.Result.NO_CHANGE:
+				case RefUpdate.Result.NEW:
+				case RefUpdate.Result.FORCED:
+				case RefUpdate.Result.FAST_FORWARD:
+				{
+					SetResult(ReceiveCommand.Result.OK);
+					break;
+				}
+
+				case RefUpdate.Result.REJECTED:
+				{
+					SetResult(ReceiveCommand.Result.REJECTED_NONFASTFORWARD);
+					break;
+				}
+
+				case RefUpdate.Result.REJECTED_CURRENT_BRANCH:
+				{
+					SetResult(ReceiveCommand.Result.REJECTED_CURRENT_BRANCH);
+					break;
+				}
+
+				default:
+				{
+					SetResult(ReceiveCommand.Result.REJECTED_OTHER_REASON, r.ToString());
+					break;
+					break;
+				}
+			}
 		}
 
 		public override string ToString()

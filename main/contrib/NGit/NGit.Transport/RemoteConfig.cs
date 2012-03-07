@@ -82,6 +82,10 @@ namespace NGit.Transport
 
 		private static readonly string KEY_TIMEOUT = "timeout";
 
+		private static readonly string KEY_INSTEADOF = "insteadof";
+
+		private static readonly string KEY_PUSHINSTEADOF = "pushinsteadof";
+
 		private const bool DEFAULT_MIRROR = false;
 
 		/// <summary>
@@ -174,16 +178,19 @@ namespace NGit.Transport
 			string[] vlst;
 			string val;
 			vlst = rc.GetStringList(SECTION, name, KEY_URL);
+			IDictionary<string, string> insteadOf = GetReplacements(rc, KEY_INSTEADOF);
 			uris = new AList<URIish>(vlst.Length);
 			foreach (string s in vlst)
 			{
-				uris.AddItem(new URIish(s));
+				uris.AddItem(new URIish(ReplaceUri(s, insteadOf)));
 			}
+			IDictionary<string, string> pushInsteadOf = GetReplacements(rc, KEY_PUSHINSTEADOF
+				);
 			vlst = rc.GetStringList(SECTION, name, KEY_PUSHURL);
 			pushURIs = new AList<URIish>(vlst.Length);
 			foreach (string s_1 in vlst)
 			{
-				pushURIs.AddItem(new URIish(s_1));
+				pushURIs.AddItem(new URIish(ReplaceUri(s_1, pushInsteadOf)));
 			}
 			vlst = rc.GetStringList(SECTION, name, KEY_FETCH);
 			fetch = new AList<RefSpec>(vlst.Length);
@@ -296,6 +303,50 @@ namespace NGit.Transport
 		private void Unset(Config rc, string key)
 		{
 			rc.Unset(SECTION, Name, key);
+		}
+
+		private IDictionary<string, string> GetReplacements(Config config, string keyName
+			)
+		{
+			IDictionary<string, string> replacements = new Dictionary<string, string>();
+			foreach (string url in config.GetSubsections(KEY_URL))
+			{
+				foreach (string insteadOf in config.GetStringList(KEY_URL, url, keyName))
+				{
+					replacements.Put(insteadOf, url);
+				}
+			}
+			return replacements;
+		}
+
+		private string ReplaceUri(string uri, IDictionary<string, string> replacements)
+		{
+			if (replacements.IsEmpty())
+			{
+				return uri;
+			}
+			KeyValuePair<string, string>? match = null;
+			foreach (KeyValuePair<string, string> replacement in replacements.EntrySet())
+			{
+				// Ignore current entry if not longer than previous match
+				if (match != null && match.Value.Key.Length > replacement.Key.Length)
+				{
+					continue;
+				}
+				if (!uri.StartsWith(replacement.Key))
+				{
+					continue;
+				}
+				match = replacement;
+			}
+			if (match != null)
+			{
+				return match.Value.Value + Sharpen.Runtime.Substring(uri, match.Value.Key.Length);
+			}
+			else
+			{
+				return uri;
+			}
 		}
 
 		/// <summary>Get the local name this remote configuration is recognized as.</summary>
