@@ -327,35 +327,16 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		void OnGripExpose (object ob, Gtk.ExposeEventArgs args)
+		void OnGripExpose (object sender, Gtk.ExposeEventArgs args)
 		{
-			EventBox w = (EventBox) ob;
+			var w = (EventBox) sender;
 			Gdk.Rectangle handleRect = w.Allocation;
-//			w.GdkWindow.DrawRectangle (w.Style.DarkGC (StateType.Normal), true, handleRect);
-			handleRect.X = handleRect.Y = 0;
-			
-/*			switch (position) {
-			case PositionType.Top:
-				handleRect.Height -= 4; handleRect.Y += 1;
-				Gtk.Style.PaintHline (w.Style, w.GdkWindow, StateType.Normal, args.Event.Area, w, "", 0, w.Allocation.Width, gripSize - 2);
-				break;
-			case PositionType.Bottom:
-				handleRect.Height -= 4; handleRect.Y += 3;
-				Gtk.Style.PaintHline (w.Style, w.GdkWindow, StateType.Normal, args.Event.Area, w, "", 0, w.Allocation.Width, 0);
-				break;
-			case PositionType.Left:
-				handleRect.Width -= 4; handleRect.X += 1;
-				Gtk.Style.PaintVline (w.Style, w.GdkWindow, StateType.Normal, args.Event.Area, w, "", 0, w.Allocation.Height, gripSize - 2);
-				break;
-			case PositionType.Right:
-				handleRect.Width -= 4; handleRect.X += 3;
-				Gtk.Style.PaintVline (w.Style, w.GdkWindow, StateType.Normal, args.Event.Area, w, "", 0, w.Allocation.Height, 0);
-				break;
-			}*/
-			
-			Orientation or = horiz ? Orientation.Vertical : Orientation.Horizontal;
 			StateType s = insideGrip ? StateType.Prelight : StateType.Normal;
-			Gtk.Style.PaintHandle (w.Style, w.GdkWindow, s, ShadowType.None, args.Event.Area, w, "paned", handleRect.Left, handleRect.Top, handleRect.Width, handleRect.Height, or);
+			
+			using (var ctx = CairoHelper.Create (args.Event.Window)) {
+				ctx.Color = (HslColor) (w.Style.Background (s));
+				ctx.Paint ();
+			}
 		}
 	}
 	
