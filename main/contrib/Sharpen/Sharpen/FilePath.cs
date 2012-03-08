@@ -8,7 +8,7 @@ namespace Sharpen
 
 	public class FilePath
 	{
-		static bool RunningOnLinux = true;
+		static bool RunningOnLinux = !Environment.OSVersion.Platform.ToString ().StartsWith ("Win");
 		
 		private string path;
 		private static long tempCounter;
@@ -57,13 +57,9 @@ namespace Sharpen
 
 		public bool CanWrite ()
 		{
-			try {
-				if (RunningOnLinux) {
-					var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
-					return info.CanAccess (Mono.Unix.Native.AccessModes.W_OK);
-				}
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
+			if (RunningOnLinux) {
+				var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
+				return info.CanAccess (Mono.Unix.Native.AccessModes.W_OK);
 			}
 			
 			return ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0);
@@ -108,22 +104,18 @@ namespace Sharpen
 		public bool Delete ()
 		{
 			try {
-				try {
-					if (RunningOnLinux) {
-						var info = UnixFileSystemInfo.GetFileSystemEntry (path);
-						if (info.Exists) {
-							try {
-								info.Delete ();
-								return true;
-							} catch {
-								// If the directory is not empty we return false. JGit relies on this
-								return false;
-							}
+				if (RunningOnLinux) {
+					var info = UnixFileSystemInfo.GetFileSystemEntry (path);
+					if (info.Exists) {
+						try {
+							info.Delete ();
+							return true;
+						} catch {
+							// If the directory is not empty we return false. JGit relies on this
+							return false;
 						}
-						return false;
 					}
-				} catch (EntryPointNotFoundException) {
-					RunningOnLinux = false;
+					return false;
 				}
 
 				if (Directory.Exists (path)) {
@@ -131,13 +123,14 @@ namespace Sharpen
 						return false;
 					MakeDirWritable (path);
 					Directory.Delete (path, true);
-				} else {
-					if (!File.Exists (path))
-						return false;
+                    return true;
+                }
+                else if (File.Exists(path)) {
 					MakeFileWritable (path);
 					File.Delete (path);
-				}
-				return true;
+                    return true;
+                }
+				return false;
 			} catch (Exception exception) {
 				Console.WriteLine (exception);
 				return false;
@@ -150,12 +143,9 @@ namespace Sharpen
 
 		public bool Exists ()
 		{
-			try {
-				if (RunningOnLinux)
-					return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path).Exists;
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
-			}
+			if (RunningOnLinux)
+				return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path).Exists;
+
 			return (File.Exists (path) || Directory.Exists (path));
 		}
 
@@ -213,8 +203,6 @@ namespace Sharpen
 				// DirectoryNotFound exception for Mono.Unix. In this case the directory definitely
 				// does not exist.
 				return false;
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
 			}
 			return Directory.Exists (path);
 		}
@@ -230,37 +218,28 @@ namespace Sharpen
 				// If we have a file /foo/bar and probe the path /foo/bar/baz, we get a DirectoryNotFound exception
 				// because 'bar' is a file and therefore 'baz' cannot possibly exist. This is annoying.
 				return false;
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
 			}
 			return File.Exists (path);
 		}
 
 		public long LastModified ()
 		{
-			if (!Exists ())
-				return 0;
+            if (RunningOnLinux) {
+                var info = UnixFileInfo.GetFileSystemEntry(path);
+                return info.Exists ? info.LastWriteTimeUtc.ToMillisecondsSinceEpoch() : 0;
+            }
 
-			try {
-				if (RunningOnLinux)
-					return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path).LastWriteTimeUtc.ToMillisecondsSinceEpoch ();
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
-			}
-			return File.GetLastWriteTimeUtc (path).ToMillisecondsSinceEpoch ();
+            var info2 = new FileInfo(path);
+			return info2.Exists ? info2.LastWriteTimeUtc.ToMillisecondsSinceEpoch() : 0;
 		}
 
 		public long Length ()
 		{
-			try {
-				if (RunningOnLinux) {
-					var info = UnixFileInfo.GetFileSystemEntry (path);
-					return info.Exists ? info.Length : 0;
-				}
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
+			if (RunningOnLinux) {
+				var info = UnixFileInfo.GetFileSystemEntry (path);
+				return info.Exists ? info.Length : 0;
 			}
-			
+
 			// If you call .Length on a file that doesn't exist, an exception is thrown
 			var info2 = new FileInfo (path);
 			return info2.Exists ? info2.Length : 0;
@@ -316,16 +295,12 @@ namespace Sharpen
 
 		private void MakeFileWritable (string file)
 		{
-			try {
-				if (RunningOnLinux) {
-					var info = UnixFileInfo.GetFileSystemEntry (file);
-					info.FileAccessPermissions |= (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
-					return;
-				}
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
+			if (RunningOnLinux) {
+				var info = UnixFileInfo.GetFileSystemEntry (file);
+				info.FileAccessPermissions |= (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
+				return;
 			}
-			
+
 			FileAttributes fileAttributes = File.GetAttributes (file);
 			if ((fileAttributes & FileAttributes.ReadOnly) != 0) {
 				fileAttributes &= ~FileAttributes.ReadOnly;
@@ -370,18 +345,9 @@ namespace Sharpen
 					if (symlink != null) {
 						var newFile = new UnixSymbolicLinkInfo (name);
 						newFile.CreateSymbolicLinkTo (symlink.ContentsPath);
-					} else {
-						File.Move (path, name);
 					}
-					return true;
 				}
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
-			} catch {
-				return false;
-			}
 
-			try {
 				File.Move (path, name);
 				return true;
 			} catch {
@@ -398,14 +364,10 @@ namespace Sharpen
 
 		public void SetReadOnly ()
 		{
-			try {
-				if (RunningOnLinux) {
-					var info = UnixFileInfo.GetFileSystemEntry (path);
-					info.FileAccessPermissions &= ~ (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
-					return;
-				}
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
+			if (RunningOnLinux) {
+				var info = UnixFileInfo.GetFileSystemEntry (path);
+				info.FileAccessPermissions &= ~ (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
+				return;
 			}
 
 			var fileAttributes = File.GetAttributes (this.path) | FileAttributes.ReadOnly;
@@ -420,47 +382,39 @@ namespace Sharpen
 		// Don't change the case of this method, since ngit does reflection on it
 		public bool canExecute ()
 		{
-			try {
-				if (RunningOnLinux) {
-					UnixFileInfo fi = new UnixFileInfo (path);
-					if (!fi.Exists)
-						return false;
-					return 0 != (fi.FileAccessPermissions & (FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute));
-				}
-			} catch (EntryPointNotFoundException) {
-				RunningOnLinux = false;
+			if (RunningOnLinux) {
+				UnixFileInfo fi = new UnixFileInfo (path);
+				if (!fi.Exists)
+					return false;
+				return 0 != (fi.FileAccessPermissions & (FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute));
 			}
-			
+
 			return false;
 		}
 		
 		// Don't change the case of this method, since ngit does reflection on it
 		public bool setExecutable (bool exec)
 		{
-			try {
-				if (RunningOnLinux) {
-					UnixFileInfo fi = new UnixFileInfo (path);
-					FileAccessPermissions perms = fi.FileAccessPermissions;
-					if (exec) {
-						if (perms.HasFlag (FileAccessPermissions.UserRead))
-							perms |= FileAccessPermissions.UserExecute;
-						if (perms.HasFlag (FileAccessPermissions.OtherRead))
-							perms |= FileAccessPermissions.OtherExecute;
-						if ((perms.HasFlag (FileAccessPermissions.GroupRead)))
-							perms |= FileAccessPermissions.GroupExecute;
-					} else {
-						if (perms.HasFlag (FileAccessPermissions.UserRead))
-							perms &= ~FileAccessPermissions.UserExecute;
-						if (perms.HasFlag (FileAccessPermissions.OtherRead))
-							perms &= ~FileAccessPermissions.OtherExecute;
-						if ((perms.HasFlag (FileAccessPermissions.GroupRead)))
-							perms &= ~FileAccessPermissions.GroupExecute;
-					}
-					fi.FileAccessPermissions = perms;
-					return true;
+			if (RunningOnLinux) {
+				UnixFileInfo fi = new UnixFileInfo (path);
+				FileAccessPermissions perms = fi.FileAccessPermissions;
+				if (exec) {
+					if (perms.HasFlag (FileAccessPermissions.UserRead))
+						perms |= FileAccessPermissions.UserExecute;
+					if (perms.HasFlag (FileAccessPermissions.OtherRead))
+						perms |= FileAccessPermissions.OtherExecute;
+					if ((perms.HasFlag (FileAccessPermissions.GroupRead)))
+						perms |= FileAccessPermissions.GroupExecute;
+				} else {
+					if (perms.HasFlag (FileAccessPermissions.UserRead))
+						perms &= ~FileAccessPermissions.UserExecute;
+					if (perms.HasFlag (FileAccessPermissions.OtherRead))
+						perms &= ~FileAccessPermissions.OtherExecute;
+					if ((perms.HasFlag (FileAccessPermissions.GroupRead)))
+						perms &= ~FileAccessPermissions.GroupExecute;
 				}
-			} catch (EntryPointNotFoundException){
-				RunningOnLinux = false;
+				fi.FileAccessPermissions = perms;
+				return true;
 			}
 
 			return false;
