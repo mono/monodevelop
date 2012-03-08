@@ -422,7 +422,7 @@ namespace MonoDevelop.CSharp.Formatting
 				//xml doc comments
 				//check previous line was a doc comment
 				//check there's a following line?
-				if (trimmedPreviousLine.StartsWith ("///") && lineNumber + 1 < textEditorData.Document.LineCount) {
+				if (trimmedPreviousLine.StartsWith ("///")) {
 					if (textEditorData.GetTextAt (line.Offset, line.EditableLength).TrimStart ().StartsWith ("///"))
 						return false;
 					//check that the newline command actually inserted a newline

@@ -83,6 +83,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
 		}
 
+
 		[Test()]
 		public void TestDesiredColumnCaretUp ()
 		{
@@ -98,6 +99,43 @@ namespace Mono.TextEditor.Tests
 			
 			Assert.AreEqual (4, data.Caret.Column);
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
+		}
+
+		[Test()]
+		public void TestVirtualColumnDesiredColumnCaretUp ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "12345\n\n12345\n";
+			CaretMoveActions.Down (data);
+			CaretMoveActions.Right (data);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (DocumentLocation.MinColumn, data.Caret.Column);
+			Assert.AreEqual (DocumentLocation.MinColumn, data.Caret.DesiredColumn);
+			CaretMoveActions.Right (data);
+			CaretMoveActions.Up (data);
+
+			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.DesiredColumn);
+		}
+
+		[Test()]
+		public void TestVirtualColumnDesiredColumnCaretDown ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "12345\n\n12345\n";
+			var segs = new List<FoldSegment> ();
+			segs.Add (new FoldSegment (data.Document, "", 5, 5, FoldingType.Region));
+			data.Document.UpdateFoldSegments (segs);
+			CaretMoveActions.Down (data);
+			CaretMoveActions.Right (data);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (DocumentLocation.MinColumn, data.Caret.Column);
+			Assert.AreEqual (DocumentLocation.MinColumn, data.Caret.DesiredColumn);
+			CaretMoveActions.Right (data);
+			CaretMoveActions.Down (data);
+
+			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.DesiredColumn);
 		}
 
 		[Test()]
