@@ -41,12 +41,15 @@ using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
+
 	[TestFixture]
 	public class CSharpTextEditorIndentationTests : TestBase
 	{
+		const string eolMarker = "\n";
 		TextEditorData Create (string input)
 		{
 			var data = new TextEditorData ();
+			data.Options.DefaultEolMarker = eolMarker;
 			data.Options.IndentStyle = IndentStyle.Smart;
 			int idx = input.IndexOf ('$');
 			if (idx > 0)
@@ -81,93 +84,82 @@ namespace MonoDevelop.CSharpBinding.Tests
 		[Test]
 		public void TestXmlDocumentContinuation ()
 		{
-			var data = Create (@"		///
-		/// Hello$
-		class Foo {}
-");
+			var data = Create (
+				"\t\t///" + eolMarker + 
+					"\t\t/// Hello$" + eolMarker +
+					"\t\tclass Foo {}"
+			);
+
 			MiscActions.InsertNewLine (data);
 
-			CheckOutput (data, @"		///
-		/// Hello
-		/// $
-		class Foo {}
-");
+			CheckOutput (data,
+				"\t\t///" + eolMarker +
+				"\t\t/// Hello" + eolMarker +
+				"\t\t/// $" + eolMarker +
+				"\t\tclass Foo {}");
 		}
 
 		[Test]
 		public void TestXmlDocumentContinuationCase2 ()
 		{
-			var data = Create (@"		///
-		/// Hel$lo
-		class Foo {}
-");
+			var data = Create ("\t\t///" + eolMarker +
+"\t\t/// Hel$lo" + eolMarker +
+"\t\tclass Foo {}");
 			MiscActions.InsertNewLine (data);
 
-			CheckOutput (data, @"		///
-		/// Hel
-		/// $lo
-		class Foo {}
-");
+			CheckOutput (data, "\t\t///" + eolMarker +
+"\t\t/// Hel" + eolMarker +
+"\t\t/// $lo" + eolMarker +
+				"\t\tclass Foo {}");
 		}
 
 		[Test]
 		public void TestMultiLineCommentContinuation ()
 		{
-			var data = Create (@"		/*$
-		class Foo {}
-");
+			var data = Create ("\t\t/*$" + eolMarker + "\t\tclass Foo {}");
 			MiscActions.InsertNewLine (data);
 
-			CheckOutput (data, @"		/*
-		 * $
-		class Foo {}
-");
+			CheckOutput (data, "\t\t/*" + eolMarker + "\t\t * $" + eolMarker + "\t\tclass Foo {}");
 		}
 
 		[Test]
 		public void TestMultiLineCommentContinuationCase2 ()
 		{
-			var data = Create (@"		/*
-		 * Hello$
-		class Foo {}
-");
+			var data = Create (
+				"\t\t/*" + eolMarker +
+				"\t\t * Hello$" + eolMarker +
+				"\t\tclass Foo {}");
 			MiscActions.InsertNewLine (data);
-
-			CheckOutput (data, @"		/*
-		 * Hello
-		 * $
-		class Foo {}
-");
+			CheckOutput (data, 
+			             "\t\t/*" + eolMarker +
+			             "\t\t * Hello" + eolMarker +
+			             "\t\t * $" + eolMarker +
+			             "\t\tclass Foo {}");
 		}
 
 		[Test]
 		public void TestMultiLineCommentContinuationCase3 ()
 		{
-			var data = Create (@"		/*
-		 * Hel$lo
-		class Foo {}
-");
+			var data = Create ("\t\t/*" + eolMarker +
+			             "\t\t * Hel$lo" + eolMarker +
+			             "class Foo {}");
 			MiscActions.InsertNewLine (data);
 
-			CheckOutput (data, @"		/*
-		 * Hel
-		 * $lo
-		class Foo {}
-");
+			CheckOutput (data,
+			             "\t\t/*" + eolMarker +
+			             "\t\t * Hel" + eolMarker +
+			             "\t\t * $lo" + eolMarker +
+			             "class Foo {}");
 		}
 
 		[Test]
 		public void TestStringContination ()
 		{
-			var data = Create (@"		""Hello$ World""");
+			var data = Create ("\t\t\"Hello$ World\"");
 			MiscActions.InsertNewLine (data);
 
-			CheckOutput (data, @"		""Hello"" +
-		""$World""");
+			CheckOutput (data, "\t\t\"Hello\" +" + eolMarker + "\t\t\"$World\"");
 		}
-
-
-
 
 	}
 }

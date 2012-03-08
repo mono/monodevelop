@@ -199,6 +199,16 @@ namespace Mono.TextEditor
 		{
 			int result = 1;
 			int offset = Offset;
+			if (editor.Options.IndentStyle == IndentStyle.Virtual && EditableLength == 0 && logicalColumn > DocumentLocation.MinColumn) {
+				foreach (char ch in editor.GetIndentationString (Offset)) {
+					if (ch == '\t') {
+						result += editor.Options.TabSize;
+						continue;
+					}
+					result++;
+				}
+				return result;
+			}
 			for (int i = 0; i < logicalColumn - 1; i++) {
 				if (i < EditableLength && editor.Document.GetCharAt (offset + i) == '\t') {
 					result = TextViewMargin.GetNextTabstop (editor, result);
