@@ -74,11 +74,6 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\contrib\Mono.Cecil\Mono.Cecil.csproj">
-      <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
-      <Name>Mono.Cecil</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
       <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
       <Name>Mono.Debugging.Soft</Name>
@@ -88,6 +83,10 @@
       <Project>{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}</Project>
       <Name>Mono.Debugger.Soft</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\contrib\Mono.Cecil\src\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
     </ProjectReference>
   </ItemGroup>
   <ProjectExtensions>

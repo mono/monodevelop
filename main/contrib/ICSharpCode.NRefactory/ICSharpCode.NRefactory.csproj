@@ -20,7 +20,6 @@
     <AssemblyOriginatorKeyFile>ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -59,12 +58,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Mono.Cecil\Mono.Cecil.csproj">
-      <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -255,4 +248,10 @@
     <Folder Include="Completion\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Cecil\src\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

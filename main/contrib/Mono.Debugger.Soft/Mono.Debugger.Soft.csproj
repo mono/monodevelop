@@ -11,7 +11,6 @@
     <AssemblyName>Mono.Debugger.Soft</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>mono.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -116,13 +115,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Mono.Cecil\Mono.Cecil.csproj">
-      <Project>{3EC06433-F168-4C5B-A885-99CE4AB617E1}</Project>
-      <Name>Mono.Cecil</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
@@ -138,4 +130,10 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Cecil\src\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
