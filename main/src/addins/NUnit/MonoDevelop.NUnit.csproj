@@ -32,10 +32,10 @@
     </Execution>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+    <Reference Include="nunit.core">
       <HintPath>lib\nunit.core.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+    <Reference Include="nunit.framework">
       <HintPath>lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
