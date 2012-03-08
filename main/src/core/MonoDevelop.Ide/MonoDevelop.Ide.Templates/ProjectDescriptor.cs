@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Templates
 	{
 		private string name;
 		private string type;
+		private string directory;
 
 		private List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
 		private List<SingleFileDescriptionTemplate> resources = new List<SingleFileDescriptionTemplate> ();
@@ -63,7 +64,10 @@ namespace MonoDevelop.Ide.Templates
 			projectDescriptor.type = xmlElement.GetAttribute ("type");
 			if (String.IsNullOrEmpty (projectDescriptor.type))
 				projectDescriptor.type = "DotNet";
-
+			
+			if (xmlElement.Attributes["directory"] != null)
+				projectDescriptor.directory = xmlElement.Attributes["directory"].Value;
+			
 			if (xmlElement["Files"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Files"].ChildNodes)
 					if (xmlNode is XmlElement)
@@ -102,41 +106,78 @@ namespace MonoDevelop.Ide.Templates
 
 			return projectDescriptor;
 		}
+		
+		string ParseAttribute(ProjectCreateInformation projectCreateInformation, string name)
+		{
+			return StringParserService.Parse (name, new string[,] { {
+					"ProjectName",
+					projectCreateInformation.ProjectName
+				} });
+		}
+		
+		ProjectCreateInformation GetCreateInformation(ProjectCreateInformation projectCreateInformation)
+		{
+			ProjectCreateInformation localProjectCI;
+			localProjectCI = new ProjectCreateInformation (projectCreateInformation);
+			localProjectCI.ProjectName = ParseAttribute (projectCreateInformation, name);
+
+			if (!string.IsNullOrEmpty (directory) && directory != ".") {
+				var dir = ParseAttribute (projectCreateInformation, directory);
+				localProjectCI.SolutionPath = Path.Combine (projectCreateInformation.SolutionPath, dir);
+				localProjectCI.ProjectBasePath = Path.Combine (projectCreateInformation.SolutionPath, dir);
+				
+				if (!Directory.Exists (localProjectCI.SolutionPath))
+					Directory.CreateDirectory (localProjectCI.SolutionPath);
+				
+				if (!Directory.Exists (localProjectCI.ProjectBasePath))
+					Directory.CreateDirectory (localProjectCI.ProjectBasePath);
+			}
+			return localProjectCI;
+		}
 
 		public SolutionEntityItem CreateItem (ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			if (string.IsNullOrEmpty (projectOptions.GetAttribute ("language")) && !string.IsNullOrEmpty (defaultLanguage))
 				projectOptions.SetAttribute ("language", defaultLanguage);
+			
+			var localProjectCI = GetCreateInformation (projectCreateInformation);
 
-			Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);
+			Project project = Services.ProjectService.CreateProject (type, localProjectCI, projectOptions);
 			return project;
 		}
 
 		public void InitializeItem (SolutionItem policyParent, ProjectCreateInformation projectCreateInformation, string defaultLanguage, SolutionEntityItem item)
 		{
+			var localProjectCI = GetCreateInformation (projectCreateInformation);
+
 			MonoDevelop.Projects.Project project = item as MonoDevelop.Projects.Project;
 
 			if (project == null) {
 				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type: {0}", type));
 				return;
 			}
-
-			string pname = StringParserService.Parse (name, new string[,] { {
-				"ProjectName",
-				projectCreateInformation.ProjectName
-			} });
 			
 			// Set the file before setting the name, to make sure the file extension is kept
-			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, pname);
-			project.Name = pname;
+			project.FileName = Path.Combine (localProjectCI.ProjectBasePath, localProjectCI.ProjectName);
+			project.Name = localProjectCI.ProjectName;
 			
 			var dnp = project as DotNetProject;
 			if (dnp != null) {
 				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.SupportsFramework (dnp.TargetFramework)) {
 					SetClosestSupportedTargetFramework (policyParent.ParentSolution.FileFormat, dnp);
 				}
-				foreach (ProjectReference projectReference in references)
-					dnp.References.Add (projectReference);
+				foreach (ProjectReference projectReference in references) {
+					var refTo = ParseAttribute (projectCreateInformation, projectReference.Reference);
+					ProjectReference localReference;
+					if (refTo != projectReference.Reference) {
+						localReference = new ProjectReference(projectReference.ReferenceType, refTo);
+						localReference.SpecificVersion = projectReference.SpecificVersion;
+					}
+					else
+						localReference = projectReference;
+					
+					dnp.References.Add (localReference);
+				}
 			}
 
 			foreach (SingleFileDescriptionTemplate resourceTemplate in resources) {
