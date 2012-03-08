@@ -111,7 +111,7 @@ class SomeNew {
 		[Test]
 		public void TestFileHeader ()
 		{
-			Test (@"[// 
+			var doc = Test (@"[// 
 // EnumMemberDeclaration.cs
 //
 // Author:
@@ -137,13 +137,16 @@ class SomeNew {
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.]
 using System;");
+			foreach (var cmt in doc.Comments) {
+				Assert.IsFalse (cmt.Text.StartsWith ("//"));
+			}
+
 		}
 		
-		[Ignore("To be done.")]
 		[Test]
 		public void TestRegions ()
 		{
-			Test (@"class Test
+			var doc = Test (@"class Test
 {
 	[#region TestRegion
 	void FooBar ()
@@ -151,9 +154,10 @@ using System;");
 	}
 	#endregion]
 }");
+			Assert.AreEqual (1, doc.AdditionalFolds.Count);
+			Assert.AreEqual ("TestRegion", doc.AdditionalFolds [0].Name);
 		}
 		
-	
 		[Test]
 		public void TestDocComment ()
 		{
@@ -166,8 +170,10 @@ using System;");
 	{
 	}
 }");
-			foreach (var cmt in doc.Comments)
+			foreach (var cmt in doc.Comments) {
+				Assert.IsFalse (cmt.Text.StartsWith ("///"));
 				Assert.IsTrue (cmt.IsDocumentation);
+			}
 		}
 		
 		
