@@ -878,9 +878,8 @@ namespace Mono.TextEditor
 			Gdk.ModifierType mod;
 			KeyboardShortcut[] accels;
 			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
-			
 			//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
-			if ((key == Gdk.Key.Menu && mod == ModifierType.None) || (key == Gdk.Key.F10 && mod == ModifierType.ShiftMask)) {
+			if (key == Gdk.Key.Menu || (key == Gdk.Key.F10 && mod.HasFlag (ModifierType.ShiftMask))) {
 				OnPopupMenu ();
 				return true;
 			}
