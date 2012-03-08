@@ -64,14 +64,14 @@ namespace MonoDevelop.Ide.Templates
 			if (String.IsNullOrEmpty (projectDescriptor.type))
 				projectDescriptor.type = "DotNet";
 
-			if (xmlElement["Files"] != null) {
+			if (xmlElement ["Files"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Files"].ChildNodes)
 					if (xmlNode is XmlElement)
 						projectDescriptor.files.Add (
 							FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode, baseDirectory));
 			}
 
-			if (xmlElement["Resources"] != null) {
+			if (xmlElement ["Resources"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Resources"].ChildNodes) {
 					if (xmlNode is XmlElement) {
 						var fileTemplate = FileDescriptionTemplate.CreateTemplate ((XmlElement)xmlNode, baseDirectory);
@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 
-			if (xmlElement["References"] != null) {
+			if (xmlElement ["References"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["References"].ChildNodes) {
 					XmlElement elem = (XmlElement)xmlNode;
 					var refType = elem.GetAttribute ("type");
@@ -92,11 +92,14 @@ namespace MonoDevelop.Ide.Templates
 					string specificVersion = elem.GetAttribute ("SpecificVersion");
 					if (!string.IsNullOrEmpty (specificVersion))
 						projectReference.SpecificVersion = bool.Parse (specificVersion);
+					string localCopy = elem.GetAttribute ("LocalCopy");
+					if (!string.IsNullOrEmpty (localCopy) && projectReference.CanSetLocalCopy)
+						projectReference.LocalCopy = bool.Parse (localCopy);
 					projectDescriptor.references.Add (projectReference);
 				}
 			}
 
-			projectDescriptor.projectOptions = xmlElement["Options"];
+			projectDescriptor.projectOptions = xmlElement ["Options"];
 			if (projectDescriptor.projectOptions == null)
 				projectDescriptor.projectOptions = xmlElement.OwnerDocument.CreateElement ("Options");
 

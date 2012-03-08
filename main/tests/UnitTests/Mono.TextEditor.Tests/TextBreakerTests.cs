@@ -28,7 +28,6 @@ using NUnit.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Utils;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 using System.Collections.Generic;
 
 namespace Mono.TextEditor.Tests

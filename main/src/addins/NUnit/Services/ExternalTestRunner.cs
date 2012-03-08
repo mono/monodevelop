@@ -48,7 +48,7 @@ namespace MonoDevelop.NUnit.External
 	{
 		NUnitTestRunner runner;
 
-		public ExternalTestRunner ( )
+		public ExternalTestRunner ()
 		{
 			// In some cases MS.NET can't properly resolve assemblies even if they
 			// are already loaded. For example, when deserializing objects from remoting.
@@ -59,6 +59,16 @@ namespace MonoDevelop.NUnit.External
 				}
 				return null;
 			};
+			
+			// Add standard services to ServiceManager
+			ServiceManager.Services.AddService (new DomainManager ());
+			ServiceManager.Services.AddService (new ProjectService ());
+			ServiceManager.Services.AddService (new AddinRegistry ());
+			ServiceManager.Services.AddService (new AddinManager ());
+			ServiceManager.Services.AddService (new TestAgency ());
+			
+			// Initialize services
+			ServiceManager.Services.InitializeServices ();
 			
 			// Preload the runner assembly. Required because TestNameFilter is implemented there
 			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
@@ -84,10 +94,10 @@ namespace MonoDevelop.NUnit.External
 		{
 			TestPackage package = new TestPackage (assemblyPath);
 			package.Settings ["ShadowCopyFiles"] = false;
-			DomainManager dm = new DomainManager ();
-			AppDomain domain = dm.CreateDomain (package);
+			
+			AppDomain domain = Services.DomainManager.CreateDomain (package);
 			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
-			runner = (NUnitTestRunner) domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.NUnit.External.NUnitTestRunner");
+			runner = (NUnitTestRunner)domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.NUnit.External.NUnitTestRunner");
 			runner.Initialize (typeof(NF.Assert).Assembly.Location, typeof(NC.Test).Assembly.Location);
 			return runner;
 		}
@@ -116,11 +126,12 @@ namespace MonoDevelop.NUnit.External
 		{
 		}
 		
-		public void SuiteFinished (TestSuiteResult result)
+		public void SuiteFinished (TestResult result)
 		{
 			testSuites.Pop ();
 			wrapped.SuiteFinished (GetTestName (result.Test), GetLocalTestResult (result));
 		}
+
 		Stack<string> testSuites = new Stack<string>();
 		public void SuiteStarted (TestName suite)
 		{
@@ -129,7 +140,7 @@ namespace MonoDevelop.NUnit.External
 			wrapped.SuiteStarted (GetTestName (suite));
 		}
 		
-		public void TestFinished (TestCaseResult result)
+		public void TestFinished (TestResult result)
 		{
 			wrapped.TestFinished (GetTestName (result.Test), GetLocalTestResult (result));
 		}
@@ -188,9 +199,9 @@ namespace MonoDevelop.NUnit.External
 			UnitTestResult res = new UnitTestResult ();
 			res.Message = t.Message;
 			
-			if (t is TestSuiteResult) {
+			if (t.Test.IsSuite) {
 				int s=0, f=0, i=0;
-				CountResults ((TestSuiteResult)t, ref s, ref f, ref i);
+				CountResults (t, ref s, ref f, ref i);
 				res.TotalFailures = f;
 				res.TotalSuccess = s;
 				res.TotalIgnored = i;
@@ -238,21 +249,21 @@ namespace MonoDevelop.NUnit.External
 			return res;
 		}		
 		
-		void CountResults (TestSuiteResult ts, ref int s, ref int f, ref int i)
+		void CountResults (TestResult ts, ref int s, ref int f, ref int i)
 		{
 			if (ts.Results == null)
 				return;
 
 			foreach (TestResult t in ts.Results) {
-				if (t is TestCaseResult) {
+				if (!t.Test.IsSuite) {
 					if (t.IsFailure)
 						f++;
 					else if (!t.Executed)
 						i++;
 					else
 						s++;
-				} else if (t is TestSuiteResult) {
-					CountResults ((TestSuiteResult) t, ref s, ref f, ref i);
+				} else {
+					CountResults (t, ref s, ref f, ref i);
 				}
 			}
 		}
