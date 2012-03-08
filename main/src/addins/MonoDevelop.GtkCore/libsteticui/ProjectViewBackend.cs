@@ -307,7 +307,7 @@ namespace Stetic {
 		{
 			if (Stetic.Editor.GtkWorkarounds.IsContextMenuButton (evt))
 				return OnPopupMenu ();
-			return base.OnButtonPressEvent (evt);
+			return base.OnButtonReleaseEvent (evt);
 		}
 
 		protected override bool OnPopupMenu ()

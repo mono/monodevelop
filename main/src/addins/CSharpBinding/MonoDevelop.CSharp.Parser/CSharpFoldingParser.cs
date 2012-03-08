@@ -35,8 +35,66 @@ namespace MonoDevelop.CSharp.Parser
 	public unsafe class CSharpFoldingParser : IFoldingParser
 	{
 		#region IFoldingParser implementation
+
+		static unsafe bool StartsIdentifier (char* ptr, char* endPtr, string identifier)
+		{
+			fixed (char* startId = identifier) {
+				char* idPtr = startId;
+				char* endId = startId + identifier.Length;
+				while (idPtr < endId) {
+					if (ptr >= endPtr)
+						return false;
+					if (*idPtr != *ptr)
+						return false;
+					idPtr++;
+					ptr++;
+				}
+				return true;
+			}
+		}
+
+		static unsafe void SkipWhitespaces (ref char* ptr, char* endPtr, ref int column)
+		{
+			while (ptr < endPtr) {
+				char ch = *ptr;
+				if (ch != ' ' && ch != '\t')
+					return;
+				column++;
+				ptr++;
+			}
+		}
+
+		static unsafe string ReadToEol (string content, ref char* ptr, char* endPtr, ref int line, ref int column)
+		{
+			char* lineBeginPtr = ptr;
+			char* lineEndPtr = lineBeginPtr;
+
+			while (ptr < endPtr) {
+				switch (*ptr) {
+				case '\n':
+					if (lineEndPtr == lineBeginPtr)
+						lineEndPtr = ptr;
+					line++;
+					column = 1;
+					ptr++;
+					fixed (char* startPtr = content) {
+						return content.Substring ((int)(lineBeginPtr - startPtr), (int)(lineEndPtr - lineBeginPtr));
+					}
+				case '\r':
+					lineEndPtr = ptr;
+					if (ptr + 1 < endPtr && *(ptr + 1) == '\n')
+						ptr++;
+					goto case '\n';
+				}
+				column++;
+				ptr++;
+			}
+			return "";
+		}
+
 		public unsafe ParsedDocument Parse (string fileName, string content)
 		{
+			var regionStack = new Stack<Tuple<string, TextLocation>> ();
 			var result = new DefaultParsedDocument (fileName);
 			bool inSingleComment = false, inMultiLineComment = false;
 			bool inString = false, inVerbatimString = false;
@@ -50,7 +108,36 @@ namespace MonoDevelop.CSharp.Parser
 				char* ptr = startPtr;
 				char* beginPtr = ptr;
 				while (ptr < endPtr) {
+
 					switch (*ptr) {
+					case '#':
+						if (!inLineStart)
+							break;
+						ptr++;
+
+						if (StartsIdentifier (ptr, endPtr, "region")) {
+							var regionLocation = new TextLocation (line, column);
+							column++;
+							ptr += "region".Length;
+							column += "region".Length;
+							SkipWhitespaces (ref ptr, endPtr, ref column);
+							regionStack.Push (Tuple.Create (ReadToEol (content, ref ptr, endPtr, ref line, ref column), regionLocation));
+						} else if (StartsIdentifier (ptr, endPtr, "endregion")) {
+							column++;
+							ptr += "endregion".Length;
+							column += "endregion".Length;
+							if (regionStack.Count > 0) {
+								var beginRegion = regionStack.Pop ();
+								result.Add (new FoldingRegion (
+									beginRegion.Item1, 
+									new DomRegion (beginRegion.Item2.Line, beginRegion.Item2.Column, line, column),
+									FoldType.UserRegion,
+									true));
+							}
+						} else {
+							column++;
+						}
+						break;
 					case '/':
 						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment)
 							break;
