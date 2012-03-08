@@ -183,6 +183,10 @@
 			_description = "Generates a getter for a field."
 			class = "MonoDevelop.CSharp.ContextAction.GenerateGetter" />
 		<Action mimeType="text/x-csharp"
+			_title = "Generate property"
+			_description = "Generates a getter and setter for a field."
+			class = "MonoDevelop.CSharp.ContextAction.GenerateProperty" />
+		<Action mimeType="text/x-csharp"
 			_title = "Create local variable"
 			_description = "Creates a local variable for a undefined variable."
 			class = "MonoDevelop.CSharp.ContextAction.CreateLocalVariable" />

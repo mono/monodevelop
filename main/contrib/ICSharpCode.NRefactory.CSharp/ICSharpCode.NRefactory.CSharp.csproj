@@ -327,6 +327,7 @@
     <Compile Include="Ast\TokenRole.cs" />
     <Compile Include="Refactoring\ContextAction\RemoveRegion.cs" />
     <Compile Include="Ast\TypeMembers\EntityDeclaration.cs" />
+    <Compile Include="Refactoring\ContextAction\GenerateProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -164,7 +164,11 @@ namespace MonoDevelop.CSharp.ContextAction
 	public class GenerateGetter : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.GenerateGetter>
 	{
 	}
-	
+
+	public class GenerateProperty : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.GenerateProperty>
+	{
+	}
+
 	public class CreateEventInvocator : ContextActionWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.CreateEventInvocator>
 	{
 	}

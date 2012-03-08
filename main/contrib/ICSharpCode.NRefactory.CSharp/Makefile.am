@@ -220,6 +220,7 @@ FILES =  \
 	Refactoring/ContextAction/CreateProperty.cs \
 	Refactoring/ContextAction/FlipOperatorArguments.cs \
 	Refactoring/ContextAction/GenerateGetter.cs \
+	Refactoring/ContextAction/GenerateProperty.cs \
 	Refactoring/ContextAction/GenerateSwitchLabels.cs \
 	Refactoring/ContextAction/InsertAnonymousMethodSignature.cs \
 	Refactoring/ContextAction/IntroduceFormatItem.cs \
