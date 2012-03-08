@@ -76,7 +76,7 @@ namespace MonoDevelop.NUnit.External
 			if (!string.IsNullOrEmpty (suiteName))
 				package.TestName = suiteName;
 			tr.Load (package);
-			return tr.Run (listener, filter);
+			return tr.Run (listener, filter, false, LoggingThreshold.All);
 		}
 		
 		public NunitTestInfo GetTestInfo (string path, List<string> supportAssemblies)
@@ -153,7 +153,7 @@ namespace MonoDevelop.NUnit.External
 		
 		public bool Pass (ITest test)
 		{
-			if ((test is global::NUnit.Core.TestCase) && test.TestName.FullName == name)
+			if (!test.IsSuite && test.TestName.FullName == name)
 				return true;
 			if (test.Tests != null) {
 				foreach (ITest ct in test.Tests) {
