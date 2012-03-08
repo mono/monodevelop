@@ -84,6 +84,7 @@ namespace Sharpen
 		{
 			if (properties == null) {
 				properties = new Hashtable ();
+				properties ["jgit.fs.debug"] = "false";
 				properties ["user.home"] = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 				properties ["java.library.path"] = Environment.GetEnvironmentVariable ("PATH");
 				if (Path.DirectorySeparatorChar != '\\')
