@@ -295,6 +295,8 @@
     <Compile Include="gtk-gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentVirtualSpaceManager.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatterTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
