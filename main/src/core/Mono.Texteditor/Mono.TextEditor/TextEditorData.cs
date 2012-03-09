@@ -1249,7 +1249,13 @@ namespace Mono.TextEditor
 			int line = LogicalToVisualLine (location.Line);
 			LineSegment lineSegment = this.GetLine (location.Line);
 			int column = lineSegment != null ? lineSegment.GetVisualColumn (this, location.Column) : location.Column;
+			Console.WriteLine (lineSegment.EditableLength);
 			return new DocumentLocation (line, column);
+		}
+
+		public DocumentLocation LogicalToVisualLocation (int line, int column)
+		{
+			return LogicalToVisualLocation (new DocumentLocation (line, column));
 		}
 
 		public int LogicalToVisualLine (int logicalLine)
