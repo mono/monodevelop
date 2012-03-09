@@ -968,7 +968,7 @@ namespace MonoDevelop.VersionControl.Views
 				});
 			} else if (info.Exception != null) {
 				text = new [] { GettextCatalog.GetString ("Could not get diff information. ") + info.Exception.Message };
-			} else if (string.IsNullOrEmpty (info.Diff.Value.Content)) {
+			} else if (info.Diff.Value == null || string.IsNullOrEmpty (info.Diff.Value.Content)) {
 				text = new [] { GettextCatalog.GetString ("No differences found") };
 			} else {
 				text = info.Diff.Value.Content.Split ('\n');
