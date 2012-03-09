@@ -120,7 +120,8 @@ namespace MonoDevelop.Debugger.Soft
 						throw new InvalidOperationException ("Assembly has no assembly name");
 					
 					AssemblyName name = new AssemblyName (asm.Name.FullName);
-					pathMap.Add (asm.Name.FullName, file);
+					if (!pathMap.ContainsKey (asm.Name.FullName))
+						pathMap.Add (asm.Name.FullName, file);
 					names.Add (name);
 				} catch (Exception ex) {
 					dsi.LogMessage = GettextCatalog.GetString ("Could not get assembly name for user assembly '{0}'. " +
