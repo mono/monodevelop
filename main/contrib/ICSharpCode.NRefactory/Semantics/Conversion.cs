@@ -69,6 +69,11 @@ namespace ICSharpCode.NRefactory.Semantics
 		public static readonly Conversion BoxingConversion = new BuiltinConversion(true, 7);
 		public static readonly Conversion UnboxingConversion = new BuiltinConversion(false, 8);
 		
+		/// <summary>
+		/// C# 'as' cast.
+		/// </summary>
+		public static readonly Conversion TryCast = new BuiltinConversion(false, 9);
+		
 		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod, bool isLifted)
 		{
 			if (operatorMethod == null)
@@ -204,6 +209,10 @@ namespace ICSharpCode.NRefactory.Semantics
 				get { return type == 8; }
 			}
 			
+			public override bool IsTryCast {
+				get { return type == 9; }
+			}
+			
 			public override string ToString()
 			{
 				string name = null;
@@ -231,6 +240,8 @@ namespace ICSharpCode.NRefactory.Semantics
 						return "boxing conversion";
 					case 8:
 						return "unboxing conversion";
+					case 9:
+						return "try cast";
 				}
 				return (isImplicit ? "implicit " : "explicit ") + name + " conversion";
 			}
@@ -334,6 +345,13 @@ namespace ICSharpCode.NRefactory.Semantics
 		}
 		
 		public virtual bool IsExplicit {
+			get { return false; }
+		}
+		
+		/// <summary>
+		/// Gets whether the conversion is an '<c>as</c>' cast.
+		/// </summary>
+		public virtual bool IsTryCast {
 			get { return false; }
 		}
 		

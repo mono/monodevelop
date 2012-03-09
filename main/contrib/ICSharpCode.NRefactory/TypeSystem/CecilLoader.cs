@@ -445,10 +445,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				var dllImport = new DefaultUnresolvedAttribute(dllImportAttributeTypeRef, new[] { KnownTypeReference.String });
 				dllImport.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, info.Module.Name));
 				
-//				if (info.IsBestFitDisabled)
-//					dllImport.AddNamedFieldArgument("BestFitMapping", falseValue);
-//				if (info.IsBestFitEnabled)
-//					dllImport.AddNamedFieldArgument("BestFitMapping", trueValue);
+				if (info.IsBestFitDisabled)
+					dllImport.AddNamedFieldArgument("BestFitMapping", falseValue);
+				if (info.IsBestFitEnabled)
+					dllImport.AddNamedFieldArgument("BestFitMapping", trueValue);
 				
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
