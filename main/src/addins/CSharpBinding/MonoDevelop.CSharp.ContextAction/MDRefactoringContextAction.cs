@@ -31,6 +31,7 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -54,14 +55,14 @@ namespace MonoDevelop.CSharp.ContextAction
 			return GetMenuText (context);
 		}
 		
-		protected abstract bool IsValid (MDRefactoringContext context);
+		protected abstract bool IsValid (MDRefactoringContext context, CancellationToken cancellationToken);
 		
-		public sealed override bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+		public sealed override bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
 			var context = new MDRefactoringContext (document, loc);
 			if (context.Unit == null)
 				return false;
-			return IsValid (context);
+			return IsValid (context, cancellationToken);
 		}
 		
 		protected abstract void Run (MDRefactoringContext context);
@@ -71,7 +72,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			var context = new MDRefactoringContext (document, loc);
 			if (context.Unit == null)
 				return;
-			if (!IsValid (context))
+			if (!IsValid (context, default (CancellationToken)))
 				return;
 			
 			Run (context);

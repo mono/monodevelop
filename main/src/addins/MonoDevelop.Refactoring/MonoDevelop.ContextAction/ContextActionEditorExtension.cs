@@ -93,7 +93,8 @@ namespace MonoDevelop.ContextAction
 				quickFixTimeout = 0;
 			}
 		}
-		
+
+
 		public override void CursorPositionChanged ()
 		{
 			RemoveWidget ();

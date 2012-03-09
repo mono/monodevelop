@@ -240,7 +240,7 @@ namespace MonoDevelop.Refactoring
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 			
-			var parsedDocument = doc.ParsedDocument;
+			var parsedDocument = doc.UpdateParseDocument ();
 			if (parsedDocument == null)
 				return;
 			
@@ -282,28 +282,20 @@ namespace MonoDevelop.Refactoring
 					ciset.CommandInfos.Add (info, new System.Action (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
-			var ext = doc.GetContent<ContextActionEditorExtension> ();
-			if (ext != null) {
-				var fixes = ext.Fixes;
-				if (fixes != null) {
-					var loc = doc.Editor.Caret.Location;
-					bool first = true;
-					foreach (var fix in fixes) {
-						if (!fix.IsValid (doc, loc))
-							continue;
-						if (first) {
-							first = false;
-							if (ciset.CommandInfos.Count > 0)
-								ciset.CommandInfos.AddSeparator ();
-						}
-						ciset.CommandInfos.Add (fix.GetMenuText (doc, loc), new System.Action (delegate {
-							fix.Run (doc, loc);
-						}));
-					}
+
+			var loc = doc.Editor.Caret.Location;
+			bool first = true;
+			foreach (var fix in RefactoringService.GetValidActions (doc, loc).Result) {
+				if (first) {
+					first = false;
+					if (ciset.CommandInfos.Count > 0)
+						ciset.CommandInfos.AddSeparator ();
 				}
+				ciset.CommandInfos.Add (fix.GetMenuText (doc, loc), new System.Action (delegate {
+					fix.Run (doc, loc);
+				}));
 			}
-			
-			
+
 			if (ciset.CommandInfos.Count > 0) {
 				ainfo.Add (ciset, null);
 				added = true;

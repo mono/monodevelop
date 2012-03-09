@@ -35,6 +35,8 @@ using MonoDevelop.Inspection;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Refactoring
 {
@@ -155,6 +157,21 @@ namespace MonoDevelop.Refactoring
 		{
 			return inspectors.Where (i => i.MimeType == mimeTye);
 		}
+
+		
+		
+		public static Task<IEnumerable<ContextAction>> GetValidActions (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			return Task.Factory.StartNew (delegate {
+				try {
+					string disabledNodes = PropertyService.Get ("ContextActions." + doc.Editor.Document.MimeType, "") ?? "";
+					return contextActions.Where (fix => disabledNodes.IndexOf (fix.Type.FullName) < 0 && fix.Action.IsValid (doc, loc, cancellationToken)).Select (fix => fix.Action);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error in analysis service", ex);
+					return Enumerable.Empty<ContextAction> ();
+				}
+			}, cancellationToken);
+		}
 		
 		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<ContextAction>> callback)
 		{
@@ -162,7 +179,7 @@ namespace MonoDevelop.Refactoring
 				try {
 					string disabledNodes = PropertyService.Get ("ContextActions." + doc.Editor.Document.MimeType, "") ?? "";
 					
-					var availableFixes = new List<ContextAction> (contextActions.Where (fix => disabledNodes.IndexOf (fix.Type.FullName) < 0 && fix.Action.IsValid (doc, loc)).Select (fix => fix.Action));
+					var availableFixes = new List<ContextAction> (contextActions.Where (fix => disabledNodes.IndexOf (fix.Type.FullName) < 0 && fix.Action.IsValid (doc, loc, CancellationToken.None)).Select (fix => fix.Action));
 					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 					if (ext != null) {
 						foreach (var result in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc.Line, loc.Column))) {

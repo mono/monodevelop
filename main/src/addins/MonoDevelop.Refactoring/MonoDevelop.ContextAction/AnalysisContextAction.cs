@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.AnalysisCore;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using System.Threading;
 
 namespace MonoDevelop.ContextAction
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.ContextAction
 			this.Description = result.Message;
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
 			return true;
 		}

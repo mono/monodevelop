@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using System.Threading;
 
 namespace MonoDevelop.ContextAction
 {
@@ -55,7 +56,8 @@ namespace MonoDevelop.ContextAction
 		}
 		
 		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
-		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
+
+		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
 		
 /*		public static ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)
 		{
