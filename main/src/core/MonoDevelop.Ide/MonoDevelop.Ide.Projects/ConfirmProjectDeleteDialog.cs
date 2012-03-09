@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -117,16 +118,21 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public List<FilePath> GetFilesToDelete ()
+		public List<FilePath> GetFilesToDelete (Solution parentSol = null)
 		{
 			List<FilePath> files = new List<FilePath> ();
 			
 			if (radioDeleteAll.Active) {
-				files.Add (item.BaseDirectory);
-				if (item.BaseDirectory != item.ItemDirectory) {
-					foreach (FilePath f in item.GetItemFiles (false)) {
-						if (!f.IsChildPathOf (item.BaseDirectory))
-							files.Add (f);
+				Project prj = (item as Project);
+				if (prj != null && parentSol != null && prj.BaseDirectory == parentSol.BaseDirectory) {
+					return CleanFiles (GetAllFilesToDelete (prj));
+				} else {
+					files.Add (item.BaseDirectory);
+					if (item.BaseDirectory != item.ItemDirectory) {
+						foreach (FilePath f in item.GetItemFiles (false)) {
+							if (!f.IsChildPathOf (item.BaseDirectory))
+								files.Add (f);
+						}
 					}
 				}
 				return files;
@@ -137,21 +143,86 @@ namespace MonoDevelop.Ide.Projects
 					files.Add ((string) store.GetValue (it, 3));
 			}
 			
-			// If a directory is selected, remove all files of that directory,
-			// since the dir will be deleted as a whole
 			
+			return CleanFiles (files);
+		}
+		
+		/// <summary>
+		/// If a directory is selected, remove all files of that directory,
+		/// since the dir will be deleted as a whole
+		/// </summary>
+		List<FilePath> CleanFiles (IEnumerable<FilePath> files)
+		{
 			List<FilePath> cleaned = new List<FilePath> (files);
 			foreach (FilePath path in files) {
-				if (Directory.Exists (path)) {
-					for (int n=0; n<cleaned.Count; n++) {
-						if (cleaned [n].IsChildPathOf (path)) {
-							cleaned.RemoveAt (n);
-							n--;
-						}
-					}
+				if (Directory.Exists (path))
+					cleaned.RemoveAll (file => file.IsChildPathOf (path));
+			}
+			
+			return cleaned;
+		}
+		
+		/// <summary>
+		/// Gets all files (and directories) in the project that should be deleted
+		/// </summary>
+		IEnumerable<FilePath> GetAllFilesToDelete(Project prj)
+		{
+			var result = new HashSet<string> ();
+			var dirs = new HashSet<string> ();
+			
+			result.Add (prj.FileName);
+			foreach (var sd in knownSubdirs) {
+				var subdir = prj.BaseDirectory.Combine (sd);
+				if (Directory.Exists (subdir))
+					result.Add (subdir);
+			}
+			foreach (var ext in knownExtensions) {
+				var filename = prj.FileName.ChangeExtension (ext);
+				if (File.Exists (filename))
+					result.Add (filename);
+			}
+			
+			foreach (var file in prj.Files) {
+				// shouldn't delete links
+				if (file.IsLink) continue;
+				
+				if (Directory.Exists (file.FilePath)) {
+					dirs.Add (file.FilePath);
+				} else {
+					result.Add (file.FilePath);
+					var tmp = file.FilePath.FullPath + "~";
+					if (File.Exists (tmp))
+						result.Add (tmp);
 				}
 			}
-			return cleaned;
+			foreach (var dir in dirs.ToArray ()) {
+				if (dirs.Contains (dir))
+					CollectDirectoriesToDelete (dir, dirs, result);
+			}
+			return result.Select (path => new FilePath (path));
+		}
+		
+		/// <summary>
+		/// Collects directories that should be deleted. 
+		/// A directory is considered should be deleted if all its children should be deleted.
+		/// </summary>
+		/// <returns>
+		/// return true if the specified dir is added to result
+		/// </returns>
+		bool CollectDirectoriesToDelete (string dir, ISet<string> dirs, ISet<string> result)
+		{
+			foreach (var subdir in Directory.GetDirectories (dir)) {
+				if (result.Contains (subdir)) continue;
+				if (dirs.Contains (subdir) && CollectDirectoriesToDelete (subdir, dirs, result)) continue;
+				return false;
+			}
+			foreach (var file in Directory.GetFiles (dir)) {
+				if (result.Contains (file)) continue;
+				return false;
+			}
+			result.Add (dir);
+			dirs.Remove (dir);
+			return true;
 		}
 		
 		ChildInfo FillDirRec (Gtk.TreeIter iter, IWorkspaceFileObject item, HashSet<string> itemFiles, HashSet<string> knownPaths, FilePath dir, bool forceSet)
