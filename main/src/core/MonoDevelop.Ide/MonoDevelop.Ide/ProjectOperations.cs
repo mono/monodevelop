@@ -832,6 +832,8 @@ namespace MonoDevelop.Ide
 		
 		void RemoveItemFromSolution (SolutionItem prj)
 		{
+			foreach (var doc in IdeApp.Workbench.Documents.Where (d => d.Project == prj).ToArray ())
+				doc.Close ();
 			Solution sol = prj.ParentSolution;
 			prj.ParentFolder.Items.Remove (prj);
 			prj.Dispose ();
