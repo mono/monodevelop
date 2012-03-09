@@ -34,6 +34,7 @@ using MonoDevelop.Refactoring;
 using System.IO;
 using System.Text;
 using MonoDevelop.Ide.StandardHeader;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -61,7 +62,8 @@ namespace MonoDevelop.CSharp.ContextAction
 			string correctFileName = GetCorrectFileName (context, type);
 			if (IsSingleType (context)) {
 				FileService.RenameFile (context.Document.FileName, correctFileName);
-//				context.Do (new RenameFileChange ());
+				if (context.Document.Project != null)
+					context.Document.Project.Save (new NullProgressMonitor ());
 				return;
 			}
 			
