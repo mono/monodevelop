@@ -26,6 +26,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -34,9 +35,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class ConvertForeachToFor : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
-			return GetForeachStatement (context) != null;
+			return GetForeachStatement (context, cancellationToken) != null;
 		}
 
 		static string GetCountProperty (IType type)
@@ -81,13 +82,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		static ForeachStatement GetForeachStatement (RefactoringContext context)
+		static ForeachStatement GetForeachStatement (RefactoringContext context, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var astNode = context.GetNode ();
 			if (astNode == null)
 				return null;
 			var result = (astNode as ForeachStatement) ?? astNode.Parent as ForeachStatement;
-			if (result == null || context.Resolve (result.InExpression) == null)
+			if (result == null || context.Resolve (result.InExpression, cancellationToken) == null)
 				return null;
 			return result;
 		}

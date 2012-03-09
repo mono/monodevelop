@@ -26,12 +26,13 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class UseVarKeyword : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			return GetVariableDeclarationStatement (context) != null || GetForeachStatement (context) != null;
 		}

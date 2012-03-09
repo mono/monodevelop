@@ -24,12 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public interface IContextAction
 	{
-		bool IsValid (RefactoringContext context);
+		bool IsValid (RefactoringContext context, CancellationToken cancellationToken);
 		void Run (RefactoringContext context);
 	}
 }

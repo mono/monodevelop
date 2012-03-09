@@ -114,7 +114,6 @@ FILES =  \
 	Ast/Statements/YieldReturnStatement.cs \
 	Ast/TokenRole.cs \
 	Ast/TypeMembers/Accessor.cs \
-	Ast/TypeMembers/AttributedNode.cs \
 	Ast/TypeMembers/ConstructorDeclaration.cs \
 	Ast/TypeMembers/DestructorDeclaration.cs \
 	Ast/TypeMembers/EntityDeclaration.cs \
@@ -124,7 +123,6 @@ FILES =  \
 	Ast/TypeMembers/FixedFieldDeclaration.cs \
 	Ast/TypeMembers/FixedVariableInitializer.cs \
 	Ast/TypeMembers/IndexerDeclaration.cs \
-	Ast/TypeMembers/MemberDeclaration.cs \
 	Ast/TypeMembers/MethodDeclaration.cs \
 	Ast/TypeMembers/OperatorDeclaration.cs \
 	Ast/TypeMembers/ParameterDeclaration.cs \

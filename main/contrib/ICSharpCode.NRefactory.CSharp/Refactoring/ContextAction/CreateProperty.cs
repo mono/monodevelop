@@ -26,12 +26,13 @@
 using System;
 using ICSharpCode.NRefactory.PatternMatching;
 using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class CreateProperty : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			var identifier = CreateField.GetIdentifier (context);
 			if (identifier == null)

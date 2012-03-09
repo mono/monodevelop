@@ -53,6 +53,7 @@ FILES =  \
 	Semantics/Conversion.cs \
 	Semantics/ConversionResolveResult.cs \
 	Semantics/ErrorResolveResult.cs \
+	Semantics/ForEachResolveResult.cs \
 	Semantics/InvocationResolveResult.cs \
 	Semantics/LocalResolveResult.cs \
 	Semantics/MemberResolveResult.cs \
@@ -60,6 +61,7 @@ FILES =  \
 	Semantics/OperatorResolveResult.cs \
 	Semantics/ResolveResult.cs \
 	Semantics/ThisResolveResult.cs \
+	Semantics/TypeIsResolveResult.cs \
 	Semantics/TypeOfResolveResult.cs \
 	Semantics/TypeResolveResult.cs \
 	Semantics/UnknownMemberResolveResult.cs \

@@ -1885,7 +1885,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					varInit.AddChild (Identifier.Create (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
 					if (blockVariableDeclaration.Initializer != null) {
 						if (initLocation != null)
-							varInit.AddChild (new CSharpTokenNode (Convert (location [0])), VariableInitializer.Roles.Assign);
+							varInit.AddChild (new CSharpTokenNode (Convert (initLocation [0])), VariableInitializer.Roles.Assign);
 						varInit.AddChild ((Expression)blockVariableDeclaration.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 					}
 					
@@ -2221,9 +2221,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new UnaryOperatorExpression ();
 				result.Operator = UnaryOperatorType.Dereference;
-				var location = LocationsBag.GetLocations (indirectionExpression);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location [0])), UnaryOperatorExpression.DereferenceRole);
+				result.AddChild (new CSharpTokenNode (Convert (indirectionExpression.Location)), UnaryOperatorExpression.DereferenceRole);
 				if (indirectionExpression.Expr != null)
 					result.AddChild ((Expression)indirectionExpression.Expr.Accept (this), UnaryOperatorExpression.Roles.Expression);
 				return result;
@@ -2715,10 +2713,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (collectionInit != null) {
 						var parent = new ArrayInitializerExpression ();
 						
-						var braceLocs = LocationsBag.GetLocations (expr);
-						if (braceLocs != null)
-							parent.AddChild (new CSharpTokenNode (Convert (braceLocs [0])), ArrayInitializerExpression.Roles.LBrace);
-						
+						parent.AddChild (new CSharpTokenNode (Convert (expr.Location)), ArrayInitializerExpression.Roles.LBrace);
+
 						for (int i = 0; i < collectionInit.Arguments.Count; i++) {
 							var arg = collectionInit.Arguments [i] as CollectionElementInitializer.ElementInitializerArgument;
 							if (arg == null)
@@ -2726,8 +2722,9 @@ namespace ICSharpCode.NRefactory.CSharp
 							parent.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
 						}
 						
+						var braceLocs = LocationsBag.GetLocations (expr);
 						if (braceLocs != null)
-							parent.AddChild (new CSharpTokenNode (Convert (braceLocs [1])), ArrayInitializerExpression.Roles.RBrace);
+							parent.AddChild (new CSharpTokenNode (Convert (braceLocs [0])), ArrayInitializerExpression.Roles.RBrace);
 							
 						init.AddChild (parent, ArrayInitializerExpression.Roles.Expression);
 					} else {
@@ -3202,8 +3199,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				
 				var fromClause = new QueryFromClause ();
-				var location = LocationsBag.GetLocations (queryStart);
-				
+
 				fromClause.AddChild (new CSharpTokenNode (Convert (queryStart.Location)), QueryFromClause.FromKeywordRole);
 				
 				if (queryStart.IdentifierType != null)
@@ -3211,8 +3207,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				fromClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert (queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
 				
+				var location = LocationsBag.GetLocations (queryStart);
 				if (location != null)
 					fromClause.AddChild (new CSharpTokenNode (Convert (location [0])), QueryFromClause.InKeywordRole);
+
 				if (queryStart.Expr != null)
 					fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
 				return fromClause;
@@ -3221,8 +3219,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (Mono.CSharp.Linq.SelectMany queryStart)
 			{
 				var fromClause = new QueryFromClause ();
-				var location = LocationsBag.GetLocations (queryStart);
-				
+
 				fromClause.AddChild (new CSharpTokenNode (Convert (queryStart.Location)), QueryFromClause.FromKeywordRole);
 				
 				if (queryStart.IdentifierType != null)
@@ -3230,9 +3227,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				fromClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert (queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
 				
+				var location = LocationsBag.GetLocations (queryStart);
 				if (location != null)
 					fromClause.AddChild (new CSharpTokenNode (Convert (location [0])), QueryFromClause.InKeywordRole);
-				
+
 				if (queryStart.Expr != null)
 					fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
 				return fromClause;
@@ -3294,6 +3292,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0])), QueryJoinClause.InKeywordRole);
+
 				if (join.Expr != null)
 					result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
 				
@@ -3326,15 +3325,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0])), QueryJoinClause.InKeywordRole);
 				
+				if (join.Expr != null)
+					result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
+
+				if (location != null && location.Count > 1)
+					result.AddChild (new CSharpTokenNode (Convert (location [1])), QueryJoinClause.OnKeywordRole);
+
 				var outer = join.OuterSelector.Statements.FirstOrDefault () as ContextualReturn;
 				if (outer != null)
 					result.AddChild ((Expression)outer.Expr.Accept (this), QueryJoinClause.OnExpressionRole);
 				
-				if (location != null && location.Count > 1)
-					result.AddChild (new CSharpTokenNode (Convert (location [1])), QueryJoinClause.OnKeywordRole);
-				if (join.Expr != null)
-					result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
-				
+
 				if (location != null && location.Count > 2)
 					result.AddChild (new CSharpTokenNode (Convert (location [2])), QueryJoinClause.EqualsKeywordRole);
 				var inner = join.InnerSelector.Statements.FirstOrDefault () as ContextualReturn;

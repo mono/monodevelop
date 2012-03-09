@@ -27,15 +27,16 @@ using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class InsertAnonymousMethodSignature : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			IType type;
-			return GetAnonymousMethodExpression (context, out type) != null;
+			return GetAnonymousMethodExpression (context, out type, cancellationToken) != null;
 		}
 		
 		public void Run (RefactoringContext context)
@@ -63,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		static AnonymousMethodExpression GetAnonymousMethodExpression (RefactoringContext context, out IType delegateType)
+		static AnonymousMethodExpression GetAnonymousMethodExpression (RefactoringContext context, out IType delegateType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			delegateType = null;
 			
@@ -75,9 +76,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var parent = anonymousMethodExpression.Parent;
 			
 			if (parent is AssignmentExpression) {
-				resolvedType = context.Resolve (((AssignmentExpression)parent).Left).Type;
+				resolvedType = context.Resolve (((AssignmentExpression)parent).Left, cancellationToken).Type;
 			} else if (parent is VariableInitializer) {
-				resolvedType = context.Resolve (((VariableDeclarationStatement)parent.Parent).Type).Type;
+				resolvedType = context.Resolve (((VariableDeclarationStatement)parent.Parent).Type, cancellationToken).Type;
 			} else if (parent is InvocationExpression) {
 				// TODO: handle invocations
 			}

@@ -27,23 +27,24 @@ using System;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class UseExplicitType: IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
-			var varDecl = GetVariableDeclarationStatement (context);
+			var varDecl = GetVariableDeclarationStatement (context, cancellationToken);
 			IType type;
 			if (varDecl != null) {
-				type = context.Resolve (varDecl.Variables.First ().Initializer).Type;
+				type = context.Resolve (varDecl.Variables.First ().Initializer, cancellationToken).Type;
 			} else {
 				var foreachStatement = GetForeachStatement (context);
 				if (foreachStatement == null)
 					return false;
-				type = context.Resolve (foreachStatement.VariableType).Type;
+				type = context.Resolve (foreachStatement.VariableType, cancellationToken).Type;
 			}
 			
 			return !type.Equals (SpecialType.NullType) && !type.Equals (SpecialType.UnknownType);
@@ -66,11 +67,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		static readonly AstType varType = new SimpleType ("var");
 
-		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context)
+		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var result = context.GetNode<VariableDeclarationStatement> ();
 			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Type.Contains (context.Location.Line, context.Location.Column) && result.Type.IsMatch (varType)) {
-				if (context.Resolve (result.Variables.First ().Initializer) == null)
+				if (context.Resolve (result.Variables.First ().Initializer, cancellationToken) == null)
 					return null;
 				return result;
 			}

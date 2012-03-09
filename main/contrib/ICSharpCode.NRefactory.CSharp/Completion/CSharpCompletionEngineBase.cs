@@ -246,7 +246,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return inSingleComment && singleLineIsDoc;
 		}
-		
+
 		protected CSharpResolver GetState ()
 		{
 			return new CSharpResolver (ctx);

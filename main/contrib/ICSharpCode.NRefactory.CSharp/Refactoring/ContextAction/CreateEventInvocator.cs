@@ -27,12 +27,13 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class CreateEventInvocator : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			VariableInitializer initializer;
 			var eventDeclaration = GetEventDeclaration (context, out initializer);

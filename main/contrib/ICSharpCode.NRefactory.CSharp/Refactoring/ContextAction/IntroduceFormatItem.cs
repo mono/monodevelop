@@ -28,6 +28,7 @@ using System;
 using ICSharpCode.NRefactory.PatternMatching;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -39,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		readonly static MemberReferenceExpression PrototypeFormatReference = new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "Format");
 		
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			if (!context.IsSomethingSelected)
 				return false;

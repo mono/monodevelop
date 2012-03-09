@@ -1975,7 +1975,7 @@ namespace Mono.CSharp
 					hidden_block_start = Location.Null;
 				}
 
-				ref_line = line;
+				//ref_line = line;
 				Location.Push (current_source);
 				return true;
 			}
@@ -2071,7 +2071,7 @@ namespace Mono.CSharp
 				hidden_block_start = Location.Null;
 			}
 
-			ref_line = new_line;
+			//ref_line = new_line;
 			return true;
 		}
 

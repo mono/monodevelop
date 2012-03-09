@@ -25,17 +25,18 @@
 // THE SOFTWARE.
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class GenerateSwitchLabels : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			var switchStatement = GetSwitchStatement (context);
 			if (switchStatement == null)
 				return false;
-			var result = context.Resolve (switchStatement.Expression);
+			var result = context.Resolve (switchStatement.Expression, cancellationToken);
 			if (result == null)
 				return false;
 			return result.Type.Kind == TypeKind.Enum;

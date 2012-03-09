@@ -25,12 +25,13 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class RemoveRegion : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			return GetDirective (context) != null;
 		}

@@ -56,6 +56,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (typeDef != null)
 					referenceFound(node, typeDef);
 			}
+			ForEachResolveResult ferr = result as ForEachResolveResult;
+			if (ferr != null) {
+				Resolved(node, ferr.GetEnumeratorCall);
+				if (ferr.CurrentProperty != null)
+					referenceFound(node, ferr.CurrentProperty.MemberDefinition);
+				if (ferr.MoveNextMethod != null)
+					referenceFound(node, ferr.MoveNextMethod.MemberDefinition);
+			}
 		}
 		
 		public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)

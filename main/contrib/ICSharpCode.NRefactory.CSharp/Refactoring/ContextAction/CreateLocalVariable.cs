@@ -28,6 +28,7 @@ using ICSharpCode.NRefactory.PatternMatching;
 using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -58,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return expressions;
 		}
 		
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			if (GetUnresolvedArguments (context).Count > 0)
 				return true;

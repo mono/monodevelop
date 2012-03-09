@@ -58,6 +58,9 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\build\bin\Mono.Cecil.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -243,15 +246,11 @@
     <Compile Include="Utils\KeyComparer.cs" />
     <Compile Include="TypeSystem\ComHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Semantics\ForEachResolveResult.cs" />
+    <Compile Include="Semantics\TypeIsResolveResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\Mono.Cecil\src\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

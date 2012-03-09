@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Editor;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -122,7 +123,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Resolving
-		public abstract ResolveResult Resolve (AstNode expression);
+		public abstract ResolveResult Resolve (AstNode expression, CancellationToken cancellationToken = default (CancellationToken));
 		#endregion
 		
 		public string GetNameProposal (string name, bool camelCase = true)

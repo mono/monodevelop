@@ -26,12 +26,13 @@
 using System;
 using ICSharpCode.NRefactory.PatternMatching;
 using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class GenerateProperty : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			var initializer = GetVariableInitializer (context);
 			if (initializer == null || !initializer.NameToken.Contains (context.Location.Line, context.Location.Column))

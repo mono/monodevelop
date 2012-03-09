@@ -1117,8 +1117,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<ResolveResult>.VisitAsExpression(AsExpression asExpression)
 		{
 			if (resolverEnabled) {
-				Scan(asExpression.Expression);
-				return new ResolveResult(ResolveType(asExpression.Type));
+				ResolveResult input = Resolve(asExpression.Expression);
+				var targetType = ResolveType(asExpression.Type);
+				return new ConversionResolveResult(targetType, input, Conversion.TryCast);
 			} else {
 				ScanChildren(asExpression);
 				return null;
@@ -1267,8 +1268,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitIsExpression(IsExpression isExpression)
 		{
-			ScanChildren(isExpression);
-			return new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Boolean));
+			if (resolverEnabled) {
+				ResolveResult input = Resolve(isExpression.Expression);
+				IType targetType = ResolveType(isExpression.Type);
+				IType booleanType = resolver.Compilation.FindType(KnownTypeCode.Boolean);
+				return new TypeIsResolveResult(input, targetType, booleanType);
+			} else {
+				ScanChildren(isExpression);
+				return null;
+			}
 		}
 		
 		// NamedArgumentExpression is "identifier: Expression"
@@ -2442,6 +2450,112 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		#endregion
 		
+		#region ForEach Statement
+		ResolveResult IAstVisitor<ResolveResult>.VisitForeachStatement(ForeachStatement foreachStatement)
+		{
+			var compilation = resolver.Compilation;
+			ResolveResult expression = Resolve(foreachStatement.InExpression);
+			bool isImplicitlyTypedVariable = IsVar(foreachStatement.VariableType);
+			var memberLookup = resolver.CreateMemberLookup();
+			
+			IType collectionType, enumeratorType, elementType;
+			ResolveResult getEnumeratorInvocation;
+			ResolveResult currentRR = null;
+			// C# 4.0 spec: §8.8.4 The foreach statement
+			if (expression.Type.Kind == TypeKind.Array || expression.Type.Kind == TypeKind.Dynamic) {
+				collectionType = compilation.FindType(KnownTypeCode.IEnumerable);
+				enumeratorType = compilation.FindType(KnownTypeCode.IEnumerator);
+				if (expression.Type.Kind == TypeKind.Array) {
+					elementType = ((ArrayType)expression.Type).ElementType;
+				} else {
+					elementType = isImplicitlyTypedVariable ? SpecialType.Dynamic : compilation.FindType(KnownTypeCode.Object);
+				}
+				getEnumeratorInvocation = resolver.ResolveCast(collectionType, expression);
+				getEnumeratorInvocation = resolver.ResolveMemberAccess(getEnumeratorInvocation, "GetEnumerator", EmptyList<IType>.Instance, true);
+				getEnumeratorInvocation = resolver.ResolveInvocation(getEnumeratorInvocation, new ResolveResult[0]);
+			} else {
+				var getEnumeratorMethodGroup = memberLookup.Lookup(expression, "GetEnumerator", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
+				if (getEnumeratorMethodGroup != null) {
+					var or = getEnumeratorMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[0]);
+					if (or.FoundApplicableCandidate && !or.IsAmbiguous && !or.BestCandidate.IsStatic && or.BestCandidate.IsPublic) {
+						collectionType = expression.Type;
+						getEnumeratorInvocation = or.CreateResolveResult(expression);
+						enumeratorType = getEnumeratorInvocation.Type;
+						currentRR = memberLookup.Lookup(new ResolveResult(enumeratorType), "Current", EmptyList<IType>.Instance, false);
+						elementType = currentRR.Type;
+					} else {
+						CheckForEnumerableInterface(expression, out collectionType, out enumeratorType, out elementType, out getEnumeratorInvocation);
+					}
+				} else {
+					CheckForEnumerableInterface(expression, out collectionType, out enumeratorType, out elementType, out getEnumeratorInvocation);
+				}
+			}
+			IMethod moveNextMethod = null;
+			var moveNextMethodGroup = memberLookup.Lookup(new ResolveResult(enumeratorType), "MoveNext", EmptyList<IType>.Instance, false) as MethodGroupResolveResult;
+			if (moveNextMethodGroup != null) {
+				var or = moveNextMethodGroup.PerformOverloadResolution(compilation, new ResolveResult[0]);
+				moveNextMethod = or.GetBestCandidateWithSubstitutedTypeArguments() as IMethod;
+			}
+			
+			if (currentRR == null)
+				currentRR = memberLookup.Lookup(new ResolveResult(enumeratorType), "Current", EmptyList<IType>.Instance, false);
+			IProperty currentProperty = null;
+			if (currentRR is MemberResolveResult)
+				currentProperty = ((MemberResolveResult)currentRR).Member as IProperty;
+			// end of foreach resolve logic
+			// back to resolve visitor:
+			
+			resolver = resolver.PushBlock();
+			IVariable v;
+			if (IsVar(foreachStatement.VariableType)) {
+				StoreCurrentState(foreachStatement.VariableType);
+				StoreResult(foreachStatement.VariableType, new TypeResolveResult(elementType));
+				v = MakeVariable(elementType, foreachStatement.VariableNameToken);
+			} else {
+				IType variableType = ResolveType(foreachStatement.VariableType);
+				v = MakeVariable(variableType, foreachStatement.VariableNameToken);
+			}
+			StoreCurrentState(foreachStatement.VariableNameToken);
+			resolver = resolver.AddVariable(v);
+			
+			StoreResult(foreachStatement.VariableNameToken, new LocalResolveResult(v));
+			
+			Scan(foreachStatement.EmbeddedStatement);
+			resolver = resolver.PopBlock();
+			return new ForEachResolveResult(getEnumeratorInvocation, collectionType, enumeratorType, elementType,
+			                                v, currentProperty, moveNextMethod, voidResult.Type);
+		}
+		
+		void CheckForEnumerableInterface(ResolveResult expression, out IType collectionType, out IType enumeratorType, out IType elementType, out ResolveResult getEnumeratorInvocation)
+		{
+			var compilation = resolver.Compilation;
+			bool? isGeneric;
+			elementType = GetElementTypeFromIEnumerable(expression.Type, compilation, false, out isGeneric);
+			if (isGeneric == true) {
+				ITypeDefinition enumerableOfT = compilation.FindType(KnownTypeCode.IEnumerableOfT).GetDefinition();
+				if (enumerableOfT != null)
+					collectionType = new ParameterizedType(enumerableOfT, new [] { elementType });
+				else
+					collectionType = SpecialType.UnknownType;
+				
+				ITypeDefinition enumeratorOfT = compilation.FindType(KnownTypeCode.IEnumeratorOfT).GetDefinition();
+				if (enumeratorOfT != null)
+					enumeratorType = new ParameterizedType(enumeratorOfT, new [] { elementType });
+				else
+					enumeratorType = SpecialType.UnknownType;
+			} else if (isGeneric == false) {
+				collectionType = compilation.FindType(KnownTypeCode.IEnumerable);
+				enumeratorType = compilation.FindType(KnownTypeCode.IEnumerator);
+			} else {
+				collectionType = SpecialType.UnknownType;
+				enumeratorType = SpecialType.UnknownType;
+			}
+			getEnumeratorInvocation = resolver.ResolveCast(collectionType, expression);
+			getEnumeratorInvocation = resolver.ResolveMemberAccess(getEnumeratorInvocation, "GetEnumerator", EmptyList<IType>.Instance, true);
+			getEnumeratorInvocation = resolver.ResolveInvocation(getEnumeratorInvocation, new ResolveResult[0]);
+		}
+		#endregion
+		
 		#region Local Variable Scopes (Block Statements)
 		ResolveResult IAstVisitor<ResolveResult>.VisitBlockStatement(BlockStatement blockStatement)
 		{
@@ -2478,31 +2592,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Scan(vi);
 			}
 			Scan(fixedStatement.EmbeddedStatement);
-			resolver = resolver.PopBlock();
-			return voidResult;
-		}
-		
-		ResolveResult IAstVisitor<ResolveResult>.VisitForeachStatement(ForeachStatement foreachStatement)
-		{
-			resolver = resolver.PushBlock();
-			IVariable v;
-			if (IsVar(foreachStatement.VariableType)) {
-				IType collectionType = Resolve(foreachStatement.InExpression).Type;
-				IType elementType = GetElementTypeFromCollection(collectionType);
-				StoreCurrentState(foreachStatement.VariableType);
-				StoreResult(foreachStatement.VariableType, new TypeResolveResult(elementType));
-				v = MakeVariable(elementType, foreachStatement.VariableNameToken);
-			} else {
-				IType elementType = ResolveType(foreachStatement.VariableType);
-				Scan(foreachStatement.InExpression);
-				v = MakeVariable(elementType, foreachStatement.VariableNameToken);
-			}
-			StoreCurrentState(foreachStatement.VariableNameToken);
-			resolver = resolver.AddVariable(v);
-			
-			StoreResult(foreachStatement.VariableNameToken, new LocalResolveResult(v));
-			
-			Scan(foreachStatement.EmbeddedStatement);
 			resolver = resolver.PopBlock();
 			return voidResult;
 		}
@@ -2630,7 +2719,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled && resolver.CurrentMember != null) {
 				IType returnType = resolver.CurrentMember.ReturnType;
-				IType elementType = GetElementTypeFromIEnumerable(returnType, resolver.Compilation, true);
+				bool? isGeneric;
+				IType elementType = GetElementTypeFromIEnumerable(returnType, resolver.Compilation, true, out isGeneric);
 				ResolveAndProcessConversion(yieldStatement.Expression, elementType);
 			} else {
 				Scan(yieldStatement.Expression);
@@ -2798,27 +2888,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		IType GetElementTypeFromCollection(IType collectionType)
-		{
-			switch (collectionType.Kind) {
-				case TypeKind.Array:
-					return ((ArrayType)collectionType).ElementType;
-				case TypeKind.Dynamic:
-					return SpecialType.Dynamic;
-			}
-			var memberLookup = resolver.CreateMemberLookup();
-			var getEnumeratorMethodGroup = memberLookup.Lookup(new ResolveResult(collectionType), "GetEnumerator", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
-			if (getEnumeratorMethodGroup != null) {
-				var or = getEnumeratorMethodGroup.PerformOverloadResolution(resolver.Compilation, new ResolveResult[0]);
-				if (or.FoundApplicableCandidate && !or.IsAmbiguous && !or.BestCandidate.IsStatic && or.BestCandidate.IsPublic) {
-					IType enumeratorType = or.BestCandidate.ReturnType;
-					return memberLookup.Lookup(new ResolveResult(enumeratorType), "Current", EmptyList<IType>.Instance, false).Type;
-				}
-			}
-			return GetElementTypeFromIEnumerable(collectionType, resolver.Compilation, false);
-		}
-		
-		static IType GetElementTypeFromIEnumerable(IType collectionType, ICompilation compilation, bool allowIEnumerator)
+		static IType GetElementTypeFromIEnumerable(IType collectionType, ICompilation compilation, bool allowIEnumerator, out bool? isGeneric)
 		{
 			bool foundNonGenericIEnumerable = false;
 			foreach (IType baseType in collectionType.GetAllBaseTypes()) {
@@ -2828,6 +2898,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (typeCode == KnownTypeCode.IEnumerableOfT || (allowIEnumerator && typeCode == KnownTypeCode.IEnumeratorOfT)) {
 						ParameterizedType pt = baseType as ParameterizedType;
 						if (pt != null) {
+							isGeneric = true;
 							return pt.GetTypeArgument(0);
 						}
 					}
@@ -2836,8 +2907,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			// System.Collections.IEnumerable found in type hierarchy -> Object is element type.
-			if (foundNonGenericIEnumerable)
+			if (foundNonGenericIEnumerable) {
+				isGeneric = false;
 				return compilation.FindType(KnownTypeCode.Object);
+			}
+			isGeneric = null;
 			return SpecialType.UnknownType;
 		}
 		#endregion
@@ -3014,7 +3088,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// This assumes queries are only used on IEnumerable.
 			// We might want to look at the signature of a LINQ method (e.g. Select) instead.
-			return GetElementTypeFromIEnumerable(type, resolver.Compilation, false);
+			bool? isGeneric;
+			return GetElementTypeFromIEnumerable(type, resolver.Compilation, false, out isGeneric);
 		}
 		
 		ResolveResult MakeTransparentIdentifierResolveResult()

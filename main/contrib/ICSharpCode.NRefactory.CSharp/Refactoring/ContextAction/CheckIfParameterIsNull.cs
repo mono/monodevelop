@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using ICSharpCode.NRefactory.PatternMatching;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -34,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	public class CheckIfParameterIsNull : IContextAction
 	{
 		//TODO: Create 'multiple' null checks when more than 1 parameter is selected.
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			var parameter = GetParameterDeclaration (context);
 			if (parameter == null)

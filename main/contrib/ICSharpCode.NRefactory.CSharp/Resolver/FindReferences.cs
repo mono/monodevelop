@@ -203,6 +203,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					break;
 				case EntityType.Property:
 					scope = FindMemberReferences(entity, m => new FindPropertyReferences((IProperty)m));
+					if (entity.Name == "Current")
+						additionalScope = FindEnumeratorCurrentReferences((IProperty)entity);
 					break;
 				case EntityType.Event:
 					scope = FindMemberReferences(entity, m => new FindEventReferences((IEvent)m));
@@ -562,6 +564,39 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Find References to IEnumerator.Current
+		SearchScope FindEnumeratorCurrentReferences(IProperty property)
+		{
+			IProperty propertyDefinition = (IProperty)property.MemberDefinition;
+			return new SearchScope(
+				delegate(ICompilation compilation) {
+					IProperty imported = compilation.Import(propertyDefinition);
+					return imported != null ? new FindEnumeratorCurrentReferencesNavigator(imported) : null;
+				});
+		}
+		
+		sealed class FindEnumeratorCurrentReferencesNavigator : FindReferenceNavigator
+		{
+			IProperty property;
+			
+			public FindEnumeratorCurrentReferencesNavigator(IProperty property)
+			{
+				this.property = property;
+			}
+			
+			internal override bool CanMatch(AstNode node)
+			{
+				return node is ForeachStatement;
+			}
+			
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				ForEachResolveResult ferr = rr as ForEachResolveResult;
+				return ferr != null && ferr.CurrentProperty != null && ferr.CurrentProperty.MemberDefinition == property;
+			}
+		}
+		#endregion
+		
 		#region Find Method References
 		SearchScope GetSearchScopeForMethod(IMethod method)
 		{
@@ -599,6 +634,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						specialNodeType = typeof(InvocationExpression);
 					else
 						specialNodeType = null;
+					break;
+				case "GetEnumerator":
+				case "MoveNext":
+					specialNodeType = typeof(ForeachStatement);
 					break;
 				default:
 					specialNodeType = null;
@@ -664,6 +703,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool IsMatch(ResolveResult rr)
 			{
+				if (specialNodeType != null) {
+					var ferr = rr as ForEachResolveResult;
+					if (ferr != null) {
+						return IsMatch(ferr.GetEnumeratorCall)
+							|| (ferr.MoveNextMethod != null && method == ferr.MoveNextMethod.MemberDefinition);
+					}
+				}
 				var mrr = rr as MemberResolveResult;
 				return mrr != null && method == mrr.Member.MemberDefinition;
 			}

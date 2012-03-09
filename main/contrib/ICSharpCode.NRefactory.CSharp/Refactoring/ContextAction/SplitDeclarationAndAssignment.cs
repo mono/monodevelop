@@ -26,15 +26,16 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class SplitDeclarationAndAssignment : IContextAction
 	{
-		public bool IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
 			AstType type;
-			return GetVariableDeclarationStatement (context, out type) != null;
+			return GetVariableDeclarationStatement (context, out type, cancellationToken) != null;
 		}
 		
 		public void Run (RefactoringContext context)
@@ -57,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context, out AstType resolvedType)
+		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context, out AstType resolvedType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var result = context.GetNode<VariableDeclarationStatement> ();
 			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Variables.First ().NameToken.Contains (context.Location.Line, context.Location.Column)) {
