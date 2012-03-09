@@ -639,7 +639,9 @@ namespace MonoDevelop.CSharp.Highlighting
 				
 				public override object VisitPrimitiveExpression (PrimitiveExpression primitiveExpression, object data)
 				{
-					return (bool)primitiveExpression.Value;
+					if (primitiveExpression.Value is bool)
+						return (bool)primitiveExpression.Value;
+					return false;
 				}
 
 				public override object VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
@@ -663,130 +665,152 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}
 			
-			protected override void ScanSpan (ref int i)
+			void ScanPreProcessorElse (ref int i)
 			{
-				if (CSharpSyntaxMode.DisableConditionalHighlighting) {
+				if (!spanStack.Any (s => s is IfBlockSpan || s is ElseIfBlockSpan)) {
 					base.ScanSpan (ref i);
 					return;
 				}
-				int textOffset = i - StartOffset;
-				if (CurText.IsAt (textOffset, "#else") && IsFirstNonWsChar (textOffset)) {
-					if (!spanStack.Any (s => s is IfBlockSpan || s is ElseIfBlockSpan)) {
-						base.ScanSpan (ref i);
-						return;
+				bool previousResult = false;
+				foreach (Span span in spanStack) {
+					if (span is IfBlockSpan) {
+						previousResult = ((IfBlockSpan)span).IsValid;
 					}
+					if (span is ElseIfBlockSpan) {
+						previousResult |= ((ElseIfBlockSpan)span).IsValid;
+					}
+				}
+				//					LineSegment line = doc.GetLineByOffset (i);
+				//					int length = line.Offset + line.EditableLength - i;
+				while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan || CurSpan is ElseIfBlockSpan)) {
+					spanStack.Pop ();
+				}
+				var ifBlock = CurSpan as IfBlockSpan;
+				var elseIfBlock = CurSpan as ElseIfBlockSpan;
+				var elseBlockSpan = new ElseBlockSpan (!previousResult);
+				if (ifBlock != null) {
+					elseBlockSpan.Disabled = ifBlock.Disabled;
+				} else if (elseIfBlock != null) {
+					elseBlockSpan.Disabled = elseIfBlock.Disabled;
+				}
+				FoundSpanBegin (elseBlockSpan, i, "#else".Length);
+				i += "#else".Length;
+					
+				// put pre processor eol span on stack, so that '#elif' gets the correct highlight
+				Span preprocessorSpan = CreatePreprocessorSpan ();
+				FoundSpanBegin (preprocessorSpan, i, 0);
+			}
+
+			void ScanPreProcessorIf (int textOffset, ref int i)
+			{
+				int length = CurText.Length - textOffset;
+				string parameter = CurText.Substring (textOffset + 3, length - 3);
+				AstNode expr;
+				using (var reader = new StringReader (parameter)) {
+					expr = new CSharpParser ().ParseExpression (reader);
+				}
+				bool result = false;
+				if (expr != null && !expr.IsNull) {
+					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null);
+					if (o is bool)
+						result = (bool)o;
+				}
+					
+				foreach (Span span in spanStack) {
+					if (span is IfBlockSpan) {
+						result &= ((IfBlockSpan)span).IsValid;
+					}
+					if (span is ElseIfBlockSpan) {
+						result &= ((ElseIfBlockSpan)span).IsValid;
+					}
+				}
+					
+				var ifBlockSpan = new IfBlockSpan (result);
+					
+				foreach (Span span in spanStack) {
+					if (span is AbstractBlockSpan) {
+						var parentBlock = (AbstractBlockSpan)span;
+						ifBlockSpan.Disabled = parentBlock.Disabled || !parentBlock.IsValid;
+						break;
+					}
+				}
+					
+				FoundSpanBegin (ifBlockSpan, i, length);
+				i += length - 1;
+			}
+
+			void ScanPreProcessorElseIf (ref int i)
+			{
+				LineSegment line = doc.GetLineByOffset (i);
+				int length = line.Offset + line.EditableLength - i;
+				string parameter = doc.GetTextAt (i + 5, length - 5);
+					
+				AstNode expr;
+				using (var reader = new StringReader (parameter)) {
+					expr = new CSharpParser ().ParseExpression (reader);
+				}
+				
+				bool result = expr != null && !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null) : false;
+					
+				IfBlockSpan containingIf = null;
+				if (result) {
 					bool previousResult = false;
 					foreach (Span span in spanStack) {
 						if (span is IfBlockSpan) {
+							containingIf = (IfBlockSpan)span;
 							previousResult = ((IfBlockSpan)span).IsValid;
+							break;
 						}
 						if (span is ElseIfBlockSpan) {
 							previousResult |= ((ElseIfBlockSpan)span).IsValid;
 						}
 					}
-//					LineSegment line = doc.GetLineByOffset (i);
-//					int length = line.Offset + line.EditableLength - i;
-					while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan || CurSpan is ElseIfBlockSpan)) {
-						spanStack.Pop ();
-					}
-					var ifBlock = CurSpan as IfBlockSpan;
-					var elseIfBlock = CurSpan as ElseIfBlockSpan;
-					var elseBlockSpan = new ElseBlockSpan (!previousResult);
-					if (ifBlock != null) {
-						elseBlockSpan.Disabled = ifBlock.Disabled;
-					} else if (elseIfBlock != null) {
-						elseBlockSpan.Disabled = elseIfBlock.Disabled;
-					}
-					FoundSpanBegin (elseBlockSpan, i, "#else".Length);
-					i += "#else".Length;
-					
-					// put pre processor eol span on stack, so that '#elif' gets the correct highlight
-					Span preprocessorSpan = CreatePreprocessorSpan ();
-					FoundSpanBegin (preprocessorSpan, i, 0);
-					return;
-				}
-				if (CurText.IsAt (textOffset, "#if") && IsFirstNonWsChar (textOffset)) {
-					int length = CurText.Length - textOffset;
-					string parameter = CurText.Substring (textOffset + 3, length - 3);
-					AstNode expr;
-					using (var reader = new StringReader (parameter)) {
-						expr = new CSharpParser ().ParseExpression (reader);
-					}
-					bool result = false;
-					if (expr != null && !expr.IsNull) {
-						object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null);
-						if (o is bool)
-							result = (bool)o;
-					}
-					
-					foreach (Span span in spanStack) {
-						if (span is IfBlockSpan) {
-							result &= ((IfBlockSpan)span).IsValid;
-						}
-						if (span is ElseIfBlockSpan) {
-							result &= ((ElseIfBlockSpan)span).IsValid;
-						}
-					}
-					
-					var ifBlockSpan = new IfBlockSpan (result);
-					
-					foreach (Span span in spanStack) {
-						if (span is AbstractBlockSpan) {
-							var parentBlock = (AbstractBlockSpan)span;
-							ifBlockSpan.Disabled = parentBlock.Disabled || !parentBlock.IsValid;
-							break;
-						}
-					}
-					
-					FoundSpanBegin (ifBlockSpan, i, length);
-					i += length - 1;
-					return;
-				}
-				if (CurText.IsAt (textOffset, "#elif") && spanStack.Any (span => span is IfBlockSpan) && IsFirstNonWsChar (textOffset)) {
-					LineSegment line = doc.GetLineByOffset (i);
-					int length = line.Offset + line.EditableLength - i;
-					string parameter = doc.GetTextAt (i + 5, length - 5);
-					
-					AstNode expr;
-					using (var reader = new StringReader (parameter)) {
-						expr = new CSharpParser ().ParseExpression (reader);
-					}
-				
-					bool result = !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null) : false;
-					
-					IfBlockSpan containingIf = null;
-					if (result) {
-						bool previousResult = false;
-						foreach (Span span in spanStack) {
-							if (span is IfBlockSpan) {
-								containingIf = (IfBlockSpan)span;
-								previousResult = ((IfBlockSpan)span).IsValid;
-								break;
-							}
-							if (span is ElseIfBlockSpan) {
-								previousResult |= ((ElseIfBlockSpan)span).IsValid;
-							}
-						}
 						
-						result = !previousResult;
-					}
+					result = !previousResult;
+				}
 					
-					ElseIfBlockSpan elseIfBlockSpan = new ElseIfBlockSpan (result);
-					if (containingIf != null)
-						elseIfBlockSpan.Disabled = containingIf.Disabled;
+				ElseIfBlockSpan elseIfBlockSpan = new ElseIfBlockSpan (result);
+				if (containingIf != null)
+					elseIfBlockSpan.Disabled = containingIf.Disabled;
 					
-					FoundSpanBegin (elseIfBlockSpan, i, 0);
+				FoundSpanBegin (elseIfBlockSpan, i, 0);
 					
-					// put pre processor eol span on stack, so that '#elif' gets the correct highlight
-					var preprocessorSpan = CreatePreprocessorSpan ();
-					FoundSpanBegin (preprocessorSpan, i, 0);
-					//i += length - 1;
+				// put pre processor eol span on stack, so that '#elif' gets the correct highlight
+				var preprocessorSpan = CreatePreprocessorSpan ();
+				FoundSpanBegin (preprocessorSpan, i, 0);
+			}
+
+			protected override void ScanSpan (ref int i)
+			{
+				int fallback = i;
+				if (CSharpSyntaxMode.DisableConditionalHighlighting) {
+					base.ScanSpan (ref i);
 					return;
 				}
-				if (CurRule.Name == "<root>" &&  CurText[textOffset] == '#' && IsFirstNonWsChar (textOffset)) {
+				int textOffset = i - StartOffset;
+
+				if (textOffset < CurText.Length && CurText [textOffset] == '#' && IsFirstNonWsChar (textOffset)) {
+
+					if (CurText.IsAt (textOffset, "#else")) {
+						ScanPreProcessorElse (ref i);
+						return;
+					}
+	
+					if (CurText.IsAt (textOffset, "#if")) {
+						ScanPreProcessorIf (textOffset, ref i);
+						return;
+					}
+	
+					if (CurText.IsAt (textOffset, "#elif") && spanStack != null && spanStack.Any (span => span is IfBlockSpan)) {
+						ScanPreProcessorElseIf (ref i);
+						return;
+					}
+	
 					var preprocessorSpan = CreatePreprocessorSpan ();
 					FoundSpanBegin (preprocessorSpan, i, 1);
+					return;
 				}
+
 				base.ScanSpan (ref i);
 			}
 			
