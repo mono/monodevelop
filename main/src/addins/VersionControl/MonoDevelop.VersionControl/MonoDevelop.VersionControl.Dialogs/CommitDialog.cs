@@ -76,9 +76,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus (info.Status);
 				string lstatus = VersionControlService.GetStatusLabel (info.Status);
 				
-				string localpath = (!info.LocalPath.IsChildPathOf (changeSet.BaseLocalPath)?
-				                    ".":
-				                    (string) info.LocalPath.ToRelative (changeSet.BaseLocalPath)); 
+				string localpath = ((string) info.LocalPath.ToRelative (changeSet.BaseLocalPath));
 				if (localpath.Length > 0 && localpath[0] == System.IO.Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
 				if (localpath == "") { localpath = "."; } // not sure if this happens
 				

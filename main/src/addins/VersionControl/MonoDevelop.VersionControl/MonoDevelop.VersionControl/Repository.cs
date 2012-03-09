@@ -151,8 +151,9 @@ namespace MonoDevelop.VersionControl
 		// Returns the versioning status of a file or directory
 		public VersionInfo GetVersionInfo (FilePath localPath, bool getRemoteStatus)
 		{
-			VersionInfo vi = OnGetVersionInfo (new FilePath[] { localPath }, getRemoteStatus).Single ();
-			vi.Init (this);
+			VersionInfo vi = OnGetVersionInfo (new FilePath[] { localPath }, getRemoteStatus).FirstOrDefault ();
+			if (vi != null)
+				vi.Init (this);
 			return vi;
 		}
 		
