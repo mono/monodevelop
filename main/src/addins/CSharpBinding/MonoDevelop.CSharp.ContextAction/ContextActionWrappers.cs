@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -34,7 +35,7 @@ namespace MonoDevelop.CSharp.ContextAction
 		
 		protected override bool IsValid (MDRefactoringContext context)
 		{
-			return action.IsValid (context);
+			return action.IsValid (context, default (CancellationToken));
 		}
 		
 		protected override void Run (MDRefactoringContext context)

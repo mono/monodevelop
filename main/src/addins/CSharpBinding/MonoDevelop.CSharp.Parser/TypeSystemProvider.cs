@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp.Parser
 			
 			public override object VisitBlockStatement (BlockStatement blockStatement, object data)
 			{
-				if (!(blockStatement.Parent is AttributedNode) && blockStatement.EndLocation.Line - blockStatement.StartLocation.Line > 2) {
+				if (!(blockStatement.Parent is EntityDeclaration) && blockStatement.EndLocation.Line - blockStatement.StartLocation.Line > 2) {
 					Foldings.Add (new FoldingRegion (new DomRegion (blockStatement.GetPrevNode ().EndLocation, blockStatement.RBraceToken.StartLocation), FoldType.Undefined));
 				}
 				

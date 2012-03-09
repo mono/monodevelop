@@ -41,6 +41,7 @@ using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
@@ -423,13 +424,13 @@ namespace MonoDevelop.CSharp.ContextAction
 			}
 		}
 		
-		public override ResolveResult Resolve (AstNode node)
+		public override ResolveResult Resolve (AstNode node, CancellationToken cancellationToken)
 		{
 			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
 			var cu = Document.ParsedDocument.GetAst<CompilationUnit> ();
 			
 			var resolver = new CSharpAstResolver (Document.Compilation, cu, parsedFile);
-			return resolver.Resolve (node);
+			return resolver.Resolve (node, cancellationToken);
 		}
 
 		public override void ReplaceReferences (ICSharpCode.NRefactory.TypeSystem.IMember member, EntityDeclaration replaceWidth)

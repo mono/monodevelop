@@ -62,7 +62,7 @@ namespace MonoDevelop.Refactoring.IntegrateTemporaryVariable
 			if (unit == null)
 				return null;
 			
-			return unit.GetNodeAt<AttributedNode> (options.Document.Editor.Caret.Location);
+			return unit.GetNodeAt<EntityDeclaration> (options.Document.Editor.Caret.Location);
 		}
 		
 		public override bool IsValid (RefactoringOptions options)

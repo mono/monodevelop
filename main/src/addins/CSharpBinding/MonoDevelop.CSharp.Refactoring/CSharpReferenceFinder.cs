@@ -113,11 +113,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is MemberType)
 				node = ((MemberType)node).MemberNameToken;
 			
-			if (node is MemberDeclaration && (searchedMembers.First () is IMember)) 
-				node = ((MemberDeclaration)node).NameToken;
-			
 			if (node is TypeDeclaration && (searchedMembers.First () is IType)) 
 				node = ((TypeDeclaration)node).NameToken;
+			
+			if (node is EntityDeclaration && (searchedMembers.First () is IMember)) 
+				node = ((EntityDeclaration)node).NameToken;
 			
 			if (node is ParameterDeclaration && (searchedMembers.First () is IParameter)) 
 				node = ((ParameterDeclaration)node).NameToken;

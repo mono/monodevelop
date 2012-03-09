@@ -434,7 +434,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
 				}
 				
-				while (node != null && !(node is Statement || node is AttributedNode)) {
+				while (node != null && !(node is Statement || node is EntityDeclaration)) {
 					if (node is SimpleType) {
 						var st = (SimpleType)node;
 						
