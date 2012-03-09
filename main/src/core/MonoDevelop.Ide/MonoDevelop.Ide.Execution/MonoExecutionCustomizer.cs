@@ -35,7 +35,8 @@ namespace MonoDevelop.Ide.Execution
 	{
 		public bool CanCustomize (ExecutionCommand cmd)
 		{
-			return cmd is DotNetExecutionCommand;
+			var dotNetCmd = cmd as DotNetExecutionCommand;
+			return dotNetCmd != null && dotNetCmd.TargetRuntime.RuntimeId == "Mono";
 		}
 		
 		public void Customize (ExecutionCommand cmd, object data)
