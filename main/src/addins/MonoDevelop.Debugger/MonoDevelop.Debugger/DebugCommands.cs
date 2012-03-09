@@ -140,7 +140,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (DebuggingService.IsDebugging || DebuggingService.IsRunning) {
+			if (DebuggingService.IsRunning) {
 				info.Enabled = false;
 				return;
 			}
