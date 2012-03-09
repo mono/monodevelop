@@ -156,7 +156,6 @@
     <Compile Include="Ast\Statements\YieldBreakStatement.cs" />
     <Compile Include="Ast\Statements\YieldReturnStatement.cs" />
     <Compile Include="Ast\TypeMembers\Accessor.cs" />
-    <Compile Include="Ast\TypeMembers\AttributedNode.cs" />
     <Compile Include="Ast\TypeMembers\ConstructorDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\DestructorDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\EnumMemberDeclaration.cs" />
@@ -165,7 +164,6 @@
     <Compile Include="Ast\TypeMembers\FixedFieldDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\FixedVariableInitializer.cs" />
     <Compile Include="Ast\TypeMembers\IndexerDeclaration.cs" />
-    <Compile Include="Ast\TypeMembers\MemberDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\MethodDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\OperatorDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\ParameterDeclaration.cs" />

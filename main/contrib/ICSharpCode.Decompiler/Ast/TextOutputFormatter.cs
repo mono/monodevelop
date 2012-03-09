@@ -336,7 +336,7 @@ namespace ICSharpCode.Decompiler.Ast
 				node is EventDeclaration ||
 				node is DelegateDeclaration ||
 				node is OperatorDeclaration||
-				node is MemberDeclaration ||
+				node is EntityDeclaration ||
 				node is TypeDeclaration;
 		}
 	}
