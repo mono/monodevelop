@@ -113,7 +113,7 @@ namespace MonoDevelop.CodeGeneration
 		
 		static string AddIndent (string text, string indent)
 		{
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			StringBuilder result = new StringBuilder ();
 			foreach (var line in doc.Lines) {

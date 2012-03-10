@@ -36,7 +36,7 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class FoldingTests
 	{
-		static List<FoldSegment> GetFoldSegments (Document doc)
+		static List<FoldSegment> GetFoldSegments (TextDocument doc)
 		{
 			List<FoldSegment> result = new List<FoldSegment> ();
 			Stack<FoldSegment> foldSegments = new Stack<FoldSegment> ();

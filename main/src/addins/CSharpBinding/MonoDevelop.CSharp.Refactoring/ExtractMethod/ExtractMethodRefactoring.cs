@@ -213,7 +213,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		static string GetIndent (string text)
 		{
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			string result = null;
 			for (int i = 1; i < doc.LineCount; i++) {
@@ -228,7 +228,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		static string RemoveIndent (string text, string indent)
 		{
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			StringBuilder result = new StringBuilder ();
 			bool firstLine = true;
@@ -245,7 +245,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		static string AddIndent (string text, string indent)
 		{
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			StringBuilder result = new StringBuilder ();
 			foreach (LineSegment line in doc.Lines) {

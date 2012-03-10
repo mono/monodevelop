@@ -225,7 +225,7 @@
 //				return node.EndLocation.Line;
 //			}
 //		
-//			internal static void EvaluateMethodLOC(MethodProperties prop, List<LineSegment> text, Mono.TextEditor.Document doc)
+//			internal static void EvaluateMethodLOC(MethodProperties prop, List<LineSegment> text, Mono.TextEditor.TextDocument doc)
 //			{
 //				ulong totalLines = 0, totalRealLines = 0, totalCommentedLines = 0;
 //				int realLines = 0;

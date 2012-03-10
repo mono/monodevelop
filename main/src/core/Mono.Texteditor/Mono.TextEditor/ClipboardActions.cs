@@ -121,13 +121,13 @@ namespace Mono.TextEditor
 				// NOTHING ?
 			}
 	
-			public Document copiedDocument;
-			public Document monoDocument; // has a slightly different format !!!
+			public TextDocument copiedDocument;
+			public TextDocument monoDocument; // has a slightly different format !!!
 			public Mono.TextEditor.Highlighting.ColorSheme docStyle;
 			ITextEditorOptions options;
 			Mono.TextEditor.Highlighting.SyntaxMode mode;
 			
-			static string GenerateRtf (Document doc, Mono.TextEditor.Highlighting.SyntaxMode mode, Mono.TextEditor.Highlighting.ColorSheme style, ITextEditorOptions options)
+			static string GenerateRtf (TextDocument doc, Mono.TextEditor.Highlighting.SyntaxMode mode, Mono.TextEditor.Highlighting.ColorSheme style, ITextEditorOptions options)
 			{
 				StringBuilder rtfText = new StringBuilder ();
 				List<Gdk.Color> colorList = new List<Gdk.Color> ();
@@ -270,8 +270,8 @@ namespace Mono.TextEditor
 				copiedDocument = null;
 				monoDocument = null;
 				if (selection != null && data != null && data.Document != null) {
-					copiedDocument = new Document ();
-					monoDocument = new Document ();
+					copiedDocument = new TextDocument ();
+					monoDocument = new TextDocument ();
 					this.docStyle = data.ColorStyle;
 					this.options = data.Options;
 					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : new SyntaxMode (data.Document);

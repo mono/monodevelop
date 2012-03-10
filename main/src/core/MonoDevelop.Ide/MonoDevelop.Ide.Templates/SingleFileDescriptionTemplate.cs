@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide.Templates
 				ms.Write (data, 0, data.Length);
 			}
 			
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = content;
 			
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain")

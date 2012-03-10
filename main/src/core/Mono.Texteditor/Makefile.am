@@ -103,7 +103,6 @@ FILES =  \
 	Mono.TextEditor/IBracketMatcher.cs \
 	Mono.TextEditor/IBuffer.cs \
 	Mono.TextEditor/IconMargin.cs \
-	Mono.TextEditor/IDocumentPartitioner.cs \
 	Mono.TextEditor/IIndentationTracker.cs \
 	Mono.TextEditor/ILineSplitter.cs \
 	Mono.TextEditor/IndentStyle.cs \

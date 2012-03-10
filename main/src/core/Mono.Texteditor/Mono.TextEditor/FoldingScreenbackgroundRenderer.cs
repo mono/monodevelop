@@ -44,7 +44,7 @@ namespace Mono.TextEditor
 			Start = 1,
 			End = 2
 		}
-		Document Document {
+		TextDocument Document {
 			get { return editor.Document; }
 		}
 

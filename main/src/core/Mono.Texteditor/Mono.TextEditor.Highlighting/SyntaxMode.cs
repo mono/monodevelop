@@ -37,9 +37,9 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class SyntaxMode : Rule
 	{
-		protected Document doc;
+		protected TextDocument doc;
 
-		public Document Document {
+		public TextDocument Document {
 			get {
 				return doc;
 			}
@@ -79,7 +79,7 @@ namespace Mono.TextEditor.Highlighting
 			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
 		}
 		
-		public SyntaxMode (Document doc) : this ()
+		public SyntaxMode (TextDocument doc) : this ()
 		{
 			this.doc = doc;
 		}
@@ -226,7 +226,7 @@ namespace Mono.TextEditor.Highlighting
 			return result.ToString ();
 		}
 
-		public static int GetIndentLength (Document doc, int offset, int length, bool skipFirstLine)
+		public static int GetIndentLength (TextDocument doc, int offset, int length, bool skipFirstLine)
 		{
 			int curOffset = offset;
 			int indentLength = int.MaxValue;
@@ -257,7 +257,7 @@ namespace Mono.TextEditor.Highlighting
 			protected SyntaxMode mode;
 			protected CloneableStack<Span> spanStack;
 			protected Stack<Rule> ruleStack;
-			protected Document doc;
+			protected TextDocument doc;
 			int maxEnd;
 
 			public Rule CurRule {
@@ -495,7 +495,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			readonly string defaultStyle = "text";
 			protected SpanParser spanParser;
-			protected Document doc;
+			protected TextDocument doc;
 			protected LineSegment line;
 			internal int lineOffset;
 			protected SyntaxMode mode;
@@ -698,7 +698,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public override Rule GetRule (Document doc, string name)
+		public override Rule GetRule (TextDocument doc, string name)
 		{
 			if (name == null || name == "<root>") {
 				return this;
@@ -793,7 +793,7 @@ namespace Mono.TextEditor.Highlighting
 
 	public interface ISyntaxModeProvider
 	{
-		SyntaxMode Create (Document doc);
+		SyntaxMode Create (TextDocument doc);
 	}
 	
 	public class ProtoTypeSyntaxModeProvider : ISyntaxModeProvider
@@ -805,7 +805,7 @@ namespace Mono.TextEditor.Highlighting
 			this.prototype = prototype;
 		}
 		
-		SyntaxMode DeepCopy (Document doc, SyntaxMode mode)
+		SyntaxMode DeepCopy (TextDocument doc, SyntaxMode mode)
 		{
 			var newMode = new SyntaxMode (doc);
 			
@@ -833,7 +833,7 @@ namespace Mono.TextEditor.Highlighting
 			return newMode;
 		}
 		
-		Rule DeepCopy (Document doc, SyntaxMode mode, Rule rule)
+		Rule DeepCopy (TextDocument doc, SyntaxMode mode, Rule rule)
 		{
 			Rule newRule = new Rule (mode);
 			newRule.spans = new Span[rule.Spans.Length];
@@ -854,7 +854,7 @@ namespace Mono.TextEditor.Highlighting
 			return newRule;
 		}
 		
-		public SyntaxMode Create (Document doc)
+		public SyntaxMode Create (TextDocument doc)
 		{
 			return DeepCopy (doc, prototype);
 		}
@@ -862,14 +862,14 @@ namespace Mono.TextEditor.Highlighting
 	
 	public class SyntaxModeProvider : ISyntaxModeProvider
 	{
-		Func<Document, SyntaxMode> createFunction;
+		Func<TextDocument, SyntaxMode> createFunction;
 		
-		public SyntaxModeProvider (Func<Document, SyntaxMode> createFunction)
+		public SyntaxModeProvider (Func<TextDocument, SyntaxMode> createFunction)
 		{
 			this.createFunction = createFunction;
 		}
 		
-		public SyntaxMode Create (Document doc)
+		public SyntaxMode Create (TextDocument doc)
 		{
 			return createFunction (doc);
 		}

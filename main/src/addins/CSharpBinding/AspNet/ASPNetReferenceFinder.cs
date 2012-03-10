@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			IncludeDocumentation = true;
 		}
 		
-		IEnumerable<DomRegion> SearchMember (IEntity member, ITypeResolveContext dom, FilePath fileName, Mono.TextEditor.TextEditorData editor, Mono.TextEditor.Document buildDocument, List<LocalDocumentInfo.OffsetInfo> offsetInfos, ParsedDocument parsedDocument)
+		IEnumerable<DomRegion> SearchMember (IEntity member, ITypeResolveContext dom, FilePath fileName, Mono.TextEditor.TextEditorData editor, Mono.TextEditor.TextDocument buildDocument, List<LocalDocumentInfo.OffsetInfo> offsetInfos, ParsedDocument parsedDocument)
 		{ // TODO: Type system conversion.
 			yield break;
 //			var resolver = new NRefactoryResolver (dom, parsedDocument.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //			var builder = new AspLanguageBuilder ();
 //			
 //			
-//			var buildDocument = new Mono.TextEditor.Document ();
+//			var buildDocument = new Mono.TextEditor.TextDocument ();
 //			var offsetInfos = new List<LocalDocumentInfo.OffsetInfo> ();
 //			buildDocument.Text = builder.BuildDocumentString (documentInfo, editor, offsetInfos, true);
 //			var parsedDocument = AspLanguageBuilder.Parse (dom, fileName, buildDocument.Text);

@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 			get { return (ISourceEditorOptions)base.Options; }
 		}
 		
-		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.Document doc) : base(doc, options)
+		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.TextDocument doc) : base(doc, options)
 		{
 			Initialize (view);
 		}
@@ -253,7 +253,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Mono.TextEditor.Document doc, int start, int end) 
+		static IEnumerable<KeyValuePair <char, int>> GetTextWithoutCommentsAndStrings (Mono.TextEditor.TextDocument doc, int start, int end) 
 		{
 			bool isInString = false, isInChar = false;
 			bool isInLineComment = false, isInBlockComment = false;

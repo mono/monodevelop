@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 {
 	public static class BookmarkActions
 	{
-		static int GetNextOffset (Document document, int lineNumber)
+		static int GetNextOffset (TextDocument document, int lineNumber)
 		{
 			int startLineNumber = lineNumber + 1;
 			if (startLineNumber > document.Length) 
@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 				data.Caret.Offset = offset;
 		}
 		
-		static int GetPrevOffset (Document document, int lineNumber)
+		static int GetPrevOffset (TextDocument document, int lineNumber)
 		{
 			int startLineNumber = lineNumber - 1;
 			if (startLineNumber < 0) 

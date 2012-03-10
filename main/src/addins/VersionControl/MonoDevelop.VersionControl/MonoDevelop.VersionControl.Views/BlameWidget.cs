@@ -337,7 +337,7 @@ namespace MonoDevelop.VersionControl.Views
 				sb.Append (ch);
 			}
 			
-			Document doc = new Document ();
+			var doc = new TextDocument ();
 			doc.Text = sb.ToString ();
 			for (int i = 1; i <= doc.LineCount; i++) {
 				string text = doc.GetLineText (i).Trim ();

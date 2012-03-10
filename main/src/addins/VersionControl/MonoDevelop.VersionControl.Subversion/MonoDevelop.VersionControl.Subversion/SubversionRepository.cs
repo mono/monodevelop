@@ -521,8 +521,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, localPath, SvnRevision.First, SvnRevision.Base));
 			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "", DateTime.MinValue);
-			var baseDocument = new Mono.TextEditor.Document (File.ReadAllText (GetPathToBaseText (localPath)));
-			var workingDocument = new Mono.TextEditor.Document (File.ReadAllText (localPath));
+			var baseDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (GetPathToBaseText (localPath)));
+			var workingDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (localPath));
 			
 			// "SubversionException: blame of the WORKING revision is not supported"
 			foreach (var hunk in baseDocument.Diff (workingDocument)) {

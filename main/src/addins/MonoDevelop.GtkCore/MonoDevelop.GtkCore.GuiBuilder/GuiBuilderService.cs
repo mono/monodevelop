@@ -546,7 +546,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {
@@ -579,7 +579,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return doc.GetTextAt (offset, doc.Length - offset);
 		}
 
-		static void CheckLine (Mono.TextEditor.Document doc, Mono.TextEditor.LineSegment line, out bool isBlank, out bool isBracket)
+		static void CheckLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.LineSegment line, out bool isBlank, out bool isBracket)
 		{
 			isBlank = true;
 			isBracket = false;

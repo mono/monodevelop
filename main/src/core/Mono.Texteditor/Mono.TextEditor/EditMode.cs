@@ -87,7 +87,7 @@ namespace Mono.TextEditor
 		}
 		
 		protected Caret Caret { get { return textEditorData.Caret; } }
-		protected Document Document { get { return textEditorData.Document; } }
+		protected TextDocument Document { get { return textEditorData.Document; } }
 		protected TextEditor Editor { get { return editor; } }
 		protected TextEditorData Data { get { return textEditorData; } }
 		

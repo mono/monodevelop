@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Templates
 			return doc.GetTextAt (offset, doc.Length - offset);
 		}
 
-		static bool IsBlankLine (Mono.TextEditor.Document doc, Mono.TextEditor.LineSegment line)
+		static bool IsBlankLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.LineSegment line)
 		{
 			for (int i = 0; i < line.EditableLength; i++) {
 				if (!Char.IsWhiteSpace (doc.GetCharAt (line.Offset + i)))

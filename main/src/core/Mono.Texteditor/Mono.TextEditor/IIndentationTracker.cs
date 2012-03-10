@@ -51,9 +51,9 @@ namespace Mono.TextEditor
 	
 	class DefaultIndentationTracker : IIndentationTracker
 	{
-		Document doc;
+		TextDocument doc;
 			
-		public DefaultIndentationTracker (Document doc)
+		public DefaultIndentationTracker (TextDocument doc)
 		{
 			this.doc = doc;
 		}

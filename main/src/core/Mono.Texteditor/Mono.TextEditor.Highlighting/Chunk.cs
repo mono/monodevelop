@@ -67,11 +67,12 @@ namespace Mono.TextEditor
 		}
 
 		
-		public virtual string GetText (Document doc)
+		public virtual string GetText (TextDocument doc)
 		{
 			return doc.GetTextAt (this);
 		}
-		public virtual char GetCharAt (Document doc, int offset)
+		
+		public virtual char GetCharAt (TextDocument doc, int offset)
 		{
 			return doc.GetCharAt (offset);
 		}

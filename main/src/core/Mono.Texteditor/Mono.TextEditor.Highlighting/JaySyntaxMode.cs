@@ -34,7 +34,7 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class JaySyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
-		public JaySyntaxMode (Document doc) : base (doc)
+		public JaySyntaxMode (TextDocument doc) : base (doc)
 		{
 			ResourceXmlProvider provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("JaySyntaxMode")));
 			using (XmlReader reader = provider.Open ()) {

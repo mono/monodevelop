@@ -272,7 +272,7 @@ namespace Mono.TextEditor
 			foldSegmentSize -= (foldSegmentSize) % 2;
 			
 			Cairo.Rectangle drawArea = new Cairo.Rectangle (x, y, marginWidth, lineHeight);
-			Document.LineState state = editor.Document.GetLineState (lineSegment);
+			var state = editor.Document.GetLineState (lineSegment);
 			
 			bool isFoldStart = false;
 			bool isContaining = false;
@@ -318,11 +318,11 @@ namespace Mono.TextEditor
 			cr.Color = bgGC;
 			cr.Fill ();
 			
-			if (state == Document.LineState.Changed) {
+			if (state == TextDocument.LineState.Changed) {
 				cr.Color = lineStateChangedGC;
 				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
 				cr.Fill ();
-			} else if (state == Document.LineState.Dirty) {
+			} else if (state == TextDocument.LineState.Dirty) {
 				cr.Color = lineStateDirtyGC;
 				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
 				cr.Fill ();

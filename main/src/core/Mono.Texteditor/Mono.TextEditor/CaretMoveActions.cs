@@ -206,7 +206,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		static int GetHomeMark (Document document, LineSegment line)
+		static int GetHomeMark (TextDocument document, LineSegment line)
 		{
 			int result;
 			for (result = 0; result < line.EditableLength; result++)

@@ -426,7 +426,7 @@ namespace MonoDevelop.Ide.Gui
 				return ch == ' ' || ch == '\t' || ch == '\v';
 			}
 			
-			public static RemoveInfo GetRemoveInfo (Mono.TextEditor.Document document, ref int pos)
+			public static RemoveInfo GetRemoveInfo (Mono.TextEditor.TextDocument document, ref int pos)
 			{
 				int len = 0;
 				while (pos > 0 && IsWhiteSpace (document.GetCharAt (pos))) {

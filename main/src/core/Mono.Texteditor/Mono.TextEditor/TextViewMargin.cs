@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 			get { return this.textEditor.ColorStyle; }
 		}
 
-		public Document Document {
+		public TextDocument Document {
 			get { return textEditor.Document; }
 		}
 
@@ -169,7 +169,7 @@ namespace Mono.TextEditor
 			
 			if (selectedRegions.Count > 0) {
 				List<ISegment> newRegions = new List<ISegment> (this.selectedRegions);
-				Document.UpdateSegments (newRegions, e);
+				TextDocument.UpdateSegments (newRegions, e);
 				this.selectedRegions = newRegions;
 				RefreshSearchMarker ();
 			}
@@ -354,10 +354,10 @@ namespace Mono.TextEditor
 			}
 
 			int offset = Caret.Offset - 1;
-			if (Caret.Mode != CaretMode.Insert || (offset >= 0 && offset < Document.Length && !Document.IsBracket (Document.GetCharAt (offset))))
+			if (Caret.Mode != CaretMode.Insert || (offset >= 0 && offset < Document.Length && !TextDocument.IsBracket (Document.GetCharAt (offset))))
 				offset++;
 			offset = System.Math.Max (0, offset);
-			if (highlightBracketOffset >= 0 && (offset >= Document.Length || !Document.IsBracket (Document.GetCharAt (offset)))) {
+			if (highlightBracketOffset >= 0 && (offset >= Document.Length || !TextDocument.IsBracket (Document.GetCharAt (offset)))) {
 				int old = highlightBracketOffset;
 				highlightBracketOffset = -1;
 				if (old >= 0)
@@ -848,7 +848,7 @@ namespace Mono.TextEditor
 		}
 
 		Dictionary<LineSegment, ChunkDescriptor> chunkDict = new Dictionary<LineSegment, ChunkDescriptor> ();
-		Chunk GetCachedChunks (SyntaxMode mode, Document doc, Mono.TextEditor.Highlighting.ColorSheme style, LineSegment line, int offset, int length)
+		Chunk GetCachedChunks (SyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorSheme style, LineSegment line, int offset, int length)
 		{
 			ChunkDescriptor descriptor;
 			if (chunkDict.TryGetValue (line, out descriptor)) {

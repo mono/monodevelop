@@ -108,9 +108,9 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void CreateComponents ()
 		{
 			this.editors = new [] {
-				new TextEditor (new Mono.TextEditor.Document (), new CommonTextEditorOptions ()),
-				new TextEditor (new Mono.TextEditor.Document (), new CommonTextEditorOptions ()),
-				new TextEditor (new Mono.TextEditor.Document (), new CommonTextEditorOptions ()),
+				new TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ()),
+				new TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ()),
+				new TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ()),
 			};
 			
 			this.editors[0].Document.ReadOnly = true;
@@ -124,7 +124,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		// todo: move to version control backend
-		IEnumerable<Conflict> Conflicts (Mono.TextEditor.Document doc)
+		IEnumerable<Conflict> Conflicts (Mono.TextEditor.TextDocument doc)
 		{
 			foreach (int mergeStart in doc.SearchForward ("<<<<<<<", 0)) {
 				LineSegment start = doc.GetLineByOffset (mergeStart);
@@ -249,7 +249,7 @@ namespace MonoDevelop.VersionControl.Views
 		void UpdateConflictsOnTextReplace (object sender, DocumentChangeEventArgs e)
 		{
 			this.UpdateDiff ();
-			Mono.TextEditor.Document.UpdateSegments (GetAllConflictingSegments (), e);
+			Mono.TextEditor.TextDocument.UpdateSegments (GetAllConflictingSegments (), e);
 		}
 	}
 }

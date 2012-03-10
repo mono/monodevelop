@@ -33,11 +33,11 @@ namespace MonoDevelop.SourceEditor
 {
 	class SourceEditorPrintOperation : PrintOperation
 	{
-		Document doc;
+		TextDocument doc;
 		FilePath filename;
 		SourceEditorPrintSettings settings;
 		
-		public SourceEditorPrintOperation (Document doc, FilePath filename)
+		public SourceEditorPrintOperation (TextDocument doc, FilePath filename)
 		{
 			this.doc = doc;
 			this.filename = filename;

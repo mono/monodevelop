@@ -32,12 +32,12 @@ namespace Mono.TextEditor
 {
 	public interface IWordFindStrategy
 	{
-		int FindNextWordOffset (Document doc, int offset);
-		int FindPrevWordOffset (Document doc, int offset);
-		int FindNextSubwordOffset (Document doc, int offset);
-		int FindPrevSubwordOffset (Document doc, int offset);
-		int FindCurrentWordStart (Document doc, int offset);
-		int FindCurrentWordEnd (Document doc, int offset);
+		int FindNextWordOffset (TextDocument doc, int offset);
+		int FindPrevWordOffset (TextDocument doc, int offset);
+		int FindNextSubwordOffset (TextDocument doc, int offset);
+		int FindPrevSubwordOffset (TextDocument doc, int offset);
+		int FindCurrentWordStart (TextDocument doc, int offset);
+		int FindCurrentWordEnd (TextDocument doc, int offset);
 	}
 	
 	public abstract class WordFindStrategy : IWordFindStrategy
@@ -75,30 +75,30 @@ namespace Mono.TextEditor
  			return CharacterClass.Unknown;
  		}
 		
-		public abstract int FindNextWordOffset (Document doc, int offset);
-		public abstract int FindPrevWordOffset (Document doc, int offset);
+		public abstract int FindNextWordOffset (TextDocument doc, int offset);
+		public abstract int FindPrevWordOffset (TextDocument doc, int offset);
 		
-		public virtual int FindNextSubwordOffset (Document doc, int offset)
+		public virtual int FindNextSubwordOffset (TextDocument doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset);
 		}
 		
-		public virtual int FindPrevSubwordOffset (Document doc, int offset)
+		public virtual int FindPrevSubwordOffset (TextDocument doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset);
 		}
 		
-		public virtual int FindCurrentWordStart (Document doc, int offset)
+		public virtual int FindCurrentWordStart (TextDocument doc, int offset)
 		{
 			return ScanWord (doc, offset, false);
 		}
 		
-		public virtual int FindCurrentWordEnd (Document doc, int offset)
+		public virtual int FindCurrentWordEnd (TextDocument doc, int offset)
 		{
 			return ScanWord (doc, offset, true);
 		}
 		
-		internal static int ScanWord (Document doc, int offset, bool forwardDirection)
+		internal static int ScanWord (TextDocument doc, int offset, bool forwardDirection)
 		{
 			if (offset < 0 || offset >= doc.Length)
 				return offset;

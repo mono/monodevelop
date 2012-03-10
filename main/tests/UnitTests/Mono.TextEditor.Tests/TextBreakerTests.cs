@@ -95,7 +95,7 @@ namespace Mono.TextEditor.Tests
 
 		public TextEditor CreateEditor (string editorText)
 		{
-			return new TextEditor (new Document (editorText));
+			return new TextEditor (new TextDocument (editorText));
 		}
 
 		public List<ISegment> BreakAllLines (String editorText)

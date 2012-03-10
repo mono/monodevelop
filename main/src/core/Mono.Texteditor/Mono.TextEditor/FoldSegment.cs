@@ -84,9 +84,9 @@ namespace Mono.TextEditor
 		}
 		
 		public FoldingType FoldingType { get; set; }
-		Document doc;
+		TextDocument doc;
 		
-		public FoldSegment (Document doc,string description,int offset,int length,FoldingType foldingType) : base (offset, length)
+		public FoldSegment (TextDocument doc, string description, int offset, int length, FoldingType foldingType) : base (offset, length)
 		{
 			this.doc = doc;
 			this.isFolded = false;

@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public HiddenTextEditorViewContent ()
 		{
-			document = new Mono.TextEditor.Document ();
+			document = new Mono.TextEditor.TextDocument ();
 			data = new Mono.TextEditor.TextEditorData (document);
 			Name = "";
 		}
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		Mono.TextEditor.Document document;
+		Mono.TextEditor.TextDocument document;
 		public string Text {
 			get {
 				return document.Text;

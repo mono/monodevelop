@@ -53,7 +53,7 @@
 //		internal static List<LineSegment> FileText
 //		{ get; private set; }
 //		
-//		internal static Mono.TextEditor.Document FileDoc
+//		internal static Mono.TextEditor.TextDocument FileDoc
 //		{ get; private set; }
 //		
 //		internal static ProjectProperties ProjProp
@@ -84,7 +84,7 @@
 //					}
 //					ProjProp = project;
 //					File = file;
-//					Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+//					Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 //					doc.Text = text;
 //					FileDoc = doc;
 //					FileText = new List<LineSegment>();

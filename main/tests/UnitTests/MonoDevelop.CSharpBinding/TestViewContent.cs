@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		}
 		public TestViewContent ()
 		{
-			document = new Mono.TextEditor.Document ();
+			document = new Mono.TextEditor.TextDocument ();
 			data = new TextEditorData (document);
 			Name = "";
 		}
@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			}
 		}
 		
-		Mono.TextEditor.Document document;
+		Mono.TextEditor.TextDocument document;
 		public string Text {
 			get {
 				return document.Text;

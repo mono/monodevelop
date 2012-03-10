@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 {
 	public abstract class SemanticRule
 	{
-		public abstract void Analyze (Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset);
+		public abstract void Analyze (TextDocument doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset);
 	}
 	
 	public class HighlightUrlSemanticRule : SemanticRule
@@ -52,7 +52,7 @@ namespace Mono.TextEditor
 		}
 		
 		bool inUpdate = false;
-		public override void Analyze (Document doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset)
+		public override void Analyze (TextDocument doc, LineSegment line, Chunk startChunk, int startOffset, int endOffset)
 		{
 			if (endOffset <= startOffset || startOffset >= doc.Length || inUpdate)
 				return;

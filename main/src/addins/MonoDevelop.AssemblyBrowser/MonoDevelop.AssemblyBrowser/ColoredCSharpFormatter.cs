@@ -51,13 +51,13 @@ namespace MonoDevelop.AssemblyBrowser
 	public class ColoredCSharpFormatter : ICSharpCode.Decompiler.ITextOutput
 	{
 		public StringBuilder sb = new StringBuilder();
-		Document doc;
+		TextDocument doc;
 		bool write_indent;
 		int indent;
 		public List<FoldSegment>      FoldSegments       = new List<FoldSegment>();
 		public List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
 		
-		public ColoredCSharpFormatter (Document doc)
+		public ColoredCSharpFormatter (TextDocument doc)
 		{
 			this.doc = doc;
 		}

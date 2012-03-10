@@ -612,7 +612,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		Pixmap backgroundPixbuf, backgroundBuffer;
 		uint redrawTimeout;
-		Document doc;
+		TextDocument doc;
 		protected override double IndicatorHeight  {
 			get {
 				return 16;

@@ -160,7 +160,7 @@ namespace Mono.TextEditor
 		{
 			if (offset < 0)
 				return null;
-			Document doc = this.textEditorData.Document;
+			var doc = this.textEditorData.Document;
 			
 			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= doc.Length && compiledPattern.Length > 0) {
 				if (searchRequest.CaseSensitive) {

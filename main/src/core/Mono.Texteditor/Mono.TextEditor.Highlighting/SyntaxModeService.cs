@@ -133,12 +133,12 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static SyntaxMode GetSyntaxMode (Document doc)
+		public static SyntaxMode GetSyntaxMode (TextDocument doc)
 		{
 			return GetSyntaxMode (doc, doc.MimeType);
 		}
 		
-		public static SyntaxMode GetSyntaxMode (Document doc, string mimeType)
+		public static SyntaxMode GetSyntaxMode (TextDocument doc, string mimeType)
 		{
 			SyntaxMode result = null;
 			if (syntaxModes.ContainsKey (mimeType)) {
@@ -158,7 +158,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static bool ValidateAllSyntaxModes ()
 		{
-			Document doc = new Document ();
+			var doc = new TextDocument ();
 			foreach (string mime in new List<string> (syntaxModeLookup.Keys)) {
 				GetSyntaxMode (doc, mime);
 			}
@@ -201,7 +201,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void ScanSpans (Document doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
+		public static void ScanSpans (TextDocument doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
 		{
 			SyntaxMode.SpanParser parser = mode.CreateSpanParser (null, spanStack);
 			parser.ParseSpans (start, end - start);
@@ -211,7 +211,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		class UpdateWorker
 		{
-			Document doc;
+			TextDocument doc;
 			SyntaxMode mode;
 			int startOffset;
 			int endOffset;
@@ -221,7 +221,7 @@ namespace Mono.TextEditor.Highlighting
 				private set;
 			}
 			
-			public Document Doc {
+			public TextDocument Doc {
 				get { return this.doc; }
 			}
 			
@@ -229,7 +229,7 @@ namespace Mono.TextEditor.Highlighting
 				get;
 				set;
 			}
-			public UpdateWorker (Document doc, SyntaxMode mode, int startOffset, int endOffset)
+			public UpdateWorker (TextDocument doc, SyntaxMode mode, int startOffset, int endOffset)
 			{
 				this.doc = doc;
 				this.mode = mode;
@@ -324,7 +324,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void StartUpdate (Document doc, SyntaxMode mode, int startOffset, int endOffset)
+		public static void StartUpdate (TextDocument doc, SyntaxMode mode, int startOffset, int endOffset)
 		{
 			lock (updateQueue) {
 				updateQueue.Enqueue (new UpdateWorker (doc, mode, startOffset, endOffset));
@@ -332,7 +332,7 @@ namespace Mono.TextEditor.Highlighting
 			queueSignal.Set ();
 		}
 		
-		public static void WaitUpdate (Document doc)
+		public static void WaitUpdate (TextDocument doc)
 		{
 			UpdateWorker[] arr;
 			lock (updateQueue) {

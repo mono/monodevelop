@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 {
 	public class SharpDevelopWordFindStrategy : WordFindStrategy
 	{
-		int FindNextWordOffset (Document doc, int offset, bool subword)
+		int FindNextWordOffset (TextDocument doc, int offset, bool subword)
 		{
 			int lineNumber   = doc.OffsetToLineNumber (offset);
 			LineSegment line = doc.GetLine (lineNumber);
@@ -78,7 +78,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		int FindPrevWordOffset (Document doc, int offset, bool subword)
+		int FindPrevWordOffset (TextDocument doc, int offset, bool subword)
 		{
 			int lineNumber = doc.OffsetToLineNumber (offset);
 			LineSegment line = doc.GetLine (lineNumber);
@@ -127,22 +127,22 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public override int FindNextWordOffset (Document doc, int offset)
+		public override int FindNextWordOffset (TextDocument doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset, false);
 		}
 		
-		public override int FindPrevWordOffset (Document doc, int offset)
+		public override int FindPrevWordOffset (TextDocument doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset, false);
 		}
 		
-		public override int FindNextSubwordOffset (Document doc, int offset)
+		public override int FindNextSubwordOffset (TextDocument doc, int offset)
 		{
 			return FindNextWordOffset (doc, offset, true);
 		}
 		
-		public override int FindPrevSubwordOffset (Document doc, int offset)
+		public override int FindPrevSubwordOffset (TextDocument doc, int offset)
 		{
 			return FindPrevWordOffset (doc, offset, true);
 		}

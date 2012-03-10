@@ -92,9 +92,9 @@ namespace MonoDevelop.SourceEditor
 		class FileContent
 		{
 			public string FileName;
-			public Mono.TextEditor.Document Content;
+			public Mono.TextEditor.TextDocument Content;
 
-			public FileContent (string fileName, Mono.TextEditor.Document content)
+			public FileContent (string fileName, Mono.TextEditor.TextDocument content)
 			{
 				this.FileName = fileName;
 				this.Content = content;
@@ -167,7 +167,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public static void InformAutoSaveThread (Mono.TextEditor.Document content)
+		public static void InformAutoSaveThread (Mono.TextEditor.TextDocument content)
 		{
 			if (content == null || !autoSaveEnabled)
 				return;

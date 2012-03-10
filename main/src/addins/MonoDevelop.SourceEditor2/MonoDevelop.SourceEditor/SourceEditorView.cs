@@ -79,7 +79,7 @@ namespace MonoDevelop.SourceEditor
 		bool writeAllowed;
 		bool writeAccessChecked;
 		
-		public Mono.TextEditor.Document Document {
+		public Mono.TextEditor.TextDocument Document {
 			get {
 				return widget.TextEditor.Document;
 			}

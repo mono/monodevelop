@@ -94,7 +94,7 @@ namespace Mono.TextEditor.Tests
 			data.Caret.AllowCaretBehindLineEnd = true;
 			data.Caret.Offset = 2; // 2nd.Line
 			Assert.AreEqual (DocumentLocation.MinColumn + 1, data.Caret.Column);
-			Document.RemoveTrailingWhitespaces (data, data.Document.GetLine (2));
+			TextDocument.RemoveTrailingWhitespaces (data, data.Document.GetLine (2));
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 			Assert.AreEqual (DocumentLocation.MinColumn + 1, data.Caret.Column);
 		}

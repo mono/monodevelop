@@ -294,7 +294,7 @@ kkk lll", mode.Text);
 			get { return base.Data; }
 		}
 		
-		public new Document Document {
+		public new TextDocument Document {
 			get { return base.Document; }
 		}
 		

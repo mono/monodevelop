@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.Document.Project);
 		}
 
-		static bool IsBlankLine (Document doc, int i)
+		static bool IsBlankLine (TextDocument doc, int i)
 		{
 			var line = doc.GetLine (i);
 			return line.EditableLength == line.GetIndentation (doc).Length;
@@ -106,7 +106,7 @@ namespace MonoDevelop.CSharp.ContextAction
 
 		static string StripDoubleBlankLines (string content)
 		{
-			var doc = new Mono.TextEditor.Document (content);
+			var doc = new Mono.TextEditor.TextDocument (content);
 			for (int i = 1; i + 1 <= doc.LineCount; i++) {
 				if (IsBlankLine (doc, i) && IsBlankLine (doc, i + 1)) {
 					((IBuffer)doc).Remove (doc.GetLine (i));
@@ -119,7 +119,7 @@ namespace MonoDevelop.CSharp.ContextAction
 
 		static string StripHeader (string content)
 		{
-			var doc = new Mono.TextEditor.Document (content);
+			var doc = new Mono.TextEditor.TextDocument (content);
 			while (true) {
 				string lineText = doc.GetLineText (1);
 				if (lineText == null)

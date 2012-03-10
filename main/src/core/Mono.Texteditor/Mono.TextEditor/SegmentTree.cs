@@ -62,12 +62,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void InstallListener (Document doc)
+		public void InstallListener (TextDocument doc)
 		{
 			doc.TextReplaced += UpdateOnTextReplace;
 		}
 
-		public void RemoveListener (Document doc)
+		public void RemoveListener (TextDocument doc)
 		{
 			doc.TextReplaced -= UpdateOnTextReplace;
 		}

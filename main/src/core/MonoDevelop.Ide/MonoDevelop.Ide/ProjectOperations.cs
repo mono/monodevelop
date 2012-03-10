@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide
 		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (IUnresolvedTypeDefinition part)
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.Region.FileName);
-			var doc = new Mono.TextEditor.Document ();
+			var doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = provider.ReadString ();
 			int position = doc.LocationToOffset (part.Region.BeginLine, part.Region.BeginColumn);
 			while (position + part.Name.Length < doc.Length) {

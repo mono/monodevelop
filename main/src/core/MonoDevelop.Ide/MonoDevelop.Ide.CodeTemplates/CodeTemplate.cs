@@ -354,7 +354,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		string RemoveIndent (string text, string indent)
 		{
-			Document doc = new Document ();
+			var doc = new TextDocument ();
 			doc.Text = text;
 			StringBuilder result = new StringBuilder ();
 			foreach (LineSegment line in doc.Lines) {
@@ -367,7 +367,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		string Reindent (string text, string indent)
 		{
-			Document doc = new Document ();
+			var doc = new TextDocument ();
 			doc.Text = text;
 			StringBuilder result = new StringBuilder ();
 			foreach (LineSegment line in doc.Lines) {

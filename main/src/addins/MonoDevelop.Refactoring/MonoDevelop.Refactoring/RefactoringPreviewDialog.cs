@@ -107,7 +107,7 @@ namespace MonoDevelop.Refactoring
 				return;
 			}
 			
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = System.IO.File.ReadAllText (replaceChange.FileName);
 			DocumentLocation loc = doc.OffsetToLocation (replaceChange.Offset);
 			
@@ -134,7 +134,7 @@ namespace MonoDevelop.Refactoring
 					return;
 			
 				var openDocument = IdeApp.Workbench.GetDocument (replaceChange.FileName);
-				Mono.TextEditor.Document originalDocument = new Mono.TextEditor.Document ();
+				Mono.TextEditor.TextDocument originalDocument = new Mono.TextEditor.TextDocument ();
 				originalDocument.FileName = replaceChange.FileName;
 				if (openDocument == null) {
 					originalDocument.Text = System.IO.File.ReadAllText (replaceChange.FileName);
@@ -142,7 +142,7 @@ namespace MonoDevelop.Refactoring
 					originalDocument.Text = openDocument.Editor.Document.Text;
 				}
 				
-				Mono.TextEditor.Document changedDocument = new Mono.TextEditor.Document ();
+				Mono.TextEditor.TextDocument changedDocument = new Mono.TextEditor.TextDocument ();
 				changedDocument.FileName = replaceChange.FileName;
 				changedDocument.Text = originalDocument.Text;
 				

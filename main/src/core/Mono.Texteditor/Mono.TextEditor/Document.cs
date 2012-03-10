@@ -35,7 +35,7 @@ using System.ComponentModel;
 
 namespace Mono.TextEditor
 {
-	public class Document : AbstractAnnotatable, IBuffer, ICSharpCode.NRefactory.Editor.IDocument
+	public class TextDocument : AbstractAnnotatable, IBuffer, ICSharpCode.NRefactory.Editor.IDocument
 	{
 		IBuffer      buffer;
 		internal ILineSplitter splitter;
@@ -87,7 +87,7 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		protected Document (IBuffer buffer,ILineSplitter splitter)
+		protected TextDocument (IBuffer buffer,ILineSplitter splitter)
 		{
 			this.buffer = buffer;
 			this.splitter = splitter;
@@ -102,25 +102,25 @@ namespace Mono.TextEditor
 				foldedSegments.Remove (e.Node);
 		}
 
-		public Document () : this(new GapBuffer (), new LineSplitter ())
+		public TextDocument () : this(new GapBuffer (), new LineSplitter ())
 		{
 		}
 		
-		public Document (string text) : this()
+		public TextDocument (string text) : this()
 		{
 			Text = text;
 		}
 
-		public static Document CreateImmutableDocument (string text)
+		public static TextDocument CreateImmutableDocument (string text)
 		{
-			return new Document(new StringBuffer(text), new PrimitiveLineSplitter()) {
+			return new TextDocument(new StringBuffer(text), new PrimitiveLineSplitter()) {
 				SuppressHighlightUpdate = true,
 				Text = text,
 				ReadOnly = true
 			};
 		}
 		
-		~Document ()
+		~TextDocument ()
 		{
 			if (foldSegmentWorker != null) {
 				foldSegmentWorker.Dispose ();
@@ -204,8 +204,6 @@ namespace Mono.TextEditor
 			//			Debug.Assert (0 <= offset && offset + count <= Length);
 			int oldLineCount = this.LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
-			if (Partitioner != null)
-				Partitioner.TextReplacing (args);
 			OnTextReplacing (args);
 			value = args.InsertedText;
 			/* insert/repla
@@ -230,8 +228,6 @@ namespace Mono.TextEditor
 			buffer.Replace (offset, count, value);
 			foldSegmentTree.UpdateOnTextReplace (this, args);
 			splitter.TextReplaced (this, args);
-			if (Partitioner != null)
-				Partitioner.TextReplaced (args);
 			OnTextReplaced (args);
 			
 			UpdateUndoStackOnReplace (args);
@@ -477,7 +473,7 @@ namespace Mono.TextEditor
 			}
 			
 			
-			internal void Setup (Document doc, DocumentChangeEventArgs args)
+			internal void Setup (TextDocument doc, DocumentChangeEventArgs args)
 			{
 				if (args != null) {
 					this.startOffset = args.Offset;
@@ -494,7 +490,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public virtual void Undo (Document doc)
+			public virtual void Undo (TextDocument doc)
 			{
 				if (args.InsertionLength > 0)
 					((IBuffer)doc).Remove (args.Offset, args.InsertionLength);
@@ -503,7 +499,7 @@ namespace Mono.TextEditor
 				OnUndoDone ();
 			}
 			
-			public virtual void Redo (Document doc)
+			public virtual void Redo (TextDocument doc)
 			{
 				((IBuffer)doc).Replace (args.Offset, args.RemovalLength, args.InsertedText);
 				OnRedoDone ();
@@ -565,7 +561,7 @@ namespace Mono.TextEditor
 				operations.Add (operation);
 			}
 			
-			public override void Undo (Document doc)
+			public override void Undo (TextDocument doc)
 			{
 				for (int i = operations.Count - 1; i >= 0; i--) {
 					operations[i].Undo (doc);
@@ -574,7 +570,7 @@ namespace Mono.TextEditor
 				OnUndoDone ();
 			}
 			
-			public override void Redo (Document doc)
+			public override void Redo (TextDocument doc)
 			{
 				foreach (UndoOperation operation in this.operations) {
 					operation.Redo (doc);
@@ -810,9 +806,9 @@ namespace Mono.TextEditor
 		
 		class UndoGroup : IDisposable
 		{
-			Document doc;
+			TextDocument doc;
 			
-			public UndoGroup (Document doc)
+			public UndoGroup (TextDocument doc)
 			{
 				if (doc == null)
 					throw new ArgumentNullException ("doc");
@@ -1554,7 +1550,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		public IEnumerable<Hunk> Diff (Document changedDocument, bool includeEol = true)
+		public IEnumerable<Hunk> Diff (TextDocument changedDocument, bool includeEol = true)
 		{
 			var codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;
@@ -1563,53 +1559,7 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
-		#region Partitioner
-		IDocumentPartitioner partitioner;
-		public IDocumentPartitioner Partitioner {
-			get { 
-				return partitioner; 
-			}
-			set {
-				partitioner = value;
-				partitioner.Document = this; 
-			}
-		}
 		
-		public IEnumerable<TypedSegment> GetPartitions (int offset, int length)
-		{
-			if (Partitioner == null)
-				return new TypedSegment[0];
-			return Partitioner.GetPartitions (offset, length);
-		}
-		
-		public IEnumerable<TypedSegment> GetPartitions (ISegment segment)
-		{
-			if (Partitioner == null)
-				return new TypedSegment[0];
-			return Partitioner.GetPartitions (segment);
-		}
-		
-		public TypedSegment GetPartition (int offset)
-		{
-			if (Partitioner == null)
-				return null;
-			return Partitioner.GetPartition (offset);
-		}
-		
-		public TypedSegment GetPartition (DocumentLocation location)
-		{
-			if (Partitioner == null)
-				return null;
-			return Partitioner.GetPartition (location);
-		}
-		
-		public TypedSegment GetPartition (int line, int column)
-		{
-			if (Partitioner == null)
-				return null;
-			return Partitioner.GetPartition (line, column);
-		}
-		#endregion
 		
 		#region ContentLoaded 
 		// The problem: Action to perform on a newly opened text editor, but content didn't get loaded because autosave file exist.

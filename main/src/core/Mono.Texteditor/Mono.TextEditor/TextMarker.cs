@@ -110,7 +110,7 @@ namespace Mono.TextEditor
 		int endColumn;
 		LineSegment line;
 		UrlType urlType;
-		Document doc;
+		TextDocument doc;
 		
 		public string Url {
 			get {
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public UrlMarker (Document doc, LineSegment line, string url, UrlType urlType, string style, int startColumn, int endColumn)
+		public UrlMarker (TextDocument doc, LineSegment line, string url, UrlType urlType, string style, int startColumn, int endColumn)
 		{
 			this.doc = doc;
 			this.line = line;

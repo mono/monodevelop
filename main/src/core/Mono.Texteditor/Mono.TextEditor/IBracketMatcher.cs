@@ -32,20 +32,20 @@ namespace Mono.TextEditor
 {
 	public interface IBracketMatcher
 	{
-		int SearchMatchingBracketForward (System.ComponentModel.BackgroundWorker worker, Document document, int offset, char openBracket, char closingBracket);
-		int SearchMatchingBracketBackward (System.ComponentModel.BackgroundWorker worker, Document document, int offset, char openBracket, char closingBracket);
+		int SearchMatchingBracketForward (System.ComponentModel.BackgroundWorker worker, TextDocument document, int offset, char openBracket, char closingBracket);
+		int SearchMatchingBracketBackward (System.ComponentModel.BackgroundWorker worker, TextDocument document, int offset, char openBracket, char closingBracket);
 	}
 	
 	public class DefaultBracketMatcher : IBracketMatcher
 	{
-		static List<string> GetList (Document document, string name)
+		static List<string> GetList (TextDocument document, string name)
 		{
 			if (document.SyntaxMode.Properties.ContainsKey(name)) 
 				return document.SyntaxMode.Properties[name];
 			return new List<string> ();
 		}
 		
-		static int StartsWithListMember (Document document, List<string> list, int offset)
+		static int StartsWithListMember (TextDocument document, List<string> list, int offset)
 		{
 			for (int i = 0; i < list.Count; i++) {
 				string item = list[i];
@@ -57,7 +57,7 @@ namespace Mono.TextEditor
 			return -1;
 		}
 		
-		public int SearchMatchingBracketForward (System.ComponentModel.BackgroundWorker worker, Document document, int offset, char openBracket, char closingBracket)
+		public int SearchMatchingBracketForward (System.ComponentModel.BackgroundWorker worker, TextDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool isInBlockComment = false;
 			bool isInLineComment  = false;
@@ -125,7 +125,7 @@ namespace Mono.TextEditor
 			}
 			return -1;
 		}
-		bool StartsInLineComment (Document document, int offset)
+		bool StartsInLineComment (TextDocument document, int offset)
 		{
 			List<string> lineComments = GetList (document, "LineComment");
 			LineSegment line = document.GetLineByOffset (offset);
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 			return false;
 		}
 		
-		int GetLastSourceCodePosition (Document document, int lineOffset)
+		int GetLastSourceCodePosition (TextDocument document, int lineOffset)
 		{
 			LineSegment line = document.GetLineByOffset (lineOffset);
 			bool isInBlockComment = false;
@@ -180,7 +180,7 @@ namespace Mono.TextEditor
 			return lineOffset;
 		}
 		
-		public int SearchMatchingBracketBackward (System.ComponentModel.BackgroundWorker worker, Document document, int offset, char openBracket, char closingBracket)
+		public int SearchMatchingBracketBackward (System.ComponentModel.BackgroundWorker worker, TextDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool isInBlockComment = false;
 			bool isInLineComment  = false;

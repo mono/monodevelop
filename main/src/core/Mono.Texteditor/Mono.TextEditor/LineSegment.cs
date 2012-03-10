@@ -164,7 +164,7 @@ namespace Mono.TextEditor
 		/// <returns>
 		/// The indentation of the line (all whitespace chars up to the first non ws char).
 		/// </returns>
-		public string GetIndentation (Document doc)
+		public string GetIndentation (TextDocument doc)
 		{
 			var result = new StringBuilder ();
 			int offset = Offset;

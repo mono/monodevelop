@@ -574,7 +574,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		Dictionary<Mono.TextEditor.Document, TextEditorData> dict = new Dictionary<Mono.TextEditor.Document, TextEditorData> ();
+		Dictionary<Mono.TextEditor.TextDocument, TextEditorData> dict = new Dictionary<Mono.TextEditor.TextDocument, TextEditorData> ();
 
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 
@@ -616,7 +616,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		void HandleDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			var data = dict [(Document)sender];
+			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
 			var editor = info.Document.GetContent<IEditableTextFile> ();
 			editor.DeleteText (e.Offset, e.RemovalLength);

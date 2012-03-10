@@ -562,7 +562,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				HashSet<string> symbols = new HashSet<string> ();
 				
 			
-				MonoDevelop.Projects.Project GetProject (Mono.TextEditor.Document doc)
+				MonoDevelop.Projects.Project GetProject (Mono.TextEditor.TextDocument doc)
 				{
 					// There is no reference between document & higher level infrastructure,
 					// therefore it's a bit tricky to find the right project.
@@ -584,7 +584,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return project;
 				}
 				
-				public ConditinalExpressionEvaluator (Mono.TextEditor.Document doc)
+				public ConditinalExpressionEvaluator (Mono.TextEditor.TextDocument doc)
 				{
 					var project = GetProject (doc);
 					

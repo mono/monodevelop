@@ -116,7 +116,7 @@ namespace MonoDevelop.AssemblyBrowser
 				ShowTabs = false,
 				HighlightCaretLine = true,
 			};
-			inspectEditor = new Mono.TextEditor.TextEditor (new Mono.TextEditor.Document (), options);
+			inspectEditor = new Mono.TextEditor.TextEditor (new Mono.TextEditor.TextDocument (), options);
 			inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
 			
 			this.inspectEditor.Document.ReadOnly = true;

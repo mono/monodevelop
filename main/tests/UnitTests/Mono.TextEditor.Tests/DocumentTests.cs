@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDocumentCreation ()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			
 			string text = 
 			"1234567890\n" +
@@ -59,7 +59,7 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestDocumentInsert ()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			
 			string top  = "1234567890\n";
 			string text =
@@ -81,7 +81,7 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestDocumentRemove ()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			
 			string top      = "1234567890\n";
 			string testText =
@@ -109,7 +109,7 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestDocumentBug1Test()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 						
 			string top    = "1234567890";
 			document.Text = top;
@@ -128,7 +128,7 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestDocumentBug2Test()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			
 			string top      = "123\n456\n789\n0";
 			string testText = "Hello World!";
@@ -146,7 +146,7 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void SplitterTest ()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			for (int i = 0; i < 100; i++) {
 				((IBuffer)document).Insert (0, new string ('c', i) + Environment.NewLine);
 			}

@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 		
 		double mx, my;
 		
-		public Document Document {
+		public TextDocument Document {
 			get {
 				return textEditorData.Document;
 			}
@@ -173,7 +173,7 @@ namespace Mono.TextEditor
 		
 		Dictionary<int, double> lineHeights = new Dictionary<int, double> ();
 		
-		public TextEditor () : this(new Document ())
+		public TextEditor () : this(new TextDocument ())
 		{
 		}
 
@@ -277,17 +277,17 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public TextEditor (Document doc)
+		public TextEditor (TextDocument doc)
 			: this (doc, null)
 		{
 		}
 		
-		public TextEditor (Document doc, ITextEditorOptions options)
+		public TextEditor (TextDocument doc, ITextEditorOptions options)
 			: this (doc, options, new SimpleEditMode ())
 		{
 		}
 		
-		public TextEditor (Document doc, ITextEditorOptions options, EditMode initialMode)
+		public TextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			textEditorData = new TextEditorData (doc);
 			textEditorData.Parent = this;
@@ -359,7 +359,7 @@ namespace Mono.TextEditor
 #endif
 		}
 
-		void HandleDocumenthandleEndUndo (object sender, Document.UndoOperationEventArgs e)
+		void HandleDocumenthandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
 		{
 			if (this.Document.HeightChanged) {
 				this.Document.HeightChanged = false;

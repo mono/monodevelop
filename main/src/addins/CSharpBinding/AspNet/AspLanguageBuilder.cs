@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		CSharpCompletionTextEditorExtension CreateCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
 		{
-			var doc = new Mono.TextEditor.Document () {
+			var doc = new Mono.TextEditor.TextDocument () {
 				Text = localInfo.LocalDocument,
 			};
 			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);

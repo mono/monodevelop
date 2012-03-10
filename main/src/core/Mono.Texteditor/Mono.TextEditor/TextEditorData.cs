@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 	public class TextEditorData : IDisposable
 	{
 		ITextEditorOptions options;
-		Document   document; 
+		TextDocument document; 
 		Caret      caret;
 		
 		static Adjustment emptyAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
@@ -95,11 +95,11 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public TextEditorData () : this (new Document ())
+		public TextEditorData () : this (new TextDocument ())
 		{
 		}
 
-		public TextEditorData (Document doc)
+		public TextEditorData (TextDocument doc)
 		{
 			LineHeight = 16;
 
@@ -140,7 +140,7 @@ namespace Mono.TextEditor
 		}
 
 		
-		public Document Document {
+		public TextDocument Document {
 			get {
 				return document;
 			}
@@ -377,7 +377,7 @@ namespace Mono.TextEditor
 			if (Options.RemoveTrailingWhitespaces && args.Location.Line != Caret.Line) {
 				LineSegment line = Document.GetLine (args.Location.Line);
 				if (line != null && line.WasChanged)
-					Document.RemoveTrailingWhitespaces (this, line);
+					TextDocument.RemoveTrailingWhitespaces (this, line);
 			}
 		}
 		
@@ -442,7 +442,7 @@ namespace Mono.TextEditor
 			savedSelection = Selection.Clone (MainSelection);
 		}
 
-		void OnEndUndo (object sender, Document.UndoOperationEventArgs e)
+		void OnEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
 		{
 			if (!document.IsInAtomicUndo && hasChangedInUndo)
 				FixVirtualIndentation ();
@@ -460,14 +460,14 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void DocumentHandleUndone (object sender, Document.UndoOperationEventArgs e)
+		void DocumentHandleUndone (object sender, TextDocument.UndoOperationEventArgs e)
 		{
 			TextEditorDataState state = e.Operation.Tag as TextEditorDataState;
 			if (state != null)
 				state.UndoState ();
 		}
 
-		void DocumentHandleRedone (object sender, Document.UndoOperationEventArgs e)
+		void DocumentHandleRedone (object sender, TextDocument.UndoOperationEventArgs e)
 		{
 			TextEditorDataState state = e.Operation.Tag as TextEditorDataState;
 			if (state != null)

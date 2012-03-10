@@ -34,7 +34,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Commands;
-using Document = Mono.TextEditor.Document;
+using Document = Mono.TextEditor.TextDocument;
 using Services = MonoDevelop.Projects.Services;
 using System.Threading;
 using MonoDevelop.Ide;
@@ -1341,7 +1341,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 	
-		public Mono.TextEditor.Document Document {
+		public Mono.TextEditor.TextDocument Document {
 			get {
 				var editor = TextEditor;
 				if (editor == null)

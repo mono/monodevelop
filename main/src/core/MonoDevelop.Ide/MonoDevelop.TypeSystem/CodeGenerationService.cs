@@ -252,7 +252,7 @@ namespace MonoDevelop.TypeSystem
 			return result;
 		}
 
-		static void CheckEndPoint (Document doc, InsertionPoint point, bool isStartPoint)
+		static void CheckEndPoint (TextDocument doc, InsertionPoint point, bool isStartPoint)
 		{
 			LineSegment line = doc.GetLine (point.Location.Line);
 			if (line == null)
@@ -264,7 +264,7 @@ namespace MonoDevelop.TypeSystem
 				point.LineAfter = NewLineInsertion.Eol;
 		}
 		
-		static void CheckStartPoint (Document doc, InsertionPoint point, bool isEndPoint)
+		static void CheckStartPoint (TextDocument doc, InsertionPoint point, bool isEndPoint)
 		{
 			LineSegment line = doc.GetLine (point.Location.Line);
 			if (line == null)
@@ -284,7 +284,7 @@ namespace MonoDevelop.TypeSystem
 				point.LineAfter = isEndPoint ? NewLineInsertion.Eol : NewLineInsertion.BlankLine;
 		}
 		
-		static InsertionPoint GetInsertionPosition (Document doc, int line, int column)
+		static InsertionPoint GetInsertionPosition (TextDocument doc, int line, int column)
 		{
 			int bodyEndOffset = doc.LocationToOffset (line, column) + 1;
 			LineSegment curLine = doc.GetLine (line);

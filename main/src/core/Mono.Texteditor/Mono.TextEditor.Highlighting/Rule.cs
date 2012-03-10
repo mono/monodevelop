@@ -139,7 +139,7 @@ namespace Mono.TextEditor.Highlighting
 			this.mode = mode;
 		}
 		
-		public virtual Rule GetRule (Document doc, string name)
+		public virtual Rule GetRule (TextDocument doc, string name)
 		{
 			return mode.GetRule (doc, name);
 		}
