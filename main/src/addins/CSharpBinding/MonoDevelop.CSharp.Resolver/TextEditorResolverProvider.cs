@@ -65,18 +65,13 @@ namespace MonoDevelop.CSharp.Resolver
 		}
 		
 		
-		public ResolveResult GetLanguageItem (Mono.TextEditor.TextEditorData data, int offset, out DomRegion expressionRegion)
+		public ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document doc, int offset, out DomRegion expressionRegion)
 		{
 			if (offset < 0) {
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-
-			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null) {
-				expressionRegion = DomRegion.Empty;
-				return null;
-			}
+			var data = doc.Editor;
 			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null) {
 				expressionRegion = DomRegion.Empty;
@@ -91,6 +86,7 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
+
 			AstNode node;
 			var result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
 			if (result == null || node is Statement) {
@@ -101,19 +97,16 @@ namespace MonoDevelop.CSharp.Resolver
 			return result;
 		}
 		
-		public ResolveResult GetLanguageItem (Mono.TextEditor.TextEditorData data, int offset, string expression)
+		public ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document doc, int offset, string expression)
 		{
 			if (offset < 0) {
 				return null;
 			}
 
-			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null) {
-				return null;
-			}
 			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return null;
+			var data = doc.Editor;
 			var loc = data.OffsetToLocation (offset);
 			var unit       = parsedDocument.GetAst<CompilationUnit> ();
 			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;

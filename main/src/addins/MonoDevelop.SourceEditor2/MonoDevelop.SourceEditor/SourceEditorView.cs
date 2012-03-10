@@ -1587,13 +1587,17 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator)]
 		protected void ShowExpressionEvaluator ()
 		{
-			string expression;
+			string expression = "";
 			if (TextEditor.IsSomethingSelected)
 				expression = TextEditor.SelectedText;
-			else
-				expression = TextEditor.GetExpression (TextEditor.Caret.Offset);
-			
-			DebuggingService.ShowExpressionEvaluator (expression);
+			else {
+				DomRegion region;
+				var rr = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
+				if (rr != null && !rr.IsError)
+					expression = TextEditor.GetTextBetween (region.Begin, region.End);
+			}
+			if (!string.IsNullOrEmpty (expression))
+				DebuggingService.ShowExpressionEvaluator (expression);
 		}
 
 		[CommandUpdateHandler (MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator)]

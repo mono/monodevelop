@@ -484,7 +484,7 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (GetTextEditorData (), offset, out region);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, out region);
 				this.resolveRegion = region;
 			} else {
 				region = DomRegion.Empty;
@@ -517,7 +517,7 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (GetTextEditorData (), offset, expression);
+				this.resolveResult = textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, expression);
 			} else {
 				this.resolveResult = null;
 			}
@@ -525,12 +525,12 @@ namespace MonoDevelop.SourceEditor
 			return this.resolveResult;
 		}
 
-		public string GetExpression (int offset)
-		{
-			if (textEditorResolverProvider != null) 
-				return textEditorResolverProvider.GetExpression (GetTextEditorData (), offset);
-			return string.Empty;
-		}
+//		public string GetExpression (int offset)
+//		{
+//			if (textEditorResolverProvider != null) 
+//				return textEditorResolverProvider.GetExpression (view.WorkbenchWindow.Document, offset);
+//			return string.Empty;
+//		}
 		
 		string GetExpressionBeforeOffset (int offset)
 		{
