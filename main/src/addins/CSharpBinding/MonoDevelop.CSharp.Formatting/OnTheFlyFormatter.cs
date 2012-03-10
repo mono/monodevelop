@@ -85,11 +85,11 @@ namespace MonoDevelop.CSharp.Formatting
 			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
 				return;
 
-//			var unit = data.ParsedDocument.Annotation<CompilationUnit> ();
 			var pf = data.ParsedDocument.ParsedFile as CSharpParsedFile;
 
 			StringBuilder sb = new StringBuilder ();
 			int closingBrackets = 0;
+			
 			// use the member start location to determine the using scope, because this information is in sync, the position in
 			// the file may have changed since last parse run (we have up 2 date locations from the type segment tree).
 			var scope = pf.GetUsingScope (member.Region.Begin);
@@ -113,7 +113,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 			int startOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
-			int endOffset = startOffset + data.Editor.LocationToOffset (endLocation) - seg.Offset;
+			int documentFormattingEndOffset = startOffset + data.Editor.LocationToOffset (endLocation);
+			int endOffset = documentFormattingEndOffset - seg.Offset;
+			
 			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
 			// could interfere with the current indentation.
 			for (int i = 0; i <= endLocation.Column; i++) {
@@ -158,21 +160,6 @@ namespace MonoDevelop.CSharp.Formatting
 			foreach (TextReplaceAction change in changes) {
 				change.Offset += delta;
 				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
-			}
-			// be sensible in documents with parser errors - only correct up to the caret position.
-			if (hadErrors || data.ParsedDocument.Errors.Any (e => e.ErrorType == ErrorType.Error)) {
-				var lastOffset = data.Editor.Caret.Offset;
-				newList = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> (); 
-
-				for (int i = 0; i < changes.Count; i++) {
-					var tra = (TextReplaceAction)changes [i];
-					if (tra.Offset < lastOffset || tra.DependsOn != null && newList.Contains (tra.DependsOn)) {
-						newList.Add (tra);
-					} else {
-						Console.WriteLine (tra);
-					}
-				}
-				changes = newList;
 			}
 			
 			var caretEndOffset = data.Editor.Caret.Offset;
