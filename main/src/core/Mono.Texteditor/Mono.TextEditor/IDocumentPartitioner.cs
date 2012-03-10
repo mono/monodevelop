@@ -57,7 +57,7 @@ namespace Mono.TextEditor
 		/// <param name='args'>
 		/// The arguments of the replacing event.
 		/// </param>
-		void TextReplacing (ReplaceEventArgs args);
+		void TextReplacing (DocumentChangeEventArgs args);
 		
 		/// <summary>
 		/// Informs the partitioner of a text replaced event. This is called before all other handlers except the line splitter.
@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 		/// <param name='args'>
 		/// The arguments of the replace event.
 		/// </param>
-		void TextReplaced (ReplaceEventArgs args);
+		void TextReplaced (DocumentChangeEventArgs args);
 		
 		/// <summary>
 		/// Gets the partitions between offset and offset + length;

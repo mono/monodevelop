@@ -562,11 +562,11 @@ namespace MonoDevelop.VersionControl.Views
 			/// <summary>
 			/// Marks necessary lines modified when text is replaced
 			/// </summary>
-			private void EditorDocumentTextReplacing (object sender, ReplaceEventArgs e)
+			private void EditorDocumentTextReplacing (object sender, DocumentChangeEventArgs e)
 			{
-				int  startLine = widget.Editor.Document.OffsetToLineNumber (e.Offset),
-				     endLine = widget.Editor.Document.OffsetToLineNumber (e.Offset + Math.Max (e.Count, e.Value != null ? e.Value.Length : 0)),
-				     lineCount = 0;
+				int startLine = widget.Editor.Document.OffsetToLineNumber (e.Offset),
+					endLine = widget.Editor.Document.OffsetToLineNumber (e.Offset + Math.Max (e.RemovalLength, e.InsertionLength)),
+					lineCount = 0;
 				string[] tokens = null;
 				
 				if (startLine < endLine) {
@@ -577,14 +577,14 @@ namespace MonoDevelop.VersionControl.Views
 					
 					if (lineCount > 0)
 						annotations.RemoveRange (startLine - 1, lineCount);
-					if (!string.IsNullOrEmpty (e.Value)) {
+					if (!string.IsNullOrEmpty (e.InsertedText)) {
 						for (int i=0; i<lineCount; ++i)
 							annotations.Insert (startLine - 1, locallyModified);
 					}
 					return;
-				} else if (0 == e.Count) {
-						// insert
-						tokens = e.Value.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
+				} else if (0 == e.RemovalLength) {
+					// insert
+					tokens = e.InsertedText.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
 						lineCount = tokens.Length - 1;
 						for (int i=0; i<lineCount; ++i) {
 							annotations.Insert (Math.Min (startLine, annotations.Count), locallyModified);

@@ -94,10 +94,10 @@ namespace MonoDevelop.SourceEditor
 			
 			Document.TextReplaced += HandleSkipCharsOnReplace;
 			
-			Document.TextReplaced += delegate(object sender, ReplaceEventArgs args) {
+			Document.TextReplaced += delegate(object sender, DocumentChangeEventArgs args) {
 				if (Extension != null) {
 					try {
-						Extension.TextChanged (args.Offset, args.Offset + Math.Max (args.Count, args.Value != null ? args.Value.Length : 0));
+						Extension.TextChanged (args.Offset, args.Offset + Math.Max (args.RemovalLength, args.InsertionLength));
 					} catch (Exception ex) {
 						ReportExtensionError (ex);
 					}
@@ -109,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 			this.DoPopupMenu = ShowPopup;
 		}
 		
-		void HandleSkipCharsOnReplace (object sender, ReplaceEventArgs args)
+		void HandleSkipCharsOnReplace (object sender, DocumentChangeEventArgs args)
 		{
 			var skipChars = GetTextEditorData ().SkipChars;
 			for (int i = 0; i < skipChars.Count; i++) {
@@ -120,10 +120,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				}
 				if (args.Offset <= sc.Offset) {
-					sc.Offset -= args.Count;
-					if (!string.IsNullOrEmpty (args.Value)) {
-						sc.Offset += args.Value.Length;
-					}
+					sc.Offset += args.ChangeDelta;
 				}
 			}
 		}

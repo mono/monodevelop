@@ -22,7 +22,7 @@ namespace Mono.TextEditor
 		LineSegment GetLineByOffset (int offset);
 		int OffsetToLineNumber (int offset);
 
-		void TextReplaced (object sender, ReplaceEventArgs args);
+		void TextReplaced (object sender, DocumentChangeEventArgs args);
 		void TextRemove (int offset, int length);
 		void TextInsert (int offset, string text);
 

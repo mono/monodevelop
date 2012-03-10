@@ -30,37 +30,22 @@ using System.Text;
 
 namespace Mono.TextEditor
 {
-	public class ReplaceEventArgs : System.EventArgs
+	public class DocumentChangeEventArgs : ICSharpCode.NRefactory.Editor.TextChangeEventArgs
 	{
-		public int Offset {
-			get;
-			private set;
-		}
-
-		public int Count {
-			get;
-			private set;
+		public int ChangeDelta {
+			get {
+				return InsertionLength - RemovalLength;
+			}
 		}
 		
-		public string Value {
-			get;
-			set;
-		}
-		
-		public ReplaceEventArgs (int offset, int count, string value)
+		public DocumentChangeEventArgs (int offset, string removedText, string insertedText) : base (offset, removedText, insertedText)
 		{
-			this.Offset = offset;
-			this.Count  = count;
-			this.Value  = value;
 		}
+		
 		
 		public override string ToString ()
 		{
-			return String.Format ("[ReplaceEventArgs: Offset={0}, Count={1}, Value={2}]",
-			                      this.Offset,
-			                      this.Count,
-			                      this.Value);
+			return string.Format ("[ReplaceEventArgs: Offset={0}, RemovedText={1}, RemovalLength={2}, InsertedText={3}, InsertionLength={4}]", Offset, RemovedText, RemovalLength, InsertedText, InsertionLength);
 		}
-
 	}
 }

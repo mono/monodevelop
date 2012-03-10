@@ -90,12 +90,12 @@ namespace Mono.TextEditor
 			return Get (OffsetToLineNumber (offset));
 		}
 
-		public void TextReplaced (object sender, ReplaceEventArgs args)
+		public void TextReplaced (object sender, DocumentChangeEventArgs args)
 		{
-			if (args.Count > 0)
-				TextRemove (args.Offset, args.Count);
-			if (!string.IsNullOrEmpty (args.Value))
-				TextInsert (args.Offset, args.Value);
+			if (args.RemovalLength > 0)
+				TextRemove (args.Offset, args.RemovalLength);
+			if (args.InsertionLength > 0)
+				TextInsert (args.Offset, args.InsertedText);
 		}
 
 		public void TextRemove (int offset, int length)

@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			RemoveMarkers (false);
 		}
 
-		void HandleTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleTextEditorDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
 			RemoveMarkers (false);
 		}

@@ -310,11 +310,11 @@ namespace Mono.TextEditor
 		bool isExited = false;
 		bool wasReplaced = false;
 
-		void UpdateLinksOnTextReplace (object sender, ReplaceEventArgs e)
+		void UpdateLinksOnTextReplace (object sender, DocumentChangeEventArgs e)
 		{
 			wasReplaced = true;
 			int offset = e.Offset - baseOffset;
-			int delta = -e.Count + (!string.IsNullOrEmpty (e.Value) ? e.Value.Length : 0);
+			int delta = e.ChangeDelta;
 			if (!IsInUpdate && !links.Where (link => link.Links.Where (segment => segment.Contains (offset)
 					|| segment.EndOffset == offset).
 				Any ()).Any ()) {

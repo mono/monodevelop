@@ -246,7 +246,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		void UpdateConflictsOnTextReplace (object sender, ReplaceEventArgs e)
+		void UpdateConflictsOnTextReplace (object sender, DocumentChangeEventArgs e)
 		{
 			this.UpdateDiff ();
 			Mono.TextEditor.Document.UpdateSegments (GetAllConflictingSegments (), e);

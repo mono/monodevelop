@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				template.CodeTemplateType |= CodeTemplateType.SurroundsWith;
 		}
 
-		void DocumentTextReplaced (object sender, Mono.TextEditor.ReplaceEventArgs e)
+		void DocumentTextReplaced (object sender, Mono.TextEditor.DocumentChangeEventArgs e)
 		{
 			List<string> vars = template.ParseVariables (textEditor.Document.Text);
 			foreach (string var in vars) {

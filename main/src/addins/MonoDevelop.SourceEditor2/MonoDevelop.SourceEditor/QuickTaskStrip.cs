@@ -631,7 +631,7 @@ namespace MonoDevelop.SourceEditor
 			RequestRedraw ();
 		}
 		
-		void TextReplaced (object sender, ReplaceEventArgs args)
+		void TextReplaced (object sender, DocumentChangeEventArgs args)
 		{
 			RequestRedraw ();
 		}

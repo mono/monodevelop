@@ -153,7 +153,7 @@ namespace Mono.TextEditor
 			set {
 				if (!SuppressHighlightUpdate)
 					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
-				var args = new ReplaceEventArgs (0, Length, value);
+				var args = new DocumentChangeEventArgs (0, Text, value);
 				this.OnTextReplacing (args);
 				this.buffer.Text = value;
 				splitter.Initalize (value);
@@ -203,11 +203,11 @@ namespace Mono.TextEditor
 			//			Debug.Assert (count >= 0);
 			//			Debug.Assert (0 <= offset && offset + count <= Length);
 			int oldLineCount = this.LineCount;
-			var args = new ReplaceEventArgs (offset, count, value);
+			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
 			if (Partitioner != null)
 				Partitioner.TextReplacing (args);
 			OnTextReplacing (args);
-			value = args.Value;
+			value = args.InsertedText;
 			/* insert/repla
 			lock (syncObject) {
 				int endOffset = offset + count;
@@ -216,7 +216,7 @@ namespace Mono.TextEditor
 			}*/	
 			UndoOperation operation = null;
 			if (!isInUndo) {
-				operation = new UndoOperation (args, count > 0 ? GetTextAt (offset, count) : "");
+				operation = new UndoOperation (args);
 				if (currentAtomicOperation != null) {
 					currentAtomicOperation.Add (operation);
 				} else {
@@ -333,20 +333,20 @@ namespace Mono.TextEditor
 			return SearchBackwardIgnoreCase (pattern, startIndex);
 		}
 		
-		protected virtual void OnTextReplaced (ReplaceEventArgs args)
+		protected virtual void OnTextReplaced (DocumentChangeEventArgs args)
 		{
 			if (TextReplaced != null)
 				TextReplaced (this, args);
 		}
 		
-		public event EventHandler<ReplaceEventArgs> TextReplaced;
+		public event EventHandler<DocumentChangeEventArgs> TextReplaced;
 		
-		protected virtual void OnTextReplacing (ReplaceEventArgs args)
+		protected virtual void OnTextReplacing (DocumentChangeEventArgs args)
 		{
 			if (TextReplacing != null)
 				TextReplacing (this, args);
 		}
-		public event EventHandler<ReplaceEventArgs> TextReplacing;
+		public event EventHandler<DocumentChangeEventArgs> TextReplacing;
 		
 		protected virtual void OnTextSet (EventArgs e)
 		{
@@ -443,16 +443,10 @@ namespace Mono.TextEditor
 		#region Undo/Redo operations
 		public class UndoOperation
 		{
-			ReplaceEventArgs args;
-			string text;
+			DocumentChangeEventArgs args;
 			int startOffset, length;
-			public virtual string Text {
-				get {
-					return text;
-				}
-			}
 			
-			public virtual ReplaceEventArgs Args {
+			public virtual DocumentChangeEventArgs Args {
 				get {
 					return args;
 				}
@@ -477,50 +471,41 @@ namespace Mono.TextEditor
 					;
 			}
 			
-			public UndoOperation (ReplaceEventArgs args, string text)
+			public UndoOperation (DocumentChangeEventArgs args)
 			{
 				this.args = args;
-				this.text = text;
 			}
 			
-			static int GetDelta (ReplaceEventArgs args)
-			{
-				int result = -args.Count;
-				if (!String.IsNullOrEmpty (args.Value))
-					result += args.Value.Length;
-				return result;
-			}
 			
-			internal void Setup (Document doc, ReplaceEventArgs args)
+			internal void Setup (Document doc, DocumentChangeEventArgs args)
 			{
 				if (args != null) {
 					this.startOffset = args.Offset;
-					if (!String.IsNullOrEmpty (args.Value))
-						this.length  = args.Value.Length;
+					this.length = args.InsertionLength;
 				}
 			}
 			
-			internal virtual void InformTextReplace (ReplaceEventArgs args)
+			internal virtual void InformTextReplace (DocumentChangeEventArgs args)
 			{
 				if (args.Offset < startOffset) {
-					startOffset = System.Math.Max (startOffset + GetDelta(args), args.Offset);
+					startOffset = System.Math.Max (startOffset + args.ChangeDelta, args.Offset);
 				} else if (args.Offset < startOffset + length) {
-					length = System.Math.Max (length + GetDelta(args), startOffset - args.Offset);
+					length = System.Math.Max (length + args.ChangeDelta, startOffset - args.Offset);
 				}
 			}
 			
 			public virtual void Undo (Document doc)
 			{
-				if (args.Value != null && args.Value.Length > 0)
-					((IBuffer)doc).Remove (args.Offset, args.Value.Length);
-				if (!String.IsNullOrEmpty (text))
-					((IBuffer)doc).Insert (args.Offset, text);
+				if (args.InsertionLength > 0)
+					((IBuffer)doc).Remove (args.Offset, args.InsertionLength);
+				if (args.RemovalLength > 0)
+					((IBuffer)doc).Insert (args.Offset, args.RemovedText);
 				OnUndoDone ();
 			}
 			
 			public virtual void Redo (Document doc)
 			{
-				((IBuffer)doc).Replace (args.Offset, args.Count, args.Value);
+				((IBuffer)doc).Replace (args.Offset, args.RemovalLength, args.InsertedText);
 				OnRedoDone ();
 			}
 			
@@ -549,19 +534,14 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public override string Text {
-				get {
-					return null;
-				}
-			}
-			public override ReplaceEventArgs Args {
+			public override DocumentChangeEventArgs Args {
 				get {
 					return null;
 				}
 			}
 			
 			
-			internal override void InformTextReplace (ReplaceEventArgs args)
+			internal override void InformTextReplace (DocumentChangeEventArgs args)
 			{
 				operations.ForEach (o => o.InformTextReplace (args));
 			}
@@ -617,13 +597,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public override string Text {
-				get {
-					return operations.Count > 0 ? operations [operations.Count - 1].Text : "";
-				}
-			}
-			
-			public override ReplaceEventArgs Args {
+			public override DocumentChangeEventArgs Args {
 				get {
 					return operations.Count > 0 ? operations [operations.Count - 1].Args : null;
 				}
@@ -637,7 +611,7 @@ namespace Mono.TextEditor
 		
 		// The undo stack needs to be updated on replace, because the text editor
 		// draws a replace operation marker at the left margin.
-		public void UpdateUndoStackOnReplace (ReplaceEventArgs args)
+		public void UpdateUndoStackOnReplace (DocumentChangeEventArgs args)
 		{
 			foreach (UndoOperation op in undoStack) {
 				op.InformTextReplace (args);
@@ -718,7 +692,7 @@ namespace Mono.TextEditor
 			if (undoStack.Count == 0)
 				return;
 			UndoOperation top = undoStack.Pop ();
-			if (top.Args == null || top.Args.Value == null || top.Args.Value.Length != 1 || (top is KeyboardStackUndo && ((KeyboardStackUndo)top).IsClosed)) {
+			if (top.Args == null || top.Args.InsertedText == null || top.Args.InsertionLength != 1 || (top is KeyboardStackUndo && ((KeyboardStackUndo)top).IsClosed)) {
 				undoStack.Push (top);
 				return;
 			}
@@ -1496,9 +1470,9 @@ namespace Mono.TextEditor
 
 		}
 		
-		public static void UpdateSegments (IEnumerable<ISegment> segments, ReplaceEventArgs args)
+		public static void UpdateSegments (IEnumerable<ISegment> segments, DocumentChangeEventArgs args)
 		{
-			int delta = -args.Count + (!string.IsNullOrEmpty (args.Value) ? args.Value.Length : 0);
+			int delta = args.ChangeDelta;
 			foreach (ISegment segment in segments) {
 				if (args.Offset < segment.Offset) {
 					segment.Offset += delta;

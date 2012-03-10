@@ -451,7 +451,7 @@ namespace Mono.TextEditor
 			e.Operation.Tag = new TextEditorDataState (this, savedCaretPos, savedSelection);
 		}
 
-		void HandleTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
 			if (document.IsInAtomicUndo) {
 				hasChangedInUndo = true;

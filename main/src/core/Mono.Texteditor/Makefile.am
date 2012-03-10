@@ -82,6 +82,7 @@ FILES =  \
 	Mono.TextEditor/DefaultEditActions.cs \
 	Mono.TextEditor/DeleteActions.cs \
 	Mono.TextEditor/Document.cs \
+	Mono.TextEditor/DocumentChangeEventArgs.cs \
 	Mono.TextEditor/DocumentLocation.cs \
 	Mono.TextEditor/DocumentUpdateRequest.cs \
 	Mono.TextEditor/EditMode.cs \
@@ -121,7 +122,6 @@ FILES =  \
 	Mono.TextEditor/PangoUtil.cs \
 	Mono.TextEditor/Platform.cs \
 	Mono.TextEditor/PrimitiveLineSplitter.cs \
-	Mono.TextEditor/ReplaceEventArgs.cs \
 	Mono.TextEditor/SearchRequest.cs \
 	Mono.TextEditor/SearchResult.cs \
 	Mono.TextEditor/Segment.cs \

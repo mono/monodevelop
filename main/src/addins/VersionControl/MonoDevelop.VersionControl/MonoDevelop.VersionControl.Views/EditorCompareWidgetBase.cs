@@ -578,11 +578,11 @@ namespace MonoDevelop.VersionControl.Views
 
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 
-		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
 			foreach (var data in localUpdate.ToArray ()) {
 				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Replace (e.Offset, e.Count, e.Value);
+				data.Replace (e.Offset, e.RemovalLength, e.InsertedText);
 				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 				data.Document.CommitUpdateAll ();
 			}
@@ -614,13 +614,13 @@ namespace MonoDevelop.VersionControl.Views
 			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 		}
 
-		void HandleDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			var data = dict[(Document)sender];
+			var data = dict [(Document)sender];
 			localUpdate.Remove (data);
 			var editor = info.Document.GetContent<IEditableTextFile> ();
-			editor.DeleteText (e.Offset, e.Count);
-			editor.InsertText (e.Offset, e.Value);
+			editor.DeleteText (e.Offset, e.RemovalLength);
+			editor.InsertText (e.Offset, e.InsertedText);
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}

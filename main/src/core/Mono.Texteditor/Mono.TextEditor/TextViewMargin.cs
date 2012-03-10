@@ -158,13 +158,11 @@ namespace Mono.TextEditor
 				UpdateBracketHighlighting (this, EventArgs.Empty);
 		}
 
-		void HandleTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
 			RemoveCachedLine (Document.GetLineByOffset (e.Offset));
 			if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
-				int delta = -e.Count;
-				if (!string.IsNullOrEmpty (e.Value))
-					delta += e.Value.Length;
+				int delta = e.ChangeDelta;
 				mouseWordStart += delta;
 				mouseWordEnd += delta;
 			}
