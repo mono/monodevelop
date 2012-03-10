@@ -59,6 +59,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			var ed = (ExtensibleTextEditor)editor;
 			var doc = ed.ParsedDocument;
+			if (doc == null)
+				return null;
 			
 			var resolveResult = (ResolveResult)item.Item;
 			if (lastResult != null && !lastResult.IsError && lastWindow.IsRealized && 
