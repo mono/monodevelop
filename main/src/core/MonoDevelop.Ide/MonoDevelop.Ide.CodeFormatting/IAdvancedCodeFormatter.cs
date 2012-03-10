@@ -39,30 +39,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 		bool SupportsOnTheFlyFormatting { get; }
 		bool SupportsCorrectingIndent { get; }
 		
-		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData textEditorData, int line);
+		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditorData textEditorData, int line);
 		
-		/// <summary>
-		/// Formats a text document directly with insert/remove operations.
-		/// </summary>
-		/// <param name="textEditorData">
-		/// A <see cref="System.Object"/> that must be from type Mono.TextEditorData.
-		/// </param>
-		/// <param name="dom">
-		/// A <see cref="ITypeResolveContext"/>
-		/// </param>
-		/// <param name="unit">
-		/// A <see cref="IParsedFile"/>
-		/// </param>
-		/// <param name="caretLocation">
-		/// A <see cref="TextLocation"/> that should be the end location to which the parsing should occur.
-		/// </param>
-		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData textEditorData, IType callingType, IMember callingMember, ITypeResolveContext dom,
-			IParsedFile unit, TextLocation endLocation);
+		void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset);
 		
-		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData textEditorData, int startOffset, int endOffset);
 	}
 	
 	public abstract class AbstractAdvancedFormatter : AbstractCodeFormatter, IAdvancedCodeFormatter
@@ -70,15 +50,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		public virtual bool SupportsOnTheFlyFormatting { get { return false; } }
 		public virtual bool SupportsCorrectingIndent { get { return false; } }
 		
-		public virtual void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData data, IType callingType, IMember callingMember, ITypeResolveContext dom,
-			IParsedFile unit, TextLocation endLocation)
-		{
-			throw new NotSupportedException ();
-		}
-		
-		public virtual void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData data, int startOffset, int endOffset)
+		public virtual void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
 			throw new NotSupportedException ();
 		}

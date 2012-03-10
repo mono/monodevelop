@@ -59,10 +59,17 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, data, location, correctBlankLines);
+			Format (policyParent, mimeTypeChain, data, location, data.Editor.Caret.Location, correctBlankLines);
+		}
+		
+		public static void Format (MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset)
+		{
+			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
+			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+			Format (policyParent, mimeTypeChain, data, data.Editor.OffsetToLocation (startOffset), data.Editor.OffsetToLocation (endOffset), true);
 		}
 
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, TextLocation location, bool correctBlankLines)
+		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, TextLocation location, TextLocation endLocation, bool correctBlankLines)
 		{
 			if (data.ParsedDocument == null)
 				return;
@@ -106,10 +113,10 @@ namespace MonoDevelop.CSharp.Formatting
 
 			int startOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
-			int endOffset = startOffset + data.Editor.Caret.Offset - seg.Offset;
+			int endOffset = startOffset + data.Editor.LocationToOffset (endLocation) - seg.Offset;
 			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
 			// could interfere with the current indentation.
-			for (int i = 0; i <= data.Editor.Caret.Column; i++) {
+			for (int i = 0; i <= endLocation.Column; i++) {
 				sb.Append (data.Editor.EolMarker);
 			}
 			sb.Append (data.Editor.EolMarker);

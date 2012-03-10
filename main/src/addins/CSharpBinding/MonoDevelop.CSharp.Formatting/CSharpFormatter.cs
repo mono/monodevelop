@@ -116,55 +116,11 @@ namespace MonoDevelop.CSharp.Formatting
 			tracker.Dispose ();
 		}
 
-		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditorData data, IType type, IMember member, ITypeResolveContext dom, IParsedFile unit, TextLocation caretLocation)
+		public override void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
-			//		OnTheFlyFormatter.Format (policyParent, mimeTypeChain, data, dom, caretLocation, true);
+			OnTheFlyFormatter.Format (doc, startOffset, endOffset);
 		}
 
-		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditorData data, int startOffset, int endOffset)
-		{
-			var parser = new CSharpParser ();
-			var compilationUnit = parser.ParseSnippet (data);
-			if (compilationUnit == null) {
-				Console.WriteLine ("couldn't parse : " + data.Text);
-				return;
-			}
-			if (parser.HasErrors)
-				return;
-			
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var factory = new FormattingActionFactory (data);
-			
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, factory, data.Options.TabsToSpaces, data.Options.IndentationSize) {
-				HadErrors =  parser.HasErrors, 
-				EolMarker = data.EolMarker
-			};
-			
-			compilationUnit.AcceptVisitor (formattingVisitor);
-			
-			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-			changes.AddRange (formattingVisitor.Changes.
-				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-			
-			var startPositionChange = factory.CreateTextReplaceAction (startOffset, 0, null);
-			changes.Add (startPositionChange);
-			
-			var endPositionChange = factory.CreateTextReplaceAction (endOffset, 0, null);
-			changes.Add (endPositionChange);
-			
-			using (var undo = data.OpenUndoGroup ()) {
-				MDRefactoringContext.MdScript.RunActions (changes, null);
-			}
-			
-			if (data.IsSomethingSelected) {
-				var range = data.SelectionRange;
-				if (range.Offset == startOffset && range.EndOffset == endOffset) {
-					data.SetSelection (startPositionChange.Offset, endPositionChange.Offset);
-				}
-			}
-		}
 
 		public string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{

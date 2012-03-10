@@ -289,7 +289,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			var formatter = CodeFormatterService.GetFormatter (context.Document.Editor.Document.MimeType);
 			if (formatter != null && context.Document.HasProject) {
-				formatter.OnTheFlyFormat (context.Document.Project.Policies, data, 0, data.Length);
+				formatter.OnTheFlyFormat (context.Document, 0, data.Length);
 			}
 			
 			IndentCode (data, context.LineIndent);
