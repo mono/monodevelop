@@ -47,52 +47,51 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		public static void Format (MonoDevelop.Ide.Gui.Document data)
 		{
-			Format (data, TextLocation.Empty, false);
+			Format (data, 0, data.Editor.Length);
 		}
 
 		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location)
 		{
-			Format (data, location, false);
+			Format (data, location, location);
 		} 
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location, bool correctBlankLines)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation startLocation, TextLocation endLocation)
 		{
-			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
-			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, data, location, data.Editor.Caret.Location, correctBlankLines);
+			Format (data, data.Editor.LocationToOffset (startLocation), data.Editor.LocationToOffset (endLocation));
 		}
 		
 		public static void Format (MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset)
 		{
 			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, data, data.Editor.OffsetToLocation (startOffset), data.Editor.OffsetToLocation (endOffset), true);
+			Format (policyParent, mimeTypeChain, data, startOffset, endOffset);
 		}
-
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, TextLocation location, TextLocation endLocation, bool correctBlankLines)
+		
+		
+		/// <summary>
+		/// Builds a compileable stub file out of an entity.
+		/// </summary>
+		/// <returns>
+		/// A string representing the stub
+		/// </returns>
+		/// <param name='memberStartOffset'>
+		/// The offset where the member starts in the returned text.
+		/// </param>
+		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int endOffset, out int memberStartOffset)
 		{
-			if (data.ParsedDocument == null)
-				return;
-			var ext = data.GetContent<CSharpCompletionTextEditorExtension> ();
-			if (ext == null)
-				return;
-			var offset = data.Editor.LocationToOffset (location);
-			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (offset);
-			if (seg == null)
-				return;
-
-			var member = seg.Entity;
-			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
-				return;
-
 			var pf = data.ParsedDocument.ParsedFile as CSharpParsedFile;
-
-			StringBuilder sb = new StringBuilder ();
+			if (pf == null) {
+				memberStartOffset = 0;
+				return null;
+			}
+			
+			var sb = new StringBuilder ();
+			
 			int closingBrackets = 0;
 			
 			// use the member start location to determine the using scope, because this information is in sync, the position in
 			// the file may have changed since last parse run (we have up 2 date locations from the type segment tree).
-			var scope = pf.GetUsingScope (member.Region.Begin);
+			var scope = pf.GetUsingScope (seg.Entity.Region.Begin);
 
 			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				sb.Append ("namespace Stub {");
@@ -103,7 +102,7 @@ namespace MonoDevelop.CSharp.Formatting
 				scope = scope.Parent;
 			}
 
-			var parent = member.DeclaringTypeDefinition;
+			var parent = seg.Entity.DeclaringTypeDefinition;
 			while (parent != null) {
 				sb.Append ("class " + parent.Name + " {");
 				sb.Append (data.Editor.EolMarker);
@@ -111,72 +110,106 @@ namespace MonoDevelop.CSharp.Formatting
 				parent = parent.DeclaringTypeDefinition;
 			}
 
-			int startOffset = sb.Length;
+			memberStartOffset = sb.Length;
 			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
-			int documentFormattingEndOffset = startOffset + data.Editor.LocationToOffset (endLocation);
-			int endOffset = documentFormattingEndOffset - seg.Offset;
 			
 			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
 			// could interfere with the current indentation.
+			var endLocation = data.Editor.OffsetToLocation (endOffset);
 			for (int i = 0; i <= endLocation.Column; i++) {
 				sb.Append (data.Editor.EolMarker);
 			}
 			sb.Append (data.Editor.EolMarker);
 			sb.Append (new string ('}', closingBrackets));
-			var stubData = new TextEditorData () { Text = sb.ToString () };
-			stubData.Document.FileName = data.FileName;
-			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
-			var compilationUnit = parser.Parse (stubData);
-			bool hadErrors = parser.HasErrors;
-			// try it out, if the behavior is better when working only with correct code.
-//			if (hadErrors) {
-/*				Console.WriteLine (sb);
-				parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));*/
-//				return;
-//			}
 			
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+			return sb.ToString ();
+		}
+		
+		static List<TextReplaceAction> GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, string input)
+		{
+			using (var stubData = new TextEditorData () { Text = input }) {
+				stubData.Document.FileName = data.FileName;
+				var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
+				var compilationUnit = parser.Parse (stubData);
+				bool hadErrors = parser.HasErrors;
+				// try it out, if the behavior is better when working only with correct code.
+				//			if (hadErrors) {
+				/*				Console.WriteLine (sb);
+					parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));*/
+				//				return;
+				//			}
+				
+				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+				
+				var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, new FormattingActionFactory (data.Editor), data.Editor.Options.TabsToSpaces, data.Editor.Options.TabSize) {
+					HadErrors = hadErrors,
+					EolMarker = stubData.EolMarker
+				};
+				compilationUnit.AcceptVisitor (domSpacingVisitor);
+				var changes = new List<TextReplaceAction> ();
+				changes.AddRange (domSpacingVisitor.Changes);
+				changes.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
+				return changes;
+			}
+		}
+		
+		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset)
+		{
+			if (data.ParsedDocument == null)
+				return;
+			var ext = data.GetContent<CSharpCompletionTextEditorExtension> ();
+			if (ext == null)
+				return;
+			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset);
+			if (seg == null)
+				return;
+
+			var member = seg.Entity;
+			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
+				return;
 			
-			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, new FormattingActionFactory (data.Editor), data.Editor.Options.TabsToSpaces, data.Editor.Options.TabSize) {
-				HadErrors = hadErrors,
-				EolMarker = stubData.EolMarker
-			};
-			compilationUnit.AcceptVisitor (domSpacingVisitor);
-			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ());
-			changes.Sort ((x, y) => ((TextReplaceAction)x).Offset.CompareTo (((TextReplaceAction)y).Offset));
+			// Build stub
+			int formatStartOffset;
+			var text = BuildStub (data, seg, endOffset, out formatStartOffset);
+			int formatEndOffset = formatStartOffset + endOffset - seg.Offset;
 			
-			var newList = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> (); 
+			// Get changes from formatting visitor
+			var changes = GetFormattingChanges (policyParent, mimeTypeChain, data, text);
+			
+			// Filter changes.
+			var newList = new List<TextReplaceAction> (); 
 			for (int i = 0; i < changes.Count; i++) {
-				var c = (TextReplaceAction)changes [i];
-				if (startOffset < c.Offset && c.Offset < endOffset || c.DependsOn != null && newList.Contains (c.DependsOn)) {
+				var c = changes [i];
+				if (formatStartOffset < c.Offset && c.Offset < formatEndOffset || c.DependsOn != null && newList.Contains (c.DependsOn)) {
 					newList.Add (c);
 				}
 			}
 			changes = newList;
-			int delta = seg.Offset - startOffset;
 			
-			HashSet<int> lines = new HashSet<int> ();
-			foreach (TextReplaceAction change in changes) {
-				change.Offset += delta;
+			// Adjust changes to real document offsets.
+			int realTextDelta = seg.Offset - formatStartOffset;
+			var lines = new HashSet<int> ();
+			foreach (var change in changes) {
+				change.Offset += realTextDelta;
 				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
 			}
 			
+			// Move caret.
 			var caretEndOffset = data.Editor.Caret.Offset;
 			int caretDelta = 0;
-			foreach (TextReplaceAction act in changes) {
+			foreach (var act in changes) {
 				if (act.Offset < caretEndOffset)
 					caretDelta += -act.RemovedChars + (act.InsertedText != null ? act.InsertedText.Length : 0);
 			}
 			caretEndOffset += caretDelta;
 			
+			// Do the actual formatting
 			using (var undo = data.Editor.OpenUndoGroup ()) {
 				MDRefactoringContext.MdScript.RunActions (changes, null);
 				foreach (int line in lines)
 					data.Editor.Document.CommitLineUpdate (line);
 			}
 			data.Editor.Caret.Offset = caretEndOffset;
-			stubData.Dispose ();
 		}
 	}
 }

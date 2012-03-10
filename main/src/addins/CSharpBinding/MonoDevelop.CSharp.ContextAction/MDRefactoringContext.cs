@@ -298,7 +298,7 @@ namespace MonoDevelop.CSharp.ContextAction
 				this.ctx = ctx;
 			}
 
-			public static void RunActions (IList<ICSharpCode.NRefactory.CSharp.Refactoring.Action> actions, Script script)
+			public static void RunActions<T> (IList<T> actions, Script script) where T : ICSharpCode.NRefactory.CSharp.Refactoring.Action
 			{
 				for (int i = 0; i < actions.Count; i++) {
 					actions [i].Perform (script);
