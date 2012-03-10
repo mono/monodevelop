@@ -29,6 +29,7 @@ using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using MonoDevelop.VersionControl;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.LogReporting;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -42,19 +43,30 @@ namespace MonoDevelop.VersionControl.Views
 		void HandleDocumentChanged (object sender, EventArgs e)
 		{
 			var document = Ide.IdeApp.Workbench.ActiveDocument;
-			if (document == null || !document.IsFile || document.Project == null || document.Window.FindView<IDiffView> () >= 0)
-				return;
-			
-			var repo = VersionControlService.GetRepository (document.Project);
-			if (repo == null || !repo.GetVersionInfo (document.FileName).IsVersioned)
-				return;
-			
-			var item = new VersionControlItem (repo, document.Project, document.FileName, false, null);
-			var vcInfo = new VersionControlDocumentInfo (document.PrimaryView, item, item.Repository);
-			TryAttachView <IDiffView> (document, vcInfo, DiffCommand.DiffViewHandlers);
-			TryAttachView <IBlameView> (document, vcInfo, BlameCommand.BlameViewHandlers);
-			TryAttachView <ILogView> (document, vcInfo, LogCommand.LogViewHandlers);
-			TryAttachView <IMergeView> (document, vcInfo, MergeCommand.MergeViewHandlers);
+			try {
+				if (document == null || !document.IsFile || document.Project == null || document.Window.FindView<IDiffView> () >= 0)
+					return;
+				
+				var repo = VersionControlService.GetRepository (document.Project);
+				if (repo == null)
+					return;
+
+				var versionInfo = repo.GetVersionInfo (document.FileName);
+				if (!versionInfo.IsVersioned)
+					return;
+
+				var item = new VersionControlItem (repo, document.Project, document.FileName, false, null);
+				var vcInfo = new VersionControlDocumentInfo (document.PrimaryView, item, item.Repository);
+				TryAttachView <IDiffView> (document, vcInfo, DiffCommand.DiffViewHandlers);
+				TryAttachView <IBlameView> (document, vcInfo, BlameCommand.BlameViewHandlers);
+				TryAttachView <ILogView> (document, vcInfo, LogCommand.LogViewHandlers);
+				TryAttachView <IMergeView> (document, vcInfo, MergeCommand.MergeViewHandlers);
+			} catch (Exception ex) {
+				// If a user is hitting this, it will show a dialog box every time they
+				// switch to a document or open a document, so suppress the crash dialog
+				// This bug *should* be fixed already, but it's hard to tell.
+				LogReportingService.ReportUnhandledException (ex, false, true);
+			}
 		}
 		
 		void TryAttachView <T>(Document document, VersionControlDocumentInfo info, string type)

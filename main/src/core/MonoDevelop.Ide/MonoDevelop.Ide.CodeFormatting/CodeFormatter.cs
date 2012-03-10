@@ -93,28 +93,13 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// <param name="caretLocation">
 		/// A <see cref="TextLocation"/> that should be the end location to which the parsing should occur.
 		/// </param>
-		public void OnTheFlyFormat (PolicyContainer policyParent, TextEditorData data,
-			IType callingType, IMember callingMember, ITypeResolveContext dom, IParsedFile unit,
-			TextLocation endLocation)
+		public void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsOnTheFlyFormatting)
 				throw new InvalidOperationException ("On the fly formatting not supported");
 			
-			adv.OnTheFlyFormat (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain,
-				data, callingType, callingMember, dom, unit, endLocation);
-		}
-		
-		public void OnTheFlyFormat (PolicyContainer policyParent, TextEditorData data,
-			int startOffset, int endOffset)
-		{
-			var adv = formatter as IAdvancedCodeFormatter;
-			if (adv == null || !adv.SupportsOnTheFlyFormatting)
-				throw new InvalidOperationException ("On the fly formatting not supported");
-			if (startOffset >= endOffset)
-				return;
-			adv.OnTheFlyFormat (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain,
-				data, startOffset, endOffset);
+			adv.OnTheFlyFormat (doc, startOffset, endOffset);
 		}
 		
 		public void CorrectIndenting (PolicyContainer policyParent, TextEditorData data, int line)

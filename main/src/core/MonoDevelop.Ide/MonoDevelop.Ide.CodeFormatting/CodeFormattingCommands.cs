@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			
 			using (var undo = doc.Editor.OpenUndoGroup ()) {
 				if (formatter.SupportsOnTheFlyFormatting) {
-					formatter.OnTheFlyFormat (doc.Project != null ? doc.Project.Policies : null, doc.Editor, selection.Offset, selection.EndOffset);
+					formatter.OnTheFlyFormat (doc, selection.Offset, selection.EndOffset);
 				} else {
 					var pol = doc.Project != null ? doc.Project.Policies : null;
 					string text = formatter.FormatText (pol, doc.Editor.Text, selection.Offset, selection.EndOffset);

@@ -408,8 +408,7 @@ namespace MonoDevelop.SourceEditor
 				var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
 					using (var undo = TextEditor.OpenUndoGroup ()) {
-						var policies = Project != null ? Project.Policies : null;
-						formatter.OnTheFlyFormat (policies, TextEditor.GetTextEditorData (), 0, Document.Length);
+						formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.Length);
 						wasEdited = false;
 					}
 				}
