@@ -81,7 +81,6 @@ FILES =  \
 	Mono.TextEditor/DashedLineMargin.cs \
 	Mono.TextEditor/DefaultEditActions.cs \
 	Mono.TextEditor/DeleteActions.cs \
-	Mono.TextEditor/Document.cs \
 	Mono.TextEditor/DocumentChangeEventArgs.cs \
 	Mono.TextEditor/DocumentLocation.cs \
 	Mono.TextEditor/DocumentUpdateRequest.cs \
@@ -130,6 +129,7 @@ FILES =  \
 	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
 	Mono.TextEditor/SimpleEditMode.cs \
 	Mono.TextEditor/StringBuffer.cs \
+	Mono.TextEditor/TextDocument.cs \
 	Mono.TextEditor/TextEditor.cs \
 	Mono.TextEditor/TextEditorAccessibility.cs \
 	Mono.TextEditor/TextEditorContainer.cs \

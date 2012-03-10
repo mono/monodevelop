@@ -64,7 +64,6 @@
     <Compile Include="Mono.TextEditor\DefaultEditActions.cs" />
     <Compile Include="Mono.TextEditor\DocumentLocation.cs" />
     <Compile Include="Mono.TextEditor\DashedLineMargin.cs" />
-    <Compile Include="Mono.TextEditor\Document.cs" />
     <Compile Include="Mono.TextEditor\GutterMargin.cs" />
     <Compile Include="Mono.TextEditor\GapBuffer.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Rule.cs" />
@@ -182,6 +181,7 @@
     <Compile Include="Mono.TextEditor\IndentStyle.cs" />
     <Compile Include="Mono.TextEditor\IIndentationTracker.cs" />
     <Compile Include="Mono.TextEditor\DocumentChangeEventArgs.cs" />
+    <Compile Include="Mono.TextEditor\TextDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
