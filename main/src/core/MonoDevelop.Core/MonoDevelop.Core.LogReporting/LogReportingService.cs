@@ -61,9 +61,14 @@ namespace MonoDevelop.Core.LogReporting
 		
 		public static void ReportUnhandledException (Exception ex, bool willShutDown)
 		{
+			ReportUnhandledException (ex, willShutDown, false);
+		}
+		
+		public static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently)
+		{
 			var oldReportCrashes = ReportCrashes;
 			
-			if (UnhandledErrorOccured != null)
+			if (UnhandledErrorOccured != null && !silently)
 				ReportCrashes = UnhandledErrorOccured (ReportCrashes, ex, willShutDown);
 			
 			// If crash reporting has been explicitly disabled, disregard this crash

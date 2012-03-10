@@ -140,13 +140,18 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (DebuggingService.IsPaused || DebuggingService.IsDebugging) {
+			if (DebuggingService.IsRunning) {
+				info.Enabled = false;
+				return;
+			}
+			
+			if (DebuggingService.IsPaused) {
 				info.Enabled = true;
 				info.Text = GettextCatalog.GetString ("_Continue");
 				info.Description = GettextCatalog.GetString ("Continue the execution of the application");
 				return;
 			}
-
+			
 			// If there are no debugger installed, this command will not debug, it will
 			// just run, so the label has to be changed accordingly.
 			if (!DebuggingService.IsDebuggingSupported) {
