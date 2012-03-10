@@ -142,6 +142,8 @@ namespace MonoDevelop.CSharp.Formatting
 			compilationUnit.AcceptVisitor (domSpacingVisitor);
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ());
+			changes.Sort ((x, y) => ((TextReplaceAction)x).Offset.CompareTo (((TextReplaceAction)y).Offset));
+			
 			var newList = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> (); 
 			for (int i = 0; i < changes.Count; i++) {
 				var c = (TextReplaceAction)changes [i];

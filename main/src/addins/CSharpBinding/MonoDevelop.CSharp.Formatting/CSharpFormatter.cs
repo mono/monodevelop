@@ -158,8 +158,9 @@ namespace MonoDevelop.CSharp.Formatting
 			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
 			changes.AddRange (formattingVisitor.Changes.
 				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-			var endPositionChange = factory.CreateTextReplaceAction (endOffset, 0, null);
+			var endPositionChange = factory.CreateTextReplaceAction (endOffset, 0, "//end");
 			changes.Add (endPositionChange);
+			changes.Sort ((x, y) => ((TextReplaceAction)x).Offset.CompareTo (((TextReplaceAction)y).Offset));
 			MDRefactoringContext.MdScript.RunActions (changes, null);
 			
 			// check if the formatter has produced errors
