@@ -53,8 +53,8 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
 		
-		[ItemProperty ("Optimize")]
-		bool optimize;
+		[ItemProperty ("Optimize", DefaultValue = true)]
+		bool optimize = true;
 		
 		[ItemProperty ("AllowUnsafeBlocks", DefaultValue = false)]
 		bool unsafecode = false;
