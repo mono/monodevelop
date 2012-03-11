@@ -184,6 +184,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				searchNodes = CollectMembers ((IType)member);
 			} else if (member is IEntity) {
 				var e = (IEntity)member;
+				if (e.EntityType == EntityType.Destructor) {
+					foreach (var r in FindReferences (solution, e.DeclaringType, scope, monitor)) {
+						yield return r;
+					}
+					yield break;
+				}
 				var declaringPart = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ();
 				if (declaringPart != null)
 					unit = declaringPart.ParsedFile;
@@ -265,10 +271,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		internal static IEnumerable<IEntity> CollectMembers (IType type)
 		{
 			yield return (IEntity)type;
-
 			foreach (var c in type.GetConstructors ()) {
 				if (!c.IsSynthetic)
 					yield return c;
+			}
+
+			foreach (var m in type.GetMethods (m  => m.IsDestructor)) {
+				yield return m;
 			}
 		}
 

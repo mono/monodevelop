@@ -81,7 +81,12 @@ namespace MonoDevelop.Refactoring.Rename
 			} else if (options.SelectedItem is IEvent) {
 				this.Title = GettextCatalog.GetString ("Rename Event");
 			} else if (options.SelectedItem is IMethod) { 
-				this.Title = GettextCatalog.GetString ("Rename Method");
+				var m = (IMethod)options.SelectedItem;
+				if (m.IsConstructor || m.IsDestructor) {
+					this.Title = GettextCatalog.GetString ("Rename Class");
+				} else {
+					this.Title = GettextCatalog.GetString ("Rename Method");
+				}
 			} else if (options.SelectedItem is IParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Parameter");
 			} else if (options.SelectedItem is IVariable) {
@@ -92,7 +97,11 @@ namespace MonoDevelop.Refactoring.Rename
 			
 			if (options.SelectedItem is IEntity) {
 				var member = (IEntity)options.SelectedItem;
-				entry.Text = member.Name;
+				if (member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
+					entry.Text = member.DeclaringType.Name;
+				} else {
+					entry.Text = member.Name;
+				}
 				fileName = member.Region.FileName;
 			} else if (options.SelectedItem is IVariable) {
 				var lvar = (IVariable)options.SelectedItem;

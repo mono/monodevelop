@@ -107,6 +107,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is ObjectCreateExpression) // Ast type inside is handled in case of constructor search.
 				return null;
 
+			if (node is ConstructorInitializer)
+				return null;
+
 			if (node is InvocationExpression)
 				node = ((InvocationExpression)node).Target;
 			
@@ -126,6 +129,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				node = ((ParameterDeclaration)node).NameToken;
 			if (node is ConstructorDeclaration)
 				node = ((ConstructorDeclaration)node).NameToken;
+			if (node is DestructorDeclaration)
+				node = ((DestructorDeclaration)node).NameToken;
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 			
 			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.Begin), memberName.Length);
@@ -218,7 +223,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							compilation,
 							(astNode, result) => {
 								var newRef = GetReference (result, astNode, file, editor);
-								if (refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
+								if (newRef == null || refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
 									return;
 								refs.Add (newRef);
 							},
