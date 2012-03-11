@@ -165,12 +165,12 @@ namespace Mono.TextEditor
 			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= doc.Length && compiledPattern.Length > 0) {
 				if (searchRequest.CaseSensitive) {
 					for (int i = 0; i < compiledPattern.Length && offset + i < doc.Length; i++) {
-						if (doc.GetCharAt (offset + i) != compiledPattern[i]) 
+						if (doc.GetCharAt (offset + i) != compiledPattern [i]) 
 							return null;
 					}
 				} else {
 					for (int i = 0; i < compiledPattern.Length && offset + i < doc.Length; i++) {
-						if (System.Char.ToUpper (doc.GetCharAt (offset + i)) != compiledPattern[i]) 
+						if (System.Char.ToUpper (doc.GetCharAt (offset + i)) != compiledPattern [i]) 
 							return null;
 					}
 				}
@@ -313,7 +313,7 @@ namespace Mono.TextEditor
 		
 		public override void Replace (SearchResult result, string pattern)
 		{
-			string text = this.textEditorData.Document.GetTextAt (result);
+			string text = this.textEditorData.Document.GetTextAt (result.Segment);
 			this.textEditorData.Replace (result.Offset, result.Length, regex.Replace (text, pattern));
 		}
 		

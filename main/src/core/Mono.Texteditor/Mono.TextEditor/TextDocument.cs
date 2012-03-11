@@ -187,7 +187,7 @@ namespace Mono.TextEditor
 			((IBuffer)this).Replace (offset, count, null);
 		}
 		
-		void IBuffer.Remove (ISegment segment)
+		void IBuffer.Remove (TextSegment segment)
 		{
 			((IBuffer)this).Remove (segment.Offset, segment.Length);
 		}
@@ -278,7 +278,7 @@ namespace Mono.TextEditor
 			return buffer.GetTextAt (offset, count);
 		}
 		
-		public string GetTextAt (ISegment segment)
+		public string GetTextAt (TextSegment segment)
 		{
 			return GetTextAt (segment.Offset, segment.Length);
 		}
@@ -1278,12 +1278,12 @@ namespace Mono.TextEditor
 		
 		public bool Contains (int offset)
 		{
-			return new Segment (0, Length).Contains (offset);
+			return new TextSegment (0, Length).Contains (offset);
 		}
 		
-		public bool Contains (ISegment segment)
+		public bool Contains (TextSegment segment)
 		{
-			return new Segment (0, Length).Contains (segment);
+			return new TextSegment (0, Length).Contains (segment);
 		}
 		
 		
@@ -1464,18 +1464,6 @@ namespace Mono.TextEditor
 
 			return CharacterClass.Unknown;
 
-		}
-		
-		public static void UpdateSegments (IEnumerable<ISegment> segments, DocumentChangeEventArgs args)
-		{
-			int delta = args.ChangeDelta;
-			foreach (ISegment segment in segments) {
-				if (args.Offset < segment.Offset) {
-					segment.Offset += delta;
-				} else if (args.Offset <= segment.EndOffset) {
-					segment.Length += delta;
-				}
-			}
 		}
 		
 		public static void RemoveTrailingWhitespaces (TextEditorData data, LineSegment line)

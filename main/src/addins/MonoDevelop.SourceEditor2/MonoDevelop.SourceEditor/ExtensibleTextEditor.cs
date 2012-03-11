@@ -666,8 +666,9 @@ namespace MonoDevelop.SourceEditor
 						
 						Caret.Offset = result.InsertPosition + TranslateOffset (oldText, text, Caret.Offset - result.InsertPosition);
 						foreach (TextLink textLink in tle.Links) {
-							foreach (ISegment segment in textLink.Links) {
-								segment.Offset = TranslateOffset (oldText, text, segment.Offset);
+							for (int i = 0; i < textLink.Links.Count; i++) {
+								var segment = textLink.Links [i];
+								textLink.Links [i] = new TextSegment (TranslateOffset (oldText, text, segment.Offset), segment.Length);
 							}
 						}
 					}

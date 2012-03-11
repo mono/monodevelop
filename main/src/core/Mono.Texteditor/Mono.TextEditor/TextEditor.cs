@@ -455,7 +455,7 @@ namespace Mono.TextEditor
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
 			if (IsSomethingSelected) {
-				ISegment selectionRange = MainSelection.GetSelectionRange (textEditorData);
+				var selectionRange = MainSelection.GetSelectionRange (textEditorData);
 				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length) {
 					ClipboardActions.CopyToPrimary (this.textEditorData);
 				} else {
@@ -1141,7 +1141,7 @@ namespace Mono.TextEditor
 				int dragOffset = Document.LocationToOffset (dragCaretPos);
 				if (context.Action == DragAction.Move) {
 					if (CanEdit (Caret.Line) && selection != null) {
-						ISegment selectionRange = selection.GetSelectionRange (textEditorData);
+						var selectionRange = selection.GetSelectionRange (textEditorData);
 						if (selectionRange.Offset < dragOffset)
 							dragOffset -= selectionRange.Length;
 						Caret.PreserveSelection = true;
@@ -1735,7 +1735,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public ISegment SelectionRange {
+		public TextSegment SelectionRange {
 			get {
 				return this.textEditorData.SelectionRange;
 			}
@@ -1785,7 +1785,7 @@ namespace Mono.TextEditor
 			return textEditorData.Insert (offset, value);
 		}
 		
-		public void Remove (ISegment removeSegment)
+		public void Remove (TextSegment removeSegment)
 		{
 			textEditorData.Remove (removeSegment);
 		}
@@ -1924,7 +1924,7 @@ namespace Mono.TextEditor
 			return Document.GetTextAt (offset, count);
 		}
 
-		public string GetTextAt (ISegment segment)
+		public string GetTextAt (TextSegment segment)
 		{
 			return Document.GetTextAt (segment);
 		}
@@ -2236,7 +2236,7 @@ namespace Mono.TextEditor
 		{
 			if (!IsComposited || !Options.EnableAnimations)
 				return;
-			TextViewMargin.MainSearchResult = result;
+			TextViewMargin.MainSearchResult = result.Segment;
 			if (result != null) {
 				if (popupWindow != null) {
 					popupWindow.StopPlaying ();

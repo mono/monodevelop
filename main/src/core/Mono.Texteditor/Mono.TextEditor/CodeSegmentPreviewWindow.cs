@@ -53,7 +53,7 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public ISegment Segment {
+		public TextSegment Segment {
 			get;
 			private set;
 		}
@@ -64,11 +64,11 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, bool removeIndent = true) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight, removeIndent)
+		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, TextSegment segment, bool removeIndent = true) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight, removeIndent)
 		{
 		}
 		
-		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, int width, int height, bool removeIndent = true) : base (Gtk.WindowType.Popup)
+		public CodeSegmentPreviewWindow (TextEditor editor, bool hideCodeSegmentPreviewInformString, TextSegment segment, int width, int height, bool removeIndent = true) : base (Gtk.WindowType.Popup)
 		{
 			this.HideCodeSegmentPreviewInformString = hideCodeSegmentPreviewInformString;
 			this.Segment = segment;
@@ -90,14 +90,14 @@ namespace Mono.TextEditor
 		
 		const int maxLines = 40;
 		
-		public void SetSegment (ISegment segment, bool removeIndent)
+		public void SetSegment (TextSegment segment, bool removeIndent)
 		{
 			int startLine = editor.Document.OffsetToLineNumber (segment.Offset);
 			int endLine = editor.Document.OffsetToLineNumber (segment.EndOffset);
 			
 			bool pushedLineLimit = endLine - startLine > maxLines;
 			if (pushedLineLimit)
-				segment = new Segment (segment.Offset, editor.Document.GetLine (startLine + maxLines).Offset - segment.Offset);
+				segment = new TextSegment (segment.Offset, editor.Document.GetLine (startLine + maxLines).Offset - segment.Offset);
 			layout.Ellipsize = Pango.EllipsizeMode.End;
 			layout.SetMarkup (editor.GetTextEditorData ().GetMarkup (segment.Offset, segment.Length, removeIndent) + (pushedLineLimit ? Environment.NewLine + "..." : ""));
 			QueueDraw ();

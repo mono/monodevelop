@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 			throw new NotSupportedException ("Operation not supported on this buffer.");
 		}
 
-		void IBuffer.Remove (ISegment segment)
+		void IBuffer.Remove (TextSegment segment)
 		{
 			throw new NotSupportedException ("Operation not supported on this buffer.");
 		}
@@ -51,7 +51,7 @@ namespace Mono.TextEditor
 			return buffer.Substring (offset, count);
 		}
 
-		string IBuffer.GetTextAt (ISegment segment)
+		string IBuffer.GetTextAt (TextSegment segment)
 		{
 			return buffer.Substring (segment.Offset, segment.Length);
 		}

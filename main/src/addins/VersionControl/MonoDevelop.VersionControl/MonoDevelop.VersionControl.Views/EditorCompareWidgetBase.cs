@@ -274,12 +274,12 @@ namespace MonoDevelop.VersionControl.Views
 			diffCache.Clear ();
 		}
 		
-		static List<ISegment> BreakTextInWords (TextEditor editor, int start, int count)
+		static List<TextSegment> BreakTextInWords (TextEditor editor, int start, int count)
 		{
 			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
-		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
+		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
 		{
 			List<Cairo.Rectangle> result = new List<Cairo.Rectangle> ();
 			int startOffset = -1;

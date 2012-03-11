@@ -33,9 +33,10 @@ using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public abstract class LineSegment : ISegment, ICSharpCode.NRefactory.Editor.IDocumentLine
+	public abstract class LineSegment : ICSharpCode.NRefactory.Editor.IDocumentLine
 	{
 		List<TextMarker> markers;
+
 		public IEnumerable<TextMarker> Markers {
 			get {
 				return markers ?? Enumerable.Empty<TextMarker> ();
@@ -81,6 +82,12 @@ namespace Mono.TextEditor
 		public int Length {
 			get;
 			set;
+		}
+
+		public TextSegment Segment {
+			get {
+				return new TextSegment (Offset, Length);
+			}
 		}
 
 		public int EndOffset {
@@ -225,9 +232,14 @@ namespace Mono.TextEditor
 			return o <= offset && offset < o + Length;
 		}
 
-		public bool Contains (ISegment segment)
+		public bool Contains (TextSegment segment)
 		{
-			return segment != null && Offset <= segment.Offset && segment.EndOffset <= EndOffset;
+			return Offset <= segment.Offset && segment.EndOffset <= EndOffset;
+		}
+
+		public static implicit operator TextSegment (LineSegment line)
+		{
+			return new TextSegment (line.Offset, line.Length);
 		}
 
 		public override string ToString ()
@@ -273,7 +285,7 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
-		#region ISegment implementation
+		#region TextSegment implementation
 		int ICSharpCode.NRefactory.Editor.ISegment.Offset {
 			get {
 				return Offset;

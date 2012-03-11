@@ -97,12 +97,19 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append ("static ");
 			sb.Append ("void ");
 			int pos2 = sb.Length;
-			sb.Append (this.DisplayText);sb.Append (' ');sb.Append (this.parameterList);sb.Append (editor.EolMarker);
-			sb.Append (indent);sb.Append ("{");sb.Append (editor.EolMarker);
-			sb.Append (indent);sb.Append (TextEditorProperties.IndentString);
+			sb.Append (this.DisplayText);
+			sb.Append (' ');
+			sb.Append (this.parameterList);
+			sb.Append (editor.EolMarker);
+			sb.Append (indent);
+			sb.Append ("{");
+			sb.Append (editor.EolMarker);
+			sb.Append (indent);
+			sb.Append (TextEditorProperties.IndentString);
 			int cursorPos = pos + sb.Length;
 			sb.Append (editor.EolMarker);
-			sb.Append (indent);sb.Append ("}");
+			sb.Append (indent);
+			sb.Append ("}");
 			editor.Insert (pos, sb.ToString ());
 			editor.Caret.Offset = cursorPos;
 			
@@ -110,8 +117,8 @@ namespace MonoDevelop.CSharp.Completion
 			List<TextLink> links = new List<TextLink> ();
 			TextLink link = new TextLink ("name");
 			
-			link.AddLink (new Segment (0, this.DisplayText.Length));
-			link.AddLink (new Segment (pos - initialOffset + pos2, this.DisplayText.Length));
+			link.AddLink (new TextSegment (0, this.DisplayText.Length));
+			link.AddLink (new TextSegment (pos - initialOffset + pos2, this.DisplayText.Length));
 			links.Add (link);
 			
 			CompletionTextLinkMode tle = new CompletionTextLinkMode (editor.Parent, initialOffset, links);

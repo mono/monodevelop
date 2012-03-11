@@ -254,7 +254,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			
 			public override void Perform (Script script)
 			{
-				List<Segment> segments = new List<Segment> ();
+				var segments = new List<TextSegment> ();
 				foreach (var action in script.Actions) {
 					if (action == this)
 						break;
@@ -264,7 +264,7 @@ namespace MonoDevelop.CSharp.ContextAction
 					foreach (var astNode in Linked) {
 						NodeOutput.Segment segment;
 						if (noa.NodeOutput.NodeSegments.TryGetValue (astNode, out segment))
-							segments.Add (new Segment (noa.Offset + segment.Offset, segment.Length));
+							segments.Add (new TextSegment (noa.Offset + segment.Offset, segment.Length));
 					}
 				}
 				segments.Sort ((x, y) => x.Offset.CompareTo (y.Offset));

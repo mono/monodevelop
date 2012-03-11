@@ -520,7 +520,7 @@ But I leave it in in the case I've missed something. Mike
 		protected override void OnFocusChildSet (Widget widget)
 		{
 			base.OnFocusChildSet (widget);
-			ISegment mainResult = this.textEditor.TextViewMargin.MainSearchResult;
+			var mainResult = this.textEditor.TextViewMargin.MainSearchResult;
 			this.textEditor.TextViewMargin.HideSelection = widget == table && mainResult != null &&
 				this.textEditor.IsSomethingSelected && this.textEditor.SelectionRange.Offset == mainResult.Offset && this.textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
 			
@@ -677,10 +677,10 @@ But I leave it in in the case I've missed something. Mike
 				return;
 			}
 			
-		//	bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
+			//	bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
 			string errorMsg;
 			bool valid = textEditor.SearchEngine.IsValidPattern (searchPattern, out errorMsg);
-		//	error |= !valid;
+			//	error |= !valid;
 			
 			if (!valid) {
 				IdeApp.Workbench.StatusBar.ShowError (errorMsg);
@@ -697,8 +697,8 @@ But I leave it in in the case I've missed something. Mike
 				int resultIndex = 0;
 				int foundIndex = -1;
 				int caretOffset = textEditor.Caret.Offset;
-				ISegment foundSegment = null;
-				foreach (ISegment searchResult in textEditor.TextViewMargin.SearchResults) {
+				TextSegment foundSegment = TextSegment.Invalid;
+				foreach (var searchResult in textEditor.TextViewMargin.SearchResults) {
 					if (searchResult.Offset <= caretOffset && caretOffset <= searchResult.EndOffset) {
 						foundIndex = resultIndex + 1;
 						foundSegment = searchResult;

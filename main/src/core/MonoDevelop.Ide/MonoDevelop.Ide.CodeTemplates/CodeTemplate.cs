@@ -254,7 +254,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 								s = variableDecarations [name].Default;
 						}
 						if (s != null) {
-							link.AddLink (new Segment (sb.Length, s.Length));
+							link.AddLink (new TextSegment (sb.Length, s.Length));
 							if (isNew) {
 								link.GetStringFunc = delegate (Func<string, string> callback) {
 									return expansion.RunFunction (context, callback, variableDecarations [name].Function);
@@ -276,12 +276,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			data.Text = sb.ToString ();
 			data.Document.TextReplaced += delegate(object sender, DocumentChangeEventArgs e) {
 				int delta = e.ChangeDelta;
+
 				foreach (var link in result.TextLinks) {
-					foreach (var segment in link.Links) {
-						if (segment.Offset > e.Offset) {
-							segment.Offset += delta;
-						}
-					}
+					link.Links = new List<TextSegment> (link.Links.AdjustSegments (e));
 				}
 				if (result.CaretEndOffset > e.Offset)
 					result.CaretEndOffset += delta;
@@ -300,9 +297,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 		void AddDefaultValue (StringBuilder sb, TextLink link, string name)
 		{
-			if (string.IsNullOrEmpty (variableDecarations[name].Default))
+			if (string.IsNullOrEmpty (variableDecarations [name].Default))
 				return;
-			link.AddLink (new Segment (sb.Length, variableDecarations[name].Default.Length));
+			link.AddLink (new TextSegment (sb.Length, variableDecarations[name].Default.Length));
 			sb.Append (variableDecarations[name].Default);
 		}
 

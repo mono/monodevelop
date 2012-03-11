@@ -239,7 +239,7 @@ namespace Mono.TextEditor
 			Replace (offset, count, null);
 		}
 		
-		public void Remove (ISegment removeSegment)
+		public void Remove (TextSegment removeSegment)
 		{
 			Remove (removeSegment.Offset, removeSegment.Length);
 		}
@@ -621,14 +621,14 @@ namespace Mono.TextEditor
 				}
 			}
 		}
-		public ISegment SelectionRange {
+		public TextSegment SelectionRange {
 			get {
-				return MainSelection != null ? MainSelection.GetSelectionRange (this) : new Segment (Caret.Offset, 0);
+				return MainSelection != null ? MainSelection.GetSelectionRange (this) : new TextSegment (Caret.Offset, 0);
 			}
 			set {
-				if (!Segment.Equals (this.SelectionRange, value)) {
+				if (this.SelectionRange != value) {
 					OnSelectionChanging (EventArgs.Empty);
-					if (value == null || value.Length == 0) {
+					if (value.IsEmpty) {
 						MainSelection = null;
 					} else {
 						DocumentLocation loc1 = document.OffsetToLocation (value.Offset);
@@ -660,11 +660,11 @@ namespace Mono.TextEditor
 			set {
 				if (!IsSomethingSelected)
 					return;
-				ISegment selection = this.SelectionRange;
+				var selection = this.SelectionRange;
 				Replace (selection.Offset, selection.Length, value);
 				if (this.Caret.Offset > selection.Offset)
 					this.Caret.Offset = selection.Offset + value.Length;
-				this.SelectionRange = new Segment(selection.Offset, value.Length);
+				this.SelectionRange = new TextSegment (selection.Offset, value.Length);
 			}
 		}
 		
@@ -733,7 +733,7 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("selection");
 			switch (selection.SelectionMode) {
 			case SelectionMode.Normal:
-				ISegment segment = selection.GetSelectionRange (this);
+				var segment = selection.GetSelectionRange (this);
 				if (Caret.Offset > segment.Offset)
 					Caret.Offset -= System.Math.Min (segment.Length, Caret.Offset - segment.Offset);
 				int len = System.Math.Min (segment.Length, Document.Length - segment.Offset);
@@ -780,7 +780,7 @@ namespace Mono.TextEditor
 			bool needUpdate = false;
 			using (var undo = OpenUndoGroup ()) {
 				foreach (Selection selection in Selections) {
-					ISegment segment = selection.GetSelectionRange (this);
+					var segment = selection.GetSelectionRange (this);
 					needUpdate |= Document.OffsetToLineNumber (segment.Offset) != Document.OffsetToLineNumber (segment.EndOffset);
 					DeleteSelection (selection);
 				}
@@ -891,7 +891,7 @@ namespace Mono.TextEditor
 			SearchResult result = SearchBackward (searchOffset);
 			if (result != null) {
 				result.SearchWrapped = result.EndOffset > startOffset;
-				Caret.Offset  = result.Offset + result.Length;
+				Caret.Offset = result.Offset + result.Length;
 				if (setSelection)
 					MainSelection = new Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
 			}
@@ -902,7 +902,7 @@ namespace Mono.TextEditor
 		{
 			bool result = false;
 			if (this.IsSomethingSelected) {
-				ISegment selection = MainSelection.GetSelectionRange (this);
+				var selection = MainSelection.GetSelectionRange (this);
 				SearchResult match = searchEngine.GetMatchAt (selection.Offset, selection.Length);
 				if (match != null) {
 					searchEngine.Replace (match, withPattern);
@@ -1069,7 +1069,7 @@ namespace Mono.TextEditor
 			return document.GetTextAt (offset, count);
 		}
 
-		public string GetTextAt (ISegment segment)
+		public string GetTextAt (TextSegment segment)
 		{
 			return document.GetTextAt (segment);
 		}

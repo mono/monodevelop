@@ -73,8 +73,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			
 			if (ext.Markers.ContainsKey (doc.Editor.Caret.Line)) {
-				var marker = ext.Markers[doc.Editor.Caret.Line];
-				ISegment segment = null;
+				var marker = ext.Markers [doc.Editor.Caret.Line];
+				var segment = TextSegment.Invalid;
 				for (int i = 0; i < marker.Usages.Count; i++) {
 					if (marker.Usages[i].EndOffset < doc.Editor.Caret.Offset)
 						segment = marker.Usages[i];
@@ -123,8 +123,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			
 			if (ext.Markers.ContainsKey (doc.Editor.Caret.Line)) {
-				var marker = ext.Markers[doc.Editor.Caret.Line];
-				ISegment segment = null;
+				var marker = ext.Markers [doc.Editor.Caret.Line];
+				var segment = TextSegment.Invalid;
 				for (int i = 0; i < marker.Usages.Count; i++) {
 					if (marker.Usages[i].Offset > doc.Editor.Caret.Offset) {
 						segment = marker.Usages[i];
@@ -152,7 +152,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			MoveToSegment (doc, ext.Markers.First ().Value.Usages.First ());
 		}
 		
-		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, ISegment segment)
+		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, TextSegment segment)
 		{
 			TextEditorData data = doc.Editor;
 			data.Caret.Offset = segment.Offset;

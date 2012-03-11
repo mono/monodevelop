@@ -1,20 +1,21 @@
-// Segment.cs
-//
+// 
+// TextSegment.cs
+//  
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
-//
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
-//
+//       Mike Krüger <mkrueger@xamarin.com>
+// 
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,17 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
 using System;
 
 namespace Mono.TextEditor
 {
-	public class Segment : ISegment
+	public struct TextSegment : IEquatable<TextSegment>
 	{
-		public virtual int Offset { get; set; }
-		public virtual int Length { get; set; }
+		public static readonly TextSegment Invalid = new TextSegment (-1, 0);
+
+		public readonly int Offset;
+		public readonly int Length;
 
 		public int EndOffset {
 			get {
@@ -40,23 +41,37 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected Segment ()
-		{
+		public bool IsEmpty {
+			get {
+				return Length == 0;
+			}
 		}
 
-		public Segment (int offset, int length)
+		public bool IsInvalid {
+			get {
+				return Offset < 0;
+			}
+		}
+
+		public TextSegment (int offset, int length)
 		{
 			this.Offset = offset;
 			this.Length = length;
 		}
 
-		public Segment (ISegment segment) : this (segment.Offset, segment.Length)
+		public static bool operator == (TextSegment left, TextSegment right)
 		{
+			return left.Equals (right);
 		}
 
-		public static bool Equals (ISegment left, ISegment right)
+		public static bool operator != (TextSegment left, TextSegment right)
 		{
-			return left != null && right != null && left.Offset == right.Offset && left.Length == right.Length;
+			return !left.Equals (right);
+		}
+
+		public bool Equals (TextSegment left, TextSegment right)
+		{
+			return left.Offset == right.Offset && left.Length == right.Length;
 		}
 
 		public bool Contains (int offset)
@@ -64,14 +79,29 @@ namespace Mono.TextEditor
 			return Offset <= offset && offset < EndOffset;
 		}
 
-		public bool Contains (ISegment segment)
+		public bool Contains (TextSegment segment)
 		{
-			return  segment != null && Offset <= segment.Offset && segment.EndOffset <= EndOffset;
+			return Offset <= segment.Offset && segment.EndOffset <= EndOffset;
+		}
+
+		public bool Equals (TextSegment other)
+		{
+			return this == other;
+		}
+
+		public override bool Equals (object obj)
+		{
+			return obj is TextSegment && this.Equals ((TextSegment)obj);
+		}
+
+		public override int GetHashCode ()
+		{
+			return this.Offset ^ this.Length;
 		}
 
 		public override string ToString ()
 		{
-			return String.Format ("[Segment: Offset={0}, Length={1}]", this.Offset, this.Length);
+			return string.Format ("[TextSegment: Offset={0}, Length={1}]", Offset, Length);
 		}
 	}
 }

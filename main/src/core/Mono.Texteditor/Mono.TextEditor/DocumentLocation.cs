@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 			return !(left < right);
 		}
 		
-		public static implicit operator TextLocation(DocumentLocation location)
+		public static implicit operator TextLocation (DocumentLocation location)
 		{
 			return new TextLocation (location.Line, location.Column);
 		}

@@ -160,7 +160,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 				TextLink link = new TextLink ("name");
 				if (varName != null) {
 					foreach (var offset in offsets) {
-						link.AddLink (new Segment (offset - selectionStart, varName.Length));
+						link.AddLink (new TextSegment (offset - selectionStart, varName.Length));
 					}
 				}
 				List<TextLink > links = new List<TextLink> ();

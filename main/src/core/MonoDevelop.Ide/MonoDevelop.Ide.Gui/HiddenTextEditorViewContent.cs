@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -143,7 +144,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void Select (int startPosition, int endPosition)
 		{
-			data.SelectionRange = new Mono.TextEditor.Segment (startPosition, endPosition - startPosition);
+			data.SelectionRange = new TextSegment (startPosition, endPosition - startPosition);
 		}
 		
 		public void ShowPosition (int position)

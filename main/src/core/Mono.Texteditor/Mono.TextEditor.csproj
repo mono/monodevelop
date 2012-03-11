@@ -37,18 +37,23 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System" />
@@ -58,7 +63,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor\IBuffer.cs" />
-    <Compile Include="Mono.TextEditor\Segment.cs" />
     <Compile Include="Mono.TextEditor\LineSegment.cs" />
     <Compile Include="Mono.TextEditor\LineSplitter.cs" />
     <Compile Include="Mono.TextEditor\DefaultEditActions.cs" />
@@ -74,7 +78,6 @@
     <Compile Include="Mono.TextEditor\FoldMarkerMargin.cs" />
     <Compile Include="Mono.TextEditor\Margin.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Chunk.cs" />
-    <Compile Include="Mono.TextEditor\ISegment.cs" />
     <Compile Include="Mono.TextEditor\TextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor\TextEditorData.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\DefaultStyle.cs" />
@@ -160,7 +163,6 @@
     <Compile Include="Mono.TextEditor.Highlighting\CloneableStack.cs" />
     <Compile Include="Mono.TextEditor.Utils\Diff.cs" />
     <Compile Include="Mono.TextEditor\AbstractPartitioner.cs" />
-    <Compile Include="Mono.TextEditor\TypedSegment.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\HighlightingPartitioner.cs" />
     <Compile Include="Mono.TextEditor\ILineSplitter.cs" />
     <Compile Include="Mono.TextEditor\PrimitiveLineSplitter.cs" />
@@ -182,6 +184,7 @@
     <Compile Include="Mono.TextEditor\IIndentationTracker.cs" />
     <Compile Include="Mono.TextEditor\DocumentChangeEventArgs.cs" />
     <Compile Include="Mono.TextEditor\TextDocument.cs" />
+    <Compile Include="Mono.TextEditor\TextSegment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

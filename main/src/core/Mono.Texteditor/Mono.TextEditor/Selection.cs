@@ -80,11 +80,11 @@ namespace Mono.TextEditor
 			this.SelectionMode = selectionMode;
 		}
 		
-		public ISegment GetSelectionRange (TextEditorData data)
+		public TextSegment GetSelectionRange (TextEditorData data)
 		{
 			int anchorOffset = GetAnchorOffset (data);
-			int leadOffset   = GetLeadOffset (data);
-			return new Segment (System.Math.Min (anchorOffset, leadOffset), System.Math.Abs (anchorOffset - leadOffset));
+			int leadOffset = GetLeadOffset (data);
+			return new TextSegment (System.Math.Min (anchorOffset, leadOffset), System.Math.Abs (anchorOffset - leadOffset));
 		}
 		
 		// for markup syntax mode the syntax highlighting information need to be taken into account

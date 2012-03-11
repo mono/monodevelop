@@ -132,7 +132,7 @@ namespace Mono.TextEditor
 				StringBuilder rtfText = new StringBuilder ();
 				List<Gdk.Color> colorList = new List<Gdk.Color> ();
 	
-				ISegment selection = new Segment (0, doc.Length);
+				var selection = new TextSegment (0, doc.Length);
 				int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
 				int endLineNumber   = doc.OffsetToLineNumber (selection.EndOffset);
 				
@@ -463,7 +463,7 @@ namespace Mono.TextEditor
 							data.Caret.PreserveSelection = false;
 							data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 						} else {
-							ISegment selection = data.SelectionRange;
+							TextSegment selection = data.SelectionRange;
 							if (preserveSelection && data.IsSomethingSelected)
 								data.DeleteSelectedText ();
 							data.Caret.PreserveSelection = true;
@@ -472,7 +472,7 @@ namespace Mono.TextEditor
 							result = textLength;
 		
 							if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset)
-								data.SelectionRange.Offset += textLength;
+								data.SelectionRange = new TextSegment (data.SelectionRange.Offset + textLength, data.SelectionRange.Length);
 							if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset)
 								data.MainSelection.Anchor = data.Document.OffsetToLocation (data.MainSelection.GetAnchorOffset (data) + textLength);
 							
@@ -482,11 +482,11 @@ namespace Mono.TextEditor
 							} else {
 								if (caretPos >= insertionOffset)
 									data.Caret.Offset += textLength;
-								if (selection != null) {
+								if (!selection.IsInvalid) {
 									int offset = selection.Offset;
 									if (offset >= insertionOffset)
 										offset += textLength;
-									data.SelectionRange = new Segment (offset, selection.Length);
+									data.SelectionRange = new TextSegment (offset, selection.Length);
 								}
 							}
 							data.PasteText (insertionOffset, text, textLength);

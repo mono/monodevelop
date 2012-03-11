@@ -116,7 +116,7 @@ namespace MonoDevelop.Refactoring.Rename
 					baseOffset = Math.Min (baseOffset, r.Offset);
 				}
 				foreach (MemberReference r in col) {
-					Segment segment = new Segment (r.Offset - baseOffset, r.Length);
+					var segment = new TextSegment (r.Offset - baseOffset, r.Length);
 					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment); 
 					} else {

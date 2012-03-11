@@ -149,7 +149,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					                                                        offset < sr.Offset && sr.EndOffset < endOffset)) {
 						textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
 					}
-					marker.Usages.Add (new Mono.TextEditor.Segment (offset, endOffset - offset));
+					marker.Usages.Add (new TextSegment (offset, endOffset - offset));
 					lineNumbers.Add (r.Region.BeginLine);
 				}
 			}
@@ -230,9 +230,9 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		public class UsageMarker : TextMarker, IBackgroundMarker
 		{
-			List<ISegment> usages = new List<ISegment> ();
+			List<TextSegment> usages = new List<TextSegment> ();
 			
-			public List<ISegment> Usages {
+			public List<TextSegment> Usages {
 				get { return this.usages; }
 			}
 			
@@ -246,7 +246,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				drawBg = false;
 				if (selectionStart >= 0 || editor.CurrentMode is TextLinkEditMode)
 					return true;
-				foreach (ISegment usage in Usages) {
+				foreach (var usage in Usages) {
 					int markerStart = usage.Offset;
 					int markerEnd = usage.EndOffset;
 					

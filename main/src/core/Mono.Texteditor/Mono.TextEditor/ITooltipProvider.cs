@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 {
 	public class TooltipItem
 	{
-		public ISegment ItemSegment { get; set; }
+		public TextSegment ItemSegment { get; set; }
 		public object Item { get; set; }
 		
 		public TooltipItem (object item)
@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 			this.Item = item;
 		}
 		
-		public TooltipItem (object item, ISegment itemSegment)
+		public TooltipItem (object item, TextSegment itemSegment)
 		{
 			this.ItemSegment = itemSegment;
 			this.Item = item;
@@ -47,7 +47,7 @@ namespace Mono.TextEditor
 		
 		public TooltipItem (object item, int offset, int length)
 		{
-			this.ItemSegment = new Segment (offset, length);
+			this.ItemSegment = new TextSegment (offset, length);
 			this.Item = item;
 		}
 	}

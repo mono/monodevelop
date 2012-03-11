@@ -1175,7 +1175,7 @@ namespace MonoDevelop.SourceEditor
 			set {
 				TextEditor.DeleteSelectedText ();
 				int length = TextEditor.Insert (TextEditor.Caret.Offset, value);
-				TextEditor.SelectionRange = new Segment (TextEditor.Caret.Offset, length);
+				TextEditor.SelectionRange = new TextSegment (TextEditor.Caret.Offset, length);
 				TextEditor.Caret.Offset += length; 
 			}
 		}
@@ -1223,7 +1223,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Select (int startPosition, int endPosition)
 		{
-			TextEditor.SelectionRange = new Segment (startPosition, endPosition - startPosition);
+			TextEditor.SelectionRange = new TextSegment (startPosition, endPosition - startPosition);
 			TextEditor.ScrollToCaret ();
 		}
 		

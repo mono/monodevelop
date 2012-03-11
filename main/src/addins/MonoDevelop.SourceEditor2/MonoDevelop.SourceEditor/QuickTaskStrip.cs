@@ -230,7 +230,7 @@ namespace MonoDevelop.SourceEditor
 				if (start == null || end == null) {
 					return base.OnMotionNotifyEvent (evnt);
 				}
-				var showSegment = new Mono.TextEditor.Segment (start.Offset, end.Offset + end.EditableLength - start.Offset);
+				var showSegment = new TextSegment (start.Offset, end.Offset + end.EditableLength - start.Offset);
 				
 				if (previewWindow != null) {
 					previewWindow.SetSegment (showSegment, false);
@@ -249,10 +249,10 @@ namespace MonoDevelop.SourceEditor
 		class PreviewPopup {
 			
 			QuickTaskMapMode strip;
-			Mono.TextEditor.Segment segment;
+			TextSegment segment;
 			int w, y;
 			
-			public PreviewPopup (QuickTaskMapMode strip, Mono.TextEditor.Segment segment, int w, int y)
+			public PreviewPopup (QuickTaskMapMode strip, TextSegment segment, int w, int y)
 			{
 				this.strip = strip;
 				this.segment = segment;

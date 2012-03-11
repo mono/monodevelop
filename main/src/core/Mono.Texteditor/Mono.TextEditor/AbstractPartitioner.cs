@@ -193,7 +193,7 @@
 //			}
 //		}
 //		
-//		public IEnumerable<TypedSegment> GetPartitions (ISegment segment)
+//		public IEnumerable<TypedSegment> GetPartitions (TextSegment segment)
 //		{
 //			return GetPartitions (segment.Offset, segment.Length);
 //		}

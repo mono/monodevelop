@@ -124,7 +124,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.TextViewMargin.GetLink = delegate(Mono.TextEditor.MarginMouseEventArgs arg) {
 				var loc = inspectEditor.PointToLocation (arg.X, arg.Y);
 				int offset = inspectEditor.LocationToOffset (loc);
-				var referencedSegment = ReferencedSegments != null ? ReferencedSegments.FirstOrDefault (seg => seg.Contains (offset)) : null;
+				var referencedSegment = ReferencedSegments != null ? ReferencedSegments.FirstOrDefault (seg => seg.Segment.Contains (offset)) : null;
 				if (referencedSegment == null)
 					return null;
 				return null;
@@ -957,7 +957,7 @@ namespace MonoDevelop.AssemblyBrowser
 					continue;
 				// FIXME: ILSpy sometimes gives reference segments for punctuation. See http://bugzilla.xamarin.com/show_bug.cgi?id=2918
 				string text = inspectEditor.GetTextAt (seg);
-				if (text != null && text.Length == 1 && !(char.IsLetter (text[0]) || text[0] =='…'))
+				if (text != null && text.Length == 1 && !(char.IsLetter (text [0]) || text [0] == '…'))
 					continue;
 				var marker = new UnderlineMarker ("blue", 1 + seg.Offset - line.Offset, 1 + seg.EndOffset - line.Offset);
 				marker.Wave = false;

@@ -168,9 +168,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (selectedRegions.Count > 0) {
-				List<ISegment> newRegions = new List<ISegment> (this.selectedRegions);
-				TextDocument.UpdateSegments (newRegions, e);
-				this.selectedRegions = newRegions;
+				this.selectedRegions = new List<TextSegment> (this.selectedRegions.AdjustSegments (e));
 				RefreshSearchMarker ();
 			}
 		}
@@ -205,7 +203,7 @@ namespace Mono.TextEditor
 		public class SearchWorkerArguments {
 			public int FirstLine { get; set; }
 			public int LastLine { get; set; }
-			public List<ISegment> OldRegions { get; set; }
+			public List<TextSegment> OldRegions { get; set; }
 			public ISearchEngine Engine { get; set; }
 		}
 
@@ -240,7 +238,7 @@ namespace Mono.TextEditor
 		{
 			SearchWorkerArguments args = (SearchWorkerArguments)e.Argument;
 			System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)sender;
-			List<ISegment> newRegions = new List<ISegment> ();
+			List<TextSegment> newRegions = new List<TextSegment> ();
 			int offset = 0;
 			do {
 				if (worker.CancellationPending)
@@ -257,7 +255,7 @@ namespace Mono.TextEditor
 				if (result == null || result.SearchWrapped)
 					break;
 				offset = result.EndOffset;
-				newRegions.Add (result);
+				newRegions.Add (result.Segment);
 			} while (true);
 			HashSet<int> updateLines = null;
 			if (args.OldRegions.Count == newRegions.Count) {
@@ -289,11 +287,11 @@ namespace Mono.TextEditor
 			});
 		}
 
-		void UpdateRegions (IEnumerable<ISegment> regions, SearchWorkerArguments args)
+		void UpdateRegions (IEnumerable<TextSegment> regions, SearchWorkerArguments args)
 		{
 			HashSet<int> updateLines = new HashSet<int> ();
 
-			foreach (ISegment region in regions) {
+			foreach (TextSegment region in regions) {
 				int lineNumber = Document.OffsetToLineNumber (region.Offset);
 				if (lineNumber > args.LastLine || lineNumber < args.FirstLine)
 					continue;
@@ -534,7 +532,7 @@ namespace Mono.TextEditor
 
 		void DisposeGCs ()
 		{
-			ShowTooltip (null, Gdk.Rectangle.Zero);
+			ShowTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 		}
 		
 
@@ -665,7 +663,7 @@ namespace Mono.TextEditor
 			selectionStart = -1;
 			selectionEnd = -1;
 			if (textEditor.IsSomethingSelected) {
-				ISegment segment = textEditor.SelectionRange;
+				TextSegment segment = textEditor.SelectionRange;
 				selectionStart = segment.Offset;
 				selectionEnd = segment.EndOffset;
 
@@ -1355,7 +1353,7 @@ namespace Mono.TextEditor
 			}
 
 			// highlight search results
-			ISegment firstSearch;
+			TextSegment firstSearch;
 			int o = offset;
 			uint curIndex = 0, byteIndex = 0;
 			if (textEditor.HighlightSearchPattern) {
@@ -1463,19 +1461,19 @@ namespace Mono.TextEditor
 		}
 
 
-		ISegment GetFirstSearchResult (int startOffset, int endOffset)
+		TextSegment GetFirstSearchResult (int startOffset, int endOffset)
 		{
 			if (startOffset < endOffset && this.selectedRegions.Count > 0) {
-				ISegment region = new Segment (startOffset, endOffset - startOffset);
+				var region = new TextSegment (startOffset, endOffset - startOffset);
 				int min = 0;
 				int max = selectedRegions.Count - 1;
 				do {
 					int mid = (min + max) / 2;
-					ISegment segment = selectedRegions[mid];
+					TextSegment segment = selectedRegions [mid];
 					if (segment.Contains (startOffset) || segment.Contains (endOffset) || region.Contains (segment)) {
 						if (mid == 0)
 							return segment;
-						ISegment prevSegment = selectedRegions[mid - 1];
+						TextSegment prevSegment = selectedRegions [mid - 1];
 						if (!(prevSegment.Contains (startOffset) || prevSegment.Contains (endOffset) || region.Contains (prevSegment)))
 							return segment;
 						max = mid - 1;
@@ -1490,7 +1488,7 @@ namespace Mono.TextEditor
 
 				} while (min <= max);
 			}
-			return null;
+			return TextSegment.Invalid;
 		}
 
 		void DrawEolMarker (Cairo.Context cr, LineSegment line, bool selected, double x, double y)
@@ -1585,13 +1583,13 @@ namespace Mono.TextEditor
 				}
 				if (isHandled)
 					return;
-				if (line != null && clickLocation.Column >= line.EditableLength + 1 && GetWidth (Document.GetTextAt (line) + "-") < args.X) {
-						clickLocation.Column = line.EditableLength + 1;
-						if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual) {
-							int indentationColumn = this.textEditor.GetTextEditorData ().GetVirtualIndentationColumn (clickLocation);
-							if (indentationColumn > clickLocation.Column)
-								clickLocation.Column = indentationColumn;
-						}
+				if (line != null && clickLocation.Column >= line.EditableLength + 1 && GetWidth (Document.GetTextAt (line.Segment) + "-") < args.X) {
+					clickLocation.Column = line.EditableLength + 1;
+					if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual) {
+						int indentationColumn = this.textEditor.GetTextEditorData ().GetVirtualIndentationColumn (clickLocation);
+						if (indentationColumn > clickLocation.Column)
+							clickLocation.Column = indentationColumn;
+					}
 				}
 
 				int offset = Document.LocationToOffset (clickLocation);
@@ -1652,7 +1650,7 @@ namespace Mono.TextEditor
 			
 			// disable middle click on windows.
 			if (!Platform.IsWindows && args.Button == 2 && this.textEditor.CanEdit (docLocation.Line)) {
-				ISegment selectionRange = null;
+				TextSegment selectionRange = TextSegment.Invalid;
 				int offset = Document.LocationToOffset (docLocation);
 				if (selection != null)
 					selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
@@ -1740,7 +1738,7 @@ namespace Mono.TextEditor
 		}
 
 		uint codeSegmentTooltipTimeoutId = 0;
-		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
+		void ShowTooltip (TextSegment segment, Rectangle hintRectangle)
 		{
 			if (previewWindow != null && previewWindow.Segment == segment)
 				return;
@@ -1855,7 +1853,7 @@ namespace Mono.TextEditor
 				foreach (var marker in newMarkers.Where (m => !oldMarkers.Contains (m))) {
 					marker.MouseHover (this.textEditor, args, hoverResult);
 				}
-				oldMarkers.Clear();
+				oldMarkers.Clear ();
 				var tmp = oldMarkers;
 				oldMarkers = newMarkers;
 				newMarkers = tmp;
@@ -1874,12 +1872,12 @@ namespace Mono.TextEditor
 				int lineNr = args.LineNumber;
 				foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
 					if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-						ShowTooltip (shownFolding.Value, shownFolding.Key);
+						ShowTooltip (shownFolding.Value.Segment, shownFolding.Key);
 						return;
 					}
 				}
 
-				ShowTooltip (null, Gdk.Rectangle.Zero);
+				ShowTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 				string link = GetLink != null ? GetLink (args) : null;
 
 				if (!String.IsNullOrEmpty (link)) {
@@ -2062,20 +2060,20 @@ namespace Mono.TextEditor
 			return result;
 		}
 
-		List<ISegment> selectedRegions = new List<ISegment> ();
+		List<TextSegment> selectedRegions = new List<TextSegment> ();
 		public int SearchResultMatchCount {
 			get {
 				return selectedRegions.Count;
 			}
 		}
-		public IEnumerable<ISegment> SearchResults {
+		public IEnumerable<TextSegment> SearchResults {
 			get {
 				return selectedRegions;
 			}
 		}
 
-		ISegment mainSearchResult;
-		public ISegment MainSearchResult {
+		TextSegment mainSearchResult;
+		public TextSegment MainSearchResult {
 			get {
 				return mainSearchResult;
 			}
@@ -2149,7 +2147,7 @@ namespace Mono.TextEditor
 					markerLayout.SetText (folding.Description);
 					markerLayout.GetSize (out width, out height);
 					
-					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding);
+					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding.Segment);
 					double pixelX = pangoPosition / Pango.Scale.PangoScale;
 					double pixelWidth = (pangoPosition + width) / Pango.Scale.PangoScale - pixelX;
 					var foldingRectangle = new Cairo.Rectangle (pixelX + 0.5, y + 0.5, pixelWidth - cr.LineWidth, this.LineHeight - cr.LineWidth);
@@ -2282,7 +2280,7 @@ namespace Mono.TextEditor
 		protected internal override void MouseLeft ()
 		{
 			base.MouseLeft ();
-			ShowTooltip (null, Gdk.Rectangle.Zero);
+			ShowTooltip (TextSegment.Invalid, Gdk.Rectangle.Zero);
 		}
 		
 		#region Coordinate transformation

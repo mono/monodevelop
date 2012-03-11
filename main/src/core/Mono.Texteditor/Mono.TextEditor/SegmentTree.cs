@@ -34,7 +34,7 @@ namespace Mono.TextEditor
 	/// A segment tree contains overlapping segments and get all segments overlapping a segment. It's implemented as a augmented interval tree
 	/// described in Cormen et al. (2001, Section 14.3: Interval trees, pp. 311–317).
 	/// </summary>
-	public class SegmentTree<T> : ISegmentTree where T : TreeSegment
+	public class SegmentTree<T> : TextSegmentTree where T : TreeSegment
 	{
 		internal readonly RedBlackTree<T> tree = new RedBlackTree<T> ();
 		
@@ -207,7 +207,7 @@ namespace Mono.TextEditor
 			return GetSegmentsOverlapping (offset, 0);
 		}
 		
-		public IEnumerable<T> GetSegmentsOverlapping (ISegment segment)
+		public IEnumerable<T> GetSegmentsOverlapping (TextSegment segment)
 		{
 			if (segment == null)
 				return Enumerable.Empty<T> ();
@@ -269,17 +269,17 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	interface ISegmentTree
+	interface TextSegmentTree
 	{
 		void Add (TreeSegment segment);
 		void Remove (TreeSegment segment);
 	}
 	
-	public class TreeSegment : Segment, IRedBlackTreeNode
+	public class TreeSegment : IRedBlackTreeNode
 	{
-		internal ISegmentTree segmentTree;
+		internal TextSegmentTree segmentTree;
 
-		public override int Offset {
+		public int Offset {
 			get {
 				if (segmentTree == null)
 					return DistanceToPrevNode;
@@ -307,6 +307,23 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public int Length {
+			get;
+			set;
+		}
+
+		public int EndOffset {
+			get {
+				return Offset + Length;
+			}
+		}
+
+		public TextSegment Segment {
+			get {
+				return new TextSegment (Offset, Length);
+			}
+		}
+
 		// TotalLength = DistanceToPrevNode + Left.DistanceToPrevNode + Right.DistanceToPrevNode
 		internal int TotalLength;
 		
@@ -319,12 +336,24 @@ namespace Mono.TextEditor
 		{
 		}
 
-		public TreeSegment (int offset, int length) : base (offset, length)
+		public TreeSegment (int offset, int length)
+		{
+			Offset = offset;
+			Length = length;
+		}
+
+		public TreeSegment (TextSegment segment) : this (segment.Offset, segment.Length)
 		{
 		}
 
-		public TreeSegment (ISegment segment) : base (segment)
+		public bool Contains (int offset)
 		{
+			return Offset <= offset && offset < EndOffset;
+		}
+
+		public bool Contains (TextSegment segment)
+		{
+			return Offset <= segment.Offset && segment.EndOffset <= EndOffset;
 		}
 
 		#region IRedBlackTreeNode implementation

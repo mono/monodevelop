@@ -107,7 +107,6 @@ FILES =  \
 	Mono.TextEditor/IndentStyle.cs \
 	Mono.TextEditor/InsertionCursorEditMode.cs \
 	Mono.TextEditor/ISearchEngine.cs \
-	Mono.TextEditor/ISegment.cs \
 	Mono.TextEditor/ITextEditorOptions.cs \
 	Mono.TextEditor/ITooltipProvider.cs \
 	Mono.TextEditor/IWordFindStrategy.cs \
@@ -122,7 +121,6 @@ FILES =  \
 	Mono.TextEditor/PrimitiveLineSplitter.cs \
 	Mono.TextEditor/SearchRequest.cs \
 	Mono.TextEditor/SearchResult.cs \
-	Mono.TextEditor/Segment.cs \
 	Mono.TextEditor/SegmentTree.cs \
 	Mono.TextEditor/Selection.cs \
 	Mono.TextEditor/SelectionActions.cs \
@@ -138,8 +136,8 @@ FILES =  \
 	Mono.TextEditor/TextLinkEditMode.cs \
 	Mono.TextEditor/TextMarker.cs \
 	Mono.TextEditor/TextMarkerEvent.cs \
-	Mono.TextEditor/TextViewMargin.cs \
-	Mono.TextEditor/TypedSegment.cs 
+	Mono.TextEditor/TextSegment.cs \
+	Mono.TextEditor/TextViewMargin.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \
