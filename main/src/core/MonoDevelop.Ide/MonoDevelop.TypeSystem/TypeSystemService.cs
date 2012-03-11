@@ -1154,17 +1154,21 @@ namespace MonoDevelop.TypeSystem
 					}
 				} catch (Exception) {
 				}
-				
+
 				var asm = ReadAssembly (fileName);
 				if (asm == null)
 					return null;
 				
-				var loader = new CecilLoader ();
-				FilePath xmlDocFile;
-				
-				var assembly = loader.LoadAssembly (asm);
-				assembly.Location = fileName;
-				
+				IUnresolvedAssembly assembly;
+				try {
+					var loader = new CecilLoader ();
+					assembly = loader.LoadAssembly (asm);
+					assembly.Location = fileName;
+				} catch (Exception e) {
+					LoggingService.LogError ("Can't convert assembly: " + fileName, e);
+					return null;
+				}
+
 				if (cache != null)
 					SerializeObject (assemblyPath, assembly);
 				return assembly;
