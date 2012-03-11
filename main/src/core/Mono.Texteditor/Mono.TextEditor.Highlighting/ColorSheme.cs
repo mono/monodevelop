@@ -35,6 +35,8 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class ColorSheme
 	{
+		public static ColorSheme Empty = new ColorSheme ();
+		
 		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
 		

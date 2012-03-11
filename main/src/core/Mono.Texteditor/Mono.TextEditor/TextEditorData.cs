@@ -212,7 +212,7 @@ namespace Mono.TextEditor
 		Mono.TextEditor.Highlighting.ColorSheme colorStyle;
 		public Mono.TextEditor.Highlighting.ColorSheme ColorStyle {
 			get {
-				return colorStyle;
+				return colorStyle ?? Mono.TextEditor.Highlighting.ColorSheme.Empty;
 			}
 			set {
 				colorStyle = value;
