@@ -154,6 +154,8 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, TextSegment segment)
 		{
+			if (segment.IsInvalid || segment.IsEmpty)
+				return;
 			TextEditorData data = doc.Editor;
 			data.Caret.Offset = segment.Offset;
 			data.Parent.ScrollTo (segment.EndOffset);

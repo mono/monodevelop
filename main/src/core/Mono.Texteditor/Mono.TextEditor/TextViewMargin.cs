@@ -1357,7 +1357,7 @@ namespace Mono.TextEditor
 			int o = offset;
 			uint curIndex = 0, byteIndex = 0;
 			if (textEditor.HighlightSearchPattern) {
-				while ((firstSearch = GetFirstSearchResult (o, offset + length)) != null) {
+				while (!(firstSearch = GetFirstSearchResult (o, offset + length)).IsInvalid) {
 					double x = pangoPosition;
 					HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
 						uint startIndex = (uint)(start - offset);
