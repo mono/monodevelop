@@ -1170,8 +1170,11 @@ namespace Mono.TextEditor
 		{
 			uint curIndex = 0, byteIndex = 0;
 			bool first = true, oldSelected = false;
-			for (int i = 0; i < layout.LineChars.Length; i++) {
-				if (layout.LineChars[i] == ' ') {
+			int index, trailing;
+			layout.Layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
+
+			for (int i = index; i < layout.LineChars.Length; i++) {
+				if (layout.LineChars [i] == ' ') {
 					bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
 					if (first || oldSelected != selected) {
 						ctx.Color = selected ? SelectionColor.CairoColor : ColorStyle.WhitespaceMarker;
@@ -1179,8 +1182,10 @@ namespace Mono.TextEditor
 						oldSelected = selected;
 					}
 					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
-					int xpos = pos.X;
-					DrawSpaceMarker (ctx, selected, xPos + xpos / Pango.Scale.PangoScale, y);
+					double xpos = xPos + pos.X / Pango.Scale.PangoScale;
+					if (xpos > textEditor.Allocation.Width)
+						break;
+					DrawSpaceMarker (ctx, selected, xpos, y);
 				}
 			}
 		}
@@ -1197,7 +1202,10 @@ namespace Mono.TextEditor
 		{
 			uint curIndex = 0, byteIndex = 0;
 			bool first = true, oldSelected = false;
-			for (int i = 0; i < layout.LineChars.Length; i++) {
+			int index, trailing;
+			layout.Layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
+
+			for (int i = index; i < layout.LineChars.Length; i++) {
 				if (layout.LineChars[i] == '\t') {
 					bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
 					if (first || oldSelected != selected) {
@@ -1206,8 +1214,10 @@ namespace Mono.TextEditor
 						oldSelected = selected;
 					}
 					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
-					int xpos = pos.X;
-					DrawTabMarker (ctx, selected, xPos + xpos / Pango.Scale.PangoScale, y);
+					double xpos = xPos + pos.X / Pango.Scale.PangoScale;
+					if (xpos > textEditor.Allocation.Width)
+						break;
+					DrawTabMarker (ctx, selected, xpos, y);
 				}
 			}
 		}
@@ -1216,8 +1226,11 @@ namespace Mono.TextEditor
 		{
 			uint curIndex = 0, byteIndex = 0;
 			bool first = true, oldSelected = false;
-			for (int i = 0; i < layout.LineChars.Length; i++) {
-				char ch = layout.LineChars[i];
+			int index, trailing;
+			layout.Layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
+
+			for (int i = index; i < layout.LineChars.Length; i++) {
+				char ch = layout.LineChars [i];
 				if (ch != ' ' && ch != '\t')
 					continue;
 				bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
@@ -1227,11 +1240,13 @@ namespace Mono.TextEditor
 					oldSelected = selected;
 				}
 				Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
-				int xpos = pos.X;
+				double xpos = xPos + pos.X / Pango.Scale.PangoScale;
+				if (xpos > textEditor.Allocation.Width)
+					break;
 				if (ch == '\t') {
-					DrawTabMarker (ctx, selected, xPos + xpos / Pango.Scale.PangoScale, y);
+					DrawTabMarker (ctx, selected, xpos, y);
 				} else {
-					DrawSpaceMarker (ctx, selected, xPos + xpos / Pango.Scale.PangoScale, y);
+					DrawSpaceMarker (ctx, selected, xpos, y);
 				}
 			}
 		}
