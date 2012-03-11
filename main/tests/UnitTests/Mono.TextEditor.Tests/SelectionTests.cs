@@ -35,16 +35,16 @@ namespace Mono.TextEditor.Tests
 	public class SelectionTests
 	{
 		
-		static ISegment GetSelection (TextEditorData data, bool reverse)
+		static TextSegment GetSelection (TextEditorData data, bool reverse)
 		{
 			int offset1 = data.Document.Text.IndexOf ('[');
 			int offset2 = data.Document.Text.IndexOf (']');
-			return new Segment (offset1, offset2 - offset1);
+			return new TextSegment (offset1, offset2 - offset1);
 		}
 
 		static void SetSelection (TextEditorData data, bool reverse)
 		{
-			ISegment selection = GetSelection (data, reverse);
+			var selection = GetSelection (data, reverse);
 			
 			if (reverse) {
 				data.Caret.Offset = selection.Offset;

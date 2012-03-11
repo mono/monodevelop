@@ -148,7 +148,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		public void Select (int startPosition, int endPosition)
 		{
-			data.SelectionRange = new Segment (startPosition, endPosition - startPosition);
+			data.SelectionRange = new TextSegment (startPosition, endPosition - startPosition);
 		}
 		
 		public void ShowPosition (int position)
