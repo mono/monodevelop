@@ -139,7 +139,7 @@ namespace Mono.TextEditor
 			int offset = 0;
 			while (true) {
 				var delimiter = NextDelimiter (text, offset);
-				if (delimiter.Offset < 0)
+				if (delimiter.IsInvalid)
 					break;
 
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
@@ -194,7 +194,7 @@ namespace Mono.TextEditor
 
 			while (true) {
 				var delimiter = NextDelimiter (text, textOffset);
-				if (delimiter.Offset < 0)
+				if (delimiter.IsInvalid)
 					break;
 
 				int newLineLength = lineOffset + line.Length - (offset + textOffset);
@@ -213,11 +213,19 @@ namespace Mono.TextEditor
 
 		internal struct Delimiter
 		{
+			public static readonly Delimiter Invalid = new Delimiter (-1, 0);
+
 			public readonly int Offset;
 			public readonly int Length;
 
 			public int EndOffset {
 				get { return Offset + Length; }
+			}
+
+			public bool IsInvalid {
+				get {
+					return Offset < 0;
+				}
 			}
 
 			public Delimiter (int offset, int length)
@@ -244,7 +252,7 @@ namespace Mono.TextEditor
 					}
 					p++;
 				}
-				return new Delimiter (-1, 0);
+				return Delimiter.Invalid;
 			}
 		}
 

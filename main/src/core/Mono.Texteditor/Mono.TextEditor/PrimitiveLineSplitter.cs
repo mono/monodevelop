@@ -37,7 +37,7 @@ namespace Mono.TextEditor
 			int offset = 0;
 			while (true) {
 				var delimiter = LineSplitter.NextDelimiter (text, offset);
-				if (delimiter.Offset < 0)
+				if (delimiter.IsInvalid)
 					break;
 
 				delimiters.Add (delimiter);
