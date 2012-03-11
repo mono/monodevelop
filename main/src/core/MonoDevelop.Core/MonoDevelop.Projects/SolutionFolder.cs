@@ -722,6 +722,12 @@ namespace MonoDevelop.Projects
 						fInfo.Name = newName;
 					else if (fInfo.FilePath.IsChildPathOf (oldName))
 						fInfo.Name = newName.Combine (fInfo.FilePath.ToRelative (oldName));
+					else {
+						var fullVirtualPath = projectEntry.BaseDirectory.Combine(fInfo.ProjectVirtualPath);
+						if (fullVirtualPath.IsChildPathOf (oldName)) // update links
+							fInfo.Link = newName.ToRelative (projectEntry.BaseDirectory)
+										        .Combine (fullVirtualPath.ToRelative (oldName));
+					}
 				}
 			}
 		}
