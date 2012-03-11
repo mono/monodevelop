@@ -124,13 +124,15 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
-			var data = TextEditorData.CreateImmutable (input);
+			var data = new TextEditorData ();
+			data.Document.SuppressHighlightUpdate = true;
 			data.Document.MimeType = mimeType;
 			data.Document.FileName = "toformat.cs";
 			if (textPolicy != null) {
 				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
 				data.Options.IndentationSize = data.Options.TabSize = textPolicy.TabWidth;
 			}
+			data.Text = input;
 
 			// System.Console.WriteLine ("-----");
 			// System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
@@ -160,7 +162,7 @@ namespace MonoDevelop.CSharp.Formatting
 			changes.Add (endPositionChange);
 			changes.Sort ((x, y) => ((TextReplaceAction)x).Offset.CompareTo (((TextReplaceAction)y).Offset));
 			MDRefactoringContext.MdScript.RunActions (changes, null);
-			
+
 			// check if the formatter has produced errors
 			parser = new CSharpParser ();
 			parser.Parse (data);
