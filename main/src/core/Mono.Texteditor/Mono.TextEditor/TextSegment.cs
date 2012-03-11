@@ -28,12 +28,23 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public struct TextSegment : IEquatable<TextSegment>
+	public struct TextSegment : IEquatable<TextSegment>, ICSharpCode.NRefactory.Editor.ISegment
 	{
 		public static readonly TextSegment Invalid = new TextSegment (-1, 0);
 
-		public readonly int Offset;
-		public readonly int Length;
+		readonly int offset;
+		public int Offset {
+			get {
+				return offset;
+			}
+		}
+
+		readonly int length;
+		public int Length {
+			get {
+				return length;
+			}
+		}
 
 		public int EndOffset {
 			get {
@@ -55,8 +66,8 @@ namespace Mono.TextEditor
 
 		public TextSegment (int offset, int length)
 		{
-			this.Offset = offset;
-			this.Length = length;
+			this.offset = offset;
+			this.length = length;
 		}
 
 		public static bool operator == (TextSegment left, TextSegment right)
