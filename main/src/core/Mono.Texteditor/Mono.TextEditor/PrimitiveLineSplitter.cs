@@ -32,7 +32,20 @@ namespace Mono.TextEditor
 
 		public void Initalize (string text)
 		{
-			delimiters = new List<LineSplitter.Delimiter> (LineSplitter.FindDelimiter (text));
+			delimiters = new List<LineSplitter.Delimiter> ();
+
+			int offset = 0;
+			while (true) {
+				var delimiter = LineSplitter.NextDelimiter (text, offset);
+				if (delimiter.Offset < 0)
+					break;
+
+				delimiters.Add (delimiter);
+
+				offset = delimiter.EndOffset;
+			}
+
+
 			textLength = text.Length;
 		}
 

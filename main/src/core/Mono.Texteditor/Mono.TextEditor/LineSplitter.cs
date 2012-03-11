@@ -135,8 +135,13 @@ namespace Mono.TextEditor
 			if (string.IsNullOrEmpty (text))
 				return;
 			var nodes = new List<TreeNode> ();
+
 			int offset = 0;
-			foreach (var delimiter in FindDelimiter (text)) {
+			while (true) {
+				var delimiter = NextDelimiter (text, offset);
+				if (delimiter.Offset < 0)
+					break;
+
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
 				var newLine = new TreeNode (delimiterEndOffset - offset, delimiter.Length);
 				nodes.Add (newLine);
@@ -146,7 +151,7 @@ namespace Mono.TextEditor
 			nodes.Add (lastLine);
 			
 			int height = GetTreeHeight (nodes.Count);
-			
+
 			var newRoot = BuildTree (nodes, 0, nodes.Count, height);
 			if (newRoot != null) {
 				tree.Root = newRoot;
@@ -186,7 +191,12 @@ namespace Mono.TextEditor
 			var line = GetNodeAtOffset (offset);
 			int textOffset = 0;
 			int lineOffset = line.Offset;
-			foreach (var delimiter in FindDelimiter (text)) {
+
+			while (true) {
+				var delimiter = NextDelimiter (text, textOffset);
+				if (delimiter.Offset < 0)
+					break;
+
 				int newLineLength = lineOffset + line.Length - (offset + textOffset);
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
 				int curLineLength = offset + delimiterEndOffset - lineOffset;
@@ -196,7 +206,7 @@ namespace Mono.TextEditor
 				textOffset = delimiterEndOffset;
 				lineOffset += curLineLength;
 			}
-			
+
 			if (textOffset != text.Length)
 				ChangeLength (line, line.Length + text.Length - textOffset);
 		}
@@ -217,28 +227,25 @@ namespace Mono.TextEditor
 			}
 		}
 
-		static internal IEnumerable<Delimiter> FindDelimiter (string text)
+		static unsafe internal Delimiter NextDelimiter (string text, int offset)
 		{
-			for (int i = 0; i < text.Length; i++) {
-				switch (text[i]) {
-				case '\r':
-					if (i + 1 < text.Length && text[i + 1] == '\n') {
-						yield return new Delimiter (i, 2);
-						i++;
-					} else {
-						yield return new Delimiter (i, 1);
+			fixed (char* start = text) {
+				char* p = start + offset;
+				char* endPtr = start + text.Length;
+				while (p < endPtr) {
+					switch (*p) {
+					case '\r':
+						char* nextp = p + 1;
+						if (nextp < endPtr && *nextp == '\n') 
+							return new Delimiter ((int)(p - start), 2);
+						return new Delimiter ((int)(p - start), 1);
+					case '\n':
+						return new Delimiter ((int)(p - start), 1);
 					}
-					break;
-				case '\n':
-					yield return new Delimiter (i, 1);
-					break;
+					p++;
 				}
+				return new Delimiter (-1, 0);
 			}
-		}
-
-		static internal int CountLines (string text)
-		{
-			return FindDelimiter (text).Count ();
 		}
 
 		#region Line segment tree
