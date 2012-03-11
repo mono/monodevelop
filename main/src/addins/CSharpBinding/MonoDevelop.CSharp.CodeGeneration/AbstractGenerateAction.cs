@@ -144,12 +144,10 @@ namespace MonoDevelop.CodeGeneration
 				}
 				output.Append (AddIndent (nodeText, indent));
 			}
-			
+
 			if (output.Length > 0) {
 				var data = options.Document.Editor;
-				int offset = data.Caret.Offset - indent.Length;
-				data.Replace (offset, indent.Length, output.ToString ());
-				data.Caret.Offset = offset + output.Length;
+				data.InsertAtCaret (output.ToString ().TrimStart ());
 			}
 		}
 	}
