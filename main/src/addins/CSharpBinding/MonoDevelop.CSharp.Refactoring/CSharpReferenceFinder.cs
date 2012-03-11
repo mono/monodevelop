@@ -103,7 +103,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else if (result is TypeResolveResult) {
 				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
 			}
-			
+
+			if (node is ObjectCreateExpression) // Ast type inside is handled in case of constructor search.
+				return null;
+
 			if (node is InvocationExpression)
 				node = ((InvocationExpression)node).Target;
 			
@@ -154,7 +157,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					}, CancellationToken.None);
 				} else if (obj is IVariable) {
 					refFinder.FindLocalReferences ((IVariable)obj, file, unit, compilation, (astNode, r) => { 
-						if (IsNodeValid (obj, astNode)) 
+						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (r, astNode, editor.FileName, editor));
 					}, CancellationToken.None);
 				}
@@ -178,7 +181,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
 				foreach (var newRef in FindInDocument (opendoc.Item2, compilation)) {
-					if (refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
+					if (newRef == null || refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
 						continue;
 					refs.Add (newRef);
 				}

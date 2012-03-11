@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				var nodes = new List<object> ();
 				nodes.Add (member);
 				nodes.AddRange (((IType)member).GetConstructors ());
-				searchNodes = nodes;
+				searchNodes = CollectMembers ((IType)member);
 			} else if (member is IEntity) {
 				var e = (IEntity)member;
 				var declaringPart = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ();
@@ -262,6 +262,17 @@ namespace MonoDevelop.Ide.FindInFiles
 			return result;
 		}
 		
+		internal static IEnumerable<IEntity> CollectMembers (IType type)
+		{
+			yield return (IEntity)type;
+
+			foreach (var c in type.GetConstructors ()) {
+				if (!c.IsSynthetic)
+					yield return c;
+			}
+		}
+
+
 		public enum RefactoryScope{ Unknown, File, DeclaringType, Solution, Project}
 		static RefactoryScope GetScope (object o)
 		{
