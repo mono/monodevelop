@@ -638,6 +638,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 			return style;
 		}
+
+		public ChunkStyle GetChunkStyle (Chunk chunk)
+		{
+			if (chunk == null)
+				throw new ArgumentNullException ("chunk");
+			return GetChunkStyle (chunk.Style);
+		}
 		
 		public ChunkStyle GetChunkStyle (string name)
 		{

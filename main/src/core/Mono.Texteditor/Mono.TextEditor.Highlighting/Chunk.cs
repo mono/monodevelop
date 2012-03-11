@@ -32,13 +32,6 @@ namespace Mono.TextEditor
 {
 	public class Chunk
 	{
-		public virtual ChunkStyle GetChunkStyle (ColorSheme style)
-		{
-			if (style == null)
-				return null;
-			return style.GetChunkStyle (Style);
-		}
-
 		public Chunk Next {
 			get;
 			set;
@@ -84,18 +77,6 @@ namespace Mono.TextEditor
 			this.Length = length;
 		}
 
-		
-		public virtual string GetText (TextDocument doc)
-		{
-			return doc.GetTextAt (this);
-		}
-		
-		public virtual char GetCharAt (TextDocument doc, int offset)
-		{
-			return doc.GetCharAt (offset);
-		}
-
-		
 		public static implicit operator TextSegment (Chunk chunk)
 		{
 			return new TextSegment (chunk.Offset, chunk.Length);

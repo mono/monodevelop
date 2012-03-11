@@ -134,18 +134,18 @@ namespace Mono.TextEditor
 	
 				var selection = new TextSegment (0, doc.Length);
 				int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
-				int endLineNumber   = doc.OffsetToLineNumber (selection.EndOffset);
+				int endLineNumber = doc.OffsetToLineNumber (selection.EndOffset);
 				
 				bool isItalic = false;
-				bool isBold   = false;
-				int curColor  = -1;
+				bool isBold = false;
+				int curColor = -1;
 
 				foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
 					bool appendSpace = false;
 					for (Chunk chunk = mode.GetChunks (style, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
 						int start = System.Math.Max (selection.Offset, chunk.Offset);
-						int end   = System.Math.Min (chunk.EndOffset, selection.EndOffset);
-						ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
+						int end = System.Math.Min (chunk.EndOffset, selection.EndOffset);
+						ChunkStyle chunkStyle = style.GetChunkStyle (chunk);
 						if (start < end) {
 							if (isBold != chunkStyle.Bold) {
 								rtfText.Append (chunkStyle.Bold ? @"\b" : @"\b0");
@@ -166,7 +166,7 @@ namespace Mono.TextEditor
 								appendSpace = true;
 							}
 							for (int i = start; i < end; i++) {
-								char ch = chunk.GetCharAt (doc, i);
+								char ch = doc.GetCharAt (i);
 								
 								switch (ch) {
 								case '\\':

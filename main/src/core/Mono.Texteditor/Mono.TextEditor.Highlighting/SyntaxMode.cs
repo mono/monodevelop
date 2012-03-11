@@ -158,37 +158,37 @@ namespace Mono.TextEditor.Highlighting
 				Stack<ChunkStyle> styleStack = new Stack<ChunkStyle> ();
 				for (var chunk = GetChunks (style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
 
-					ChunkStyle chunkStyle = chunk.GetChunkStyle (style);
+					ChunkStyle chunkStyle = style.GetChunkStyle (chunk);
 					bool setBold = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold) ||
-						!chunkStyle.Bold && (styleStack.Count == 0 || styleStack.Peek ().Bold);
+							!chunkStyle.Bold && (styleStack.Count == 0 || styleStack.Peek ().Bold);
 					bool setItalic = chunkStyle.Italic && (styleStack.Count == 0 || !styleStack.Peek ().Italic) ||
-						!chunkStyle.Italic && (styleStack.Count == 0 || styleStack.Peek ().Italic);
+							!chunkStyle.Italic && (styleStack.Count == 0 || styleStack.Peek ().Italic);
 					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline) ||
-						!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
+							!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
 					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Color) != TextViewMargin.GetPixel (chunkStyle.Color);
 					if (setColor || setBold || setItalic || setUnderline) {
 						if (styleStack.Count > 0) {
-							result.Append("</span>");
+							result.Append ("</span>");
 							styleStack.Pop ();
 						}
-						result.Append("<span");
+						result.Append ("<span");
 						if (useColors) {
-							result.Append(" foreground=\"");
-							result.Append(ColorToPangoMarkup (chunkStyle.Color));
-							result.Append("\"");
+							result.Append (" foreground=\"");
+							result.Append (ColorToPangoMarkup (chunkStyle.Color));
+							result.Append ("\"");
 						}
 						if (chunkStyle.Bold)
-							result.Append(" weight=\"bold\"");
+							result.Append (" weight=\"bold\"");
 						if (chunkStyle.Italic)
-							result.Append(" style=\"italic\"");
+							result.Append (" style=\"italic\"");
 						if (chunkStyle.Underline)
-							result.Append(" underline=\"single\"");
-						result.Append(">");
+							result.Append (" underline=\"single\"");
+						result.Append (">");
 						styleStack.Push (chunkStyle);
 					}
 
 					for (int i = 0; i < chunk.Length && chunk.Offset + i < doc.Length; i++) {
-						char ch = chunk.GetCharAt (doc, chunk.Offset + i);
+						char ch = doc.GetCharAt (chunk.Offset + i);
 						switch (ch) {
 						case '&':
 							result.Append ("&amp;");

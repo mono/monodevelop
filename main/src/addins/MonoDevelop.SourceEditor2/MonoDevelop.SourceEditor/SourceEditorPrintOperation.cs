@@ -99,66 +99,67 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnDrawPage (PrintContext context, int pageNr)
 		{
 			using (var cr = context.CairoContext) {
-			double xPos = 0, yPos = 0;
+				double xPos = 0, yPos = 0;
 			
-			PrintHeader (cr, context, pageNr, ref xPos, ref yPos);
+				PrintHeader (cr, context, pageNr, ref xPos, ref yPos);
 			
-			int startLine = pageNr * linesPerPage;
-			int endLine = Math.Min (startLine + linesPerPage - 1, doc.LineCount);
+				int startLine = pageNr * linesPerPage;
+				int endLine = Math.Min (startLine + linesPerPage - 1, doc.LineCount);
 			
-			//FIXME: use proper 1-layout-per-line
-			for (int i = startLine; i < endLine; i++) {
-				var line = doc.GetLine (i + 1);
-				if (!settings.UseHighlighting) {
-					string text = doc.GetTextAt (line);
-					text = text.Replace ("\t", new string (' ', settings.TabSize));
+				//FIXME: use proper 1-layout-per-line
+				for (int i = startLine; i < endLine; i++) {
+					var line = doc.GetLine (i + 1);
+					if (!settings.UseHighlighting) {
+						string text = doc.GetTextAt (line);
+						text = text.Replace ("\t", new string (' ', settings.TabSize));
 					
-					layout.SetText (text);
-					cr.MoveTo (xPos, yPos);
-					Pango.CairoHelper.ShowLayout (cr, layout);
+						layout.SetText (text);
+						cr.MoveTo (xPos, yPos);
+						Pango.CairoHelper.ShowLayout (cr, layout);
 					
-					yPos += lineHeight;
-					continue;
-				}
-					
-				Chunk startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.Length);
-				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
-					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (style) : null;
-					string text = chunk.GetText (doc);
-					text = text.Replace ("\t", new string (' ', settings.TabSize));
-					layout.SetText (text);
-					
-					var atts = ResetAttributes ();
-					
-					atts.Insert (new Pango.AttrForeground ( chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue));
-					
-					if (chunkStyle.Bold) {
-						atts.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
-					}
-					if (chunkStyle.Italic) {
-						atts.Insert (new Pango.AttrStyle (Pango.Style.Italic));
-					}
-					if (chunkStyle.Underline) {
-						atts.Insert (new Pango.AttrUnderline (Pango.Underline.Single));
+						yPos += lineHeight;
+						continue;
 					}
 					
-					cr.MoveTo (xPos, yPos);
-					Pango.CairoHelper.ShowLayout (cr, layout);
+					Chunk startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.Length);
+					for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
+						ChunkStyle chunkStyle = chunk != null ? style.GetChunkStyle (chunk) : null;
+						string text = doc.GetTextAt (chunk);
+						text = text.Replace ("\t", new string (' ', settings.TabSize));
+						layout.SetText (text);
 					
-					int wout, hout;
-					layout.GetSize (out wout, out hout);
-					double w = wout / Pango.Scale.PangoScale;
+						var atts = ResetAttributes ();
+					
+						atts.Insert (new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue));
+					
+						if (chunkStyle.Bold) {
+							atts.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
+						}
+						if (chunkStyle.Italic) {
+							atts.Insert (new Pango.AttrStyle (Pango.Style.Italic));
+						}
+						if (chunkStyle.Underline) {
+							atts.Insert (new Pango.AttrUnderline (Pango.Underline.Single));
+						}
+					
+						cr.MoveTo (xPos, yPos);
+						Pango.CairoHelper.ShowLayout (cr, layout);
+					
+						int wout, hout;
+						layout.GetSize (out wout, out hout);
+						double w = wout / Pango.Scale.PangoScale;
 						
-					xPos += w;
+						xPos += w;
 					
-					if (w > pageWidth)
-						break;
+						if (w > pageWidth)
+							break;
+					}
+
+					xPos = 0;
+					yPos += lineHeight;
 				}
-				xPos = 0;
-				yPos += lineHeight;
-			}
 			
-			PrintFooter (cr, context, pageNr, ref xPos, ref yPos);
+				PrintFooter (cr, context, pageNr, ref xPos, ref yPos);
 			}
 		}
 		

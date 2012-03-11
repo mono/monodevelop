@@ -1039,7 +1039,7 @@ namespace Mono.TextEditor
 		{
 			return GetCachedLayout (line, offset, length, selectionStart, selectionEnd, delegate(LayoutWrapper wrapper) {
 				if (logicalRulerColumn < 0)
-					logicalRulerColumn = line.GetLogicalColumn(textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
+					logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 				var atts = new FastPangoAttrList ();
 				wrapper.Layout.Alignment = Pango.Alignment.Left;
 				wrapper.Layout.FontDescription = textEditor.Options.Font;
@@ -1048,7 +1048,7 @@ namespace Mono.TextEditor
 				Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 					try {
-						textBuilder.Append (chunk.GetText (Document));
+						textBuilder.Append (Document.GetTextAt (chunk));
 					} catch {
 						Console.WriteLine (chunk);
 					}
@@ -1070,7 +1070,7 @@ namespace Mono.TextEditor
 				
 				uint oldEndIndex = 0;
 				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
-					ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
+					ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
 					spanStack = chunk.SpanStack ?? spanStack;
 					foreach (TextMarker marker in line.Markers)
 						chunkStyle = marker.GetStyle (chunkStyle);
@@ -2450,14 +2450,14 @@ namespace Mono.TextEditor
 			column--;
 			if (line == null || line.EditableLength == 0 || column < 0)
 				return 0;
-			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData(), textEditor.Options.RulerColumn);
+			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 			int lineOffset = line.Offset;
 			StringBuilder textBuilder = new StringBuilder ();
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, lineOffset, line.EditableLength);
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
 				try {
-					textBuilder.Append (chunk.GetText (Document));
+					textBuilder.Append (Document.GetTextAt (chunk));
 				} catch (Exception e) {
 					Console.WriteLine (e);
 					return 0;
@@ -2487,7 +2487,7 @@ namespace Mono.TextEditor
 			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
 			uint oldEndIndex = 0;
 			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
-				ChunkStyle chunkStyle = chunk != null ? chunk.GetChunkStyle (textEditor.ColorStyle) : null;
+				ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
 
 				foreach (TextMarker marker in line.Markers)
 					chunkStyle = marker.GetStyle (chunkStyle);
