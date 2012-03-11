@@ -188,9 +188,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				string text = File.ReadAllText (file);
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0)
 					continue;
-				using (var editor = new TextEditorData ()) {
+				using (var editor = TextEditorData.CreateImmutable (text)) {
 					editor.Document.FileName = file;
-					editor.Text = text;
 					var unit = new CSharpParser ().Parse (editor);
 					if (unit == null)
 						continue;

@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		static List<TextReplaceAction> GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, string input)
 		{
-			using (var stubData = new TextEditorData () { Text = input }) {
+			using (var stubData = TextEditorData.CreateImmutable (input)) {
 				stubData.Document.FileName = data.FileName;
 				var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
 				var compilationUnit = parser.Parse (stubData);

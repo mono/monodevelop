@@ -1324,5 +1324,18 @@ namespace Mono.TextEditor
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Creates the a text editor data object which document can't be changed. This is useful for 'view' only
+		/// documents.
+		/// </summary>
+		/// <remarks>
+		/// The Document itself is very fast because it uses a special case buffer and line splitter implementation.
+		/// Additionally highlighting is turned off as default.
+		/// </remarks>
+		public static TextEditorData CreateImmutable (string input, bool suppressHighlighting = true)
+		{
+			return new TextEditorData (TextDocument.CreateImmutableDocument (input, suppressHighlighting));
+		}
 	}
 }

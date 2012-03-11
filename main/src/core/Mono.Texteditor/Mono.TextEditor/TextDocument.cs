@@ -111,10 +111,10 @@ namespace Mono.TextEditor
 			Text = text;
 		}
 
-		public static TextDocument CreateImmutableDocument (string text)
+		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
 			return new TextDocument(new StringBuffer(text), new PrimitiveLineSplitter()) {
-				SuppressHighlightUpdate = true,
+				SuppressHighlightUpdate = suppressHighlighting,
 				Text = text,
 				ReadOnly = true
 			};
