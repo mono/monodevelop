@@ -115,6 +115,7 @@ namespace Mono.TextEditor
 			Text = text;
 		}
 
+
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
 			return new TextDocument (new StringBuffer (text), new PrimitiveLineSplitter ()) {
@@ -167,6 +168,7 @@ namespace Mono.TextEditor
 				this.OnTextSet (EventArgs.Empty);
 				this.CommitUpdateAll ();
 				this.ClearUndoBuffer ();
+				versionProvider = new TextSourceVersionProvider ();
 			}
 		}
 		
@@ -234,6 +236,7 @@ namespace Mono.TextEditor
 			buffer.Replace (offset, count, value);
 			foldSegmentTree.UpdateOnTextReplace (this, args);
 			splitter.TextReplaced (this, args);
+			versionProvider.AppendChange (args);
 			OnTextReplaced (args);
 			
 			UpdateUndoStackOnReplace (args);
@@ -337,7 +340,6 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnTextReplaced (DocumentChangeEventArgs args)
 		{
-			versionProvider.AppendChange (args);
 			if (TextReplaced != null)
 				TextReplaced (this, args);
 		}
@@ -1767,7 +1769,7 @@ namespace Mono.TextEditor
 			throw new NotImplementedException ();
 		}
 
-		public ITextSourceVersion Version {
+		public virtual ITextSourceVersion Version {
 			get {
 				return versionProvider.CurrentVersion;
 			}
@@ -1779,11 +1781,26 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public class SnapshotDocument : TextDocument
+		{
+			readonly ITextSourceVersion version;
+			public override ITextSourceVersion Version  {
+				get {
+					return version;
+				}
+			}
+
+			public SnapshotDocument (string text, ITextSourceVersion version) : base (new StringBuffer (text), new PrimitiveLineSplitter ())
+			{
+				this.version = version;
+				Text = text;
+				ReadOnly = true;
+			}
+		}
+
 		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot ()
 		{
-			var result = CreateImmutableDocument (Text, false);
-			result.versionProvider = versionProvider;
-			return result;
+			return new SnapshotDocument (Text, Version);
 		}
 		#endregion
 	}
