@@ -97,6 +97,7 @@ namespace NGit.Api
 		/// </exception>
 		/// <returns>the newly created branch</returns>
 		/// <exception cref="NGit.Api.Errors.JGitInternalException"></exception>
+		/// <exception cref="NGit.Api.Errors.CheckoutConflictException"></exception>
 		public override Ref Call()
 		{
 			CheckCallable();
@@ -146,7 +147,7 @@ namespace NGit.Api
 				catch (NGit.Errors.CheckoutConflictException e)
 				{
 					status = new CheckoutResult(CheckoutResult.Status.CONFLICTS, dco.GetConflicts());
-					throw;
+					throw new NGit.Api.Errors.CheckoutConflictException(dco.GetConflicts(), e);
 				}
 				Ref @ref = repo.GetRef(name);
 				if (@ref != null && !@ref.GetName().StartsWith(Constants.R_HEADS))
@@ -296,7 +297,7 @@ namespace NGit.Api
 					{
 						ObjectId blobId = startWalk.GetObjectId(0);
 						FileMode mode = startWalk.GetFileMode(0);
-						editor.Add(new _PathEdit_285(this, blobId, mode, workTree, r, startWalk.PathString
+						editor.Add(new _PathEdit_286(this, blobId, mode, workTree, r, startWalk.PathString
 							));
 					}
 					editor.Commit();
@@ -315,9 +316,9 @@ namespace NGit.Api
 			return this;
 		}
 
-		private sealed class _PathEdit_285 : DirCacheEditor.PathEdit
+		private sealed class _PathEdit_286 : DirCacheEditor.PathEdit
 		{
-			public _PathEdit_285(CheckoutCommand _enclosing, ObjectId blobId, FileMode mode, 
+			public _PathEdit_286(CheckoutCommand _enclosing, ObjectId blobId, FileMode mode, 
 				FilePath workTree, ObjectReader r, string baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;

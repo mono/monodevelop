@@ -55,17 +55,27 @@ namespace NGit.Transport
 	/// This stream is buffered at packet sizes, so the caller doesn't need to wrap
 	/// it in yet another buffered stream.
 	/// </remarks>
-	internal class SideBandOutputStream : OutputStream
+	public class SideBandOutputStream : OutputStream
 	{
-		internal const int CH_DATA = SideBandInputStream.CH_DATA;
+		/// <summary>Channel used for pack data.</summary>
+		/// <remarks>Channel used for pack data.</remarks>
+		public const int CH_DATA = SideBandInputStream.CH_DATA;
 
-		internal const int CH_PROGRESS = SideBandInputStream.CH_PROGRESS;
+		/// <summary>Channel used for progress messages.</summary>
+		/// <remarks>Channel used for progress messages.</remarks>
+		public const int CH_PROGRESS = SideBandInputStream.CH_PROGRESS;
 
-		internal const int CH_ERROR = SideBandInputStream.CH_ERROR;
+		/// <summary>Channel used for error messages.</summary>
+		/// <remarks>Channel used for error messages.</remarks>
+		public const int CH_ERROR = SideBandInputStream.CH_ERROR;
 
-		internal const int SMALL_BUF = 1000;
+		/// <summary>Default buffer size for a small amount of data.</summary>
+		/// <remarks>Default buffer size for a small amount of data.</remarks>
+		public const int SMALL_BUF = 1000;
 
-		internal const int MAX_BUF = 65520;
+		/// <summary>Maximum buffer size for a single packet of sideband data.</summary>
+		/// <remarks>Maximum buffer size for a single packet of sideband data.</remarks>
+		public const int MAX_BUF = 65520;
 
 		internal const int HDR_SIZE = 5;
 
@@ -101,7 +111,7 @@ namespace NGit.Transport
 		/// stream that the packets are written onto. This stream should
 		/// be attached to a SideBandInputStream on the remote side.
 		/// </param>
-		internal SideBandOutputStream(int chan, int sz, OutputStream os)
+		public SideBandOutputStream(int chan, int sz, OutputStream os)
 		{
 			if (chan <= 0 || chan > 255)
 			{

@@ -570,6 +570,7 @@
     <Compile Include="NGit.Util\GitDateFormatter.cs" />
     <Compile Include="NGit.Api.Errors\PatchApplyException.cs" />
     <Compile Include="NGit.Api.Errors\PatchFormatException.cs" />
+    <Compile Include="NGit.Transport\RequestNotYetReadException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

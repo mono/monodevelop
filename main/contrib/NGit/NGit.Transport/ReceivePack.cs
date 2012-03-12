@@ -59,6 +59,45 @@ namespace NGit.Transport
 	/// <remarks>Implements the server side of a push connection, receiving objects.</remarks>
 	public class ReceivePack
 	{
+		/// <summary>Data in the first line of a request, the line itself plus capabilities.</summary>
+		/// <remarks>Data in the first line of a request, the line itself plus capabilities.</remarks>
+		public class FirstLine
+		{
+			private readonly string line;
+
+			private readonly ICollection<string> capabilities;
+
+			/// <summary>Parse the first line of a receive-pack request.</summary>
+			/// <remarks>Parse the first line of a receive-pack request.</remarks>
+			/// <param name="line">line from the client.</param>
+			public FirstLine(string line)
+			{
+				HashSet<string> caps = new HashSet<string>();
+				int nul = line.IndexOf('\0');
+				if (nul >= 0)
+				{
+					foreach (string c in Sharpen.Runtime.Substring(line, nul + 1).Split(" "))
+					{
+						caps.AddItem(c);
+					}
+				}
+				this.line = Sharpen.Runtime.Substring(line, 0, nul);
+				this.capabilities = Sharpen.Collections.UnmodifiableSet(caps);
+			}
+
+			/// <returns>non-capabilities part of the line.</returns>
+			public virtual string GetLine()
+			{
+				return line;
+			}
+
+			/// <returns>capabilities parsed from the line.</returns>
+			public virtual ICollection<string> GetCapabilities()
+			{
+				return capabilities;
+			}
+		}
+
 		/// <summary>Database we write the stored objects into.</summary>
 		/// <remarks>Database we write the stored objects into.</remarks>
 		private readonly Repository db;
@@ -160,7 +199,7 @@ namespace NGit.Transport
 
 		/// <summary>Capabilities requested by the client.</summary>
 		/// <remarks>Capabilities requested by the client.</remarks>
-		private ICollection<string> enabledCapablities;
+		private ICollection<string> enabledCapabilities;
 
 		/// <summary>Commands to execute, as received by the client.</summary>
 		/// <remarks>Commands to execute, as received by the client.</remarks>
@@ -222,10 +261,10 @@ namespace NGit.Transport
 
 		private class ReceiveConfig
 		{
-			private sealed class _SectionParser_227 : Config.SectionParser<ReceivePack.ReceiveConfig
+			private sealed class _SectionParser_260 : Config.SectionParser<ReceivePack.ReceiveConfig
 				>
 			{
-				public _SectionParser_227()
+				public _SectionParser_260()
 				{
 				}
 
@@ -236,7 +275,7 @@ namespace NGit.Transport
 			}
 
 			internal static readonly Config.SectionParser<ReceivePack.ReceiveConfig> KEY = new 
-				_SectionParser_227();
+				_SectionParser_260();
 
 			internal readonly bool checkReceivedObjects;
 
@@ -711,6 +750,29 @@ namespace NGit.Transport
 			maxObjectSizeLimit = limit;
 		}
 
+		/// <summary>Check whether the client expects a side-band stream.</summary>
+		/// <remarks>Check whether the client expects a side-band stream.</remarks>
+		/// <returns>
+		/// true if the client has advertised a side-band capability, false
+		/// otherwise.
+		/// </returns>
+		/// <exception cref="RequestNotYetReadException">
+		/// if the client's request has not yet been read from the wire, so
+		/// we do not know if they expect side-band. Note that the client
+		/// may have already written the request, it just has not been
+		/// read.
+		/// </exception>
+		/// <exception cref="NGit.Transport.RequestNotYetReadException"></exception>
+		public virtual bool IsSideBand()
+		{
+			if (enabledCapabilities == null)
+			{
+				throw new RequestNotYetReadException();
+			}
+			return enabledCapabilities.Contains(BasePackPushConnection.CAPABILITY_SIDE_BAND_64K
+				);
+		}
+
 		/// <returns>all of the command received by the current request.</returns>
 		public virtual IList<ReceiveCommand> GetAllCommands()
 		{
@@ -824,7 +886,6 @@ namespace NGit.Transport
 				pckIn = new PacketLineIn(rawIn);
 				pckOut = new PacketLineOut(rawOut);
 				pckOut.SetFlushOnEnd(false);
-				enabledCapablities = new HashSet<string>();
 				commands = new AList<ReceiveCommand>();
 				Service();
 			}
@@ -870,7 +931,7 @@ namespace NGit.Transport
 					pckIn = null;
 					pckOut = null;
 					refs = null;
-					enabledCapablities = null;
+					enabledCapabilities = null;
 					commands = null;
 					if (timer != null)
 					{
@@ -949,14 +1010,14 @@ namespace NGit.Transport
 				UnlockPack();
 				if (reportStatus)
 				{
-					SendStatusReport(true, new _Reporter_810(this));
+					SendStatusReport(true, new _Reporter_859(this));
 					pckOut.End();
 				}
 				else
 				{
 					if (msgOut != null)
 					{
-						SendStatusReport(false, new _Reporter_817(this));
+						SendStatusReport(false, new _Reporter_866(this));
 					}
 				}
 				postReceive.OnPostReceive(this, ReceiveCommand.Filter(commands, ReceiveCommand.Result
@@ -968,9 +1029,9 @@ namespace NGit.Transport
 			}
 		}
 
-		private sealed class _Reporter_810 : ReceivePack.Reporter
+		private sealed class _Reporter_859 : ReceivePack.Reporter
 		{
-			public _Reporter_810(ReceivePack _enclosing)
+			public _Reporter_859(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -984,9 +1045,9 @@ namespace NGit.Transport
 			private readonly ReceivePack _enclosing;
 		}
 
-		private sealed class _Reporter_817 : ReceivePack.Reporter
+		private sealed class _Reporter_866 : ReceivePack.Reporter
 		{
-			public _Reporter_817(ReceivePack _enclosing)
+			public _Reporter_866(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -1081,15 +1142,9 @@ namespace NGit.Transport
 				}
 				if (commands.IsEmpty())
 				{
-					int nul = line.IndexOf('\0');
-					if (nul >= 0)
-					{
-						foreach (string c in Sharpen.Runtime.Substring(line, nul + 1).Split(" "))
-						{
-							enabledCapablities.AddItem(c);
-						}
-						line = Sharpen.Runtime.Substring(line, 0, nul);
-					}
+					ReceivePack.FirstLine firstLine = new ReceivePack.FirstLine(line);
+					enabledCapabilities = firstLine.GetCapabilities();
+					line = firstLine.GetLine();
 				}
 				if (line.Length < 83)
 				{
@@ -1115,9 +1170,9 @@ namespace NGit.Transport
 
 		private void EnableCapabilities()
 		{
-			reportStatus = enabledCapablities.Contains(BasePackPushConnection.CAPABILITY_REPORT_STATUS
+			reportStatus = enabledCapabilities.Contains(BasePackPushConnection.CAPABILITY_REPORT_STATUS
 				);
-			sideBand = enabledCapablities.Contains(BasePackPushConnection.CAPABILITY_SIDE_BAND_64K
+			sideBand = enabledCapabilities.Contains(BasePackPushConnection.CAPABILITY_SIDE_BAND_64K
 				);
 			if (sideBand)
 			{

@@ -82,13 +82,21 @@ namespace NGit.Transport
 	/// </remarks>
 	public abstract class BasePackPushConnection : BasePackConnection, PushConnection
 	{
-		internal static readonly string CAPABILITY_REPORT_STATUS = "report-status";
+		/// <summary>The client expects a status report after the server processes the pack.</summary>
+		/// <remarks>The client expects a status report after the server processes the pack.</remarks>
+		public static readonly string CAPABILITY_REPORT_STATUS = "report-status";
 
-		internal static readonly string CAPABILITY_DELETE_REFS = "delete-refs";
+		/// <summary>The server supports deleting refs.</summary>
+		/// <remarks>The server supports deleting refs.</remarks>
+		public static readonly string CAPABILITY_DELETE_REFS = "delete-refs";
 
-		internal static readonly string CAPABILITY_OFS_DELTA = "ofs-delta";
+		/// <summary>The server supports packs with OFS deltas.</summary>
+		/// <remarks>The server supports packs with OFS deltas.</remarks>
+		public static readonly string CAPABILITY_OFS_DELTA = "ofs-delta";
 
-		internal static readonly string CAPABILITY_SIDE_BAND_64K = "side-band-64k";
+		/// <summary>The client supports using the 64K side-band for progress messages.</summary>
+		/// <remarks>The client supports using the 64K side-band for progress messages.</remarks>
+		public static readonly string CAPABILITY_SIDE_BAND_64K = "side-band-64k";
 
 		private readonly bool thinPack;
 
