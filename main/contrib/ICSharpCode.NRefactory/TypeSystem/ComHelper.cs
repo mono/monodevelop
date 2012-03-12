@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Helper methods for COM.
 	/// </summary>
-	public class ComHelper
+	public static class ComHelper
 	{
 		static bool IsComAttribute(IAttribute attribute, string name)
 		{
@@ -45,6 +45,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the CoClass of the specified COM interface.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Co",
+		                                                 Justification = "Consistent with CoClassAttribute")]
 		public static IType GetCoClass(ITypeDefinition typeDefinition)
 		{
 			if (typeDefinition == null)

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.Utils;
@@ -145,7 +146,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ToString()
 		{
-			return string.Format("[MergedNamespace {0}{1} (from {2} assemblies)]", externAlias != null ? externAlias + "::" : null, this.FullName, this.namespaces.Length);
+			return string.Format(CultureInfo.InvariantCulture, "[MergedNamespace {0}{1} (from {2} assemblies)]",
+			                     externAlias != null ? externAlias + "::" : null, this.FullName, this.namespaces.Length);
 		}
 	}
 }

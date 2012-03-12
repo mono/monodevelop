@@ -28,6 +28,8 @@ namespace ICSharpCode.NRefactory.Utils
 	{
 		static volatile object barrier = null;
 		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "tmp",
+		                                                 Justification = "The volatile read is important to cause a read barrier.")]
 		public static void ReadBarrier()
 		{
 			object tmp = barrier;

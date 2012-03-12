@@ -85,10 +85,10 @@ namespace ICSharpCode.NRefactory.Documentation
 			return Xml.Text;
 		}
 		
-		public static implicit operator string (DocumentationComment cmt)
+		public static implicit operator string (DocumentationComment documentationComment)
 		{
-			if (cmt != null)
-				return cmt.ToString ();
+			if (documentationComment != null)
+				return documentationComment.ToString ();
 			return null;
 		}
 	}

@@ -30,8 +30,10 @@ FILES =  \
 	Editor/ITextAnchor.cs \
 	Editor/ITextSource.cs \
 	Editor/ReadOnlyDocument.cs \
+	Editor/StringBuilderDocument.cs \
 	Editor/StringTextSource.cs \
 	Editor/TextChangeEventArgs.cs \
+	Editor/TextSourceVersionProvider.cs \
 	IAnnotatable.cs \
 	PatternMatching/AnyNode.cs \
 	PatternMatching/Backreference.cs \
@@ -169,6 +171,7 @@ FILES =  \
 	Utils/BitVector16.cs \
 	Utils/BusyManager.cs \
 	Utils/CacheManager.cs \
+	Utils/CallbackOnDispose.cs \
 	Utils/CSharpPrimitiveCast.cs \
 	Utils/EmptyList.cs \
 	Utils/ExtensionMethods.cs \

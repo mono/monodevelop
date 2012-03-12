@@ -26,13 +26,13 @@ namespace ICSharpCode.NRefactory
 	[Serializable]
 	public sealed class EmptyList<T> : IList<T>, IEnumerator<T>
 	{
-		public static readonly IList<T> Instance = new EmptyList<T>();
+		public static readonly EmptyList<T> Instance = new EmptyList<T>();
 		
 		private EmptyList() {}
 		
 		T IList<T>.this[int index] {
-			get { throw new IndexOutOfRangeException(); }
-			set { throw new IndexOutOfRangeException(); }
+			get { throw new ArgumentOutOfRangeException("index"); }
+			set { throw new ArgumentOutOfRangeException("index"); }
 		}
 		
 		int ICollection<T>.Count {

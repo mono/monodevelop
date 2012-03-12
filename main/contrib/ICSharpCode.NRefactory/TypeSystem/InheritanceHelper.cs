@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Provides helper methods for inheritance.
 	/// </summary>
-	public class InheritanceHelper
+	public static class InheritanceHelper
 	{
 		// TODO: maybe these should be extension methods?
 		// or even part of the interface itself? (would allow for easy caching)

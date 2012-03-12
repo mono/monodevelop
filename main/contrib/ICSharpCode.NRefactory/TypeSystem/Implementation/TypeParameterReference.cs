@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -69,9 +70,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			if (ownerType == EntityType.Method)
-				return "!!" + index.ToString();
+				return "!!" + index.ToString(CultureInfo.InvariantCulture);
 			else
-				return "!" + index.ToString();
+				return "!" + index.ToString(CultureInfo.InvariantCulture);
 		}
 	}
 }

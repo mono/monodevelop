@@ -242,7 +242,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 		}
 		
-		void ReadMembersSection(XmlTextReader reader, LinePositionMapper linePosMapper, List<IndexEntry> indexList)
+		static void ReadMembersSection(XmlTextReader reader, LinePositionMapper linePosMapper, List<IndexEntry> indexList)
 		{
 			while (reader.Read()) {
 				switch (reader.NodeType) {

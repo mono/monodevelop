@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Semantics
 		/// </summary>
 		public readonly IList<ResolveResult> Arguments;
 		
-		public InvocationResolveResult(ResolveResult targetResult, IParameterizedMember member, IList<ResolveResult> arguments)
+		protected InvocationResolveResult(ResolveResult targetResult, IParameterizedMember member, IList<ResolveResult> arguments)
 			: base(targetResult, member)
 		{
 			this.Arguments = arguments ?? EmptyList<ResolveResult>.Instance;
@@ -49,6 +49,8 @@ namespace ICSharpCode.NRefactory.Semantics
 		/// Gets the arguments in the order they are being passed to the method.
 		/// For parameter arrays (params), this will return an ArrayCreateResolveResult.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate",
+		                                                 Justification = "Derived methods may be expensive and create new lists")]
 		public virtual IList<ResolveResult> GetArgumentsForCall()
 		{
 			return Arguments;

@@ -67,6 +67,7 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Gets the whole text as string.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
 		string Text { get; }
 		
 		/// <summary>

@@ -18,8 +18,6 @@
 
 using System;
 using System.Linq;
-using System.Linq.Expressions;
-using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {

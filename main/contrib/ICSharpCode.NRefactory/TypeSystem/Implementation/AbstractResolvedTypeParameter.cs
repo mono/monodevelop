@@ -18,8 +18,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using System.Globalization;
+
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.compilation = owner.Compilation;
 			this.ownerType = owner.EntityType;
 			this.index = index;
-			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString());
+			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
 			this.attributes = attributes ?? EmptyList<IAttribute>.Instance;
 			this.region = region;
 			this.variance = variance;
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.compilation = compilation;
 			this.ownerType = ownerType;
 			this.index = index;
-			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString());
+			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
 			this.attributes = attributes ?? EmptyList<IAttribute>.Instance;
 			this.region = region;
 			this.variance = variance;
@@ -198,7 +198,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public string ReflectionName {
 			get {
-				return (this.OwnerType == EntityType.Method ? "``" : "`") + index.ToString();
+				return (this.OwnerType == EntityType.Method ? "``" : "`") + index.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 		

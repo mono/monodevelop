@@ -472,7 +472,7 @@ namespace ICSharpCode.NRefactory.Utils
 			List<FieldInfo> fields = new List<FieldInfo>();
 			for (Type baseType = type; baseType != null; baseType = baseType.BaseType) {
 				FieldInfo[] declFields = baseType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly);
-				Array.Sort(declFields, (a,b) => a.Name.CompareTo(b.Name));
+				Array.Sort(declFields, (a,b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal));
 				fields.AddRange(declFields);
 			}
 			fields.RemoveAll(f => f.IsNotSerialized);
@@ -806,7 +806,7 @@ namespace ICSharpCode.NRefactory.Utils
 					return Reader.ReadInt32();
 			}
 			
-			internal void DeserializeTypeDescriptions(FastSerializer fastSerializer)
+			internal void DeserializeTypeDescriptions()
 			{
 				for (int i = 0; i < this.Types.Length; i++) {
 					Type type = this.Types[i];
@@ -918,7 +918,7 @@ namespace ICSharpCode.NRefactory.Utils
 						throw new SerializationException("Unknown type kind");
 				}
 			}
-			context.DeserializeTypeDescriptions(this);
+			context.DeserializeTypeDescriptions();
 			int[] typeIDByObjectID = new int[context.Objects.Length];
 			for (int i = 1 + fixedInstanceCount; i < context.Objects.Length; i++) {
 				int typeID = context.ReadTypeID();
@@ -1296,7 +1296,7 @@ namespace ICSharpCode.NRefactory.Utils
 			return action;
 		}
 		
-		CustomDeserializationAction CreateCustomDeserializationAction(Type type)
+		static CustomDeserializationAction CreateCustomDeserializationAction(Type type)
 		{
 			ConstructorInfo ctor = type.GetConstructor(
 				BindingFlags.DeclaredOnly | BindingFlags.ExactBinding | BindingFlags.Instance

@@ -28,6 +28,7 @@ namespace ICSharpCode.NRefactory.Editor
 	public class StringTextSource : ITextSource
 	{
 		readonly string text;
+		readonly ITextSourceVersion version;
 		
 		/// <summary>
 		/// Creates a new StringTextSource with the given text.
@@ -39,8 +40,20 @@ namespace ICSharpCode.NRefactory.Editor
 			this.text = text;
 		}
 		
-		ITextSourceVersion ITextSource.Version {
-			get { return null; }
+		/// <summary>
+		/// Creates a new StringTextSource with the given text.
+		/// </summary>
+		public StringTextSource(string text, ITextSourceVersion version)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			this.text = text;
+			this.version = version;
+		}
+		
+		/// <inheritdoc/>
+		public ITextSourceVersion Version {
+			get { return version; }
 		}
 		
 		/// <inheritdoc/>

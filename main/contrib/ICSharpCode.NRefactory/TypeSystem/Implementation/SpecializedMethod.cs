@@ -144,6 +144,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return true;
 		}
 		
+		public IList<IUnresolvedMethod> Parts {
+			get { return methodDefinition.Parts; }
+		}
+		
 		public IList<IAttribute> ReturnTypeAttributes {
 			get { return methodDefinition.ReturnTypeAttributes; }
 		}

@@ -187,7 +187,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		public static IMemberReference ParseMemberIdString(string memberIdString)
 		{
 			if (memberIdString == null)
-				throw new ArgumentNullException("memberIDString");
+				throw new ArgumentNullException("memberIdString");
 			if (memberIdString.Length < 2 || memberIdString[1] != ':')
 				throw new ReflectionNameParseException(0, "Missing type tag");
 			char typeChar = memberIdString[0];

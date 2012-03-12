@@ -26,8 +26,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	[Serializable]
 	public sealed class DefaultAssemblyReference : IAssemblyReference, ISupportsInterning
 	{
-		public static IAssemblyReference CurrentAssembly = new CurrentAssemblyReference();
-		public static IAssemblyReference Corlib = new DefaultAssemblyReference("mscorlib");
+		public static readonly IAssemblyReference CurrentAssembly = new CurrentAssemblyReference();
+		public static readonly IAssemblyReference Corlib = new DefaultAssemblyReference("mscorlib");
 		
 		string shortName;
 		

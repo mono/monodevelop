@@ -26,9 +26,9 @@ namespace ICSharpCode.NRefactory.Utils
 	{
 		public readonly static ReferenceComparer Instance = new ReferenceComparer();
 		
-		public new bool Equals(object a, object b)
+		public new bool Equals(object x, object y)
 		{
-			return a == b;
+			return x == y;
 		}
 		
 		public int GetHashCode(object obj)

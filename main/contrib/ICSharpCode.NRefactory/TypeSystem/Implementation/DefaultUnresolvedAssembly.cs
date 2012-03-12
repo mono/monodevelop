@@ -61,15 +61,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return assemblyName; }
 			set {
 				if (value == null)
-					throw new ArgumentNullException();
+					throw new ArgumentNullException("value");
 				FreezableHelper.ThrowIfFrozen(this);
 				assemblyName = value;
 			}
-		}
-		
-		public string Location {
-			get;
-			set;
 		}
 		
 		public IList<IUnresolvedAttribute> AssemblyAttributes {
