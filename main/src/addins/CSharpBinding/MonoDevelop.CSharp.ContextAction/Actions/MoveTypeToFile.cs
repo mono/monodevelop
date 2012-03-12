@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return String.Format (GettextCatalog.GetString ("_Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
 		}
 		
-		protected override bool IsValid (MDRefactoringContext context, System.Threading.CancellationToken cancellationToken)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
 			var type = GetTypeDeclaration (context);
 			if (type == null)

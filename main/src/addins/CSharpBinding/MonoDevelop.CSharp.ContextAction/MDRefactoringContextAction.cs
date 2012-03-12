@@ -46,23 +46,23 @@ namespace MonoDevelop.CSharp.ContextAction
 		{
 			return Node.Title;
 		}
-		
-		public sealed override string GetMenuText (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+
+		public sealed override string GetMenuText (Document document, TextLocation loc)
 		{
 			var context = new MDRefactoringContext (document, loc);
-			if (context.Unit == null)
+			if (context.IsInvalid)
 				return "invalid";
 			return GetMenuText (context);
 		}
 		
-		protected abstract bool IsValid (MDRefactoringContext context, CancellationToken cancellationToken);
+		protected abstract bool IsValid (MDRefactoringContext context);
 		
 		public sealed override bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
 			var context = new MDRefactoringContext (document, loc);
-			if (context.Unit == null)
+			if (context.IsInvalid)
 				return false;
-			return IsValid (context, cancellationToken);
+			return IsValid (context);
 		}
 		
 		protected abstract void Run (MDRefactoringContext context);
@@ -70,9 +70,9 @@ namespace MonoDevelop.CSharp.ContextAction
 		public sealed override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
 		{
 			var context = new MDRefactoringContext (document, loc);
-			if (context.Unit == null)
+			if (context.IsInvalid)
 				return;
-			if (!IsValid (context, default (CancellationToken)))
+			if (!IsValid (context))
 				return;
 			
 			Run (context);

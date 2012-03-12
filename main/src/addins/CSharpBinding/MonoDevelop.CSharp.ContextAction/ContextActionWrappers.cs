@@ -33,9 +33,9 @@ namespace MonoDevelop.CSharp.ContextAction
 	{
 		protected T action = new T ();
 		
-		protected override bool IsValid (MDRefactoringContext context, CancellationToken cancellationToken)
+		protected override bool IsValid (MDRefactoringContext context)
 		{
-			return action.IsValid (context, cancellationToken);
+			return action.IsValid (context);
 		}
 		
 		protected override void Run (MDRefactoringContext context)

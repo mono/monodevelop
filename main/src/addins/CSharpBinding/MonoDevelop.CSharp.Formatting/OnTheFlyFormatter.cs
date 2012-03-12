@@ -125,7 +125,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return sb.ToString ();
 		}
 		
-		static List<TextReplaceAction> GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, string input)
+		static AstFormattingVisitor GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, string input)
 		{
 			using (var stubData = TextEditorData.CreateImmutable (input)) {
 				stubData.Document.FileName = data.FileName;
@@ -134,20 +134,17 @@ namespace MonoDevelop.CSharp.Formatting
 				bool hadErrors = parser.HasErrors;
 				// try it out, if the behavior is better when working only with correct code.
 				if (hadErrors) {
-					return new List<TextReplaceAction> ();
+					return null;
 				}
 				
 				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 				
-				var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, new FormattingActionFactory (data.Editor), data.Editor.Options.TabsToSpaces, data.Editor.Options.TabSize) {
+				var formattingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, data.Editor.Options.TabsToSpaces, data.Editor.Options.TabSize) {
 					HadErrors = hadErrors,
 					EolMarker = stubData.EolMarker
 				};
-				compilationUnit.AcceptVisitor (domSpacingVisitor);
-				var changes = new List<TextReplaceAction> ();
-				changes.AddRange (domSpacingVisitor.Changes);
-				changes.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
-				return changes;
+				compilationUnit.AcceptVisitor (formattingVisitor);
+				return formattingVisitor;
 			}
 		}
 		
@@ -173,41 +170,23 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			// Get changes from formatting visitor
 			var changes = GetFormattingChanges (policyParent, mimeTypeChain, data, text);
-			
-			// Filter changes.
-			var newList = new List<TextReplaceAction> (); 
-			for (int i = 0; i < changes.Count; i++) {
-				var c = changes [i];
-				if (formatStartOffset < c.Offset && c.Offset < formatEndOffset || c.DependsOn != null && newList.Contains (c.DependsOn)) {
-					newList.Add (c);
-				}
-			}
-			changes = newList;
-			
-			// Adjust changes to real document offsets.
-			int realTextDelta = seg.Offset - formatStartOffset;
-			var lines = new HashSet<int> ();
-			foreach (var change in changes) {
-				change.Offset += realTextDelta;
-				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
-			}
-			
-			// Move caret.
-			var caretEndOffset = data.Editor.Caret.Offset;
-			int caretDelta = 0;
-			foreach (var act in changes) {
-				if (act.Offset < caretEndOffset)
-					caretDelta += -act.RemovedChars + (act.InsertedText != null ? act.InsertedText.Length : 0);
-			}
-			caretEndOffset += caretDelta;
-			
+			if (changes == null)
+				return;
+
 			// Do the actual formatting
-			using (var undo = data.Editor.OpenUndoGroup ()) {
-				MDRefactoringContext.MdScript.RunActions (changes, null);
-				foreach (int line in lines)
-					data.Editor.Document.CommitLineUpdate (line);
-			}
-			data.Editor.Caret.Offset = caretEndOffset;
+			var originalVersion = data.Editor.Document.Version;
+			int caretOffset = data.Editor.Caret.Offset;
+
+			int realTextDelta = seg.Offset - formatStartOffset;
+
+			changes.ApplyChanges (formatStartOffset + 1, formatEndOffset, delegate (int replaceOffset, int replaceLength, string insertText) {
+				int translatedOffset = realTextDelta + replaceOffset;
+				data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
+				data.Editor.Replace (translatedOffset, replaceLength, insertText);
+			});
+			var currentVersion = data.Editor.Document.Version;
+
+			data.Editor.Caret.Offset = originalVersion.MoveOffsetTo (currentVersion, caretOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default);
 		}
 	}
 }

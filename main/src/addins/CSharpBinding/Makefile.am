@@ -71,6 +71,7 @@ FILES =  \
 	MonoDevelop.CSharp.ContextAction/ContextActionWrappers.cs \
 	MonoDevelop.CSharp.ContextAction/MDRefactoringContext.cs \
 	MonoDevelop.CSharp.ContextAction/MDRefactoringContextAction.cs \
+	MonoDevelop.CSharp.ContextAction/MDRefactoringScript.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicyPanel.cs \

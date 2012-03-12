@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		void RunFormatter ()
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode)) {
+			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
 				OnTheFlyFormatter.Format (Document, textEditorData.Caret.Location);
 			}
 		}
