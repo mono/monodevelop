@@ -38,10 +38,12 @@ namespace MonoDevelop.CSharp.ContextAction
 	public class MDRefactoringScript : DocumentScript
 	{
 		readonly Document document;
+		readonly IDisposable undoGroup;
 
 		public MDRefactoringScript (Document document, CSharpFormattingOptions formattingOptions) : base(document.Editor.Document, formattingOptions)
 		{
 			this.document = document;
+			undoGroup  = this.document.Editor.OpenUndoGroup ();
 		}
 
 		public override void Select (AstNode node)
@@ -115,6 +117,13 @@ namespace MonoDevelop.CSharp.ContextAction
 				document.Editor.CurrentMode = tle;
 			}
 		}
+
+		public override void Dispose ()
+		{
+			undoGroup.Dispose ();
+			base.Dispose ();
+		}
+
 	}
 }
 
