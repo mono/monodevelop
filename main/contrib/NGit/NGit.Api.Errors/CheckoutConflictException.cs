@@ -65,7 +65,12 @@ namespace NGit.Api.Errors
 
 		/// <summary>Translate internal exception to API exception</summary>
 		/// <param name="conflictingPaths">list of conflicting paths</param>
-		/// <param name="e"></param>
+		/// <param name="e">
+		/// a
+		/// <see cref="NGit.Errors.CheckoutConflictException">NGit.Errors.CheckoutConflictException
+		/// 	</see>
+		/// exception
+		/// </param>
 		public CheckoutConflictException(IList<string> conflictingPaths, NGit.Errors.CheckoutConflictException
 			 e) : base(e.Message, e)
 		{

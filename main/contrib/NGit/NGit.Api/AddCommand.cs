@@ -214,7 +214,7 @@ namespace NGit.Api
 								}
 								else
 								{
-									if (!update)
+									if (c != null && (!update || FileMode.GITLINK == c.EntryFileMode))
 									{
 										builder.Add(c.GetDirCacheEntry());
 									}

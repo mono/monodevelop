@@ -501,7 +501,7 @@ namespace NGit.Treewalk
 		/// <exception cref="System.IO.IOException"></exception>
 		private InputStream FilterClean(InputStream @in)
 		{
-			return new EolCanonicalizingInputStream(@in);
+			return new EolCanonicalizingInputStream(@in, true);
 		}
 
 		/// <summary>Returns the working tree options used by this iterator.</summary>
@@ -617,7 +617,7 @@ namespace NGit.Treewalk
 			InputStream @is;
 			if (GetOptions().GetAutoCRLF() != CoreConfig.AutoCRLF.FALSE)
 			{
-				@is = new EolCanonicalizingInputStream(rawis);
+				@is = new EolCanonicalizingInputStream(rawis, true);
 			}
 			else
 			{
