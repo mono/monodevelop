@@ -291,9 +291,7 @@ namespace MonoDevelop.Refactoring
 					if (ciset.CommandInfos.Count > 0)
 						ciset.CommandInfos.AddSeparator ();
 				}
-				ciset.CommandInfos.Add (fix.GetMenuText (doc, loc), new System.Action (delegate {
-					fix.Run (doc, loc);
-				}));
+				ciset.CommandInfos.Add (fix.GetMenuText (doc, loc), new System.Action (new FixWrapper (fix, doc, loc).Operation));
 			}
 
 			if (ciset.CommandInfos.Count > 0) {
@@ -369,7 +367,7 @@ namespace MonoDevelop.Refactoring
 			} else if (resolveResult is UnknownMemberResolveResult) {
 				usedNamespaces = options.GetUsedNamespaces ();
 				var umResult = (UnknownMemberResolveResult)resolveResult;
-				var conv = new Conversions (options.Document.Compilation);
+				var conv = new CSharpConversions (options.Document.Compilation);
 				var baseTypes = new List<IType> (umResult.TargetType.GetAllBaseTypes ());
 				string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : null;
 				
@@ -659,6 +657,7 @@ namespace MonoDevelop.Refactoring
 				ainfo.AddSeparator ();*/
 		}
 		
+
 		class RefactoringOperationWrapper
 		{
 			RefactoringOperation refactoring;
@@ -674,8 +673,27 @@ namespace MonoDevelop.Refactoring
 			{
 				refactoring.Run (options);
 			}
+		}	
+
+		class FixWrapper
+		{
+			MonoDevelop.ContextAction.ContextAction action;
+			Document doc;
+			DocumentLocation loc;
+
+			public FixWrapper (MonoDevelop.ContextAction.ContextAction action, MonoDevelop.Ide.Gui.Document doc, Mono.TextEditor.DocumentLocation loc)
+			{
+				this.action = action;
+				this.doc = doc;
+				this.loc = loc;
+			}
+
+			public void Operation ()
+			{
+				action.Run (doc, loc);
+			}
 		}
-		
+
 /*		public class ResolveNameOperation
 		{
 			ProjectDom ctx;
@@ -716,6 +734,8 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 */
+
+
 		bool IsModifiable (object member)
 		{
 			IType t = member as IType;
