@@ -2234,10 +2234,10 @@ namespace Mono.TextEditor
 		
 		public void AnimateSearchResult (SearchResult result)
 		{
-			if (!IsComposited || !Options.EnableAnimations)
+			if (!IsComposited || !Options.EnableAnimations || result == null)
 				return;
 			TextViewMargin.MainSearchResult = result.Segment;
-			if (result != null) {
+			if (!TextViewMargin.MainSearchResult.IsInvalid) {
 				if (popupWindow != null) {
 					popupWindow.StopPlaying ();
 					popupWindow.Destroy ();

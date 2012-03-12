@@ -32,6 +32,7 @@ using Mono.TextEditor.Highlighting;
 using Mono.TextEditor.Utils;
 using System.Linq;
 using System.ComponentModel;
+using ICSharpCode.NRefactory.Editor;
 
 namespace Mono.TextEditor
 {
@@ -40,7 +41,9 @@ namespace Mono.TextEditor
 		IBuffer      buffer;
 		internal ILineSplitter splitter;
 		SyntaxMode   syntaxMode = null;
-		
+
+		TextSourceVersionProvider versionProvider = new TextSourceVersionProvider ();
+
 		string mimeType;
 		
 		bool   readOnly;
@@ -172,11 +175,6 @@ namespace Mono.TextEditor
 				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, buffer.Length);
 		}
 		
-		public System.IO.TextReader OpenTextReader ()
-		{
-			return new BufferedTextReader (this.buffer);
-		}
-		
 		void IBuffer.Insert (int offset, string text)
 		{
 			((IBuffer)this).Replace (offset, 0, text);
@@ -194,6 +192,13 @@ namespace Mono.TextEditor
 
 		void IBuffer.Replace (int offset, int count, string value)
 		{
+			if (offset < 0)
+				throw new ArgumentOutOfRangeException ("offset", "must be > 0, was: " + offset);
+			if (offset > Length)
+				throw new ArgumentOutOfRangeException ("offset", "must be <= Length, was: " + offset);
+			if (count < 0)
+				throw new ArgumentOutOfRangeException ("count", "must be > 0, was: " + count);
+
 			if (atomicUndoLevel == 0) {
 				if (this.syntaxMode != null && !SuppressHighlightUpdate)
 					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
@@ -331,6 +336,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void OnTextReplaced (DocumentChangeEventArgs args)
 		{
+			versionProvider.AppendChange (args);
 			if (TextReplaced != null)
 				TextReplaced (this, args);
 		}
@@ -1679,11 +1685,6 @@ namespace Mono.TextEditor
 			EndAtomicUndo ();
 		}
 
-		IDisposable ICSharpCode.NRefactory.Editor.IDocument.OpenUndoGroup ()
-		{
-			throw new NotImplementedException ();
-		}
-
 		ICSharpCode.NRefactory.Editor.ITextAnchor ICSharpCode.NRefactory.Editor.IDocument.CreateAnchor (int offset)
 		{
 			throw new NotImplementedException ();
@@ -1723,9 +1724,9 @@ namespace Mono.TextEditor
 			throw new NotImplementedException ();
 		}
 
-		System.IO.TextReader ICSharpCode.NRefactory.Editor.ITextSource.CreateReader ()
+		public System.IO.TextReader CreateReader ()
 		{
-			throw new NotImplementedException ();
+			return new BufferedTextReader (this.buffer);
 		}
 
 		public System.IO.TextReader CreateReader (int offset, int length)
@@ -1762,15 +1763,15 @@ namespace Mono.TextEditor
 		{
 			throw new NotImplementedException ();
 		}
-		
+
 		int ICSharpCode.NRefactory.Editor.ITextSource.LastIndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
 			throw new NotImplementedException ();
 		}
 
-		ICSharpCode.NRefactory.Editor.ITextSourceVersion ICSharpCode.NRefactory.Editor.ITextSource.Version {
+		public ITextSourceVersion Version {
 			get {
-				throw new NotImplementedException ();
+				return versionProvider.CurrentVersion;
 			}
 		}
 
@@ -1780,12 +1781,10 @@ namespace Mono.TextEditor
 			}
 		}
 
-		string ICSharpCode.NRefactory.Editor.ITextSource.Text {
-			get {
-				return Text;
-			}
+		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot()
+		{
+			return CreateImmutableDocument (Text, false);
 		}
-		
 		#endregion
 	}
 	
