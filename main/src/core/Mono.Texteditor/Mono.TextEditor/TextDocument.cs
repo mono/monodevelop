@@ -38,8 +38,9 @@ namespace Mono.TextEditor
 {
 	public class TextDocument : AbstractAnnotatable, IBuffer, ICSharpCode.NRefactory.Editor.IDocument
 	{
-		IBuffer      buffer;
-		internal ILineSplitter splitter;
+		readonly IBuffer buffer;
+		internal readonly ILineSplitter splitter;
+
 		SyntaxMode   syntaxMode = null;
 
 		TextSourceVersionProvider versionProvider = new TextSourceVersionProvider ();
@@ -116,7 +117,7 @@ namespace Mono.TextEditor
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
-			return new TextDocument(new StringBuffer(text), new PrimitiveLineSplitter()) {
+			return new TextDocument (new StringBuffer (text), new PrimitiveLineSplitter ()) {
 				SuppressHighlightUpdate = suppressHighlighting,
 				Text = text,
 				ReadOnly = true
@@ -498,10 +499,7 @@ namespace Mono.TextEditor
 			
 			public virtual void Undo (TextDocument doc)
 			{
-				if (args.InsertionLength > 0)
-					((IBuffer)doc).Remove (args.Offset, args.InsertionLength);
-				if (args.RemovalLength > 0)
-					((IBuffer)doc).Insert (args.Offset, args.RemovedText);
+				((IBuffer)doc).Replace (args.Offset, args.InsertionLength, args.RemovedText);
 				OnUndoDone ();
 			}
 			
@@ -570,7 +568,7 @@ namespace Mono.TextEditor
 			public override void Undo (TextDocument doc)
 			{
 				for (int i = operations.Count - 1; i >= 0; i--) {
-					operations[i].Undo (doc);
+					operations [i].Undo (doc);
 					doc.OnUndone (new UndoOperationEventArgs (operations[i]));
 				}
 				OnUndoDone ();
@@ -1781,9 +1779,11 @@ namespace Mono.TextEditor
 			}
 		}
 
-		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot()
+		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot ()
 		{
-			return CreateImmutableDocument (Text, false);
+			var result = CreateImmutableDocument (Text, false);
+			result.versionProvider = versionProvider;
+			return result;
 		}
 		#endregion
 	}
