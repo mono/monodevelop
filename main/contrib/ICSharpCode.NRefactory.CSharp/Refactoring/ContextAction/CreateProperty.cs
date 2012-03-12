@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CreateProperty.cs
 //  
 // Author:
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class CreateProperty : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			var identifier = CreateField.GetIdentifier (context);
 			if (identifier == null)

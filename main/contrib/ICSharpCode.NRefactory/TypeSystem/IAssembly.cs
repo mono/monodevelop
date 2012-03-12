@@ -30,6 +30,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the assembly name (short name).
 		/// </summary>
 		string AssemblyName { get; }
+
+		string Location { get; set; }
 		
 		/// <summary>
 		/// Gets the list of all assembly attributes in the project.

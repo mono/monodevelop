@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GenerateGetter.cs
 //  
 // Author:
@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class GenerateGetter : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			var initializer = GetVariableInitializer (context);
 			if (initializer == null || !initializer.NameToken.Contains (context.Location.Line, context.Location.Column))

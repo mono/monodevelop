@@ -46,6 +46,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			get; set;
 		}
 		
+		public CSharpTokenNode VarianceToken {
+			get {
+				switch (Variance) {
+					case VarianceModifier.Covariant:
+						return GetChildByRole(OutVarianceKeywordRole);
+					case VarianceModifier.Contravariant:
+						return GetChildByRole(InVarianceKeywordRole);
+					default:
+						return CSharpTokenNode.Null;
+				}
+			}
+		}
+		
 		public string Name {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;
@@ -68,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitTypeParameterDeclaration (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitTypeParameterDeclaration (this);

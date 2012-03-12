@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ConvertHexToDec.cs
 //  
 // Author:
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class ConvertHexToDec: IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			var pexpr = context.GetNode<PrimitiveExpression> ();
 			if (pexpr == null || !pexpr.LiteralValue.StartsWith ("0X", System.StringComparison.OrdinalIgnoreCase))

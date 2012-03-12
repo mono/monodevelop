@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	public class CheckIfParameterIsNull : IContextAction
 	{
 		//TODO: Create 'multiple' null checks when more than 1 parameter is selected.
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			var parameter = GetParameterDeclaration (context);
 			if (parameter == null)

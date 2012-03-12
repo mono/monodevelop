@@ -32,16 +32,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Contains logic that determines whether an implicit conversion exists between two types.
 	/// </summary>
 	/// <remarks>
-	/// Because this class internally uses a cache, it is NOT thread-safe!
+	/// This class is thread-safe.
 	/// </remarks>
-	public sealed class Conversions
+	public sealed class CSharpConversions
 	{
-		readonly Dictionary<TypePair, Conversion> implicitConversionCache = new Dictionary<TypePair, Conversion>();
+		readonly ConcurrentDictionary<TypePair, Conversion> implicitConversionCache = new ConcurrentDictionary<TypePair, Conversion>();
 		readonly ICompilation compilation;
 		readonly IType objectType;
-		int subtypeCheckNestingDepth;
 		
-		public Conversions(ICompilation compilation)
+		public CSharpConversions(ICompilation compilation)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
@@ -52,11 +51,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		/// <summary>
 		/// Gets the Conversions instance for the specified <see cref="ICompilation"/>.
-		/// This will make use of the context's cache manager (if available) to reuse the Conversions instance.
+		/// This will make use of the context's cache manager to reuse the Conversions instance.
 		/// </summary>
-		public static Conversions Get(ICompilation compilation)
+		public static CSharpConversions Get(ICompilation compilation)
 		{
-			return new Conversions(compilation);
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			CacheManager cache = compilation.CacheManager;
+			CSharpConversions operators = (CSharpConversions)cache.GetShared(typeof(CSharpConversions));
+			if (operators == null) {
+				operators = (CSharpConversions)cache.GetOrAddShared(typeof(CSharpConversions), new CSharpConversions(compilation));
+			}
+			return operators;
 		}
 		
 		#region TypePair (for caching)
@@ -147,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return c;
 			if (NullLiteralConversion(fromType, toType))
 				return Conversion.NullLiteralConversion;
-			if (ImplicitReferenceConversion(fromType, toType))
+			if (ImplicitReferenceConversion(fromType, toType, 0))
 				return Conversion.ImplicitReferenceConversion;
 			if (BoxingConversion(fromType, toType))
 				return Conversion.BoxingConversion;
@@ -176,7 +182,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			if (IdentityConversion(fromType, toType))
 				return true;
-			if (ImplicitReferenceConversion(fromType, toType))
+			if (ImplicitReferenceConversion(fromType, toType, 0))
 				return true;
 			if (BoxingConversion(fromType, toType) && !NullableType.IsNullable(fromType))
 				return true;
@@ -261,7 +267,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			readonly IType objectType;
 			
-			public DynamicErasure(Conversions conversions)
+			public DynamicErasure(CSharpConversions conversions)
 			{
 				this.objectType = conversions.objectType;
 			}
@@ -392,7 +398,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Implicit Reference Conversion
-		bool ImplicitReferenceConversion(IType fromType, IType toType)
+		bool ImplicitReferenceConversion(IType fromType, IType toType, int subtypeCheckNestingDepth)
 		{
 			// C# 4.0 spec: §6.1.6
 			
@@ -406,7 +412,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (toArray != null) {
 					// array covariance (the broken kind)
 					return fromArray.Dimensions == toArray.Dimensions
-						&& ImplicitReferenceConversion(fromArray.ElementType, toArray.ElementType);
+						&& ImplicitReferenceConversion(fromArray.ElementType, toArray.ElementType, subtypeCheckNestingDepth);
 				}
 				// conversion from single-dimensional array S[] to IList<T>:
 				ParameterizedType toPT = toType as ParameterizedType;
@@ -416,47 +422,43 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				{
 					// array covariance plays a part here as well (string[] is IList<object>)
 					return IdentityConversion(fromArray.ElementType, toPT.GetTypeArgument(0))
-						|| ImplicitReferenceConversion(fromArray.ElementType, toPT.GetTypeArgument(0));
+						|| ImplicitReferenceConversion(fromArray.ElementType, toPT.GetTypeArgument(0), subtypeCheckNestingDepth);
 				}
 				// conversion from any array to System.Array and the interfaces it implements:
 				IType systemArray = compilation.FindType(KnownTypeCode.Array);
-				return systemArray.Kind != TypeKind.Unknown && (systemArray.Equals(toType) || ImplicitReferenceConversion(systemArray, toType));
+				return systemArray.Kind != TypeKind.Unknown && (systemArray.Equals(toType) || ImplicitReferenceConversion(systemArray, toType, subtypeCheckNestingDepth));
 			}
 			
 			// now comes the hard part: traverse the inheritance chain and figure out generics+variance
-			return IsSubtypeOf(fromType, toType);
+			return IsSubtypeOf(fromType, toType, subtypeCheckNestingDepth);
 		}
 		
 		// Determines whether s is a subtype of t.
 		// Helper method used for ImplicitReferenceConversion, BoxingConversion and ImplicitTypeParameterConversion
 		
-		bool IsSubtypeOf(IType s, IType t)
+		bool IsSubtypeOf(IType s, IType t, int subtypeCheckNestingDepth)
 		{
 			// conversion to dynamic + object are always possible
 			if (t.Kind == TypeKind.Dynamic || t.Equals(objectType))
 				return true;
-			try {
-				if (++subtypeCheckNestingDepth > 10) {
-					// Subtyping in C# is undecidable
-					// (see "On Decidability of Nominal Subtyping with Variance" by Andrew J. Kennedy and Benjamin C. Pierce),
-					// so we'll prevent infinite recursions by putting a limit on the nesting depth of variance conversions.
-					
-					// No real C# code should use generics nested more than 10 levels deep, and even if they do, most of
-					// those nestings should not involve variance.
-					return false;
-				}
-				// let GetAllBaseTypes do the work for us
-				foreach (IType baseType in s.GetAllBaseTypes()) {
-					if (IdentityOrVarianceConversion(baseType, t))
-						return true;
-				}
+			if (subtypeCheckNestingDepth > 10) {
+				// Subtyping in C# is undecidable
+				// (see "On Decidability of Nominal Subtyping with Variance" by Andrew J. Kennedy and Benjamin C. Pierce),
+				// so we'll prevent infinite recursions by putting a limit on the nesting depth of variance conversions.
+				
+				// No real C# code should use generics nested more than 10 levels deep, and even if they do, most of
+				// those nestings should not involve variance.
 				return false;
-			} finally {
-				subtypeCheckNestingDepth--;
 			}
+			// let GetAllBaseTypes do the work for us
+			foreach (IType baseType in s.GetAllBaseTypes()) {
+				if (IdentityOrVarianceConversion(baseType, t, subtypeCheckNestingDepth + 1))
+					return true;
+			}
+			return false;
 		}
 		
-		bool IdentityOrVarianceConversion(IType s, IType t)
+		bool IdentityOrVarianceConversion(IType s, IType t, int subtypeCheckNestingDepth)
 		{
 			ITypeDefinition def = s.GetDefinition();
 			if (def != null && def.Equals(t.GetDefinition())) {
@@ -472,11 +474,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						ITypeParameter xi = def.TypeParameters[i];
 						switch (xi.Variance) {
 							case VarianceModifier.Covariant:
-								if (!ImplicitReferenceConversion(si, ti))
+								if (!ImplicitReferenceConversion(si, ti, subtypeCheckNestingDepth))
 									return false;
 								break;
 							case VarianceModifier.Contravariant:
-								if (!ImplicitReferenceConversion(ti, si))
+								if (!ImplicitReferenceConversion(ti, si, subtypeCheckNestingDepth))
 									return false;
 								break;
 							default:
@@ -513,7 +515,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §6.1.7
 			fromType = NullableType.GetUnderlyingType(fromType);
 			if (fromType.IsReferenceType == false && toType.IsReferenceType == true)
-				return IsSubtypeOf(fromType, toType);
+				return IsSubtypeOf(fromType, toType, 0);
 			else
 				return false;
 		}
@@ -523,7 +525,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §6.2.5
 			toType = NullableType.GetUnderlyingType(toType);
 			if (fromType.IsReferenceType == true && toType.IsReferenceType == false)
-				return IsSubtypeOf(toType, fromType);
+				return IsSubtypeOf(toType, fromType, 0);
 			else
 				return false;
 		}
@@ -570,7 +572,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return false; // not a type parameter
 			if (fromType.IsReferenceType == true)
 				return false; // already handled by ImplicitReferenceConversion
-			return IsSubtypeOf(fromType, toType);
+			return IsSubtypeOf(fromType, toType, 0);
 		}
 		
 		bool ExplicitTypeParameterConversion(IType fromType, IType toType)
@@ -804,7 +806,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			var or = rr.PerformOverloadResolution(compilation, args, allowExpandingParams: false, conversions: this);
 			if (or.FoundApplicableCandidate)
-				return Conversion.MethodGroupConversion((IMethod)or.BestCandidate);
+				return Conversion.MethodGroupConversion((IMethod)or.GetBestCandidateWithSubstitutedTypeArguments());
 			else
 				return Conversion.None;
 		}

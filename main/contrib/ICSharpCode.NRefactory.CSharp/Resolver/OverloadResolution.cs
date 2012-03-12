@@ -125,14 +125,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly ICompilation compilation;
 		readonly ResolveResult[] arguments;
 		readonly string[] argumentNames;
-		readonly Conversions conversions;
+		readonly CSharpConversions conversions;
 		//List<Candidate> candidates = new List<Candidate>();
 		Candidate bestCandidate;
 		Candidate bestCandidateAmbiguousWith;
 		IType[] explicitlyGivenTypeArguments;
 		
 		#region Constructor
-		public OverloadResolution(ICompilation compilation, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null, Conversions conversions = null)
+		public OverloadResolution(ICompilation compilation, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null, CSharpConversions conversions = null)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
@@ -150,7 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeArguments != null && typeArguments.Length > 0)
 				this.explicitlyGivenTypeArguments = typeArguments;
 			
-			this.conversions = conversions ?? Conversions.Get(compilation);
+			this.conversions = conversions ?? CSharpConversions.Get(compilation);
 			this.AllowExpandingParams = true;
 		}
 		#endregion
@@ -392,7 +392,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		sealed class ConstraintValidatingSubstitution : TypeParameterSubstitution
 		{
-			readonly Conversions conversions;
+			readonly CSharpConversions conversions;
 			public bool ConstraintsValid = true;
 			
 			public ConstraintValidatingSubstitution(IList<IType> classTypeArguments, IList<IType> methodTypeArguments, OverloadResolution overloadResolution)
@@ -441,10 +441,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("typeParameter.Owner");
 			if (typeArgument == null)
 				throw new ArgumentNullException("typeArgument");
-			return ValidateConstraints(typeParameter, typeArgument, substitution, Conversions.Get(typeParameter.Owner.Compilation));
+			return ValidateConstraints(typeParameter, typeArgument, substitution, CSharpConversions.Get(typeParameter.Owner.Compilation));
 		}
 		
-		internal static bool ValidateConstraints(ITypeParameter typeParameter, IType typeArgument, TypeVisitor substitution, Conversions conversions)
+		internal static bool ValidateConstraints(ITypeParameter typeParameter, IType typeArgument, TypeVisitor substitution, CSharpConversions conversions)
 		{
 			switch (typeArgument.Kind) { // void, null, and pointers cannot be used as type arguments
 				case TypeKind.Void:

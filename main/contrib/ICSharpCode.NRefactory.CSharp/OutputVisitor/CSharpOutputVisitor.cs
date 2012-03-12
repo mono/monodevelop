@@ -1529,7 +1529,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				else if (blockStatement.Parent.Role == CustomEventDeclaration.RemoveAccessorRole)
 					style = policy.EventRemoveBraceStyle;
 				else
-					throw new NotSupportedException ("Unknown type of accessor");
+					style = policy.StatementBraceStyle;
 			} else {
 				style = policy.StatementBraceStyle;
 			}

@@ -31,12 +31,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class GenerateSwitchLabels : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			var switchStatement = GetSwitchStatement (context);
 			if (switchStatement == null)
 				return false;
-			var result = context.Resolve (switchStatement.Expression, cancellationToken);
+			var result = context.Resolve (switchStatement.Expression);
 			if (result == null)
 				return false;
 			return result.Type.Kind == TypeKind.Enum;

@@ -1,6 +1,6 @@
 ﻿// 
 // RefactoringContext.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -23,43 +23,55 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Linq;
+using System.Threading;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Editor;
-using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class RefactoringContext : AbstractActionFactory
+	public abstract class RefactoringContext
 	{
-		public CompilationUnit Unit {
-			get;
-			protected set;
-		}
-
-		public TextLocation Location {
-			get;
-			protected set;
+		readonly CSharpAstResolver resolver;
+		readonly CancellationToken cancellationToken;
+		
+		public RefactoringContext(CSharpAstResolver resolver, CancellationToken cancellationToken)
+		{
+			this.resolver = resolver;
+			this.cancellationToken = cancellationToken;
 		}
 		
-		public abstract bool HasCSharp3Support {
-			get;
+		public CancellationToken CancellationToken {
+			get { return cancellationToken; }
+		}
+		
+		public virtual AstNode RootNode {
+			get { return resolver.RootNode; }
+		}
+
+		public abstract TextLocation Location { get; }
+		
+		public virtual bool Supports(Version version)
+		{
+			return true;
 		}
 		
 		public ICompilation Compilation {
-			get;
-			protected set;
+			get { return resolver.Compilation; }
 		}
 		
-		public abstract CSharpFormattingOptions FormattingOptions {
-			get;
+		public virtual AstType CreateShortType (IType fullType)
+		{
+			var csResolver = resolver.GetResolverStateBefore(GetNode());
+			var builder = new TypeSystemAstBuilder(csResolver);
+			return builder.ConvertType(fullType);
 		}
-
-		public abstract AstType CreateShortType (IType fullType);
 		
 		public AstType CreateShortType (string ns, string name, int typeParameterCount = 0)
 		{
@@ -72,39 +84,38 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return new MemberType (new SimpleType (ns), name);
 		}
 		
-		public virtual AstType CreateShortType (AstType fullType)
-		{
-			return CreateShortType (Resolve (fullType).Type);
-		}
-		
-//		public abstract IType GetDefinition (AstType resolvedType);
-
-		public abstract void ReplaceReferences (IMember member, EntityDeclaration replaceWith);
-		
 		public AstNode GetNode ()
 		{
-			return Unit.GetNodeAt (Location);
+			return RootNode.GetNodeAt (Location);
 		}
 		
 		public T GetNode<T> () where T : AstNode
 		{
-			return Unit.GetNodeAt<T> (Location);
+			return RootNode.GetNodeAt<T> (Location);
 		}
 		
-		public abstract Script StartScript ();
-		
 		#region Text stuff
-		public abstract string EolMarker { get; }
-
-		public abstract bool IsSomethingSelected { get; }
-
-		public abstract string SelectedText { get; }
-
-		public abstract int SelectionStart { get; }
-
-		public abstract int SelectionEnd { get; }
-
-		public abstract int SelectionLength { get; }
+		public virtual string EolMarker {
+			get { return Environment.NewLine; }
+		}
+		
+		public virtual bool IsSomethingSelected {
+			get { return this.SelectionLength > 0; }
+		}
+		
+		public virtual string SelectedText {
+			get { return string.Empty; }
+		}
+		
+		public virtual int SelectionStart {
+			get { return 0; }
+		}
+		public virtual int SelectionEnd {
+			get { return 0; }
+		}
+		public virtual int SelectionLength {
+			get { return 0; }
+		}
 
 		public abstract int GetOffset (TextLocation location);
 
@@ -123,10 +134,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Resolving
-		public abstract ResolveResult Resolve (AstNode expression, CancellationToken cancellationToken = default (CancellationToken));
+		public ResolveResult Resolve (AstNode node)
+		{
+			return resolver.Resolve (node, cancellationToken);
+		}
+		
+		public IType ResolveType (AstType type)
+		{
+			return resolver.Resolve (type, cancellationToken).Type;
+		}
+		
+		public IType GetExpectedType (Expression expression)
+		{
+			return resolver.GetExpectedType(expression, cancellationToken);
+		}
+		
+		public Conversion GetConversion (Expression expression)
+		{
+			return resolver.GetConversion(expression, cancellationToken);
+		}
 		#endregion
 		
-		public string GetNameProposal (string name, bool camelCase = true)
+		public virtual string GetNameProposal (string name, bool camelCase = true)
 		{
 			string baseName = (camelCase ? char.ToLower (name [0]) : char.ToUpper (name [0])) + name.Substring (1);
 			
@@ -136,7 +165,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			int number = -1;
 			string proposedName;
-			do { 
+			do {
 				proposedName = AppendNumberToName (baseName, number++);
 			} while (type.Members.Select (m => m.GetChildByRole (AstNode.Roles.Identifier)).Any (n => n.Name == proposedName));
 			return proposedName;
@@ -146,17 +175,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return baseName + (number > 0 ? (number + 1).ToString () : "");
 		}
-	}
-	
-	public static class RefactoringExtensions
-	{
-		#region ConvertTypes
-		public static ICSharpCode.NRefactory.CSharp.AstType ConvertToAstType (this IType type)
-		{
-			var builder = new TypeSystemAstBuilder ();
-			return builder.ConvertType (type);
-		}
-		#endregion
+		
+		public abstract Script StartScript();
 	}
 }
 

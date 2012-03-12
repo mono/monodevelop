@@ -270,7 +270,6 @@
     <Compile Include="Refactoring\TextReplaceAction.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
-    <Compile Include="Resolver\Conversions.cs" />
     <Compile Include="Resolver\CSharpInvocationResolveResult.cs" />
     <Compile Include="Resolver\CSharpResolver.cs" />
     <Compile Include="Resolver\DetectSkippableNodesNavigator.cs" />
@@ -326,6 +325,7 @@
     <Compile Include="Refactoring\ContextAction\RemoveRegion.cs" />
     <Compile Include="Ast\TypeMembers\EntityDeclaration.cs" />
     <Compile Include="Refactoring\ContextAction\GenerateProperty.cs" />
+    <Compile Include="Resolver\CSharpConversions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

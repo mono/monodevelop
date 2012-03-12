@@ -1,4 +1,4 @@
-// 
+﻿// 
 // SplitDeclarationAndAssignment.cs
 //  
 // Author:
@@ -32,10 +32,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class SplitDeclarationAndAssignment : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			AstType type;
-			return GetVariableDeclarationStatement (context, out type, cancellationToken) != null;
+			return GetVariableDeclarationStatement (context, out type) != null;
 		}
 		
 		public void Run (RefactoringContext context)
@@ -46,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var assign = new AssignmentExpression (new IdentifierExpression (varDecl.Variables.First ().Name), AssignmentOperatorType.Assign, varDecl.Variables.First ().Initializer.Clone ());
 			
 			var newVarDecl = (VariableDeclarationStatement)varDecl.Clone ();
+			newVarDecl.Role = BlockStatement.StatementRole;
 			
 			if (newVarDecl.Type.IsMatch (new SimpleType ("var")))
 				newVarDecl.Type = type;

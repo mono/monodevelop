@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		readonly static MemberReferenceExpression PrototypeFormatReference = new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "Format");
 		
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			if (!context.IsSomethingSelected)
 				return false;

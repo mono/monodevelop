@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class CreateEventInvocator : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			VariableInitializer initializer;
 			var eventDeclaration = GetEventDeclaration (context, out initializer);
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				ReturnType = new PrimitiveType ("void"),
 				Modifiers = ICSharpCode.NRefactory.CSharp.Modifiers.Protected | ICSharpCode.NRefactory.CSharp.Modifiers.Virtual,
 				Body = new BlockStatement () {
-					new VariableDeclarationStatement (context.CreateShortType (eventDeclaration.ReturnType), handlerName, new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name)),
+					new VariableDeclarationStatement (eventDeclaration.ReturnType.Clone (), handlerName, new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name)),
 					new IfElseStatement () {
 						Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null)),
 						TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName), arguments))

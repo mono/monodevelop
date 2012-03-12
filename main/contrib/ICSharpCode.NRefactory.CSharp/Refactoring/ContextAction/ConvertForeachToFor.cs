@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ConvertForeachToFor.cs
 //  
 // Author:
@@ -35,9 +35,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class ConvertForeachToFor : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
-			return GetForeachStatement (context, cancellationToken) != null;
+			return GetForeachStatement (context) != null;
 		}
 
 		static string GetCountProperty (IType type)
@@ -82,13 +82,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		static ForeachStatement GetForeachStatement (RefactoringContext context, CancellationToken cancellationToken = default (CancellationToken))
+		static ForeachStatement GetForeachStatement (RefactoringContext context)
 		{
 			var astNode = context.GetNode ();
 			if (astNode == null)
 				return null;
 			var result = (astNode as ForeachStatement) ?? astNode.Parent as ForeachStatement;
-			if (result == null || context.Resolve (result.InExpression, cancellationToken) == null)
+			if (result == null || context.Resolve (result.InExpression) == null)
 				return null;
 			return result;
 		}

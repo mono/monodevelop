@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class AddAnotherAccessor : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			var pdecl = GetPropertyDeclaration (context);
 			if (pdecl == null)
@@ -53,12 +53,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Body = new BlockStatement { accessorStatement }
 			};
 			
-			pdecl.AddChild (accessor, pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole);
+			accessor.Role = pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole;
 			
 			using (var script = context.StartScript ()) {
 				script.InsertBefore (pdecl.RBraceToken, accessor);
 				script.Select (accessorStatement);
-				script.FormatText (ctx => GetPropertyDeclaration (context));
+				script.FormatText (pdecl);
 			}
 		}
 

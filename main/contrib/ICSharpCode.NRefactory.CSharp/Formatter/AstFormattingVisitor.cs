@@ -1,6 +1,6 @@
 ﻿// 
 // AstFormattingVisitor.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +36,36 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class AstFormattingVisitor : DepthFirstAstVisitor
 	{
+		sealed class TextReplaceAction
+		{
+			internal readonly int Offset;
+			internal readonly int RemovalLength;
+			internal readonly string NewText;
+			internal TextReplaceAction DependsOn;
+			
+			public TextReplaceAction(int offset, int removalLength, string newText)
+			{
+				this.Offset = offset;
+				this.RemovalLength = removalLength;
+				this.NewText = newText ?? string.Empty;
+			}
+			
+			public override bool Equals(object obj)
+			{
+				TextReplaceAction other = obj as TextReplaceAction;
+				if (other == null)
+					return false;
+				return this.Offset == other.Offset && this.RemovalLength == other.RemovalLength && this.NewText == other.NewText;
+			}
+			
+			public override int GetHashCode()
+			{
+				return 0;
+			}
+		}
+		
 		CSharpFormattingOptions policy;
 		IDocument document;
-		IActionFactory factory;
 		List<TextReplaceAction> changes = new List<TextReplaceAction> ();
 		Indent curIndent = new Indent ();
 
@@ -55,10 +83,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public List<TextReplaceAction> Changes {
-			get { return this.changes; }
-		}
-
 		public bool CorrectBlankLines {
 			get;
 			set;
@@ -71,18 +95,75 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string EolMarker { get; set; }
 
-		public AstFormattingVisitor (CSharpFormattingOptions policy, IDocument document, IActionFactory factory,
-		                             bool tabsToSpaces = false, int indentationSize = 4)
+		public AstFormattingVisitor (CSharpFormattingOptions policy, IDocument document, bool tabsToSpaces = false, int indentationSize = 4)
 		{
-			if (factory == null)
-				throw new ArgumentNullException ("factory");
+			if (policy == null)
+				throw new ArgumentNullException("policy");
+			if (document == null)
+				throw new ArgumentNullException("document");
 			this.policy = policy;
 			this.document = document;
 			this.curIndent.TabsToSpaces = tabsToSpaces;
 			this.curIndent.TabSize = indentationSize;
-			this.factory = factory;
 			this.EolMarker = Environment.NewLine;
 			CorrectBlankLines = true;
+		}
+		
+		/// <summary>
+		/// Applies the changes to the input document.
+		/// </summary>
+		public void ApplyChanges()
+		{
+			ApplyChanges(0, document.TextLength, document.Replace);
+		}
+		
+		public void ApplyChanges(int startOffset, int length)
+		{
+			ApplyChanges(startOffset, length, document.Replace);
+		}
+		
+		/// <summary>
+		/// Applies the changes to the given Script instance.
+		/// </summary>
+		public void ApplyChanges(Script script)
+		{
+			ApplyChanges(0, document.TextLength, script.Replace);
+		}
+		
+		public void ApplyChanges(int startOffset, int length, Script script)
+		{
+			ApplyChanges(startOffset, length, script.Replace);
+		}
+		
+		void ApplyChanges(int startOffset, int length, Action<int, int, string> documentReplace)
+		{
+			int endOffset = startOffset + length;
+			TextReplaceAction previousChange = null;
+			int delta = 0;
+			foreach (var change in changes.OrderBy(c => c.Offset)) {
+				if (previousChange != null) {
+					if (change.Equals(previousChange)) {
+						// ignore duplicate changes
+						continue;
+					}
+					if (change.Offset < previousChange.Offset + previousChange.RemovalLength) {
+						throw new InvalidOperationException("Detected overlapping changes");
+					}
+				}
+				previousChange = change;
+				
+				if (change.Offset < startOffset) {
+					// skip all changes in front of the begin offset
+					continue;
+				} else if (change.Offset > endOffset) {
+					// skip this change unless it depends on one that we already applied
+					continue;
+				}
+				
+				documentReplace(change.Offset + delta, change.RemovalLength, change.NewText);
+				delta += change.NewText.Length - change.RemovalLength;
+			}
+			changes.Clear();
 		}
 
 		public override void VisitCompilationUnit (CompilationUnit unit)
@@ -137,17 +218,17 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingDeclaration (UsingDeclaration usingDeclaration)
 		{
-			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) 
+			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration))
 				EnsureBlankLinesBefore (usingDeclaration, policy.BlankLinesBeforeUsings);
-			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
+			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration))
 				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
 		}
 
 		public override void VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration)
 		{
-			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) 
+			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration))
 				EnsureBlankLinesBefore (usingDeclaration, policy.BlankLinesBeforeUsings);
-			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) 
+			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration))
 				EnsureBlankLinesAfter (usingDeclaration, policy.BlankLinesAfterUsings);
 		}
 
@@ -297,10 +378,10 @@ namespace ICSharpCode.NRefactory.CSharp
 //			if (n == null || n.IsNull)
 //				return 0;
 //			AstLocation location = n.StartLocation;
-//			
+//
 //			int offset = data.LocationToOffset (location.Line, location.Column);
 //			int i = offset - 1;
-//			
+//
 //			while (i >= 0 && IsSpacing (data.GetCharAt (i))) {
 //				i--;
 //			}
@@ -316,7 +397,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			// respect manual line breaks.
 			if (location.Column <= 1 || GetIndentation (location.Line).Length == location.Column - 1)
 				return 0;
-	
+			
 			int offset = document.GetOffset (location);
 			int i = offset - 1;
 			while (i >= 0 && IsSpacing (document.GetCharAt (i))) {
@@ -538,7 +619,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				initializer.AcceptVisitor (this);
 			}
-			IndentLevel--;			
+			IndentLevel--;
 		}
 
 		public override void VisitAccessor (Accessor accessor)
@@ -588,7 +669,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				initializer.AcceptVisitor (this);
 			}
-			IndentLevel--;			
+			IndentLevel--;
 		}
 
 		public override void VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration)
@@ -703,8 +784,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ForceSpacesBefore (constructorDeclaration.RParToken, policy.SpaceBetweenEmptyConstructorDeclarationParentheses);
 			}
 			FormatCommas (constructorDeclaration, policy.SpaceBeforeConstructorDeclarationParameterComma, policy.SpaceAfterConstructorDeclarationParameterComma);
-		
-			object result = null;
+			
 			if (!constructorDeclaration.Body.IsNull) {
 				EnforceBraceStyle (policy.ConstructorBraceStyle, constructorDeclaration.Body.LBraceToken, constructorDeclaration.Body.RBraceToken);
 				if (policy.IndentMethodBody)
@@ -725,7 +805,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			int offset = this.document.GetOffset (lParen.StartLocation);
 			ForceSpaceBefore (offset, policy.SpaceBeforeConstructorDeclarationParentheses);
 			
-			object result = null;
 			if (!destructorDeclaration.Body.IsNull) {
 				EnforceBraceStyle (policy.DestructorBraceStyle, destructorDeclaration.Body.LBraceToken, destructorDeclaration.Body.RBraceToken);
 				if (policy.IndentMethodBody)
@@ -821,54 +900,54 @@ namespace ICSharpCode.NRefactory.CSharp
 			TextReplaceAction endBraceAction = null;
 
 			switch (braceForcement) {
-			case BraceForcement.DoNotChange:
-				//nothing
-				break;
-			case BraceForcement.AddBraces:
-				if (!isBlock) {
-					AstNode n = node.Parent.GetCSharpNodeBefore (node);
-					int start = document.GetOffset (n.EndLocation);
-					var next = n.GetNextNode ();
-					int offset = document.GetOffset (next.StartLocation);
-					string startBrace = "";
-					switch (braceStyle) {
-					case BraceStyle.EndOfLineWithoutSpace:
-						startBrace = "{";
-						break;
-					case BraceStyle.BannerStyle:
-					case BraceStyle.EndOfLine:
-						startBrace = " {";
-						break;
-					case BraceStyle.NextLine:
-						startBrace = this.EolMarker + curIndent.IndentString + "{";
-						break;
-					case BraceStyle.NextLineShifted2:
-					case BraceStyle.NextLineShifted:
-						startBrace = this.EolMarker + curIndent.IndentString + curIndent.SingleIndent + "{";
-						break;
+				case BraceForcement.DoNotChange:
+					//nothing
+					break;
+				case BraceForcement.AddBraces:
+					if (!isBlock) {
+						AstNode n = node.Parent.GetCSharpNodeBefore (node);
+						int start = document.GetOffset (n.EndLocation);
+						var next = n.GetNextNode ();
+						int offset = document.GetOffset (next.StartLocation);
+						string startBrace = "";
+						switch (braceStyle) {
+							case BraceStyle.EndOfLineWithoutSpace:
+								startBrace = "{";
+								break;
+							case BraceStyle.BannerStyle:
+							case BraceStyle.EndOfLine:
+								startBrace = " {";
+								break;
+							case BraceStyle.NextLine:
+								startBrace = this.EolMarker + curIndent.IndentString + "{";
+								break;
+							case BraceStyle.NextLineShifted2:
+							case BraceStyle.NextLineShifted:
+								startBrace = this.EolMarker + curIndent.IndentString + curIndent.SingleIndent + "{";
+								break;
+						}
+						if (IsLineIsEmptyUpToEol (document.GetOffset (node.StartLocation)))
+							startBrace += this.EolMarker + GetIndentation (node.StartLocation.Line);
+						beginBraceAction = AddChange (start, offset - start, startBrace);
 					}
-					if (IsLineIsEmptyUpToEol (document.GetOffset (node.StartLocation)))
-						startBrace += this.EolMarker + GetIndentation (node.StartLocation.Line);
-					beginBraceAction = AddChange (start, offset - start, startBrace);
-				}
-				break;
-			case BraceForcement.RemoveBraces:
-				if (isBlock) {
-					BlockStatement block = node as BlockStatement;
-					if (block.Statements.Count () == 1) {
-						int offset1 = document.GetOffset (node.StartLocation);
-						int start = SearchWhitespaceStart (offset1);
-						
-						int offset2 = document.GetOffset (node.EndLocation);
-						int end = SearchWhitespaceStart (offset2 - 1);
-						
-						beginBraceAction = AddChange (start, offset1 - start + 1, null);
-						endBraceAction = AddChange (end + 1, offset2 - end, null);
-						node = block.FirstChild;
-						isBlock = false;
+					break;
+				case BraceForcement.RemoveBraces:
+					if (isBlock) {
+						BlockStatement block = node as BlockStatement;
+						if (block.Statements.Count () == 1) {
+							int offset1 = document.GetOffset (node.StartLocation);
+							int start = SearchWhitespaceStart (offset1);
+							
+							int offset2 = document.GetOffset (node.EndLocation);
+							int end = SearchWhitespaceStart (offset2 - 1);
+							
+							beginBraceAction = AddChange (start, offset1 - start + 1, null);
+							endBraceAction = AddChange (end + 1, offset2 - end, null);
+							node = block.FirstChild;
+							isBlock = false;
+						}
 					}
-				}
-				break;
+					break;
 			}
 			if (isBlock) {
 				BlockStatement block = node as BlockStatement;
@@ -1009,35 +1088,9 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		TextReplaceAction AddChange (int offset, int removedChars, string insertedText)
 		{
-			if (changes.Any (c => c.Offset == offset && c.RemovedChars == removedChars 
-				&& c.InsertedText == insertedText))
-				return null;
-			string currentText = document.GetText (offset, removedChars);
-			if (currentText == insertedText)
-				return null;
-			if (currentText.Any (c => !(char.IsWhiteSpace (c) || c == '\r' || c == '\t' || c == '{' || c == '}')))
-				throw new InvalidOperationException ("Tried to remove non ws chars: '" + currentText + "'");
-			foreach (var change in changes) {
-				if (change.Offset == offset) {
-					if (removedChars > 0 && insertedText == change.InsertedText) {
-						change.RemovedChars = removedChars;
-//						change.InsertedText = insertedText;
-						return null;
-					}
-					if (!string.IsNullOrEmpty (change.InsertedText)) {
-						change.InsertedText += insertedText;
-					} else {
-						change.InsertedText = insertedText;
-					}
-					change.RemovedChars = System.Math.Max (removedChars, change.RemovedChars);
-					return null;
-				}
-			}
-			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}, removedText={3}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."), removedChars > 0 ? document.GetText (offset, removedChars).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", ".") : "null");
-			//Console.WriteLine (Environment.StackTrace);
-			var result = factory.CreateTextReplaceAction (offset, removedChars, insertedText);
-			changes.Add (result);
-			return result;
+			var action = new TextReplaceAction(offset, removedChars, insertedText);
+			changes.Add(action);
+			return action;
 		}
 
 		public bool IsLineIsEmptyUpToEol (TextLocation startLocation)
@@ -1204,7 +1257,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			if (policy.IndentCaseBody)
 				curIndent.Level--;
-				
+			
 			if (policy.IndentSwitchBody)
 				curIndent.Level--;
 		}
@@ -1610,7 +1663,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return result;
 		}
-		*/
+		 */
 		
 		
 		public void FixSemicolon (CSharpTokenNode semicolon)
@@ -1667,7 +1720,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				Console.WriteLine (Environment.StackTrace);
 				return;
 			}
-		
+			
 			string lineIndent = GetIndentation (location.Line);
 			string indentString = this.curIndent.IndentString;
 			if (indentString != lineIndent && location.Column - 1 + relOffset == lineIndent.Length) {
@@ -1681,10 +1734,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			string indentString = this.curIndent.IndentString;
 			if (location.Column - 1 == lineIndent.Length) {
 				AddChange (document.GetOffset (location.Line, 1), lineIndent.Length, indentString);
-			} else { 
+			} else {
 				int offset = document.GetOffset (location);
 				int start = SearchWhitespaceLineStart (offset);
-				if (start > 0) { 
+				if (start > 0) {
 					char ch = document.GetCharAt (start - 1);
 					if (ch == '\n') {
 						start--;

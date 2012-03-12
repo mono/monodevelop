@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RemoveBraces.cs
 //  
 // Author:
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class RemoveBraces : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			return GetBlockStatement (context) != null;
 		}
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			using (var script = context.StartScript ()) {
 				script.Remove (block.LBraceToken);
 				script.Remove (block.RBraceToken);
-				script.FormatText (ctx => ctx.Unit.GetNodeAt (block.Parent.StartLocation));
+				script.FormatText (block.Parent);
 			}
 		}
 		
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return null;
 			if (!(block.Parent is Statement)) 
 				return null;
-			if (block.Statements.Count () != 1)
+			if (block.Statements.Count != 1)
 				return null;
 			return block;
 		}

@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			CacheManager cache = compilation.CacheManager;
 			CSharpOperators operators = (CSharpOperators)cache.GetShared(typeof(CSharpOperators));
 			if (operators == null) {
-				operators = (CSharpOperators)cache.GetOrAddShared(typeof(Conversions), new CSharpOperators(compilation));
+				operators = (CSharpOperators)cache.GetOrAddShared(typeof(CSharpOperators), new CSharpOperators(compilation));
 			}
 			return operators;
 		}

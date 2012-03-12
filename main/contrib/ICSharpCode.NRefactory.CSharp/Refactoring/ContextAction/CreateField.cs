@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CreateField.cs
 //  
 // Author:
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class CreateField : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			var identifier = GetIdentifier (context);
 			if (identifier == null)
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (identifier.Parent is AssignmentExpression) {
 				var assign = (AssignmentExpression)identifier.Parent;
 				var other = assign.Left == identifier ? assign.Right : assign.Left;
-				return context.Resolve (other).Type.ConvertToAstType ();
+				return context.CreateShortType (context.Resolve (other).Type);
 			}
 			return null;
 		}

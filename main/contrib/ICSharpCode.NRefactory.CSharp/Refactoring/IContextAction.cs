@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ContextAction.cs
 //  
 // Author:
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public interface IContextAction
 	{
-		bool IsValid (RefactoringContext context, CancellationToken cancellationToken);
+		bool IsValid (RefactoringContext context);
 		void Run (RefactoringContext context);
 	}
 }

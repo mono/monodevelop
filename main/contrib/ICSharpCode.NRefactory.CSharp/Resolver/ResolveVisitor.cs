@@ -473,7 +473,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			while (!resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
 				parent = parent.Parent;
 				if (parent == null)
-					throw new InvalidOperationException("Could not find a resolver state for any parent of the specified node. Did you forget to call 'Scan(compilationUnit);'?");
+					throw new InvalidOperationException("Could not find a resolver state for any parent of the specified node. Are you trying to resolve a node that is not a descendant of the CSharpAstResolver's root node?");
 			}
 			return storedResolver;
 		}
@@ -653,7 +653,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ITypeDefinition typeDef = resolver.CurrentTypeDefinition;
 			if (typeDef == null)
 				return null;
-			return typeDef.GetMembers(m => m.ParsedFile == parsedFile && m.Region.IsInside(location), GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions).FirstOrDefault();
+			return typeDef.GetMembers(
+				delegate (IUnresolvedMember m) {
+					if (m.ParsedFile != parsedFile)
+						return false;
+					DomRegion region = m.Region;
+					return !region.IsEmpty && region.Begin <= location && region.End > location;
+				},
+				GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions
+			).FirstOrDefault();
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitVariableInitializer(VariableInitializer variableInitializer)
@@ -1255,7 +1263,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult rr = resolver.ResolveIndexer(targetResult, arguments, argumentNames);
 				ArrayAccessResolveResult aarr = rr as ArrayAccessResolveResult;
 				if (aarr != null) {
-					ProcessConversionResults(indexerExpression.Arguments, aarr.Indices);
+					ProcessConversionResults(indexerExpression.Arguments, aarr.Indexes);
 				} else {
 					ProcessConversionsInInvocation(target, indexerExpression.Arguments, rr as CSharpInvocationResolveResult);
 				}
@@ -1838,7 +1846,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			}
 			
-			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, CSharpConversions conversions)
 			{
 				Log.WriteLine("Testing validity of {0} for return-type {1}...", this, returnType);
 				Log.Indent();
@@ -1988,7 +1996,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return parameters; }
 			}
 			
-			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, CSharpConversions conversions)
 			{
 				Log.WriteLine("Testing validity of {0} for parameters ({1}) and return-type {2}...",
 				              this, string.Join<IType>(", ", parameterTypes), returnType);
@@ -2171,7 +2179,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return c;
 			}
 			
-			public Conversion IsValid(IType returnType, Conversions conversions)
+			public Conversion IsValid(IType returnType, CSharpConversions conversions)
 			{
 				bool valid = success && IsValidLambda(isValidAsVoidMethod, isEndpointUnreachable, lambda.IsAsync, returnValues, returnType, conversions);
 				return new AnonymousFunctionConversion(returnType, this, valid);
@@ -2365,7 +2373,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				|| expr is AssignmentExpression;
 		}
 		
-		static bool IsValidLambda(bool isValidAsVoidMethod, bool isEndpointUnreachable, bool isAsync, IList<ResolveResult> returnValues, IType returnType, Conversions conversions)
+		static bool IsValidLambda(bool isValidAsVoidMethod, bool isEndpointUnreachable, bool isAsync, IList<ResolveResult> returnValues, IType returnType, CSharpConversions conversions)
 		{
 			if (returnType.Kind == TypeKind.Void) {
 				// Lambdas that are valid statement lambdas or expression lambdas with a statement-expression
@@ -3135,7 +3143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return parameters; }
 			}
 			
-			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, CSharpConversions conversions)
 			{
 				if (parameterTypes.Length == parameters.Length) {
 					this.inferredParameterTypes = parameterTypes;

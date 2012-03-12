@@ -1,6 +1,6 @@
 ﻿// 
 // RemoveBackingStore.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -34,9 +34,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class RemoveBackingStore : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
-			return GetBackingField (context, cancellationToken) != null;
+			return GetBackingField (context) != null;
 		}
 		
 		public void Run (RefactoringContext context)
@@ -44,16 +44,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var property = context.GetNode<PropertyDeclaration> ();
 			var field = GetBackingField (context);
 			
-			context.ReplaceReferences (field, property);
-			
-			// create new auto property 
-			var newProperty = (PropertyDeclaration)property.Clone ();	
+			// create new auto property
+			var newProperty = (PropertyDeclaration)property.Clone ();
 			newProperty.Getter.Body = BlockStatement.Null;
 			newProperty.Setter.Body = BlockStatement.Null;
 			
 			using (var script = context.StartScript ()) {
-				script.Remove (context.Unit.GetNodeAt<FieldDeclaration> (field.Region.BeginLine, field.Region.BeginColumn));
+				script.Remove (context.RootNode.GetNodeAt<FieldDeclaration> (field.Region.BeginLine, field.Region.BeginColumn));
 				script.Replace (property, newProperty);
+				script.Rename (field, newProperty.Name);
 			}
 			
 		}
@@ -75,19 +74,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 //				}
 //			}
 //		}
-//		
-		static IField GetBackingField (RefactoringContext context, CancellationToken cancellationToken = default(CancellationToken))
+//
+		static readonly Version csharp3 = new Version(3, 0);
+		
+		static IField GetBackingField (RefactoringContext context)
 		{
 			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
 			// automatic properties always need getter & setter
 			if (propertyDeclaration == null || propertyDeclaration.Getter.IsNull || propertyDeclaration.Setter.IsNull || propertyDeclaration.Getter.Body.IsNull || propertyDeclaration.Setter.Body.IsNull)
 				return null;
-			if (!context.HasCSharp3Support || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ClassType.Interface)
+			if (!context.Supports(csharp3) || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ClassType.Interface)
 				return null;
-			var getterField = ScanGetter (context, propertyDeclaration, cancellationToken);
+			var getterField = ScanGetter (context, propertyDeclaration);
 			if (getterField == null)
 				return null;
-			var setterField = ScanSetter (context, propertyDeclaration, cancellationToken);
+			var setterField = ScanSetter (context, propertyDeclaration);
 			if (setterField == null)
 				return null;
 			if (getterField.Region != setterField.Region)
@@ -95,20 +96,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return getterField;
 		}
 		
-		internal static IField ScanGetter (RefactoringContext context, PropertyDeclaration propertyDeclaration, CancellationToken cancellationToken = default(CancellationToken))
+		internal static IField ScanGetter (RefactoringContext context, PropertyDeclaration propertyDeclaration)
 		{
 			if (propertyDeclaration.Getter.Body.Statements.Count != 1)
 				return null;
 			var returnStatement = propertyDeclaration.Getter.Body.Statements.First () as ReturnStatement;
 			if (returnStatement == null)
 				return null;
-			var result = context.Resolve (returnStatement.Expression, cancellationToken);
+			var result = context.Resolve (returnStatement.Expression);
 			if (result == null || !(result is MemberResolveResult))
 				return null;
 			return ((MemberResolveResult)result).Member as IField;
 		}
 		
-		internal static IField ScanSetter (RefactoringContext context, PropertyDeclaration propertyDeclaration, CancellationToken cancellationToken = default(CancellationToken))
+		internal static IField ScanSetter (RefactoringContext context, PropertyDeclaration propertyDeclaration)
 		{
 			if (propertyDeclaration.Setter.Body.Statements.Count != 1)
 				return null;
@@ -116,7 +117,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var assignment = setAssignment != null ? setAssignment.Expression as AssignmentExpression : null;
 			if (assignment == null || assignment.Operator != AssignmentOperatorType.Assign)
 				return null;
-			var result = context.Resolve (assignment.Left, cancellationToken);
+			var result = context.Resolve (assignment.Left);
 			if (result == null || !(result is MemberResolveResult))
 				return null;
 			return ((MemberResolveResult)result).Member as IField;

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UseVarKeyword.cs
 //  
 // Author:
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class UseVarKeyword : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			return GetVariableDeclarationStatement (context) != null || GetForeachStatement (context) != null;
 		}

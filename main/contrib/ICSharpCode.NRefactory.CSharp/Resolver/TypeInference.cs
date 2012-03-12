@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public sealed class TypeInference
 	{
 		readonly ICompilation compilation;
-		readonly Conversions conversions;
+		readonly CSharpConversions conversions;
 		TypeInferenceAlgorithm algorithm = TypeInferenceAlgorithm.CSharp4;
 		
 		// determines the maximum generic nesting level; necessary to avoid infinite recursion in 'Improved' mode.
@@ -63,10 +63,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
 			this.compilation = compilation;
-			this.conversions = Conversions.Get(compilation);
+			this.conversions = CSharpConversions.Get(compilation);
 		}
 		
-		internal TypeInference(ICompilation compilation, Conversions conversions)
+		internal TypeInference(ICompilation compilation, CSharpConversions conversions)
 		{
 			Debug.Assert(compilation != null);
 			Debug.Assert(conversions != null);
@@ -513,7 +513,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					                                        allowExtensionMethods: false,
 					                                        allowExpandingParams: false);
 					if (or.FoundApplicableCandidate && or.BestCandidateAmbiguousWith == null) {
-						IType returnType = or.BestCandidate.ReturnType;
+						IType returnType = or.GetBestCandidateWithSubstitutedTypeArguments().ReturnType;
 						MakeLowerBoundInference(returnType, m.ReturnType);
 					}
 				}

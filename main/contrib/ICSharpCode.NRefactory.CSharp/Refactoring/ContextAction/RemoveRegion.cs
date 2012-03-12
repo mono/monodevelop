@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RemoveRegion.cs
 //  
 // Author:
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class RemoveRegion : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			return GetDirective (context) != null;
 		}
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public void Run (RefactoringContext context)
 		{
 			var directive = GetDirective (context);
-			var endDirective = DirectiveSearcher.GetEndRegion (context.Unit, directive);
+			var endDirective = DirectiveSearcher.GetEndRegion (context.RootNode, directive);
 			if (endDirective == null)
 				return;
 			using (var script = context.StartScript ()) {
@@ -62,10 +62,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.regionDirective = regionDirective;
 			}
 			
-			public static PreProcessorDirective GetEndRegion (CompilationUnit unit, PreProcessorDirective regionDirective)
+			public static PreProcessorDirective GetEndRegion (AstNode rootNode, PreProcessorDirective regionDirective)
 			{
 				var visitor = new DirectiveSearcher (regionDirective);
-				unit.AcceptVisitor (visitor);
+				rootNode.AcceptVisitor (visitor);
 				return visitor.endregion;
 			}
 			

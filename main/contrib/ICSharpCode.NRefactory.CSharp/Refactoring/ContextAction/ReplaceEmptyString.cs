@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ReplaceEmptyString.cs
 //  
 // Author:
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class ReplaceEmptyString : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			return GetEmptyString (context) != null;
 		}

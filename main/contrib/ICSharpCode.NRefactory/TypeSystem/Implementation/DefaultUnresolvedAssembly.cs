@@ -67,6 +67,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public string Location {
+			get;
+			set;
+		}
+		
 		public IList<IUnresolvedAttribute> AssemblyAttributes {
 			get { return assemblyAttributes; }
 		}

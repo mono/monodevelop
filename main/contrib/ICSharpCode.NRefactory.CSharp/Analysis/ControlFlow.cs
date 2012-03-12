@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		/// Gets the try-finally statements that this control flow edge is leaving.
 		/// </summary>
 		public IEnumerable<TryCatchStatement> TryFinallyStatements {
-			get { return jumpOutOfTryFinally ?? EmptyList<TryCatchStatement>.Instance; }
+			get { return jumpOutOfTryFinally ?? Enumerable.Empty<TryCatchStatement>(); }
 		}
 	}
 	

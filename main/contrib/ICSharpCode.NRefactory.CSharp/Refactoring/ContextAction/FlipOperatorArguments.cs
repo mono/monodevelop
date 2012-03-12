@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FlipOperatorArguments.cs
 //  
 // Author:
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class FlipOperatorArguments : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			return GetBinaryOperatorExpression (context) != null;
 		}
@@ -40,8 +40,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var binop = GetBinaryOperatorExpression (context);
 			
 			using (var script = context.StartScript ()) {
-				script.Replace (binop.Left, binop.Right);
-				script.Replace (binop.Right, binop.Left);
+				script.Replace (binop.Left, binop.Right.Clone());
+				script.Replace (binop.Right, binop.Left.Clone());
 			}
 		}
 		

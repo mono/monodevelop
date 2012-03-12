@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			EntityDeclaration node = astBuilder.ConvertEntity(entity);
 			PrintModifiers(node.Modifiers, formatter);
 			
-			if ((ConversionFlags & ConversionFlags.ShowDefinitionKeyWord) == ConversionFlags.ShowDefinitionKeyWord) {
+			if ((ConversionFlags & ConversionFlags.ShowDefinitionKeyword) == ConversionFlags.ShowDefinitionKeyword) {
 				if (node is TypeDeclaration) {
 					switch (((TypeDeclaration)node).ClassType) {
 						case ClassType.Class:

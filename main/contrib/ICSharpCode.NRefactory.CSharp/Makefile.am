@@ -242,8 +242,8 @@ FILES =  \
 	Refactoring/TextReplaceAction.cs \
 	Refactoring/TypeSystemAstBuilder.cs \
 	Resolver/CompositeResolveVisitorNavigator.cs \
-	Resolver/Conversions.cs \
 	Resolver/CSharpAstResolver.cs \
+	Resolver/CSharpConversions.cs \
 	Resolver/CSharpInvocationResolveResult.cs \
 	Resolver/CSharpOperators.cs \
 	Resolver/CSharpResolver.cs \

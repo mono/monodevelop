@@ -1,4 +1,4 @@
-// 
+﻿// 
 // InvertIf.cs
 //  
 // Author:
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class InvertIf : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			var ifStatement = GetIfElseStatement (context);
 			return ifStatement != null && !ifStatement.TrueStatement.IsNull && !ifStatement.FalseStatement.IsNull;
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.Replace (ifStatement.Condition, CSharpUtil.InvertCondition (ifStatement.Condition));
 				script.Replace (ifStatement.TrueStatement, ifStatement.FalseStatement);
 				script.Replace (ifStatement.FalseStatement, ifStatement.TrueStatement);
-				script.FormatText (ctx => GetIfElseStatement (ctx));
+				script.FormatText (ifStatement);
 			}
 		}
 		
