@@ -1426,10 +1426,13 @@ namespace Mono.TextEditor
 						if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
 							DrawCaretLineMarker (cr, pangoPosition / Pango.Scale.PangoScale, y, vx / Pango.Scale.PangoScale);
 
+						// When drawing virtual space before the selection start paint it as unselected.
+						var virtualSpaceMod = selectionStart < caretOffset ? 0 : virtualSpace.Length;
+
 						if (DecorateLineBg != null)
-							DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
+							DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStart + virtualSpaceMod, selectionEnd + virtualSpace.Length);
 						if (DecorateLineFg != null)
-							DecorateLineFg (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
+							DecorateLineFg (cr, wrapper, offset, length, xPos, y, selectionStart + virtualSpaceMod, selectionEnd + virtualSpace.Length);
 						wrapper.Dispose ();
 						pangoPosition += vx;
 					} else if (index == length && textEditor.preeditString == null) {
