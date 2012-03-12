@@ -46,14 +46,12 @@ using Sharpen;
 
 namespace NGit.Util.IO
 {
-	/// <summary>
-	/// An input stream which canonicalizes EOLs bytes on the fly to '\n', unless the
-	/// first 8000 bytes indicate the stream is binary.
-	/// </summary>
+	/// <summary>An input stream which canonicalizes EOLs bytes on the fly to '\n'.</summary>
 	/// <remarks>
-	/// An input stream which canonicalizes EOLs bytes on the fly to '\n', unless the
-	/// first 8000 bytes indicate the stream is binary.
-	/// Note: Make sure to apply this InputStream only to text files!
+	/// An input stream which canonicalizes EOLs bytes on the fly to '\n'.
+	/// Optionally, a binary check on the first 8000 bytes is performed
+	/// and in case of binary files, canonicalization is turned off
+	/// (for the complete file).
 	/// </remarks>
 	public class EolCanonicalizingInputStream : InputStream
 	{
@@ -69,13 +67,14 @@ namespace NGit.Util.IO
 
 		private bool isBinary;
 
-		private bool modeDetected;
+		private bool detectBinary;
 
 		/// <summary>Creates a new InputStream, wrapping the specified stream</summary>
 		/// <param name="in">raw input stream</param>
-		public EolCanonicalizingInputStream(InputStream @in)
+		public EolCanonicalizingInputStream(InputStream @in, bool detectBinary)
 		{
 			this.@in = @in;
+			this.detectBinary = detectBinary;
 		}
 
 		/// <exception cref="System.IO.IOException"></exception>
@@ -143,10 +142,10 @@ namespace NGit.Util.IO
 			{
 				return false;
 			}
-			if (!modeDetected)
+			if (detectBinary)
 			{
 				isBinary = RawText.IsBinary(buf, cnt);
-				modeDetected = true;
+				detectBinary = false;
 			}
 			ptr = 0;
 			return true;

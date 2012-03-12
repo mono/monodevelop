@@ -87,6 +87,54 @@ namespace NGit.Transport
 			ANY
 		}
 
+		/// <summary>Data in the first line of a request, the line itself plus options.</summary>
+		/// <remarks>Data in the first line of a request, the line itself plus options.</remarks>
+		public class FirstLine
+		{
+			private readonly string line;
+
+			private readonly ICollection<string> options;
+
+			/// <summary>Parse the first line of a receive-pack request.</summary>
+			/// <remarks>Parse the first line of a receive-pack request.</remarks>
+			/// <param name="line">line from the client.</param>
+			public FirstLine(string line)
+			{
+				if (line.Length > 45)
+				{
+					HashSet<string> opts = new HashSet<string>();
+					string opt = Sharpen.Runtime.Substring(line, 45);
+					if (opt.StartsWith(" "))
+					{
+						opt = Sharpen.Runtime.Substring(opt, 1);
+					}
+					foreach (string c in opt.Split(" "))
+					{
+						opts.AddItem(c);
+					}
+					this.line = Sharpen.Runtime.Substring(line, 0, 45);
+					this.options = Sharpen.Collections.UnmodifiableSet(opts);
+				}
+				else
+				{
+					this.line = line;
+					this.options = Sharpen.Collections.EmptySet<string>();
+				}
+			}
+
+			/// <returns>non-capabilities part of the line.</returns>
+			public virtual string GetLine()
+			{
+				return line;
+			}
+
+			/// <returns>options parsed from the line.</returns>
+			public virtual ICollection<string> GetOptions()
+			{
+				return options;
+			}
+		}
+
 		/// <summary>Database we read the objects from.</summary>
 		/// <remarks>Database we read the objects from.</remarks>
 		private readonly Repository db;
@@ -158,7 +206,7 @@ namespace NGit.Transport
 
 		/// <summary>Capabilities requested by the client.</summary>
 		/// <remarks>Capabilities requested by the client.</remarks>
-		private readonly ICollection<string> options = new HashSet<string>();
+		private ICollection<string> options;
 
 		/// <summary>Raw ObjectIds the client has asked for, before validating them.</summary>
 		/// <remarks>Raw ObjectIds the client has asked for, before validating them.</remarks>
@@ -467,6 +515,29 @@ namespace NGit.Transport
 		public virtual void SetLogger(UploadPackLogger logger)
 		{
 			this.logger = logger;
+		}
+
+		/// <summary>Check whether the client expects a side-band stream.</summary>
+		/// <remarks>Check whether the client expects a side-band stream.</remarks>
+		/// <returns>
+		/// true if the client has advertised a side-band capability, false
+		/// otherwise.
+		/// </returns>
+		/// <exception cref="RequestNotYetReadException">
+		/// if the client's request has not yet been read from the wire, so
+		/// we do not know if they expect side-band. Note that the client
+		/// may have already written the request, it just has not been
+		/// read.
+		/// </exception>
+		/// <exception cref="NGit.Transport.RequestNotYetReadException"></exception>
+		public virtual bool IsSideBand()
+		{
+			if (options == null)
+			{
+				throw new RequestNotYetReadException();
+			}
+			return (options.Contains(OPTION_SIDE_BAND) || options.Contains(OPTION_SIDE_BAND_64K
+				));
 		}
 
 		/// <summary>Execute the upload task on the socket.</summary>
@@ -778,16 +849,9 @@ namespace NGit.Transport
 				}
 				if (isFirst && line.Length > 45)
 				{
-					string opt = Sharpen.Runtime.Substring(line, 45);
-					if (opt.StartsWith(" "))
-					{
-						opt = Sharpen.Runtime.Substring(opt, 1);
-					}
-					foreach (string c in opt.Split(" "))
-					{
-						options.AddItem(c);
-					}
-					line = Sharpen.Runtime.Substring(line, 0, 45);
+					UploadPack.FirstLine firstLine = new UploadPack.FirstLine(line);
+					options = firstLine.GetOptions();
+					line = firstLine.GetLine();
 				}
 				wantIds.AddItem(ObjectId.FromString(Sharpen.Runtime.Substring(line, 5)));
 				isFirst = false;

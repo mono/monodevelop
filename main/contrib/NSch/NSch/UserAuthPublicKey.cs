@@ -154,6 +154,10 @@ loop1_break: ;
 							{
 								break;
 							}
+							else
+							{
+								throw new System.Exception ("Invalid passphrase supplied for the ssh key");
+							}
 						}
 						Util.Bzero(passphrase);
 						passphrase = null;

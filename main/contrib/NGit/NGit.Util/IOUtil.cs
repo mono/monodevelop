@@ -138,13 +138,7 @@ namespace NGit.Util
 					throw new IOException(MessageFormat.Format(JGitText.Get().fileIsTooLarge, path));
 				}
 				byte[] buf = new byte[(int)sz];
-				int actSz = IOUtil.ReadFully(@in, buf, 0);
-				if (actSz == sz)
-				{
-					byte[] ret = new byte[actSz];
-					System.Array.Copy(buf, 0, ret, 0, actSz);
-					return ret;
-				}
+				IOUtil.ReadFully(@in, buf, 0);
 				return buf;
 			}
 			finally
