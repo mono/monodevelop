@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public class GitCredentials: CredentialsProvider
 	{
-		DateTime LastAsked {
+		bool HasReset {
 			get; set;
 		}
 		
@@ -60,8 +60,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (TryGetUsernamePassword (uri, items, out passwordItem) || TryGetPassphrase (uri, items, out passphraseItem)) {
 				// If the password store has a password and we already tried using it, it could be incorrect.
 				// If this happens, do not return true and ask the user for a new password.
-				if (!ProbablyIncorrect ()) {
-					LastAsked = DateTime.Now;
+				if (!HasReset) {
 					return true;
 				}
 			}
@@ -75,7 +74,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			});
 				
-			LastAsked = DateTime.Now;
+			HasReset = false;
 			if (result) {
 				if (passwordItem != null) {
 					PasswordService.AddWebPassword (new Uri (uri.ToString ()), new string (passwordItem.GetValue ()));
@@ -86,11 +85,9 @@ namespace MonoDevelop.VersionControl.Git
 			return result;
 		}
 		
-		bool ProbablyIncorrect ()
+		public override void Reset (URIish uri)
 		{
-			// If we are queried multiple times in rapid succession it is probably
-			// because the supplied password is incorrect and we should dump it.
-			return (DateTime.Now - LastAsked) < TimeSpan.FromSeconds (2);
+			HasReset = true;
 		}
 		
 		bool TryGetPassphrase (URIish uri, CredentialItem[] items, out CredentialItem.StringType passphraseItem)
