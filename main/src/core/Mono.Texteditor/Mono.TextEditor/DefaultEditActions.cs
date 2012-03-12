@@ -266,10 +266,12 @@ namespace Mono.TextEditor
 		
 		static void NewLineSmartIndent (TextEditorData data)
 		{
-			data.EnsureCaretIsNotVirtual ();
-			data.Insert (data.Caret.Offset, data.EolMarker);
-			data.Caret.Offset += data.EolMarker.Length;
-			data.InsertAtCaret (data.GetIndentationString (data.Caret.Location));
+			using (var undo = data.OpenUndoGroup ()) {
+				data.EnsureCaretIsNotVirtual ();
+				data.Insert (data.Caret.Offset, data.EolMarker);
+				data.Caret.Offset += data.EolMarker.Length;
+				data.InsertAtCaret (data.GetIndentationString (data.Caret.Location));
+			}
 		}
 		
 		public static void InsertNewLine (TextEditorData data)

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Text;
 using Gtk;
 using System.IO;
+using System.Diagnostics;
 
 namespace Mono.TextEditor
 {
@@ -779,6 +780,7 @@ namespace Mono.TextEditor
 				return;
 			bool needUpdate = false;
 			using (var undo = OpenUndoGroup ()) {
+				EnsureCaretIsNotVirtual ();
 				foreach (Selection selection in Selections) {
 					var segment = selection.GetSelectionRange (this);
 					needUpdate |= Document.OffsetToLineNumber (segment.Offset) != Document.OffsetToLineNumber (segment.EndOffset);
@@ -984,8 +986,13 @@ namespace Mono.TextEditor
 			return IndentationTracker.GetVirtualIndentationColumn (offset);
 		}
 		
+		/// <summary>
+		/// Ensures the caret is not in a virtual position by adding whitespaces up to caret position.
+		/// That method should always be called in an undo group.
+		/// </summary>
 		public int EnsureCaretIsNotVirtual ()
 		{
+			Debug.Assert (document.IsInAtomicUndo);
 			LineSegment line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return 0;
@@ -997,6 +1004,7 @@ namespace Mono.TextEditor
 					virtualSpace = new string (' ', Caret.Column - 1 - line.EditableLength);
 				}
 				Insert (Caret.Offset, virtualSpace);
+
 				// No need to reposition the caret, because it's already at the correct position
 				// The only difference is that the position is not virtual anymore.
 				return virtualSpace.Length;

@@ -507,8 +507,10 @@ namespace Mono.TextEditor
 		{
 			if (!data.CanEditSelection)
 				return;
-			data.EnsureCaretIsNotVirtual ();
-			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
+			using (var undo = data.OpenUndoGroup ()) {
+				data.EnsureCaretIsNotVirtual ();
+				PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
+			}
 		}
 	}
 }

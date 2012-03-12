@@ -179,6 +179,46 @@ namespace Mono.TextEditor.Tests
 		}
 
 		[Test()]
+		public void TestBackspaceSelectionBehavior ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\t\ttest\n\n";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			SelectionActions.MoveUp (data);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
+			Assert.IsTrue (data.IsSomethingSelected);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
+			Assert.AreEqual ("\t\ttest\n\n", data.Document.Text);
+		}
+
+		[Test()]
+		public void TestDeleteSelectionBehavior ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\t\ttest\n\n";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			SelectionActions.MoveUp (data);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
+			Assert.IsTrue (data.IsSomethingSelected);
+			DeleteActions.Delete (data);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
+			Assert.AreEqual ("\t\ttest\n\n", data.Document.Text);
+		}
+
+		[Test()]
+		public void TestDeleteBehavior ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\t\ttest";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			CaretMoveActions.Up (data);
+			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
+			DeleteActions.Delete (data);
+			Assert.AreEqual ("\t\t\t\ttest", data.Document.Text);
+		}
+
+		[Test()]
 		public void TestAutoRemoveIndent ()
 		{
 			var data = CreateData ();
