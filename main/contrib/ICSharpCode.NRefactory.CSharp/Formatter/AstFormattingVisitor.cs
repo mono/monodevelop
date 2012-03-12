@@ -135,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ApplyChanges(startOffset, length, script.Replace);
 		}
 		
-		void ApplyChanges(int startOffset, int length, Action<int, int, string> documentReplace)
+		public void ApplyChanges(int startOffset, int length, Action<int, int, string> documentReplace)
 		{
 			int endOffset = startOffset + length;
 			TextReplaceAction previousChange = null;

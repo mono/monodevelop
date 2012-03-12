@@ -326,6 +326,7 @@
     <Compile Include="Ast\TypeMembers\EntityDeclaration.cs" />
     <Compile Include="Refactoring\ContextAction\GenerateProperty.cs" />
     <Compile Include="Resolver\CSharpConversions.cs" />
+    <Compile Include="Refactoring\DocumentScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

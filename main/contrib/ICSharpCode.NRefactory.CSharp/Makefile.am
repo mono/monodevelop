@@ -232,6 +232,7 @@ FILES =  \
 	Refactoring/ContextAction/UseExplicitType.cs \
 	Refactoring/ContextAction/UseVarKeyword.cs \
 	Refactoring/CreateLinkAction.cs \
+	Refactoring/DocumentScript.cs \
 	Refactoring/FormatTextAction.cs \
 	Refactoring/IActionFactory.cs \
 	Refactoring/IContextAction.cs \

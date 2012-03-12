@@ -2100,6 +2100,11 @@ namespace Mono.CSharp {
 
 		public static readonly string MetadataName = "Finalize";
 
+		public string Identifier {
+			get;
+			set;
+		}
+
 		public Destructor (TypeDefinition parent, Modifiers mod, ParametersCompiled parameters, Attributes attrs, Location l)
 			: base (parent, null, mod, AllowedModifiers, new MemberName (MetadataName, l), attrs, parameters)
 		{
