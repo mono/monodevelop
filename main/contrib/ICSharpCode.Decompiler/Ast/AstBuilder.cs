@@ -269,25 +269,26 @@ namespace ICSharpCode.Decompiler.Ast
 			// create type
 			TypeDefinition oldCurrentType = context.CurrentType;
 			context.CurrentType = typeDef;
-			TypeDeclaration astType = new TypeDeclaration ();
+			TypeDeclaration astType = new TypeDeclaration.Class ();
+
+			if (typeDef.IsEnum) {
+				// NB: Enum is value type
+				astType = new TypeDeclaration.Enum ();
+				astType.Modifiers &= ~Modifiers.Sealed;
+			} else if (typeDef.IsValueType) {
+				astType = new TypeDeclaration.Struct ();
+				astType.Modifiers &= ~Modifiers.Sealed;
+			} else if (typeDef.IsInterface) {
+				astType = new TypeDeclaration.Interface ();
+				astType.Modifiers &= ~Modifiers.Abstract;
+			} else {
+				astType = new TypeDeclaration.Class ();
+			}
 			ConvertAttributes (astType, typeDef);
 			astType.AddAnnotation (typeDef);
 			astType.Modifiers = ConvertModifiers (typeDef);
 			astType.Name = CleanName (typeDef.Name);
-			
-			if (typeDef.IsEnum) {  // NB: Enum is value type
-				astType.ClassType = ClassType.Enum;
-				astType.Modifiers &= ~Modifiers.Sealed;
-			} else if (typeDef.IsValueType) {
-				astType.ClassType = ClassType.Struct;
-				astType.Modifiers &= ~Modifiers.Sealed;
-			} else if (typeDef.IsInterface) {
-				astType.ClassType = ClassType.Interface;
-				astType.Modifiers &= ~Modifiers.Abstract;
-			} else {
-				astType.ClassType = ClassType.Class;
-			}
-			
+
 			IEnumerable<GenericParameter> genericParameters = typeDef.GenericParameters;
 			if (typeDef.DeclaringType != null && typeDef.DeclaringType.HasGenericParameters)
 				genericParameters = genericParameters.Skip (typeDef.DeclaringType.GenericParameters.Count);
@@ -313,7 +314,7 @@ namespace ICSharpCode.Decompiler.Ast
 							enumMember.AddChild (new PrimitiveExpression (field.Constant), EnumMemberDeclaration.InitializerRole);
 						}
 						expectedEnumMemberValue = memberValue + 1;
-						astType.AddChild (enumMember, TypeDeclaration.MemberRole);
+						astType.AddChild (enumMember, Roles.TypeMemberRole);
 					}
 				}
 			} else if (typeDef.BaseType != null && typeDef.BaseType.FullName == "System.MulticastDelegate") {
@@ -699,26 +700,26 @@ namespace ICSharpCode.Decompiler.Ast
 
 		#endregion
 		
-		void AddTypeMembers(TypeDeclaration astType, TypeDefinition typeDef)
+		void AddTypeMembers (TypeDeclaration astType, TypeDefinition typeDef)
 		{
 			// Nested types
 			foreach (TypeDefinition nestedTypeDef in typeDef.NestedTypes) {
-				if (MemberIsHidden(nestedTypeDef, context.Settings))
+				if (MemberIsHidden (nestedTypeDef, context.Settings))
 					continue;
-				var nestedType = CreateType(nestedTypeDef);
-				SetNewModifier(nestedType);
-				astType.AddChild(nestedType, TypeDeclaration.MemberRole);
+				var nestedType = CreateType (nestedTypeDef);
+				SetNewModifier (nestedType);
+				astType.AddChild (nestedType, Roles.TypeMemberRole);
 			}
 			
 			// Add fields
 			foreach(FieldDefinition fieldDef in typeDef.Fields) {
 				if (MemberIsHidden(fieldDef, context.Settings)) continue;
-				astType.AddChild(CreateField(fieldDef), TypeDeclaration.MemberRole);
+				astType.AddChild(CreateField(fieldDef), Roles.TypeMemberRole);
 			}
 			
 			// Add events
 			foreach(EventDefinition eventDef in typeDef.Events) {
-				astType.AddChild(CreateEvent(eventDef), TypeDeclaration.MemberRole);
+				astType.AddChild(CreateEvent(eventDef), Roles.TypeMemberRole);
 			}
 
 			// Add properties
