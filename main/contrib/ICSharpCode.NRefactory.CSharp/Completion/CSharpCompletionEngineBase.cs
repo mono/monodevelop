@@ -510,7 +510,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					// insert target type into compilation unit, to respect the 
 					attr.Remove ();
 					var node = Unit.GetNodeAt (location) ?? Unit;
-					node.AddChild (attr, AttributeSection.AttributeRole);
+					node.AddChild (attr, Roles.Attribute);
 					return new ExpressionResult ((AstNode)attr, Unit);
 				}
 			}

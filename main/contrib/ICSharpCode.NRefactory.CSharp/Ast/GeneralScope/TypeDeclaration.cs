@@ -48,8 +48,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly TokenRole StructKeywordRole = new TokenRole ("struct");
 		public static readonly TokenRole ClassKeywordRole = new TokenRole ("class");
 		
-		public readonly static TokenRole ColonRole = Roles.Colon;
-		public readonly static Role<AstType> BaseTypeRole = new Role<AstType>("BaseType", AstType.Null);
 		public readonly static Role<EntityDeclaration> MemberRole = new Role<EntityDeclaration>("Member");
 		
 		public override NodeType NodeType {
@@ -70,7 +68,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public AstNodeCollection<AstType> BaseTypes {
-			get { return GetChildrenByRole (BaseTypeRole); }
+			get {
+				return GetChildrenByRole(Roles.BaseType); }
 		}
 		
 		public AstNodeCollection<Constraint> Constraints {

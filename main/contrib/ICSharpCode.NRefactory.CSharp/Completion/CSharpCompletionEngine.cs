@@ -924,12 +924,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				wrapper.AddCustom ("var"); 
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 			
-			if (node != null && node.Role == AstNode.Roles.Argument) {
+			if (node != null && node.Role == Roles.Argument) {
 				var resolved = ResolveExpression (node.Parent, Unit);
 				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
 				if (invokeResult != null) {
 					int argNum = 0;
-					foreach (var arg in node.Parent.Children.Where (c => c.Role == AstNode.Roles.Argument)) {
+					foreach (var arg in node.Parent.Children.Where (c => c.Role == Roles.Argument)) {
 						if (arg == node)
 							break;
 						argNum++;
@@ -2059,7 +2059,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var target = type.Target;
 					target.Remove ();
 					var node = Unit.GetNodeAt (location) ?? Unit;
-					node.AddChild (target, AstNode.Roles.Type);
+					node.AddChild (target, Roles.Type);
 					return new ExpressionResult ((AstNode)target, Unit);
 				}
 			}
@@ -2108,7 +2108,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							tref = baseUnit.GetNodeAt<Expression> (location); 
 							if (tref == null) {
 								tref = new TypeReferenceExpression (memberType.Clone ());
-								memberType.Parent.AddChild (tref, AstNode.Roles.Expression);
+								memberType.Parent.AddChild (tref, Roles.Expression);
 							}
 							if (tref is ObjectCreateExpression) {
 								expr = new TypeReferenceExpression (memberType.Target.Clone ());

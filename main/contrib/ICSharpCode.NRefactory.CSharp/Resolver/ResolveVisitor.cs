@@ -632,10 +632,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult VisitFieldOrEventDeclaration(EntityDeclaration fieldOrEventDeclaration)
 		{
-			//int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(FieldDeclaration.Roles.Variable).Count;
+			//int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(Roles.Variable).Count;
 			CSharpResolver oldResolver = resolver;
 			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
-				if (node.Role == FieldDeclaration.Roles.Variable) {
+				if (node.Role == Roles.Variable) {
 					resolver = resolver.WithCurrentMember(GetMemberFromLocation(node.StartLocation));
 					
 					Scan(node);
@@ -2688,7 +2688,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				for (AstNode child = conditionStatement.FirstChild; child != null; child = child.NextSibling) {
-					if (child.Role == AstNode.Roles.Condition) {
+					if (child.Role == Roles.Condition) {
 						Expression condition = (Expression)child;
 						ResolveResult conditionRR = Resolve(condition);
 						ResolveResult convertedRR = resolver.ResolveCondition(conditionRR);
@@ -2979,7 +2979,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!resolverEnabled)
 				return null;
 			KnownTypeCode typeCode = primitiveType.KnownTypeCode;
-			if (typeCode == KnownTypeCode.None && primitiveType.Parent is Constraint && primitiveType.Role == Constraint.BaseTypeRole) {
+			if (typeCode == KnownTypeCode.None && primitiveType.Parent is Constraint && primitiveType.Role == Roles.BaseType) {
 				switch (primitiveType.Keyword) {
 					case "class":
 					case "struct":
@@ -3005,7 +3005,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type;
 			if (outermostType.Parent is UsingDeclaration || outermostType.Parent is UsingAliasDeclaration) {
 				lookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
-			} else if (outermostType.Parent is TypeDeclaration && outermostType.Role == TypeDeclaration.BaseTypeRole) {
+			} else if (outermostType.Parent is TypeDeclaration && outermostType.Role == Roles.BaseType) {
 				lookupMode = SimpleNameLookupMode.BaseTypeReference;
 			}
 			

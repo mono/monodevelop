@@ -192,7 +192,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Expression); }
 			set { SetChildByRole (Roles.Expression, value); }
 		}
-		
+
+		public CSharpTokenNode ColonToken {
+			get { return GetChildByRole (Roles.Colon); }
+		}
+
 		public CaseLabel ()
 		{
 		}

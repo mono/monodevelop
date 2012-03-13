@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			if (target == null)
 				return false;
 			
-			if (target.Parent is MemberReferenceExpression && ((MemberReferenceExpression)target.Parent).GetChildByRole (MemberReferenceExpression.Roles.Identifier) == target) {
+			if (target.Parent is MemberReferenceExpression && ((MemberReferenceExpression)target.Parent).GetChildByRole (Roles.Identifier) == target) {
 				var memberReference = (MemberReferenceExpression)target.Parent;
 				target = memberReference.Target;
 				var targetResult = options.Resolve (target);

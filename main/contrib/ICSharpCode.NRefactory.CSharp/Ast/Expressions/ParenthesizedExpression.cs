@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static Expression UnpackParenthesizedExpression(Expression expr)
 		{
 			while (ActsAsParenthesizedExpression(expr))
-				expr = expr.GetChildByRole(ParenthesizedExpression.Roles.Expression);
+				expr = expr.GetChildByRole(Roles.Expression);
 			return expr;
 		}
 	}

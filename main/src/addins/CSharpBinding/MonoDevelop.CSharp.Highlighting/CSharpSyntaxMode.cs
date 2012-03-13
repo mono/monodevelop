@@ -459,7 +459,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					
 					if (node is Identifier) {
-						if (node.Parent is TypeDeclaration && node.Role == TypeDeclaration.Roles.Identifier) {
+						if (node.Parent is TypeDeclaration && node.Role == Roles.Identifier) {
 							endOffset = chunk.Offset + ((Identifier)node).Name.Length;
 							return "keyword.semantic.type";
 						}

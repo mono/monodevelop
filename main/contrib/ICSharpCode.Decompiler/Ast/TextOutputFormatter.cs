@@ -82,7 +82,7 @@ namespace ICSharpCode.Decompiler.Ast
 		{
 			AstNode node = nodeStack.Peek();
 			MemberReference memberRef = node.Annotation<MemberReference>();
-			if (memberRef == null && node.Role == AstNode.Roles.TargetExpression && (node.Parent is InvocationExpression || node.Parent is ObjectCreateExpression)) {
+			if (memberRef == null && node.Role == Roles.TargetExpression && (node.Parent is InvocationExpression || node.Parent is ObjectCreateExpression)) {
 				memberRef = node.Parent.Annotation<MemberReference>();
 			}
 			return memberRef;
@@ -170,7 +170,7 @@ namespace ICSharpCode.Decompiler.Ast
 			// Attach member reference to token only if there's no identifier in the current node.
 			MemberReference memberRef = GetCurrentMemberReference();
 			var node = nodeStack.Peek();
-			if (memberRef != null && node.GetChildByRole(AstNode.Roles.Identifier).IsNull)
+			if (memberRef != null && node.GetChildByRole(Roles.Identifier).IsNull)
 				output.WriteReference(token, memberRef);
 			else
 				output.Write(token);

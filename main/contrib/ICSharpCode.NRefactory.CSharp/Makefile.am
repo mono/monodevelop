@@ -16,6 +16,7 @@ FILES =  \
 	Analysis/DefiniteAssignmentAnalysis.cs \
 	Analysis/ReachabilityAnalysis.cs \
 	Ast/AstNode.cs \
+	Ast/Roles.cs \
 	Ast/AstNodeCollection.cs \
 	Ast/AstType.cs \
 	Ast/CompilationUnit.cs \

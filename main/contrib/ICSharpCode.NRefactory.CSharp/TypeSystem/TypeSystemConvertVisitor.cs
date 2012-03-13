@@ -108,8 +108,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			if (node == null || node.IsNull)
 				return DomRegion.Empty;
 			else
-				return MakeRegion(node.GetChildByRole(AstNode.Roles.LBrace).StartLocation,
-				                  node.GetChildByRole(AstNode.Roles.RBrace).EndLocation);
+				return MakeRegion(node.GetChildByRole(Roles.LBrace).StartLocation,
+				                  node.GetChildByRole(Roles.RBrace).EndLocation);
 		}
 		
 		#region Compilation Unit
@@ -871,7 +871,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		internal static ITypeReference ConvertAttributeType(AstType type)
 		{
 			ITypeReference tr = type.ToTypeReference();
-			if (!type.GetChildByRole(AstNode.Roles.Identifier).IsVerbatim) {
+			if (!type.GetChildByRole(Roles.Identifier).IsVerbatim) {
 				// Try to add "Attribute" suffix, but only if the identifier
 				// (=last identifier in fully qualified name) isn't a verbatim identifier.
 				SimpleTypeOrNamespaceReference st = tr as SimpleTypeOrNamespaceReference;

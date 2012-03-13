@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (parameter == null)
 				return false;
 			
-			var bodyStatement = parameter.Parent.GetChildByRole (AstNode.Roles.Body);
+			var bodyStatement = parameter.Parent.GetChildByRole (Roles.Body);
 			
 			if (bodyStatement == null)
 				return false;
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var parameter = GetParameterDeclaration (context);
 			
-			var bodyStatement = parameter.Parent.GetChildByRole (AstNode.Roles.Body);
+			var bodyStatement = parameter.Parent.GetChildByRole (Roles.Body);
 			
 			var statement = new IfElseStatement () {
 				Condition = new BinaryOperatorExpression (new IdentifierExpression (parameter.Name), BinaryOperatorType.Equality, new NullReferenceExpression ()),

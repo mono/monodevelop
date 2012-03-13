@@ -693,10 +693,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					PointerReferenceExpression pre = target as PointerReferenceExpression;
 					if (pre != null)
 						return pre.MemberName == method.Name;
-				} else if (expr.Role != InvocationExpression.Roles.TargetExpression) {
+				} else if (expr.Role != Roles.TargetExpression) {
 					// MemberReferences & Identifiers that aren't used in an invocation can still match the method
 					// as delegate name.
-					if (expr.GetChildByRole(AstNode.Roles.Identifier).Name == method.Name)
+					if (expr.GetChildByRole(Roles.Identifier).Name == method.Name)
 						potentialMethodGroupConversions.Add(expr);
 				}
 				return node is MethodDeclaration;

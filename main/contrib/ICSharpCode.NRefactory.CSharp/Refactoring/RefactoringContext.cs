@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			string proposedName;
 			do {
 				proposedName = AppendNumberToName (baseName, number++);
-			} while (type.Members.Select (m => m.GetChildByRole (AstNode.Roles.Identifier)).Any (n => n.Name == proposedName));
+			} while (type.Members.Select (m => m.GetChildByRole (Roles.Identifier)).Any (n => n.Name == proposedName));
 			return proposedName;
 		}
 		

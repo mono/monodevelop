@@ -264,16 +264,16 @@ namespace ICSharpCode.Decompiler.Ast
 		/// </summary>
 		/// <param name="typeDef"></param>
 		/// <returns>TypeDeclaration or DelegateDeclaration.</returns>
-		public EntityDeclaration CreateType(TypeDefinition typeDef)
+		public EntityDeclaration CreateType (TypeDefinition typeDef)
 		{
 			// create type
 			TypeDefinition oldCurrentType = context.CurrentType;
 			context.CurrentType = typeDef;
-			TypeDeclaration astType = new TypeDeclaration();
-			ConvertAttributes(astType, typeDef);
-			astType.AddAnnotation(typeDef);
-			astType.Modifiers = ConvertModifiers(typeDef);
-			astType.Name = CleanName(typeDef.Name);
+			TypeDeclaration astType = new TypeDeclaration ();
+			ConvertAttributes (astType, typeDef);
+			astType.AddAnnotation (typeDef);
+			astType.Modifiers = ConvertModifiers (typeDef);
+			astType.Name = CleanName (typeDef.Name);
 			
 			if (typeDef.IsEnum) {  // NB: Enum is value type
 				astType.ClassType = ClassType.Enum;
@@ -290,55 +290,55 @@ namespace ICSharpCode.Decompiler.Ast
 			
 			IEnumerable<GenericParameter> genericParameters = typeDef.GenericParameters;
 			if (typeDef.DeclaringType != null && typeDef.DeclaringType.HasGenericParameters)
-				genericParameters = genericParameters.Skip(typeDef.DeclaringType.GenericParameters.Count);
-			astType.TypeParameters.AddRange(MakeTypeParameters(genericParameters));
-			astType.Constraints.AddRange(MakeConstraints(genericParameters));
+				genericParameters = genericParameters.Skip (typeDef.DeclaringType.GenericParameters.Count);
+			astType.TypeParameters.AddRange (MakeTypeParameters (genericParameters));
+			astType.Constraints.AddRange (MakeConstraints (genericParameters));
 			
 			EntityDeclaration result = astType;
 			if (typeDef.IsEnum) {
 				long expectedEnumMemberValue = 0;
-				bool forcePrintingInitializers = IsFlagsEnum(typeDef);
+				bool forcePrintingInitializers = IsFlagsEnum (typeDef);
 				foreach (FieldDefinition field in typeDef.Fields) {
 					if (field.IsRuntimeSpecialName) {
 						// the value__ field
 						if (field.FieldType != typeDef.Module.TypeSystem.Int32) {
-							astType.AddChild(ConvertType(field.FieldType), TypeDeclaration.BaseTypeRole);
+							astType.AddChild (ConvertType (field.FieldType), Roles.BaseType);
 						}
 					} else {
-						var enumMember = new EnumMemberDeclaration();
-						enumMember.AddAnnotation(field);
-						enumMember.Name = CleanName(field.Name);
-						long memberValue = (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, field.Constant, false);
+						var enumMember = new EnumMemberDeclaration ();
+						enumMember.AddAnnotation (field);
+						enumMember.Name = CleanName (field.Name);
+						long memberValue = (long)CSharpPrimitiveCast.Cast (TypeCode.Int64, field.Constant, false);
 						if (forcePrintingInitializers || memberValue != expectedEnumMemberValue) {
-							enumMember.AddChild(new PrimitiveExpression(field.Constant), EnumMemberDeclaration.InitializerRole);
+							enumMember.AddChild (new PrimitiveExpression (field.Constant), EnumMemberDeclaration.InitializerRole);
 						}
 						expectedEnumMemberValue = memberValue + 1;
-						astType.AddChild(enumMember, TypeDeclaration.MemberRole);
+						astType.AddChild (enumMember, TypeDeclaration.MemberRole);
 					}
 				}
 			} else if (typeDef.BaseType != null && typeDef.BaseType.FullName == "System.MulticastDelegate") {
-				DelegateDeclaration dd = new DelegateDeclaration();
+				DelegateDeclaration dd = new DelegateDeclaration ();
 				dd.Modifiers = astType.Modifiers & ~Modifiers.Sealed;
 				dd.Name = astType.Name;
-				dd.AddAnnotation(typeDef);
-				astType.Attributes.MoveTo(dd.Attributes);
-				astType.TypeParameters.MoveTo(dd.TypeParameters);
-				astType.Constraints.MoveTo(dd.Constraints);
+				dd.AddAnnotation (typeDef);
+				astType.Attributes.MoveTo (dd.Attributes);
+				astType.TypeParameters.MoveTo (dd.TypeParameters);
+				astType.Constraints.MoveTo (dd.Constraints);
 				foreach (var m in typeDef.Methods) {
 					if (m.Name == "Invoke") {
-						dd.ReturnType = ConvertType(m.ReturnType, m.MethodReturnType);
-						dd.Parameters.AddRange(MakeParameters(m));
-						ConvertAttributes(dd, m.MethodReturnType, m.Module);
+						dd.ReturnType = ConvertType (m.ReturnType, m.MethodReturnType);
+						dd.Parameters.AddRange (MakeParameters (m));
+						ConvertAttributes (dd, m.MethodReturnType, m.Module);
 					}
 				}
 				result = dd;
 			} else {
 				// Base type
 				if (typeDef.BaseType != null && !typeDef.IsValueType && typeDef.BaseType.FullName != "System.Object") {
-					astType.AddChild(ConvertType(typeDef.BaseType), TypeDeclaration.BaseTypeRole);
+					astType.AddChild (ConvertType (typeDef.BaseType), Roles.BaseType);
 				}
 				foreach (var i in typeDef.Interfaces)
-					astType.AddChild(ConvertType(i), TypeDeclaration.BaseTypeRole);
+					astType.AddChild(ConvertType(i), Roles.BaseType);
 				
 				AddTypeMembers(astType, typeDef);
 
@@ -841,7 +841,7 @@ namespace ICSharpCode.Decompiler.Ast
 			astMethod.Body = CreateMethodBody(methodDef, astMethod.Parameters);
 			ConvertAttributes(astMethod, methodDef);
 			if (methodDef.IsStatic && methodDef.DeclaringType.IsBeforeFieldInit && !astMethod.Body.IsNull) {
-				astMethod.Body.InsertChildAfter(null, new Comment(" Note: this type is marked as 'beforefieldinit'."), AstNode.Roles.Comment);
+				astMethod.Body.InsertChildAfter(null, new Comment(" Note: this type is marked as 'beforefieldinit'."), Roles.Comment);
 			}
 			return astMethod;
 		}
@@ -1000,7 +1000,7 @@ namespace ICSharpCode.Decompiler.Ast
 			FieldDeclaration astField = new FieldDeclaration();
 			astField.AddAnnotation(fieldDef);
 			VariableInitializer initializer = new VariableInitializer(CleanName(fieldDef.Name));
-			astField.AddChild(initializer, FieldDeclaration.Roles.Variable);
+			astField.AddChild(initializer, Roles.Variable);
 			astField.ReturnType = ConvertType(fieldDef.FieldType, fieldDef);
 			astField.Modifiers = ConvertModifiers(fieldDef);
 			if (fieldDef.HasConstant) {

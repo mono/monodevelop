@@ -36,11 +36,6 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </remarks>
 	public class Constraint : AstNode
 	{
-		public readonly static TokenRole WhereKeywordRole = new TokenRole ("where");
-		public readonly static TokenRole ColonRole = TypeDeclaration.ColonRole;
-		public readonly static Role<AstType> BaseTypeRole = TypeDeclaration.BaseTypeRole;
-		public readonly static Role<SimpleType> TypeParameterRole = new Role<SimpleType> ("TypeParameter", SimpleType.Null);
-		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
@@ -49,15 +44,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public SimpleType TypeParameter {
 			get {
-				return GetChildByRole (TypeParameterRole);
+				return GetChildByRole (Roles.ConstraintTypeParameter);
 			}
 			set {
-				SetChildByRole(TypeParameterRole, value);
+				SetChildByRole(Roles.ConstraintTypeParameter, value);
 			}
 		}
 		
 		public AstNodeCollection<AstType> BaseTypes {
-			get { return GetChildrenByRole (BaseTypeRole); }
+			get {
+				return GetChildrenByRole(Roles.BaseType); }
 		}
 		
 		public override void AcceptVisitor (IAstVisitor visitor)

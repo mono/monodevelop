@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			if ((ConversionFlags & ConversionFlags.ShowReturnType) == ConversionFlags.ShowReturnType) {
-				var rt = node.GetChildByRole(AstNode.Roles.Type);
+				var rt = node.GetChildByRole(Roles.Type);
 				if (!rt.IsNull) {
 					rt.AcceptVisitor(new CSharpOutputVisitor(formatter, formattingPolicy));
 					formatter.Space();
@@ -99,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if ((ConversionFlags & ConversionFlags.ShowParameterList) == ConversionFlags.ShowParameterList && HasParameters(entity)) {
 				formatter.WriteToken(entity.EntityType == EntityType.Indexer ? "[" : "(");
 				bool first = true;
-				foreach (var param in node.GetChildrenByRole(AstNode.Roles.Parameter)) {
+				foreach (var param in node.GetChildrenByRole(Roles.Parameter)) {
 					if (first) {
 						first = false;
 					} else {
@@ -174,7 +174,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			formatter.WriteIdentifier(typeDef.Name);
 			if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList) {
 				var outputVisitor = new CSharpOutputVisitor(formatter, formattingPolicy);
-				outputVisitor.WriteTypeParameters(astBuilder.ConvertEntity(typeDef).GetChildrenByRole(AstNode.Roles.TypeParameter));
+				outputVisitor.WriteTypeParameters(astBuilder.ConvertEntity(typeDef).GetChildrenByRole(Roles.TypeParameter));
 			}
 		}
 		
@@ -229,7 +229,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList && member.EntityType == EntityType.Method) {
 				var outputVisitor = new CSharpOutputVisitor(formatter, formattingPolicy);
-				outputVisitor.WriteTypeParameters(astBuilder.ConvertEntity(member).GetChildrenByRole(AstNode.Roles.TypeParameter));
+				outputVisitor.WriteTypeParameters(astBuilder.ConvertEntity(member).GetChildrenByRole(Roles.TypeParameter));
 			}
 		}
 		

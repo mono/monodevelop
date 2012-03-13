@@ -81,9 +81,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
-		public static readonly Role<Attribute> AttributeRole = new Role<Attribute>("Attribute");
-		public static readonly Role<CSharpTokenNode> TargetRole = new Role<CSharpTokenNode>("Target", CSharpTokenNode.Null);
-		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
@@ -113,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public AstNodeCollection<Attribute> Attributes {
-			get { return base.GetChildrenByRole (AttributeRole); }
+			get { return base.GetChildrenByRole (Roles.Attribute); }
 		}
 		
 		public CSharpTokenNode RBracketToken {

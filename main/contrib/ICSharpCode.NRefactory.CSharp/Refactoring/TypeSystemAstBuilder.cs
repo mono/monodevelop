@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		void AddTypeArguments(AstType result, IList<IType> typeArguments, int startIndex, int endIndex)
 		{
 			for (int i = startIndex; i < endIndex; i++) {
-				result.AddChild(ConvertType(typeArguments[i]), AstType.Roles.TypeArgument);
+				result.AddChild(ConvertType(typeArguments[i]), Roles.TypeArgument);
 			}
 		}
 		

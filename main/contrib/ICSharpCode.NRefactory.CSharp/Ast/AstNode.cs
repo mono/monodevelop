@@ -124,7 +124,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		AstNode nextSibling;
 		AstNode firstChild;
 		AstNode lastChild;
-		Role role = RootRole;
+		Role role = Roles.Root;
 		
 		public abstract NodeType NodeType {
 			get;
@@ -722,54 +722,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				return text.Substring(0, 97) + "...";
 			else
 				return text;
-		}
-		
-		// the Root role must be available when creating the null nodes, so we can't put it in the Roles class
-		static readonly Role<AstNode> RootRole = new Role<AstNode> ("Root");
-		
-		public static class Roles
-		{
-			/// <summary>
-			/// Root of an abstract syntax tree.
-			/// </summary>
-			public static readonly Role<AstNode> Root = RootRole;
-			
-			// some pre defined constants for common roles
-			public static readonly Role<Identifier> Identifier = new Role<Identifier> ("Identifier", CSharp.Identifier.Null);
-			public static readonly Role<BlockStatement> Body = new Role<BlockStatement> ("Body", CSharp.BlockStatement.Null);
-			public static readonly Role<ParameterDeclaration> Parameter = new Role<ParameterDeclaration> ("Parameter");
-			public static readonly Role<Expression> Argument = new Role<Expression> ("Argument", CSharp.Expression.Null);
-			public static readonly Role<AstType> Type = new Role<AstType> ("Type", CSharp.AstType.Null);
-			public static readonly Role<Expression> Expression = new Role<Expression> ("Expression", CSharp.Expression.Null);
-			public static readonly Role<Expression> TargetExpression = new Role<Expression> ("Target", CSharp.Expression.Null);
-			public readonly static Role<Expression> Condition = new Role<Expression> ("Condition", CSharp.Expression.Null);
-			public static readonly Role<TypeParameterDeclaration> TypeParameter = new Role<TypeParameterDeclaration> ("TypeParameter");
-			public static readonly Role<AstType> TypeArgument = new Role<AstType> ("TypeArgument", CSharp.AstType.Null);
-			public readonly static Role<Constraint> Constraint = new Role<Constraint> ("Constraint");
-			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer> ("Variable", VariableInitializer.Null);
-			public static readonly Role<Statement> EmbeddedStatement = new Role<Statement> ("EmbeddedStatement", CSharp.Statement.Null);
-//			public static readonly TokenRole Keyword = new TokenRole ("Keyword", CSharpTokenNode.Null);
-//			public static readonly TokenRole InKeyword = new TokenRole ("InKeyword", CSharpTokenNode.Null);
-			
-			// some pre defined constants for most used punctuation
-			public static readonly TokenRole LPar = new TokenRole ("(");
-			public static readonly TokenRole RPar = new TokenRole (")");
-			public static readonly TokenRole LBracket = new TokenRole ("[");
-			public static readonly TokenRole RBracket = new TokenRole ("]");
-			public static readonly TokenRole LBrace = new TokenRole ("{");
-			public static readonly TokenRole RBrace = new TokenRole ("}");
-			public static readonly TokenRole LChevron = new TokenRole ("<");
-			public static readonly TokenRole RChevron = new TokenRole (">");
-			public static readonly TokenRole Comma = new TokenRole (",");
-			public static readonly TokenRole Dot = new TokenRole (".");
-			public static readonly TokenRole Semicolon = new TokenRole (";");
-			public static readonly TokenRole Assign = new TokenRole ("=");
-			public static readonly TokenRole Colon = new TokenRole (":");
-			public static readonly TokenRole DoubleColon = new TokenRole ("::");
-			public static readonly Role<Comment> Comment = new Role<Comment> ("Comment");
-			public static readonly Role<PreProcessorDirective> PreProcessorDirective = new Role<PreProcessorDirective> ("PreProcessorDirective");
-			public static readonly Role<ErrorNode> Error = new Role<ErrorNode> ("Error");
-			
 		}
 	}
 }

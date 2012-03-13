@@ -99,6 +99,12 @@ namespace MonoDevelop.Refactoring.Rename
 		public override void Run (RefactoringOptions options)
 		{
 			if (options.SelectedItem is IVariable) {
+				var field = options.SelectedItem as IField;
+				if (field != null && field.Accessibility != Accessibility.Private) {
+					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+					return;
+				}
+
 				var col = ReferenceFinder.FindReferences (options.SelectedItem);
 				if (col == null)
 					return;

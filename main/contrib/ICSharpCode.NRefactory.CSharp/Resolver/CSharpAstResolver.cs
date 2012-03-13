@@ -254,7 +254,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// Most tokens cannot be resolved, but there are a couple of special cases:
 				if (node.Parent is QueryClause && node is Identifier) {
 					return false;
-				} else if (node.Role == AstNode.Roles.Identifier) {
+				} else if (node.Role == Roles.Identifier) {
 					return !(node.Parent is ForeachStatement || node.Parent is CatchClause);
 				}
 				return true;
