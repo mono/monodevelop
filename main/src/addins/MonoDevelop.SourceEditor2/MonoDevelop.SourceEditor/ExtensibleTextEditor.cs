@@ -105,7 +105,6 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			UpdateEditMode ();
-			this.GetTextEditorData ().Paste += HandleTextPaste;
 			this.DoPopupMenu = ShowPopup;
 		}
 		
@@ -625,25 +624,7 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 		
-		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
-		{
-			if (PropertyService.Get ("OnTheFlyFormatting", true)) {
-				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
-				if (prettyPrinter != null && Project != null && text != null) {
-					try {
-						var policies = Project.Policies;
-						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + insertedChars);
-						if (!string.IsNullOrEmpty (newText)) {
-							int replaceResult = Replace (insertionOffset, insertedChars, newText);
-							Caret.Offset = insertionOffset + replaceResult;
-						}
-					} catch (Exception e) {
-						LoggingService.LogError ("Error formatting pasted text", e);
-					}
-				}
-			}
-		}
-		
+
 		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
 		{
 			using (var undo = Document.OpenUndoGroup ()) {

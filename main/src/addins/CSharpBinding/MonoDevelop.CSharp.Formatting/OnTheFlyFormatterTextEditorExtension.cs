@@ -38,6 +38,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return Document.Editor;
 			}
 		}
+
 		void RunFormatter ()
 		{
 			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
@@ -49,6 +50,29 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			MonoDevelop.Ide.CodeCompletion.CompletionWindowManager.WordCompleted += HandleWordCompleted;
 			base.Initialize ();
+			Document.Editor.Paste += HandleTextPaste;
+
+		}
+
+		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
+		{
+			RunFormatter ();
+			/*
+			if (PropertyService.Get ("OnTheFlyFormatting", true)) {
+				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
+				if (prettyPrinter != null && Project != null && text != null) {
+					try {
+						var policies = Project.Policies;
+						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + insertedChars);
+						if (!string.IsNullOrEmpty (newText)) {
+							int replaceResult = Replace (insertionOffset, insertedChars, newText);
+							Caret.Offset = insertionOffset + replaceResult;
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error formatting pasted text", e);
+					}
+				}
+			}*/
 		}
 
 		void HandleWordCompleted (object sender, MonoDevelop.Ide.CodeCompletion.CodeCompletionContextEventArgs e)
