@@ -48,7 +48,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override void Initialize ()
 		{
-			MonoDevelop.Ide.CodeCompletion.CompletionWindowManager.WordCompleted += HandleWordCompleted;
 			base.Initialize ();
 			Document.Editor.Paste += HandleTextPaste;
 
@@ -75,14 +74,8 @@ namespace MonoDevelop.CSharp.Formatting
 			}*/
 		}
 
-		void HandleWordCompleted (object sender, MonoDevelop.Ide.CodeCompletion.CodeCompletionContextEventArgs e)
-		{
-			RunFormatter ();
-		}
-
 		public override void Dispose ()
 		{
-			MonoDevelop.Ide.CodeCompletion.CompletionWindowManager.WordCompleted -= HandleWordCompleted;
 			base.Dispose ();
 		}
 
