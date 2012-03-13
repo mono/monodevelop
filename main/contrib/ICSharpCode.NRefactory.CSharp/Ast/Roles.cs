@@ -49,7 +49,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public readonly static Role<Constraint> Constraint = new Role<Constraint> ("Constraint");
 		public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer> ("Variable", VariableInitializer.Null);
 		public static readonly Role<Statement> EmbeddedStatement = new Role<Statement> ("EmbeddedStatement", CSharp.Statement.Null);
-//			public static readonly TokenRole Keyword = new TokenRole ("Keyword", CSharpTokenNode.Null);
+		public readonly static Role<EntityDeclaration> TypeMemberRole = new Role<EntityDeclaration> ("TypeMember");
+		
+
+		//			public static readonly TokenRole Keyword = new TokenRole ("Keyword", CSharpTokenNode.Null);
 //			public static readonly TokenRole InKeyword = new TokenRole ("InKeyword", CSharpTokenNode.Null);
 			
 		// some pre defined constants for most used punctuation
@@ -78,6 +81,16 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public readonly static TokenRole WhereKeyword = new TokenRole ("where");
 		public readonly static Role<SimpleType> ConstraintTypeParameter = new Role<SimpleType> ("TypeParameter", SimpleType.Null);
+		public readonly static TokenRole DelegateKeyword = new TokenRole ("delegate");
+		public static readonly TokenRole ExternKeyword = new TokenRole ("extern");
+		public static readonly TokenRole AliasKeyword = new TokenRole ("alias");
+		public static readonly TokenRole NamespaceKeyword = new TokenRole ("namespace");
+
+		public static readonly TokenRole EnumKeyword = new TokenRole ("enum");
+		public static readonly TokenRole InterfaceKeyword = new TokenRole ("interface");
+		public static readonly TokenRole StructKeyword = new TokenRole ("struct");
+		public static readonly TokenRole ClassKeyword = new TokenRole ("class");
+
 	}
 }
 

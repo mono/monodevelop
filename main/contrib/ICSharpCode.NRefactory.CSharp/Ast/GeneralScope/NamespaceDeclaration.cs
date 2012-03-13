@@ -35,8 +35,6 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class NamespaceDeclaration : AstNode
 	{
-		public static readonly TokenRole NamespaceKeywordRole = new TokenRole ("namespace");
-		
 		public static readonly Role<AstNode> MemberRole = CompilationUnit.MemberRole;
 		
 		public override NodeType NodeType {
@@ -46,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode NamespaceToken {
-			get { return GetChildByRole (NamespaceKeywordRole); }
+			get { return GetChildByRole (Roles.NamespaceKeyword); }
 		}
 		
 		public string Name {

@@ -31,9 +31,6 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ExternAliasDeclaration : AstNode
 	{
-		public static readonly TokenRole ExternKeywordRole = new TokenRole ("extern");
-		public static readonly TokenRole AliasKeywordRole = new TokenRole ("alias");
-		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
@@ -41,11 +38,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		public CSharpTokenNode ExternToken {
-			get { return GetChildByRole (ExternKeywordRole); }
+			get { return GetChildByRole (Roles.ExternKeyword); }
 		}
 
 		public CSharpTokenNode AliasToken {
-			get { return GetChildByRole (AliasKeywordRole); }
+			get { return GetChildByRole (Roles.AliasKeyword); }
 		}
 
 		public string Name {

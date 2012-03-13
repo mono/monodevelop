@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (nspace.NS != null && !string.IsNullOrEmpty (nspace.NS.Name)) {
 						nDecl = new NamespaceDeclaration ();
 						if (loc != null)
-							nDecl.AddChild (new CSharpTokenNode (Convert (loc [0])), NamespaceDeclaration.NamespaceKeywordRole);
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc [0])), Roles.NamespaceKeyword);
 						ConvertNamespaceName (nspace.RealMemberName, nDecl);
 						if (loc != null && loc.Count > 1)
 							nDecl.AddChild (new CSharpTokenNode (Convert (loc [1])), Roles.LBrace);
@@ -352,7 +352,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (nspace.NS != null && !string.IsNullOrEmpty (nspace.NS.Name)) {
 					nDecl = new NamespaceDeclaration ();
 					if (loc != null)
-						nDecl.AddChild (new CSharpTokenNode (Convert (loc [0])), NamespaceDeclaration.NamespaceKeywordRole);
+						nDecl.AddChild (new CSharpTokenNode (Convert (loc [0])), Roles.NamespaceKeyword);
 					ConvertNamespaceName (nspace.RealMemberName, nDecl);
 					if (loc != null && loc.Count > 1)
 						nDecl.AddChild (new CSharpTokenNode (Convert (loc [1])), Roles.LBrace);
@@ -442,9 +442,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var ud = new ExternAliasDeclaration ();
 				var loc = LocationsBag.GetLocations (uea);
-				ud.AddChild (new CSharpTokenNode (Convert (uea.Location)), ExternAliasDeclaration.ExternKeywordRole);
+				ud.AddChild (new CSharpTokenNode (Convert (uea.Location)), Roles.ExternKeyword);
 				if (loc != null)
-					ud.AddChild (new CSharpTokenNode (Convert (loc [0])), ExternAliasDeclaration.AliasKeywordRole);
+					ud.AddChild (new CSharpTokenNode (Convert (loc [0])), Roles.AliasKeyword);
 				ud.AddChild (Identifier.Create (uea.Alias.Value, Convert (uea.Alias.Location)), Roles.Identifier);
 				if (loc != null && loc.Count > 1)
 					ud.AddChild (new CSharpTokenNode (Convert (loc [1])), Roles.Semicolon);
@@ -483,15 +483,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit(Class c)
 			{
-				TypeDeclaration newType = new TypeDeclaration ();
-				newType.ClassType = ClassType.Class;
+				var newType = new TypeDeclaration.Class ();
 				AddAttributeSection(newType, c);
 				
 				var location = LocationsBag.GetMemberLocation(c);
 				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), TypeDeclaration.ClassKeywordRole);
+					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.ClassKeyword);
 				
 				newType.AddChild (Identifier.Create (c.MemberName.Name, Convert (c.MemberName.Location)), Roles.Identifier);
 				AddTypeParameters (newType, c.MemberName);
@@ -534,14 +533,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit(Struct s)
 			{
-				TypeDeclaration newType = new TypeDeclaration ();
-				newType.ClassType = ClassType.Struct;
+				var newType = new TypeDeclaration.Struct();
 				AddAttributeSection(newType, s);
 				var location = LocationsBag.GetMemberLocation(s);
 				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), TypeDeclaration.StructKeywordRole);
+					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.StructKeyword);
 				newType.AddChild (Identifier.Create (s.MemberName.Name, Convert (s.MemberName.Location)), Roles.Identifier);
 				AddTypeParameters (newType, s.MemberName);
 				
@@ -579,14 +577,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit(Interface i)
 			{
-				TypeDeclaration newType = new TypeDeclaration ();
-				newType.ClassType = ClassType.Interface;
+				var newType = new TypeDeclaration.Interface ();
 				AddAttributeSection(newType, i);
 				var location = LocationsBag.GetMemberLocation(i);
 				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), TypeDeclaration.InterfaceKeywordRole);
+					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.InterfaceKeyword);
 				newType.AddChild (Identifier.Create (i.MemberName.Name, Convert (i.MemberName.Location)), Roles.Identifier);
 				AddTypeParameters (newType, i.MemberName);
 				
@@ -622,14 +619,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddType (newType);
 			}
 			
-			public override void Visit (Mono.CSharp.Delegate d)
+			public override void Visit(Mono.CSharp.Delegate d)
 			{
 				DelegateDeclaration newDelegate = new DelegateDeclaration ();
-				var location = LocationsBag.GetMemberLocation (d);
-				AddAttributeSection (newDelegate, d);
-				AddModifiers (newDelegate, location);
-				if (location != null)
-					newDelegate.AddChild (new CSharpTokenNode (Convert (location [0])), DelegateDeclaration.DelegateKeywordRole);
+				var location = LocationsBag.GetMemberLocation(d);
+				AddAttributeSection(newDelegate, d);
+				AddModifiers(newDelegate, location);
+				if (location != null) {
+					newDelegate.AddChild(new CSharpTokenNode (Convert(location [0])), Roles.DelegateKeyword);
+				}
 				newDelegate.AddChild (ConvertToType (d.ReturnType), Roles.Type);
 				newDelegate.AddChild (Identifier.Create (d.MemberName.Name, Convert (d.MemberName.Location)), Roles.Identifier);
 				AddTypeParameters (newDelegate, d.MemberName);
@@ -651,7 +649,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			void AddType (EntityDeclaration child)
 			{
 				if (typeStack.Count > 0) {
-					typeStack.Peek ().AddChild (child, TypeDeclaration.MemberRole);
+					typeStack.Peek ().AddChild (child, Roles.TypeMemberRole);
 				} else {
 					AddToNamespace (child);
 				}
@@ -668,15 +666,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit(Mono.CSharp.Enum e)
 			{
-				TypeDeclaration newType = new TypeDeclaration ();
+				var newType = new TypeDeclaration.Enum ();
 				AddAttributeSection(newType, e);
-				newType.ClassType = ClassType.Enum;
 				var location = LocationsBag.GetMemberLocation(e);
 				
 				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null)
-					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), TypeDeclaration.EnumKeywordRole);
+					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.EnumKeyword);
 				newType.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), Roles.Identifier);
 				
 				if (e.BaseTypeExpression != null) {
@@ -719,7 +716,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				//Console.WriteLine (newField.StartLocation +"-" + newField.EndLocation);
 				
-				typeStack.Peek ().AddChild (newField, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 			}
 			#endregion
 			
@@ -771,13 +768,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				if (location != null)
 					newField.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Semicolon);
-				typeStack.Peek ().AddChild (newField, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 				
 			}
 
-			public override void Visit (Field f)
+			public override void Visit(Field f)
 			{
-				var location = LocationsBag.GetMemberLocation (f);
+				var location = LocationsBag.GetMemberLocation(f);
 				
 				FieldDeclaration newField = new FieldDeclaration ();
 				AddAttributeSection (newField, f);
@@ -812,7 +809,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newField.AddChild (new CSharpTokenNode (Convert (location [location.Count - 1])), Roles.Semicolon);
 
-				typeStack.Peek ().AddChild (newField, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 			}
 			
 			public override void Visit (Const f)
@@ -852,7 +849,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newField.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Semicolon);
 				
-				typeStack.Peek ().AddChild (newField, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 
 				
 			}
@@ -902,7 +899,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (location != null && location.Count >= 5)
 						newOperator.AddChild (new CSharpTokenNode (Convert (location [4])), Roles.Semicolon);
 				}
-				typeStack.Peek ().AddChild (newOperator, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newOperator, Roles.TypeMemberRole);
 			}
 			
 			public void AddAttributeSection (AstNode parent, Attributable a)
@@ -985,7 +982,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					// parser error, set end node to max value.
 					newIndexer.AddChild (new ErrorNode (), Roles.Error);
 				}
-				typeStack.Peek ().AddChild (newIndexer, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newIndexer, Roles.TypeMemberRole);
 			}
 			
 			public override void Visit (Method m)
@@ -1024,7 +1021,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						newMethod.AddChild (new CSharpTokenNode (Convert (location [2])), Roles.Semicolon);
 					}
 				}
-				typeStack.Peek ().AddChild (newMethod, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newMethod, Roles.TypeMemberRole);
 			}
 			
 			static Dictionary<Mono.CSharp.Modifiers, ICSharpCode.NRefactory.CSharp.Modifiers> modifierTable = new Dictionary<Mono.CSharp.Modifiers, ICSharpCode.NRefactory.CSharp.Modifiers> ();
@@ -1151,7 +1148,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					newProperty.AddChild (new ErrorNode (), Roles.Error);
 				}
 				
-				typeStack.Peek ().AddChild (newProperty, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newProperty, Roles.TypeMemberRole);
 			}
 			
 			public override void Visit (Constructor c)
@@ -1188,7 +1185,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (c.Block != null)
 					newConstructor.AddChild ((BlockStatement)c.Block.Accept (this), Roles.Body);
-				typeStack.Peek ().AddChild (newConstructor, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newConstructor, Roles.TypeMemberRole);
 			}
 			
 			public override void Visit (Destructor d)
@@ -1211,7 +1208,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (d.Block != null)
 					newDestructor.AddChild ((BlockStatement)d.Block.Accept (this), Roles.Body);
 				
-				typeStack.Peek ().AddChild (newDestructor, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newDestructor, Roles.TypeMemberRole);
 			}
 			
 			public override void Visit (EventField e)
@@ -1255,9 +1252,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null && location.Count > 1)
 					newEvent.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Semicolon);
 				
-				typeStack.Peek ().AddChild (newEvent, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newEvent, Roles.TypeMemberRole);
 			}
-			
+
 			void AddExplicitInterface (AstNode parent, MemberName memberName)
 			{
 				if (memberName == null || memberName.ExplicitInterface == null)
@@ -1316,7 +1313,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					newEvent.AddChild (new ErrorNode (), Roles.Error);
 				}
 				
-				typeStack.Peek ().AddChild (newEvent, TypeDeclaration.MemberRole);
+				typeStack.Peek ().AddChild (newEvent, Roles.TypeMemberRole);
 			}
 			
 			#endregion

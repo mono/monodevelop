@@ -1382,7 +1382,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (delegateDeclaration);
 			WriteAttributes (delegateDeclaration.Attributes);
 			WriteModifiers (delegateDeclaration.ModifierTokens);
-			WriteKeyword (DelegateDeclaration.DelegateKeywordRole);
+			WriteKeyword (Roles.DelegateKeyword);
 			delegateDeclaration.ReturnType.AcceptVisitor (this);
 			Space ();
 			WriteIdentifier (delegateDeclaration.Name);
@@ -1396,10 +1396,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode (delegateDeclaration);
 		}
 		
-		public void VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration)
+		public void VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration)
 		{
-			StartNode (namespaceDeclaration);
-			WriteKeyword (NamespaceDeclaration.NamespaceKeywordRole);
+			StartNode(namespaceDeclaration);
+			WriteKeyword(Roles.NamespaceKeyword);
 			WriteQualifiedIdentifier (namespaceDeclaration.Identifiers);
 			OpenBrace (policy.NamespaceBraceStyle);
 			foreach (var member in namespaceDeclaration.Members)
@@ -1418,19 +1418,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			BraceStyle braceStyle;
 			switch (typeDeclaration.ClassType) {
 				case ClassType.Enum:
-					WriteKeyword(TypeDeclaration.EnumKeywordRole);
+					WriteKeyword(Roles.EnumKeyword);
 					braceStyle = policy.EnumBraceStyle;
 					break;
 				case ClassType.Interface:
-					WriteKeyword(TypeDeclaration.InterfaceKeywordRole);
+					WriteKeyword(Roles.InterfaceKeyword);
 					braceStyle = policy.InterfaceBraceStyle;
 					break;
 				case ClassType.Struct:
-					WriteKeyword(TypeDeclaration.StructKeywordRole);
+					WriteKeyword(Roles.StructKeyword);
 					braceStyle = policy.StructBraceStyle;
 					break;
 				default:
-					WriteKeyword(TypeDeclaration.ClassKeywordRole);
+					WriteKeyword(Roles.ClassKeyword);
 					braceStyle = policy.ClassBraceStyle;
 					break;
 			}
@@ -1492,12 +1492,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode (usingDeclaration);
 		}
 		
-		public void VisitExternAliasDeclaration (ExternAliasDeclaration externAliasDeclaration)
+		public void VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration)
 		{
-			StartNode (externAliasDeclaration);
-			WriteKeyword (ExternAliasDeclaration.ExternKeywordRole);
+			StartNode(externAliasDeclaration);
+			WriteKeyword(Roles.ExternKeyword);
 			Space ();
-			WriteKeyword (ExternAliasDeclaration.AliasKeywordRole);
+			WriteKeyword (Roles.AliasKeyword);
 			Space ();
 			externAliasDeclaration.NameToken.AcceptVisitor (this);
 			Semicolon ();

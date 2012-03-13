@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -2238,7 +2238,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				member2.Remove ();
 
 				if (member is TypeDeclaration) {
-					member.AddChild (member2, TypeDeclaration.MemberRole);
+					member.AddChild (member2, Roles.TypeMemberRole);
 				} else {
 					member.ReplaceWith (member2);
 				}

@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CompilationUnit.cs
 //
 // Author:
@@ -72,17 +72,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
-		public IEnumerable<TypeDeclaration> GetTypes (bool includeInnerTypes = false)
+		public IEnumerable<TypeDeclaration> GetTypes(bool includeInnerTypes = false)
 		{
 			Stack<AstNode> nodeStack = new Stack<AstNode> ();
-			nodeStack.Push (this);
+			nodeStack.Push(this);
 			while (nodeStack.Count > 0) {
-				var curNode = nodeStack.Pop ();
-				if (curNode is TypeDeclaration)
+				var curNode = nodeStack.Pop();
+				if (curNode is TypeDeclaration) {
 					yield return (TypeDeclaration)curNode;
+				}
 				foreach (var child in curNode.Children) {
 					if (!(child is Statement || child is Expression) &&
-					    (child.Role != TypeDeclaration.MemberRole || (child is TypeDeclaration && includeInnerTypes)))
+						(child.Role != Roles.TypeMemberRole || (child is TypeDeclaration && includeInnerTypes)))
 						nodeStack.Push (child);
 				}
 			}

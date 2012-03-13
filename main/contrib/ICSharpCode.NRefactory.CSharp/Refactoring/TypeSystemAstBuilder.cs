@@ -466,18 +466,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					break;
 				case TypeKind.Delegate:
 					IMethod invoke = typeDefinition.GetDelegateInvokeMethod();
-					if (invoke != null)
+					if (invoke != null) {
 						return ConvertDelegate(invoke, modifiers);
-					else
+					} else {
 						goto default;
+					}
 				default:
 					classType = ClassType.Class;
 					break;
 			}
 			
-			TypeDeclaration decl = new TypeDeclaration();
+			var decl = TypeDeclaration.Create(classType);
 			decl.Modifiers = modifiers;
-			decl.ClassType = classType;
 			decl.Name = typeDefinition.Name;
 			
 			int outerTypeParameterCount = (typeDefinition.DeclaringTypeDefinition == null) ? 0 : typeDefinition.DeclaringTypeDefinition.TypeParameterCount;

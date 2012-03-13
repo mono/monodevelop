@@ -41,15 +41,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// class Name&lt;TypeParameters&gt; : BaseTypes where Constraints;
 	/// </summary>
-	public class TypeDeclaration : EntityDeclaration
+	public abstract class TypeDeclaration : EntityDeclaration
 	{
-		public static readonly TokenRole EnumKeywordRole = new TokenRole ("enum");
-		public static readonly TokenRole InterfaceKeywordRole = new TokenRole ("interface");
-		public static readonly TokenRole StructKeywordRole = new TokenRole ("struct");
-		public static readonly TokenRole ClassKeywordRole = new TokenRole ("class");
-		
-		public readonly static Role<EntityDeclaration> MemberRole = new Role<EntityDeclaration>("Member");
-		
 		public override NodeType NodeType {
 			get { return NodeType.TypeDeclaration; }
 		}
@@ -58,22 +51,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return EntityType.TypeDefinition; }
 		}
 		
-		public ClassType ClassType {
+
+		public abstract CSharpTokenNode TypeKeyword {
 			get;
-			set;
 		}
-		
+
+		public abstract ClassType ClassType {
+			get;
+		}
+
 		public AstNodeCollection<TypeParameterDeclaration> TypeParameters {
 			get { return GetChildrenByRole (Roles.TypeParameter); }
 		}
 		
 		public AstNodeCollection<AstType> BaseTypes {
-			get {
-				return GetChildrenByRole(Roles.BaseType); }
+			get { return GetChildrenByRole(Roles.BaseType); }
 		}
 		
 		public AstNodeCollection<Constraint> Constraints {
-			get { return GetChildrenByRole (Roles.Constraint); }
+			get { return GetChildrenByRole(Roles.Constraint); }
 		}
 		
 		public CSharpTokenNode LBraceToken {
@@ -81,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public AstNodeCollection<EntityDeclaration> Members {
-			get { return GetChildrenByRole (MemberRole); }
+			get { return GetChildrenByRole (Roles.TypeMemberRole); }
 		}
 		
 		public CSharpTokenNode RBraceToken {
@@ -111,5 +107,87 @@ namespace ICSharpCode.NRefactory.CSharp
 				&& this.BaseTypes.DoMatch(o.BaseTypes, match) && this.Constraints.DoMatch(o.Constraints, match)
 				&& this.Members.DoMatch(o.Members, match);
 		}
+
+		protected TypeDeclaration ()
+		{
+		}
+
+		public static TypeDeclaration Create(ClassType type)
+		{
+			switch (type) {
+				case ICSharpCode.NRefactory.CSharp.ClassType.Class:
+					return new Class ();
+				case ICSharpCode.NRefactory.CSharp.ClassType.Struct:
+					return new Struct ();
+				case ICSharpCode.NRefactory.CSharp.ClassType.Interface:
+					return new Interface ();
+				case ICSharpCode.NRefactory.CSharp.ClassType.Enum:
+					return new Enum ();
+				default:
+					throw new System.ArgumentOutOfRangeException();
+			}
+		}
+
+		#region Concrete Types
+		public class Class : TypeDeclaration
+		{
+			public override ClassType ClassType {
+				get {
+					return ClassType.Class;
+				}
+			}
+
+			public override CSharpTokenNode TypeKeyword {
+				get {
+					return GetChildByRole(Roles.ClassKeyword);
+				}
+			}
+		}
+
+		public class Struct : TypeDeclaration
+		{
+			public override ClassType ClassType {
+				get {
+					return ClassType.Struct;
+				}
+			}
+
+			public override CSharpTokenNode TypeKeyword {
+				get {
+					return GetChildByRole(Roles.StructKeyword);
+				}
+			}
+		}
+
+		public class Interface : TypeDeclaration
+		{
+			public override ClassType ClassType {
+				get {
+					return ClassType.Interface;
+				}
+			}
+
+			public override CSharpTokenNode TypeKeyword {
+				get {
+					return GetChildByRole(Roles.InterfaceKeyword);
+				}
+			}
+		}
+
+		public class Enum : TypeDeclaration
+		{
+			public override ClassType ClassType {
+				get {
+					return ClassType.Enum;
+				}
+			}
+
+			public override CSharpTokenNode TypeKeyword {
+				get {
+					return GetChildByRole(Roles.EnumKeyword);
+				}
+			}
+		}
+		#endregion
 	}
 }

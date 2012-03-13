@@ -33,8 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class DelegateDeclaration : EntityDeclaration
 	{
-		public readonly static TokenRole DelegateKeywordRole = new TokenRole ("delegate");
-		
 		public override NodeType NodeType {
 			get { return NodeType.TypeDeclaration; }
 		}
@@ -44,9 +42,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode DelegateToken {
-			get { return GetChildByRole (DelegateKeywordRole); }
+			get { return GetChildByRole(Roles.DelegateKeyword); }
 		}
-		
+
 		public AstNodeCollection<TypeParameterDeclaration> TypeParameters {
 			get { return GetChildrenByRole (Roles.TypeParameter); }
 		}
