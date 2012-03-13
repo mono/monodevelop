@@ -90,6 +90,9 @@ namespace MonoDevelop.CSharp
 				string debugAtt = projectOptions.GetAttribute ("DefineDebug");
 				if (string.Compare ("True", debugAtt, true) == 0)
 					pars.AddDefineSymbol ("DEBUG");
+				string releaseAtt = projectOptions.GetAttribute ("Release");
+				if (string.Compare ("True", releaseAtt, true) == 0)
+					pars.Optimize = true;
 			}
 			return pars;
 		}
