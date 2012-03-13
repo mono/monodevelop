@@ -637,19 +637,13 @@ namespace MonoDevelop.SourceEditor
 						int endOffset = result.InsertPosition + result.Code.Length;
 						string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
 						var policies = document.Project != null ? document.Project.Policies : null;
-						string text = prettyPrinter.FormatText (policies, Document.Text, result.InsertPosition, endOffset);
-						
-						if (text != null)
-							Replace (result.InsertPosition, result.Code.Length, text);
-						else
-							//if formatting failed, just use the unformatted text
-							text = oldText;
-						
-						Caret.Offset = result.InsertPosition + TranslateOffset (oldText, text, Caret.Offset - result.InsertPosition);
+						var oldVersion = Document.Version;
+						prettyPrinter.OnTheFlyFormat (document, result.InsertPosition, endOffset);
+
 						foreach (TextLink textLink in tle.Links) {
 							for (int i = 0; i < textLink.Links.Count; i++) {
 								var segment = textLink.Links [i];
-								textLink.Links [i] = new TextSegment (TranslateOffset (oldText, text, segment.Offset), segment.Length);
+								textLink.Links [i] = new TextSegment (oldVersion.MoveOffsetTo (Document.Version, segment.Offset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default), segment.Length);
 							}
 						}
 					}
@@ -662,30 +656,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 		}
-		
-		static int TranslateOffset (string baseInput, string formattedInput, int offset)
-		{
-			int i = 0;
-			int j = 0;
-			while (i < baseInput.Length && j < formattedInput.Length && i < offset) {
-				char ch1 = baseInput[i];
-				char ch2 = formattedInput[j];
-				bool ch1IsWs = Char.IsWhiteSpace (ch1);
-				bool ch2IsWs = Char.IsWhiteSpace (ch2);
-				if (ch1 == ch2 || ch1IsWs && ch2IsWs) {
-					i++;
-					j++;
-				} else if (!ch1IsWs && ch2IsWs) {
-					j++;
-				} else if (ch1IsWs && !ch2IsWs) {
-					i++;
-				} else {
-					return -1;
-				}
-			}
-			return j;
-		}
-		
+
 		protected override void HAdjustmentValueChanged ()
 		{
 			base.HAdjustmentValueChanged ();

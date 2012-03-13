@@ -167,7 +167,6 @@ namespace MonoDevelop.CSharp.Formatting
 			int formatStartOffset;
 			var text = BuildStub (data, seg, endOffset, out formatStartOffset);
 			int formatLength = endOffset - seg.Offset;
-
 			// Get changes from formatting visitor
 			var changes = GetFormattingChanges (policyParent, mimeTypeChain, data, text);
 			if (changes == null)
@@ -178,8 +177,8 @@ namespace MonoDevelop.CSharp.Formatting
 			int caretOffset = data.Editor.Caret.Offset;
 
 			int realTextDelta = seg.Offset - formatStartOffset;
-
-			changes.ApplyChanges (formatStartOffset + 1, formatLength - 1, delegate (int replaceOffset, int replaceLength, string insertText) {
+			int startDelta = startOffset - seg.Offset;
+			changes.ApplyChanges (formatStartOffset + startDelta, formatLength - startDelta, delegate (int replaceOffset, int replaceLength, string insertText) {
 				int translatedOffset = realTextDelta + replaceOffset;
 				data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
 				data.Editor.Replace (translatedOffset, replaceLength, insertText);
