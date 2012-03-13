@@ -45,6 +45,9 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp
 {
@@ -101,6 +104,29 @@ namespace MonoDevelop.CSharp
 			var codePolicy = project != null ? project.Policies.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) :
 				MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			return codePolicy.CreateOptions ();
+		}
+
+		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			result = null;
+			node = null;
+			var data = doc.Editor;
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return false;
+
+			var unit = parsedDocument.GetAst<CompilationUnit> ();
+			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+			
+			if (unit == null || parsedFile == null)
+				return false;
+
+			result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
+			if (result == null || result .IsError || node is Statement)
+				return false;
+			return true;
 		}
 	}
 }

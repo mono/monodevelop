@@ -71,28 +71,15 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-			var data = doc.Editor;
-			var parsedDocument = doc.ParsedDocument;
-			if (parsedDocument == null) {
-				expressionRegion = DomRegion.Empty;
-				return null;
-			}
-			var loc = data.OffsetToLocation (offset);
-			
-			var unit = parsedDocument.GetAst<CompilationUnit> ();
-			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
-			
-			if (unit == null || parsedFile == null) {
+			var loc = doc.Editor.OffsetToLocation (offset);
+			ResolveResult result;
+			AstNode node;
+
+			if (!doc.TryResolveAt (loc, out result, out node)) {
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
 
-			AstNode node;
-			var result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
-			if (result == null || node is Statement) {
-				expressionRegion = DomRegion.Empty;
-				return null;
-			}
 			expressionRegion = new DomRegion (node.StartLocation, node.EndLocation);
 			return result;
 		}
