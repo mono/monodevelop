@@ -155,14 +155,26 @@ namespace MonoDevelop.Core
 		
 		public void Delete ()
 		{
-			MakeWritable ();
-			if (Directory.Exists (this))
+			// Ensure that this file/directory and all children are writable
+			MakeWritable (true);
+			
+			// Also ensure the directory containing this file/directory is writable,
+			// otherwise we will not be able to delete it
+			ParentDirectory.MakeWritable (false);
+			
+			if (Directory.Exists (this)) {
 				Directory.Delete (this, true);
-			else if (File.Exists (this))
+			} else if (File.Exists (this)) {
 				File.Delete (this);
+			}
+		}
+
+		public void MakeWritable ()
+		{
+			MakeWritable (false);
 		}
 		
-		public void MakeWritable ()
+		public void MakeWritable (bool recurse)
 		{
 			if (Directory.Exists (this)) {
 				try {
@@ -171,9 +183,11 @@ namespace MonoDevelop.Core
 				} catch {
 					
 				}
-
-				foreach (var sub in Directory.GetFileSystemEntries (this)) {
-					((FilePath) sub).MakeWritable ();
+				
+				if (recurse) {
+					foreach (var sub in Directory.GetFileSystemEntries (this)) {
+						((FilePath) sub).MakeWritable (recurse);
+					}
 				}
 			} else if (File.Exists (this)) {
 				try {
@@ -183,7 +197,7 @@ namespace MonoDevelop.Core
 					var info = new FileInfo (this);
 					info.Attributes &= ~FileAttributes.ReadOnly;
 				} catch {
-				
+					
 				}
 			}
 		}
@@ -267,7 +281,7 @@ namespace MonoDevelop.Core
 		{
 			return fileName;
 		}
-
+		 
 		public int CompareTo (FilePath filePath)
 		{
 			return PathComparer.Compare (fileName, filePath.fileName);
