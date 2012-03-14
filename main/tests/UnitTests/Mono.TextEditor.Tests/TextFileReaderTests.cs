@@ -37,6 +37,20 @@ namespace Mono.TextEditor.Tests
 	public class TextFileReaderTests
 	{
 		[Test()]
+		public void TestFallback ()
+		{
+			byte[] input = new byte[] { 0xFF, 0x10, 0xAA, (byte)'u' };
+			Assert.AreEqual ("?\u0010?u", TextFileReader.GetText (input));
+		}
+
+		[Test()]
+		public void TestCodePage858 ()
+		{
+			byte[] input = new byte[] { (byte)'/', (byte)'/', (byte)' ', 0x9D };
+			Assert.AreEqual ("// \u00D8", TextFileReader.GetText (input));
+		}
+
+		[Test()]
 		public void TestUTF8 ()
 		{
 			var src = "Hello World\u2122";
@@ -59,7 +73,6 @@ namespace Mono.TextEditor.Tests
 			byte[] input = Encoding.Unicode.GetBytes (src);
 			Assert.AreEqual (src, TextFileReader.GetText (input));
 		}
-
 
 		[Test()]
 		public void TestUTF16BESimpleText ()
