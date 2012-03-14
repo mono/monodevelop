@@ -54,6 +54,14 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 
 		bool updatingProjectFiles;
 		bool disposed;
+		
+		FilePath ObjDir {
+			get { return dnp.BaseDirectory.Combine ("obj"); }
+		}
+		
+		FilePath XcodeDir {
+			get { return ObjDir.Combine ("Xcode"); }
+		}
 
 		public XcodeProjectTracker (DotNetProject dnp, NSObjectInfoService infoService)
 		{
@@ -94,7 +102,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			monitor.Log.WriteLine ("Enabled syncing for project: {0}", dnp.Name);
 			
-			xcode = new XcodeMonitor (dnp.BaseDirectory.Combine ("obj", "Xcode"), dnp.Name);
+			xcode = new XcodeMonitor (XcodeDir, dnp.Name);
 			
 			dnp.FileAddedToProject += FileAddedToProject;
 			dnp.FilePropertyChangedInProject += FilePropertyChangedInProject;
@@ -391,6 +399,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		bool UpdateXcodeProject (IProgressMonitor monitor)
 		{
 			try {
+				// Ensure that the obj directory and all subfiles/subdirectories
+				// are writeable so we can create the temp files for xcode syncing
+				dnp.BaseDirectory.MakeWritable ();
+				ObjDir.MakeWritable ();
+				XcodeDir.MakeWritable (true);
+				
 				xcode.UpdateProject (monitor, CreateSyncList (), CreateProject (dnp.Name));
 				return true;
 			} catch (AppleScriptException asex) {
