@@ -182,6 +182,7 @@
     <Compile Include="Mono.TextEditor.Highlighting\ColorSheme.cs" />
     <Compile Include="Mono.TextEditor\GtkWorkarounds.cs" />
     <Compile Include="Mono.TextEditor\Annotatable.cs" />
+    <Compile Include="Mono.TextEditor.Utils\TextFileReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
