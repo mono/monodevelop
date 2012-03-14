@@ -844,14 +844,15 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			
 			NavigationHistoryService.LogActiveDocument ();
+			FilePath baseDir = args.Item.BaseDirectory;
 			
-			string currentFileName = prefs.ActiveDocument != null ? Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, prefs.ActiveDocument)) : null;
+			string currentFileName = prefs.ActiveDocument != null ? baseDir.Combine (prefs.ActiveDocument).FullPath : null;
 			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.OpenFileIcon, true);
 			List<IViewContent> docViews = new List<IViewContent> ();
 			IViewContent currentView = null;
 			
 			foreach (DocumentUserPrefs doc in prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ())) {
-				FilePath fileName = args.Item.BaseDirectory.Combine (doc.FileName).FullPath;
+				string fileName = baseDir.Combine (doc.FileName).FullPath;
 				if (File.Exists (fileName)) {
 					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, doc.Line, doc.Column);
 					if (fileName == currentFileName)
