@@ -267,8 +267,8 @@
 			icon = "gtk-execute"
 			shortcut = "Control|F5"
 			macShortcut = "Alt|Meta|Return"
-			_description = "Run"
-			_label = "_Run" />
+			_description = "Start program without debugging"
+			_label = "Start Without Debugging" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList"
 			defaultHandler = "MonoDevelop.Ide.Commands.RunWithHandler"
 			type="array"
