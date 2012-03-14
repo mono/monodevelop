@@ -128,15 +128,11 @@ namespace MonoDevelop.NUnit.External
 		
 		public void SuiteFinished (TestResult result)
 		{
-			testSuites.Pop ();
 			wrapped.SuiteFinished (GetTestName (result.Test), GetLocalTestResult (result));
 		}
 
-		Stack<string> testSuites = new Stack<string>();
 		public void SuiteStarted (TestName suite)
 		{
-			Console.WriteLine ("start:"+suite.Name +"/"+suite.GetType ());
-			testSuites.Push (suite.FullName);
 			wrapped.SuiteStarted (GetTestName (suite));
 		}
 		
@@ -173,18 +169,7 @@ namespace MonoDevelop.NUnit.External
 		{
 			if (t == null)
 				return null;
-			if (t.TestType != "Test Case" || testSuites.Count == 0)
-				return t.TestName.FullName;
-			
-			// This is a work around for a nunit bug. 
-			// see Bug 1026 - Test hierarchies are not colored correctly during testing (using Generics) for details
-			// Either t.TestName.FullName is wrong or t.TestName.Name (but not both at the same time) depending on
-			// the base class is generic or not.
-			string name = t.TestName.Name;
-			int idx = name.LastIndexOf ('.');
-			if (idx >= 0)
-				name = name.Substring (idx + 1);
-			return testSuites.Peek () + "." + name;
+			return t.TestName.FullName;
 		}
 		
 		public string GetTestName (TestName t)
@@ -342,7 +327,6 @@ namespace MonoDevelop.NUnit.External
 				return null;
 			if (sname == "<root>")
 				return rootTest;
-			
 			if (sname.StartsWith (rootFullName)) {
 				sname = sname.Substring (rootFullName.Length);
 			}
@@ -356,7 +340,6 @@ namespace MonoDevelop.NUnit.External
 		{
 			if (testPath == "")
 				return t;
-
 			UnitTestGroup group = t as UnitTestGroup;
 			if (group == null)
 				return null;
@@ -367,12 +350,35 @@ namespace MonoDevelop.NUnit.External
 
 			string[] paths = testPath.Split (new char[] {'.'}, 2);
 			if (paths.Length == 2) {
-				string nextPathSection = paths[0];
-				string nextTestCandidate = paths[1];
+				string nextPathSection = paths [0];
+				string nextTestCandidate = paths [1];
 
 				UnitTest childTest = group.Tests [nextPathSection];
 				if (childTest != null)
 					return FindTest (childTest, nextTestCandidate);
+			}
+
+			return SearchRecursive (group, testPath);
+		}
+
+		/// <summary>
+		/// In some cases the test name doesn't include the last group name. In these cases the current subtree needs to be
+		/// searched for the right name. (May be an nunit bug.)
+		/// See: https://bugzilla.xamarin.com/show_bug.cgi?id=3881
+		/// </summary>
+		UnitTest SearchRecursive (UnitTestGroup group, string testPath)
+		{
+			UnitTest result;
+			foreach (var t in group.Tests) {
+				var childGroup = t as UnitTestGroup;
+				if (childGroup != null) {
+					result = SearchRecursive (childGroup, testPath);
+					if (result != null)
+						return result;
+				} else {
+					if (t.Name == testPath)
+						return t;
+				}
 			}
 			return null;
 		}
