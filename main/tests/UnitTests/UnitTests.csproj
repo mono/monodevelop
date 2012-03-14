@@ -230,6 +230,7 @@
     <Compile Include="Mono.TextEditor.Tests\HeightTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\BookmarkTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\TextFileReaderTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
