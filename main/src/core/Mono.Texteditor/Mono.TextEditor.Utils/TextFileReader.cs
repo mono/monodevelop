@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -160,34 +161,29 @@ namespace Mono.TextEditor.Utils
 		#endregion
 
 		#region Encoding autodetection
-		readonly static Encoding EncodingCp1252 = Encoding.GetEncoding (1252);
 
-		static Encoding AutoDetectEncoding (Stream stream)
+		static unsafe Encoding AutoDetectEncoding (Stream stream)
 		{
 			try {
 				int max = (int)System.Math.Min (stream.Length, 50 * 1024);
-
-				var utf8 = new Utf8Verifier ();
-				var utf16 = new UnicodeVerifier ();
-				var utf16BE = new BigEndianUnicodeVerifier ();
-				var cp1252 = new CodePage1252Verifier ();
-
-				for (int i = 0; i < max; i++) {
-					var b = (byte)stream.ReadByte ();
-					utf8.Advance (b);
-					utf16.Advance (b);
-					utf16BE.Advance (b);
-					cp1252.Advance (b);
-				}
+				byte[] readBuf = new byte[max];
+				int readLength = stream.Read (readBuf, 0, max);
 				stream.Position = 0;
-				if (utf16.IsValid)
-					return Encoding.Unicode;
-				if (utf16BE.IsValid)
-					return Encoding.BigEndianUnicode;
-				if (utf8.IsValid)
-					return Encoding.UTF8;
-				if (cp1252.IsValid)
-					return EncodingCp1252;
+
+				var verifiers = new Verifier[] {
+					new UnicodeVerifier (),
+					new BigEndianUnicodeVerifier (),
+					new Utf8Verifier (),
+					new CodePage1252Verifier (),
+					new CodePage858Verifier ()
+				};
+
+				foreach (var verifier in verifiers) {
+					if (verifier.IsValid (readBuf, readLength)) {
+						return verifier.Encoding;
+					}
+				}
+
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}
@@ -228,10 +224,41 @@ namespace Mono.TextEditor.Utils
 		#endregion
 	}
 
-	class Utf8Verifier
+	abstract class Verifier
 	{
-		const byte Error   = 0;
+		protected const byte Error   = 0;
+		protected byte state = 0;
+		protected static readonly byte[] errorTable = new byte[(int)byte.MaxValue + 1];
 
+		protected abstract void Advance (byte b);
+
+		public abstract Encoding Encoding { get; }
+
+		protected virtual bool IsEncodingValid { 
+			get { 
+				return state != Error; 
+			}
+		}
+
+		public unsafe bool IsValid (byte[] readBuf, int readLength)
+		{
+			fixed (byte* bPtr = readBuf) {
+				byte* ptr = bPtr;
+				byte* bEndPtr = bPtr + readLength;
+				while (ptr != bEndPtr) {
+					Advance (*ptr);
+					if (state == Error)
+						return false;
+					ptr++;
+				}
+			}
+
+			return IsEncodingValid;
+		}
+	}
+
+	class Utf8Verifier : Verifier
+	{
 		const byte UTF1     = 1;
 		const byte UTFTail1 = 2;
 		const byte UTFTail2 = 3;
@@ -243,20 +270,13 @@ namespace Mono.TextEditor.Utils
 
 		const byte LAST = 9;
 
-		byte state = UTF1;
-
-		public bool IsValid {
-			get {
-				return state != Error;
-			}
-		}
-
 		static byte[][] table;
 
 		static Utf8Verifier ()
 		{
 			table = new byte[LAST][];
-			for (int i = 0; i < LAST; i++)
+			table[0] = errorTable;
+			for (int i = 1; i < LAST; i++)
 				table[i] = new byte[(int)byte.MaxValue + 1];
 
 			// UTF8-1      = %x00-7F
@@ -314,27 +334,39 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		public void Advance (byte b)
+		public override Encoding Encoding { get { return Encoding.UTF8; } }
+
+		public Utf8Verifier ()
+		{
+			state = UTF1;
+		}
+
+		protected override void Advance (byte b)
 		{
 			state = table[state][b];
 		}
 	}
 
-	class UnicodeVerifier
+	class UnicodeVerifier : Verifier
 	{
-		const byte Error   = 0;
 		const byte Running = 1;
 		const byte Possible = 2;
 
-		byte state = Running;
+		public override Encoding Encoding { get { return Encoding.Unicode; } }
 
-		public bool IsValid {
+		protected override bool IsEncodingValid {
 			get {
 				return state == Possible;
 			}
 		}
+
+		public UnicodeVerifier ()
+		{
+			state = Running;
+		}
+
 		int number = 0;
-		public void Advance (byte b)
+		protected override void Advance (byte b)
 		{
 			if (state == Error)
 				return;
@@ -344,21 +376,26 @@ namespace Mono.TextEditor.Utils
 		}
 	}
 
-	class BigEndianUnicodeVerifier
+	class BigEndianUnicodeVerifier : Verifier
 	{
-		const byte Error   = 0;
 		const byte Running = 1;
 		const byte Possible = 2;
 
-		byte state = Running;
+		public override Encoding Encoding { get { return Encoding.BigEndianUnicode; } }
 
-		public bool IsValid {
+		protected override bool IsEncodingValid {
 			get {
 				return state == Possible;
 			}
 		}
+
+		public BigEndianUnicodeVerifier ()
+		{
+			state = Running;
+		}
+
 		int number = 0;
-		public void Advance (byte b)
+		protected override void Advance (byte b)
 		{
 			if (state == Error)
 				return;
@@ -368,26 +405,25 @@ namespace Mono.TextEditor.Utils
 		}
 	}
 
-	class CodePage1252Verifier
+	/// <summary>
+	/// Code page 1252 was the long time default on windows. This encoding is a superset of ISO 8859-1.
+	/// </summary>
+	class CodePage1252Verifier : Verifier
 	{
-		const byte Error = 0;
 		const byte Valid = 1;
 		const byte LAST = 2;
 
-		byte state = Valid;
-
 		static byte[][] table;
 
-		public bool IsValid {
-			get {
-				return state == Valid;
-			}
-		}
+		readonly static Encoding EncodingCp1252 = Encoding.GetEncoding (1252);
+
+		public override Encoding Encoding { get { return EncodingCp1252; } }
 
 		static CodePage1252Verifier ()
 		{
 			table = new byte[LAST][];
-			for (int i = 0; i < LAST; i++)
+			table[0] = errorTable;
+			for (int i = 1; i < LAST; i++)
 				table[i] = new byte[(int)byte.MaxValue + 1];
 
 			for (int i = 0x20; i <= 0xFF; i++) {
@@ -400,7 +436,49 @@ namespace Mono.TextEditor.Utils
 			table[Valid][0x9D] = Error;
 		}
 
-		public void Advance (byte b)
+		public CodePage1252Verifier ()
+		{
+			state = Valid;
+		}
+
+		protected override 		void Advance (byte b)
+		{
+			state = table[state][b];
+		}
+	}
+
+	/// <summary>
+	/// Code page 858 supports old DOS style files extended with the euro sign.
+	/// </summary>
+	class CodePage858Verifier : Verifier
+	{
+		const byte Valid = 1;
+		const byte LAST = 2;
+
+		static byte[][] table;
+
+		readonly static Encoding EncodingCp858 = Encoding.GetEncoding (858);
+
+		public override Encoding Encoding { get { return EncodingCp858; } }
+
+		static CodePage858Verifier ()
+		{
+			table = new byte[LAST][];
+			table[0] = errorTable;
+			for (int i = 1; i < LAST; i++)
+				table[i] = new byte[(int)byte.MaxValue + 1];
+
+			for (int i = 0x20; i <= 0xFF; i++) {
+				table[Valid][i] = Valid;
+			}
+		}
+
+		public CodePage858Verifier ()
+		{
+			state = Valid;
+		}
+
+		protected override void Advance (byte b)
 		{
 			state = table[state][b];
 		}
