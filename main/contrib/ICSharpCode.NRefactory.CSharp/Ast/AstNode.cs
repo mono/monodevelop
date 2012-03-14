@@ -35,6 +35,11 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public abstract class AstNode : AbstractAnnotatable, PatternMatching.INode
 	{
+		/// <summary>
+		/// Root of an abstract syntax tree.
+		/// </summary>
+		public static readonly Role<AstNode> Root = new Role<AstNode> ("Root");
+		
 		#region Null
 		public static readonly AstNode Null = new NullAstNode ();
 		
@@ -124,7 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		AstNode nextSibling;
 		AstNode firstChild;
 		AstNode lastChild;
-		Role role = Roles.Root;
+		Role role = Root;
 		
 		public abstract NodeType NodeType {
 			get;

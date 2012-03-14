@@ -30,10 +30,6 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public static class Roles
 	{
-		/// <summary>
-		/// Root of an abstract syntax tree.
-		/// </summary>
-		public static readonly Role<AstNode> Root = new Role<AstNode> ("Root");
 			
 		// some pre defined constants for common roles
 		public static readonly Role<Identifier> Identifier = new Role<Identifier> ("Identifier", CSharp.Identifier.Null);

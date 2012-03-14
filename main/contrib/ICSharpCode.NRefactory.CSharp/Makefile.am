@@ -16,7 +16,6 @@ FILES =  \
 	Analysis/DefiniteAssignmentAnalysis.cs \
 	Analysis/ReachabilityAnalysis.cs \
 	Ast/AstNode.cs \
-	Ast/Roles.cs \
 	Ast/AstNodeCollection.cs \
 	Ast/AstType.cs \
 	Ast/CompilationUnit.cs \
@@ -86,6 +85,7 @@ FILES =  \
 	Ast/NodeType.cs \
 	Ast/ObservableAstVisitor.cs \
 	Ast/PrimitiveType.cs \
+	Ast/Roles.cs \
 	Ast/SimpleType.cs \
 	Ast/Statements/BlockStatement.cs \
 	Ast/Statements/BreakStatement.cs \
