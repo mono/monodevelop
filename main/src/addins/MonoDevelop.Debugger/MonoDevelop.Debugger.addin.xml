@@ -58,13 +58,13 @@
 				icon = "md-execute-debug"
 				shortcut = "F5"
 				macShortcut = "Meta|Return"
-				_description = "Debug"
-				_label = "_Debug" />
+				_description = "Start debugging"
+				_label = "Start _Debugging" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DebugEntry"
 				defaultHandler = "MonoDevelop.Debugger.DebugEntryHandler"
 				icon = "md-execute-debug"
 				_description = "Debug current project"
-				_label = "D_ebug Item" />
+				_label = "Start D_ebugging Item" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
