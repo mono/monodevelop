@@ -180,6 +180,7 @@
     <Compile Include="Mono.TextEditor\DocumentChangeEventArgs.cs" />
     <Compile Include="Mono.TextEditor\TextDocument.cs" />
     <Compile Include="Mono.TextEditor\TextSegment.cs" />
+    <Compile Include="Mono.TextEditor.Utils\TextFileReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
