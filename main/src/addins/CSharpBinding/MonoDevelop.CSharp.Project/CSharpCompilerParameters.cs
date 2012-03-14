@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp.Project
 		
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
-		
+
 		[ItemProperty ("Optimize")]
 		bool optimize;
 		
