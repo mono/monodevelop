@@ -45,8 +45,9 @@ namespace MonoDevelop.NUnit
 		public NUnitTestCase (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo, string className) : base (tinfo.Name)
 		{
 			this.className = className;
-			this.pathName  = tinfo.PathName;
+			this.pathName = tinfo.PathName;
 			this.rootSuite = rootSuite;
+			this.TestId = tinfo.TestId;
 		}
 		
 		public string ClassName {

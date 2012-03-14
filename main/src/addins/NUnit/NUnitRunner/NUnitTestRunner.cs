@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Collections;
@@ -99,6 +100,7 @@ namespace MonoDevelop.NUnit.External
 				tname = tname.Substring (i + 1);
 			
 			ti.Name = tname;
+			ti.TestId = test.TestName.FullName;
 
 			// Trim short name from end of full name to get the path
 			string testNameWithDelimiter = "." + tname;
@@ -136,24 +138,25 @@ namespace MonoDevelop.NUnit.External
 	{
 		public string Name;
 		public string PathName;
+		public string TestId;
 		public NunitTestInfo[] Tests;
 	}
 		
 	[Serializable]
 	public class TestNameFilter: ITestFilter
 	{
-		string name;
+		string[] names;
 		
-		public TestNameFilter (string name)
+		public TestNameFilter (params string[] names)
 		{
-			this.name = name;
+			this.names = names;
 		}
 		
 		#region ITestFilter implementation 
 		
 		public bool Pass (ITest test)
 		{
-			if (!test.IsSuite && test.TestName.FullName == name)
+			if (!test.IsSuite && names.Any (n => test.TestName.FullName == n))
 				return true;
 			if (test.Tests != null) {
 				foreach (ITest ct in test.Tests) {

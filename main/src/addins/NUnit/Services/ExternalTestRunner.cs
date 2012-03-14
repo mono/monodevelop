@@ -128,15 +128,11 @@ namespace MonoDevelop.NUnit.External
 		
 		public void SuiteFinished (TestResult result)
 		{
-			testSuites.Pop ();
 			wrapped.SuiteFinished (GetTestName (result.Test), GetLocalTestResult (result));
 		}
 
-		Stack<string> testSuites = new Stack<string>();
 		public void SuiteStarted (TestName suite)
 		{
-			Console.WriteLine ("start:"+suite.Name +"/"+suite.GetType ());
-			testSuites.Push (suite.FullName);
 			wrapped.SuiteStarted (GetTestName (suite));
 		}
 		
@@ -173,18 +169,7 @@ namespace MonoDevelop.NUnit.External
 		{
 			if (t == null)
 				return null;
-			if (t.TestType != "Test Case" || testSuites.Count == 0)
-				return t.TestName.FullName;
-			
-			// This is a work around for a nunit bug. 
-			// see Bug 1026 - Test hierarchies are not colored correctly during testing (using Generics) for details
-			// Either t.TestName.FullName is wrong or t.TestName.Name (but not both at the same time) depending on
-			// the base class is generic or not.
-			string name = t.TestName.Name;
-			int idx = name.LastIndexOf ('.');
-			if (idx >= 0)
-				name = name.Substring (idx + 1);
-			return testSuites.Peek () + "." + name;
+			return t.TestName.FullName;
 		}
 		
 		public string GetTestName (TestName t)
@@ -196,49 +181,30 @@ namespace MonoDevelop.NUnit.External
 		
 		public UnitTestResult GetLocalTestResult (TestResult t)
 		{
+
 			UnitTestResult res = new UnitTestResult ();
-			res.Message = t.Message;
-			
-			if (t.Test.IsSuite) {
-				int s=0, f=0, i=0;
-				CountResults (t, ref s, ref f, ref i);
-				res.TotalFailures = f;
-				res.TotalSuccess = s;
-				res.TotalIgnored = i;
-				if (f > 0)
-					res.Status |= ResultStatus.Failure;
-				if (s > 0)
-					res.Status |= ResultStatus.Success;
-				if (i > 0)
-					res.Status |= ResultStatus.Ignored;
-			} else {
-				if (t.IsFailure) {
-					res.Status = ResultStatus.Failure;
-					res.TotalFailures = 1;
-				}
-				else if (!t.Executed) {
-					res.Status = ResultStatus.Ignored;
-					res.TotalIgnored = 1;
-				}
-				else {
-					res.Status = ResultStatus.Success;
-					res.TotalSuccess = 1;
-				}
-			
-				if (string.IsNullOrEmpty (res.Message)) {
-					if (t.IsFailure)
-						res.Message = GettextCatalog.GetString ("Test failed");
-					else if (!t.Executed)
-						res.Message = GettextCatalog.GetString ("Test ignored");
-					else {
-						res.Message = GettextCatalog.GetString ("Test successful") + "\n\n";
-						res.Message += GettextCatalog.GetString ("Execution time: {0:0.00}ms", t.Time);
-					}
-				}
-			}
+			var summary = new ResultSummarizer (t);
+			res.Failures = summary.Failures;
+			res.Errors = summary.Errors;
+			res.Ignored = summary.Ignored;
+			res.Inconclusive = summary.Inconclusive;
+			res.NotRunnable = summary.NotRunnable;
+			res.Passed = summary.Passed;
 			res.StackTrace = t.StackTrace;
 			res.Time = TimeSpan.FromSeconds (t.Time);
-			
+
+			res.Message = t.Message;
+			if (string.IsNullOrEmpty (res.Message)) {
+				if (res.IsFailure)
+					res.Message = GettextCatalog.GetString ("Test failed");
+				else if (!t.Executed)
+					res.Message = GettextCatalog.GetString ("Test ignored");
+				else {
+					res.Message = GettextCatalog.GetString ("Test successful") + "\n\n";
+					res.Message += GettextCatalog.GetString ("Execution time: {0:0.00}ms", t.Time);
+				}
+			}
+
 			if (consoleOutput != null) {
 				res.ConsoleOutput = consoleOutput.ToString ();
 				res.ConsoleError = consoleError.ToString ();
@@ -247,27 +213,8 @@ namespace MonoDevelop.NUnit.External
 			}
 			
 			return res;
-		}		
-		
-		void CountResults (TestResult ts, ref int s, ref int f, ref int i)
-		{
-			if (ts.Results == null)
-				return;
-
-			foreach (TestResult t in ts.Results) {
-				if (!t.Test.IsSuite) {
-					if (t.IsFailure)
-						f++;
-					else if (!t.Executed)
-						i++;
-					else
-						s++;
-				} else {
-					CountResults (t, ref s, ref f, ref i);
-				}
-			}
 		}
-		
+
 		public void UnhandledException (Exception exception)
 		{
 		}
@@ -290,7 +237,7 @@ namespace MonoDevelop.NUnit.External
 		bool singleTestRun;
 		UnitTestResult singleTestResult;
 		public bool Canceled;
-		
+
 		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
 		{
 			this.rootFullName = rootFullName;
@@ -380,37 +327,36 @@ namespace MonoDevelop.NUnit.External
 				return null;
 			if (sname == "<root>")
 				return rootTest;
-			
+			/*
 			if (sname.StartsWith (rootFullName)) {
 				sname = sname.Substring (rootFullName.Length);
 			}
 			if (sname.StartsWith ("."))
-				sname = sname.Substring (1);
+				sname = sname.Substring (1);*/
 			UnitTest tt = FindTest (rootTest, sname);
 			return tt;
 		}
 		
 		UnitTest FindTest (UnitTest t, string testPath)
 		{
-			if (testPath == "")
-				return t;
-
-			UnitTestGroup group = t as UnitTestGroup;
+			var group = t as UnitTestGroup;
 			if (group == null)
 				return null;
+			return SearchRecursive (group, testPath);
+		}
 
-			UnitTest returnTest = group.Tests [testPath];
-			if (returnTest != null)
-				return returnTest;
-
-			string[] paths = testPath.Split (new char[] {'.'}, 2);
-			if (paths.Length == 2) {
-				string nextPathSection = paths[0];
-				string nextTestCandidate = paths[1];
-
-				UnitTest childTest = group.Tests [nextPathSection];
-				if (childTest != null)
-					return FindTest (childTest, nextTestCandidate);
+		UnitTest SearchRecursive (UnitTestGroup group, string testPath)
+		{
+			UnitTest result;
+			foreach (var t in group.Tests) {
+				if (t.TestId == testPath)
+					return t;
+				var childGroup = t as UnitTestGroup;
+				if (childGroup != null) {
+					result = SearchRecursive (childGroup, testPath);
+					if (result != null)
+						return result;
+				}
 			}
 			return null;
 		}

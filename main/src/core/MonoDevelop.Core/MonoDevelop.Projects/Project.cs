@@ -510,16 +510,14 @@ namespace MonoDevelop.Projects
 			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 
 			foreach (FileCopySet.Item item in GetSupportFileList (configuration)) {
-				string dest = Path.Combine (config.OutputDirectory, item.Target);
+				FilePath dest = Path.Combine (config.OutputDirectory, item.Target);
 
 				// Ignore files which were not copied
 				if (Path.GetFullPath (dest) == Path.GetFullPath (item.Src))
 					continue;
 
 				try {
-					if (File.Exists (dest)) {
-						FileService.DeleteFile (dest);
-					}
+					dest.Delete ();
 				} catch (IOException ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Error deleting support file '{0}'.", dest), ex);
 				}
@@ -650,9 +648,9 @@ namespace MonoDevelop.Projects
 			// Delete generated files
 			foreach (FilePath file in GetOutputFiles (configuration)) {
 				if (File.Exists (file)) {
-					FileService.DeleteFile (file);
+					file.Delete ();
 					if (file.ParentDirectory.CanonicalPath != config.OutputDirectory.CanonicalPath && Directory.GetFiles (file.ParentDirectory).Length == 0)
-						FileService.DeleteDirectory (file.ParentDirectory);
+						file.ParentDirectory.Delete ();
 				}
 			}
 	

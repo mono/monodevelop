@@ -74,7 +74,6 @@ namespace MonoDevelop.NUnit
 		{
 			try {
 				if (TestInfoCachePath != null) {
-					Console.WriteLine ("saving TestInfoCachePath = " + TestInfoCachePath);
 					testInfoCache.Write (TestInfoCachePath);
 				}
 			} catch {
@@ -338,6 +337,20 @@ namespace MonoDevelop.NUnit
 			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
 		}
 
+		public string[] CollectTests (UnitTestGroup group)
+		{
+			List<string> result = new List<string> ();
+			foreach (var t in group.Tests) {
+				if (t is UnitTestGroup) {
+					result.AddRange (CollectTests ((UnitTestGroup)t));
+				} else {
+					Console.WriteLine (t.TestId);
+					result.Add (t.TestId);
+				}
+			}
+			return result.ToArray ();
+		}
+
 		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
 		{
 
@@ -345,7 +358,10 @@ namespace MonoDevelop.NUnit
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName, testName != null);
 
 			ITestFilter filter = null;
-			if (testName != null) {
+			if (suiteName != null) {
+				if (test is UnitTestGroup)
+					filter = new TestNameFilter (CollectTests ((UnitTestGroup)test));
+			} else if (testName != null) {
 				filter = new TestNameFilter (pathName + "." + testName);
 			} else {
 				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
@@ -372,7 +388,7 @@ namespace MonoDevelop.NUnit
 					throw new Exception (msg);
 				}
 				System.Runtime.Remoting.RemotingServices.Marshal (localMonitor, null, typeof (IRemoteEventListener));
-				result = runner.Run (localMonitor, filter, AssemblyPath, suiteName, new List<string> (SupportAssemblies));
+				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies));
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
 			} catch (Exception ex) {

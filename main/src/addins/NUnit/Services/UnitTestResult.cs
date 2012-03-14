@@ -44,9 +44,6 @@ namespace MonoDevelop.NUnit
 		string message;
 		string output;
 		string stackTrace;
-		int totalFailures;
-		int totalSuccess;
-		int totalIgnored;
 		string cerror;
 		
 		public UnitTestResult ()
@@ -93,34 +90,67 @@ namespace MonoDevelop.NUnit
 		
 		public ResultStatus Status {
 			get { return status; }
-			set { status = value; }
 		}
 		
 		public bool IsFailure {
-			get { return (status & ResultStatus.Failure) != 0; }
+			get { return ErrorsAndFailures > 0; }
 		}
-		
-		public bool IsIgnored {
-			get { return (status & ResultStatus.Ignored) != 0; }
-		}
-		
+
 		public bool IsSuccess {
-			get { return (status & ResultStatus.Success) != 0; }
+			get { return ErrorsAndFailures == 0 && Passed > 0; }
 		}
-		
-		public int TotalFailures {
-			get { return totalFailures; }
-			set { totalFailures = value; }
+
+		public bool IsNotRun {
+			get {
+				return Passed == 0 && ErrorsAndFailures == 0 && TestsNotRun > 0;
+			}
 		}
-		
-		public int TotalSuccess {
-			get { return totalSuccess; }
-			set { totalSuccess = value; }
+
+		public int Passed {
+			get;
+			set;
 		}
-		
-		public int TotalIgnored {
-			get { return totalIgnored; }
-			set { totalIgnored = value; }
+
+		public int Errors {
+			get;
+			set;
+		}
+
+		public int Failures {
+			get;
+			set;
+		}
+
+		public int ErrorsAndFailures {
+			get {
+				return Errors + Failures;
+			}
+		}
+
+		public int TestsNotRun {
+			get {
+				return Ignored + NotRunnable + Skipped;
+			}
+		}
+
+		public int Inconclusive {
+			get;
+			set;
+		}
+
+		public int NotRunnable {
+			get;
+			set;
+		}
+
+		public int Skipped {
+			get;
+			set;
+		}
+
+		public int Ignored {
+			get;
+			set;
 		}
 		
 		public TimeSpan Time {
@@ -152,19 +182,30 @@ namespace MonoDevelop.NUnit
 		{
 			if (string.IsNullOrEmpty (stackTrace))
 				return null;
-			string[] stackLines = stackTrace.Replace ("\r","").Split ('\n');
+			string[] stackLines = stackTrace.Replace ("\r", "").Split ('\n');
 			foreach (string line in stackLines) {
 				if (line.IndexOf ("NUnit.Framework") != -1)
 					continue;
 				Regex r = new Regex (@".*?\(.*?\)\s\[.*?\]\s.*?\s(?<file>.*)\:(?<line>\d*)");
 				Match m = r.Match (line);
-				if (m.Groups["file"] != null && m.Groups["line"] != null && File.Exists (m.Groups["file"].Value)) {
+				if (m.Groups ["file"] != null && m.Groups ["line"] != null && File.Exists (m.Groups ["file"].Value)) {
 					int lin;
-					if (int.TryParse (m.Groups["line"].Value, out lin))
-						return new MonoDevelop.NUnit.SourceCodeLocation (m.Groups["file"].Value, lin, -1);
+					if (int.TryParse (m.Groups ["line"].Value, out lin))
+						return new MonoDevelop.NUnit.SourceCodeLocation (m.Groups ["file"].Value, lin, -1);
 				}
 			}
 			return null;
+		}
+
+		public void Add (UnitTestResult res)
+		{
+			Time += res.Time;
+			Passed += res.Passed;
+			Errors += res.Errors;
+			Failures += res.Failures;
+			Ignored += res.Ignored;
+			Inconclusive += res.Inconclusive;
+			Skipped += res.Skipped;
 		}
 	}
 }
