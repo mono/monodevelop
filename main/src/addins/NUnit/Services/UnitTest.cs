@@ -373,8 +373,8 @@ namespace MonoDevelop.NUnit
 				return;
 
 			result.TestDate = context.TestDate;
-			if ((int)result.Status == 0)
-				result.Status = ResultStatus.Ignored;
+//			if ((int)result.Status == 0)
+//				result.Status = ResultStatus.Ignored;
 			lastResult = result;
 			IResultsStore store = GetResultsStore ();
 			if (store != null)

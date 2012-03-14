@@ -145,11 +145,7 @@ namespace MonoDevelop.NUnit
 					} catch (Exception ex) {
 						res = UnitTestResult.CreateFailure (ex);
 					}
-					tres.Time += res.Time;
-					tres.Status |= res.Status;
-					tres.TotalFailures += res.TotalFailures;
-					tres.TotalSuccess += res.TotalSuccess;
-					tres.TotalIgnored += res.TotalIgnored;
+					tres.Add (res);
 				}
 			} finally {
 				OnEndTest (testContext);

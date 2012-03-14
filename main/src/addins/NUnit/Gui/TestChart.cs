@@ -316,8 +316,8 @@ namespace MonoDevelop.NUnit
 				} else {
 					DateTime endDate = new DateTime ((long)lastDateValue);
 					startDate = endDate - currentSpan;
-					StartX = (double) startDate.Ticks;
-					EndX = (double) endDate.Ticks;
+					StartX = (double)startDate.Ticks;
+					EndX = (double)endDate.Ticks;
 					first = test.Results.GetLastResult (startDate);
 					results = test.Results.GetResults (startDate, lastResult.TestDate);
 				}
@@ -330,10 +330,10 @@ namespace MonoDevelop.NUnit
 						DateTime d1 = results [n].TestDate;
 						DateTime d2 = results [n + 1].TestDate;
 						if (d1.Day != d2.Day || d1.Month != d2.Month || d1.Year != d2.Year)
-							list.Add (results[n]);
+							list.Add (results [n]);
 					}
 					list.Add (results [results.Length - 1]);
-					results = (UnitTestResult[]) list.ToArray (typeof(UnitTestResult));
+					results = (UnitTestResult[])list.ToArray (typeof(UnitTestResult));
 				}
 				
 				if (resetCursors) {
@@ -350,12 +350,13 @@ namespace MonoDevelop.NUnit
 					list.Add (lastResult);
 					while (list.Count < testCount + (int)lastTestNumber + 1) {
 						UnitTestResult res = test.Results.GetPreviousResult (lastResult.TestDate);
-						if (res == null) break;
+						if (res == null)
+							break;
 						if (res.TestDate.Day != lastResult.TestDate.Day || res.TestDate.Month != lastResult.TestDate.Month || res.TestDate.Year != lastResult.TestDate.Year)
 							list.Add (res);
 						lastResult = res;
 					}
-					results = (UnitTestResult[]) list.ToArray (typeof(UnitTestResult));
+					results = (UnitTestResult[])list.ToArray (typeof(UnitTestResult));
 					Array.Reverse (results);
 				} else {
 					results = test.Results.GetResultsToDate (DateTime.Now, testCount + (int)lastTestNumber + 1);
@@ -378,17 +379,17 @@ namespace MonoDevelop.NUnit
 			if (Type == TestChartType.Results) {
 				if (first != null) {
 					double x = timeScale ? first.TestDate.Ticks : results.Length;
-					serieFailed.AddData (x, first.TotalFailures);
-					serieSuccess.AddData (x, first.TotalSuccess);
-					serieIgnored.AddData (x, first.TotalIgnored);
+					serieFailed.AddData (x, first.ErrorsAndFailures);
+					serieSuccess.AddData (x, first.Passed);
+					serieIgnored.AddData (x, first.TestsNotRun);
 				}
 				
 				for (int n=0; n < results.Length; n++) {
 					UnitTestResult res = results [n];
 					double x = timeScale ? res.TestDate.Ticks : results.Length - n - 1;
-					serieFailed.AddData (x, res.TotalFailures);
-					serieSuccess.AddData (x, res.TotalSuccess);
-					serieIgnored.AddData (x, res.TotalIgnored);
+					serieFailed.AddData (x, res.ErrorsAndFailures);
+					serieSuccess.AddData (x, res.Passed);
+					serieIgnored.AddData (x, res.TestsNotRun);
 				}
 			} else {
 				if (first != null) {

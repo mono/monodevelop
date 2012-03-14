@@ -51,8 +51,7 @@ namespace MonoDevelop.NUnit
 		VBox panel;
 		HPaned book;
 		
-		Label infoFailed = new Label (GettextCatalog.GetString ("<b>Failed</b>: {0}", 0));
-		Label infoIgnored = new Label (GettextCatalog.GetString ("<b>Ignored</b>: {0}", 0));
+		Label infoLabel = new Label ();
 		Label infoCurrent = new Label ();
 		HBox labels;
 		
@@ -79,9 +78,9 @@ namespace MonoDevelop.NUnit
 		bool running;
 		int testsToRun;
 		int testsRun;
-		int testsFailed;
-		int testsIgnored;
-		
+
+		UnitTestResult resultSummary;
+
 		UnitTest rootTest;
 		string configuration;
 		ArrayList results = new ArrayList ();
@@ -180,7 +179,7 @@ namespace MonoDevelop.NUnit
 			buttonIgnored.Image = new Gtk.Image (CircleImage.NotRun);
 			buttonIgnored.Image.Show ();
 			buttonIgnored.Toggled += new EventHandler (OnShowIgnoredToggled);
-			buttonIgnored.TooltipText = GettextCatalog.GetString( "Show Ignored Tests");
+			buttonIgnored.TooltipText = GettextCatalog.GetString ("Show Ignored Tests");
 			toolbar.Add (buttonIgnored);
 			
 			buttonOutput = new ToggleButton ();
@@ -223,18 +222,18 @@ namespace MonoDevelop.NUnit
 			
 			labels = new HBox (false, 10);
 			
-			infoFailed.UseMarkup = true;
-			infoIgnored.UseMarkup = true;
-			
-			labels.PackStart (infoFailed, true, false, 0);
-			labels.PackStart (infoIgnored, true, false, 0);
-			
+			infoLabel.UseMarkup = true;
+
+			labels.PackStart (infoLabel, true, false, 0);
+
 			runPanel.Add (new Gtk.Label (), true);
 			runPanel.Add (labels);
 			runPanel.Add (infoSep, false, 10);
 			
-			progressBar.HeightRequest = infoFailed.SizeRequest().Height;
+			progressBar.HeightRequest = infoLabel.SizeRequest ().Height;
 			runPanel.ShowAll ();
+			resultSummary = new UnitTestResult ();
+			UpdateCounters ();
 		}
 		
 		public void Dispose ()
@@ -254,8 +253,7 @@ namespace MonoDevelop.NUnit
 			progressBar.Fraction = 0;
 			progressBar.Text = "";
 			testsRun = 0;
-			testsFailed = 0;
-			testsIgnored = 0;
+			resultSummary = new UnitTestResult ();
 			UpdateCounters ();
 			if (rootTest != null) {
 				rootTest = testService.SearchTest (rootTest.FullName);
@@ -282,28 +280,30 @@ namespace MonoDevelop.NUnit
 		{
 		}
 		
+		string GetResultsMarkup ()
+		{
+			return string.Format (GettextCatalog.GetString ("<b>Passed</b>: {0}   <b>Failed</b>: {1}   <b>Errors</b>: {2}   <b>Inconclusive</b>: {3}   <b>Invalid</b>: {4}   <b>Ignored</b>: {5}   <b>Skipped</b>: {6}   <b>Time</b>: {7}"), 
+					                        resultSummary.Passed, resultSummary.Failures, resultSummary.Errors, resultSummary.Inconclusive, resultSummary.NotRunnable, resultSummary.Ignored, resultSummary.Skipped, resultSummary.Time);
+		}
 		void UpdateCounters ()
 		{
-			infoFailed.Markup = GettextCatalog.GetString ("<b>Failed</b>: {0}", testsFailed);
-			infoIgnored.Markup = GettextCatalog.GetString ("<b>Ignored</b>: {0}", testsIgnored);
+			infoLabel.Markup = GetResultsMarkup ();
 		}
 		
 		public void InitializeTestRun (UnitTest test)
 		{
 			rootTest = test;
 			results.Clear ();
+
 			testsToRun = test.CountTestCases ();
-			
 			error = null;
 			errorMessage = null;
 			
 			progressBar.Fraction = 0;
 			progressBar.Text = "";
 			progressBar.Text = "0 / " + testsToRun;
-
 			testsRun = 0;
-			testsFailed = 0;
-			testsIgnored = 0;
+			resultSummary = new UnitTestResult ();
 			UpdateCounters ();
 			
 			infoSep.Show ();
@@ -390,12 +390,8 @@ namespace MonoDevelop.NUnit
 			buttonStop.Sensitive = false;
 			buttonRun.Sensitive = true;
 			
-			StringBuilder sb = new StringBuilder ();
-			sb.Append (GettextCatalog.GetString ("<b>Tests</b>: {0}", testsRun)).Append ("  ");
-			sb.Append (GettextCatalog.GetString ("<b>Failed</b>: {0}", testsFailed)).Append ("  ");
-			sb.Append (GettextCatalog.GetString ("<b>Ignored</b>: {0}", testsIgnored));
-			resultLabel.Markup = sb.ToString ();
-			
+			resultLabel.Markup = GetResultsMarkup ();
+
 			Running = false;
 		}
 		
@@ -602,12 +598,7 @@ namespace MonoDevelop.NUnit
 			rec.Test = test;
 			rec.Result = result;
 			
-			if (result.IsFailure) {
-				testsFailed++;
-			}
-			if (result.IsIgnored) {
-				testsIgnored++;
-			}
+			resultSummary.Add (result);
 			results.Add (rec);
 			
 			ShowTestResult (test, result);
