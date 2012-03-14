@@ -60,6 +60,7 @@ FILES =  \
 	Mono.TextEditor.Tests/SmartIndentModeTests.cs \
 	Mono.TextEditor.Tests/SyntaxHighlightingTests.cs \
 	Mono.TextEditor.Tests/TextBreakerTests.cs \
+	Mono.TextEditor.Tests/TextFileReaderTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
 	Mono.TextEditor.Tests/VirtualIndentModeTests.cs \
 	Mono.TextEditor.Tests/VirtualSpacesTests.cs \
