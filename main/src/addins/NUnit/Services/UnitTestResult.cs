@@ -95,15 +95,17 @@ namespace MonoDevelop.NUnit
 		public bool IsFailure {
 			get { return ErrorsAndFailures > 0; }
 		}
-		
-		public bool IsIgnored {
-			get { return (status & ResultStatus.Ignored) != 0; }
-		}
-		
+
 		public bool IsSuccess {
 			get { return ErrorsAndFailures == 0 && Passed > 0; }
 		}
-		
+
+		public bool IsNotRun {
+			get {
+				return Passed == 0 && ErrorsAndFailures == 0 && TestsNotRun > 0;
+			}
+		}
+
 		public int Passed {
 			get;
 			set;

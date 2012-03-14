@@ -237,7 +237,7 @@ namespace MonoDevelop.NUnit.External
 		bool singleTestRun;
 		UnitTestResult singleTestResult;
 		public bool Canceled;
-		
+
 		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
 		{
 			this.rootFullName = rootFullName;
@@ -327,57 +327,35 @@ namespace MonoDevelop.NUnit.External
 				return null;
 			if (sname == "<root>")
 				return rootTest;
+			/*
 			if (sname.StartsWith (rootFullName)) {
 				sname = sname.Substring (rootFullName.Length);
 			}
 			if (sname.StartsWith ("."))
-				sname = sname.Substring (1);
+				sname = sname.Substring (1);*/
 			UnitTest tt = FindTest (rootTest, sname);
 			return tt;
 		}
 		
 		UnitTest FindTest (UnitTest t, string testPath)
 		{
-			if (testPath == "")
-				return t;
-			UnitTestGroup group = t as UnitTestGroup;
+			var group = t as UnitTestGroup;
 			if (group == null)
 				return null;
-
-			UnitTest returnTest = group.Tests [testPath];
-			if (returnTest != null)
-				return returnTest;
-
-			string[] paths = testPath.Split (new char[] {'.'}, 2);
-			if (paths.Length == 2) {
-				string nextPathSection = paths [0];
-				string nextTestCandidate = paths [1];
-
-				UnitTest childTest = group.Tests [nextPathSection];
-				if (childTest != null)
-					return FindTest (childTest, nextTestCandidate);
-			}
-
 			return SearchRecursive (group, testPath);
 		}
 
-		/// <summary>
-		/// In some cases the test name doesn't include the last group name. In these cases the current subtree needs to be
-		/// searched for the right name. (May be an nunit bug.)
-		/// See: https://bugzilla.xamarin.com/show_bug.cgi?id=3881
-		/// </summary>
 		UnitTest SearchRecursive (UnitTestGroup group, string testPath)
 		{
 			UnitTest result;
 			foreach (var t in group.Tests) {
+				if (t.TestId == testPath)
+					return t;
 				var childGroup = t as UnitTestGroup;
 				if (childGroup != null) {
 					result = SearchRecursive (childGroup, testPath);
 					if (result != null)
 						return result;
-				} else {
-					if (t.Name == testPath)
-						return t;
 				}
 			}
 			return null;

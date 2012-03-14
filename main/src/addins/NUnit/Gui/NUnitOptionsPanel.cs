@@ -49,7 +49,6 @@ namespace MonoDevelop.NUnit
 		
 		public override void ApplyChanges ()
 		{
-			Console.WriteLine ("STORE !!!!");
 			widget.Store ((Properties) DataObject);
 		}
 	}

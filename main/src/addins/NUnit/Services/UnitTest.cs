@@ -286,7 +286,15 @@ namespace MonoDevelop.NUnit
 		
 		public TestStatus Status {
 			get { return status; }
-			set { status = value; OnTestStatusChanged (); }
+			set {
+				status = value;
+				OnTestStatusChanged ();
+			}
+		}
+
+		public string TestId {
+			get;
+			protected set;
 		}
 		
 		public string FullName {

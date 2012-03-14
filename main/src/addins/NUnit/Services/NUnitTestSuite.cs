@@ -47,6 +47,7 @@ namespace MonoDevelop.NUnit
 			fullName = !string.IsNullOrEmpty (tinfo.PathName) ? tinfo.PathName + "." + tinfo.Name : tinfo.Name;
 			this.testInfo = tinfo;
 			this.rootSuite = rootSuite;
+			this.TestId = tinfo.TestId;
 		}
 		
 		public override bool HasTests {

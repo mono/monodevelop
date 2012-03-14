@@ -74,7 +74,6 @@ namespace MonoDevelop.NUnit {
 				Properties configNodeProperties = new Properties();
 				configNodeProperties.Set ("UnitTest", test);
 				configNodeProperties.Set ("Config", name);
-				Console.WriteLine ("contig: " + name);
 				foreach (OptionsDialogSection section in configurationNode.ChildNodes) {
 					OptionsDialogSection s = (OptionsDialogSection)section.Clone ();
 					if (firstSection == null)

@@ -562,7 +562,7 @@ namespace MonoDevelop.NUnit
 				}
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);
 			}
-			if (result.IsIgnored) {
+			if (result.IsNotRun) {
 				if (!buttonIgnored.Active)
 					return;
 				TreeIter testRow = failuresStore.AppendValues (CircleImage.NotRun, Escape (test.FullName), test);

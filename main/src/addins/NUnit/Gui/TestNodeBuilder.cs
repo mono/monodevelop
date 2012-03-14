@@ -92,14 +92,14 @@ namespace MonoDevelop.NUnit
 				UnitTestResult res = test.GetLastResult ();
 				if (res == null)
 					icon = CircleImage.None;
-				else if (res.IsFailure && res.IsSuccess)
+				else if (res.IsFailure && res.Passed > 0)
 					icon = CircleImage.SuccessAndFailure;
 				else if (res.IsFailure)
 					icon = CircleImage.Failure;
 				else if (res.IsSuccess) {
 					icon = CircleImage.Success;
 
-				} else if (res.IsIgnored)
+				} else if (res.IsNotRun)
 					icon = CircleImage.NotRun;
 				else
 					icon = CircleImage.None;
