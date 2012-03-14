@@ -166,7 +166,7 @@ namespace Mono.TextEditor.Utils
 		{
 			try {
 				int max = (int)System.Math.Min (stream.Length, 50 * 1024);
-	
+
 				var utf8 = new Utf8Verifier ();
 				var utf16 = new UnicodeVerifier ();
 				var utf16BE = new BigEndianUnicodeVerifier ();
@@ -177,13 +177,14 @@ namespace Mono.TextEditor.Utils
 					utf16.Advance (b);
 					utf16BE.Advance (b);
 				}
-				if (utf8.IsValid)
-					return Encoding.UTF8;
 				if (utf16.IsValid)
 					return Encoding.Unicode;
 				if (utf16BE.IsValid)
 					return Encoding.BigEndianUnicode;
-			} catch (Exception) {
+				if (utf8.IsValid)
+					return Encoding.UTF8;
+			} catch (Exception e) {
+				Console.WriteLine (e);
 			}
 			return fallbackEncoding;
 		}
@@ -235,7 +236,7 @@ namespace Mono.TextEditor.Utils
 		const byte UTF8_4_TailPre1 = 7;
 		const byte UTF8_4_TailPre2 = 8;
 
-		const byte LAST = 8;
+		const byte LAST = 9;
 
 		byte state = UTF1;
 
