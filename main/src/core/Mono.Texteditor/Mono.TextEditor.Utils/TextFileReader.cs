@@ -160,7 +160,7 @@ namespace Mono.TextEditor.Utils
 		#endregion
 
 		#region Encoding autodetection
-		readonly static Encoding fallbackEncoding = Encoding.GetEncoding (1252);
+		readonly static Encoding EncodingCp1252 = Encoding.GetEncoding (1252);
 
 		static Encoding AutoDetectEncoding (Stream stream)
 		{
@@ -170,23 +170,28 @@ namespace Mono.TextEditor.Utils
 				var utf8 = new Utf8Verifier ();
 				var utf16 = new UnicodeVerifier ();
 				var utf16BE = new BigEndianUnicodeVerifier ();
+				var cp1252 = new CodePage1252Verifier ();
 
 				for (int i = 0; i < max; i++) {
 					var b = (byte)stream.ReadByte ();
 					utf8.Advance (b);
 					utf16.Advance (b);
 					utf16BE.Advance (b);
+					cp1252.Advance (b);
 				}
+				stream.Position = 0;
 				if (utf16.IsValid)
 					return Encoding.Unicode;
 				if (utf16BE.IsValid)
 					return Encoding.BigEndianUnicode;
 				if (utf8.IsValid)
 					return Encoding.UTF8;
+				if (cp1252.IsValid)
+					return EncodingCp1252;
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}
-			return fallbackEncoding;
+			return Encoding.ASCII;
 		}
 
 		static bool IsBinary (byte[] bytes)
@@ -319,19 +324,22 @@ namespace Mono.TextEditor.Utils
 	{
 		const byte Error   = 0;
 		const byte Running = 1;
+		const byte Possible = 2;
 
 		byte state = Running;
 
 		public bool IsValid {
 			get {
-				return state != Error;
+				return state == Possible;
 			}
 		}
 		int number = 0;
 		public void Advance (byte b)
 		{
-			if (number % 2 == 1 && b != 0)
-				state = Error;
+			if (state == Error)
+				return;
+			if (b == 0)
+				state = number % 2 == 1 ? Possible : Error;
 			number++;
 		}
 	}
@@ -340,22 +348,62 @@ namespace Mono.TextEditor.Utils
 	{
 		const byte Error   = 0;
 		const byte Running = 1;
+		const byte Possible = 2;
 
 		byte state = Running;
 
 		public bool IsValid {
 			get {
-				return state != Error;
+				return state == Possible;
 			}
 		}
 		int number = 0;
 		public void Advance (byte b)
 		{
-			if (number % 2 == 0 && b != 0)
-				state = Error;
+			if (state == Error)
+				return;
+			if (b == 0)
+				state = number % 2 == 0 ? Possible : Error;
 			number++;
 		}
 	}
 
+	class CodePage1252Verifier
+	{
+		const byte Error = 0;
+		const byte Valid = 1;
+		const byte LAST = 2;
+
+		byte state = Valid;
+
+		static byte[][] table;
+
+		public bool IsValid {
+			get {
+				return state == Valid;
+			}
+		}
+
+		static CodePage1252Verifier ()
+		{
+			table = new byte[LAST][];
+			for (int i = 0; i < LAST; i++)
+				table[i] = new byte[(int)byte.MaxValue + 1];
+
+			for (int i = 0x20; i <= 0xFF; i++) {
+				table[Valid][i] = Valid;
+			}
+			table[Valid][0x81] = Error;
+			table[Valid][0x8D] = Error;
+			table[Valid][0x8F] = Error;
+			table[Valid][0x90] = Error;
+			table[Valid][0x9D] = Error;
+		}
+
+		public void Advance (byte b)
+		{
+			state = table[state][b];
+		}
+	}
 }
 

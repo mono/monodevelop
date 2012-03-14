@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.IO;
 using System.Text;
@@ -37,39 +36,45 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class TextFileReaderTests
 	{
-		static Encoding GetEncoding (byte[] input)
-		{
-			var method = typeof (TextFileReader).GetMethod ("AutoDetectEncoding", BindingFlags.Static | BindingFlags.NonPublic);
-			using (var ms = new MemoryStream (input)) {
-				return (Encoding)method.Invoke (null, new object[] { ms });
-			}
-		}
-
 		[Test()]
 		public void TestUTF8 ()
 		{
-			byte[] input = Encoding.UTF8.GetBytes ("Hello World\u2122");
-			var result = GetEncoding (input);
-			Assert.IsTrue (result != null);
-			Assert.AreEqual (Encoding.UTF8, result);
+			var src = "Hello World\u2122";
+			byte[] input = Encoding.UTF8.GetBytes (src);
+			Assert.AreEqual (src, TextFileReader.GetText (input));
 		}
 
 		[Test()]
-		public void TestUTF16 ()
+		public void TestUTF16SimpleText ()
 		{
-			byte[] input = Encoding.Unicode.GetBytes ("Hello World");
-			var result = GetEncoding (input);
-			Assert.IsTrue (result != null);
-			Assert.AreEqual (Encoding.Unicode, result);
+			var src = "Hello World";
+			byte[] input = Encoding.Unicode.GetBytes (src);
+			Assert.AreEqual (src, TextFileReader.GetText (input));
 		}
 
 		[Test()]
-		public void TestUTF16BE ()
+		public void TestUTF16MixedText ()
 		{
-			byte[] input = Encoding.BigEndianUnicode.GetBytes ("Hello World");
-			var result = GetEncoding (input);
-			Assert.IsTrue (result != null);
-			Assert.AreEqual (Encoding.BigEndianUnicode, result);
+			var src = "Hello\u00A9 World\u2122";
+			byte[] input = Encoding.Unicode.GetBytes (src);
+			Assert.AreEqual (src, TextFileReader.GetText (input));
+		}
+
+
+		[Test()]
+		public void TestUTF16BESimpleText ()
+		{
+			var src = "Hello World";
+			byte[] input = Encoding.BigEndianUnicode.GetBytes (src);
+			Assert.AreEqual (src, TextFileReader.GetText (input));
+		}
+
+		[Test()]
+		public void TestUTF16BEMixedText ()
+		{
+			var src = "Hello\u00A9 World\u2122";
+			byte[] input = Encoding.BigEndianUnicode.GetBytes (src);
+			Assert.AreEqual (src, TextFileReader.GetText (input));
 		}
 
 		/// <summary>
@@ -80,10 +85,15 @@ namespace Mono.TextEditor.Tests
 		{
 			// 0xA9 == (c) was the problem for UTF8
 			byte[] input = new byte[] { (byte)'/', (byte)'/', (byte)' ', 0xA9 };
+			Assert.AreEqual ("// \u00A9", TextFileReader.GetText (input));
+		}
 
-			var result = GetEncoding (input);
-			Assert.IsTrue (result != null);
-			Assert.AreNotEqual (Encoding.UTF8, result);
+		[Test()]
+		public void TestCp1252 ()
+		{
+			var src = "Hello\u00A9 World\u00C1";
+			byte[] input = Encoding.GetEncoding (1252).GetBytes (src);
+			Assert.AreEqual (src, TextFileReader.GetText (input));
 		}
 	}
 }
