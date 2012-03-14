@@ -358,11 +358,12 @@ namespace MonoDevelop.NUnit
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName, testName != null);
 
 			ITestFilter filter = null;
-			if (suiteName != null) {
-				if (test is UnitTestGroup)
+			if (test != null) {
+				if (test is UnitTestGroup) {
 					filter = new TestNameFilter (CollectTests ((UnitTestGroup)test));
-			} else if (testName != null) {
-				filter = new TestNameFilter (pathName + "." + testName);
+				} else {
+					filter = new TestNameFilter (test.TestId);
+				}
 			} else {
 				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
 				if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
