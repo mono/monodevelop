@@ -94,11 +94,11 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 	
 	public class VariableLookupVisitor : DepthFirstAstVisitor<object, object>
 	{
+		readonly CSharpAstResolver resolver;
+
 		List<KeyValuePair <string, IType>> unknownVariables = new List<KeyValuePair <string, IType>> ();
 		Dictionary<string, VariableDescriptor> variables = new Dictionary<string, VariableDescriptor> ();
-//		bool valueGetsChanged;
-		RefactoringOptions options;
-		
+
 		public bool ReferencesMember {
 			get;
 			set;
@@ -132,9 +132,9 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			get;
 			set;
 		}
-		public VariableLookupVisitor (RefactoringOptions options, TextLocation position)
+		public VariableLookupVisitor (CSharpAstResolver resolver, TextLocation position)
 		{
-			this.options = options;
+			this.resolver = resolver;
 			this.position = position;
 			this.MemberLocation = TextLocation.Empty;
 		}
@@ -163,7 +163,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		public override object VisitIdentifierExpression (ICSharpCode.NRefactory.CSharp.IdentifierExpression identifierExpression, object data)
 		{
-			var result = options.Resolve (identifierExpression);
+			var result = resolver.Resolve (identifierExpression);
 			var mrr = result as MemberResolveResult;
 			ReferencesMember |= mrr != null && mrr.Member != null && !mrr.Member.IsStatic;
 			

@@ -44,9 +44,11 @@ namespace MonoDevelop.Refactoring
 {
 	public class RefactoringOptions
 	{
+		readonly CSharpAstResolver resolver;
+
 		public Document Document {
 			get;
-			set;
+			private set;
 		}
 		
 		public object SelectedItem {
@@ -76,7 +78,32 @@ namespace MonoDevelop.Refactoring
 				return new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 			}
 		}
-		
+		public readonly CompilationUnit Unit;
+
+
+		public RefactoringOptions (Document doc)
+		{
+			this.Document = doc;
+			if (doc != null && doc.ParsedDocument != null) {
+				Unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
+				resolver = CreateResolver (Unit);
+			}
+		}
+
+		public CSharpAstResolver CreateResolver (CompilationUnit unit)
+		{
+			var parsedDocument = Document.ParsedDocument;
+			if (parsedDocument == null)
+				return null;
+
+			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+			
+			if (unit == null || parsedFile == null)
+				return null;
+
+			return new CSharpAstResolver (Document.Compilation, unit, parsedFile);
+		}
+
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()
 		{
 			return Document.Editor;
@@ -168,10 +195,6 @@ namespace MonoDevelop.Refactoring
 		
 		public ResolveResult Resolve (AstNode node)
 		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
-			var cu = Document.ParsedDocument.GetAst<CompilationUnit> ();
-			
-			var resolver = new CSharpAstResolver (Document.Compilation, cu, parsedFile);
 			return resolver.Resolve (node);
 		}
 		

@@ -248,8 +248,7 @@ namespace MonoDevelop.Refactoring
 			object item = GetItem (doc, out resolveResult);
 			bool added = false;
 			
-			var options = new RefactoringOptions () {
-				Document = doc,
+			var options = new RefactoringOptions (doc) {
 				ResolveResult = resolveResult,
 				SelectedItem = item
 			};

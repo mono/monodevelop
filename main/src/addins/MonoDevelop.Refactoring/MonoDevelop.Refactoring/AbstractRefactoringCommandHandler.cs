@@ -55,8 +55,7 @@ namespace MonoDevelop.Refactoring
 			ResolveResult result;
 			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out result);
 			
-			RefactoringOptions options = new RefactoringOptions () {
-				Document = doc,
+			RefactoringOptions options = new RefactoringOptions (doc) {
 				ResolveResult = result,
 				SelectedItem = item
 			};

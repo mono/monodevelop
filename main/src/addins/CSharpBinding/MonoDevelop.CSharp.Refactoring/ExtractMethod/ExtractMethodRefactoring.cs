@@ -119,9 +119,8 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 				return null;
 			
 			var param = new ExtractMethodParameters () {
-// TODO: Type system conversion.
-//				DeclaringMember = member,
-				Location = new TextLocation (buffer.Caret.Line, buffer.Caret.Column)
+				DeclaringMember = member.CreateResolved (doc.GetTypeResolveContext (options.Document.Compilation, buffer.Caret.Location)),
+				Location = buffer.Caret.Location
 			};
 			Analyze (options, param, true);
 			return param;
@@ -281,7 +280,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			string text = options.Document.Editor.GetTextBetween (startLocation, endLocation);
 			
 			param.Text = RemoveIndent (text, GetIndent (data.GetTextBetween (data.GetLine (startLocation.Line).Offset, data.GetLine (endLocation.Line).EndOffset))).TrimEnd ('\n', '\r');
-			var visitor = new VariableLookupVisitor (options, param.Location);
+			var visitor = new VariableLookupVisitor (options.CreateResolver (unit), param.Location);
 			visitor.MemberLocation = param.DeclaringMember.Region.Begin;
 			visitor.CutRegion = new DomRegion (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column);
 			if (fillParameter) {
@@ -365,6 +364,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		
 		static string GenerateMethodCall (RefactoringOptions options, ExtractMethodParameters param)
 		{
+
 //			var data = options.GetTextEditorData ();
 			StringBuilder sb = new StringBuilder ();
 			
@@ -420,7 +420,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		static IUnresolvedMethod GenerateMethodStub (RefactoringOptions options, IUnresolvedTypeDefinition callingType, ExtractMethodParameters param)
 		{
 			var result = new DefaultUnresolvedMethod (callingType, param.Name);
-			result.ReturnType = param.ExpressionType.ToTypeReference ();
+			result.ReturnType = param.ExpressionType != null ? param.ExpressionType.ToTypeReference () : typeof(void).ToTypeReference ();
 			result.Accessibility = param.Modifiers;
 //			if (!param.ReferencesMember)
 //				result.Modifiers |= MonoDevelop.Projects.Dom.Modifiers.Static;
@@ -473,14 +473,15 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			var cu = options.Document.ParsedDocument;
 			if (cu != null)
 				callingType = cu.GetInnermostTypeDefinition (options.Document.Editor.Caret.Location);
-			var newMethod = GenerateMethodStub (options, callingType, param);
+			var ctx = (cu.ParsedFile as CSharpParsedFile).GetTypeResolveContext (options.Document.Compilation, callingType.Region.Begin);
+
+			var newMethod = GenerateMethodStub (options, callingType, param).CreateResolved (ctx);
 			var type = callingType.Resolve (options.Document.ParsedDocument.GetTypeResolveContext (options.Document.Compilation, options.Location)).GetDefinition ();
 
 			var createdMethod = codeGenerator.CreateMemberImplementation (type, callingType, newMethod, false);
 			
 			if (param.GenerateComment && DocGenerator.Instance != null) {
-				var ctx = (cu.ParsedFile as CSharpParsedFile).GetTypeResolveContext (options.Document.Compilation, callingType.Region.Begin);
-				methodText.AppendLine (DocGenerator.Instance.GenerateDocumentation (newMethod.CreateResolved (ctx), indent + "/// "));
+				methodText.AppendLine (DocGenerator.Instance.GenerateDocumentation (newMethod, indent + "/// "));
 			}
 			string code = createdMethod.Code;
 			int idx1 = code.LastIndexOf ("throw");

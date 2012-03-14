@@ -61,8 +61,7 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		{
 			var renameFix = (RenameMemberFix)fix;
 			var refactoring = new RenameRefactoring ();
-			var options = new RefactoringOptions () {
-				Document = doc,
+			var options = new RefactoringOptions (doc) {
 				SelectedItem = renameFix.Item,
 			};
 			

@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp.Inspection
 					new DomRegion (node.StartLocation, node.EndLocation),
 					GettextCatalog.GetString ("Remove unused usings"),
 					delegate {
-						var options = new RefactoringOptions () { Document = data.Document};
+						var options = new RefactoringOptions (data.Document);
 						new RemoveUnusedImportsRefactoring ().Run (options);
 					}
 				);

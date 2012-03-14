@@ -112,7 +112,6 @@ namespace MonoDevelop.CSharp
 				throw new ArgumentNullException ("doc");
 			result = null;
 			node = null;
-			var data = doc.Editor;
 			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return false;

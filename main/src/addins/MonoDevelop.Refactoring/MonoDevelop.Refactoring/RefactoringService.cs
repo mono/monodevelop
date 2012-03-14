@@ -125,7 +125,7 @@ namespace MonoDevelop.Refactoring
 		
 		public static void AcceptChanges (IProgressMonitor monitor, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
 		{
-			var rctx = new RefactoringOptions ();
+			var rctx = new RefactoringOptions (null);
 			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
 			for (int i = 0; i < changes.Count; i++) {

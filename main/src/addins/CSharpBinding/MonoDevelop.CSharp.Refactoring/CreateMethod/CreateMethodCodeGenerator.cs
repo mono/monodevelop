@@ -185,7 +185,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			var data = options.GetTextEditorData ();
 			if (data.Document.MimeType != CSharpFormatter.MimeType)
 				return false;
-			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
+			var unit = options.Unit;
 			
 			if (!AnalyzeTargetExpression (options, unit))
 				return false;
@@ -264,6 +264,7 @@ namespace MonoDevelop.CSharp.Refactoring.CreateMethod
 			if (data == null)
 				return;
 			openDocument.RunWhenLoaded (delegate {
+				Analyze (options);
 				try {
 					indent = data.Document.GetLine (declaringType.Region.BeginLine).GetIndentation (data.Document) ?? "";
 				} catch (Exception) {
