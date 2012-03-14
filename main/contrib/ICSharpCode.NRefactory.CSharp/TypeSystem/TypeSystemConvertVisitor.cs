@@ -728,8 +728,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				ev.ReturnType = eventDeclaration.ReturnType.ToTypeReference();
 				
 				var valueParameter = new DefaultUnresolvedParameter(ev.ReturnType, "value");
-				ev.AddAccessor = CreateDefaultEventAccessor(ev, "get_" + ev.Name, valueParameter);
-				ev.RemoveAccessor = CreateDefaultEventAccessor(ev, "set_" + ev.Name, valueParameter);
+				ev.AddAccessor = CreateDefaultEventAccessor(ev, "add_" + ev.Name, valueParameter);
+				ev.RemoveAccessor = CreateDefaultEventAccessor(ev, "remove_" + ev.Name, valueParameter);
 				
 				foreach (AttributeSection section in eventDeclaration.Attributes) {
 					if (section.AttributeTarget == "method") {

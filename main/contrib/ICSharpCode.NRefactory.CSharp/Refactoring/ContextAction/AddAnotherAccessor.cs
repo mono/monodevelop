@@ -56,7 +56,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			accessor.Role = pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole;
 			
 			using (var script = context.StartScript ()) {
-				script.InsertBefore (pdecl.RBraceToken, accessor);
+				if (pdecl.Setter.IsNull && !pdecl.Getter.IsNull) {
+					script.InsertBefore (pdecl.RBraceToken, accessor);
+				} else {
+					script.InsertBefore (pdecl.Getter, accessor);
+				}
 				script.Select (accessorStatement);
 				script.FormatText (pdecl);
 			}

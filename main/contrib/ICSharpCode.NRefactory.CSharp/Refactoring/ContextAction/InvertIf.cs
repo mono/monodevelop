@@ -44,9 +44,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var ifStatement = GetIfElseStatement (context);
 			
 			using (var script = context.StartScript ()) {
-				script.Replace (ifStatement.Condition, CSharpUtil.InvertCondition (ifStatement.Condition));
-				script.Replace (ifStatement.TrueStatement, ifStatement.FalseStatement);
-				script.Replace (ifStatement.FalseStatement, ifStatement.TrueStatement);
+				script.Replace (ifStatement.Condition, CSharpUtil.InvertCondition (ifStatement.Condition.Clone ()));
+				script.Replace (ifStatement.TrueStatement, ifStatement.FalseStatement.Clone ());
+				script.Replace (ifStatement.FalseStatement, ifStatement.TrueStatement.Clone ());
 				script.FormatText (ifStatement);
 			}
 		}

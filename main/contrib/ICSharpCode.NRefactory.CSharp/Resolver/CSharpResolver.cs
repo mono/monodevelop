@@ -449,6 +449,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new ConstantResolveResult(resultType, val);
 			} else {
 				expression = Convert(expression, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
+				if (builtinOperatorOR.BestCandidate is OverloadResolution.ILiftedOperator) {
+					return new OperatorResolveResult(
+						resultType, UnaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow),
+						null, true, new[] { expression });
+				}
 				return UnaryOperatorResolveResult(resultType, op, expression);
 			}
 		}
@@ -1837,7 +1842,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null) {
 				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
 				if (or.BestCandidate != null) {
-					return or.CreateResolveResult(mgrr.TargetResult);
+					if (or.BestCandidate.IsStatic && !(mgrr.TargetResult is TypeResolveResult))
+						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetResult.Type));
+					else
+						return or.CreateResolveResult(mgrr.TargetResult);
 				} else {
 					// No candidate found at all (not even an inapplicable one).
 					// This can happen with empty method groups (as sometimes used with extension methods)
