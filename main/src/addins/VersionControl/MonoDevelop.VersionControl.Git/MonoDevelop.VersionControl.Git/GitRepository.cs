@@ -857,7 +857,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		string GetCommitTextContent (RevCommit c, FilePath file)
 		{
-			return NGit.Util.RawParseUtils.Decode (GetCommitContent (c, file));
+			return Mono.TextEditor.Utils.TextFileReader.GetText (GetCommitContent (c, file));
 		}
 		
 		string GenerateDiff (byte[] data1, byte[] data2)
