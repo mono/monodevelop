@@ -108,6 +108,20 @@ namespace Mono.TextEditor.Tests
 			byte[] input = Encoding.GetEncoding (1252).GetBytes (src);
 			Assert.AreEqual (src, TextFileReader.GetText (input));
 		}
+
+		[Test()]
+		public void TestIsBinaryUtfInput ()
+		{
+			var src = "Hello\u00A9 World\u2122";
+			byte[] input = Encoding.Unicode.GetBytes (src);
+			Assert.IsFalse (TextFileReader.IsBinary (input));
+		}
+		
+		[Test()]
+		public void TestIsBinaryBinaryInput ()
+		{
+			Assert.IsTrue (TextFileReader.IsBinary (typeof (TextFileReaderTests).Assembly.Location));
+		}
 	}
 }
 
