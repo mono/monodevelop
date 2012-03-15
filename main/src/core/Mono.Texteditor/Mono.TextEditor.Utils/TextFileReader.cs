@@ -52,6 +52,20 @@ namespace Mono.TextEditor.Utils
 				encodings.Add (encoding);
 			}
 			encodingsWithBom = encodings.ToArray ();
+			
+			// Encoding verifiers
+			verifiers = new Verifier[] {
+				new UnicodeVerifier (),
+				new BigEndianUnicodeVerifier (),
+				new Utf8Verifier (),
+				new CodePage1252Verifier (),
+				new CodePage858Verifier ()
+			};
+
+			// cache the verifier machine state tables, to do the virtual StateTable only once.
+			stateTables =  new byte[verifiers.Length][][];
+			for (int i = 0; i < verifiers.Length; i++)
+				stateTables[i] = verifiers[i].StateTable;
 		}
 
 		#region stream reader methods
@@ -161,14 +175,9 @@ namespace Mono.TextEditor.Utils
 		#endregion
 
 		#region Encoding autodetection
-		static Verifier[] verifiers = new Verifier[] {
-			new UnicodeVerifier (),
-			new BigEndianUnicodeVerifier (),
-			new Utf8Verifier (),
-			new CodePage1252Verifier (),
-			new CodePage858Verifier ()
-		};
-		
+		static Verifier[] verifiers;
+		static byte[][][] stateTables;
+
 		static unsafe Encoding AutoDetectEncoding (Stream stream)
 		{
 			try {
@@ -178,15 +187,12 @@ namespace Mono.TextEditor.Utils
 				stream.Position = 0;
 				
 				// Store the dfa data from the verifiers in local variables.
-				byte[]   states        = new byte[verifiers.Length];
-				byte[][][] stateTables =  new byte[verifiers.Length][][];
+				byte[] states = new byte[verifiers.Length];
 				int verifiersRunning = verifiers.Length;
 
-				for (int i = 0; i < verifiers.Length; i++) {
+				for (int i = 0; i < verifiers.Length; i++)
 					states[i] = verifiers[i].InitalState;
-					stateTables[i] = verifiers[i].StateTable;
-				}
-				
+
 				// run the verifiers
 				fixed (byte* bBeginPtr = readBuf, stateBeginPtr = states) {
 					byte* bPtr = bBeginPtr;
@@ -210,9 +216,11 @@ namespace Mono.TextEditor.Utils
 						bPtr++;
 					}
 					
-					for (int i = 0; i < verifiers.Length; i++) {
-						if (verifiers[i].IsEncodingValid (states[i]))
-							return verifiers[i].Encoding;
+					if (verifiersRunning > 0) {
+						for (int i = 0; i < verifiers.Length; i++) {
+							if (verifiers[i].IsEncodingValid (states[i]))
+								return verifiers[i].Encoding;
+						}
 					}
 				}
 				
