@@ -161,7 +161,14 @@ namespace Mono.TextEditor.Utils
 		#endregion
 
 		#region Encoding autodetection
-
+		static Verifier[] verifiers = new Verifier[] {
+			new UnicodeVerifier (),
+			new BigEndianUnicodeVerifier (),
+			new Utf8Verifier (),
+			new CodePage1252Verifier (),
+			new CodePage858Verifier ()
+		};
+		
 		static unsafe Encoding AutoDetectEncoding (Stream stream)
 		{
 			try {
@@ -169,21 +176,46 @@ namespace Mono.TextEditor.Utils
 				byte[] readBuf = new byte[max];
 				int readLength = stream.Read (readBuf, 0, max);
 				stream.Position = 0;
+				
+				// Store the dfa data from the verifiers in local variables.
+				byte[]   states        = new byte[verifiers.Length];
+				byte[][][] stateTables =  new byte[verifiers.Length][][];
+				int verifiersRunning = verifiers.Length;
 
-				var verifiers = new Verifier[] {
-					new UnicodeVerifier (),
-					new BigEndianUnicodeVerifier (),
-					new Utf8Verifier (),
-					new CodePage1252Verifier (),
-					new CodePage858Verifier ()
-				};
-
-				foreach (var verifier in verifiers) {
-					if (verifier.IsValid (readBuf, readLength)) {
-						return verifier.Encoding;
+				for (int i = 0; i < verifiers.Length; i++) {
+					states[i] = verifiers[i].InitalState;
+					stateTables[i] = verifiers[i].StateTable;
+				}
+				
+				// run the verifiers
+				fixed (byte* bBeginPtr = readBuf, stateBeginPtr = states) {
+					byte* bPtr = bBeginPtr;
+					byte* bEndPtr = bBeginPtr + readLength;
+					byte* sEndPtr = stateBeginPtr + states.Length;
+					
+					while (bPtr != bEndPtr && verifiersRunning > 1) {
+						byte* sPtr = stateBeginPtr;
+						int i = 0;
+						while (sPtr != sEndPtr) {
+							byte curState = *sPtr;
+							if (curState != 0) {
+								curState = stateTables[i][curState][*bPtr];
+								if (curState == 0)
+									verifiersRunning--;
+								*sPtr = curState;
+							}
+							sPtr++;
+							i++;
+						}
+						bPtr++;
+					}
+					
+					for (int i = 0; i < verifiers.Length; i++) {
+						if (verifiers[i].IsEncodingValid (states[i]))
+							return verifiers[i].Encoding;
 					}
 				}
-
+				
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}
@@ -226,34 +258,17 @@ namespace Mono.TextEditor.Utils
 
 	abstract class Verifier
 	{
-		protected const byte Error   = 0;
-		protected byte state = 0;
+		internal const byte Error   = 0;
+
 		protected static readonly byte[] errorTable = new byte[(int)byte.MaxValue + 1];
 
-		protected abstract void Advance (byte b);
-
+		public abstract byte InitalState { get; }
 		public abstract Encoding Encoding { get; }
-
-		protected virtual bool IsEncodingValid { 
-			get { 
-				return state != Error; 
-			}
-		}
-
-		public unsafe bool IsValid (byte[] readBuf, int readLength)
+		public abstract byte[][] StateTable { get; }
+		
+		public virtual bool IsEncodingValid (byte state) 
 		{
-			fixed (byte* bPtr = readBuf) {
-				byte* ptr = bPtr;
-				byte* bEndPtr = bPtr + readLength;
-				while (ptr != bEndPtr) {
-					Advance (*ptr);
-					if (state == Error)
-						return false;
-					ptr++;
-				}
-			}
-
-			return IsEncodingValid;
+			return state != Error; 
 		}
 	}
 
@@ -334,74 +349,92 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
+		public override byte InitalState { get { return UTF1; } }
 		public override Encoding Encoding { get { return Encoding.UTF8; } }
-
-		public Utf8Verifier ()
-		{
-			state = UTF1;
-		}
-
-		protected override void Advance (byte b)
-		{
-			state = table[state][b];
-		}
+		public override byte[][] StateTable { get { return table; } }
 	}
 
+	/// <summary>
+	/// Unicode verifier
+	/// </summary> 
 	class UnicodeVerifier : Verifier
 	{
-		const byte Running = 1;
-		const byte Possible = 2;
+		const byte Even = 1;
+		const byte Odd = 2;
+		const byte EvenPossible = 3;
+		const byte OddPossible = 4;
+		const byte LAST = 5;
 
-		public override Encoding Encoding { get { return Encoding.Unicode; } }
+		static byte[][] table;
 
-		protected override bool IsEncodingValid {
-			get {
-				return state == Possible;
+		static UnicodeVerifier ()
+		{
+			// Simple approach - detect 0 at odd posititons, then it's likely a utf16
+			// if 0 at an even position it's regarded as no utf-16.
+			table = new byte[LAST][];
+			table[0] = errorTable;
+			for (int i = 1; i < LAST; i++)
+				table[i] = new byte[(int)byte.MaxValue + 1];
+			
+			for (int i = 0x00; i <= 0xFF; i++) {
+				table[Even][i] = Odd;
+				table[Odd][i] = Even;
+				table[EvenPossible][i] = OddPossible;
+				table[OddPossible][i] = EvenPossible;
 			}
+			table[Odd][0] = EvenPossible;
+			table[Even][0] = Error;
+			table[EvenPossible][0] = Error;
 		}
+		
+		public override byte InitalState { get { return Even; } }
+		public override Encoding Encoding { get { return Encoding.Unicode; } }
+		public override byte[][] StateTable { get { return table; } }
 
-		public UnicodeVerifier ()
+		public override bool IsEncodingValid (byte state)
 		{
-			state = Running;
-		}
-
-		int number = 0;
-		protected override void Advance (byte b)
-		{
-			if (state == Error)
-				return;
-			if (b == 0)
-				state = number % 2 == 1 ? Possible : Error;
-			number++;
+			return state == EvenPossible || state == OddPossible;
 		}
 	}
 
 	class BigEndianUnicodeVerifier : Verifier
 	{
-		const byte Running = 1;
-		const byte Possible = 2;
+		const byte Even = 1;
+		const byte Odd = 2;
+		const byte EvenPossible = 3;
+		const byte OddPossible = 4;
+		const byte LAST = 5;
 
+		public override byte InitalState { get { return Even; } }
 		public override Encoding Encoding { get { return Encoding.BigEndianUnicode; } }
+		public override byte[][] StateTable { get { return table; } }
+		
 
-		protected override bool IsEncodingValid {
-			get {
-				return state == Possible;
+		public override bool IsEncodingValid (byte state)
+		{
+			return state == EvenPossible || state == OddPossible;
+		}
+
+		static byte[][] table;
+
+		static BigEndianUnicodeVerifier ()
+		{
+			// Simple approach - detect 0 at even posititons, then it's likely a utf16be
+			// if 0 at an odd position it's regarded as no utf-16be.
+			table = new byte[LAST][];
+			table[0] = errorTable;
+			for (int i = 1; i < LAST; i++)
+				table[i] = new byte[(int)byte.MaxValue + 1];
+			
+			for (int i = 0x00; i <= 0xFF; i++) {
+				table[Even][i] = Odd;
+				table[Odd][i] = Even;
+				table[EvenPossible][i] = OddPossible;
+				table[OddPossible][i] = EvenPossible;
 			}
-		}
-
-		public BigEndianUnicodeVerifier ()
-		{
-			state = Running;
-		}
-
-		int number = 0;
-		protected override void Advance (byte b)
-		{
-			if (state == Error)
-				return;
-			if (b == 0)
-				state = number % 2 == 0 ? Possible : Error;
-			number++;
+			table[Odd][0] = Error;
+			table[OddPossible][0] = Error;
+			table[Even][0] = OddPossible;
 		}
 	}
 
@@ -417,7 +450,9 @@ namespace Mono.TextEditor.Utils
 
 		readonly static Encoding EncodingCp1252 = Encoding.GetEncoding (1252);
 
+		public override byte InitalState { get { return Valid; } }
 		public override Encoding Encoding { get { return EncodingCp1252; } }
+		public override byte[][] StateTable { get { return table; } }
 
 		static CodePage1252Verifier ()
 		{
@@ -435,16 +470,6 @@ namespace Mono.TextEditor.Utils
 			table[Valid][0x90] = Error;
 			table[Valid][0x9D] = Error;
 		}
-
-		public CodePage1252Verifier ()
-		{
-			state = Valid;
-		}
-
-		protected override 		void Advance (byte b)
-		{
-			state = table[state][b];
-		}
 	}
 
 	/// <summary>
@@ -459,7 +484,9 @@ namespace Mono.TextEditor.Utils
 
 		readonly static Encoding EncodingCp858 = Encoding.GetEncoding (858);
 
+		public override byte InitalState { get { return Valid; } }
 		public override Encoding Encoding { get { return EncodingCp858; } }
+		public override byte[][] StateTable { get { return table; } }
 
 		static CodePage858Verifier ()
 		{
@@ -471,16 +498,6 @@ namespace Mono.TextEditor.Utils
 			for (int i = 0x20; i <= 0xFF; i++) {
 				table[Valid][i] = Valid;
 			}
-		}
-
-		public CodePage858Verifier ()
-		{
-			state = Valid;
-		}
-
-		protected override void Advance (byte b)
-		{
-			state = table[state][b];
 		}
 	}
 }
