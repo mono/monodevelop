@@ -253,6 +253,7 @@ namespace MonoDevelop.SourceEditor
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
 			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
+			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
 		}
 		
 		#region new options
