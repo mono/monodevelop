@@ -143,25 +143,23 @@ namespace MonoDevelop.CSharp.Refactoring
 			return true;
 		}
 		
-		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc, ICompilation compilation = null)
+		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc)
 		{
 			if (string.IsNullOrEmpty (memberName))
 				return Enumerable.Empty<MemberReference> ();
 			var editor = doc.Editor;
 			var unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
 			var file = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
-			if (compilation == null)
-				compilation = doc.Compilation;
 			var result = new List<MemberReference> ();
 			
 			foreach (var obj in searchedMembers) {
 				if (obj is IEntity) {
-					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, compilation, (astNode, r) => {
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, doc.Compilation, (astNode, r) => {
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (r, astNode, editor.FileName, editor)); 
 					}, CancellationToken.None);
 				} else if (obj is IVariable) {
-					refFinder.FindLocalReferences ((IVariable)obj, file, unit, compilation, (astNode, r) => { 
+					refFinder.FindLocalReferences ((IVariable)obj, file, unit, doc.Compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (r, astNode, editor.FileName, editor));
 					}, CancellationToken.None);
@@ -185,7 +183,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var compilation = entity != null ? entity.Compilation : content.CreateCompilation ();
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
-				foreach (var newRef in FindInDocument (opendoc.Item2, compilation)) {
+				foreach (var newRef in FindInDocument (opendoc.Item2)) {
 					if (newRef == null || refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
 						continue;
 					refs.Add (newRef);
