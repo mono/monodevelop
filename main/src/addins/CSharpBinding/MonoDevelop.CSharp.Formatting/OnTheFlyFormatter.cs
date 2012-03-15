@@ -178,7 +178,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int realTextDelta = seg.Offset - formatStartOffset;
 			int startDelta = 1;
 			using (var undo = data.Editor.OpenUndoGroup ()) {
-				changes.ApplyChanges (formatStartOffset + startDelta, formatLength - startDelta, delegate (int replaceOffset, int replaceLength, string insertText) {
+				changes.ApplyChanges (formatStartOffset + startDelta, Math.Max (0, formatLength - startDelta - 1), delegate (int replaceOffset, int replaceLength, string insertText) {
 					int translatedOffset = realTextDelta + replaceOffset;
 					data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
 					data.Editor.Replace (translatedOffset, replaceLength, insertText);
