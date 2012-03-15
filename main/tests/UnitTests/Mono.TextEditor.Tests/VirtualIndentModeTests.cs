@@ -245,6 +245,32 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\t\t\n\n", data.Document.Text);
 			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
 		}
+
+		
+		[Test()]
+		public void TestUndoRedo ()
+		{
+			var data = CreateData ();
+			data.Text = "";
+			data.Caret.Location = new DocumentLocation (1, 3);
+			data.InsertAtCaret ("1");
+			data.InsertAtCaret ("2");
+			data.InsertAtCaret ("3");
+			Assert.AreEqual ("\t\t123", data.Document.Text);
+
+			Assert.IsTrue (data.Document.CanUndo);
+			data.Document.Undo ();
+			data.Document.Undo ();
+			data.Document.Undo ();
+			Assert.IsFalse (data.Document.CanUndo);
+
+			Assert.AreEqual (data.Document.Text, "");
+			data.Document.Redo ();
+			data.Document.Redo ();
+			data.Document.Redo ();
+			Assert.AreEqual ("\t\t123", data.Document.Text);
+
+		}
 	}
 }
 

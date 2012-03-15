@@ -150,7 +150,6 @@ namespace Mono.TextEditor
 				this.document = value;
 				this.document.BeginUndo += OnBeginUndo;
 				this.document.EndUndo += OnEndUndo;
-				this.document.TextReplaced += HandleTextReplaced;
 
 				this.document.Undone += DocumentHandleUndone;
 				this.document.Redone += DocumentHandleRedone;
@@ -339,7 +338,6 @@ namespace Mono.TextEditor
 			
 			document.BeginUndo -= OnBeginUndo;
 			document.EndUndo -= OnEndUndo;
-			document.TextReplaced -= HandleTextReplaced;
 
 			document.Undone -= DocumentHandleUndone;
 			document.Redone -= DocumentHandleRedone;
@@ -362,7 +360,7 @@ namespace Mono.TextEditor
 			DetachDocument ();
 		}
 
-		void FixVirtualIndentation ()
+		internal void FixVirtualIndentation ()
 		{
 			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
 				return;
@@ -432,33 +430,19 @@ namespace Mono.TextEditor
 		#region undo/redo handling
 		int       savedCaretPos;
 		Selection savedSelection;
-		bool hasChangedInUndo = false;
 		//List<TextEditorDataState> states = new List<TextEditorDataState> ();
 
 		void OnBeginUndo (object sender, EventArgs args)
 		{
-			if (!document.IsInAtomicUndo)
-				hasChangedInUndo = false;
 			savedCaretPos  = Caret.Offset;
 			savedSelection = Selection.Clone (MainSelection);
 		}
 
 		void OnEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
 		{
-			if (!document.IsInAtomicUndo && hasChangedInUndo)
-				FixVirtualIndentation ();
 			if (e == null)
 				return;
 			e.Operation.Tag = new TextEditorDataState (this, savedCaretPos, savedSelection);
-		}
-
-		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
-		{
-			if (document.IsInAtomicUndo) {
-				hasChangedInUndo = true;
-			} else {
-				FixVirtualIndentation ();
-			}
 		}
 
 		void DocumentHandleUndone (object sender, TextDocument.UndoOperationEventArgs e)
@@ -766,7 +750,7 @@ namespace Mono.TextEditor
 				Caret.PreserveSelection = preserve;
 				break;
 			}
-		
+			FixVirtualIndentation ();
 		}
 		
 		public void DeleteSelectedText ()
@@ -788,6 +772,7 @@ namespace Mono.TextEditor
 				}
 				if (clearSelection)
 					ClearSelection ();
+				FixVirtualIndentation ();
 			}
 			if (needUpdate)
 				Document.CommitDocumentUpdate ();

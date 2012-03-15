@@ -168,6 +168,7 @@ namespace Mono.TextEditor
 			} else {
 				removeCharBeforeCaret (data);
 			}
+			data.FixVirtualIndentation ();
 		}
 		
 		public static void RemoveCharBeforeCaret (TextEditorData data)
@@ -223,6 +224,7 @@ namespace Mono.TextEditor
 					data.Remove (data.Caret.Offset, 1); 
 					data.Document.CommitLineUpdate (data.Caret.Line);
 				}
+				data.FixVirtualIndentation ();
 			}
 		}
 		
