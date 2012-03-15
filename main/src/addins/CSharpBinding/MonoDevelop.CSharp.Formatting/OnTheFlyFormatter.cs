@@ -158,7 +158,6 @@ namespace MonoDevelop.CSharp.Formatting
 			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset);
 			if (seg == null)
 				return;
-
 			var member = seg.Entity;
 			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
 				return;
@@ -177,15 +176,17 @@ namespace MonoDevelop.CSharp.Formatting
 			int caretOffset = data.Editor.Caret.Offset;
 
 			int realTextDelta = seg.Offset - formatStartOffset;
-			int startDelta = startOffset - seg.Offset;
-			changes.ApplyChanges (formatStartOffset + startDelta, formatLength - startDelta, delegate (int replaceOffset, int replaceLength, string insertText) {
-				int translatedOffset = realTextDelta + replaceOffset;
-				data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
-				data.Editor.Replace (translatedOffset, replaceLength, insertText);
-			});
-			var currentVersion = data.Editor.Document.Version;
+			int startDelta = 1;
+			using (var undo = data.Editor.OpenUndoGroup ()) {
+				changes.ApplyChanges (formatStartOffset + startDelta, formatLength - startDelta, delegate (int replaceOffset, int replaceLength, string insertText) {
+					int translatedOffset = realTextDelta + replaceOffset;
+					data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
+					data.Editor.Replace (translatedOffset, replaceLength, insertText);
+				});
 
-			data.Editor.Caret.Offset = originalVersion.MoveOffsetTo (currentVersion, caretOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default);
+				var currentVersion = data.Editor.Document.Version;
+				data.Editor.Caret.Offset = originalVersion.MoveOffsetTo (currentVersion, caretOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default);
+			}
 		}
 	}
 }

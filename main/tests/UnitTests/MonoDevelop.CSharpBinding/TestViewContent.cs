@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -43,6 +45,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 				return null;
 			}
 		}
+		
 		public TextEditorData Data {
 			get {
 				return this.data;
@@ -188,6 +191,13 @@ namespace MonoDevelop.CSharpBinding.Tests
 			public void Dispose ()
 			{
 			}
+		}
+		
+		public List<object> Contents = new List<object> ();
+		
+		public override T GetContent<T> () 
+		{
+			return Contents.OfType<T> ().FirstOrDefault () ??  base.GetContent<T> ();
 		}
 		
 		public IDisposable OpenUndoGroup ()

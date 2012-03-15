@@ -220,6 +220,7 @@
     <Compile Include="Mono.TextEditor.Tests\VirtualIndentModeTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextFileReaderTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

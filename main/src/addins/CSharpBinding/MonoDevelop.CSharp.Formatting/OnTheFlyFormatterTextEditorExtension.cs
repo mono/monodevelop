@@ -38,10 +38,19 @@ namespace MonoDevelop.CSharp.Formatting
 				return Document.Editor;
 			}
 		}
-
+		
+		public static bool OnTheFlyFormatting {
+			get {
+				return PropertyService.Get ("OnTheFlyFormatting", true);
+			}
+			set {
+				PropertyService.Set ("OnTheFlyFormatting", value);
+			}
+		}
+		
 		void RunFormatter ()
 		{
-			if (PropertyService.Get ("OnTheFlyFormatting", true) && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
+			if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
 				OnTheFlyFormatter.Format (Document, textEditorData.Caret.Location);
 			}
 		}
@@ -50,7 +59,6 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			base.Initialize ();
 			Document.Editor.Paste += HandleTextPaste;
-
 		}
 
 		void HandleTextPaste (int insertionOffset, string text, int insertedChars)

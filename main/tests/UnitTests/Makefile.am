@@ -69,6 +69,7 @@ FILES =  \
 	MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs \
 	MonoDevelop.CSharpBinding/FoldingParserTests.cs \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
+	MonoDevelop.CSharpBinding/OnTheFlyFormatterTests.cs \
 	MonoDevelop.CSharpBinding/ProjectDomTests.cs \
 	MonoDevelop.CSharpBinding/TestDocument.cs \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \
