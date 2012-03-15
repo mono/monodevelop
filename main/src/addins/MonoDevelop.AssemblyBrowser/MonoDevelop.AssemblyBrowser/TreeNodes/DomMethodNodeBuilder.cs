@@ -208,7 +208,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return false;
 			
 			var method = (IUnresolvedEntity)navigator.DataItem;
-			data.Text = File.ReadAllText (method.Region.FileName);
+			data.Text = Mono.TextEditor.Utils.TextFileReader.ReadAllText (method.Region.FileName);
 			data.Caret.Location = method.Region.Begin;
 			data.CenterToCaret ();
 			return true;
@@ -230,7 +230,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			var resolved = Resolve (navigator, method);
 			if (GetMainAssembly (navigator) == null) {
-				return System.IO.File.ReadAllText (method.Region.FileName);
+				return Mono.TextEditor.Utils.TextFileReader.ReadAllText (method.Region.FileName);
 			}
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
