@@ -298,17 +298,21 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (node == null)
 				return RefactoryScope.File;
 			
-			if (node.DeclaringTypeDefinition != null && node.DeclaringTypeDefinition.Kind == TypeKind.Interface)
-				return GetScope (node.DeclaringTypeDefinition);
-			
-			if ((node.Accessibility & Accessibility.Public) == Accessibility.Public)
-				return RefactoryScope.Solution;
-			
 			// TODO: RefactoringsScope.Hierarchy
-			if ((node.Accessibility & Accessibility.Protected) == Accessibility.Protected)
+			switch (node.Accessibility) {
+			case Accessibility.Public:
+			case Accessibility.Protected:
+			case Accessibility.ProtectedOrInternal:
+				if (node.DeclaringTypeDefinition != null) {
+					var scope = GetScope (node.DeclaringTypeDefinition);
+					if (scope != RefactoryScope.Solution)
+						return RefactoryScope.Project;
+				}
 				return RefactoryScope.Solution;
-			if ((node.Accessibility & Accessibility.Internal) == Accessibility.Protected)
+			case Accessibility.Internal:
+			case Accessibility.ProtectedAndInternal:
 				return RefactoryScope.Project;
+			}
 			return RefactoryScope.DeclaringType;
 		}
 	}
