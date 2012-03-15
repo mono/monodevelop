@@ -110,14 +110,19 @@ namespace MonoDevelop.Ide.FindInFiles
 				this.Files = files;
 			}
 		}
-		
+
+		static FileList GetFileNamesForType (ITypeDefinition type)
+		{
+			var paths = type.Parts.Select (p => p.Region.FileName).Distinct ().Select (p => (FilePath)p);
+			return new FileList (type.GetSourceProject (), type.GetProjectContent (), paths);
+		}
+
 		static IEnumerable<FileList> GetFileNames (Solution solution, IParsedFile unit, object member, RefactoryScope scope, IProgressMonitor monitor)
 		{
 			if (scope == RefactoryScope.Unknown)
 				scope = GetScope (member);
 			switch (scope) {
 			case RefactoryScope.File:
-			case RefactoryScope.DeclaringType:
 				string fileName;
 				if (member is IEntity) {
 					fileName = ((IEntity)member).Region.FileName;
@@ -128,6 +133,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				if (doc != null)
 					yield return new FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)unit.FileName });
+				break;
+			case RefactoryScope.DeclaringType:
+				if (member is IEntity)
+					yield return GetFileNamesForType ((member as IEntity).DeclaringTypeDefinition);
 				break;
 			case RefactoryScope.Project:
 				var prj = TypeSystemService.GetProject ((IEntity)member);
@@ -287,7 +296,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			IEntity node = o as IEntity;
 			if (node == null)
-				return RefactoryScope.DeclaringType;
+				return RefactoryScope.File;
 			
 			if (node.DeclaringTypeDefinition != null && node.DeclaringTypeDefinition.Kind == TypeKind.Interface)
 				return GetScope (node.DeclaringTypeDefinition);
