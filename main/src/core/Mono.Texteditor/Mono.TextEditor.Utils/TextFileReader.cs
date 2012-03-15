@@ -44,7 +44,12 @@ namespace Mono.TextEditor.Utils
 			var encodings = new List<Encoding> ();
 
 			foreach (var info in Encoding.GetEncodings ()) {
-				var encoding = info.GetEncoding ();
+				Encoding encoding;
+				try {
+					encoding = info.GetEncoding ();
+				} catch (NotSupportedException) {
+					continue;
+				}
 				var bom = encoding.GetPreamble ();
 				if (bom == null || bom.Length == 0)
 					continue;
