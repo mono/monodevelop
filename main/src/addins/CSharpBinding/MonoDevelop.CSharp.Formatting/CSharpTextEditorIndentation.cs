@@ -507,6 +507,7 @@ namespace MonoDevelop.CSharp.Formatting
 			pos += offset;
 
 			textEditorData.Caret.Offset = pos;
+			textEditorData.FixVirtualIndentation ();
 		}
 
 		/*

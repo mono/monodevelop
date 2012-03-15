@@ -360,7 +360,11 @@ namespace Mono.TextEditor
 			DetachDocument ();
 		}
 
-		internal void FixVirtualIndentation ()
+		/// <summary>
+		/// Removes the indent on the caret line, if the indent mode is set to virtual and the indent matches
+		/// the current virtual indent in that line.
+		/// </summary>
+		public void FixVirtualIndentation ()
 		{
 			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
 				return;

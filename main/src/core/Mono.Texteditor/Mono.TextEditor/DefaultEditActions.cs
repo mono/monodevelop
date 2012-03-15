@@ -307,8 +307,7 @@ namespace Mono.TextEditor
 					var indentCol = data.GetVirtualIndentationColumn (data.Caret.Location);
 					if (curLine.EditableLength >= data.Caret.Column) {
 						NewLineSmartIndent (data);
-						if (curLine.EditableLength == curLine.GetIndentation (data.Document).Length)
-							data.Remove (curLine.Offset, curLine.EditableLength);
+						data.FixVirtualIndentation ();
 						break;
 					}
 					data.Insert (data.Caret.Offset, data.EolMarker);
