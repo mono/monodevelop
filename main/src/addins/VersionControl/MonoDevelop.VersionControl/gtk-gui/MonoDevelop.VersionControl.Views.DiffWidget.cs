@@ -57,7 +57,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.buttonDiff.CanFocus = true;
 			this.buttonDiff.Name = "buttonDiff";
 			this.buttonDiff.UseUnderline = true;
-			this.buttonDiff.Label = global::Mono.Unix.Catalog.GetString ("Patch");
+			this.buttonDiff.Label = global::Mono.Unix.Catalog.GetString ("Unified Diff");
 			this.hbox2.Add (this.buttonDiff);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonDiff]));
 			w3.PackType = ((global::Gtk.PackType)(1));
