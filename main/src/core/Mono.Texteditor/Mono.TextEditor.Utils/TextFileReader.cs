@@ -59,7 +59,7 @@ namespace Mono.TextEditor.Utils
 			encodingsWithBom = encodings.ToArray ();
 			
 			// Encoding verifiers
-			verifiers = new Verifier[] {
+			var verifierList = new List<Verifier> () {
 				new UnicodeVerifier (),
 				new BigEndianUnicodeVerifier (),
 				new Utf8Verifier (),
@@ -67,10 +67,14 @@ namespace Mono.TextEditor.Utils
 				new CodePage858Verifier ()
 			};
 
+			verifiers = verifierList.Where (v => v.IsSupported).ToArray ();
+
 			// cache the verifier machine state tables, to do the virtual StateTable only once.
-			stateTables =  new byte[verifiers.Length][][];
-			for (int i = 0; i < verifiers.Length; i++)
-				stateTables[i] = verifiers[i].StateTable;
+			stateTables = new byte[verifiers.Length][][];
+			for (int i = 0; i < verifiers.Length; i++) {
+				verifiers [i].Initialize ();
+				stateTables [i] = verifiers [i].StateTable;
+			}
 		}
 
 		#region stream reader methods
@@ -104,7 +108,7 @@ namespace Mono.TextEditor.Utils
 				var bom = encoding.GetPreamble ();
 				bool invalid = false;
 				for (int i = 0; i < bom.Length; i++) {
-					if (bom[i] != possibleBom[i]) {
+					if (bom [i] != possibleBom [i]) {
 						invalid = true;
 						break;
 					}
@@ -223,7 +227,7 @@ namespace Mono.TextEditor.Utils
 				int verifiersRunning = verifiers.Length;
 
 				for (int i = 0; i < verifiers.Length; i++)
-					states[i] = verifiers[i].InitalState;
+					states [i] = verifiers [i].InitalState;
 
 				// run the verifiers
 				fixed (byte* bBeginPtr = readBuf, stateBeginPtr = states) {
@@ -237,7 +241,7 @@ namespace Mono.TextEditor.Utils
 						while (sPtr != sEndPtr) {
 							byte curState = *sPtr;
 							if (curState != 0) {
-								curState = stateTables[i][curState][*bPtr];
+								curState = stateTables [i] [curState] [*bPtr];
 								if (curState == 0)
 									verifiersRunning--;
 								*sPtr = curState;
@@ -250,8 +254,8 @@ namespace Mono.TextEditor.Utils
 					
 					if (verifiersRunning > 0) {
 						for (int i = 0; i < verifiers.Length; i++) {
-							if (verifiers[i].IsEncodingValid (states[i]))
-								return verifiers[i].Encoding;
+							if (verifiers [i].IsEncodingValid (states [i]))
+								return verifiers [i].Encoding;
 						}
 					}
 				}
@@ -264,15 +268,30 @@ namespace Mono.TextEditor.Utils
 
 		abstract class Verifier
 		{
-			internal const byte Error   = 0;
-
+			internal const byte Error = 0;
 			protected static readonly byte[] errorTable = new byte[(int)byte.MaxValue + 1];
 
 			public abstract byte InitalState { get; }
+
 			public abstract Encoding Encoding { get; }
+
 			public abstract byte[][] StateTable { get; }
-			
-			public virtual bool IsEncodingValid (byte state) 
+		
+			protected abstract void Init ();
+
+			bool isInitialized = false;
+
+			public void Initialize ()
+			{
+				if (isInitialized)
+					throw new InvalidOperationException ("Already initialized");
+				isInitialized = true;
+				Init ();
+			}
+
+			public abstract bool IsSupported { get; }
+
+			public virtual bool IsEncodingValid (byte state)
 			{
 				return state != Error; 
 			}
@@ -280,7 +299,7 @@ namespace Mono.TextEditor.Utils
 
 		class Utf8Verifier : Verifier
 		{
-			const byte UTF1     = 1;
+			const byte UTF1 = 1;
 			const byte UTFTail1 = 2;
 			const byte UTFTail2 = 3;
 			const byte UTFTail3 = 4;
@@ -288,75 +307,85 @@ namespace Mono.TextEditor.Utils
 			const byte UTF8_3_TailPre2 = 6;
 			const byte UTF8_4_TailPre1 = 7;
 			const byte UTF8_4_TailPre2 = 8;
-	
 			const byte LAST = 9;
-
 			static byte[][] table;
 
-			static Utf8Verifier ()
+			public override bool IsSupported {
+				get {
+					try {
+						return Encoding.UTF8 != null;
+					} catch (Exception) {
+						return false;
+					}
+				}
+			}
+
+			protected override void Init ()
 			{
 				table = new byte[LAST][];
-				table[0] = errorTable;
+				table [0] = errorTable;
 				for (int i = 1; i < LAST; i++)
-					table[i] = new byte[(int)byte.MaxValue + 1];
+					table [i] = new byte[(int)byte.MaxValue + 1];
 
 				// UTF8-1      = %x00-7F
 				for (int i = 0x00; i <= 0x7F; i++) {
-					table[UTF1][i] = UTF1;
+					table [UTF1] [i] = UTF1;
 				}
 
 				// UTF8-tail   = %x80-BF
 				for (int i = 0x80; i <= 0xBF; i++) {
-					table[UTFTail1][i] = UTF1;
-					table[UTFTail2][i] = UTFTail1;
-					table[UTFTail3][i] = UTFTail2;
+					table [UTFTail1] [i] = UTF1;
+					table [UTFTail2] [i] = UTFTail1;
+					table [UTFTail3] [i] = UTFTail2;
 				}
-
+		
 				// UTF8-2 = %xC2-DF UTF8-tail
-				for (int i = 0xC2; i <= 0xDF;i++)
-					table[UTF1][i] = UTFTail1;
+				for (int i = 0xC2; i <= 0xDF; i++)
+					table [UTF1] [i] = UTFTail1;
 
 				// UTF8-3      = %xE0 %xA0-BF UTF8-tail / %xE1-EC 2( UTF8-tail ) /
 				//               %xED %x80-9F UTF8-tail / %xEE-EF 2( UTF8-tail )
 				for (int i = 0xA0; i <= 0xBF; i++) {
-					table[UTF8_3_TailPre1][i] = UTFTail1;
+					table [UTF8_3_TailPre1] [i] = UTFTail1;
 				}
 				for (int i = 0x80; i <= 0x9F; i++) {
-					table[UTF8_3_TailPre2][i] = UTFTail1;
+					table [UTF8_3_TailPre2] [i] = UTFTail1;
 				}
 
-				table[UTF1][0xE0] = UTF8_3_TailPre1;
-				for (int i = 0xE1; i <= 0xEC;i++)
-					table[UTF1][i] = UTFTail2;
-				table[UTF1][0xED] = UTF8_3_TailPre2;
-				for (int i = 0xEE; i <= 0xEE;i++)
-					table[UTF1][i] = UTFTail2;
+				table [UTF1] [0xE0] = UTF8_3_TailPre1;
+				for (int i = 0xE1; i <= 0xEC; i++)
+					table [UTF1] [i] = UTFTail2;
+				table [UTF1] [0xED] = UTF8_3_TailPre2;
+				for (int i = 0xEE; i <= 0xEE; i++)
+					table [UTF1] [i] = UTFTail2;
 
 				// UTF8-4      = %xF0 %x90-BF 2( UTF8-tail ) / %xF1-F3 3( UTF8-tail ) /
 				//               %xF4 %x80-8F 2( UTF8-tail )
 
 				for (int i = 0x90; i <= 0xBF; i++) {
-					table[UTF8_4_TailPre1][i] = UTFTail2;
+					table [UTF8_4_TailPre1] [i] = UTFTail2;
 				}
 				for (int i = 0x80; i <= 0xBF; i++) {
-					table[UTF8_4_TailPre2][i] = UTFTail2;
+					table [UTF8_4_TailPre2] [i] = UTFTail2;
 				}
-				table[UTF1][0xF0] = UTF8_4_TailPre1;
-				for (int i = 0xF1; i <= 0xF3;i++)
-					table[UTF1][i] = UTFTail3;
-				table[UTF1][0xF4] = UTF8_4_TailPre2;
+				table [UTF1] [0xF0] = UTF8_4_TailPre1;
+				for (int i = 0xF1; i <= 0xF3; i++)
+					table [UTF1] [i] = UTFTail3;
+				table [UTF1] [0xF4] = UTF8_4_TailPre2;
 
 				// always invalid.
 				for (int i = 0; i < table.Length; i++) {
-					table[i][0xC0] = Error;
-					table[i][0xC1] = Error;
-					table[i][0xF5] = Error;
-					table[i][0xFF] = Error;
+					table [i] [0xC0] = Error;
+					table [i] [0xC1] = Error;
+					table [i] [0xF5] = Error;
+					table [i] [0xFF] = Error;
 				}
 			}
 
 			public override byte InitalState { get { return UTF1; } }
+
 			public override Encoding Encoding { get { return Encoding.UTF8; } }
+
 			public override byte[][] StateTable { get { return table; } }
 		}
 
@@ -370,32 +399,43 @@ namespace Mono.TextEditor.Utils
 			const byte EvenPossible = 3;
 			const byte OddPossible = 4;
 			const byte LAST = 5;
-
 			static byte[][] table;
 
-			static UnicodeVerifier ()
+			protected override void Init ()
 			{
 				// Simple approach - detect 0 at odd posititons, then it's likely a utf16
 				// if 0 at an even position it's regarded as no utf-16.
 				table = new byte[LAST][];
-				table[0] = errorTable;
+				table [0] = errorTable;
 				for (int i = 1; i < LAST; i++)
-					table[i] = new byte[(int)byte.MaxValue + 1];
-
+					table [i] = new byte[(int)byte.MaxValue + 1];
+			
 				for (int i = 0x00; i <= 0xFF; i++) {
-					table[Even][i] = Odd;
-					table[Odd][i] = Even;
-					table[EvenPossible][i] = OddPossible;
-					table[OddPossible][i] = EvenPossible;
+					table [Even] [i] = Odd;
+					table [Odd] [i] = Even;
+					table [EvenPossible] [i] = OddPossible;
+					table [OddPossible] [i] = EvenPossible;
 				}
-				table[Odd][0] = EvenPossible;
-				table[Even][0] = Error;
-				table[EvenPossible][0] = Error;
+				table [Odd] [0] = EvenPossible;
+				table [Even] [0] = Error;
+				table [EvenPossible] [0] = Error;
 			}
-
+		
 			public override byte InitalState { get { return Even; } }
+
 			public override Encoding Encoding { get { return Encoding.Unicode; } }
+
 			public override byte[][] StateTable { get { return table; } }
+
+			public override bool IsSupported {
+				get {
+					try {
+						return Encoding.Unicode != null;
+					} catch (Exception) {
+						return false;
+					}
+				}
+			}
 
 			public override bool IsEncodingValid (byte state)
 			{
@@ -412,8 +452,20 @@ namespace Mono.TextEditor.Utils
 			const byte LAST = 5;
 
 			public override byte InitalState { get { return Even; } }
+
 			public override Encoding Encoding { get { return Encoding.BigEndianUnicode; } }
+
 			public override byte[][] StateTable { get { return table; } }
+
+			public override bool IsSupported {
+				get {
+					try {
+						return Encoding.BigEndianUnicode != null;
+					} catch (Exception) {
+						return false;
+					}
+				}
+			}
 
 			public override bool IsEncodingValid (byte state)
 			{
@@ -422,24 +474,24 @@ namespace Mono.TextEditor.Utils
 
 			static byte[][] table;
 
-			static BigEndianUnicodeVerifier ()
+			protected override void Init ()
 			{
 				// Simple approach - detect 0 at even posititons, then it's likely a utf16be
 				// if 0 at an odd position it's regarded as no utf-16be.
 				table = new byte[LAST][];
-				table[0] = errorTable;
+				table [0] = errorTable;
 				for (int i = 1; i < LAST; i++)
-					table[i] = new byte[(int)byte.MaxValue + 1];
-
+					table [i] = new byte[(int)byte.MaxValue + 1];
+			
 				for (int i = 0x00; i <= 0xFF; i++) {
-					table[Even][i] = Odd;
-					table[Odd][i] = Even;
-					table[EvenPossible][i] = OddPossible;
-					table[OddPossible][i] = EvenPossible;
+					table [Even] [i] = Odd;
+					table [Odd] [i] = Even;
+					table [EvenPossible] [i] = OddPossible;
+					table [OddPossible] [i] = EvenPossible;
 				}
-				table[Odd][0] = Error;
-				table[OddPossible][0] = Error;
-				table[Even][0] = OddPossible;
+				table [Odd] [0] = Error;
+				table [OddPossible] [0] = Error;
+				table [Even] [0] = OddPossible;
 			}
 		}
 
@@ -450,30 +502,41 @@ namespace Mono.TextEditor.Utils
 		{
 			const byte Valid = 1;
 			const byte LAST = 2;
-
 			static byte[][] table;
-
-			readonly static Encoding EncodingCp1252 = Encoding.GetEncoding (1252);
+			static Encoding EncodingCp1252;
 
 			public override byte InitalState { get { return Valid; } }
+
 			public override Encoding Encoding { get { return EncodingCp1252; } }
+
 			public override byte[][] StateTable { get { return table; } }
 
-			static CodePage1252Verifier ()
+			public override bool IsSupported {
+				get {
+					try {
+						return Encoding.GetEncoding (1252) != null;
+					} catch (Exception) {
+						return false;
+					}
+				}
+			}
+
+			protected override void Init ()
 			{
+				EncodingCp1252 = Encoding.GetEncoding (1252);
 				table = new byte[LAST][];
-				table[0] = errorTable;
+				table [0] = errorTable;
 				for (int i = 1; i < LAST; i++)
-					table[i] = new byte[(int)byte.MaxValue + 1];
+					table [i] = new byte[(int)byte.MaxValue + 1];
 
 				for (int i = 0x20; i <= 0xFF; i++) {
-					table[Valid][i] = Valid;
+					table [Valid] [i] = Valid;
 				}
-				table[Valid][0x81] = Error;
-				table[Valid][0x8D] = Error;
-				table[Valid][0x8F] = Error;
-				table[Valid][0x90] = Error;
-				table[Valid][0x9D] = Error;
+				table [Valid] [0x81] = Error;
+				table [Valid] [0x8D] = Error;
+				table [Valid] [0x8F] = Error;
+				table [Valid] [0x90] = Error;
+				table [Valid] [0x9D] = Error;
 			}
 		}
 
@@ -484,29 +547,39 @@ namespace Mono.TextEditor.Utils
 		{
 			const byte Valid = 1;
 			const byte LAST = 2;
-
 			static byte[][] table;
-
-			readonly static Encoding EncodingCp858 = Encoding.GetEncoding (858);
+			static Encoding EncodingCp858;
 
 			public override byte InitalState { get { return Valid; } }
+
 			public override Encoding Encoding { get { return EncodingCp858; } }
+
 			public override byte[][] StateTable { get { return table; } }
 
-			static CodePage858Verifier ()
+			public override bool IsSupported {
+				get {
+					try {
+						return Encoding.GetEncoding (858) != null;
+					} catch (Exception) {
+						return false;
+					}
+				}
+			}
+
+			protected override void Init ()
 			{
+				EncodingCp858 = Encoding.GetEncoding (858);
 				table = new byte[LAST][];
-				table[0] = errorTable;
+				table [0] = errorTable;
 				for (int i = 1; i < LAST; i++)
-					table[i] = new byte[(int)byte.MaxValue + 1];
+					table [i] = new byte[(int)byte.MaxValue + 1];
 
 				for (int i = 0x20; i <= 0xFF; i++) {
-					table[Valid][i] = Valid;
+					table [Valid] [i] = Valid;
 				}
 			}
 		}
 		#endregion
 	}
-
 }
 
