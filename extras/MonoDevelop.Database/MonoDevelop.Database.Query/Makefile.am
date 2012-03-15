@@ -24,7 +24,8 @@ FILES =  \
 	QueryResultView.cs \
 	SqlQueryDisplayBinding.cs \
 	SqlQueryTextEditorExtension.cs \
-	SqlQueryView.cs
+	SqlQueryView.cs \
+	QueryResultPad.cs
 
 DATA_FILES =  \
 	icons/Icons.16x16.Database.Column.Key.png \

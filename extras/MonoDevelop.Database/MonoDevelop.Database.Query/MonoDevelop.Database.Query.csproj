@@ -165,6 +165,7 @@
     <Compile Include="SqlQueryTextEditorExtension.cs" />
     <Compile Include="ISqlQueryEditorView.cs" />
     <Compile Include="SqlQueryDisplayBinding.cs" />
+    <Compile Include="QueryResultPad.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

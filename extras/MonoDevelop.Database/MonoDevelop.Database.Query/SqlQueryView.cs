@@ -52,11 +52,12 @@ namespace MonoDevelop.Database.Query
 		private ToolButton buttonStop;
 		private ToolButton buttonClear;
 		private DatabaseConnectionContextComboBox comboConnections;
-		private Notebook notebook;
-		private VPaned pane;
-		private TextView status;
-		SqlEditorWidget history;
 		
+		private VPaned pane;
+		SqlEditorWidget history;
+		Pad resultPad;
+		QueryResultPad padView;
+			
 		private object currentQueryState;
 		private List<object> stoppedQueries;
 		private DateTime queryStart;
@@ -68,13 +69,13 @@ namespace MonoDevelop.Database.Query
 			stoppedQueries = new List<object> ();
 			MonoDevelop.SourceEditor.Extension.TemplateExtensionNodeLoader.Init ();
 			this.UntitledName = string.Concat (AddinCatalog.GetString ("Untitled Sql Script"), ".sql");
-			
-			vbox = new VBox (false, 6);
-			vbox.BorderWidth = 6;
-			
+
+			vbox = new VBox (false, 2);
+			vbox.BorderWidth = 2;
+
 			Toolbar toolbar = new Toolbar ();
 			toolbar.ToolbarStyle = ToolbarStyle.BothHoriz;
-			
+
 			buttonExecute = new ToolButton (ImageService.GetImage ("md-db-execute", IconSize.SmallToolbar),
 			                                AddinCatalog.GetString ("_Execute"));
 			buttonExecute.Label = AddinCatalog.GetString ("Execute");
@@ -87,44 +88,27 @@ namespace MonoDevelop.Database.Query
 			buttonStop.TooltipText = AddinCatalog.GetString ("Stop Query Execution");
 			buttonStop.Sensitive = false;
 			buttonStop.Clicked += new EventHandler (StopClicked);
-			
+
 			buttonClear = new ToolButton (ImageService.GetImage ("gtk-clear", IconSize.Button), 
 			                              AddinCatalog.GetString ("Clear Results"));
 			buttonClear.TooltipText = AddinCatalog.GetString ("Clear Results");
 			buttonClear.Clicked += new EventHandler (ClearClicked);
-			
+
 			comboConnections = new DatabaseConnectionContextComboBox ();
 			selectedConnection = comboConnections.DatabaseConnection;
 			comboConnections.Changed += new EventHandler (ConnectionChanged);
 			ToolItem comboItem = new ToolItem ();
 			comboItem.Child = comboConnections;
-			
+
 			toolbar.Add (buttonExecute);
 			toolbar.Add (buttonStop);
 			toolbar.Add (buttonClear);
 			toolbar.Add (new SeparatorToolItem ());
 			toolbar.Add (comboItem);
-			
-			pane = new VPaned ();
 
-			// Sql History Window
-			ScrolledWindow windowHistory = new ScrolledWindow ();
-			history = new SqlEditorWidget ();
-			history.Editable = false;
-			windowHistory.AddWithViewport (history);
-			
-			// Status of the Last Query
-			ScrolledWindow windowStatus = new ScrolledWindow ();
-			status = new TextView ();
-			windowStatus.Add (status);
-			
-			notebook = new Notebook ();
-			notebook.AppendPage (windowStatus, new Label (AddinCatalog.GetString ("Status")));
-			notebook.AppendPage (windowHistory, new Label (AddinCatalog.GetString ("Query History")));
-			
-			pane.Pack2 (notebook, true, true);
+
 			vbox.PackStart (toolbar, false, true, 0);
-			vbox.PackStart (pane, true, true, 0);
+
 			this.Document.TextReplaced += SqlChanged;
 			vbox.ShowAll ();
 			Document.DocumentUpdated += delegate (object sender, EventArgs args) {
@@ -134,8 +118,12 @@ namespace MonoDevelop.Database.Query
 				else 
 					Document.MimeType = GetMimeType ();
 				
-			};
-			notebook.Hide ();
+			};		
+ 			resultPad = IdeApp.Workbench.GetPad<QueryResultPad> ();
+			if (resultPad == null) {
+				resultPad =	IdeApp.Workbench.ShowPad (new QueryResultPad(), "ResultPad", "Result Pad","Bottom", Gtk.Stock.Execute);	
+			}
+			padView =  resultPad.Content as QueryResultPad;
 		}
 
 		string GetMimeType ()
@@ -212,7 +200,7 @@ namespace MonoDevelop.Database.Query
 			if (!(control is VBox))
 				return;
 			
-			((VBox)control).PackEnd (vbox, true, true, 0);
+			((VBox)control).PackEnd (vbox, false, false, 0);
 			
 		}
 		
@@ -244,11 +232,8 @@ namespace MonoDevelop.Database.Query
 			
 			currentQueryState = new object ();
 			IPooledDbConnection conn = context.ConnectionPool.Request ();
-			IDbCommand command = conn.CreateCommand (QueryText);
-			if (history.Text.EndsWith (Environment.NewLine) || history.Text == string.Empty)
-				history.Text = string.Concat (history.Text, QueryText);
-			else
-				history.Text = string.Concat (history.Text, Environment.NewLine, "------------------------", QueryText);
+			IDbCommand command = conn.CreateCommand (QueryText);			
+			padView.AppendHistory(QueryText);
 			queryStart = DateTime.Now;
 			conn.ExecuteSetAsync (command, new ExecuteCallback<DataSet> (ExecuteQueryThreaded), currentQueryState);
 		}
@@ -259,7 +244,7 @@ namespace MonoDevelop.Database.Query
 			TimeSpan duration = DateTime.Now.Subtract (queryStart);
 			
 			DispatchService.GuiDispatch (delegate () {
-				notebook.ShowAll ();
+				
 				string msg = String.Concat (
 					AddinCatalog.GetPluralString ("Query executed ({0} result table)",
 						"Query executed ({0} result tables)", result.Tables.Count),
@@ -267,6 +252,12 @@ namespace MonoDevelop.Database.Query
 				        AddinCatalog.GetString ("Query duration: {0}", duration.ToString ())
 				);
 				SetQueryState (false, String.Format (msg, result.Tables.Count));
+				
+				
+				
+				resultPad.BringToFront(false);
+				padView.ShowResults();
+				
 			});
 			
 			if (stoppedQueries.Contains (state)) {
@@ -277,20 +268,10 @@ namespace MonoDevelop.Database.Query
 			if (result != null) {
 				foreach (DataTable table in result.Tables) {
 					DispatchService.GuiDispatch (delegate () {
-						MonoDevelop.Database.Components.DataGrid grid = new MonoDevelop.Database.Components.DataGrid ();
-						grid.DataSource = table;
-						grid.DataBind ();
-	
-						string msg = String.Concat (Environment.NewLine, AddinCatalog.GetString ("Table"), ": ",table.TableName,
-							Environment.NewLine, "\t", AddinCatalog.GetString ("Affected Rows"), ": ", table.Rows.Count);
-						status.Buffer.Text += msg;
 						
-						TabLabel label = new TabLabel (new Label (table.TableName), ImageService.GetImage ("md-db-table", IconSize.Menu));
-						label.CloseClicked += new EventHandler (OnResultTabClose);
-						notebook.AppendPage (grid, label);
-						notebook.ShowAll ();
+
 						this.Document.ReadOnly = false;
-						notebook.Page = notebook.NPages -1;
+						padView.AppendeResultTab(table);
 					});
 				}
 				
@@ -298,35 +279,27 @@ namespace MonoDevelop.Database.Query
 			
 			if (result == null || result.Tables.Count == 0) {
 				DispatchService.GuiDispatch (delegate () {
-					status.Buffer.Text += AddinCatalog.GetString ("No Results");
+					IdeApp.Workbench.StatusBar.ShowMessage (AddinCatalog.GetString ("No query results"));
 					this.Document.ReadOnly = false;
 				});
 				
 			}
 		}
 			
-		private void OnResultTabClose (object sender, EventArgs args)
-		{
-			Widget tabLabel = (Widget)sender;
-			foreach (Widget child in notebook.Children) {
-				if (notebook.GetTabLabel (child) == tabLabel) {
-					notebook.Remove (child);
-					break;
-				}
-			}
-		}
+
 		
 		private void ExecuteClicked (object sender, EventArgs e)
 		{
-			SetQueryState (true, AddinCatalog.GetString ("Executing query"));
+			string msg = String.Concat ("------------------------",
+			                           Environment.NewLine,
+			                           AddinCatalog.GetString ("Executing query"));
+			SetQueryState (true,msg);
 			ExecuteQuery ();
 		}
 		
 		private void ClearClicked (object sender, EventArgs e)
 		{
-			while (notebook.NPages > 2)
-				notebook.RemovePage (2);
-			status.Buffer.Text = String.Empty;
+			padView.Clear();
 		}
 		
 		private void StopClicked (object sender, EventArgs e)
@@ -358,8 +331,8 @@ namespace MonoDevelop.Database.Query
 			buttonStop.Sensitive = exec;
 			buttonClear.Sensitive = !exec;
 			this.Document.ReadOnly = !exec;
-			notebook.Show ();
-			status.Buffer.Text = msg + Environment.NewLine;
+			IdeApp.Workbench.StatusBar.ShowMessage (msg);
+			padView.AppendHistory(msg);
 		}
 
 
