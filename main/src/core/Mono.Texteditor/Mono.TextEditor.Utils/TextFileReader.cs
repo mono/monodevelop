@@ -59,7 +59,7 @@ namespace Mono.TextEditor.Utils
 			encodingsWithBom = encodings.ToArray ();
 			
 			// Encoding verifiers
-			verifiers = new Verifier[] {
+			var verifierList = new List<Verifier> () {
 				new UnicodeVerifier (),
 				new BigEndianUnicodeVerifier (),
 				new Utf8Verifier (),
@@ -67,10 +67,14 @@ namespace Mono.TextEditor.Utils
 				new CodePage858Verifier ()
 			};
 
+			verifiers = verifierList.Where (v => v.IsSupported).ToArray ();
+
 			// cache the verifier machine state tables, to do the virtual StateTable only once.
-			stateTables =  new byte[verifiers.Length][][];
-			for (int i = 0; i < verifiers.Length; i++)
-				stateTables[i] = verifiers[i].StateTable;
+			stateTables = new byte[verifiers.Length][][];
+			for (int i = 0; i < verifiers.Length; i++) {
+				verifiers [i].Initialize ();
+				stateTables [i] = verifiers [i].StateTable;
+			}
 		}
 
 		#region stream reader methods
@@ -274,6 +278,20 @@ namespace Mono.TextEditor.Utils
 		public abstract Encoding Encoding { get; }
 		public abstract byte[][] StateTable { get; }
 		
+		protected abstract void Init ();
+
+		bool isInitialized = false;
+
+		public void Initialize ()
+		{
+			if (isInitialized)
+				throw new InvalidOperationException ("Already initialized");
+			isInitialized = true;
+			Init ();
+		}
+
+		public abstract bool IsSupported { get; }
+
 		public virtual bool IsEncodingValid (byte state) 
 		{
 			return state != Error; 
@@ -295,7 +313,17 @@ namespace Mono.TextEditor.Utils
 
 		static byte[][] table;
 
-		static Utf8Verifier ()
+		public override bool IsSupported {
+			get {
+				try {
+					return Encoding.UTF8 != null;
+				} catch (Exception) {
+					return false;
+				}
+			}
+		}
+
+		protected override void Init ()
 		{
 			table = new byte[LAST][];
 			table[0] = errorTable;
@@ -375,7 +403,7 @@ namespace Mono.TextEditor.Utils
 
 		static byte[][] table;
 
-		static UnicodeVerifier ()
+		protected override void Init ()
 		{
 			// Simple approach - detect 0 at odd posititons, then it's likely a utf16
 			// if 0 at an even position it's regarded as no utf-16.
@@ -399,6 +427,16 @@ namespace Mono.TextEditor.Utils
 		public override Encoding Encoding { get { return Encoding.Unicode; } }
 		public override byte[][] StateTable { get { return table; } }
 
+		public override bool IsSupported {
+			get {
+				try {
+					return Encoding.Unicode != null;
+				} catch (Exception) {
+					return false;
+				}
+			}
+		}
+
 		public override bool IsEncodingValid (byte state)
 		{
 			return state == EvenPossible || state == OddPossible;
@@ -413,10 +451,21 @@ namespace Mono.TextEditor.Utils
 		const byte OddPossible = 4;
 		const byte LAST = 5;
 
+
 		public override byte InitalState { get { return Even; } }
 		public override Encoding Encoding { get { return Encoding.BigEndianUnicode; } }
 		public override byte[][] StateTable { get { return table; } }
-		
+
+		public override bool IsSupported {
+			get {
+				try {
+					return Encoding.BigEndianUnicode != null;
+				} catch (Exception) {
+					return false;
+				}
+			}
+		}
+
 
 		public override bool IsEncodingValid (byte state)
 		{
@@ -425,7 +474,7 @@ namespace Mono.TextEditor.Utils
 
 		static byte[][] table;
 
-		static BigEndianUnicodeVerifier ()
+		protected override void Init ()
 		{
 			// Simple approach - detect 0 at even posititons, then it's likely a utf16be
 			// if 0 at an odd position it's regarded as no utf-16be.
@@ -456,14 +505,25 @@ namespace Mono.TextEditor.Utils
 
 		static byte[][] table;
 
-		readonly static Encoding EncodingCp1252 = Encoding.GetEncoding (1252);
+		static Encoding EncodingCp1252;
 
 		public override byte InitalState { get { return Valid; } }
 		public override Encoding Encoding { get { return EncodingCp1252; } }
 		public override byte[][] StateTable { get { return table; } }
 
-		static CodePage1252Verifier ()
+		public override bool IsSupported {
+			get {
+				try {
+					return Encoding.GetEncoding (1252) != null;
+				} catch (Exception) {
+					return false;
+				}
+			}
+		}
+
+		protected override void Init ()
 		{
+			EncodingCp1252 = Encoding.GetEncoding (1252);
 			table = new byte[LAST][];
 			table[0] = errorTable;
 			for (int i = 1; i < LAST; i++)
@@ -490,14 +550,25 @@ namespace Mono.TextEditor.Utils
 
 		static byte[][] table;
 
-		readonly static Encoding EncodingCp858 = Encoding.GetEncoding (858);
+		static Encoding EncodingCp858;
 
 		public override byte InitalState { get { return Valid; } }
 		public override Encoding Encoding { get { return EncodingCp858; } }
 		public override byte[][] StateTable { get { return table; } }
 
-		static CodePage858Verifier ()
+		public override bool IsSupported {
+			get {
+				try {
+					return Encoding.GetEncoding (858) != null;
+				} catch (Exception) {
+					return false;
+				}
+			}
+		}
+
+		protected override void Init ()
 		{
+			EncodingCp858 = Encoding.GetEncoding (858);
 			table = new byte[LAST][];
 			table[0] = errorTable;
 			for (int i = 1; i < LAST; i++)
