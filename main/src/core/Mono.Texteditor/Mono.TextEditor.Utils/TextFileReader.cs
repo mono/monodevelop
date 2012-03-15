@@ -193,7 +193,7 @@ namespace Mono.TextEditor.Utils
 					byte* bEndPtr = bBeginPtr + readLength;
 					byte* sEndPtr = stateBeginPtr + states.Length;
 					
-					while (bPtr != bEndPtr && verifiersRunning > 1) {
+					while (bPtr != bEndPtr && verifiersRunning > 0) {
 						byte* sPtr = stateBeginPtr;
 						int i = 0;
 						while (sPtr != sEndPtr) {
@@ -222,14 +222,14 @@ namespace Mono.TextEditor.Utils
 			return Encoding.ASCII;
 		}
 
-		static bool IsBinary (byte[] bytes)
+		public static bool IsBinary (byte[] bytes)
 		{
 			if (bytes == null)
 				throw new ArgumentNullException ("bytes");
 			return IsBinary (new MemoryStream (bytes, false));
 		}
 
-		static bool IsBinary (string fileName)
+		public static bool IsBinary (string fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
@@ -238,19 +238,14 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		static bool IsBinary (Stream stream)
+		public static bool IsBinary (Stream stream)
 		{
 			if (stream == null)
 				throw new ArgumentNullException ("stream");
-
-			// Uses the same approach as GIT
-			const int FIRST_FEW_BYTES = 8 * 1024;
-			int length = System.Math.Min (FIRST_FEW_BYTES, (int)stream.Length);
-			for (int i = 0; i < length; i++) {
-				if (stream.ReadByte () == 0)
-					return true;
-			}
-			return false;
+			
+			var enc = AutoDetectEncoding (stream);
+			Console.WriteLine (enc);
+			return enc == Encoding.ASCII;
 		}
 
 		#endregion
