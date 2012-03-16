@@ -2130,7 +2130,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
-			Print (member2);
 			return new ExpressionResult ((AstNode)expr, Unit);
 		}
 
