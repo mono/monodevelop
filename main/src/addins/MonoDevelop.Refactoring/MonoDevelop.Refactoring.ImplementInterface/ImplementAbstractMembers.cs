@@ -95,8 +95,9 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 							sb.Append (editor.EolMarker);
 							sb.Append (editor.EolMarker);
 						}
-				
-						sb.Append (generator.CreateMemberImplementation (declaringType, member, false).Code);
+						var impl = generator.CreateMemberImplementation (declaringType, member, false);
+						if (impl != null)
+							sb.Append (impl.Code);
 					}
 					args.InsertionPoint.Insert (document.Editor, generator.WrapInRegions ("implemented abstract members of " + abstractType.FullName, sb.ToString ()));
 				}
