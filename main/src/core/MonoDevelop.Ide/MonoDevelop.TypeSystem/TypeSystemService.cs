@@ -627,7 +627,7 @@ namespace MonoDevelop.TypeSystem
 				if (content == null)
 					throw new ArgumentNullException ("content");
 				this.Project = project;
-				this.content = content;
+				this.content = content.SetAssemblyName (project.Name);
 			}
 			
 			public IEnumerable<Project> ReferencedProjects {
