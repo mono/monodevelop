@@ -9,7 +9,7 @@ namespace MonoDevelop.Debugger
 		private global::Gtk.Label labelMessage;
 		private global::Gtk.Notebook notebook1;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-		private global::Gtk.TreeView treeStack;
+		private global::Gtk.TextView stackTextView;
 		private global::Gtk.Label label2;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::MonoDevelop.Debugger.ObjectValueTreeView valueView;
@@ -38,6 +38,7 @@ namespace MonoDevelop.Debugger
 			this.labelType.Xalign = 0F;
 			this.labelType.LabelProp = "<b>Exception</b> has been thrown";
 			this.labelType.UseMarkup = true;
+			this.labelType.Selectable = true;
 			this.vbox2.Add (this.labelType);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelType]));
 			w2.Position = 0;
@@ -50,6 +51,7 @@ namespace MonoDevelop.Debugger
 			this.labelMessage.Xalign = 0F;
 			this.labelMessage.LabelProp = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
 			this.labelMessage.Wrap = true;
+			this.labelMessage.Selectable = true;
 			this.vbox2.Add (this.labelMessage);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelMessage]));
 			w3.Position = 1;
@@ -64,13 +66,13 @@ namespace MonoDevelop.Debugger
 			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
 			this.GtkScrolledWindow1.ShadowType = ((global::Gtk.ShadowType)(1));
-			this.GtkScrolledWindow1.BorderWidth = ((uint)(3));
 			// Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
-			this.treeStack = new global::Gtk.TreeView ();
-			this.treeStack.CanFocus = true;
-			this.treeStack.Name = "treeStack";
-			this.treeStack.HeadersVisible = false;
-			this.GtkScrolledWindow1.Add (this.treeStack);
+			this.stackTextView = new global::Gtk.TextView ();
+			this.stackTextView.CanFocus = true;
+			this.stackTextView.Name = "stackTextView";
+			this.stackTextView.Editable = false;
+			this.stackTextView.CursorVisible = false;
+			this.GtkScrolledWindow1.Add (this.stackTextView);
 			this.notebook1.Add (this.GtkScrolledWindow1);
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
