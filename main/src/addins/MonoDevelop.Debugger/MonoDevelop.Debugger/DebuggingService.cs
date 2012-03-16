@@ -98,6 +98,8 @@ namespace MonoDevelop.Debugger
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 				IdeApp.Workspace.LastWorkspaceItemClosed += OnSolutionClosed;
 				busyDialog = new BusyEvaluatorDialog ();
+				busyDialog.TransientFor = MessageService.RootWindow;
+				busyDialog.DestroyWithParent = true;
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Regresh the engine list
@@ -565,7 +567,7 @@ namespace MonoDevelop.Debugger
 						busyStatusIcon.SetAlertMode (100);
 						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The Debugger is waiting for an expression evaluation to finish.");
 						busyStatusIcon.EventBox.ButtonPressEvent += delegate {
-							busyDialog.Show ();
+							MessageService.PlaceDialog (busyDialog, MessageService.RootWindow);
 						};
 					}
 				} else {
@@ -580,7 +582,7 @@ namespace MonoDevelop.Debugger
 		static bool CheckIsBusy ()
 		{
 			if (isBusy && !busyDialog.Visible)
-				busyDialog.Show ();
+				MessageService.PlaceDialog (busyDialog, MessageService.RootWindow);
 			return isBusy;
 		}
 		
