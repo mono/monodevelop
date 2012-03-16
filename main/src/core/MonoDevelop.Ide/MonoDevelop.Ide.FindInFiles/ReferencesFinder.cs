@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				var allProjects = solution.GetAllProjects ();
 				if (monitor != null)
 					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), solution.GetAllProjects ().Count);
-				var sourceProject = TypeSystemService.GetProject ((IEntity)member);
+				var sourceProject = TypeSystemService.GetProject ((member as IEntity).ParentAssembly.UnresolvedAssembly.Location);
 				foreach (var project in GetAllReferencingProjects (solution, sourceProject)) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
