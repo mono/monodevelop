@@ -735,18 +735,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
-
-			ITypeDefinition def;
-			if (entity is IType) {
-				def = ((IType)entity).GetDefinition ();
-			} else {
-				def = entity.DeclaringTypeDefinition;
-			}
-			if (def == null)
-				return null;
-			
-			return GetProject (def.Compilation.MainAssembly.UnresolvedAssembly.Location);
-				
+			return GetProject (entity.ParentAssembly.UnresolvedAssembly.Location);
 		}
 		
 		public static Project GetProject (string location)
