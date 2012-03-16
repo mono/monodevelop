@@ -36,6 +36,35 @@ using System.Xml;
 
 namespace MonoDevelop.Core
 {
+	public class PropertyWrapper<T>
+	{
+		T value;
+		readonly string propertyName;
+
+		public T Value {
+			get {
+				return value;
+			}
+			set {
+				if (!object.Equals (this.value, value)) {
+					this.value = value;
+					PropertyService.Set (propertyName, value);
+				}
+			}
+		}
+
+		public PropertyWrapper (string propertyName, T defaultValue)
+		{
+			this.propertyName = propertyName;
+			value = PropertyService.Get (propertyName, defaultValue);
+		}
+
+		public static implicit operator T (PropertyWrapper<T> watch)
+		{
+			return watch.value;
+		}
+	}
+
 	public static class PropertyService
 	{
 		//force the static class to intialize

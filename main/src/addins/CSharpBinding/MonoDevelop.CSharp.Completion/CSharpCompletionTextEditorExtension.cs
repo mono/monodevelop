@@ -191,9 +191,9 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
-			if (!TextEditorProperties.EnableCodeCompletion)
+			if (!EnableCodeCompletion)
 				return null;
-			if (!TextEditorProperties.EnableAutoCodeCompletion && char.IsLetter (completionChar))
+			if (!EnableAutoCodeCompletion && char.IsLetter (completionChar))
 				return null;
 
 			//	var timer = Counters.ResolveTime.BeginTiming ();
@@ -371,7 +371,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			if (!TextEditorProperties.EnableCodeCompletion)
+			if (!EnableCodeCompletion)
 				return null;
 			if (Unit == null || CSharpParsedFile == null)
 				return null;

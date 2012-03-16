@@ -118,101 +118,95 @@ namespace MonoDevelop.SourceEditor
 		void UpdatePreferences (object sender, PropertyChangedEventArgs args)
 		{
 			try {
-			switch (args.Key) {
-			case "TabIsReindent": 
-				this.TabIsReindent = (bool) args.NewValue;
-				break;
-			case "EnableSemanticHighlighting":
-				this.EnableSemanticHighlighting = (bool) args.NewValue;
-				break;
-			case "AutoInsertMatchingBracket":
-				this.AutoInsertMatchingBracket = (bool) args.NewValue;
-				break;
-			case "EnableCodeCompletion":
-				this.EnableCodeCompletion = (bool) args.NewValue;
-				break;
-			case "EnableParameterInsight":
-				this.EnableParameterInsight = (bool) args.NewValue;
-				break;
-			case "UnderlineErrors":
-				this.UnderlineErrors = (bool) args.NewValue;
-				break;
-			case "IndentStyle":
-				if (args.NewValue == null) {
-					LoggingService.LogWarning ("tried to set indent style == null");
-				} else if (!(args.NewValue is IndentStyle)) {
-					LoggingService.LogWarning ("tried to set indent style to " + args.NewValue + " which isn't from type IndentStyle instead it is from:" +  args.NewValue.GetType ());
-					this.IndentStyle = (IndentStyle)Enum.Parse (typeof (IndentStyle), args.NewValue.ToString ());
-				} else 
-					this.IndentStyle = (IndentStyle) args.NewValue;
-				break;
-			case "ShowLineNumberMargin":
-				base.ShowLineNumberMargin = (bool) args.NewValue;
-				break;
-			case "ShowFoldMargin":
-				base.ShowFoldMargin = (bool) args.NewValue;
-				break;
-			case "ShowInvalidLines":
-				base.ShowInvalidLines = (bool) args.NewValue;
-				break;
-			case "ShowTabs":
-				base.ShowTabs = (bool) args.NewValue;
-				break;
-			case "ShowEolMarkers":
-				base.ShowEolMarkers = (bool) args.NewValue;
-				break;
-			case "HighlightCaretLine":
-				base.HighlightCaretLine = (bool) args.NewValue;
-				break;
-			case "ShowSpaces":
-				base.ShowSpaces = (bool) args.NewValue;
-				break;
-			case "EnableSyntaxHighlighting":
-				base.EnableSyntaxHighlighting = (bool) args.NewValue;
-				break;
-			case "HighlightMatchingBracket":
-				base.HighlightMatchingBracket = (bool) args.NewValue;
-				break;
-			case "ShowRuler":
-				base.ShowRuler = (bool) args.NewValue;
-				break;
-			case "FontName":
-				base.FontName = (string) args.NewValue;
-				break;
-			case "ColorScheme":
-				base.ColorScheme = (string) args.NewValue;
-				break;
-			case "DefaultRegionsFolding":
-				this.DefaultRegionsFolding = (bool) args.NewValue;
-				break;
-			case "DefaultCommentFolding":
-				this.DefaultCommentFolding = (bool) args.NewValue;
-				break;
-			case "UseViModes":
-				this.UseViModes = (bool) args.NewValue;
-				break;
-			case "OnTheFlyFormatting":
-				this.OnTheFlyFormatting = (bool) args.NewValue;
-				break;
-			case "EnableAutoCodeCompletion":
-				this.EnableAutoCodeCompletion = (bool) args.NewValue;
-				break;
-			case "CompleteWithSpaceOrPunctuation":
-				this.CompleteWithSpaceOrPunctuation = (bool) args.NewValue;
-				break;
-			case "HideObsoleteItems":
-				this.HideObsoleteItems = (bool) args.NewValue;
-				break;
-			case "ControlLeftRightMode":
-				this.ControlLeftRightMode = (ControlLeftRightMode) args.NewValue;
-				break;
-			case "EnableAnimations":
-				base.EnableAnimations =  (bool) args.NewValue;
-				break;
-			case "UseAntiAliasing":
-				base.UseAntiAliasing =  (bool) args.NewValue;
-				break;
-			}
+				switch (args.Key) {
+				case "TabIsReindent": 
+					this.TabIsReindent = (bool)args.NewValue;
+					break;
+				case "EnableSemanticHighlighting":
+					this.EnableSemanticHighlighting = (bool)args.NewValue;
+					break;
+				case "AutoInsertMatchingBracket":
+					this.AutoInsertMatchingBracket = (bool)args.NewValue;
+					break;
+				case "UnderlineErrors":
+					this.UnderlineErrors = (bool)args.NewValue;
+					break;
+				case "IndentStyle":
+					if (args.NewValue == null) {
+						LoggingService.LogWarning ("tried to set indent style == null");
+					} else if (!(args.NewValue is IndentStyle)) {
+						LoggingService.LogWarning ("tried to set indent style to " + args.NewValue + " which isn't from type IndentStyle instead it is from:" + args.NewValue.GetType ());
+						this.IndentStyle = (IndentStyle)Enum.Parse (typeof(IndentStyle), args.NewValue.ToString ());
+					} else 
+						this.IndentStyle = (IndentStyle)args.NewValue;
+					break;
+				case "ShowLineNumberMargin":
+					base.ShowLineNumberMargin = (bool)args.NewValue;
+					break;
+				case "ShowFoldMargin":
+					base.ShowFoldMargin = (bool)args.NewValue;
+					break;
+				case "ShowInvalidLines":
+					base.ShowInvalidLines = (bool)args.NewValue;
+					break;
+				case "ShowTabs":
+					base.ShowTabs = (bool)args.NewValue;
+					break;
+				case "ShowEolMarkers":
+					base.ShowEolMarkers = (bool)args.NewValue;
+					break;
+				case "HighlightCaretLine":
+					base.HighlightCaretLine = (bool)args.NewValue;
+					break;
+				case "ShowSpaces":
+					base.ShowSpaces = (bool)args.NewValue;
+					break;
+				case "EnableSyntaxHighlighting":
+					base.EnableSyntaxHighlighting = (bool)args.NewValue;
+					break;
+				case "HighlightMatchingBracket":
+					base.HighlightMatchingBracket = (bool)args.NewValue;
+					break;
+				case "ShowRuler":
+					base.ShowRuler = (bool)args.NewValue;
+					break;
+				case "FontName":
+					base.FontName = (string)args.NewValue;
+					break;
+				case "ColorScheme":
+					base.ColorScheme = (string)args.NewValue;
+					break;
+				case "DefaultRegionsFolding":
+					this.DefaultRegionsFolding = (bool)args.NewValue;
+					break;
+				case "DefaultCommentFolding":
+					this.DefaultCommentFolding = (bool)args.NewValue;
+					break;
+				case "UseViModes":
+					this.UseViModes = (bool)args.NewValue;
+					break;
+				case "OnTheFlyFormatting":
+					this.OnTheFlyFormatting = (bool)args.NewValue;
+					break;
+				case "EnableAutoCodeCompletion":
+					this.EnableAutoCodeCompletion = (bool)args.NewValue;
+					break;
+				case "CompleteWithSpaceOrPunctuation":
+					this.CompleteWithSpaceOrPunctuation = (bool)args.NewValue;
+					break;
+				case "HideObsoleteItems":
+					this.HideObsoleteItems = (bool)args.NewValue;
+					break;
+				case "ControlLeftRightMode":
+					this.ControlLeftRightMode = (ControlLeftRightMode)args.NewValue;
+					break;
+				case "EnableAnimations":
+					base.EnableAnimations = (bool)args.NewValue;
+					break;
+				case "UseAntiAliasing":
+					base.UseAntiAliasing = (bool)args.NewValue;
+					break;
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("SourceEditorOptions error with property value for '" + (args.Key ?? "") + "'", ex);
 			}
@@ -225,8 +219,6 @@ namespace MonoDevelop.SourceEditor
 			//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
 			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
 			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
-			this.enableCodeCompletion = PropertyService.Get ("EnableCodeCompletion", true);
-			this.enableParameterInsight = PropertyService.Get ("EnableParameterInsight", true);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Auto);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
@@ -396,28 +388,14 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		bool enableCodeCompletion;
 		public bool EnableCodeCompletion {
-			get { return enableCodeCompletion; }
-			set {
-				if (value != this.enableCodeCompletion) {
-					this.enableCodeCompletion = value;
-					PropertyService.Set ("EnableCodeCompletion", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
+			get { return CompletionTextEditorExtension.EnableCodeCompletion; }
+			set { CompletionTextEditorExtension.EnableCodeCompletion.Value = value; }
 		}
 		
-		bool enableParameterInsight;
 		public bool EnableParameterInsight {
-			get { return enableParameterInsight; }
-			set {
-				if (value != this.enableParameterInsight) {
-					this.enableParameterInsight = value;
-					PropertyService.Set ("EnableParameterInsight", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
+			get { return CompletionTextEditorExtension.EnableParameterInsight; }
+			set { CompletionTextEditorExtension.EnableParameterInsight.Value = value; }
 		}
 		
 		bool underlineErrors;
