@@ -61,8 +61,7 @@ namespace MonoDevelop.RegexToolkit
 				this.Destroy ();
 			};
 			
-			var isWindows = System.IO.Path.DirectorySeparatorChar == '\\';
-			this.buttonLibrary.Visible = !isWindows;
+			this.buttonLibrary.Visible = false;
 			this.buttonStart.Sensitive = false;
 			this.entryRegEx.Changed += UpdateStartButtonSensitivity;
 			this.inputTextview.Buffer.Changed += UpdateStartButtonSensitivity;
