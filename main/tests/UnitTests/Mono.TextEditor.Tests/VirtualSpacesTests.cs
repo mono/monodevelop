@@ -41,6 +41,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug615196 ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\nHello World\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
@@ -59,7 +60,8 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug613770 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
@@ -73,6 +75,7 @@ namespace Mono.TextEditor.Tests
 		public void TestReturnKeyBehavior ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
@@ -90,6 +93,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug615624 ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n \n\n";
 			data.Caret.AllowCaretBehindLineEnd = true;
 			data.Caret.Offset = 2; // 2nd.Line
@@ -103,6 +107,7 @@ namespace Mono.TextEditor.Tests
 		public void TestCaretRightBehavior ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\n\n";
 			data.Caret.AllowCaretBehindLineEnd = true;
 
@@ -117,6 +122,7 @@ namespace Mono.TextEditor.Tests
 		public void TestCaretLeftBehavior ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\n\n";
 			data.Caret.AllowCaretBehindLineEnd = true;
 			data.Caret.Column = 4;
