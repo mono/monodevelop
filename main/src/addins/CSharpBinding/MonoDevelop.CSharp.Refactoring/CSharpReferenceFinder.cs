@@ -104,11 +104,11 @@ namespace MonoDevelop.CSharp.Refactoring
 				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
 			}
 
-			if (node is ObjectCreateExpression) // Ast type inside is handled in case of constructor search.
-				return null;
-
 			if (node is ConstructorInitializer)
 				return null;
+
+			if (node is ObjectCreateExpression)
+				node = ((ObjectCreateExpression)node).Type;
 
 			if (node is InvocationExpression)
 				node = ((InvocationExpression)node).Target;
