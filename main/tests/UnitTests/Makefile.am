@@ -88,6 +88,7 @@ FILES =  \
 	MonoDevelop.Projects/TextFormatterTests.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
 	MonoDevelop.Refactoring/ImplementInterfaceTests.cs \
+	MonoDevelop.Refactoring/ResolveNamespaceTests.cs \
 	MonoDevelop.VersionControl.Git/GitUtilsTests.cs \
 	MonoDevelop.VersionControl.Views/EditorCompareWidgetBaseTest.cs \
 	TestBase.cs \

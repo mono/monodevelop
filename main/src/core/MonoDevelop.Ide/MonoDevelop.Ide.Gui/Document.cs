@@ -638,23 +638,32 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 				string currentParseText = editor.Text;
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
+				if (Project == null) {
+					singleFileContext = GetProjectContext ().UpdateProjectContent (singleFileContext.GetFile (currentParseFile), parsedDocument.ParsedFile);
+				}
 			} finally {
 				OnDocumentParsed (EventArgs.Empty);
 			}
 			return this.parsedDocument;
 		}
 
+		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly> ( () => new CecilLoader ().LoadAssemblyFile (typeof (object).Assembly.Location));
+		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>( () => new CecilLoader ().LoadAssemblyFile (typeof (System.Linq.Enumerable).Assembly.Location));
+
+		static IUnresolvedAssembly Mscorlib { get { return mscorlib.Value; } }
+		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
+		
 		public virtual IProjectContent GetProjectContext ()
 		{
-			IProjectContent ctx;
 			if (Project == null) {
-				if (singleFileContext == null)
+				if (singleFileContext == null) {
 					singleFileContext = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
-				ctx = singleFileContext;
-			} else {
-				ctx = TypeSystemService.GetProjectContext (Project);
+					singleFileContext = singleFileContext.AddAssemblyReferences (new [] { Mscorlib, SystemCore });
+				}
+				return singleFileContext;
 			}
-			return ctx;
+			
+			return TypeSystemService.GetProjectContext (Project);
 		}
 		
 		uint parseTimeout = 0;

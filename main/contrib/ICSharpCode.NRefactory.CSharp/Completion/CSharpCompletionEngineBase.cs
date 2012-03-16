@@ -272,10 +272,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return state;*/
 		}
-				#endregion
-		
+		#endregion
+
 		#region Basic parsing/resolving functions
-		Stack<Tuple<char, int>> GetBracketStack (string memberText)
+		static Stack<Tuple<char, int>> GetBracketStack (string memberText)
 		{
 			var bracketStack = new Stack<Tuple<char, int>> ();
 			
@@ -361,7 +361,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return bracketStack;
 		}
 		
-		protected void AppendMissingClosingBrackets (StringBuilder wrapper, string memberText, bool appendSemicolon)
+		public static void AppendMissingClosingBrackets (StringBuilder wrapper, string memberText, bool appendSemicolon)
 		{
 			var bracketStack = GetBracketStack (memberText);
 			bool didAppendSemicolon = !appendSemicolon;
@@ -411,12 +411,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					break;
 				}
 			}
-			if (currentMember == null && lastBracket == ']') {
-				// attribute context
-			} else {
-				if (!didAppendSemicolon)
-					wrapper.Append (';');
-			}
+			if (!didAppendSemicolon)
+				wrapper.Append (';');
 		}
 
 		protected CompilationUnit ParseStub (string continuation, bool appendSemicolon = true, string afterContinuation = null)
@@ -639,7 +635,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!IsInsideType (currentMember, location))
 					currentMember = null;
 			}
-			var stack = engine.GetBracketStack (engine.GetMemberTextToCaret ().Item1);
+			var stack = GetBracketStack (engine.GetMemberTextToCaret ().Item1);
 			if (stack.Count == 0)
 				currentMember = null;
 		}

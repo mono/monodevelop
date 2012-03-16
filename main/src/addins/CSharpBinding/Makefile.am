@@ -130,6 +130,7 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/RefactorImports/SortImportsRefactoring.cs \
 	MonoDevelop.CSharp.Refactoring/VisitNamespaceNodesNavigator.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
+	MonoDevelop.CSharp.Resolver/ResolveCommandHandler.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
 	MonoDevelop.CSharp/CSharpAmbience.cs \
 	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \

@@ -51,7 +51,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp
 {
-	static class HelperMethods
+	public static class HelperMethods
 	{
 		public static void SetText (this CompletionData data, string text)
 		{

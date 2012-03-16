@@ -232,7 +232,6 @@
 			_description = 'Replaces "" with string.Empty'
 			class = "MonoDevelop.CSharp.ContextAction.ReplaceEmptyString" />
 			
-			
 		<Action mimeType="text/x-csharp"
 			_title = "Use 'var' keyword"
 			_description = "Converts local variable declaration to be implicit typed."
@@ -289,21 +288,25 @@
 			_description = "'?:' expression can be converted to '??' expression."
 			severity = "Suggestion"
 			class = "MonoDevelop.CSharp.Inspection.ConditionalToNullCoalescingInspector" />
+		
 		<Inspector mimeType="text/x-csharp"
 			_title = "Remove unused usings"
 			_description = "Removes used declarations that are not required."
 			severity = "Warning"
 			class = "MonoDevelop.CSharp.Inspection.UnusedUsingInspector" />
+		
 		<Inspector mimeType="text/x-csharp"
 			_title = "Remove redundant 'this.'"
 			_description = "Removes 'this.' references that are not required."
 			severity = "Warning"
 			class = "MonoDevelop.CSharp.Inspection.RedundantThisInspector" />
+		
 		<Inspector mimeType="text/x-csharp"
 			_title = "Show NotImplementedException"
 			_description = "Shows NotImplementedException throws in the quick task bar."
 			severity = "Suggestion"
 			class = "MonoDevelop.CSharp.Inspection.NotImplementedExceptionInspector" />
+			
 		<Inspector mimeType="text/x-csharp"
 			_title = "Use string.IsNullOrEmpty"
 			_description = "Uses shorter string.IsNullOrEmpty call instead of a longer condition."
@@ -317,7 +320,7 @@
 			class = "MonoDevelop.CSharp.Inspection.UseVarKeywordInspector" />
 			
 		<Inspector mimeType="text/x-csharp"
-			_title = "Remove redunaint 'internal' modifier."
+			_title = "Remove redunant 'internal' modifier."
 			_description = "Removes 'internal' modifiers that are not required."
 			severity = "Warning"
 			class = "MonoDevelop.CSharp.Inspection.RedundantInternalInspector" />
@@ -340,6 +343,11 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
+		<Command id = "MonoDevelop.CSharp.Resolver.Commands.Resolve"
+				defaultHandler = "MonoDevelop.CSharp.Resolver.ResolveCommandHandler"
+				type="array"
+				_label = "Resolve"/> 
+			
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.RemoveUnusedImports"
 					defaultHandler = "MonoDevelop.CSharp.Refactoring.RefactorImports.RemoveUnusedImportsHandler"
 					icon = "md-remove-namespace"
@@ -409,6 +417,12 @@
 		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">	
+		<CommandItem id = "MonoDevelop.CSharp.Resolver.Commands.Resolve"
+			insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"
+			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"/>
 	</Extension>
 	
 <!--

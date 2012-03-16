@@ -298,6 +298,7 @@
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringScript.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\ResolveCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
