@@ -107,7 +107,9 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 							sb.Append (editor.EolMarker);
 						}
 						var resolvedType = declaringType.Resolve (options.Document.ParsedDocument.GetTypeResolveContext (options.Document.Compilation, loc)).GetDefinition ();
-						sb.Append (generator.CreateMemberImplementation (resolvedType, declaringType, member, false).Code);
+						var impl = generator.CreateMemberImplementation (resolvedType, declaringType, member, false);
+						if (impl != null)
+							sb.Append (impl.Code);
 					}
 					args.InsertionPoint.Insert (document.Editor, generator.WrapInRegions ("implemented abstract members of " + abstractType.FullName, sb.ToString ()));
 				}
