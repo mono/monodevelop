@@ -375,16 +375,28 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			if (Unit == null || CSharpParsedFile == null)
 				return null;
-			var engine = new CSharpParameterCompletionEngine (
-				textEditorData.Document,
-				this,
-				Document.GetProjectContext (),
-				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext,
-				Unit,
-				CSharpParsedFile
-			);
-			engine.MemberProvider = typeSystemSegmentTree;
-			return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar);
+			try {
+				var engine = new CSharpParameterCompletionEngine (
+					textEditorData.Document,
+					this,
+					Document.GetProjectContext (),
+					CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext,
+					Unit,
+					CSharpParsedFile
+				);
+				engine.MemberProvider = typeSystemSegmentTree;
+				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar);
+			} catch (Exception e) {
+				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
+					"FileName: " + Document.FileName + Environment.NewLine + 
+					"Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
+					"Line text: " + Document.Editor.GetLineText (completionContext.TriggerLine), 
+					e);
+				return null;
+			} finally {
+				//			if (timer != null)
+				//				timer.Dispose ();
+			}
 		}
 		
 		List<string> GetUsedNamespaces ()
