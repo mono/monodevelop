@@ -357,7 +357,7 @@ namespace MonoDevelop.NUnit
 			AddStackTrace (row, error.StackTrace, null);
 		}
 		
-		readonly static Regex stackTraceLineRegex = new Regex (@".*\s(?<file>.*)\:\w*\s?(?<line>\d*)", RegexOptions.Compiled);
+		readonly static Regex stackTraceLineRegex = new Regex (@".*\s(?<file>.*)\:\D*\s?(?<line>\d+)", RegexOptions.Compiled);
 		
 		public static bool TryParseLocationFromStackTrace (string stackTraceLine, out string fileName, out int lineNumber)
 		{
