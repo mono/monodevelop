@@ -59,6 +59,8 @@ namespace Mono.TextEditor.Theatrics
 
 		protected AnimatedBox (bool horizontal)
 		{
+			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			
 			WidgetFlags |= WidgetFlags.NoWindow;
 			this.horizontal = horizontal;
 			stage.ActorStep += OnActorStep;

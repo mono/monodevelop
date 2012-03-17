@@ -90,14 +90,11 @@ namespace MonoDevelop.Components
 		
 		public SectionList ()
 		{
+			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			
 			this.WidgetFlags |= WidgetFlags.NoWindow;
 			WidthRequest = 100;
 			EnsureLayout ();
-		}
-		
-		//HACK: for some reason GTK# tries to resurrect this for a child forall callback even after it's destroyed
-		protected SectionList (IntPtr handle) : base (handle)
-		{
 		}
 		
 		protected override void OnRealized ()

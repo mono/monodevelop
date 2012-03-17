@@ -64,6 +64,8 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockFrame ()
 		{
+			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			
 			shadedContainer = new ShadedContainer ();
 			
 			dockBarTop = new DockBar (this, Gtk.PositionType.Top);

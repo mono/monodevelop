@@ -8,6 +8,8 @@ namespace Stetic {
 
 		public Grid () : base ()
 		{
+			Stetic.Editor.GtkWorkarounds.FixContainerLeak (this);
+			
 			BorderWidth = 2;
 			WidgetFlags |= WidgetFlags.NoWindow;
 			lines = new ArrayList ();
