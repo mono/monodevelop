@@ -2348,7 +2348,7 @@ namespace Mono.TextEditor
 						if (layout == null) {
 							layout = cr.CreateLayout ();
 							layout.FontDescription = Editor.Options.Font;
-							string markup = Editor.Document.SyntaxMode.GetMarkup (Editor.Options, Editor.ColorStyle, Result.Offset, Result.Length, true);
+							string markup = Editor.GetTextEditorData ().GetMarkup (Result.Offset, Result.Length, true);
 							layout.SetMarkup (markup);
 							layout.GetPixelSize (out layoutWidth, out layoutHeight);
 						}

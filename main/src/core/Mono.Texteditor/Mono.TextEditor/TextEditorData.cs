@@ -220,9 +220,86 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public string GetMarkup (int offset, int length, bool removeIndent)
+		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true)
 		{
-			return document.SyntaxMode.GetMarkup (Options, ColorStyle, offset, length, removeIndent);
+			ISyntaxMode mode = Document.SyntaxMode;
+
+			int indentLength = SyntaxMode.GetIndentLength (Document, offset, length, false);
+			int curOffset = offset;
+
+			StringBuilder result = new StringBuilder ();
+			while (curOffset < offset + length && curOffset < Document.Length) {
+				LineSegment line = Document.GetLineByOffset (curOffset);
+				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
+				Stack<ChunkStyle> styleStack = new Stack<ChunkStyle> ();
+				foreach (var chunk in mode.GetChunks (ColorStyle, line, curOffset, toOffset - curOffset)) {
+
+					ChunkStyle chunkStyle = ColorStyle.GetChunkStyle (chunk);
+					bool setBold = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold) ||
+							!chunkStyle.Bold && (styleStack.Count == 0 || styleStack.Peek ().Bold);
+					bool setItalic = chunkStyle.Italic && (styleStack.Count == 0 || !styleStack.Peek ().Italic) ||
+							!chunkStyle.Italic && (styleStack.Count == 0 || styleStack.Peek ().Italic);
+					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline) ||
+							!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
+					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Color) != TextViewMargin.GetPixel (chunkStyle.Color);
+					if (setColor || setBold || setItalic || setUnderline) {
+						if (styleStack.Count > 0) {
+							result.Append ("</span>");
+							styleStack.Pop ();
+						}
+						result.Append ("<span");
+						if (useColors) {
+							result.Append (" foreground=\"");
+							result.Append (SyntaxMode.ColorToPangoMarkup (chunkStyle.Color));
+							result.Append ("\"");
+						}
+						if (chunkStyle.Bold)
+							result.Append (" weight=\"bold\"");
+						if (chunkStyle.Italic)
+							result.Append (" style=\"italic\"");
+						if (chunkStyle.Underline)
+							result.Append (" underline=\"single\"");
+						result.Append (">");
+						styleStack.Push (chunkStyle);
+					}
+
+					for (int i = 0; i < chunk.Length && chunk.Offset + i < Document.Length; i++) {
+						char ch = Document.GetCharAt (chunk.Offset + i);
+						switch (ch) {
+						case '&':
+							result.Append ("&amp;");
+							break;
+						case '<':
+							result.Append ("&lt;");
+							break;
+						case '>':
+							result.Append ("&gt;");
+							break;
+						case '\t':
+							if (replaceTabs) {
+								result.Append (new string (' ', options.TabSize));
+							} else {
+								result.Append ('\t');
+							}
+							break;
+						default:
+							result.Append (ch);
+							break;
+						}
+					}
+				}
+				while (styleStack.Count > 0) {
+					result.Append("</span>");
+					styleStack.Pop ();
+				}
+
+				curOffset = line.EndOffset;
+				if (removeIndent)
+					curOffset += indentLength;
+				if (result.Length > 0 && curOffset < offset + length)
+					result.AppendLine ();
+			}
+			return result.ToString ();
 		}
 
 		public IEnumerable<Chunk> GetChunks (LineSegment line, int offset, int length)

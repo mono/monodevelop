@@ -467,8 +467,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 			int indent = line.GetIndentation (doc).Length;
-			string markup = doc.SyntaxMode != null ? 
-				doc.SyntaxMode.GetMarkup (new TextEditorOptions (), highlightStyle, line.Offset + indent, line.EditableLength - indent, true, !isSelected, false) : 
+			var data = new Mono.TextEditor.TextEditorData (doc);
+			data.ColorStyle = highlightStyle;
+			string markup = doc.SyntaxMode != null ?
+				data.GetMarkup (line.Offset + indent, line.EditableLength - indent, true, !isSelected, false) :
 				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
 			
 			if (!isSelected) {
