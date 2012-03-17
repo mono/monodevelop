@@ -182,7 +182,12 @@ namespace MonoDevelop.CSharp.Formatting
 					int translatedOffset = realTextDelta + replaceOffset;
 					data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
 					data.Editor.Replace (translatedOffset, replaceLength, insertText);
-				}, (o, l, v) => data.Editor.GetTextAt (realTextDelta + o, l) == v);
+				}, (replaceOffset, replaceLength, insertText) => {
+					int translatedOffset = realTextDelta + replaceOffset;
+					if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length)
+						return true;
+					return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
+				});
 
 				var currentVersion = data.Editor.Document.Version;
 				data.Editor.Caret.Offset = originalVersion.MoveOffsetTo (currentVersion, caretOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default);
