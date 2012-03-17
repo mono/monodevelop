@@ -177,9 +177,9 @@ using System;");
 	}
 	#endregion]
 }");
-			Assert.AreEqual (2, doc.AdditionalFolds.Count);
-			Assert.AreEqual ("TestRegion", doc.AdditionalFolds [0].Name);
-			Assert.AreEqual ("TestRegion2", doc.AdditionalFolds [1].Name);
+			Assert.AreEqual (2, doc.Foldings.Count ());
+			Assert.AreEqual ("TestRegion", doc.Foldings.First ().Name);
+			Assert.AreEqual ("TestRegion2", doc.Foldings.Skip (1).First ().Name);
 		}
 		
 
