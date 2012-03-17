@@ -36,6 +36,9 @@ using System.Xml;
 
 namespace MonoDevelop.Core
 {
+	/// <summary>
+	/// The Property wrapper wraps a global property service value as an easy to use object.
+	/// </summary>
 	public class PropertyWrapper<T>
 	{
 		T value;
@@ -46,11 +49,27 @@ namespace MonoDevelop.Core
 				return value;
 			}
 			set {
-				if (!object.Equals (this.value, value)) {
-					this.value = value;
-					PropertyService.Set (propertyName, value);
-				}
+				Set (value);
 			}
+		}
+		
+		/// <summary>
+		/// Set the property to the specified value.
+		/// </summary>
+		/// <param name='newValue'>
+		/// The new value.
+		/// </param>
+		/// <returns>
+		/// true, if the property has changed, false otherwise.
+		/// </returns>
+		public bool Set (T newValue)
+		{
+			if (!object.Equals (this.value, newValue)) {
+				this.value = newValue;
+				PropertyService.Set (propertyName, value);
+				return true;
+			}
+			return false;
 		}
 
 		public PropertyWrapper (string propertyName, T defaultValue)
