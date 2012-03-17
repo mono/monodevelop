@@ -476,7 +476,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			bool result;
 			
-			if (TextEditorProperties.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
+			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
 				result = base.KeyPress (key, keyChar, modifier);
 				SmartIndentLine (Editor.Caret.Line);
 				return result;
@@ -551,7 +551,7 @@ namespace MonoDevelop.XmlEditor
 						return;
 					monitor.BeginTask (GettextCatalog.GetString ("Creating schema..."), 0);
 					try {
-						string schema = XmlEditorService.CreateSchema (xml);
+						string schema = XmlEditorService.CreateSchema (Document, xml);
 						string fileName = XmlEditorService.GenerateFileName (FileName, "{0}.xsd");
 						IdeApp.Workbench.NewDocument (fileName, "application/xml", schema);
 						monitor.ReportSuccess (GettextCatalog.GetString ("Schema created."));
@@ -659,7 +659,7 @@ namespace MonoDevelop.XmlEditor
 					string newFileName = XmlEditorService.GenerateFileName (FileName, "-transformed{0}.xml");
 					
 					monitor.BeginTask (GettextCatalog.GetString ("Executing transform..."), 1);
-					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter()) {
+					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter(Document)) {
 						xslt.Transform (doc, null, output);
 						IdeApp.Workbench.NewDocument (
 						    newFileName, "application/xml", output.ToString ());

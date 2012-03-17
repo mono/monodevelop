@@ -170,7 +170,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (TextEditorProperties.IndentStyle == IndentStyle.Smart) {
+			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart) {
 				var newLine = Editor.Caret.Line + 1;
 				var ret = base.KeyPress (key, keyChar, modifier);
 				if (key == Gdk.Key.Return && Editor.Caret.Line == newLine) {

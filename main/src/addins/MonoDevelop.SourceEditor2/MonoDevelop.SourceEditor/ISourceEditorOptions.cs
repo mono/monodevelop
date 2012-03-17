@@ -40,8 +40,17 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.SourceEditor
 {
-	
-	
+	public enum EditorFontType {
+		// Default Monospace font as set in the user's GNOME font properties
+		DefaultMonospace,
+		
+		// Default Sans font as set in the user's GNOME font properties
+		DefaultSans,
+		
+		// Custom font, will need to get the FontName property for more specifics
+		UserSpecified
+	}
+
 	public interface ISourceEditorOptions : Mono.TextEditor.ITextEditorOptions
 	{
 		

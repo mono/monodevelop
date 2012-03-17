@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Templates
 				cns.Name = StripImplicitNamespace (project, tags, cns.Name);
 			
 			CodeGeneratorOptions options = new CodeGeneratorOptions ();
-			options.IndentString = TextEditorProperties.IndentString;
+			options.IndentString = "\t";
 			options.BracingStyle = "C";
 			
 			StringWriter sw = new StringWriter ();

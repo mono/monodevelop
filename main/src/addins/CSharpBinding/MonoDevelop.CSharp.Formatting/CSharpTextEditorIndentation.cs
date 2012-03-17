@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -172,10 +173,11 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			}
 
-			if (key == Gdk.Key.Tab && TextEditorProperties.TabIsReindent && !CompletionWindowManager.IsVisible && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
+
+			if (key == Gdk.Key.Tab && DefaultSourceEditorOptions.Instance.TabIsReindent && !CompletionWindowManager.IsVisible && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = textEditorData.Caret.Offset;
 
-				if (TextEditorProperties.TabIsReindent && stateTracker.Engine.IsInsideVerbatimString) {
+				if (stateTracker.Engine.IsInsideVerbatimString) {
 					// insert normal tab inside @" ... "
 					if (textEditorData.IsSomethingSelected) {
 						textEditorData.SelectedText = "\t";
@@ -184,7 +186,7 @@ namespace MonoDevelop.CSharp.Formatting
 						textEditorData.Caret.Offset++;
 					}
 					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
-				} else if (TextEditorProperties.TabIsReindent && cursor >= 1) {
+				} else if (cursor >= 1) {
 					if (textEditorData.Caret.Column > 1) {
 						int delta = cursor - this.cursorPositionBeforeKeyPress;
 						if (delta < 2 && delta > 0) {
@@ -200,7 +202,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			//do the smart indent
-			if (TextEditorProperties.IndentStyle == IndentStyle.Smart || TextEditorProperties.IndentStyle == IndentStyle.Virtual) {
+			if (textEditorData.Options.IndentStyle == IndentStyle.Smart || textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
 				bool retval;
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					//capture some of the current state
@@ -245,7 +247,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return retval;
 			}
 
-			if (TextEditorProperties.IndentStyle == IndentStyle.Auto && TextEditorProperties.TabIsReindent && key == Gdk.Key.Tab) {
+			if (textEditorData.Options.IndentStyle == IndentStyle.Auto && DefaultSourceEditorOptions.Instance.TabIsReindent && key == Gdk.Key.Tab) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				DoReSmartIndent ();
 				return retval;

@@ -494,7 +494,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId)
 		{
-			if (parentWindow == null)
+/*			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;
 
 			OptionsDialog ops = new OptionsDialog (
@@ -512,7 +512,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			} finally {
 				ops.Destroy ();
-			}
+			}*/
 		}
 		
 		public void ShowDefaultPoliciesDialog (Gtk.Window parentWindow)

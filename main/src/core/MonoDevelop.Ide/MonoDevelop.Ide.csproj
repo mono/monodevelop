@@ -917,7 +917,6 @@
     <Compile Include="MonoDevelop.Ide.Commands\NavigationCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ISolutionItemFeature.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderService.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\TextEditorProperties.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\InternalLogPad.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\InternalLog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\KeyBindingsPanel.cs" />

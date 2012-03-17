@@ -156,7 +156,7 @@ namespace CBinding
 			int lineCursorIndex = Math.Min (lineText.Length, Editor.Caret.Column);
 			
 			// Smart Indentation
-			if (TextEditorProperties.IndentStyle == IndentStyle.Smart)
+			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart)
 			{
 				if (keyChar == '}') {
 					// Only indent if the brace is preceeded by whitespace.
@@ -196,7 +196,7 @@ namespace CBinding
 									nextChar = lineText[lineCursorIndex];
 	
 								if(finalChar == '{')
-									indent = TextEditorProperties.IndentString;
+									indent = Document.Editor.Options.IndentationString;
 							}
 	
 							// If the next character is an closing brace, indent it appropriately.
