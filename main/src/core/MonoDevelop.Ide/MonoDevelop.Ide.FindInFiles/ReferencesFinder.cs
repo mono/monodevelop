@@ -202,8 +202,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				var declaringPart = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ();
 				if (declaringPart != null)
 					unit = declaringPart.ParsedFile;
-				if (member is IMethod)
-					searchNodes = CollectMembers (solution, (IMethod)member);
+				if (member is IMember)
+					searchNodes = CollectMembers (solution, (IMember)member);
 			} else if (member is IVariable) { 
 				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).Region.FileName);
 				unit = doc.ParsedDocument.ParsedFile;
@@ -245,36 +245,47 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 		
 		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IEnumerable<object> searchedMembers);
-		
-		internal static IEnumerable<IEntity> CollectMembers (Solution solution, IMethod member)
+
+		internal static IEnumerable<IEntity> CollectMembers (Solution solution, IMember member)
 		{
-			if (member.IsConstructor || member.IsDestructor || member.IsOperator)
-				return new IEntity[] { member };
-			
-			// For renaming interface members search for all methods implementing the interface method.
-			// also search for overrides of the method
+			if (member is IMethod) {
+				var method = (IMethod)member;
+				if (method.IsConstructor || method.IsDestructor || method.IsOperator)
+					return new IEntity [] { member };
+			}
+
+			// For renaming interface members search for all members implementing the interface member.
+			// also search for overrides of the member
 			var declaringType = member.DeclaringType.GetDefinition ();
-			var methods = new List<IMethod> (declaringType.GetMethods (m => m.Name == member.Name));
-			var result = new List<IEntity> (methods);
-			if (declaringType.Kind == TypeKind.Interface || (member.IsOverridable && declaringType.Kind == TypeKind.Class)) {
+			var searchMembers = new List<IMember> (declaringType.GetMembers (m => m.Name == member.Name));
+			var result = new List<IEntity> (searchMembers);
+			if (declaringType.Kind == TypeKind.Interface || (declaringType.Kind == TypeKind.Class && member.IsOverridable)) {
 				foreach (var p in solution.GetAllSolutionItems<Project> ()) {
 					var compilation = TypeSystemService.GetCompilation (p);
-					//skip projects that are not in the same compilation
-					//and avoid possible exception in IsDerivedFrom
-					if (compilation != declaringType.Compilation) 
+					var declaringTypeImport = compilation.Import (declaringType);
+					if (declaringTypeImport == null)
 						continue;
 					foreach (var type in compilation.GetAllTypeDefinitions ()) {
-						if (!type.IsDerivedFrom (declaringType)) 
+						if (!type.IsDerivedFrom (declaringTypeImport))
 							continue;
 						if (type.ReflectionName == declaringType.ReflectionName)
 							continue;
+						var members = type.GetMembers (m => m.Name == member.Name);
 						// Parameter list needs to match any parameter list from the interface.
-						result.AddRange (type.GetMethods (m => m.Name == member.Name).Where (m => methods.Any (om => ParameterListComparer.Instance.Equals (om.Parameters, m.Parameters))));
+						if (member is IParameterizedMember)
+							members = members.Where (m => searchMembers.Any (om => MatchParameters (m as IParameterizedMember, om as IParameterizedMember)));
+						result.AddRange (members);
 					}
 				}
 			}
 			
 			return result;
+		}
+
+		static bool MatchParameters (IParameterizedMember a, IParameterizedMember b)
+		{
+			if (a == null || b == null) return false;
+			return ParameterListComparer.Instance.Equals (a.Parameters, b.Parameters);
 		}
 		
 		internal static IEnumerable<IEntity> CollectMembers (IType type)
