@@ -111,7 +111,7 @@ namespace MonoDevelop.CodeGeneration
 				var parsedDocument = Document.ParsedDocument;
 				if (parsedDocument == null)
 					return null;
-				var unit = parsedDocument.GetAst<CompilationUnit> ();
+				var unit = parsedDocument.GetAst<CompilationUnit> ().Clone ();
 				var file = parsedDocument.ParsedFile as CSharpParsedFile;
 				
 				var resolvedNode = unit.GetNodeAt<BlockStatement> (Document.Editor.Caret.Location);
