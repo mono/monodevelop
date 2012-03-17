@@ -181,6 +181,7 @@
     <Compile Include="Mono.TextEditor\TextDocument.cs" />
     <Compile Include="Mono.TextEditor\TextSegment.cs" />
     <Compile Include="Mono.TextEditor.Utils\TextFileReader.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\ISyntaxMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

@@ -125,9 +125,9 @@ namespace Mono.TextEditor
 			public TextDocument monoDocument; // has a slightly different format !!!
 			public Mono.TextEditor.Highlighting.ColorSheme docStyle;
 			ITextEditorOptions options;
-			Mono.TextEditor.Highlighting.SyntaxMode mode;
+			Mono.TextEditor.Highlighting.ISyntaxMode mode;
 			
-			static string GenerateRtf (TextDocument doc, Mono.TextEditor.Highlighting.SyntaxMode mode, Mono.TextEditor.Highlighting.ColorSheme style, ITextEditorOptions options)
+			static string GenerateRtf (TextDocument doc, Mono.TextEditor.Highlighting.ISyntaxMode mode, Mono.TextEditor.Highlighting.ColorSheme style, ITextEditorOptions options)
 			{
 				StringBuilder rtfText = new StringBuilder ();
 				List<Gdk.Color> colorList = new List<Gdk.Color> ();
@@ -279,12 +279,12 @@ namespace Mono.TextEditor
 					case SelectionMode.Normal:
 						isBlockMode = false;
 						var segment = selection.GetSelectionRange (data);
-						var text = this.mode.GetTextWithoutMarkup (data.ColorStyle, segment.Offset, segment.Length);
+						var text = data.GetTextAt (segment);
 						copiedDocument.Text = text;
 						monoDocument.Text = text;
 						var line = data.Document.GetLineByOffset (segment.Offset);
 						var spanStack = line.StartSpan.Clone ();
-						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, segment.Offset);
+						SyntaxModeService.ScanSpans (data.Document, this.mode as SyntaxMode, this.mode as SyntaxMode, spanStack, line.Offset, segment.Offset);
 						this.copiedDocument.GetLine (DocumentLocation.MinLine).StartSpan = spanStack;
 						break;
 					case SelectionMode.Block:
@@ -310,7 +310,7 @@ namespace Mono.TextEditor
 						}
 						line = data.Document.GetLine (selection.MinLine);
 						spanStack = line.StartSpan.Clone ();
-						SyntaxModeService.ScanSpans (data.Document, this.mode, this.mode, spanStack, line.Offset, line.Offset + startCol);
+						SyntaxModeService.ScanSpans (data.Document, this.mode as SyntaxMode, this.mode as SyntaxMode, spanStack, line.Offset, line.Offset + startCol);
 						this.copiedDocument.GetLine (DocumentLocation.MinLine).StartSpan = spanStack;
 						break;
 					}

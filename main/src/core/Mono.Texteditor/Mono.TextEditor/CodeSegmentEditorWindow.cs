@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 	{
 		TextEditor codeSegmentEditor = new TextEditor ();
 		
-		public SyntaxMode SyntaxMode {
+		public ISyntaxMode SyntaxMode {
 			get {
 				return codeSegmentEditor.Document.SyntaxMode;
 			}
@@ -46,8 +46,6 @@ namespace Mono.TextEditor
 			}
 			set {
 				codeSegmentEditor.Document.Text = value;
-				codeSegmentEditor.Document.UpdateHighlighting ();
-				Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (codeSegmentEditor.Document);
 			}
 		}
 		

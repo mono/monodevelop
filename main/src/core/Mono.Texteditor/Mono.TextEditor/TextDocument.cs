@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 		readonly IBuffer buffer;
 		internal readonly ILineSplitter splitter;
 
-		SyntaxMode   syntaxMode = null;
+		ISyntaxMode syntaxMode = null;
 
 		TextSourceVersionProvider versionProvider = new TextSourceVersionProvider ();
 
@@ -72,7 +72,7 @@ namespace Mono.TextEditor
 			set;
 		}
 		
-		public SyntaxMode SyntaxMode {
+		public ISyntaxMode SyntaxMode {
 			get {
 				return syntaxMode ?? new SyntaxMode (this);
 			}
@@ -82,7 +82,6 @@ namespace Mono.TextEditor
 				syntaxMode = value;
 				if (syntaxMode != null)
 					syntaxMode.Document = this;
-				UpdateHighlighting ();
 			}
 		}
 		
@@ -163,7 +162,6 @@ namespace Mono.TextEditor
 				this.buffer.Text = value;
 				splitter.Initalize (value);
 				ClearFoldSegments ();
-				UpdateHighlighting ();
 				this.OnTextReplaced (args);
 				this.OnTextSet (EventArgs.Empty);
 				this.CommitUpdateAll ();
@@ -171,13 +169,7 @@ namespace Mono.TextEditor
 				versionProvider = new TextSourceVersionProvider ();
 			}
 		}
-		
-		public void UpdateHighlighting ()
-		{
-			if (this.syntaxMode != null && !SuppressHighlightUpdate)
-				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, 0, buffer.Length);
-		}
-		
+
 		void IBuffer.Insert (int offset, string text)
 		{
 			((IBuffer)this).Replace (offset, 0, text);
@@ -243,9 +235,6 @@ namespace Mono.TextEditor
 			if (operation != null)
 				operation.Setup (this, args);
 			
-			if (this.syntaxMode != null && !SuppressHighlightUpdate) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.StartUpdate (this, this.syntaxMode, offset, value != null ? offset + value.Length : offset + count);
-			}
 			if (oldLineCount != LineCount)
 				this.CommitLineToEndUpdate (this.OffsetToLocation (offset).Line);
 		}

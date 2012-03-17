@@ -25,6 +25,7 @@ FILES =  \
 	Mono.TextEditor.Highlighting/ColorSheme.cs \
 	Mono.TextEditor.Highlighting/DefaultStyle.cs \
 	Mono.TextEditor.Highlighting/HighlightingPartitioner.cs \
+	Mono.TextEditor.Highlighting/ISyntaxMode.cs \
 	Mono.TextEditor.Highlighting/IXmlProvider.cs \
 	Mono.TextEditor.Highlighting/JaySyntaxMode.cs \
 	Mono.TextEditor.Highlighting/Keywords.cs \

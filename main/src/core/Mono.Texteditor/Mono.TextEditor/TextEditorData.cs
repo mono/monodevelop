@@ -29,6 +29,7 @@ using System.Text;
 using Gtk;
 using System.IO;
 using System.Diagnostics;
+using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -209,10 +210,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		Mono.TextEditor.Highlighting.ColorSheme colorStyle;
-		public Mono.TextEditor.Highlighting.ColorSheme ColorStyle {
+		ColorSheme colorStyle;
+		public ColorSheme ColorStyle {
 			get {
-				return colorStyle ?? Mono.TextEditor.Highlighting.ColorSheme.Empty;
+				return colorStyle ?? ColorSheme.Empty;
 			}
 			set {
 				colorStyle = value;

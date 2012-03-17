@@ -846,7 +846,7 @@ namespace Mono.TextEditor
 		}
 
 		Dictionary<LineSegment, ChunkDescriptor> chunkDict = new Dictionary<LineSegment, ChunkDescriptor> ();
-		IEnumerable<Chunk> GetCachedChunks (SyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorSheme style, LineSegment line, int offset, int length)
+		IEnumerable<Chunk> GetCachedChunks (ISyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorSheme style, LineSegment line, int offset, int length)
 		{
 			ChunkDescriptor descriptor;
 			if (chunkDict.TryGetValue (line, out descriptor)) {
@@ -1030,12 +1030,12 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public LayoutWrapper CreateLinePartLayout (SyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
+		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			return CreateLinePartLayout (mode, line, -1, offset, length, selectionStart, selectionEnd);
 		}
 
-		public LayoutWrapper CreateLinePartLayout (SyntaxMode mode, LineSegment line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
+		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, LineSegment line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			return GetCachedLayout (line, offset, length, selectionStart, selectionEnd, delegate(LayoutWrapper wrapper) {
 				if (logicalRulerColumn < 0)
@@ -1269,7 +1269,7 @@ namespace Mono.TextEditor
 
 		public LayoutWrapper GetLayout (LineSegment line)
 		{
-			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
+			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			return CreateLinePartLayout (mode, line, line.Offset, line.EditableLength, -1, -1);
 		}
 
@@ -1290,7 +1290,7 @@ namespace Mono.TextEditor
 
 		void DrawLinePart (Cairo.Context cr, LineSegment line, int lineNumber, int logicalRulerColumn, int offset, int length, ref double pangoPosition, ref bool isSelectionDrawn, double y, double maxX)
 		{
-			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
+			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			int selectionStart;
 			int selectionEnd;
 			if (this.HideSelection) {
@@ -2344,7 +2344,7 @@ namespace Mono.TextEditor
 				if (xp < 0)
 					return new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
 				int column = DocumentLocation.MinColumn;
-				SyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : new SyntaxMode (margin.Document);
+				ISyntaxMode mode = margin.Document.SyntaxMode != null && margin.textEditor.Options.EnableSyntaxHighlighting ? margin.Document.SyntaxMode : new SyntaxMode (margin.Document);
 				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
 				bool done = false;
 				Pango.Layout measueLayout = null;
@@ -2456,7 +2456,7 @@ namespace Mono.TextEditor
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 			int lineOffset = line.Offset;
 			StringBuilder textBuilder = new StringBuilder ();
-			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
+			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			var startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, lineOffset, line.EditableLength);
 			foreach (Chunk chunk in startChunk) {
 				try {

@@ -76,13 +76,11 @@ namespace MonoDevelop.SourceEditor
 				if (data.Caret.Offset > 0) {
 					var line = data.GetLine (data.Caret.Line);
 					var stack = line.StartSpan.Clone();
-					Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset - 1);
 					if (stack.Any (s => s.Color == "string.other")) {
 						DeleteActions.Backspace (data);
 						return;
 					}
 					stack = line.StartSpan.Clone();
-					Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (data.Document, data.Document.SyntaxMode, data.Document.SyntaxMode, stack, line.Offset, data.Caret.Offset);
 					if (stack.Any (s => s.Color == "string.other")) {
 						DeleteActions.Backspace (data);
 						return;

@@ -2296,7 +2296,7 @@ namespace Mono.TextEditor
 			{
 				LineSegment line = Editor.Document.GetLineByOffset (Result.Offset);
 				int lineNr = Editor.Document.OffsetToLineNumber (Result.Offset);
-				SyntaxMode mode = Editor.Document.SyntaxMode != null && Editor.Options.EnableSyntaxHighlighting ? Editor.Document.SyntaxMode : new SyntaxMode (Editor.Document);
+				ISyntaxMode mode = Editor.Document.SyntaxMode != null && Editor.Options.EnableSyntaxHighlighting ? Editor.Document.SyntaxMode : new SyntaxMode (Editor.Document);
 				int logicalRulerColumn = line.GetLogicalColumn (Editor.GetTextEditorData (), Editor.Options.RulerColumn);
 				var lineLayout = Editor.textViewMargin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, line.EditableLength, -1, -1);
 				if (lineLayout == null)

@@ -75,7 +75,7 @@ namespace Mono.TextEditor
 				}
 			}
 			TextViewMargin textViewMargin = editor.TextViewMargin;
-			SyntaxMode mode = Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
+			ISyntaxMode mode = Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			
 			//	Gdk.Rectangle lineArea = new Gdk.Rectangle (textViewMargin.XOffset, y, editor.Allocation.Width - textViewMargin.XOffset, editor.LineHeight);
 			//	Gdk.GC gc = new Gdk.GC (drawable);

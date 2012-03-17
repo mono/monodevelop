@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using Mono.TextEditor.Highlighting;
 
 
 namespace Mono.TextEditor
@@ -40,8 +41,11 @@ namespace Mono.TextEditor
 	{
 		static List<string> GetList (TextDocument document, string name)
 		{
-			if (document.SyntaxMode.Properties.ContainsKey(name)) 
-				return document.SyntaxMode.Properties[name];
+			var mode = document.SyntaxMode as SyntaxMode;
+			if (mode != null) {
+				if (mode.Properties.ContainsKey(name)) 
+					return mode.Properties[name];
+			}
 			return new List<string> ();
 		}
 		
