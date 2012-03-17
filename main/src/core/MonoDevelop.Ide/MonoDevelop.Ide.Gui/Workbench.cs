@@ -492,14 +492,17 @@ namespace MonoDevelop.Ide.Gui
 			ShowGlobalPreferencesDialog (parentWindow, null);
 		}
 		
+		static Properties properties = ((Properties) PropertyService.Get (
+			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
+			new Properties()));
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId)
 		{
-/*			if (parentWindow == null)
+			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;
 
 			OptionsDialog ops = new OptionsDialog (
 				parentWindow,
-				TextEditorProperties.Properties,
+				properties,
 				"/MonoDevelop/Ide/GlobalOptionsDialog");
 
 			try {
@@ -512,7 +515,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			} finally {
 				ops.Destroy ();
-			}*/
+			}
 		}
 		
 		public void ShowDefaultPoliciesDialog (Gtk.Window parentWindow)

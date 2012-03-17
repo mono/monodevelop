@@ -25,7 +25,8 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Core; 
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Content; 
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -63,8 +64,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableParameterInsightCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableParameterInsight;
 			this.autoCodeCompletionCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
 			this.antiAliasingCheckbutton.Active = DefaultSourceEditorOptions.Instance.UseAntiAliasing;
-			this.hideObsoleteItemsCheckbutton.Active = DefaultSourceEditorOptions.Instance.HideObsoleteItems;
-			
+//			this.hideObsoleteItemsCheckbutton.Active = CompletionTextEditorExtension.HideObsoleteItems;
+			this.hideObsoleteItemsCheckbutton.Hide ();
 			HandleCodeCompletioncheckbuttonToggled (this, EventArgs.Empty);
 			return this;
 		}
@@ -80,7 +81,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.EnableParameterInsight = this.enableParameterInsightCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.UseAntiAliasing = this.antiAliasingCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.LineEndingConversion = (LineEndingConversion)this.comboboxLineEndings.Active;
-			DefaultSourceEditorOptions.Instance.HideObsoleteItems = this.hideObsoleteItemsCheckbutton.Active;
+//			CompletionTextEditorExtension.HideObsoleteItems.Set (this.hideObsoleteItemsCheckbutton.Active);
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

@@ -188,15 +188,6 @@ namespace MonoDevelop.SourceEditor
 				case "OnTheFlyFormatting":
 					this.OnTheFlyFormatting = (bool)args.NewValue;
 					break;
-				case "EnableAutoCodeCompletion":
-					this.EnableAutoCodeCompletion = (bool)args.NewValue;
-					break;
-				case "CompleteWithSpaceOrPunctuation":
-					this.CompleteWithSpaceOrPunctuation = (bool)args.NewValue;
-					break;
-				case "HideObsoleteItems":
-					this.HideObsoleteItems = (bool)args.NewValue;
-					break;
 				case "ControlLeftRightMode":
 					this.ControlLeftRightMode = (ControlLeftRightMode)args.NewValue;
 					break;
@@ -237,9 +228,6 @@ namespace MonoDevelop.SourceEditor
 			this.defaultCommentFolding = PropertyService.Get ("DefaultCommentFolding", true);
 			this.useViModes = PropertyService.Get ("UseViModes", false);
 			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", true);
-			this.enableAutoCodeCompletion = PropertyService.Get ("EnableAutoCodeCompletion", true);
-			this.completeWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
-			this.hideObsoleteItems = PropertyService.Get ("HideObsoleteItems", false);
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
@@ -250,44 +238,14 @@ namespace MonoDevelop.SourceEditor
 		
 		#region new options
 		
-		
-		bool enableAutoCodeCompletion;
 		public bool EnableAutoCodeCompletion {
-			get {
-				return enableAutoCodeCompletion;
-			}
-			set {
-				if (value != enableAutoCodeCompletion) {
-					enableAutoCodeCompletion = value;
-					PropertyService.Set ("EnableAutoCodeCompletion", value);
-				}
-			}
+			get { return CompletionTextEditorExtension.EnableAutoCodeCompletion; }
+			set { CompletionTextEditorExtension.EnableAutoCodeCompletion.Set (value); }
 		}
 		
-		bool completeWithSpaceOrPunctuation;
 		public bool CompleteWithSpaceOrPunctuation {
-			get {
-				return completeWithSpaceOrPunctuation;
-			}
-			set {
-				if (value != completeWithSpaceOrPunctuation) {
-					completeWithSpaceOrPunctuation = value;
-					PropertyService.Set ("CompleteWithSpaceOrPunctuation", value);
-				}
-			}
-		}
-		
-		bool hideObsoleteItems;
-		public bool HideObsoleteItems {
-			get {
-				return hideObsoleteItems;
-			}
-			set {
-				if (value != hideObsoleteItems) {
-					hideObsoleteItems = value;
-					PropertyService.Set ("HideObsoleteItems", value);
-				}
-			}
+			get { return CompletionTextEditorExtension.CompleteWithSpaceOrPunctuation; }
+			set { CompletionTextEditorExtension.CompleteWithSpaceOrPunctuation.Set (value); }
 		}
 		
 		bool defaultRegionsFolding;

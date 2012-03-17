@@ -52,7 +52,7 @@ namespace MonoDevelop.Core
 				Set (value);
 			}
 		}
-		
+
 		/// <summary>
 		/// Set the property to the specified value.
 		/// </summary>
@@ -86,9 +86,15 @@ namespace MonoDevelop.Core
 
 	public static class PropertyService
 	{
+		public static PropertyWrapper<T> Wrap<T> (string property, T defaultValue)
+		{
+			return new PropertyWrapper<T> (property, defaultValue);
+		}
+
 		//force the static class to intialize
 		internal static void Initialize ()
 		{
+
 		}
 		readonly static string FileName = "MonoDevelopProperties.xml";
 		static Properties properties;
