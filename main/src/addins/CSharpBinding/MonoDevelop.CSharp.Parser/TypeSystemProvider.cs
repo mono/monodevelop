@@ -60,6 +60,7 @@ namespace MonoDevelop.CSharp.Parser
 			};
 			
 			var unit = parser.Parse (content, fileName);
+			unit.Freeze ();
 			var pf = unit.ToTypeSystem ();
 			try {
 				pf.LastWriteTime = System.IO.File.GetLastWriteTime (fileName);
