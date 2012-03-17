@@ -109,9 +109,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return EntityType.Operator; }
 		}
 		
+		OperatorType operatorType;
+		
 		public OperatorType OperatorType {
-			get;
-			set;
+			get { return operatorType; }
+			set {
+				ThrowIfFrozen();
+				operatorType = value;
+			}
 		}
 		
 		public CSharpTokenNode OperatorToken {

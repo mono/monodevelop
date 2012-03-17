@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class RefactoringContext
 	{
-		protected readonly CSharpAstResolver resolver;
+		readonly CSharpAstResolver resolver;
 		readonly CancellationToken cancellationToken;
 		
 		public RefactoringContext(CSharpAstResolver resolver, CancellationToken cancellationToken)

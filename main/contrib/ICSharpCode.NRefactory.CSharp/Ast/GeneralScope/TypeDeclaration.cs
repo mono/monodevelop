@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// class Name&lt;TypeParameters&gt; : BaseTypes where Constraints;
 	/// </summary>
-	public abstract class TypeDeclaration : EntityDeclaration
+	public class TypeDeclaration : EntityDeclaration
 	{
 		public override NodeType NodeType {
 			get { return NodeType.TypeDeclaration; }
@@ -51,13 +51,31 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return EntityType.TypeDefinition; }
 		}
 		
+		ClassType classType;
 
-		public abstract CSharpTokenNode TypeKeyword {
-			get;
+		public CSharpTokenNode TypeKeyword {
+			get {
+				switch (classType) {
+					case ClassType.Class:
+						return GetChildByRole(Roles.ClassKeyword);
+					case ClassType.Struct:
+						return GetChildByRole(Roles.StructKeyword);
+					case ClassType.Interface:
+						return GetChildByRole(Roles.InterfaceKeyword);
+					case ClassType.Enum:
+						return GetChildByRole(Roles.EnumKeyword);
+					default:
+						return CSharpTokenNode.Null;
+				}
+			}
 		}
-
-		public abstract ClassType ClassType {
-			get;
+		
+		public ClassType ClassType {
+			get { return classType; }
+			set {
+				ThrowIfFrozen();
+				classType = value;
+			}
 		}
 
 		public AstNodeCollection<TypeParameterDeclaration> TypeParameters {
@@ -88,7 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitTypeDeclaration (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitTypeDeclaration (this);
@@ -107,87 +125,5 @@ namespace ICSharpCode.NRefactory.CSharp
 				&& this.BaseTypes.DoMatch(o.BaseTypes, match) && this.Constraints.DoMatch(o.Constraints, match)
 				&& this.Members.DoMatch(o.Members, match);
 		}
-
-		protected TypeDeclaration ()
-		{
-		}
-
-		public static TypeDeclaration Create(ClassType type)
-		{
-			switch (type) {
-				case ICSharpCode.NRefactory.CSharp.ClassType.Class:
-					return new Class ();
-				case ICSharpCode.NRefactory.CSharp.ClassType.Struct:
-					return new Struct ();
-				case ICSharpCode.NRefactory.CSharp.ClassType.Interface:
-					return new Interface ();
-				case ICSharpCode.NRefactory.CSharp.ClassType.Enum:
-					return new Enum ();
-				default:
-					throw new System.ArgumentOutOfRangeException();
-			}
-		}
-
-		#region Concrete Types
-		public class Class : TypeDeclaration
-		{
-			public override ClassType ClassType {
-				get {
-					return ClassType.Class;
-				}
-			}
-
-			public override CSharpTokenNode TypeKeyword {
-				get {
-					return GetChildByRole(Roles.ClassKeyword);
-				}
-			}
-		}
-
-		public class Struct : TypeDeclaration
-		{
-			public override ClassType ClassType {
-				get {
-					return ClassType.Struct;
-				}
-			}
-
-			public override CSharpTokenNode TypeKeyword {
-				get {
-					return GetChildByRole(Roles.StructKeyword);
-				}
-			}
-		}
-
-		public class Interface : TypeDeclaration
-		{
-			public override ClassType ClassType {
-				get {
-					return ClassType.Interface;
-				}
-			}
-
-			public override CSharpTokenNode TypeKeyword {
-				get {
-					return GetChildByRole(Roles.InterfaceKeyword);
-				}
-			}
-		}
-
-		public class Enum : TypeDeclaration
-		{
-			public override ClassType ClassType {
-				get {
-					return ClassType.Enum;
-				}
-			}
-
-			public override CSharpTokenNode TypeKeyword {
-				get {
-					return GetChildByRole(Roles.EnumKeyword);
-				}
-			}
-		}
-		#endregion
 	}
 }

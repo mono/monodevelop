@@ -29,14 +29,16 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	
 	public class CSharpModifierToken : CSharpTokenNode
 	{
 		Modifiers modifier;
 		
 		public Modifiers Modifier {
 			get { return modifier; }
-			set { this.modifier = value; }
+			set { 
+				ThrowIfFrozen();
+				this.modifier = value; 
+			}
 		}
 		
 		protected override int TokenLength {

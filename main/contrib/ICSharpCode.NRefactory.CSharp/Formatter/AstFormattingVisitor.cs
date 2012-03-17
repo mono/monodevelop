@@ -181,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					// skip this change unless it depends on one that we already applied
 					continue;
 				}
-
+				
 				documentReplace(change.Offset + delta, change.RemovalLength, change.NewText);
 				delta += change.NewText.Length - change.RemovalLength;
 			}

@@ -248,6 +248,7 @@
     <Compile Include="Editor\StringBuilderDocument.cs" />
     <Compile Include="Editor\TextSourceVersionProvider.cs" />
     <Compile Include="Utils\CallbackOnDispose.cs" />
+    <Compile Include="Semantics\InitializedObjectResolveResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />

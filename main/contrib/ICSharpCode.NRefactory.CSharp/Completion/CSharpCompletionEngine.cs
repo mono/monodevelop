@@ -864,59 +864,65 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return wrapper.Result;
 		}
 		
-		void AddContextCompletion (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
+		void AddContextCompletion(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
 			if (state != null && !(node is AstType)) {
 				foreach (var variable in state.LocalVariables) {
-					if (variable.Region.IsInside (location.Line, location.Column - 1))
+					if (variable.Region.IsInside(location.Line, location.Column - 1)) {
 						continue;
-					wrapper.AddVariable (variable);
+					}
+					wrapper.AddVariable(variable);
 				}
 			}
 			
 			if (currentMember is IUnresolvedParameterizedMember && !(node is AstType)) {
-				var param = (IParameterizedMember)currentMember.CreateResolved (ctx);
+				var param = (IParameterizedMember)currentMember.CreateResolved(ctx);
 				foreach (var p in param.Parameters) {
-					wrapper.AddVariable (p);
+					wrapper.AddVariable(p);
 				}
 			}
 			
 			if (currentMember is IUnresolvedMethod) {
 				var method = (IUnresolvedMethod)currentMember;
 				foreach (var p in method.TypeParameters) {
-					wrapper.AddTypeParameter (p);
+					wrapper.AddTypeParameter(p);
 				}
 			}
 			
 			Predicate<IType> typePred = null;
-			if (IsAttributeContext (node)) {
-				var attribute = Compilation.FindType (KnownTypeCode.Attribute);
+			if (IsAttributeContext(node)) {
+				var attribute = Compilation.FindType(KnownTypeCode.Attribute);
 				typePred = t => {
-					return t.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (attribute));
+					return t.GetAllBaseTypeDefinitions().Any(bt => bt.Equals(attribute));
 				};
 			}
-			AddTypesAndNamespaces (wrapper, state, node, typePred);
+			AddTypesAndNamespaces(wrapper, state, node, typePred);
 			
-			wrapper.Result.Add (factory.CreateLiteralCompletionData ("global"));
+			wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));
 			
 			if (!(node is AstType)) {
 				if (currentMember != null) {
-					AddKeywords (wrapper, statementStartKeywords);
-					AddKeywords (wrapper, expressionLevelKeywords);
+					AddKeywords(wrapper, statementStartKeywords);
+					AddKeywords(wrapper, expressionLevelKeywords);
 				} else if (currentType != null) {
-					AddKeywords (wrapper, typeLevelKeywords);
+					AddKeywords(wrapper, typeLevelKeywords);
 				} else {
-					AddKeywords (wrapper, globalLevelKeywords);
+					AddKeywords(wrapper, globalLevelKeywords);
 				}
 				var prop = currentMember as IUnresolvedProperty;
-				if (prop != null && prop.Setter != null && prop.Setter.Region.IsInside (location))
-					wrapper.AddCustom ("value"); 
-				if (currentMember is IUnresolvedEvent)
-					wrapper.AddCustom ("value"); 
+				if (prop != null && prop.Setter != null && prop.Setter.Region.IsInside(location)) {
+					wrapper.AddCustom("value");
+				} 
+				if (currentMember is IUnresolvedEvent) {
+					wrapper.AddCustom("value");
+				} 
 				
-				if (IsInSwitchContext (node)) {
-					wrapper.AddCustom ("case"); 
+				if (IsInSwitchContext(node)) {
+					wrapper.AddCustom("case"); 
 				}
+			} else {
+				if (((AstType)node).Parent is ParameterDeclaration)
+					AddKeywords(wrapper, parameterTypePredecessorKeywords);
 			}
 			
 			AddKeywords (wrapper, primitiveTypesKeywords);
@@ -1529,11 +1535,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return e.Name + "`" + e.TypeParameters.Count;
 		}
 		
-		void AddVirtuals (Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
+		void AddVirtuals(Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
 		{
-			if (curType == null)
+			if (curType == null) {
 				return;
-			foreach (var m in curType.GetMethods (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.GetProperties ().Cast<IMember> ()).Reverse ()) {
+			}
+			foreach (var m in curType.GetMembers ().Reverse ()) {
 				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !m.IsOverridable)
 					continue;
 				// filter out the "Finalize" methods, because finalizers should be done with destructors.
@@ -2130,6 +2137,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
+			Print (member2);
 			return new ExpressionResult ((AstNode)expr, Unit);
 		}
 
@@ -2520,6 +2528,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"override", "readonly", "virtual", "volatile"
 		};
 		static string[] linqKeywords = new string[] { "from", "where", "select", "group", "into", "orderby", "join", "let", "in", "on", "equals", "by", "ascending", "descending" };
+		static string[] parameterTypePredecessorKeywords = new string[] { "out", "ref", "params" };
 		#endregion
 	}
 }

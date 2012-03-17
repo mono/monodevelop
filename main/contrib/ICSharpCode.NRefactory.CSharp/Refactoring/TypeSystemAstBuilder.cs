@@ -476,7 +476,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					break;
 			}
 			
-			var decl = TypeDeclaration.Create(classType);
+			var decl = new TypeDeclaration();
+			decl.ClassType = classType;
 			decl.Modifiers = modifiers;
 			decl.Name = typeDefinition.Name;
 			

@@ -96,6 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region IRelocationable implementation
 		void IRelocatable.SetStartLocation (TextLocation startLocation)
 		{
+			ThrowIfFrozen();
 			int lineDelta = startLocation.Line - this.startLocation.Line;
 			endLocation = new TextLocation (endLocation.Line + lineDelta, lineDelta != 0 ? endLocation.Column : endLocation.Column + startLocation.Column - this.startLocation.Column);
 			this.startLocation = startLocation;

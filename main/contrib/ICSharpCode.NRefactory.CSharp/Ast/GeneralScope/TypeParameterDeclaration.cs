@@ -42,8 +42,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (AttributeRole); }
 		}
 		
+		VarianceModifier variance;
+		
 		public VarianceModifier Variance {
-			get; set;
+			get { return variance; }
+			set { ThrowIfFrozen(); variance = value; }
 		}
 		
 		public CSharpTokenNode VarianceToken {

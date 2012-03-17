@@ -57,6 +57,7 @@ FILES =  \
 	Semantics/ErrorResolveResult.cs \
 	Semantics/ForEachResolveResult.cs \
 	Semantics/InvocationResolveResult.cs \
+	Semantics/InitializedObjectResolveResult.cs \
 	Semantics/LocalResolveResult.cs \
 	Semantics/MemberResolveResult.cs \
 	Semantics/NamespaceResolveResult.cs \

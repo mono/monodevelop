@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Roles.cs
 //  
 // Author:
@@ -30,7 +30,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public static class Roles
 	{
-			
+		public static readonly Role<AstNode> Root = AstNode.RootRole;
+		
 		// some pre defined constants for common roles
 		public static readonly Role<Identifier> Identifier = new Role<Identifier> ("Identifier", CSharp.Identifier.Null);
 		public static readonly Role<BlockStatement> Body = new Role<BlockStatement> ("Body", CSharp.BlockStatement.Null);

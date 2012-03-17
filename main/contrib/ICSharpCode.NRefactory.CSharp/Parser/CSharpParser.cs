@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpParser.cs
 //
 // Author:
@@ -483,7 +483,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit(Class c)
 			{
-				var newType = new TypeDeclaration.Class ();
+				var newType = new TypeDeclaration ();
+				newType.ClassType = ClassType.Class;
 				AddAttributeSection(newType, c);
 				
 				var location = LocationsBag.GetMemberLocation(c);
@@ -533,7 +534,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit(Struct s)
 			{
-				var newType = new TypeDeclaration.Struct();
+				var newType = new TypeDeclaration();
+				newType.ClassType = ClassType.Struct;
 				AddAttributeSection(newType, s);
 				var location = LocationsBag.GetMemberLocation(s);
 				AddModifiers(newType, location);
@@ -577,7 +579,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit(Interface i)
 			{
-				var newType = new TypeDeclaration.Interface ();
+				var newType = new TypeDeclaration();
+				newType.ClassType = ClassType.Interface;
 				AddAttributeSection(newType, i);
 				var location = LocationsBag.GetMemberLocation(i);
 				AddModifiers(newType, location);
@@ -667,7 +670,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit(Mono.CSharp.Enum e)
 			{
-				var newType = new TypeDeclaration.Enum ();
+				var newType = new TypeDeclaration();
+				newType.ClassType = ClassType.Enum;
 				AddAttributeSection(newType, e);
 				var location = LocationsBag.GetMemberLocation(e);
 				

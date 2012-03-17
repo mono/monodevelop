@@ -51,6 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region IRelocationable implementation
 		void IRelocatable.SetStartLocation (TextLocation startLocation)
 		{
+			ThrowIfFrozen();
 			this.Location = startLocation;
 		}
 		#endregion

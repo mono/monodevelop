@@ -37,7 +37,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		public readonly static TokenRole ArrowRole = new TokenRole ("=>");
 		public static readonly Role<AstNode> BodyRole = new Role<AstNode>("Body", AstNode.Null);
 		
-		public bool IsAsync { get; set; }
+		bool isAsync;
+		
+		public bool IsAsync {
+			get { return isAsync; }
+			set { ThrowIfFrozen(); isAsync = value; }
+		}
 		
 		public AstNodeCollection<ParameterDeclaration> Parameters {
 			get { return GetChildrenByRole (Roles.Parameter); }

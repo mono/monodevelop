@@ -272,8 +272,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return state;*/
 		}
-		#endregion
-
+				#endregion
+		
 		#region Basic parsing/resolving functions
 		static Stack<Tuple<char, int>> GetBracketStack (string memberText)
 		{

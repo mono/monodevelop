@@ -248,7 +248,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			#if DEBUG
 			CSharpResolver oldResolver;
 			if (resolverBeforeDict.TryGetValue(node, out oldResolver)) {
-				Debug.Assert(oldResolver.LocalVariables.Count() == resolver.LocalVariables.Count());
+				Debug.Assert(oldResolver.LocalVariables.SequenceEqual(resolver.LocalVariables));
 			}
 			#endif
 			
@@ -425,45 +425,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolveResultCache.TryGetValue(node, out result))
 				return result;
 			
-			bool needResolveParent = (node.NodeType == NodeType.Token || IsVar(node));
-			
-			AstNode nodeToResolve = node;
-			if (needResolveParent) {
-				nodeToResolve = node.Parent;
-				if (resolveResultCache.ContainsKey(nodeToResolve))
-					return null;
-			}
-			
 			AstNode parent;
-			CSharpResolver storedResolver = GetPreviouslyScannedContext(nodeToResolve, out parent);
+			CSharpResolver storedResolver = GetPreviouslyScannedContext(node, out parent);
 			ResetContext(
 				storedResolver,
 				delegate {
-					navigator = new NodeListResolveVisitorNavigator(node, nodeToResolve);
+					navigator = new NodeListResolveVisitorNavigator(node);
 					Debug.Assert(!resolverEnabled);
 					Scan(parent);
 					navigator = skipAllNavigator;
 				});
 			
 			MergeUndecidedLambdas();
-			if (resolveResultCache.TryGetValue(node, out result))
-				return result;
-			else
-				return null;
-		}
-		
-		/// <summary>
-		/// Gets the resolve result for the specified node.
-		/// If the node was not resolved by the navigator, this method will return null.
-		/// </summary>
-		public ResolveResult GetResolveResultIfResolved(AstNode node)
-		{
-			MergeUndecidedLambdas();
-			ResolveResult result;
-			if (resolveResultCache.TryGetValue(node, out result))
-				return result;
-			else
-				return null;
+			return resolveResultCache[node];
 		}
 		
 		CSharpResolver GetPreviouslyScannedContext(AstNode node, out AstNode parent)
@@ -530,8 +504,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (conversionDict.TryGetValue(expr, out result)) {
 				return result;
 			} else {
-				ResolveResult rr = GetResolveResultIfResolved(expr);
-				return new ConversionWithTargetType(Conversion.IdentityConversion, rr != null ? rr.Type : SpecialType.UnknownType);
+				ResolveResult rr = GetResolveResult(expr);
+				return new ConversionWithTargetType(Conversion.IdentityConversion, rr.Type);
 			}
 		}
 		#endregion
@@ -1301,21 +1275,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// NamedExpression is "identifier = Expression" in object initializers and attributes
 		ResolveResult IAstVisitor<ResolveResult>.VisitNamedExpression(NamedExpression namedExpression)
 		{
+			// The parent expression takes care of handling NamedExpression
+			// by calling HandleObjectInitializer() or HandleNamedExpression().
+			// This method gets called only when scanning, or when the named expression is used
+			// in an invalid context.
+			ScanChildren(namedExpression);
+			return null;
+		}
+		
+		void HandleNamedExpression(NamedExpression namedExpression, List<ResolveResult> initializerStatements)
+		{
+			StoreCurrentState(namedExpression);
 			Expression rhs = namedExpression.Expression;
+			ResolveResult lhsRR = resolver.ResolveIdentifierInObjectInitializer(namedExpression.Identifier);
 			if (rhs is ArrayInitializerExpression) {
-				ResolveResult result = resolver.ResolveIdentifierInObjectInitializer(namedExpression.Identifier);
-				HandleObjectInitializer(result.Type, (ArrayInitializerExpression)rhs);
-				return result;
+				HandleObjectInitializer(lhsRR, (ArrayInitializerExpression)rhs, initializerStatements);
 			} else {
-				if (resolverEnabled) {
-					ResolveResult result = resolver.ResolveIdentifierInObjectInitializer(namedExpression.Identifier);
-					ResolveAndProcessConversion(rhs, result.Type);
-					return result;
-				} else {
-					ScanChildren(namedExpression);
-					return null;
+				var rhsRR = Resolve(rhs);
+				var rr = resolver.ResolveAssignment(AssignmentOperatorType.Assign, lhsRR, rhsRR) as OperatorResolveResult;
+				if (rr != null) {
+					ProcessConversionResult(rhs, rr.Operands[1] as ConversionResolveResult);
+					initializerStatements.Add(rr);
 				}
 			}
+			StoreResult(namedExpression, lhsRR);
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression)
@@ -1331,15 +1314,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return typeResolveResult;
 				IType type = typeResolveResult.Type;
 				
+				List<ResolveResult> initializerStatements = null;
 				var initializer = objectCreateExpression.Initializer;
 				if (!initializer.IsNull) {
-					HandleObjectInitializer(type, initializer);
+					initializerStatements = new List<ResolveResult>();
+					HandleObjectInitializer(new InitializedObjectResolveResult(type), initializer, initializerStatements);
 				}
 				
 				string[] argumentNames;
 				ResolveResult[] arguments = GetArguments(objectCreateExpression.Arguments, out argumentNames);
 				
-				ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames);
+				ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames, false, initializerStatements);
 				if (arguments.Length == 1 && rr.Type.Kind == TypeKind.Delegate) {
 					// process conversion in case it's a delegate creation
 					ProcessConversionResult(objectCreateExpression.Arguments.Single(), rr as ConversionResolveResult);
@@ -1358,10 +1343,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		void HandleObjectInitializer(IType type, ArrayInitializerExpression initializer)
+		void HandleObjectInitializer(ResolveResult initializedObject, ArrayInitializerExpression initializer, List<ResolveResult> initializerStatements)
 		{
 			StoreCurrentState(initializer);
-			resolver = resolver.PushInitializerType(type);
+			resolver = resolver.PushObjectInitializer(initializedObject);
 			foreach (Expression element in initializer.Elements) {
 				ArrayInitializerExpression aie = element as ArrayInitializerExpression;
 				if (aie != null) {
@@ -1373,24 +1358,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						addArguments[i++] = Resolve(addArgument);
 					}
 					MemberLookup memberLookup = resolver.CreateMemberLookup();
-					ResolveResult targetResult = new ResolveResult(type);
-					var addRR = memberLookup.Lookup(targetResult, "Add", EmptyList<IType>.Instance, true);
+					var addRR = memberLookup.Lookup(initializedObject, "Add", EmptyList<IType>.Instance, true);
 					var mgrr = addRR as MethodGroupResolveResult;
 					if (mgrr != null) {
 						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Compilation, addArguments, null, false, false, resolver.conversions);
-						var invocationRR = or.CreateResolveResult(targetResult);
+						var invocationRR = or.CreateResolveResult(initializedObject);
 						StoreResult(aie, invocationRR);
 						ProcessConversionsInInvocation(null, aie.Elements, invocationRR);
+						initializerStatements.Add(invocationRR);
 					} else {
 						StoreResult(aie, addRR);
 					}
+				} else if (element is NamedExpression) {
+					HandleNamedExpression((NamedExpression)element, initializerStatements);
 				} else {
-					// assignment in object initializer (NamedExpression),
-					// or some unknown kind of expression
+					// unknown kind of expression
 					Scan(element);
 				}
 			}
-			resolver = resolver.PopInitializerType();
+			resolver = resolver.PopObjectInitializer();
 			StoreResult(initializer, voidResult);
 		}
 		
@@ -1917,6 +1903,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Implicitly typed
+		// Implicitly-typed lambdas are really complex, as the lambda depends on the target type (the delegate to which
+		// the lambda is converted), but figuring out the target type might involve overload resolution (for method
+		// calls in which the lambda is used as argument), which requires knowledge about the lamdba.
+		// 
+		// The implementation in NRefactory works like this:
+		// 1. The lambda resolves to a ImplicitlyTypedLambda (derived from LambdaResolveResult).
+		//     The lambda body is not resolved yet (one of the few places where ResolveVisitor
+		//     deviates from the usual depth-first AST traversal).
+		// 2. The parent statement is resolved as usual. This might require analyzing the lambda in detail (for example
+		//    as part of overload resolution). Such analysis happens using LambdaResolveResult.IsValid, where the caller
+		//    (i.e. the overload resolution algorithm) supplies the parameter types to the lambda body. For every IsValid()
+		//    call, a nested LambdaTypeHypothesis is constructed for analyzing the lambda using the supplied type assignment.
+		//    Multiple IsValid() calls may use several LambdaTypeHypothesis instances, one for each set of parameter types.
+		// 3. When the resolver reports the conversions that occurred as part of the parent statement (as with any
+		//    conversions), the results from the LambdaTypeHypothesis corresponding to the actually chosen
+		//    conversion are merged into the main resolver.
+		// 4. LambdaResolveResult.Body is set to the main resolve result from the chosen nested resolver. I think this
+		//    is the only place where NRefactory is mutating a ResolveResult (normally all resolve results are immutable).
+		//    As this step is guaranteed to occur before the resolver returns the LamdbaResolveResult to user code, the
+		//    mutation shouldn't cause any problems.
 		sealed class ImplicitlyTypedLambda : LambdaBase
 		{
 			readonly LambdaExpression lambda;
@@ -1925,7 +1931,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			readonly CSharpResolver storedContext;
 			readonly CSharpParsedFile parsedFile;
 			readonly List<LambdaTypeHypothesis> hypotheses = new List<LambdaTypeHypothesis>();
-			readonly List<IParameter> parameters = new List<IParameter>();
+			internal IList<IParameter> parameters = new List<IParameter>();
 			
 			internal LambdaTypeHypothesis winningHypothesis;
 			internal ResolveResult bodyResult;
@@ -1979,7 +1985,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				: this(parentVisitor)
 			{
 				this.selectClause = selectClause;
-				this.parameters.AddRange(parameters);
+				foreach (IParameter p in parameters)
+					this.parameters.Add(p);
 				
 				RegisterUndecidedLambda();
 			}
@@ -2104,7 +2111,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		sealed class LambdaTypeHypothesis : IResolveVisitorNavigator
 		{
 			readonly ImplicitlyTypedLambda lambda;
-			internal readonly IParameter[] lambdaParameters;
+			readonly IParameter[] lambdaParameters;
 			internal readonly IType[] parameterTypes;
 			readonly ResolveVisitor visitor;
 			
@@ -2198,6 +2205,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					throw new InvalidOperationException("Trying to merge conflicting hypotheses");
 				
 				lambda.winningHypothesis = this;
+				lambda.parameters = lambdaParameters; // replace untyped parameters with typed parameters
 				if (lambda.BodyExpression is Expression && returnValues.Count == 1) {
 					lambda.bodyResult = returnValues[0];
 				}
@@ -2515,7 +2523,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			resolver = resolver.PushBlock();
 			IVariable v;
-			if (IsVar(foreachStatement.VariableType)) {
+			if (isImplicitlyTypedVariable) {
 				StoreCurrentState(foreachStatement.VariableType);
 				StoreResult(foreachStatement.VariableType, new TypeResolveResult(elementType));
 				v = MakeVariable(elementType, foreachStatement.VariableNameToken);
@@ -2931,18 +2939,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// Separate arguments into ctor arguments and non-ctor arguments:
 			var constructorArguments = attribute.Arguments.Where(a => !(a is NamedExpression));
-			var nonConstructorArguments = attribute.Arguments.Where(a => a is NamedExpression);
+			var nonConstructorArguments = attribute.Arguments.OfType<NamedExpression>();
 			
 			// Scan the non-constructor arguments
-			resolver = resolver.PushInitializerType(type);
+			resolver = resolver.PushObjectInitializer(new InitializedObjectResolveResult(type));
+			List<ResolveResult> initializerStatements = new List<ResolveResult>();
 			foreach (var arg in nonConstructorArguments)
-				Scan(arg);
-			resolver = resolver.PopInitializerType();
+				HandleNamedExpression(arg, initializerStatements);
+			resolver = resolver.PopObjectInitializer();
 			
 			// Resolve the ctor arguments and find the matching ctor overload
 			string[] argumentNames;
 			ResolveResult[] arguments = GetArguments(constructorArguments, out argumentNames);
-			ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames);
+			ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames, false, initializerStatements);
 			ProcessConversionsInInvocation(null, constructorArguments, rr as CSharpInvocationResolveResult);
 			return rr;
 		}
@@ -3391,9 +3400,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				implicitlyTypedLambda.EnforceMerge(this);
-				if (implicitlyTypedLambda.winningHypothesis.parameterTypes.Length == 2) {
+				if (implicitlyTypedLambda.Parameters.Count == 2) {
 					StoreCurrentState(queryJoinClause.IntoIdentifierToken);
-					groupVariable = implicitlyTypedLambda.winningHypothesis.lambdaParameters[1];
+					groupVariable = implicitlyTypedLambda.Parameters[1];
 				} else {
 					groupVariable = null;
 				}

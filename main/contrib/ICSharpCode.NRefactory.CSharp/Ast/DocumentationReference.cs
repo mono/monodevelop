@@ -29,6 +29,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly Role<AstType> DeclaringTypeRole = new Role<AstType>("DeclaringType", AstType.Null);
 		public static readonly Role<AstType> ConversionOperatorReturnTypeRole = new Role<AstType>("ConversionOperatorReturnType", AstType.Null);
 		
+		EntityType entityType;
+		OperatorType operatorType;
+		bool hasParameterList;
+		
 		/// <summary>
 		/// Gets/Sets the entity type.
 		/// Possible values are:
@@ -37,18 +41,36 @@ namespace ICSharpCode.NRefactory.CSharp
 		///   <c>EntityType.TypeDefinition</c> for references to primitive types,
 		///   and <c>EntityType.None</c> for everything else.
 		/// </summary>
-		public EntityType EntityType { get; set; }
+		public EntityType EntityType {
+			get { return entityType; }
+			set {
+				ThrowIfFrozen();
+				entityType = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/Sets the operator type.
 		/// This property is only used when EntityType==Operator.
 		/// </summary>
-		public OperatorType OperatorType { get; set; }
+		public OperatorType OperatorType {
+			get { return operatorType; }
+			set {
+				ThrowIfFrozen();
+				operatorType = value;
+			}
+		}
 		
 		/// <summary>
 		/// Gets/Sets whether a parameter list was provided.
 		/// </summary>
-		public bool HasParameterList { get; set; }
+		public bool HasParameterList {
+			get { return hasParameterList; }
+			set {
+				ThrowIfFrozen();
+				hasParameterList = value;
+			}
+		}
 		
 		public override NodeType NodeType {
 			get { return NodeType.Unknown; }
@@ -113,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitDocumentationReference (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitDocumentationReference (this);

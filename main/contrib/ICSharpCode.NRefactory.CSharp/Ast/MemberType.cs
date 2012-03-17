@@ -37,7 +37,15 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public static readonly Role<AstType> TargetRole = new Role<AstType>("Target", AstType.Null);
 		
-		public bool IsDoubleColon { get; set; }
+		bool isDoubleColon;
+		
+		public bool IsDoubleColon {
+			get { return isDoubleColon; }
+			set {
+				ThrowIfFrozen();
+				isDoubleColon = value;
+			}
+		}
 		
 		public AstType Target {
 			get { return GetChildByRole(TargetRole); }
@@ -93,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitMemberType (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitMemberType (this);

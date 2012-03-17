@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
@@ -47,20 +49,30 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		object value;
+		
 		public object Value {
-			get;
-			set;
+			get { return this.value; }
+			set { 
+				ThrowIfFrozen(); 
+				this.value = value;
+			}
 		}
 		
 		public string LiteralValue {
-			get {
-				return literalValue;
+			get { return literalValue; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException();
+				ThrowIfFrozen();
+				literalValue = value;
 			}
 		}
 		
 		public PrimitiveExpression (object value)
 		{
 			this.Value = value;
+			this.literalValue = "";
 		}
 		
 		public PrimitiveExpression (object value, string literalValue)

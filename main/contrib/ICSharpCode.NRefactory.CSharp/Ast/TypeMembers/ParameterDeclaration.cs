@@ -56,9 +56,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (AttributeRole); }
 		}
 		
+		ParameterModifier parameterModifier;
+		
 		public ParameterModifier ParameterModifier {
-			get;
-			set;
+			get { return parameterModifier; }
+			set {
+				ThrowIfFrozen();
+				parameterModifier = value;
+			}
 		}
 		
 		public AstType Type {

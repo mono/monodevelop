@@ -37,11 +37,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		public readonly static TokenRole DelegateKeywordRole = new TokenRole ("delegate");
 		public readonly static TokenRole AsyncModifierRole = LambdaExpression.AsyncModifierRole;
 		
-		public bool IsAsync { get; set; }
+		bool isAsync;
+		
+		public bool IsAsync {
+			get { return isAsync; }
+			set { ThrowIfFrozen(); isAsync = value; }
+		}
 		
 		// used to tell the difference between delegate {} and delegate () {}
+		bool hasParameterList;
+		
 		public bool HasParameterList {
-			get; set;
+			get { return hasParameterList; }
+			set { ThrowIfFrozen(); hasParameterList = value; }
 		}
 		
 		public CSharpTokenNode DelegateToken {

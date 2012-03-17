@@ -1,6 +1,6 @@
 ﻿// 
 // Identifier.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void AcceptVisitor (IAstVisitor visitor)
 			{
 			}
-				
+			
 			public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 			{
 				return default (T);
@@ -68,9 +68,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		string name;
 		public string Name {
 			get { return this.name; }
-			set { 
+			set {
 				if (value == null)
 					throw new ArgumentNullException("value");
+				ThrowIfFrozen();
 				this.name = value;
 			}
 		}
@@ -80,25 +81,34 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				return startLocation;
 			}
-			
 		}
 		
-		public virtual bool IsVerbatim {
+		const uint verbatimBit = 1u << AstNodeFlagsUsedBits;
+		
+		public bool IsVerbatim {
 			get {
-				return false;
+				return (flags & verbatimBit) != 0;
+			}
+			set {
+				ThrowIfFrozen();
+				if (value)
+					flags |= verbatimBit;
+				else
+					flags &= ~verbatimBit;
 			}
 		}
 		
 		#region IRelocationable implementation
 		void IRelocatable.SetStartLocation (TextLocation startLocation)
 		{
+			ThrowIfFrozen();
 			this.startLocation = startLocation;
 		}
 		#endregion
 		
 		public override TextLocation EndLocation {
 			get {
-				return new TextLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+				return new TextLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length + (IsVerbatim ? 1 : 0));
 			}
 		}
 		
@@ -125,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (string.IsNullOrEmpty(name))
 				return Identifier.Null;
 			if (name[0] == '@')
-				return new VerbatimIdentifier(name.Substring (1), location);
+				return new Identifier (name.Substring (1), location) { IsVerbatim = true };
 			else
 				return new Identifier (name, location);
 		}
@@ -136,7 +146,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return Identifier.Null;
 			
 			if (isVerbatim)
-				return new VerbatimIdentifier (name, location);
+				return new Identifier (name, location) { IsVerbatim = true };
 			return new Identifier (name, location);
 		}
 		
@@ -144,7 +154,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitIdentifier (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitIdentifier (this);
@@ -159,25 +169,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			Identifier o = other as Identifier;
 			return o != null && !o.IsNull && MatchString(this.Name, o.Name);
-		}
-
-		class VerbatimIdentifier : Identifier
-		{
-			public override TextLocation EndLocation {
-				get {
-					return new TextLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length + 1); // @"..."
-				}
-			}
-			
-			public override bool IsVerbatim {
-				get {
-					return true;
-				}
-			}
-			
-			public VerbatimIdentifier(string name, TextLocation location) : base (name, location)
-			{
-			}
 		}
 	}
 }

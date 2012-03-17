@@ -34,8 +34,18 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class PrimitiveType : AstType, IRelocatable
 	{
-		public string Keyword { get; set; }
-		public TextLocation Location { get; set; }
+		TextLocation location;
+		string keyword = string.Empty;
+		
+		public string Keyword {
+			get { return keyword; }
+			set { 
+				if (value == null)
+					throw new ArgumentNullException();
+				ThrowIfFrozen();
+				keyword = value; 
+			}
+		}
 		
 		public KnownTypeCode KnownTypeCode {
 			get { return GetTypeCodeForPrimitiveType(this.Keyword); }
@@ -53,17 +63,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		public PrimitiveType(string keyword, TextLocation location)
 		{
 			this.Keyword = keyword;
-			this.Location = location;
+			this.location = location;
 		}
 		
 		public override TextLocation StartLocation {
 			get {
-				return Location;
+				return location;
 			}
 		}
 		public override TextLocation EndLocation {
 			get {
-				return new TextLocation (Location.Line, Location.Column + (Keyword != null ? Keyword.Length : 0));
+				return new TextLocation (location.Line, location.Column + keyword.Length);
 			}
 		}
 		
@@ -71,7 +81,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region IRelocationable implementation
 		void IRelocatable.SetStartLocation (TextLocation startLocation)
 		{
-			this.Location = startLocation;
+			ThrowIfFrozen();
+			this.location = startLocation;
 		}
 		#endregion
 		
@@ -98,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override string ToString()
 		{
-			return Keyword ?? base.ToString();
+			return Keyword;
 		}
 		
 		public override ITypeReference ToTypeReference(SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
