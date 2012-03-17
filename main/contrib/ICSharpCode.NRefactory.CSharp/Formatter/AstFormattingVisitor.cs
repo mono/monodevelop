@@ -129,12 +129,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		public void ApplyChanges()
 		{
-			ApplyChanges(0, document.TextLength, document.Replace, (o, l, v) => document.GetText(o, l) != v);
+			ApplyChanges(0, document.TextLength, document.Replace, (o, l, v) => document.GetText(o, l) == v);
 		}
 		
 		public void ApplyChanges(int startOffset, int length)
 		{
-			ApplyChanges(startOffset, length, document.Replace, (o, l, v) => document.GetText(o, l) != v);
+			ApplyChanges(startOffset, length, document.Replace, (o, l, v) => document.GetText(o, l) == v);
 		}
 		
 		/// <summary>
