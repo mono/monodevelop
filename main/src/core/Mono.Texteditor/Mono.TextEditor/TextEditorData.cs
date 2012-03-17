@@ -224,7 +224,7 @@ namespace Mono.TextEditor
 			return document.SyntaxMode.GetMarkup (Options, ColorStyle, offset, length, removeIndent);
 		}
 
-		public Chunk GetChunks (LineSegment line, int offset, int length)
+		public IEnumerable<Chunk> GetChunks (LineSegment line, int offset, int length)
 		{
 			return document.SyntaxMode.GetChunks (ColorStyle, line, offset, length);
 		}		

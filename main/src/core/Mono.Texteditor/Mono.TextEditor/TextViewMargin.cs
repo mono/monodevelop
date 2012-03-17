@@ -835,18 +835,18 @@ namespace Mono.TextEditor
 
 		class ChunkDescriptor : LineDescriptor
 		{
-			public Chunk Chunk {
+			public Chunk[] Chunk {
 				get;
 				private set;
 			}
-			public ChunkDescriptor (LineSegment line, int offset, int length, Chunk chunk) : base(line, offset, length)
+			public ChunkDescriptor (LineSegment line, int offset, int length, Chunk[] chunk) : base(line, offset, length)
 			{
 				this.Chunk = chunk;
 			}
 		}
 
 		Dictionary<LineSegment, ChunkDescriptor> chunkDict = new Dictionary<LineSegment, ChunkDescriptor> ();
-		Chunk GetCachedChunks (SyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorSheme style, LineSegment line, int offset, int length)
+		IEnumerable<Chunk> GetCachedChunks (SyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorSheme style, LineSegment line, int offset, int length)
 		{
 			ChunkDescriptor descriptor;
 			if (chunkDict.TryGetValue (line, out descriptor)) {
@@ -856,10 +856,10 @@ namespace Mono.TextEditor
 				chunkDict.Remove (line);
 			}
 
-			Chunk chunk = mode.GetChunks (style, line, offset, length);
-			descriptor = new ChunkDescriptor (line, offset, length, chunk);
+			Chunk[] chunks = mode.GetChunks (style, line, offset, length).ToArray ();
+			descriptor = new ChunkDescriptor (line, offset, length, chunks);
 			chunkDict[line] = descriptor;
-			return chunk;
+			return chunks;
 		}
 
 		public void ForceInvalidateLine (int lineNr)
@@ -1045,8 +1045,8 @@ namespace Mono.TextEditor
 				wrapper.Layout.FontDescription = textEditor.Options.Font;
 				wrapper.Layout.Tabs = tabArray;
 				StringBuilder textBuilder = new StringBuilder ();
-				Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
-				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
+				var chunks = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
+				foreach (var chunk in chunks) {
 					try {
 						textBuilder.Append (Document.GetTextAt (chunk));
 					} catch {
@@ -1069,7 +1069,7 @@ namespace Mono.TextEditor
 				uint curChunkIndex = 0, byteChunkIndex = 0;
 				
 				uint oldEndIndex = 0;
-				for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
+				foreach (Chunk chunk in chunks) {
 					ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
 					spanStack = chunk.SpanStack ?? spanStack;
 					foreach (TextMarker marker in line.Markers)
@@ -2457,8 +2457,8 @@ namespace Mono.TextEditor
 			int lineOffset = line.Offset;
 			StringBuilder textBuilder = new StringBuilder ();
 			SyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
-			Chunk startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, lineOffset, line.EditableLength);
-			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
+			var startChunk = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, lineOffset, line.EditableLength);
+			foreach (Chunk chunk in startChunk) {
 				try {
 					textBuilder.Append (Document.GetTextAt (chunk));
 				} catch (Exception e) {
@@ -2489,7 +2489,7 @@ namespace Mono.TextEditor
 			uint curChunkIndex = 0, byteChunkIndex = 0;
 			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
 			uint oldEndIndex = 0;
-			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
+			foreach (Chunk chunk in startChunk) {
 				ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
 
 				foreach (TextMarker marker in line.Markers)

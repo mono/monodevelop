@@ -142,7 +142,7 @@ namespace Mono.TextEditor
 
 				foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
 					bool appendSpace = false;
-					for (Chunk chunk = mode.GetChunks (style, line, line.Offset, line.EditableLength); chunk != null; chunk = chunk.Next) {
+					foreach (Chunk chunk in mode.GetChunks (style, line, line.Offset, line.EditableLength)) {
 						int start = System.Math.Max (selection.Offset, chunk.Offset);
 						int end = System.Math.Min (chunk.EndOffset, selection.EndOffset);
 						ChunkStyle chunkStyle = style.GetChunkStyle (chunk);

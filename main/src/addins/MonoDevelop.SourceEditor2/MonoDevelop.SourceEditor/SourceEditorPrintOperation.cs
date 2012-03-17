@@ -121,8 +121,8 @@ namespace MonoDevelop.SourceEditor
 						continue;
 					}
 					
-					Chunk startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.Length);
-					for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
+					var startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.Length);
+					foreach (Chunk chunk in startChunk) {
 						ChunkStyle chunkStyle = chunk != null ? style.GetChunkStyle (chunk) : null;
 						string text = doc.GetTextAt (chunk);
 						text = text.Replace ("\t", new string (' ', settings.TabSize));

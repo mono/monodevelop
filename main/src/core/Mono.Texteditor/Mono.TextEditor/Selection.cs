@@ -94,9 +94,9 @@ namespace Mono.TextEditor
 			LineSegment line = data.GetLine (loc.Line);
 			if (line == null)
 				return 0;
-			Chunk startChunk = data.GetChunks (line, line.Offset, line.Length);
+			var startChunk = data.GetChunks (line, line.Offset, line.Length);
 			int col = 1;
-			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
+			foreach (Chunk chunk in startChunk) {
 				if (col <= loc.Column && loc.Column < col + chunk.Length)
 					return chunk.Offset - col + loc.Column;
 				col += chunk.Length;

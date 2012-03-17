@@ -97,7 +97,7 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 
-		public virtual Chunk GetChunks (ColorSheme style, LineSegment line, int offset, int length)
+		public virtual IEnumerable<Chunk> GetChunks (ColorSheme style, LineSegment line, int offset, int length)
 		{
 			SpanParser spanParser = CreateSpanParser (line, null);
 			ChunkParser chunkParser = CreateChunkParser (spanParser, style, line);
@@ -131,8 +131,10 @@ namespace Mono.TextEditor.Highlighting
 					}
 				}
 			}
-
-			return result;
+			while (result != null) {
+				yield return result;
+				result = result.Next;
+			}
 		}
 
 		public virtual string GetTextWithoutMarkup (ColorSheme style, int offset, int length)
@@ -156,7 +158,7 @@ namespace Mono.TextEditor.Highlighting
 				LineSegment line = doc.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
 				Stack<ChunkStyle> styleStack = new Stack<ChunkStyle> ();
-				for (var chunk = GetChunks (style, line, curOffset, toOffset - curOffset); chunk != null; chunk = chunk.Next) {
+				foreach (var chunk in GetChunks (style, line, curOffset, toOffset - curOffset)) {
 
 					ChunkStyle chunkStyle = style.GetChunkStyle (chunk);
 					bool setBold = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold) ||
