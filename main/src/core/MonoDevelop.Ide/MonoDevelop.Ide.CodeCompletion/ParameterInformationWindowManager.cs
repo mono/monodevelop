@@ -203,7 +203,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					MethodData md = methods [methods.Count - 1];
 					int cparam = ext != null ? ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
 					Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
-					Gtk.Requisition reqSize = window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
+					Gtk.Requisition reqSize = args.Requisition;
+					window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
 					X = md.CompletionContext.TriggerXCoord;
 					if (CompletionWindowManager.IsVisible) {
 						// place above
@@ -212,8 +213,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						// place below
 						Y = ctx.TriggerYCoord;
 					}
-					
-					
+
 					if (X + reqSize.Width > geometry.Right)
 						X = geometry.Right - reqSize.Width;
 			
@@ -241,6 +241,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					lastW = -1;
 					lastH = -1;
 				};
+				window.QueueResize ();
 				window.Show ();
 				wasAbove = false;
 			}

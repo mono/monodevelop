@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			EnableTransparencyControl = true;
 		}
 		
-		public Gtk.Requisition ShowParameterInfo (IParameterDataProvider provider, int overload, int _currentParam, int maxSize)
+		public void ShowParameterInfo (IParameterDataProvider provider, int overload, int _currentParam, int maxSize)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");
@@ -123,19 +123,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 				goPrev.Hide ();
 				goNext.Hide ();
 			}
-			Gtk.Requisition req = this.SizeRequest ();
 			
-			if (req.Width > maxSize) {
+			if (Allocation.Width > maxSize) {
 				for (int i = 1; i < numParams; i++) {
 					paramText [i] = Environment.NewLine + "\t" + paramText [i];
 				}
 				text = provider.GetHeading (overload, paramText, currentParam);
 				heading.Markup = text;
-				req = this.SizeRequest ();
 			}
-			
-			Resize (req.Width, req.Height);
-			return req;
+			QueueResize ();
 		}
 		
 		// The wrapping of Gtk.Label wasn't exactly what's needed in that case
