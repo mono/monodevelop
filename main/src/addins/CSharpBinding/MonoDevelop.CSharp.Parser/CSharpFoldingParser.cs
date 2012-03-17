@@ -106,7 +106,6 @@ namespace MonoDevelop.CSharp.Parser
 				char* ptr = startPtr;
 				char* beginPtr = ptr;
 				while (ptr < endPtr) {
-
 					switch (*ptr) {
 					case '#':
 						if (!inLineStart)
@@ -120,6 +119,7 @@ namespace MonoDevelop.CSharp.Parser
 							column += "region".Length;
 							SkipWhitespaces (ref ptr, endPtr, ref column);
 							regionStack.Push (Tuple.Create (ReadToEol (content, ref ptr, endPtr, ref line, ref column), regionLocation));
+							continue;
 						} else if (StartsIdentifier (ptr, endPtr, "endregion")) {
 							column++;
 							ptr += "endregion".Length;
@@ -132,6 +132,7 @@ namespace MonoDevelop.CSharp.Parser
 									FoldType.UserRegion,
 									true));
 							}
+							continue;
 						} else {
 							column++;
 						}

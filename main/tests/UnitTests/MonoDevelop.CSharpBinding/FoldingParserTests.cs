@@ -159,6 +159,29 @@ using System;");
 		}
 		
 		[Test]
+		public void TestTwoRegions ()
+		{
+			var doc = Test (@"class Test
+{
+	[#region TestRegion
+	void FooBar ()
+	{
+	}
+	#endregion]
+	
+	[#region TestRegion2
+	void FooBar2 ()
+	{
+	}
+	#endregion]
+}");
+			Assert.AreEqual (2, doc.AdditionalFolds.Count);
+			Assert.AreEqual ("TestRegion", doc.AdditionalFolds [0].Name);
+			Assert.AreEqual ("TestRegion2", doc.AdditionalFolds [1].Name);
+		}
+		
+
+		[Test]
 		public void TestDocComment ()
 		{
 			var doc = Test (@"class Test
