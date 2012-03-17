@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Represents a literal value.
 	/// </summary>
-	public class PrimitiveExpression : Expression, IRelocatable
+	public class PrimitiveExpression : Expression
 	{
 		public static readonly object AnyValue = new object();
 		
@@ -87,13 +87,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.startLocation = startLocation;
 			this.literalValue = literalValue ?? "";
 		}
-		
-		#region IRelocationable implementation
-		void IRelocatable.SetStartLocation (TextLocation startLocation)
-		{
-			this.startLocation = startLocation;
-		}
-		#endregion
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{

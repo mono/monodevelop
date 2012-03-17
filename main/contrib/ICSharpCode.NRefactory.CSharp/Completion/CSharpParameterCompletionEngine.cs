@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			baseUnit = ParseStub ("x] = a[1");
 			
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt (location, n => n is IndexerExpression); 
 			AstNode expr;
 			if (mref is IndexerExpression) {
@@ -67,13 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			
-			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
-			if (member == null || member2 == null)
-				return null;
-			member2.Remove ();
-			member.ReplaceWith (member2);
-			return new ExpressionResult ((AstNode)expr, Unit);
+			return new ExpressionResult ((AstNode)expr, baseUnit);
 		}
 		
 		public ExpressionResult GetConstructorInitializerBeforeCursor ()
@@ -88,7 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var expr = baseUnit.GetNodeAt <ConstructorInitializer> (location); 
 			if (expr == null)
 				return null;
-			return new ExpressionResult ((AstNode)expr, Unit);
+			return new ExpressionResult ((AstNode)expr, baseUnit);
 		}
 		
 		public ExpressionResult GetTypeBeforeCursor ()
@@ -100,15 +94,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			baseUnit = ParseStub ("x> a");
 			
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column + 1); // '>' position
-			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
-			if (member == null || member2 == null)
-				return null;
-			member2.Remove ();
-			member.ReplaceWith (member2);
-			return new ExpressionResult ((AstNode)expr, Unit);
+			return new ExpressionResult ((AstNode)expr, baseUnit);
 		}
 
 		IEnumerable<IMethod> CollectMethods (AstNode resolvedNode, MethodGroupResolveResult resolveResult)

@@ -1712,7 +1712,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver oldResolver = resolver;
 			List<IParameter> parameters = (hasParameterList || parameterDeclarations.Any()) ? new List<IParameter>() : null;
-			bool oldIsWithinLambdaExpression = resolver.IsWithinLambdaExpression;
+			//bool oldIsWithinLambdaExpression = resolver.IsWithinLambdaExpression;
 			resolver = resolver.WithIsWithinLambdaExpression(true);
 			foreach (var pd in parameterDeclarations) {
 				IType type = ResolveType(pd.Type);
@@ -2626,7 +2626,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (string.IsNullOrEmpty(catchClause.VariableName)) {
 				Scan(catchClause.Type);
 			} else {
-				DomRegion region = MakeRegion(catchClause.VariableNameToken);
+				//DomRegion region = MakeRegion(catchClause.VariableNameToken);
 				StoreCurrentState(catchClause.VariableNameToken);
 				IVariable v = MakeVariable(ResolveType(catchClause.Type), catchClause.VariableNameToken);
 				resolver = resolver.AddVariable(v);

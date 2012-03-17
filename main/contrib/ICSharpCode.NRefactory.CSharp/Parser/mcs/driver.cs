@@ -113,12 +113,13 @@ namespace Mono.CSharp
 			input.Close ();
 		}
 
-		public static CSharpParser Parse (SeekableStreamReader reader, SourceFile sourceFile, ModuleContainer module)
+		public static CSharpParser Parse(SeekableStreamReader reader, SourceFile sourceFile, ModuleContainer module, int lineModifier = 0)
 		{
 			var file = new CompilationSourceFile (module, sourceFile);
-			module.AddTypeContainer (file);
+			module.AddTypeContainer(file);
 
 			CSharpParser parser = new CSharpParser (reader, file);
+			parser.Lexer.Line += lineModifier;
 			parser.Lexer.sbag = new SpecialsBag ();
 			parser.parse ();
 			return parser;

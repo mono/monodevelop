@@ -274,6 +274,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
+		/// Gets the ancestors of this node (including this node itself)
+		/// </summary>
+		public IEnumerable<AstNode> AncestorsAndSelf {
+			get {
+				for (AstNode cur = this; cur != null; cur = cur.parent) {
+					yield return cur;
+				}
+			}
+		}
+		
+		/// <summary>
 		/// Gets all descendants of this node (excluding this node itself).
 		/// </summary>
 		public IEnumerable<AstNode> Descendants {

@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// ;
 	/// </summary>
-	public class EmptyStatement : Statement, IRelocatable
+	public class EmptyStatement : Statement
 	{
 		public TextLocation Location {
 			get;
@@ -47,14 +47,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new TextLocation (Location.Line, Location.Column + 1);
 			}
 		}
-		
-		#region IRelocationable implementation
-		void IRelocatable.SetStartLocation (TextLocation startLocation)
-		{
-			ThrowIfFrozen();
-			this.Location = startLocation;
-		}
-		#endregion
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{

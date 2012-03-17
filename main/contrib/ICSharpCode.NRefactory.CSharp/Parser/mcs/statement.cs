@@ -2025,8 +2025,8 @@ namespace Mono.CSharp {
 		static int id;
 		public int ID = id++;
 
-		static int clone_id_counter;
-		int clone_id;
+//		static int clone_id_counter;
+//		int clone_id;
 #endif
 
 //		int assignable_slots;
@@ -2338,7 +2338,7 @@ namespace Mono.CSharp {
 		{
 			Block target = (Block) t;
 #if DEBUG
-			target.clone_id = clone_id_counter++;
+//			target.clone_id = clone_id_counter++;
 #endif
 
 			clonectx.AddBlockMap (this, target);

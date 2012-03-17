@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class PrimitiveType : AstType, IRelocatable
+	public class PrimitiveType : AstType
 	{
 		TextLocation location;
 		string keyword = string.Empty;
@@ -76,15 +76,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new TextLocation (location.Line, location.Column + keyword.Length);
 			}
 		}
-		
-		
-		#region IRelocationable implementation
-		void IRelocatable.SetStartLocation (TextLocation startLocation)
-		{
-			ThrowIfFrozen();
-			this.location = startLocation;
-		}
-		#endregion
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{

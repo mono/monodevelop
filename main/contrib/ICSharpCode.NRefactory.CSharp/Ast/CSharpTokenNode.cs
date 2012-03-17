@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <remarks>
 	/// In all non null c# token nodes the Role of a CSharpToken must be a TokenRole.
 	/// </remarks>
-	public class CSharpTokenNode : AstNode, IRelocatable
+	public class CSharpTokenNode : AstNode
 	{
 		public static new readonly CSharpTokenNode Null = new NullCSharpTokenNode ();
 		class NullCSharpTokenNode : CSharpTokenNode
@@ -99,14 +99,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.startLocation = location;
 		}
-		
-		#region IRelocationable implementation
-		void IRelocatable.SetStartLocation (TextLocation startLocation)
-		{
-			ThrowIfFrozen();
-			this.startLocation = startLocation;
-		}
-		#endregion
 		
 		public override string GetText (CSharpFormattingOptions formattingOptions = null)
 		{

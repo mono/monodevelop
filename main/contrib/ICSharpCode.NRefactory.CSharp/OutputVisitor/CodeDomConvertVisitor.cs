@@ -717,7 +717,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		CodeObject IAstVisitor<CodeObject>.VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
-			bool isNestedType = typeStack.Count > 0;
+			//bool isNestedType = typeStack.Count > 0;
 			CodeTypeDeclaration typeDecl = new CodeTypeDeclaration(typeDeclaration.Name);
 			typeDecl.Attributes = ConvertMemberAttributes(typeDeclaration.Modifiers);
 			typeDecl.CustomAttributes.AddRange(Convert(typeDeclaration.Attributes));

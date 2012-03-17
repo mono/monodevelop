@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		MultiLineDocumentation
 	}
 	
-	public class Comment : AstNode, IRelocatable
+	public class Comment : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -105,16 +105,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.startLocation = startLocation;
 			this.endLocation = endLocation;
 		}
-		
-		#region IRelocationable implementation
-		void IRelocatable.SetStartLocation (TextLocation startLocation)
-		{
-			ThrowIfFrozen();
-			int lineDelta = startLocation.Line - this.startLocation.Line;
-			endLocation = new TextLocation (endLocation.Line + lineDelta, lineDelta != 0 ? endLocation.Column : endLocation.Column + startLocation.Column - this.startLocation.Column);
-			this.startLocation = startLocation;
-		}
-		#endregion
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{

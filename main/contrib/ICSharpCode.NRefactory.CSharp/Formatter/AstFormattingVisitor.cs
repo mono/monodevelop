@@ -129,12 +129,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		public void ApplyChanges()
 		{
-			ApplyChanges(0, document.TextLength, document.Replace);
+			ApplyChanges(0, document.TextLength, document.Replace, (o, l, v) => document.GetText(o, l) != v);
 		}
 		
 		public void ApplyChanges(int startOffset, int length)
 		{
-			ApplyChanges(startOffset, length, document.Replace);
+			ApplyChanges(startOffset, length, document.Replace, (o, l, v) => document.GetText(o, l) != v);
 		}
 		
 		/// <summary>
@@ -150,11 +150,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			ApplyChanges(startOffset, length, script.Replace);
 		}
 		
-		public void ApplyChanges(int startOffset, int length, Action<int, int, string> documentReplace)
+		public void ApplyChanges(int startOffset, int length, Action<int, int, string> documentReplace, Func<int, int, string, bool> filter = null)
 		{
 			int endOffset = startOffset + length;
 			TextReplaceAction previousChange = null;
 			int delta = 0;
+			var depChanges = new List<TextReplaceAction> ();
 			foreach (var change in changes.OrderBy(c => c.Offset)) {
 				if (previousChange != null) {
 					if (change.Equals(previousChange)) {
@@ -174,16 +175,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				previousChange = change;
 				
-				if (change.Offset < startOffset) {
-					// skip all changes in front of the begin offset
-					continue;
-				} else if (change.Offset > endOffset) {
-					// skip this change unless it depends on one that we already applied
-					continue;
+				bool skipChange = change.Offset < startOffset || change.Offset > endOffset;
+				skipChange |= filter != null && filter(change.Offset + delta, change.RemovalLength, change.NewText);
+				skipChange &= !depChanges.Contains(change);
+
+				if (!skipChange) {
+					documentReplace(change.Offset + delta, change.RemovalLength, change.NewText);
+					delta += change.NewText.Length - change.RemovalLength;
+					if (change.DependsOn != null) {
+						depChanges.Add(change.DependsOn);
+					}
 				}
-				
-				documentReplace(change.Offset + delta, change.RemovalLength, change.NewText);
-				delta += change.NewText.Length - change.RemovalLength;
 			}
 			changes.Clear();
 		}

@@ -28,7 +28,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class Identifier : AstNode, IRelocatable
+	public class Identifier : AstNode
 	{
 		public new static readonly Identifier Null = new NullIdentifier ();
 		sealed class NullIdentifier : Identifier
@@ -97,14 +97,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					flags &= ~verbatimBit;
 			}
 		}
-		
-		#region IRelocationable implementation
-		void IRelocatable.SetStartLocation (TextLocation startLocation)
-		{
-			ThrowIfFrozen();
-			this.startLocation = startLocation;
-		}
-		#endregion
 		
 		public override TextLocation EndLocation {
 			get {

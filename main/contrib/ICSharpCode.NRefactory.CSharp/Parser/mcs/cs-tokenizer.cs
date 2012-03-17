@@ -376,6 +376,9 @@ namespace Mono.CSharp
 			get {
 				return ref_line;
 			}
+			set {
+				ref_line = value;
+			}
 		}
 
 		//
@@ -1532,7 +1535,6 @@ namespace Mono.CSharp
 #endif
 			number_pos = 0;
 			var loc = Location;
-			bool hasLeadingDot = c == '.';
 
 			if (c >= '0' && c <= '9'){
 				if (c == '0'){

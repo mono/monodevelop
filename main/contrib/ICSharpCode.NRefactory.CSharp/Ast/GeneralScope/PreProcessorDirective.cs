@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		Line = 12
 	}
 	
-	public class PreProcessorDirective : AstNode, IRelocatable
+	public class PreProcessorDirective : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -93,16 +93,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.endLocation = endLocation;
 		}
 		
-		#region IRelocationable implementation
-		void IRelocatable.SetStartLocation (TextLocation startLocation)
-		{
-			ThrowIfFrozen();
-			int lineDelta = startLocation.Line - this.startLocation.Line;
-			endLocation = new TextLocation (endLocation.Line + lineDelta, lineDelta != 0 ? endLocation.Column : endLocation.Column + startLocation.Column - this.startLocation.Column);
-			this.startLocation = startLocation;
-		}
-		#endregion
-
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitPreProcessorDirective (this);

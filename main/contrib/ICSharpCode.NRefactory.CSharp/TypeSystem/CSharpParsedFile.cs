@@ -159,7 +159,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return null;
 		}
 		
-		public CSharpTypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		public CSharpTypeResolveContext GetTypeResolveContext(ICompilation compilation, TextLocation loc)
 		{
 			var rctx = new CSharpTypeResolveContext (compilation.MainAssembly);
 			rctx = rctx.WithUsingScope (GetUsingScope (loc).Resolve (compilation));
