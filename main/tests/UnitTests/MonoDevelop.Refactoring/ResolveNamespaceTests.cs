@@ -170,6 +170,33 @@ class Test {
 			Assert.IsTrue (result.Contains ("System"));
 		}
 
+		[Test ()]
+		public void TestAmbigiousResolveResult ()
+		{
+
+			var result = GetResult (@"namespace Foo { class Bar {} }
+namespace Foo2 { class Bar {} }
+
+namespace My
+{
+	using Foo;
+	using Foo2;
+
+	class Program
+	{
+		public static void Main ()
+		{
+			$Bar bar;
+		}
+	}
+}");
+			foreach (var a in result)
+				Console.WriteLine (a);
+			Assert.IsTrue (result.Contains ("Foo"));
+			Assert.IsTrue (result.Contains ("Foo2"));
+		}
+
+
 		#region Bug 3453 - [New Resolver] "Resolve" doesn't show up from time
 		[Test ()]
 		public void TestBug3453Case1 ()

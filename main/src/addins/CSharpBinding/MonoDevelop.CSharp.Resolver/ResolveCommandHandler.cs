@@ -76,9 +76,12 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			var possibleNamespaces = GetPossibleNamespaces (doc, resolveResult);
 
-			foreach (string ns in possibleNamespaces) {
-				var info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new System.Action (new AddImport (doc, resolveResult, ns, true).Run));
-				info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
+			bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
+			if (addUsing) {
+				foreach (string ns in possibleNamespaces) {
+					var info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new System.Action (new AddImport (doc, resolveResult, ns, true).Run));
+					info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
+				}
 			}
 			
 			bool resolveDirect = !(resolveResult is UnknownMemberResolveResult);
@@ -148,9 +151,16 @@ namespace MonoDevelop.CSharp.Resolver
 		{
 			if (resolveResult == null || resolveResult.Type.FullName == "System.Void") 
 				resolveResult = GetHeuristicResult (doc) ?? resolveResult;
+
 			var location = doc.Editor.Caret.Location;
-			var usedNamespaces = MonoDevelop.Refactoring.RefactoringOptions.GetUsedNamespaces (doc, location);
-			return new HashSet<string> (GetPossibleNamespaces (doc, resolveResult, location).Where (n => !usedNamespaces.Contains (n)));
+			var foundNamespaces = GetPossibleNamespaces (doc, resolveResult, location);
+			
+			if (!(resolveResult is AmbiguousTypeResolveResult)) {
+				var usedNamespaces = MonoDevelop.Refactoring.RefactoringOptions.GetUsedNamespaces (doc, location);
+				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n));
+			}
+
+			return new HashSet<string> (foundNamespaces);
 		}
 
 		static IEnumerable<string> GetPossibleNamespaces (Document doc, ResolveResult resolveResult, DocumentLocation location)
@@ -161,6 +171,25 @@ namespace MonoDevelop.CSharp.Resolver
 			
 			var attribute = unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (location);
 			bool isInsideAttributeType = attribute != null && attribute.Type.Contains (location);
+
+			if (resolveResult is AmbiguousTypeResolveResult) {
+				var aResult = resolveResult as AmbiguousTypeResolveResult;
+				var file = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
+				var scope = file.GetUsingScope (location).Resolve (doc.Compilation);
+				while (scope != null) {
+					foreach (var u in scope.Usings) {
+						foreach (var typeDefinition  in u.Types) {
+							if (typeDefinition.Name == aResult.Type.Name) {
+								yield return typeDefinition.Namespace;
+							}
+						}
+					}
+					scope = scope.Parent;
+				}
+
+				yield break;
+			}
+
 
 			if (resolveResult is UnknownIdentifierResolveResult) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
