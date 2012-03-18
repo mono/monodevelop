@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using Mono.Addins;
 
-namespace MonoDevelop.CSharpBinding.Tests
+namespace MonoDevelop.CSharpBinding
 {
 	public class TestWorkbenchWindow : IWorkbenchWindow
 	{

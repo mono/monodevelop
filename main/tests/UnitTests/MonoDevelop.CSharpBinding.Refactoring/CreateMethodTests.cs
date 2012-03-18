@@ -33,7 +33,7 @@ using MonoDevelop.Projects.CodeGeneration;
 using System.Linq;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.Refactoring.Tests
+namespace MonoDevelop.CSharpBinding.Refactoring.Tests
 {
 	[TestFixture()]
 	public class CreateMethodTests : UnitTests.TestBase

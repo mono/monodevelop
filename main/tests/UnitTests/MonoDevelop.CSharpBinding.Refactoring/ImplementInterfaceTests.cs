@@ -38,7 +38,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharpBinding.Refactoring
 {
 	[TestFixture()]
 	public class ImplementInterfaceTests : UnitTests.TestBase

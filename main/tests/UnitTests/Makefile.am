@@ -65,6 +65,8 @@ FILES =  \
 	Mono.TextEditor.Tests/VirtualIndentModeTests.cs \
 	Mono.TextEditor.Tests/VirtualSpacesTests.cs \
 	Mono.TextEditor.Tests/ViTests.cs \
+	MonoDevelop.CSharpBinding.Refactoring/ImplementInterfaceTests.cs \
+	MonoDevelop.CSharpBinding.Refactoring/ResolveNamespaceTests.cs \
 	MonoDevelop.CSharpBinding/CSharpTextEditorIndentationTests.cs \
 	MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs \
 	MonoDevelop.CSharpBinding/FoldingParserTests.cs \
@@ -74,8 +76,7 @@ FILES =  \
 	MonoDevelop.CSharpBinding/TestDocument.cs \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \
 	MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs \
-	MonoDevelop.CSharpBinding/TopLevelTests.cs \
-	MonoDevelop.Projects.Gui/CompletionListWindowTests.cs \
+	MonoDevelop.Ide.Gui/CompletionListWindowTests.cs \
 	MonoDevelop.Projects/LocalCopyTests.cs \
 	MonoDevelop.Projects/MakefileTests.cs \
 	MonoDevelop.Projects/MdsTests.cs \
@@ -87,8 +88,6 @@ FILES =  \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/TextFormatterTests.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
-	MonoDevelop.Refactoring/ImplementInterfaceTests.cs \
-	MonoDevelop.Refactoring/ResolveNamespaceTests.cs \
 	MonoDevelop.VersionControl.Git/GitUtilsTests.cs \
 	MonoDevelop.VersionControl.Views/EditorCompareWidgetBaseTest.cs \
 	TestBase.cs \

@@ -26,11 +26,11 @@
 
 using System;
 using NUnit.Framework;
-using MonoDevelop.Refactoring;
+using MonoDevelop.CSharpBinding.Refactoring;
 using System.Collections.Generic;
 using MonoDevelop.CSharp.Refactoring.DeclareLocal;
 
-namespace MonoDevelop.Refactoring.Tests
+namespace MonoDevelop.CSharpBinding.Refactoring.Tests
 {
 	[TestFixture()]
 	public class DeclareLocalTests : UnitTests.TestBase
