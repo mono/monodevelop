@@ -148,11 +148,17 @@ namespace MonoDevelop.Ide.FindInFiles
 				yield return new FileList (prj, ctx, prj.Files.Select (f => f.FilePath));
 				break;
 			case RefactoryScope.Solution:
-				var allProjects = solution.GetAllProjects ();
 				if (monitor != null)
 					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), solution.GetAllProjects ().Count);
 				var sourceProject = TypeSystemService.GetProject ((IEntity)member);
-				foreach (var project in GetAllReferencingProjects (solution, sourceProject)) {
+				IEnumerable<Project> projects;
+				if (sourceProject == null) { 
+					// member is defined in a referenced assembly
+					projects = GetAllReferencingProjects (solution, ((IEntity)member).ParentAssembly.AssemblyName);
+				} else {
+					projects = GetAllReferencingProjects (solution, sourceProject);
+				}
+				foreach (var project in projects) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					var currentDom = TypeSystemService.GetProjectContext (project);
@@ -164,6 +170,12 @@ namespace MonoDevelop.Ide.FindInFiles
 					monitor.EndTask ();
 				break;
 			}
+		}
+
+		static IEnumerable<Project> GetAllReferencingProjects (Solution solution, string assemblyName)
+		{
+			return solution.GetAllProjects ().Where (
+				project => TypeSystemService.GetCompilation (project).Assemblies.Any (a => a.AssemblyName == assemblyName));
 		}
 		
 		public static List<Project> GetAllReferencingProjects (Solution solution, Project sourceProject)
