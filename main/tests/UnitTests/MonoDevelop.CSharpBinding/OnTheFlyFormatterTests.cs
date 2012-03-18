@@ -40,8 +40,9 @@ using MonoDevelop.CSharp.Formatting;
 using UnitTests;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.CSharpBinding.Tests;
 
-namespace MonoDevelop.CSharpBinding.Tests
+namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
 	public class OnTheFlyFormatterTests : UnitTests.TestBase

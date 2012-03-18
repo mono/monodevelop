@@ -1,5 +1,5 @@
 // 
-// IntegrateTemporaryVariableTests.cs
+// IntroduceConstantRefactoringTests.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -26,40 +26,44 @@
 
 using System;
 using NUnit.Framework;
-using MonoDevelop.Refactoring;
+using MonoDevelop.CSharpBinding.Refactoring;
 using System.Collections.Generic;
-using MonoDevelop.Refactoring.IntegrateTemporaryVariable;
+using MonoDevelop.CSharpBinding.Refactoring.IntroduceConstant;
 
-namespace MonoDevelop.Refactoring.Tests
+namespace MonoDevelop.CSharpBinding.Refactoring.Tests
 {
 	[TestFixture()]
-	public class IntegrateTemporaryVariableTests : UnitTests.TestBase
+	public class IntroduceConstantRefactoringTests : UnitTests.TestBase
 	{
-		void TestIntegrateTemporaryVariable (string inputString, string outputString)
+		void TestIntroduceConstantRefactoring (string inputString, string outputString)
 		{
-			IntegrateTemporaryVariableRefactoring refactoring = new IntegrateTemporaryVariableRefactoring ();
+			IntroduceConstantRefactoring refactoring = new IntroduceConstantRefactoring ();
 			RefactoringOptions options = ExtractMethodTests.CreateRefactoringOptions (inputString);
-			List<Change> changes = refactoring.PerformChanges (options, null);
+			IntroduceConstantRefactoring.Parameters param = new IntroduceConstantRefactoring.Parameters () {
+				Name = "magic"
+			};
+			List<Change> changes = refactoring.PerformChanges (options, param);
 			string output = ExtractMethodTests.GetOutput (options, changes);
 			Assert.IsTrue (ExtractMethodTests.CompareSource (output, outputString), "Expected:" + Environment.NewLine + outputString + Environment.NewLine + "was:" + Environment.NewLine + output);
 		}
 		
 		[Test()]
-		public void IntegrateTemporaryVariableTest ()
+		public void IntroduceConstantRefactoringTest ()
 		{
-			TestIntegrateTemporaryVariable (@"class TestClass
+			TestIntroduceConstantRefactoring (@"class TestClass
 {
 	void Test ()
 	{
-		int $tmp = 5 + 6;
-		Console.WriteLine (tmp);
+		Console.WriteLine ($5564);
 	}
 }
 ", @"class TestClass
 {
+	const int magic = 5564;
+
 	void Test ()
 	{
-		Console.WriteLine (5 + 6);
+		Console.WriteLine (magic);
 	}
 }");
 		}

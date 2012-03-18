@@ -28,7 +28,7 @@ using NUnit.Framework;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Refactoring;
+using MonoDevelop.CSharpBinding.Refactoring;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.CSharp.Refactoring.ExtractMethod;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.Refactoring.Tests
+namespace MonoDevelop.CSharpBinding.Refactoring.Tests
 {
 	[TestFixture()]
 	public class GenerateNewMemberTests : UnitTests.TestBase

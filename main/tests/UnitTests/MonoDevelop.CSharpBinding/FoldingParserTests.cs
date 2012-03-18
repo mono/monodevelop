@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using NUnit.Framework;
 
 using MonoDevelop.CSharp.Parser;
@@ -35,7 +36,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 
-namespace MonoDevelop.CSharpBinding.Tests
+namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
 	public class FoldingParserTests

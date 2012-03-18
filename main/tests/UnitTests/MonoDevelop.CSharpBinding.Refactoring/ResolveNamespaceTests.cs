@@ -27,7 +27,7 @@ using System;
 using NUnit.Framework;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Refactoring;
+using MonoDevelop.CSharpBinding.Refactoring;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.CSharp.Refactoring.ExtractMethod;
 using System.Collections.Generic;
@@ -42,7 +42,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp;
 using MonoDevelop.CSharp.Completion;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharpBinding.Refactoring
 {
 	[TestFixture()]
 	public class ResolveNamespaceTests : UnitTests.TestBase

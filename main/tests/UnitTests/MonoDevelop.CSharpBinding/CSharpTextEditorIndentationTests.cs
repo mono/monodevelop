@@ -39,7 +39,7 @@ using MonoDevelop.CSharp.Formatting;
 using UnitTests;
 using MonoDevelop.Projects.Policies;
 
-namespace MonoDevelop.CSharpBinding.Tests
+namespace MonoDevelop.CSharpBinding
 {
 
 	[TestFixture]

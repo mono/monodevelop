@@ -28,7 +28,7 @@ using System;
 using NUnit.Framework;
 using MonoDevelop.Projects.CodeGeneration;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharpBinding.Refactoring
 {
 
 	[TestFixture()]
