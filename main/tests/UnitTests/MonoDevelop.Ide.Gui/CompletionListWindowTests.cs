@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 
-namespace MonoDevelop.Projects.Gui
+namespace MonoDevelop.Ide.Gui
 {
 	[TestFixture()]
 	public class CompletionListWindowTests
