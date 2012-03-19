@@ -79,7 +79,7 @@ namespace MonoDevelop.DesignerSupport
 				}
 				else if (lastCustomProvider != null) {
 					propertyPad.UseCustomWidget (lastCustomProvider.GetCustomPropertyWidget ());
-					var customizer = propertyPad as IPropertyPadCustomizer;
+					var customizer = lastCustomProvider as IPropertyPadCustomizer;
 					if (customizer != null)
 						customizer.Customize (pad.PadWindow, null);
 				}
