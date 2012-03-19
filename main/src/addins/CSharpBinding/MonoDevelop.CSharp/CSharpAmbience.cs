@@ -860,7 +860,11 @@ namespace MonoDevelop.CSharp
 			if (member == null || !member.IsExplicitInterfaceImplementation)
 				return;
 			foreach (var implementedInterfaceMember in member.ImplementedInterfaceMembers) {
-				sb.Append (Format (implementedInterfaceMember.DeclaringTypeDefinition.FullName));
+				if (settings.UseFullName) {
+					sb.Append (Format (implementedInterfaceMember.DeclaringTypeDefinition.FullName));
+				} else {
+					sb.Append (Format (implementedInterfaceMember.DeclaringTypeDefinition.Name));
+				}
 				sb.Append (settings.Markup ("."));
 			}
 		}
