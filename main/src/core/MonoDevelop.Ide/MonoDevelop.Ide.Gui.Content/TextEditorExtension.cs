@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		}
 
 		protected TextEditorData Editor {
-			get { return document.Editor; }
+			get { return document != null ? document.Editor : null; }
 		}
 
 		protected FilePath FileName {

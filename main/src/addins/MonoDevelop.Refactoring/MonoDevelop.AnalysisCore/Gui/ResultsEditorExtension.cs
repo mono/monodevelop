@@ -146,13 +146,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
 			bool IdleHandler ()
 			{
-				if (ext.Editor == null || ext.Editor.Document == null || cancellationToken.IsCancellationRequested)
+				var editor = ext.Editor;
+				if (editor == null || editor.Document == null || cancellationToken.IsCancellationRequested)
 					return false;
 				//clear the old results out at the same rate we add in the new ones
 				for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
 					if (cancellationToken.IsCancellationRequested)
 						return false;
-					ext.Editor.Document.RemoveMarker (ext.markers.Dequeue ());
+					editor.Document.RemoveMarker (ext.markers.Dequeue ());
 					oldMarkers--;
 				}
 				//add in the new markers
@@ -166,7 +167,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					var currentResult = (Result)enumerator.Current;
 					var marker = new ResultMarker (currentResult);
 					marker.IsVisible = currentResult.Underline;
-					ext.Editor.Document.AddMarker (marker.Line, marker);
+					editor.Document.AddMarker (marker.Line, marker);
 					ext.markers.Enqueue (marker);
 					
 					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));
