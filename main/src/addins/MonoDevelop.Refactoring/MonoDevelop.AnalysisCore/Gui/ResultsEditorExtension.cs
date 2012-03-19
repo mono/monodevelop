@@ -136,6 +136,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			
 			public void Update ()
 			{
+				if (!QuickTaskStrip.EnableFancyFeatures)
+					return;
 				ext.tasks.Clear ();
 				GLib.Idle.Add (IdleHandler);
 			}
