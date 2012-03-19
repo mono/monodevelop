@@ -1520,17 +1520,11 @@ namespace Mono.TextEditor
 			double startY = LineToY (startLine);
 			double curY = startY - this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
-			for (int visualLineNumber = startLine; ; visualLineNumber++) {
-				int logicalLineNumber = visualLineNumber;
-				LineSegment line      = Document.GetLine (logicalLineNumber);
-				double lineHeight     = GetLineHeight (line);
-				int lastFold = 0;
-				foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
-					lastFold = System.Math.Max (fs.EndOffset, lastFold);
-				}
-				if (lastFold >= DocumentLocation.MinLine)
-					visualLineNumber = Document.OffsetToLineNumber (lastFold);
-				foreach (Margin margin in this.margins) {
+			for (int visualLineNumber = textEditorData.LogicalToVisualLine (startLine);; visualLineNumber++) {
+				int logicalLineNumber = textEditorData.VisualToLogicalLine (visualLineNumber);
+				var line = Document.GetLine (logicalLineNumber);
+				double lineHeight = GetLineHeight (line);
+				foreach (var margin in this.margins) {
 					if (!margin.IsVisible)
 						continue;
 					try {
@@ -1552,7 +1546,7 @@ namespace Mono.TextEditor
 					break;
 			}
 			
-			foreach (Margin margin in this.margins) {
+			foreach (var margin in this.margins) {
 				if (!margin.IsVisible)
 					continue;
 				foreach (var drawer in margin.MarginDrawer)
