@@ -97,6 +97,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
+			if (!QuickTaskStrip.EnableFancyFeatures)
+				return;
 			var doc = Document.ParsedDocument;
 			if (doc == null)
 				return;
