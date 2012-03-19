@@ -161,12 +161,13 @@ namespace MonoDevelop.DesignerSupport
 
 				lastCustomProvider = provider;
 				
-				if (propertyPad != null)
+				if (propertyPad != null) {
 					propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
 				
-				var customizer = provider as IPropertyPadCustomizer;
-				if (customizer != null)
-					customizer.Customize (propertyPad.PadWindow, null);
+					var customizer = provider as IPropertyPadCustomizer;
+					if (customizer != null)
+						customizer.Customize (propertyPad.PadWindow, null);
+				}
 			}
 			else {
 				ReSetPad ();
