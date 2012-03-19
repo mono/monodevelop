@@ -425,11 +425,11 @@
 			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"/>
 	</Extension>
 	
-<!--
+
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Rule _name="C# Code Analysis" input="Document" 
 			func="MonoDevelop.CSharp.Inspection.CodeAnalysis.Check" />
-	</Extension>-->
+	</Extension>
 	
 	<Module>
 	    <Runtime>

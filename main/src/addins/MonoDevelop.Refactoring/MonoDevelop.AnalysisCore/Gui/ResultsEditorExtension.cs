@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
 using Mono.TextEditor;
@@ -87,89 +89,93 @@ namespace MonoDevelop.AnalysisCore.Gui
 		void Disable ()
 		{
 			Document.DocumentParsed -= OnDocumentParsed;
-			UpdateResults (new Result[0]);
+			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
 		}
 		
+		Task oldTask;
+		CancellationTokenSource src = null;
 		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
 			var doc = Document.ParsedDocument;
 			if (doc == null)
 				return;
+			if (src != null) {
+				src.Cancel ();
+				oldTask.Wait ();
+			}
+			src = new CancellationTokenSource ();
 			var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
-			AnalysisService.QueueAnalysis (Document, treeType, UpdateResults);
+			var task = AnalysisService.QueueAnalysis (Document, treeType);
+			oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update ());
 		}
 		
-		void UpdateResults (IList<Result> results)
+		class ResultsUpdater 
 		{
-			lock (updaterLock) {
-				if (!Enabled && results.Count > 0)
-					return;
-				nextResults = results;
-				if (!updaterRunning) {
-					GLib.Idle.Add (ResultsUpdater);
-					updaterRunning = true;
+			readonly ResultsEditorExtension ext;
+			readonly CancellationToken cancellationToken;
+			
+			//the number of markers at the head of the queue that need tp be removed
+			int oldMarkers;
+			IEnumerator<Result> enumerator;
+			
+			public ResultsUpdater (ResultsEditorExtension ext, IEnumerable<Result> results, CancellationToken cancellationToken)
+			{
+				if (ext == null)
+					throw new ArgumentNullException ("ext");
+				if (results == null)
+					throw new ArgumentNullException ("results");
+					
+				this.ext = ext;
+				this.cancellationToken = cancellationToken;
+				this.oldMarkers = ext.markers.Count;
+				enumerator = ((IEnumerable<Result>)results).GetEnumerator ();
+			}
+			
+			public void Update ()
+			{
+				ext.tasks.Clear ();
+				GLib.Idle.Add (IdleHandler);
+			}
+			
+			//this runs as a glib idle handler so it can add/remove text editor markers
+			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
+			bool IdleHandler ()
+			{
+				if (ext.Editor == null || ext.Editor.Document == null || cancellationToken.IsCancellationRequested)
+					return false;
+				//clear the old results out at the same rate we add in the new ones
+				for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
+					if (cancellationToken.IsCancellationRequested)
+						return false;
+					ext.Editor.Document.RemoveMarker (ext.markers.Dequeue ());
+					oldMarkers--;
 				}
+				//add in the new markers
+				for (int i = 0; i < UPDATE_COUNT; i++) {
+					if (!enumerator.MoveNext ()) {
+						ext.OnTasksUpdated (EventArgs.Empty);
+						return false;
+					}
+					if (cancellationToken.IsCancellationRequested)
+						return false;
+					var currentResult = (Result)enumerator.Current;
+					var marker = new ResultMarker (currentResult);
+					marker.IsVisible = currentResult.Underline;
+					ext.Editor.Document.AddMarker (marker.Line, marker);
+					ext.markers.Enqueue (marker);
+					
+					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));
+				}
+				
+				return true;
 			}
 		}
-		
-		object updaterLock = new object ();
-		
-		//protected by lock. This is how we hand new results over to ResultsUpdater from the callback.
-		bool updaterRunning;
-		IList<Result> nextResults;
-		
-		//only accessed by ResultsUpdater. This is the list it's using to update the text editor.
-		int updateIndex = 0;
-		IList<Result> currentResults;
-		
-		//the number of markers at the head of the queue that need tp be removed
-		int oldMarkers = 0;
 		
 		//all markers known to be in the editor
 		Queue<ResultMarker> markers = new Queue<ResultMarker> ();
 		
 		const int UPDATE_COUNT = 20;
-		
-		//this runs as a glib idle handler so it can add/remove text editor markers
-		//in order to to block the GUI thread, we batch them in UPDATE_COUNT
-		bool ResultsUpdater ()
-		{
-			lock (updaterLock) {
-				if (nextResults != null) {
-					currentResults = nextResults;
-					nextResults = null;
-					updateIndex = 0;
-					oldMarkers += markers.Count;
-				}
-				//stop the updater when we're done updating results
-				if (currentResults.Count == updateIndex && oldMarkers == 0) {
-					currentResults = null;
-					updaterRunning = false;
-					UpdateQuickTasks ();
-					return false;
-				}
-			}
-			
-			if (Editor == null || Editor.Document == null) 
-				return false; // prevents endless idle loop
-			
-			//clear the old results out at the same rate we add in the new ones
-			for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
-				Editor.Document.RemoveMarker (markers.Dequeue ());
-				oldMarkers--;
-			}
-			
-			//add in the new markers
-			int targetIndex = updateIndex + UPDATE_COUNT;
-			for (; updateIndex < targetIndex && updateIndex < currentResults.Count; updateIndex++) {
-				var marker = new ResultMarker (currentResults [updateIndex]);
-				marker.IsVisible = currentResults [updateIndex].Underline;
-				Editor.Document.AddMarker (marker.Line, marker);
-				markers.Enqueue (marker);
-			}
-			return true;
-		}
 		
 		public IList<Result> GetResultsAtOffset (int offset)
 		{
@@ -210,17 +216,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 			get {
 				return tasks;
 			}
-		}
-		
-		void UpdateQuickTasks ()
-		{
-			tasks.Clear ();
-			foreach (var result in GetResults ()) {
-				var newTask = new QuickTask (result.Message, result.Region.Begin, result.Level);
-				tasks.Add (newTask);
-			}
-			
-			OnTasksUpdated (EventArgs.Empty);
 		}
 		
 		#endregion

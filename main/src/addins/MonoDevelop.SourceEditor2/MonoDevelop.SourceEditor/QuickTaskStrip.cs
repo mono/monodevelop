@@ -106,14 +106,10 @@ namespace MonoDevelop.SourceEditor
 	
 	public class QuickTaskMapMode : DrawingArea
 	{
-		QuickTaskStrip parentStrip;
-		int caretLine = -1;
+		readonly QuickTaskStrip parentStrip;
+		readonly Adjustment vadjustment;
 		
-		public Adjustment VAdjustment {
-			get {
-				return parentStrip.VAdjustment;
-			}
-		}
+		int caretLine = -1;
 		
 		public TextEditor TextEditor {
 			get;
@@ -130,9 +126,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.parentStrip = parent;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
+			vadjustment = this.parentStrip.VAdjustment;
 			
-			VAdjustment.ValueChanged += RedrawOnUpdate;
-			VAdjustment.Changed += RedrawOnUpdate;
+			vadjustment.ValueChanged += RedrawOnUpdate;
+			vadjustment.Changed += RedrawOnUpdate;
 			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
 			TextEditor = parent.TextEditor;
 			TextEditor.Caret.PositionChanged += CaretPositionChanged;
@@ -152,6 +149,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
+			base.OnDestroyed ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
 			TextEditor.Caret.PositionChanged -= CaretPositionChanged;
@@ -162,9 +160,8 @@ namespace MonoDevelop.SourceEditor
 			
 			parentStrip.TaskProviderUpdated -= RedrawOnUpdate;
 			
-			VAdjustment.ValueChanged -= RedrawOnUpdate;
-			VAdjustment.Changed -= RedrawOnUpdate;
-			base.OnDestroyed ();
+			vadjustment.ValueChanged -= RedrawOnUpdate;
+			vadjustment.Changed -= RedrawOnUpdate;
 		}
 		
 		void RedrawOnUpdate (object sender, EventArgs e)
@@ -359,9 +356,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (button != 1)
 				return;
-			double position = (y / (Allocation.Height - IndicatorHeight)) * VAdjustment.Upper - VAdjustment.PageSize / 2;
-			position = Math.Max (VAdjustment.Lower, Math.Min (position, VAdjustment.Upper - VAdjustment.PageSize));
-			VAdjustment.Value = position;
+			double position = (y / (Allocation.Height - IndicatorHeight)) * vadjustment.Upper - vadjustment.PageSize / 2;
+			position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
+			vadjustment.Value = position;
 		}
 		
 		QuickTask hoverTask = null;
@@ -523,7 +520,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected virtual void DrawBar (Cairo.Context cr)
 		{
-			if (VAdjustment == null || VAdjustment.Upper <= VAdjustment.PageSize) 
+			if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize) 
 				return;
 			var h = Allocation.Height - IndicatorHeight;
 			
@@ -531,9 +528,9 @@ namespace MonoDevelop.SourceEditor
 			
 			MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, 
 				0.5 +(Allocation.Width - barWidth) / 2,
-				h * VAdjustment.Value / VAdjustment.Upper + cr.LineWidth + 0.5,
+				h * vadjustment.Value / vadjustment.Upper + cr.LineWidth + 0.5,
 				barWidth,
-				h * (VAdjustment.PageSize / VAdjustment.Upper),
+				h * (vadjustment.PageSize / vadjustment.Upper),
 				barWidth / 2);
 			
 			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0));
@@ -608,8 +605,10 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 	
-	public class QuickTaskFullMode : QuickTaskMapMode
+	public class QuickTaskFullMode : HBox
 	{
+		QuickTaskMapMode rightMap;
+	/*
 		Pixmap backgroundPixbuf, backgroundBuffer;
 		uint redrawTimeout;
 		TextDocument doc;
@@ -618,14 +617,17 @@ namespace MonoDevelop.SourceEditor
 				return 16;
 			}
 		}
-		
-		public QuickTaskFullMode (QuickTaskStrip parent) : base (parent)
+		*/
+		public QuickTaskFullMode (QuickTaskStrip parent)
 		{
-			doc = parent.TextEditor.Document;
+			rightMap = new QuickTaskMapMode (parent);
+			PackStart (rightMap, true, true, 0);
+			
+/*			doc = parent.TextEditor.Document;
 			doc.TextReplaced += TextReplaced;
-			doc.Folded += HandleFolded;
+			doc.Folded += HandleFolded;*/
 		}
-
+			/*
 		void HandleFolded (object sender, FoldSegmentEventArgs e)
 		{
 			RequestRedraw ();
@@ -698,11 +700,11 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
+			base.OnDestroyed ();
 			doc.Folded -= HandleFolded;
 			doc.TextReplaced -= TextReplaced;
 			RemoveRedrawTimer ();
 			DestroyBgBuffer ();
-			base.OnDestroyed ();
 		}
 		
 		protected override void OnSizeAllocated (Rectangle allocation)
@@ -865,12 +867,14 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			return true;
-		}
+		}*/
 	}
 	
 	
 	public class QuickTaskStrip : VBox
 	{
+		public readonly static bool EnableFancyFeatures = false;
+		
 		Adjustment adj;
 		
 		public Adjustment VAdjustment {
@@ -924,13 +928,17 @@ namespace MonoDevelop.SourceEditor
 		
 		public QuickTaskStrip ()
 		{
-			ScrollBarMode = ScrollBarMode.Normal; //PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Map);
-//			PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
+			if (EnableFancyFeatures) {
+				ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Map);
+				PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
+			} else {
+				ScrollBarMode = MonoDevelop.SourceEditor.ScrollBarMode.Normal;
+			}
 			Events |= EventMask.ButtonPressMask;
 		}
 		
 		VScrollbar vScrollBar;
-		QuickTaskMapMode mapMode;
+		Widget mapMode;
 		void SetupMode ()
 		{
 			if (adj == null || textEditor == null)
@@ -965,11 +973,11 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnDestroyed ()
 		{
+			base.OnDestroyed ();
 			adj = null;
 			textEditor = null;
 			providerTasks = null;
 			PropertyService.RemovePropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
-			base.OnDestroyed ();
 		}
 		
 		void ScrollBarModeChanged (object sender, PropertyChangedEventArgs args)
@@ -999,10 +1007,9 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-		/*	if (evnt.Button == 3) {
-				var cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar");
-				IdeApp.CommandService.ShowContextMenu (cset, this);
-			}*/
+			if (evnt.Button == 3) {
+				IdeApp.CommandService.ShowContextMenu (this, evnt, "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar");
+			}
 			return base.OnButtonPressEvent (evnt);
 		}
 		
@@ -1034,6 +1041,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandUpdateHandler (ScrollbarCommand.ShowScrollBar)]
 		void UpdateShowScrollBar (CommandInfo info)
 		{
+			info.Visible = EnableFancyFeatures;
 			info.Checked = ScrollBarMode == ScrollBarMode.Normal;
 		}
 		
@@ -1046,6 +1054,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandUpdateHandler (ScrollbarCommand.ShowMap)]
 		void UpdateShowMap (CommandInfo info)
 		{
+			info.Visible = EnableFancyFeatures;
 			info.Checked = ScrollBarMode == ScrollBarMode.Map;
 		}
 		
@@ -1058,6 +1067,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandUpdateHandler (ScrollbarCommand.ShowFull)]
 		void UpdateShowFull (CommandInfo info)
 		{
+			info.Visible = EnableFancyFeatures;
 			info.Checked = ScrollBarMode == ScrollBarMode.Full;
 		}
 		

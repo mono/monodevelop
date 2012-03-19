@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
@@ -47,12 +48,33 @@ namespace MonoDevelop.CSharp.Inspection
 			var memberReference = expr.Parent as MemberReferenceExpression;
 			if (memberReference == null)
 				return;
-			var state = data.Graph.Resolver.GetResolverStateBefore (expr);
-			var wholeResult = data.Graph.Resolver.Resolve (memberReference) as MemberResolveResult;
-			var result = state.LookupSimpleNameOrTypeName (memberReference.MemberName, new List<IType> (), SimpleNameLookupMode.Expression) as MemberResolveResult;
+			var state = data.Graph.Resolver.GetResolverStateAfter (expr, data.CancellationToken);
+			var wholeResult = data.Graph.Resolver.Resolve (memberReference, data.CancellationToken);
+			
+			var result = state.LookupSimpleNameOrTypeName (memberReference.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
 			if (result == null || wholeResult == null)
 				return;
-			if (result.Member.Region.Equals (wholeResult.Member.Region)) {
+			
+			IMember member;
+			if (wholeResult is MemberResolveResult) {
+				member = ((MemberResolveResult)result).Member;
+			} else if (wholeResult is MethodGroupResolveResult) {
+				member = ((MethodGroupResolveResult)result).Methods.FirstOrDefault ();
+			} else {
+				member = null;
+			}
+			if (member == null)
+				return;
+				
+			bool isRedundant;
+			if (result is MemberResolveResult) {
+				isRedundant = ((MemberResolveResult)result).Member.Region.Equals (member.Region);
+			} else if (result is MethodGroupResolveResult) {
+				isRedundant = ((MethodGroupResolveResult)result).Methods.Any (m => m.Region.Equals (member.Region));
+			} else {
+				return;
+			}
+			if (isRedundant) {
 				AddResult (data,
 					new DomRegion (expr.StartLocation, memberReference.MemberNameToken.StartLocation),
 					GettextCatalog.GetString ("Remove redundant 'this.'"),

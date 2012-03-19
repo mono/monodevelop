@@ -42,19 +42,32 @@ using Mono.Addins;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using System.Threading;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class InspectionData	
 	{
+		readonly CancellationToken cancellationToken;
 		readonly List<Result> results = new List<Result> ();
 		
 		public IEnumerable<Result> Results {
 			get { return results; }
 		}
+
+		public CancellationToken CancellationToken {
+			get {
+				return cancellationToken;
+			}
+		}
 		
 		public CallGraph Graph { get; set; }
 		public Document Document { get; set; }
+		
+		public InspectionData (CancellationToken cancellationToken)
+		{
+			this.cancellationToken = cancellationToken;
+		}
 		
 		public void Add (Result result)
 		{
@@ -95,29 +108,21 @@ namespace MonoDevelop.CSharp.Inspection
 			inspector.Attach (null, visitor);
 		}
 		
-		public static IEnumerable<Result> Check (Document input)
+		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
+			if (!QuickTaskStrip.EnableFancyFeatures)
+				return Enumerable.Empty<Result> ();
 			var unit = input.ParsedDocument.GetAst<CompilationUnit> ();
 			if (unit == null)
 				return Enumerable.Empty<Result> ();
-			var oldSrc = input.Annotation<CancellationTokenSource> ();
-			if (oldSrc != null) {
-				Console.WriteLine ("cancel !!!");
-				oldSrc.Cancel ();
-			}
 			
-			var cts = new CancellationTokenSource(); 
-			var token = cts.Token;
-			input.AddAnnotation (cts);
-			try {
-				var cg = new CallGraph (token);
-				cg.Inspect (input, input.ParsedDocument);
-				var data = new InspectionData () { Graph = cg, Document = input };
-				unit.AcceptVisitor (visitor, data);
-				return data.Results;
-			} catch (OperationCanceledException) {
-				return Enumerable.Empty<Result>();
-			}
+			
+			var cg = new CallGraph (cancellationToken);
+			cg.Inspect (input, input.ParsedDocument);
+			var data = new InspectionData (cancellationToken) { Graph = cg, Document = input };
+			unit.AcceptVisitor (visitor, data);
+			return data.Results;
 		}
+			
 	}
 }

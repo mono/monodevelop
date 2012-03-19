@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharp.Inspection
 		
 		public ResolveResult Resolve (AstNode node)
 		{
-			return Resolver.Resolve (node);
+			return Resolver.Resolve (node, token);
 		}
 		
 		public void Inspect (MonoDevelop.Ide.Gui.Document doc, ParsedDocument parsedDocument)
