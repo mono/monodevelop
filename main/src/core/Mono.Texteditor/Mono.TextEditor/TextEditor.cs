@@ -1671,8 +1671,8 @@ namespace Mono.TextEditor
 					animation.Drawer.Draw (cr);
 				}
 				
-				if (HasFocus && e.Area.Contains ((int)TextViewMargin.caretX, (int)TextViewMargin.caretY))
-					textViewMargin.DrawCaret (e.Window);
+				if (HasFocus)
+					textViewMargin.DrawCaret (e.Window, e.Area);
 				
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}

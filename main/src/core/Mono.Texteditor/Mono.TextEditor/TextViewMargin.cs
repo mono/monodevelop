@@ -506,8 +506,6 @@ namespace Mono.TextEditor
 				tabArray = null;
 			}
 
-			EnsureCaretGc ();
-
 			var tabWidthLayout = PangoUtil.CreateLayout (textEditor, (new string (' ', textEditor.Options.TabSize)));
 			tabWidthLayout.Alignment = Pango.Alignment.Left;
 			tabWidthLayout.FontDescription = textEditor.Options.Font;
@@ -519,15 +517,6 @@ namespace Mono.TextEditor
 
 			DisposeLayoutDict ();
 			chunkDict.Clear ();
-		}
-
-		void EnsureCaretGc ()
-		{
-			if (caretGc != null || textEditor.GdkWindow == null)
-				return;
-			caretGc = new Gdk.GC (textEditor.GdkWindow);
-			caretGc.RgbFgColor = new Color (0x80, 0x80, 0x80);
-			caretGc.Function = Gdk.Function.Xor;
 		}
 
 		void DisposeGCs ()
@@ -558,8 +547,6 @@ namespace Mono.TextEditor
 			xtermCursor.Dispose ();
 
 			DisposeGCs ();
-			if (caretGc != null)
-				caretGc.Dispose ();
 			if (markerLayout != null)
 				markerLayout.Dispose ();
 			if (tabMarkerLayout != null)
@@ -609,22 +596,27 @@ namespace Mono.TextEditor
 		bool UpdateCaret ()
 		{
 			caretBlink = !caretBlink;
-//			int multiplier = caretBlink ? cursorOnMultiplier : cursorOffMultiplier;
-			if (Caret.IsVisible)
-				DrawCaret (textEditor.GdkWindow);
+			//			int multiplier = caretBlink ? cursorOnMultiplier : cursorOffMultiplier;
+			if (caretBlink) {
+				if (Caret.IsVisible)
+					DrawCaret (textEditor.GdkWindow, textEditor.Allocation);
+			} else {
+				textEditor.QueueDrawArea (caretRectangle.X,
+				                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
+				                          caretRectangle.Width,
+				                          caretRectangle.Height);
+			}
 			return true;
 		}
 		#endregion
 		
 		internal double caretX;
 		internal double caretY;
-		Gdk.GC caretGc;
-		
+
 		void SetVisibleCaretPosition (double x, double y)
 		{
 			if (x == caretX && y == caretY)
 				return;
-			
 			caretX = x;
 			caretY = y;
 			
@@ -637,24 +629,89 @@ namespace Mono.TextEditor
 		}
 
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
-		public void DrawCaret (Gdk.Drawable win)
+		Gdk.Rectangle caretRectangle;
+		double caretVAdjustmentValue;
+		char GetCaretChar ()
+		{
+			var offset = Caret.Offset;
+			char caretChar;
+			if (offset >= 0 && offset < Document.Length) {
+				caretChar = Document.GetCharAt (offset);
+			} else {
+				if (textEditor.Options.ShowEolMarkers) {
+					// <EOF>
+					return '<';
+				}
+				caretChar = '\0';
+			}
+
+			switch (caretChar) {
+			case ' ':
+				if (textEditor.Options.ShowSpaces)
+					return '·';
+				break;
+			case '\t':
+				if (textEditor.Options.ShowTabs)
+					return '»';
+				break;
+			case '\n':
+			case '\r':
+				if (textEditor.Options.ShowEolMarkers)
+					return '\\';
+				break;
+			}
+			return caretChar;
+		}
+
+		public void DrawCaret (Gdk.Drawable win, Gdk.Rectangle rect)
 		{
 			if (!this.textEditor.IsInDrag && !(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0))) 
 				return;
-			if (win == null || Settings.Default.CursorBlink && !Caret.IsVisible)
+			if (win == null || Settings.Default.CursorBlink && !Caret.IsVisible || !caretBlink)
 				return;
-
-			switch (Caret.Mode) {
-			case CaretMode.Insert:
-				win.DrawLine (caretGc, (int)caretX, (int)caretY, (int)caretX, (int)(caretY + LineHeight - 1));
-				break;
-			case CaretMode.Block:
-				win.DrawRectangle (caretGc, true, new Gdk.Rectangle ((int)caretX, (int)caretY, (int)this.charWidth, (int)LineHeight));
-				break;
-			case CaretMode.Underscore:
-				double bottom = caretY + LineHeight;
-				win.DrawLine (caretGc, (int)caretX, (int)bottom, (int)(caretX + this.charWidth), (int)bottom);
-				break;
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
+				cr.LineWidth = textEditor.Options.Zoom;
+				cr.Antialias = Cairo.Antialias.None;
+				var curRect = new Gdk.Rectangle ((int)caretX, (int)caretY, (int)this.charWidth, (int)LineHeight - 1);
+				if (curRect != caretRectangle) {
+					caretRectangle = curRect;
+					textEditor.QueueDrawArea (caretRectangle.X,
+					               (int)(caretRectangle.Y + (-textEditor.VAdjustment.Value + caretVAdjustmentValue)),
+					               caretRectangle.Width + 1,
+					               caretRectangle.Height + 1);
+					caretVAdjustmentValue = textEditor.VAdjustment.Value;
+				}
+				cr.Color = textEditor.ColorStyle.Default.CairoColor;
+				switch (Caret.Mode) {
+				case CaretMode.Insert:
+					cr.DrawLine (textEditor.ColorStyle.Default.CairoColor,
+					             caretRectangle.X + 0.5, 
+					             caretRectangle.Y + 0.5,
+					             caretRectangle.X + 0.5,
+					             caretRectangle.Y + caretRectangle.Height);
+					break;
+				case CaretMode.Block:
+					cr.Rectangle (caretRectangle.X + 0.5, caretRectangle.Y + 0.5, caretRectangle.Width, caretRectangle.Height);
+					cr.Fill ();
+					char caretChar = GetCaretChar ();
+					if (!char.IsWhiteSpace (caretChar) && caretChar != '\0') {
+						using (var layout = PangoUtil.CreateLayout (textEditor)) {
+							layout.FontDescription = textEditor.Options.Font;
+							layout.SetText (caretChar.ToString ());
+							cr.MoveTo (caretRectangle.X, caretRectangle.Y);
+							cr.Color = textEditor.ColorStyle.Default.CairoBackgroundColor;
+							cr.ShowLayout (layout);
+						}
+					}
+					break;
+				case CaretMode.Underscore:
+					cr.DrawLine (textEditor.ColorStyle.Default.CairoColor,
+					             caretRectangle.X + 0.5, 
+					             caretRectangle.Y + caretRectangle.Height + 0.5,
+					             caretRectangle.X + caretRectangle.Width,
+					             caretRectangle.Y + caretRectangle.Height + 0.5);
+					break;
+				}
 			}
 		}
 
@@ -2272,13 +2329,6 @@ namespace Mono.TextEditor
 		}
 
 		internal double lastLineRenderWidth = 0;
-
-
-		void SetClip (Gdk.Rectangle rect)
-		{
-			EnsureCaretGc ();
-			caretGc.ClipRectangle = rect;
-		}
 
 		protected internal override void MouseLeft ()
 		{
