@@ -315,8 +315,11 @@ namespace MonoDevelop.SourceEditor
 			bool inChar = false;
 			bool inComment = false;
 			bool inString = false;
-//			string escape = "\"";
+			//			string escape = "\"";
 			var stack = line.StartSpan.Clone ();
+			var sm = Document.SyntaxMode as SyntaxMode;
+			if (sm != null)
+				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, sm, sm, stack, line.Offset, Caret.Offset);
 			foreach (Span span in stack) {
 				if (string.IsNullOrEmpty (span.Color))
 					continue;
