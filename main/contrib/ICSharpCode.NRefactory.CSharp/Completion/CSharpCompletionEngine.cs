@@ -1562,7 +1562,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IEnumerable<ICompletionData> GetOverrideCompletionData(IUnresolvedTypeDefinition type, string modifiers)
 		{
 			var wrapper = new CompletionDataWrapper (this);
-			var alreadyInserted = new Dictionary<string, bool> ();
+			var alreadyInserted = new List<IMember> ();
 			//bool addedVirtuals = false;
 			
 			int declarationBegin = offset;
@@ -1644,16 +1644,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return null;
 		}
 		
-		static string GetNameWithParamCount(IMember member)
-		{
-			var e = member as IMethod;
-			if (e == null || e.TypeParameters.Count == 0) {
-				return member.Name;
-			}
-			return e.Name + "`" + e.TypeParameters.Count;
-		}
-		
-		void AddVirtuals(Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
+		void AddVirtuals(List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
 		{
 			if (curType == null) {
 				return;
@@ -1668,17 +1659,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				var data = factory.CreateNewOverrideCompletionData(declarationBegin, currentType, m);
-				string text = GetNameWithParamCount(m);
-				
 				// check if the member is already implemented
-				bool foundMember = curType.GetMembers().Any(cm => GetNameWithParamCount(cm) == text && cm.DeclaringTypeDefinition == curType.GetDefinition());
+				bool foundMember = curType.GetMembers().Any(cm => SignatureComparer.Ordinal.Equals(cm, m) && cm.DeclaringTypeDefinition == curType.GetDefinition());
 				if (foundMember) {
 					continue;
 				}
-				if (alreadyInserted.ContainsKey(text)) {
+				if (alreadyInserted.Any(cm => SignatureComparer.Ordinal.Equals(cm, m)))
 					continue;
-				}
-				alreadyInserted [text] = true;
+				alreadyInserted.Add (m);
 				data.CompletionCategory = col.GetCompletionCategory(curType);
 				col.Add(data);
 			}
