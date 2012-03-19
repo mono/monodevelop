@@ -89,6 +89,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 		void Disable ()
 		{
 			Document.DocumentParsed -= OnDocumentParsed;
+			if (src != null) {
+				src.Cancel ();
+				oldTask.Wait ();
+			}
 			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
 		}
 		
