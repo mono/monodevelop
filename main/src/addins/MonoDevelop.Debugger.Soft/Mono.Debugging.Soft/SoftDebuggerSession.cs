@@ -330,10 +330,13 @@ namespace Mono.Debugging.Soft
 			if (Exited)
 				return;
 			
-			if (!HandleException (ex)) {
+			if (!HandleException (new ConnectionException (ex))) {
 				LoggingService.LogAndShowException ("Unhandled error launching soft debugger", ex);
-				EndSession ();
 			}
+			
+			// The session is dead
+			// HandleException doesn't actually handle exceptions, it just displays them.
+			EndSession ();
 		}
 		
 		void ConnectionStarting (IAsyncResult connectionHandle, DebuggerStartInfo dsi, bool listening, int attemptNumber) 
@@ -1063,13 +1066,16 @@ namespace Mono.Debugging.Soft
 						break;
 					}
 					HandleEventSet (e);
-				} catch (VMDisconnectedException ex) {
-					if (!HandleException (ex))
-						OnDebuggerOutput (true, ex.ToString ());
-					break;
 				} catch (Exception ex) {
-					if (!HandleException (ex))
+					if (exited) {
+						break;
+					}
+					if (!HandleException (ex)) {
 						OnDebuggerOutput (true, ex.ToString ());
+					}
+					if (ex is VMDisconnectedException || ex is IOException || ex is SocketException) {
+						break;
+					}
 				}
 			}
 			
@@ -2174,6 +2180,14 @@ namespace Mono.Debugging.Soft
 	{
 		public DebugSocketException (Exception ex):
 			base ("Could not open port for debugger. Another process may be using the port.", ex)
+		{
+		}
+	}
+	
+	class ConnectionException : DebuggerException
+	{
+		public ConnectionException (Exception ex):
+			base ("Could not connect to the debugger.", ex)
 		{
 		}
 	}
