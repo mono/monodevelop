@@ -258,40 +258,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IEnumerable<object> searchedMembers);
 
-		internal static IEnumerable<IEntity> CollectMembers (Solution solution, IMember member)
+		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member)
 		{
 			if (member is IMethod) {
 				var method = (IMethod)member;
 				if (method.IsConstructor || method.IsDestructor || method.IsOperator)
-					return new IEntity [] { member };
+					return new [] { member };
 			}
 
-			// For renaming interface members search for all members implementing the interface member.
-			// also search for overrides of the member
-			var declaringType = member.DeclaringType.GetDefinition ();
-			var searchMembers = new List<IMember> (declaringType.GetMembers (m => m.Name == member.Name));
-			var result = new List<IEntity> (searchMembers);
-			if (declaringType.Kind == TypeKind.Interface || (declaringType.Kind == TypeKind.Class && member.IsOverridable)) {
-				foreach (var p in solution.GetAllSolutionItems<Project> ()) {
-					var compilation = TypeSystemService.GetCompilation (p);
-					var declaringTypeImport = compilation.Import (declaringType);
-					if (declaringTypeImport == null)
-						continue;
-					foreach (var type in compilation.GetAllTypeDefinitions ()) {
-						if (!type.IsDerivedFrom (declaringTypeImport))
-							continue;
-						if (type.ReflectionName == declaringType.ReflectionName)
-							continue;
-						var members = type.GetMembers (m => m.Name == member.Name);
-						// Parameter list needs to match any parameter list from the interface.
-						if (member is IParameterizedMember)
-							members = members.Where (m => searchMembers.Any (om => MatchParameters (m as IParameterizedMember, om as IParameterizedMember)));
-						result.AddRange (members);
-					}
-				}
-			}
-			
-			return result;
+			return MemberCollector.CollectMembers (solution, member);
 		}
 
 		static bool MatchParameters (IParameterizedMember a, IParameterizedMember b)

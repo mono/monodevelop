@@ -221,6 +221,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\CompletionListWindowTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ImplementInterfaceTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ResolveNamespaceTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollectorTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -265,5 +266,6 @@
     <Folder Include="MonoDevelop.VersionControl.Git\" />
     <Folder Include="MonoDevelop.Ide.Gui\" />
     <Folder Include="MonoDevelop.CSharpBinding.Refactoring\" />
+    <Folder Include="MonoDevelop.Ide.FindInFiles\" />
   </ItemGroup>
 </Project>
