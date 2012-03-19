@@ -599,13 +599,17 @@ namespace Mono.Debugging.Soft
 		{
 			exited = true;
 			EndLaunch ();
-			if (vm != null)
+			if (vm != null) {
 				try {
 					vm.Exit (0);
 				} catch (SocketException se) {
 					// This will often happen during normal operation
 					LoggingService.LogError ("Error closing debugger session", se);
+				}catch (IOException ex) {
+					// This will often happen during normal operation
+					LoggingService.LogError ("Error closing debugger session", ex);
 				}
+			}
 			QueueEnsureExited ();
 		}
 		
@@ -1096,8 +1100,8 @@ namespace Mono.Debugging.Soft
 		{
 			HideConnectionDialog ();
 			
-			if (ex is VMDisconnectedException)
-				ex = new DisconnectedException ();
+			if (ex is VMDisconnectedException || ex is IOException)
+				ex = new DisconnectedException (ex);
 			else if (ex is SocketException)
 				ex = new DebugSocketException (ex);
 			
@@ -2170,8 +2174,8 @@ namespace Mono.Debugging.Soft
 	
 	class DisconnectedException: DebuggerException
 	{
-		public DisconnectedException ():
-			base ("The connection with the debugger has been lost. The target application may have exited.")
+		public DisconnectedException (Exception ex):
+			base ("The connection with the debugger has been lost. The target application may have exited.", ex)
 		{
 		}
 	}
