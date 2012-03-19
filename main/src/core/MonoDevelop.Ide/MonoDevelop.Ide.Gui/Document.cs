@@ -529,14 +529,9 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		bool wasEdited;
-		internal void OnDocumentAttached ()
+		
+		void InitializeEditor (IExtensibleTextEditor editor)
 		{
-			window.Document = this;
-			
-			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
-			if (editor == null)
-				return;
-			
 			Editor.Document.TextReplaced += (o, a) => {
 				if (Editor.Document.IsInAtomicUndo) {
 					wasEdited = true;
@@ -561,12 +556,11 @@ namespace MonoDevelop.Ide.Gui
 			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			editorExtension = null;
 			TextEditorExtension last = null;
-			
 			foreach (TextEditorExtensionNode extNode in extensions) {
 				if (!extNode.Supports (FileName))
 					continue;
 				
-				TextEditorExtension ext = (TextEditorExtension) extNode.CreateInstance ();
+				TextEditorExtension ext = (TextEditorExtension)extNode.CreateInstance ();
 				if (ext.ExtendsEditor (this, editor)) {
 					if (editorExtension == null)
 						editorExtension = ext;
@@ -583,9 +577,19 @@ namespace MonoDevelop.Ide.Gui
 				last.Next = editor.AttachExtension (editorExtension);
 			
 			RunWhenLoaded (() => ReparseDocument ());
+		}
+		
+		internal void OnDocumentAttached ()
+		{
+			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
+			if (editor != null)
+				InitializeEditor (editor);
+			
+			window.Document = this;
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
+			
 		}
 		
 		/// <summary>
