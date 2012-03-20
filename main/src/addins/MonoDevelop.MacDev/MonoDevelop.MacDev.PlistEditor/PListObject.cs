@@ -230,12 +230,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PDictionary : PObjectContainer, IEnumerable<KeyValuePair<string, PObject>>
 	{
+		public const string Type = "Dictionary";
 		Dictionary<string, PObject> dict;
 		List<string> order;
 		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Dictionary");
+				return Type;
 			}
 		}
 		
@@ -547,11 +548,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PArray : PObjectContainer, IEnumerable<PObject>
 	{
+		public const string Type = "Array";
 		List<PObject> list;
 		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Array");
+				return Type;
 			}
 		}
 		
@@ -727,9 +729,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PBoolean : PValueObject<bool>
 	{
+		public const string Type = "Boolean";
+		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Boolean");
+				return Type;
 			}
 		}
 		
@@ -756,11 +760,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PData : PValueObject<byte[]>
 	{
+		public const string Type = "Data";
 		static readonly byte[] Empty = new byte [0];
 		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Data");
+				return Type;
 			}
 		}
 		
@@ -792,11 +797,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PDate : PValueObject<DateTime>
 	{
+		public const string Type = "Date";
 		internal static DateTime referenceDate = new DateTime (2001, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Date");
+				return Type;
 			}
 		}
 		
@@ -818,9 +824,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PNumber : PValueObject<int>
 	{
+		public const string Type = "Number";
+		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Number");
+				return Type;
 			}
 		}
 		
@@ -843,9 +851,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PString : PValueObject<string>
 	{
+		public const string Type = "String";
+		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("String");
+				return Type;
 			}
 		}
 		
