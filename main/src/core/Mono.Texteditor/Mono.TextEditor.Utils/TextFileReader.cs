@@ -235,15 +235,18 @@ namespace Mono.TextEditor.Utils
 					byte* bEndPtr = bBeginPtr + readLength;
 					byte* sEndPtr = stateBeginPtr + states.Length;
 					
-					while (bPtr != bEndPtr && verifiersRunning > 0) {
+					while (bPtr != bEndPtr) {
 						byte* sPtr = stateBeginPtr;
 						int i = 0;
 						while (sPtr != sEndPtr) {
 							byte curState = *sPtr;
 							if (curState != 0) {
 								curState = stateTables [i] [curState] [*bPtr];
-								if (curState == 0)
+								if (curState == 0) {
 									verifiersRunning--;
+									if (verifiersRunning == 0) 
+										goto finishVerify;
+								}
 								*sPtr = curState;
 							}
 							sPtr++;
@@ -251,7 +254,7 @@ namespace Mono.TextEditor.Utils
 						}
 						bPtr++;
 					}
-					
+				finishVerify:
 					if (verifiersRunning > 0) {
 						for (int i = 0; i < verifiers.Length; i++) {
 							if (verifiers [i].IsEncodingValid (states [i]))
