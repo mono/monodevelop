@@ -111,9 +111,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		Dictionary<string, INamespace> GetChildNamespaces()
 		{
-			var result = this.childNamespaces;
+			var result = LazyInit.VolatileRead(ref this.childNamespaces);
 			if (result != null) {
-				LazyInit.ReadBarrier();
 				return result;
 			} else {
 				result = new Dictionary<string, INamespace>(compilation.NameComparer);

@@ -36,9 +36,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IType FindType(KnownTypeCode typeCode)
 		{
-			IType type = knownTypes[(int)typeCode];
+			IType type = LazyInit.VolatileRead(ref knownTypes[(int)typeCode]);
 			if (type != null) {
-				LazyInit.ReadBarrier();
 				return type;
 			}
 			return LazyInit.GetOrSet(ref knownTypes[(int)typeCode], SearchType(typeCode));

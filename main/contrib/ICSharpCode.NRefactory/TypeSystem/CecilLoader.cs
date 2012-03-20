@@ -869,9 +869,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public IList<ResolveResult> PositionalArguments {
 				get {
-					var result = this.positionalArguments;
+					var result = LazyInit.VolatileRead(ref this.positionalArguments);
 					if (result != null) {
-						LazyInit.ReadBarrier();
 						return result;
 					}
 					DecodeBlob();
@@ -881,9 +880,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public IList<KeyValuePair<IMember, ResolveResult>> NamedArguments {
 				get {
-					var result = this.namedArguments;
+					var result = LazyInit.VolatileRead(ref this.namedArguments);
 					if (result != null) {
-						LazyInit.ReadBarrier();
 						return result;
 					}
 					DecodeBlob();

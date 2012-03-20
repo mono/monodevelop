@@ -110,9 +110,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public INamespace RootNamespace {
 			get {
-				INamespace ns = this.rootNamespace;
+				INamespace ns = LazyInit.VolatileRead(ref this.rootNamespace);
 				if (ns != null) {
-					LazyInit.ReadBarrier();
 					return ns;
 				} else {
 					if (referencedAssemblies == null)

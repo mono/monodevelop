@@ -56,9 +56,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IMember> ImplementedInterfaceMembers {
 			get {
-				IList<IMember> result = this.implementedInterfaceMembers;
+				IList<IMember> result = LazyInit.VolatileRead(ref this.implementedInterfaceMembers);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				} else {
 					return LazyInit.GetOrSet(ref implementedInterfaceMembers, FindImplementedInterfaceMembers());
@@ -123,9 +122,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (unresolvedAccessor == null)
 				return null;
-			IMethod result = accessorField;
+			IMethod result = LazyInit.VolatileRead(ref accessorField);
 			if (result != null) {
-				LazyInit.ReadBarrier();
 				return result;
 			} else {
 				return LazyInit.GetOrSet(ref accessorField, (IMethod)unresolvedAccessor.CreateResolved(context));

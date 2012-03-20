@@ -234,9 +234,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public object ConstantValue {
 				get {
-					ResolveResult rr = this.resolvedDefaultValue;
+					ResolveResult rr = LazyInit.VolatileRead(ref this.resolvedDefaultValue);
 					if (rr != null) {
-						LazyInit.ReadBarrier();
 						return rr.ConstantValue;
 					} else {
 						rr = defaultValue.Resolve(context);

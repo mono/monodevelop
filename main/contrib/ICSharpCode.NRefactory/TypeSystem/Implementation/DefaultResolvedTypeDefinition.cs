@@ -61,9 +61,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<ITypeParameter> TypeParameters {
 			get {
-				var result = this.typeParameters;
+				var result = LazyInit.VolatileRead(ref this.typeParameters);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				}
 				ITypeResolveContext contextForTypeParameters = parts[0].CreateResolveContext(parentContext);
@@ -91,9 +90,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IAttribute> Attributes {
 			get {
-				var result = this.attributes;
+				var result = LazyInit.VolatileRead(ref this.attributes);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				}
 				result = new List<IAttribute>();
@@ -126,9 +124,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<ITypeDefinition> NestedTypes {
 			get {
-				IList<ITypeDefinition> result = this.nestedTypes;
+				IList<ITypeDefinition> result = LazyInit.VolatileRead(ref this.nestedTypes);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				} else {
 					result = (
@@ -171,9 +168,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public IMember this[int index] {
 				get {
-					IMember output = resolvedMembers[index];
+					IMember output = LazyInit.VolatileRead(ref resolvedMembers[index]);
 					if (output != null) {
-						LazyInit.ReadBarrier();
 						return output;
 					}
 					return LazyInit.GetOrSet(ref resolvedMembers[index], unresolvedMembers[index].CreateResolved(contextPerMember[index]));
@@ -288,9 +284,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		MemberList GetMemberList()
 		{
-			var result = this.memberList;
+			var result = LazyInit.VolatileRead(ref this.memberList);
 			if (result != null) {
-				LazyInit.ReadBarrier();
 				return result;
 			}
 			List<IUnresolvedMember> unresolvedMembers = new List<IUnresolvedMember>();
@@ -506,9 +501,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IType> DirectBaseTypes {
 			get {
-				IList<IType> result = this.directBaseTypes;
+				IList<IType> result = LazyInit.VolatileRead(ref this.directBaseTypes);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				} else {
 					result = CalculateDirectBaseTypes();

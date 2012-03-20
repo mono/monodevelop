@@ -40,9 +40,8 @@ namespace ICSharpCode.NRefactory.Utils
 		
 		public TOutput this[int index] {
 			get {
-				TOutput output = items[index];
+				TOutput output = LazyInit.VolatileRead(ref items[index]);
 				if (output != null) {
-					LazyInit.ReadBarrier();
 					return output;
 				}
 				return LazyInit.GetOrSet(ref items[index], projection(input[index]));
@@ -150,9 +149,8 @@ namespace ICSharpCode.NRefactory.Utils
 		
 		public TOutput this[int index] {
 			get {
-				TOutput output = items[index];
+				TOutput output = LazyInit.VolatileRead(ref items[index]);
 				if (output != null) {
-					LazyInit.ReadBarrier();
 					return output;
 				}
 				return LazyInit.GetOrSet(ref items[index], projection(context, input[index]));
