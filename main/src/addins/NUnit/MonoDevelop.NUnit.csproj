@@ -150,6 +150,9 @@
     <EmbeddedResource Include="Gui\unit-test-24.png">
       <LogicalName>unit-test-24.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Gui\NUnit.Inconclusive.png">
+      <LogicalName>NUnit.Inconclusive.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
