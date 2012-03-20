@@ -192,45 +192,45 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// of the current method overload
 			if (window == null && methods.Count > 0) {
 				window = new ParameterInformationWindow (ext, widget);
-				window.SizeRequested += delegate(object o, SizeRequestedArgs args) {
-					if (args.Requisition.Width == lastW && args.Requisition.Height == lastH && wasVisi == CompletionWindowManager.IsVisible)
+				window.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
+
+					if (args.Allocation.Width == lastW && args.Allocation.Height == lastH && wasVisi == CompletionWindowManager.IsVisible)
 						return;
-					lastW = args.Requisition.Width;
-					lastH = args.Requisition.Height;
+					lastW = args.Allocation.Width;
+					lastH = args.Allocation.Height;
 					wasVisi = CompletionWindowManager.IsVisible;
 					
 					var ctx = widget.CurrentCodeCompletionContext;
 					MethodData md = methods [methods.Count - 1];
 					int cparam = ext != null ? ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
 					Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
-					Gtk.Requisition reqSize = args.Requisition;
 					window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
 					X = md.CompletionContext.TriggerXCoord;
 					if (CompletionWindowManager.IsVisible) {
 						// place above
-						Y = ctx.TriggerYCoord - ctx.TriggerTextHeight - reqSize.Height - 10;
+						Y = ctx.TriggerYCoord - ctx.TriggerTextHeight - args.Allocation.Height - 10;
 					} else {
 						// place below
 						Y = ctx.TriggerYCoord;
 					}
 
-					if (X + reqSize.Width > geometry.Right)
-						X = geometry.Right - reqSize.Width;
+					if (X + args.Allocation.Width > geometry.Right)
+						X = geometry.Right - args.Allocation.Width;
 			
 					if (Y < geometry.Top)
 						Y = ctx.TriggerYCoord;
 			
-					if (wasAbove || Y + reqSize.Height > geometry.Bottom) {
-						Y = Y - ctx.TriggerTextHeight - reqSize.Height - 4;
+					if (wasAbove || Y + args.Allocation.Height > geometry.Bottom) {
+						Y = Y - ctx.TriggerTextHeight - args.Allocation.Height - 4;
 						wasAbove = true;
 					}
 					
 					if (CompletionWindowManager.IsVisible) {
 						Rectangle completionWindow = new Rectangle (CompletionWindowManager.X, CompletionWindowManager.Y,
 				                                            CompletionWindowManager.Wnd.Allocation.Width, CompletionWindowManager.Wnd.Allocation.Height);
-						if (completionWindow.IntersectsWith (new Rectangle (X, Y, reqSize.Width, reqSize.Height))) {
+						if (completionWindow.IntersectsWith (new Rectangle (X, Y, args.Allocation.Width, args.Allocation.Height))) {
 							X = completionWindow.X;
-							Y = completionWindow.Y - reqSize.Height - 6;
+							Y = completionWindow.Y - args.Allocation.Height - 6;
 							if (Y < 0)
 								Y = completionWindow.Bottom + 6;
 						}
