@@ -34,6 +34,13 @@ namespace MonoDevelop.Refactoring.Rename
 {
 	public class RenameHandler : AbstractRefactoringCommandHandler
 	{
+		protected override void Update (RefactoringOptions options, CommandInfo info)
+		{
+			var renameRefactoring = new RenameRefactoring ();
+			if (!renameRefactoring.IsValid (options))
+				info.Bypass = true;
+		}
+
 		protected override void Run (RefactoringOptions options)
 		{
 			var renameRefactoring = new RenameRefactoring ();

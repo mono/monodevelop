@@ -38,28 +38,48 @@ namespace MonoDevelop.Refactoring
 	public abstract class AbstractRefactoringCommandHandler : CommandHandler
 	{
 		protected abstract void Run (RefactoringOptions options);
+
+		protected virtual void Update (RefactoringOptions options, CommandInfo info)
+		{
+		}
+		
 		public void Start (object data)
 		{
 			Run (data);
 		}
-		protected override void Run (object data)
+
+		RefactoringOptions CreateOptions ()
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
-				return;
-			
-			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
-			if (editor == null)
-				return;
+				return null;
 			
 			ResolveResult result;
 			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out result);
 			
-			RefactoringOptions options = new RefactoringOptions (doc) {
+			return new RefactoringOptions (doc) {
 				ResolveResult = result,
 				SelectedItem = item
 			};
-			Run (options);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			
+			var options = CreateOptions ();
+			if (options != null) {
+				Update (options, info);
+			} else {
+				info.Bypass = true;
+			}
+		}
+
+		protected override void Run (object data)
+		{
+			var options = CreateOptions ();
+			if (options != null)
+				Run (options);
 		}
 	}
 }
