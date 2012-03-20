@@ -68,9 +68,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		IList<IAttribute> GetAttributes(ref IList<IAttribute> field, bool assemblyAttributes)
 		{
-			IList<IAttribute> result = field;
+			IList<IAttribute> result = LazyInit.VolatileRead(ref field);
 			if (result != null) {
-				LazyInit.ReadBarrier();
 				return result;
 			} else {
 				result = new List<IAttribute>();
@@ -89,9 +88,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public INamespace RootNamespace {
 			get {
-				NS root = this.rootNamespace;
+				NS root = LazyInit.VolatileRead(ref this.rootNamespace);
 				if (root != null) {
-					LazyInit.ReadBarrier();
 					return root;
 				} else {
 					root = new NS(this);
@@ -183,9 +181,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		Dictionary<FullNameAndTypeParameterCount, ITypeDefinition> GetTypes()
 		{
-			var dict = this.typeDict;
+			var dict = LazyInit.VolatileRead(ref this.typeDict);
 			if (dict != null) {
-				LazyInit.ReadBarrier();
 				return dict;
 			} else {
 				// Always use the ordinal comparer for the main dictionary so that partial classes

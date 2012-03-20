@@ -1794,9 +1794,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var currentUsingScope = context.CurrentUsingScope;
 			if (currentUsingScope == null)
 				return EmptyList<List<IMethod>>.Instance;
-			List<List<IMethod>> extensionMethodGroups = currentUsingScope.AllExtensionMethods;
+			List<List<IMethod>> extensionMethodGroups = LazyInit.VolatileRead(ref currentUsingScope.AllExtensionMethods);
 			if (extensionMethodGroups != null) {
-				LazyInit.ReadBarrier();
 				return extensionMethodGroups;
 			}
 			extensionMethodGroups = new List<List<IMethod>>();

@@ -418,7 +418,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ParameterizedType toPT = toType as ParameterizedType;
 				if (fromArray.Dimensions == 1 && toPT != null && toPT.TypeParameterCount == 1
 				    && toPT.Namespace == "System.Collections.Generic"
-				    && (toPT.Name == "IList" || toPT.Name == "ICollection" || toPT.Name == "IEnumerable"))
+				    && (toPT.Name == "IList" || toPT.Name == "ICollection" || toPT.Name == "IEnumerable" || toPT.Name == "IReadOnlyList"))
 				{
 					// array covariance plays a part here as well (string[] is IList<object>)
 					return IdentityConversion(fromArray.ElementType, toPT.GetTypeArgument(0))

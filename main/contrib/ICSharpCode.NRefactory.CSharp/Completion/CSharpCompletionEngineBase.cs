@@ -415,9 +415,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				wrapper.Append (';');
 		}
 
-		protected CompilationUnit ParseStub (string continuation, bool appendSemicolon = true, string afterContinuation = null)
+		protected CompilationUnit ParseStub(string continuation, bool appendSemicolon = true, string afterContinuation = null)
 		{
-			var mt = GetMemberTextToCaret ();
+			var mt = GetMemberTextToCaret();
 			if (mt == null) {
 				return null;
 			}
@@ -429,7 +429,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var wrapper = new StringBuilder ();
 			bool wrapInClass = memberLocation != new TextLocation (1, 1);
 			if (wrapInClass) {
-				var nodeAtLocation = Unit.GetNodeAt (memberLocation, n => n is TypeDeclaration || n is NamespaceDeclaration);
+				var nodeAtLocation = Unit.GetNodeAt(memberLocation, n => n is TypeDeclaration || n is NamespaceDeclaration);
 				if (nodeAtLocation != null) {
 					foreach (var n in nodeAtLocation.AncestorsAndSelf) {
 						if (memberLocation == n.StartLocation) {
@@ -438,25 +438,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (n is TypeDeclaration) {
 							var t = (TypeDeclaration)n;
 							switch (t.ClassType) {
-							case ClassType.Class:
-								wrapper.Append ("class");
-								break;
-							case ClassType.Struct:
-								wrapper.Append ("struct");
-								break;
-							case ClassType.Interface:
-								wrapper.Append ("interface");
-								break;
-							case ClassType.Enum:
-								wrapper.Append ("enum");
-								break;
+								case ClassType.Class:
+									wrapper.Append("class");
+									break;
+								case ClassType.Struct:
+									wrapper.Append("struct");
+									break;
+								case ClassType.Interface:
+									wrapper.Append("interface");
+									break;
+								case ClassType.Enum:
+									wrapper.Append("enum");
+									break;
 							}
-							wrapper.Append (" " + t.Name + " {");
-							wrapper.AppendLine ();
+							wrapper.Append(" " + t.Name + " {");
+							wrapper.AppendLine();
 							closingBrackets++;
 							generatedLines++;
 						} else {
-							Console.WriteLine (n);
+							Console.WriteLine(n);
 						}
 					}
 				}

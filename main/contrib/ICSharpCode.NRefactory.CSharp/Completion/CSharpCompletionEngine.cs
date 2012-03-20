@@ -73,6 +73,34 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.IndentString = "\t";
 		}
 
+		public bool TryGetCompletionWord (int offset, out int startPos, out int wordLength)
+		{
+			startPos = wordLength = 0;
+			int pos = offset - 1;
+			while (pos >= 0) {
+				char c = document.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				pos--;
+			}
+			if (pos == -1)
+				return false;
+
+			pos++;
+			startPos = pos;
+
+			while (pos < document.TextLength) {
+				char c = document.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				pos++;
+			}
+			wordLength = pos - startPos;
+			return true;
+		}
+
+
+
 		public IEnumerable<ICompletionData> GetCompletionData(int offset, bool controlSpace)
 		{
 			this.AutoCompleteEmptyMatch = true;
@@ -481,6 +509,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 					if (identifierStart != null && identifierStart.Node is TypeParameterDeclaration) {
 						return null;
+					}
+
+					if (identifierStart != null && identifierStart.Node is Identifier) {
+						// May happen in variable names
+						return controlSpace ? DefaultControlSpaceItems(identifierStart) : null;
 					}
 
 					if (identifierStart != null && identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
@@ -2279,14 +2312,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		ExpressionResult GetExpressionAtCursor()
 		{
-//			TextLocation memberLocation;
-//			if (currentMember != null) {
-//				memberLocation = currentMember.Region.Begin;
-//			} else if (currentType != null) {
-//				memberLocation = currentType.Region.Begin;
-//			} else {
-//				memberLocation = location;
-//			}
+			//			TextLocation memberLocation;
+			//			if (currentMember != null) {
+			//				memberLocation = currentMember.Region.Begin;
+			//			} else if (currentType != null) {
+			//				memberLocation = currentType.Region.Begin;
+			//			} else {
+			//				memberLocation = location;
+			//			}
 			var baseUnit = ParseStub("a");
 			
 			var tmpUnit = baseUnit;
@@ -2294,7 +2327,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType>(location.Line, location.Column - 1);
 			}
-
+			if (expr == null)
+				expr = baseUnit.GetNodeAt<Identifier>(location.Line, location.Column - 1);
 			// try insertStatement
 			if (expr == null && baseUnit.GetNodeAt<EmptyStatement>(location.Line, location.Column) != null) {
 				tmpUnit = baseUnit = ParseStub("a();", false);
