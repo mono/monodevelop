@@ -311,23 +311,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (!treeview.Selection.GetSelected (out iter))
 					return;
 				
-				PObject obj = null;
-				if (treeStore.IterParent (out iter, iter))
-					obj = (PObject) treeStore.GetValue (iter, 1);
-				obj = obj ?? nsDictionary;
-
-				var newObj = new PString ("");
-				if (obj is PArray) {
-					var arr = (PArray) obj;
-					arr.Add (newObj);
-				} else if (obj is PDictionary) {
-					string name = "newNode";
-					var dict = (PDictionary) obj;
-					while (dict.ContainsKey (name))
-						name += "_";
-					dict.Add (name ,newObj);
-				} else {
-					return;
+				PObject parent = null;
+				string parentKey = null;
+				if (treeStore.IterParent (out iter, iter)) {
+					parentKey = (string) treeStore.GetValue (iter, 0);
+					parent = (PObject) treeStore.GetValue (iter, 1);
+				}
+				parentKey = parentKey ?? "";
+				parent = parent ?? nsDictionary;
+				
+				if (parent is PArray) {
+					AddNewArrayElement ((PArray) parent, scheme.GetKey (parentKey));
+				} else if (parent is PDictionary) {
+					AddNewDictionaryElement ((PDictionary) parent, scheme.GetKey (parentKey));
 				}
 			};
 			
@@ -454,6 +450,50 @@ namespace MonoDevelop.MacDev.PlistEditor
 			});
 			treeview.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview.Model = treeStore;
+		}
+		
+		void AddNewArrayElement (PArray array, PListScheme.Key key)
+		{
+			if (key == null) {
+				array.Add (CreateNewObject (PString.Type));
+				return;
+			}
+			
+			var usedValues = array;
+			var allowedValues = new List<PListScheme.Value> (key.Values);
+			foreach (var allowed in key.Values) {
+				foreach (var used in usedValues) {
+					if (used is PString && key.ArrayType == used.TypeString) {
+						if (((PString)used).Value == allowed.Identifier)
+							allowedValues.Remove (allowed);
+					} else if (used is PNumber && key.ArrayType == used.TypeString) {
+						if (((PNumber) used).Value.ToString () == allowed.Identifier) {
+							allowedValues.Remove (allowed);
+						}
+					}
+				}
+			}
+			
+			if (allowedValues.Count > 0 && key.Values.Count > 0) {
+				var newKey = allowedValues.First ();
+				if (key.ArrayType == PString.Type) {
+					array.Add (new PString (newKey.Identifier));
+				} else if (key.ArrayType == PNumber.Type) {
+					array.Add (new PNumber (int.Parse (newKey.Identifier)));
+				} else {
+					array.Add (CreateNewObject (key.ArrayType ?? PString.Type));
+				}
+			} else {
+				array.Add (CreateNewObject (key.ArrayType ?? PString.Type));
+			}
+		}
+		
+		void AddNewDictionaryElement (PDictionary dict, PListScheme.Key key)
+		{
+			string name = "newNode";
+			while (dict.ContainsKey (name))
+				name += "_";
+			dict.Add (name, new PString (""));
 		}
 
 		bool GetIsExpanded (Gtk.TreeIter iter, TreeStore treeStore)
