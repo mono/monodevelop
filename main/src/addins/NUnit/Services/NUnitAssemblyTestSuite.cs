@@ -344,7 +344,6 @@ namespace MonoDevelop.NUnit
 				if (t is UnitTestGroup) {
 					result.AddRange (CollectTests ((UnitTestGroup)t));
 				} else {
-					Console.WriteLine (t.TestId);
 					result.Add (t.TestId);
 				}
 			}
