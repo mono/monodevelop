@@ -203,18 +203,16 @@ namespace MonoDevelop.CSharp.Resolver
 
 			if (resolveResult is UnknownMemberResolveResult) {
 				var umResult = (UnknownMemberResolveResult)resolveResult;
-				var conv = new CSharpConversions (doc.Compilation);
-				var baseTypes = new List<IType> (umResult.TargetType.GetAllBaseTypes ());
 				string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : null;
-				
+
 				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ().Where (t => t.HasExtensionMethods)) {
-					foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == umResult.MemberName || m.Name == possibleAttributeName))) {
-						var pType = m.Parameters.First ().Type;
-						foreach (var baseType in baseTypes) {
-							if (conv.ImplicitConversion (pType, baseType) != Conversion.None) {
-								yield return typeDefinition.Namespace;
-								goto skipType;
-							}
+					foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == umResult.MemberName || m.Name == possibleAttributeName))) {
+						IType[] inferredTypes;
+						if (CSharpResolver.IsEligibleExtensionMethod (
+							method.Compilation, CSharpConversions.Get (method.Compilation),
+							umResult.TargetType, method, true, out inferredTypes)) {
+							yield return typeDefinition.Namespace;
+							goto skipType;
 						}
 					}
 					skipType:

@@ -196,6 +196,21 @@ namespace My
 			Assert.IsTrue (result.Contains ("Foo2"));
 		}
 
+		[Test ()]
+		public void TestExtensionMethod ()
+		{
+			var result = GetResult (@"class Program
+{
+	public static void Main (string[] args)
+	{
+		args.$First ();
+	}
+}");
+			foreach (var a in result)
+				Console.WriteLine (a);
+			Assert.IsTrue (result.Contains ("System.Linq"));
+		}
+
 
 		#region Bug 3453 - [New Resolver] "Resolve" doesn't show up from time
 		[Test ()]
