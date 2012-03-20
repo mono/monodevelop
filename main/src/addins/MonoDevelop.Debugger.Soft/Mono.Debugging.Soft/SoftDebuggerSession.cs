@@ -558,15 +558,10 @@ namespace Mono.Debugging.Soft
 						} catch (Exception ex) {
 							LoggingService.LogError ("Error exiting SDB VM:", ex);
 						}
-						try {
-							vm.Dispose ();
-						} catch (VMDisconnectedException) {
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error disposing SDB VM:", ex);
-						}
 					});
 				}
 			}
+			
 			Adaptor.Dispose ();
 		}
 
@@ -629,7 +624,7 @@ namespace Mono.Debugging.Soft
 					// Ignore
 				}
 				var t = new System.Timers.Timer ();
-				t.Interval = 1000;
+				t.Interval = 3000;
 				t.Elapsed += delegate {
 					try {
 						t.Enabled = false;
@@ -637,6 +632,14 @@ namespace Mono.Debugging.Soft
 						EnsureExited ();
 					} catch (Exception ex) {
 						LoggingService.LogError ("Failed to force-terminate process", ex);
+					}
+					try {
+						if (vm != null) {
+							//this is a no-op if it already closed
+							vm.ForceDisconnect ();
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Failed to force-close debugger connection", ex);
 					}
 				};
 				t.Enabled = true;
