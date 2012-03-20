@@ -189,6 +189,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 
+		IEnumerable<ICompletionData> HandleMemberReferenceCompletion(ExpressionResult expr)
+		{
+			if (expr == null) 
+				return null;
+		
+			// do not complete <number>. (but <number>.<number>.)
+			if (expr.Node is PrimitiveExpression) {
+				var pexpr = (PrimitiveExpression)expr.Node;
+				if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains('.')) {
+					return null;
+				}
+			}
+			
+			var resolveResult = ResolveExpression (expr);
+			if (resolveResult == null) {
+				return null;
+			}
+			if (expr.Node is AstType) {
+				return CreateTypeAndNamespaceCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
+			}
+			return CreateCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
+		}
+
 		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace)
 		{
 			ExpressionResult expr;
@@ -201,26 +224,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (IsInsideCommentOrString()) {
 						return Enumerable.Empty<ICompletionData>();
 					}
-					expr = GetExpressionBeforeCursor();
-					if (expr == null) {
-						return null;
-					}
-					// do not complete <number>. (but <number>.<number>.)
-					if (expr.Node is PrimitiveExpression) {
-						var pexpr = (PrimitiveExpression)expr.Node;
-						if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains('.')) {
-							return null;
-						}
-					}
-
-					resolveResult = ResolveExpression(expr);
-					if (resolveResult == null) {
-						return null;
-					}
-					if (expr.Node is AstType) {
-						return CreateTypeAndNamespaceCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
-					}
-					return CreateCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
+					return HandleMemberReferenceCompletion(GetExpressionBeforeCursor());
 				case '#':
 					if (IsInsideCommentOrString()) {
 						return null;
@@ -506,25 +510,32 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 					var contextList = new CompletionDataWrapper (this);
 					var identifierStart = GetExpressionAtCursor();
+					if (identifierStart != null) {
 
-					if (identifierStart != null && identifierStart.Node is TypeParameterDeclaration) {
-						return null;
-					}
-
-					if (identifierStart != null && identifierStart.Node is Identifier) {
-						// May happen in variable names
-						return controlSpace ? DefaultControlSpaceItems(identifierStart) : null;
-					}
-
-					if (identifierStart != null && identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
-						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
-					}
-
-					if (identifierStart != null && identifierStart.Node is CatchClause) {
-						if (((CatchClause)identifierStart.Node).VariableNameToken.Contains(location)) {
+						
+						if (identifierStart.Node is TypeParameterDeclaration) {
 							return null;
 						}
-						identifierStart = null;
+
+						if (identifierStart.Node is MemberReferenceExpression) {
+							return HandleMemberReferenceCompletion(new ExpressionResult (((MemberReferenceExpression)identifierStart.Node).Target, identifierStart.Unit));
+						}
+
+						if (identifierStart.Node is Identifier) {
+							// May happen in variable names
+							return controlSpace ? DefaultControlSpaceItems(identifierStart) : null;
+						}
+	
+						if (identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
+							return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
+						}
+	
+						if (identifierStart.Node is CatchClause) {
+							if (((CatchClause)identifierStart.Node).VariableNameToken.Contains(location)) {
+								return null;
+							}
+							identifierStart = null;
+						}
 					}
 					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Node.Parent is ArrayInitializerExpression))) {
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
