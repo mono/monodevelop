@@ -42,7 +42,12 @@ namespace MonoDevelop.Refactoring
 		protected virtual void Update (RefactoringOptions options, CommandInfo info)
 		{
 		}
-		
+
+		public void UpdateCommandInfo (CommandInfo info)
+		{
+			Update (info);
+		}
+
 		public void Start (object data)
 		{
 			Run (data);
