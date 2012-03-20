@@ -72,15 +72,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		CSharpParsedFile CSharpParsedFile {
+		public CSharpParsedFile CSharpParsedFile {
 			get;
 			set;
-		}
-		
-		static bool EnableParameterInsight {
-			get {
-				return PropertyService.Get ("EnableParameterInsight", true);
-			}
 		}
 		
 		public ParsedDocument ParsedDocument {

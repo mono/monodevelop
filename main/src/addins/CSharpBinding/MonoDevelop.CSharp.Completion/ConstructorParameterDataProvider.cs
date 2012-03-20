@@ -26,6 +26,8 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -37,7 +39,16 @@ namespace MonoDevelop.CSharp.Completion
 		public ConstructorParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type) : base (startOffset, ext)
 		{
 			this.type = type;
-			foreach (var method in type.GetConstructors (m => m.IsPublic)) {
+			
+			var ctx = ext.CSharpParsedFile.GetTypeResolveContext (ext.Compilation, ext.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+
+
+			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, ext.Compilation.MainAssembly);
+			bool isProtectedAllowed = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.IsDerivedFrom (type.GetDefinition ()) : false;
+						
+			foreach (var method in type.GetConstructors ()) {
+				if (!lookup.IsAccessible (method, isProtectedAllowed))
+					continue;
 				methods.Add (method);
 			}
 		}
