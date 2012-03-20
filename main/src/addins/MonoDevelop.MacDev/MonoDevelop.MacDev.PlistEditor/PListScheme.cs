@@ -72,7 +72,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 						Identifier = reader.GetAttribute ("name"),
 						Description = reader.GetAttribute ("_description"),
 						Type = reader.GetAttribute ("type"),
-						ArrayType = reader.GetAttribute ("name")
+						ArrayType = reader.GetAttribute ("arrayType")
 					};
 					XmlReadHelper.ReadList (reader, "Key", delegate () {
 						if (reader.LocalName == "Value") {
