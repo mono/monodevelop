@@ -43,6 +43,7 @@ using Mono.TextEditor.Theatrics;
 using System.ComponentModel;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -1372,84 +1373,97 @@ namespace MonoDevelop.SourceEditor
 		#region commenting and indentation
 		internal void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
 		{
-//			List<string> lineComments;
-//			if (Document.SyntaxMode.Properties.TryGetValue ("LineComment", out lineComments)) {
-//				info.Visible = lineComments.Count > 0;
-//			} else {
-//				List<string> blockStarts;
-//				List<string> blockEnds;
-//				if (Document.SyntaxMode.Properties.TryGetValue ("BlockCommentStart", out blockStarts) && Document.SyntaxMode.Properties.TryGetValue ("BlockCommentEnd", out blockEnds)) {
-//					info.Visible = blockStarts.Count > 0 && blockEnds.Count > 0;
-//				}
-//			}
+			var mode = Document.SyntaxMode as SyntaxMode;
+			if (mode == null) {
+				info.Visible = false;
+				return;
+			}
+			List<string> lineComments;
+			if (mode.Properties.TryGetValue ("LineComment", out lineComments)) {
+				info.Visible = lineComments.Count > 0;
+			} else {
+				List<string> blockStarts;
+				List<string> blockEnds;
+				if (mode.Properties.TryGetValue ("BlockCommentStart", out blockStarts) && mode.Properties.TryGetValue ("BlockCommentEnd", out blockEnds)) {
+					info.Visible = blockStarts.Count > 0 && blockEnds.Count > 0;
+				}
+			}
 		}
 		
 		void ToggleCodeCommentWithBlockComments ()
 		{
+			var mode = Document.SyntaxMode as SyntaxMode;
+			if (mode == null)
+				return;
 
-//			List<string> blockStarts;
-//			if (!Document.SyntaxMode.Properties.TryGetValue ("BlockCommentStart", out blockStarts) || blockStarts.Count == 0)
-//				return;
-//
-//			List<string> blockEnds;
-//			if (!Document.SyntaxMode.Properties.TryGetValue ("BlockCommentEnd", out blockEnds) || blockEnds.Count == 0)
-//				return;
-//
-//			string blockStart = blockStarts[0];
-//			string blockEnd = blockEnds[0];
-//
-//			using (var undo = Document.OpenUndoGroup ()) {
-//				LineSegment startLine;
-//				LineSegment endLine;
-//	
-//				if (TextEditor.IsSomethingSelected) {
-//					startLine = Document.GetLineByOffset (textEditor.SelectionRange.Offset);
-//					endLine = Document.GetLineByOffset (textEditor.SelectionRange.EndOffset);
-//				} else {
-//					startLine = endLine = Document.GetLine (textEditor.Caret.Line);
-//				}
-//				string startLineText = Document.GetTextAt (startLine.Offset, startLine.EditableLength);
-//				string endLineText = Document.GetTextAt (endLine.Offset, endLine.EditableLength);
-//				if (startLineText.StartsWith (blockStart) && endLineText.EndsWith (blockEnd)) {
-//					textEditor.Remove (endLine.Offset + endLine.EditableLength - blockEnd.Length, blockEnd.Length);
-//					textEditor.Remove (startLine.Offset, blockStart.Length);
-//					if (TextEditor.IsSomethingSelected) {
-//						TextEditor.SelectionAnchor -= blockEnd.Length;
-//					}
-//				} else {
-//					textEditor.Insert (endLine.Offset + endLine.EditableLength, blockEnd);
-//					textEditor.Insert (startLine.Offset, blockStart);
-//					if (TextEditor.IsSomethingSelected) {
-//						TextEditor.SelectionAnchor += blockEnd.Length;
-//					}
-//					
-//				}
-//			}
+			List<string> blockStarts;
+			if (!mode.Properties.TryGetValue ("BlockCommentStart", out blockStarts) || blockStarts.Count == 0)
+				return;
+
+			List<string> blockEnds;
+			if (!mode.Properties.TryGetValue ("BlockCommentEnd", out blockEnds) || blockEnds.Count == 0)
+				return;
+
+			string blockStart = blockStarts[0];
+			string blockEnd = blockEnds[0];
+
+			using (var undo = Document.OpenUndoGroup ()) {
+				LineSegment startLine;
+				LineSegment endLine;
+	
+				if (TextEditor.IsSomethingSelected) {
+					startLine = Document.GetLineByOffset (textEditor.SelectionRange.Offset);
+					endLine = Document.GetLineByOffset (textEditor.SelectionRange.EndOffset);
+				} else {
+					startLine = endLine = Document.GetLine (textEditor.Caret.Line);
+				}
+				string startLineText = Document.GetTextAt (startLine.Offset, startLine.EditableLength);
+				string endLineText = Document.GetTextAt (endLine.Offset, endLine.EditableLength);
+				if (startLineText.StartsWith (blockStart) && endLineText.EndsWith (blockEnd)) {
+					textEditor.Remove (endLine.Offset + endLine.EditableLength - blockEnd.Length, blockEnd.Length);
+					textEditor.Remove (startLine.Offset, blockStart.Length);
+					if (TextEditor.IsSomethingSelected) {
+						TextEditor.SelectionAnchor -= blockEnd.Length;
+					}
+				} else {
+					textEditor.Insert (endLine.Offset + endLine.EditableLength, blockEnd);
+					textEditor.Insert (startLine.Offset, blockStart);
+					if (TextEditor.IsSomethingSelected) {
+						TextEditor.SelectionAnchor += blockEnd.Length;
+					}
+
+				}
+			}
 		}
 		
 		public void ToggleCodeComment ()
 		{
-//			bool comment = false;
-//			List<string> lineComments;
-//			if (!Document.SyntaxMode.Properties.TryGetValue ("LineComment", out lineComments) || lineComments.Count == 0) {
-//				ToggleCodeCommentWithBlockComments ();
-//				return;
-//			}
-//			string commentTag = lineComments[0];
-//			
-//			foreach (LineSegment line in this.textEditor.SelectedLines) {
-//				string text = Document.GetTextAt (line);
-//				string trimmedText = text.TrimStart ();
-//				if (!trimmedText.StartsWith (commentTag)) {
-//					comment = true;
-//					break;
-//				}
-//			}
-//			if (comment) {
-//				CommentSelectedLines (commentTag);
-//			} else {
-//				UncommentSelectedLines (commentTag);
-//			}
+			var mode = Document.SyntaxMode as SyntaxMode;
+			if (mode == null)
+				return;
+			bool comment = false;
+			List<string> lineComments;
+			if (!mode.Properties.TryGetValue ("LineComment", out lineComments) || lineComments.Count == 0) {
+				ToggleCodeCommentWithBlockComments ();
+				return;
+			}
+			string commentTag = lineComments [0];
+
+			foreach (LineSegment line in this.textEditor.SelectedLines) {
+				if (line.GetIndentation (TextEditor.Document).Length == line.EditableLength)
+					continue;
+				string text = Document.GetTextAt (line);
+				string trimmedText = text.TrimStart ();
+				if (!trimmedText.StartsWith (commentTag)) {
+					comment = true;
+					break;
+				}
+			}
+			if (comment) {
+				CommentSelectedLines (commentTag);
+			} else {
+				UncommentSelectedLines (commentTag);
+			}
 		}
 		
 		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
@@ -1480,15 +1494,17 @@ namespace MonoDevelop.SourceEditor
 		void CommentSelectedLines (string commentTag)
 		{
 			int startLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.Offset) : TextEditor.Caret.Line;
-			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
+			int endLineNr = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
 			if (endLineNr < 0)
 				endLineNr = Document.LineCount;
 			
-			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
-			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
+			LineSegment anchorLine = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
+			int anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
 			
 			using (var undo = Document.OpenUndoGroup ()) {
 				foreach (LineSegment line in TextEditor.SelectedLines) {
+//					if (line.GetIndentation (TextEditor.Document).Length == line.EditableLength)
+//						continue;
 					TextEditor.Insert (line.Offset, commentTag);
 				}
 				if (TextEditor.IsSomethingSelected) {
