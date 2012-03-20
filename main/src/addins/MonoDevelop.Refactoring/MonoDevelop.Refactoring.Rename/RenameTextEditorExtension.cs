@@ -27,11 +27,43 @@ using System;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public class RenameTextEditorExtension : TextEditorExtension
 	{
+		[CommandUpdateHandler(EditCommands.Rename)]
+		public void RenameCommand_Update(CommandInfo ci)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return;
+
+			var editor = doc.GetContent<ITextBuffer>();
+			if (editor == null)
+				return;
+
+			var dom = doc.Dom;
+
+			ResolveResult result;
+			INode item;
+			CurrentRefactoryOperationsHandler.GetItem(dom, doc, editor, out result, out item);
+
+			var options = new RefactoringOptions()
+			{
+				Document = doc,
+				Dom = dom,
+				ResolveResult = result,
+				SelectedItem = item is InstantiatedType ? ((InstantiatedType)item).UninstantiatedType : item
+			};
+
+			// If not a valid operation, allow command to be handled by others
+			if (!new RenameRefactoring().IsValid(options))
+				ci.Bypass = true;
+		}
+
 		[CommandHandler (EditCommands.Rename)]
 		public void RenameCommand ()
 		{
