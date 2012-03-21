@@ -73,7 +73,11 @@ FILES =  \
 	MonoDevelop.Refactoring/RefactoringOptions.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \
-	MonoDevelop.Refactoring/RefactoryCommands.cs 
+	MonoDevelop.Refactoring/RefactoryCommands.cs \
+	MonoDevelop.Inspection\IInspector.cs \
+	MonoDevelop.Inspection\DefaultInspectionCategories.cs \
+	MonoDevelop.Inspection\InspectionOptions.cs \
+	gtk-gui\MonoDevelop.Inspection.InspectionOptions.cs
 
 RES =  \
 	gtk-gui/gui.stetic \
