@@ -256,9 +256,15 @@ namespace Mono.Debugging.Soft
 				}
 				type = type.BaseType;
 			}
+			
 			MethodMirror idx = OverloadResolve ((SoftEvaluationContext) ctx, targetType.Name, null, types, candidates, true);
 			int i = candidates.IndexOf (idx);
-			return new PropertyValueReference (ctx, props[i], target, null, values);
+			
+			MethodMirror getter = props[i].GetGetMethod (true);
+			if (getter == null)
+				return null;
+			
+			return new PropertyValueReference (ctx, props[i], target, null, getter, values);
 		}
 		
 		static bool InGeneratedClosureOrIteratorType (EvaluationContext ctx)
@@ -479,8 +485,13 @@ namespace Mono.Debugging.Soft
 				if (field != null && (field.IsStatic || co != null))
 					return new FieldValueReference (ctx, field, co, type);
 				PropertyInfoMirror prop = FindByName (type.GetProperties(), p => p.Name, name, ctx.CaseSensitive);
-				if (prop != null && (IsStatic (prop) || co != null))
-					return new PropertyValueReference (ctx, prop, co, type, null);
+				if (prop != null && (IsStatic (prop) || co != null)) {
+					MethodMirror getter = prop.GetGetMethod (true);
+					if (getter == null)
+						return null;
+					
+					return new PropertyValueReference (ctx, prop, co, type, getter, null);
+				}
 				type = type.BaseType;
 			}
 			return null;
@@ -541,24 +552,29 @@ namespace Mono.Debugging.Soft
 					yield return new FieldValueReference (ctx, field, co, type);
 				}
 				foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
-					MethodMirror met = prop.GetGetMethod (true);
-					if (met == null || met.GetParameters ().Length != 0 || met.IsAbstract)
+					MethodMirror getter = prop.GetGetMethod (true);
+					if (getter == null || getter.GetParameters ().Length != 0 || getter.IsAbstract)
 						continue;
-					if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
+					if (getter.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
 						continue;
-					if (!met.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
+					if (!getter.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
 						continue;
-					if (met.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+					if (getter.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
 						continue;
-					if (!met.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+					if (!getter.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
 						continue;
 					
 					// If a property is overriden, return the override instead of the base property
-					PropertyInfoMirror overriden;
-					if (met.IsVirtual && subProps.TryGetValue (prop.Name, out overriden))
-						yield return new PropertyValueReference (ctx, overriden, co, overriden.DeclaringType, null);
-					else
-						yield return new PropertyValueReference (ctx, prop, co, type, null);
+					PropertyInfoMirror overridden;
+					if (getter.IsVirtual && subProps.TryGetValue (prop.Name, out overridden)) {
+						getter = overridden.GetGetMethod (true);
+						if (getter == null)
+							continue;
+						
+						yield return new PropertyValueReference (ctx, overridden, co, overridden.DeclaringType, getter, null);
+					} else {
+						yield return new PropertyValueReference (ctx, prop, co, type, getter, null);
+					}
 				}
 				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
 					break;

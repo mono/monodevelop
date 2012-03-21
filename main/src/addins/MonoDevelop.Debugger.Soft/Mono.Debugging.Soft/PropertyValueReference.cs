@@ -39,16 +39,17 @@ namespace Mono.Debugging.Soft
 		Value[] indexerArgs;
 		ObjectValueFlags flags;
 		
-		public PropertyValueReference (EvaluationContext ctx, PropertyInfoMirror property, object obj, TypeMirror declaringType, Value[] indexerArgs): base (ctx)
+		public PropertyValueReference (EvaluationContext ctx, PropertyInfoMirror property, object obj, TypeMirror declaringType, MethodMirror getter, Value[] indexerArgs): base (ctx)
 		{
 			this.property = property;
 			this.obj = obj;
 			this.declaringType = declaringType;
 			this.indexerArgs = indexerArgs;
+			
 			flags = ObjectValueFlags.Property;
 			if (property.GetSetMethod (true) == null)
 				flags |= ObjectValueFlags.ReadOnly;
-			MethodMirror getter = property.GetGetMethod (true);
+			
 			if (getter.IsStatic)
 				flags |= ObjectValueFlags.Global;
 			if (getter.IsPublic)
@@ -61,6 +62,7 @@ namespace Mono.Debugging.Soft
 				flags |= ObjectValueFlags.Internal;
 			else if (getter.IsFamilyOrAssembly)
 				flags |= ObjectValueFlags.InternalProtected;
+			
 			if (property.DeclaringType.IsValueType)
 				flags |= ObjectValueFlags.ReadOnly; // Setting property values on structs is not supported by sdb
 		}
