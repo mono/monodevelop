@@ -1881,8 +1881,10 @@ namespace Mono.Debugging.Soft
 				}
 			}
 			
-			if (target_loc != null && fuzzy && CheckBetterMatch (type, file, line, target_loc))
+			if (target_loc != null && fuzzy && CheckBetterMatch (type, file, line, target_loc)) {
+				insideTypeRange = false;
 				return null;
+			}
 			
 			return target_loc;
 		}
