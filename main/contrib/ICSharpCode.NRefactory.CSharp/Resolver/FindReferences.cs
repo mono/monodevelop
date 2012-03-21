@@ -42,9 +42,42 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		#region Properties
 		/// <summary>
-		/// Gets/Sets whether to find type references even if an alias is being used.
+		/// Specifies whether to find type references even if an alias is being used.
+		/// Aliases may be <c>var</c> or <c>using Alias = ...;</c>.
 		/// </summary>
 		public bool FindTypeReferencesEvenIfAliased { get; set; }
+		
+		/// <summary>
+		/// Specifies whether find references should only look for specialized matches
+		/// with equal type parameter substitution to the member we are searching for.
+		/// </summary>
+		public bool FindOnlySpecializedReferences { get; set; }
+		
+		/// <summary>
+		/// If this option is enabled, find references on a overridden member
+		/// will find calls to the base member.
+		/// </summary>
+		public bool FindCallsThroughVirtualBaseMethod { get; set; }
+		
+		/// <summary>
+		/// If this option is enabled, find references on a member implementing
+		/// an interface will also find calls to the interface.
+		/// </summary>
+		public bool FindCallsThroughInterface { get; set; }
+		
+		/// <summary>
+		/// If this option is enabled, find references will look for all references
+		/// to the virtual method slot.
+		/// </summary>
+		public bool WholeVirtualSlot { get; set; }
+		
+		/// <summary>
+		/// Specifies whether to look for references in documentation comments.
+		/// This will find entity references in <c>cref</c> attributes and
+		/// parameter references in <c>&lt;param&gt;</c> and <c>&lt;paramref&gt;</c> tags.
+		/// TODO: implement this feature.
+		/// </summary>
+		public bool SearchInDocumentationComments { get; set; }
 		#endregion
 		
 		#region GetEffectiveAccessibility

@@ -164,7 +164,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						this.TargetType, method, true, out inferredTypes))
 					{
 						if (substituteInferredTypes && inferredTypes != null) {
-							outputGroup.Add(new SpecializedMethod(method.DeclaringType, method, inferredTypes));
+							outputGroup.Add(new SpecializedMethod(method, new TypeParameterSubstitution(null, inferredTypes)));
 						} else {
 							outputGroup.Add(method);
 						}

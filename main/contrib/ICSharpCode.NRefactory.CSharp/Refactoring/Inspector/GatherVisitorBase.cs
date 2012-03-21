@@ -1,10 +1,10 @@
 // 
-// FormatTextAction.cs
+// GatherVisitorBase.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.CSharp.Refactoring
+namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class FormatTextAction : Action
+	class GatherVisitorBase : DepthFirstAstVisitor
 	{
-		public Func<RefactoringContext, AstNode> Callback { get; private set; }
-		
-		public FormatTextAction (Func<RefactoringContext, AstNode> callback)
+		protected readonly BaseRefactoringContext ctx;
+
+		public readonly List<InspectionIssue> FoundIssues = new List<InspectionIssue> ();
+
+		public GatherVisitorBase (BaseRefactoringContext ctx)
 		{
-			this.Callback = callback;
+			this.ctx = ctx;
+		}
+		
+		protected override void VisitChildren (AstNode node)
+		{
+			if (ctx.CancellationToken.IsCancellationRequested)
+				return;
+			base.VisitChildren (node);
+		}
+		
+		protected void AddIssue (AstNode node, string title, System.Action fix)
+		{
+			FoundIssues.Add (new InspectionIssue (title, node.StartLocation, node.EndLocation, fix));
 		}
 	}
+		
+	
 }
+

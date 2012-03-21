@@ -79,7 +79,6 @@ FILES =  \
 	Ast/IAstVisitor.cs \
 	Ast/Identifier.cs \
 	Ast/IdentifierExpressionBackreference.cs \
-	Ast/IRelocatable.cs \
 	Ast/MemberType.cs \
 	Ast/Modifiers.cs \
 	Ast/NodeType.cs \
@@ -206,7 +205,7 @@ FILES =  \
 	Parser/mcs/typespec.cs \
 	Parser/mcs/visit.cs \
 	Properties/AssemblyInfo.cs \
-	Refactoring/Action.cs \
+	Refactoring/BaseRefactoringContext.cs \
 	Refactoring/ContextAction/AddAnotherAccessor.cs \
 	Refactoring/ContextAction/CheckIfParameterIsNull.cs \
 	Refactoring/ContextAction/ConvertDecToHex.cs \
@@ -232,16 +231,14 @@ FILES =  \
 	Refactoring/ContextAction/SplitString.cs \
 	Refactoring/ContextAction/UseExplicitType.cs \
 	Refactoring/ContextAction/UseVarKeyword.cs \
-	Refactoring/CreateLinkAction.cs \
 	Refactoring/DocumentScript.cs \
-	Refactoring/FormatTextAction.cs \
-	Refactoring/IActionFactory.cs \
 	Refactoring/IContextAction.cs \
-	Refactoring/NodeOutputAction.cs \
-	Refactoring/NodeSelectionAction.cs \
+	Refactoring/IInspector.cs \
+	Refactoring/InspectionIssue.cs \
+	Refactoring/Inspector/ConditionalToNullCoalescingInspector.cs \
+	Refactoring/Inspector/GatherVisitorBase.cs \
 	Refactoring/RefactoringContext.cs \
 	Refactoring/Script.cs \
-	Refactoring/TextReplaceAction.cs \
 	Refactoring/TypeSystemAstBuilder.cs \
 	Resolver/CompositeResolveVisitorNavigator.cs \
 	Resolver/CSharpAstResolver.cs \

@@ -629,15 +629,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Handle array types:
 			ArrayType arrU = U as ArrayType;
 			ArrayType arrV = V as ArrayType;
-			ParameterizedType pV = V as ParameterizedType;
 			if (arrU != null && arrV != null && arrU.Dimensions == arrV.Dimensions) {
 				MakeLowerBoundInference(arrU.ElementType, arrV.ElementType);
 				return;
-			} else if (arrU != null && IsIEnumerableCollectionOrList(pV) && arrU.Dimensions == 1) {
-				MakeLowerBoundInference(arrU.ElementType, pV.GetTypeArgument(0));
-				return;
 			}
 			// Handle parameterized types:
+			ParameterizedType pV = V as ParameterizedType;
 			if (pV != null) {
 				ParameterizedType uniqueBaseType = null;
 				foreach (IType baseU in U.GetAllBaseTypes()) {
@@ -677,20 +674,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.Unindent();
 			}
 		}
-		
-		static bool IsIEnumerableCollectionOrList(ParameterizedType rt)
-		{
-			if (rt == null || rt.TypeParameterCount != 1)
-				return false;
-			switch (rt.GetDefinition().FullName) {
-				case "System.Collections.Generic.IList":
-				case "System.Collections.Generic.ICollection":
-				case "System.Collections.Generic.IEnumerable":
-					return true;
-				default:
-					return false;
-			}
-		}
 		#endregion
 		
 		#region MakeUpperBoundInference (§7.5.2.10)
@@ -713,15 +696,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Handle array types:
 			ArrayType arrU = U as ArrayType;
 			ArrayType arrV = V as ArrayType;
-			ParameterizedType pU = U as ParameterizedType;
 			if (arrV != null && arrU != null && arrU.Dimensions == arrV.Dimensions) {
 				MakeUpperBoundInference(arrU.ElementType, arrV.ElementType);
 				return;
-			} else if (arrV != null && IsIEnumerableCollectionOrList(pU) && arrV.Dimensions == 1) {
-				MakeUpperBoundInference(pU.GetTypeArgument(0), arrV.ElementType);
-				return;
 			}
 			// Handle parameterized types:
+			ParameterizedType pU = U as ParameterizedType;
 			if (pU != null) {
 				ParameterizedType uniqueBaseType = null;
 				foreach (IType baseV in V.GetAllBaseTypes()) {

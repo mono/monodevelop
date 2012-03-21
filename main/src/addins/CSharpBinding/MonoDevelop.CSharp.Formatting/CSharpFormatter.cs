@@ -48,39 +48,6 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-
-	class FormattingActionFactory : AbstractActionFactory
-	{
-		Mono.TextEditor.TextEditorData data;
-
-		class ConcreteTextReplaceAction : TextReplaceAction
-		{
-			Mono.TextEditor.TextEditorData data;
-
-			public ConcreteTextReplaceAction (Mono.TextEditor.TextEditorData data, int offset, int removedChars, string insertedText) : base (offset, removedChars, insertedText)
-			{
-				this.data = data;
-			}
-			
-			public override void Perform (Script script)
-			{
-				data.Replace (Offset, RemovedChars, InsertedText);
-			}
-		}
-
-		public FormattingActionFactory (Mono.TextEditor.TextEditorData data)
-		{
-			if (data == null)
-				throw new ArgumentNullException ("data");
-			this.data = data;
-		}
-		
-		public override TextReplaceAction CreateTextReplaceAction (int offset, int removedChars, string insertedText)
-		{
-			return new ConcreteTextReplaceAction (data, offset, removedChars, insertedText);
-		}
-	}
-	
 	public class CSharpFormatter : AbstractAdvancedFormatter
 	{
 		static internal readonly string MimeType = "text/x-csharp";

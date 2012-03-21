@@ -3929,6 +3929,27 @@ namespace Mono.CSharp
 			}
 		}
 
+		public override Expression EmitToField (EmitContext ec)
+		{
+			if ((oper & Operator.LogicalMask) == 0) {
+				var await_expr = left as Await;
+				if (await_expr != null && right.IsSideEffectFree) {
+					await_expr.Statement.EmitPrologue (ec);
+					left = await_expr.Statement.GetResultExpression (ec);
+					return this;
+				}
+
+				await_expr = right as Await;
+				if (await_expr != null && left.IsSideEffectFree) {
+					await_expr.Statement.EmitPrologue (ec);
+					right = await_expr.Statement.GetResultExpression (ec);
+					return this;
+				}
+			}
+
+			return base.EmitToField (ec);
+		}
+
 		protected override void CloneTo (CloneContext clonectx, Expression t)
 		{
 			Binary target = (Binary) t;
@@ -4245,7 +4266,7 @@ namespace Mono.CSharp
 			//
 			bool right_contains_await = ec.HasSet (BuilderContext.Options.AsyncBody) && arguments[1].Expr.ContainsEmitWithAwait ();
 			if (right_contains_await) {
-				arguments[0] = arguments[0].EmitToField (ec);
+				arguments[0] = arguments[0].EmitToField (ec, false);
 				arguments[0].Expr.Emit (ec);
 			} else {
 				arguments[0].Expr.Emit (ec);
@@ -5052,11 +5073,11 @@ namespace Mono.CSharp
 		}
 
 		public override bool IsRef {
-			get { return (pi.Parameter.ModFlags & Parameter.Modifier.ISBYREF) != 0; }
+			get { return (pi.Parameter.ModFlags & Parameter.Modifier.RefOutMask) != 0; }
 		}
 
 		bool HasOutModifier {
-			get { return pi.Parameter.ModFlags == Parameter.Modifier.OUT; }
+			get { return (pi.Parameter.ModFlags & Parameter.Modifier.OUT) != 0; }
 		}
 
 		public override HoistedVariable GetHoistedVariable (AnonymousExpression ae)
@@ -5247,6 +5268,12 @@ namespace Mono.CSharp
 		public Expression Exp {
 			get {
 				return expr;
+			}
+		}
+
+		public MethodGroupExpr MethodGroup {
+			get {
+				return mg;
 			}
 		}
 		#endregion
@@ -6628,6 +6655,11 @@ namespace Mono.CSharp
 
 		public override void Emit (EmitContext ec)
 		{
+			EmitToFieldSource (ec);
+		}
+
+		protected sealed override FieldExpr EmitToFieldSource (EmitContext ec)
+		{
 			if (first_emit != null) {
 				first_emit.Emit (ec);
 				first_emit_temp.Store (ec);
@@ -6646,7 +6678,7 @@ namespace Mono.CSharp
 			ec.EmitArrayNew ((ArrayContainer) type);
 			
 			if (initializers == null)
-				return;
+				return await_stack_field;
 
 			if (await_stack_field != null)
 				await_stack_field.EmitAssignFromStack (ec);
@@ -6671,11 +6703,10 @@ namespace Mono.CSharp
 				EmitDynamicInitializers (ec, true, await_stack_field);
 			}
 
-			if (await_stack_field != null)
-				await_stack_field.Emit (ec);
-
 			if (first_emit_temp != null)
 				first_emit_temp.Release (ec);
+
+			return await_stack_field;
 		}
 
 		public override void EncodeAttributeValue (IMemberContext rc, AttributeEncoder enc, TypeSpec targetType)

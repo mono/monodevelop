@@ -903,6 +903,11 @@ namespace Mono.CSharp {
 		// 
 		public bool IsInternalCall ()
 		{
+			return (GetMethodImplOptions () & MethodImplOptions.InternalCall) != 0;
+		}
+
+		public MethodImplOptions GetMethodImplOptions ()
+		{
 			MethodImplOptions options = 0;
 			if (pos_args.Count == 1) {
 				options = (MethodImplOptions) System.Enum.Parse (typeof (MethodImplOptions), ((Constant) pos_args[0].Expr).GetValue ().ToString ());
@@ -911,7 +916,7 @@ namespace Mono.CSharp {
 				options = (MethodImplOptions) System.Enum.Parse (typeof (MethodImplOptions), named.GetValue ().ToString ());
 			}
 
-			return (options & MethodImplOptions.InternalCall) != 0;
+			return options;
 		}
 
 		//
@@ -1631,6 +1636,9 @@ namespace Mono.CSharp {
 		public readonly PredefinedDecimalAttribute DecimalConstant;
 		public readonly PredefinedAttribute StructLayout;
 		public readonly PredefinedAttribute FieldOffset;
+		public readonly PredefinedAttribute CallerMemberNameAttribute;
+		public readonly PredefinedAttribute CallerLineNumberAttribute;
+		public readonly PredefinedAttribute CallerFilePathAttribute;
 
 		public PredefinedAttributes (ModuleContainer module)
 		{
@@ -1681,6 +1689,10 @@ namespace Mono.CSharp {
 			DecimalConstant = new PredefinedDecimalAttribute (module, "System.Runtime.CompilerServices", "DecimalConstantAttribute");
 			StructLayout = new PredefinedAttribute (module, "System.Runtime.InteropServices", "StructLayoutAttribute");
 			FieldOffset = new PredefinedAttribute (module, "System.Runtime.InteropServices", "FieldOffsetAttribute");
+
+			CallerMemberNameAttribute = new PredefinedAttribute (module, "System.Runtime.CompilerServices", "CallerMemberNameAttribute");
+			CallerLineNumberAttribute = new PredefinedAttribute (module, "System.Runtime.CompilerServices", "CallerLineNumberAttribute");
+			CallerFilePathAttribute = new PredefinedAttribute (module, "System.Runtime.CompilerServices", "CallerFilePathAttribute");
 
 			// TODO: Should define only attributes which are used for comparison
 			const System.Reflection.BindingFlags all_fields = System.Reflection.BindingFlags.Public |

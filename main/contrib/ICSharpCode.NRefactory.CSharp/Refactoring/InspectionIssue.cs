@@ -1,10 +1,10 @@
 // 
-// SelectionAction.cs
+// InspectionIssue.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,34 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class NodeSelectionAction : Action
+	public class InspectionIssue
 	{
-		public AstNode AstNode { get; private set; }
+		public string Title {
+			get;
+			private set;
+		}
 		
-		public NodeSelectionAction (AstNode astNode)
+		public TextLocation Start {
+			get;
+			private set;
+		}
+		
+		public TextLocation End {
+			get;
+			private set;
+		}
+
+		public System.Action Fix {
+			get;
+			private set;
+		}
+
+		public InspectionIssue (string title, TextLocation start, TextLocation end, System.Action fix)
 		{
-			this.AstNode = astNode;
+			this.Title = title;
+			this.Start = start;
+			this.End = end;
+			this.Fix = fix;
 		}
 	}
 }

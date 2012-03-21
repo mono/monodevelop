@@ -36,36 +36,14 @@ using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class RefactoringContext
+	public abstract class RefactoringContext : BaseRefactoringContext
 	{
-		protected readonly CSharpAstResolver resolver;
-		readonly CancellationToken cancellationToken;
-		
-		public RefactoringContext(CSharpAstResolver resolver, CancellationToken cancellationToken)
+		public RefactoringContext(CSharpAstResolver resolver, CancellationToken cancellationToken) : base  (resolver, cancellationToken)
 		{
-			this.resolver = resolver;
-			this.cancellationToken = cancellationToken;
-		}
-		
-		public CancellationToken CancellationToken {
-			get { return cancellationToken; }
-		}
-		
-		public virtual AstNode RootNode {
-			get { return resolver.RootNode; }
 		}
 
 		public abstract TextLocation Location { get; }
-		
-		public virtual bool Supports(Version version)
-		{
-			return true;
-		}
-		
-		public ICompilation Compilation {
-			get { return resolver.Compilation; }
-		}
-		
+
 		public virtual AstType CreateShortType (IType fullType)
 		{
 			var csResolver = resolver.GetResolverStateBefore(GetNode());
@@ -132,29 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public abstract string GetText (ISegment segment);
 		#endregion
-		
-		#region Resolving
-		public ResolveResult Resolve (AstNode node)
-		{
-			return resolver.Resolve (node, cancellationToken);
-		}
-		
-		public IType ResolveType (AstType type)
-		{
-			return resolver.Resolve (type, cancellationToken).Type;
-		}
-		
-		public IType GetExpectedType (Expression expression)
-		{
-			return resolver.GetExpectedType(expression, cancellationToken);
-		}
-		
-		public Conversion GetConversion (Expression expression)
-		{
-			return resolver.GetConversion(expression, cancellationToken);
-		}
-		#endregion
-		
+
 		public virtual string GetNameProposal (string name, bool camelCase = true)
 		{
 			string baseName = (camelCase ? char.ToLower (name [0]) : char.ToUpper (name [0])) + name.Substring (1);
@@ -175,8 +131,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return baseName + (number > 0 ? (number + 1).ToString () : "");
 		}
-		
-		public abstract Script StartScript();
 	}
 }
 

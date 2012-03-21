@@ -1310,8 +1310,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled || !objectCreateExpression.Initializer.IsNull) {
 				var typeResolveResult = Resolve(objectCreateExpression.Type);
-				if (typeResolveResult.IsError)
+				if (typeResolveResult.IsError) {
+					ScanChildren (objectCreateExpression);
 					return typeResolveResult;
+				}
 				IType type = typeResolveResult.Type;
 				
 				List<ResolveResult> initializerStatements = null;

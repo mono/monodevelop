@@ -807,7 +807,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 			IMethod method = bestCandidate.Member as IMethod;
 			if (method != null && method.TypeParameters.Count > 0) {
-				return new SpecializedMethod(method.DeclaringType, (IMethod)method.MemberDefinition, bestCandidate.InferredTypes);
+				SpecializedMethod sm = method as SpecializedMethod;
+				if (sm != null) {
+					// Do not compose the substitutions, but merge them.
+					// This is required for InvocationTests.SubstituteClassAndMethodTypeParametersAtOnce
+					return new SpecializedMethod(
+						(IMethod)method.MemberDefinition,
+						new TypeParameterSubstitution(sm.Substitution.ClassTypeArguments, bestCandidate.InferredTypes));
+				} else {
+					return new SpecializedMethod(method, new TypeParameterSubstitution(null, bestCandidate.InferredTypes));
+				}
 			} else {
 				return bestCandidate.Member;
 			}

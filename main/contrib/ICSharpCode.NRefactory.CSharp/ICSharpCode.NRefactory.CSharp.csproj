@@ -122,7 +122,6 @@
     <Compile Include="Ast\GeneralScope\UsingDeclaration.cs" />
     <Compile Include="Ast\IAstVisitor.cs" />
     <Compile Include="Ast\Identifier.cs" />
-    <Compile Include="Ast\IRelocatable.cs" />
     <Compile Include="Ast\MemberType.cs" />
     <Compile Include="Ast\Modifiers.cs" />
     <Compile Include="Ast\NodeType.cs" />
@@ -235,7 +234,6 @@
     <Compile Include="Parser\mcs\typespec.cs" />
     <Compile Include="Parser\mcs\visit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Refactoring\Action.cs" />
     <Compile Include="Refactoring\ContextAction\AddAnotherAccessor.cs" />
     <Compile Include="Refactoring\ContextAction\CheckIfParameterIsNull.cs" />
     <Compile Include="Refactoring\ContextAction\ConvertDecToHex.cs" />
@@ -259,15 +257,9 @@
     <Compile Include="Refactoring\ContextAction\SplitString.cs" />
     <Compile Include="Refactoring\ContextAction\UseExplicitType.cs" />
     <Compile Include="Refactoring\ContextAction\UseVarKeyword.cs" />
-    <Compile Include="Refactoring\CreateLinkAction.cs" />
-    <Compile Include="Refactoring\FormatTextAction.cs" />
-    <Compile Include="Refactoring\IActionFactory.cs" />
     <Compile Include="Refactoring\IContextAction.cs" />
-    <Compile Include="Refactoring\NodeOutputAction.cs" />
-    <Compile Include="Refactoring\NodeSelectionAction.cs" />
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />
-    <Compile Include="Refactoring\TextReplaceAction.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
     <Compile Include="Resolver\CSharpInvocationResolveResult.cs" />
@@ -328,6 +320,11 @@
     <Compile Include="Resolver\CSharpConversions.cs" />
     <Compile Include="Refactoring\DocumentScript.cs" />
     <Compile Include="Ast\Roles.cs" />
+    <Compile Include="Refactoring\BaseRefactoringContext.cs" />
+    <Compile Include="Refactoring\IInspector.cs" />
+    <Compile Include="Refactoring\InspectionIssue.cs" />
+    <Compile Include="Refactoring\Inspector\ConditionalToNullCoalescingInspector.cs" />
+    <Compile Include="Refactoring\Inspector\GatherVisitorBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -1167,13 +1167,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal readonly IParameterizedMember nonLiftedOperator;
 			
 			public LiftedUserDefinedOperator(IMethod nonLiftedMethod)
-				: base(nonLiftedMethod.DeclaringType, (IMethod)nonLiftedMethod.MemberDefinition,
-				       EmptyList<IType>.Instance, new MakeNullableVisitor(nonLiftedMethod.Compilation))
+				: base(nonLiftedMethod, TypeParameterSubstitution.Identity)
 			{
 				this.nonLiftedOperator = nonLiftedMethod;
+				var substitution = new MakeNullableVisitor(nonLiftedMethod.Compilation);
+				this.Parameters = base.CreateParameters(substitution);
 				// Comparison operators keep the 'bool' return type even when lifted.
 				if (IsComparisonOperator(nonLiftedMethod))
 					this.ReturnType = nonLiftedMethod.ReturnType;
+				else
+					this.ReturnType = nonLiftedMethod.ReturnType.AcceptVisitor(substitution);
 			}
 			
 			public IList<IParameter> NonLiftedParameters {
@@ -1726,13 +1729,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (typeArguments != null && typeArguments.Count > 0) {
 						if (method.TypeParameters.Count != typeArguments.Count)
 							continue;
-						SpecializedMethod sm = new SpecializedMethod(method.DeclaringType, method, typeArguments);
+						SpecializedMethod sm = new SpecializedMethod(method, new TypeParameterSubstitution(null, typeArguments));
 						if (IsEligibleExtensionMethod(targetType, method, false, out inferredTypes))
 							outputGroup.Add(sm);
 					} else {
 						if (IsEligibleExtensionMethod(targetType, method, true, out inferredTypes)) {
 							if (substituteInferredTypes && inferredTypes != null) {
-								outputGroup.Add(new SpecializedMethod(method.DeclaringType, method, inferredTypes));
+								outputGroup.Add(new SpecializedMethod(method, new TypeParameterSubstitution(null, inferredTypes)));
 							} else {
 								outputGroup.Add(method);
 							}
