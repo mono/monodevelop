@@ -308,6 +308,7 @@
 			
 		<Inspector mimeType="text/x-csharp"
 			severity = "Hint"
+			mark = "TaskBarOnly"
 			class = "MonoDevelop.CSharp.Inspection.UseVarKeywordInspector" />
 			
 		<Inspector mimeType="text/x-csharp"

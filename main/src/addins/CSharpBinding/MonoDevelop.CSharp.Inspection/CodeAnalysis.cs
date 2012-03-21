@@ -114,8 +114,9 @@ namespace MonoDevelop.CSharp.Inspection
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures)
 				return Enumerable.Empty<Result> ();
-
 			var context = new MDRefactoringContext (input, ICSharpCode.NRefactory.TextLocation.Empty, cancellationToken);
+			if (context.IsInvalid)
+				return Enumerable.Empty<Result> ();
 			var result = new BlockingCollection<Result> ();
 			Parallel.ForEach (inspectors, (inspector) => {
 				foreach (var r in inspector.GetResults (context))
