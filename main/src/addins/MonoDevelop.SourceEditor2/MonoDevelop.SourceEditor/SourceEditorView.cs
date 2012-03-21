@@ -1944,7 +1944,10 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()
 		{
-			return TextEditor.GetTextEditorData ();
+			var editor = TextEditor;
+			if (editor == null)
+				return null;
+			return editor.GetTextEditorData ();
 		}
 		
 		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document doc)

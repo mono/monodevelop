@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.IO;
 using Mono.TextEditor;
 using System.Linq;
@@ -58,7 +57,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			if (!disposed) {
 				AnalysisOptions.Changed -= AnalysisOptionsChanged;
-				Enabled = false;
+				CancelTask ();
 				disposed = true;
 			}
 			base.Dispose ();
@@ -85,14 +84,19 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (Document.ParsedDocument != null)
 				OnDocumentParsed (null, null);
 		}
-		
-		void Disable ()
+
+		void CancelTask ()
 		{
-			Document.DocumentParsed -= OnDocumentParsed;
 			if (src != null) {
 				src.Cancel ();
 				oldTask.Wait ();
 			}
+		}
+		
+		void Disable ()
+		{
+			Document.DocumentParsed -= OnDocumentParsed;
+			CancelTask ();
 			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
 		}
 		
@@ -131,7 +135,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 					throw new ArgumentNullException ("ext");
 				if (results == null)
 					throw new ArgumentNullException ("results");
-					
 				this.ext = ext;
 				this.cancellationToken = cancellationToken;
 				this.oldMarkers = ext.markers.Count;
@@ -150,8 +153,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
 			bool IdleHandler ()
 			{
+				if (cancellationToken.IsCancellationRequested)
+					return false;
 				var editor = ext.Editor;
-				if (editor == null || editor.Document == null || cancellationToken.IsCancellationRequested)
+				if (editor == null || editor.Document == null)
 					return false;
 				//clear the old results out at the same rate we add in the new ones
 				for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {

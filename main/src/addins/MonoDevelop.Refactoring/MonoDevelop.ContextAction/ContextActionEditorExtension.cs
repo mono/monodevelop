@@ -75,7 +75,11 @@ namespace MonoDevelop.ContextAction
 			this.Fixes = fixes;
 			if (!fixes.Any ())
 				return;
-		/* CONTEXT WIDGET DISABLED FOR NOW !
+			if (!QuickTaskStrip.EnableFancyFeatures)
+				return;
+			var editor = Document.Editor.Parent;
+			if (!editor.IsRealized)
+				return;
 			widget = new ContextActionWidget (this, Document, loc, fixes);
 			var container = Document.Editor.Parent.Parent as TextEditorContainer;
 			if (container == null) 
@@ -83,7 +87,7 @@ namespace MonoDevelop.ContextAction
 			container.AddTopLevelWidget (widget,
 				2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
 				-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
-			widget.Show ();*/
+			widget.Show ();
 		}
 
 		public void CancelQuickFixTimer ()
@@ -93,7 +97,6 @@ namespace MonoDevelop.ContextAction
 				quickFixTimeout = 0;
 			}
 		}
-
 
 		public override void CursorPositionChanged ()
 		{

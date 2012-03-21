@@ -77,7 +77,7 @@ namespace MonoDevelop.ContextAction
 		{
 			Gtk.Menu menu = new Gtk.Menu ();
 			
-			Dictionary<Gtk.MenuItem, ContextAction> fixTable = new Dictionary<Gtk.MenuItem, ContextAction> ();
+			var fixTable = new Dictionary<Gtk.MenuItem, ContextAction> ();
 			int mnemonic = 1;
 			foreach (ContextAction fix in fixes) {
 				var escapedLabel = fix.GetMenuText (document, loc).Replace ("_", "__");
@@ -104,7 +104,9 @@ namespace MonoDevelop.ContextAction
 				menuPushed = false;
 				QueueDraw ();
 			};
-			GtkWorkarounds.ShowContextMenu (menu, this, evt, Allocation);
+			var container = (TextEditorContainer)this.document.Editor.Parent.Parent;
+			var child = (TextEditorContainer.EditorContainerChild)container [this];
+			GtkWorkarounds.ShowContextMenu (menu, this.document.Editor.Parent, null, new Gdk.Rectangle (child.X, child.Y + Allocation.Height, 0, 0));
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
