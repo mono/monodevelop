@@ -246,19 +246,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			ITypeDefinition def = type.GetDefinition();
-			if (def != null && def.Kind == TypeKind.Delegate) {
-				foreach (IMember member in def.Members) {
-					if (member.Name == "Invoke" && member is IMethod) {
-						ParameterizedType pt = type as ParameterizedType;
-						if (pt != null) {
-							return new SpecializedMethod(pt, (IMethod)member);
-						}
-						return (IMethod)member;
-					}
-				}
-			}
-			return null;
+			if (type.Kind == TypeKind.Delegate)
+				return type.GetMethods(m => m.Name == "Invoke", GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
+			else
+				return null;
 		}
 		#endregion
 		

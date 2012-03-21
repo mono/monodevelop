@@ -781,7 +781,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				IType coClass = ComHelper.GetCoClass(this);
 				using (var busyLock = BusyManager.Enter(this)) {
 					if (busyLock.Success) {
-						return coClass.GetConstructors(filter, options).Select(m => new SpecializedMethod(this, m));
+						return coClass.GetConstructors(filter, options)
+							.Select(m => new SpecializedMethod(m, TypeParameterSubstitution.Identity) { DeclaringType = this });
 					}
 				}
 				return EmptyList<IMethod>.Instance;

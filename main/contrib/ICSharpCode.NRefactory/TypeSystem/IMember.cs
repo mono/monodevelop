@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {

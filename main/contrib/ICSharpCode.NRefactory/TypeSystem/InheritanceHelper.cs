@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -50,12 +51,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (member == null)
 				throw new ArgumentNullException("member");
 			
-			member = member.MemberDefinition;
 			if (member.IsExplicitInterfaceImplementation && member.ImplementedInterfaceMembers.Count == 1) {
 				// C#-style explicit interface implementation
-				yield return member.ImplementedInterfaceMembers[0];
-				member = member.ImplementedInterfaceMembers[0].MemberDefinition;
+				member = member.ImplementedInterfaceMembers[0];
+				yield return member;
 			}
+			
+			SpecializedMember specializedMember = member as SpecializedMember;
+			member = member.MemberDefinition;
 			
 			IEnumerable<IType> allBaseTypes;
 			if (includeImplementedInterfaces) {
@@ -68,8 +71,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					continue;
 				
 				foreach (IMember baseMember in baseType.GetMembers(m => m.Name == member.Name, GetMemberOptions.IgnoreInheritedMembers)) {
-					if (SignatureComparer.Ordinal.Equals(member, baseMember))
-						yield return baseMember;
+					if (SignatureComparer.Ordinal.Equals(member, baseMember)) {
+						if (specializedMember != null)
+							yield return SpecializedMember.Create(baseMember, specializedMember.Substitution);
+						else
+							yield return baseMember;
+					}
 				}
 			}
 		}

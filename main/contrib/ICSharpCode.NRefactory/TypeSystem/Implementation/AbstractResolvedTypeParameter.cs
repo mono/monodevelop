@@ -261,7 +261,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (this.HasDefaultConstructorConstraint || this.HasValueTypeConstraint) {
 					if (filter == null || filter(dummyConstructor)) {
 						var resolvedCtor = GetDummyConstructor(compilation);
-						IMethod m = new SpecializedMethod(this, resolvedCtor, EmptyList<IType>.Instance);
+						IMethod m = new SpecializedMethod(resolvedCtor, TypeParameterSubstitution.Identity) { DeclaringType = this };
 						return new [] { m };
 					}
 				}
