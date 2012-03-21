@@ -232,14 +232,9 @@
     <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\CSharpNamingPolicy.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingRule.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingStyle.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\ConditionalToNullCoalescingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UseVarKeywordInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UnusedUsingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\StringIsNullOrEmptyInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\NotImplementedExceptionInspector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContext.cs" />
@@ -275,10 +270,6 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\RefactorImportsHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\SortImportsRefactoring.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantThisInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantInternalInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantPrivateInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantNamespaceUsageInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\TemplateParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
@@ -303,6 +294,15 @@
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\Inspectors\UseVarKeywordInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\Inspectors\UnusedUsingInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\Inspectors\StringIsNullOrEmptyInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\Inspectors\NotImplementedExceptionInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantThisInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantInternalInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantPrivateInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantNamespaceUsageInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingInspector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

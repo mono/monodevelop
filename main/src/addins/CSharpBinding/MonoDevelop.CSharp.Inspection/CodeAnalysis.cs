@@ -89,7 +89,8 @@ namespace MonoDevelop.CSharp.Inspection
 	{
 		static List<InspectorAddinNode> inspectorNodes = new List<InspectorAddinNode> ();
 		static ObservableAstVisitor<InspectionData, object> visitor = new ObservableAstVisitor<InspectionData, object> ();
-		
+		static List<CSharpInspector> inspectors = new List<CSharpInspector> ();
+
 		static CodeAnalysis ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -99,7 +100,9 @@ namespace MonoDevelop.CSharp.Inspection
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					inspectorNodes.Add (node);
-					((CSharpInspector)node.Inspector).Attach (node, visitor);
+					var inspector = node.Inspector as CSharpInspector;
+					inspector.Attach (node);
+					inspectors.Add (inspector);
 					break;
 				}
 			});
@@ -108,17 +111,14 @@ namespace MonoDevelop.CSharp.Inspection
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures)
-				return Enumerable.Empty<Result> ();
-			var unit = input.ParsedDocument.GetAst<CompilationUnit> ();
-			if (unit == null)
-				return Enumerable.Empty<Result> ();
-			
-			
-			var cg = new CallGraph (cancellationToken);
-			cg.Inspect (input, input.ParsedDocument);
-			var data = new InspectionData (cancellationToken) { Graph = cg, Document = input };
-			unit.AcceptVisitor (visitor, data);
-			return data.Results;
+				yield break;
+
+			var context = new MDRefactoringContext (input, ICSharpCode.NRefactory.TextLocation.Empty);
+
+			foreach (var inspector in inspectors) {
+				foreach (var result in inspector.GetResults (context))
+					yield return result;
+			}
 		}
 			
 	}

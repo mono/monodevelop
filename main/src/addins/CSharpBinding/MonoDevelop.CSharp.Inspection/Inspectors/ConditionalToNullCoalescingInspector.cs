@@ -32,13 +32,13 @@ using MonoDevelop.CSharp.ContextAction;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Inspection;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class ConditionalToNullCoalescingInspector : CSharpInspector
 	{
-		static ConditionalExpression[] Matches;
-
 		public override string Category {
 			get {
 				return DefaultInspectionCategories.Opportunities;
@@ -57,69 +57,15 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		public ConditionalToNullCoalescingInspector ()
-		{
-			Matches = new [] { new ConditionalExpression (new BinaryOperatorExpression (new NullReferenceExpression (), BinaryOperatorType.Equality, new AnyNode ()), new AnyNode (), new AnyNode ()),
-				new ConditionalExpression (new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.Equality, new NullReferenceExpression ()), new AnyNode (), new AnyNode ()),
-				new ConditionalExpression (new BinaryOperatorExpression (new NullReferenceExpression (), BinaryOperatorType.InEquality, new AnyNode ()), new AnyNode (), new AnyNode ()),
-				new ConditionalExpression (new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.InEquality, new NullReferenceExpression ()), new AnyNode (), new AnyNode ()),
-			};
-		}
-		
-		public bool IsCandidate (ConditionalExpression node)
-		{
-			var condition = node.Condition as BinaryOperatorExpression;
-			var compareNode = condition.Left is NullReferenceExpression ? condition.Right : condition.Left;
-			
-			
-			if (compareNode.IsMatch (node.TrueExpression)) {
-				// a == null ? a : other
-				if (condition.Operator == BinaryOperatorType.Equality) 
-					return false;
-				// a != null ? a : other
-				return compareNode.IsMatch (node.TrueExpression);
-			} else {
-				// a == null ? other : a
-				if (condition.Operator == BinaryOperatorType.Equality)
-					return compareNode.IsMatch (node.FalseExpression);
-				// a != null ? other : a
-				return false;
-			}
-		}
-		
-		public Tuple<Expression, Expression> GetExpressions (ConditionalExpression cond)
-		{
-			var condition = cond.Condition as BinaryOperatorExpression;
-			var compareNode = condition.Left is NullReferenceExpression ? condition.Right : condition.Left;
+		ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingInspector inspector = new ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingInspector ();
 
-			if (compareNode.IsMatch (cond.TrueExpression)) {
-				// a != null ? a : other
-				return new Tuple<Expression, Expression> (cond.TrueExpression, cond.FalseExpression);
-			}
-
-			// a == null ? other : a
-			return new Tuple<Expression, Expression> (cond.FalseExpression, cond.TrueExpression);
-		}
-		
-		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitior)
+		public override IEnumerable<Result> GetResults (MonoDevelop.CSharp.ContextAction.MDRefactoringContext context)
 		{
-			visitior.ConditionalExpressionVisited += delegate(ConditionalExpression node, InspectionData data) {
-				foreach (var match in Matches) {
-					if (match.IsMatch (node) && IsCandidate (node)) {
-						
-						AddResult (data,
-							new DomRegion (node.StartLocation, node.EndLocation),
-							GettextCatalog.GetString ("Convert to '??' expression"),
-							delegate {
-								var expressions = GetExpressions (node);
-										
-								Expression expr = new BinaryOperatorExpression (expressions.Item1.Clone (), BinaryOperatorType.NullCoalescing, expressions.Item2.Clone ());
-								data.Document.Editor.Replace (node, expr);
-							}
-						);
-					}
-				}
-			};
+			MonoDevelop.SourceEditor.QuickTaskSeverity severity = node.GetSeverity ();
+			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
+				return Enumerable.Empty<Result> ();
+			
+			return inspector.Run (context).Select (issue => Convert (issue));
 		}
 	}
 }

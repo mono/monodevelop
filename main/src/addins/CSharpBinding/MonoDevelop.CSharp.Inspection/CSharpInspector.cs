@@ -31,6 +31,7 @@ using MonoDevelop.AnalysisCore;
 using MonoDevelop.Inspection;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -41,31 +42,26 @@ namespace MonoDevelop.CSharp.Inspection
 		public abstract string Description { get; }
 
 		protected InspectorAddinNode node;
+		protected QuickTaskSeverity severity;
+
 		
-		protected void AddResult (InspectionData data, DomRegion region, string menuText, Action fix)
+		public void Attach (InspectorAddinNode node)
+		{
+			this.node = node;
+		}
+
+		protected Result Convert (ICSharpCode.NRefactory.CSharp.Refactoring.InspectionIssue issue)
 		{
 			var severity = node.GetSeverity ();
-			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
-				return;
-			data.Add (
-				new InspectorResults (node,
-					region,
-					Title,
-					severity, 
-					node.InspectionMark,
-					new GenericFix (menuText, fix)
-				)
-			);
+			return new InspectorResults (node, 
+			                             new DomRegion (issue.Start, issue.End), 
+			                             Title,
+			                             severity, 
+			                             node.InspectionMark,
+			                             new GenericFix (issue.Title, issue.Fix));
 		}
+
 		
-		public void Attach (InspectorAddinNode node, ObservableAstVisitor<InspectionData, object> visitior)
-		{
-			if (visitior == null)
-				throw new ArgumentNullException ("visitior");
-			this.node = node;
-			Attach (visitior);
-		}
-		
-		protected abstract void Attach (ObservableAstVisitor<InspectionData, object> visitior);
+		public abstract IEnumerable<Result> GetResults (MonoDevelop.CSharp.ContextAction.MDRefactoringContext context);
 	}
 }
