@@ -802,6 +802,9 @@
     <EmbeddedResource Include="branding\WelcomePageContent.xml">
       <LogicalName>WelcomePageContent.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightbulb.png">
+      <LogicalName>lightbulb.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
