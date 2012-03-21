@@ -182,5 +182,6 @@
 		
 		<Style name="semantic.type" color="skyblue2" weight="normal"/>
 		<Style name="semantic.field" color="black" weight="Italic"/>
+		<Style name="semantic.error" color="scarletred1"/>
 	</Style>
 </EditorStyle>

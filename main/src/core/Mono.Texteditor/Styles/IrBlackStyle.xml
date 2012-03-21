@@ -175,5 +175,6 @@
 	
 	<Style name="keyword.semantic.type" color="IdentifierVim"/>
 	<Style name="keyword.semantic.field" color="NormalVim" weight="Italic"/>
+	<Style name="keyword.semantic.error" color="scarletred1"/>
 	
 </EditorStyle>

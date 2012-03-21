@@ -170,4 +170,5 @@
 	
 	<Style name="keyword.semantic.type" color="accent_green_highlight" weight="normal"/>
 	<Style name="keyword.semantic.field" color="black" weight="Italic"/>
+	<Style name="keyword.semantic.error" color="accent_red" weight="normal"/>
 </EditorStyle>

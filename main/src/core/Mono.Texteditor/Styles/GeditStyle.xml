@@ -111,6 +111,7 @@
   <Style name="string.other" color="#FF00FE" />
   <Style name="keyword.semantic.type" color="#008A8C" />
   <Style name="keyword.semantic.field" color="black" weight="Italic"/>
+  <Style name="keyword.semantic.error" color="red"/>
   <Style name="keyword" color="#000000" weight="Bold" />
   <Style name="keyword.access" color="#A52929" weight="Bold" />
   <Style name="keyword.operator" color="#A52929" weight="Bold" />

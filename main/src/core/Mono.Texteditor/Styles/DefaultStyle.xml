@@ -151,6 +151,7 @@
 	<Style name="keyword" color="Blue">
 		<Style name="semantic.type" color="#3399BB"/>
 		<Style name="semantic.field" color="black" weight="Italic"/>
+		<Style name="semantic.error" color="red"/>
 	</Style>
 </EditorStyle>
 

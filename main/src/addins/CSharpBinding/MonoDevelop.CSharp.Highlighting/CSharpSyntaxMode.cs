@@ -439,7 +439,10 @@ namespace MonoDevelop.CSharp.Highlighting
 						var st = (SimpleType)node;
 						
 						var result = visitor.Resolve (st);
-						
+						if (result.IsError) {
+							endOffset = chunk.Offset + st.Identifier.Length;
+							return "keyword.semantic.error";
+						}
 						if (result is TypeResolveResult && st.IdentifierToken.Contains (loc) && unit.GetNodeAt<UsingDeclaration> (loc) == null) {
 							endOffset = chunk.Offset + st.Identifier.Length;
 							return "keyword.semantic.type";
@@ -450,7 +453,10 @@ namespace MonoDevelop.CSharp.Highlighting
 						var mt = (ICSharpCode.NRefactory.CSharp.MemberType)node;
 						
 						var result = visitor.Resolve (mt);
-						
+						if (result.IsError) {
+							endOffset = chunk.Offset + mt.MemberName.Length;
+							return "keyword.semantic.error";
+						}
 						if (result is TypeResolveResult && mt.MemberNameToken.Contains (loc) && unit.GetNodeAt<UsingDeclaration> (loc) == null) {
 							endOffset = chunk.Offset + mt.MemberName.Length;
 							return "keyword.semantic.type";
@@ -473,6 +479,11 @@ namespace MonoDevelop.CSharp.Highlighting
 					var id = node as IdentifierExpression;
 					if (id != null) {
 						var result = visitor.Resolve (id);
+						if (result.IsError) {
+							endOffset = chunk.Offset + id.Identifier.Length;
+							return "keyword.semantic.error";
+						}
+						
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
 							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
@@ -494,6 +505,11 @@ namespace MonoDevelop.CSharp.Highlighting
 							return null;
 						
 						var result = visitor.Resolve (memberReferenceExpression);
+						if (result.IsError) {
+							endOffset = chunk.Offset + memberReferenceExpression.MemberName.Length;
+							return "keyword.semantic.error";
+						}
+						
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
 							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {

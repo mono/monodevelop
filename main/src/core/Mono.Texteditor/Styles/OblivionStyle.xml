@@ -173,5 +173,6 @@
 	
 	<Style name="keyword.semantic.type" color="chameleon1"/>
 	<Style name="keyword.semantic.field" color="aluminium2" weight="Italic"/>
+	<Style name="keyword.semantic.error" color="scarletred1"/>
 	
 </EditorStyle>

@@ -83,6 +83,7 @@
 	<Style name="string.other" color="#a31515"/>
 	
 	<Style name="keyword.semantic.type" color="semantic-type"/>
+	<Style name="keyword.semantic.error" color="red"/>
 	<Style name="keyword" color="keyword-blue">
 		<Style name="access"/>
 	</Style>
