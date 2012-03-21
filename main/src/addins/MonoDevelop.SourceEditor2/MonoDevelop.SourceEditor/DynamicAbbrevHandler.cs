@@ -117,7 +117,7 @@ namespace MonoDevelop.SourceEditor
 			case AbbrevState.SearchOtherBuffers:
 				foreach (Document curDoc in IdeApp.Workbench.Documents) {
 					SourceEditorView otherView = curDoc.GetContent<SourceEditorView> ();
-					if (curDoc == doc && otherView == null)
+					if (curDoc == doc || otherView == null || otherView.Document == null)
 						continue;
 					for (int i = 0; i < otherView.Document.Length; i++) {
 						if (IsMatchAt (otherView, i, abbrevWord)) {
