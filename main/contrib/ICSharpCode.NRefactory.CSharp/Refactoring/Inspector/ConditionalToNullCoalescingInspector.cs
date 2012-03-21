@@ -1,6 +1,6 @@
-// 
+﻿// 
 // ConditionalToNullCoalescingInspector.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -25,18 +25,42 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	/// <summary>
-	/// Checks for  obj != null ? obj : <expr> 
-	/// Converts to: obj ?? <expr>
+	/// Checks for "a != null ? a : other"<expr>
+	/// Converts to: "a ?? other"<expr>
 	/// </summary>
 	public class ConditionalToNullCoalescingInspector : IInspector
 	{
-		static ConditionalExpression[] Matches;
-
+		static readonly Pattern pattern = new Choice {
+			// a != null ? a : other
+			new ConditionalExpression(
+				new Choice {
+					// a != null
+					new BinaryOperatorExpression(new AnyNode("a"), BinaryOperatorType.InEquality, new NullReferenceExpression()),
+					// null != a
+					new BinaryOperatorExpression(new NullReferenceExpression(), BinaryOperatorType.InEquality, new AnyNode("a")),
+				},
+				new Backreference("a"),
+				new AnyNode("other")
+			),
+			// a == null ? other : a
+			new ConditionalExpression(
+				new Choice {
+					// a == null
+					new BinaryOperatorExpression(new AnyNode("a"), BinaryOperatorType.Equality, new NullReferenceExpression()),
+					// null == a
+					new BinaryOperatorExpression(new NullReferenceExpression(), BinaryOperatorType.Equality, new AnyNode("a")),
+				},
+				new AnyNode("other"),
+				new Backreference("a")
+			),
+		};
+		
 		string title = "Convert to '??' expression";
 
 		public string Title {
@@ -46,16 +70,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			set {
 				title = value;
 			}
-		}		
-
-		public ConditionalToNullCoalescingInspector ()
-		{
-			Matches = new [] {
-				new ConditionalExpression (new BinaryOperatorExpression (new NullReferenceExpression (), BinaryOperatorType.Equality, new AnyNode ()), new AnyNode (), new AnyNode ()),
-				new ConditionalExpression (new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.Equality, new NullReferenceExpression ()), new AnyNode (), new AnyNode ()),
-				new ConditionalExpression (new BinaryOperatorExpression (new NullReferenceExpression (), BinaryOperatorType.InEquality, new AnyNode ()), new AnyNode (), new AnyNode ()),
-				new ConditionalExpression (new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.InEquality, new NullReferenceExpression ()), new AnyNode (), new AnyNode ()),
-			};
 		}
 
 		public IEnumerable<InspectionIssue> Run (BaseRefactoringContext context)
@@ -74,58 +88,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.inspector = inspector;
 			}
 
-			public override void VisitConditionalExpression (ConditionalExpression conditionalExpression)
+			public override void VisitConditionalExpression(ConditionalExpression conditionalExpression)
 			{
-				foreach (var match in Matches) {
-					if (match.IsMatch (conditionalExpression) && IsCandidate (conditionalExpression)) {
-						AddIssue (conditionalExpression,
-						               inspector.Title,
-						               delegate {
-							using (var script = ctx.StartScript ()) {
-								var expressions = SortExpressions (conditionalExpression);
-								var expr = new BinaryOperatorExpression (expressions.Item1.Clone (), BinaryOperatorType.NullCoalescing, expressions.Item2.Clone ());
-								script.Replace (conditionalExpression, expr);
-							}
-						});
-					}
+				Match m = pattern.Match(conditionalExpression);
+				if (m.Success) {
+					var a = m.Get<Expression>("a").Single();
+					var other = m.Get<Expression>("other").Single();
+					AddIssue(conditionalExpression, inspector.Title, delegate {
+						using (var script = ctx.StartScript ()) {
+							var expr = new BinaryOperatorExpression (a.Clone (), BinaryOperatorType.NullCoalescing, other.Clone ());
+							script.Replace (conditionalExpression, expr);
+						}
+					});
 				}
 				base.VisitConditionalExpression (conditionalExpression);
 			}
-		}
-
-		static bool IsCandidate (ConditionalExpression node)
-		{
-			var condition = node.Condition as BinaryOperatorExpression;
-			var compareNode = condition.Left is NullReferenceExpression ? condition.Right : condition.Left;
-			
-			
-			if (compareNode.IsMatch (node.TrueExpression)) {
-				// a == null ? a : other
-				if (condition.Operator == BinaryOperatorType.Equality) 
-					return false;
-				// a != null ? a : other
-				return compareNode.IsMatch (node.TrueExpression);
-			} else {
-				// a == null ? other : a
-				if (condition.Operator == BinaryOperatorType.Equality)
-					return compareNode.IsMatch (node.FalseExpression);
-				// a != null ? other : a
-				return false;
-			}
-		}
-
-		static Tuple<Expression, Expression> SortExpressions (ConditionalExpression cond)
-		{
-			var condition = cond.Condition as BinaryOperatorExpression;
-			var compareNode = condition.Left is NullReferenceExpression ? condition.Right : condition.Left;
-
-			if (compareNode.IsMatch (cond.TrueExpression)) {
-				// a != null ? a : other
-				return new Tuple<Expression, Expression> (cond.TrueExpression, cond.FalseExpression);
-			}
-
-			// a == null ? other : a
-			return new Tuple<Expression, Expression> (cond.FalseExpression, cond.TrueExpression);
 		}
 	}
 }

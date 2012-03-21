@@ -1,5 +1,5 @@
 // 
-// GatherVisitorBase.cs
+// RedundantUsingInspector.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,41 +23,55 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.PatternMatching;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	class GatherVisitorBase : DepthFirstAstVisitor
+	/// <summary>
+	/// Finds redundant using declarations.
+	/// </summary>
+	public class RedundantUsingInspector : IInspector
 	{
-		protected readonly BaseRefactoringContext ctx;
+		string title = "Remove redundant using";
 
-		public readonly List<InspectionIssue> FoundIssues = new List<InspectionIssue> ();
-
-		public GatherVisitorBase (BaseRefactoringContext ctx)
-		{
-			this.ctx = ctx;
-		}
-		
-		protected override void VisitChildren (AstNode node)
-		{
-			if (ctx.CancellationToken.IsCancellationRequested)
-				return;
-			base.VisitChildren (node);
-		}
-		
-		protected void AddIssue (AstNode node, string title, System.Action fix = null)
-		{
-			FoundIssues.Add (new InspectionIssue (title, node.StartLocation, node.EndLocation, fix));
+		public string Title {
+			get {
+				return title;
+			}
+			set {
+				title = value;
+			}
 		}
 
-		protected void AddIssue(TextLocation start, TextLocation end, string title, System.Action fix = null)
+		public IEnumerable<InspectionIssue> Run (BaseRefactoringContext context)
 		{
-			FoundIssues.Add (new InspectionIssue (title, start, end, fix));
+			var visitor = new GatherVisitor (context, this);
+			context.RootNode.AcceptVisitor (visitor);
+			return visitor.FoundIssues;
+		}
+
+		class GatherVisitor : GatherVisitorBase
+		{
+			readonly RedundantUsingInspector inspector;
+			
+			public GatherVisitor (BaseRefactoringContext ctx, RedundantUsingInspector inspector) : base (ctx)
+			{
+				this.inspector = inspector;
+			}
+
+			public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
+			{
+				base.VisitUsingDeclaration(usingDeclaration);
+				// TODO
+				//			return cSharpResolver.usedScopes
+				//				.OfType<ITypeOrNamespaceReference> ()
+				//				.Any (u => u.ResolveNamespace (ctx).NamespaceName == ns) || additionalNamespaces.Contains (ns);
+			}
 		}
 	}
-		
-	
 }
-

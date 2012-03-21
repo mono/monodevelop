@@ -325,6 +325,14 @@
     <Compile Include="Refactoring\InspectionIssue.cs" />
     <Compile Include="Refactoring\Inspector\ConditionalToNullCoalescingInspector.cs" />
     <Compile Include="Refactoring\Inspector\GatherVisitorBase.cs" />
+    <Compile Include="Refactoring\Inspector\NotImplementedExceptionInspector.cs" />
+    <Compile Include="Refactoring\Inspector\RedundantInternalInspector.cs" />
+    <Compile Include="Refactoring\Inspector\RedundantNamespaceUsageInspector.cs" />
+    <Compile Include="Refactoring\Inspector\RedundantPrivateInspector.cs" />
+    <Compile Include="Refactoring\Inspector\RedundantThisInspector.cs" />
+    <Compile Include="Refactoring\Inspector\RedundantUsingInspector.cs" />
+    <Compile Include="Refactoring\Inspector\StringIsNullOrEmptyInspector.cs" />
+    <Compile Include="Refactoring\Inspector\UseVarKeywordInspector.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

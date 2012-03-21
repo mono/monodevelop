@@ -237,6 +237,14 @@ FILES =  \
 	Refactoring/InspectionIssue.cs \
 	Refactoring/Inspector/ConditionalToNullCoalescingInspector.cs \
 	Refactoring/Inspector/GatherVisitorBase.cs \
+	Refactoring/Inspector/NotImplementedExceptionInspector.cs \
+	Refactoring/Inspector/RedundantInternalInspector.cs \
+	Refactoring/Inspector/RedundantNamespaceUsageInspector.cs \
+	Refactoring/Inspector/RedundantPrivateInspector.cs \
+	Refactoring/Inspector/RedundantThisInspector.cs \
+	Refactoring/Inspector/RedundantUsingInspector.cs \
+	Refactoring/Inspector/StringIsNullOrEmptyInspector.cs \
+	Refactoring/Inspector/UseVarKeywordInspector.cs \
 	Refactoring/RefactoringContext.cs \
 	Refactoring/Script.cs \
 	Refactoring/TypeSystemAstBuilder.cs \

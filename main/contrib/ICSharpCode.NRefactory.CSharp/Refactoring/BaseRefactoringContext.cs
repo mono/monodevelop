@@ -70,6 +70,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return resolver.Resolve (node, cancellationToken);
 		}
 		
+		public CSharpResolver GetResolverStateBefore(AstNode node)
+		{
+			return resolver.GetResolverStateBefore (node, cancellationToken);
+		}
+		
+		public CSharpResolver GetResolverStateAfter(AstNode node)
+		{
+			return resolver.GetResolverStateAfter (node, cancellationToken);
+		}
+
 		public IType ResolveType (AstType type)
 		{
 			return resolver.Resolve (type, cancellationToken).Type;
