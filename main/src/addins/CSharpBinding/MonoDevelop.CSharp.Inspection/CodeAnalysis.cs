@@ -43,6 +43,8 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using System.Threading;
 using MonoDevelop.SourceEditor;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -111,14 +113,16 @@ namespace MonoDevelop.CSharp.Inspection
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures)
-				yield break;
+				return Enumerable.Empty<Result> ();
 
-			var context = new MDRefactoringContext (input, ICSharpCode.NRefactory.TextLocation.Empty);
+			var context = new MDRefactoringContext (input, ICSharpCode.NRefactory.TextLocation.Empty, cancellationToken);
+			var result = new BlockingCollection<Result> ();
+			Parallel.ForEach (inspectors, (inspector) => {
+				foreach (var r in inspector.GetResults (context))
+					result.Add (r);
+			});
 
-			foreach (var inspector in inspectors) {
-				foreach (var result in inspector.GetResults (context))
-					yield return result;
-			}
+			return result;
 		}
 			
 	}

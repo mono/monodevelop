@@ -181,7 +181,7 @@ namespace MonoDevelop.CSharp.ContextAction
 			return new CSharpAstResolver (document.Compilation, unit, parsedFile);
 		}
 
-		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc) : base (CreateResolver (document), default (CancellationToken))
+		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (CreateResolver (document), cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
