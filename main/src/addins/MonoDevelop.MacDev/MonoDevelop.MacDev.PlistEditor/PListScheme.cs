@@ -31,68 +31,176 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
-	public class PListScheme
+	public partial class PListScheme
 	{
-		List<Key> keys = new List<Key> ();
+		public abstract class SchemaItem
+		{
+			public string ArrayType { get; set; }
+			public string Description { get; set; }
+			public string Identifier { get; set; }
+			public string Type { get; set; }
+			public List<Value> Values { get; set; }
+			
+			public SchemaItem ()
+			{
+				Values = new List<Value> ();
+			}
+			
+			public PObject Create ()
+			{
+				if (Type == PDictionary.Type) {
+					var dictionary = new PDictionary ();
+					foreach (var v in Values) {
+						if (v.Required)
+							dictionary.Add (v.Identifier, v.Create ());
+					}
+					return dictionary;
+				} else if (Type == PArray.Type) {
+					var array = new PArray ();
+					foreach (var v in Values) {
+						if (v.Required)
+							array.Add (v.Create ());
+					}
+					return array;
+				} else if (Values.Any ()){
+					return Values.First ().Create ();
+				} else {
+					var obj = PObject.Create (Type);
+					if (!string.IsNullOrEmpty (Identifier) && !(this is Key))
+						obj.SetValue (Identifier);
+					return obj;
+				}
+			}
+		}
 		
+		public class Value : SchemaItem {
+
+			public bool Required { get; set; }
+			
+			public Value ()
+			{
+				
+			}
+		}
+
+		public class Key : SchemaItem {
+			public static readonly Key Empty = new Key { };
+		}
+	}
+	
+	public partial class PListScheme
+	{
+		public static readonly PListScheme Empty = new PListScheme () { keys = new Key [0] };
 		
-		public IEnumerable<Key> Keys {
+		IList<Key> keys = new List<Key> ();
+
+		public IList<Key> Keys {
 			get {
 				return keys;
 			}
 		}
-		
-		public class Value {
-			public string Identifier { get; set; }
-			public string Description { get; set; }
-		}
-		
-		public class Key {
-			public string Identifier { get; set; }
-			public string Description { get; set; }
-			public string Type { get; set; }
-			public string ArrayType { get; set; }
-			
-			public readonly List<Value> Values = new List<Value> ();
-		}
-		
+
 		public Key GetKey (string id)
 		{
 			return keys.FirstOrDefault (k => k.Identifier == id);
 		}
-		
+
 		public static PListScheme Load (XmlReader reader)
 		{
 			var result = new PListScheme ();
+			var doc = new XmlDocument ();
+			doc.Load (reader);
 			
-			XmlReadHelper.ReadList (reader, "PListScheme", delegate () {
-				switch (reader.LocalName) {
-				case "Key":
-					var key = new Key () {
-						Identifier = reader.GetAttribute ("name"),
-						Description = reader.GetAttribute ("_description"),
-						Type = reader.GetAttribute ("type"),
-						ArrayType = reader.GetAttribute ("arrayType")
-					};
-					XmlReadHelper.ReadList (reader, "Key", delegate () {
-						if (reader.LocalName == "Value") {
-							key.Values.Add (new Value () {
-								Identifier = reader.GetAttribute ("name"),
-								Description = reader.GetAttribute ("_description")
-							});
-							return true;
-						}
-						return false;
-					});
-					result.keys.Add (key);
-					return true;
-				}
-				return false;
-			});
+			foreach (XmlNode keyNode in doc.SelectNodes ("/PListScheme/*")) {
+				var key = new Key {
+					Identifier = AttributeToString (keyNode.Attributes ["name"]),
+					Description = AttributeToString (keyNode.Attributes ["_description"]),
+					Type = AttributeToString (keyNode.Attributes ["type"]),
+					ArrayType = AttributeToString (keyNode.Attributes ["arrayType"])
+				};
+				
+				if (keyNode.HasChildNodes)
+					key.Values.AddRange (ParseValues (key.ArrayType ?? key.Type, keyNode.ChildNodes));
+				result.Keys.Add (key);
+			}
+			
 			return result;
 		}
 		
-		public static readonly PListScheme Empty = new PListScheme ();
+		public static Dictionary<PObject, SchemaItem> Match (PDictionary dictionary, PListScheme scheme)
+		{
+			Dictionary<PObject, SchemaItem> results = new Dictionary<PObject, SchemaItem> ();
+			foreach (var kp in dictionary) {
+				var key = scheme.GetKey (kp.Key);
+				if (key == null) {
+					results.Add (kp.Value, key);
+					continue;
+				}
+				
+				// Every array element is produced by instantiating a copy of this value
+				if (key.Type == PArray.Type && key.Values.Count == 1 && key.Values [0].Identifier == null) {
+					results.Add (kp.Value, key);
+					foreach (var v in ((PArray) kp.Value)) {
+						Match (v, key.Values [0], results);
+					}
+				} else if (key.Type == PArray.Type) {
+					Match (kp.Value, key, results);
+				} else if (key.Type == PDictionary.Type) {
+					Match (kp.Value, key, results);
+				} else {
+					results.Add (kp.Value, key);
+				}
+			}
+			return results;
+		}
+		
+		static void Match (PObject o, SchemaItem value, Dictionary<PObject, SchemaItem> results)
+		{
+			results.Add (o, value);
+			if (o is PDictionary) {
+				foreach (var kp in ((PDictionary) o)) {
+					var subValue = value.Values.Where (k => k.Identifier == kp.Key).FirstOrDefault () ?? value;
+					Match (kp.Value, subValue, results);
+				}
+			} else if (o is PArray) {
+				foreach (var v in ((PArray) o)) {
+					Match (v, value, results);
+				}
+			}
+		}
+		
+		
+		static IEnumerable<Value> ParseValues (string type, XmlNodeList nodeList)
+		{
+			List<Value> values = new List<Value> ();
+			foreach (XmlNode node in nodeList) {
+				if (node.Name != "Value")
+					throw new NotSupportedException (string.Format ("Node of type {0} not supported as a Value", node.Name));
+				
+				Value v = new Value {
+					ArrayType = AttributeToString (node.Attributes ["arrayType"]),
+					Description = AttributeToString (node.Attributes ["_description"]),
+					Identifier = AttributeToString (node.Attributes ["name"]),
+					Type = AttributeToString (node.Attributes ["type"]) ?? type
+				};
+				
+				if (node.Attributes ["required"] != null)
+					v.Required = bool.Parse (node.Attributes ["required"].Value);
+				
+				if (node.HasChildNodes)
+					v.Values.AddRange (ParseValues (v.ArrayType ?? v.Type, node.ChildNodes));
+				
+				values.Add (v);
+			}
+			return values;
+		}
+		
+		static string AttributeToString (XmlAttribute attr)
+		{
+			if (attr == null || string.IsNullOrEmpty (attr.Value))
+				return null;
+			return attr.Value;
+		}
 	}
 }
 

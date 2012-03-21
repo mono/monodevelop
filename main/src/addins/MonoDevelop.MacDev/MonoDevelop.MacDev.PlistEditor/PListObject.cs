@@ -52,6 +52,28 @@ namespace MonoDevelop.MacDev.PlistEditor
 			int arg2,
 			out IntPtr arg3);
 		
+		public static PObject Create (string type)
+		{
+			switch (type) {
+			case "Array":
+				return new PArray ();
+			case "Dictionary":
+				return new PDictionary ();
+			case "Boolean":
+				return new PBoolean (true);
+			case "Data":
+				return new PData (new byte[0]);
+			case "Date":
+				return new PDate (DateTime.Now);
+			case "Number":
+				return new PNumber (0);
+			case "String":
+				return new PString ("");
+			}
+			LoggingService.LogError ("Unknown pobject type:" + type);
+			return new PString ("<error>");
+		}
+		
 		
 		PObject parent;
 		public PObject Parent {
@@ -185,7 +207,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 		}
-		
 	}
 	
 	public abstract class PObjectContainer : PObject

@@ -201,6 +201,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserInterfaceTests", "tests\UserInterfaceTests\UserInterfaceTests.csproj", "{07F55155-51A8-4072-9F80-FA473666F086}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.MacDev.Tests", "tests\MonoDevelop.MacDev.Tests\MonoDevelop.MacDev.Tests.csproj", "{76495467-E8BF-43B0-A03C-18C6341966B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -489,6 +491,18 @@ Global
 		{75B9F2DF-4DEA-4007-965D-339563735EBE}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{75B9F2DF-4DEA-4007-965D-339563735EBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75B9F2DF-4DEA-4007-965D-339563735EBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.Debug|x86.Build.0 = Debug|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.DebugWin32|x86.Build.0 = Debug|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{76495467-E8BF-43B0-A03C-18C6341966B9}.Release|x86.Build.0 = Release|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -936,6 +950,7 @@ Global
 		{E414CD46-33C8-4CE1-986F-B601F941EBB9} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
 		{1497D0A8-AFF1-4938-BC22-BE79B358BA5B} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{07F55155-51A8-4072-9F80-FA473666F086} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
+		{76495467-E8BF-43B0-A03C-18C6341966B9} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
