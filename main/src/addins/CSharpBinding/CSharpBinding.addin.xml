@@ -286,7 +286,7 @@
 		<Inspector mimeType="text/x-csharp"
 			severity = "Suggestion"
 			class = "MonoDevelop.CSharp.Inspection.ConditionalToNullCoalescingInspector" />
-		<!--
+		
 		<Inspector mimeType="text/x-csharp"
 			severity = "Warning"
 			mark = "GrayOut"
@@ -328,7 +328,7 @@
 		<Inspector mimeType="text/x-csharp"
 			severity = "Warning"
 			class = "MonoDevelop.CSharp.Inspection.NamingInspector" />
-		-->
+		
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

@@ -37,7 +37,7 @@ using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public class UseVarKeywordInspector	 : CSharpInspector
+	public class UseVarKeywordInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordInspector>
 	{
 		public override string Category {
 			get {
@@ -57,62 +57,9 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		protected override void Attach (ObservableAstVisitor<InspectionData, object>  visitior)
+		public UseVarKeywordInspector ()
 		{
-			visitior.VariableDeclarationStatementVisited += HandleVisitiorVariableDeclarationStatementVisited;
-		}
-
-		void HandleVisitiorVariableDeclarationStatementVisited (VariableDeclarationStatement node, InspectionData data)
-		{
-			if (node.Type is PrimitiveType)
-				return;
-			if (node.Type is SimpleType && ((SimpleType)node.Type).Identifier == "var") 
-				return;
-			var severity = base.node.GetSeverity ();
-			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
-				return;
-			//only checks for cases where the type would be obvious - assignment of new, cast, etc.
-			//also check the type actually matches else the user might want to assign different subclasses later
-			foreach (var v in node.Variables) {
-				if (v.Initializer.IsNull)
-					return;
-				
-				var arrCreate = v.Initializer as ArrayCreateExpression;
-				if (arrCreate != null) {
-					var n = node.Type as ComposedType;
-					//FIXME: check the specifier compatibility
-					if (n != null && n.ArraySpecifiers.Any () && n.BaseType.IsMatch (arrCreate.Type))
-						continue;
-					return;
-				}
-				var objCreate = v.Initializer as ObjectCreateExpression;
-				if (objCreate != null) {
-					if (objCreate.Type.IsMatch (node.Type))
-						continue;
-					return;
-				}
-				var asCast = v.Initializer as AsExpression;
-				if (asCast != null) {
-					if (asCast.Type.IsMatch (node.Type))
-						continue;
-					return;
-				}
-				var cast = v.Initializer as CastExpression;
-				if (cast != null) {
-					if (cast.Type.IsMatch (node.Type))
-						continue;
-					return;
-				}
-				return;
-			}
-			
-			data.Add (new Result (
-					new DomRegion (node.Type.StartLocation, node.Type.EndLocation),
-					GettextCatalog.GetString ("Use 'var' keyword"),
-					severity,
-					InspectionMark.Underline,
-					severity != MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion)
-				);
+			inspector.Title = GettextCatalog.GetString ("Use 'var' keyword");
 		}
 	}
 }

@@ -32,7 +32,7 @@ using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public class UnusedUsingInspector : CSharpInspector
+	public class UnusedUsingInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.RedundantUsingInspector>
 	{
 		public override string Category {
 			get {
@@ -52,23 +52,9 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
+		public UnusedUsingInspector ()
 		{
-			visitor.UsingDeclarationVisited += HandleVisitorUsingDeclarationVisited;
-		}
-		
-		void HandleVisitorUsingDeclarationVisited (UsingDeclaration node, InspectionData data)
-		{
-			if (!data.Graph.Navigator.GetsUsed (data.Graph.CSharpResolver, node.StartLocation, node.Namespace)) {
-				AddResult (data,
-					new DomRegion (node.StartLocation, node.EndLocation),
-					GettextCatalog.GetString ("Remove unused usings"),
-					delegate {
-						var options = new RefactoringOptions (data.Document);
-						new RemoveUnusedImportsRefactoring ().Run (options);
-					}
-				);
-			}
+			inspector.Title = GettextCatalog.GetString ("Remove redundant using");
 		}
 	}
 }

@@ -34,7 +34,7 @@ using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public class StringIsNullOrEmptyInspector : CSharpInspector
+	public class StringIsNullOrEmptyInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.StringIsNullOrEmptyInspector>
 	{
 		public override string Category {
 			get {
@@ -54,113 +54,11 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		static BinaryOperatorExpression[] Matches;
-		static BinaryOperatorExpression[] NegatedMatches;
-		
-		static StringIsNullOrEmptyInspector ()
+		public StringIsNullOrEmptyInspector ()
 		{
-			// str == null && str == "" equals string.IsNullOrEmpty (str)
-			Matches = new [] {
-				new BinaryOperatorExpression (
-					new BinaryOperatorExpression (new NullReferenceExpression (), BinaryOperatorType.Equality, new AnyNode ()),
-					BinaryOperatorType.ConditionalAnd,
-					new BinaryOperatorExpression (new PrimitiveExpression (""), BinaryOperatorType.Equality, new AnyNode ())
-				),
-				new BinaryOperatorExpression (
-					new BinaryOperatorExpression (new NullReferenceExpression (), BinaryOperatorType.Equality, new AnyNode ()),
-					BinaryOperatorType.ConditionalAnd,
-					new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.Equality, new PrimitiveExpression (""))
-				),
-				new BinaryOperatorExpression (
-					new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.Equality, new NullReferenceExpression ()),
-					BinaryOperatorType.ConditionalAnd,
-					new BinaryOperatorExpression (new PrimitiveExpression (""), BinaryOperatorType.Equality, new AnyNode ())
-				),
-				new BinaryOperatorExpression (
-					new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.Equality, new NullReferenceExpression ()),
-					BinaryOperatorType.ConditionalAnd,
-					new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.Equality, new PrimitiveExpression (""))
-				)
-			};
-			
-			// str != null && str != "" equals !string.IsNullOrEmpty (str)
-			NegatedMatches = new [] {
-				new BinaryOperatorExpression (
-					new BinaryOperatorExpression (new NullReferenceExpression (), BinaryOperatorType.InEquality, new AnyNode ()),
-					BinaryOperatorType.ConditionalAnd,
-					new BinaryOperatorExpression (new PrimitiveExpression (""), BinaryOperatorType.InEquality, new AnyNode ())
-				),
-				new BinaryOperatorExpression (
-					new BinaryOperatorExpression (new NullReferenceExpression (), BinaryOperatorType.InEquality, new AnyNode ()),
-					BinaryOperatorType.ConditionalAnd,
-					new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.InEquality, new PrimitiveExpression (""))
-				),
-				new BinaryOperatorExpression (
-					new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.InEquality, new NullReferenceExpression ()),
-					BinaryOperatorType.ConditionalAnd,
-					new BinaryOperatorExpression (new PrimitiveExpression (""), BinaryOperatorType.InEquality, new AnyNode ())
-				),
-				new BinaryOperatorExpression (
-					new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.InEquality, new NullReferenceExpression ()),
-					BinaryOperatorType.ConditionalAnd,
-					new BinaryOperatorExpression (new AnyNode (), BinaryOperatorType.InEquality, new PrimitiveExpression (""))
-				)
-			};
+			inspector.Title = GettextCatalog.GetString ("Use string.IsNullOrEmpty");
 		}
-		
-		static bool ComparesEqualNodes (BinaryOperatorExpression binOp)
-		{
-			var left = binOp.Left as BinaryOperatorExpression;
-			var right = binOp.Right as BinaryOperatorExpression;
-			
-			return left.Left.IsMatch (right.Right) || left.Left.IsMatch (right.Left) ||
-				left.Right.IsMatch (right.Right) || left.Right.IsMatch (right.Left);
-		}
-		
-		static Expression GetParameter (BinaryOperatorExpression binOp)
-		{
-			var left = binOp.Left as BinaryOperatorExpression;
-			var right = binOp.Right as BinaryOperatorExpression;
-			
-			if (left.Left.IsMatch (right.Right))
-				return left.Left.Clone ();
-			if (left.Right.IsMatch (right.Right))
-				return left.Right.Clone ();
-			if (left.Left.IsMatch (right.Left))
-				return left.Left.Clone ();
-			return left.Right.Clone ();
-		}
-		
-		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitior)
-		{
-			visitior.BinaryOperatorExpressionVisited += delegate(BinaryOperatorExpression binOp, InspectionData data) {
-				foreach (var match in Matches) {
-					if (match.IsMatch (binOp) && ComparesEqualNodes (binOp)) {
-						AddResult (data,
-							new DomRegion (binOp.StartLocation.Line, binOp.StartLocation.Column, binOp.EndLocation.Line, binOp.EndLocation.Column),
-							GettextCatalog.GetString ("Use string.IsNullOrEmpty"),
-							delegate {
-//							Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
-//							binOp.Replace (data.Document, invocation);	
-						}
-						);
-					}
-				}
-				foreach (var match in NegatedMatches) {
-					if (match.IsMatch (binOp) && ComparesEqualNodes (binOp)) {
-						AddResult (data,
-							new DomRegion (binOp.StartLocation, binOp.EndLocation),
-							GettextCatalog.GetString ("Use string.IsNullOrEmpty"),
-							delegate {
-//								Expression invocation = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "IsNullOrEmpty"), GetParameter (binOp));
-//								invocation = new UnaryOperatorExpression (UnaryOperatorType.Not, invocation);
-//								binOp.Replace (data.Document, invocation);	
-							}
-						);
-					}
-				}
-			};
-		}
+
 	}
 }
 

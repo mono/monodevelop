@@ -175,10 +175,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 					if (cancellationToken.IsCancellationRequested)
 						return false;
 					var currentResult = (Result)enumerator.Current;
-					var marker = new ResultMarker (currentResult);
-					marker.IsVisible = currentResult.Underline;
-					editor.Document.AddMarker (marker.Line, marker);
-					ext.markers.Enqueue (marker);
+					
+					if (currentResult.InspectionMark != MonoDevelop.Inspection.InspectionMark.TaskBarOnly) {
+						var marker = new ResultMarker (currentResult);
+						marker.IsVisible = currentResult.Underline;
+						editor.Document.AddMarker (marker.Line, marker);
+						ext.markers.Enqueue (marker);
+					}
 					
 					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));
 				}

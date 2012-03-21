@@ -37,7 +37,7 @@ using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public class RedundantThisInspector: CSharpInspector
+	public class RedundantThisInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.RedundantThisInspector>
 	{
 		public override string Category {
 			get {
@@ -57,53 +57,9 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
+		public RedundantThisInspector ()
 		{
-			visitor.ThisReferenceExpressionVisited += HandleThisReferenceExpressionVisited;
-		}
-			
-		void HandleThisReferenceExpressionVisited (ThisReferenceExpression expr, InspectionData data)
-		{
-			var memberReference = expr.Parent as MemberReferenceExpression;
-			if (memberReference == null)
-				return;
-			var state = data.Graph.Resolver.GetResolverStateAfter (expr, data.CancellationToken);
-			var wholeResult = data.Graph.Resolver.Resolve (memberReference, data.CancellationToken);
-			
-			var result = state.LookupSimpleNameOrTypeName (memberReference.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
-			if (result == null || wholeResult == null)
-				return;
-			
-			IMember member;
-			if (wholeResult is MemberResolveResult) {
-				member = ((MemberResolveResult)wholeResult).Member;
-			} else if (wholeResult is MethodGroupResolveResult) {
-				member = ((MethodGroupResolveResult)wholeResult).Methods.FirstOrDefault ();
-			} else {
-				member = null;
-			}
-			if (member == null)
-				return;
-
-			bool isRedundant;
-			if (result is MemberResolveResult) {
-				isRedundant = ((MemberResolveResult)result).Member.Region.Equals (member.Region);
-			} else if (result is MethodGroupResolveResult) {
-				isRedundant = ((MethodGroupResolveResult)result).Methods.Any (m => m.Region.Equals (member.Region));
-			} else {
-				return;
-			}
-			if (isRedundant) {
-				AddResult (data,
-					new DomRegion (expr.StartLocation, memberReference.MemberNameToken.StartLocation),
-					GettextCatalog.GetString ("Remove redundant 'this.'"),
-					delegate {
-						int offset = data.Document.Editor.LocationToOffset (expr.StartLocation);
-						int end = data.Document.Editor.LocationToOffset (memberReference.MemberNameToken.StartLocation);
-						data.Document.Editor.Remove (offset, end - offset);
-					}
-				);
-			}
+			inspector.Title = GettextCatalog.GetString ("Remove redundant 'this.'");
 		}
 	}
 }

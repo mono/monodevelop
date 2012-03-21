@@ -50,18 +50,7 @@ namespace MonoDevelop.CSharp.Inspection
 			this.node = node;
 		}
 
-		protected Result Convert (ICSharpCode.NRefactory.CSharp.Refactoring.InspectionIssue issue)
-		{
-			var severity = node.GetSeverity ();
-			return new InspectorResults (node, 
-			                             new DomRegion (issue.Start, issue.End), 
-			                             Title,
-			                             severity, 
-			                             node.InspectionMark,
-			                             new GenericFix (issue.Title, issue.Fix));
-		}
 
-		
 		public abstract IEnumerable<Result> GetResults (MonoDevelop.CSharp.ContextAction.MDRefactoringContext context);
 	}
 }

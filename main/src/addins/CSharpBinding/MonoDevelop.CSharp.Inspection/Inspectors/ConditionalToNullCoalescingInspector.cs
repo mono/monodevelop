@@ -34,10 +34,38 @@ using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Inspection;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.AnalysisCore.Fixes;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public class ConditionalToNullCoalescingInspector : CSharpInspector
+	public abstract class NRefactoryInspectorWrapper<T> : CSharpInspector where T : ICSharpCode.NRefactory.CSharp.Refactoring.IInspector, new ()
+	{
+		protected T inspector = new T ();
+
+		public override IEnumerable<Result> GetResults (MonoDevelop.CSharp.ContextAction.MDRefactoringContext context)
+		{
+			MonoDevelop.SourceEditor.QuickTaskSeverity severity = node.GetSeverity ();
+			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
+				return Enumerable.Empty<Result> ();
+			
+			return inspector.Run (context).Select (issue => Convert (issue));
+		}
+
+		protected Result Convert (ICSharpCode.NRefactory.CSharp.Refactoring.InspectionIssue issue)
+		{
+			Console.WriteLine (Title +" - mark: " + node.InspectionMark);
+			var severity = node.GetSeverity ();
+			return new InspectorResults (node, 
+			                             new DomRegion (issue.Start, issue.End), 
+			                             Title,
+			                             severity, 
+			                             node.InspectionMark,
+			                             new GenericFix (issue.Title, issue.Fix));
+		}
+
+	}
+
+	public class ConditionalToNullCoalescingInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingInspector>
 	{
 		public override string Category {
 			get {
@@ -57,15 +85,9 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingInspector inspector = new ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingInspector ();
-
-		public override IEnumerable<Result> GetResults (MonoDevelop.CSharp.ContextAction.MDRefactoringContext context)
+		public ConditionalToNullCoalescingInspector ()
 		{
-			MonoDevelop.SourceEditor.QuickTaskSeverity severity = node.GetSeverity ();
-			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
-				return Enumerable.Empty<Result> ();
-			
-			return inspector.Run (context).Select (issue => Convert (issue));
+			inspector.Title = GettextCatalog.GetString ("Convert to '??' expression");
 		}
 	}
 }

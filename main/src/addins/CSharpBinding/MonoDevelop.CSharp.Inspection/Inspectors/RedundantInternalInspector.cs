@@ -30,7 +30,7 @@ using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public class RedundantInternalInspector : CSharpInspector
+	public class RedundantInternalInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.RedundantInternalInspector>
 	{
 		public override string Category {
 			get {
@@ -50,28 +50,9 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
+		public RedundantInternalInspector ()
 		{
-			visitor.TypeDeclarationVisited += HandleTypeDeclarationVisited;
-		}
-		
-		void HandleTypeDeclarationVisited (TypeDeclaration type, InspectionData data)
-		{
-			if (type.Parent is TypeDeclaration)
-				return;
-			foreach (var token in type.ModifierTokens) {
-				if (token.Modifier == Modifiers.Internal) {
-					AddResult (data,
-						new DomRegion (token.StartLocation, token.EndLocation),
-						GettextCatalog.GetString ("Remove redundant 'internal' modifier"),
-						delegate {
-							int offset = data.Document.Editor.LocationToOffset (token.StartLocation);
-							int end = data.Document.Editor.LocationToOffset (token.GetNextNode ().StartLocation);
-							data.Document.Editor.Remove (offset, end - offset);
-						}
-					);
-				}
-			}
+			inspector.Title = GettextCatalog.GetString ("Remove redundant 'internal' modifier");
 		}
 	}
 }

@@ -33,7 +33,7 @@ using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public class RedundantNamespaceUsageInspector : CSharpInspector
+	public class RedundantNamespaceUsageInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.RedundantNamespaceUsageInspector>
 	{
 		public override string Category {
 			get {
@@ -53,31 +53,9 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
+		public RedundantNamespaceUsageInspector ()
 		{
-			visitor.MemberReferenceExpressionVisited += delegate (MemberReferenceExpression mr, InspectionData data) {
-				var result = data.GetResolveResult (mr.Target);
-				if (!(result is NamespaceResolveResult))
-					return;
-				var wholeResult = data.GetResolveResult (mr);
-				if (!(wholeResult is TypeResolveResult))
-					return;
-				
-				var state = data.GetResolverStateBefore (mr);
-				var lookupName = state.LookupSimpleNameOrTypeName (mr.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
-				
-				if (lookupName != null && wholeResult.Type.Equals (lookupName.Type)) {
-					AddResult (data,
-						new DomRegion (mr.StartLocation, mr.MemberNameToken.StartLocation),
-						GettextCatalog.GetString ("Remove redundant namespace usage"),
-						delegate {
-							int offset = data.Document.Editor.LocationToOffset (mr.StartLocation);
-							int end = data.Document.Editor.LocationToOffset (mr.MemberNameToken.StartLocation);
-							data.Document.Editor.Remove (offset, end - offset);
-						}
-					);
-				}
-			};
+			inspector.Title = GettextCatalog.GetString ("Remove redundant namespace usage");
 		}
 	}
 }

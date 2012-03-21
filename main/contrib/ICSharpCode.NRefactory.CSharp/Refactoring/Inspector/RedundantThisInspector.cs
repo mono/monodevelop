@@ -66,47 +66,35 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.inspector = inspector;
 			}
 
-			static IMember GetMember(ResolveResult result)
+			static IMember GetMember (ResolveResult result)
 			{
 				if (result is MemberResolveResult) {
 					return ((MemberResolveResult)result).Member;
-				} 
-				return null;
-			}
-
-			static IEnumerable<IMember> GetMembers (ResolveResult result)
-			{
-				if (result is MemberResolveResult) {
-					return new IMember[] {  ((MemberResolveResult)result).Member };
 				} else if (result is MethodGroupResolveResult) {
-					return ((MethodGroupResolveResult)result).Methods;
+					return ((MethodGroupResolveResult)result).Methods.First ();
 				}
 
 				return null;
 			}
-				
 
-			public override void VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression)
+			public override void VisitThisReferenceExpression (ThisReferenceExpression thisReferenceExpression)
 			{
-				base.VisitThisReferenceExpression(thisReferenceExpression);
+				base.VisitThisReferenceExpression (thisReferenceExpression);
 				var memberReference = thisReferenceExpression.Parent as MemberReferenceExpression;
 				if (memberReference == null) {
 					return;
 				}
 
-				var state = ctx.GetResolverStateAfter(thisReferenceExpression);
-				var wholeResult = ctx.Resolve(thisReferenceExpression);
+				var state = ctx.GetResolverStateAfter (thisReferenceExpression);
+				var wholeResult = ctx.Resolve (memberReference);
 			
-				var result = state.LookupSimpleNameOrTypeName(memberReference.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
-				if (result == null || wholeResult == null) {
-					return;
-				}
-			
-				IMember member = GetMember(wholeResult);
+				IMember member = GetMember (wholeResult);
 				if (member == null) { 
 					return;
 				}
 
+				var result = state.LookupSimpleNameOrTypeName (memberReference.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
+			
 				bool isRedundant;
 				if (result is MemberResolveResult) {
 					isRedundant = ((MemberResolveResult)result).Member.Region.Equals(member.Region);

@@ -30,7 +30,7 @@ using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public class RedundantPrivateInspector : CSharpInspector
+	public class RedundantPrivateInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.RedundantPrivateInspector>
 		
 	{
 		public override string Category {
@@ -51,39 +51,9 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
+		public RedundantPrivateInspector ()
 		{
-			visitor.MethodDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.FieldDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.PropertyDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.IndexerDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.EventDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.CustomEventDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.ConstructorDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.ConstructorDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.OperatorDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.FixedFieldDeclarationVisited += (node, data) => CheckNode (node, data);
-			visitor.TypeDeclarationVisited += delegate(TypeDeclaration node, InspectionData data) {
-				if (node.Parent is TypeParameterDeclaration)
-					CheckNode (node, data);
-			};
-		}
-		
-		void CheckNode (EntityDeclaration node, InspectionData data)
-		{
-			foreach (var token in node.ModifierTokens) {
-				if (token.Modifier == Modifiers.Private) {
-					AddResult (data,
-						new DomRegion (token.StartLocation, token.EndLocation),
-						GettextCatalog.GetString ("Remove redundant 'private' modifier"),
-						delegate {
-							int offset = data.Document.Editor.LocationToOffset (token.StartLocation);
-							int end = data.Document.Editor.LocationToOffset (token.GetNextNode ().StartLocation);
-							data.Document.Editor.Remove (offset, end - offset);
-						}
-					);
-				}
-			}
+			inspector.Title = GettextCatalog.GetString ("Remove redundant 'private' modifier");
 		}
 	}
 }

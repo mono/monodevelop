@@ -59,126 +59,131 @@ namespace MonoDevelop.CSharp.Inspection
 			}
 		}
 
-		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
+		public override IEnumerable<Result> GetResults (MonoDevelop.CSharp.ContextAction.MDRefactoringContext context)
 		{
-			visitor.VariableDeclarationStatementVisited += HandleVisitorVariableDeclarationStatementVisited;
-			visitor.FixedFieldDeclarationVisited += HandleVisitorFixedFieldDeclarationVisited;
-			visitor.ParameterDeclarationVisited += HandleVisitorParameterDeclarationVisited;
-			visitor.PropertyDeclarationVisited += HandleVisitorPropertyDeclarationVisited;
-			visitor.MethodDeclarationVisited += HandleVisitorMethodDeclarationVisited;
-			visitor.FieldDeclarationVisited += HandleVisitorFieldDeclarationVisited;
-			visitor.CustomEventDeclarationVisited += HandleVisitorCustomEventDeclarationVisited;
-			visitor.EventDeclarationVisited += HandleVisitorEventDeclarationVisited;
-			visitor.TypeDeclarationVisited += HandleVisitorTypeDeclarationVisited;
-			visitor.DelegateDeclarationVisited += HandleVisitorDelegateDeclarationVisited;
-			visitor.NamespaceDeclarationVisited += HandleVisitorNamespaceDeclarationVisited;
-			visitor.TypeParameterDeclarationVisited += HandleVisitorTypeParameterDeclarationVisited;
-			visitor.EnumMemberDeclarationVisited += HandleVisitorEnumMemberDeclarationVisited;
+			yield break;
 		}
 
-		void HandleVisitorVariableDeclarationStatementVisited (VariableDeclarationStatement node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckVariableDeclaration (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorFixedFieldDeclarationVisited (FixedFieldDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckField (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorParameterDeclarationVisited (ParameterDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckParameter (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorPropertyDeclarationVisited (PropertyDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckProperty (node, data))
-					return;
-			}
-		}
-		
-		void HandleVisitorMethodDeclarationVisited (MethodDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckMethod (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorFieldDeclarationVisited (FieldDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckField (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorCustomEventDeclarationVisited (CustomEventDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckEvent (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorEventDeclarationVisited (EventDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckEvent (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorTypeDeclarationVisited (TypeDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckType (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorEnumMemberDeclarationVisited (EnumMemberDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckEnumMember (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorTypeParameterDeclarationVisited (TypeParameterDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckTypeParameter (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorNamespaceDeclarationVisited (NamespaceDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckNamespace (node, data))
-					return;
-			}
-		}
-
-		void HandleVisitorDelegateDeclarationVisited (DelegateDeclaration node, InspectionData data)
-		{
-			foreach (var rule in policy.Rules) {
-				if (rule.CheckDelegate (node, data))
-					return;
-			}
-		}
+//		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
+//		{
+//			visitor.VariableDeclarationStatementVisited += HandleVisitorVariableDeclarationStatementVisited;
+//			visitor.FixedFieldDeclarationVisited += HandleVisitorFixedFieldDeclarationVisited;
+//			visitor.ParameterDeclarationVisited += HandleVisitorParameterDeclarationVisited;
+//			visitor.PropertyDeclarationVisited += HandleVisitorPropertyDeclarationVisited;
+//			visitor.MethodDeclarationVisited += HandleVisitorMethodDeclarationVisited;
+//			visitor.FieldDeclarationVisited += HandleVisitorFieldDeclarationVisited;
+//			visitor.CustomEventDeclarationVisited += HandleVisitorCustomEventDeclarationVisited;
+//			visitor.EventDeclarationVisited += HandleVisitorEventDeclarationVisited;
+//			visitor.TypeDeclarationVisited += HandleVisitorTypeDeclarationVisited;
+//			visitor.DelegateDeclarationVisited += HandleVisitorDelegateDeclarationVisited;
+//			visitor.NamespaceDeclarationVisited += HandleVisitorNamespaceDeclarationVisited;
+//			visitor.TypeParameterDeclarationVisited += HandleVisitorTypeParameterDeclarationVisited;
+//			visitor.EnumMemberDeclarationVisited += HandleVisitorEnumMemberDeclarationVisited;
+//		}
+//
+//		void HandleVisitorVariableDeclarationStatementVisited (VariableDeclarationStatement node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckVariableDeclaration (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorFixedFieldDeclarationVisited (FixedFieldDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckField (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorParameterDeclarationVisited (ParameterDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckParameter (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorPropertyDeclarationVisited (PropertyDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckProperty (node, data))
+//					return;
+//			}
+//		}
+//		
+//		void HandleVisitorMethodDeclarationVisited (MethodDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckMethod (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorFieldDeclarationVisited (FieldDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckField (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorCustomEventDeclarationVisited (CustomEventDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckEvent (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorEventDeclarationVisited (EventDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckEvent (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorTypeDeclarationVisited (TypeDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckType (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorEnumMemberDeclarationVisited (EnumMemberDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckEnumMember (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorTypeParameterDeclarationVisited (TypeParameterDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckTypeParameter (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorNamespaceDeclarationVisited (NamespaceDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckNamespace (node, data))
+//					return;
+//			}
+//		}
+//
+//		void HandleVisitorDelegateDeclarationVisited (DelegateDeclaration node, InspectionData data)
+//		{
+//			foreach (var rule in policy.Rules) {
+//				if (rule.CheckDelegate (node, data))
+//					return;
+//			}
+//		}
 
 	}
 }
