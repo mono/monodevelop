@@ -61,6 +61,10 @@ namespace MonoDevelop.ContextAction
 			
 			var col = new TreeViewColumn ();
 			
+			searchentryFilter.Ready = true;
+			searchentryFilter.Visible = true;
+			searchentryFilter.Entry.Changed += ApplyFilter;
+
 			var togRender = new CellRendererToggle ();
 			togRender.Toggled += delegate(object o, ToggledArgs args) {
 				TreeIter iter;
@@ -74,14 +78,19 @@ namespace MonoDevelop.ContextAction
 			
 			var textRender = new CellRendererText ();
 			col.PackStart (textRender, true);
-			col.AddAttribute (textRender, "text", 0);
+			col.AddAttribute (textRender, "markup", 0);
 			
 			treeviewContextActions.AppendColumn (col);
 			treeviewContextActions.HeadersVisible = false;
 			treeviewContextActions.Model = treeStore;
 			
-			FillTreeStore ();
+			FillTreeStore (null);
 			treeviewContextActions.Selection.Changed += HandleTreeviewContextActionsSelectionChanged;
+		}
+
+		void ApplyFilter (object sender, EventArgs e)
+		{
+			FillTreeStore (searchentryFilter.Entry.Text.Trim ());
 		}
 
 		void HandleTreeviewContextActionsSelectionChanged (object sender, EventArgs e)
@@ -94,12 +103,22 @@ namespace MonoDevelop.ContextAction
 			this.labelDescription.Markup = "<b>" + actionNode.Title + "</b>" + Environment.NewLine + actionNode.Description;
 		}
 
-		public void FillTreeStore ()
+		public void FillTreeStore (string filter)
 		{
+			treeStore.Clear ();
 			string disabledNodes = PropertyService.Get ("ContextActions." + mimeType, "");
 			foreach (var node in RefactoringService.ContextAddinNodes.Where (n => n.MimeType == mimeType)) {
+				if (!string.IsNullOrEmpty (filter) && node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
+					continue;
+				
 				bool isEnabled = disabledNodes.IndexOf (node.Type.FullName) < 0;
-				treeStore.AppendValues (node.Title, isEnabled, node);
+				var title = node.Title;
+				if (!string.IsNullOrEmpty (filter)) {
+					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
+					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
+				}
+				
+				treeStore.AppendValues (title, isEnabled, node);
 			}
 		}
 		

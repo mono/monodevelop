@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.AnalysisCore.Extensions;
 using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -40,45 +41,28 @@ namespace MonoDevelop.AnalysisCore
 			this.Underline = underLine;
 		}
 		
-		public Result (DomRegion region, string message, QuickTaskSeverity level, ResultCertainty certainty, ResultImportance importance, bool underline = true)
+		public Result (DomRegion region, string message, QuickTaskSeverity level, InspectionMark inspectionMark, bool underline = true)
 		{
 			this.Region = region;
 			this.Message = message;
 			this.Level = level;
-			this.Certainty = certainty;
-			this.Importance = importance;
+			this.InspectionMark = inspectionMark;
 			this.Underline = underline;
 		}
 		 
-		public void SetSeverity (QuickTaskSeverity level, ResultCertainty certainty, ResultImportance importance)
+		public void SetSeverity (QuickTaskSeverity level, InspectionMark inspectionMark)
 		{
 			this.Level = level;
-			this.Certainty = certainty;
-			this.Importance = importance;
+			this.InspectionMark = inspectionMark;
 		}
 		
 		public string Message { get; private set; }
 		public QuickTaskSeverity Level { get; private set; }
-		public ResultCertainty Certainty { get; private set; }
-		public ResultImportance Importance { get; private set; }
+		public InspectionMark InspectionMark { get; private set; }
 		public DomRegion Region { get; private set; }
 		
 		public bool Underline { get; private set; }
 		
 		internal AnalysisRuleAddinNode Source { get; set; }
-	}
-	
-	public enum ResultCertainty
-	{
-		High,
-		Medium,
-		Low
-	}
-	
-	public enum ResultImportance
-	{
-		High,
-		Medium,
-		Low
 	}
 }

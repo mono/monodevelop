@@ -31,12 +31,31 @@ using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class ConditionalToNullCoalescingInspector : CSharpInspector
 	{
 		static ConditionalExpression[] Matches;
+
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.Opportunities;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("'?:' expression can be converted to '??' expression");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("'?:' expression can be converted to '??' expression.");
+			}
+		}
 
 		public ConditionalToNullCoalescingInspector ()
 		{

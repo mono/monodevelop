@@ -33,11 +33,30 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp.Refactoring;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class RedundantThisInspector: CSharpInspector
 	{
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.Redundancies;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("Remove redundant 'this.'");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("Removes 'this.' references that are not required.");
+			}
+		}
+
 		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
 		{
 			visitor.ThisReferenceExpressionVisited += HandleThisReferenceExpressionVisited;
@@ -57,15 +76,15 @@ namespace MonoDevelop.CSharp.Inspection
 			
 			IMember member;
 			if (wholeResult is MemberResolveResult) {
-				member = ((MemberResolveResult)result).Member;
+				member = ((MemberResolveResult)wholeResult).Member;
 			} else if (wholeResult is MethodGroupResolveResult) {
-				member = ((MethodGroupResolveResult)result).Methods.FirstOrDefault ();
+				member = ((MethodGroupResolveResult)wholeResult).Methods.FirstOrDefault ();
 			} else {
 				member = null;
 			}
 			if (member == null)
 				return;
-				
+
 			bool isRedundant;
 			if (result is MemberResolveResult) {
 				isRedundant = ((MemberResolveResult)result).Member.Region.Equals (member.Region);

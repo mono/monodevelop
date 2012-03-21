@@ -35,6 +35,7 @@ using MonoDevelop.Core.Serialization;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -724,7 +725,7 @@ namespace MonoDevelop.CSharp.Inspection
 				new DomRegion (null, location.Line, location.Column, location.Line, location.Column + name.Length),
 				error,
 				MonoDevelop.SourceEditor.QuickTaskSeverity.Warning,
-				ResultCertainty.High, ResultImportance.Medium,
+				InspectionMark.Underline,
 				fixes.ToArray<IAnalysisFix> ());
 		}
 	}

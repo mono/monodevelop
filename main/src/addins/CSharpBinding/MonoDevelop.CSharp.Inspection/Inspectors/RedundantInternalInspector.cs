@@ -26,11 +26,30 @@
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class RedundantInternalInspector : CSharpInspector
 	{
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.Redundancies;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("Remove redunant 'internal' modifier");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("Removes 'internal' modifiers that are not required.");
+			}
+		}
+
 		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
 		{
 			visitor.TypeDeclarationVisited += HandleTypeDeclarationVisited;

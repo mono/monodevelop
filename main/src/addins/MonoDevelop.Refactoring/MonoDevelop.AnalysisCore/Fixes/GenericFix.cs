@@ -27,14 +27,26 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
+	public class InspectorResults : GenericResults
+	{
+		public InspectorAddinNode Inspector { get; private set; }
+
+		public InspectorResults (InspectorAddinNode inspector, DomRegion region, string message, QuickTaskSeverity level, InspectionMark mark, params GenericFix[] fixes)
+			: base (region, message, level, mark, fixes)
+		{
+			this.Inspector = inspector;
+		}
+	}
+
 	public class GenericResults : FixableResult
 	{
 		public GenericResults (DomRegion region, string message, QuickTaskSeverity level,
-			ResultCertainty certainty, ResultImportance importance, params GenericFix[] fixes)
-			: base (region, message, level, certainty, importance)
+			InspectionMark mark, params GenericFix[] fixes)
+			: base (region, message, level, mark)
 		{
 			this.Fixes = fixes;
 		}

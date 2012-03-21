@@ -30,48 +30,44 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Inspection
 {
+	public enum InspectionMark
+	{
+		TaskBarOnly,
+		Underline,
+		GrayOut
+	}
+
 	public class InspectorAddinNode : TypeExtensionNode
 	{
 		[NodeAttribute ("mimeType", Required=true, Description="The mime type of this action.")]
 		string mimeType = null;
-		
 		public string MimeType {
 			get {
 				return mimeType;
 			}
 		}
-		
-		[NodeAttribute ("_title", Required=true, Localizable=true, Description="The title of this action.")]
-		string title = null;
-		
-		public string Title {
-			get {
-				return title;
-			}
-		}
-		
-		[NodeAttribute ("_description", Required=true, Localizable=true,  Description="The description of this action.")]
-		string description = null;
-		
-		public string Description {
-			get {
-				return description;
-			}
-		}
-		
-		[NodeAttribute ("severity", Required=true, Localizable=true,  Description="The severity of this action.")]
+
+		[NodeAttribute ("severity", Required=true, Localizable=false,  Description="The severity of this action.")]
 		QuickTaskSeverity severity;
 		public QuickTaskSeverity Severity {
 			get {
 				return severity;
 			}
 		}
-		
-		object inspector;
-		public object Inspector {
+
+		[NodeAttribute ("mark", Required=false, Localizable=false,  Description="The severity of this action.")]
+		InspectionMark inspectionMark = InspectionMark.Underline;
+		public InspectionMark InspectionMark {
+			get {
+				return inspectionMark;
+			}
+		}
+
+		IInspector inspector;
+		public IInspector Inspector {
 			get {
 				if (inspector == null)
-					inspector = CreateInstance ();
+					inspector = (IInspector)CreateInstance ();
 				return inspector;
 			}
 		}

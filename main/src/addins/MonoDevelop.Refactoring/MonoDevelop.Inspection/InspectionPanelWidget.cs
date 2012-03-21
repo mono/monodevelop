@@ -31,6 +31,8 @@ using System.Linq;
 using System.Text;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.Refactoring;
+using System.Collections.Generic;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Inspection
 {
@@ -52,7 +54,7 @@ namespace MonoDevelop.Inspection
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class InspectionPanelWidget : Gtk.Bin
 	{
-//		string mimeType;
+		readonly string mimeType;
 		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(QuickTaskSeverity), typeof(InspectorAddinNode));
 		
 		string GetDescription (QuickTaskSeverity severity)
@@ -72,19 +74,66 @@ namespace MonoDevelop.Inspection
 				throw new ArgumentOutOfRangeException ();
 			}
 		}
+
+		Gdk.Color GetColor (QuickTaskSeverity severity)
+		{
+			switch (severity) {
+			case QuickTaskSeverity.None:
+				return Style.Base (StateType.Normal);
+			case QuickTaskSeverity.Error:
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle (Style).ErrorUnderline;
+			case QuickTaskSeverity.Warning:
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle (Style).WarningUnderline;
+			case QuickTaskSeverity.Hint:
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle (Style).HintUnderline;
+			case QuickTaskSeverity.Suggestion:
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle (Style).SuggestionUnderline;
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
+		}
+
+		public void FillInspectors (string filter)
+		{
+			categories.Clear ();
+			treeStore.Clear ();
+			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
+				if (!string.IsNullOrEmpty (filter) && node.Inspector.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
+					continue;
+				Gtk.TreeIter iter;
+				if (!categories.TryGetValue (node.Inspector.Category, out iter)) {
+					iter = treeStore.AppendValues ("<b>" + node.Inspector.Category + "</b>");
+					categories [node.Inspector.Category] = iter;
+				}
+				var title = node.Inspector.Title;
+				if (!string.IsNullOrEmpty (filter)) {
+					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
+					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
+				}
+				treeStore.AppendValues (iter, title, node.GetSeverity (), node);
+			}
+			treeviewInspections.ExpandAll ();
+		}
 		
 		public InspectionPanelWidget (string mimeType)
 		{
-			this.Build ();
-//			this.mimeType = mimeType;
-			
-			
-			treeviewInspections.AppendColumn ("Title", new CellRendererText (), "text", 0);
-			
-			
+			this.mimeType = mimeType;
+			Build ();
+
+			var col1 = treeviewInspections.AppendColumn ("Title", new CellRendererText (), "markup", 0);
+			col1.Expand = true;
+
+			searchentryFilter.Ready = true;
+			searchentryFilter.Visible = true;
+			searchentryFilter.Entry.Changed += ApplyFilter;
+
 			var comboRenderer = new CellRendererCombo ();
+			comboRenderer.Alignment = Pango.Alignment.Center;
 			var col = treeviewInspections.AppendColumn ("Severity", comboRenderer);
-			
+			col.Sizing = TreeViewColumnSizing.GrowOnly;
+			col.MinWidth = 100;
+			col.Expand = false;
+
 			var comboBoxStore = new ListStore (typeof(string), typeof(QuickTaskSeverity));
 			comboBoxStore.AppendValues (GetDescription (QuickTaskSeverity.None), QuickTaskSeverity.None);
 			comboBoxStore.AppendValues (GetDescription (QuickTaskSeverity.Error), QuickTaskSeverity.Error);
@@ -94,6 +143,7 @@ namespace MonoDevelop.Inspection
 			comboRenderer.Model = comboBoxStore;
 			comboRenderer.Mode = CellRendererMode.Activatable;
 			comboRenderer.TextColumn = 0;
+
 			comboRenderer.Editable = true;
 			comboRenderer.HasEntry = false;
 			
@@ -105,7 +155,6 @@ namespace MonoDevelop.Inspection
 				Gtk.TreeIter storeIter;
 				if (!comboBoxStore.GetIterFirst (out storeIter))
 					return;
-				Console.WriteLine ("new text:" + args.NewText);
 				do {
 					if ((string)comboBoxStore.GetValue (storeIter, 0) == args.NewText) {
 						treeStore.SetValue (iter, 1, (QuickTaskSeverity)comboBoxStore.GetValue (storeIter, 1));
@@ -115,38 +164,64 @@ namespace MonoDevelop.Inspection
 			};
 			
 			col.SetCellDataFunc (comboRenderer, delegate (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter) {
-				var severity = (QuickTaskSeverity)treeStore.GetValue (iter, 1);
+				var val = treeStore.GetValue (iter, 1);
+				if (val == null) {
+					comboRenderer.Visible = false;
+					return;
+				}
+				var severity = (QuickTaskSeverity)val;
+				comboRenderer.Visible = true;
 				comboRenderer.Text = GetDescription (severity);
+				comboRenderer.BackgroundGdk = GetColor (severity);
 			});
 			treeviewInspections.HeadersVisible = false;
 			treeviewInspections.Model = treeStore;
 			treeviewInspections.Selection.Changed += HandleSelectionChanged;
 
-			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
-				treeStore.AppendValues (node.Title, node.GetSeverity (), node);
-			}
+			FillInspectors (null);
 		}
-		
+
+		void ApplyFilter (object sender, EventArgs e)
+		{
+			FillInspectors (searchentryFilter.Entry.Text.Trim ());
+		}
+
+		Dictionary<string, TreeIter> categories = new Dictionary<string, TreeIter> ();
+
 		void HandleSelectionChanged (object sender, EventArgs e)
 		{
-			this.labelDescription.Text = "";
+			labelDescription.Text = "";
 			Gtk.TreeIter iter;
 			if (!treeviewInspections.Selection.GetSelected (out iter))
 				return;
 			var actionNode = (InspectorAddinNode)treeStore.GetValue (iter, 2);
-			this.labelDescription.Markup = "<b>" + actionNode.Title + "</b>" + Environment.NewLine + actionNode.Description;
+			if (actionNode != null)
+				labelDescription.Markup = "<b>" + actionNode.Inspector.Title + "</b>" + Environment.NewLine + actionNode.Inspector.Description;
 		}
 
 		public void ApplyChanges ()
 		{
 			Gtk.TreeIter iter;
-			if (!treeStore.GetIterFirst (out iter))
-				return;
+			if (treeStore.GetIterFirst (out iter))
+				ApplyChanges (iter);
+			
+		}
+
+		public void ApplyChanges (Gtk.TreeIter iter)
+		{
 			do {
-				var severity = (QuickTaskSeverity)treeStore.GetValue (iter, 1);
-				var node = (InspectorAddinNode)treeStore.GetValue (iter, 2);
-				node.SetSeverity (severity);
+				var node = treeStore.GetValue (iter, 2) as InspectorAddinNode;
+
+				if (node != null) {
+					var severity = (QuickTaskSeverity)treeStore.GetValue (iter, 1);
+					node.SetSeverity (severity);
+				}
+
+				TreeIter child;
+				if (treeStore.IterChildren (out child, iter)) 
+					ApplyChanges (child);
 			} while (treeStore.IterNext (ref iter));
+			MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.RefreshAllColors ();
 		}
 	}
 }

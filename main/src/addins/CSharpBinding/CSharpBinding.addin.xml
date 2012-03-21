@@ -284,58 +284,50 @@
 	
 	<Extension path = "/MonoDevelop/Refactoring/Inspectors">
 		<Inspector mimeType="text/x-csharp"
-			_title = "'?:' expression can be converted to '??' expression"
-			_description = "'?:' expression can be converted to '??' expression."
 			severity = "Suggestion"
 			class = "MonoDevelop.CSharp.Inspection.ConditionalToNullCoalescingInspector" />
 		
 		<Inspector mimeType="text/x-csharp"
-			_title = "Remove unused usings"
-			_description = "Removes used declarations that are not required."
 			severity = "Warning"
+			mark = "GrayOut"
 			class = "MonoDevelop.CSharp.Inspection.UnusedUsingInspector" />
 		
 		<Inspector mimeType="text/x-csharp"
-			_title = "Remove redundant 'this.'"
-			_description = "Removes 'this.' references that are not required."
 			severity = "Warning"
+			mark = "GrayOut"
 			class = "MonoDevelop.CSharp.Inspection.RedundantThisInspector" />
 		
 		<Inspector mimeType="text/x-csharp"
-			_title = "Show NotImplementedException"
-			_description = "Shows NotImplementedException throws in the quick task bar."
 			severity = "Suggestion"
+			mark = "TaskBarOnly"
 			class = "MonoDevelop.CSharp.Inspection.NotImplementedExceptionInspector" />
-			
+		
 		<Inspector mimeType="text/x-csharp"
-			_title = "Use string.IsNullOrEmpty"
-			_description = "Uses shorter string.IsNullOrEmpty call instead of a longer condition."
 			severity = "Suggestion"
 			class = "MonoDevelop.CSharp.Inspection.StringIsNullOrEmptyInspector" />
 			
 		<Inspector mimeType="text/x-csharp"
-			_title = "Use implicitly typed local variable decaration"
-			_description = "Use implicitly typed local variable decaration"
-			severity = "Suggestion"
+			severity = "Hint"
 			class = "MonoDevelop.CSharp.Inspection.UseVarKeywordInspector" />
 			
 		<Inspector mimeType="text/x-csharp"
-			_title = "Remove redunant 'internal' modifier."
-			_description = "Removes 'internal' modifiers that are not required."
-			severity = "Warning"
+			severity = "Hint"
+			mark = "GrayOut"
 			class = "MonoDevelop.CSharp.Inspection.RedundantInternalInspector" />
 		
 		<Inspector mimeType="text/x-csharp"
-			_title = "Remove redundant 'private' modifier."
-			_description = "Removes 'private' modifiers that are not required."
-			severity = "Warning"
+			severity = "Hint"
+			mark = "GrayOut"
 			class = "MonoDevelop.CSharp.Inspection.RedundantPrivateInspector" />
 		
 		<Inspector mimeType="text/x-csharp"
-			_title = "Remove redundant 'namespace' usages."
-			_description = "Removes namespace usages."
 			severity = "Warning"
+			mark = "GrayOut"
 			class = "MonoDevelop.CSharp.Inspection.RedundantNamespaceUsageInspector" />
+		
+		<Inspector mimeType="text/x-csharp"
+			severity = "Warning"
+			class = "MonoDevelop.CSharp.Inspection.NamingInspector" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

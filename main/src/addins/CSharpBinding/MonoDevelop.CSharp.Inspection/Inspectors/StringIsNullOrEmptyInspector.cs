@@ -30,11 +30,30 @@ using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class StringIsNullOrEmptyInspector : CSharpInspector
 	{
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.Improvements;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("Use string.IsNullOrEmpty");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("Uses shorter string.IsNullOrEmpty call instead of a longer condition.");
+			}
+		}
+
 		static BinaryOperatorExpression[] Matches;
 		static BinaryOperatorExpression[] NegatedMatches;
 		

@@ -32,11 +32,30 @@ using MonoDevelop.AnalysisCore;
 using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class NotImplementedExceptionInspector : CSharpInspector
 	{
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.Notifications;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("Show NotImplementedException");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("Shows NotImplementedException throws in the quick task bar.");
+			}
+		}
+
 		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitior)
 		{
 			visitior.ThrowStatementVisited += delegate(ThrowStatement node, InspectionData data) {
@@ -53,8 +72,7 @@ namespace MonoDevelop.CSharp.Inspection
 						new DomRegion (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column),
 						GettextCatalog.GetString ("NotImplemented exception thrown"),
 						MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion,
-						ResultCertainty.High,
-						ResultImportance.Low,
+						InspectionMark.TaskBarOnly,
 						false)
 					);
 				}

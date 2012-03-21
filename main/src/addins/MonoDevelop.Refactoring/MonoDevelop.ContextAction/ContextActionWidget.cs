@@ -30,6 +30,11 @@ using MonoDevelop.Components.Commands;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Inspection;
+using MonoDevelop.AnalysisCore.Fixes;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.ContextAction
 {
@@ -52,7 +57,6 @@ namespace MonoDevelop.ContextAction
 			this.SetSizeRequest (Math.Max ((int)document.Editor.LineHeight , icon.Width) + 4, (int)document.Editor.LineHeight + 4);
 			ShowAll ();
 			document.Editor.Parent.EditorOptionsChanged += HandleDocumentEditorParentEditorOptionsChanged;
-			;
 		}
 
 		void HandleDocumentEditorParentEditorOptionsChanged (object sender, EventArgs e)
@@ -77,7 +81,6 @@ namespace MonoDevelop.ContextAction
 		{
 			Gtk.Menu menu = new Gtk.Menu ();
 			
-			var fixTable = new Dictionary<Gtk.MenuItem, ContextAction> ();
 			int mnemonic = 1;
 			foreach (ContextAction fix in fixes) {
 				var escapedLabel = fix.GetMenuText (document, loc).Replace ("_", "__");
@@ -85,18 +88,25 @@ namespace MonoDevelop.ContextAction
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
-				fixTable [menuItem] = fix;
-				menuItem.Activated += delegate(object sender, EventArgs e) {
-					// ensure that the Ast is recent.
-					document.UpdateParseDocument ();
-					var runFix = fixTable [(Gtk.MenuItem)sender];
-					runFix.Run (document, loc);
-					
-					document.Editor.Document.CommitUpdateAll ();
+				menuItem.Activated += delegate {
+					new ContextActionRunner (fix).Run (document, loc);
 					menu.Destroy ();
 				};
 				menu.Add (menuItem);
 			}
+			var first = true;
+			foreach (var analysisFix in fixes.OfType <AnalysisContextAction>().Where (f => f.Result is InspectorResults)) {
+				if (first) {
+					menu.Add (new Gtk.SeparatorMenuItem ());
+					first = false;
+				}
+				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", analysisFix.Action.Label);
+				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
+				menuItem.Activated += new AnalysisFixOptions (analysisFix).HandleActivated;
+				
+				menu.Add (menuItem);
+			}
+			
 			menu.ShowAll ();
 			menu.SelectFirst (true);
 			menuPushed = true;
@@ -106,7 +116,41 @@ namespace MonoDevelop.ContextAction
 			};
 			var container = (TextEditorContainer)this.document.Editor.Parent.Parent;
 			var child = (TextEditorContainer.EditorContainerChild)container [this];
-			GtkWorkarounds.ShowContextMenu (menu, this.document.Editor.Parent, null, new Gdk.Rectangle (child.X, child.Y + Allocation.Height, 0, 0));
+			GtkWorkarounds.ShowContextMenu (menu, this.document.Editor.Parent, null, new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0));
+		}
+
+		class ContextActionRunner
+		{
+			ContextAction act;
+			
+			public ContextActionRunner (ContextAction act)
+			{
+				this.act = act;
+			}
+
+			public void Run (Document document, TextLocation loc)
+			{
+				// ensure that the Ast is recent.
+				document.UpdateParseDocument ();
+				act.Run (document, loc);
+					
+				document.Editor.Document.CommitUpdateAll ();
+			}
+		}
+
+		class AnalysisFixOptions
+		{
+			AnalysisContextAction act;
+			
+			public AnalysisFixOptions (MonoDevelop.ContextAction.AnalysisContextAction act)
+			{
+				this.act = act;
+			}
+
+			public void HandleActivated (object sender, EventArgs e)
+			{
+				MessageService.RunCustomDialog (new InspectionOptions (act), MessageService.RootWindow);
+			}
 		}
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)

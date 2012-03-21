@@ -77,7 +77,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return;
 			
-			bool drawOverlay = result.Level == QuickTaskSeverity.Warning && result.Importance == ResultImportance.Low;
+			bool drawOverlay = result.InspectionMark == MonoDevelop.Inspection.InspectionMark.GrayOut;
 			
 			if (drawOverlay && editor.IsSomethingSelected) {
 				var selectionRange = editor.SelectionRange;

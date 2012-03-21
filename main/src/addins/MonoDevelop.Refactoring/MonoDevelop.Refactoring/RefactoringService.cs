@@ -52,7 +52,13 @@ namespace MonoDevelop.Refactoring
 				return contextActions;
 			}
 		} 
-		
+
+		public static List<InspectorAddinNode> Inspectors {
+			get {
+				return inspectors;
+			}
+		}
+
 		static RefactoringService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {

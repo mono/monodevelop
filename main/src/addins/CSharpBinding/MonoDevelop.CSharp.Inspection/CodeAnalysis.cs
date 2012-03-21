@@ -103,9 +103,6 @@ namespace MonoDevelop.CSharp.Inspection
 					break;
 				}
 			});
-			
-			NamingInspector inspector = new NamingInspector ();
-			inspector.Attach (null, visitor);
 		}
 		
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)

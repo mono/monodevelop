@@ -28,11 +28,30 @@ using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Refactoring.RefactorImports;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class UnusedUsingInspector : CSharpInspector
 	{
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.Redundancies;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("Remove unused usings");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("Removes used declarations that are not required.");
+			}
+		}
+
 		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
 		{
 			visitor.UsingDeclarationVisited += HandleVisitorUsingDeclarationVisited;

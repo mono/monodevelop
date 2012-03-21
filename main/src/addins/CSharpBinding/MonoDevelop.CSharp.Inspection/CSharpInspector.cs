@@ -34,8 +34,12 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public abstract class CSharpInspector
+	public abstract class CSharpInspector : IInspector
 	{
+		public abstract string Category { get; }
+		public abstract string Title { get; }
+		public abstract string Description { get; }
+
 		protected InspectorAddinNode node;
 		
 		protected void AddResult (InspectionData data, DomRegion region, string menuText, Action fix)
@@ -44,12 +48,11 @@ namespace MonoDevelop.CSharp.Inspection
 			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
 				return;
 			data.Add (
-				new GenericResults (
+				new InspectorResults (node,
 					region,
-					node.Title,
+					Title,
 					severity, 
-					ResultCertainty.High, 
-					ResultImportance.Low,
+					node.InspectionMark,
 					new GenericFix (menuText, fix)
 				)
 			);

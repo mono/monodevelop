@@ -5,7 +5,9 @@ namespace MonoDevelop.Inspection
 	public partial class InspectionPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
+		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label1;
+		private global::MonoDevelop.Components.SearchEntry searchentryFilter;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeviewInspections;
 		private global::Gtk.Label labelDescription;
@@ -21,16 +23,36 @@ namespace MonoDevelop.Inspection
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
 			// Container child vbox1.Gtk.Box+BoxChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Available inspections:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Filter:");
 			this.label1.UseUnderline = true;
-			this.vbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
+			this.hbox1.Add (this.label1);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.searchentryFilter = new global::MonoDevelop.Components.SearchEntry ();
+			this.searchentryFilter.Name = "searchentryFilter";
+			this.searchentryFilter.ForceFilterButtonVisible = false;
+			this.searchentryFilter.IsCheckMenu = false;
+			this.searchentryFilter.ActiveFilterID = 0;
+			this.searchentryFilter.Ready = true;
+			this.searchentryFilter.HasFocus = false;
+			this.hbox1.Add (this.searchentryFilter);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.searchentryFilter]));
+			w2.Position = 1;
+			this.vbox1.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
+			w3.Position = 0;
+			w3.Expand = false;
+			w3.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
@@ -41,21 +63,22 @@ namespace MonoDevelop.Inspection
 			this.treeviewInspections.Name = "treeviewInspections";
 			this.GtkScrolledWindow.Add (this.treeviewInspections);
 			this.vbox1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
-			w3.Position = 1;
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
+			w5.Position = 1;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.labelDescription = new global::Gtk.Label ();
 			this.labelDescription.Name = "labelDescription";
 			this.labelDescription.Xalign = 0F;
 			this.vbox1.Add (this.labelDescription);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.labelDescription]));
-			w4.Position = 2;
-			w4.Expand = false;
-			w4.Fill = false;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.labelDescription]));
+			w6.Position = 2;
+			w6.Expand = false;
+			w6.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
+			this.label1.MnemonicWidget = this.searchentryFilter;
 			this.Hide ();
 		}
 	}

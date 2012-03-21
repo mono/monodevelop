@@ -33,11 +33,30 @@ using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class UseVarKeywordInspector	 : CSharpInspector
 	{
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.Opportunities;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("Use 'var' keyword");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("Use implicitly typed local variable decaration");
+			}
+		}
+
 		protected override void Attach (ObservableAstVisitor<InspectionData, object>  visitior)
 		{
 			visitior.VariableDeclarationStatementVisited += HandleVisitiorVariableDeclarationStatementVisited;
@@ -89,10 +108,9 @@ namespace MonoDevelop.CSharp.Inspection
 			
 			data.Add (new Result (
 					new DomRegion (node.Type.StartLocation, node.Type.EndLocation),
-					GettextCatalog.GetString ("Use implicitly typed local variable decaration"),
+					GettextCatalog.GetString ("Use 'var' keyword"),
 					severity,
-					ResultCertainty.High, 
-					ResultImportance.Medium,
+					InspectionMark.Underline,
 					severity != MonoDevelop.SourceEditor.QuickTaskSeverity.Suggestion)
 				);
 		}

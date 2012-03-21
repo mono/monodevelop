@@ -118,12 +118,6 @@ namespace MonoDevelop.AnalysisCore
 			int c = ((int)r1.Level).CompareTo ((int)r2.Level);
 			if (c != 0)
 				return c;
-			c = ((int)r1.Importance).CompareTo ((int)r2.Importance);
-			if (c != 0)
-				return c;
-			c = ((int)r1.Certainty).CompareTo ((int)r2.Certainty);
-			if (c != 0)
-				return c;
 			return r1.Message.CompareTo (r2.Message);
 		}
 		

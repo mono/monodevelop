@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Text;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -40,6 +41,24 @@ namespace MonoDevelop.CSharp.Inspection
 	{
 		CSharpNamingPolicy policy = new CSharpNamingPolicy ();
 		
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.ConstraintViolations;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("Inconsistent naming");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("Name doesn't match defined name style");
+			}
+		}
+
 		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
 		{
 			visitor.VariableDeclarationStatementVisited += HandleVisitorVariableDeclarationStatementVisited;

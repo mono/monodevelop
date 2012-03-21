@@ -29,11 +29,30 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.Inspection;
 
 namespace MonoDevelop.CSharp.Inspection
 {
 	public class RedundantNamespaceUsageInspector : CSharpInspector
 	{
+		public override string Category {
+			get {
+				return DefaultInspectionCategories.Redundancies;
+			}
+		}
+
+		public override string Title {
+			get {
+				return GettextCatalog.GetString ("Remove redundant namespace usages");
+			}
+		}
+
+		public override string Description {
+			get {
+				return GettextCatalog.GetString ("Removes namespace usages.");
+			}
+		}
+
 		protected override void Attach (ObservableAstVisitor<InspectionData, object> visitor)
 		{
 			visitor.MemberReferenceExpressionVisited += delegate (MemberReferenceExpression mr, InspectionData data) {
@@ -50,7 +69,7 @@ namespace MonoDevelop.CSharp.Inspection
 				if (lookupName != null && wholeResult.Type.Equals (lookupName.Type)) {
 					AddResult (data,
 						new DomRegion (mr.StartLocation, mr.MemberNameToken.StartLocation),
-						GettextCatalog.GetString ("Remove redundant namespace usage."),
+						GettextCatalog.GetString ("Remove redundant namespace usage"),
 						delegate {
 							int offset = data.Document.Editor.LocationToOffset (mr.StartLocation);
 							int end = data.Document.Editor.LocationToOffset (mr.MemberNameToken.StartLocation);

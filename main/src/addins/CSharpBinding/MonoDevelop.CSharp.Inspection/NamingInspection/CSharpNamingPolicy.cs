@@ -53,16 +53,15 @@ namespace MonoDevelop.CSharp.Inspection
 			// however, these rules' modifiers have been more precisely defined so that their 
 			// order in the list should not matter
 			
-			//private constants should be SCREAMING_CAPS
 			rules.Add (new NamingRule () {
 				MatchKind = DeclarationKinds.LocalVariable,
 				MatchAllModifiers = ICS.Modifiers.Const,
-				NamingStyle = NamingStyle.AllUpper,
+				NamingStyle = NamingStyle.CamelCase,
 			});
 			rules.Add (new NamingRule () {
 				MatchKind = DeclarationKinds.Field,
 				MatchAllModifiers = ICS.Modifiers.Const | ICS.Modifiers.Private,
-				NamingStyle = NamingStyle.AllUpper,
+				NamingStyle = NamingStyle.PascalCase,
 			});
 			//local variables should be camelCase
 			rules.Add (new NamingRule () {
@@ -98,7 +97,7 @@ namespace MonoDevelop.CSharp.Inspection
 			rules.Add (new NamingRule () {
 				MatchKind = DeclarationKinds.TypeParameter,
 				NamingStyle = NamingStyle.PascalCase,
-				RequiredPrefixes = new [] { "T" },
+				RequiredPrefixes = new [] { "T", "S", "U" },
 			});
 			//interfaces should be PascalCase and prefixed with an I
 			rules.Add (new NamingRule () {
