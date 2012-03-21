@@ -268,12 +268,6 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			return MemberCollector.CollectMembers (solution, member);
 		}
-
-		static bool MatchParameters (IParameterizedMember a, IParameterizedMember b)
-		{
-			if (a == null || b == null) return false;
-			return ParameterListComparer.Instance.Equals (a.Parameters, b.Parameters);
-		}
 		
 		internal static IEnumerable<IEntity> CollectMembers (IType type)
 		{
