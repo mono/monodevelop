@@ -39,19 +39,20 @@ namespace MonoDevelop.Inspection
 		public InspectionOptions (AnalysisContextAction act)
 		{
 			this.act = act;
-			this.Build ();
+			Build ();
+			HasSeparator = false;
 
 			var r = act.Result as InspectorResults;
-			this.labelInspectionTitle.Text = r.Inspector.Inspector.Title;
+			labelInspectionTitle.Text = r.Inspector.Inspector.Title;
 			var s = r.Inspector.GetSeverity ();
 			radiobuttonHide.Active = s == QuickTaskSeverity.None;
 			radiobuttonError.Active = s == QuickTaskSeverity.Error;
 			radiobuttonWarning.Active = s == QuickTaskSeverity.Warning;
 			radiobuttonHint.Active = s == QuickTaskSeverity.Hint;
 			radiobuttonSuggestion.Active = s == QuickTaskSeverity.Suggestion;
-			this.buttonOk.Clicked += HandleClicked;
-			this.buttonCancel.Clicked += (sender, e) => Destroy ();
-			this.Response += (o, args) => {
+			buttonOk.Clicked += HandleClicked;
+			buttonCancel.Clicked += (sender, e) => Destroy ();
+			Response += (o, args) => {
 				if (args.ResponseId == ResponseType.Close)
 					Destroy ();
 			};
