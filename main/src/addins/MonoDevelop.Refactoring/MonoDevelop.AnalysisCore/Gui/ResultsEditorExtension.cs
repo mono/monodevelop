@@ -44,7 +44,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			AnalysisOptions.Changed += AnalysisOptionsChanged;
+
+			AnalysisOptions.AnalysisEnabled.Changed += AnalysisOptionsChanged;
 			AnalysisOptionsChanged (null, null);
 		}
 
@@ -56,7 +57,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public override void Dispose ()
 		{
 			if (!disposed) {
-				AnalysisOptions.Changed -= AnalysisOptionsChanged;
+				AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 				CancelTask ();
 				disposed = true;
 			}

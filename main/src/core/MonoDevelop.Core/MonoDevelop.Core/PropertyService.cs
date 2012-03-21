@@ -67,6 +67,7 @@ namespace MonoDevelop.Core
 			if (!object.Equals (this.value, newValue)) {
 				this.value = newValue;
 				PropertyService.Set (propertyName, value);
+				OnChanged (EventArgs.Empty);
 				return true;
 			}
 			return false;
@@ -82,6 +83,14 @@ namespace MonoDevelop.Core
 		{
 			return watch.value;
 		}
+
+		protected virtual void OnChanged (EventArgs e)
+		{
+			EventHandler handler = this.Changed;
+			if (handler != null)
+				handler (this, e);
+		}
+		public event EventHandler Changed;
 	}
 
 	public static class PropertyService

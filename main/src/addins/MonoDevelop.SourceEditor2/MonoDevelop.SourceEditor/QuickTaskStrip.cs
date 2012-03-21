@@ -873,7 +873,8 @@ namespace MonoDevelop.SourceEditor
 	
 	public class QuickTaskStrip : VBox
 	{
-		public readonly static bool EnableFancyFeatures = false;
+		// move that one to AnalysisOptions when the new features are enabled by default.
+		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", false);
 		
 		Adjustment adj;
 		
