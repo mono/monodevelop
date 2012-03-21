@@ -39,6 +39,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public class CustomPropertiesWidget : VBox, IRawPListDisplayWidget
 	{
 		const string AddKeyNode = "Add new entry";
+		const string DefaultNewObjectType = PString.Type;
 		
 		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
@@ -307,23 +308,24 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			var addRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-add", IconSize.Menu));
 			addRenderer.Clicked += delegate {
-				Gtk.TreeIter iter = Gtk.TreeIter.Zero;
-				if (!treeview.Selection.GetSelected (out iter))
-					return;
+				// By default we assume we are adding something to the root dictionary/array
+				var iter = TreeIter.Zero;
+				var parent = nsDictionary;
+				var parentKey = "";
 				
-				PObject parent = null;
-				string parentKey = null;
-				if (treeStore.IterParent (out iter, iter)) {
-					parentKey = (string) treeStore.GetValue (iter, 0);
-					parent = (PObject) treeStore.GetValue (iter, 1);
-				}
-				parentKey = parentKey ?? "";
-				parent = parent ?? nsDictionary;
-				
-				if (parent is PArray) {
-					AddNewArrayElement ((PArray) parent, scheme.GetKey (parentKey));
-				} else if (parent is PDictionary) {
-					AddNewDictionaryElement ((PDictionary) parent, scheme.GetKey (parentKey));
+				// Grab the selected row and find out what the parent is. If there is a parent, then we
+				// will need it correlate against the schema to figure out what values are allowed to be
+				// entered here
+				if (treeview.Selection.GetSelected (out iter)) {
+					if (treeStore.IterParent (out iter, iter)) {
+						parentKey = (string) treeStore.GetValue (iter, 0);
+						parent = (PObject) treeStore.GetValue (iter, 1);
+					}
+
+					if (parent is PArray)
+						AddNewArrayElement ((PArray) parent, scheme.GetKey (parentKey));
+					else if (parent is PDictionary)
+						AddNewDictionaryElement ((PDictionary) parent, scheme.GetKey (parentKey));
 				}
 			};
 			
@@ -455,7 +457,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		void AddNewArrayElement (PArray array, PListScheme.Key key)
 		{
 			if (key == null) {
-				array.Add (CreateNewObject (PString.Type));
+				array.Add (CreateNewObject (DefaultNewObjectType));
 				return;
 			}
 			
@@ -481,10 +483,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 				} else if (key.ArrayType == PNumber.Type) {
 					array.Add (new PNumber (int.Parse (newKey.Identifier)));
 				} else {
-					array.Add (CreateNewObject (key.ArrayType ?? PString.Type));
+					array.Add (CreateNewObject (key.ArrayType ?? DefaultNewObjectType));
 				}
 			} else {
-				array.Add (CreateNewObject (key.ArrayType ?? PString.Type));
+				array.Add (CreateNewObject (key.ArrayType ?? DefaultNewObjectType));
 			}
 		}
 		
