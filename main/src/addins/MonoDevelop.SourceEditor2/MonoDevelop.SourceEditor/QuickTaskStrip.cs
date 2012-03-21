@@ -481,16 +481,10 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				}
 				
-				var color = (HslColor)GetBarColor (task.Severity);
-				cr.Color = color;
-				cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
-				cr.FillPreserve ();
-				
-				color.L *= 0.7;
-				cr.Color = color;
-				cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
-				cr.Stroke ();
-				
+				cr.Color = GetBarColor (task.Severity);
+				cr.Rectangle (3 + 0.5, y - 1 + 0.5, Allocation.Width - 5, 2);
+				cr.Fill ();
+
 				switch (task.Severity) {
 				case QuickTaskSeverity.Error:
 					severity = QuickTaskSeverity.Error;
@@ -549,15 +543,9 @@ namespace MonoDevelop.SourceEditor
 				bool isMainSelection = false;
 				if (TextEditor.TextViewMargin.MainSearchResult != null)
 					isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
-				var color = (HslColor)(isMainSelection ? TextEditor.ColorStyle.SearchTextMainBg : TextEditor.ColorStyle.SearchTextBg);
-				cr.Color = color;
-				cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
-				cr.FillPreserve ();
-			
-				color.L *= 0.7;
-				cr.Color = color;
-				cr.Rectangle (3, y - 1, Allocation.Width - 5, 4);
-				cr.Stroke ();
+				cr.Color = isMainSelection ? TextEditor.ColorStyle.SearchTextMainBg : TextEditor.ColorStyle.SearchTextBg;
+				cr.Rectangle (3 + 0.5, y - 1 + 0.5, Allocation.Width - 5, 2);
+				cr.Fill ();
 			}
 		}
 		
