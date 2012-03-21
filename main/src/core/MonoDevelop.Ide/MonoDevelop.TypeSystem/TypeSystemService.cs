@@ -214,23 +214,25 @@ namespace MonoDevelop.TypeSystem
 			
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text);
 		}
-		
+		static object projectWrapperUpdateLock = new object ();
 		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
-			ProjectContentWrapper wrapper;
-			if (project != null) {
-				projectContents.TryGetValue (project, out wrapper);
-			} else {
-				wrapper = null;
-			}
-			
+
 			var parser = GetParser (mimeType);
 			if (parser == null)
 				return null;
 			try {
 				var result = parser.Parse (true, fileName, content, project);
-				if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
-					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result.ParsedFile);
+				lock (projectWrapperUpdateLock) {
+					ProjectContentWrapper wrapper;
+					if (project != null) {
+						projectContents.TryGetValue (project, out wrapper);
+					} else {
+						wrapper = null;
+					}
+					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+						wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result.ParsedFile);
+				}
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
@@ -262,8 +264,10 @@ namespace MonoDevelop.TypeSystem
 				return null;
 			try {
 				var result = parser.Parse (true, fileName, content);
-				if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
-					wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result.ParsedFile);
+				lock (projectWrapperUpdateLock) {
+					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+						wrapper.Content = wrapper.Content.UpdateProjectContent (wrapper.Content.GetFile (fileName), result.ParsedFile);
+				}
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
