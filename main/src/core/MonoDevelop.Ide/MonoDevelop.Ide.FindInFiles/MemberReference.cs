@@ -47,8 +47,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public MemberReference (IEntity entity, DomRegion region, int offset, int length) : base (offset, length)
 		{
-			this.Entity = entity;
-			this.Region = region;
+			if (entity == null)
+				throw new System.ArgumentNullException ("entity");
+			Entity = entity;
+			Region = region;
 		}
 	}
 }
