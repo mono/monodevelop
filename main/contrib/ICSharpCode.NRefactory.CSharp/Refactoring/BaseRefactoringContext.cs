@@ -98,6 +98,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public abstract Script StartScript();
 
+		/// <summary>
+		/// Translates the english input string to the context language.
+		/// </summary>
+		/// <returns>
+		/// The translated string.
+		/// </returns>
+		public virtual string TranslateString(string str)
+		{
+			return str;
+		}
 	}
 	
 }
