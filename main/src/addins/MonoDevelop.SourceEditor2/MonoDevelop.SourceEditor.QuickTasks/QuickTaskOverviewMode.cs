@@ -39,7 +39,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 	public class QuickTaskOverviewMode : DrawingArea
 	{
 		readonly QuickTaskStrip parentStrip;
-		readonly Adjustment vadjustment;
+		protected readonly Adjustment vadjustment;
 		
 		int caretLine = -1;
 		

@@ -175,8 +175,8 @@
 		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgDown" />
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowScrollBar" />
-		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMap" />
-		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowFull" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowTasks" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMinimap" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/NavigationBar">
