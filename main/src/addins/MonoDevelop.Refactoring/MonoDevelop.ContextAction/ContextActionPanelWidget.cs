@@ -52,7 +52,7 @@ namespace MonoDevelop.ContextAction
 	{
 		string mimeType;
 		
-		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof (string), typeof (bool), typeof (ContextActionAddinNode));
+		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(bool), typeof(ContextActionProvider));
 		
 		public ContextActionPanelWidget (string mimeType)
 		{
@@ -99,7 +99,7 @@ namespace MonoDevelop.ContextAction
 			Gtk.TreeIter iter;
 			if (!treeviewContextActions.Selection.GetSelected (out iter))
 				return;
-			var actionNode = (ContextActionAddinNode)treeStore.GetValue (iter, 2);
+			var actionNode = (ContextActionProvider)treeStore.GetValue (iter, 2);
 			this.labelDescription.Markup = "<b>" + actionNode.Title + "</b>" + Environment.NewLine + actionNode.Description;
 		}
 
@@ -111,7 +111,7 @@ namespace MonoDevelop.ContextAction
 				if (!string.IsNullOrEmpty (filter) && node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
 					continue;
 				
-				bool isEnabled = disabledNodes.IndexOf (node.Type.FullName) < 0;
+				bool isEnabled = disabledNodes.IndexOf (node.IdString) < 0;
 				var title = node.Title;
 				if (!string.IsNullOrEmpty (filter)) {
 					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
@@ -130,12 +130,12 @@ namespace MonoDevelop.ContextAction
 				return;
 			do {
 				bool enabled = (bool)treeStore.GetValue (iter, 1);
-				var node = (ContextActionAddinNode)treeStore.GetValue (iter, 2);
+				var node = (ContextActionProvider)treeStore.GetValue (iter, 2);
 				
 				if (!enabled) {
 					if (sb.Length > 0)
 						sb.Append (",");
-					sb.Append (node.Type.FullName);
+					sb.Append (node.IdString);
 				}
 			} while (treeStore.IterNext (ref iter));
 			PropertyService.Set ("ContextActions." + mimeType, sb.ToString ());

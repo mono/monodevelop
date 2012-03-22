@@ -368,8 +368,4 @@
   <ItemGroup>
     <None Include="Parser\mcs\cs-parser.jay" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Refactoring\Inspector\" />
-    <Folder Include="Refactoring\ContextAction\" />
-  </ItemGroup>
 </Project>

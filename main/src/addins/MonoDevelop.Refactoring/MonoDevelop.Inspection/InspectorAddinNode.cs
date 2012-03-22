@@ -28,16 +28,10 @@ using MonoDevelop.SourceEditor;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.Inspection
 {
-	public enum InspectionMark
-	{
-		TaskBarOnly,
-		Underline,
-		GrayOut
-	}
-
 	public class InspectorAddinNode : TypeExtensionNode
 	{
 		[NodeAttribute ("mimeType", Required=true, Description="The mime type of this action.")]
@@ -49,39 +43,34 @@ namespace MonoDevelop.Inspection
 		}
 
 		[NodeAttribute ("severity", Required=true, Localizable=false,  Description="The severity of this action.")]
-		QuickTaskSeverity severity;
-		public QuickTaskSeverity Severity {
+		Severity severity;
+		public Severity Severity {
 			get {
 				return severity;
 			}
 		}
 
 		[NodeAttribute ("mark", Required=false, Localizable=false,  Description="The severity of this action.")]
-		InspectionMark inspectionMark = InspectionMark.Underline;
-		public InspectionMark InspectionMark {
+		IssueMarker inspectionMark = IssueMarker.Underline;
+		public IssueMarker IssueMarker {
 			get {
 				return inspectionMark;
 			}
 		}
 
-		IInspector inspector;
-		public IInspector Inspector {
+		CodeIssueProvider inspector;
+		public CodeIssueProvider Inspector {
 			get {
-				if (inspector == null)
-					inspector = (IInspector)CreateInstance ();
+				if (inspector == null) {
+					inspector = (CodeIssueProvider)CreateInstance ();
+					inspector.MimeType = MimeType;
+					inspector.IssueMarker = IssueMarker;
+					inspector.Severity = severity;
+				}
 				return inspector;
 			}
 		}
 		
-		public QuickTaskSeverity GetSeverity ()
-		{
-			return PropertyService.Get<QuickTaskSeverity> ("refactoring.inspectors." + MimeType + "." + Type.FullName, Severity);
-		}
-		
-		public void SetSeverity (QuickTaskSeverity severity)
-		{
-			PropertyService.Set ("refactoring.inspectors." + MimeType + "." + Type.FullName, severity);
-		}
 	}
 }
 

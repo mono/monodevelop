@@ -25,7 +25,6 @@ FILES =  \
 	MonoDevelop.SourceEditor.QuickTasks/QuickTask.cs \
 	MonoDevelop.SourceEditor.QuickTasks/QuickTaskMiniMapMode.cs \
 	MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs \
-	MonoDevelop.SourceEditor.QuickTasks/QuickTaskSeverity.cs \
 	MonoDevelop.SourceEditor.QuickTasks/QuickTaskStrip.cs \
 	MonoDevelop.SourceEditor.QuickTasks/ScrollbarCommand.cs \
 	MonoDevelop.SourceEditor.QuickTasks/ScrollBarMode.cs \

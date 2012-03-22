@@ -46,6 +46,7 @@ using MonoDevelop.SourceEditor;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -88,43 +89,83 @@ namespace MonoDevelop.CSharp.Inspection
 		}
 	}
 	
+	class NRefactoryIssueWrapper : CodeIssueProvider
+	{
+		ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
+		IssueDescriptionAttribute attr;
+		
+		public override string IdString {
+			get {
+				return "refactoring.inspectors." + MimeType + "." + issueProvider.GetType ().FullName;
+			}
+		}
+
+		public NRefactoryIssueWrapper (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
+		{
+			this.issueProvider = issue;
+			this.attr = attr;
+			this.MimeType = "text/x-csharp";
+			this.Category = attr.Category;
+			this.Title = attr.Title;
+			this.Description = attr.Description;
+			this.Severity = attr.Severity;
+			this.IssueMarker = attr.IssueMarker;
+		}
+
+		public override IEnumerable<CodeIssue> GetIssues (Document document, ICSharpCode.NRefactory.TextLocation loc, CancellationToken cancellationToken)
+		{
+			var context = new MDRefactoringContext (document, loc);
+			foreach (var action in issueProvider.GetIssues (context)) {
+				var issue = new CodeIssue (action.Desription, action.Start, action.End, new [] {action.Action}.Select (
+					act => new MDRefactoringContextAction (act.Description, ctx => {
+						using (var script = ctx.StartScript ())
+							act.Run (script);
+					})));
+				yield return issue;
+			}
+		}
+		
+	}
+
 	public static class CodeAnalysis
 	{
-		static List<InspectorAddinNode> inspectorNodes = new List<InspectorAddinNode> ();
-		static ObservableAstVisitor<InspectionData, object> visitor = new ObservableAstVisitor<InspectionData, object> ();
-		static List<CSharpInspector> inspectors = new List<CSharpInspector> ();
-
 		static CodeAnalysis ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
-				InspectorAddinNode node = (InspectorAddinNode)args.ExtensionNode;
-				if (node.MimeType != "text/x-csharp")
-					return;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					inspectorNodes.Add (node);
-					var inspector = node.Inspector as CSharpInspector;
-					inspector.Attach (node);
-					inspectors.Add (inspector);
-					break;
-				}
-			});
+			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider).Assembly.GetTypes ()) {
+				var attr = t.GetCustomAttributes (typeof(IssueDescriptionAttribute), false);
+				if (attr == null || attr.Length != 1)
+					continue;
+				NRefactoryIssueWrapper provider = new NRefactoryIssueWrapper ((ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider)Activator.CreateInstance (t), (IssueDescriptionAttribute)attr [0]);
+				RefactoringService.AddProvider (provider);
+			}
+
 		}
 		
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures)
 				return Enumerable.Empty<Result> ();
-			var context = new MDRefactoringContext (input, ICSharpCode.NRefactory.TextLocation.Empty, cancellationToken);
-			if (context.IsInvalid)
-				return Enumerable.Empty<Result> ();
+			var loc = input.Editor.Caret.Location;
 			var result = new BlockingCollection<Result> ();
-			Parallel.ForEach (inspectors, (inspector) => {
+			var codeIssueProvider = RefactoringService.GetInspectors ("text/x-csharp");
+			Parallel.ForEach (codeIssueProvider, (provider) => {
 				try {
-					foreach (var r in inspector.GetResults (context))
-						result.Add (r);
+					var severity = provider.GetSeverity ();
+					if (severity == Severity.None)
+						return;
+					foreach (var r in provider.GetIssues (input, loc, cancellationToken)) {
+						foreach (var a in r.Actions) {
+							result.Add (new InspectorResults (
+								provider, 
+								new DomRegion (r.Start, r.End), 
+								r.Description,
+								severity, 
+								provider.IssueMarker,
+								new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
+						}
+					}
 				} catch (Exception e) {
-					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + inspector + "'", e);
+					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + provider + "'", e);
 				}
 			});
 

@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -49,12 +50,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			private set;
 		}
 		
-		public QuickTaskSeverity Severity {
+		public Severity Severity {
 			get;
 			private set;
 		}
 		
-		public QuickTask (string description, TextLocation location, QuickTaskSeverity severity)
+		public QuickTask (string description, TextLocation location, Severity severity)
 		{
 			this.Description = description;
 			this.Location = location;

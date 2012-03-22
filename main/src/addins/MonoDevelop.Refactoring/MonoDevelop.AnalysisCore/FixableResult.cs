@@ -29,14 +29,15 @@ using System.Collections.Generic;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Inspection;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class FixableResult : Result
 	{
-		public FixableResult (DomRegion region, string message, QuickTaskSeverity level,
-			InspectionMark mark, params IAnalysisFix[] fixes)
+		public FixableResult (DomRegion region, string message, Severity level,
+			IssueMarker mark, params IAnalysisFix[] fixes)
 			: base (region, message, level, mark)
 		{
 			this.Fixes = fixes;

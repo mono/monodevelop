@@ -29,14 +29,15 @@ using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Inspection;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
 	public class InspectorResults : GenericResults
 	{
-		public InspectorAddinNode Inspector { get; private set; }
+		public CodeIssueProvider Inspector { get; private set; }
 
-		public InspectorResults (InspectorAddinNode inspector, DomRegion region, string message, QuickTaskSeverity level, InspectionMark mark, params GenericFix[] fixes)
+		public InspectorResults (CodeIssueProvider inspector, DomRegion region, string message, Severity level, IssueMarker mark, params GenericFix[] fixes)
 			: base (region, message, level, mark, fixes)
 		{
 			this.Inspector = inspector;
@@ -45,8 +46,8 @@ namespace MonoDevelop.AnalysisCore.Fixes
 
 	public class GenericResults : FixableResult
 	{
-		public GenericResults (DomRegion region, string message, QuickTaskSeverity level,
-			InspectionMark mark, params GenericFix[] fixes)
+		public GenericResults (DomRegion region, string message, Severity level,
+			IssueMarker mark, params GenericFix[] fixes)
 			: base (region, message, level, mark)
 		{
 			this.Fixes = fixes;

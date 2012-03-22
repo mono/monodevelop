@@ -99,26 +99,32 @@
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
@@ -234,12 +240,9 @@
     <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionSettingsDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingRule.cs" />
     <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingStyle.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\ConditionalToNullCoalescingInspector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContext.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionWrappers.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextAction.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\TypeSystemProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
@@ -290,19 +293,12 @@
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringScript.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\ResolveCommandHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UseVarKeywordInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UnusedUsingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\StringIsNullOrEmptyInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\NotImplementedExceptionInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantThisInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantInternalInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantPrivateInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\RedundantNamespaceUsageInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextActionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
+    <None Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingInspector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -335,7 +331,6 @@
     <Folder Include="MonoDevelop.CSharp.ContextAction\" />
     <Folder Include="MonoDevelop.CSharp.Inspection\" />
     <Folder Include="MonoDevelop.CSharp.Inspection\NamingInspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
     <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\RefactorImports\" />
     <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />

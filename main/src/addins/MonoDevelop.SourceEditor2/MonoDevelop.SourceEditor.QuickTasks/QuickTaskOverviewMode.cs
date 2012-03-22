@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -118,10 +119,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					int errors = 0, warnings = 0;
 					foreach (var task in AllTasks) {
 						switch (task.Severity) {
-						case QuickTaskSeverity.Error:
+						case Severity.Error:
 							errors++;
 							break;
-						case QuickTaskSeverity.Warning:
+						case Severity.Warning:
 							warnings++;
 							break;
 						}
@@ -243,36 +244,36 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
-		Cairo.Color GetBarColor (QuickTaskSeverity severity)
+		Cairo.Color GetBarColor (Severity severity)
 		{
 			var style = this.TextEditor.ColorStyle;
 			if (style == null)
 				return new Cairo.Color (0, 0, 0);
 			switch (severity) {
-			case QuickTaskSeverity.Error:
+			case Severity.Error:
 				return style.ErrorUnderline;
-			case QuickTaskSeverity.Warning:
+			case Severity.Warning:
 				return style.WarningUnderline;
-			case QuickTaskSeverity.Suggestion:
+			case Severity.Suggestion:
 				return style.SuggestionUnderline;
-			case QuickTaskSeverity.Hint:
+			case Severity.Hint:
 				return style.HintUnderline;
-			case QuickTaskSeverity.None:
+			case Severity.None:
 				return style.Default.CairoColor;
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
 		}
 		
-		Cairo.Color GetIndicatorColor (QuickTaskSeverity severity)
+		Cairo.Color GetIndicatorColor (Severity severity)
 		{
 			var style = this.TextEditor.ColorStyle;
 			if (style == null)
 				return new Cairo.Color (0, 0, 0);
 			switch (severity) {
-			case QuickTaskSeverity.Error:
+			case Severity.Error:
 				return style.ErrorUnderline;
-			case QuickTaskSeverity.Warning:
+			case Severity.Warning:
 				return style.WarningUnderline;
 			default:
 				return style.SuggestionUnderline;
@@ -319,7 +320,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
-		protected void DrawIndicator (Cairo.Context cr, QuickTaskSeverity severity)
+		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
 			cr.Rectangle (3, Allocation.Height - IndicatorHeight + 4, Allocation.Width - 6, IndicatorHeight - 6);
 			
@@ -395,35 +396,23 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.Fill ();
 		}
 		
-		protected QuickTaskSeverity DrawQuickTasks (Cairo.Context cr)
+		protected Severity DrawQuickTasks (Cairo.Context cr)
 		{
-			QuickTaskSeverity severity = QuickTaskSeverity.None;
+			Severity severity = Severity.None;
 			foreach (var task in AllTasks) {
 				double y = LineToY (task.Location.Line);
-				
-				if (task.Severity == QuickTaskSeverity.Usage) {
-					var usageColor = TextEditor.ColorStyle.Default.CairoColor;
-					usageColor.A = 0.4;
-					cr.Color = usageColor;
-					cr.MoveTo (0, y - 3);
-					cr.LineTo (5, y);
-					cr.LineTo (0, y + 3);
-					cr.ClosePath ();
-					cr.Fill ();
-					continue;
-				}
-				
+
 				cr.Color = GetBarColor (task.Severity);
 				cr.Rectangle (3 + 0.5, y - 1 + 0.5, Allocation.Width - 5, 2);
 				cr.Fill ();
 
 				switch (task.Severity) {
-				case QuickTaskSeverity.Error:
-					severity = QuickTaskSeverity.Error;
+				case Severity.Error:
+					severity = Severity.Error;
 					break;
-				case QuickTaskSeverity.Warning:
-					if (severity == QuickTaskSeverity.None)
-						severity = QuickTaskSeverity.Warning;
+				case Severity.Warning:
+					if (severity == Severity.None)
+						severity = Severity.Warning;
 					break;
 				}
 			}

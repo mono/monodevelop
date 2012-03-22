@@ -40,7 +40,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.SourceEditor.QuickTasks;
-
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -157,7 +157,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				foreach (var r in references) {
 					var marker = GetMarker (r.Region.BeginLine);
 					
-					quickTasks.Add (new QuickTask (null, r.Region.Begin, QuickTaskSeverity.Usage));
+					quickTasks.Add (new QuickTask (null, r.Region.Begin, Severity.Hint));
 					
 					int offset = r.Offset;
 					int endOffset = offset + r.Length;

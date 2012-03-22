@@ -34,6 +34,7 @@ using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using Mono.TextEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.Inspection
 {
@@ -56,38 +57,38 @@ namespace MonoDevelop.Inspection
 	public partial class InspectionPanelWidget : Gtk.Bin
 	{
 		readonly string mimeType;
-		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(QuickTaskSeverity), typeof(InspectorAddinNode));
+		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(Severity), typeof(CodeIssueProvider));
 		
-		string GetDescription (QuickTaskSeverity severity)
+		string GetDescription (Severity severity)
 		{
 			switch (severity) {
-			case QuickTaskSeverity.None:
+			case Severity.None:
 				return GettextCatalog.GetString ("Do not show");
-			case QuickTaskSeverity.Error:
+			case Severity.Error:
 				return GettextCatalog.GetString ("Error");
-			case QuickTaskSeverity.Warning:
+			case Severity.Warning:
 				return GettextCatalog.GetString ("Warning");
-			case QuickTaskSeverity.Hint:
+			case Severity.Hint:
 				return GettextCatalog.GetString ("Hint");
-			case QuickTaskSeverity.Suggestion:
+			case Severity.Suggestion:
 				return GettextCatalog.GetString ("Suggestion");
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
 		}
 
-		Gdk.Color GetColor (QuickTaskSeverity severity)
+		Gdk.Color GetColor (Severity severity)
 		{
 			switch (severity) {
-			case QuickTaskSeverity.None:
+			case Severity.None:
 				return Style.Base (StateType.Normal);
-			case QuickTaskSeverity.Error:
+			case Severity.Error:
 				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle (Style).ErrorUnderline;
-			case QuickTaskSeverity.Warning:
+			case Severity.Warning:
 				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle (Style).WarningUnderline;
-			case QuickTaskSeverity.Hint:
+			case Severity.Hint:
 				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle (Style).HintUnderline;
-			case QuickTaskSeverity.Suggestion:
+			case Severity.Suggestion:
 				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle (Style).SuggestionUnderline;
 			default:
 				throw new ArgumentOutOfRangeException ();
@@ -99,14 +100,14 @@ namespace MonoDevelop.Inspection
 			categories.Clear ();
 			treeStore.Clear ();
 			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
-				if (!string.IsNullOrEmpty (filter) && node.Inspector.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
+				if (!string.IsNullOrEmpty (filter) && node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
 					continue;
 				Gtk.TreeIter iter;
-				if (!categories.TryGetValue (node.Inspector.Category, out iter)) {
-					iter = treeStore.AppendValues ("<b>" + node.Inspector.Category + "</b>");
-					categories [node.Inspector.Category] = iter;
+				if (!categories.TryGetValue (node.Category, out iter)) {
+					iter = treeStore.AppendValues ("<b>" + node.Category + "</b>");
+					categories [node.Category] = iter;
 				}
-				var title = node.Inspector.Title;
+				var title = node.Title;
 				if (!string.IsNullOrEmpty (filter)) {
 					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
 					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
@@ -135,12 +136,12 @@ namespace MonoDevelop.Inspection
 			col.MinWidth = 100;
 			col.Expand = false;
 
-			var comboBoxStore = new ListStore (typeof(string), typeof(QuickTaskSeverity));
-			comboBoxStore.AppendValues (GetDescription (QuickTaskSeverity.None), QuickTaskSeverity.None);
-			comboBoxStore.AppendValues (GetDescription (QuickTaskSeverity.Error), QuickTaskSeverity.Error);
-			comboBoxStore.AppendValues (GetDescription (QuickTaskSeverity.Warning), QuickTaskSeverity.Warning);
-			comboBoxStore.AppendValues (GetDescription (QuickTaskSeverity.Hint), QuickTaskSeverity.Hint);
-			comboBoxStore.AppendValues (GetDescription (QuickTaskSeverity.Suggestion), QuickTaskSeverity.Suggestion);
+			var comboBoxStore = new ListStore (typeof(string), typeof(Severity));
+			comboBoxStore.AppendValues (GetDescription (Severity.None), Severity.None);
+			comboBoxStore.AppendValues (GetDescription (Severity.Error), Severity.Error);
+			comboBoxStore.AppendValues (GetDescription (Severity.Warning), Severity.Warning);
+			comboBoxStore.AppendValues (GetDescription (Severity.Hint), Severity.Hint);
+			comboBoxStore.AppendValues (GetDescription (Severity.Suggestion), Severity.Suggestion);
 			comboRenderer.Model = comboBoxStore;
 			comboRenderer.Mode = CellRendererMode.Activatable;
 			comboRenderer.TextColumn = 0;
@@ -158,7 +159,7 @@ namespace MonoDevelop.Inspection
 					return;
 				do {
 					if ((string)comboBoxStore.GetValue (storeIter, 0) == args.NewText) {
-						treeStore.SetValue (iter, 1, (QuickTaskSeverity)comboBoxStore.GetValue (storeIter, 1));
+						treeStore.SetValue (iter, 1, (Severity)comboBoxStore.GetValue (storeIter, 1));
 						return;
 					}
 				} while (comboBoxStore.IterNext (ref storeIter));
@@ -170,7 +171,7 @@ namespace MonoDevelop.Inspection
 					comboRenderer.Visible = false;
 					return;
 				}
-				var severity = (QuickTaskSeverity)val;
+				var severity = (Severity)val;
 				comboRenderer.Visible = true;
 				comboRenderer.Text = GetDescription (severity);
 				comboRenderer.BackgroundGdk = GetColor (severity);
@@ -195,9 +196,9 @@ namespace MonoDevelop.Inspection
 			Gtk.TreeIter iter;
 			if (!treeviewInspections.Selection.GetSelected (out iter))
 				return;
-			var actionNode = (InspectorAddinNode)treeStore.GetValue (iter, 2);
+			var actionNode = (CodeIssueProvider)treeStore.GetValue (iter, 2);
 			if (actionNode != null)
-				labelDescription.Markup = "<b>" + actionNode.Inspector.Title + "</b>" + Environment.NewLine + actionNode.Inspector.Description;
+				labelDescription.Markup = "<b>" + actionNode.Title + "</b>" + Environment.NewLine + actionNode.Description;
 		}
 
 		public void ApplyChanges ()
@@ -211,10 +212,10 @@ namespace MonoDevelop.Inspection
 		public void ApplyChanges (Gtk.TreeIter iter)
 		{
 			do {
-				var node = treeStore.GetValue (iter, 2) as InspectorAddinNode;
+				var node = treeStore.GetValue (iter, 2) as CodeIssueProvider;
 
 				if (node != null) {
-					var severity = (QuickTaskSeverity)treeStore.GetValue (iter, 1);
+					var severity = (Severity)treeStore.GetValue (iter, 1);
 					node.SetSeverity (severity);
 				}
 

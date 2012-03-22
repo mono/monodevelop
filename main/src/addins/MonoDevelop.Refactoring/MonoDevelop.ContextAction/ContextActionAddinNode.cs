@@ -57,12 +57,14 @@ namespace MonoDevelop.ContextAction
 			}
 		}
 		
-		ContextAction action;
-		public ContextAction Action {
+		ContextActionProvider action;
+		public ContextActionProvider Action {
 			get {
 				if (action == null) {
-					action = (ContextAction)CreateInstance ();
-					action.Node = this;
+					action = (ContextActionProvider)CreateInstance ();
+					action.Title = title;
+					action.Description = description;
+					action.MimeType = MimeType;
 				}
 				
 				return action;

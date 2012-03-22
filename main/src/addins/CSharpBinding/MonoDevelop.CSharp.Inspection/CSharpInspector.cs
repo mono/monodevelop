@@ -36,14 +36,14 @@ using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CSharp.Inspection
 {
-	public abstract class CSharpInspector : IInspector
+	public abstract class CSharpInspector : CodeIssueProvider
 	{
 		public abstract string Category { get; }
 		public abstract string Title { get; }
 		public abstract string Description { get; }
 
 		protected InspectorAddinNode node;
-		protected QuickTaskSeverity severity;
+		protected Severity severity;
 
 		
 		public void Attach (InspectorAddinNode node)

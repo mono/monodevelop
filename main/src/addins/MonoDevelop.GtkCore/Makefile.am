@@ -10,7 +10,6 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.GtkCore/libsteticui.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
-	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
@@ -20,6 +19,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
+	-r:../../../build/bin/Mono.Cecil.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

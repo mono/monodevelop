@@ -34,6 +34,7 @@ using Gtk;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -153,14 +154,14 @@ namespace MonoDevelop.AnalysisCore
 						yield return action;
 		}
 		
-		static string GetIcon (QuickTaskSeverity severity)
+		static string GetIcon (Severity severity)
 		{
 			switch (severity) {
-			case QuickTaskSeverity.Error:
+			case Severity.Error:
 				return Gtk.Stock.DialogError;
-			case QuickTaskSeverity.Warning:
+			case Severity.Warning:
 				return Gtk.Stock.DialogWarning;
-			case QuickTaskSeverity.Hint:
+			case Severity.Hint:
 				return Gtk.Stock.Info;
 			default:
 				return null;

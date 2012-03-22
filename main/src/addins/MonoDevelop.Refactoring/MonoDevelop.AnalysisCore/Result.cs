@@ -30,6 +30,7 @@ using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Inspection;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.AnalysisCore
 			this.Underline = underLine;
 		}
 		
-		public Result (DomRegion region, string message, QuickTaskSeverity level, InspectionMark inspectionMark, bool underline = true)
+		public Result (DomRegion region, string message, Severity level, IssueMarker inspectionMark, bool underline = true)
 		{
 			this.Region = region;
 			this.Message = message;
@@ -51,15 +52,15 @@ namespace MonoDevelop.AnalysisCore
 			this.Underline = underline;
 		}
 		 
-		public void SetSeverity (QuickTaskSeverity level, InspectionMark inspectionMark)
+		public void SetSeverity (Severity level, IssueMarker inspectionMark)
 		{
 			this.Level = level;
 			this.InspectionMark = inspectionMark;
 		}
 		
 		public string Message { get; private set; }
-		public QuickTaskSeverity Level { get; private set; }
-		public InspectionMark InspectionMark { get; private set; }
+		public Severity Level { get; private set; }
+		public IssueMarker InspectionMark { get; private set; }
 		public DomRegion Region { get; private set; }
 		
 		public bool Underline { get; private set; }

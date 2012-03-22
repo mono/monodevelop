@@ -45,6 +45,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -1602,12 +1603,12 @@ namespace MonoDevelop.SourceEditor
 			tasks.Clear ();
 			
 			foreach (var cmt in doc.TagComments) {
-				var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, QuickTaskSeverity.Hint);
+				var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
 				tasks.Add (newTask);
 			}
 			
 			foreach (var error in doc.Errors) {
-				var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? QuickTaskSeverity.Error : QuickTaskSeverity.Warning);
+				var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
 				tasks.Add (newTask);
 			}
 			

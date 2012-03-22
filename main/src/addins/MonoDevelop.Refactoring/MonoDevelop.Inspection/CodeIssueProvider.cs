@@ -1,10 +1,10 @@
 // 
-// RedundantThisInspector.cs
+// IInspector.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc.
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +23,42 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Linq;
-using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Core;
-using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.CSharp.Refactoring.RefactorImports;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using MonoDevelop.CSharp.Refactoring;
+using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Semantics;
-using MonoDevelop.Inspection;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
+using System.Threading;
+using MonoDevelop.Core; 
 
-namespace MonoDevelop.CSharp.Inspection
+namespace MonoDevelop.Inspection
 {
-	public class RedundantThisInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.RedundantThisInspector>
+	public abstract class CodeIssueProvider
 	{
-		public override string Category {
+		public string MimeType { get; set; }
+		public string Category { get; set; }
+		public string Title { get; set; }
+		public string Description { get; set; }
+		public Severity Severity { get; set; }
+		public IssueMarker IssueMarker { get; set; }
+
+		public virtual string IdString {
 			get {
-				return DefaultInspectionCategories.Redundancies;
+				return "refactoring.inspectors." + MimeType + "." + GetType ().FullName;
 			}
 		}
 
-		public override string Title {
-			get {
-				return GettextCatalog.GetString ("Remove redundant 'this.'");
-			}
-		}
-
-		public override string Description {
-			get {
-				return GettextCatalog.GetString ("Removes 'this.' references that are not required.");
-			}
-		}
-
-		public RedundantThisInspector ()
+		public Severity GetSeverity ()
 		{
-			inspector.Title = GettextCatalog.GetString ("Remove redundant 'this.'");
+			return PropertyService.Get<Severity> (IdString, Severity);
 		}
+		
+		public void SetSeverity (Severity severity)
+		{
+			PropertyService.Set (IdString, severity);
+		}
+
+		public abstract IEnumerable<CodeIssue> GetIssues (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
 	}
 }
 

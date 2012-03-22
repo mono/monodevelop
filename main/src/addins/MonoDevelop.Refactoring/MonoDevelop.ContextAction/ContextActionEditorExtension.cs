@@ -44,7 +44,7 @@ namespace MonoDevelop.ContextAction
 		ContextActionWidget widget;
 		uint quickFixTimeout;
 		
-		public List<ContextAction> Fixes {
+		public IEnumerable<ContextAction> Fixes {
 			get;
 			private set;
 		}
@@ -71,7 +71,7 @@ namespace MonoDevelop.ContextAction
 			base.Dispose ();
 		}
 		
-		public void CreateWidget (List<ContextAction> fixes, TextLocation loc)
+		public void CreateWidget (IEnumerable<ContextAction> fixes, TextLocation loc)
 		{
 			this.Fixes = fixes;
 			if (!fixes.Any ())

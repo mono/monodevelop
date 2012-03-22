@@ -25,49 +25,17 @@
 // THE SOFTWARE.
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using System;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace MonoDevelop.ContextAction
 {
-	public enum ContextActionType 
-	{
-		Hidden,
-		Error,
-		Warning,
-		Suggestion,
-		Hint
-	}
-	
 	public abstract class ContextAction
 	{
-		public ContextActionAddinNode Node {
-			get;
-			internal set;
-		}
-		
-		public string Description {
-			get;
-			protected set;
-		}
-		
-		public virtual string GetMenuText (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
-		{
-			return Node.Title;
-		}
-		
-		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
+		public string Title { get; set; }
 
-		public abstract bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
-		
-/*		public static ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, string fullyQualifiedTypeName)
-		{
-			return doc.ParsedDocument.CompilationUnit.ShortenTypeName (new DomReturnType (fullyQualifiedTypeName), doc.Editor.Caret.Line, doc.Editor.Caret.Column).ConvertToTypeReference ();
-		}
-		
-		public static ICSharpCode.NRefactory.CSharp.AstType ShortenTypeName (MonoDevelop.Ide.Gui.Document doc, i fullyQualifiedTypeName)
-		{
-			return doc.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, doc.Editor.Caret.Line, doc.Editor.Caret.Column).ConvertToTypeReference ();
-		}
-	*/	
+		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
 	}
+
 }

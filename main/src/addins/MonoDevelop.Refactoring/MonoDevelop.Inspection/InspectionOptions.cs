@@ -29,6 +29,7 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 using Gtk;
 
 namespace MonoDevelop.Inspection
@@ -44,13 +45,13 @@ namespace MonoDevelop.Inspection
 			HasSeparator = false;
 
 			var r = act.Result as InspectorResults;
-			labelInspectionTitle.Text = r.Inspector.Inspector.Title;
+			labelInspectionTitle.Text = r.Inspector.Title;
 			var s = r.Inspector.GetSeverity ();
-			radiobuttonHide.Active = s == QuickTaskSeverity.None;
-			radiobuttonError.Active = s == QuickTaskSeverity.Error;
-			radiobuttonWarning.Active = s == QuickTaskSeverity.Warning;
-			radiobuttonHint.Active = s == QuickTaskSeverity.Hint;
-			radiobuttonSuggestion.Active = s == QuickTaskSeverity.Suggestion;
+			radiobuttonHide.Active = s == Severity.None;
+			radiobuttonError.Active = s == Severity.Error;
+			radiobuttonWarning.Active = s == Severity.Warning;
+			radiobuttonHint.Active = s == Severity.Hint;
+			radiobuttonSuggestion.Active = s == Severity.Suggestion;
 			buttonOk.Clicked += HandleClicked;
 			buttonCancel.Clicked += (sender, e) => Destroy ();
 			Response += (o, args) => {
@@ -63,15 +64,15 @@ namespace MonoDevelop.Inspection
 		{
 			var r = act.Result as InspectorResults;
 			if (radiobuttonHide.Active) {
-				r.Inspector.SetSeverity (QuickTaskSeverity.None);
+				r.Inspector.SetSeverity (Severity.None);
 			} else if (radiobuttonError.Active) {
-				r.Inspector.SetSeverity (QuickTaskSeverity.Error);
+				r.Inspector.SetSeverity (Severity.Error);
 			} else if (radiobuttonWarning.Active) {
-				r.Inspector.SetSeverity (QuickTaskSeverity.Warning);
+				r.Inspector.SetSeverity (Severity.Warning);
 			} else if (radiobuttonHint.Active) {
-				r.Inspector.SetSeverity (QuickTaskSeverity.Hint);
+				r.Inspector.SetSeverity (Severity.Hint);
 			} else if (radiobuttonSuggestion.Active) {
-				r.Inspector.SetSeverity (QuickTaskSeverity.Suggestion);
+				r.Inspector.SetSeverity (Severity.Suggestion);
 			}
 			MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.RefreshAllColors ();
 			Destroy ();

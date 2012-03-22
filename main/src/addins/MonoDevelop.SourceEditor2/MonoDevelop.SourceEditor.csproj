@@ -167,7 +167,6 @@
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskStrip.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\ScrollbarCommand.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\ScrollBarMode.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskSeverity.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IQuickTaskProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTask.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskMiniMapMode.cs" />

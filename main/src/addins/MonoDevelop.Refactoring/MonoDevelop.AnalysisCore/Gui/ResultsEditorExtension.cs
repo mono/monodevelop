@@ -35,6 +35,7 @@ using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -177,7 +178,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 						return false;
 					var currentResult = (Result)enumerator.Current;
 					
-					if (currentResult.InspectionMark != MonoDevelop.Inspection.InspectionMark.TaskBarOnly) {
+					if (currentResult.InspectionMark != IssueMarker.None) {
 						var marker = new ResultMarker (currentResult);
 						marker.IsVisible = currentResult.Underline;
 						editor.Document.AddMarker (marker.Line, marker);

@@ -1,10 +1,10 @@
 // 
-// UseVarKeywordInspector.cs
+// CodeIssue.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,41 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.PatternMatching;
-using MonoDevelop.Core;
-using MonoDevelop.AnalysisCore;
-using MonoDevelop.CSharp.ContextAction;
-using MonoDevelop.Ide.Gui;
-using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Inspection;
+using Mono.TextEditor;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
-namespace MonoDevelop.CSharp.Inspection
+namespace MonoDevelop.Inspection
 {
-	public class UseVarKeywordInspector : NRefactoryInspectorWrapper<ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordInspector>
+	public class CodeIssue
 	{
-		public override string Category {
-			get {
-				return DefaultInspectionCategories.Opportunities;
-			}
+		public string Description {
+			get;
+			private set;
+		}
+		
+		public DocumentLocation Start {
+			get;
+			private set;
+		}
+		
+		public DocumentLocation End {
+			get;
+			private set;
 		}
 
-		public override string Title {
-			get {
-				return GettextCatalog.GetString ("Use 'var' keyword");
-			}
+		public IEnumerable<MonoDevelop.ContextAction.ContextAction> Actions {
+			get;
+			private set;
 		}
 
-		public override string Description {
-			get {
-				return GettextCatalog.GetString ("Use implicitly typed local variable decaration");
-			}
-		}
-
-		public UseVarKeywordInspector ()
+		public CodeIssue (string description, DocumentLocation start, DocumentLocation end, IEnumerable<MonoDevelop.ContextAction.ContextAction>  actions = null)
 		{
-			inspector.Title = GettextCatalog.GetString ("Use 'var' keyword");
+			Description = description;
+			Start = start;
+			End = end;
+			Actions = actions;
 		}
 	}
 }

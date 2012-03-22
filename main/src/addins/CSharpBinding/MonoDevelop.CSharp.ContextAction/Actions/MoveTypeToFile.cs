@@ -38,41 +38,38 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.CSharp.ContextAction
 {
-	public class MoveTypeToFile : MDRefactoringContextAction
+	public class MoveTypeToFile : MDRefactoringContextActionProvider
 	{
-		protected override string GetMenuText (MDRefactoringContext context)
-		{
-			var type = GetTypeDeclaration (context);
-			if (IsSingleType (context))
-				return String.Format (GettextCatalog.GetString ("_Rename file to '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
-			return String.Format (GettextCatalog.GetString ("_Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
-		}
-		
-		protected override bool IsValid (MDRefactoringContext context)
+		protected override IEnumerable<MonoDevelop.ContextAction.ContextAction> GetActions (MDRefactoringContext context)
 		{
 			var type = GetTypeDeclaration (context);
 			if (type == null)
-				return false;
-			return Path.GetFileNameWithoutExtension (context.Document.FileName) != type.Name;
-		}
-		
-		protected override void Run (MDRefactoringContext context)
-		{
-			var type = GetTypeDeclaration (context);
-			string correctFileName = GetCorrectFileName (context, type);
+				yield break;
+			if (Path.GetFileNameWithoutExtension (context.Document.FileName) == type.Name)
+				yield break;
+			string title;
 			if (IsSingleType (context)) {
-				FileService.RenameFile (context.Document.FileName, correctFileName);
-				if (context.Document.Project != null)
-					context.Document.Project.Save (new NullProgressMonitor ());
-				return;
+				title = String.Format (GettextCatalog.GetString ("_Rename file to '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
+			} else {
+				title = String.Format (GettextCatalog.GetString ("_Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
 			}
-			
-			CreateNewFile (context, type, correctFileName);
-			using (var script = context.StartScript ()) {
-				script.Remove (type);
-			}
+			yield return new MDRefactoringContextAction (title, ctx => {
+				string correctFileName = GetCorrectFileName (ctx, type);
+				if (IsSingleType (ctx)) {
+					FileService.RenameFile (ctx.Document.FileName, correctFileName);
+					if (ctx.Document.Project != null)
+						ctx.Document.Project.Save (new NullProgressMonitor ());
+					return;
+				}
+				
+				CreateNewFile (ctx, type, correctFileName);
+				using (var script = ctx.StartScript ()) {
+					script.Remove (type);
+				}
+
+			});
 		}
-		
+
 		void CreateNewFile (MDRefactoringContext context, TypeDeclaration type, string correctFileName)
 		{
 			var content = context.Document.Editor.Text;

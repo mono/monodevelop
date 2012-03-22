@@ -249,13 +249,14 @@ namespace MonoDevelop.Refactoring
 
 			var loc = doc.Editor.Caret.Location;
 			bool first = true;
-			foreach (var fix in RefactoringService.GetValidActions (doc, loc).Result) {
+			foreach (var fix_ in RefactoringService.GetValidActions (doc, loc).Result) {
+				var fix = fix_;
 				if (first) {
 					first = false;
 					if (ciset.CommandInfos.Count > 0)
 						ciset.CommandInfos.AddSeparator ();
 				}
-				ciset.CommandInfos.Add (fix.GetMenuText (doc, loc), new System.Action (new FixWrapper (fix, doc, loc).Operation));
+				ciset.CommandInfos.Add (fix.Title, new System.Action (() => fix.Run (doc, loc)));
 			}
 
 			if (ciset.CommandInfos.Count > 0) {
@@ -559,25 +560,6 @@ namespace MonoDevelop.Refactoring
 			public void Operation ()
 			{
 				refactoring.Run (options);
-			}
-		}	
-
-		class FixWrapper
-		{
-			MonoDevelop.ContextAction.ContextAction action;
-			Document doc;
-			DocumentLocation loc;
-
-			public FixWrapper (MonoDevelop.ContextAction.ContextAction action, MonoDevelop.Ide.Gui.Document doc, Mono.TextEditor.DocumentLocation loc)
-			{
-				this.action = action;
-				this.doc = doc;
-				this.loc = loc;
-			}
-
-			public void Operation ()
-			{
-				action.Run (doc, loc);
 			}
 		}
 

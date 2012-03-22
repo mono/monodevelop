@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Inspection;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -725,8 +726,8 @@ namespace MonoDevelop.CSharp.Inspection
 			return new FixableResult (
 				new DomRegion (null, location.Line, location.Column, location.Line, location.Column + name.Length),
 				error,
-				QuickTaskSeverity.Warning,
-				InspectionMark.Underline,
+				Severity.Warning,
+				IssueMarker.Underline,
 				fixes.ToArray<IAnalysisFix> ());
 		}
 	}

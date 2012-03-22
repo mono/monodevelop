@@ -68,9 +68,8 @@ FILES =  \
 	MonoDevelop.CSharp.Completion/VariableCompletionData.cs \
 	MonoDevelop.CSharp.ContextAction/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.ContextAction/ContextActionExtensions.cs \
-	MonoDevelop.CSharp.ContextAction/ContextActionWrappers.cs \
 	MonoDevelop.CSharp.ContextAction/MDRefactoringContext.cs \
-	MonoDevelop.CSharp.ContextAction/MDRefactoringContextAction.cs \
+	MonoDevelop.CSharp.ContextAction/MDRefactoringContextActionProvider.cs \
 	MonoDevelop.CSharp.ContextAction/MDRefactoringScript.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormatter.cs \
 	MonoDevelop.CSharp.Formatting/CSharpFormattingPolicy.cs \
@@ -92,19 +91,9 @@ FILES =  \
 	MonoDevelop.CSharp.Inspection/CallGraph.cs \
 	MonoDevelop.CSharp.Inspection/CodeAnalysis.cs \
 	MonoDevelop.CSharp.Inspection/CSharpInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/ConditionalToNullCoalescingInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/NotImplementedExceptionInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/RedundantInternalInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/RedundantNamespaceUsageInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/RedundantPrivateInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/RedundantThisInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/StringIsNullOrEmptyInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/UnusedUsingInspector.cs \
-	MonoDevelop.CSharp.Inspection/Inspectors/UseVarKeywordInspector.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/CSharpNamingPolicy.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingConventionPanelWidget.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingConventionSettingsDialog.cs \
-	MonoDevelop.CSharp.Inspection/NamingInspection/NamingInspector.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingRule.cs \
 	MonoDevelop.CSharp.Inspection/NamingInspection/NamingStyle.cs \
 	MonoDevelop.CSharp.Parser/CSharpFoldingParser.cs \

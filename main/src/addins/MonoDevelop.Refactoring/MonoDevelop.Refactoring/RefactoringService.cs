@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using System.Threading.Tasks;
 using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring
 {
@@ -44,16 +45,26 @@ namespace MonoDevelop.Refactoring
 	public static class RefactoringService
 	{
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static List<ContextActionAddinNode> contextActions = new List<ContextActionAddinNode> ();
-		static List<InspectorAddinNode> inspectors = new List<InspectorAddinNode> ();
+		static List<ContextActionProvider> contextActions = new List<ContextActionProvider> ();
+		static List<CodeIssueProvider> inspectors = new List<CodeIssueProvider> ();
 		
-		public static IEnumerable<ContextActionAddinNode> ContextAddinNodes {
+		public static IEnumerable<ContextActionProvider> ContextAddinNodes {
 			get {
 				return contextActions;
 			}
 		} 
 
-		public static List<InspectorAddinNode> Inspectors {
+		public static void AddProvider (ContextActionProvider provider)
+		{
+			contextActions.Add (provider);
+		}
+		
+		public static void AddProvider (CodeIssueProvider provider)
+		{
+			inspectors.Add (provider);
+		}
+
+		public static List<CodeIssueProvider> Inspectors {
 			get {
 				return inspectors;
 			}
@@ -76,10 +87,10 @@ namespace MonoDevelop.Refactoring
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					contextActions.Add ((ContextActionAddinNode)args.ExtensionNode);
+					contextActions.Add (((ContextActionAddinNode)args.ExtensionNode).Action);
 					break;
 				case ExtensionChange.Remove:
-					contextActions.Remove ((ContextActionAddinNode)args.ExtensionNode);
+					contextActions.Remove (((ContextActionAddinNode)args.ExtensionNode).Action);
 					break;
 				}
 			});
@@ -87,10 +98,10 @@ namespace MonoDevelop.Refactoring
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					inspectors.Add ((InspectorAddinNode)args.ExtensionNode);
+					inspectors.Add (((InspectorAddinNode)args.ExtensionNode).Inspector);
 					break;
 				case ExtensionChange.Remove:
-					inspectors.Remove ((InspectorAddinNode)args.ExtensionNode);
+					inspectors.Remove (((InspectorAddinNode)args.ExtensionNode).Inspector);
 					break;
 				}
 			});
@@ -159,46 +170,46 @@ namespace MonoDevelop.Refactoring
 			TextReplaceChange.FinishRefactoringOperation ();
 		}
 		
-		public static IEnumerable<InspectorAddinNode> GetInspectors (string mimeTye)
+		public static IEnumerable<CodeIssueProvider> GetInspectors (string mimeType)
 		{
-			return inspectors.Where (i => i.MimeType == mimeTye);
+			return inspectors.Where (i => i.MimeType == mimeType);
 		}
 
-		
-		
 		public static Task<IEnumerable<ContextAction>> GetValidActions (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			return Task.Factory.StartNew (delegate {
+				var result = new List<ContextAction> ();
 				try {
 					string disabledNodes = PropertyService.Get ("ContextActions." + doc.Editor.Document.MimeType, "") ?? "";
-					return contextActions.Where (fix => disabledNodes.IndexOf (fix.Type.FullName) < 0 && fix.Action.IsValid (doc, loc, cancellationToken)).Select (fix => fix.Action);
+					foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString) < 0)) {
+						result.AddRange (provider.GetActions (doc, loc, cancellationToken));
+					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
-					return Enumerable.Empty<ContextAction> ();
 				}
+				return (IEnumerable<ContextAction>)result;
 			}, cancellationToken);
 		}
-		
 		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<ContextAction>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					string disabledNodes = PropertyService.Get ("ContextActions." + doc.Editor.Document.MimeType, "") ?? "";
-					
-					var availableFixes = new List<ContextAction> (contextActions.Where (fix => disabledNodes.IndexOf (fix.Type.FullName) < 0 && fix.Action.IsValid (doc, loc, CancellationToken.None)).Select (fix => fix.Action));
+					var result = new List<ContextAction> (GetValidActions (doc, loc).Result);
+
 					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 					if (ext != null) {
-						foreach (var result in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc.Line, loc.Column))) {
-							var fresult = result as FixableResult;
+						foreach (var r in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc.Line, loc.Column))) {
+							var fresult = r as FixableResult;
 							if (fresult == null)
 								continue;
-							foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
-								availableFixes.Add (new AnalysisContextAction (result, action));
+							foreach (var action_ in FixOperationsHandler.GetActions (doc, fresult)) {
+								var action = action_;
+								result.Add (new AnalysisContextAction (r.Message, r, (d, t) => action.Fix ()));
 							}
 						}
 					}
 					
-					callback (availableFixes);
+					callback (result);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
 				}

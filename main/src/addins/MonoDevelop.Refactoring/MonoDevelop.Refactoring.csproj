@@ -32,23 +32,29 @@
     <Reference Include="System" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -75,7 +81,6 @@
     <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
-    <Compile Include="MonoDevelop.ContextAction\AnalysisContextAction.cs" />
     <Compile Include="MonoDevelop.ContextAction\ContextAction.cs" />
     <Compile Include="MonoDevelop.ContextAction\ContextActionEditorExtension.cs" />
     <Compile Include="MonoDevelop.ContextAction\ContextActionWidget.cs" />
@@ -107,10 +112,13 @@
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
-    <Compile Include="MonoDevelop.Inspection\IInspector.cs" />
     <Compile Include="MonoDevelop.Inspection\DefaultInspectionCategories.cs" />
     <Compile Include="MonoDevelop.Inspection\InspectionOptions.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Inspection.InspectionOptions.cs" />
+    <Compile Include="MonoDevelop.ContextAction\ContextActionProvider.cs" />
+    <Compile Include="MonoDevelop.ContextAction\AnalysisContextAction.cs" />
+    <Compile Include="MonoDevelop.Inspection\CodeIssueProvider.cs" />
+    <Compile Include="MonoDevelop.Inspection\CodeIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

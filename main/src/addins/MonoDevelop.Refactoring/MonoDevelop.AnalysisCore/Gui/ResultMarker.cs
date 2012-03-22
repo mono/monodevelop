@@ -27,6 +27,7 @@
 using Mono.TextEditor;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -58,13 +59,15 @@ namespace MonoDevelop.AnalysisCore.Gui
 		static string GetColor (Result result)
 		{
 			switch (result.Level) {
-			case QuickTaskSeverity.Error:
+			case Severity.None:
+				return Mono.TextEditor.Highlighting.ColorSheme.DefaultString;
+			case Severity.Error:
 				return Mono.TextEditor.Highlighting.ColorSheme.ErrorUnderlineString;
-			case QuickTaskSeverity.Warning:
+			case Severity.Warning:
 				return Mono.TextEditor.Highlighting.ColorSheme.WarningUnderlineString;
-			case QuickTaskSeverity.Suggestion:
+			case Severity.Suggestion:
 				return Mono.TextEditor.Highlighting.ColorSheme.SuggestionUnderlineString;
-			case QuickTaskSeverity.Hint:
+			case Severity.Hint:
 				return Mono.TextEditor.Highlighting.ColorSheme.HintUnderlineString;
 			default:
 				throw new System.ArgumentOutOfRangeException ();
@@ -78,7 +81,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return;
 			
-			bool drawOverlay = result.InspectionMark == MonoDevelop.Inspection.InspectionMark.GrayOut;
+			bool drawOverlay = result.InspectionMark == IssueMarker.GrayOut;
 			
 			if (drawOverlay && editor.IsSomethingSelected) {
 				var selectionRange = editor.SelectionRange;

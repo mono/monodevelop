@@ -38,31 +38,44 @@ namespace MonoDevelop.ContextAction
 			private set;
 		}
 		
+		Action<MonoDevelop.Ide.Gui.Document, TextLocation> act;
+		
+		public AnalysisContextAction (string title, Result result, Action<MonoDevelop.Ide.Gui.Document, TextLocation> act)
+		{
+			this.Title = title;
+			this.act = act;
+			this.Result = result;
+		}
+
+		public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+		{
+			act (document, loc);
+		}
+	}
+
+
+	public class AnalysisContextActionProvider : ContextActionProvider
+	{
+		public Result Result {
+			get;
+			private set;
+		}
+		
 		public IAnalysisFixAction Action {
 			get;
 			private set;
 		}
 		
-		public AnalysisContextAction (Result result, IAnalysisFixAction action)
+		public AnalysisContextActionProvider (Result result, IAnalysisFixAction action)
 		{
 			this.Result = result;
 			this.Action = action;
 			this.Description = result.Message;
 		}
 		
-		public override bool IsValid (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
+		public override System.Collections.Generic.IEnumerable<ContextAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
-			return true;
-		}
-		
-		public override string GetMenuText (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
-		{
-			return Action.Label;
-		}
-		
-		public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
-		{
-			Action.Fix ();
+			yield return new AnalysisContextAction (Action.Label, Result, (d, l) => Action.Fix ());
 		}
 	}
 }

@@ -42,11 +42,11 @@ namespace MonoDevelop.ContextAction
 	{
 		ContextActionEditorExtension ext;
 		MonoDevelop.Ide.Gui.Document document;
-		List<ContextAction> fixes;
+		IEnumerable<ContextAction> fixes;
 		TextLocation loc;
 		Gdk.Pixbuf icon;
 		
-		public ContextActionWidget (ContextActionEditorExtension ext, MonoDevelop.Ide.Gui.Document document, TextLocation loc, List<ContextAction> fixes)
+		public ContextActionWidget (ContextActionEditorExtension ext, MonoDevelop.Ide.Gui.Document document, TextLocation loc, IEnumerable<ContextAction> fixes)
 		{
 			this.ext = ext;
 			this.document = document;
@@ -83,7 +83,7 @@ namespace MonoDevelop.ContextAction
 			
 			int mnemonic = 1;
 			foreach (ContextAction fix in fixes) {
-				var escapedLabel = fix.GetMenuText (document, loc).Replace ("_", "__");
+				var escapedLabel = fix.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
@@ -95,12 +95,13 @@ namespace MonoDevelop.ContextAction
 				menu.Add (menuItem);
 			}
 			var first = true;
-			foreach (var analysisFix in fixes.OfType <AnalysisContextAction>().Where (f => f.Result is InspectorResults)) {
+			foreach (var analysisFix_ in fixes.OfType <AnalysisContextAction>().Where (f => f.Result is InspectorResults)) {
+				var analysisFix = analysisFix_;
 				if (first) {
 					menu.Add (new Gtk.SeparatorMenuItem ());
 					first = false;
 				}
-				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", analysisFix.Action.Label);
+				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", analysisFix.Result.Message);
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
 				menuItem.Activated += new AnalysisFixOptions (analysisFix).HandleActivated;
 				
@@ -152,7 +153,7 @@ namespace MonoDevelop.ContextAction
 				MessageService.RunCustomDialog (new InspectionOptions (act), MessageService.RootWindow);
 			}
 		}
-		
+//		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (!evnt.TriggersContextMenu () && evnt.Button == 1)

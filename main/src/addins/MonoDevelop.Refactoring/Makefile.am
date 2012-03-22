@@ -25,6 +25,7 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.ContextAction.ContextActionPanelWidget.cs \
+	gtk-gui/MonoDevelop.Inspection.InspectionOptions.cs \
 	gtk-gui/MonoDevelop.Inspection.InspectionPanelWidget.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
@@ -51,7 +52,12 @@ FILES =  \
 	MonoDevelop.ContextAction/ContextActionAddinNode.cs \
 	MonoDevelop.ContextAction/ContextActionEditorExtension.cs \
 	MonoDevelop.ContextAction/ContextActionPanelWidget.cs \
+	MonoDevelop.ContextAction/ContextActionProvider.cs \
 	MonoDevelop.ContextAction/ContextActionWidget.cs \
+	MonoDevelop.Inspection/CodeIssue.cs \
+	MonoDevelop.Inspection/CodeIssueProvider.cs \
+	MonoDevelop.Inspection/DefaultInspectionCategories.cs \
+	MonoDevelop.Inspection/InspectionOptions.cs \
 	MonoDevelop.Inspection/InspectionPanelWidget.cs \
 	MonoDevelop.Inspection/InspectorAddinNode.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \
@@ -73,11 +79,7 @@ FILES =  \
 	MonoDevelop.Refactoring/RefactoringOptions.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \
-	MonoDevelop.Refactoring/RefactoryCommands.cs \
-	MonoDevelop.Inspection/IInspector.cs \
-	MonoDevelop.Inspection/DefaultInspectionCategories.cs \
-	MonoDevelop.Inspection/InspectionOptions.cs \
-	gtk-gui/MonoDevelop.Inspection.InspectionOptions.cs
+	MonoDevelop.Refactoring/RefactoryCommands.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

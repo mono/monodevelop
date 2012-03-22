@@ -1,5 +1,5 @@
 // 
-// QuickTaskSeverity.cs
+// ContextActionProvider.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,29 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System;
-using Gtk;
-using Mono.TextEditor;
-using System.Collections.Generic;
-using Gdk;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Components.Commands;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using System.Threading;
+using System.Collections.Generic;
 
-namespace MonoDevelop.SourceEditor.QuickTasks
+namespace MonoDevelop.ContextAction
 {
-	
-	public enum QuickTaskSeverity
+	public abstract class ContextActionProvider
 	{
-		None,
-		Error,
-		Warning,
-		Hint,
-		Suggestion,
-		
-		Usage
+		public string MimeType { get; set; }
+
+		public string Title { get; set; }
+
+		public string Description { get; set; }
+
+		public string Category { get; set; }
+
+		public virtual string IdString {
+			get {
+				return this.GetType ().FullName;
+			}
+		}
+
+		public abstract IEnumerable<ContextAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
 	}
-	
 }
