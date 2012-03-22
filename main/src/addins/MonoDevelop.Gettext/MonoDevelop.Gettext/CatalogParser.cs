@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq; //GB Added
 
 namespace MonoDevelop.Gettext
 {
@@ -38,18 +39,23 @@ namespace MonoDevelop.Gettext
 	public abstract class CatalogParser
 	{
 		internal static readonly string[] LineSplitStrings = { "\n\r", "\r\n", "\r", "\n" };
-		
-		//string fileName;
-		string loadedFile;
+
+		//string fileName
 		string[] fileLines;
 		string newLine;
 		int lineNumber = 0;
 		
 		public CatalogParser (string fileName, Encoding encoding)
 		{
-			//this.fileName = fileName;
-			loadedFile = File.ReadAllText (fileName, encoding);
-			fileLines = CatalogParser.GetLines (loadedFile, out newLine);
+	
+			newLine = GetNewLine (fileName,encoding);
+			var fileLineList = File.ReadLines (fileName, encoding).ToList ();
+			fileLineList.Add ("");
+			fileLines = fileLineList.ToArray ();
+			// Previously string.Split was used to get the lines, 
+			// this resulted in an extra line after EOF
+			// The parse function relies on this to work right, so added it in. Messy.
+			
 		}
 		
 		// Returns new line constant used in file
@@ -58,22 +64,41 @@ namespace MonoDevelop.Gettext
 			get { return newLine; }
 		}
 		
-		static string[] GetLines (string fileStr, out string newLine)
+		static string GetNewLine (string fileName, Encoding encoding) 
 		{
-			int lf = fileStr.IndexOf ('\n');
-			int cr = fileStr.IndexOf ('\r');
 			
-			if (lf >= 0 && cr == lf - 1) {
-				newLine = "\r\n";
-			} else if (lf >= 0) {
-				newLine = "\n";
-			} else if (cr >= 0) {
-				newLine = "\r";
-			} else {
-				newLine = Environment.NewLine;
+			char foundchar = 'x';
+			char[] curr = new char[] {'x'};
+			
+			using (TextReader tr = new StreamReader(File.Open(fileName,FileMode.Open),encoding))
+			{
+				while (tr.Read (curr,0,1) != 0)
+				{
+					if (curr[0] == '\n') {
+						if (foundchar == '\r')
+							return "\r\n";
+						else if (foundchar == 'x')
+							foundchar = '\n';
+						else if (foundchar == '\n')
+							return "\n";
+					} else if (curr[0] == '\r') {
+						if (foundchar == '\n')
+							return "\n\r";
+						else if (foundchar == 'x')
+							foundchar = '\r';
+						else if (foundchar == '\r')
+							return  "\r";
+					}
+					else if (foundchar != 'x')
+							return foundchar.ToString ();
+				}
 			}
 			
-			return fileStr.Split (LineSplitStrings, StringSplitOptions.None);
+			// only gets here if EOF reached	
+			if (foundchar != 'x')
+						return foundchar.ToString ();
+			else
+				return Environment.NewLine;
 		}
 		
 		// If input begins with pattern, fill output with end of input (without
