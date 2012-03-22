@@ -107,46 +107,48 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public override void AddFile (string fileName, string displayName)
 		{
-			try {
-				Add (fileGroup, fileName, displayName);
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't add to recent files list.", e);
-			}
+			Add (fileGroup, fileName, displayName);
 		}
 		
 		public override void AddProject (string fileName, string displayName)
 		{
-			try {
-				Add (projGroup, fileName, displayName);
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't add to recent project list.", e);
-			}
+			Add (projGroup, fileName, displayName);
 		}
 		
 		void Add (string grp, string fileName, string displayName)
 		{
 			var mime = DesktopService.GetMimeTypeForUri (fileName);
-			var uri = RecentFileStorage.ToUri (fileName);
-			var recentItem = new RecentItem (uri, mime, grp) { Private = displayName };
-			recentFiles.AddWithLimit (recentItem, grp, ItemLimit);
+			System.Threading.ThreadPool.QueueUserWorkItem (_ => {
+				try {
+					var uri = RecentFileStorage.ToUri (fileName);
+					var recentItem = new RecentItem (uri, mime, grp) { Private = displayName };
+					recentFiles.AddWithLimit (recentItem, grp, ItemLimit);
+				} catch (Exception e) {
+					LoggingService.LogError ("Failed to add item to recent files list.", e);
+				}
+			});
 		}
 		
 		public override void NotifyFileRemoved (string fileName)
 		{
-			try {
-				recentFiles.RemoveItem (RecentFileStorage.ToUri (fileName));
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't remove from recent files list.", e);
-			}
+			System.Threading.ThreadPool.QueueUserWorkItem (_ => {
+				try {
+					recentFiles.RemoveItem (RecentFileStorage.ToUri (fileName));
+				} catch (Exception e) {
+					LoggingService.LogError ("Can't remove from recent files list.", e);
+				}
+			});
 		}
 		
 		public override void NotifyFileRenamed (string oldName, string newName)
 		{
-			try {
-				recentFiles.RenameItem (RecentFileStorage.ToUri (oldName), RecentFileStorage.ToUri (newName));
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't rename file in recent files list.", e);
-			}
+			System.Threading.ThreadPool.QueueUserWorkItem (_ => {
+				try {
+					recentFiles.RenameItem (RecentFileStorage.ToUri (oldName), RecentFileStorage.ToUri (newName));
+				} catch (Exception e) {
+					LoggingService.LogError ("Can't rename file in recent files list.", e);
+				}
+			});
 		}
 		
 		public void Dispose ()
