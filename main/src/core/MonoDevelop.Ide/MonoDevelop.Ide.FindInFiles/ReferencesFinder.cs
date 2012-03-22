@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return new FileList (type.GetSourceProject (), type.GetProjectContent (), paths);
 		}
 
-		static IEnumerable<FileList> GetFileNames (Solution solution, IParsedFile unit, object member, RefactoryScope scope, IProgressMonitor monitor)
+		static IEnumerable<FileList> GetFileNames (Solution solution, object member, RefactoryScope scope, IProgressMonitor monitor)
 		{
 			if (scope == RefactoryScope.Unknown)
 				scope = GetScope (member);
@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				var doc = IdeApp.Workbench.GetDocument (fileName);
 
 				if (doc != null)
-					yield return new FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)unit.FileName });
+					yield return new FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
 				break;
 			case RefactoryScope.DeclaringType:
 				if (member is IEntity)
@@ -193,12 +193,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (member == null)
 				yield break;
-			IParsedFile unit = null;
 			IEnumerable<object> searchNodes = new [] { member };
 			if (member is IType) {
-				var declaringPart = ((IType)member).GetDefinition ().Parts.FirstOrDefault ();
-				if (declaringPart != null)
-					unit = declaringPart.ParsedFile;
 				var nodes = new List<object> ();
 				nodes.Add (member);
 				nodes.AddRange (((IType)member).GetConstructors ());
@@ -211,20 +207,14 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 					yield break;
 				}
-				var declaringPart = e.DeclaringTypeDefinition.Parts.Where (p => p.Region.FileName == e.Region.FileName && p.Region.IsInside (e.Region.Begin)).FirstOrDefault ();
-				if (declaringPart != null)
-					unit = declaringPart.ParsedFile;
 				if (member is IMember)
 					searchNodes = CollectMembers (solution, (IMember)member);
-			} else if (member is IVariable) { 
-				var doc = IdeApp.Workbench.GetDocument (((IVariable)member).Region.FileName);
-				unit = doc.ParsedDocument.ParsedFile;
 			}
 			
 			// prepare references finder
 			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
 			var curList = new List<FilePath> ();
-			foreach (var info in GetFileNames (solution, unit, member, scope, monitor)) {
+			foreach (var info in GetFileNames (solution, member, scope, monitor)) {
 				string oldMime = null;
 				foreach (var file in info.Files) {
 					if (monitor != null && monitor.IsCancelRequested)
@@ -260,11 +250,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member)
 		{
-			if (member is IMethod) {
-				var method = (IMethod)member;
-				if (method.IsConstructor || method.IsDestructor || method.IsOperator)
-					return new [] { member };
-			}
+			if (member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Operator)
+				return new [] { member };
 
 			return MemberCollector.CollectMembers (solution, member);
 		}
