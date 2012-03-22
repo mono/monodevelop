@@ -55,6 +55,7 @@ FILES =  \
 	MonoDevelop.CodeActions/CodeActionProvider.cs \
 	MonoDevelop.CodeActions/CodeActionWidget.cs \
 	MonoDevelop.CodeActions/ICodeActionProviderSource.cs \
+	MonoDevelop.CodeIssues/CodeAnalysisRunner.cs \
 	MonoDevelop.CodeIssues/CodeIssue.cs \
 	MonoDevelop.CodeIssues/CodeIssueOptionsDialog.cs \
 	MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs \

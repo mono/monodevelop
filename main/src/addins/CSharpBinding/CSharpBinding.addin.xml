@@ -273,12 +273,6 @@
 			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"/>
 	</Extension>
 	
-
-	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Rule _name="C# Code Analysis" input="Document" 
-			func="MonoDevelop.CSharp.Refactoring.CodeIssues.CodeAnalysis.Check" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
 		<Source class ="MonoDevelop.CSharp.Refactoring.CodeActions.NRefactoryCodeActionSource"/>
 	</Extension>

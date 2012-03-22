@@ -1,10 +1,10 @@
 // 
-// NamingConventions.cs
+// CodeAnalysisRunner.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,9 +40,9 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CodeIssues;
 
-namespace MonoDevelop.CSharp.Refactoring.CodeIssues
+namespace MonoDevelop.CodeIssues
 {
-	public static class CodeAnalysis
+	public static class CodeAnalysisRunner
 	{
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				return Enumerable.Empty<Result> ();
 			var loc = input.Editor.Caret.Location;
 			var result = new BlockingCollection<Result> ();
-			var codeIssueProvider = RefactoringService.GetInspectors ("text/x-csharp");
+			var codeIssueProvider = RefactoringService.GetInspectors (input.Editor.Document.MimeType);
 			Parallel.ForEach (codeIssueProvider, (provider) => {
 				try {
 					var severity = provider.GetSeverity ();
@@ -75,3 +75,4 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		}
 	}
 }
+
