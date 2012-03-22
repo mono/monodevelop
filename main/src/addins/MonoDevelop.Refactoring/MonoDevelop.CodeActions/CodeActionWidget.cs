@@ -93,7 +93,7 @@ namespace MonoDevelop.CodeActions
 				menu.Add (menuItem);
 			}
 			var first = true;
-			foreach (var analysisFix_ in fixes.OfType <AnalysisCodeAction>().Where (f => f.Result is InspectorResults)) {
+			foreach (var analysisFix_ in fixes.OfType <AnalysisContextActionProvider.AnalysisCodeAction>().Where (f => f.Result is InspectorResults)) {
 				var analysisFix = analysisFix_;
 				if (first) {
 					menu.Add (new Gtk.SeparatorMenuItem ());
@@ -101,7 +101,7 @@ namespace MonoDevelop.CodeActions
 				}
 				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", analysisFix.Result.Message);
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
-				menuItem.Activated += new AnalysisFixOptions (analysisFix).HandleActivated;
+				menuItem.Activated += analysisFix.ShowOptions;
 				
 				menu.Add (menuItem);
 			}
@@ -134,21 +134,6 @@ namespace MonoDevelop.CodeActions
 				act.Run (document, loc);
 					
 				document.Editor.Document.CommitUpdateAll ();
-			}
-		}
-
-		class AnalysisFixOptions
-		{
-			AnalysisCodeAction act;
-			
-			public AnalysisFixOptions (AnalysisCodeAction act)
-			{
-				this.act = act;
-			}
-
-			public void HandleActivated (object sender, EventArgs e)
-			{
-				MessageService.RunCustomDialog (new CodeIssueOptionsDialog (act), MessageService.RootWindow);
 			}
 		}
 //		

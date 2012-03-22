@@ -27,8 +27,14 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CodeActions
 {
+	/// <summary>
+	/// A code action provider source provides a way for language backends to add a set of generated code action providers.
+	/// </summary>
 	public interface ICodeActionProviderSource
 	{
+		/// <summary>
+		/// Gets the providers.
+		/// </summary>
 		IEnumerable<CodeActionProvider> GetProviders ();
 	}
 }

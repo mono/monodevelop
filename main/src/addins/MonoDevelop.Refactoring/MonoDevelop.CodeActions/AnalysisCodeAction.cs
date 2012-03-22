@@ -28,33 +28,13 @@ using MonoDevelop.AnalysisCore;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using System.Threading;
+using MonoDevelop.Ide;
+using MonoDevelop.CodeIssues;
+using MonoDevelop.AnalysisCore.Fixes;
 
 namespace MonoDevelop.CodeActions
 {
-	public class AnalysisCodeAction : CodeAction
-	{
-		public Result Result {
-			get;
-			private set;
-		}
-		
-		Action<MonoDevelop.Ide.Gui.Document, TextLocation> act;
-		
-		public AnalysisCodeAction (string title, Result result, Action<MonoDevelop.Ide.Gui.Document, TextLocation> act)
-		{
-			this.Title = title;
-			this.act = act;
-			this.Result = result;
-		}
-
-		public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
-		{
-			act (document, loc);
-		}
-	}
-
-
-	public class AnalysisContextActionProvider : CodeActionProvider
+	class AnalysisContextActionProvider : CodeActionProvider
 	{
 		public Result Result {
 			get;
@@ -68,14 +48,44 @@ namespace MonoDevelop.CodeActions
 		
 		public AnalysisContextActionProvider (Result result, IAnalysisFixAction action)
 		{
-			this.Result = result;
-			this.Action = action;
-			this.Description = result.Message;
+			Result = result;
+			Action = action;
+			Description = result.Message;
 		}
 		
 		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
 			yield return new AnalysisCodeAction (Action.Label, Result, (d, l) => Action.Fix ());
+		}
+
+		internal class AnalysisCodeAction : CodeAction
+		{
+			public Result Result {
+				get;
+				private set;
+			}
+			
+			Action<MonoDevelop.Ide.Gui.Document, TextLocation> act;
+			
+			public AnalysisCodeAction (string title, Result result, Action<MonoDevelop.Ide.Gui.Document, TextLocation> act)
+			{
+				this.Title = title;
+				this.act = act;
+				this.Result = result;
+			}
+	
+			public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+			{
+				act (document, loc);
+			}
+
+			public void ShowOptions (object sender, EventArgs e)
+			{
+				var inspectorResults = Result as InspectorResults;
+				if (inspectorResults == null)
+					return;
+				MessageService.RunCustomDialog (new CodeIssueOptionsDialog (inspectorResults), MessageService.RootWindow);
+			}
 		}
 	}
 }

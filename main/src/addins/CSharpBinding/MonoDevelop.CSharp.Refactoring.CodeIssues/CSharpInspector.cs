@@ -37,11 +37,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public abstract string Title { get; }
 		public abstract string Description { get; }
 
-		protected InspectorAddinNode node;
+		protected CodeIssueAddinNode node;
 		protected Severity severity;
 
 		
-		public void Attach (InspectorAddinNode node)
+		public void Attach (CodeIssueAddinNode node)
 		{
 			this.node = node;
 		}

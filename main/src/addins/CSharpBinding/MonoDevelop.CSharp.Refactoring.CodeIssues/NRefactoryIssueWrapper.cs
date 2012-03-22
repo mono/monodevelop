@@ -38,7 +38,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 	class NRefactoryIssueWrapper : CodeIssueProvider
 	{
 		ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
-		IssueDescriptionAttribute attr;
 
 		public override string IdString {
 			get {
@@ -48,19 +47,18 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public NRefactoryIssueWrapper (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
-			this.issueProvider = issue;
-			this.attr = attr;
-			this.MimeType = "text/x-csharp";
-			this.Category = attr.Category;
-			this.Title = attr.Title;
-			this.Description = attr.Description;
-			this.Severity = attr.Severity;
-			this.IssueMarker = attr.IssueMarker;
+			issueProvider = issue;
+			MimeType = "text/x-csharp";
+			Category = attr.Category;
+			Title = attr.Title;
+			Description = attr.Description;
+			DefaultSeverity = attr.Severity;
+			IssueMarker = attr.IssueMarker;
 		}
 
-		public override IEnumerable<CodeIssue> GetIssues (Document document, ICSharpCode.NRefactory.TextLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<CodeIssue> GetIssues (Document document, CancellationToken cancellationToken)
 		{
-			var context = new MDRefactoringContext (document, loc);
+			var context = new MDRefactoringContext (document, document.Editor.Caret.Location);
 			foreach (var action in issueProvider.GetIssues (context)) {
 				var issue = new CodeIssue (action.Desription, action.Start, action.End, new [] { action.Action }.Select (
 					act => new MDRefactoringContextAction (act.Description, ctx => {

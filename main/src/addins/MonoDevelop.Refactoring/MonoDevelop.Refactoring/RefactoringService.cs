@@ -103,10 +103,10 @@ namespace MonoDevelop.Refactoring
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssues", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					inspectors.Add (((InspectorAddinNode)args.ExtensionNode).Inspector);
+					inspectors.Add (((CodeIssueAddinNode)args.ExtensionNode).Inspector);
 					break;
 				case ExtensionChange.Remove:
-					inspectors.Remove (((InspectorAddinNode)args.ExtensionNode).Inspector);
+					inspectors.Remove (((CodeIssueAddinNode)args.ExtensionNode).Inspector);
 					break;
 				}
 			});
@@ -217,7 +217,7 @@ namespace MonoDevelop.Refactoring
 								continue;
 							foreach (var action_ in FixOperationsHandler.GetActions (doc, fresult)) {
 								var action = action_;
-								result.Add (new AnalysisCodeAction (r.Message, r, (d, t) => action.Fix ()));
+								result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (r.Message, r, (d, t) => action.Fix ()));
 							}
 						}
 					}

@@ -38,7 +38,7 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class CodeIssuePanel : OptionsPanel
+	class CodeIssuePanel : OptionsPanel
 	{
 		CodeIssuePanelWidget widget;
 		
@@ -54,7 +54,7 @@ namespace MonoDevelop.CodeIssues
 	}
 	
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class CodeIssuePanelWidget : Gtk.Bin
+	partial class CodeIssuePanelWidget : Gtk.Bin
 	{
 		readonly string mimeType;
 		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(Severity), typeof(CodeIssueProvider));

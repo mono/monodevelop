@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class InspectorAddinNode : TypeExtensionNode
+	public class CodeIssueAddinNode : TypeExtensionNode
 	{
 		[NodeAttribute ("mimeType", Required=true, Description="The mime type of this action.")]
 		string mimeType = null;
@@ -65,7 +65,7 @@ namespace MonoDevelop.CodeIssues
 					inspector = (CodeIssueProvider)CreateInstance ();
 					inspector.MimeType = MimeType;
 					inspector.IssueMarker = IssueMarker;
-					inspector.Severity = severity;
+					inspector.DefaultSeverity = severity;
 				}
 				return inspector;
 			}

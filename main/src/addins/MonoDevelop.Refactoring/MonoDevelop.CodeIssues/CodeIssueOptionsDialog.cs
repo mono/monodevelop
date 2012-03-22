@@ -34,17 +34,16 @@ using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CodeIssues
 {
-	public partial class CodeIssueOptionsDialog : Gtk.Dialog
+	partial class CodeIssueOptionsDialog : Gtk.Dialog
 	{
-		readonly AnalysisCodeAction act;
+		readonly InspectorResults r;
 		
-		public CodeIssueOptionsDialog (AnalysisCodeAction act)
+		public CodeIssueOptionsDialog (InspectorResults act)
 		{
-			this.act = act;
+			this.r = act;
 			Build ();
 			HasSeparator = false;
 
-			var r = act.Result as InspectorResults;
 			labelInspectionTitle.Text = r.Inspector.Title;
 			var s = r.Inspector.GetSeverity ();
 			radiobuttonHide.Active = s == Severity.None;
@@ -62,7 +61,6 @@ namespace MonoDevelop.CodeIssues
 
 		void HandleClicked (object sender, EventArgs e)
 		{
-			var r = act.Result as InspectorResults;
 			if (radiobuttonHide.Active) {
 				r.Inspector.SetSeverity (Severity.None);
 			} else if (radiobuttonError.Active) {

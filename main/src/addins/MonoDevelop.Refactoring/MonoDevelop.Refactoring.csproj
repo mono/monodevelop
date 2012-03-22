@@ -103,8 +103,6 @@
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\InspectorAddinNode.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\DefaultInspectionCategories.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssue.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionEditorExtension.cs" />
@@ -122,6 +120,8 @@
     <Compile Include="MonoDevelop.CodeActions\ICodeActionProviderSource.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ICodeIssueProviderSource.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisRunner.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\DefaultCodeIssueCategories.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeIssueAddinNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

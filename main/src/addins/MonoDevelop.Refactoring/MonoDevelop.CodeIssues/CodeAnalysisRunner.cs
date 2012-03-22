@@ -56,11 +56,11 @@ namespace MonoDevelop.CodeIssues
 					var severity = provider.GetSeverity ();
 					if (severity == Severity.None)
 						return;
-					foreach (var r in provider.GetIssues (input, loc, cancellationToken)) {
+					foreach (var r in provider.GetIssues (input, cancellationToken)) {
 						foreach (var a in r.Actions) {
 							result.Add (new InspectorResults (
 								provider, 
-								new DomRegion (r.Start, r.End), 
+								r.Region, 
 								r.Description,
 								severity, 
 								provider.IssueMarker,

@@ -27,36 +27,54 @@ using System;
 using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeIssues
 {
+	/// <summary>
+	/// A code issue marks an issue inside a text editor. An issue is a description shown in the tooltip and
+	/// (optionally) a set of code actions to solve the issue.
+	/// </summary>
 	public class CodeIssue
 	{
+		/// <summary>
+		/// Gets or sets the description shown in the tooltip.
+		/// </summary>
 		public string Description {
 			get;
 			private set;
 		}
 		
-		public DocumentLocation Start {
+		/// <summary>
+		/// Gets or sets the region of the issue.
+		/// </summary>
+		public DomRegion Region {
 			get;
 			private set;
 		}
 		
-		public DocumentLocation End {
-			get;
-			private set;
-		}
-
+		/// <summary>
+		/// Gets or sets the code actions to solve the issue.
+		/// </summary>
 		public IEnumerable<MonoDevelop.CodeActions.CodeAction> Actions {
 			get;
 			private set;
 		}
 
-		public CodeIssue (string description, DocumentLocation start, DocumentLocation end, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
+		/// </summary>
+		public CodeIssue (string description, DocumentLocation start, DocumentLocation end, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (description, new DomRegion (start, end), actions)
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
+		/// </summary>
+		public CodeIssue (string description, DomRegion region, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null)
 		{
 			Description = description;
-			Start = start;
-			End = end;
+			Region = region;
 			Actions = actions;
 		}
 	}

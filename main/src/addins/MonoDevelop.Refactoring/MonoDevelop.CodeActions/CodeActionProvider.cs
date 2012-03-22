@@ -30,22 +30,44 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CodeActions
 {
+	/// <summary>
+	/// A code action provider is a factory that creates code actions for a document at a given location.
+	/// Note: There is only one code action provider generated therfore providers need to be state less.
+	/// </summary>
 	public abstract class CodeActionProvider
 	{
+		/// <summary>
+		/// Gets or sets the type of the MIME the provider is attached to.
+		/// </summary>
 		public string MimeType { get; set; }
 
-		public string Title { get; set; }
-
-		public string Description { get; set; }
-
+		/// <summary>
+		/// Gets or sets the category of the provider (used in the option panel).
+		/// </summary>
 		public string Category { get; set; }
 
+		/// <summary>
+		/// Gets or sets the title of the provider (used in the option panel).
+		/// </summary>
+		public string Title { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the description of the provider (used in the option panel).
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets the identifier string used as property ID tag.
+		/// </summary>
 		public virtual string IdString {
 			get {
-				return this.GetType ().FullName;
+				return GetType ().FullName;
 			}
 		}
 
+		/// <summary>
+		/// Gets all the code actions in document at given location.
+		/// </summary>
 		public abstract IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
 	}
 }

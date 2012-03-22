@@ -27,10 +27,19 @@ using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CodeActions
 {
+	/// <summary>
+	/// A code action represents a menu entry that does edit operation in one document.
+	/// </summary>
 	public abstract class CodeAction
 	{
+		/// <summary>
+		/// Gets or sets the menu item text.
+		/// </summary>
 		public string Title { get; set; }
 
+		/// <summary>
+		/// Performs the specified code action in document at loc.
+		/// </summary>
 		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
 	}
 

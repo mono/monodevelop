@@ -33,32 +33,71 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeIssues
 {
+	/// <summary>
+	/// A code issue provider is a factory that creates code issues of a given document.
+	/// </summary>
 	public abstract class CodeIssueProvider
 	{
+		/// <summary>
+		/// Gets or sets the type of the MIME the provider is attached to.
+		/// </summary>
 		public string MimeType { get; set; }
+
+		/// <summary>
+		/// Gets or sets the category of the issue provider (used in the option panel).
+		/// </summary>
 		public string Category { get; set; }
+
+		/// <summary>
+		/// Gets or sets the title of the issue provider (used in the option panel).
+		/// </summary>
 		public string Title { get; set; }
+
+		/// <summary>
+		/// Gets or sets the description of the issue provider (used in the option panel).
+		/// </summary>
 		public string Description { get; set; }
-		public Severity Severity { get; set; }
+
+		/// <summary>
+		/// Gets or sets the default severity. Note that GetSeverity () should be called to get the valid value inside the IDE.
+		/// </summary>
+		public Severity DefaultSeverity { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating how this issue should be marked inside the text editor.
+		/// Note: There is only one code issue provider generated therfore providers need to be state less.
+		/// </summary>
 		public IssueMarker IssueMarker { get; set; }
 
+		/// <summary>
+		/// Gets the identifier string used as property ID tag.
+		/// </summary>
 		public virtual string IdString {
 			get {
 				return "refactoring.inspectors." + MimeType + "." + GetType ().FullName;
 			}
 		}
 
+		/// <summary>
+		/// Gets the current (user defined) severity.
+		/// </summary>
 		public Severity GetSeverity ()
 		{
-			return PropertyService.Get<Severity> (IdString, Severity);
+			return PropertyService.Get<Severity> (IdString, DefaultSeverity);
 		}
 		
+		/// <summary>
+		/// Sets the user defined severity.
+		/// </summary>
 		public void SetSeverity (Severity severity)
 		{
 			PropertyService.Set (IdString, severity);
 		}
 
-		public abstract IEnumerable<CodeIssue> GetIssues (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
+		/// <summary>
+		/// Gets all the code issues inside a document.
+		/// </summary>
+		public abstract IEnumerable<CodeIssue> GetIssues (MonoDevelop.Ide.Gui.Document document, CancellationToken cancellationToken);
 	}
 }
 

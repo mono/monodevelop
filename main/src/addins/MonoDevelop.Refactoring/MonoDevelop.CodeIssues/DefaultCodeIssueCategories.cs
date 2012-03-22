@@ -28,7 +28,10 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeIssues
 {
-	public static class DefaultInspectionCategories
+	/// <summary>
+	/// Default code issue categories provide strings to common categories used in the code issue options panel.
+	/// </summary>
+	public static class DefaultCodeIssueCategories
 	{
 		public readonly static string Improvements      = GettextCatalog.GetString ("Code Improvements");
 		public readonly static string CodeQualityIssues = GettextCatalog.GetString ("Code Quality Issues");

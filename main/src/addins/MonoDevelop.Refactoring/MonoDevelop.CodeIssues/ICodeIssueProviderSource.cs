@@ -28,8 +28,14 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.CodeIssues
 {
+	/// <summary>
+	/// A code issue provider source provides a way for language backends to add a set of generated code issue providers.
+	/// </summary>
 	public interface ICodeIssueProviderSource
 	{
+		/// <summary>
+		/// Gets the providers.
+		/// </summary>
 		IEnumerable<CodeIssueProvider> GetProviders ();
 	}
 }
