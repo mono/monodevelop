@@ -171,6 +171,9 @@ namespace MonoDevelop.Ide.Gui
 				Window.ViewContent.Project = value; 
 				if (value != null)
 					singleFileContext = null;
+				// File needs to be in sync with the project, otherwise the parsed document at start may be invalid.
+				// better solution: create the document with the project attached.
+				StartReparseThread ();
 			}
 		}
 		
