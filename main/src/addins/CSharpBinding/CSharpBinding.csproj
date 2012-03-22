@@ -287,6 +287,9 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\CodeAnalysis.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\CSharpInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryIssueWrapper.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryCodeIssueSource.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionSource.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

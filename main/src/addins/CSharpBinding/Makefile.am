@@ -93,8 +93,11 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringContext.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringContextActionProvider.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringScript.cs \
+	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionSource.cs \
+	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionWrapper.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/CodeAnalysis.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/CSharpInspector.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryCodeIssueSource.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryIssueWrapper.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodHandler.cs \

@@ -1,10 +1,10 @@
 // 
-// CSharpQuickFix.cs
+// NRefactoryCodeActionSource.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,43 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.CodeActions;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using MonoDevelop.Ide.Gui;
-using ICSharpCode.NRefactory;
-using System.Threading;
-using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class MDRefactoringContextAction : MonoDevelop.CodeActions.CodeAction
+	public class NRefactoryCodeActionSource : ICodeActionProviderSource
 	{
-		readonly Action<MDRefactoringContext> act;
-		
-		public MDRefactoringContextAction (string title, Action<MDRefactoringContext> act)
+		#region ICodeActionProviderSource implementation
+		public IEnumerable<CodeActionProvider> GetProviders ()
 		{
-			this.Title = title;
-			this.act = act;
+			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeActionProvider).Assembly.GetTypes ()) {
+				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.ContextActionAttribute), false);
+				if (attr == null || attr.Length != 1)
+					continue;
+				yield return new NRefactoryCodeActionWrapper (
+					(ICSharpCode.NRefactory.CSharp.Refactoring.ICodeActionProvider)Activator.CreateInstance (t),
+					(ICSharpCode.NRefactory.CSharp.ContextActionAttribute)attr [0]);
+			}
 		}
-
-		public override void Run (Document document, TextLocation loc)
-		{
-			var context = new MDRefactoringContext (document, loc);
-			act (context);
-		}
-	}
-
-	public abstract class MDRefactoringContextActionProvider : MonoDevelop.CodeActions.CodeActionProvider
-	{
-
-		protected abstract IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context);
-		
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
-		{
-			var context = new MDRefactoringContext (document, loc);
-			return GetActions (context);
-		}
+		#endregion
 	}
 }
 

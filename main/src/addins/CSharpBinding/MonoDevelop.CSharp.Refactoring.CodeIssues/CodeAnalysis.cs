@@ -44,18 +44,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
 	public static class CodeAnalysis
 	{
-		static CodeAnalysis ()
-		{
-			foreach (var t in typeof (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider).Assembly.GetTypes ()) {
-				var attr = t.GetCustomAttributes (typeof(IssueDescriptionAttribute), false);
-				if (attr == null || attr.Length != 1)
-					continue;
-				NRefactoryIssueWrapper provider = new NRefactoryIssueWrapper ((ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider)Activator.CreateInstance (t), (IssueDescriptionAttribute)attr [0]);
-				RefactoringService.AddProvider (provider);
-			}
-
-		}
-		
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures)
@@ -83,9 +71,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + provider + "'", e);
 				}
 			});
-
 			return result;
 		}
-			
 	}
 }

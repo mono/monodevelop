@@ -279,6 +279,14 @@
 			func="MonoDevelop.CSharp.Refactoring.CodeIssues.CodeAnalysis.Check" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
+		<Source class ="MonoDevelop.CSharp.Refactoring.CodeActions.NRefactoryCodeActionSource"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Refactoring/CodeIssueSource">
+		<Source class ="MonoDevelop.CSharp.Refactoring.CodeIssues.NRefactoryCodeIssueSource"/>
+	</Extension>
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
