@@ -37,9 +37,10 @@ namespace MonoDevelop.TextTemplating.Parser
 	public class T4ParsedDocument : ParsedDocument
 	{
 		string fileName;
+
 		public override string FileName {
 			get {
-				return FileName;
+				return fileName;
 			}
 		}
 
