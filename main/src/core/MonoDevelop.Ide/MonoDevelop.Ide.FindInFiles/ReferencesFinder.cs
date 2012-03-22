@@ -111,71 +111,87 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		static FileList GetFileNamesForType (ITypeDefinition type)
+		static FileList GetFileNamesForType (ITypeDefinition type, ISet<string> searchedFiles)
 		{
-			var paths = type.Parts.Select (p => p.Region.FileName).Distinct ().Select (p => (FilePath)p);
+			var paths = type.Parts.Select (p => p.Region.FileName).Where (searchedFiles.Add).Distinct ().Select (p => (FilePath)p);
 			return new FileList (type.GetSourceProject (), type.GetProjectContent (), paths);
 		}
 
-		static IEnumerable<FileList> GetFileNames (Solution solution, object member, RefactoryScope scope, IProgressMonitor monitor)
+		static FileList GetFileList (string fileName)
 		{
-			if (scope == RefactoryScope.Unknown)
-				scope = GetScope (member);
-			switch (scope) {
-			case RefactoryScope.File:
-				string fileName;
-				if (member is IEntity) {
-					fileName = ((IEntity)member).Region.FileName;
-				} else {
-					fileName = ((IVariable)member).Region.FileName;
-				}
-				var doc = IdeApp.Workbench.GetDocument (fileName);
+			var doc = IdeApp.Workbench.GetDocument (fileName);
+			return doc == null ? null : new FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
+		}
 
-				if (doc != null)
-					yield return new FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
-				break;
-			case RefactoryScope.DeclaringType:
-				if (member is IEntity)
-					yield return GetFileNamesForType ((member as IEntity).DeclaringTypeDefinition);
-				break;
-			case RefactoryScope.Project:
-				var prj = TypeSystemService.GetProject ((IEntity)member);
-				if (prj == null)
-					yield break;
-				var ctx = TypeSystemService.GetProjectContext (prj);
-				if (ctx == null)
-					yield break;
-				yield return new FileList (prj, ctx, prj.Files.Select (f => f.FilePath));
-				break;
-			case RefactoryScope.Solution:
-				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), solution.GetAllProjects ().Count);
-				var sourceProject = TypeSystemService.GetProject ((IEntity)member);
-				IEnumerable<Project> projects;
-				if (sourceProject == null) { 
-					// member is defined in a referenced assembly
-					projects = GetAllReferencingProjects (solution, ((IEntity)member).ParentAssembly.AssemblyName);
-				} else {
-					projects = GetAllReferencingProjects (solution, sourceProject);
+		static IEnumerable<FileList> GetFileNames (Solution solution, IEnumerable<object> searchNodes, RefactoryScope scope, IProgressMonitor monitor)
+		{
+			var searchedFiles = new HashSet<string> ();
+			var searchedProjects = new HashSet<Project> ();
+			foreach (var node in searchNodes) {
+				if (node is IVariable) {
+					// it's okay to give a broader scope than File for variable,
+					// but we'll only look for it in the file
+					var fileList = GetFileList ((node as IVariable).Region.FileName);
+					if (fileList != null)
+						yield return fileList;
+					continue;
 				}
-				foreach (var project in projects) {
-					if (monitor != null && monitor.IsCancelRequested)
-						yield break;
-					var currentDom = TypeSystemService.GetProjectContext (project);
-					yield return new FileList (project, currentDom, project.Files.Select (f => f.FilePath));
+
+				var entity = (IEntity)node;
+				if (scope == RefactoryScope.Unknown)
+					scope = GetScope (node);
+
+				switch (scope) {
+				case RefactoryScope.File:
+					if (!searchedFiles.Add (entity.Region.FileName))
+						continue;
+					var fileList = GetFileList (entity.Region.FileName);
+					if (fileList != null)
+						yield return fileList;
+					break;
+				case RefactoryScope.DeclaringType:
+					yield return GetFileNamesForType (entity.DeclaringTypeDefinition, searchedFiles);
+					break;
+				case RefactoryScope.Project:
+					var prj = TypeSystemService.GetProject (entity);
+					if (prj == null || !searchedProjects.Add (prj))
+						continue;
+					var ctx = TypeSystemService.GetProjectContext (prj);
+					if (ctx != null)
+						yield return new FileList (prj, ctx, prj.Files.Select (f => f.FilePath));
+					break;
+				case RefactoryScope.Solution:
+					var sourceProject = TypeSystemService.GetProject (entity);
+					IList<Project> projects;
+					if (sourceProject == null) {
+						// member is defined in a referenced assembly
+						projects = GetAllReferencingProjects (solution, entity.ParentAssembly.AssemblyName);
+					} else {
+						projects = GetAllReferencingProjects (solution, sourceProject);
+					}
 					if (monitor != null)
-						monitor.Step (1);
+						monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), projects.Count);
+					foreach (var project in projects) {
+						if (monitor != null && monitor.IsCancelRequested)
+							yield break;
+						if (!searchedProjects.Add (project))
+							continue;
+						var currentDom = TypeSystemService.GetProjectContext (project);
+						yield return new FileList (project, currentDom, project.Files.Select (f => f.FilePath));
+						if (monitor != null)
+							monitor.Step (1);
+					}
+					if (monitor != null)
+						monitor.EndTask ();
+					break;
 				}
-				if (monitor != null)
-					monitor.EndTask ();
-				break;
 			}
 		}
 
-		static IEnumerable<Project> GetAllReferencingProjects (Solution solution, string assemblyName)
+		static IList<Project> GetAllReferencingProjects (Solution solution, string assemblyName)
 		{
 			return solution.GetAllProjects ().Where (
-				project => TypeSystemService.GetCompilation (project).Assemblies.Any (a => a.AssemblyName == assemblyName));
+				project => TypeSystemService.GetCompilation (project).Assemblies.Any (a => a.AssemblyName == assemblyName)).ToList ();
 		}
 		
 		public static List<Project> GetAllReferencingProjects (Solution solution, Project sourceProject)
@@ -214,7 +230,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			// prepare references finder
 			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
 			var curList = new List<FilePath> ();
-			foreach (var info in GetFileNames (solution, member, scope, monitor)) {
+			foreach (var info in GetFileNames (solution, searchNodes, scope, monitor)) {
 				string oldMime = null;
 				foreach (var file in info.Files) {
 					if (monitor != null && monitor.IsCancelRequested)
