@@ -39,6 +39,7 @@ using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 
 namespace MonoDevelop.CSharp.Highlighting

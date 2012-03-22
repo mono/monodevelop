@@ -32,6 +32,7 @@ using MonoDevelop.Inspection;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CSharp.Inspection
 {

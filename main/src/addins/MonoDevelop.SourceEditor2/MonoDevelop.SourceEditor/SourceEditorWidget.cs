@@ -44,10 +44,10 @@ using System.ComponentModel;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.SourceEditor
 {
-	
 	class SourceEditorWidget : ITextEditorExtension, IQuickTaskProvider
 	{
 		SourceEditorView view;

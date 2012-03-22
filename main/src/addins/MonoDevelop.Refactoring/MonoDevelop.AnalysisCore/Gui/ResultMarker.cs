@@ -26,6 +26,7 @@
 
 using Mono.TextEditor;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {

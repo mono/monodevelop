@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.SourceEditor;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.Inspection
 {

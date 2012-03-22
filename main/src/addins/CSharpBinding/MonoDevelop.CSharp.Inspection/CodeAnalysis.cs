@@ -45,6 +45,7 @@ using System.Threading;
 using MonoDevelop.SourceEditor;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CSharp.Inspection
 {

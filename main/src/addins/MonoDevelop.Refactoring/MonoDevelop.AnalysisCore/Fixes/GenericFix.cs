@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Inspection;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {

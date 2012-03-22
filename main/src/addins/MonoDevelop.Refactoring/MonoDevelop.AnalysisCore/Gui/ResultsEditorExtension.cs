@@ -34,6 +34,7 @@ using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {

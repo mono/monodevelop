@@ -33,6 +33,7 @@ using MonoDevelop.SourceEditor;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using Mono.TextEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.Inspection
 {

@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Refactoring;

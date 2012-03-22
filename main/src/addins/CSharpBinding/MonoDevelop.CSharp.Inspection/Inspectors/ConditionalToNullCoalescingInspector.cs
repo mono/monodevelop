@@ -35,6 +35,7 @@ using MonoDevelop.Inspection;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.AnalysisCore.Fixes;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CSharp.Inspection
 {
@@ -44,8 +45,8 @@ namespace MonoDevelop.CSharp.Inspection
 
 		public override IEnumerable<Result> GetResults (MonoDevelop.CSharp.ContextAction.MDRefactoringContext context)
 		{
-			MonoDevelop.SourceEditor.QuickTaskSeverity severity = node.GetSeverity ();
-			if (severity == MonoDevelop.SourceEditor.QuickTaskSeverity.None)
+			QuickTaskSeverity severity = node.GetSeverity ();
+			if (severity == QuickTaskSeverity.None)
 				return Enumerable.Empty<Result> ();
 			
 			return inspector.Run (context).Select (issue => Convert (issue));

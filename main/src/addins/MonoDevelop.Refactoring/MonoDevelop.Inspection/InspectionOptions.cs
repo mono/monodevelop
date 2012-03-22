@@ -28,6 +28,7 @@ using MonoDevelop.ContextAction;
 using MonoDevelop.Refactoring;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
 using Gtk;
 
 namespace MonoDevelop.Inspection

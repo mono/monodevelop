@@ -1,10 +1,10 @@
 // 
-// AnalysisOptions.cs
+// ScrollbarCommand.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,27 @@
 // THE SOFTWARE.
 
 using System;
+using Gtk;
+using Mono.TextEditor;
+using System.Collections.Generic;
+using Gdk;
 using MonoDevelop.Core;
-using MonoDevelop.SourceEditor.QuickTasks;
+using MonoDevelop.Ide;
+using MonoDevelop.Components.Commands;
+using ICSharpCode.NRefactory;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	public static class AnalysisOptions
+	public enum ScrollbarCommand
 	{
-		public static PropertyWrapper<bool> AnalysisEnabled {
-			get { return QuickTaskStrip.EnableFancyFeatures; }
-		}
+		Top,
+		Bottom,
+		PgUp,
+		PgDown,
+		
+		ShowScrollBar,
+		ShowTasks,
+		ShowMinimap
 	}
+	
 }
-

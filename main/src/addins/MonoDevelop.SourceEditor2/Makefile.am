@@ -21,6 +21,14 @@ FILES =  \
 	MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/NewColorShemeDialog.cs \
+	MonoDevelop.SourceEditor.QuickTasks/IQuickTaskProvider.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTask.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTaskMiniMapMode.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTaskSeverity.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTaskStrip.cs \
+	MonoDevelop.SourceEditor.QuickTasks/ScrollbarCommand.cs \
+	MonoDevelop.SourceEditor.QuickTasks/ScrollBarMode.cs \
 	MonoDevelop.SourceEditor/AutoSave.cs \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
 	MonoDevelop.SourceEditor/Counters.cs \
@@ -41,7 +49,6 @@ FILES =  \
 	MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs \
 	MonoDevelop.SourceEditor/PinnedWatchWidget.cs \
 	MonoDevelop.SourceEditor/PrintSettingsWidget.cs \
-	MonoDevelop.SourceEditor/QuickTaskStrip.cs \
 	MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs \
 	MonoDevelop.SourceEditor/SourceEditorCommands.cs \
 	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \

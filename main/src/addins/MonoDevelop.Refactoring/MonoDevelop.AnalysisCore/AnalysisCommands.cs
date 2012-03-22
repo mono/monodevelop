@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.AnalysisCore
 {

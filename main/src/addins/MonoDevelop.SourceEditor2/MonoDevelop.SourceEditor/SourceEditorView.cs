@@ -49,6 +49,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.SourceEditor
 {	
