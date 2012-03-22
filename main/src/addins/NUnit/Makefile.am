@@ -78,7 +78,6 @@ RES =  \
 	Gui/NUnit.Running.png \
 	Gui/NUnit.Success.png \
 	Gui/NUnit.SuccessAndFailed.png \
-	Gui/NUnit.Inconclusive.png \
 	Gui/nunit-overlay-32.png \
 	Gui/unit-test-16.png \
 	Gui/unit-test-24.png \
