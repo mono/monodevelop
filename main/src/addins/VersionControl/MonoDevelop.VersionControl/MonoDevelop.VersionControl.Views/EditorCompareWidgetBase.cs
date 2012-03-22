@@ -113,6 +113,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public EditorCompareWidgetBase ()
 		{
+			GtkWorkarounds.FixContainerLeak (this);
 			Intialize ();
 		}
 
@@ -401,10 +402,6 @@ namespace MonoDevelop.VersionControl.Views
 			get {
 				return children.FirstOrDefault (c => c.Child == w);
 			}
-		}
-
-		protected EditorCompareWidgetBase (IntPtr ptr) : base (ptr)
-		{
 		}
 
 		public override GLib.GType ChildType ()

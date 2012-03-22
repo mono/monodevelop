@@ -39,17 +39,12 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	[ToolboxItem (true)]
 	public class MergeWidget : EditorCompareWidgetBase
 	{
 		protected override TextEditor MainEditor {
 			get {
 				return editors != null && editors.Length >= 2 ? editors[1] : null;
 			}
-		}
-
-		protected MergeWidget (IntPtr ptr) : base (ptr)
-		{
 		}
 
 		public MergeWidget ()

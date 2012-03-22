@@ -94,12 +94,10 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		protected BlameWidget (IntPtr ptr) : base (ptr)
-		{
-		}
-
 		public BlameWidget (VersionControlDocumentInfo info)
 		{
+			GtkWorkarounds.FixContainerLeak (this);
+			
 			this.info = info;
 			var sourceEditor = info.Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			

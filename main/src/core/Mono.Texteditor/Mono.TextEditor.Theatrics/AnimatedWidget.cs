@@ -65,6 +65,8 @@ namespace Mono.TextEditor.Theatrics
 
 		public AnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, bool horizontal)
 		{
+			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			
 			this.horizontal = horizontal;
 			Widget = widget;
 			Duration = duration;
@@ -75,10 +77,6 @@ namespace Mono.TextEditor.Theatrics
 			Widget.Parent = this;
 			Widget.Destroyed += OnWidgetDestroyed;
 			ShowAll ();
-		}
-
-		protected AnimatedWidget (IntPtr raw) : base(raw)
-		{
 		}
 
 		public double Percent {

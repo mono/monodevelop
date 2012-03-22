@@ -61,12 +61,10 @@ namespace Mono.TextEditor.Theatrics
 			QueueDraw ();
 		}
 		
-		protected SmartScrolledWindow (IntPtr ptr) : base (ptr)
-		{
-		}
-		
 		public SmartScrolledWindow (Gtk.Widget vScrollBar = null)
 		{
+			GtkWorkarounds.FixContainerLeak (this);
+			
 			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			vAdjustment.Changed += HandleAdjustmentChanged;
 			

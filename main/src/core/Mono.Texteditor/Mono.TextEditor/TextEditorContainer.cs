@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// Is a container that contains a text editor as background and floating widgets over the text editor.
 	/// </summary>
-	public class TextEditorContainer : Gtk.Container
+	public class TextEditorContainer : Container
 	{
 		TextEditor textEditorWidget;
 		
@@ -56,12 +56,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public TextEditorContainer (IntPtr raw) : base (raw)
-		{
-		}
-		
 		public TextEditorContainer (TextEditor textEditorWidget)
 		{
+			GtkWorkarounds.FixContainerLeak (this);
+			
 			this.textEditorWidget = textEditorWidget;
 			AddTopLevelWidget (textEditorWidget, 0, 0);
 			stage.ActorStep += OnActorStep;

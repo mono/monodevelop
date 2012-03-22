@@ -93,8 +93,8 @@ namespace MonoDevelop.Projects
 
 		public DotNetProject (string languageName, ProjectCreateInformation projectCreateInfo, XmlElement projectOptions) : this(languageName)
 		{
-			if ((projectOptions != null) && (projectOptions.Attributes["Target"] != null))
-				CompileTarget = (CompileTarget)Enum.Parse (typeof(CompileTarget), projectOptions.Attributes["Target"].Value);
+			if ((projectOptions != null) && (projectOptions.Attributes ["Target"] != null))
+				CompileTarget = (CompileTarget)Enum.Parse (typeof(CompileTarget), projectOptions.Attributes ["Target"].Value);
 			else if (IsLibraryBasedProjectType)
 				CompileTarget = CompileTarget.Library;
 
@@ -109,7 +109,7 @@ namespace MonoDevelop.Projects
 					if (!projectOptions.HasAttribute ("Platform")) {
 						// Clone the element since we are going to change it
 						platform = GetDefaultTargetPlatform (projectCreateInfo);
-						projectOptions = (XmlElement) projectOptions.CloneNode (true);
+						projectOptions = (XmlElement)projectOptions.CloneNode (true);
 						projectOptions.SetAttribute ("Platform", platform);
 					} else
 						platform = projectOptions.GetAttribute ("Platform");
@@ -125,9 +125,15 @@ namespace MonoDevelop.Projects
 				Configurations.Add (configDebug);
 
 				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release" + platformSuffix) as DotNetProjectConfiguration;
-				XmlElement releaseProjectOptions = (XmlElement)projectOptions.CloneNode (true);
-				releaseProjectOptions.SetAttribute ("Release", "True");
-				configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (releaseProjectOptions);
+				
+				if (projectOptions != null) {
+					XmlElement releaseProjectOptions = (XmlElement)projectOptions.CloneNode (true);
+					releaseProjectOptions.SetAttribute ("Release", "True");
+					configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (releaseProjectOptions);
+				} else {
+					configRelease.CompilationParameters = languageBinding.CreateCompilationParameters (null);
+				}
+				
 				configRelease.CompilationParameters.RemoveDefineSymbol ("DEBUG");
 				configRelease.DebugMode = false;
 				configRelease.ExternalConsole = externalConsole;

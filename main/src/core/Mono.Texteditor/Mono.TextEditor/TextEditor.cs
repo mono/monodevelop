@@ -273,10 +273,6 @@ namespace Mono.TextEditor
 			this.textEditorData.VAdjustment.ValueChanged += VAdjustmentValueChanged;
 		}
 		
-		protected TextEditor (IntPtr raw) : base (raw)
-		{
-		}
-		
 		public TextEditor (TextDocument doc)
 			: this (doc, null)
 		{

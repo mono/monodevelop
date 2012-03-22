@@ -225,6 +225,8 @@ namespace Stetic
 		
 		public ResizableFixed ()
 		{
+			GtkWorkarounds.FixContainerLeak (this);
+			
 			fixd = new Fixed ();
 			Add (fixd);
 			this.CanFocus = true;
@@ -233,10 +235,6 @@ namespace Stetic
 //			VisibleWindow = false;
 			selectionBox = new SelectionHandleBox (this);
 			selectionBox.Show ();
-		}
-		
-		public ResizableFixed (IntPtr p): base (p)
-		{
 		}
 		
 		protected override void OnDestroyed ()

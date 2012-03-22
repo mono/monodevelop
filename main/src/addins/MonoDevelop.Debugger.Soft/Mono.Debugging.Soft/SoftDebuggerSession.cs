@@ -330,10 +330,13 @@ namespace Mono.Debugging.Soft
 			if (Exited)
 				return;
 			
-			if (!HandleException (ex)) {
+			if (!HandleException (new ConnectionException (ex))) {
 				LoggingService.LogAndShowException ("Unhandled error launching soft debugger", ex);
-				EndSession ();
 			}
+			
+			// The session is dead
+			// HandleException doesn't actually handle exceptions, it just displays them.
+			EndSession ();
 		}
 		
 		void ConnectionStarting (IAsyncResult connectionHandle, DebuggerStartInfo dsi, bool listening, int attemptNumber) 
@@ -555,15 +558,10 @@ namespace Mono.Debugging.Soft
 						} catch (Exception ex) {
 							LoggingService.LogError ("Error exiting SDB VM:", ex);
 						}
-						try {
-							vm.Dispose ();
-						} catch (VMDisconnectedException) {
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error disposing SDB VM:", ex);
-						}
 					});
 				}
 			}
+			
 			Adaptor.Dispose ();
 		}
 
@@ -596,13 +594,17 @@ namespace Mono.Debugging.Soft
 		{
 			exited = true;
 			EndLaunch ();
-			if (vm != null)
+			if (vm != null) {
 				try {
 					vm.Exit (0);
 				} catch (SocketException se) {
 					// This will often happen during normal operation
 					LoggingService.LogError ("Error closing debugger session", se);
+				}catch (IOException ex) {
+					// This will often happen during normal operation
+					LoggingService.LogError ("Error closing debugger session", ex);
 				}
+			}
 			QueueEnsureExited ();
 		}
 		
@@ -622,7 +624,7 @@ namespace Mono.Debugging.Soft
 					// Ignore
 				}
 				var t = new System.Timers.Timer ();
-				t.Interval = 1000;
+				t.Interval = 3000;
 				t.Elapsed += delegate {
 					try {
 						t.Enabled = false;
@@ -630,6 +632,14 @@ namespace Mono.Debugging.Soft
 						EnsureExited ();
 					} catch (Exception ex) {
 						LoggingService.LogError ("Failed to force-terminate process", ex);
+					}
+					try {
+						if (vm != null) {
+							//this is a no-op if it already closed
+							vm.ForceDisconnect ();
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Failed to force-close debugger connection", ex);
 					}
 				};
 				t.Enabled = true;
@@ -1063,13 +1073,16 @@ namespace Mono.Debugging.Soft
 						break;
 					}
 					HandleEventSet (e);
-				} catch (VMDisconnectedException ex) {
-					if (!HandleException (ex))
-						OnDebuggerOutput (true, ex.ToString ());
-					break;
 				} catch (Exception ex) {
-					if (!HandleException (ex))
+					if (exited) {
+						break;
+					}
+					if (!HandleException (ex)) {
 						OnDebuggerOutput (true, ex.ToString ());
+					}
+					if (ex is VMDisconnectedException || ex is IOException || ex is SocketException) {
+						break;
+					}
 				}
 			}
 			
@@ -1090,8 +1103,8 @@ namespace Mono.Debugging.Soft
 		{
 			HideConnectionDialog ();
 			
-			if (ex is VMDisconnectedException)
-				ex = new DisconnectedException ();
+			if (ex is VMDisconnectedException || ex is IOException)
+				ex = new DisconnectedException (ex);
 			else if (ex is SocketException)
 				ex = new DebugSocketException (ex);
 			
@@ -1868,8 +1881,10 @@ namespace Mono.Debugging.Soft
 				}
 			}
 			
-			if (target_loc != null && fuzzy && CheckBetterMatch (type, file, line, target_loc))
+			if (target_loc != null && fuzzy && CheckBetterMatch (type, file, line, target_loc)) {
+				insideTypeRange = false;
 				return null;
+			}
 			
 			return target_loc;
 		}
@@ -2164,8 +2179,8 @@ namespace Mono.Debugging.Soft
 	
 	class DisconnectedException: DebuggerException
 	{
-		public DisconnectedException ():
-			base ("The connection with the debugger has been lost. The target application may have exited.")
+		public DisconnectedException (Exception ex):
+			base ("The connection with the debugger has been lost. The target application may have exited.", ex)
 		{
 		}
 	}
@@ -2174,6 +2189,14 @@ namespace Mono.Debugging.Soft
 	{
 		public DebugSocketException (Exception ex):
 			base ("Could not open port for debugger. Another process may be using the port.", ex)
+		{
+		}
+	}
+	
+	class ConnectionException : DebuggerException
+	{
+		public ConnectionException (Exception ex):
+			base ("Could not connect to the debugger.", ex)
 		{
 		}
 	}

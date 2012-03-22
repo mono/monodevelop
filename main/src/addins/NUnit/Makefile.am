@@ -70,6 +70,7 @@ FILES =  \
 RES =  \
 	gtk-gui/gui.stetic \
 	Gui/NUnit.Failed.png \
+	Gui/NUnit.Inconclusive.png \
 	Gui/NUnit.Loading.png \
 	Gui/NUnit.None.png \
 	Gui/NUnit.NotRun.png \
