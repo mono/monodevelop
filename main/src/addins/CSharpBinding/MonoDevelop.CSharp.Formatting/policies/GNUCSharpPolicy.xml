@@ -69,6 +69,10 @@ THE SOFTWARE.
 	
 	<BeforeMethodCallParentheses>False</BeforeMethodCallParentheses>
 	<BeforeMethodDeclarationParentheses>False</BeforeMethodDeclarationParentheses>
+	<BeforeConstructorDeclarationParentheses>False</BeforeConstructorDeclarationParentheses>
+	<BeforeDelegateDeclarationParentheses>False</BeforeDelegateDeclarationParentheses>
+	<NewParentheses>False</NewParentheses>
+	
 	<IfParentheses>True</IfParentheses>
 	<WhileParentheses>True</WhileParentheses>
 	<ForParentheses>True</ForParentheses>
