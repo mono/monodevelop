@@ -115,6 +115,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				UseNamespace(ctx.Resolve(identifierExpression).Type.Namespace);
 			}
 
+			public override void VisitSimpleType(SimpleType simpleType)
+			{
+				base.VisitSimpleType(simpleType);
+				UseNamespace(ctx.Resolve(simpleType).Type.Namespace);
+			}
+
 			public override void VisitInvocationExpression (InvocationExpression invocationExpression)
 			{
 				base.VisitInvocationExpression (invocationExpression);
