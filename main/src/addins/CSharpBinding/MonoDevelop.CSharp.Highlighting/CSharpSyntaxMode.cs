@@ -71,6 +71,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		MonoDevelop.Ide.Gui.Document guiDocument;
 		CompilationUnit unit;
 		CSharpParsedFile parsedFile;
+		ICompilation compilation;
 		
 		internal class StyledTreeSegment : TreeSegment
 		{
@@ -131,6 +132,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						highlightedSegmentCache.Clear ();
 					unit = parsedDocument.GetAst<CompilationUnit> ();
 					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+					compilation = guiDocument.Compilation;
 				}
 			}
 		}
@@ -342,7 +344,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					tags.Add (tag.Tag);
 				}
 				if (csharpSyntaxMode.unit != null && csharpSyntaxMode.parsedFile != null)
-					visitor = new CSharpAstResolver (csharpSyntaxMode.guiDocument.Compilation, csharpSyntaxMode.unit, csharpSyntaxMode.parsedFile);
+					visitor = new CSharpAstResolver (csharpSyntaxMode.compilation, csharpSyntaxMode.unit, csharpSyntaxMode.parsedFile);
 			}
 			
 			#region IResolveVisitorNavigator implementation
