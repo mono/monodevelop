@@ -231,19 +231,6 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\CodeAnalysis.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\CSharpInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\CallGraph.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\CSharpNamingPolicy.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingRule.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingStyle.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContext.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\TypeSystemProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CompletionTextLinkMode.cs" />
@@ -291,14 +278,27 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatterTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringScript.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\ResolveCommandHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextActionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\ContextActionExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContext.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringScript.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContextActionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\CodeAnalysis.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\CSharpInspector.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryIssueWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
-    <None Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NamingInspector.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NamingRule.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\CSharpNamingPolicy.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NamingConventionPanelWidget.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NamingConventionSettingsDialog.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NamingStyle.cs" />
+    <None Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionSettingsDialog.cs" />
+    <None Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanelWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -328,12 +328,12 @@
     <Folder Include="MonoDevelop.CSharp.Refactoring\CreateMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
-    <Folder Include="MonoDevelop.CSharp.ContextAction\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\NamingInspection\" />
-    <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\RefactorImports\" />
     <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
     <Folder Include="MonoDevelop.CSharp.Formatting\policies\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\" />
   </ItemGroup>
 </Project>

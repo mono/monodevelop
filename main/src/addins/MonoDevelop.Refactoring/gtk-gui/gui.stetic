@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>..\..\MonoDevelop.Refactoring</images-root-path>
+    <images-root-path>../../MonoDevelop.Refactoring</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
@@ -910,7 +910,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.ContextAction.ContextActionPanelWidget" design-size="300 280">
+  <widget class="Gtk.Bin" id="MonoDevelop.CodeActions.ContextActionPanelWidget" design-size="300 280">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -990,7 +990,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Inspection.InspectionPanelWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.CodeIssues.CodeIssuePanelWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1070,9 +1070,9 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Inspection.InspectionOptions" design-size="206 252">
+  <widget class="Gtk.Dialog" id="MonoDevelop.CodeIssues.CodeIssueOptionsDialog" design-size="234 252">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">Inspection Options</property>
+    <property name="Title" translatable="yes">Code Issue Options</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">Center</property>
     <property name="Modal">True</property>
@@ -1106,7 +1106,6 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Do not show</property>
-                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>

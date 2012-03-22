@@ -31,30 +31,27 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.Inspection;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using System.Threading.Tasks;
 using System.Threading;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.CodeActions;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.Refactoring
 {
-	using MonoDevelop.ContextAction;
 	public static class RefactoringService
 	{
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static List<ContextActionProvider> contextActions = new List<ContextActionProvider> ();
+		static List<CodeActionProvider> contextActions = new List<CodeActionProvider> ();
 		static List<CodeIssueProvider> inspectors = new List<CodeIssueProvider> ();
 		
-		public static IEnumerable<ContextActionProvider> ContextAddinNodes {
+		public static IEnumerable<CodeActionProvider> ContextAddinNodes {
 			get {
 				return contextActions;
 			}
 		} 
 
-		public static void AddProvider (ContextActionProvider provider)
+		public static void AddProvider (CodeActionProvider provider)
 		{
 			contextActions.Add (provider);
 		}
@@ -84,18 +81,18 @@ namespace MonoDevelop.Refactoring
 			});
 
 			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeActions", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					contextActions.Add (((ContextActionAddinNode)args.ExtensionNode).Action);
+					contextActions.Add (((CodeActionAddinNode)args.ExtensionNode).Action);
 					break;
 				case ExtensionChange.Remove:
-					contextActions.Remove (((ContextActionAddinNode)args.ExtensionNode).Action);
+					contextActions.Remove (((CodeActionAddinNode)args.ExtensionNode).Action);
 					break;
 				}
 			});
 			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssues", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					inspectors.Add (((InspectorAddinNode)args.ExtensionNode).Inspector);
@@ -175,10 +172,10 @@ namespace MonoDevelop.Refactoring
 			return inspectors.Where (i => i.MimeType == mimeType);
 		}
 
-		public static Task<IEnumerable<ContextAction>> GetValidActions (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		public static Task<IEnumerable<MonoDevelop.CodeActions.CodeAction>> GetValidActions (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			return Task.Factory.StartNew (delegate {
-				var result = new List<ContextAction> ();
+				var result = new List<MonoDevelop.CodeActions.CodeAction> ();
 				try {
 					string disabledNodes = PropertyService.Get ("ContextActions." + doc.Editor.Document.MimeType, "") ?? "";
 					foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString) < 0)) {
@@ -187,14 +184,14 @@ namespace MonoDevelop.Refactoring
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
 				}
-				return (IEnumerable<ContextAction>)result;
+				return (IEnumerable<MonoDevelop.CodeActions.CodeAction>)result;
 			}, cancellationToken);
 		}
-		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<ContextAction>> callback)
+		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<MonoDevelop.CodeActions.CodeAction>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					var result = new List<ContextAction> (GetValidActions (doc, loc).Result);
+					var result = new List<MonoDevelop.CodeActions.CodeAction> (GetValidActions (doc, loc).Result);
 
 					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 					if (ext != null) {
@@ -204,7 +201,7 @@ namespace MonoDevelop.Refactoring
 								continue;
 							foreach (var action_ in FixOperationsHandler.GetActions (doc, fresult)) {
 								var action = action_;
-								result.Add (new AnalysisContextAction (r.Message, r, (d, t) => action.Fix ()));
+								result.Add (new AnalysisCodeAction (r.Message, r, (d, t) => action.Fix ()));
 							}
 						}
 					}

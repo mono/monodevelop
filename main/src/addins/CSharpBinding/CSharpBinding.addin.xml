@@ -173,17 +173,17 @@
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
+	<Extension path = "/MonoDevelop/Refactoring/CodeActions">
 		<Action mimeType="text/x-csharp"
 			_title = "Move type to another file"
 			_description = "Moves current type to another file that matches the name of the type."
-			class = "MonoDevelop.CSharp.ContextAction.MoveTypeToFile" />
+			class = "MonoDevelop.CSharp.Refactoring.CodeActions.MoveTypeToFile" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Refactoring/Inspectors">
+	<Extension path = "/MonoDevelop/Refactoring/CodeIssues">
 		<Inspector mimeType="text/x-csharp"
 			severity = "Warning"
-			class = "MonoDevelop.CSharp.Inspection.NamingInspector" />
+			class = "MonoDevelop.CSharp.Refactoring.CodeIssues.NamingInspector" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
@@ -276,7 +276,7 @@
 
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Rule _name="C# Code Analysis" input="Document" 
-			func="MonoDevelop.CSharp.Inspection.CodeAnalysis.Check" />
+			func="MonoDevelop.CSharp.Refactoring.CodeIssues.CodeAnalysis.Check" />
 	</Extension>
 	
 	<Module>

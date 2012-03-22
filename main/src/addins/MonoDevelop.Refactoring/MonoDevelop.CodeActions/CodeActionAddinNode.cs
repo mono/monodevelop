@@ -1,10 +1,10 @@
 // 
-// FixableResult.cs
+// ContextActionCodon.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,53 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
+using Mono.Addins;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.CodeActions
 {
-	public class FixableResult : Result
+	public class CodeActionAddinNode : TypeExtensionNode
 	{
-		public FixableResult (DomRegion region, string message, Severity level,
-			IssueMarker mark, params IAnalysisFix[] fixes)
-			: base (region, message, level, mark)
-		{
-			this.Fixes = fixes;
+		[NodeAttribute ("mimeType", Required=true, Description="The mime type of this action.")]
+		string mimeType = null;
+		
+		public string MimeType {
+			get {
+				return mimeType;
+			}
 		}
 		
-		public IAnalysisFix[] Fixes { get; protected set; }
-	}
-	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
-	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
+		[NodeAttribute ("_title", Required=true, Localizable=true, Description="The title of this action.")]
+		string title = null;
+		
+		public string Title {
+			get {
+				return title;
+			}
+		}
+		
+		[NodeAttribute ("_description", Required=true, Localizable=true,  Description="The description of this action.")]
+		string description = null;
+		
+		public string Description {
+			get {
+				return description;
+			}
+		}
+		
+		CodeActionProvider action;
+		public CodeActionProvider Action {
+			get {
+				if (action == null) {
+					action = (CodeActionProvider)CreateInstance ();
+					action.Title = title;
+					action.Description = description;
+					action.MimeType = MimeType;
+				}
+				
+				return action;
+			}
+		}
 	}
 }
 

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>..</images-root-path>
+    <images-root-path>../../CSharpBinding</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
@@ -2046,7 +2046,7 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanelWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -2103,7 +2103,7 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog" design-size="388 238">
+  <widget class="Gtk.Window" id="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionSettingsDialog" design-size="388 238">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Edit rule set</property>
     <property name="WindowPosition">CenterOnParent</property>

@@ -1,10 +1,10 @@
 // 
-// FixableResult.cs
+// NamingConventionPanelWidget.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
-	public class FixableResult : Result
+	[System.ComponentModel.ToolboxItem(true)]
+	public partial class NamingConventionPanelWidget : Gtk.Bin
 	{
-		public FixableResult (DomRegion region, string message, Severity level,
-			IssueMarker mark, params IAnalysisFix[] fixes)
-			: base (region, message, level, mark)
+		public NamingConventionPanelWidget ()
 		{
-			this.Fixes = fixes;
+		//	this.Build ();	
 		}
-		
-		public IAnalysisFix[] Fixes { get; protected set; }
-	}
-	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
-	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
 	}
 }
 

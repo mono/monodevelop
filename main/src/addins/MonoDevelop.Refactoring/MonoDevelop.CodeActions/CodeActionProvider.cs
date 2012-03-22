@@ -1,10 +1,10 @@
 // 
-// FixableResult.cs
+// ContextActionProvider.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System;
-using System.Collections.Generic;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
+using System.Threading;
+using System.Collections.Generic;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.CodeActions
 {
-	public class FixableResult : Result
+	public abstract class CodeActionProvider
 	{
-		public FixableResult (DomRegion region, string message, Severity level,
-			IssueMarker mark, params IAnalysisFix[] fixes)
-			: base (region, message, level, mark)
-		{
-			this.Fixes = fixes;
+		public string MimeType { get; set; }
+
+		public string Title { get; set; }
+
+		public string Description { get; set; }
+
+		public string Category { get; set; }
+
+		public virtual string IdString {
+			get {
+				return this.GetType ().FullName;
+			}
 		}
-		
-		public IAnalysisFix[] Fixes { get; protected set; }
-	}
-	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
-	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
+
+		public abstract IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
 	}
 }
-

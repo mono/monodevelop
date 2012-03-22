@@ -23,20 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using Mono.CSharp;
 using Mono.TextEditor;
-using MonoDevelop.CSharp.Parser;
 using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Policies;
 using ICSharpCode.NRefactory.CSharp;
 using System.Text;
-using System.Linq;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using MonoDevelop.CSharp.ContextAction;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.CSharp.Completion;

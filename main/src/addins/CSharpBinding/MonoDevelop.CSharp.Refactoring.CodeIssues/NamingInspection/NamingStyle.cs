@@ -1,10 +1,10 @@
 // 
-// FixableResult.cs
+// NamingConventions.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using System.Linq;
+using MonoDevelop.AnalysisCore;
 using System.Collections.Generic;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Projects.Policies;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
+using System.Text;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
-	public class FixableResult : Result
-	{
-		public FixableResult (DomRegion region, string message, Severity level,
-			IssueMarker mark, params IAnalysisFix[] fixes)
-			: base (region, message, level, mark)
-		{
-			this.Fixes = fixes;
-		}
-		
-		public IAnalysisFix[] Fixes { get; protected set; }
-	}
-	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
-	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
+	public enum NamingStyle {
+		None,
+		PascalCase,
+		CamelCase,
+		AllUpper,
+		AllLower,
+		FirstUpper
 	}
 }
-

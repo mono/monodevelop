@@ -33,13 +33,14 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Refactoring/ContextActions" name = "ContextAction">
-		<ExtensionNode name="Action" type ="MonoDevelop.ContextAction.ContextActionAddinNode"/>
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeActions" name = "CodeAction">
+		<ExtensionNode name="Action" type ="MonoDevelop.CodeActions.CodeActionAddinNode"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/Refactoring/Inspectors" name = "Inspector">
-		<ExtensionNode name="Inspector" type ="MonoDevelop.Inspection.InspectorAddinNode"/>
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssues" name = "CodeIssue">
+		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeIssues.CodeIssueAddinNode"/>
 	</ExtensionPoint>
+	
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
 		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
@@ -144,7 +145,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.Refactoring.Rename.RenameTextEditorExtension" />
-		<Class class = "MonoDevelop.ContextAction.ContextActionEditorExtension" />
+		<Class class = "MonoDevelop.CodeActions.CodeActionEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
@@ -171,10 +172,10 @@
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
 		<Section id = "C#" _label = "C#">
 			<Section id = "Inspection" _label = "Code inspection" fill="true"
-				class="MonoDevelop.Inspection.InspectionPanel"/>
-			<Section id = "ContextActions" _label = "Context Actions" fill="true"
+				class="MonoDevelop.CodeIssues.CodeIssuePanel"/>
+			<Section id = "CodeActions" _label = "Context Actions" fill="true"
 				icon="md-text-quickfix" 
-				class="MonoDevelop.ContextAction.ContextActionPanel"/>
+				class="MonoDevelop.CodeActions.CodeActionPanel"/>
 		</Section>
 	</Extension>
 	

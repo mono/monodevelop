@@ -27,26 +27,17 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Text;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide;
 using System.Linq;
-using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Semantics;
-using MonoDevelop.ContextAction;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 

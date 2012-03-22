@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.AnalysisCore.Extensions;
 using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Inspection;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
 

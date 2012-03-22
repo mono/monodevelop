@@ -25,11 +25,9 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Inspection;
-using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {

@@ -24,9 +24,9 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.ContextAction.ContextActionPanelWidget.cs \
-	gtk-gui/MonoDevelop.Inspection.InspectionOptions.cs \
-	gtk-gui/MonoDevelop.Inspection.InspectionPanelWidget.cs \
+	gtk-gui/MonoDevelop.CodeActions.ContextActionPanelWidget.cs \
+	gtk-gui/MonoDevelop.CodeIssues.CodeIssueOptionsDialog.cs \
+	gtk-gui/MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs \
 	gtk-gui/MonoDevelop.Refactoring.RefactoringPreviewDialog.cs \
 	gtk-gui/MonoDevelop.Refactoring.Rename.RenameItemDialog.cs \
 	MonoDevelop.AnalysisCore/AnalysisCommands.cs \
@@ -47,19 +47,19 @@ FILES =  \
 	MonoDevelop.AnalysisCore/Rules/Adaptors.cs \
 	MonoDevelop.AnalysisCore/RuleTree.cs \
 	MonoDevelop.AnalysisCore/RuleTreeType.cs \
-	MonoDevelop.ContextAction/AnalysisContextAction.cs \
-	MonoDevelop.ContextAction/ContextAction.cs \
-	MonoDevelop.ContextAction/ContextActionAddinNode.cs \
-	MonoDevelop.ContextAction/ContextActionEditorExtension.cs \
-	MonoDevelop.ContextAction/ContextActionPanelWidget.cs \
-	MonoDevelop.ContextAction/ContextActionProvider.cs \
-	MonoDevelop.ContextAction/ContextActionWidget.cs \
-	MonoDevelop.Inspection/CodeIssue.cs \
-	MonoDevelop.Inspection/CodeIssueProvider.cs \
-	MonoDevelop.Inspection/DefaultInspectionCategories.cs \
-	MonoDevelop.Inspection/InspectionOptions.cs \
-	MonoDevelop.Inspection/InspectionPanelWidget.cs \
-	MonoDevelop.Inspection/InspectorAddinNode.cs \
+	MonoDevelop.CodeActions/AnalysisCodeAction.cs \
+	MonoDevelop.CodeActions/CodeAction.cs \
+	MonoDevelop.CodeActions/CodeActionAddinNode.cs \
+	MonoDevelop.CodeActions/CodeActionEditorExtension.cs \
+	MonoDevelop.CodeActions/CodeActionPanelWidget.cs \
+	MonoDevelop.CodeActions/CodeActionProvider.cs \
+	MonoDevelop.CodeActions/CodeActionWidget.cs \
+	MonoDevelop.CodeIssues/CodeIssue.cs \
+	MonoDevelop.CodeIssues/CodeIssueOptionsDialog.cs \
+	MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs \
+	MonoDevelop.CodeIssues/CodeIssueProvider.cs \
+	MonoDevelop.CodeIssues/DefaultInspectionCategories.cs \
+	MonoDevelop.CodeIssues/InspectorAddinNode.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementImplicit.cs \

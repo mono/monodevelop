@@ -1,10 +1,10 @@
 // 
-// FixableResult.cs
+// InspectorAddinNode.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,54 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
 using MonoDevelop.SourceEditor;
+using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.CodeIssues
 {
-	public class FixableResult : Result
+	public class InspectorAddinNode : TypeExtensionNode
 	{
-		public FixableResult (DomRegion region, string message, Severity level,
-			IssueMarker mark, params IAnalysisFix[] fixes)
-			: base (region, message, level, mark)
-		{
-			this.Fixes = fixes;
+		[NodeAttribute ("mimeType", Required=true, Description="The mime type of this action.")]
+		string mimeType = null;
+		public string MimeType {
+			get {
+				return mimeType;
+			}
+		}
+
+		[NodeAttribute ("severity", Required=true, Localizable=false,  Description="The severity of this action.")]
+		Severity severity;
+		public Severity Severity {
+			get {
+				return severity;
+			}
+		}
+
+		[NodeAttribute ("mark", Required=false, Localizable=false,  Description="The severity of this action.")]
+		IssueMarker inspectionMark = IssueMarker.Underline;
+		public IssueMarker IssueMarker {
+			get {
+				return inspectionMark;
+			}
+		}
+
+		CodeIssueProvider inspector;
+		public CodeIssueProvider Inspector {
+			get {
+				if (inspector == null) {
+					inspector = (CodeIssueProvider)CreateInstance ();
+					inspector.MimeType = MimeType;
+					inspector.IssueMarker = IssueMarker;
+					inspector.Severity = severity;
+				}
+				return inspector;
+			}
 		}
 		
-		public IAnalysisFix[] Fixes { get; protected set; }
-	}
-	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
-	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
 	}
 }
 

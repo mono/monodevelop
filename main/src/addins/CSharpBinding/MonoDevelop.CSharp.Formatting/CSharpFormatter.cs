@@ -25,25 +25,15 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
 
 
 using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using MonoDevelop.CSharp.ContextAction;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting

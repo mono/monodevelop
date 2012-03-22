@@ -81,15 +81,6 @@
     <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
-    <Compile Include="MonoDevelop.ContextAction\ContextAction.cs" />
-    <Compile Include="MonoDevelop.ContextAction\ContextActionEditorExtension.cs" />
-    <Compile Include="MonoDevelop.ContextAction\ContextActionWidget.cs" />
-    <Compile Include="MonoDevelop.ContextAction\ContextActionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.ContextAction.ContextActionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.ContextAction\ContextActionAddinNode.cs" />
-    <Compile Include="MonoDevelop.Inspection\InspectorAddinNode.cs" />
-    <Compile Include="MonoDevelop.Inspection\InspectionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Inspection.InspectionPanelWidget.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoryCommands.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringOperation.cs" />
@@ -112,13 +103,22 @@
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.IntegrateTemporaryVariable\IntegrateTemporaryVariableHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
-    <Compile Include="MonoDevelop.Inspection\DefaultInspectionCategories.cs" />
-    <Compile Include="MonoDevelop.Inspection\InspectionOptions.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Inspection.InspectionOptions.cs" />
-    <Compile Include="MonoDevelop.ContextAction\ContextActionProvider.cs" />
-    <Compile Include="MonoDevelop.ContextAction\AnalysisContextAction.cs" />
-    <Compile Include="MonoDevelop.Inspection\CodeIssueProvider.cs" />
-    <Compile Include="MonoDevelop.Inspection\CodeIssue.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\InspectorAddinNode.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\DefaultInspectionCategories.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeIssueProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeIssue.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeAction.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionProvider.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionAddinNode.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionWidget.cs" />
+    <Compile Include="MonoDevelop.CodeActions\AnalysisCodeAction.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeIssueOptionsDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssueOptionsDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -127,8 +127,8 @@
     <Folder Include="MonoDevelop.Refactoring.CreateClass\" />
     <Folder Include="MonoDevelop.Refactoring.ImplementInterface\" />
     <Folder Include="MonoDevelop.AnalysisCore\" />
-    <Folder Include="MonoDevelop.ContextAction\" />
-    <Folder Include="MonoDevelop.Inspection\" />
+    <Folder Include="MonoDevelop.CodeIssues\" />
+    <Folder Include="MonoDevelop.CodeActions\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">

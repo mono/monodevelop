@@ -1,10 +1,10 @@
 // 
-// FixableResult.cs
+// IInspector.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc.
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,42 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
+using System.Threading;
+using MonoDevelop.Core; 
 
-namespace MonoDevelop.AnalysisCore
+namespace MonoDevelop.CodeIssues
 {
-	public class FixableResult : Result
+	public abstract class CodeIssueProvider
 	{
-		public FixableResult (DomRegion region, string message, Severity level,
-			IssueMarker mark, params IAnalysisFix[] fixes)
-			: base (region, message, level, mark)
+		public string MimeType { get; set; }
+		public string Category { get; set; }
+		public string Title { get; set; }
+		public string Description { get; set; }
+		public Severity Severity { get; set; }
+		public IssueMarker IssueMarker { get; set; }
+
+		public virtual string IdString {
+			get {
+				return "refactoring.inspectors." + MimeType + "." + GetType ().FullName;
+			}
+		}
+
+		public Severity GetSeverity ()
 		{
-			this.Fixes = fixes;
+			return PropertyService.Get<Severity> (IdString, Severity);
 		}
 		
-		public IAnalysisFix[] Fixes { get; protected set; }
-	}
-	
-	//FIXME: should this really use MonoDevelop.Ide.Gui.Document? Fixes could be more generic.
-	public interface IAnalysisFix
-	{
-		string FixType { get; }
-	}
-	
-	public interface IFixHandler
-	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
-	}
-	
-	public interface IAnalysisFixAction
-	{
-		string Label { get; }
-		void Fix ();
+		public void SetSeverity (Severity severity)
+		{
+			PropertyService.Set (IdString, severity);
+		}
+
+		public abstract IEnumerable<CodeIssue> GetIssues (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
 	}
 }
 
