@@ -183,7 +183,6 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			return char.IsLetterOrDigit (ch) || ch == '_' || ch == '.';
 		}
 
-		
 		int selectionStart;
 		int selectionEnd;
 		List<int> offsets = new List<int> ();
@@ -210,13 +209,14 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			ResolveResult resolveResult;
 			LineSegment lineSegment;
 			var unit = options.Document.ParsedDocument.GetAst<CompilationUnit> ();
-			var visitor = new VariableLookupVisitor (options, new TextLocation (endPoint.Line, endPoint.Column));
+			var resolver = options.CreateResolver (unit);
+			var visitor = new VariableLookupVisitor (resolver, endPoint);
 			
 			var callingMember = options.Document.ParsedDocument.GetMember (options.Location);
 			if (callingMember != null)
 				visitor.MemberLocation = callingMember.Region.Begin;
 			unit.AcceptVisitor (visitor, null);
-			resolveResult = options.Resolve (selectedExpression);
+			resolveResult = resolver.Resolve (selectedExpression);
 			
 			AstType returnType;
 			if (resolveResult == null || resolveResult.Type.Kind == TypeKind.Unknown) {
@@ -357,7 +357,7 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 		}
 	}
 	
-	
+
 	public class VariableDescriptor
 	{
 		public string Name {
@@ -440,14 +440,14 @@ namespace MonoDevelop.CSharp.Refactoring.DeclareLocal
 			set;
 		}
 		
-		RefactoringOptions resolver;
+		CSharpAstResolver resolver;
 		TextLocation position;
 		public DomRegion CutRegion {
 			get;
 			set;
 		}
 		
-		public VariableLookupVisitor (RefactoringOptions resolver, TextLocation position)
+		public VariableLookupVisitor (CSharpAstResolver resolver, TextLocation position)
 		{
 			this.resolver = resolver;
 			this.position = position;
