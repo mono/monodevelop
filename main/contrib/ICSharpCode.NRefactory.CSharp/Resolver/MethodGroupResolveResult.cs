@@ -159,10 +159,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var outputGroup = new List<IMethod>();
 				foreach (var method in methodGroup) {
 					IType[] inferredTypes;
-					if (CSharpResolver.IsEligibleExtensionMethod(
-						method.Compilation, CSharpConversions.Get(method.Compilation),
-						this.TargetType, method, true, out inferredTypes))
-					{
+					if (CSharpResolver.IsEligibleExtensionMethod(this.TargetType, method, true, out inferredTypes)) {
 						if (substituteInferredTypes && inferredTypes != null) {
 							outputGroup.Add(new SpecializedMethod(method, new TypeParameterSubstitution(null, inferredTypes)));
 						} else {

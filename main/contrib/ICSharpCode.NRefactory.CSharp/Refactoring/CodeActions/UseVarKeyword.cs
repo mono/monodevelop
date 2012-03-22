@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (varDecl == null && foreachStmt == null) {
 				yield break;
 			}
-			yield return new CodeAction (context.TranslateString("Remove braces"), script => {
+			yield return new CodeAction(context.TranslateString("Use 'var' keyword"), script => {
 				if (varDecl != null) {
 					script.Replace(varDecl.Type, new SimpleType ("var"));
 				} else {

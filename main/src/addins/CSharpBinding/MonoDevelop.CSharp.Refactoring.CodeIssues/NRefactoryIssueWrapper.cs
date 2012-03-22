@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			var context = new MDRefactoringContext (document, document.Editor.Caret.Location);
 			foreach (var action in issueProvider.GetIssues (context)) {
-				var issue = new CodeIssue (action.Desription, action.Start, action.End, new [] { action.Action }.Select (
+				var issue = new CodeIssue (action.Desription, action.Start, action.End, action.Actions.Select (
 					act => new MDRefactoringContextAction (act.Description, ctx => {
 						using (var script = ctx.StartScript ())
 							act.Run (script);

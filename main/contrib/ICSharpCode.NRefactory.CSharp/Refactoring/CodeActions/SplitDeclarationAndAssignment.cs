@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (varDecl == null) {
 				yield break;
 			}
-			yield return new CodeAction (context.TranslateString("Remove braces"), script => {
+			yield return new CodeAction(context.TranslateString("Split local variable declaration and assignment"), script => {
 				var assign = new AssignmentExpression (new IdentifierExpression (varDecl.Variables.First().Name), AssignmentOperatorType.Assign, varDecl.Variables.First().Initializer.Clone());
 				
 				var newVarDecl = (VariableDeclarationStatement)varDecl.Clone();

@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (expr == null) {
 				yield break;
 			}
-			yield return new CodeAction (context.TranslateString("Remove braces"), script => {
+			yield return new CodeAction(context.TranslateString("Use string.Empty"), script => {
 				script.Replace(expr, new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "Empty"));
 			});
 		}

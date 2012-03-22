@@ -1730,10 +1730,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (method.TypeParameters.Count != typeArguments.Count)
 							continue;
 						SpecializedMethod sm = new SpecializedMethod(method, new TypeParameterSubstitution(null, typeArguments));
-						if (IsEligibleExtensionMethod(targetType, method, false, out inferredTypes))
+						if (IsEligibleExtensionMethod(compilation, conversions, targetType, method, false, out inferredTypes))
 							outputGroup.Add(sm);
 					} else {
-						if (IsEligibleExtensionMethod(targetType, method, true, out inferredTypes)) {
+						if (IsEligibleExtensionMethod(compilation, conversions, targetType, method, true, out inferredTypes)) {
 							if (substituteInferredTypes && inferredTypes != null) {
 								outputGroup.Add(new SpecializedMethod(method, new TypeParameterSubstitution(null, inferredTypes)));
 							} else {
@@ -1748,12 +1748,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return extensionMethodGroups;
 		}
 		
-		internal bool IsEligibleExtensionMethod(IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
+		/// <summary>
+		/// Checks whether the specified extension method is eligible on the target type.
+		/// </summary>
+		/// <param name="targetType">Target type that is passed as first argument to the extension method.</param>
+		/// <param name="method">The extension method.</param>
+		/// <param name="useTypeInference">Whether to perform type inference for the method.
+		/// Use <c>false</c> if <paramref name="method"/> is already specialized (e.g. when type arguments were given explicitly).
+		/// Otherwise, use <c>true</c>.
+		/// </param>
+		/// <param name="outInferredTypes">If the method is generic and <paramref name="useTypeInference"/> is <c>true</c>,
+		/// and at least some of the type arguments could be inferred, this parameter receives the inferred type arguments.
+		/// Since only the type for the first parameter is considered, not all type arguments may be inferred.
+		/// If an array is returned, any slot with an uninferred type argument will be set to the method's
+		/// corresponding type parameter.
+		/// </param>
+		public static bool IsEligibleExtensionMethod(IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
 		{
-			return IsEligibleExtensionMethod(compilation, conversions, targetType, method, useTypeInference, out outInferredTypes);
+			if (targetType == null)
+				throw new ArgumentNullException("targetType");
+			if (method == null)
+				throw new ArgumentNullException("method");
+			var compilation = method.Compilation;
+			return IsEligibleExtensionMethod(compilation, CSharpConversions.Get(compilation), targetType, method, useTypeInference, out outInferredTypes);
 		}
 		
-		public static bool IsEligibleExtensionMethod(ICompilation compilation, CSharpConversions conversions, IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
+		static bool IsEligibleExtensionMethod(ICompilation compilation, CSharpConversions conversions, IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
 		{
 			outInferredTypes = null;
 			if (targetType == null)

@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -44,17 +46,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			private set;
 		}
 
-		public CodeAction Action {
+		public IEnumerable<CodeAction> Actions {
 			get;
 			private set;
 		}
 
-		public CodeIssue (string description, TextLocation start, TextLocation end, CodeAction action = null)
+		public CodeIssue(string description, TextLocation start, TextLocation end, IEnumerable<CodeAction> action = null)
 		{
 			Desription = description;
 			Start = start;
 			End = end;
-			Action = action;
+			Actions = action ?? Enumerable.Empty<CodeAction> ();
+		}
+		
+		public CodeIssue(string description, TextLocation start, TextLocation end, CodeAction action) : this (description, start, end, new [] { action })
+		{
 		}
 	}
 }

@@ -42,17 +42,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			if (pexpr.LiteralValue.StartsWith("@")) {
-				if (!(pexpr.StartLocation < new TextLocation (context.Location.Line, context.Location.Column - 2) &&
-					new TextLocation (context.Location.Line, context.Location.Column + 2) < pexpr.EndLocation)) {
+				if (!(pexpr.StartLocation < new TextLocation(context.Location.Line, context.Location.Column - 2) &&
+					new TextLocation(context.Location.Line, context.Location.Column + 2) < pexpr.EndLocation)) {
 					yield break;
 				}
 			} else {
-				if (!(pexpr.StartLocation < new TextLocation (context.Location.Line, context.Location.Column - 1) && new TextLocation (context.Location.Line, context.Location.Column + 1) < pexpr.EndLocation)) {
+				if (!(pexpr.StartLocation < new TextLocation(context.Location.Line, context.Location.Column - 1) && new TextLocation(context.Location.Line, context.Location.Column + 1) < pexpr.EndLocation)) {
 					yield break;
 				}
 			}
 
-			yield return new CodeAction (context.TranslateString("Remove braces"), script => {
+			yield return new CodeAction(context.TranslateString("Split string literal"), script => {
 				int offset = context.GetOffset (context.Location);
 				script.InsertText (offset, pexpr.LiteralValue.StartsWith ("@") ? "\" + @\"" : "\" + \"");
 			});

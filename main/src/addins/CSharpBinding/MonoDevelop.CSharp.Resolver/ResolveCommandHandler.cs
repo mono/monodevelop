@@ -199,9 +199,7 @@ namespace MonoDevelop.CSharp.Resolver
 				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ().Where (t => t.HasExtensionMethods)) {
 					foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == umResult.MemberName || m.Name == possibleAttributeName))) {
 						IType[] inferredTypes;
-						if (CSharpResolver.IsEligibleExtensionMethod (
-							method.Compilation, CSharpConversions.Get (method.Compilation),
-							umResult.TargetType, method, true, out inferredTypes)) {
+						if (CSharpResolver.IsEligibleExtensionMethod (umResult.TargetType, method, true, out inferredTypes)) {
 							yield return typeDefinition.Namespace;
 							goto skipType;
 						}

@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			
-			yield return new CodeAction (context.TranslateString("Add null check for parameter"), script => {
+			yield return new CodeAction(context.TranslateString("Convert dec to hex"), script => {
 				script.Replace(pexpr, new PrimitiveExpression (pexpr.Value, string.Format("0x{0:x}", pexpr.Value)));
 			});
 		}

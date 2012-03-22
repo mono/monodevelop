@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (foreachStatement == null) {
 				yield break;
 			}
-			yield return new CodeAction (context.TranslateString("Add null check for parameter"), script => {
+			yield return new CodeAction(context.TranslateString("Convert 'foreach' loop to 'for'"), script => {
 				var result = context.Resolve (foreachStatement.InExpression);
 				var countProperty = GetCountProperty (result.Type);
 				

@@ -38,7 +38,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (binop == null) {
 				yield break;
 			}
-			yield return new CodeAction (context.TranslateString("Swap left and right arguments"), script => {
+
+
+			yield return new CodeAction(string.Format(context.TranslateString("Flip '{0}' operator arguments"), binop.OperatorToken.GetText()), script => {
 				script.Replace(binop.Left, binop.Right.Clone());
 				script.Replace(binop.Right, binop.Left.Clone());
 			});

@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			
-			yield return new CodeAction (context.TranslateString("Add null check for parameter"), script => {
+			yield return new CodeAction(context.TranslateString("Create backing store"), script => {
 				string backingStoreName = context.GetNameProposal (property.Name);
 				
 				// create field
