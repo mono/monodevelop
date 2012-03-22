@@ -92,6 +92,14 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeActionSource", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					contextActions.AddRange (((ICodeActionProviderSource)args.ExtensionObject).GetProviders ());
+					break;
+				}
+			});
+
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssues", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
@@ -99,6 +107,14 @@ namespace MonoDevelop.Refactoring
 					break;
 				case ExtensionChange.Remove:
 					inspectors.Remove (((InspectorAddinNode)args.ExtensionNode).Inspector);
+					break;
+				}
+			});
+			
+		AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssueSource", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					inspectors.AddRange (((ICodeIssueProviderSource)args.ExtensionObject).GetProviders ());
 					break;
 				}
 			});

@@ -54,11 +54,13 @@ FILES =  \
 	MonoDevelop.CodeActions/CodeActionPanelWidget.cs \
 	MonoDevelop.CodeActions/CodeActionProvider.cs \
 	MonoDevelop.CodeActions/CodeActionWidget.cs \
+	MonoDevelop.CodeActions/ICodeActionProviderSource.cs \
 	MonoDevelop.CodeIssues/CodeIssue.cs \
 	MonoDevelop.CodeIssues/CodeIssueOptionsDialog.cs \
 	MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs \
 	MonoDevelop.CodeIssues/CodeIssueProvider.cs \
 	MonoDevelop.CodeIssues/DefaultInspectionCategories.cs \
+	MonoDevelop.CodeIssues/ICodeIssueProviderSource.cs \
 	MonoDevelop.CodeIssues/InspectorAddinNode.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs \
 	MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs \

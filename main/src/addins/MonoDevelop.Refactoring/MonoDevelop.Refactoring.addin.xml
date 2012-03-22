@@ -36,9 +36,17 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeActions" name = "CodeAction">
 		<ExtensionNode name="Action" type ="MonoDevelop.CodeActions.CodeActionAddinNode"/>
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeActionSource" name = "CodeActionSource">
+		<ExtensionNode name="Source"/>
+	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssues" name = "CodeIssue">
 		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeIssues.CodeIssueAddinNode"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssueSource" name = "CodeIssueSource">
+		<ExtensionNode name="Source"/>
 	</ExtensionPoint>
 	
 	<!-- Extensions -->

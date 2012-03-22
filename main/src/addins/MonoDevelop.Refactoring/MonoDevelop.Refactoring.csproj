@@ -119,6 +119,8 @@
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueOptionsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssueOptionsDialog.cs" />
+    <Compile Include="MonoDevelop.CodeActions\ICodeActionProviderSource.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ICodeIssueProviderSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
