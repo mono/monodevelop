@@ -27,17 +27,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Mono.TextEditor;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.FindInFiles;
-using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Refactoring;
-using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects;
-using MonoDevelop.Core.ProgressMonitoring;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -46,33 +38,40 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		IAssembly GenerateAssembly(Project project, string code)
 		{
-			TypeSystem.TypeSystemService.Load (project);
-			TypeSystem.TypeSystemService.ParseFile (project, "test.cs", "text/x-csharp", code);
-			var compilation = TypeSystem.TypeSystemService.GetCompilation (project);
+			TypeSystemService.Load (project);
+			TypeSystemService.ParseFile (project, "test.cs", "text/x-csharp", code);
+			var compilation = TypeSystemService.GetCompilation (project);
 			return compilation.MainAssembly;
 		}
-		
-		List<IMember> CollectMembers (string code, string typeName, string memberName, Predicate<IMember> searchMemberFilter = null,
-		                              bool includeOverloads = true)
+
+		List<IMember> CollectMembers (string code, string typeName, Predicate<IUnresolvedMember> filter1, Predicate<IMember> filter2,
+									  bool includeOverloads, bool matchDeclaringType)
 		{
-			var project = new UnknownProject ();
-			project.FileName = "test.csproj";
-			
+			var project = new UnknownProject { FileName = "test.csproj" };
+
 			var solution = new Solution ();
 			solution.RootFolder.AddItem (project);
-			
+
 			var baseType = GenerateAssembly (project, code).GetTypeDefinition ("", typeName, 0);
- 			
-			var members = baseType.GetMembers (m => m.Name == memberName && m.DeclaringTypeDefinition.Name == typeName);
-			if (searchMemberFilter != null)
-				members = members.Where (m => searchMemberFilter(m));
-			return MemberCollector.CollectMembers (solution, members.First (), includeOverloads).ToList ();
+
+			var members = baseType.GetMembers (filter1).Concat (baseType.GetConstructors (filter1));
+			if (filter2 != null)
+				members = members.Where (m => filter2(m));
+			return MemberCollector.CollectMembers (solution, members.First (), ReferenceFinder.RefactoryScope.Solution,
+				includeOverloads, matchDeclaringType).ToList ();
+		}
+
+		List<IMember> CollectMembers (string code, string typeName, string memberName, Predicate<IMember> searchMemberFilter,
+									  bool includeOverloads, bool matchDeclaringType)
+		{
+			return CollectMembers (code, typeName, m => m.Name == memberName && m.DeclaringTypeDefinition.Name == typeName,
+				searchMemberFilter, includeOverloads, matchDeclaringType);
 		}
 		
-		void TestCollectMembers (string code, string typeName, string memberName, IEnumerable<Predicate<IMember>> expected, 
-		                 	     Predicate<IMember> searchMemberFilter = null, bool includeOverloads = true)
+		void TestCollectMembers (string code, string typeName, string memberName, IEnumerable<Predicate<IMember>> expected,
+								 Predicate<IMember> searchMemberFilter = null, bool includeOverloads = true, bool matchDeclaringType = false)
 		{
-			var result = CollectMembers (code, typeName, memberName, searchMemberFilter, includeOverloads);
+			var result = CollectMembers (code, typeName, memberName, searchMemberFilter, includeOverloads, matchDeclaringType);
 			VerifyResult (result, expected);
 		}
 		
@@ -111,7 +110,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 		
 		[Test ()]
-		public void MethodOverridesTest ()
+		public void TestMethodOverrides ()
 		{
 			var code = @"
 class A
@@ -137,7 +136,7 @@ class D : A
 		}
 		
 		[Test ()]
-		public void EventOverridesTest ()
+		public void TestEventOverrides ()
 		{
 			var code = @"
 class A
@@ -162,7 +161,7 @@ class D : A
 		}
 		
 		[Test ()]
-		public void PropertyOverridesTest ()
+		public void TestPropertyOverrides ()
 		{
 			var code = @"
 class A
@@ -191,7 +190,7 @@ class D : A
 		}
 	
 		[Test ()]
-		public void SingleInterfaceImplTest  ()
+		public void TestSingleInterfaceImpl ()
 		{
 			var code = @"
 interface IA
@@ -216,7 +215,7 @@ class C : IA
 		}
 		
 		[Test ()]
-		public void MultiInterfacesImplTest  ()
+		public void TestMultiInterfacesImpl ()
 		{
 			var code = @"
 interface IA
@@ -265,7 +264,7 @@ class C : IB
 		}
 		
 		[Test ()]
-		public void MethodOverloadsTest ()
+		public void TestMethodOverloads ()
 		{
 			var code = @"
 class A
@@ -296,7 +295,7 @@ struct B
 		}
 		
 		[Test ()]
-		public void IncludeOverloadsTest ()
+		public void TestIncludeOverloads ()
 		{
 			var code = @"
 class A
@@ -334,7 +333,7 @@ class D : A
 		}
 		
 		[Test ()]
-		public void ExcludeOverloadsTest ()
+		public void TestExcludeOverloads ()
 		{
 			var code = @"
 class A
@@ -380,7 +379,7 @@ class D : A
 		}
 		
 		[Test ()]
-		public void InterfaceOverridesTest ()
+		public void TestInterfacePlusOverrides ()
 		{
 			string code = @"
 class A
@@ -448,5 +447,61 @@ class D : B, IA, IB { }
 			VerifyResult (result3, new Predicate<ITypeDefinition>[] 
 			             {t => t == A, t => t == IA, t => t == IB});
 		}
+
+		[Test ()]
+		public void TestMatchDeclaringType ()
+		{
+			var code = @"
+class A
+{
+	public virtual void Method() { };
+	public void Method(int i) { };
+}
+class B : A
+{
+	public override void Method() { };
+}";
+			var memberName = "Method";
+			var emptyParam = new string [] { };
+			var intParam = new [] { "Int32" };
+
+			var paramList = new [] { emptyParam, intParam };
+			var expected1 = paramList.Select (p => GetMemberFilter ("A", memberName, m => MatchParameters (m, p))).ToList ();
+			foreach (var filter in expected1)
+				TestCollectMembers (code, "A", memberName, expected1, filter, true, true);
+
+			var expected2 = new List<Predicate<IMember>> { GetMemberFilter ("A", memberName, m => MatchParameters (m, emptyParam)) };
+			TestCollectMembers (code, "A", memberName, expected2, expected2 [0], false, true);
+
+			var expected3 = new List<Predicate<IMember>> { GetMemberFilter ("B", memberName, m => MatchParameters (m, emptyParam)) };
+			TestCollectMembers (code, "B", memberName, expected3, expected3 [0], false, true);
+		}
+
+		[Test ()]
+		public void TestConstructor ()
+		{
+			var code = @"
+class A
+{
+	public A() { }
+	public A(int i) { }
+}";
+			var emptyParam = new string [] { };
+			var intParam = new [] { "Int32" };
+			var filters = new List<Predicate<IMember>> 
+			{
+				m => m.EntityType == EntityType.Constructor && MatchParameters(m, emptyParam),
+				m => m.EntityType == EntityType.Constructor && MatchParameters(m, intParam)
+			};
+
+			foreach (var filter in filters) {
+				var result1 = CollectMembers (code, "A", m => true, filter, true, false);
+				VerifyResult (result1, filters);
+			}
+
+			var result2 = CollectMembers (code, "A", m => true, filters [0], false, true);
+			VerifyResult (result2, new [] { filters [0] });
+		}
+
 	}
 }

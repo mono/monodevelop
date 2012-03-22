@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					yield break;
 				}
 				if (member is IMember)
-					searchNodes = CollectMembers (solution, (IMember)member);
+					searchNodes = CollectMembers (solution, (IMember)member, scope);
 			}
 			
 			// prepare references finder
@@ -248,12 +248,9 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IEnumerable<object> searchedMembers);
 
-		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member)
+		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member, RefactoryScope scope)
 		{
-			if (member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Operator)
-				return new [] { member };
-
-			return MemberCollector.CollectMembers (solution, member);
+			return MemberCollector.CollectMembers (solution, member, scope);
 		}
 		
 		internal static IEnumerable<IEntity> CollectMembers (IType type)
