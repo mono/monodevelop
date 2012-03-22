@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			TypeSystem.TypeSystemService.ParseFile (project, "stub.cs", "text/x-csharp", "class Stub {\n "+stubString+"}\n");
 			
 			var wrapper = TypeSystem.TypeSystemService.GetProjectContentWrapper (project);
-			wrapper.Content = wrapper.Content.AddAssemblyReferences (new [] { Mscorlib, SystemCore });
+			wrapper.UpdateContent (c => c.AddAssemblyReferences (new [] { Mscorlib, SystemCore }));
 			
 			var pctx = TypeSystem.TypeSystemService.GetCompilation (project);
 			
