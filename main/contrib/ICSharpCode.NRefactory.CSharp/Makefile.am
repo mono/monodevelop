@@ -245,6 +245,8 @@ FILES =  \
 	Refactoring/Inspector/RedundantUsingInspector.cs \
 	Refactoring/Inspector/StringIsNullOrEmptyInspector.cs \
 	Refactoring/Inspector/UseVarKeywordInspector.cs \
+	Refactoring/PatternHelper.cs \
+	Refactoring/RefactoringAstHelper.cs \
 	Refactoring/RefactoringContext.cs \
 	Refactoring/Script.cs \
 	Refactoring/TypeSystemAstBuilder.cs \

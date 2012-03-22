@@ -161,8 +161,8 @@ namespace Mono.CSharp
 		Field pc_field;
 		StateMachineMethod method;
 
-		protected StateMachine (Block block, TypeDefinition parent, MemberBase host, TypeParameters tparams, string name, MemberKind kind)
-			: base (block, parent, host, tparams, name, kind)
+		protected StateMachine (Block block, TypeDefinition parent, MemberBase host, TypeParameters tparams, string name)
+			: base (block, parent, host, tparams, name)
 		{
 		}
 
@@ -401,12 +401,15 @@ namespace Mono.CSharp
 		Field disposing_field;
 		int local_name_idx;
 
-		TypeSpec generic_enumerator_type;
-		TypeSpec generic_enumerable_type;
+		TypeExpr enumerator_type;
+		TypeExpr enumerable_type;
+		TypeArguments generic_args;
+		TypeExpr generic_enumerator_type;
+		TypeExpr generic_enumerable_type;
 
 		public IteratorStorey (Iterator iterator)
 			: base (iterator.Container.ParametersBlock, iterator.Host,
-			  iterator.OriginalMethod as MemberBase, iterator.OriginalMethod.CurrentTypeParameters, "Iterator", MemberKind.Class)
+			  iterator.OriginalMethod as MemberBase, iterator.OriginalMethod.CurrentTypeParameters, "Iterator")
 		{
 			this.Iterator = iterator;
 		}
@@ -434,30 +437,33 @@ namespace Mono.CSharp
 				mtype = Mutator.Mutate (mtype);
 
 			iterator_type_expr = new TypeExpression (mtype, Location);
+			generic_args = new TypeArguments (iterator_type_expr);
 
-			var ifaces = new List<TypeSpec> (5);
+			var list = new List<FullNamedExpression> ();
 			if (Iterator.IsEnumerable) {
-				ifaces.Add (Compiler.BuiltinTypes.IEnumerable);
+				enumerable_type = new TypeExpression (Compiler.BuiltinTypes.IEnumerable, Location);
+				list.Add (enumerable_type);
 
 				if (Module.PredefinedTypes.IEnumerableGeneric.Define ()) {
-					generic_enumerable_type = Module.PredefinedTypes.IEnumerableGeneric.TypeSpec.MakeGenericType (Module, new[] { mtype });
-					ifaces.Add (generic_enumerable_type);
+					generic_enumerable_type = new GenericTypeExpr (Module.PredefinedTypes.IEnumerableGeneric.TypeSpec, generic_args, Location);
+					list.Add (generic_enumerable_type);
 				}
 			}
 
-			ifaces.Add (Compiler.BuiltinTypes.IEnumerator);
-			ifaces.Add (Compiler.BuiltinTypes.IDisposable);
+			enumerator_type = new TypeExpression (Compiler.BuiltinTypes.IEnumerator, Location);
+			list.Add (enumerator_type);
+
+			list.Add (new TypeExpression (Compiler.BuiltinTypes.IDisposable, Location));
 
 			var ienumerator_generic = Module.PredefinedTypes.IEnumeratorGeneric;
 			if (ienumerator_generic.Define ()) {
-				generic_enumerator_type = ienumerator_generic.TypeSpec.MakeGenericType (Module, new [] { mtype });
-				ifaces.Add (generic_enumerator_type);
+				generic_enumerator_type = new GenericTypeExpr (ienumerator_generic.TypeSpec, generic_args, Location);
+				list.Add (generic_enumerator_type);
 			}
 
-			base_class = null;
+			type_bases = list;
 
-			base_type = Compiler.BuiltinTypes.Object;
-			return ifaces.ToArray ();
+			return base.ResolveBaseTypes (out base_class);
 		}
 
 		protected override bool DoDefineMembers ()
@@ -491,20 +497,20 @@ namespace Mono.CSharp
 				var name = new MemberName ("GetEnumerator", null, explicit_iface, Location.Null);
 
 				if (generic_enumerator_type != null) {
-					explicit_iface = new TypeExpression (generic_enumerable_type, Location);
+					explicit_iface = new GenericTypeExpr (Module.PredefinedTypes.IEnumerableGeneric.Resolve (), generic_args, Location);
 					var gname = new MemberName ("GetEnumerator", null, explicit_iface, Location.Null);
-					Method gget_enumerator = GetEnumeratorMethod.Create (this, new TypeExpression (generic_enumerator_type, Location), gname);
+					Method gget_enumerator = GetEnumeratorMethod.Create (this, generic_enumerator_type, gname);
 
 					//
 					// Just call generic GetEnumerator implementation
 					//
 					var stmt = new Return (new Invocation (new DynamicMethodGroupExpr (gget_enumerator, Location), null), Location);
-					Method get_enumerator = GetEnumeratorMethod.Create (this, new TypeExpression (Compiler.BuiltinTypes.IEnumerator, Location), name, stmt);
+					Method get_enumerator = GetEnumeratorMethod.Create (this, enumerator_type, name, stmt);
 
 					Members.Add (get_enumerator);
 					Members.Add (gget_enumerator);
 				} else {
-					Members.Add (GetEnumeratorMethod.Create (this, new TypeExpression (Compiler.BuiltinTypes.IEnumerator, Location), name));
+					Members.Add (GetEnumeratorMethod.Create (this, enumerator_type, name));
 				}
 			}
 
@@ -517,7 +523,7 @@ namespace Mono.CSharp
 			FullNamedExpression explicit_iface;
 
 			if (is_generic) {
-				explicit_iface = new TypeExpression (generic_enumerator_type, Location);
+				explicit_iface = new GenericTypeExpr (Module.PredefinedTypes.IEnumeratorGeneric.Resolve (), generic_args, Location);
 				type = iterator_type_expr;
 			} else {
 				explicit_iface = new TypeExpression (Module.Compiler.BuiltinTypes.IEnumerator, Location);
@@ -566,9 +572,6 @@ namespace Mono.CSharp
 
 		protected override string GetVariableMangledName (LocalVariable local_info)
 		{
-			if (local_info.IsCompilerGenerated)
-				return base.GetVariableMangledName (local_info);
-
 			return "<" + local_info.Name + ">__" + local_name_idx++.ToString ("X");
 		}
 	}
@@ -1066,7 +1069,7 @@ namespace Mono.CSharp
 			for (int i = 0; i < parameters.Count; i++) {
 				Parameter p = parameters [i];
 				Parameter.Modifier mod = p.ModFlags;
-				if ((mod & Parameter.Modifier.RefOutMask) != 0) {
+				if ((mod & Parameter.Modifier.ISBYREF) != 0) {
 					parent.Compiler.Report.Error (1623, p.Location,
 						"Iterators cannot have ref or out parameters");
 					return;

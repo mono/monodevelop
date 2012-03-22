@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
 
@@ -65,18 +66,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public override DocumentationComment Documentation {
-			get {
-				IUnresolvedDocumentationProvider docProvider = unresolved.ParsedFile as IUnresolvedDocumentationProvider;
-				if (docProvider != null) {
-					var doc = docProvider.GetDocumentation(unresolved, this);
-					if (doc != null)
-						return doc;
-				}
-				return base.Documentation;
-			}
-		}
-		
 		IList<IMember> FindImplementedInterfaceMembers()
 		{
 			if (unresolved.IsExplicitInterfaceImplementation) {
@@ -87,8 +76,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						result.Add(member);
 				}
 				return result.ToArray();
+			} else if (unresolved.IsStatic) {
+				return EmptyList<IMember>.Instance;
 			} else {
-				throw new NotImplementedException();
+				// TODO: implement interface member mappings correctly
+				return InheritanceHelper.GetBaseMembers(this, true)
+					.Where(m => m.DeclaringTypeDefinition != null && m.DeclaringTypeDefinition.Kind == TypeKind.Interface)
+					.ToArray();
+			}
+		}
+		
+		public override DocumentationComment Documentation {
+			get {
+				IUnresolvedDocumentationProvider docProvider = unresolved.ParsedFile as IUnresolvedDocumentationProvider;
+				if (docProvider != null) {
+					var doc = docProvider.GetDocumentation(unresolved, this);
+					if (doc != null)
+						return doc;
+				}
+				return base.Documentation;
 			}
 		}
 		

@@ -17,28 +17,24 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.PatternMatching;
 
-namespace ICSharpCode.NRefactory.Semantics
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	/// <summary>
-	/// Represents the 'this' reference.
-	/// Also used for the 'base' reference.
+	/// Helper class for constructing pattern ASTs.
 	/// </summary>
-	public class ThisResolveResult : ResolveResult
+	public class PatternHelper
 	{
-		bool causesNonVirtualInvocation;
-		
-		public ThisResolveResult(IType type, bool causesNonVirtualInvocation = false) : base(type)
-		{
-			this.causesNonVirtualInvocation = causesNonVirtualInvocation;
-		}
-		
 		/// <summary>
-		/// Gets whether this resolve result causes member invocations to be non-virtual.
+		/// Produces a choice pattern for <c>expr1 op expr2</c> or <c>expr2 op expr1</c>.
 		/// </summary>
-		public bool CausesNonVirtualInvocation {
-			get { return causesNonVirtualInvocation; }
+		public static Expression CommutativeOperator(Expression expr1, BinaryOperatorType op, Expression expr2)
+		{
+			return new Choice {
+				new BinaryOperatorExpression(expr1, op, expr2),
+				new BinaryOperatorExpression(expr2.Clone(), op, expr1.Clone())
+			};
 		}
 	}
 }

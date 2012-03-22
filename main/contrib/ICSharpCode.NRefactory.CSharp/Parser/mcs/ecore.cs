@@ -118,11 +118,6 @@ namespace Mono.CSharp {
 		bool IsFixed { get; }
 	}
 
-	public interface IExpressionCleanup
-	{
-		void EmitCleanup (EmitContext ec);
-	}
-
 	/// <remarks>
 	///   Base class for expressions
 	/// </remarks>
@@ -227,7 +222,8 @@ namespace Mono.CSharp {
 
 		public static void Error_InvalidExpressionStatement (Report Report, Location loc)
 		{
-			Report.Error (201, loc, "Only assignment, call, increment, decrement, await, and new object expressions can be used as a statement");
+			Report.Error (201, loc, "Only assignment, call, increment, decrement, and new object " +
+				       "expressions can be used as a statement");
 		}
 		
 		public void Error_InvalidExpressionStatement (BlockContext ec)
@@ -540,40 +536,38 @@ namespace Mono.CSharp {
 				ec.EmitThis ();
 
 			// Emit original code
-			var field = EmitToFieldSource (ec);
-			if (field == null) {
-				//
-				// Store the result to temporary field when we
-				// cannot load `this' directly
-				//
-				field = ec.GetTemporaryField (type);
-				if (needs_temporary) {
-					//
-					// Create temporary local (we cannot load `this' before Emit)
-					//
-					var temp = ec.GetTemporaryLocal (type);
-					ec.Emit (OpCodes.Stloc, temp);
+			EmitToFieldSource (ec);
 
-					ec.EmitThis ();
-					ec.Emit (OpCodes.Ldloc, temp);
-					field.EmitAssignFromStack (ec);
+			//
+			// Store the result to temporary field when we
+			// cannot load `this' directly
+			//
+			var field = ec.GetTemporaryField (type);
+			if (needs_temporary) {
+				//
+				// Create temporary local (we cannot load `this' before Emit)
+				//
+				var temp = ec.GetTemporaryLocal (type);
+				ec.Emit (OpCodes.Stloc, temp);
 
-					ec.FreeTemporaryLocal (temp, type);
-				} else {
-					field.EmitAssignFromStack (ec);
-				}
+				ec.EmitThis ();
+				ec.Emit (OpCodes.Ldloc, temp);
+				field.EmitAssignFromStack (ec);
+
+				ec.FreeTemporaryLocal (temp, type);
+			} else {
+				field.EmitAssignFromStack (ec);
 			}
 
 			return field;
 		}
 
-		protected virtual FieldExpr EmitToFieldSource (EmitContext ec)
+		protected virtual void EmitToFieldSource (EmitContext ec)
 		{
 			//
 			// Default implementation calls Emit method
 			//
 			Emit (ec);
-			return null;
 		}
 
 		protected static void EmitExpressionsList (EmitContext ec, List<Expression> expressions)
@@ -1030,12 +1024,6 @@ namespace Mono.CSharp {
 			ExpressionStatement es = e as ExpressionStatement;
 			if (es == null)
 				Error_InvalidExpressionStatement (ec);
-
-			if (ec.CurrentAnonymousMethod is AsyncInitializer && !(e is Assign) &&
-				(e.Type.IsGenericTask || e.Type == ec.Module.PredefinedTypes.Task.TypeSpec)) {
-				ec.Report.Warning (4014, 1, e.Location,
-					"The statement is not awaited and execution of current method continues before the call is completed. Consider using `await' operator");
-			}
 
 			return es;
 		}
@@ -1938,12 +1926,6 @@ namespace Mono.CSharp {
 
 		#region Properties
 
-		public override bool IsSideEffectFree {
-			get {
-				return expr.IsSideEffectFree;
-			}
-		}
-
 		public Expression OriginalExpression {
 			get {
 				return orig_expr;
@@ -2014,11 +1996,6 @@ namespace Mono.CSharp {
 		public override void Emit (EmitContext ec)
 		{
 			expr.Emit (ec);
-		}
-
-		public override Expression EmitToField (EmitContext ec)
-		{
- 			return expr.EmitToField(ec);
 		}
 
 		public override void EmitBranchable (EmitContext ec, Label target, bool on_true)
@@ -4054,15 +4031,10 @@ namespace Mono.CSharp {
 			Arguments orig_args = arguments;
 
 			if (arg_count != param_count) {
-				//
-				// No arguments expansion when doing exact match for delegates
-				//
-				if ((restrictions & Restrictions.CovariantDelegate) == 0) {
-					for (int i = 0; i < pd.Count; ++i) {
-						if (pd.FixedParameters[i].HasDefaultValue) {
-							optional_count = pd.Count - i;
-							break;
-						}
+				for (int i = 0; i < pd.Count; ++i) {
+					if (pd.FixedParameters[i].HasDefaultValue) {
+						optional_count = pd.Count - i;
+						break;
 					}
 				}
 
@@ -4238,8 +4210,7 @@ namespace Mono.CSharp {
 			for (int i = 0; i < arg_count; i++) {
 				Argument a = arguments[i];
 				if (a == null) {
-					var fp = pd.FixedParameters[i];
-					if (!fp.HasDefaultValue) {
+					if (!pd.FixedParameters[i].HasDefaultValue) {
 						arguments = orig_args;
 						return arg_count * 2 + 2;
 					}
@@ -4248,7 +4219,7 @@ namespace Mono.CSharp {
 					// Get the default value expression, we can use the same expression
 					// if the type matches
 					//
-					Expression e = fp.DefaultValue;
+					Expression e = pd.FixedParameters[i].DefaultValue;
 					if (!(e is Constant) || e.Type.IsGenericOrParentIsGeneric || e.Type.IsGenericParameter) {
 						//
 						// LAMESPEC: No idea what the exact rules are for System.Reflection.Missing.Value instead of null
@@ -4261,19 +4232,6 @@ namespace Mono.CSharp {
 						}
 
 						e = e.Resolve (ec);
-					}
-
-					if ((fp.ModFlags & Parameter.Modifier.CallerMask) != 0) {
-						//
-						// LAMESPEC: Attributes can be mixed together with build-in priority
-						//
-						if ((fp.ModFlags & Parameter.Modifier.CallerLineNumber) != 0) {
-							e = new IntLiteral (ec.BuiltinTypes, loc.Row, loc);
-						} else if ((fp.ModFlags & Parameter.Modifier.CallerFilePath) != 0) {
-							e = new StringLiteral (ec.BuiltinTypes, loc.NameFullPath, loc);
-						} else if (ec.MemberContext.CurrentMemberDefinition != null) {
-							e = new StringLiteral (ec.BuiltinTypes, ec.MemberContext.CurrentMemberDefinition.GetCallerMemberName (), loc);
-						}
 					}
 
 					arguments[i] = new Argument (e, Argument.AType.Default);
@@ -4306,7 +4264,7 @@ namespace Mono.CSharp {
 							continue;
 						}
 					} else {
-						score = IsArgumentCompatible (ec, a, p_mod, pt);
+						score = IsArgumentCompatible (ec, a, p_mod & ~Parameter.Modifier.PARAMS, pt);
 
 						if (score < 0)
 							dynamicArgument = true;
@@ -4367,7 +4325,7 @@ namespace Mono.CSharp {
 			// Types have to be identical when ref or out modifer
 			// is used and argument is not of dynamic type
 			//
-			if (((argument.Modifier | param_mod) & Parameter.Modifier.RefOutMask) != 0) {
+			if ((argument.Modifier | param_mod) != 0) {
 				if (argument.Type != parameter) {
 					//
 					// Do full equality check after quick path
@@ -4376,18 +4334,18 @@ namespace Mono.CSharp {
 						//
 						// Using dynamic for ref/out parameter can still succeed at runtime
 						//
-						if (argument.Type.BuiltinType == BuiltinTypeSpec.Type.Dynamic && (argument.Modifier & Parameter.Modifier.RefOutMask) == 0 && (restrictions & Restrictions.CovariantDelegate) == 0)
+						if (argument.Type.BuiltinType == BuiltinTypeSpec.Type.Dynamic && argument.Modifier == 0 && (restrictions & Restrictions.CovariantDelegate) == 0)
 							return -1;
 
 						return 2;
 					}
 				}
 
-				if ((argument.Modifier & Parameter.Modifier.RefOutMask) != (param_mod & Parameter.Modifier.RefOutMask)) {
+				if (argument.Modifier != param_mod) {
 					//
 					// Using dynamic for ref/out parameter can still succeed at runtime
 					//
-					if (argument.Type.BuiltinType == BuiltinTypeSpec.Type.Dynamic && (argument.Modifier & Parameter.Modifier.RefOutMask) == 0 && (restrictions & Restrictions.CovariantDelegate) == 0)
+					if (argument.Type.BuiltinType == BuiltinTypeSpec.Type.Dynamic && argument.Modifier == 0 && (restrictions & Restrictions.CovariantDelegate) == 0)
 						return -1;
 
 					return 1;
@@ -4760,12 +4718,9 @@ namespace Mono.CSharp {
 			if (custom_errors != null && custom_errors.ArgumentMismatch (ec, method, a, idx))
 				return;
 
-			if (a.Type == InternalType.ErrorType)
-				return;
-
 			if (a is CollectionElementInitializer.ElementInitializerArgument) {
 				ec.Report.SymbolRelatedToPreviousError (method);
-				if ((expected_par.FixedParameters[idx].ModFlags & Parameter.Modifier.RefOutMask) != 0) {
+				if ((expected_par.FixedParameters[idx].ModFlags & Parameter.Modifier.ISBYREF) != 0) {
 					ec.Report.Error (1954, loc, "The best overloaded collection initalizer method `{0}' cannot have 'ref', or `out' modifier",
 						TypeManager.CSharpSignature (method));
 					return;
@@ -4775,7 +4730,7 @@ namespace Mono.CSharp {
 			} else if (IsDelegateInvoke) {
 				ec.Report.Error (1594, loc, "Delegate `{0}' has some invalid arguments",
 					DelegateType.GetSignatureForError ());
-			} else {
+			} else if (a.Type != InternalType.ErrorType) {
 				ec.Report.SymbolRelatedToPreviousError (method);
 				ec.Report.Error (1502, loc, "The best overloaded method match for `{0}' has some invalid arguments",
 					method.GetSignatureForError ());
@@ -4784,14 +4739,15 @@ namespace Mono.CSharp {
 			Parameter.Modifier mod = idx >= expected_par.Count ? 0 : expected_par.FixedParameters[idx].ModFlags;
 
 			string index = (idx + 1).ToString ();
-			if (((mod & Parameter.Modifier.RefOutMask) ^ (a.Modifier & Parameter.Modifier.RefOutMask)) != 0) {
-				if ((mod & Parameter.Modifier.RefOutMask) == 0)
+			if (((mod & (Parameter.Modifier.REF | Parameter.Modifier.OUT)) ^
+				(a.Modifier & (Parameter.Modifier.REF | Parameter.Modifier.OUT))) != 0) {
+				if ((mod & Parameter.Modifier.ISBYREF) == 0)
 					ec.Report.Error (1615, loc, "Argument `#{0}' does not require `{1}' modifier. Consider removing `{1}' modifier",
 						index, Parameter.GetModifierSignature (a.Modifier));
 				else
 					ec.Report.Error (1620, loc, "Argument `#{0}' is missing `{1}' modifier",
 						index, Parameter.GetModifierSignature (mod));
-			} else {
+			} else if (a.Type != InternalType.ErrorType) {
 				string p1 = a.GetSignatureForError ();
 				string p2 = TypeManager.CSharpName (paramType);
 
@@ -4920,8 +4876,8 @@ namespace Mono.CSharp {
 				//
 				// Types have to be identical when ref or out modifer is used 
 				//
-				if (((a.Modifier | p_mod) & Parameter.Modifier.RefOutMask) != 0) {
-					if ((a.Modifier & Parameter.Modifier.RefOutMask) != (p_mod & Parameter.Modifier.RefOutMask))
+				if (a.Modifier != 0 || (p_mod & ~Parameter.Modifier.PARAMS) != 0) {
+					if ((p_mod & ~Parameter.Modifier.PARAMS) != a.Modifier)
 						break;
 
 					if (a.Expr.Type == pt || TypeSpecComparer.IsEqual (a.Expr.Type, pt))
@@ -5559,7 +5515,7 @@ namespace Mono.CSharp {
 				base.EmitSideEffect (ec);
 		}
 
-		public virtual void AddressOf (EmitContext ec, AddressOp mode)
+		public void AddressOf (EmitContext ec, AddressOp mode)
 		{
 			if ((mode & AddressOp.Store) != 0)
 				spec.MemberDefinition.SetIsAssigned ();
@@ -5986,11 +5942,10 @@ namespace Mono.CSharp {
 			Emit (ec, false);
 		}
 
-		protected override FieldExpr EmitToFieldSource (EmitContext ec)
+		protected override void EmitToFieldSource (EmitContext ec)
 		{
 			has_await_arguments = true;
 			Emit (ec, false);
-			return null;
 		}
 
 		public abstract SLE.Expression MakeAssignExpression (BuilderContext ctx, Expression source);

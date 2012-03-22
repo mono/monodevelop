@@ -46,10 +46,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (bodyStatement == null)
 				return false;
 			
-			if (parameter.Type is PrimitiveType)
-				return (((PrimitiveType)parameter.Type).Keyword == "object" || ((PrimitiveType)parameter.Type).Keyword == "string") && !HasNullCheck (parameter);
+			var type = context.ResolveType(parameter.Type);
+			if (type.IsReferenceType == false)
+				return false;
 			
-			// TODO: check for structs
 			return !HasNullCheck (parameter);
 		}
 		
@@ -83,25 +83,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		class CheckNullVisitor : DepthFirstAstVisitor<object, object>
 		{
-			ParameterDeclaration parameter;
+			readonly Expression pattern;
 			
-			public bool ContainsNullCheck { 
-				get;
-				set;
-			}
+			internal bool ContainsNullCheck;
 			
 			public CheckNullVisitor (ParameterDeclaration parameter)
 			{
-				this.parameter = parameter;
+				this.pattern = PatternHelper.CommutativeOperator(new IdentifierExpression(parameter.Name), BinaryOperatorType.Any, new NullReferenceExpression());
 			}
 			
 			public override object VisitIfElseStatement (IfElseStatement ifElseStatement, object data)
 			{
 				if (ifElseStatement.Condition is BinaryOperatorExpression) {
 					var binOp = ifElseStatement.Condition as BinaryOperatorExpression;
-					if ((binOp.Operator == BinaryOperatorType.Equality || binOp.Operator == BinaryOperatorType.InEquality) &&
-						binOp.Left.IsMatch (new IdentifierExpression (parameter.Name)) && binOp.Right.IsMatch (new NullReferenceExpression ()) || 
-						binOp.Right.IsMatch (new IdentifierExpression (parameter.Name)) && binOp.Left.IsMatch (new NullReferenceExpression ())) {
+					if ((binOp.Operator == BinaryOperatorType.Equality || binOp.Operator == BinaryOperatorType.InEquality) && pattern.IsMatch(binOp)) {
 						ContainsNullCheck = true;
 					}
 				}

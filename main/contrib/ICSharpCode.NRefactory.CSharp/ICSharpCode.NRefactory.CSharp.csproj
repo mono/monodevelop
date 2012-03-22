@@ -333,6 +333,8 @@
     <Compile Include="Refactoring\Inspector\RedundantUsingInspector.cs" />
     <Compile Include="Refactoring\Inspector\StringIsNullOrEmptyInspector.cs" />
     <Compile Include="Refactoring\Inspector\UseVarKeywordInspector.cs" />
+    <Compile Include="Refactoring\PatternHelper.cs" />
+    <Compile Include="Refactoring\RefactoringAstHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

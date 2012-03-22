@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// </summary>
 	public static class IdStringProvider
 	{
-		#region GetIDString
+		#region GetIdString
 		/// <summary>
 		/// Gets the ID string (C# 4.0 spec, §A.3.1) for the specified entity.
 		/// </summary>

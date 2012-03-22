@@ -85,15 +85,16 @@ namespace Mono.CSharp
 			}
 		}
 
+#if FULL_AST
 		//
-		// Any unattached attributes during parsing get added here. User
-		// by FULL_AST mode
+		// Any unattached attributes during parsing get added here.
 		//
 		public Attributes UnattachedAttributes {
 			get; set;
 		}
+#endif
 
-		public virtual void AddCompilerGeneratedClass (CompilerGeneratedContainer c)
+		public virtual void AddCompilerGeneratedClass (CompilerGeneratedClass c)
 		{
 			containers.Add (c);
 		}
@@ -746,7 +747,7 @@ namespace Mono.CSharp
 			base.AddTypeContainer (tc);
 		}
 
-		public override void AddCompilerGeneratedClass (CompilerGeneratedContainer c)
+		public override void AddCompilerGeneratedClass (CompilerGeneratedClass c)
 		{
 			members.Add (c);
 
@@ -1325,7 +1326,7 @@ namespace Mono.CSharp
 			}
 
 			if (proxy_method == null) {
-				string name = CompilerGeneratedContainer.MakeName (method.Name, null, "BaseCallProxy", hoisted_base_call_proxies.Count);
+				string name = CompilerGeneratedClass.MakeName (method.Name, null, "BaseCallProxy", hoisted_base_call_proxies.Count);
 				var base_parameters = new Parameter[method.Parameters.Count];
 				for (int i = 0; i < base_parameters.Length; ++i) {
 					var base_param = method.Parameters.FixedParameters[i];
@@ -1957,28 +1958,28 @@ namespace Mono.CSharp
 			if (OptAttributes != null)
 				OptAttributes.Emit ();
 
-			if (!IsCompilerGenerated) {
-				if (!IsTopLevel) {
-					MemberSpec candidate;
-					bool overrides = false;
-					var conflict_symbol = MemberCache.FindBaseMember (this, out candidate, ref overrides);
-					if (conflict_symbol == null && candidate == null) {
-						if ((ModFlags & Modifiers.NEW) != 0)
-							Report.Warning (109, 4, Location, "The member `{0}' does not hide an inherited member. The new keyword is not required",
-								GetSignatureForError ());
-					} else {
-						if ((ModFlags & Modifiers.NEW) == 0) {
-							if (candidate == null)
-								candidate = conflict_symbol;
+			if (!IsTopLevel) {
+				MemberSpec candidate;
+				bool overrides = false;
+				var conflict_symbol = MemberCache.FindBaseMember (this, out candidate, ref overrides);
+				if (conflict_symbol == null && candidate == null) {
+					if ((ModFlags & Modifiers.NEW) != 0)
+						Report.Warning (109, 4, Location, "The member `{0}' does not hide an inherited member. The new keyword is not required",
+							GetSignatureForError ());
+				} else {
+					if ((ModFlags & Modifiers.NEW) == 0) {
+						if (candidate == null)
+							candidate = conflict_symbol;
 
-							Report.SymbolRelatedToPreviousError (candidate);
-							Report.Warning (108, 2, Location, "`{0}' hides inherited member `{1}'. Use the new keyword if hiding was intended",
-								GetSignatureForError (), candidate.GetSignatureForError ());
-						}
+						Report.SymbolRelatedToPreviousError (candidate);
+						Report.Warning (108, 2, Location, "`{0}' hides inherited member `{1}'. Use the new keyword if hiding was intended",
+							GetSignatureForError (), candidate.GetSignatureForError ());
 					}
 				}
+			}
 
-				// Run constraints check on all possible generic types
+			// Run constraints check on all possible generic types
+			if ((ModFlags & Modifiers.COMPILER_GENERATED) == 0) {
 				if (base_type != null && base_type_expr != null) {
 					ConstraintChecker.Check (this, base_type, base_type_expr.Location);
 				}
@@ -2354,8 +2355,6 @@ namespace Mono.CSharp
 
 	public abstract class ClassOrStruct : TypeDefinition
 	{
-		public const TypeAttributes StaticClassAttribute = TypeAttributes.Abstract | TypeAttributes.Sealed;
-
 		SecurityType declarative_security;
 
 		public ClassOrStruct (TypeContainer parent, MemberName name, Attributes attrs, MemberKind kind)
@@ -2365,19 +2364,7 @@ namespace Mono.CSharp
 
 		protected override TypeAttributes TypeAttr {
 			get {
-				TypeAttributes ta = base.TypeAttr;
-				if (!has_static_constructor)
-					ta |= TypeAttributes.BeforeFieldInit;
-
-				if (Kind == MemberKind.Class) {
-					ta |= TypeAttributes.AutoLayout | TypeAttributes.Class;
-					if (IsStatic)
-						ta |= StaticClassAttribute;
-				} else {
-					ta |= TypeAttributes.SequentialLayout;
-				}
-
-				return ta;
+				return has_static_constructor ? base.TypeAttr : base.TypeAttr | TypeAttributes.BeforeFieldInit;
 			}
 		}
 
@@ -2492,8 +2479,8 @@ namespace Mono.CSharp
 	}
 
 
-	public sealed class Class : ClassOrStruct
-	{
+	// TODO: should be sealed
+	public class Class : ClassOrStruct {
 		const Modifiers AllowedModifiers =
 			Modifiers.NEW |
 			Modifiers.PUBLIC |
@@ -2504,6 +2491,8 @@ namespace Mono.CSharp
 			Modifiers.SEALED |
 			Modifiers.STATIC |
 			Modifiers.UNSAFE;
+
+		public const TypeAttributes StaticClassAttribute = TypeAttributes.Abstract | TypeAttributes.Sealed;
 
 		public Class (TypeContainer parent, MemberName name, Modifiers mod, Attributes attrs)
 			: base (parent, name, attrs, MemberKind.Class)
@@ -2698,10 +2687,23 @@ namespace Mono.CSharp
 			caching_flags |= Flags.Excluded;
 			return conditions;
 		}
+
+		//
+		// FIXME: How do we deal with the user specifying a different
+		// layout?
+		//
+		protected override TypeAttributes TypeAttr {
+			get {
+				TypeAttributes ta = base.TypeAttr | TypeAttributes.AutoLayout | TypeAttributes.Class;
+				if (IsStatic)
+					ta |= StaticClassAttribute;
+				return ta;
+			}
+		}
 	}
 
-	public sealed class Struct : ClassOrStruct
-	{
+	public sealed class Struct : ClassOrStruct {
+
 		bool is_unmanaged, has_unmanaged_check_done;
 		bool InTransit;
 
@@ -2871,6 +2873,17 @@ namespace Mono.CSharp
 			var ifaces = base.ResolveBaseTypes (out base_class);
 			base_type = Compiler.BuiltinTypes.ValueType;
 			return ifaces;
+		}
+
+		protected override TypeAttributes TypeAttr {
+			get {
+				const
+				TypeAttributes DefaultTypeAttributes =
+					TypeAttributes.SequentialLayout | 
+					TypeAttributes.Sealed ; 
+
+				return base.TypeAttr | DefaultTypeAttributes;
+			}
 		}
 
 		public override void RegisterFieldForInitialization (MemberCore field, FieldInitializer expression)

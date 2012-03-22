@@ -1753,7 +1753,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return IsEligibleExtensionMethod(compilation, conversions, targetType, method, useTypeInference, out outInferredTypes);
 		}
 		
-		public static bool IsEligibleExtensionMethod(ICompilation compilation, CSharpConversions conversions, IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
+		internal static bool IsEligibleExtensionMethod(ICompilation compilation, CSharpConversions conversions, IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
 		{
 			outInferredTypes = null;
 			if (targetType == null)
@@ -1857,7 +1857,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null) {
 				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
 				if (or.BestCandidate != null) {
-					if (or.BestCandidate.IsStatic && !(mgrr.TargetResult is TypeResolveResult))
+					if (or.BestCandidate.IsStatic && !or.IsExtensionMethodInvocation && !(mgrr.TargetResult is TypeResolveResult))
 						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetResult.Type));
 					else
 						return or.CreateResolveResult(mgrr.TargetResult);
@@ -2133,7 +2133,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (t != null) {
 				foreach (IType baseType in t.DirectBaseTypes) {
 					if (baseType.Kind != TypeKind.Unknown && baseType.Kind != TypeKind.Interface) {
-						return new ThisResolveResult(baseType);
+						return new ThisResolveResult(baseType, causesNonVirtualInvocation: true);
 					}
 				}
 			}

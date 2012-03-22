@@ -65,18 +65,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 			{
-				if (!(typeDeclaration.Parent is TypeDeclaration)) {
-					foreach (var token in typeDeclaration.ModifierTokens) {
-						if (token.Modifier == Modifiers.Internal) {
-							AddIssue(token, inspector.Title, delegate {
-								using (var script = ctx.StartScript ()) {
-									script.Remove(token);
-								}
-							});
-						}
+				foreach (var token_ in typeDeclaration.ModifierTokens) {
+					var token = token_;
+					if (token.Modifier == Modifiers.Internal) {
+						AddIssue(token, inspector.Title, delegate {
+							using (var script = ctx.StartScript ()) {
+								script.Remove(token);
+							}
+						});
 					}
 				}
-				base.VisitTypeDeclaration(typeDeclaration);
 			}
 		}
 	}

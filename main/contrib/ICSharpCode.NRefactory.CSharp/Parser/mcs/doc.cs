@@ -439,7 +439,7 @@ namespace Mono.CSharp
 
 										if (i >= pm.Parameters.Count || pparam == null ||
 											pparam.TypeSpec != pm.Parameters.Types[i] ||
-											(pparam.Modifier & Parameter.Modifier.RefOutMask) != (pm.Parameters.FixedParameters[i].ModFlags & Parameter.Modifier.RefOutMask)) {
+											(pparam.Modifier & Parameter.Modifier.SignatureMask) != (pm.Parameters.FixedParameters[i].ModFlags & Parameter.Modifier.SignatureMask)) {
 
 											if (i > parameters_match) {
 												parameters_match = i;

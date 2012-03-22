@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -143,6 +144,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			internal string searchTerm;
+			internal FindReferences findReferences;
 			internal ICompilation declarationCompilation;
 			internal Accessibility accessibility;
 			internal ITypeDefinition topLevelTypeDefinition;
@@ -152,6 +154,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				FindReferenceNavigator n = factory(compilation);
 				if (n != null) {
 					n.callback = callback;
+					n.findReferences = findReferences;
 					return n;
 				} else {
 					return new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Skip, null);
@@ -178,6 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		abstract class FindReferenceNavigator : IResolveVisitorNavigator
 		{
 			internal FoundReferenceCallback callback;
+			internal FindReferences findReferences;
 			
 			internal abstract bool CanMatch(AstNode node);
 			internal abstract bool IsMatch(ResolveResult rr);
@@ -218,6 +222,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
+			if (entity is IMember)
+				entity = NormalizeMember((IMember)entity);
 			Accessibility effectiveAccessibility = GetEffectiveAccessibility(entity);
 			ITypeDefinition topLevelTypeDefinition = entity.DeclaringTypeDefinition;
 			while (topLevelTypeDefinition != null && topLevelTypeDefinition.DeclaringTypeDefinition != null)
@@ -252,7 +258,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					scope = GetSearchScopeForOperator((IMethod)entity);
 					break;
 				case EntityType.Constructor:
-					IMethod ctor = (IMethod)((IMethod)entity).MemberDefinition;
+					IMethod ctor = (IMethod)entity;
 					scope = FindObjectCreateReferences(ctor);
 					additionalScope = FindChainedConstructorReferences(ctor);
 					break;
@@ -266,11 +272,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				scope.accessibility = effectiveAccessibility;
 			scope.declarationCompilation = entity.Compilation;
 			scope.topLevelTypeDefinition = topLevelTypeDefinition;
+			scope.findReferences = this;
 			if (additionalScope != null) {
 				if (additionalScope.accessibility == Accessibility.None)
 					additionalScope.accessibility = effectiveAccessibility;
 				additionalScope.declarationCompilation = entity.Compilation;
 				additionalScope.topLevelTypeDefinition = topLevelTypeDefinition;
+				additionalScope.findReferences = this;
 				return new[] { scope, additionalScope };
 			} else {
 				return new[] { scope };
@@ -418,17 +426,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (searchTerm.Length > 9 && searchTerm.EndsWith("Attribute", StringComparison.Ordinal)) {
 					// The type might be an attribute, so we also need to look for the short form:
 					string shortForm = searchTerm.Substring(0, searchTerm.Length - 9);
-					additionalScope = new SearchScope(
-						shortForm,
-						delegate (ICompilation compilation) {
-							ITypeDefinition imported = compilation.Import(typeDefinition);
-							if (imported != null)
-								return new FindTypeDefinitionReferencesNavigator(imported, shortForm);
-							else
-								return null;
-						});
+					additionalScope = FindTypeDefinitionReferences(typeDefinition, shortForm);
 				}
 			}
+			return FindTypeDefinitionReferences(typeDefinition, searchTerm);
+		}
+		
+		SearchScope FindTypeDefinitionReferences(ITypeDefinition typeDefinition, string searchTerm)
+		{
 			return new SearchScope(
 				searchTerm,
 				delegate (ICompilation compilation) {
@@ -495,11 +500,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		SearchScope FindMemberReferences(IEntity member, Func<IMember, FindMemberReferencesNavigator> factory)
 		{
 			string searchTerm = member.Name;
-			IMember memberDefinition = ((IMember)member).MemberDefinition;
 			return new SearchScope(
 				searchTerm,
 				delegate(ICompilation compilation) {
-					IMember imported = compilation.Import(memberDefinition);
+					IMember imported = compilation.Import((IMember)member);
 					return imported != null ? factory(imported) : null;
 				});
 		}
@@ -511,7 +515,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public FindMemberReferencesNavigator(IMember member)
 			{
-				this.member = member.MemberDefinition;
+				this.member = member;
 				this.searchTerm = member.Name;
 			}
 			
@@ -539,8 +543,58 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && member == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(member, mrr.Member, mrr.IsVirtualCall);
 			}
+		}
+		
+		IMember NormalizeMember(IMember member)
+		{
+			if (WholeVirtualSlot && member.IsOverride)
+				member = InheritanceHelper.GetBaseMembers(member, false).FirstOrDefault(m => !m.IsOverride) ?? member;
+			if (!FindOnlySpecializedReferences)
+				member = member.MemberDefinition;
+			return member;
+		}
+		
+		bool IsMemberMatch(IMember member, IMember referencedMember, bool isVirtualCall)
+		{
+			referencedMember = NormalizeMember(referencedMember);
+			if (member.Equals(referencedMember))
+				return true;
+			if (!isVirtualCall)
+				return false;
+			bool isInterfaceCall = referencedMember.DeclaringTypeDefinition != null && referencedMember.DeclaringTypeDefinition.Kind == TypeKind.Interface;
+			if (FindCallsThroughVirtualBaseMethod && member.IsOverride && !WholeVirtualSlot && !isInterfaceCall) {
+				// Test if 'member' overrides 'referencedMember':
+				foreach (var baseMember in InheritanceHelper.GetBaseMembers(member, false)) {
+					if (FindOnlySpecializedReferences) {
+						if (baseMember.Equals(referencedMember))
+							return true;
+					} else {
+						if (baseMember.MemberDefinition.Equals(referencedMember))
+							return true;
+					}
+					if (!baseMember.IsOverride)
+						break;
+				}
+				return false;
+			} else if (FindCallsThroughInterface && isInterfaceCall) {
+				// Test if 'member' implements 'referencedMember':
+				if (FindOnlySpecializedReferences) {
+					return member.ImplementedInterfaceMembers.Contains(referencedMember);
+				} else {
+					return member.ImplementedInterfaceMembers.Any(m => m.MemberDefinition.Equals(referencedMember));
+				}
+			}
+			return false;
+		}
+		
+		bool PerformVirtualLookup(IMember member, IMember referencedMember)
+		{
+			if (FindCallsThroughVirtualBaseMethod && member.IsOverride && !WholeVirtualSlot)
+				return true;
+			var typeDef = referencedMember.DeclaringTypeDefinition;
+			return FindCallsThroughInterface && typeDef != null && typeDef.Kind == TypeKind.Interface;
 		}
 		
 		sealed class FindFieldReferences : FindMemberReferencesNavigator
@@ -601,10 +655,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Find References to IEnumerator.Current
 		SearchScope FindEnumeratorCurrentReferences(IProperty property)
 		{
-			IProperty propertyDefinition = (IProperty)property.MemberDefinition;
 			return new SearchScope(
 				delegate(ICompilation compilation) {
-					IProperty imported = compilation.Import(propertyDefinition);
+					IProperty imported = compilation.Import(property);
 					return imported != null ? new FindEnumeratorCurrentReferencesNavigator(imported) : null;
 				});
 		}
@@ -626,7 +679,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				ForEachResolveResult ferr = rr as ForEachResolveResult;
-				return ferr != null && ferr.CurrentProperty != null && ferr.CurrentProperty.MemberDefinition == property;
+				return ferr != null && ferr.CurrentProperty != null && findReferences.IsMemberMatch(property, ferr.CurrentProperty, true);
 			}
 		}
 		#endregion
@@ -634,8 +687,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Find Method References
 		SearchScope GetSearchScopeForMethod(IMethod method)
 		{
-			method = (IMethod)method.MemberDefinition;
-			
 			Type specialNodeType;
 			switch (method.Name) {
 				case "Add":
@@ -741,18 +792,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					var ferr = rr as ForEachResolveResult;
 					if (ferr != null) {
 						return IsMatch(ferr.GetEnumeratorCall)
-							|| (ferr.MoveNextMethod != null && method == ferr.MoveNextMethod.MemberDefinition);
+							|| (ferr.MoveNextMethod != null && findReferences.IsMemberMatch(method, ferr.MoveNextMethod, true));
 					}
 				}
 				var mrr = rr as MemberResolveResult;
-				return mrr != null && method == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(method, mrr.Member, mrr.IsVirtualCall);
 			}
 			
 			internal override void NavigatorDone(CSharpAstResolver resolver, CancellationToken cancellationToken)
 			{
 				foreach (var expr in potentialMethodGroupConversions) {
 					var conversion = resolver.GetConversion(expr, cancellationToken);
-					if (conversion.IsMethodGroupConversion && conversion.Method.MemberDefinition == method) {
+					if (conversion.IsMethodGroupConversion && findReferences.IsMemberMatch(method, conversion.Method, conversion.IsVirtualMethodLookup)) {
 						IType targetType = resolver.GetExpectedType(expr, cancellationToken);
 						ResolveResult result = resolver.Resolve(expr, cancellationToken);
 						ReportMatch(expr, new ConversionResolveResult(targetType, result, conversion));
@@ -766,7 +817,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Find Indexer References
 		SearchScope FindIndexerReferences(IProperty indexer)
 		{
-			indexer = (IProperty)indexer.MemberDefinition;
 			return new SearchScope(
 				delegate (ICompilation compilation) {
 					IProperty imported = compilation.Import(indexer);
@@ -794,7 +844,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && indexer == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(indexer, mrr.Member, mrr.IsVirtualCall);
 			}
 		}
 		#endregion
@@ -867,7 +917,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		SearchScope FindOperator(IMethod op, Func<IMethod, FindReferenceNavigator> factory)
 		{
-			op = (IMethod)op.MemberDefinition;
 			return new SearchScope(
 				delegate (ICompilation compilation) {
 					IMethod imported = compilation.Import(op);
@@ -908,7 +957,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && op == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(op, mrr.Member, mrr.IsVirtualCall);
 			}
 		}
 		
@@ -940,7 +989,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && op == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(op, mrr.Member, mrr.IsVirtualCall);
 			}
 		}
 		
@@ -961,12 +1010,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && op == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(op, mrr.Member, mrr.IsVirtualCall);
 			}
 			
 			public override void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
 			{
-				if (conversion.IsUserDefined && conversion.Method.MemberDefinition == op) {
+				if (conversion.IsUserDefined && findReferences.IsMemberMatch(op, conversion.Method, conversion.IsVirtualMethodLookup)) {
 					ReportMatch(expression, result);
 				}
 			}
@@ -989,7 +1038,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				ConversionResolveResult crr = rr as ConversionResolveResult;
-				return crr != null && crr.Conversion.IsUserDefined && crr.Conversion.Method.MemberDefinition == op;
+				return crr != null && crr.Conversion.IsUserDefined 
+					&& findReferences.IsMemberMatch(op, crr.Conversion.Method, crr.Conversion.IsVirtualMethodLookup);
 			}
 		}
 		#endregion
@@ -997,7 +1047,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Find Constructor References
 		SearchScope FindObjectCreateReferences(IMethod ctor)
 		{
-			ctor = (IMethod)ctor.MemberDefinition;
 			string searchTerm = null;
 			if (KnownTypeReference.GetCSharpNameByTypeCode(ctor.DeclaringTypeDefinition.KnownTypeCode) == null) {
 				// not a built-in type
@@ -1035,13 +1084,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && ctor == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(ctor, mrr.Member, mrr.IsVirtualCall);
 			}
 		}
 		
 		SearchScope FindChainedConstructorReferences(IMethod ctor)
 		{
-			ctor = (IMethod)ctor.MemberDefinition;
 			SearchScope searchScope = new SearchScope(
 				delegate (ICompilation compilation) {
 					IMethod imported = compilation.Import(ctor);
@@ -1075,7 +1123,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && ctor == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(ctor, mrr.Member, mrr.IsVirtualCall);
 			}
 		}
 		#endregion
@@ -1083,22 +1131,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Find Destructor References
 		SearchScope GetSearchScopeForDestructor(IMethod dtor)
 		{
-			dtor = (IMethod)dtor.MemberDefinition;
-			string searchTerm = null;
-			if (KnownTypeReference.GetCSharpNameByTypeCode(dtor.DeclaringTypeDefinition.KnownTypeCode) == null) {
-				// not a built-in type
-				searchTerm = dtor.DeclaringTypeDefinition.Name;
-			}
-			return new SearchScope (
-				searchTerm,
+			var scope = new SearchScope (
 				delegate (ICompilation compilation) {
-				IMethod imported = compilation.Import(dtor);
-				if (imported != null) {
-					return new FindDestructorReferencesNavigator (imported);
-				} else {
-					return null;
-				}
-			});
+					IMethod imported = compilation.Import(dtor);
+					if (imported != null) {
+						return new FindDestructorReferencesNavigator (imported);
+					} else {
+						return null;
+					}
+				});
+			scope.accessibility = Accessibility.Private;
+			return scope;
 		}
 		
 		sealed class FindDestructorReferencesNavigator : FindReferenceNavigator
@@ -1118,7 +1161,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				MemberResolveResult mrr = rr as MemberResolveResult;
-				return mrr != null && dtor == mrr.Member.MemberDefinition;
+				return mrr != null && findReferences.IsMemberMatch(dtor, mrr.Member, mrr.IsVirtualCall);
 			}
 		}
 		#endregion

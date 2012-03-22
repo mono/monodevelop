@@ -88,11 +88,11 @@ namespace ICSharpCode.NRefactory.Semantics
 			return new UserDefinedConversion(false, operatorMethod, isLifted);
 		}
 		
-		public static Conversion MethodGroupConversion(IMethod chosenMethod)
+		public static Conversion MethodGroupConversion(IMethod chosenMethod, bool isVirtualMethodLookup)
 		{
 			if (chosenMethod == null)
 				throw new ArgumentNullException("chosenMethod");
-			return new MethodGroupConv(chosenMethod);
+			return new MethodGroupConv(chosenMethod, isVirtualMethodLookup);
 		}
 		#endregion
 		
@@ -302,10 +302,12 @@ namespace ICSharpCode.NRefactory.Semantics
 		sealed class MethodGroupConv : Conversion
 		{
 			readonly IMethod method;
+			readonly bool isVirtualMethodLookup;
 			
-			public MethodGroupConv(IMethod method)
+			public MethodGroupConv(IMethod method, bool isVirtualMethodLookup)
 			{
 				this.method = method;
+				this.isVirtualMethodLookup = isVirtualMethodLookup;
 			}
 			
 			public override bool IsImplicit {
@@ -314,6 +316,10 @@ namespace ICSharpCode.NRefactory.Semantics
 			
 			public override bool IsMethodGroupConversion {
 				get { return true; }
+			}
+			
+			public override bool IsVirtualMethodLookup {
+				get { return isVirtualMethodLookup; }
 			}
 			
 			public override IMethod Method {
@@ -431,6 +437,13 @@ namespace ICSharpCode.NRefactory.Semantics
 		/// Gets whether this conversion is a method group conversion.
 		/// </summary>
 		public virtual bool IsMethodGroupConversion {
+			get { return false; }
+		}
+		
+		/// <summary>
+		/// For method-group conversions, gets whether to perform a virtual method lookup at runtime.
+		/// </summary>
+		public virtual bool IsVirtualMethodLookup {
 			get { return false; }
 		}
 		

@@ -54,6 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var result = context.Resolve (foreachStatement.InExpression);
 			var countProperty = GetCountProperty (result.Type);
 			
+			// TODO: use another variable name if 'i' is already in use
 			var initializer = new VariableDeclarationStatement (new PrimitiveType ("int"), "i", new PrimitiveExpression (0));
 			var id1 = new IdentifierExpression ("i");
 			var id2 = id1.Clone ();
@@ -88,7 +89,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (astNode == null)
 				return null;
 			var result = (astNode as ForeachStatement) ?? astNode.Parent as ForeachStatement;
-			if (result == null || context.Resolve (result.InExpression) == null)
+			if (result == null)
+				return null;
+			var collection = context.Resolve (result.InExpression);
+			if (collection.Type.Kind != TypeKind.Array && !collection.Type.GetProperties(p => p.IsIndexer).Any())
 				return null;
 			return result;
 		}

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RedundantPrivateInspector.cs
 //  
 // Author:
@@ -65,7 +65,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void CheckNode(EntityDeclaration node)
 			{
-				foreach (var token in node.ModifierTokens) {
+				foreach (var token_ in node.ModifierTokens) {
+					var token = token_;
 					if (token.Modifier == Modifiers.Private) {
 						AddIssue(token, inspector.Title, delegate {
 							using (var script = ctx.StartScript ()) {

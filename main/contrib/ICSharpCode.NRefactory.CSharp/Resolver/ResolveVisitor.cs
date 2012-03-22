@@ -650,7 +650,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult result = errorResult;
 				if (variableInitializer.Parent is FieldDeclaration || variableInitializer.Parent is EventDeclaration) {
 					if (resolver.CurrentMember != null) {
-						result = new MemberResolveResult(null, resolver.CurrentMember);
+						result = new MemberResolveResult(null, resolver.CurrentMember, false);
 					}
 				} else {
 					string identifier = variableInitializer.Name;
@@ -707,7 +707,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled) {
 				ResolveResult result = errorResult;
 				if (resolver.CurrentMember != null) {
-					result = new MemberResolveResult(null, resolver.CurrentMember);
+					result = new MemberResolveResult(null, resolver.CurrentMember, false);
 				}
 				ResolveAndProcessConversion(fixedVariableInitializer.CountExpression, resolver.Compilation.FindType(KnownTypeCode.Int32));
 				return result;
@@ -726,7 +726,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(member);
 				
 				if (resolver.CurrentMember != null)
-					return new MemberResolveResult(null, resolver.CurrentMember);
+					return new MemberResolveResult(null, resolver.CurrentMember, false);
 				else
 					return errorResult;
 			} finally {
@@ -772,7 +772,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				if (resolver.CurrentMember != null)
-					return new MemberResolveResult(null, resolver.CurrentMember);
+					return new MemberResolveResult(null, resolver.CurrentMember, false);
 				else
 					return errorResult;
 			} finally {
@@ -805,7 +805,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				if (resolver.CurrentMember != null)
-					return new MemberResolveResult(null, resolver.CurrentMember);
+					return new MemberResolveResult(null, resolver.CurrentMember, false);
 				else
 					return errorResult;
 			} finally {
@@ -885,7 +885,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (resolverEnabled && resolver.CurrentTypeDefinition != null) {
 					ResolveAndProcessConversion(enumMemberDeclaration.Initializer, resolver.CurrentTypeDefinition.EnumUnderlyingType);
 					if (resolverEnabled && resolver.CurrentMember != null)
-						return new MemberResolveResult(null, resolver.CurrentMember);
+						return new MemberResolveResult(null, resolver.CurrentMember, false);
 					else
 						return errorResult;
 				} else {

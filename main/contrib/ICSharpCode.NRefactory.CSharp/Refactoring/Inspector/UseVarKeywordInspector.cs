@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UseVarKeywordInspector.cs
 //  
 // Author:
@@ -74,46 +74,38 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (variableDeclarationStatement.Type is SimpleType && ((SimpleType)variableDeclarationStatement.Type).Identifier == "var") { 
 					return;
 				}
+				if (variableDeclarationStatement.Variables.Count != 1) {
+					return;
+				}
 				
 				//only checks for cases where the type would be obvious - assignment of new, cast, etc.
 				//also check the type actually matches else the user might want to assign different subclasses later
-				foreach (var v in variableDeclarationStatement.Variables) {
-					if (v.Initializer.IsNull) {
-						return;
-					}
+				var v = variableDeclarationStatement.Variables.Single();
 				
-					var arrCreate = v.Initializer as ArrayCreateExpression;
-					if (arrCreate != null) {
-						var n = variableDeclarationStatement.Type as ComposedType;
-						//FIXME: check the specifier compatibility
-						if (n != null && n.ArraySpecifiers.Any() && n.BaseType.IsMatch(arrCreate.Type)) {
-							continue;
-						}
-						return;
+				var arrCreate = v.Initializer as ArrayCreateExpression;
+				if (arrCreate != null) {
+					var n = variableDeclarationStatement.Type as ComposedType;
+					//FIXME: check the specifier compatibility
+					if (n != null && n.ArraySpecifiers.Any() && n.BaseType.IsMatch(arrCreate.Type)) {
+						AddIssue(variableDeclarationStatement);
 					}
-					var objCreate = v.Initializer as ObjectCreateExpression;
-					if (objCreate != null) {
-						if (objCreate.Type.IsMatch(variableDeclarationStatement.Type)) {
-							continue;
-						}
-						return;
-					}
-					var asCast = v.Initializer as AsExpression;
-					if (asCast != null) {
-						if (asCast.Type.IsMatch(variableDeclarationStatement.Type)) {
-							continue;
-						}
-						return;
-					}
-					var cast = v.Initializer as CastExpression;
-					if (cast != null) {
-						if (cast.Type.IsMatch(variableDeclarationStatement.Type)) {
-							continue;
-						}
-						return;
-					}
-					return;
 				}
+				var objCreate = v.Initializer as ObjectCreateExpression;
+				if (objCreate != null && objCreate.Type.IsMatch(variableDeclarationStatement.Type)) {
+					AddIssue(variableDeclarationStatement);
+				}
+				var asCast = v.Initializer as AsExpression;
+				if (asCast != null && asCast.Type.IsMatch(variableDeclarationStatement.Type)) {
+					AddIssue(variableDeclarationStatement);
+				}
+				var cast = v.Initializer as CastExpression;
+				if (cast != null && cast.Type.IsMatch(variableDeclarationStatement.Type)) {
+					AddIssue(variableDeclarationStatement);
+				}
+			}
+			
+			void AddIssue(VariableDeclarationStatement variableDeclarationStatement)
+			{
 				AddIssue(variableDeclarationStatement.Type, inspector.Title);
 			}
 		}

@@ -305,10 +305,11 @@ namespace Mono.CSharp {
 							//
 							// First check exact modifiers match
 							//
-							if ((cp[pi].ModFlags & Parameter.Modifier.RefOutMask) == (tp[pi].ModFlags & Parameter.Modifier.RefOutMask))
+							const Parameter.Modifier ref_out = Parameter.Modifier.REF | Parameter.Modifier.OUT;
+							if ((cp[pi].ModFlags & ref_out) == (tp[pi].ModFlags & ref_out))
 								continue;
 
-							if (((cp[pi].ModFlags | tp[pi].ModFlags) & Parameter.Modifier.RefOutMask) == Parameter.Modifier.RefOutMask) {
+							if ((cp[pi].ModFlags & tp[pi].ModFlags & Parameter.Modifier.ISBYREF) != 0) {
 								ref_only_difference = true;
 								continue;
 							}
@@ -556,7 +557,8 @@ namespace Mono.CSharp {
 						//
 						// First check exact ref/out match
 						//
-						if ((parameters.FixedParameters[i].ModFlags & Parameter.Modifier.RefOutMask) == (candidate_param.FixedParameters[i].ModFlags & Parameter.Modifier.RefOutMask))
+						const Parameter.Modifier ref_out = Parameter.Modifier.REF | Parameter.Modifier.OUT;
+						if ((parameters.FixedParameters[i].ModFlags & ref_out) == (candidate_param.FixedParameters[i].ModFlags & ref_out))
 							continue;
 
 						modifiers_match = false;
@@ -564,7 +566,7 @@ namespace Mono.CSharp {
 						//
 						// Different in ref/out only
 						//
-						if ((parameters.FixedParameters[i].ModFlags & Parameter.Modifier.RefOutMask) != (candidate_param.FixedParameters[i].ModFlags & Parameter.Modifier.RefOutMask)) {
+						if ((parameters.FixedParameters[i].ModFlags & candidate_param.FixedParameters[i].ModFlags & Parameter.Modifier.ISBYREF) != 0) {
 							if (similar_candidate == null) {
 								if (!candidate.IsPublic)
 									break;

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RedundantNamespaceUsageInspector.cs
 //  
 // Author:
@@ -25,10 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.PatternMatching;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
+
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -80,10 +81,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var state = ctx.GetResolverStateBefore(memberReferenceExpression);
 				var lookupName = state.LookupSimpleNameOrTypeName(memberReferenceExpression.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
 				
-				if (lookupName != null && wholeResult.Type.Equals(lookupName.Type)) {
+				if (lookupName is TypeResolveResult && !lookupName.IsError && wholeResult.Type.Equals(lookupName.Type)) {
 					AddIssue(memberReferenceExpression.StartLocation, memberReferenceExpression.MemberNameToken.StartLocation, inspector.Title, delegate {
 						using (var script = ctx.StartScript ()) {
-							script.Replace(memberReferenceExpression, new IdentifierExpression (memberReferenceExpression.MemberName));
+							script.Replace(memberReferenceExpression, RefactoringAstHelper.RemoveTarget(memberReferenceExpression));
 						}
 					}
 					);

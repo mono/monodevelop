@@ -17,28 +17,33 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace ICSharpCode.NRefactory.Semantics
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	/// <summary>
-	/// Represents the 'this' reference.
-	/// Also used for the 'base' reference.
+	/// Helper methods for constructing ASTs for refactoring.
+	/// These helpers work with frozen ASTs, i.e. they clone input nodes.
 	/// </summary>
-	public class ThisResolveResult : ResolveResult
+	public class RefactoringAstHelper
 	{
-		bool causesNonVirtualInvocation;
-		
-		public ThisResolveResult(IType type, bool causesNonVirtualInvocation = false) : base(type)
+		/// <summary>
+		/// Removes the target from a member reference while preserving the identifier and type arguments.
+		/// </summary>
+		public static IdentifierExpression RemoveTarget(MemberReferenceExpression mre)
 		{
-			this.causesNonVirtualInvocation = causesNonVirtualInvocation;
+			IdentifierExpression ident = new IdentifierExpression(mre.MemberName);
+			ident.TypeArguments.AddRange(mre.TypeArguments.Select(t => t.Clone()));
+			return ident;
 		}
 		
 		/// <summary>
-		/// Gets whether this resolve result causes member invocations to be non-virtual.
+		/// Removes the target from a member reference while preserving the identifier and type arguments.
 		/// </summary>
-		public bool CausesNonVirtualInvocation {
-			get { return causesNonVirtualInvocation; }
+		public static SimpleType RemoveTarget(MemberType memberType)
+		{
+			return new SimpleType(memberType.MemberName, memberType.TypeArguments.Select(t => t.Clone()));
 		}
 	}
 }

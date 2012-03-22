@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RedundantThisInspector.cs
 //  
 // Author:
@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
+
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -71,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (result is MemberResolveResult) {
 					return ((MemberResolveResult)result).Member;
 				} else if (result is MethodGroupResolveResult) {
-					return ((MethodGroupResolveResult)result).Methods.First ();
+					return ((MethodGroupResolveResult)result).Methods.FirstOrDefault ();
 				}
 
 				return null;
@@ -93,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				}
 
-				var result = state.LookupSimpleNameOrTypeName (memberReference.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
+				var result = state.LookupSimpleNameOrTypeName (memberReference.MemberName, EmptyList<IType>.Instance, SimpleNameLookupMode.Expression);
 			
 				bool isRedundant;
 				if (result is MemberResolveResult) {
@@ -107,7 +108,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (isRedundant) {
 					AddIssue(thisReferenceExpression.StartLocation, memberReference.MemberNameToken.StartLocation, inspector.Title, delegate {
 						using (var script = ctx.StartScript ()) {
-							script.Replace(memberReference, new IdentifierExpression (memberReference.MemberName));
+							script.Replace(memberReference, RefactoringAstHelper.RemoveTarget(memberReference));
 						}
 					}
 					);

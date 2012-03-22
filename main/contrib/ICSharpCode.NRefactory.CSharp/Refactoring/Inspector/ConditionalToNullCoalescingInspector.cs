@@ -39,23 +39,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static readonly Pattern pattern = new Choice {
 			// a != null ? a : other
 			new ConditionalExpression(
-				new Choice {
-					// a != null
-					new BinaryOperatorExpression(new AnyNode("a"), BinaryOperatorType.InEquality, new NullReferenceExpression()),
-					// null != a
-					new BinaryOperatorExpression(new NullReferenceExpression(), BinaryOperatorType.InEquality, new AnyNode("a")),
-				},
+				PatternHelper.CommutativeOperator(new AnyNode("a"), BinaryOperatorType.InEquality, new NullReferenceExpression()),
 				new Backreference("a"),
 				new AnyNode("other")
 			),
 			// a == null ? other : a
 			new ConditionalExpression(
-				new Choice {
-					// a == null
-					new BinaryOperatorExpression(new AnyNode("a"), BinaryOperatorType.Equality, new NullReferenceExpression()),
-					// null == a
-					new BinaryOperatorExpression(new NullReferenceExpression(), BinaryOperatorType.Equality, new AnyNode("a")),
-				},
+				PatternHelper.CommutativeOperator(new AnyNode("a"), BinaryOperatorType.Equality, new NullReferenceExpression()),
 				new AnyNode("other"),
 				new Backreference("a")
 			),

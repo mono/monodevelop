@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RedundantUsingInspector.cs
 //  
 // Author:
@@ -29,6 +29,8 @@ using ICSharpCode.NRefactory.PatternMatching;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -37,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class RedundantUsingInspector : IInspector
 	{
-		string title = "Remove redundant using";
+		string title = "Remove redundant usings";
 
 		public string Title {
 			get {
@@ -52,26 +54,77 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var visitor = new GatherVisitor (context, this);
 			context.RootNode.AcceptVisitor (visitor);
+			visitor.Collect ();
 			return visitor.FoundIssues;
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
 			readonly RedundantUsingInspector inspector;
+			Dictionary<UsingDeclaration, bool> usingDeclarations = new Dictionary<UsingDeclaration, bool> ();
+			
+			Stack<List<UsingDeclaration>> usingStack = new Stack<List<UsingDeclaration>> ();
 			
 			public GatherVisitor (BaseRefactoringContext ctx, RedundantUsingInspector inspector) : base (ctx)
 			{
 				this.inspector = inspector;
+				usingStack.Push (new List<UsingDeclaration> ());
+			}
+
+			public void Collect ()
+			{
+				foreach (var u in usingDeclarations.Where (u => !u.Value)) {
+					var decl = u.Key;
+					AddIssue (decl, inspector.Title, delegate {
+						using (var script = ctx.StartScript ()) {
+							foreach (var u2 in usingDeclarations.Where (a => !a.Value)) {
+								script.Remove (u2.Key);
+							}
+						}
+					}
+					);
+				}
 			}
 
 			public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 			{
 				base.VisitUsingDeclaration(usingDeclaration);
-				// TODO
-				//			return cSharpResolver.usedScopes
-				//				.OfType<ITypeOrNamespaceReference> ()
-				//				.Any (u => u.ResolveNamespace (ctx).NamespaceName == ns) || additionalNamespaces.Contains (ns);
+				usingDeclarations [usingDeclaration] = false;
+				usingStack.Peek().Add(usingDeclaration);
 			}
+			
+			public override void VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration)
+			{
+				usingStack.Push(new List<UsingDeclaration> (usingStack.Peek()));
+				base.VisitNamespaceDeclaration(namespaceDeclaration);
+				usingStack.Pop();
+			}
+			
+			void UseNamespace(string ns)
+			{
+				foreach (var u in usingStack.Peek ()) {
+					if (u.Namespace == ns) {
+						usingDeclarations [u] = true;
+					}
+				}
+			}
+
+			public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
+			{
+				base.VisitIdentifierExpression(identifierExpression);
+				UseNamespace(ctx.Resolve(identifierExpression).Type.Namespace);
+			}
+
+			public override void VisitInvocationExpression (InvocationExpression invocationExpression)
+			{
+				base.VisitInvocationExpression (invocationExpression);
+				var mg = ctx.Resolve (invocationExpression) as CSharpInvocationResolveResult;
+				if (mg == null || !mg.IsExtensionMethodInvocation) {
+					return;
+				}
+				UseNamespace (mg.Member.DeclaringType.Namespace);
+			}
+			
 		}
 	}
 }

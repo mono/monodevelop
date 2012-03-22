@@ -36,14 +36,13 @@ namespace Mono.CSharp
 		//
 		// Compiler generated container for static data
 		//
-		sealed class StaticDataContainer : CompilerGeneratedContainer
+		sealed class StaticDataContainer : CompilerGeneratedClass
 		{
 			readonly Dictionary<int, Struct> size_types;
 			int fields;
 
 			public StaticDataContainer (ModuleContainer module)
-				: base (module, new MemberName ("<PrivateImplementationDetails>" + module.builder.ModuleVersionId.ToString ("B"), Location.Null),
-					Modifiers.STATIC | Modifiers.INTERNAL)
+				: base (module, new MemberName ("<PrivateImplementationDetails>" + module.builder.ModuleVersionId.ToString ("B"), Location.Null), Modifiers.STATIC)
 			{
 				size_types = new Dictionary<int, Struct> ();
 			}

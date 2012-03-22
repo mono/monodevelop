@@ -120,14 +120,10 @@ namespace Mono.CSharp
 			ml.AddressOf (ec, mode);
 		}
 
-		public Argument EmitToField (EmitContext ec, bool cloneResult)
+		public Argument EmitToField (EmitContext ec)
 		{
 			var res = Expr.EmitToField (ec);
-			if (cloneResult && res != Expr)
-				return new Argument (res, ArgType);
-
-			Expr = res;
-			return this;
+			return res == Expr ? this : new Argument (res, ArgType);
 		}
 
 		public string GetSignatureForError ()
@@ -262,7 +258,7 @@ namespace Mono.CSharp
 			{
 				foreach (var a in ordered) {
 					if (prepareAwait)
-						a.EmitToField (ec, false);
+						a.EmitToField (ec);
 					else
 						a.EmitToVariable (ec);
 				}
@@ -444,7 +440,7 @@ namespace Mono.CSharp
 			LocalTemporary lt;
 			foreach (Argument a in args) {
 				if (prepareAwait) {
-					dups.Add (a.EmitToField (ec, true));
+					dups.Add (a.EmitToField (ec));
 					continue;
 				}
 				

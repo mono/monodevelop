@@ -19,7 +19,6 @@ using System.Security.Permissions;
 using System.Text;
 using System.Linq;
 using Mono.CompilerServices.SymbolWriter;
-using System.Runtime.CompilerServices;
 
 #if NET_2_1
 using XmlElement = System.Object;
@@ -534,13 +533,10 @@ namespace Mono.CSharp {
 			}
 
 			if (a.Type == pa.MethodImpl) {
-				if ((ModFlags & Modifiers.ASYNC) != 0 && (a.GetMethodImplOptions () & MethodImplOptions.Synchronized) != 0) {
-					Report.Error (4015, a.Location, "`{0}': Async methods cannot use `MethodImplOptions.Synchronized'",
-						GetSignatureForError ());
-				}
-
 				is_external_implementation = a.IsInternalCall ();
-			} else if (a.Type == pa.DllImport) {
+			}
+
+			if (a.Type == pa.DllImport) {
 				const Modifiers extern_static = Modifiers.EXTERN | Modifiers.STATIC;
 				if ((ModFlags & extern_static) != extern_static) {
 					Report.Error (601, a.Location, "The DllImport attribute must be specified on a method marked `static' and `extern'");
@@ -637,7 +633,7 @@ namespace Mono.CSharp {
 			if ((ModFlags & Modifiers.PARTIAL) != 0) {
 				for (int i = 0; i < parameters.Count; ++i) {
 					IParameterData p = parameters.FixedParameters [i];
-					if ((p.ModFlags & Parameter.Modifier.OUT) != 0) {
+					if (p.ModFlags == Parameter.Modifier.OUT) {
 						Report.Error (752, Location, "`{0}': A partial method parameters cannot use `out' modifier",
 							GetSignatureForError ());
 					}
@@ -892,7 +888,7 @@ namespace Mono.CSharp {
 
 			var ac = parameters.Types [0] as ArrayContainer;
 			return ac != null && ac.Rank == 1 && ac.Element.BuiltinType == BuiltinTypeSpec.Type.String &&
-					(parameters[0].ModFlags & Parameter.Modifier.RefOutMask) == 0;
+					(parameters[0].ModFlags & ~Parameter.Modifier.PARAMS) == Parameter.Modifier.NONE;
 		}
 
 		public override FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
@@ -940,7 +936,7 @@ namespace Mono.CSharp {
 				}
 
 				for (int i = 0; i < parameters.Count; ++i) {
-					if ((parameters.FixedParameters [i].ModFlags & Parameter.Modifier.OUT) != 0) {
+					if (parameters.FixedParameters [i].ModFlags == Parameter.Modifier.OUT) {
 						Report.Error (685, Location, "Conditional method `{0}' cannot have an out parameter", GetSignatureForError ());
 						return;
 					}
@@ -1703,11 +1699,6 @@ namespace Mono.CSharp {
 			return null;
 		}
 
-		public override string GetCallerMemberName ()
-		{
-			return IsStatic ? TypeConstructorName : ConstructorName;
-		}
-
 		public override string GetSignatureForDocumentation ()
 		{
 			return Parent.GetSignatureForDocumentation () + ".#ctor" + parameters.GetSignatureForDocumentation ();
@@ -2113,7 +2104,7 @@ namespace Mono.CSharp {
 			get;
 			set;
 		}
-		
+
 		public Destructor (TypeDefinition parent, Modifiers mod, ParametersCompiled parameters, Attributes attrs, Location l)
 			: base (parent, null, mod, AllowedModifiers, new MemberName (MetadataName, l), attrs, parameters)
 		{
@@ -2354,11 +2345,6 @@ namespace Mono.CSharp {
 				return true;
 
 			return false;
-		}
-
-		public override string GetCallerMemberName ()
-		{
-			return base.GetCallerMemberName ().Substring (prefix.Length);
 		}
 
 		public override string GetSignatureForDocumentation ()
