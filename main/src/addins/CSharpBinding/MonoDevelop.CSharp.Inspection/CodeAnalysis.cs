@@ -120,8 +120,12 @@ namespace MonoDevelop.CSharp.Inspection
 				return Enumerable.Empty<Result> ();
 			var result = new BlockingCollection<Result> ();
 			Parallel.ForEach (inspectors, (inspector) => {
-				foreach (var r in inspector.GetResults (context))
-					result.Add (r);
+				try {
+					foreach (var r in inspector.GetResults (context))
+						result.Add (r);
+				} catch (Exception e) {
+					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + inspector + "'", e);
+				}
 			});
 
 			return result;
