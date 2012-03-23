@@ -53,6 +53,11 @@ namespace Mono.Debugging.Soft
 		public List<AssemblyName> UserAssemblyNames { get; set; }
 		
 		/// <summary>
+		/// A mapping of AssemblyNames to their paths.
+		/// </summary>
+		public Dictionary<string, string> AssemblyPathMap { get; set; }
+		
+		/// <summary>
 		/// The session will output this to the debug log as soon as it starts. It can be used to log warnings from
 		/// creating the SoftDebuggerStartInfo
 		/// </summary>

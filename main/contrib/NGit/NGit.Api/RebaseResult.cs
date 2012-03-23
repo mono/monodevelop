@@ -74,6 +74,9 @@ namespace NGit.Api
 			public static RebaseResult.Status FAST_FORWARD = new RebaseResult.Status.FAST_FORWARD_Class
 				();
 
+			public static RebaseResult.Status NOTHING_TO_COMMIT = new RebaseResult.Status.NOTHING_TO_COMMIT_Class
+				();
+
 			internal class OK_Class : RebaseResult.Status
 			{
 				public override bool IsSuccessful()
@@ -122,6 +125,14 @@ namespace NGit.Api
 				}
 			}
 
+			internal class NOTHING_TO_COMMIT_Class : RebaseResult.Status
+			{
+				public override bool IsSuccessful()
+				{
+					return false;
+				}
+			}
+
 			public abstract bool IsSuccessful();
 		}
 
@@ -136,6 +147,9 @@ namespace NGit.Api
 
 		internal static readonly RebaseResult FAST_FORWARD_RESULT = new RebaseResult(RebaseResult.Status
 			.FAST_FORWARD);
+
+		internal static readonly RebaseResult NOTHING_TO_COMMIT_RESULT = new RebaseResult
+			(RebaseResult.Status.NOTHING_TO_COMMIT);
 
 		private readonly RebaseResult.Status status;
 

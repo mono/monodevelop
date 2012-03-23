@@ -46,6 +46,7 @@ using System.IO;
 using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
+using NGit.Errors;
 using NGit.Storage.File;
 using NGit.Submodule;
 using NGit.Treewalk.Filter;
@@ -178,15 +179,20 @@ namespace NGit.Api
 			// Save path and URL to parent repository's .gitmodules file
 			FileBasedConfig modulesConfig = new FileBasedConfig(new FilePath(repo.WorkTree, Constants
 				.DOT_GIT_MODULES), repo.FileSystem);
-			modulesConfig.SetString(ConfigConstants.CONFIG_SUBMODULE_SECTION, path, ConfigConstants
-				.CONFIG_KEY_PATH, path);
-			modulesConfig.SetString(ConfigConstants.CONFIG_SUBMODULE_SECTION, path, ConfigConstants
-				.CONFIG_KEY_URL, uri);
 			try
 			{
+				modulesConfig.Load();
+				modulesConfig.SetString(ConfigConstants.CONFIG_SUBMODULE_SECTION, path, ConfigConstants
+					.CONFIG_KEY_PATH, path);
+				modulesConfig.SetString(ConfigConstants.CONFIG_SUBMODULE_SECTION, path, ConfigConstants
+					.CONFIG_KEY_URL, uri);
 				modulesConfig.Save();
 			}
 			catch (IOException e)
+			{
+				throw new JGitInternalException(e.Message, e);
+			}
+			catch (ConfigInvalidException e)
 			{
 				throw new JGitInternalException(e.Message, e);
 			}

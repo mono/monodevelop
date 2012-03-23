@@ -231,79 +231,86 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
 		{
-			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
-			if (staticResolve)
-				flags |= OutputFlags.StaticUsage;
-			string name = (this.delegateName ?? (methods [overload].IsConstructor ? ambience.GetString (methods [overload].DeclaringType, flags) : methods [overload].Name));
-			StringBuilder parameters = new StringBuilder ();
-			int curLen = 0;
-			string prefix = !methods [overload].IsConstructor ? ambience.GetString (methods [overload].ReturnType, flags) + " " : "";
-
-			foreach (string parameter in parameterMarkup) {
-				if (parameters.Length > 0)
-					parameters.Append (", ");
-				string text;
-				Pango.AttrList attrs;
-				char ch;
-				Pango.Global.ParseMarkup (parameter, '_', out attrs, out text, out ch);
-				if (curLen > 80) {
-					parameters.AppendLine ();
-					parameters.Append (new string (' ', (prefix != null ? prefix.Length : 0) + name.Length + 4));
-					curLen = 0;
-				}
-				curLen += text.Length + 2;
-				parameters.Append (parameter);
-			}
-			StringBuilder sb = new StringBuilder ();
-			if (!staticResolve && methods [overload].WasExtended)
-				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			sb.Append (prefix);
-			sb.Append ("<b>");
-			sb.Append (CSharpAmbience.FilterName (name));
-			sb.Append ("</b> (");
-			sb.Append (parameters.ToString ());
-			sb.Append (")");
-
-			if (methods [overload].IsObsolete) {
-				sb.AppendLine ();
-				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
-			}
-			IParameter curParameter = currentParameter >= 0 && currentParameter < methods [overload].Parameters.Count ? methods [overload].Parameters [currentParameter] : null;
-
-			string docText = AmbienceService.GetDocumentation (methods [overload]);
-
-			if (!string.IsNullOrEmpty (docText)) {
-				string text = docText;
-				if (curParameter != null) {
-					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
-					Match match = paramRegex.Match (docText);
-					if (match.Success) {
-						text = match.Groups [1].Value;
-						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>" + text;
+			try {
+				if (overload < 0 || overload >= methods.Count)
+					return "";
+				var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
+				if (staticResolve)
+					flags |= OutputFlags.StaticUsage;
+				string name = (this.delegateName ?? (methods [overload].IsConstructor ? ambience.GetString (methods [overload].DeclaringType, flags) : methods [overload].Name));
+				StringBuilder parameters = new StringBuilder ();
+				int curLen = 0;
+				string prefix = !methods [overload].IsConstructor ? ambience.GetString (methods [overload].ReturnType, flags) + " " : "";
+	
+				foreach (string parameter in parameterMarkup) {
+					if (parameters.Length > 0)
+						parameters.Append (", ");
+					string text;
+					Pango.AttrList attrs;
+					char ch;
+					Pango.Global.ParseMarkup (parameter, '_', out attrs, out text, out ch);
+					if (curLen > 80) {
+						parameters.AppendLine ();
+						parameters.Append (new string (' ', (prefix != null ? prefix.Length : 0) + name.Length + 4));
+						curLen = 0;
 					}
-				} else {
-					text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>";
+					curLen += text.Length + 2;
+					parameters.Append (parameter);
 				}
-				sb.AppendLine ();
-				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
-					HighlightParameter = curParameter != null ? curParameter.Name : null,
-					Ambience = ambience,
-					SmallText = true
-				}));
-			}
-			
-			if (curParameter != null) {
-				var returnType = curParameter.DeclaringMember.SourceProjectDom.GetType (curParameter.ReturnType);
-				if (returnType != null && returnType.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
+				StringBuilder sb = new StringBuilder ();
+				if (!staticResolve && methods [overload].WasExtended)
+					sb.Append (GettextCatalog.GetString ("(Extension) "));
+				sb.Append (prefix);
+				sb.Append ("<b>");
+				sb.Append (CSharpAmbience.FilterName (name));
+				sb.Append ("</b> (");
+				sb.Append (parameters.ToString ());
+				sb.Append (")");
+	
+				if (methods [overload].IsObsolete) {
 					sb.AppendLine ();
-					sb.AppendLine ();
-					sb.Append ("<small>");
-					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
-					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
-					sb.Append ("</small>");
+					sb.Append (GettextCatalog.GetString ("[Obsolete]"));
 				}
+				IParameter curParameter = methods [overload].Parameters != null && currentParameter >= 0 && currentParameter < methods [overload].Parameters.Count ? methods [overload].Parameters [currentParameter] : null;
+	
+				string docText = AmbienceService.GetDocumentation (methods [overload]);
+	
+				if (!string.IsNullOrEmpty (docText)) {
+					string text = docText;
+					if (curParameter != null) {
+						Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
+						Match match = paramRegex.Match (docText);
+						if (match.Success) {
+							text = match.Groups [1].Value;
+							text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>" + text;
+						}
+					} else {
+						text = "<summary>" + AmbienceService.GetDocumentationSummary (methods [overload]) + "</summary>";
+					}
+					sb.AppendLine ();
+					sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
+						HighlightParameter = curParameter != null ? curParameter.Name : null,
+						Ambience = ambience,
+						SmallText = true
+					}));
+				}
+				
+				if (curParameter != null && curParameter.DeclaringMember != null && curParameter.DeclaringMember.SourceProjectDom != null) {
+					var returnType = curParameter.DeclaringMember.SourceProjectDom.GetType (curParameter.ReturnType);
+					if (returnType != null && returnType.ClassType == MonoDevelop.Projects.Dom.ClassType.Delegate) {
+						sb.AppendLine ();
+						sb.AppendLine ();
+						sb.Append ("<small>");
+						sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
+						sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
+						sb.Append ("</small>");
+					}
+				}
+				return sb.ToString ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error in parameter data provider.", ex);
+				return "";
 			}
-			return sb.ToString ();
 		}
 		
 		public string GetParameterMarkup (int overload, int paramIndex)

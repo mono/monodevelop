@@ -8,6 +8,8 @@ namespace Sharpen
 
 	public class FilePath
 	{
+		static bool RunningOnLinux = !Environment.OSVersion.Platform.ToString ().StartsWith ("Win");
+		
 		private string path;
 		private static long tempCounter;
 
@@ -55,12 +57,12 @@ namespace Sharpen
 
 		public bool CanWrite ()
 		{
-			try {
+			if (RunningOnLinux) {
 				var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
 				return info.CanAccess (Mono.Unix.Native.AccessModes.W_OK);
-			} catch {
-				return ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0);
 			}
+			
+			return ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0);
 		}
 
 		public bool CreateNewFile ()
@@ -102,13 +104,18 @@ namespace Sharpen
 		public bool Delete ()
 		{
 			try {
-				try {
+				if (RunningOnLinux) {
 					var info = UnixFileSystemInfo.GetFileSystemEntry (path);
-					if (info.Exists)
-						info.Delete ();
-					return true;
-				} catch {
-					
+					if (info.Exists) {
+						try {
+							info.Delete ();
+							return true;
+						} catch {
+							// If the directory is not empty we return false. JGit relies on this
+							return false;
+						}
+					}
+					return false;
 				}
 
 				if (Directory.Exists (path)) {
@@ -116,13 +123,14 @@ namespace Sharpen
 						return false;
 					MakeDirWritable (path);
 					Directory.Delete (path, true);
-				} else {
-					if (!File.Exists (path))
-						return false;
+                    return true;
+                }
+                else if (File.Exists(path)) {
 					MakeFileWritable (path);
 					File.Delete (path);
-				}
-				return true;
+                    return true;
+                }
+				return false;
 			} catch (Exception exception) {
 				Console.WriteLine (exception);
 				return false;
@@ -135,11 +143,10 @@ namespace Sharpen
 
 		public bool Exists ()
 		{
-			try {
+			if (RunningOnLinux)
 				return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path).Exists;
-			} catch {
-				return (File.Exists (path) || Directory.Exists (path));
-			}
+
+			return (File.Exists (path) || Directory.Exists (path));
 		}
 
 		public FilePath GetAbsoluteFile ()
@@ -187,48 +194,55 @@ namespace Sharpen
 		public bool IsDirectory ()
 		{
 			try {
-				var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
-				return info.Exists && info.FileType == FileTypes.Directory;
-			} catch {
-				return Directory.Exists (path);
+				if (RunningOnLinux) {
+					var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
+					return info.Exists && info.FileType == FileTypes.Directory;
+				}
+			} catch (DirectoryNotFoundException) {
+				// If the file /foo/bar exists and we query to see if /foo/bar/baz exists, we get a
+				// DirectoryNotFound exception for Mono.Unix. In this case the directory definitely
+				// does not exist.
+				return false;
 			}
+			return Directory.Exists (path);
 		}
 
 		public bool IsFile ()
 		{
 			try {
-				var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
-				return info.Exists && (info.FileType == FileTypes.RegularFile || info.FileType == FileTypes.SymbolicLink);
-			} catch {
-				return File.Exists (path);
+				if (RunningOnLinux) {
+					var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
+					return info.Exists && (info.FileType == FileTypes.RegularFile || info.FileType == FileTypes.SymbolicLink);
+				}
+			} catch (DirectoryNotFoundException) {
+				// If we have a file /foo/bar and probe the path /foo/bar/baz, we get a DirectoryNotFound exception
+				// because 'bar' is a file and therefore 'baz' cannot possibly exist. This is annoying.
+				return false;
 			}
+			return File.Exists (path);
 		}
 
 		public long LastModified ()
 		{
-			if (!Exists ())
-				return 0;
+            if (RunningOnLinux) {
+                var info = UnixFileInfo.GetFileSystemEntry(path);
+                return info.Exists ? info.LastWriteTimeUtc.ToMillisecondsSinceEpoch() : 0;
+            }
 
-			try {
-				return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path).LastWriteTimeUtc.ToMillisecondsSinceEpoch ();
-			} catch {
-				return File.GetLastWriteTimeUtc (path).ToMillisecondsSinceEpoch ();
-			}
+            var info2 = new FileInfo(path);
+			return info2.Exists ? info2.LastWriteTimeUtc.ToMillisecondsSinceEpoch() : 0;
 		}
 
 		public long Length ()
 		{
-			try {
+			if (RunningOnLinux) {
 				var info = UnixFileInfo.GetFileSystemEntry (path);
-				if (info.Exists)
-					return info.Length;
-			} catch {
-				var info = new FileInfo (path);
-				if (info.Exists)
-					return info.Length;
+				return info.Exists ? info.Length : 0;
 			}
 
-			return 0;
+			// If you call .Length on a file that doesn't exist, an exception is thrown
+			var info2 = new FileInfo (path);
+			return info2.Exists ? info2.Length : 0;
 		}
 
 		public string[] List ()
@@ -281,15 +295,16 @@ namespace Sharpen
 
 		private void MakeFileWritable (string file)
 		{
-			try {
+			if (RunningOnLinux) {
 				var info = UnixFileInfo.GetFileSystemEntry (file);
 				info.FileAccessPermissions |= (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
-			} catch {
-				FileAttributes fileAttributes = File.GetAttributes (file);
-				if ((fileAttributes & FileAttributes.ReadOnly) != 0) {
-					fileAttributes &= ~FileAttributes.ReadOnly;
-					File.SetAttributes (file, fileAttributes);
-				}
+				return;
+			}
+
+			FileAttributes fileAttributes = File.GetAttributes (file);
+			if ((fileAttributes & FileAttributes.ReadOnly) != 0) {
+				fileAttributes &= ~FileAttributes.ReadOnly;
+				File.SetAttributes (file, fileAttributes);
 			}
 		}
 
@@ -325,19 +340,16 @@ namespace Sharpen
 		public bool RenameTo (string name)
 		{
 			try {
-				try {
+				if (RunningOnLinux) {
 					var symlink = UnixFileInfo.GetFileSystemEntry (path) as UnixSymbolicLinkInfo;
 					if (symlink != null) {
 						var newFile = new UnixSymbolicLinkInfo (name);
 						newFile.CreateSymbolicLinkTo (symlink.ContentsPath);
-					} else {
-						File.Move (path, name);
 					}
-					return true;
-				} catch {
-					File.Move (path, name);
-					return true;
 				}
+
+				File.Move (path, name);
+				return true;
 			} catch {
 				return false;
 			}
@@ -352,12 +364,14 @@ namespace Sharpen
 
 		public void SetReadOnly ()
 		{
-			try {
-				UnixFileInfo.GetFileSystemEntry (path).FileAccessPermissions &= ~ (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
-			} catch {
-				FileAttributes fileAttributes = File.GetAttributes (this.path) | FileAttributes.ReadOnly;
-				File.SetAttributes (path, fileAttributes);
+			if (RunningOnLinux) {
+				var info = UnixFileInfo.GetFileSystemEntry (path);
+				info.FileAccessPermissions &= ~ (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
+				return;
 			}
+
+			var fileAttributes = File.GetAttributes (this.path) | FileAttributes.ReadOnly;
+			File.SetAttributes (path, fileAttributes);
 		}
 		
 		public Uri ToURI ()
@@ -368,16 +382,20 @@ namespace Sharpen
 		// Don't change the case of this method, since ngit does reflection on it
 		public bool canExecute ()
 		{
-			UnixFileInfo fi = new UnixFileInfo (path);
-			if (!fi.Exists)
-				return false;
-			return 0 != (fi.FileAccessPermissions & (FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute));
+			if (RunningOnLinux) {
+				UnixFileInfo fi = new UnixFileInfo (path);
+				if (!fi.Exists)
+					return false;
+				return 0 != (fi.FileAccessPermissions & (FileAccessPermissions.UserExecute | FileAccessPermissions.GroupExecute | FileAccessPermissions.OtherExecute));
+			}
+
+			return false;
 		}
 		
 		// Don't change the case of this method, since ngit does reflection on it
 		public bool setExecutable (bool exec)
 		{
-			try {
+			if (RunningOnLinux) {
 				UnixFileInfo fi = new UnixFileInfo (path);
 				FileAccessPermissions perms = fi.FileAccessPermissions;
 				if (exec) {
@@ -397,9 +415,9 @@ namespace Sharpen
 				}
 				fi.FileAccessPermissions = perms;
 				return true;
-			} catch {
-				return false;
 			}
+
+			return false;
 		}
 		
 		public string GetParent ()

@@ -67,10 +67,6 @@ namespace MonoDevelop.VersionControl.Views
 			set { LeftDiff = value; }
 		}
 		
-		protected ComparisonWidget (IntPtr ptr) : base (ptr)
-		{
-		}
-		
 		protected override void CreateComponents ()
 		{
 			this.editors = new [] {

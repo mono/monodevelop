@@ -151,6 +151,7 @@
     <Compile Include="Sharpen\ThreadPoolExecutor.cs" />
     <Compile Include="Sharpen\WeakReference.cs" />
     <Compile Include="Sharpen\Process.cs" />
+    <Compile Include="Sharpen\DateFormat.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

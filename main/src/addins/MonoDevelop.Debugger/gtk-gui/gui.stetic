@@ -1782,6 +1782,7 @@
                 <property name="Xalign">0</property>
                 <property name="LabelProp">&lt;b&gt;Exception&lt;/b&gt; has been thrown</property>
                 <property name="UseMarkup">True</property>
+                <property name="Selectable">True</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -1797,6 +1798,7 @@
                 <property name="Xalign">0</property>
                 <property name="LabelProp">test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test</property>
                 <property name="Wrap">True</property>
+                <property name="Selectable">True</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -1814,13 +1816,14 @@
                   <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
                     <property name="MemberName" />
                     <property name="ShadowType">In</property>
-                    <property name="BorderWidth">3</property>
                     <child>
-                      <widget class="Gtk.TreeView" id="treeStack">
+                      <widget class="Gtk.TextView" id="stackTextView">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ShowScrollbars">True</property>
-                        <property name="HeadersVisible">False</property>
+                        <property name="Editable">False</property>
+                        <property name="CursorVisible">False</property>
+                        <property name="Text" translatable="yes" />
                       </widget>
                     </child>
                   </widget>

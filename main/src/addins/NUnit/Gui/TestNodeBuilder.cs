@@ -92,23 +92,26 @@ namespace MonoDevelop.NUnit
 				UnitTestResult res = test.GetLastResult ();
 				if (res == null)
 					icon = CircleImage.None;
-				else if (res.IsFailure && res.IsSuccess)
+				else if (res.Inconclusive > 0)
+					icon = CircleImage.Inconclusive;
+				else if (res.ErrorsAndFailures > 0 && res.Passed > 0)
 					icon = CircleImage.SuccessAndFailure;
 				else if (res.IsFailure)
 					icon = CircleImage.Failure;
 				else if (res.IsSuccess) {
 					icon = CircleImage.Success;
-					if (treeBuilder.Options ["ShowTestTime"]) {
-						label += " (" + (res.Time.TotalMilliseconds) + " ms)";
-					}
-				}
-				else if (res.IsIgnored)
+
+				} else if (res.IsNotRun)
 					icon = CircleImage.NotRun;
 				else
 					icon = CircleImage.None;
-				
+
 				if (res != null && treeBuilder.Options ["ShowTestCounters"] && (test is UnitTestGroup)) {
-					label += string.Format (GettextCatalog.GetString (" ({0} success, {1} failed, {2} ignored)"), res.TotalSuccess, res.TotalFailures, res.TotalIgnored);
+					label += string.Format (GettextCatalog.GetString (" ({0} passed, {1} failed, {2} not run)"), res.Passed, res.ErrorsAndFailures, res.TestsNotRun);
+				}
+
+				if (treeBuilder.Options ["ShowTestTime"]) {
+					label += "   Time: {0}ms" + (res.Time.TotalMilliseconds);
 				}
 			}
 		}

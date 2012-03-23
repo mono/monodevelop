@@ -93,16 +93,7 @@ namespace NGit.Transport
 			}
 		}
 
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
-		public override void OnPreAdvertiseRefs(UploadPack up)
-		{
-			for (int i = 0; i < count; i++)
-			{
-				hooks[i].OnPreAdvertiseRefs(up);
-			}
-		}
-
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		public override void OnBeginNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
 			, int cntOffered)
 		{
@@ -112,7 +103,7 @@ namespace NGit.Transport
 			}
 		}
 
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		public override void OnEndNegotiateRound<_T0>(UploadPack up, ICollection<_T0> wants
 			, int cntCommon, int cntNotFound, bool ready)
 		{
@@ -122,7 +113,7 @@ namespace NGit.Transport
 			}
 		}
 
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		public override void OnSendPack<_T0, _T1>(UploadPack up, ICollection<_T0> wants, 
 			ICollection<_T1> haves)
 		{

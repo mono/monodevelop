@@ -238,9 +238,9 @@ namespace NSch
 			}
 			if (env != null)
 			{
-				for (IEnumerator _env = env.Keys.GetEnumerator (); _env.MoveNext(); )
+				foreach (var v in env.Keys)
 				{
-					object name = _env.Current;
+					object name = v;
 					object value = env[name];
 					request = new RequestEnv();
 					((RequestEnv)request).SetEnv(ToByteArray(name), ToByteArray(value));
@@ -268,8 +268,7 @@ namespace NSch
 			{
 				while (IsConnected() && thread != null && io != null && io.@in != null)
 				{
-					i = io.@in.Read(buf.buffer, 14, buf.buffer.Length - 14 - 32 - 20);
-					// padding and mac
+					i = io.@in.Read(buf.buffer, 14, buf.buffer.Length - 14 - Session.buffer_margin);
 					if (i == 0)
 					{
 						continue;

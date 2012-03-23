@@ -521,6 +521,26 @@ namespace NGit.Dircache
 			}
 		}
 
+		/// <summary>Compares whether two pairs of ObjectId and FileMode are equal.</summary>
+		/// <remarks>Compares whether two pairs of ObjectId and FileMode are equal.</remarks>
+		/// <param name="id1"></param>
+		/// <param name="mode1"></param>
+		/// <param name="id2"></param>
+		/// <param name="mode2"></param>
+		/// <returns>
+		/// <code>true</code> if FileModes and ObjectIds are equal.
+		/// <code>false</code> otherwise
+		/// </returns>
+		private bool EqualIdAndMode(ObjectId id1, FileMode mode1, ObjectId id2, FileMode 
+			mode2)
+		{
+			if (!mode1.Equals(mode2))
+			{
+				return false;
+			}
+			return id1 != null ? id1.Equals(id2) : id2 == null;
+		}
+
 		/// <summary>Here the main work is done.</summary>
 		/// <remarks>
 		/// Here the main work is done. This method is called for each existing path
@@ -536,7 +556,7 @@ namespace NGit.Dircache
 		internal virtual void ProcessEntry(AbstractTreeIterator h, AbstractTreeIterator m
 			, DirCacheBuildIterator i, WorkingTreeIterator f)
 		{
-			DirCacheEntry dce;
+			DirCacheEntry dce = i != null ? i.GetDirCacheEntry() : null;
 			string name = walk.PathString;
 			if (i == null && m == null && h == null)
 			{
@@ -552,6 +572,9 @@ namespace NGit.Dircache
 			ObjectId iId = (i == null ? null : i.EntryObjectId);
 			ObjectId mId = (m == null ? null : m.EntryObjectId);
 			ObjectId hId = (h == null ? null : h.EntryObjectId);
+			FileMode iMode = (i == null ? null : i.EntryFileMode);
+			FileMode mMode = (m == null ? null : m.EntryFileMode);
+			FileMode hMode = (h == null ? null : h.EntryFileMode);
 			// The information whether head,index,merge iterators are currently
 			// pointing to file/folder/non-existing is encoded into this variable.
 			//
@@ -569,18 +592,18 @@ namespace NGit.Dircache
 			int ffMask = 0;
 			if (h != null)
 			{
-				ffMask = FileMode.TREE.Equals(h.EntryFileMode) ? unchecked((int)(0xD00)) : unchecked(
-					(int)(0xF00));
+				ffMask = FileMode.TREE.Equals(hMode) ? unchecked((int)(0xD00)) : unchecked((int)(
+					0xF00));
 			}
 			if (i != null)
 			{
-				ffMask |= FileMode.TREE.Equals(i.EntryFileMode) ? unchecked((int)(0x0D0)) : unchecked(
-					(int)(0x0F0));
+				ffMask |= FileMode.TREE.Equals(iMode) ? unchecked((int)(0x0D0)) : unchecked((int)
+					(0x0F0));
 			}
 			if (m != null)
 			{
-				ffMask |= FileMode.TREE.Equals(m.EntryFileMode) ? unchecked((int)(0x00D)) : unchecked(
-					(int)(0x00F));
+				ffMask |= FileMode.TREE.Equals(mMode) ? unchecked((int)(0x00D)) : unchecked((int)
+					(0x00F));
 			}
 			// Check whether we have a possible file/folder conflict. Therefore we
 			// need a least one file and one folder.
@@ -600,12 +623,12 @@ namespace NGit.Dircache
 						// 1 2
 						if (IsModified(name))
 						{
-							Conflict(name, i.GetDirCacheEntry(), h, m);
+							Conflict(name, dce, h, m);
 						}
 						else
 						{
 							// 1
-							Update(name, m.EntryObjectId, m.EntryFileMode);
+							Update(name, mId, mMode);
 						}
 						// 2
 						break;
@@ -635,7 +658,7 @@ namespace NGit.Dircache
 						// 10 11
 						// TODO: make use of tree extension as soon as available in jgit
 						// we would like to do something like
-						// if (!iId.equals(mId))
+						// if (!equalIdAndMode(iId, iMode, mId, mMode)
 						//   conflict(name, i.getDirCacheEntry(), h, m);
 						// But since we don't know the id of a tree in the index we do
 						// nothing here and wait that conflicts between index and merge
@@ -646,7 +669,7 @@ namespace NGit.Dircache
 					case unchecked((int)(0xD0F)):
 					{
 						// 19
-						Update(name, mId, m.EntryFileMode);
+						Update(name, mId, mMode);
 						break;
 					}
 
@@ -655,23 +678,23 @@ namespace NGit.Dircache
 					{
 						// conflict without a rule
 						// 15
-						Conflict(name, (i != null) ? i.GetDirCacheEntry() : null, h, m);
+						Conflict(name, dce, h, m);
 						break;
 					}
 
 					case unchecked((int)(0xFDF)):
 					{
 						// 7 8 9
-						if (hId.Equals(mId))
+						if (EqualIdAndMode(hId, hMode, mId, mMode))
 						{
 							if (IsModified(name))
 							{
-								Conflict(name, i.GetDirCacheEntry(), h, m);
+								Conflict(name, dce, h, m);
 							}
 							else
 							{
 								// 8
-								Update(name, mId, m.EntryFileMode);
+								Update(name, mId, mMode);
 							}
 						}
 						else
@@ -679,13 +702,13 @@ namespace NGit.Dircache
 							// 7
 							if (!IsModified(name))
 							{
-								Update(name, mId, m.EntryFileMode);
+								Update(name, mId, mMode);
 							}
 							else
 							{
 								// 9
 								// To be confirmed - this case is not in the table.
-								Conflict(name, i.GetDirCacheEntry(), h, m);
+								Conflict(name, dce, h, m);
 							}
 						}
 						break;
@@ -694,16 +717,15 @@ namespace NGit.Dircache
 					case unchecked((int)(0xFD0)):
 					{
 						// keep without a rule
-						Keep(i.GetDirCacheEntry());
+						Keep(dce);
 						break;
 					}
 
 					case unchecked((int)(0xFFD)):
 					{
 						// 12 13 14
-						if (hId.Equals(iId))
+						if (EqualIdAndMode(hId, hMode, iId, iMode))
 						{
-							dce = i.GetDirCacheEntry();
 							if (f == null || f.IsModified(dce, true))
 							{
 								Conflict(name, dce, h, m);
@@ -715,7 +737,7 @@ namespace NGit.Dircache
 						}
 						else
 						{
-							Conflict(name, i.GetDirCacheEntry(), h, m);
+							Conflict(name, dce, h, m);
 						}
 						break;
 					}
@@ -725,18 +747,18 @@ namespace NGit.Dircache
 						// 16 17
 						if (!IsModified(name))
 						{
-							Update(name, mId, m.EntryFileMode);
+							Update(name, mId, mMode);
 						}
 						else
 						{
-							Conflict(name, i.GetDirCacheEntry(), h, m);
+							Conflict(name, dce, h, m);
 						}
 						break;
 					}
 
 					default:
 					{
-						Keep(i.GetDirCacheEntry());
+						Keep(dce);
 						break;
 					}
 				}
@@ -759,11 +781,11 @@ namespace NGit.Dircache
 				if (f != null)
 				{
 					// A submodule is not a file. We should ignore it
-					if (!FileMode.GITLINK.Equals(m.EntryFileMode))
+					if (!FileMode.GITLINK.Equals(mMode))
 					{
 						// a dirty worktree: the index is empty but we have a
 						// workingtree-file
-						if (mId == null || !mId.Equals(f.EntryObjectId))
+						if (mId == null || !EqualIdAndMode(mId, mMode, f.EntryObjectId, f.EntryFileMode))
 						{
 							Conflict(name, null, h, m);
 							return;
@@ -772,7 +794,7 @@ namespace NGit.Dircache
 				}
 				if (h == null)
 				{
-					Update(name, mId, m.EntryFileMode);
+					Update(name, mId, mMode);
 				}
 				else
 				{
@@ -784,17 +806,16 @@ namespace NGit.Dircache
 					else
 					{
 						// 2
-						Update(name, mId, m.EntryFileMode);
+						Update(name, mId, mMode);
 					}
 				}
 			}
 			else
 			{
 				// 3
-				dce = i.GetDirCacheEntry();
 				if (h == null)
 				{
-					if (m == null || mId.Equals(iId))
+					if (m == null || EqualIdAndMode(mId, mMode, iId, iMode))
 					{
 						if (m == null && walk.IsDirectoryFileConflict())
 						{
@@ -821,7 +842,7 @@ namespace NGit.Dircache
 				{
 					if (m == null)
 					{
-						if (dce.FileMode == FileMode.GITLINK)
+						if (iMode == FileMode.GITLINK)
 						{
 							// Submodules that disappear from the checkout must
 							// be removed from the index, but not deleted from disk.
@@ -829,7 +850,7 @@ namespace NGit.Dircache
 						}
 						else
 						{
-							if (hId.Equals(iId))
+							if (EqualIdAndMode(hId, hMode, iId, iMode))
 							{
 								if (f == null || f.IsModified(dce, true))
 								{
@@ -848,18 +869,20 @@ namespace NGit.Dircache
 					}
 					else
 					{
-						if (!hId.Equals(mId) && !hId.Equals(iId) && !mId.Equals(iId))
+						if (!EqualIdAndMode(hId, hMode, mId, mMode) && !EqualIdAndMode(hId, hMode, iId, iMode
+							) && !EqualIdAndMode(mId, mMode, iId, iMode))
 						{
 							Conflict(name, dce, h, m);
 						}
 						else
 						{
-							if (hId.Equals(iId) && !mId.Equals(iId))
+							if (EqualIdAndMode(hId, hMode, iId, iMode) && !EqualIdAndMode(mId, mMode, iId, iMode
+								))
 							{
 								// For submodules just update the index with the new SHA-1
 								if (dce != null && FileMode.GITLINK.Equals(dce.FileMode))
 								{
-									Update(name, mId, m.EntryFileMode);
+									Update(name, mId, mMode);
 								}
 								else
 								{
@@ -869,7 +892,7 @@ namespace NGit.Dircache
 									}
 									else
 									{
-										Update(name, mId, m.EntryFileMode);
+										Update(name, mId, mMode);
 									}
 								}
 							}

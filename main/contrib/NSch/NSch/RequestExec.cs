@@ -60,6 +60,7 @@ namespace NSch
 			buf.PutInt(channel.GetRecipient());
 			buf.PutString(Util.Str2byte("exec"));
 			buf.PutByte(unchecked((byte)(WaitForReply() ? 1 : 0)));
+			buf.CheckFreeSize(4 + command.Length);
 			buf.PutString(command);
 			Write(packet);
 		}

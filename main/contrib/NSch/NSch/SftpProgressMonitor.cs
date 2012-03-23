@@ -40,6 +40,8 @@ namespace NSch
 
 		public const int GET = 1;
 
+		public const long UNKNOWN_SIZE = -1L;
+
 		public abstract void Init(int op, string src, string dest, long max);
 
 		public abstract bool Count(long count);

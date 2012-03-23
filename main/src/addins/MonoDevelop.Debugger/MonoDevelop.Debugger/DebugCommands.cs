@@ -140,17 +140,22 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			if (DebuggingService.IsPaused || DebuggingService.IsDebugging) {
+			if (DebuggingService.IsRunning) {
+				info.Enabled = false;
+				return;
+			}
+			
+			if (DebuggingService.IsPaused) {
 				info.Enabled = true;
-				info.Text = GettextCatalog.GetString ("_Continue");
+				info.Text = GettextCatalog.GetString ("_Continue Debugging");
 				info.Description = GettextCatalog.GetString ("Continue the execution of the application");
 				return;
 			}
-
+			
 			// If there are no debugger installed, this command will not debug, it will
 			// just run, so the label has to be changed accordingly.
 			if (!DebuggingService.IsDebuggingSupported) {
-				info.Text = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted ? GettextCatalog.GetString ("_Run") : GettextCatalog.GetString ("_Run again");
+				info.Text = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted ? GettextCatalog.GetString ("Start Without Debugging") : GettextCatalog.GetString ("Restart Without Debugging");
 				info.Icon = "gtk-execute";
 			}
 

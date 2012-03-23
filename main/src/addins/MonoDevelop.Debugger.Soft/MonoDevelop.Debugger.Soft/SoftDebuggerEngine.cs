@@ -104,18 +104,25 @@ namespace MonoDevelop.Debugger.Soft
 			if (files == null || files.Count == 0)
 				return;
 			
+			var pathMap = new Dictionary<string, string> ();
 			var names = new List<AssemblyName> ();
+			
 			foreach (var file in files) {
 				if (!File.Exists (file)) {
 					dsi.LogMessage = GettextCatalog.GetString ("User assembly '{0}' is missing. " +
 						"Debugger will now debug all code, not just user code.", file);
 					return;
 				}
+				
 				try {
 					var asm = Mono.Cecil.AssemblyDefinition.ReadAssembly (file);
 					if (string.IsNullOrEmpty (asm.Name.Name))
 						throw new InvalidOperationException ("Assembly has no assembly name");
-					names.Add (new AssemblyName (asm.Name.FullName));
+					
+					AssemblyName name = new AssemblyName (asm.Name.FullName);
+					if (!pathMap.ContainsKey (asm.Name.FullName))
+						pathMap.Add (asm.Name.FullName, file);
+					names.Add (name);
 				} catch (Exception ex) {
 					dsi.LogMessage = GettextCatalog.GetString ("Could not get assembly name for user assembly '{0}'. " +
 						"Debugger will now debug all code, not just user code.", file);
@@ -123,7 +130,9 @@ namespace MonoDevelop.Debugger.Soft
 					return;
 				}
 			}
+			
 			dsi.UserAssemblyNames = names;
+			dsi.AssemblyPathMap = pathMap;
 		}
 		
 		class MDLogger : ICustomLogger

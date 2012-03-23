@@ -70,7 +70,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public NSObjectProjectInfo ProjectInfo {
 			get {
-				return pinfo ?? (pinfo = InfoService.GetProjectInfo (Project));
+				if (pinfo == null)
+					pinfo = InfoService.GetProjectInfo (Project);
+				
+				if (pinfo != null)
+					pinfo.Update (true);
+				
+				return pinfo;
 			}
 		}
 		
@@ -217,17 +223,33 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		}
 	}
 	
+	enum XcodeSyncFileStatus {
+		Added,
+		Modified,
+		Removed
+	}
+	
 	class XcodeSyncFileBackJob
 	{
 		public FilePath Original;
 		public FilePath SyncedRelative;
-		public bool IsFreshlyAdded;
+		public XcodeSyncFileStatus Status;
 		
-		public XcodeSyncFileBackJob (FilePath original, FilePath syncedRelative, bool isFreshlyAdded)
+		public bool IsNewOrModified {
+			get {
+				switch (Status) {
+				case XcodeSyncFileStatus.Modified: return true;
+				case XcodeSyncFileStatus.Added: return true;
+				default: return false;
+				}
+			}
+		}
+		
+		public XcodeSyncFileBackJob (FilePath original, FilePath syncedRelative, XcodeSyncFileStatus status)
 		{
-			IsFreshlyAdded = isFreshlyAdded;
 			SyncedRelative = syncedRelative;
 			Original = original;
+			Status = status;
 		}
 	}
 }

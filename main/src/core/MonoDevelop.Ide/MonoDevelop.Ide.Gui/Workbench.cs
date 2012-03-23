@@ -845,21 +845,28 @@ namespace MonoDevelop.Ide.Gui
 			
 			NavigationHistoryService.LogActiveDocument ();
 			
-			string currentFileName = prefs.ActiveDocument != null ? Path.GetFullPath (Path.Combine (args.Item.BaseDirectory, prefs.ActiveDocument)) : null;
-			IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.OpenFileIcon, true);
 			List<IViewContent> docViews = new List<IViewContent> ();
+			FilePath baseDir = args.Item.BaseDirectory;
 			IViewContent currentView = null;
 			
-			foreach (DocumentUserPrefs doc in prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ())) {
-				FilePath fileName = args.Item.BaseDirectory.Combine (doc.FileName).FullPath;
-				if (File.Exists (fileName)) {
-					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, doc.Line, doc.Column);
-					if (fileName == currentFileName)
-						currentView = view;
-					
-					if (view != null)
-						docViews.Add (view);
+			using (IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.OpenFileIcon, true)) {
+				string currentFileName = prefs.ActiveDocument != null ? baseDir.Combine (prefs.ActiveDocument).FullPath : null;
+				
+				foreach (DocumentUserPrefs doc in prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ())) {
+					string fileName = baseDir.Combine (doc.FileName).FullPath;
+					if (File.Exists (fileName)) {
+						var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, doc.Line, doc.Column);
+						if (fileName == currentFileName)
+							currentView = view;
+						
+						if (view != null)
+							docViews.Add (view);
+					}
 				}
+				
+				// Note: At this point, the progress monitor will be disposed which causes the gtk main-loop to be pumped.
+				// This is EXTREMELY important, because without this main-loop pumping action, the next foreach() loop will
+				// not cause the Solution tree-view to properly expand, nor will the ActiveDocument be set properly.
 			}
 			
 			foreach (var view in docViews) {
@@ -869,8 +876,6 @@ namespace MonoDevelop.Ide.Gui
 					doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
 				}
 			}
-			
-			pm.Dispose ();
 			
 			foreach (PadUserPrefs pi in prefs.Pads) {
 				foreach (Pad pad in IdeApp.Workbench.Pads) {

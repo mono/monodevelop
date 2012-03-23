@@ -6,16 +6,20 @@
        url         = "http://monodevelop.com"
        description = "Support for editing and running T4 text templates."
        category    = "IDE extensions"
-       version     = "2.8.6">
+       version     = "2.8.8.1">
 	
 	<Runtime>
-		<Import assembly="Mono.TextTemplating.dll" />
+		<!--
+		This needs to be in the .NET Load assembly context so the AppDomain remoting works. This means it must be
+		imported as a file, not not an assembly, else Mono.Addins will load it into the LoadFrom assembly context.
+		-->
+		<Import file="Mono.TextTemplating.dll" />
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.8.6"/>
-		<Addin id="Ide" version="2.8.6"/>
-		<Addin id="SourceEditor2" version="2.8.6"/>
+		<Addin id="Core" version="2.8.8.1"/>
+		<Addin id="Ide" version="2.8.8.1"/>
+		<Addin id="SourceEditor2" version="2.8.8.1"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">

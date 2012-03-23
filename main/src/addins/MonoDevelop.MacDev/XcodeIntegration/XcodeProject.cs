@@ -119,7 +119,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 
 			nativeBuildConfiguration.AddSetting ("GCC_PRECOMPILE_PREFIX_HEADER", "NO");
 			//nativeBuildConfiguration.AddSetting ("INFOPLIST_FILE", "\"Info.plist\"");
-			nativeBuildConfiguration.AddSetting ("PRODUCT_NAME", name);
+			nativeBuildConfiguration.AddSetting ("PRODUCT_NAME", "\"" + name + "\"");
 			nativeBuildConfiguration.AddSetting ("WRAPPER_EXTENSION", "app");
 
 			this.nativeConfigurationList.AddBuildConfiguration (nativeBuildConfiguration);

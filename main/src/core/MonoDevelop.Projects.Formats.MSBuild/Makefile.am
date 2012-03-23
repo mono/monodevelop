@@ -1,15 +1,8 @@
-
-ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
-
-REFS =  \
-	-r:Microsoft.Build.Engine \
-	-r:Microsoft.Build.Framework \
-	-r:Microsoft.Build.Utilities.v3.5 \
-	-r:System \
-	-r:System.Runtime.Remoting
-
 FILES =  \
 	AssemblyInfo.cs \
+	AssemblyInfo.v2.0.cs \
+	AssemblyInfo.v3.5.cs \
+	AssemblyInfo.v4.0.cs \
 	Main.cs \
 	MonoDevelop.Projects.Formats.MSBuild/BuildEngine.cs \
 	MonoDevelop.Projects.Formats.MSBuild/ConsoleLogger.cs \
@@ -20,28 +13,39 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/MSBuildResult.cs \
 	MonoDevelop.Projects.Formats.MSBuild/ProjectBuilder.cs
 
+PROJECTS = \
+	MonoDevelop.Projects.Formats.MSBuild.csproj \
+	MonoDevelop.Projects.Formats.MSBuild.v2.0.csproj \
+	MonoDevelop.Projects.Formats.MSBuild.v3.5.csproj
+
+REFS = 
 RES = 
 
-# Mono's 2.0/3.5 compiler doesn't recognize 3.5 variants of the MSBuild assemblies
-# so patch up the references
-MSB_REF_PREFIX:=$(shell pkg-config --variable prefix mono)/lib/mono/3.5/
-FIXED_REFS:=$(shell echo '$(REFS)' | sed -e 's@Microsoft.Build[^ ]*@$(MSB_REF_PREFIX)&.dll@g')
+all:
+	for p in $(PROJECTS); do xbuild $$p; done
 
-all: $(ASSEMBLY) $(ASSEMBLY).mdb
+clean-local:
+	for p in $(PROJECTS); do xbuild /t:Clean $$p; done
 
-$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
-	$(CSC) $(CSC_FLAGS) -warnaserror -debug -out:$@ -target:winexe $(FIXED_REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources)
-	
-$(ASSEMBLY).mdb: $(ASSEMBLY)
-
-$(ASSEMBLY).config: $(srcdir)/app.config
-	cp $< $@
-
+ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Projects.Formats.MSBuild.exe
 assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
+ASSEMBLY20 = $(top_builddir)/build/bin/MSBuild/2.0/MonoDevelop.Projects.Formats.MSBuild.exe
+assembly20dir = $(MD_ASSEMBLY_DIR)\MSBuild\2.0
+assembly20_DATA = $(ASSEMBLY20) $(ASSEMBLY20).mdb $(ASSEMBLY20).config
 
-EXTRA_DIST = $(FILES) $(RES) app.config
+ASSEMBLY35 = $(top_builddir)/build/bin/MSBuild/3.5/MonoDevelop.Projects.Formats.MSBuild.exe
+assembly35dir = $(MD_ASSEMBLY_DIR)\MSBuild\3.5
+assembly35_DATA = $(ASSEMBLY35) $(ASSEMBLY35).mdb $(ASSEMBLY35).config
+
+.PHONY: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config $(ASSEMBLY20) $(ASSEMBLY20).mdb $(ASSEMBLY20).config $(ASSEMBLY35) $(ASSEMBLY35).mdb $(ASSEMBLY35).config
+
+EXTRA_DIST = $(FILES) \
+	$(PROJECTS) \
+	app.config \
+	MonoDevelop.Projects.Formats.MSBuild.v2.0.exe.config \
+	MonoDevelop.Projects.Formats.MSBuild.v3.5.exe.config
 
 include $(top_srcdir)/Makefile.include
+

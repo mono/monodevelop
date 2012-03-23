@@ -153,6 +153,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
 		}
 		
+		//for some reason, MD internally handles "AnyCPU" as "", but we need to be explicit when
+		//passing it to the build engine
+		static string GetExplicitPlatform (SolutionItemConfiguration configObject)
+		{
+			if (string.IsNullOrEmpty (configObject.Platform)) {
+				return "AnyCPU";
+			}
+			return configObject.Platform;
+		}
+		
 		IEnumerable<string> IAssemblyReferenceHandler.GetAssemblyReferences (ConfigurationSelector configuration)
 		{
 			if (useXBuild) {
@@ -160,7 +170,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				SolutionItemConfiguration configObject = item.GetConfiguration (configuration);
-				foreach (string s in builder.GetAssemblyReferences (configObject.Name, configObject.Platform))
+				foreach (string s in builder.GetAssemblyReferences (configObject.Name, GetExplicitPlatform (configObject)))
 					yield return s;
 			}
 			else {
@@ -184,14 +194,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
-					
-					//for some reason, MD internally handles "AnyCPU" as "", but we need to be explicit when
-					//passing it to the build engine
-					var platform = configObject.Platform;
-					if (platform.Length == 0)
-						platform = "AnyCPU";
-					
-					MSBuildResult[] results = builder.RunTarget (target, configObject.Name, configObject.Platform,
+					MSBuildResult[] results = builder.RunTarget (target, configObject.Name, GetExplicitPlatform (configObject),
 						logWriter, verbosity);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					

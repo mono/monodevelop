@@ -6,11 +6,11 @@
        description = "Support for Debugging projects"
        copyright = "MIT X11"
        flags = "Hidden"
-       version = "2.8.6">
+       version = "2.8.8.1">
 
 	<Dependencies>
-		<Addin id="Core" version="2.8.6"/>
-		<Addin id="Ide" version="2.8.6"/>
+		<Addin id="Core" version="2.8.8.1"/>
+		<Addin id="Ide" version="2.8.8.1"/>
 	</Dependencies>
 	
 	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerEngines">
@@ -58,13 +58,13 @@
 				icon = "md-execute-debug"
 				shortcut = "F5"
 				macShortcut = "Meta|Return"
-				_description = "Debug"
-				_label = "_Debug" />
+				_description = "Start debugging"
+				_label = "Start _Debugging" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DebugEntry"
 				defaultHandler = "MonoDevelop.Debugger.DebugEntryHandler"
 				icon = "md-execute-debug"
 				_description = "Debug current project"
-				_label = "D_ebug Item" />
+				_label = "Start D_ebugging Item" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">

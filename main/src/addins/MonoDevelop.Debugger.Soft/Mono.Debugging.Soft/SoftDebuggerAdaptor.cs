@@ -256,9 +256,15 @@ namespace Mono.Debugging.Soft
 				}
 				type = type.BaseType;
 			}
+			
 			MethodMirror idx = OverloadResolve ((SoftEvaluationContext) ctx, targetType.Name, null, types, candidates, true);
 			int i = candidates.IndexOf (idx);
-			return new PropertyValueReference (ctx, props[i], target, null, values);
+			
+			MethodMirror getter = props[i].GetGetMethod (true);
+			if (getter == null)
+				return null;
+			
+			return new PropertyValueReference (ctx, props[i], target, null, getter, values);
 		}
 		
 		static bool InGeneratedClosureOrIteratorType (EvaluationContext ctx)
@@ -267,29 +273,28 @@ namespace Mono.Debugging.Soft
 			if (cx.Frame.Method.IsStatic)
 				return false;
 			TypeMirror tm = cx.Frame.Method.DeclaringType;
-			return IsGeneratedClosureOrIteratorType (tm);
+			return IsGeneratedType (tm);
 		}
 		
-		static bool IsGeneratedClosureOrIteratorType (TypeMirror tm)
+		internal static bool IsGeneratedType (TypeMirror tm)
 		{
-			return IsGeneratedClosureType (tm) || IsGeneratedIteratorType (tm);
-		}
-		
-		static bool IsGeneratedClosureType (TypeMirror tm)
-		{
-			return tm.Name.IndexOf (">c__") != -1;
-		}
-		
-		internal static bool IsGeneratedIteratorType (TypeMirror tm)
-		{
+			//
+			// This should cover all C# generated special containers
+			// - anonymous methods
+			// - lambdas
+			// - iterators
+			// - async methods
+			//
+			// which allow stepping into
+			//
 			return tm.Name[0] == '<' &&
-				// mcs is of the form <${NAME}>.c__Iterator${NUMBER}
-				(tm.Name.IndexOf (">c__Iterator") != -1 ||
+				// mcs is of the form <${NAME}>.c__{KIND}${NUMBER}
+				(tm.Name.IndexOf (">c__") > 0 ||
 				// csc is of form <${NAME}>d__${NUMBER}
-				 tm.Name.IndexOf (">d__") != -1);
+				 tm.Name.IndexOf (">d__") > 0);
 		}
-		
-		internal static string GetNameFromGeneratedIteratorType (TypeMirror tm)
+
+		internal static string GetNameFromGeneratedType (TypeMirror tm)
 		{
 			return tm.Name.Substring (1, tm.Name.IndexOf ('>') - 1);
 		}
@@ -352,7 +357,7 @@ namespace Mono.Debugging.Soft
 				return new ValueReference [0];
 			
 			TypeMirror tm = (TypeMirror) vthis.Type;
-			bool isIterator = IsGeneratedIteratorType (tm);
+			bool isIterator = IsGeneratedType (tm);
 			
 			var list = new List<ValueReference> ();
 			TypeMirror type = (TypeMirror) vthis.Type;
@@ -462,7 +467,7 @@ namespace Mono.Debugging.Soft
 			foreach (LocalVariable local in locals) {
 				if (local.IsArg)
 					continue;
-				if (IsClosureReferenceLocal (local) && IsGeneratedClosureType (local.Type)) {
+				if (IsClosureReferenceLocal (local) && IsGeneratedType (local.Type)) {
 					foreach (var gv in GetHoistedLocalVariables (cx, new VariableValueReference (cx, local.Name, local))) {
 						yield return gv;
 					}
@@ -480,8 +485,13 @@ namespace Mono.Debugging.Soft
 				if (field != null && (field.IsStatic || co != null))
 					return new FieldValueReference (ctx, field, co, type);
 				PropertyInfoMirror prop = FindByName (type.GetProperties(), p => p.Name, name, ctx.CaseSensitive);
-				if (prop != null && (IsStatic (prop) || co != null))
-					return new PropertyValueReference (ctx, prop, co, type, null);
+				if (prop != null && (IsStatic (prop) || co != null)) {
+					MethodMirror getter = prop.GetGetMethod (true);
+					if (getter == null)
+						return null;
+					
+					return new PropertyValueReference (ctx, prop, co, type, getter, null);
+				}
 				type = type.BaseType;
 			}
 			return null;
@@ -542,24 +552,29 @@ namespace Mono.Debugging.Soft
 					yield return new FieldValueReference (ctx, field, co, type);
 				}
 				foreach (PropertyInfoMirror prop in type.GetProperties (bindingFlags)) {
-					MethodMirror met = prop.GetGetMethod (true);
-					if (met == null || met.GetParameters ().Length != 0 || met.IsAbstract)
+					MethodMirror getter = prop.GetGetMethod (true);
+					if (getter == null || getter.GetParameters ().Length != 0 || getter.IsAbstract)
 						continue;
-					if (met.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
+					if (getter.IsStatic && ((bindingFlags & BindingFlags.Static) == 0))
 						continue;
-					if (!met.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
+					if (!getter.IsStatic && ((bindingFlags & BindingFlags.Instance) == 0))
 						continue;
-					if (met.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
+					if (getter.IsPublic && ((bindingFlags & BindingFlags.Public) == 0))
 						continue;
-					if (!met.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
+					if (!getter.IsPublic && ((bindingFlags & BindingFlags.NonPublic) == 0))
 						continue;
 					
 					// If a property is overriden, return the override instead of the base property
-					PropertyInfoMirror overriden;
-					if (met.IsVirtual && subProps.TryGetValue (prop.Name, out overriden))
-						yield return new PropertyValueReference (ctx, overriden, co, overriden.DeclaringType, null);
-					else
-						yield return new PropertyValueReference (ctx, prop, co, type, null);
+					PropertyInfoMirror overridden;
+					if (getter.IsVirtual && subProps.TryGetValue (prop.Name, out overridden)) {
+						getter = overridden.GetGetMethod (true);
+						if (getter == null)
+							continue;
+						
+						yield return new PropertyValueReference (ctx, overridden, co, overridden.DeclaringType, getter, null);
+					} else {
+						yield return new PropertyValueReference (ctx, prop, co, type, getter, null);
+					}
 				}
 				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
 					break;

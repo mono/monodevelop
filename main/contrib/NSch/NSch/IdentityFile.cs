@@ -206,6 +206,47 @@ namespace NSch
 		{
 			this.identity = name;
 			this.jsch = jsch;
+			// prvkey from "ssh-add" command on the remote.
+			if (pubkey == null && prvkey != null && (prvkey.Length > 11 && prvkey[0] == 0 && 
+				prvkey[1] == 0 && prvkey[2] == 0 && prvkey[3] == 7))
+			{
+				Buffer buf = new Buffer(prvkey);
+				string _type = Sharpen.Runtime.GetStringForBytes(buf.GetString());
+				// ssh-rsa
+				if (_type.Equals("ssh-rsa"))
+				{
+					type = RSA;
+					n_array = buf.GetString();
+					e_array = buf.GetString();
+					d_array = buf.GetString();
+					buf.GetString();
+					buf.GetString();
+					buf.GetString();
+					this.identity += Sharpen.Runtime.GetStringForBytes(buf.GetString());
+				}
+				else
+				{
+					if (_type.Equals("ssh-dss"))
+					{
+						type = DSS;
+						P_array = buf.GetString();
+						Q_array = buf.GetString();
+						G_array = buf.GetString();
+						pub_array = buf.GetString();
+						prv_array = buf.GetString();
+						this.identity += Sharpen.Runtime.GetStringForBytes(buf.GetString());
+					}
+					else
+					{
+						throw new JSchException("privatekey: invalid key " + Sharpen.Runtime.GetStringForBytes
+							(prvkey, 4, 7));
+					}
+				}
+				encoded_data = prvkey;
+				encrypted = false;
+				keytype = OPENSSH;
+				return;
+			}
 			try
 			{
 				Type c;
@@ -279,6 +320,42 @@ namespace NSch
 						else
 						{
 							throw new JSchException("privatekey: aes256-cbc is not available " + identity);
+						}
+						continue;
+					}
+					if (buf[i] == 'A' && i + 7 < len && buf[i + 1] == 'E' && buf[i + 2] == 'S' && buf
+						[i + 3] == '-' && buf[i + 4] == '1' && buf[i + 5] == '9' && buf[i + 6] == '2' &&
+						 buf[i + 7] == '-')
+					{
+						i += 8;
+						if (Session.CheckCipher((string)JSch.GetConfig("aes192-cbc")))
+						{
+							c = Sharpen.Runtime.GetType((string)JSch.GetConfig("aes192-cbc"));
+							cipher = (NSch.Cipher)(System.Activator.CreateInstance(c));
+							key = new byte[cipher.GetBlockSize()];
+							iv = new byte[cipher.GetIVSize()];
+						}
+						else
+						{
+							throw new JSchException("privatekey: aes192-cbc is not available " + identity);
+						}
+						continue;
+					}
+					if (buf[i] == 'A' && i + 7 < len && buf[i + 1] == 'E' && buf[i + 2] == 'S' && buf
+						[i + 3] == '-' && buf[i + 4] == '1' && buf[i + 5] == '2' && buf[i + 6] == '8' &&
+						 buf[i + 7] == '-')
+					{
+						i += 8;
+						if (Session.CheckCipher((string)JSch.GetConfig("aes128-cbc")))
+						{
+							c = Sharpen.Runtime.GetType((string)JSch.GetConfig("aes128-cbc"));
+							cipher = (NSch.Cipher)(System.Activator.CreateInstance(c));
+							key = new byte[cipher.GetBlockSize()];
+							iv = new byte[cipher.GetIVSize()];
+						}
+						else
+						{
+							throw new JSchException("privatekey: aes128-cbc is not available " + identity);
 						}
 						continue;
 					}
@@ -374,9 +451,9 @@ namespace NSch
 					byte[] _type = _buf.GetString();
 					//System.err.println("type: "+new String(_type)); 
 					byte[] _cipher = _buf.GetString();
-					string cipher2 = Util.Byte2str(_cipher);
+					string cipherStr = Util.Byte2str(_cipher);
 					//System.err.println("cipher: "+cipher); 
-					if (cipher2.Equals("3des-cbc"))
+					if (cipherStr.Equals("3des-cbc"))
 					{
 						_buf.GetInt();
 						byte[] foo = new byte[encoded_data.Length - _buf.GetOffSet()];
@@ -387,7 +464,7 @@ namespace NSch
 					}
 					else
 					{
-						if (cipher2.Equals("none"))
+						if (cipherStr.Equals("none"))
 						{
 							_buf.GetInt();
 							//_buf.getInt();
@@ -676,7 +753,7 @@ namespace NSch
 				Type c = Sharpen.Runtime.GetType((string)JSch.GetConfig("signature.rsa"));
 				NSch.SignatureRSA rsa = (NSch.SignatureRSA)(System.Activator.CreateInstance(c));
 				rsa.Init();
-				rsa.SetPrvKey(d_array, n_array);
+				rsa.SetPrvKey(d_array, n_array, e_array);
 				rsa.Update(data);
 				byte[] sig = rsa.Sign();
 				Buffer buf = new Buffer("ssh-rsa".Length + 4 + sig.Length + 4);

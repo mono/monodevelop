@@ -52,14 +52,20 @@ namespace MonoDevelop.NUnit
 		TestInfoCache testInfoCache = new TestInfoCache ();
 		bool cacheLoaded;
 		DateTime lastAssemblyTime;
-		
+
 		static Queue<LoadData> loadQueue = new Queue<LoadData> ();
 		static bool loaderRunning;
-		
+
+		public virtual IList<string> UserAssemblyPaths {
+			get {
+				return null;
+			}
+		}
+
 		public NUnitAssemblyTestSuite (string name): base (name)
 		{
 		}
-		
+
 		public NUnitAssemblyTestSuite (string name, SolutionItem ownerSolutionItem): base (name, ownerSolutionItem)
 		{
 		}
@@ -68,7 +74,6 @@ namespace MonoDevelop.NUnit
 		{
 			try {
 				if (TestInfoCachePath != null) {
-					Console.WriteLine ("saving TestInfoCachePath = " + TestInfoCachePath);
 					testInfoCache.Write (TestInfoCachePath);
 				}
 			} catch {
@@ -82,7 +87,7 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
-		
+
 		protected override void OnActiveConfigurationChanged ()
 		{
 			UpdateTests ();
@@ -180,7 +185,7 @@ namespace MonoDevelop.NUnit
 			}
 
 			OnTestStatusChanged ();
-			
+
 			LoadData ld = new LoadData ();
 			ld.Path = AssemblyPath;
 			ld.TestInfoCachePath = cacheLoaded ? null : TestInfoCachePath;
@@ -268,8 +273,7 @@ namespace MonoDevelop.NUnit
 		
 		static void RunAsyncLoadTest ()
 		{
-			while (true)
-			{
+			while (true) {
 				LoadData ld;
 				lock (loadQueue) {
 					if (loadQueue.Count == 0) {
@@ -297,12 +301,12 @@ namespace MonoDevelop.NUnit
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
 				}
-				
+
 				ExternalTestRunner runner = null;
-				
+
 				try {
 					if (File.Exists (ld.Path)) {
-						runner = (ExternalTestRunner) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), false);
+						runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), false);
 						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies);
 					}
 				} catch (Exception ex) {
@@ -315,7 +319,7 @@ namespace MonoDevelop.NUnit
 							runner.Dispose ();
 					} catch {}
 				}
-				
+
 				try {
 					ld.Callback (ld);
 				} catch {
@@ -327,20 +331,38 @@ namespace MonoDevelop.NUnit
 		{
 			return RunUnitTest (this, "", "", null, testContext);
 		}
-		
+
 		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
 		{
 			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
 		}
-		
+
+		public string[] CollectTests (UnitTestGroup group)
+		{
+			List<string> result = new List<string> ();
+			foreach (var t in group.Tests) {
+				if (t is UnitTestGroup) {
+					result.AddRange (CollectTests ((UnitTestGroup)t));
+				} else {
+					result.Add (t.TestId);
+				}
+			}
+			return result.ToArray ();
+		}
+
 		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
 		{
-			ExternalTestRunner runner = (ExternalTestRunner) Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext);
+
+			ExternalTestRunner runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext, UserAssemblyPaths);
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName, testName != null);
-			
+
 			ITestFilter filter = null;
-			if (testName != null) {
-				filter = new TestNameFilter (pathName + "." + testName);
+			if (test != null) {
+				if (test is UnitTestGroup) {
+					filter = new TestNameFilter (CollectTests ((UnitTestGroup)test));
+				} else {
+					filter = new TestNameFilter (test.TestId);
+				}
 			} else {
 				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
 				if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
@@ -351,22 +373,22 @@ namespace MonoDevelop.NUnit
 						filter = new NotFilter (filter);
 				}
 			}
-			
+
 			RunData rd = new RunData ();
 			rd.Runner = runner;
 			rd.Test = this;
 			rd.LocalMonitor = localMonitor;
 			testContext.Monitor.CancelRequested += new TestHandler (rd.Cancel);
-			
+
 			UnitTestResult result;
-			
+
 			try {
 				if (string.IsNullOrEmpty (AssemblyPath)) {
 					string msg = GettextCatalog.GetString ("Could not get a valid path to the assembly. There may be a conflict in the project configurations.");
 					throw new Exception (msg);
 				}
 				System.Runtime.Remoting.RemotingServices.Marshal (localMonitor, null, typeof (IRemoteEventListener));
-				result = runner.Run (localMonitor, filter, AssemblyPath, suiteName, new List<string> (SupportAssemblies));
+				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies));
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
 			} catch (Exception ex) {

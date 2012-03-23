@@ -257,10 +257,6 @@ namespace Mono.TextEditor
 			this.textEditorData.VAdjustment.ValueChanged += VAdjustmentValueChanged;
 		}
 		
-		protected TextEditor (IntPtr raw) : base (raw)
-		{
-		}
-		
 		public TextEditor (Document doc)
 			: this (doc, null)
 		{
@@ -878,9 +874,8 @@ namespace Mono.TextEditor
 			Gdk.ModifierType mod;
 			KeyboardShortcut[] accels;
 			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
-			
 			//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
-			if ((key == Gdk.Key.Menu && mod == ModifierType.None) || (key == Gdk.Key.F10 && mod == ModifierType.ShiftMask)) {
+			if (key == Gdk.Key.Menu || (key == Gdk.Key.F10 && mod.HasFlag (ModifierType.ShiftMask))) {
 				OnPopupMenu ();
 				return true;
 			}
@@ -1155,27 +1150,31 @@ namespace Mono.TextEditor
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			RemoveScrollWindowTimer ();
-			double x = e.X;
-			double y = e.Y;
-			Gdk.ModifierType mod = e.State;
-			double startPos;
-			Margin margin = GetMarginAtX (x, out startPos);
-			if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, (int)pressPositionX, (int)pressPositionY, (int)x, (int)y)) {
-				dragContents = new ClipboardActions.CopyOperation ();
-				dragContents.CopyData (textEditorData);
-				DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Move | DragAction.Copy, 1, e);
-				if (!Platform.IsMac) {
-					CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, true, textEditorData.SelectionRange, 300, 300);
-					Gtk.Drag.SetIconWidget (context, window, 0, 0);
+			try {
+				RemoveScrollWindowTimer ();
+				double x = e.X;
+				double y = e.Y;
+				Gdk.ModifierType mod = e.State;
+				double startPos;
+				Margin margin = GetMarginAtX (x, out startPos);
+				if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, (int)pressPositionX, (int)pressPositionY, (int)x, (int)y)) {
+					dragContents = new ClipboardActions.CopyOperation ();
+					dragContents.CopyData (textEditorData);
+					DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Move | DragAction.Copy, 1, e);
+					if (!Platform.IsMac) {
+						CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (this, true, textEditorData.SelectionRange, 300, 300);
+						Gtk.Drag.SetIconWidget (context, window, 0, 0);
+					}
+					selection = Selection.Clone (MainSelection);
+					textViewMargin.inDrag = false;
+				} else {
+					FireMotionEvent (x, y, mod);
+					if (mouseButtonPressed != 0) {
+						UpdateScrollWindowTimer (x, y, mod);
+					}
 				}
-				selection = Selection.Clone (MainSelection);
-				textViewMargin.inDrag = false;
-			} else {
-				FireMotionEvent (x, y, mod);
-				if (mouseButtonPressed != 0) {
-					UpdateScrollWindowTimer (x, y, mod);
-				}
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
 			}
 			return base.OnMotionNotifyEvent (e);
 		}
@@ -1517,17 +1516,11 @@ namespace Mono.TextEditor
 			double startY = LineToY (startLine);
 			double curY = startY - this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
-			for (int visualLineNumber = startLine; ; visualLineNumber++) {
-				int logicalLineNumber = visualLineNumber;
-				LineSegment line      = Document.GetLine (logicalLineNumber);
-				double lineHeight     = GetLineHeight (line);
-				int lastFold = 0;
-				foreach (FoldSegment fs in Document.GetStartFoldings (line).Where (fs => fs.IsFolded)) {
-					lastFold = System.Math.Max (fs.EndOffset, lastFold);
-				}
-				if (lastFold >= DocumentLocation.MinLine)
-					visualLineNumber = Document.OffsetToLineNumber (lastFold);
-				foreach (Margin margin in this.margins) {
+			for (int visualLineNumber = textEditorData.LogicalToVisualLine (startLine);; visualLineNumber++) {
+				int logicalLineNumber = textEditorData.VisualToLogicalLine (visualLineNumber);
+				var line = Document.GetLine (logicalLineNumber);
+				double lineHeight = GetLineHeight (line);
+				foreach (var margin in this.margins) {
 					if (!margin.IsVisible)
 						continue;
 					try {
@@ -1549,7 +1542,7 @@ namespace Mono.TextEditor
 					break;
 			}
 			
-			foreach (Margin margin in this.margins) {
+			foreach (var margin in this.margins) {
 				if (!margin.IsVisible)
 					continue;
 				foreach (var drawer in margin.MarginDrawer)

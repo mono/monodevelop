@@ -84,6 +84,7 @@ namespace Sharpen
 		{
 			if (properties == null) {
 				properties = new Hashtable ();
+				properties ["jgit.fs.debug"] = "false";
 				properties ["user.home"] = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 				properties ["java.library.path"] = Environment.GetEnvironmentVariable ("PATH");
 				if (Path.DirectorySeparatorChar != '\\')
@@ -96,7 +97,7 @@ namespace Sharpen
 
 		public static string GetProperty (string key)
 		{
-			return ((string) GetProperties ()[key]) ?? string.Empty;
+			return ((string) GetProperties ()[key]);
 		}
 		
 		public static void SetProperty (string key, string value)
@@ -130,6 +131,11 @@ namespace Sharpen
 			{
 				this.Runnable.Run ();
 			}
+		}
+		
+		public static void DeleteCharAt (StringBuilder sb, int index)
+		{
+			sb.Remove (index, 1);
 		}
 		
 		public static byte[] GetBytesForString (string str)

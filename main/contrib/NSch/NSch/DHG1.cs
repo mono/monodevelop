@@ -157,7 +157,7 @@ namespace NSch
 			}
 			catch (Exception ex)
 			{
-				System.Console.Error.WriteLine(ex);
+				System.Console.Error.WriteLine(e);
 			}
 			buf = new Buffer();
 			packet = new Packet(buf);
@@ -189,14 +189,6 @@ namespace NSch
 				JSch.GetLogger().Log(Logger.INFO, "expecting SSH_MSG_KEXDH_REPLY");
 			}
 			state = SSH_MSG_KEXDH_REPLY;
-		}
-		
-		static byte[] CB (sbyte[] si)
-		{
-			byte[] s = new byte [si.Length];
-			for (int n=0; n<si.Length; n++)
-				s[n] = (byte)si[n];
-			return s;
 		}
 
 		/// <exception cref="System.Exception"></exception>

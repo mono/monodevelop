@@ -45,14 +45,37 @@ namespace MonoDevelop.VersionControl.Views
 		bool remoteStatus = false;
 
 		class DiffData {
-			public bool diffRequested = false;
-			public bool diffRunning = false;
-			public Exception diffException;
-			public DiffInfo[] difs;
-		};
+			public Exception Exception {
+				get; private set;
+			}
 
-		DiffData localDiff = new DiffData ();
-		DiffData remoteDiff = new DiffData ();
+			public Lazy<DiffInfo> Diff {
+				get; set;
+			}
+			
+			public VersionInfo VersionInfo {
+				get; private set;
+			}
+			
+			public DiffData (Repository vc, FilePath root, VersionInfo info, bool remote)
+			{
+				VersionInfo = info;
+				Diff = new Lazy<DiffInfo> (() => {
+					try {
+						DiffInfo result = null;
+						if (!remote)
+							result = vc.GenerateDiff (root, info);
+						return result ?? vc.PathDiff (root, new [] { info.LocalPath }, remote).FirstOrDefault ();
+					} catch (Exception ex) {
+						Exception = ex;
+						return null;
+					}
+				});
+			}
+		}
+
+		List<DiffData> localDiff = new List<DiffData> ();
+		List<DiffData> remoteDiff = new List<DiffData> ();
 		
 		bool updatingComment;
 		ChangeSet changeSet;
@@ -74,7 +97,7 @@ namespace MonoDevelop.VersionControl.Views
 		const int ColStatusRemoteDiff = 13;
 		const int ColRenderAsText = 14;
 		
-		delegate void DiffDataHandler (DiffData diffdata);
+		delegate void DiffDataHandler (List<DiffData> diffdata);
 		
 		/// <summary>
 		/// Fired when content difference data is loaded
@@ -437,21 +460,32 @@ namespace MonoDevelop.VersionControl.Views
 		
 		private void Update ()
 		{
-			localDiff.diffRequested = false;
-			remoteDiff.diffRequested = false;
-			localDiff.difs = null;
-			remoteDiff.difs = null;
+			localDiff.Clear ();
+			remoteDiff.Clear ();
 			
 			filestore.Clear();
 			diffRenderer.Reset ();
 			
 			if (statuses.Count > 0) {
-				foreach (VersionInfo n in statuses) {
-					if (FileVisible (n)) {
+				try {
+					filelist.FreezeChildNotify ();
+					
+					foreach (VersionInfo n in statuses) {
 						if (firstLoad)
 							changeSet.AddFile (n);
 						AppendFileInfo (n);
+
+						// Calling GenerateDiff and supplying the versioninfo
+						// is the new fast way of doing things. If we do not get
+						// the same number of diffs as VersionInfos, we should
+						// fall back to the old slow method as the VC addin probably
+						// has not implemented the new fast one.
+						// The new way can also only be used locally.
+						localDiff.Add (new DiffData (vc, filepath, n, false));
+						remoteDiff.Add (new DiffData (vc, filepath, n, true));
 					}
+				} finally {
+					filelist.ThawChildNotify ();
 				}
 			}
 			UpdateControlStatus ();
@@ -659,7 +693,7 @@ namespace MonoDevelop.VersionControl.Views
 				filestore.IterChildren (out iter, args.Iter);
 				string fileName = (string) filestore.GetValue (args.Iter, ColFullPath);
 				bool remoteDiff = (bool) filestore.GetValue (args.Iter, ColStatusRemoteDiff);
-				SetFileDiff (iter, fileName, remoteDiff);
+				FillDiffInfo (iter, fileName, GetDiffData (remoteDiff));
 			}
 		}
 		
@@ -904,118 +938,53 @@ namespace MonoDevelop.VersionControl.Views
 			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges);
 		}
 
-		DiffData GetDiffData (bool remote)
+		List<DiffData> GetDiffData (bool remote)
 		{
 			if (remote)
 				return remoteDiff;
 			else
 				return localDiff;
 		}
-		
-		/// <summary>
-		/// Loads diff information from a version control provider.
-		/// </summary>
-		/// <param name="remote">
-		/// A <see cref="System.Boolean"/>: Whether the information 
-		/// should be loaded from the remote server.
-		/// </param>
-		void LoadDiffs (bool remote)
-		{
-			DiffData ddata = GetDiffData (remote);
-			if (ddata.diffRunning)
-				return;
 
-			// Diff not yet requested. Do it now.
-			ddata.diffRunning = true;
+		void FillDiffInfo (TreeIter iter, string file, List<DiffData> ddata)
+		{
+			bool asText = true;
+			string[] text = null;
 			
-			// Run the diff in a separate thread and update the tree when done
-			ThreadPool.QueueUserWorkItem (
-				delegate {
-					ddata.diffException = null;
-					try {
-						List<DiffInfo> diffs = new List<DiffInfo> ();
-						// Calling GenerateDiff and supplying the versioninfo
-						// is the new fast way of doing things. If we do not get
-						// the same number of diffs as VersionInfos, we should
-						// fall back to the old slow method as the VC addin probably
-						// has not implemented the new fast one.
-						// The new way can also only be used locally.
-						if (!remote) {
-							foreach (var vi in statuses) {
-								var diff = vc.GenerateDiff (filepath, vi);
-								if (diff == null)
-									break;
-								diffs.Add (diff);
-							}
-						}
-					
-						if (diffs.Count == statuses.Count)
-							ddata.difs = diffs.ToArray ();
-						else
-							ddata.difs = vc.PathDiff (filepath, null, remote);
-					} catch (Exception ex) {
-						ddata.diffException = ex;
-					} finally {
-						ddata.diffRequested = true;
-						ddata.diffRunning = false;
-						if (null != DiffDataLoaded) {
-							Gtk.Application.Invoke (delegate {
-								DiffDataLoaded (ddata);
-								DiffDataLoaded = null;
-							});
-						}
-					}
-				}
-			);
-		}
-		
-		void SetFileDiff (TreeIter iter, string file, bool remote)
-		{
-			// If diff information is already loaded, just look for the
-			// diff chunk of the file and fill the tree
-
-			DiffData ddata = GetDiffData (remote);
-			if (ddata.diffRequested) {
-				FillDiffInfo (iter, file, ddata);
-				return;
+			DiffData info = ddata.FirstOrDefault (d => d.VersionInfo.LocalPath == file);
+			if (info == null) {
+				// This should be impossible. We shouldn't generate a diff for a file
+				// which is not in our list
+				text =  new[] { GettextCatalog.GetString ("No differences found") };
+				LoggingService.LogError ("Attempted to generate the diff for a file not in the changeset", (Exception) null);
+			} else if (!info.Diff.IsValueCreated) {
+				text = new [] { GettextCatalog.GetString ("Loading data...") };
+				ThreadPool.QueueUserWorkItem (delegate {
+					// Here we just touch the  property so that the Lazy<T> creates
+					// the value. Do not capture the TreeIter as it may invalidate 
+					// before the diff data has asyncronously loaded.
+					GC.KeepAlive (info.Diff.Value);
+					Gtk.Application.Invoke (delegate { if (!disposed) FillDifs (GetDiffData (this.remoteStatus)); });
+				});
+			} else if (info.Exception != null) {
+				text = new [] { GettextCatalog.GetString ("Could not get diff information. ") + info.Exception.Message };
+			} else if (info.Diff.Value == null || string.IsNullOrEmpty (info.Diff.Value.Content)) {
+				text = new [] { GettextCatalog.GetString ("No differences found") };
+			} else {
+				text = info.Diff.Value.Content.Split ('\n');
+				asText = false;
 			}
-
-			filestore.SetValue (iter, ColPath, new string[] { GettextCatalog.GetString ("Loading data...") });
-			filestore.SetValue (iter, ColRenderAsText, true);
 			
-			if (ddata.diffRunning)
-				return;
-
-			DiffDataLoaded += FillDifs;
-			LoadDiffs (remote);
+			filestore.SetValue (iter, ColRenderAsText, asText);
+			filestore.SetValue (iter, ColPath, text);
 		}
 		
-		void FillDiffInfo (TreeIter iter, string file, DiffData ddata)
-		{
-			if (ddata.difs != null) {
-				foreach (DiffInfo di in ddata.difs) {
-					if (di.FileName == file) {
-						filestore.SetValue (iter, ColPath, di.Content.Split ('\n'));
-						filestore.SetValue (iter, ColRenderAsText, false);
-						return;
-					}
-				}
-			}
-			filestore.SetValue (iter, ColPath, new string[] { GettextCatalog.GetString ("No differences found") });
-			filestore.SetValue (iter, ColRenderAsText, true);
-		}
-		
-		void FillDifs (DiffData ddata)
+		void FillDifs (List<DiffData> ddata)
 		{
 			if (disposed)
 				return;
 
 			diffRenderer.Reset ();
-
-			if (ddata.diffException != null) {
-				MessageService.ShowException (ddata.diffException, GettextCatalog.GetString ("Could not get diff information. ") + ddata.diffException.Message);
-			}
-			
 			TreeIter it;
 			if (!filestore.GetIterFirst (out it))
 				return;

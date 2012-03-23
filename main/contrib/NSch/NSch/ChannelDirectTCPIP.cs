@@ -41,6 +41,8 @@ namespace NSch
 
 		private const int LOCAL_MAXIMUM_PACKET_SIZE = unchecked((int)(0x4000));
 
+		private static readonly byte[] _type = Util.Str2byte("direct-tcpip");
+
 		internal string host;
 
 		internal int port;
@@ -51,6 +53,7 @@ namespace NSch
 
 		public ChannelDirectTCPIP() : base()
 		{
+			type = _type;
 			SetLocalWindowSizeMax(LOCAL_WINDOW_SIZE_MAX);
 			SetLocalWindowSize(LOCAL_WINDOW_SIZE_MAX);
 			SetLocalPacketSize(LOCAL_MAXIMUM_PACKET_SIZE);
@@ -58,14 +61,7 @@ namespace NSch
 
 		internal override void Init()
 		{
-			try
-			{
-				io = new IO();
-			}
-			catch (Exception e)
-			{
-				System.Console.Error.WriteLine(e);
-			}
+			io = new IO();
 		}
 
 		/// <exception cref="NSch.JSchException"></exception>
@@ -78,48 +74,6 @@ namespace NSch
 				{
 					throw new JSchException("session is down");
 				}
-				Buffer buf = new Buffer(150);
-				Packet packet = new Packet(buf);
-				// send
-				// byte   SSH_MSG_CHANNEL_OPEN(90)
-				// string channel type         //
-				// uint32 sender channel       // 0
-				// uint32 initial window size  // 0x100000(65536)
-				// uint32 maxmum packet size   // 0x4000(16384)
-				packet.Reset();
-				buf.PutByte(unchecked((byte)90));
-				buf.PutString(Util.Str2byte("direct-tcpip"));
-				buf.PutInt(id);
-				buf.PutInt(lwsize);
-				buf.PutInt(lmpsize);
-				buf.PutString(Util.Str2byte(host));
-				buf.PutInt(port);
-				buf.PutString(Util.Str2byte(originator_IP_address));
-				buf.PutInt(originator_port);
-				_session.Write(packet);
-				int retry = 1000;
-				try
-				{
-					while (this.GetRecipient() == -1 && _session.IsConnected() && retry > 0 && !eof_remote
-						)
-					{
-						//Thread.sleep(500);
-						Sharpen.Thread.Sleep(50);
-						retry--;
-					}
-				}
-				catch (Exception)
-				{
-				}
-				if (!_session.IsConnected())
-				{
-					throw new JSchException("session is down");
-				}
-				if (retry == 0 || this.eof_remote)
-				{
-					throw new JSchException("channel is not opened.");
-				}
-				connected = true;
 				if (io.@in != null)
 				{
 					thread = new Sharpen.Thread(this);
@@ -145,23 +99,19 @@ namespace NSch
 
 		public override void Run()
 		{
-			Buffer buf = new Buffer(rmpsize);
-			Packet packet = new Packet(buf);
-			int i = 0;
 			try
 			{
+				SendChannelOpen();
+				Buffer buf = new Buffer(rmpsize);
+				Packet packet = new Packet(buf);
 				Session _session = GetSession();
+				int i = 0;
 				while (IsConnected() && thread != null && io != null && io.@in != null)
 				{
-					i = io.@in.Read(buf.buffer, 14, buf.buffer.Length - 14 - 32 - 20);
-					// padding and mac
+					i = io.@in.Read(buf.buffer, 14, buf.buffer.Length - 14 - Session.buffer_margin);
 					if (i <= 0)
 					{
 						Eof();
-						break;
-					}
-					if (close)
-					{
 						break;
 					}
 					packet.Reset();
@@ -169,7 +119,14 @@ namespace NSch
 					buf.PutInt(recipient);
 					buf.PutInt(i);
 					buf.Skip(i);
-					_session.Write(packet, this, i);
+					lock (this)
+					{
+						if (close)
+						{
+							break;
+						}
+						_session.Write(packet, this, i);
+					}
 				}
 			}
 			catch (Exception)
@@ -178,7 +135,6 @@ namespace NSch
 			Disconnect();
 		}
 
-		//System.err.println("connect end");
 		public override void SetInputStream(InputStream @in)
 		{
 			io.SetInputStream(@in);
@@ -207,6 +163,28 @@ namespace NSch
 		public virtual void SetOrgPort(int foo)
 		{
 			this.originator_port = foo;
+		}
+
+		protected internal override Packet GenChannelOpenPacket()
+		{
+			Buffer buf = new Buffer(150);
+			Packet packet = new Packet(buf);
+			// byte   SSH_MSG_CHANNEL_OPEN(90)
+			// string channel type         //
+			// uint32 sender channel       // 0
+			// uint32 initial window size  // 0x100000(65536)
+			// uint32 maxmum packet size   // 0x4000(16384)
+			packet.Reset();
+			buf.PutByte(unchecked((byte)90));
+			buf.PutString(this.type);
+			buf.PutInt(id);
+			buf.PutInt(lwsize);
+			buf.PutInt(lmpsize);
+			buf.PutString(Util.Str2byte(host));
+			buf.PutInt(port);
+			buf.PutString(Util.Str2byte(originator_IP_address));
+			buf.PutInt(originator_port);
+			return packet;
 		}
 	}
 }

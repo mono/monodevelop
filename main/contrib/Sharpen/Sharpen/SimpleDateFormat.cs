@@ -3,10 +3,9 @@ namespace Sharpen
 	using System;
 	using System.Globalization;
 
-	internal class SimpleDateFormat
+	public class SimpleDateFormat : DateFormat
 	{
 		string format;
-		TimeZoneInfo timeZone;
 		
 		public SimpleDateFormat (): this ("g")
 		{
@@ -20,23 +19,18 @@ namespace Sharpen
 		{
 			this.format = format.Replace ("EEE", "ddd");
 			this.format = this.format.Replace ("Z", "zzz");
-			this.timeZone = TimeZoneInfo.Local;
+			SetTimeZone (TimeZoneInfo.Local);
 		}
 
-		public string Format (DateTime date)
+		public override string Format (DateTime date)
 		{
-			date += timeZone.BaseUtcOffset;
+			date += GetTimeZone().BaseUtcOffset;
 			return date.ToString (format);
 		}
-
+		
 		public string Format (long date)
 		{
-			return Extensions.MillisToDateTimeOffset (date, (int)timeZone.BaseUtcOffset.TotalMinutes).DateTime.ToString (format);
-		}
-
-		public void SetTimeZone (TimeZoneInfo timeZone)
-		{
-			this.timeZone = timeZone;
+			return Extensions.MillisToDateTimeOffset (date, (int)GetTimeZone ().BaseUtcOffset.TotalMinutes).DateTime.ToString (format);
 		}
 	}
 }

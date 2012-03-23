@@ -74,8 +74,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (dom == null)
 				return null;
 			
-			dom.ForceUpdate (true);
-			
 			return GetProjectInfo (dom);
 		}
 		

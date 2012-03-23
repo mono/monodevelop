@@ -87,17 +87,17 @@ namespace MonoDevelop.Core.Execution
 			timer.AutoReset = false;
 			timer.Elapsed += new System.Timers.ElapsedEventHandler (WaitTimeout);
 		}
-		
-		public void Start ()
+
+		public void Start (IList<string> userAssemblyPaths = null)
 		{
-			lock (this)
-			{
-				if (starting) return;
+			lock (this) {
+				if (starting)
+					return;
 				starting = true;
 				exitRequestEvent.Reset ();
-				
+
 				RemotingService.RegisterRemotingChannel ();
-				
+
 				BinaryFormatter bf = new BinaryFormatter ();
 				ObjRef oref = RemotingServices.Marshal (this);
 				MemoryStream ms = new MemoryStream ();
@@ -111,28 +111,30 @@ namespace MonoDevelop.Core.Execution
 				try {
 					string location = Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly ().Location);
 					location = Path.Combine (location, "mdhost.exe");
-					
+
 					tmpFile = Path.GetTempFileName ();
 					StreamWriter sw = new StreamWriter (tmpFile);
 					sw.WriteLine (sref);
 					sw.WriteLine (Process.GetCurrentProcess ().Id);
 					sw.WriteLine (Runtime.SystemAssemblyService.CurrentRuntime.RuntimeId);
-					
+
 					// Explicitly load Mono.Addins since the target runtime may not have it installed
 					sw.WriteLine (2);
 					sw.WriteLine (typeof(AddinManager).Assembly.Location);
 					sw.WriteLine (typeof(Mono.Addins.Setup.SetupService).Assembly.Location);
 					sw.Close ();
-					
-					string arguments = string.Format("{0} \"{1}\"", id, tmpFile);
-					DotNetExecutionCommand cmd = new DotNetExecutionCommand(location, arguments, AppDomain.CurrentDomain.BaseDirectory);
+
+					string arguments = string.Format ("{0} \"{1}\"", id, tmpFile);
+					DotNetExecutionCommand cmd = new DotNetExecutionCommand (location, arguments, AppDomain.CurrentDomain.BaseDirectory);
+					if (userAssemblyPaths != null)
+						cmd.UserAssemblyPaths = userAssemblyPaths;
 					cmd.DebugMode = isDebugMode;
 					ProcessHostConsole cons = new ProcessHostConsole ();
 					process = executionHandlerFactory.Execute (cmd, cons);
 					Counters.ExternalHostProcesses++;
-					
+
 					process.Completed += ProcessExited;
-					
+
 				} catch (Exception ex) {
 					if (tmpFile != null) {
 						try {
@@ -145,7 +147,7 @@ namespace MonoDevelop.Core.Execution
 				}
 			}
 		}
-		
+
 		bool isDebugMode
 		{
 			get {
@@ -179,20 +181,20 @@ namespace MonoDevelop.Core.Execution
 				references = 0;
 			}
 		}
-		
-		public object CreateInstance (Type type, string[] addins)
+
+		public object CreateInstance (Type type, string[] addins, IList<string> userAssemblyPaths = null)
 		{
 			lock (this) {
 				references++;
 				if (processHost == null)
-					Start ();
+					Start (userAssemblyPaths);
 			}
-			
+
 			if (!runningEvent.WaitOne (15000, false)) {
 				references--;
 				throw new ApplicationException ("Couldn't create a remote process.");
 			}
-			
+
 			try {
 				// Before creating the instance, load the add-ins on which it depends
 				if (addins != null && addins.Length > 0)
@@ -210,19 +212,19 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public object CreateInstance (string assemblyPath, string typeName, string[] addins)
+		public object CreateInstance (string assemblyPath, string typeName, string[] addins, IList<string> userAssemblyPaths = null)
 		{
 			lock (this) {
 				references++;
 				if (processHost == null)
-					Start ();
+					Start (userAssemblyPaths);
 			}
-			
+
 			if (!runningEvent.WaitOne (15000, false)) {
 				references--;
 				throw new ApplicationException ("Couldn't create a remote process.");
 			}
-			
+
 			try {
 				// Before creating the instance, load the add-ins on which it depends
 				if (addins != null && addins.Length > 0)
@@ -239,7 +241,7 @@ namespace MonoDevelop.Core.Execution
 				throw;
 			}
 		}
-		
+
 		IMethodReturnMessage RemoteProcessObjectDisposing (object obj, IMethodCallMessage msg)
 		{
 			ThreadPool.QueueUserWorkItem (delegate {

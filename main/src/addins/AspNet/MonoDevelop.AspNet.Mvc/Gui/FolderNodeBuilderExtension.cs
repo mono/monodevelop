@@ -98,7 +98,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			string outputFile = null;
 			MvcTextTemplateHost host = null;
-			MonoDevelop.TextTemplating.RecyclableAppDomain.Handle handle = null;
+			Mono.TextTemplating.TemplatingAppDomainRecycler.Handle handle = null;
 			AddViewDialog dialog = null;
 			
 			try {

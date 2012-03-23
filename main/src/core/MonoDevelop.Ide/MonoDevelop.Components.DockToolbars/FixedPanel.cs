@@ -45,6 +45,8 @@ namespace MonoDevelop.Components.DockToolbars
 		
 		public FixedPanel ()
 		{
+			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			
 			WidgetFlags |= WidgetFlags.NoWindow;
 		}
 		

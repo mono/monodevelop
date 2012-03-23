@@ -495,6 +495,8 @@ namespace MonoDevelop.Projects.Dom.Parser
 			Stack<IType > types = new Stack <IType> (Types);
 			while (types.Count > 0) {
 				IType t = types.Pop ();
+				if (t == null || t.SourceProjectDom == null)
+					continue;
 				string typeDecoratedFullName = t.DecoratedFullName;
 				foreach (var inner in t.InnerTypes)
 					types.Push (inner);

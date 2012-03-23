@@ -29,5 +29,10 @@ namespace Sharpen
 		{
 			// Closing a ByteArrayOutputStream has no effect.
 		}
+		
+		public override string ToString ()
+		{
+			return System.Text.Encoding.UTF8.GetString (ToByteArray ());
+		}
 	}
 }

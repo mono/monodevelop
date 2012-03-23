@@ -90,14 +90,28 @@ namespace Sharpen
 	
 	class AesCipher: Cipher
 	{
+		Aes encryptor;
+		ICryptoTransform transformer;
+
 		public AesCipher (CipherMode mode)
 		{
-			throw new NotSupportedException ();
+			encryptor = Aes.Create ();
+			encryptor.Mode = mode;
+			encryptor.Padding = PaddingMode.None;
 		}
-		
+
 		public override void Init (int mode, Key keyspec, IvParameterSpec spec)
 		{
-			//SecretKeySpec ks = (SecretKeySpec) keyspec;
+			SecretKeySpec key = (SecretKeySpec)keyspec;
+			if (mode == Cipher.ENCRYPT_MODE)
+				transformer = encryptor.CreateEncryptor (key.Key, spec.Iv);
+			else
+				transformer = encryptor.CreateDecryptor (key.Key, spec.Iv);
+		}
+
+		public override void Update (byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset)
+		{
+			transformer.TransformBlock (input, inputOffset, inputLen, output, outputOffset);
 		}
 	}
 	

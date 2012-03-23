@@ -168,14 +168,16 @@ namespace Mono.Debugger.Soft
 			}
 		}
 
+		// Since protocol version 2.12
 		public bool IsGenericMethod {
 			get {
-				if (vm.Version.AtLeast (2, 12)) {
-					return GetInfo ().is_generic_method;
-				} else {
-					return Name.IndexOf ('`') != -1;
-				}
+				vm.CheckProtocolVersion (2, 12);
+				return GetInfo ().is_generic_method;
 			}
+		}
+
+		public MethodImplAttributes GetMethodImplementationFlags() {
+			return (MethodImplAttributes)GetInfo ().iattributes;
 		}
 
 		public ParameterInfoMirror[] GetParameters () {
@@ -204,7 +206,13 @@ namespace Mono.Debugger.Soft
 
 		public LocalVariable[] GetLocals () {
 			if (locals == null) {
-				var li = vm.conn.Method_GetLocalsInfo (id);
+
+				LocalsInfo li = new LocalsInfo ();
+				try {
+					li = vm.conn.Method_GetLocalsInfo (id);
+				} catch (CommandException) {
+					throw new ArgumentException ("Method doesn't have a body.");
+				}
 				// Add the arguments as well
 				var pi = vm.conn.Method_GetParamInfo (id);
 

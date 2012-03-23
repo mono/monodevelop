@@ -90,6 +90,13 @@ namespace NSch
 
 		internal abstract int GetKeySize();
 
+		public virtual string GetPublicKeyComment()
+		{
+			return publicKeyComment;
+		}
+
+		private string publicKeyComment = string.Empty;
+
 		internal JSch jsch = null;
 
 		private NSch.Cipher cipher;
@@ -448,7 +455,7 @@ namespace NSch
 								hash.Update(tmp, 0, tmp.Length);
 							}
 							hash.Update(passphrase, 0, passphrase.Length);
-							hash.Update(iv, 0, iv.Length);
+							hash.Update(iv, 0, iv.Length > 8 ? 8 : iv.Length);
 							tmp = hash.Digest();
 							System.Array.Copy(tmp, 0, hn, index, tmp.Length);
 							index += tmp.Length;
@@ -568,6 +575,8 @@ namespace NSch
 			byte[] publickeyblob = null;
 			int type = ERROR;
 			int vendor = VENDOR_OPENSSH;
+			string publicKeyComment = string.Empty;
+			NSch.Cipher cipher = null;
 			try
 			{
 				FilePath file = new FilePath(prvkey);
@@ -587,8 +596,17 @@ namespace NSch
 				int i_1 = 0;
 				while (i_1 < len)
 				{
-					if (buf[i_1] == 'B' && buf[i_1 + 1] == 'E' && buf[i_1 + 2] == 'G' && buf[i_1 + 3]
-						 == 'I')
+					if (buf[i_1] == '-' && i_1 + 4 < len && buf[i_1 + 1] == '-' && buf[i_1 + 2] == '-'
+						 && buf[i_1 + 3] == '-' && buf[i_1 + 4] == '-')
+					{
+						break;
+					}
+					i_1++;
+				}
+				while (i_1 < len)
+				{
+					if (buf[i_1] == 'B' && i_1 + 3 < len && buf[i_1 + 1] == 'E' && buf[i_1 + 2] == 'G'
+						 && buf[i_1 + 3] == 'I')
 					{
 						i_1 += 6;
 						if (buf[i_1] == 'D' && buf[i_1 + 1] == 'S' && buf[i_1 + 2] == 'A')
@@ -611,7 +629,6 @@ namespace NSch
 								}
 								else
 								{
-									//System.err.println("invalid format: "+identity);
 									throw new JSchException("invalid privatekey: " + prvkey);
 								}
 							}
@@ -619,8 +636,62 @@ namespace NSch
 						i_1 += 3;
 						continue;
 					}
-					if (buf[i_1] == 'C' && buf[i_1 + 1] == 'B' && buf[i_1 + 2] == 'C' && buf[i_1 + 3]
-						 == ',')
+					if (buf[i_1] == 'A' && i_1 + 7 < len && buf[i_1 + 1] == 'E' && buf[i_1 + 2] == 'S'
+						 && buf[i_1 + 3] == '-' && buf[i_1 + 4] == '2' && buf[i_1 + 5] == '5' && buf[i_1
+						 + 6] == '6' && buf[i_1 + 7] == '-')
+					{
+						i_1 += 8;
+						if (Session.CheckCipher((string)JSch.GetConfig("aes256-cbc")))
+						{
+							Type c = Sharpen.Runtime.GetType((string)JSch.GetConfig("aes256-cbc"));
+							cipher = (NSch.Cipher)(System.Activator.CreateInstance(c));
+							// key=new byte[cipher.getBlockSize()];
+							iv = new byte[cipher.GetIVSize()];
+						}
+						else
+						{
+							throw new JSchException("privatekey: aes256-cbc is not available " + prvkey);
+						}
+						continue;
+					}
+					if (buf[i_1] == 'A' && i_1 + 7 < len && buf[i_1 + 1] == 'E' && buf[i_1 + 2] == 'S'
+						 && buf[i_1 + 3] == '-' && buf[i_1 + 4] == '1' && buf[i_1 + 5] == '9' && buf[i_1
+						 + 6] == '2' && buf[i_1 + 7] == '-')
+					{
+						i_1 += 8;
+						if (Session.CheckCipher((string)JSch.GetConfig("aes192-cbc")))
+						{
+							Type c = Sharpen.Runtime.GetType((string)JSch.GetConfig("aes192-cbc"));
+							cipher = (NSch.Cipher)(System.Activator.CreateInstance(c));
+							// key=new byte[cipher.getBlockSize()];
+							iv = new byte[cipher.GetIVSize()];
+						}
+						else
+						{
+							throw new JSchException("privatekey: aes192-cbc is not available " + prvkey);
+						}
+						continue;
+					}
+					if (buf[i_1] == 'A' && i_1 + 7 < len && buf[i_1 + 1] == 'E' && buf[i_1 + 2] == 'S'
+						 && buf[i_1 + 3] == '-' && buf[i_1 + 4] == '1' && buf[i_1 + 5] == '2' && buf[i_1
+						 + 6] == '8' && buf[i_1 + 7] == '-')
+					{
+						i_1 += 8;
+						if (Session.CheckCipher((string)JSch.GetConfig("aes128-cbc")))
+						{
+							Type c = Sharpen.Runtime.GetType((string)JSch.GetConfig("aes128-cbc"));
+							cipher = (NSch.Cipher)(System.Activator.CreateInstance(c));
+							// key=new byte[cipher.getBlockSize()];
+							iv = new byte[cipher.GetIVSize()];
+						}
+						else
+						{
+							throw new JSchException("privatekey: aes128-cbc is not available " + prvkey);
+						}
+						continue;
+					}
+					if (buf[i_1] == 'C' && i_1 + 3 < len && buf[i_1 + 1] == 'B' && buf[i_1 + 2] == 'C'
+						 && buf[i_1 + 3] == ',')
 					{
 						i_1 += 4;
 						for (int ii = 0; ii < iv.Length; ii++)
@@ -710,10 +781,9 @@ namespace NSch
 					_buf.GetInt();
 					byte[] _type = _buf.GetString();
 					//System.err.println("type: "+new String(_type)); 
-					byte[] _cipher = _buf.GetString();
-					string cipher = Util.Byte2str(_cipher);
-					//System.err.println("cipher: "+cipher); 
-					if (cipher.Equals("3des-cbc"))
+					string _cipher = Util.Byte2str(_buf.GetString());
+					//System.err.println("cipher: "+_cipher); 
+					if (_cipher.Equals("3des-cbc"))
 					{
 						_buf.GetInt();
 						byte[] foo = new byte[data.Length - _buf.GetOffSet()];
@@ -724,7 +794,7 @@ namespace NSch
 					}
 					else
 					{
-						if (cipher.Equals("none"))
+						if (_cipher.Equals("none"))
 						{
 							_buf.GetInt();
 							_buf.GetInt();
@@ -858,6 +928,22 @@ namespace NSch
 									}
 									publickeyblob = Util.FromBase64(buf, start, i_1 - start);
 								}
+								if (i_1++ < len)
+								{
+									int s = i_1;
+									while (i_1 < len)
+									{
+										if (buf[i_1] == '\n')
+										{
+											break;
+										}
+										i_1++;
+									}
+									if (i_1 < len)
+									{
+										publicKeyComment = Sharpen.Runtime.GetStringForBytes(buf, s, i_1 - s);
+									}
+								}
 							}
 						}
 					}
@@ -895,6 +981,8 @@ namespace NSch
 				kpair.encrypted = encrypted;
 				kpair.publickeyblob = publickeyblob;
 				kpair.vendor = vendor;
+				kpair.publicKeyComment = publicKeyComment;
+				kpair.cipher = cipher;
 				if (encrypted)
 				{
 					kpair.iv = iv;

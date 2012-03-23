@@ -52,6 +52,7 @@
     <Compile Include="Microsoft.VisualStudio.TextTemplating\ParameterDirectiveProcessor.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\TextTemplatingSession.cs" />
     <Compile Include="Microsoft.VisualStudio.TextTemplating\Interfaces.cs" />
+    <Compile Include="Mono.TextTemplating\RecyclableAppDomain.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

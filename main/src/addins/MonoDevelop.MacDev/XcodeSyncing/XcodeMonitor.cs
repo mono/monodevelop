@@ -68,6 +68,20 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			return Directory.Exists (xcproj);
 		}
 		
+		static void DeleteFile (string path)
+		{
+			if (!File.Exists (path))
+				return;
+			
+			try {
+				File.Delete (path);
+			} catch (UnauthorizedAccessException) {
+				// The path is either a directory or we don't have permissions to delete it
+			} catch (DirectoryNotFoundException) {
+				// File doesn't exist (removed by another process?)
+			}
+		}
+		
 		// Note: This method may throw TimeoutException or AppleScriptException
 		public void UpdateProject (IProgressMonitor monitor, List<XcodeSyncedItem> allItems, XcodeProject emptyProject)
 		{
@@ -121,8 +135,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				itemMap.Remove (f);
 				syncTimeCache.Remove (f);
 				var path = projectDir.Combine (f);
-				if (File.Exists (path))
-					File.Delete (path);
+				DeleteFile (path);
 			}
 			
 			if (removedOldProject) {
@@ -207,23 +220,22 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (knownFiles.Contains (file))
 					continue;
 				
+				FilePath relative;
+				if (relativePath != null)
+					relative = new FilePath (Path.Combine (relativePath, Path.GetFileName (file)));
+				else
+					relative = new FilePath (Path.GetFileName (file));
+				
 				if (file.EndsWith (".h")) {
 					NSObjectTypeInfo parsed = NSObjectInfoService.ParseHeader (file);
 					
-					monitor.Log.WriteLine ("New Objective-C header file found: {0}", Path.Combine (relativePath, Path.GetFileName (file)));
+					monitor.Log.WriteLine ("New Objective-C header file found: {0}", relative);
 					ctx.TypeSyncJobs.Add (XcodeSyncObjcBackJob.NewType (parsed, relativePath));
 				} else {
-					FilePath original, relative;
-					
-					if (relativePath != null)
-						relative = new FilePath (Path.Combine (relativePath, Path.GetFileName (file)));
-					else
-						relative = new FilePath (Path.GetFileName (file));
-					
-					original = ctx.Project.BaseDirectory.Combine (relative);
+					FilePath original = ctx.Project.BaseDirectory.Combine (relative);
 					
 					monitor.Log.WriteLine ("New content file found: {0}", relative);
-					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, true));
+					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, XcodeSyncFileStatus.Added));
 				}
 			}
 			
@@ -312,30 +324,46 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
+		static void DeleteDirectory (string path, bool recursive)
+		{
+			if (!Directory.Exists (path))
+				return;
+			
+			XC4Debug.Indent ();
+			
+			try {
+				Directory.Delete (path, recursive);
+			} catch (UnauthorizedAccessException uae) {
+				// We do not appear to have permissions to delete this directory
+				XC4Debug.Log ("{0}", uae.Message);
+			} catch (DirectoryNotFoundException) {
+				// Directory doesn't exist (removed by another process?)
+			} finally {
+				XC4Debug.Unindent ();
+			}
+		}
+		
 		public void DeleteProjectDirectory ()
 		{
 			bool isRunning = CheckRunning ();
 			
 			XC4Debug.Log ("Deleting temporary Xcode project directories.");
 			
-			if (Directory.Exists (projectDir))
-				Directory.Delete (projectDir, true);
+			DeleteDirectory (projectDir, true);
 			
 			if (isRunning) {
 				XC4Debug.Log ("Xcode still running, leaving empty directory in place to prevent name re-use.");
 				Directory.CreateDirectory (projectDir);
 			} else {
 				XC4Debug.Log ("Xcode not running, removing all temporary directories.");
-				if (Directory.Exists (originalProjectDir))
-					Directory.Delete (originalProjectDir, true);
+				DeleteDirectory (originalProjectDir, true);
 			}
 		}
 		
 		void DeleteXcproj (IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ("Deleting project artifacts.");
-			if (Directory.Exists (xcproj))
-				Directory.Delete (xcproj, true);
+			DeleteDirectory (xcproj, true);
 		}
 		
 		static string GetWorkspacePath (string infoPlist)

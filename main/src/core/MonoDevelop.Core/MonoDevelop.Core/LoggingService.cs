@@ -40,13 +40,15 @@ namespace MonoDevelop.Core
 	{
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
-		static int logId = 0;
+		static DateTime timestamp;
 		
 		static LoggingService ()
 		{
 			ConsoleLogger consoleLogger = new ConsoleLogger ();
 			loggers.Add (consoleLogger);
 			loggers.Add (new InstrumentationLogger ());
+			
+			timestamp = DateTime.Now;
 			
 			string consoleLogLevelEnv = Environment.GetEnvironmentVariable ("MONODEVELOP_CONSOLE_LOG_LEVEL");
 			if (!string.IsNullOrEmpty (consoleLogLevelEnv)) {
@@ -75,22 +77,18 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		static FilePath GenericLogFile {
+		static string GenericLogFile {
 			get { return "MonoDevelop.log"; }
 		}
-
-		static string FormattedGenericLogFile (int value)
-		{
-			return string.Format ("MonoDevelop-{0}.log", value);
-		}
-
-		static string FormattedUniqueFileName (DateTime timestamp)
-		{
-			return string.Format ("MonoDevelop.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
-		}
 		
-		public static int LogId {
-			get { return logId; }
+		public static DateTime LogTimestamp {
+			get { return timestamp; }
+		}
+
+		static string UniqueLogFile {
+			get {
+				return string.Format ("MonoDevelop.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
+			}
 		}
 		
 		public static void Initialize (bool redirectOutput)
@@ -107,12 +105,17 @@ namespace MonoDevelop.Core
 			if (!Directory.Exists (UserProfile.Current.LogDir))
 				return;
 
-			var files = Directory.EnumerateFiles (UserProfile.Current.LogDir, "*.log")
+			var files = Directory.EnumerateFiles (UserProfile.Current.LogDir)
 				.Select (f => new FileInfo (f))
 				.Where (f => f.CreationTimeUtc < DateTime.UtcNow.Subtract (TimeSpan.FromDays (7)));
 
-			foreach (var v in files)
-				v.Delete ();
+			foreach (var v in files) {
+				try {
+					v.Delete ();
+				} catch (Exception ex) {
+					Console.Error.WriteLine (ex);
+				}
+			}
 		}
 		
 		static void RedirectOutputToLogFile ()
@@ -120,60 +123,36 @@ namespace MonoDevelop.Core
 			FilePath logDir = UserProfile.Current.LogDir;
 			if (!Directory.Exists (logDir))
 				Directory.CreateDirectory (logDir);
-		
+			
 			try {
 				if (Platform.IsWindows) {
 					//TODO: redirect the file descriptors on Windows, just plugging in a textwriter won't get everything
-					RedirectOutputToFileWindows (logDir);
+					RedirectOutputToFileWindows (logDir, UniqueLogFile);
 				} else {
-					RedirectOutputToFileUnix (logDir);
+					RedirectOutputToFileUnix (logDir, UniqueLogFile);
 				}
-			} catch {
+			} catch (Exception ex) {
+				Console.Error.WriteLine (ex);
 			}
 		}
 
-		static IEnumerable<string> GetGenericLogFiles (FilePath logDirectory)
+		static void RedirectOutputToFileWindows (FilePath logDirectory, string logName)
 		{
-			// Look for MonoDevelop.log and also MonoDevelop-XXX.log
-			string additonalGenericLogs = Path.GetFileNameWithoutExtension (GenericLogFile) + "-";
-			return Directory.GetFiles (logDirectory)
-				.Where (f => f == GenericLogFile || f.StartsWith (additonalGenericLogs))
-				.OrderBy (f => f);
-		}
+			var stream = File.Open (logDirectory.Combine (logName), FileMode.Create, FileAccess.Write, FileShare.Read);
+			var writer = new StreamWriter (stream) { AutoFlush = true };
+			
+			var stderr = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
+			stderr.ChainWriter (Console.Error);
+			stderr.ChainWriter (writer);
+			Console.SetError (stderr);
 
-		static void RedirectOutputToFileWindows (FilePath logDirectory)
-		{
-			// First try to move any generic MonoDevelop.log files to a timestamped filename
-			foreach (var path in GetGenericLogFiles (logDirectory)) {
-				try {
-					var creationTime = File.GetCreationTime (path);
-					var destination = logDirectory.Combine (FormattedUniqueFileName (creationTime));
-					FileService.RenameFile (path, destination);
-				} catch {}
-			}
-
-			// Find the first free filename, try MonoDevelop.log first and then MonoDevelop-{0}.log
-			string logName = GenericLogFile;
-			FileStream stream = null;
-			
-			do {
-				try {
-					stream = File.Open (logDirectory.Combine (logName), FileMode.CreateNew, FileAccess.Write);
-					break;
-				} catch (IOException) {
-					// the file already exists...
-				}
-				
-				logName = FormattedGenericLogFile (++logId);
-			} while (true);
-			
-			var logFile = new StreamWriter (stream) { AutoFlush = true };
-			
-			Console.SetOut (logFile);
-			Console.SetError (logFile);
+			var stdout = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
+			stdout.ChainWriter (Console.Out);
+			stdout.ChainWriter (writer);
+			Console.SetOut (stdout);
 		}
 		
-		static void RedirectOutputToFileUnix (FilePath logDirectory)
+		static void RedirectOutputToFileUnix (FilePath logDirectory, string logName)
 		{
 			const int STDOUT_FILENO = 1;
 			const int STDERR_FILENO = 2;
@@ -184,7 +163,7 @@ namespace MonoDevelop.Core
 				| Mono.Unix.Native.FilePermissions.S_IRUSR | Mono.Unix.Native.FilePermissions.S_IWUSR
 				| Mono.Unix.Native.FilePermissions.S_IRGRP | Mono.Unix.Native.FilePermissions.S_IWGRP;
 			
-			var file = logDirectory.Combine (FormattedUniqueFileName (DateTime.Now));
+			var file = logDirectory.Combine (logName);
 			int fd = Mono.Unix.Native.Syscall.open (file, flags, mode);
 			if (fd < 0)
 				//error

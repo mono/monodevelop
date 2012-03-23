@@ -202,7 +202,9 @@ namespace Mono.Debugger.Soft
 	}
 
 	enum StackFrameFlags {
-		DEBUGGER_INVOKE = 1
+		NONE = 0,
+		DEBUGGER_INVOKE = 1,
+		NATIVE_TRANSITION = 2
 	}
 
 	class ResolvedToken {
@@ -240,6 +242,10 @@ namespace Mono.Debugger.Soft
 		}
 
 		public int Size {
+			get; set;
+		}
+
+		public int Filter {
 			get; set;
 		}
 	}
@@ -370,7 +376,7 @@ namespace Mono.Debugger.Soft
 		 * with newer runtimes, and vice versa.
 		 */
 		internal const int MAJOR_VERSION = 2;
-		internal const int MINOR_VERSION = 15;
+		internal const int MINOR_VERSION = 17;
 
 		enum WPSuspendPolicy {
 			NONE = 0,
@@ -1126,7 +1132,9 @@ namespace Mono.Debugger.Soft
 					if (!res)
 						break;
 				} catch (Exception ex) {
-					Console.WriteLine (ex);
+					if (!closed) {
+						Console.WriteLine (ex);
+					}
 					break;
 				}
 			}
@@ -1784,11 +1792,14 @@ namespace Mono.Debugger.Soft
 
 			var frames = new FrameInfo [count];
 			for (int i = 0; i < count; ++i) {
-				frames [i].id = res.ReadInt ();
-				frames [i].method = res.ReadId ();
-				frames [i].il_offset = res.ReadInt ();
-				frames [i].flags = (StackFrameFlags)res.ReadByte ();
+				var f = new FrameInfo ();
+				f.id = res.ReadInt ();
+				f.method = res.ReadId ();
+				f.il_offset = res.ReadInt ();
+				f.flags = (StackFrameFlags)res.ReadByte ();
+				frames [i] = f;
 			}
+
 			return frames;
 		}
 
@@ -2039,6 +2050,8 @@ namespace Mono.Debugger.Soft
 						w.WriteId ((mod as StepModifier).Thread);
 						w.WriteInt ((mod as StepModifier).Size);
 						w.WriteInt ((mod as StepModifier).Depth);
+						if (Version.AtLeast (2, 16))
+							w.WriteInt ((mod as StepModifier).Filter);
 					} else if (mod is ThreadModifier) {
 						w.WriteByte ((byte)ModifierKind.THREAD_ONLY);
 						w.WriteId ((mod as ThreadModifier).Thread);
@@ -2204,6 +2217,10 @@ namespace Mono.Debugger.Soft
 			return res;
 		}
 
+		public void ForceDisconnect ()
+		{
+			TransportClose ();
+		}
 	}
 	
 	class TcpConnection : Connection

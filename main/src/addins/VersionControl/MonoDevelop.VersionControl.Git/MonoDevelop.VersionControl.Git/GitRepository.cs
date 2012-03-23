@@ -266,12 +266,18 @@ namespace MonoDevelop.VersionControl.Git
 			else
 				rev = null;
 			
-			RepositoryStatus status;
-			if (localFileNames != null)
-				status = GitUtil.GetFileStatus (repo, localFileNames);
-			else
-				status = GitUtil.GetDirectoryStatus (repo, localDirectory, recursive);
-			
+			IEnumerable<string> paths;
+			if (localFileNames == null) {
+				if (recursive)
+					paths = new [] { (string) localDirectory };
+				else
+					paths = Directory.GetFiles (localDirectory);
+			} else {
+				paths = localFileNames.Select (f => (string)f);
+			}
+			paths = paths.Select (f => ToGitPath (f));
+
+			var status = new FilteredStatus (repo, paths).Call (); 
 			HashSet<string> added = new HashSet<string> ();
 			Action<IEnumerable<string>, VersionStatus> AddFiles = delegate(IEnumerable<string> files, VersionStatus fstatus) {
 				foreach (string file in files) {
@@ -284,13 +290,14 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			};
 			
-			AddFiles (status.Added, VersionStatus.Versioned | VersionStatus.ScheduledAdd);
-			AddFiles (status.Modified, VersionStatus.Versioned | VersionStatus.Modified);
-			AddFiles (status.Removed, VersionStatus.Versioned | VersionStatus.ScheduledDelete);
-			AddFiles (status.Missing, VersionStatus.Versioned | VersionStatus.ScheduledDelete);
-			AddFiles (status.MergeConflict, VersionStatus.Versioned | VersionStatus.Conflicted);
-			AddFiles (status.Untracked, VersionStatus.Unversioned);
-			
+			AddFiles (status.GetAdded (), VersionStatus.Versioned | VersionStatus.ScheduledAdd);
+			AddFiles (status.GetChanged (), VersionStatus.Versioned | VersionStatus.Modified);
+			AddFiles (status.GetModified (), VersionStatus.Versioned | VersionStatus.Modified);
+			AddFiles (status.GetRemoved (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
+			AddFiles (status.GetMissing (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
+			AddFiles (status.GetConflicting (), VersionStatus.Versioned | VersionStatus.Conflicted);
+			AddFiles (status.GetUntracked (), VersionStatus.Unversioned);
+
 			// Existing files for which git did not report an status are supposed to be tracked
 			foreach (FilePath file in existingFiles) {
 				VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null);
@@ -850,7 +857,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		string GetCommitTextContent (RevCommit c, FilePath file)
 		{
-			return NGit.Util.RawParseUtils.Decode (GetCommitContent (c, file));
+			return Mono.TextEditor.Utils.TextFileReader.GetText (GetCommitContent (c, file));
 		}
 		
 		string GenerateDiff (byte[] data1, byte[] data2)
@@ -949,8 +956,14 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void CreateBranch (string name, string trackSource)
 		{
-			ObjectId headId = repo.Resolve (Constants.HEAD);
-			RefUpdate updateRef = repo.UpdateRef ("refs/heads/" + name);
+			// If the user did not specify a branch to base the new local
+			// branch off, assume they want to create the new branch based
+			// on the current HEAD.
+			if (string.IsNullOrEmpty (trackSource))
+				trackSource = Constants.HEAD;
+
+			ObjectId headId = repo.Resolve (trackSource);
+			RefUpdate updateRef = repo.UpdateRef (Constants.R_HEADS + name);
 			updateRef.SetNewObjectId(headId);
 			updateRef.Update();
 			GitUtil.SetUpstreamSource (repo, name, trackSource);

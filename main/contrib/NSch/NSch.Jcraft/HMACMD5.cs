@@ -36,7 +36,7 @@ using Sharpen;
 
 namespace NSch.Jcraft
 {
-	public class HMACMD5 : HMAC, MAC
+	class HMACMD5 : HMAC, MAC
 	{
 		private static readonly string name = "hmac-md5";
 

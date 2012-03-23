@@ -43,7 +43,30 @@ namespace MonoDevelop.Core.Instrumentation
 		DateTime lastValueTime = DateTime.MinValue;
 		CounterDisplayMode displayMode = CounterDisplayMode.Block;
 		bool disposed;
+		bool storeValues;
+		bool enabled;
 		
+		List<IInstrumentationConsumer> handlers = new List<IInstrumentationConsumer> ();
+
+		public bool StoreValues {
+			get {
+				return storeValues;
+			}
+			set {
+				storeValues = value;
+			}
+		}
+		
+		internal List<IInstrumentationConsumer> Handlers {
+			get { return handlers; }
+		}
+		
+		internal void UpdateStatus ()
+		{
+			enabled = InstrumentationService.Enabled || handlers.Count > 0;
+			storeValues = InstrumentationService.Enabled;
+		}
+	
 		internal Counter (string name, CounterCategory category)
 		{
 			this.name = name;
@@ -166,7 +189,13 @@ namespace MonoDevelop.Core.Instrumentation
 				if (now - lastValueTime < resolution)
 					return -1;
 			}
-			values.Add (new CounterValue (count, totalCount, now, message, traces));
+			var val = new CounterValue (count, totalCount, now, message, traces);
+			if (storeValues)
+				values.Add (val);
+			if (handlers.Count > 0) {
+				foreach (var h in handlers)
+					h.ConsumeValue (this, val);
+			}
 			return values.Count - 1;
 		}
 		
@@ -198,7 +227,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void Inc (int n, string message)
 		{
-			if (InstrumentationService.Enabled) {
+			if (enabled) {
 				lock (values) {
 					count += n;
 					totalCount += n;
@@ -226,7 +255,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void Dec (int n, string message)
 		{
-			if (InstrumentationService.Enabled) {
+			if (enabled) {
 				lock (values) {
 					count -= n;
 					StoreValue (message, null);
@@ -243,7 +272,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void SetValue (int value, string message)
 		{
-			if (InstrumentationService.Enabled) {
+			if (enabled) {
 				lock (values) {
 					count = value;
 					StoreValue (message, null);
@@ -272,7 +301,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public virtual void Trace (string message)
 		{
-			if (InstrumentationService.Enabled) {
+			if (enabled) {
 				lock (values) {
 					StoreValue (message, null);
 				}

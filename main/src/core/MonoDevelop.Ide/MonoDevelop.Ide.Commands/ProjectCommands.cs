@@ -255,9 +255,9 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			if ((IdeApp.Workspace.IsOpen) && (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted))
-				info.Text = GettextCatalog.GetString ("_Run again");
+				info.Text = GettextCatalog.GetString ("Restart Without Debugging");
 			else
-				info.Text = GettextCatalog.GetString ("_Run");
+				info.Text = GettextCatalog.GetString ("Start Without Debugging");
 
 			info.Enabled = CanRun (Runtime.ProcessService.DefaultExecutionHandler);
 		}

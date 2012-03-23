@@ -29,7 +29,6 @@ using NGit.Storage.File;
 using NGit.Revwalk;
 using NGit;
 using UnitTests;
-using NUnit.Framework.SyntaxHelpers;
 using System.IO;
 using System.Collections.Generic;
 

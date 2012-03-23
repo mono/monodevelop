@@ -197,6 +197,8 @@ namespace Sharpen
 		{
 			int nextWait = ST.Timeout.Infinite;
 			while (true) {
+				if (nextWait != ST.Timeout.Infinite)
+					nextWait = Math.Max (0, nextWait);
 				newTask.WaitOne (nextWait);
 				lock (tasks) {
 					DateTime now = DateTime.Now;

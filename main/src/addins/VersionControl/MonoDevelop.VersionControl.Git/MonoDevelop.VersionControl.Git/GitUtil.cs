@@ -164,17 +164,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			}
 		}
-		
-		public static RepositoryStatus GetDirectoryStatus (NGit.Repository repo, string dir, bool recursive)
-		{
-			return new RepositoryStatus (repo, null, repo.ToGitPath (dir), recursive);
-		}
-		
-		public static RepositoryStatus GetFileStatus (NGit.Repository repo, IEnumerable<FilePath> fileNames)
-		{
-			return new RepositoryStatus (repo, repo.ToGitPath (fileNames), null, false);
-		}
-		
+
 		public static ObjectId CreateCommit (NGit.Repository rep, string message, IList<ObjectId> parents, ObjectId indexTreeId, PersonIdent author, PersonIdent committer)
 		{
 			try {

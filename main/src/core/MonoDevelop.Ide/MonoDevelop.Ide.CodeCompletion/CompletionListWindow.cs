@@ -296,6 +296,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			this.Style = CompletionWidget.GtkStyle;
 			
+			if (PropertyService.Get ("HideObsoleteItems", false))
+				foreach (var item in completionDataList.Where (x => (DisplayFlags.Obsolete == (DisplayFlags.Obsolete & x.DisplayFlags))).ToList ())
+					completionDataList.Remove (item);
+			
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
@@ -435,7 +439,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			IList<CompletionData> overloads;
 			if (data.IsOverloaded) {
-				overloads = new List<CompletionData> (data.OverloadedData);
+				var filteredOverloads = data.OverloadedData;
+				if (PropertyService.Get ("HideObsoleteItems", false))
+					filteredOverloads = filteredOverloads.Where (x => (DisplayFlags.Obsolete != (DisplayFlags.Obsolete & x.DisplayFlags)));
+				overloads = new List<CompletionData> (filteredOverloads);
 			} else {
 				overloads = new CompletionData[] { data };
 			}

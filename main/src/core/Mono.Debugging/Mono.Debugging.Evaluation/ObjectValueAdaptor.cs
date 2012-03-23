@@ -91,6 +91,7 @@ namespace Mono.Debugging.Evaluation
 			int genericEndIndex = -1;
 			int typeEndIndex;
 			
+		retry:
 			if (tokenIndex == -1) // Simple type
 				return GetShortTypeName (typeName.Substring (startIndex, endIndex - startIndex));
 			
@@ -102,7 +103,15 @@ namespace Mono.Debugging.Evaluation
 			
 			// decode generic args first, if this is a generic type
 			if (typeName[tokenIndex] == '`') {
-				genericEndIndex = tokenIndex = typeName.IndexOf ('[', tokenIndex, endIndex - tokenIndex);
+				genericEndIndex = typeName.IndexOf ('[', tokenIndex, endIndex - tokenIndex);
+				if (genericEndIndex == -1) {
+					// Mono's compiler seems to generate non-generic types with '`'s in the name
+					// e.g. __EventHandler`1_FileCopyEventArgs_DelegateFactory_2
+					tokenIndex = typeName.IndexOfAny (new char [] { '[', ',' }, tokenIndex, endIndex - tokenIndex);
+					goto retry;
+				}
+				
+				tokenIndex = genericEndIndex;
 				genericArgs = GetGenericArguments (typeName, ref tokenIndex, endIndex);
 			}
 			
@@ -157,7 +166,7 @@ namespace Mono.Debugging.Evaluation
 				// Append the next generic type component
 				sb.Append (typeName.Substring (i, next - i));
 				
-				i = next;
+				i = next + 1;
 			}
 			
 			return sb.ToString ();

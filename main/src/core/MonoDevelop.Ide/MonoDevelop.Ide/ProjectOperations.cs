@@ -688,8 +688,12 @@ namespace MonoDevelop.Ide
 		{
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
 			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
-			if (MessageService.ShowCustomDialog (npdlg) == (int)Gtk.ResponseType.Ok)
-				return npdlg.NewItem as SolutionItem;
+			if (MessageService.ShowCustomDialog (npdlg) == (int)Gtk.ResponseType.Ok) {
+				var item = npdlg.NewItem as SolutionItem;
+				if ((item is Project) && ProjectCreated != null)
+					ProjectCreated (this, new ProjectCreatedEventArgs (item as Project));
+				return item;
+			}
 			return null;
 		}
 
@@ -828,6 +832,8 @@ namespace MonoDevelop.Ide
 		
 		void RemoveItemFromSolution (SolutionItem prj)
 		{
+			foreach (var doc in IdeApp.Workbench.Documents.Where (d => d.Project == prj).ToArray ())
+				doc.Close ();
 			Solution sol = prj.ParentSolution;
 			prj.ParentFolder.Items.Remove (prj);
 			prj.Dispose ();
@@ -1243,7 +1249,7 @@ namespace MonoDevelop.Ide
 						monitor.ReportError(GettextCatalog.GetString("Build failed."), null);
 					}
 					tt.Trace ("End build event");
-					OnEndBuild (monitor, lastResult.FailedBuildCount == 0);
+					OnEndBuild (monitor, lastResult.FailedBuildCount == 0, lastResult, entry as SolutionItem);
 				} else {
 					tt.Trace ("End build event");
 					OnEndBuild (monitor, false);
@@ -1604,7 +1610,7 @@ namespace MonoDevelop.Ide
 							filesToRemove.Add (folder);
 					} else {
 						filesToRemove = new List<ProjectFile> ();
-						var pf = sourceProject.GetProjectFile (sourcePath);
+						var pf = sourceProject.Files.GetFileWithVirtualPath (sourceProject.GetRelativeChildPath (sourcePath));
 						if (pf != null)
 							filesToRemove.Add (pf);
 					}
@@ -1701,7 +1707,7 @@ namespace MonoDevelop.Ide
 				
 				if (sourceProject != null) {
 					if (fileIsLink) {
-						var linkFile = (sourceProject == targetProject)? file : (ProjectFile) file.Clone ();
+						var linkFile = (ProjectFile) file.Clone ();
 						if (movingFolder) {
 							var abs = linkFile.Link.ToAbsolute (sourceProject.BaseDirectory);
 							var relSrc = abs.ToRelative (sourcePath);
@@ -1824,11 +1830,21 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		void OnEndBuild (IProgressMonitor monitor, bool success)
+		void OnEndBuild (IProgressMonitor monitor, bool success, BuildResult result = null, SolutionItem item = null)
 		{
-			if (EndBuild != null) {
-				EndBuild (this, new BuildEventArgs (monitor, success));
+			if (EndBuild == null)
+				return;
+					
+			var args = new BuildEventArgs (monitor, success) {
+				SolutionItem = item
+			};
+			if (result != null) {
+				args.WarningCount = result.WarningCount;
+				args.ErrorCount = result.ErrorCount;
+				args.BuildCount = result.BuildCount;
+				args.FailedBuildCount = result.FailedBuildCount;
 			}
+			EndBuild (this, args);
 		}
 		
 		void OnStartClean (IProgressMonitor monitor, ITimeTracker tt)
@@ -1898,6 +1914,7 @@ namespace MonoDevelop.Ide
 		
 		public event EventHandler<SolutionEventArgs> CurrentSelectedSolutionChanged;
 		public event ProjectEventHandler CurrentProjectChanged;
+		public event EventHandler<ProjectCreatedEventArgs> ProjectCreated;
 		
 		// Fired just before an entry is added to a combine
 		public event AddEntryEventHandler AddingEntryToCombine;

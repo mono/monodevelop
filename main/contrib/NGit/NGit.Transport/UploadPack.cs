@@ -87,6 +87,54 @@ namespace NGit.Transport
 			ANY
 		}
 
+		/// <summary>Data in the first line of a request, the line itself plus options.</summary>
+		/// <remarks>Data in the first line of a request, the line itself plus options.</remarks>
+		public class FirstLine
+		{
+			private readonly string line;
+
+			private readonly ICollection<string> options;
+
+			/// <summary>Parse the first line of a receive-pack request.</summary>
+			/// <remarks>Parse the first line of a receive-pack request.</remarks>
+			/// <param name="line">line from the client.</param>
+			public FirstLine(string line)
+			{
+				if (line.Length > 45)
+				{
+					HashSet<string> opts = new HashSet<string>();
+					string opt = Sharpen.Runtime.Substring(line, 45);
+					if (opt.StartsWith(" "))
+					{
+						opt = Sharpen.Runtime.Substring(opt, 1);
+					}
+					foreach (string c in opt.Split(" "))
+					{
+						opts.AddItem(c);
+					}
+					this.line = Sharpen.Runtime.Substring(line, 0, 45);
+					this.options = Sharpen.Collections.UnmodifiableSet(opts);
+				}
+				else
+				{
+					this.line = line;
+					this.options = Sharpen.Collections.EmptySet<string>();
+				}
+			}
+
+			/// <returns>non-capabilities part of the line.</returns>
+			public virtual string GetLine()
+			{
+				return line;
+			}
+
+			/// <returns>options parsed from the line.</returns>
+			public virtual ICollection<string> GetOptions()
+			{
+				return options;
+			}
+		}
+
 		/// <summary>Database we read the objects from.</summary>
 		/// <remarks>Database we read the objects from.</remarks>
 		private readonly Repository db;
@@ -144,9 +192,13 @@ namespace NGit.Transport
 		/// <remarks>The refs we advertised as existing at the start of the connection.</remarks>
 		private IDictionary<string, Ref> refs;
 
+		/// <summary>Hook used while advertising the refs to the client.</summary>
+		/// <remarks>Hook used while advertising the refs to the client.</remarks>
+		private AdvertiseRefsHook advertiseRefsHook = AdvertiseRefsHook.DEFAULT;
+
 		/// <summary>Filter used while advertising the refs to the client.</summary>
 		/// <remarks>Filter used while advertising the refs to the client.</remarks>
-		private RefFilter refFilter;
+		private RefFilter refFilter = RefFilter.DEFAULT;
 
 		/// <summary>Hook handling the various upload phases.</summary>
 		/// <remarks>Hook handling the various upload phases.</remarks>
@@ -154,7 +206,7 @@ namespace NGit.Transport
 
 		/// <summary>Capabilities requested by the client.</summary>
 		/// <remarks>Capabilities requested by the client.</remarks>
-		private readonly ICollection<string> options = new HashSet<string>();
+		private ICollection<string> options;
 
 		/// <summary>Raw ObjectIds the client has asked for, before validating them.</summary>
 		/// <remarks>Raw ObjectIds the client has asked for, before validating them.</remarks>
@@ -246,7 +298,6 @@ namespace NGit.Transport
 			SAVE.AddItem(PEER_HAS);
 			SAVE.AddItem(COMMON);
 			SAVE.AddItem(SATISFIED);
-			refFilter = RefFilter.DEFAULT;
 		}
 
 		/// <returns>the repository this upload is reading from.</returns>
@@ -261,27 +312,47 @@ namespace NGit.Transport
 			return walk;
 		}
 
-		/// <returns>all refs which were advertised to the client.</returns>
+		/// <summary>Get refs which were advertised to the client.</summary>
+		/// <remarks>Get refs which were advertised to the client.</remarks>
+		/// <returns>
+		/// all refs which were advertised to the client, or null if
+		/// <see cref="SetAdvertisedRefs(System.Collections.Generic.IDictionary{K, V})">SetAdvertisedRefs(System.Collections.Generic.IDictionary&lt;K, V&gt;)
+		/// 	</see>
+		/// has not been called yet.
+		/// </returns>
 		public IDictionary<string, Ref> GetAdvertisedRefs()
 		{
-			if (refs == null)
-			{
-				SetAdvertisedRefs(db.GetAllRefs());
-			}
 			return refs;
 		}
 
+		/// <summary>Set the refs advertised by this UploadPack.</summary>
+		/// <remarks>
+		/// Set the refs advertised by this UploadPack.
+		/// <p>
+		/// Intended to be called from a
+		/// <see cref="PreUploadHook">PreUploadHook</see>
+		/// .
+		/// </remarks>
 		/// <param name="allRefs">
 		/// explicit set of references to claim as advertised by this
 		/// UploadPack instance. This overrides any references that
 		/// may exist in the source repository. The map is passed
 		/// to the configured
 		/// <see cref="GetRefFilter()">GetRefFilter()</see>
-		/// .
+		/// . If null, assumes
+		/// all refs were advertised.
 		/// </param>
 		public virtual void SetAdvertisedRefs(IDictionary<string, Ref> allRefs)
 		{
-			refs = refFilter.Filter(allRefs);
+			if (allRefs != null)
+			{
+				refs = allRefs;
+			}
+			else
+			{
+				refs = db.GetAllRefs();
+			}
+			refs = refFilter.Filter(refs);
 		}
 
 		/// <returns>timeout (in seconds) before aborting an IO operation.</returns>
@@ -353,20 +424,53 @@ namespace NGit.Transport
 			requestPolicy = policy != null ? policy : UploadPack.RequestPolicy.ADVERTISED;
 		}
 
+		/// <returns>the hook used while advertising the refs to the client</returns>
+		public virtual AdvertiseRefsHook GetAdvertiseRefsHook()
+		{
+			return advertiseRefsHook;
+		}
+
 		/// <returns>the filter used while advertising the refs to the client</returns>
 		public virtual RefFilter GetRefFilter()
 		{
 			return refFilter;
 		}
 
+		/// <summary>Set the hook used while advertising the refs to the client.</summary>
+		/// <remarks>
+		/// Set the hook used while advertising the refs to the client.
+		/// <p>
+		/// If the
+		/// <see cref="AdvertiseRefsHook">AdvertiseRefsHook</see>
+		/// chooses to call
+		/// <see cref="SetAdvertisedRefs(System.Collections.Generic.IDictionary{K, V})">SetAdvertisedRefs(System.Collections.Generic.IDictionary&lt;K, V&gt;)
+		/// 	</see>
+		/// , only refs set by this hook <em>and</em>
+		/// selected by the
+		/// <see cref="RefFilter">RefFilter</see>
+		/// will be shown to the client.
+		/// </remarks>
+		/// <param name="advertiseRefsHook">the hook; may be null to show all refs.</param>
+		public virtual void SetAdvertiseRefsHook(AdvertiseRefsHook advertiseRefsHook)
+		{
+			if (advertiseRefsHook != null)
+			{
+				this.advertiseRefsHook = advertiseRefsHook;
+			}
+			else
+			{
+				this.advertiseRefsHook = AdvertiseRefsHook.DEFAULT;
+			}
+		}
+
 		/// <summary>Set the filter used while advertising the refs to the client.</summary>
 		/// <remarks>
 		/// Set the filter used while advertising the refs to the client.
 		/// <p>
-		/// Only refs allowed by this filter will be sent to the client. This can
-		/// be used by a server to restrict the list of references the client can
-		/// obtain through clone or fetch, effectively limiting the access to only
-		/// certain refs.
+		/// Only refs allowed by this filter will be sent to the client.
+		/// The filter is run against the refs specified by the
+		/// <see cref="AdvertiseRefsHook">AdvertiseRefsHook</see>
+		/// (if applicable).
 		/// </remarks>
 		/// <param name="refFilter">the filter; may be null to show all refs.</param>
 		public virtual void SetRefFilter(RefFilter refFilter)
@@ -411,6 +515,29 @@ namespace NGit.Transport
 		public virtual void SetLogger(UploadPackLogger logger)
 		{
 			this.logger = logger;
+		}
+
+		/// <summary>Check whether the client expects a side-band stream.</summary>
+		/// <remarks>Check whether the client expects a side-band stream.</remarks>
+		/// <returns>
+		/// true if the client has advertised a side-band capability, false
+		/// otherwise.
+		/// </returns>
+		/// <exception cref="RequestNotYetReadException">
+		/// if the client's request has not yet been read from the wire, so
+		/// we do not know if they expect side-band. Note that the client
+		/// may have already written the request, it just has not been
+		/// read.
+		/// </exception>
+		/// <exception cref="NGit.Transport.RequestNotYetReadException"></exception>
+		public virtual bool IsSideBand()
+		{
+			if (options == null)
+			{
+				throw new RequestNotYetReadException();
+			}
+			return (options.Contains(OPTION_SIDE_BAND) || options.Contains(OPTION_SIDE_BAND_64K
+				));
 		}
 
 		/// <summary>Execute the upload task on the socket.</summary>
@@ -482,6 +609,15 @@ namespace NGit.Transport
 			return statistics;
 		}
 
+		private IDictionary<string, Ref> GetAdvertisedOrDefaultRefs()
+		{
+			if (refs == null)
+			{
+				SetAdvertisedRefs(null);
+			}
+			return refs;
+		}
+
 		/// <exception cref="System.IO.IOException"></exception>
 		private void Service()
 		{
@@ -498,7 +634,7 @@ namespace NGit.Transport
 				else
 				{
 					advertised = new HashSet<ObjectId>();
-					foreach (Ref @ref in GetAdvertisedRefs().Values)
+					foreach (Ref @ref in GetAdvertisedOrDefaultRefs().Values)
 					{
 						if (@ref.GetObjectId() != null)
 						{
@@ -544,7 +680,7 @@ namespace NGit.Transport
 				ReportErrorDuringNegotiate(err.Message);
 				throw;
 			}
-			catch (UploadPackMayNotContinueException err)
+			catch (ServiceMayNotContinueException err)
 			{
 				if (!err.IsOutput() && err.Message != null)
 				{
@@ -636,16 +772,15 @@ namespace NGit.Transport
 		/// <param name="adv">the advertisement formatter.</param>
 		/// <exception cref="System.IO.IOException">the formatter failed to write an advertisement.
 		/// 	</exception>
-		/// <exception cref="UploadPackMayNotContinueException">the hook denied advertisement.
-		/// 	</exception>
-		/// <exception cref="NGit.Transport.UploadPackMayNotContinueException"></exception>
+		/// <exception cref="ServiceMayNotContinueException">the hook denied advertisement.</exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		public virtual void SendAdvertisedRefs(RefAdvertiser adv)
 		{
 			try
 			{
-				preUploadHook.OnPreAdvertiseRefs(this);
+				advertiseRefsHook.AdvertiseRefs(this);
 			}
-			catch (UploadPackMayNotContinueException fail)
+			catch (ServiceMayNotContinueException fail)
 			{
 				if (fail.Message != null)
 				{
@@ -669,7 +804,7 @@ namespace NGit.Transport
 				adv.AdvertiseCapability(OPTION_NO_DONE);
 			}
 			adv.SetDerefTags(true);
-			advertised = adv.Send(GetAdvertisedRefs());
+			advertised = adv.Send(GetAdvertisedOrDefaultRefs());
 			adv.End();
 		}
 
@@ -714,16 +849,9 @@ namespace NGit.Transport
 				}
 				if (isFirst && line.Length > 45)
 				{
-					string opt = Sharpen.Runtime.Substring(line, 45);
-					if (opt.StartsWith(" "))
-					{
-						opt = Sharpen.Runtime.Substring(opt, 1);
-					}
-					foreach (string c in opt.Split(" "))
-					{
-						options.AddItem(c);
-					}
-					line = Sharpen.Runtime.Substring(line, 0, 45);
+					UploadPack.FirstLine firstLine = new UploadPack.FirstLine(line);
+					options = firstLine.GetOptions();
+					line = firstLine.GetLine();
 				}
 				wantIds.AddItem(ObjectId.FromString(Sharpen.Runtime.Substring(line, 5)));
 				isFirst = false;
@@ -1160,7 +1288,7 @@ namespace NGit.Transport
 				{
 					SendPack(true);
 				}
-				catch (UploadPackMayNotContinueException noPack)
+				catch (ServiceMayNotContinueException noPack)
 				{
 					// This was already reported on (below).
 					throw;
@@ -1254,7 +1382,7 @@ namespace NGit.Transport
 					preUploadHook.OnSendPack(this, wantAll, commonBase);
 				}
 			}
-			catch (UploadPackMayNotContinueException noPack)
+			catch (ServiceMayNotContinueException noPack)
 			{
 				if (sideband && noPack.Message != null)
 				{
