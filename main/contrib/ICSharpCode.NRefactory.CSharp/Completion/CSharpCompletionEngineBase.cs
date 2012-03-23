@@ -438,8 +438,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Append(continuation);
 			AppendMissingClosingBrackets(wrapper, memberText, appendSemicolon);
 			wrapper.Append(afterContinuation);
-			Console.WriteLine("-------");
-			Console.WriteLine(wrapper);
 			if (closingBrackets > 0) { 
 				wrapper.Append(new string ('}', closingBrackets));
 			}
