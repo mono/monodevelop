@@ -44,9 +44,9 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	public class HighlightUsagesExtension : TextEditorExtension, IQuickTaskProvider
+	public class HighlightUsagesExtension : TextEditorExtension, IUsageProvider
 	{
-		public readonly List<TextSegment> Usages = new List<TextSegment> ();
+		public readonly List<TextSegment> UsagesSegments = new List<TextSegment> ();
 			
 		TextEditorData textEditorData;
 
@@ -115,10 +115,10 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void ClearQuickTasks ()
 		{
-			Usages.Clear ();
-			if (quickTasks.Count > 0) {
-				quickTasks.Clear ();
-				OnTasksUpdated (EventArgs.Empty);
+			UsagesSegments.Clear ();
+			if (usages.Count > 0) {
+				usages.Clear ();
+				OnUsagesUpdated (EventArgs.Empty);
 			}
 		}
 
@@ -150,14 +150,14 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			RemoveMarkers (false);
 			var lineNumbers = new HashSet<int> ();
-			quickTasks.Clear ();
-			Usages.Clear ();
+			usages.Clear ();
+			UsagesSegments.Clear ();
 			if (references != null) {
 				bool alphaBlend = false;
 				foreach (var r in references) {
 					var marker = GetMarker (r.Region.BeginLine);
 					
-					quickTasks.Add (new QuickTask (null, r.Region.Begin, Severity.Hint));
+					usages.Add (r.Region.Begin);
 					
 					int offset = r.Offset;
 					int endOffset = offset + r.Length;
@@ -165,32 +165,17 @@ namespace MonoDevelop.CSharp.Highlighting
 						offset < sr.Offset && sr.EndOffset < endOffset)) {
 						textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
 					}
-					Usages.Add (new TextSegment (offset, endOffset - offset));
+					UsagesSegments.Add (new TextSegment (offset, endOffset - offset));
 					marker.Usages.Add (new TextSegment (offset, endOffset - offset));
 					lineNumbers.Add (r.Region.BeginLine);
 				}
 			}
 			foreach (int line in lineNumbers)
 				textEditorData.Document.CommitLineUpdate (line);
-			Usages.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
-			OnTasksUpdated (EventArgs.Empty);
+			UsagesSegments.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
+			OnUsagesUpdated (EventArgs.Empty);
 		}
-		
-		List<QuickTask> quickTasks = new List<QuickTask> ();
-		public IEnumerable<QuickTask> QuickTasks {
-			get {
-				return quickTasks;
-			}
-		}
-		
-		public event EventHandler TasksUpdated;
-		
-		protected virtual void OnTasksUpdated (EventArgs e)
-		{
-			EventHandler handler = this.TasksUpdated;
-			if (handler != null)
-				handler (this, e);
-		}
+
 
 		List<MemberReference> GetReferences (ResolveResult resolveResult)
 		{
@@ -309,6 +294,24 @@ namespace MonoDevelop.CSharp.Highlighting
 				return true;
 			}
 		}
+
+		#region IUsageProvider implementation
+		public event EventHandler UsagesUpdated;
+
+		protected virtual void OnUsagesUpdated (System.EventArgs e)
+		{
+			EventHandler handler = this.UsagesUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		List<DocumentLocation> usages = new List<DocumentLocation> ();
+		IEnumerable<DocumentLocation> IUsageProvider.Usages {
+			get {
+				return usages;
+			}
+		}
+		#endregion
 	}
 }
 

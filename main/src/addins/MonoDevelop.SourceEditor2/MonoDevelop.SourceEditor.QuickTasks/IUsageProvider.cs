@@ -1,5 +1,5 @@
 // 
-// IQuickTaskProvider.cs
+// IUsageProvider.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -26,15 +26,16 @@
 
 using System;
 using System.Collections.Generic;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	public interface IQuickTaskProvider
+	public interface IUsageProvider
 	{
-		IEnumerable<QuickTask> QuickTasks {
+		IEnumerable<DocumentLocation> Usages {
 			get;
 		}
 		
-		event EventHandler TasksUpdated;
+		event EventHandler UsagesUpdated;
 	}
 }

@@ -79,7 +79,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 		
 		Dictionary<IQuickTaskProvider, List<QuickTask>> providerTasks = new Dictionary<IQuickTaskProvider, List<QuickTask>> ();
-		
+		Dictionary<IUsageProvider, List<DocumentLocation>> providerUsages = new Dictionary<IUsageProvider, List<DocumentLocation>> ();
+
 		public IEnumerable<QuickTask> AllTasks {
 			get {
 				if (providerTasks == null)
@@ -91,7 +92,18 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				}
 			}
 		}
-		
+		public IEnumerable<TextLocation> AllUsages {
+			get {
+				if (providerUsages == null)
+					yield break;
+				foreach (var tasks in providerUsages.Values) {
+					foreach (var task in tasks) {
+						yield return task;
+					}
+				}
+			}
+		}
+
 		public QuickTaskStrip ()
 		{
 			if (EnableFancyFeatures) {
@@ -159,6 +171,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (providerTasks == null)
 				return;
 			providerTasks [provider] = new List<QuickTask> (provider.QuickTasks);
+			OnTaskProviderUpdated (EventArgs.Empty);
+		}
+		
+		public void Update (IUsageProvider provider)
+		{
+			if (providerTasks == null)
+				return;
+			providerUsages [provider] = new List<DocumentLocation> (provider.Usages);
 			OnTaskProviderUpdated (EventArgs.Empty);
 		}
 

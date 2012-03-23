@@ -171,6 +171,7 @@
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTask.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskMiniMapMode.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IUsageProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

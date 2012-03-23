@@ -54,6 +54,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				return parentStrip.AllTasks;
 			}
 		}
+
+		public IEnumerable<TextLocation> AllUsages {
+			get {
+				return parentStrip.AllUsages;
+			}
+		}
 		
 		public QuickTaskOverviewMode (QuickTaskStrip parent)
 		{
@@ -399,6 +405,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected Severity DrawQuickTasks (Cairo.Context cr)
 		{
 			Severity severity = Severity.None;
+
+			foreach (var usage in AllUsages) {
+				double y = LineToY (usage.Line);
+				var usageColor = TextEditor.ColorStyle.Default.CairoColor;
+				usageColor.A = 0.4;
+				cr.Color = usageColor;
+				cr.MoveTo (0, y - 3);
+				cr.LineTo (5, y);
+				cr.LineTo (0, y + 3);
+				cr.ClosePath ();
+				cr.Fill ();
+			}
+
 			foreach (var task in AllTasks) {
 				double y = LineToY (task.Location.Line);
 

@@ -106,6 +106,15 @@ namespace MonoDevelop.SourceEditor
 				secondsw.AddQuickTaskStrip (provider);
 		}
 		
+		List<IUsageProvider> usageProvider = new List<IUsageProvider> ();
+		public void AddUsageTaskProvider (IUsageProvider provider)
+		{
+			usageProvider.Add (provider);
+			mainsw.AddUsageProvider (provider); 
+			if (secondsw != null)
+				secondsw.AddUsageProvider (provider);
+		}
+		
 		#region ITextEditorExtension
 		
 		ITextEditorExtension ITextEditorExtension.Next {
@@ -227,6 +236,15 @@ namespace MonoDevelop.SourceEditor
 					scrolledWindow.ReplaceVScrollBar (strip);
 				}
 				p.TasksUpdated += (sender, e) => strip.Update (p);
+			}
+			
+			public void AddUsageProvider (IUsageProvider p)
+			{
+				if (!strip.Visible) {
+					strip.VAdjustment = scrolledWindow.Vadjustment;
+					scrolledWindow.ReplaceVScrollBar (strip);
+				}
+				p.UsagesUpdated += (sender, e) => strip.Update (p);
 			}
 			
 			protected override void OnDestroyed ()

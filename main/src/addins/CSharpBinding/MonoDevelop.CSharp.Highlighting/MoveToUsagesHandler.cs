@@ -64,9 +64,9 @@ namespace MonoDevelop.CSharp.Highlighting
 				ext.ForceUpdate ();
 
 			var caretOffset = doc.Editor.Caret.Offset;
-			for (int i = 0; i < ext.Usages.Count; i++) {
-				if (ext.Usages [i].Contains (caretOffset))
-					MoveToNextUsageHandler.MoveToSegment (doc, ext.Usages [(i + ext.Usages.Count - 1) % ext.Usages.Count]);
+			for (int i = 0; i < ext.UsagesSegments.Count; i++) {
+				if (ext.UsagesSegments [i].Contains (caretOffset))
+					MoveToNextUsageHandler.MoveToSegment (doc, ext.UsagesSegments [(i + ext.UsagesSegments.Count - 1) % ext.UsagesSegments.Count]);
 			}
 		}
 	}
@@ -96,9 +96,9 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			
 			var caretOffset = doc.Editor.Caret.Offset;
-			for (int i = 0; i < ext.Usages.Count; i++) {
-				if (ext.Usages [i].Contains (caretOffset))
-					MoveToNextUsageHandler.MoveToSegment (doc, ext.Usages [(i + 1) % ext.Usages.Count]);
+			for (int i = 0; i < ext.UsagesSegments.Count; i++) {
+				if (ext.UsagesSegments [i].Contains (caretOffset))
+					MoveToNextUsageHandler.MoveToSegment (doc, ext.UsagesSegments [(i + 1) % ext.UsagesSegments.Count]);
 			}
 		}
 		

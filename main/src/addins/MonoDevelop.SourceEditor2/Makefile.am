@@ -22,6 +22,7 @@ FILES =  \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/NewColorShemeDialog.cs \
 	MonoDevelop.SourceEditor.QuickTasks/IQuickTaskProvider.cs \
+	MonoDevelop.SourceEditor.QuickTasks/IUsageProvider.cs \
 	MonoDevelop.SourceEditor.QuickTasks/QuickTask.cs \
 	MonoDevelop.SourceEditor.QuickTasks/QuickTaskMiniMapMode.cs \
 	MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs \

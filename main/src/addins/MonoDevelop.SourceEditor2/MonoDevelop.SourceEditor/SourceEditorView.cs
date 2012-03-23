@@ -533,6 +533,10 @@ namespace MonoDevelop.SourceEditor
 					foreach (var provider in WorkbenchWindow.Document.GetContents<IQuickTaskProvider> ()) {
 						widget.AddQuickTaskProvider (provider);
 					}
+
+					foreach (var provider in WorkbenchWindow.Document.GetContents<IUsageProvider> ()) {
+						widget.AddUsageTaskProvider (provider);
+					}
 					
 					WorkbenchWindow.Document.DocumentParsed += delegate(object sender, EventArgs e) {
 						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedDocument);
