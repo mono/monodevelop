@@ -133,7 +133,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				node = ((DestructorDeclaration)node).NameToken;
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 			
-			return new MemberReference (valid as IEntity, region, editor.LocationToOffset (region.Begin), memberName.Length);
+			return new MemberReference (valid, region, editor.LocationToOffset (region.Begin), memberName.Length);
 		}
 
 		bool IsNodeValid (object searchedMember, AstNode node)
