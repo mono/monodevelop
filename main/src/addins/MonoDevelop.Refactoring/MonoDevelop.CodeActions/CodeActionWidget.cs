@@ -80,7 +80,8 @@ namespace MonoDevelop.CodeActions
 			Gtk.Menu menu = new Gtk.Menu ();
 			
 			int mnemonic = 1;
-			foreach (CodeAction fix in fixes) {
+			foreach (CodeAction fix_ in fixes) {
+				var fix = fix_;
 				var escapedLabel = fix.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
