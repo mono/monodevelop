@@ -91,7 +91,9 @@ namespace MonoDevelop.CSharp.Resolver
 
 		static string CreateStub (Document doc, int offset)
 		{
-			string text = doc.Editor.GetTextAt (0, offset);
+			if (offset <= 0)
+				return "";
+			string text = doc.Editor.GetTextAt (0, Math.Min (doc.Editor.Length, offset));
 			var stub = new StringBuilder (text);
 			CSharpCompletionEngine.AppendMissingClosingBrackets (stub, text, false);
 			return stub.ToString ();
