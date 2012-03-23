@@ -1115,6 +1115,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (member.EntityType == EntityType.Operator) {
 								continue;
 							}
+							if (member.IsExplicitInterfaceImplementation) {
+								continue;
+							}
 							if (memberPred == null || memberPred(member)) {
 								wrapper.AddMember(member);
 							}
@@ -2029,7 +2032,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
-				var namespaceContents = new CompletionDataWrapper (this);
+				var namespaceContents = new CompletionDataWrapper(this);
 				
 				foreach (var cl in nr.Namespace.Types) {
 					namespaceContents.AddType(cl, cl.Name);
@@ -2043,7 +2046,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			IType type = resolveResult.Type;
 			//var typeDef = resolveResult.Type.GetDefinition();
-			var result = new CompletionDataWrapper (this);
+			var result = new CompletionDataWrapper(this);
 			bool includeStaticMembers = false;
 			
 			if (resolveResult is LocalResolveResult) {
@@ -2064,7 +2067,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return result.Result;
 			}
 			
-			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			bool isProtectedAllowed = resolveResult is ThisResolveResult ? true : lookup.IsProtectedAccessAllowed(type);
 			bool skipNonStaticMembers = (resolveResult is TypeResolveResult);
 			
@@ -2123,9 +2126,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolvedNode.Annotation<ObjectCreateExpression>() == null) {
 				//tags the created expression as part of an object create expression.
 				
-				var filteredList = new List<IMember> ();
+				var filteredList = new List<IMember>();
 				foreach (var member in type.GetMembers ()) {
 					if (member.EntityType == EntityType.Indexer || member.EntityType == EntityType.Operator || member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
+						continue;
+					}
+					if (member.IsExplicitInterfaceImplementation) {
 						continue;
 					}
 					//					Console.WriteLine ("member:" + member + member.IsShadowing);
@@ -2154,6 +2160,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						continue;
 					}
 					if (member.EntityType == EntityType.Operator) {
+						continue;
+					}
+					if (member.IsExplicitInterfaceImplementation) {
 						continue;
 					}
 					if (member.IsShadowing) {
