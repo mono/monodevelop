@@ -63,8 +63,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			foreach (var action in issueProvider.GetIssues (context)) {
 				var issue = new CodeIssue (GettextCatalog.GetString (action.Desription ?? ""), action.Start, action.End, action.Actions.Select (
 					act => new MDRefactoringContextAction (act.Description, ctx => {
+						var editor = document.Editor;
+						var offset = editor.Caret.Offset;
+						var version = editor.Document.Version;
 						using (var script = ctx.StartScript ())
 							act.Run (script);
+						editor.Caret.Offset = version.MoveOffsetTo (editor.Document.Version, offset, ICSharpCode.NRefactory.Editor.AnchorMovementType.AfterInsertion);
 					})));
 				yield return issue;
 			}
