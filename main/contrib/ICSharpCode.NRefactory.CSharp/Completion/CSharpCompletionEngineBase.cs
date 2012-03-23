@@ -426,46 +426,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var memberLocation = mt.Item2;
 			int closingBrackets = 1;
 			int generatedLines = 0;
-			var wrapper = new StringBuilder ();
-			bool wrapInClass = memberLocation != new TextLocation (1, 1);
+			var wrapper = new StringBuilder();
+			bool wrapInClass = memberLocation != new TextLocation(1, 1);
 			if (wrapInClass) {
-				var nodeAtLocation = Unit.GetNodeAt(memberLocation, n => n is TypeDeclaration || n is NamespaceDeclaration);
-				if (nodeAtLocation != null) {
-					foreach (var n in nodeAtLocation.AncestorsAndSelf) {
-						if (memberLocation == n.StartLocation) {
-							continue;
-						}
-						if (n is TypeDeclaration) {
-							var t = (TypeDeclaration)n;
-							switch (t.ClassType) {
-								case ClassType.Class:
-									wrapper.Append("class");
-									break;
-								case ClassType.Struct:
-									wrapper.Append("struct");
-									break;
-								case ClassType.Interface:
-									wrapper.Append("interface");
-									break;
-								case ClassType.Enum:
-									wrapper.Append("enum");
-									break;
-							}
-							wrapper.Append(" " + t.Name + " {");
-							wrapper.AppendLine();
-							closingBrackets++;
-							generatedLines++;
-						} else {
-							Console.WriteLine(n);
-						}
-					}
-				}
+				wrapper.Append("class Stub {");
+				wrapper.AppendLine();
+				closingBrackets++;
+				generatedLines++;
 			}
 			wrapper.Append(memberText);
 			wrapper.Append(continuation);
 			AppendMissingClosingBrackets(wrapper, memberText, appendSemicolon);
 			wrapper.Append(afterContinuation);
-			
+			Console.WriteLine("-------");
+			Console.WriteLine(wrapper);
 			if (closingBrackets > 0) { 
 				wrapper.Append(new string ('}', closingBrackets));
 			}
@@ -512,38 +486,56 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return Tuple.Create (cachedText, document.GetLocation (startOffset));
 		}
 		
-		protected ExpressionResult GetInvocationBeforeCursor (bool afterBracket)
+		protected ExpressionResult GetInvocationBeforeCursor(bool afterBracket)
 		{
 			CompilationUnit baseUnit;
-			if (currentMember == null) {
-				baseUnit = ParseStub ("", false);
-				var section = baseUnit.GetNodeAt<AttributeSection> (location.Line, location.Column - 2);
-				var attr = section != null ? section.Attributes.LastOrDefault () : null;
-				if (attr != null)
-					return new ExpressionResult ((AstNode)attr, baseUnit);
-			}
-			if (currentMember == null && currentType == null) {
-				return null;
-			}
-			baseUnit = ParseStub (afterBracket ? "" : "x");
+			baseUnit = ParseStub("a", false);
 			
+			var section = baseUnit.GetNodeAt<AttributeSection>(location.Line, location.Column - 2);
+			var attr = section != null ? section.Attributes.LastOrDefault() : null;
+			if (attr != null) {
+				return new ExpressionResult((AstNode)attr, baseUnit);
+			}
+
 			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
-			var mref = baseUnit.GetNodeAt (location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
+			var mref = baseUnit.GetNodeAt(location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
 			AstNode expr = null;
 			if (mref is InvocationExpression) {
 				expr = ((InvocationExpression)mref).Target;
 			} else if (mref is ObjectCreateExpression) {
 				expr = mref;
 			} else {
-				baseUnit = ParseStub (")};", false);
-				mref = baseUnit.GetNodeAt (location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
+				baseUnit = ParseStub(")};", false);
+				mref = baseUnit.GetNodeAt(location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
 				if (mref is InvocationExpression) {
 					expr = ((InvocationExpression)mref).Target;
 				} else if (mref is ObjectCreateExpression) {
 					expr = mref;
 				}
-				if (expr == null)
-					return null;
+			}
+
+			if (expr == null) {
+				// work around for missing ';' bug in mcs:
+				baseUnit = ParseStub("a", true);
+			
+				section = baseUnit.GetNodeAt<AttributeSection>(location.Line, location.Column - 2);
+				attr = section != null ? section.Attributes.LastOrDefault() : null;
+				if (attr != null) {
+					return new ExpressionResult((AstNode)attr, baseUnit);
+				}
+	
+				//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+				mref = baseUnit.GetNodeAt(location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
+				expr = null;
+				if (mref is InvocationExpression) {
+					expr = ((InvocationExpression)mref).Target;
+				} else if (mref is ObjectCreateExpression) {
+					expr = mref;
+				}
+			}
+
+			if (expr == null) {
+				return null;
 			}
 			return new ExpressionResult ((AstNode)expr, baseUnit);
 		}
