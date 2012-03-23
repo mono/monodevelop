@@ -187,6 +187,10 @@
 			<Include regex='GetString\s*\(\s*@"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
 			<Include regex='GetPluralString\s*\(\s*@"(.*?[^\\])"\s*,\s*@"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
 			<Transform regex='([^\\])"\s*\+\s*"' value='$1' regexOptions="Singleline"/><!-- strip out "+" concatenations -->
+			
+			<Include regex='\[\s*IssueDescription\s*\(\s*"(.*?[^\\])".*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='\[\s*ContextAction\s*\(\s*"(.*?[^\\])".*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='TranslateString\s*\(\s*"(.*?[^\\])"\s*[\)]' regexOptions="Singleline" escapeMode="CSharp"/>
 		</RegexScanner>
 	</Extension>
 </Addin>

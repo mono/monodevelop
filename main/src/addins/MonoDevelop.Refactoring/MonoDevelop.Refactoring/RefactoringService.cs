@@ -193,9 +193,12 @@ namespace MonoDevelop.Refactoring
 			return Task.Factory.StartNew (delegate {
 				var result = new List<MonoDevelop.CodeActions.CodeAction> ();
 				try {
-					string disabledNodes = PropertyService.Get ("ContextActions." + doc.Editor.Document.MimeType, "") ?? "";
-					foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString) < 0)) {
-						result.AddRange (provider.GetActions (doc, loc, cancellationToken));
+					var editor = doc.Editor;
+					if (editor != null) {
+						string disabledNodes = PropertyService.Get ("ContextActions." + editor.Document.MimeType, "") ?? "";
+						foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString) < 0)) {
+							result.AddRange (provider.GetActions (doc, loc, cancellationToken));
+						}
 					}
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);

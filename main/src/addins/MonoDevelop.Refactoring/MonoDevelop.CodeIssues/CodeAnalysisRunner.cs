@@ -48,9 +48,12 @@ namespace MonoDevelop.CodeIssues
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures)
 				return Enumerable.Empty<Result> ();
-			var loc = input.Editor.Caret.Location;
+			var editor = input.Editor;
+			if (editor == null)
+				return Enumerable.Empty<Result> ();
+			var loc = editor.Caret.Location;
 			var result = new BlockingCollection<Result> ();
-			var codeIssueProvider = RefactoringService.GetInspectors (input.Editor.Document.MimeType);
+			var codeIssueProvider = RefactoringService.GetInspectors (editor.Document.MimeType);
 			Parallel.ForEach (codeIssueProvider, (provider) => {
 				try {
 					var severity = provider.GetSeverity ();
