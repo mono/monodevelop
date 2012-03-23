@@ -50,9 +50,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			issueProvider = issue;
 			MimeType = "text/x-csharp";
-			Category = GettextCatalog.GetString (attr.Category);
-			Title = GettextCatalog.GetString (attr.Title);
-			Description = GettextCatalog.GetString (attr.Description);
+			Category = GettextCatalog.GetString (attr.Category ?? "");
+			Title = GettextCatalog.GetString (attr.Title ?? "");
+			Description = GettextCatalog.GetString (attr.Description ?? "");
 			DefaultSeverity = attr.Severity;
 			IssueMarker = attr.IssueMarker;
 		}
@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			var context = new MDRefactoringContext (document, document.Editor.Caret.Location);
 			foreach (var action in issueProvider.GetIssues (context)) {
-				var issue = new CodeIssue (GettextCatalog.GetString (action.Desription), action.Start, action.End, action.Actions.Select (
+				var issue = new CodeIssue (GettextCatalog.GetString (action.Desription ?? ""), action.Start, action.End, action.Actions.Select (
 					act => new MDRefactoringContextAction (act.Description, ctx => {
 						using (var script = ctx.StartScript ())
 							act.Run (script);

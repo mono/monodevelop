@@ -43,9 +43,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public NRefactoryCodeActionWrapper (ICodeActionProvider provider, ContextActionAttribute attr)
 		{
 			this.provider = provider;
-			Title = GettextCatalog.GetString (attr.Title);
-			Description = GettextCatalog.GetString (attr.Description);
-			Category = GettextCatalog.GetString (attr.Category);
+			Title = GettextCatalog.GetString (attr.Title ?? "");
+			Description = GettextCatalog.GetString (attr.Description ?? "");
+			Category = GettextCatalog.GetString (attr.Category ?? "");
 			MimeType = "text/x-csharp";
 		}
 
@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			var context = new MDRefactoringContext (document, loc);
 			foreach (var action in provider.GetActions (context)) {
-				yield return new MDRefactoringContextAction (GettextCatalog.GetString (action.Description), ctx => {
+				yield return new MDRefactoringContextAction (GettextCatalog.GetString (action.Description ?? ""), ctx => {
 					using (var script = ctx.StartScript ())
 						action.Run (script);
 				});
