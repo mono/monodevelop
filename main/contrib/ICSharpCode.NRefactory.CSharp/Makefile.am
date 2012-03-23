@@ -207,43 +207,43 @@ FILES =  \
 	Properties/AssemblyInfo.cs \
 	Refactoring/BaseRefactoringContext.cs \
 	Refactoring/CodeAction.cs \
-	Refactoring/CodeActions/AddAnotherAccessor.cs \
-	Refactoring/CodeActions/CheckIfParameterIsNull.cs \
-	Refactoring/CodeActions/ConvertDecToHex.cs \
-	Refactoring/CodeActions/ConvertForeachToFor.cs \
-	Refactoring/CodeActions/ConvertHexToDec.cs \
-	Refactoring/CodeActions/CreateBackingStore.cs \
-	Refactoring/CodeActions/CreateEventInvocator.cs \
-	Refactoring/CodeActions/CreateField.cs \
-	Refactoring/CodeActions/CreateLocalVariable.cs \
-	Refactoring/CodeActions/CreateProperty.cs \
-	Refactoring/CodeActions/FlipOperatorArguments.cs \
-	Refactoring/CodeActions/GenerateGetter.cs \
-	Refactoring/CodeActions/GenerateProperty.cs \
-	Refactoring/CodeActions/GenerateSwitchLabels.cs \
-	Refactoring/CodeActions/InsertAnonymousMethodSignature.cs \
-	Refactoring/CodeActions/IntroduceFormatItem.cs \
-	Refactoring/CodeActions/InvertIf.cs \
-	Refactoring/CodeActions/RemoveBackingStore.cs \
-	Refactoring/CodeActions/RemoveBraces.cs \
-	Refactoring/CodeActions/RemoveRegion.cs \
-	Refactoring/CodeActions/ReplaceEmptyString.cs \
-	Refactoring/CodeActions/SplitDeclarationAndAssignment.cs \
-	Refactoring/CodeActions/SplitString.cs \
-	Refactoring/CodeActions/UseExplicitType.cs \
-	Refactoring/CodeActions/UseVarKeyword.cs \
+	Refactoring/CodeActions/AddAnotherAccessorAction.cs \
+	Refactoring/CodeActions/CheckIfParameterIsNullAction.cs \
+	Refactoring/CodeActions/ConvertDecToHexAction.cs \
+	Refactoring/CodeActions/ConvertForeachToForAction.cs \
+	Refactoring/CodeActions/ConvertHexToDecAction.cs \
+	Refactoring/CodeActions/CreateBackingStoreAction.cs \
+	Refactoring/CodeActions/CreateEventInvocatorAction.cs \
+	Refactoring/CodeActions/CreateFieldAction.cs \
+	Refactoring/CodeActions/CreateLocalVariableAction.cs \
+	Refactoring/CodeActions/CreatePropertyAction.cs \
+	Refactoring/CodeActions/FlipOperatorArgumentsAction.cs \
+	Refactoring/CodeActions/GenerateGetterAction.cs \
+	Refactoring/CodeActions/GeneratePropertyAction.cs \
+	Refactoring/CodeActions/GenerateSwitchLabelsAction.cs \
+	Refactoring/CodeActions/InsertAnonymousMethodSignatureAction.cs \
+	Refactoring/CodeActions/IntroduceFormatItemAction.cs \
+	Refactoring/CodeActions/InvertIfAction.cs \
+	Refactoring/CodeActions/RemoveBackingStoreAction.cs \
+	Refactoring/CodeActions/RemoveBracesAction.cs \
+	Refactoring/CodeActions/RemoveRegionAction.cs \
+	Refactoring/CodeActions/ReplaceEmptyStringAction.cs \
+	Refactoring/CodeActions/SplitDeclarationAndAssignmentAction.cs \
+	Refactoring/CodeActions/SplitStringAction.cs \
+	Refactoring/CodeActions/UseExplicitTypeAction.cs \
+	Refactoring/CodeActions/UseVarKeywordAction.cs \
 	Refactoring/CodeIssue.cs \
-	Refactoring/CodeIssues/ConditionalToNullCoalescingInspector.cs \
+	Refactoring/CodeIssues/ConditionalToNullCoalescingIssue.cs \
 	Refactoring/CodeIssues/GatherVisitorBase.cs \
 	Refactoring/CodeIssues/IssueCategories.cs \
-	Refactoring/CodeIssues/NotImplementedExceptionInspector.cs \
-	Refactoring/CodeIssues/RedundantInternalInspector.cs \
-	Refactoring/CodeIssues/RedundantNamespaceUsageInspector.cs \
-	Refactoring/CodeIssues/RedundantPrivateInspector.cs \
-	Refactoring/CodeIssues/RedundantThisInspector.cs \
-	Refactoring/CodeIssues/RedundantUsingInspector.cs \
-	Refactoring/CodeIssues/StringIsNullOrEmptyInspector.cs \
-	Refactoring/CodeIssues/UseVarKeywordInspector.cs \
+	Refactoring/CodeIssues/NotImplementedExceptionIssue.cs \
+	Refactoring/CodeIssues/RedundantInternalIssue.cs \
+	Refactoring/CodeIssues/RedundantNamespaceUsageIssue.cs \
+	Refactoring/CodeIssues/RedundantPrivateIssue.cs \
+	Refactoring/CodeIssues/RedundantThisIssue.cs \
+	Refactoring/CodeIssues/RedundantUsingIssue.cs \
+	Refactoring/CodeIssues/StringIsNullOrEmptyIssue.cs \
+	Refactoring/CodeIssues/UseVarKeywordIssue.cs \
 	Refactoring/ContextActionAttribute.cs \
 	Refactoring/DocumentScript.cs \
 	Refactoring/ICodeActionProvider.cs \

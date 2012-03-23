@@ -127,6 +127,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			Replace(offset, 0, newText);
 		}
 		
+		public void RemoveText(int offset, int length)
+		{
+			Replace(offset, length, "");
+		}
+		
 		public CSharpFormattingOptions FormattingOptions {
 			get { return formattingOptions; }
 		}

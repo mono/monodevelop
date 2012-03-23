@@ -297,42 +297,8 @@
     <Compile Include="Refactoring\BaseRefactoringContext.cs" />
     <Compile Include="Refactoring\PatternHelper.cs" />
     <Compile Include="Refactoring\RefactoringAstHelper.cs" />
-    <Compile Include="Refactoring\CodeIssues\ConditionalToNullCoalescingInspector.cs" />
     <Compile Include="Refactoring\CodeIssues\GatherVisitorBase.cs" />
     <Compile Include="Refactoring\CodeIssues\IssueCategories.cs" />
-    <Compile Include="Refactoring\CodeIssues\NotImplementedExceptionInspector.cs" />
-    <Compile Include="Refactoring\CodeIssues\RedundantInternalInspector.cs" />
-    <Compile Include="Refactoring\CodeIssues\RedundantNamespaceUsageInspector.cs" />
-    <Compile Include="Refactoring\CodeIssues\RedundantPrivateInspector.cs" />
-    <Compile Include="Refactoring\CodeIssues\RedundantThisInspector.cs" />
-    <Compile Include="Refactoring\CodeIssues\RedundantUsingInspector.cs" />
-    <Compile Include="Refactoring\CodeIssues\StringIsNullOrEmptyInspector.cs" />
-    <Compile Include="Refactoring\CodeIssues\UseVarKeywordInspector.cs" />
-    <Compile Include="Refactoring\CodeActions\AddAnotherAccessor.cs" />
-    <Compile Include="Refactoring\CodeActions\CheckIfParameterIsNull.cs" />
-    <Compile Include="Refactoring\CodeActions\ConvertDecToHex.cs" />
-    <Compile Include="Refactoring\CodeActions\ConvertForeachToFor.cs" />
-    <Compile Include="Refactoring\CodeActions\ConvertHexToDec.cs" />
-    <Compile Include="Refactoring\CodeActions\CreateBackingStore.cs" />
-    <Compile Include="Refactoring\CodeActions\CreateEventInvocator.cs" />
-    <Compile Include="Refactoring\CodeActions\CreateField.cs" />
-    <Compile Include="Refactoring\CodeActions\CreateLocalVariable.cs" />
-    <Compile Include="Refactoring\CodeActions\CreateProperty.cs" />
-    <Compile Include="Refactoring\CodeActions\FlipOperatorArguments.cs" />
-    <Compile Include="Refactoring\CodeActions\GenerateGetter.cs" />
-    <Compile Include="Refactoring\CodeActions\GenerateProperty.cs" />
-    <Compile Include="Refactoring\CodeActions\GenerateSwitchLabels.cs" />
-    <Compile Include="Refactoring\CodeActions\InsertAnonymousMethodSignature.cs" />
-    <Compile Include="Refactoring\CodeActions\IntroduceFormatItem.cs" />
-    <Compile Include="Refactoring\CodeActions\InvertIf.cs" />
-    <Compile Include="Refactoring\CodeActions\RemoveBackingStore.cs" />
-    <Compile Include="Refactoring\CodeActions\RemoveBraces.cs" />
-    <Compile Include="Refactoring\CodeActions\RemoveRegion.cs" />
-    <Compile Include="Refactoring\CodeActions\ReplaceEmptyString.cs" />
-    <Compile Include="Refactoring\CodeActions\SplitDeclarationAndAssignment.cs" />
-    <Compile Include="Refactoring\CodeActions\SplitString.cs" />
-    <Compile Include="Refactoring\CodeActions\UseExplicitType.cs" />
-    <Compile Include="Refactoring\CodeActions\UseVarKeyword.cs" />
     <Compile Include="Refactoring\CodeAction.cs" />
     <Compile Include="Refactoring\CodeIssue.cs" />
     <Compile Include="Refactoring\ContextActionAttribute.cs" />
@@ -341,6 +307,40 @@
     <Compile Include="Refactoring\IssueAttribute.cs" />
     <Compile Include="Refactoring\IssueMarker.cs" />
     <Compile Include="Refactoring\Severity.cs" />
+    <Compile Include="Refactoring\CodeActions\AddAnotherAccessorAction.cs" />
+    <Compile Include="Refactoring\CodeActions\CheckIfParameterIsNullAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertDecToHexAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertForeachToForAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertHexToDecAction.cs" />
+    <Compile Include="Refactoring\CodeActions\CreateBackingStoreAction.cs" />
+    <Compile Include="Refactoring\CodeActions\CreateEventInvocatorAction.cs" />
+    <Compile Include="Refactoring\CodeActions\CreateFieldAction.cs" />
+    <Compile Include="Refactoring\CodeActions\CreateLocalVariableAction.cs" />
+    <Compile Include="Refactoring\CodeActions\CreatePropertyAction.cs" />
+    <Compile Include="Refactoring\CodeActions\FlipOperatorArgumentsAction.cs" />
+    <Compile Include="Refactoring\CodeActions\GenerateGetterAction.cs" />
+    <Compile Include="Refactoring\CodeActions\GeneratePropertyAction.cs" />
+    <Compile Include="Refactoring\CodeActions\GenerateSwitchLabelsAction.cs" />
+    <Compile Include="Refactoring\CodeActions\InsertAnonymousMethodSignatureAction.cs" />
+    <Compile Include="Refactoring\CodeActions\IntroduceFormatItemAction.cs" />
+    <Compile Include="Refactoring\CodeActions\InvertIfAction.cs" />
+    <Compile Include="Refactoring\CodeActions\RemoveBackingStoreAction.cs" />
+    <Compile Include="Refactoring\CodeActions\RemoveBracesAction.cs" />
+    <Compile Include="Refactoring\CodeActions\RemoveRegionAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ReplaceEmptyStringAction.cs" />
+    <Compile Include="Refactoring\CodeActions\SplitDeclarationAndAssignmentAction.cs" />
+    <Compile Include="Refactoring\CodeActions\SplitStringAction.cs" />
+    <Compile Include="Refactoring\CodeActions\UseExplicitTypeAction.cs" />
+    <Compile Include="Refactoring\CodeActions\UseVarKeywordAction.cs" />
+    <Compile Include="Refactoring\CodeIssues\ConditionalToNullCoalescingIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\NotImplementedExceptionIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantInternalIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantNamespaceUsageIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantPrivateIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantThisIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantUsingIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\StringIsNullOrEmptyIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\UseVarKeywordIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -367,5 +367,8 @@
   </ProjectExtensions>
   <ItemGroup>
     <None Include="Parser\mcs\cs-parser.jay" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Refactoring\CodeActions\" />
   </ItemGroup>
 </Project>
