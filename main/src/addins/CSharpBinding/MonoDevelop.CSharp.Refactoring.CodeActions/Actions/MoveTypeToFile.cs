@@ -66,7 +66,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				using (var script = ctx.StartScript ()) {
 					script.Remove (type);
 				}
-
 			});
 		}
 
@@ -74,9 +73,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			var content = context.Document.Editor.Text;
 			
-			var types = new List<TypeDeclaration> (context.Unit.GetTypes ().Where (t => t != type));
+			var types = new List<TypeDeclaration> (context.Unit.GetTypes ().Where (t => t.StartLocation != type.StartLocation));
 			types.Sort ((x, y) => y.StartLocation.CompareTo (x.StartLocation));
-			
+
 			foreach (var removeType in types) {
 				var start = context.GetOffset (removeType.StartLocation);
 				var end = context.GetOffset (removeType.EndLocation);
@@ -140,7 +139,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var result = context.GetNode<TypeDeclaration> ();
 			if (result == null || result.Parent is TypeDeclaration)
 				return null;
-			if (result != null && result.NameToken.Contains (context.Location.Line, context.Location.Column))
+			if (result != null && result.NameToken.Contains (context.Location))
 				return result;
 			return null;
 		}
