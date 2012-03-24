@@ -1,0 +1,100 @@
+<NameConventionPolicy>
+  <Rules>
+    <NamingRule>
+      <Name>Namespaces</Name>
+      <AffectedEntity>Namespace</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Types</Name>
+      <AffectedEntity>Class, Struct, Enum, Delegate</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Interfaces</Name>
+      <RequiredPrefixes>
+        <String>I</String>
+      </RequiredPrefixes>
+      <AffectedEntity>Interface</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Attributes</Name>
+      <RequiredSuffixes>
+        <String>Attribute</String>
+      </RequiredSuffixes>
+      <AffectedEntity>CustomAttributes</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Event Arguments</Name>
+      <RequiredSuffixes>
+        <String>EventArgs</String>
+      </RequiredSuffixes>
+      <AffectedEntity>CustomEventArgs</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Exceptions</Name>
+      <RequiredSuffixes>
+        <String>Exception</String>
+      </RequiredSuffixes>
+      <AffectedEntity>CustomExceptions</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Methods</Name>
+      <AffectedEntity>Method</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Fields (Non Private)</Name>
+      <AffectedEntity>Field</AffectedEntity>
+      <VisibilityMask>Internal, Protected, Public</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Fields (Private)</Name>
+      <AffectedEntity>Field</AffectedEntity>
+      <VisibilityMask>Private</VisibilityMask>
+      <NamingStyle>CamelCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Properties</Name>
+      <AffectedEntity>Property</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Events</Name>
+      <AffectedEntity>Event</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Enum Members</Name>
+      <AffectedEntity>EnumMember</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Parameters</Name>
+      <AffectedEntity>Parameter</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>CamelCase</NamingStyle>
+    </NamingRule>
+    <NamingRule>
+      <Name>Type Parameters</Name>
+      <AffectedEntity>TypeParameter</AffectedEntity>
+      <VisibilityMask>VisibilityMask</VisibilityMask>
+      <NamingStyle>PascalCase</NamingStyle>
+    </NamingRule>
+  </Rules>
+</NameConventionPolicy>

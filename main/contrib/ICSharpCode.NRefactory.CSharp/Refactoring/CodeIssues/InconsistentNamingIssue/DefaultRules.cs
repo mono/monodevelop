@@ -34,71 +34,85 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			// PascalCasing for namespace
 			yield return new NamingRule(AffectedEntity.Namespace) {
+				Name = "Namespaces",
 				NamingStyle = NamingStyle.PascalCase
 			};
 			
 			// PascalCasing for types
 
 			yield return new NamingRule(AffectedEntity.Class | AffectedEntity.Struct | AffectedEntity.Enum | AffectedEntity.Delegate) {
+				Name = "Types",
 				NamingStyle = NamingStyle.PascalCase
 			};
 
 			yield return new NamingRule(AffectedEntity.Interface) {
+				Name = "Interfaces",
 				NamingStyle = NamingStyle.PascalCase,
 				RequiredPrefixes = new [] { "I" }
 			};
 
 			yield return new NamingRule(AffectedEntity.CustomAttributes) {
+				Name = "Attributes",
 				NamingStyle = NamingStyle.PascalCase,
 				RequiredSuffixes = new [] { "Attribute" }
 			};
 			
 			yield return new NamingRule(AffectedEntity.CustomEventArgs) {
+				Name = "Event Arguments",
 				NamingStyle = NamingStyle.PascalCase,
 				RequiredSuffixes = new [] { "EventArgs" }
 			};
 			
 			yield return new NamingRule(AffectedEntity.CustomExceptions) {
+				Name = "Exceptions",
 				NamingStyle = NamingStyle.PascalCase,
 				RequiredSuffixes = new [] { "Exception" }
 			};
 
 			// PascalCasing for members
 			yield return new NamingRule(AffectedEntity.Method) {
+				Name = "Methods",
 				NamingStyle = NamingStyle.PascalCase
 			};
 
 			// public fields Pascal Case
 			yield return new NamingRule(AffectedEntity.Field) {
+				Name = "Fields (Non Private)",
 				NamingStyle = NamingStyle.PascalCase,
 				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal
 			};
 
 			// private fields Camel Case
 			yield return new NamingRule(AffectedEntity.Field) {
+				Name = "Fields (Private)",
 				NamingStyle = NamingStyle.CamelCase,
 				VisibilityMask = Modifiers.Private
 			};
 			
 			yield return new NamingRule(AffectedEntity.Property) {
+				Name = "Properties",
 				NamingStyle = NamingStyle.PascalCase
 			};
 
 			yield return new NamingRule(AffectedEntity.Event) {
+				Name = "Events",
 				NamingStyle = NamingStyle.PascalCase
 			};
 
 			yield return new NamingRule(AffectedEntity.EnumMember) {
+				Name = "Enum Members",
 				NamingStyle = NamingStyle.PascalCase
 			};
 
 			// Parameters should be camelCase
 			yield return new NamingRule(AffectedEntity.Parameter) {
+				Name = "Parameters",
 				NamingStyle = NamingStyle.CamelCase
 			};
 
 			// Type parameter should be PascalCase
 			yield return new NamingRule(AffectedEntity.TypeParameter) {
+				Name = "Type Parameters",
 				NamingStyle = NamingStyle.PascalCase
 			};
 		}

@@ -82,6 +82,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			get { return wrappedRule.NamingStyle; } 
 			set { wrappedRule.NamingStyle = value;} 
 		}
+		
+		internal NameConventionRule (ICSharpCode.NRefactory.CSharp.Refactoring.NamingRule wrappedRule)
+		{
+			this.wrappedRule = wrappedRule;
+		}
+		
+		public NameConventionRule ()
+		{
+		}
 
 		public NameConventionRule Clone ()
 		{

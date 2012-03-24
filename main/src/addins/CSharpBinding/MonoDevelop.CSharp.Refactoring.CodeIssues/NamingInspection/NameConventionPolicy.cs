@@ -25,12 +25,8 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
-using System.Text;
-using MonoDevelop.AnalysisCore;
 using System.Collections.Generic;
-using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using ICS = ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -40,26 +36,32 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 	[PolicyType ("Naming Conventions Policy")]
 	public class NameConventionPolicy : IEquatable<NameConventionPolicy>
 	{
-		List<NameConventionRule> rules = new List<NameConventionRule> ();
+		NameConventionRule[] rules = new NameConventionRule[0];
 
 		[ItemProperty]
-		public List<NameConventionRule> Rules {
+		public NameConventionRule[] Rules {
 			get { return rules; }
+			set { rules = value; }
 		}
 
 		public NameConventionPolicy Clone ()
 		{
 			var result = new NameConventionPolicy ();
-			result.rules.AddRange (rules.Select (r => r.Clone ()));
+			result.rules = new List<NameConventionRule> (rules.Select (r => r.Clone ())).ToArray ();
 			return result;
+		}
+
+		public NameConventionPolicy ()
+		{
+			rules = new List<NameConventionRule> (DefaultRules.GetFdgRules ().Select (r => new NameConventionRule (r))).ToArray ();
 		}
 
 		#region IEquatable implementation
 		public bool Equals (NameConventionPolicy other)
 		{
-			if (Rules.Count != other.Rules.Count) 
+			if (Rules.Length != other.Rules.Length) 
 				return false;
-			for (int i = 0; i < rules.Count; i++) {
+			for (int i = 0; i < rules.Length; i++) {
 				if (!rules [i].Equals (other.Rules[i]))
 					return false;
 			}

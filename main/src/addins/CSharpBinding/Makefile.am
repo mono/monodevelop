@@ -147,6 +147,7 @@ RES =  \
 	MonoDevelop.CSharp.Formatting/policies/MonoCSharpPolicy.xml \
 	MonoDevelop.CSharp.Formatting/policies/SharpDevelopCSharpPolicy.xml \
 	MonoDevelop.CSharp.Formatting/policies/WhitesmithsCSharpPolicy.xml \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/MonoNameConventionPolicy.xml \
 	templates/AssemblyInfo.xft.xml \
 	templates/ConsoleProject.xpt.xml \
 	templates/EmptyCSharpFile.xft.xml \

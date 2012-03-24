@@ -90,14 +90,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public void ApplyChanges ()
 		{
-			policy.Rules.Clear ();
+			var rules = new List<NameConventionRule> ();
 			TreeIter iter;
 			if (treeStore.GetIterFirst (out iter)) {
 				do {
 					var rule = (NameConventionRule)treeStore.GetValue (iter, 0);
-					policy.Rules.Add (rule);
+					rules.Add (rule);
 				} while (treeStore.IterNext (ref iter));
 			}
+			policy.Rules = rules.ToArray ();
 		}
 
 		void AddEntry ()
