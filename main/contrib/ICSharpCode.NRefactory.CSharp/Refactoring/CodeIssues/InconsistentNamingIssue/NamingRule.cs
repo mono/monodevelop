@@ -30,9 +30,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class NamingRule
+	public class NamingRule : IEquatable<NamingRule>
 	{
-
+		public string Name { get; set; }
 		/// <summary>
 		/// If set, identifiers are required to be prefixed with one of these values.
 		/// </summary>
@@ -128,34 +128,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return true;
 		}
 
-		public string GetPreview()
-		{
-			var result = new StringBuilder();
-			if (RequiredPrefixes != null && RequiredPrefixes.Length > 0) {
-				result.Append(RequiredPrefixes [0]);
-			}
-			switch (NamingStyle) {
-				case NamingStyle.PascalCase:
-					result.Append("PascalCase");
-					break;
-				case NamingStyle.CamelCase:
-					result.Append("camelCase");
-					break;
-				case NamingStyle.AllUpper:
-					result.Append("ALL_UPPER");
-					break;
-				case NamingStyle.AllLower:
-					result.Append("all_lower");
-					break;
-				case NamingStyle.FirstUpper:
-					result.Append("First_upper");
-					break;
-			}
-			if (RequiredSuffixes != null && RequiredSuffixes.Length > 0) {
-				result.Append(RequiredSuffixes [0]);
-			}
-			return result.ToString();
-		}
 
 		public string GetErrorMessage(BaseRefactoringContext ctx, string name, out IList<string> suggestedNames)
 		{
@@ -390,6 +362,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			sb.Append(word.ToLower());
 			sb [sb.Length - word.Length] = char.ToUpper(sb [sb.Length - word.Length]);
+		}
+
+		#region IEquatable implementation
+		public bool Equals (NamingRule other)
+		{
+			return Name == other.Name &&
+				AffectedEntity == other.AffectedEntity && 
+				VisibilityMask == other.VisibilityMask && 
+				NamingStyle == other.NamingStyle;
+		}
+		#endregion
+
+		public NamingRule Clone ()
+		{
+			return (NamingRule)MemberwiseClone ();
 		}
 	}
 }

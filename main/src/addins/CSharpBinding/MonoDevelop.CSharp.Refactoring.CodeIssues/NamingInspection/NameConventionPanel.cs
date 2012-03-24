@@ -1,10 +1,10 @@
 // 
-// NamingConventionPanelWidget.cs
+// NamingConventionPanel.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.Gui.Dialogs;
+using Gtk;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class NamingConventionPanelWidget : Gtk.Bin
+	class NameConventionPanel : PolicyOptionsPanel<NameConventionPolicy>
 	{
-		public NamingPolicy Policy {
-			get;
-			set;
+		NameConventionPanelWidget panel;
+		
+		static NameConventionPanel ()
+		{
+			// ensure that custom text editor shemes are loaded.
+			MonoDevelop.SourceEditor.SourceEditorDisplayBinding.InitSourceEditor ();
+		}
+		
+		protected override string PolicyTitleWithMnemonic {
+			get {
+				return GettextCatalog.GetString ("_Naming Style");
+			}
 		}
 
-		public NamingConventionPanelWidget ()
+		public override Widget CreatePanelWidget ()
 		{
-			this.Build ();	
-			this.Show ();
+			return panel = new NameConventionPanelWidget ();
+		}
+		
+		protected override void LoadFrom (NameConventionPolicy policy)
+		{
+			panel.Policy = policy.Clone ();
+		}
+		
+		protected override NameConventionPolicy GetPolicy ()
+		{
+			// return cloned policy
+			panel.ApplyChanges ();
+			return panel.Policy;
 		}
 	}
+
 }
 

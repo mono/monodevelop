@@ -39,8 +39,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
-	gtk-gui/MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanelWidget.cs \
-	gtk-gui/MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionSettingsDialog.cs \
+	gtk-gui/MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.cs \
+	gtk-gui/MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.CodeGeneration/AbstractGenerateAction.cs \
 	MonoDevelop.CSharp.CodeGeneration/CodeGenerationCommands.cs \
@@ -98,10 +98,11 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionSource.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionWrapper.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/CSharpInspector.cs \
-	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NamingConventionPanel.cs \
-	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NamingConventionPanelWidget.cs \
-	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NamingConventionSettingsDialog.cs \
-	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NamingPolicy.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionEditRuleDialog.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionPanel.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionPanelWidget.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionPolicy.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionRule.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryCodeIssueSource.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryIssueWrapper.cs \
 	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodCodeGenerator.cs \

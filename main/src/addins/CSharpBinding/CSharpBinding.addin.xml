@@ -180,12 +180,6 @@
 			class = "MonoDevelop.CSharp.Refactoring.CodeActions.MoveTypeToFile" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Refactoring/CodeIssues">
-		<Inspector mimeType="text/x-csharp"
-			severity = "Warning"
-			class = "MonoDevelop.CSharp.Refactoring.CodeIssues.NamingInspector" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
 	</Extension>
@@ -282,13 +276,13 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
-		<Section id="NamingConventions" _label="Naming Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
 	</Extension>
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
-		<Section id="NamingConventions" _label="Naming Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
-		<Section id="NamingConventions" _label="Naming Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
 	</Extension>
 	
 	<Module>

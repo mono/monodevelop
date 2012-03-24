@@ -1,5 +1,5 @@
 // 
-// NamingConventionSettingsDialog.cs
+// NamingConventions.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -24,17 +24,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
+using System.Text;
+using MonoDevelop.AnalysisCore;
+using System.Collections.Generic;
+using MonoDevelop.AnalysisCore.Fixes;
+using MonoDevelop.Projects.Policies;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
+using ICS = ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
-	public partial class NamingConventionSettingsDialog : Gtk.Window
+	[PolicyType ("Naming Conventions Policy")]
+	public class NameConventionPolicy : IEquatable<NameConventionPolicy>
 	{
-		public NamingConventionSettingsDialog () : 
-				base(Gtk.WindowType.Toplevel)
-		{
-			this.Build ();
-			this.Show ();
+		List<NameConventionRule> rules = new List<NameConventionRule> ();
+
+		[ItemProperty]
+		public List<NameConventionRule> Rules {
+			get { return rules; }
 		}
+
+		public NameConventionPolicy Clone ()
+		{
+			var result = new NameConventionPolicy ();
+			result.rules.AddRange (rules.Select (r => r.Clone ()));
+			return result;
+		}
+
+		#region IEquatable implementation
+		public bool Equals (NameConventionPolicy other)
+		{
+			if (Rules.Count != other.Rules.Count) 
+				return false;
+			for (int i = 0; i < rules.Count; i++) {
+				if (!rules [i].Equals (other.Rules[i]))
+					return false;
+			}
+			return true;
+		}
+		#endregion
 	}
 }
-

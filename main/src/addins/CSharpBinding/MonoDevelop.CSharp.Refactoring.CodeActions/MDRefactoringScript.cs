@@ -53,8 +53,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
 		{
-			Console.WriteLine (node.GetText ());
-			Console.WriteLine (Environment.StackTrace);
 			var editor = document.Editor;
 			DocumentLocation loc = document.Editor.Caret.Location;
 			var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (document, document.ParsedDocument.GetInnermostTypeDefinition (loc)));
