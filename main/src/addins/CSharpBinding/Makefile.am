@@ -37,8 +37,8 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs \
-	gtk-gui/MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs \
-	gtk-gui/MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs \
+	gtk-gui/MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanelWidget.cs \
+	gtk-gui/MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionSettingsDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
@@ -83,10 +83,10 @@ FILES =  \
 	MonoDevelop.CSharp.Highlighting/CSharpSyntaxMode.cs \
 	MonoDevelop.CSharp.Highlighting/HighlightUsagesExtension.cs \
 	MonoDevelop.CSharp.Highlighting/MoveToUsagesHandler.cs \
-	MonoDevelop.CSharp.Inspection/NamingInspection/NamingConventionPanel.cs \
-	MonoDevelop.CSharp.Inspection/NamingInspection/NamingConventionPanelWidget.cs \
-	MonoDevelop.CSharp.Inspection/NamingInspection/NamingConventionSettingsDialog.cs \
-	MonoDevelop.CSharp.Inspection/NamingInspection/NamingPolicy.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NamingConventionPanel.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NamingConventionPanelWidget.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NamingConventionSettingsDialog.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NamingPolicy.cs \
 	MonoDevelop.CSharp.Parser/CSharpFoldingParser.cs \
 	MonoDevelop.CSharp.Parser/TypeSystemProvider.cs \
 	MonoDevelop.CSharp.Project/CodeGenerationPanel.cs \
