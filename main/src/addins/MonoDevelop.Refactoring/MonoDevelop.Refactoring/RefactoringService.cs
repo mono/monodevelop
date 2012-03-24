@@ -220,7 +220,7 @@ namespace MonoDevelop.Refactoring
 								continue;
 							foreach (var action_ in FixOperationsHandler.GetActions (doc, fresult)) {
 								var action = action_;
-								result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (r.Message, r, (d, t) => action.Fix ()));
+								result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action.Label, r, (d, t) => action.Fix ()));
 							}
 						}
 					}
