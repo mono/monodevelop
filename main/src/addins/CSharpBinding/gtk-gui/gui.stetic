@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>..\..\CSharpBinding</images-root-path>
+    <images-root-path>../../CSharpBinding</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
@@ -10,6 +10,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Project.CodeGenerationPanelWidget" design-size="365 448">
@@ -2132,7 +2133,7 @@ Itanium</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionSettingsDialog" design-size="515 300">
+  <widget class="Gtk.Window" id="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionSettingsDialog" design-size="607 305">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Edit rule set</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -2490,6 +2491,7 @@ Itanium</property>
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Label" translatable="yes">_UpperCamelCase</property>
+                            <property name="Active">True</property>
                             <property name="DrawIndicator">True</property>
                             <property name="HasLabel">True</property>
                             <property name="UseUnderline">True</property>

@@ -1,10 +1,10 @@
-﻿// 
-// IssueAttribute.cs
+// 
+// NamingStyle.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,29 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[AttributeUsage(AttributeTargets.Class)]
-	public class IssueDescriptionAttribute : System.Attribute
-	{
-		public string Title { get; private set;}
+	public enum NamingStyle {
+		None,
 		
-		public string Description { get; set; }
+		/// <summary>
+		/// PascalCase
+		/// </summary>
+		PascalCase,
 		
-		public string Category { get; set; }
-		
-		public Severity Severity { get; set; }
+		/// <summary>
+		/// camelCase
+		/// </summary>
+		CamelCase,
 
-		public IssueMarker IssueMarker { get; set; }
+		/// <summary>
+		/// ALLUPPER
+		/// </summary>
+		AllUpper,
 
-		public IssueDescriptionAttribute (string title)
-		{
-			Title = title;
-			Severity = Severity.Suggestion;
-			IssueMarker = IssueMarker.Underline;
-		}
+		/// <summary>
+		/// alllower
+		/// </summary>
+		AllLower,
+
+		/// <summary>
+		/// Firstupper
+		/// </summary>
+		FirstUpper
 	}
+
 }
 

@@ -49,9 +49,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			),
 			// str == "" || str == null
 			new BinaryOperatorExpression (
-				PatternHelper.CommutativeOperator(new Backreference ("str"), BinaryOperatorType.Equality, new PrimitiveExpression ("")),
+				PatternHelper.CommutativeOperator(new AnyNode ("str"), BinaryOperatorType.Equality, new PrimitiveExpression ("")),
 				BinaryOperatorType.ConditionalOr,
-				PatternHelper.CommutativeOperator(new AnyNode ("str"), BinaryOperatorType.Equality, new NullReferenceExpression ())
+				PatternHelper.CommutativeOperator(new Backreference ("str"), BinaryOperatorType.Equality, new NullReferenceExpression ())
 			),
 		};
 
@@ -64,9 +64,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			),
 			// str != "" && str != null
 			new BinaryOperatorExpression (
-				PatternHelper.CommutativeOperator(new Backreference ("str"), BinaryOperatorType.InEquality, new PrimitiveExpression ("")),
+				PatternHelper.CommutativeOperator(new AnyNode ("str"), BinaryOperatorType.InEquality, new PrimitiveExpression ("")),
 				BinaryOperatorType.ConditionalAnd,
-				PatternHelper.CommutativeOperator(new AnyNode ("str"), BinaryOperatorType.InEquality, new NullReferenceExpression ())
+				PatternHelper.CommutativeOperator(new Backreference ("str"), BinaryOperatorType.InEquality, new NullReferenceExpression ())
 			),
 		};
 

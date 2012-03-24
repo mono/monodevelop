@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public override int GetCurrentOffset(int originalDocumentOffset)
 		{
-			return originalDocument.Version.MoveOffsetTo(currentDocument.Version, originalDocumentOffset, AnchorMovementType.Default);
+			return originalDocument.Version.MoveOffsetTo(currentDocument.Version, originalDocumentOffset);
 		}
 		
 		public override void FormatText(AstNode node)
@@ -147,7 +147,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			public int Offset {
-				get { return originalVersion.MoveOffsetTo(script.currentDocument.Version, originalStart, AnchorMovementType.Default); }
+				get { return originalVersion.MoveOffsetTo(script.currentDocument.Version, originalStart); }
 			}
 			
 			public int Length {
@@ -155,7 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			public int EndOffset {
-				get { return originalVersion.MoveOffsetTo(script.currentDocument.Version, originalEnd, AnchorMovementType.Default); }
+				get { return originalVersion.MoveOffsetTo(script.currentDocument.Version, originalEnd); }
 			}
 		}
 	}

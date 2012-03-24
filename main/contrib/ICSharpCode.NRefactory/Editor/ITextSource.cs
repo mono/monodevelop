@@ -200,6 +200,6 @@ namespace ICSharpCode.NRefactory.Editor
 		/// Calculates where the offset has moved in the other buffer version.
 		/// </summary>
 		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this checkpoint.</exception>
-		int MoveOffsetTo(ITextSourceVersion other, int oldOffset, AnchorMovementType movement);
+		int MoveOffsetTo(ITextSourceVersion other, int oldOffset, AnchorMovementType movement = AnchorMovementType.Default);
 	}
 }

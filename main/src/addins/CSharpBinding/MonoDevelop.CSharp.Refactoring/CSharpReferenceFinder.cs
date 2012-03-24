@@ -101,7 +101,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				var ns = ((LocalResolveResult)result).Variable;
 				valid = searchedMembers.FirstOrDefault (n => n is IVariable && ((IVariable)n).Region == ns.Region);
 			} else if (result is TypeResolveResult) {
-				valid = searchedMembers.FirstOrDefault (n => n is IType && result.Type.Equals ((IType)n));
+				valid = searchedMembers.FirstOrDefault (n => n is IType);
+			} else {
+				valid = searchedMembers.FirstOrDefault ();
 			}
 
 			if (node is ConstructorInitializer)

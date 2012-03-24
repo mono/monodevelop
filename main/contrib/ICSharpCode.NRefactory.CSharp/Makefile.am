@@ -235,6 +235,12 @@ FILES =  \
 	Refactoring/CodeIssue.cs \
 	Refactoring/CodeIssues/ConditionalToNullCoalescingIssue.cs \
 	Refactoring/CodeIssues/GatherVisitorBase.cs \
+	Refactoring/CodeIssues/InconsistentNamingIssue/AffectedEntity.cs \
+	Refactoring/CodeIssues/InconsistentNamingIssue/DefaultRules.cs \
+	Refactoring/CodeIssues/InconsistentNamingIssue/InconsistentNamingIssue.cs \
+	Refactoring/CodeIssues/InconsistentNamingIssue/IRenameNameHandler.cs \
+	Refactoring/CodeIssues/InconsistentNamingIssue/NamingRule.cs \
+	Refactoring/CodeIssues/InconsistentNamingIssue/NamingStyle.cs \
 	Refactoring/CodeIssues/IssueCategories.cs \
 	Refactoring/CodeIssues/NotImplementedExceptionIssue.cs \
 	Refactoring/CodeIssues/RedundantInternalIssue.cs \

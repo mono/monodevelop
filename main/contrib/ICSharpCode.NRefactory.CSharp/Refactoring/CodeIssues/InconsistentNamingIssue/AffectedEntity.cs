@@ -1,10 +1,10 @@
-﻿// 
-// IssueAttribute.cs
+// 
+// AffectedEntity.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,27 +25,48 @@
 // THE SOFTWARE.
 using System;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[AttributeUsage(AttributeTargets.Class)]
-	public class IssueDescriptionAttribute : System.Attribute
+	[Flags]
+	public enum AffectedEntity
 	{
-		public string Title { get; private set;}
-		
-		public string Description { get; set; }
-		
-		public string Category { get; set; }
-		
-		public Severity Severity { get; set; }
+		None,
 
-		public IssueMarker IssueMarker { get; set; }
+		Namespace = 1 << 0,
 
-		public IssueDescriptionAttribute (string title)
-		{
-			Title = title;
-			Severity = Severity.Suggestion;
-			IssueMarker = IssueMarker.Underline;
-		}
+		Class     = 1 << 1,
+		Struct    = 1 << 2,
+		Enum      = 1 << 3,
+		Interface = 1 << 4,
+		Delegate  = 1 << 5,
+
+		CustomAttributes = 1 << 6,
+		CustomEventArgs  = 1 << 7,
+		CustomExceptions = 1 << 8,
+
+		Property   = 1 << 9,
+		Method     = 1 << 10,
+		Field      = 1 << 11,
+		Event      = 1 << 12,
+		EnumMember = 1 << 13,
+
+		Parameter     = 1 << 14,
+		TypeParameter = 1 << 15,
+
+		// Unit test special case
+		TestType   = 1 << 16,
+		TestMethod = 1 << 17,
+
+		// private entities
+		LambdaParameter = 1 << 18,
+		LocalVariable   = 1 << 19,
+		Label           = 1 << 20,
+
+		LocalVars = LocalVariable | Parameter | LambdaParameter,
+
+		Member = Property | Method | Field | Event | EnumMember,
+		
+		Type = Class | Struct | Enum | Interface | Delegate,
+
 	}
 }
-

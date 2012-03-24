@@ -40,6 +40,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public Identifier LabelToken {
+			get { return GetChildByRole (Roles.Identifier); }
+			set { SetChildByRole (Roles.Identifier, value); }
+		}
+
 		public CSharpTokenNode Colon {
 			get { return GetChildByRole (Roles.Colon); }
 		}

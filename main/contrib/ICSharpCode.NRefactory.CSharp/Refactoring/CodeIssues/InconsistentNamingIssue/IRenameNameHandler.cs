@@ -1,10 +1,10 @@
-﻿// 
-// IssueAttribute.cs
+// 
+// RenameNameHandler.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,28 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[AttributeUsage(AttributeTargets.Class)]
-	public class IssueDescriptionAttribute : System.Attribute
+	public interface IRenameNameHandler
 	{
-		public string Title { get; private set;}
-		
-		public string Description { get; set; }
-		
-		public string Category { get; set; }
-		
-		public Severity Severity { get; set; }
-
-		public IssueMarker IssueMarker { get; set; }
-
-		public IssueDescriptionAttribute (string title)
-		{
-			Title = title;
-			Severity = Severity.Suggestion;
-			IssueMarker = IssueMarker.Underline;
-		}
+		IEnumerable<NamingRule> Rules { get; }
+		bool CanRunRenameDialog { get; }
+		void RunRenameDialog(IEntity entity);
+		void RunRenameDialog(IVariable entity);
 	}
 }
 

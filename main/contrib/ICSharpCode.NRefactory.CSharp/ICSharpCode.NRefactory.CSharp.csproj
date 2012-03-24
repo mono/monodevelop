@@ -341,6 +341,12 @@
     <Compile Include="Refactoring\CodeIssues\RedundantUsingIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\StringIsNullOrEmptyIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\UseVarKeywordIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\AffectedEntity.cs" />
+    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\DefaultRules.cs" />
+    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\InconsistentNamingIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\IRenameNameHandler.cs" />
+    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\NamingRule.cs" />
+    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\NamingStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

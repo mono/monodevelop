@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BaseRefactoringContext.cs
 //  
 // Author:
@@ -96,8 +96,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		#endregion
 		
-		public abstract Script StartScript();
-
 		/// <summary>
 		/// Translates the english input string to the context language.
 		/// </summary>

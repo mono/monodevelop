@@ -160,7 +160,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 
-		public override Script StartScript ()
+		public Script StartScript ()
 		{
 			return new MDRefactoringScript (this.Document, this.Document.GetFormattingOptions ());
 		}

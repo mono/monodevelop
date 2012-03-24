@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProviderDescriptionAttribute.cs
 //  
 // Author:
@@ -27,6 +27,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	[AttributeUsage(AttributeTargets.Class)]
 	public class ContextActionAttribute : System.Attribute
 	{
 		public string Title { get; private set;}
