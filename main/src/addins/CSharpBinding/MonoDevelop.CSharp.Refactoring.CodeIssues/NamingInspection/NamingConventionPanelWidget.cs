@@ -30,9 +30,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class NamingConventionPanelWidget : Gtk.Bin
 	{
+		public NamingPolicy Policy {
+			get;
+			set;
+		}
+
 		public NamingConventionPanelWidget ()
 		{
-		//	this.Build ();	
+			this.Build ();	
+			this.Show ();
 		}
 	}
 }

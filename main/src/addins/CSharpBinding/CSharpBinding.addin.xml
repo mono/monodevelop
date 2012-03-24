@@ -281,6 +281,16 @@
 		<Source class ="MonoDevelop.CSharp.Refactoring.CodeIssues.NRefactoryCodeIssueSource"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
+		<Section id="NamingConventions" _label="Naming Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanel" />
+	</Extension>
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
+		<Section id="NamingConventions" _label="Naming Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanel" />
+	</Extension>
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
+		<Section id="NamingConventions" _label="Naming Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NamingConventionPanel" />
+	</Extension>
+	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>

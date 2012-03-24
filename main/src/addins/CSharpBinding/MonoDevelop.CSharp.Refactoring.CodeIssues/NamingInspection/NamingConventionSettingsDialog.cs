@@ -32,7 +32,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public NamingConventionSettingsDialog () : 
 				base(Gtk.WindowType.Toplevel)
 		{
-		//	this.Build ();
+			this.Build ();
+			this.Show ();
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeviewConventions;
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Button button1;
+		private global::Gtk.Button buttonEdit;
 		
 		protected virtual void Build ()
 		{
@@ -37,13 +37,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.button1 = new global::Gtk.Button ();
-			this.button1.CanFocus = true;
-			this.button1.Name = "button1";
-			this.button1.UseUnderline = true;
-			this.button1.Label = global::Mono.Unix.Catalog.GetString ("_Settings...");
-			this.hbox1.Add (this.button1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.button1]));
+			this.buttonEdit = new global::Gtk.Button ();
+			this.buttonEdit.CanFocus = true;
+			this.buttonEdit.Name = "button1";
+			this.buttonEdit.UseUnderline = true;
+			this.buttonEdit.Label = global::Mono.Unix.Catalog.GetString ("_Settings...");
+			this.hbox1.Add (this.buttonEdit);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonEdit]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
