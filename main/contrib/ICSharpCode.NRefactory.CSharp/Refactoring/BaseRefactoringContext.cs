@@ -64,6 +64,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			this.cancellationToken = cancellationToken;
 		}
 
+		/// <summary>
+		/// Requests data that can be provided by the IDE
+		/// </summary>
+		public abstract T RequestData<T>();
+
 		#region Resolving
 		public ResolveResult Resolve (AstNode node)
 		{

@@ -117,6 +117,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			return result.ToString ();
 		}
 
+		internal ICSharpCode.NRefactory.CSharp.Refactoring.NamingRule GetNRefactoryRule ()
+		{
+			return wrappedRule;
+		}
 	}
 }
 

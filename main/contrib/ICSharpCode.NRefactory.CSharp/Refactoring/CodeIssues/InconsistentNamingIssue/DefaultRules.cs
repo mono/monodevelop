@@ -30,13 +30,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public static class DefaultRules
 	{
-		public static readonly List<NamingRule> Rules = new List<NamingRule>();
-
-		static DefaultRules()
-		{
-			Rules.AddRange(GetFdgRules());
-		}
-
 		public static IEnumerable<NamingRule> GetFdgRules()
 		{
 			// PascalCasing for namespace
