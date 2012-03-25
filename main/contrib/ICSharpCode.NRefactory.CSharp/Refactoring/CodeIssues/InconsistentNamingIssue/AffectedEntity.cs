@@ -44,27 +44,33 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		CustomEventArgs  = 1 << 7,
 		CustomExceptions = 1 << 8,
 
-		Property   = 1 << 9,
-		Method     = 1 << 10,
-		Field      = 1 << 11,
-		Event      = 1 << 12,
-		EnumMember = 1 << 13,
+		Property      = 1 << 9,
+		Method        = 1 << 10,
+		AsyncMethod   = 1 << 11,
+		Field         = 1 << 12,
+		ReadonlyField = 1 << 13,
+		ConstantField = 1 << 14,
 
-		Parameter     = 1 << 14,
-		TypeParameter = 1 << 15,
+		Event      = 1 << 15,
+		EnumMember = 1 << 16,
+
+		Parameter     = 1 << 17,
+		TypeParameter = 1 << 18,
 
 		// Unit test special case
-		TestType   = 1 << 16,
-		TestMethod = 1 << 17,
+		TestType   = 1 << 19,
+		TestMethod = 1 << 20,
 
 		// private entities
-		LambdaParameter = 1 << 18,
-		LocalVariable   = 1 << 19,
-		Label           = 1 << 20,
+		LambdaParameter = 1 << 21,
+		LocalVariable   = 1 << 22,
+		LocalConstant   = 1 << 23,
+		Label           = 1 << 24,
 
-		LocalVars = LocalVariable | Parameter | LambdaParameter,
-
-		Member = Property | Method | Field | Event | EnumMember,
+		LocalVars = LocalVariable | Parameter | LambdaParameter | LocalConstant,
+		Methods = Method | AsyncMethod,
+		Fields = Field | ReadonlyField | ConstantField,
+		Member = Property | Methods | Fields | Event | EnumMember,
 		
 		Type = Class | Struct | Enum | Interface | Delegate,
 

@@ -66,18 +66,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				RequiredSuffixes = new [] { "Exception" }
 			};
 
-			yield return new NamingRule(AffectedEntity.Method) {
+			yield return new NamingRule(AffectedEntity.Methods) {
 				Name = "Methods",
 				NamingStyle = NamingStyle.PascalCase
 			};
 
-			yield return new NamingRule(AffectedEntity.Field) {
+			yield return new NamingRule(AffectedEntity.Fields) {
 				Name = "Fields (Non Private)",
 				NamingStyle = NamingStyle.PascalCase,
 				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal
 			};
 
-			yield return new NamingRule(AffectedEntity.Field) {
+			yield return new NamingRule(AffectedEntity.Fields) {
 				Name = "Fields (Private)",
 				NamingStyle = NamingStyle.CamelCase,
 				VisibilityMask = Modifiers.Private

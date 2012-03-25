@@ -93,6 +93,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (!rule.VisibilityMask.HasFlag(accessibilty)) {
 						continue;
 					}
+
+					if (!rule.IncludeInstanceMembers || !rule.IncludeStaticEntities) {
+						IEntity typeSystemEntity = null;
+						if (resolveResult is MemberResolveResult) {
+							typeSystemEntity = ((MemberResolveResult)resolveResult).Member;
+						} else if (resolveResult is TypeResolveResult) { 
+							typeSystemEntity = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+						}
+						if (!rule.IncludeInstanceMembers) {
+							if (typeSystemEntity == null || typeSystemEntity.IsStatic) {
+								continue;
+							}
+						}
+						if (!rule.IncludeStaticEntities) {
+							if (typeSystemEntity != null && !typeSystemEntity.IsStatic) {
+								continue;
+							}
+						}
+					}
+
 					if (!rule.IsValid(identifier.Name)) {
 						IList<string> suggestedNames;
 						var msg = rule.GetErrorMessage(ctx, identifier.Name, out suggestedNames);
@@ -121,7 +141,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								}
 							}));
 						}
-
 
 						AddIssue(identifier, msg, actions);
 
@@ -184,21 +203,34 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 			{
 				base.VisitMethodDeclaration(methodDeclaration);
-				CheckName(methodDeclaration, AffectedEntity.Method, methodDeclaration.NameToken, GetAccessibiltiy(methodDeclaration, Modifiers.Private));
+
+				CheckName(methodDeclaration, methodDeclaration.Modifiers.HasFlag(Modifiers.Async) ? AffectedEntity.AsyncMethod : AffectedEntity.Method, methodDeclaration.NameToken, GetAccessibiltiy(methodDeclaration, Modifiers.Private));
 			}
 
 			public override void VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 			{
 				base.VisitFieldDeclaration(fieldDeclaration);
+				var entity = AffectedEntity.Field;
+				if (fieldDeclaration.Modifiers.HasFlag(Modifiers.Const)) {
+					entity = AffectedEntity.ConstantField;
+				} else if (fieldDeclaration.Modifiers.HasFlag(Modifiers.Readonly)) {
+					entity = AffectedEntity.ReadonlyField;
+				}
 				foreach (var init in fieldDeclaration.Variables) {
-					CheckName(init, AffectedEntity.Field, init.NameToken, GetAccessibiltiy(fieldDeclaration, Modifiers.Private));
+					CheckName(init, entity, init.NameToken, GetAccessibiltiy(fieldDeclaration, Modifiers.Private));
 				}
 			}
 
 			public override void VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
 			{
 				base.VisitFixedFieldDeclaration(fixedFieldDeclaration);
-				CheckName(fixedFieldDeclaration, AffectedEntity.Field, fixedFieldDeclaration.NameToken, GetAccessibiltiy(fixedFieldDeclaration, Modifiers.Private));
+				var entity = AffectedEntity.Field;
+				if (fixedFieldDeclaration.Modifiers.HasFlag(Modifiers.Const)) {
+					entity = AffectedEntity.ConstantField;
+				} else if (fixedFieldDeclaration.Modifiers.HasFlag(Modifiers.Readonly)) {
+					entity = AffectedEntity.ReadonlyField;
+				}
+				CheckName(fixedFieldDeclaration, entity, fixedFieldDeclaration.NameToken, GetAccessibiltiy(fixedFieldDeclaration, Modifiers.Private));
 			}
 
 			public override void VisitEventDeclaration(EventDeclaration eventDeclaration)
@@ -236,8 +268,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
 			{
 				base.VisitVariableDeclarationStatement(variableDeclarationStatement);
+				var entity = variableDeclarationStatement.Modifiers.HasFlag(Modifiers.Const) ? AffectedEntity.LocalConstant : AffectedEntity.LocalVariable;
 				foreach (var init in variableDeclarationStatement.Variables) {
-					CheckName(init, AffectedEntity.LocalVariable, init.NameToken, Modifiers.None);
+					CheckName(init, entity, init.NameToken, Modifiers.None);
 				}
 			}
 

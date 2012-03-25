@@ -82,6 +82,19 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			get { return wrappedRule.NamingStyle; } 
 			set { wrappedRule.NamingStyle = value;} 
 		}
+
+		[ItemProperty]
+		public bool IncludeInstanceMembers {
+			get { return wrappedRule.IncludeInstanceMembers; } 
+			set { wrappedRule.IncludeInstanceMembers = value;} 
+		}
+
+		[ItemProperty]
+		public bool IncludeStaticEntities {
+			get { return wrappedRule.IncludeStaticEntities; } 
+			set { wrappedRule.IncludeStaticEntities = value;} 
+		}
+
 		
 		internal NameConventionRule (ICSharpCode.NRefactory.CSharp.Refactoring.NamingRule wrappedRule)
 		{

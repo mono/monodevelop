@@ -53,8 +53,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			EntityName [AffectedEntity.CustomExceptions] = GettextCatalog.GetString ("Exceptions");
 	
 			EntityName [AffectedEntity.Property] = GettextCatalog.GetString ("Properties");
+			EntityName [AffectedEntity.AsyncMethod] = GettextCatalog.GetString ("Async methods");
 			EntityName [AffectedEntity.Method] = GettextCatalog.GetString ("Methods");
 			EntityName [AffectedEntity.Field] = GettextCatalog.GetString ("Fields");
+			EntityName [AffectedEntity.ConstantField] = GettextCatalog.GetString ("Constant fields");
+			EntityName [AffectedEntity.ReadonlyField] = GettextCatalog.GetString ("Readonly fields");
 			EntityName [AffectedEntity.Event] = GettextCatalog.GetString ("Events");
 			EntityName [AffectedEntity.EnumMember] = GettextCatalog.GetString ("Enum Members");
 	
@@ -68,6 +71,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			// private entities
 			EntityName [AffectedEntity.LambdaParameter] = GettextCatalog.GetString ("Lambda Parameters");
 			EntityName [AffectedEntity.LocalVariable] = GettextCatalog.GetString ("Local Variables");
+			EntityName [AffectedEntity.LocalConstant] = GettextCatalog.GetString ("Local Constants");
 			EntityName [AffectedEntity.Label] = GettextCatalog.GetString ("Labels");
 
 			AccessibilityName [Modifiers.Public] = GettextCatalog.GetString ("Public");
@@ -139,6 +143,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					continue;
 				accessibiltyStore.AppendValues (AccessibilityName [mod], mod, rule.VisibilityMask.HasFlag (mod));
 			}
+
+			checkbuttonStatic.Active = rule.IncludeStaticEntities;
+			checkbuttonInstanceMembers.Active = rule.IncludeInstanceMembers;
 		}
 
 		public void Apply ()
@@ -191,6 +198,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				} while (accessibiltyStore.IterNext (ref iter));
 			}
 			rule.VisibilityMask = mod;
+			rule.IncludeStaticEntities = checkbuttonStatic.Active;
+			rule.IncludeInstanceMembers = checkbuttonInstanceMembers.Active;
 		}
 	}
 }

@@ -69,6 +69,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// </summary
 		public NamingStyle NamingStyle { get; set; }
 
+		public bool IncludeStaticEntities { get; set; }
+		public bool IncludeInstanceMembers { get; set; }
+
 		public bool IsValid(string name)
 		{
 			string id = name;
@@ -115,6 +118,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			AffectedEntity = affectedEntity;
 			VisibilityMask = Modifiers.VisibilityMask;
+			IncludeStaticEntities = true;
+			IncludeInstanceMembers = true;
 		}
 
 		static bool NoUnderscoreWithoutNumber(string id)
