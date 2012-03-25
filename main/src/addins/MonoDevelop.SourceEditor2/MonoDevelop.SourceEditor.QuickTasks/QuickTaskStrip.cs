@@ -40,7 +40,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 	{
 		// move that one to AnalysisOptions when the new features are enabled by default.
 		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", false);
-		
+		static QuickTaskStrip ()
+		{
+			EnableFancyFeatures.Changed += delegate {
+				PropertyService.Set ("ScrollBar.Mode", EnableFancyFeatures ? ScrollBarMode.Overview : ScrollBarMode.Normal);
+			};
+		}
 		Adjustment adj;
 		
 		public Adjustment VAdjustment {
@@ -108,10 +113,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (EnableFancyFeatures) {
 				ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Overview);
-				PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
 			} else {
 				ScrollBarMode = ScrollBarMode.Normal;
 			}
+			PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
 			Events |= EventMask.ButtonPressMask;
 		}
 		

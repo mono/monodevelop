@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			var context = new MDRefactoringContext (document, document.Editor.Caret.Location);
 			foreach (var action in issueProvider.GetIssues (context)) {
-				var issue = new CodeIssue (GettextCatalog.GetString (action.Desription ?? ""), action.Start, action.End, action.Actions.Select (
+				var issue = new CodeIssue (GettextCatalog.GetString (action.Desription ?? ""), action.Start, action.End, (action.Actions ?? Enumerable.Empty<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> ()).Select (
 					act => new MDRefactoringContextAction (act.Description, ctx => {
 						var editor = document.Editor;
 						var offset = editor.Caret.Offset;
