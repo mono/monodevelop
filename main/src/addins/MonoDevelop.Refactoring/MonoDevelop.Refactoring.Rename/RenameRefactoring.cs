@@ -90,7 +90,28 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 		}
-		
+
+		public static void Rename (IVariable variable, string newName)
+		{
+			using (var monitor = new NullProgressMonitor ()) {
+				var col = ReferenceFinder.FindReferences (variable, monitor);
+				
+				List<Change> result = new List<Change> ();
+				foreach (var memberRef in col) {
+					var change = new TextReplaceChange ();
+					change.FileName = memberRef.FileName;
+					change.Offset = memberRef.Offset;
+					change.RemovedChars = memberRef.Length;
+					change.InsertedText = newName;
+					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.GetName (), newName);
+					result.Add (change);
+				}
+				if (result.Count > 0) {
+					RefactoringService.AcceptChanges (monitor, result);
+				}
+			}
+		}
+
 		public override string GetMenuDescription (RefactoringOptions options)
 		{
 			return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename).Text;

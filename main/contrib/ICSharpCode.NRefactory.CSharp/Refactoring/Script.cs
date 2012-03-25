@@ -293,6 +293,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 		}
 		
+		public virtual void Rename(IVariable entity, string name)
+		{
+		}
+
 		public virtual void Dispose()
 		{
 		}

@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction (context.TranslateString("Remove backing store"), script => {
 				script.Remove (context.RootNode.GetNodeAt<FieldDeclaration> (field.Region.BeginLine, field.Region.BeginColumn));
 				script.Replace (property, newProperty);
-				script.Rename (field, newProperty.Name);
+				script.Rename ((IEntity)field, newProperty.Name);
 			});
 		}
 		

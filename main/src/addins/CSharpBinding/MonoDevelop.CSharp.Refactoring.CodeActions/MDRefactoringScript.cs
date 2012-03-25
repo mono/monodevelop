@@ -32,6 +32,8 @@ using Mono.TextEditor;
 using MonoDevelop.TypeSystem;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Refactoring.Rename;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -122,6 +124,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			base.Dispose ();
 		}
 
+		public override void Rename (IEntity entity, string name)
+		{
+			RenameRefactoring.Rename (entity, name);
+		}
+
+		public override void Rename (IVariable entity, string name)
+		{
+			RenameRefactoring.Rename (entity, name);
+		}
 	}
 }
 
