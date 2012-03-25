@@ -35,6 +35,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public const string Redundancies = "Redundancies";
 		public const string Opportunities = "Language Usage Opportunities";
 		public const string Notifications = "Code Notifications";
+		public const string CompilerWarnings = "Compiler Warnings";
+		public const string CompilerErrors = "Compiler Errors";
 	}
 }
 

@@ -2,6 +2,7 @@
 // NamingRule.cs
 //  
 // Author:
+//       Michael Hutchinson <mhutch@xamarin.com>
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
 // Copyright (c) 2012 Xamarin <http://xamarin.com>

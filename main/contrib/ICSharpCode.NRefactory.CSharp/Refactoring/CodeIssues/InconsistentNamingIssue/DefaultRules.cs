@@ -32,14 +32,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public static IEnumerable<NamingRule> GetFdgRules()
 		{
-			// PascalCasing for namespace
 			yield return new NamingRule(AffectedEntity.Namespace) {
 				Name = "Namespaces",
 				NamingStyle = NamingStyle.PascalCase
 			};
 			
-			// PascalCasing for types
-
 			yield return new NamingRule(AffectedEntity.Class | AffectedEntity.Struct | AffectedEntity.Enum | AffectedEntity.Delegate) {
 				Name = "Types",
 				NamingStyle = NamingStyle.PascalCase
@@ -69,20 +66,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				RequiredSuffixes = new [] { "Exception" }
 			};
 
-			// PascalCasing for members
 			yield return new NamingRule(AffectedEntity.Method) {
 				Name = "Methods",
 				NamingStyle = NamingStyle.PascalCase
 			};
 
-			// public fields Pascal Case
 			yield return new NamingRule(AffectedEntity.Field) {
 				Name = "Fields (Non Private)",
 				NamingStyle = NamingStyle.PascalCase,
 				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal
 			};
 
-			// private fields Camel Case
 			yield return new NamingRule(AffectedEntity.Field) {
 				Name = "Fields (Private)",
 				NamingStyle = NamingStyle.CamelCase,
@@ -104,13 +98,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				NamingStyle = NamingStyle.PascalCase
 			};
 
-			// Parameters should be camelCase
 			yield return new NamingRule(AffectedEntity.Parameter) {
 				Name = "Parameters",
 				NamingStyle = NamingStyle.CamelCase
 			};
 
-			// Type parameter should be PascalCase
 			yield return new NamingRule(AffectedEntity.TypeParameter) {
 				Name = "Type Parameters",
 				NamingStyle = NamingStyle.PascalCase

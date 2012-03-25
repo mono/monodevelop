@@ -308,7 +308,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name='name'>
 		/// The new name, if null the user is prompted for a new name.
 		/// </param>
-		public virtual void Rename (IVariable variable, string name = null)
+		public virtual void Rename(IVariable variable, string name = null)
 		{
 		}
 

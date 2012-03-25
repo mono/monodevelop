@@ -166,7 +166,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					default:
 						throw new System.ArgumentOutOfRangeException();
 				}
-
 				CheckName(typeDeclaration, entity, typeDeclaration.NameToken, GetAccessibiltiy(typeDeclaration, typeDeclaration.Parent is TypeDeclaration ? Modifiers.Private : Modifiers.Internal));
 			}
 
