@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -55,31 +56,73 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				rules = new List<NamingRule> (ctx.RequestData<IEnumerable<NamingRule>> () ?? Enumerable.Empty<NamingRule> ());
 			}
 
-			void CheckName (AstNode node, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
+			void CheckName(AstNode node, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
+			{
+				ResolveResult resolveResult = null;
+				if (node != null) {
+					resolveResult = ctx.Resolve(node);
+				}
+				CheckNamedResolveResult(resolveResult, entity, identifier, accessibilty);
+				if (resolveResult is TypeResolveResult) {
+					var type = ((TypeResolveResult)resolveResult).Type;
+					if (type.DirectBaseTypes.Any(t => t.FullName == "System.Attribute")) {
+						CheckNamedResolveResult(resolveResult, AffectedEntity.CustomAttributes, identifier, accessibilty);
+					} else if (type.DirectBaseTypes.Any(t => t.FullName == "System.EventArgs")) {
+						CheckNamedResolveResult(resolveResult, AffectedEntity.CustomEventArgs, identifier, accessibilty);
+					} else if (type.DirectBaseTypes.Any(t => t.FullName == "System.Exception")) {
+						CheckNamedResolveResult(resolveResult, AffectedEntity.CustomExceptions, identifier, accessibilty);
+					}
+
+					if (type.GetDefinition().Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestFixtureAttribute")) {
+						CheckNamedResolveResult(resolveResult, AffectedEntity.TestType, identifier, accessibilty);
+					}
+				} else if (resolveResult is MemberResolveResult) {
+					var member = ((MemberResolveResult)resolveResult).Member;
+					if (member.EntityType == EntityType.Method && member.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestAttribute")) {
+						CheckNamedResolveResult(resolveResult, AffectedEntity.TestMethod, identifier, accessibilty);
+					}
+				}
+			}
+
+			void CheckNamedResolveResult(ResolveResult resolveResult, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
 			{
 				foreach (var rule in rules) {
-					if (!rule.AffectedEntity.HasFlag (entity)) {
+					if (!rule.AffectedEntity.HasFlag(entity)) {
 						continue;
 					}
-					if (!rule.IsValid (identifier.Name)) {
+					if (!rule.IsValid(identifier.Name)) {
 						IList<string> suggestedNames;
-						var msg = rule.GetErrorMessage (ctx, identifier.Name, out suggestedNames);
-						ResolveResult resolveResult = null;
-						if (node != null) {
-							resolveResult = ctx.Resolve (node);
+						var msg = rule.GetErrorMessage(ctx, identifier.Name, out suggestedNames);
+
+						var actions = new List<CodeAction>(suggestedNames.Select(n => new CodeAction(string.Format(ctx.TranslateString("Rename to '{0}'"), n), (Script script) => {
+								if (resolveResult is MemberResolveResult) {
+									script.Rename(((MemberResolveResult)resolveResult).Member, n);
+								} else if (resolveResult is TypeResolveResult) {
+									script.Rename(((TypeResolveResult)resolveResult).Type.GetDefinition(), n);
+								} else if (resolveResult is LocalResolveResult) {
+									script.Rename(((LocalResolveResult)resolveResult).Variable, n);
+								} else { 
+									script.Replace(identifier, Identifier.Create(n));
+								}
+							}
+						)));
+
+
+						if (resolveResult is MemberResolveResult || resolveResult is TypeResolveResult || resolveResult is LocalResolveResult) {
+							actions.Add(new CodeAction(string.Format(ctx.TranslateString("Rename '{0}'..."), identifier.Name), (Script script) => {
+								if (resolveResult is MemberResolveResult) {
+									script.Rename(((MemberResolveResult)resolveResult).Member);
+								} else if (resolveResult is TypeResolveResult) {
+									script.Rename(((TypeResolveResult)resolveResult).Type.GetDefinition ());
+								} else if (resolveResult is LocalResolveResult) {
+									script.Rename(((LocalResolveResult)resolveResult).Variable);
+								}
+							}));
 						}
 
-						AddIssue (identifier, msg, suggestedNames.Select (n => new CodeAction (string.Format (ctx.TranslateString ("Rename to '{0}'"), n), (Script script) => {
-							if (resolveResult is MemberResolveResult) {
-								script.Rename (((MemberResolveResult)resolveResult).Member, n);
-							} else if (resolveResult is TypeResolveResult) {
-								script.Rename (((TypeResolveResult)resolveResult).Type.GetDefinition (), n);
-							} else if (resolveResult is LocalResolveResult) {
-								script.Rename(((LocalResolveResult)resolveResult).Variable, n);
-							} else { 
-								script.Replace(identifier, Identifier.Create(n));
-							}
-						})));
+
+						AddIssue(identifier, msg, actions);
+
 					}
 				}
 			}

@@ -131,7 +131,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override void Rename (IVariable entity, string name)
 		{
-			RenameRefactoring.Rename (entity, name);
+			RenameRefactoring.RenameVariable (entity, name);
 		}
 	}
 }

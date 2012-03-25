@@ -287,13 +287,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		/// <summary>
-		/// Performs a rename refactoring.
+		/// Renames the specified entity.
 		/// </summary>
-		public virtual void Rename(IEntity entity, string name)
+		/// <param name='entity'>
+		/// The Entity to rename
+		/// </param>
+		/// <param name='name'>
+		/// The new name, if null the user is prompted for a new name.
+		/// </param>
+		public virtual void Rename(IEntity entity, string name = null)
 		{
 		}
 		
-		public virtual void Rename(IVariable entity, string name)
+		/// <summary>
+		/// Renames the specified variable.
+		/// </summary>
+		/// <param name='variable'>
+		/// The Variable to rename
+		/// </param>
+		/// <param name='name'>
+		/// The new name, if null the user is prompted for a new name.
+		/// </param>
+		public virtual void Rename (IVariable variable, string name = null)
 		{
 		}
 

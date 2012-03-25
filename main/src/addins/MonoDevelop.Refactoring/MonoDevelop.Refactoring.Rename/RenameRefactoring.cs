@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.Gui;
 
 
 namespace MonoDevelop.Refactoring.Rename
@@ -72,6 +73,13 @@ namespace MonoDevelop.Refactoring.Rename
 
 		public static void Rename (IEntity entity, string newName)
 		{
+			if (newName == null) {
+				var options = new RefactoringOptions () {
+					SelectedItem = entity
+				};
+				new RenameRefactoring ().Run (options);
+				return;
+			}
 			using (var monitor = new NullProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (entity, monitor);
 				
@@ -91,7 +99,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
-		public static void Rename (IVariable variable, string newName)
+		public static void RenameVariable (IVariable variable, string newName)
 		{
 			using (var monitor = new NullProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (variable, monitor);
@@ -206,7 +214,7 @@ namespace MonoDevelop.Refactoring.Rename
 					int currentPart = 1;
 					HashSet<string> alreadyRenamed = new HashSet<string> ();
 					foreach (var part in cls.Parts) {
-						if (part.Region.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.Region.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
+						if (options.Document != null && part.Region.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.Region.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
 							continue;
 						if (alreadyRenamed.Contains (part.Region.FileName))
 							continue;

@@ -80,6 +80,9 @@ namespace MonoDevelop.Refactoring
 		}
 		public readonly CompilationUnit Unit;
 
+		public RefactoringOptions ()
+		{
+		}
 
 		public RefactoringOptions (Document doc)
 		{
