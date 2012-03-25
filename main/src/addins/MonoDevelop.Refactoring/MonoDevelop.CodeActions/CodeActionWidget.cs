@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CodeIssues;
+using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.CodeActions
 {
@@ -82,7 +83,7 @@ namespace MonoDevelop.CodeActions
 			int mnemonic = 1;
 			foreach (CodeAction fix_ in fixes) {
 				var fix = fix_;
-				var escapedLabel = fix.Title.Replace ("_", "__");
+				var escapedLabel = fix.Title.Replace ("_", "");
 				var label = (mnemonic <= 10)
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
@@ -94,13 +95,22 @@ namespace MonoDevelop.CodeActions
 				menu.Add (menuItem);
 			}
 			var first = true;
+			var alreadyInserted = new HashSet<CodeIssueProvider> ();
 			foreach (var analysisFix_ in fixes.OfType <AnalysisContextActionProvider.AnalysisCodeAction>().Where (f => f.Result is InspectorResults)) {
 				var analysisFix = analysisFix_;
+				var ir = analysisFix.Result as InspectorResults;
+				if (ir == null)
+					continue;
+
 				if (first) {
 					menu.Add (new Gtk.SeparatorMenuItem ());
 					first = false;
 				}
-				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", analysisFix.Result.Message);
+				if (alreadyInserted.Contains (ir.Inspector))
+					continue;
+				alreadyInserted.Add (ir.Inspector);
+
+				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", ir.Inspector.Title);
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
 				menuItem.Activated += analysisFix.ShowOptions;
 				
