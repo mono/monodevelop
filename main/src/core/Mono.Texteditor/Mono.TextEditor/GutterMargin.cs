@@ -60,11 +60,17 @@ namespace Mono.TextEditor
 			editor.RedrawMarginLine (this, editor.Caret.Line);
 		}
 
+		int LineCountMax {
+			get {
+				return Math.Max (1000, editor.Document.LineCount);
+			}
+		}
+
 		void CalculateWidth ()
 		{
 			using (var layout = PangoUtil.CreateLayout (editor)) {
 				layout.FontDescription = editor.Options.Font;
-				layout.SetText (editor.Document.LineCount.ToString ());
+				layout.SetText (LineCountMax.ToString ());
 				layout.Alignment = Pango.Alignment.Left;
 				layout.Width = -1;
 				int height;
@@ -77,7 +83,7 @@ namespace Mono.TextEditor
 		
 		void UpdateWidth (object sender, LineEventArgs args)
 		{
-			int currentLineCountLog10 = (int)System.Math.Log10 (editor.Document.LineCount);
+			int currentLineCountLog10 = (int)System.Math.Log10 (LineCountMax);
 			if (oldLineCountLog10 != currentLineCountLog10) {
 				CalculateWidth ();
 				oldLineCountLog10 = currentLineCountLog10;
