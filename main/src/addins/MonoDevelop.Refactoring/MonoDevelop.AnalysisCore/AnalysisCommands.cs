@@ -35,6 +35,9 @@ using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.AnalysisCore.Fixes;
+using MonoDevelop.Ide;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -94,6 +97,10 @@ namespace MonoDevelop.AnalysisCore
 		
 		protected override void Run (object dataItem)
 		{
+			if (dataItem is Result) {
+				((Result)dataItem).ShowResultOptionsDialog ();
+				return;
+			}
 			var action = (IAnalysisFixAction)dataItem;
 			action.Fix ();
 		}
@@ -142,6 +149,10 @@ namespace MonoDevelop.AnalysisCore
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
 					infos.Add (label, action);
+				}
+				if (result.HasOptionsDialog) {
+					var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", result.OptionsTitle);
+					infos.Add (label, result);
 				}
 			}
 		}

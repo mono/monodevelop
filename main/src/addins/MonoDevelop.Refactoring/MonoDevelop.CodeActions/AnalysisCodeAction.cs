@@ -84,9 +84,8 @@ namespace MonoDevelop.CodeActions
 			public void ShowOptions (object sender, EventArgs e)
 			{
 				var inspectorResults = Result as InspectorResults;
-				if (inspectorResults == null)
-					return;
-				MessageService.RunCustomDialog (new CodeIssueOptionsDialog (inspectorResults), MessageService.RootWindow);
+				if (inspectorResults != null)
+					inspectorResults.ShowResultOptionsDialog ();
 			}
 		}
 	}

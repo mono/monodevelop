@@ -56,6 +56,13 @@ namespace MonoDevelop.AnalysisCore
 			this.Level = level;
 			this.InspectionMark = inspectionMark;
 		}
+
+		public virtual bool HasOptionsDialog { get { return false; } }
+		public virtual string OptionsTitle { get { return ""; } }
+		public virtual void ShowResultOptionsDialog ()
+		{
+			throw new InvalidOperationException ();
+		}
 		
 		public string Message { get; private set; }
 		public Severity Level { get; private set; }

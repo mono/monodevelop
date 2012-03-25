@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CodeIssues;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
@@ -40,6 +41,14 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		{
 			this.Inspector = inspector;
 		}
+
+		public override bool HasOptionsDialog { get { return true; } }
+		public override string OptionsTitle { get { return Inspector.Title; } }
+		public override void ShowResultOptionsDialog ()
+		{
+			MessageService.RunCustomDialog (new CodeIssueOptionsDialog (this), MessageService.RootWindow);
+		}
+		
 	}
 
 	public class GenericResults : FixableResult

@@ -60,16 +60,15 @@ namespace MonoDevelop.CodeIssues
 					if (severity == Severity.None)
 						return;
 					foreach (var r in provider.GetIssues (input, cancellationToken)) {
-						foreach (var a_ in r.Actions) {
-							var a = a_;
-							result.Add (new InspectorResults (
-								provider, 
-								r.Region, 
-								r.Description,
-								severity, 
-								provider.IssueMarker,
-								new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
-						}
+						var fixes = new List<GenericFix> (r.Actions.Select (a => new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
+						result.Add (new InspectorResults (
+							provider, 
+							r.Region, 
+							r.Description,
+							severity, 
+							provider.IssueMarker,
+							fixes.ToArray ()
+						));
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + provider + "'", e);
