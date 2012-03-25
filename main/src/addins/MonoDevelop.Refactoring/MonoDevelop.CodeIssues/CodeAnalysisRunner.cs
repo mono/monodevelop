@@ -60,7 +60,8 @@ namespace MonoDevelop.CodeIssues
 					if (severity == Severity.None)
 						return;
 					foreach (var r in provider.GetIssues (input, cancellationToken)) {
-						foreach (var a in r.Actions) {
+						foreach (var a_ in r.Actions) {
+							var a = a_;
 							result.Add (new InspectorResults (
 								provider, 
 								r.Region, 

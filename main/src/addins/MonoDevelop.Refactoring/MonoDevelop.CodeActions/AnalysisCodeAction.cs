@@ -55,28 +55,30 @@ namespace MonoDevelop.CodeActions
 		
 		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
-			yield return new AnalysisCodeAction (Action.Label, Result, (d, l) => Action.Fix ());
+			yield return new AnalysisCodeAction (Action, Result);
 		}
 
 		internal class AnalysisCodeAction : CodeAction
 		{
+			public IAnalysisFixAction Action {
+				get;
+				private set;
+			}
 			public Result Result {
 				get;
 				private set;
 			}
-			
-			Action<MonoDevelop.Ide.Gui.Document, TextLocation> act;
-			
-			public AnalysisCodeAction (string title, Result result, Action<MonoDevelop.Ide.Gui.Document, TextLocation> act)
+
+			public AnalysisCodeAction (IAnalysisFixAction action, Result result)
 			{
-				this.Title = title;
-				this.act = act;
-				this.Result = result;
+				Action = action;
+				Title = action.Label;
+				Result = result;
 			}
 	
 			public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
 			{
-				act (document, loc);
+				Action.Fix ();
 			}
 
 			public void ShowOptions (object sender, EventArgs e)

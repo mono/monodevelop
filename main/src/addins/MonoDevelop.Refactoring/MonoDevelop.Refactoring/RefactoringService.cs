@@ -206,6 +206,7 @@ namespace MonoDevelop.Refactoring
 				return (IEnumerable<MonoDevelop.CodeActions.CodeAction>)result;
 			}, cancellationToken);
 		}
+		
 		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<MonoDevelop.CodeActions.CodeAction>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
@@ -218,9 +219,8 @@ namespace MonoDevelop.Refactoring
 							var fresult = r as FixableResult;
 							if (fresult == null)
 								continue;
-							foreach (var action_ in FixOperationsHandler.GetActions (doc, fresult)) {
-								var action = action_;
-								result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action.Label, r, (d, t) => action.Fix ()));
+							foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
+								result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r));
 							}
 						}
 					}

@@ -87,8 +87,8 @@ namespace MonoDevelop.CodeActions
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
 				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
+				menuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
 				menuItem.Activated += delegate {
-					new ContextActionRunner (fix).Run (document, loc);
 					menu.Destroy ();
 				};
 				menu.Add (menuItem);
@@ -122,18 +122,22 @@ namespace MonoDevelop.CodeActions
 		class ContextActionRunner
 		{
 			CodeAction act;
+			Document document;
+			TextLocation loc;
 			
-			public ContextActionRunner (CodeAction act)
+			public ContextActionRunner (MonoDevelop.CodeActions.CodeAction act, MonoDevelop.Ide.Gui.Document document, ICSharpCode.NRefactory.TextLocation loc)
 			{
 				this.act = act;
+				this.document = document;
+				this.loc = loc;
 			}
-
-			public void Run (Document document, TextLocation loc)
+			
+			public void Run (object sender, EventArgs e)
 			{
 				// ensure that the Ast is recent.
 				document.UpdateParseDocument ();
 				act.Run (document, loc);
-					
+
 				document.Editor.Document.CommitUpdateAll ();
 			}
 		}
