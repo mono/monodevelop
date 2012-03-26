@@ -25,16 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.CSharp.Refactoring.CreateMethod;
 using NUnit.Framework;
-using System.Collections.Generic;
-using Mono.TextEditor;
 using System.Linq;
-using MonoDevelop.CSharp.Parser;
 using MonoDevelop.CSharp.Refactoring;
-using MonoDevelop.AspNet.Parser.Dom;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
 
