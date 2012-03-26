@@ -460,55 +460,41 @@ namespace MonoDevelop.MacDev.PlistEditor
 			dict.Add (name, new PString (""));
 		}
 
-		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PDictionary dict, Dictionary<PObject, PListScheme.SchemaItem> tree)
+		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PObject current, Dictionary<PObject, PListScheme.SchemaItem> tree)
 		{
-			foreach (var item in dict) {
-				TreeIter subIter;
-				if (CurrentTree.ContainsKey (item.Value)) {
-					if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
-						do {
-							if (treeStore.GetValue (subIter, 1) == item.Value)
-								break;
-						} while (treeStore.IterNext (ref subIter));
-					}
-				} else {
-					var key = tree [item.Value] ?? PListScheme.Key.Empty;
-					subIter = treeStore.InsertNodeBefore (FindOrAddNewEntry (iter));
-					treeStore.SetValues (subIter, key.Identifier ?? item.Key, item.Value, key);
-					
-					if (item.Value is PArray || item.Value is PDictionary)
-						FindOrAddNewEntry (subIter);
-				}
-					
-				if (item.Value is PArray)
-					AddToTree (treeStore, subIter, (PArray)item.Value, tree);
-				if (item.Value is PDictionary)
-					AddToTree (treeStore, subIter, (PDictionary)item.Value, tree);
+			var objs = Enumerable.Empty<Tuple<string, PObject>> ();
+			if (current is PDictionary) {
+				objs = ((PDictionary) current).Select (v => Tuple.Create (v.Key, v.Value));
+			} else if (current is PArray) {
+				objs = ((PArray) current).Select (v => Tuple.Create ("", v));
+			}
+			
+			foreach (var item in objs) {
+				var key = tree [item.Item2] ?? PListScheme.Key.Empty;
+				var subIter = FindOrInsertNode (iter, item.Item1, item.Item2, tree);
+				AddToTree (treeStore, subIter, item.Item2, tree);
 			}
 		}
-		
-		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PArray arr, Dictionary<PObject, PListScheme.SchemaItem> tree)
+
+		TreeIter FindOrInsertNode (TreeIter iter, string id, PObject item, Dictionary<PObject, PListScheme.SchemaItem> tree)
 		{
-			for (int i = 0; i < arr.Count; i++) {
-				var item = arr[i];
-				TreeIter subIter;
-				if (CurrentTree.ContainsKey (item)) {
-					if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
-						do {
-							if (treeStore.GetValue (subIter, 1) == item)
-								break;
-						} while (treeStore.IterNext (ref subIter));
-					}
-				} else {
-					subIter = treeStore.InsertNodeBefore (FindOrAddNewEntry (iter));
-					treeStore.SetValues (subIter, "", item, tree [item]);
+			TreeIter subIter;
+			if (CurrentTree.ContainsKey (item)) {
+				if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
+					do {
+						if (treeStore.GetValue (subIter, 1) == item)
+							break;
+					} while (treeStore.IterNext (ref subIter));
 				}
-				
-				if (item is PArray)
-					AddToTree (treeStore, subIter, (PArray)item, tree);
-				if (item is PDictionary)
-					AddToTree (treeStore, subIter, (PDictionary)item, tree);
+			} else {
+				subIter = treeStore.InsertNodeBefore (FindOrAddNewEntry (iter));
+				treeStore.SetValues (subIter, id, item, tree [item]);
+
+				if (item is PArray || item is PDictionary)
+					FindOrAddNewEntry (subIter);
 			}
+			
+			return subIter;
 		}
 		
 		TreeIter FindOrAddNewEntry (TreeIter iter)
