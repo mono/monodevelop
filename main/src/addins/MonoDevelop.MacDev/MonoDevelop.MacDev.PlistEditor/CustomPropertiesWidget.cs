@@ -56,7 +56,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 		}
-
+		
+		/// <summary>
+		/// The Dictionary representing all the PObjects in the GtkTreeView and the corresponding SchemaItem they
+		/// were instantiated from.
+		/// </summary>
+		/// <value>
+		/// The current tree.
+		/// </value>
 		Dictionary<PObject, PListScheme.SchemaItem> CurrentTree {
 			get; set;
 		}
@@ -64,8 +71,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		PObject RootPObject {
 			get; set;
 		}
-		
-		
+
 		public PListScheme Scheme {
 			get; private set;
 		}
@@ -167,12 +173,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 		}
-		
-		public CustomPropertiesWidget ()
-			: this (null)
-		{
-		}
-		
+
 		class CellRendererButton : CellRenderer
 		{
 			Gdk.Pixbuf pixbuf;
@@ -217,7 +218,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 				window.DrawPixbuf (widget.Style.BaseGC (StateType.Normal), pixbuf, 0, 0, x, y, pixbuf.Width, pixbuf.Height, Gdk.RgbDither.None, 0, 0);
 			}
 		}
-
+		
+		public CustomPropertiesWidget ()
+			: this (null)
+		{
+		}
+		
 		public CustomPropertiesWidget (PListScheme scheme)
 		{
 			Scheme = scheme ?? PListScheme.Empty;
@@ -471,12 +477,28 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			foreach (var item in objs) {
 				var key = tree [item.Item2] ?? PListScheme.Key.Empty;
-				var subIter = FindOrInsertNode (iter, item.Item1, item.Item2, tree);
+				var subIter = FindOrAddPObject (iter, item.Item1, item.Item2, tree);
 				AddToTree (treeStore, subIter, item.Item2, tree);
 			}
 		}
-
-		TreeIter FindOrInsertNode (TreeIter iter, string id, PObject item, Dictionary<PObject, PListScheme.SchemaItem> tree)
+		
+		TreeIter FindOrAddNewEntry (TreeIter iter)
+		{
+			TreeIter subIter;
+			if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
+				do {
+					if (AddKeyNode.Equals (treeStore.GetValue (subIter, 0)))
+						return subIter;
+				} while (treeStore.IterNext (ref subIter));
+			}
+			
+			if (iter.Equals (TreeIter.Zero))
+				return treeStore.AppendValues (AddKeyNode, null);
+			else
+				return treeStore.AppendValues (iter, AddKeyNode, null);
+		}
+		
+		TreeIter FindOrAddPObject (TreeIter iter, string id, PObject item, Dictionary<PObject, PListScheme.SchemaItem> tree)
 		{
 			TreeIter subIter;
 			if (CurrentTree.ContainsKey (item)) {
@@ -497,22 +519,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return subIter;
 		}
 		
-		TreeIter FindOrAddNewEntry (TreeIter iter)
-		{
-			TreeIter subIter;
-			if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
-				do {
-					if (AddKeyNode.Equals (treeStore.GetValue (subIter, 0)))
-						return subIter;
-				} while (treeStore.IterNext (ref subIter));
-			}
-			
-			if (iter.Equals (TreeIter.Zero))
-				return treeStore.AppendValues (AddKeyNode, null);
-			else
-				return treeStore.AppendValues (iter, AddKeyNode, null);
-		}
-
 		void RefreshKeyStore ()
 		{
 			var sortedKeys = new List<PListScheme.Key> (Scheme.Keys);
