@@ -67,6 +67,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return RootNode.GetNodeAt (Location);
 		}
 		
+		public AstNode GetNode (Predicate<AstNode> pred)
+		{
+			return RootNode.GetNodeAt (Location, pred);
+		}
+		
 		public T GetNode<T> () where T : AstNode
 		{
 			return RootNode.GetNodeAt<T> (Location);

@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return Enumerable.Empty<CodeAction>();
 		}
 
-		public IEnumerable<CodeAction>  GetActionsFromIdentifier(RefactoringContext context, IdentifierExpression identifier)
+		public IEnumerable<CodeAction> GetActionsFromIdentifier(RefactoringContext context, IdentifierExpression identifier)
 		{
 			if (!(context.Resolve(identifier).IsError)) {
 				yield break;
@@ -116,12 +116,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var state = context.GetResolverStateBefore(invocation);
 			var guessedType = invocation.Parent is ExpressionStatement ? new PrimitiveType("void") : CreateFieldAction.GuessAstType(context, invocation);
 
+			bool createInOtherType = false;
+			ResolveResult targetResolveResult = null;
+			if (invocation.Target is MemberReferenceExpression) {
+				targetResolveResult = context.Resolve(((MemberReferenceExpression)invocation.Target).Target);
+				createInOtherType = !state.CurrentTypeDefinition.Equals(targetResolveResult.Type.GetDefinition());
+			}
+
+			bool isStatic;
+			if (createInOtherType) {
+				isStatic = targetResolveResult is TypeResolveResult;
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface) {
+					yield break;
+				}
+			} else {
+				isStatic = invocation.Target is IdentifierExpression && state.CurrentMember.IsStatic;
+			}
+
 			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			bool isStatic = invocation.Target is IdentifierExpression && state.CurrentMember.IsStatic;
 			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
 				yield break;
 			}
-
 
 			yield return new CodeAction(context.TranslateString("Create method"), script => {
 				var decl = new MethodDeclaration() {
@@ -131,13 +146,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				if (isStatic) {
-					decl.Modifiers |= Modifiers.Static;
-				}
-
 				foreach (var parameter in GenerateParameters (context, invocation)) {
 					decl.Parameters.Add(parameter);
 				}
+				if (isStatic) {
+					decl.Modifiers |= Modifiers.Static;
+				}
+				
+				if (createInOtherType) {
+					if (targetResolveResult.Type.Kind == TypeKind.Interface) {
+						decl.Body = null;
+						decl.Modifiers = Modifiers.None;
+					} else {
+						decl.Modifiers |= Modifiers.Public;
+
+					}
+
+					script.InsertWithCursor(context.TranslateString("Create method"), decl, targetResolveResult.Type.GetDefinition());
+					return;
+				}
+
 				script.InsertWithCursor(context.TranslateString("Create method"), decl, Script.InsertPosition.Before);
 			});
 		}
@@ -225,7 +253,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return name;
 		}
 
-		public string GetMethodName(InvocationExpression invocation)
+		string GetMethodName(InvocationExpression invocation)
 		{
 			if (invocation.Target is IdentifierExpression) {
 				return ((IdentifierExpression)invocation.Target).Identifier;

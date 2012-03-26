@@ -101,6 +101,42 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			};
 		}
 
+		public override void InsertWithCursor (string operation, AstNode node, ITypeDefinition parentType)
+		{
+			var part = parentType.Parts.FirstOrDefault ();
+			if (part == null)
+				return;
+
+			var loadedDocument = Ide.IdeApp.Workbench.OpenDocument (part.Region.FileName);
+
+			loadedDocument.RunWhenLoaded (delegate {
+				var editor = loadedDocument.Editor;
+				var loc = part.Region.Begin;
+				var parsedDocument = loadedDocument.UpdateParseDocument ();
+				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (loadedDocument, parsedDocument.GetInnermostTypeDefinition (loc)));
+				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
+				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
+				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Accept</b> target point.")));
+				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this operation.")));
+				mode.HelpWindow = helpWindow;
+				
+				mode.CurIndex = 0;
+
+				mode.StartMode ();
+				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
+					if (iCArgs.Success) {
+						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (loc)), node);
+						output.RegisterTrackedSegments (this, loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
+						iCArgs.InsertionPoint.Insert (editor, output.Text);
+					}
+				};
+			});
+		}
+
 		public override void Link (params AstNode[] nodes)
 		{
 			var segments = new List<TextSegment> (nodes.Select (node => new TextSegment (GetSegment (node))).OrderBy (s => s.Offset));

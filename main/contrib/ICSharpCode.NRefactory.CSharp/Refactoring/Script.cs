@@ -136,9 +136,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return formattingOptions; }
 		}
 		
-		public void InsertBefore (AstNode node, AstNode insertNode)
+		public void InsertBefore(AstNode node, AstNode insertNode)
 		{
-			var startOffset = GetCurrentOffset (new TextLocation(node.StartLocation.Line, 1));
+			var startOffset = GetCurrentOffset(new TextLocation(node.StartLocation.Line, 1));
 			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
 			string text = output.Text;
 			if (!(insertNode is Expression || insertNode is AstType))
@@ -147,12 +147,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			output.RegisterTrackedSegments(this, startOffset);
 		}
 
-		public void AddTo (BlockStatement bodyStatement, AstNode insertNode)
+		public void AddTo(BlockStatement bodyStatement, AstNode insertNode)
 		{
-			var startOffset = GetCurrentOffset (bodyStatement.LBraceToken.EndLocation);
-			var output = OutputNode (1 + GetIndentLevelAt (startOffset), insertNode, true);
-			InsertText (startOffset, output.Text);
-			output.RegisterTrackedSegments (this, startOffset);
+			var startOffset = GetCurrentOffset(bodyStatement.LBraceToken.EndLocation);
+			var output = OutputNode(1 + GetIndentLevelAt(startOffset), insertNode, true);
+			InsertText(startOffset, output.Text);
+			output.RegisterTrackedSegments(this, startOffset);
 		}
 		
 		public virtual void Link (params AstNode[] nodes)
@@ -193,6 +193,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		public virtual void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public virtual void InsertWithCursor(string operation, AstNode node, ITypeDefinition parentType)
 		{
 			throw new NotImplementedException();
 		}
