@@ -46,7 +46,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (string));
 		PopupTreeView treeview;
 		bool showDescriptions = true;
-		
+	
 		public bool ShowDescriptions {
 			get { return showDescriptions; }
 			private set {
@@ -56,7 +56,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 		}
-		
+
+		Dictionary<PObject, PListScheme.SchemaItem> CurrentTree {
+			get; set;
+		}
+
 		public PListScheme Scheme {
 			get; private set;
 		}
@@ -213,6 +217,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public CustomPropertiesWidget (PListScheme scheme)
 		{
 			Scheme = scheme ?? PListScheme.Empty;
+			CurrentTree = new Dictionary<PObject, PListScheme.SchemaItem> ();
 			treeview = new PopupTreeView  (this) { DoubleBuffered = true };
 			treeview.HeadersClickable = true;
 			
@@ -451,14 +456,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			dict.Add (name, new PString (""));
 		}
 
-		Dictionary<PObject, Gtk.TreeIter> iterTable = new Dictionary<PObject, Gtk.TreeIter> ();
-
 		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PDictionary dict, Dictionary<PObject, PListScheme.SchemaItem> tree)
 		{
-			iterTable[dict] = iter;
 			foreach (var item in dict) {
 				TreeIter subIter;
-				if (currentTree.ContainsKey (item.Value)) {
+				if (CurrentTree.ContainsKey (item.Value)) {
 					if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
 						do {
 							if (treeStore.GetValue (subIter, 1) == item.Value)
@@ -483,12 +485,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PArray arr, Dictionary<PObject, PListScheme.SchemaItem> tree)
 		{
-			iterTable[arr] = iter;
-			
 			for (int i = 0; i < arr.Count; i++) {
 				var item = arr[i];
 				TreeIter subIter;
-				if (currentTree.ContainsKey (item)) {
+				if (CurrentTree.ContainsKey (item)) {
 					if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
 						do {
 							if (treeStore.GetValue (subIter, 1) == item)
@@ -522,18 +522,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			else
 				return treeStore.AppendValues (iter, AddKeyNode, null);
 		}
-		
-		void RemoveChildren (Gtk.TreeIter iter)
-		{
-			if (TreeIter.Zero.Equals (iter)) {
-				treeStore.Clear ();
-				return;
-			}
-			Gtk.TreeIter child;
-			while (treeStore.IterChildren (out child, iter))
-				treeStore.Remove (ref child);
-		}
-		
+
 		void RefreshKeyStore ()
 		{
 			var sortedKeys = new List<PListScheme.Key> (Scheme.Keys);
@@ -542,16 +531,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 			foreach (var key in sortedKeys)
 				keyStore.AppendValues (key.Description, key);
 		}
-		
-		Dictionary<PObject, PListScheme.SchemaItem> currentTree = new Dictionary<PObject, PListScheme.SchemaItem> ();
+
 		void RefreshTree ()
 		{
 			var dict = nsDictionary as PDictionary;
 			if (dict != null) {
 				var tree = PListScheme.Match (dict, Scheme);
-				RemoveOldEntries (currentTree, tree);
+				RemoveOldEntries (CurrentTree, tree);
 				AddToTree (treeStore, Gtk.TreeIter.Zero, dict, tree);
-				currentTree = tree;
+				CurrentTree = tree;
 			} else if (nsDictionary is PArray) {
 				AddToTree (treeStore, Gtk.TreeIter.Zero, (PArray)nsDictionary, null);
 			}
@@ -559,17 +547,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void RemoveOldEntries (Dictionary<PObject, PListScheme.SchemaItem> oldTree, Dictionary<PObject, PListScheme.SchemaItem> newTree)
 		{
-			var toRemove = new List<PObject> ();
-			foreach (var key in oldTree.Keys)
-				if (!newTree.ContainsKey (key))
-					toRemove.Add (key);
+			var toRemove = oldTree.Keys.Where (k => !newTree.ContainsKey (k)).ToArray ();
 			
 			TreeIter iter;
 			if (treeStore.GetIterFirst (out iter))
 				RemovePObjects (iter, toRemove);
 		}
 		
-		void RemovePObjects (TreeIter iter, List<PObject> toRemove)
+		void RemovePObjects (TreeIter iter, IList<PObject> toRemove)
 		{
 			do {
 				if (toRemove.Contains (treeStore.GetValue (iter, 1))) {
