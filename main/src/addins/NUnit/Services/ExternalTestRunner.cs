@@ -232,7 +232,7 @@ namespace MonoDevelop.NUnit.External
 	{
 		TestContext context;
 		UnitTest rootTest;
-		string rootFullName;
+//		string rootFullName;
 		UnitTest runningTest;
 		bool singleTestRun;
 		UnitTestResult singleTestResult;
@@ -240,7 +240,7 @@ namespace MonoDevelop.NUnit.External
 
 		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
 		{
-			this.rootFullName = rootFullName;
+//			this.rootFullName = rootFullName;
 			this.rootTest = rootTest;
 			this.context = context;
 			this.singleTestRun = singleTestRun;
