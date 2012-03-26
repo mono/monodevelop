@@ -258,7 +258,6 @@
     <None Include="MonoDevelop.CSharpBinding.Refactoring\IntroduceConstantRefactoringTests.cs" />
     <None Include="MonoDevelop.CSharpBinding.Refactoring\BaseRefactorerTests.cs" />
     <None Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding.Refactoring\CreateMethodTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.AspNet\" />

@@ -239,8 +239,6 @@
     <Compile Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
@@ -323,7 +321,6 @@
     <Folder Include="MonoDevelop.CSharp.Project\" />
     <Folder Include="MonoDevelop.CSharp\" />
     <Folder Include="MonoDevelop.CSharp.Completion\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring\CreateMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\RefactorImports\" />
