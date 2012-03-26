@@ -101,21 +101,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 				Gtk.TreeIter iter;
 				if (!Selection.GetSelected (out iter))
 					return;
-				
-				PObject obj = (PObject)widget.treeStore.GetValue (iter, 1);;
+
 				var menu = new Gtk.Menu ();
 				var newKey = new Gtk.MenuItem (GettextCatalog.GetString ("New key"));
-				menu.Append (newKey);
-				
 				newKey.Activated += widget.AddElement;
-				
-				if (obj != null) {
+				menu.Append (newKey);
+
+				if (widget.treeStore.GetValue (iter, 1) != null) {
 					var removeKey = new Gtk.MenuItem (GettextCatalog.GetString ("Remove key"));
 					menu.Append (removeKey);
 					removeKey.Activated += widget.RemoveElement;
 				}
 				
-				if (widget.Scheme != null) {
+				if (widget.Scheme != PListScheme.Empty) {
 					menu.Append (new Gtk.SeparatorMenuItem ());
 					var showDescItem = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Show descriptions"));
 					showDescItem.Active = widget.ShowDescriptions;
