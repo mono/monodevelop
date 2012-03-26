@@ -209,7 +209,7 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<T> GetSegmentsOverlapping (TextSegment segment)
 		{
-			if (segment == null)
+			if (segment.IsInvalid)
 				return Enumerable.Empty<T> ();
 			return GetSegmentsOverlapping (segment.Offset, segment.Length);
 		}

@@ -209,7 +209,7 @@ namespace Mono.TextEditor
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			int caretOffset = Editor.Caret.Offset - baseOffset;
-			TextLink link = links.Find (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
+			TextLink link = links.Find (l => !l.PrimaryLink.IsInvalid && l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
 			if (link != null && link.Count > 0 && link.IsEditable) {
 				if (window != null && window.DataProvider != link) {
 					DestroyWindow ();
@@ -236,7 +236,7 @@ namespace Mono.TextEditor
 		public void StartMode ()
 		{
 			foreach (TextLink link in links) {
-				if (link.PrimaryLink != null)
+				if (!link.PrimaryLink.IsInvalid)
 					link.CurrentText = Editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, link.PrimaryLink.Length);
 				foreach (TextSegment segment in link.Links) {
 					Editor.Document.EnsureOffsetIsUnfolded (baseOffset + segment.Offset);
@@ -275,7 +275,7 @@ namespace Mono.TextEditor
 
 		void Setlink (TextLink link)
 		{
-			if (link.PrimaryLink == null)
+			if (link.PrimaryLink.IsInvalid)
 				return;
 			Editor.Caret.Offset = baseOffset + link.PrimaryLink.Offset;
 			Editor.ScrollToCaret ();
@@ -487,7 +487,7 @@ namespace Mono.TextEditor
 			if (!link.IsEditable && link.Values.Count > 0) {
 				link.CurrentText = (string)link.Values [link.Values.Count - 1];
 			} else {
-				if (link.PrimaryLink != null) {
+				if (!link.PrimaryLink.IsInvalid) {
 					int offset = link.PrimaryLink.Offset + baseOffset;
 					if (offset >= 0 && link.PrimaryLink.Length >= 0)
 						link.CurrentText = Editor.Document.GetTextAt (offset, link.PrimaryLink.Length);
@@ -530,7 +530,7 @@ namespace Mono.TextEditor
 			int o = offset - mode.BaseOffset;
 			for (int i = 0; i < mode.Links.Count; i++) {
 				TextLink l = mode.Links [i];
-				if (l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
+				if (!l.PrimaryLink.IsInvalid && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
 					return new TooltipItem (l, l.PrimaryLink.Offset, l.PrimaryLink.Length);
 			}
 			return null;

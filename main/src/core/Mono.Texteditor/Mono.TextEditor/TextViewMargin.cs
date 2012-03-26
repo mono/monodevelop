@@ -1431,7 +1431,7 @@ namespace Mono.TextEditor
 							x1 /= (int)Pango.Scale.PangoScale;
 							x2 /= (int)Pango.Scale.PangoScale;
 	
-							cr.Color = MainSearchResult == null || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg;
+							cr.Color = MainSearchResult.IsInvalid || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg;
 							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x1, y, System.Math.Min (10, width) * textEditor.Options.Zoom, x2 - x1, LineHeight);
 							cr.Fill ();
 						}
@@ -1804,7 +1804,7 @@ namespace Mono.TextEditor
 				return;
 			CancelCodeSegmentTooltip ();
 			HideCodeSegmentPreviewWindow ();
-			if (segment == null || segment.Length == 0)
+			if (segment.IsInvalid || segment.Length == 0)
 				return;
 			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (650, delegate {
 				previewWindow = new CodeSegmentPreviewWindow (this.textEditor, false, segment);
