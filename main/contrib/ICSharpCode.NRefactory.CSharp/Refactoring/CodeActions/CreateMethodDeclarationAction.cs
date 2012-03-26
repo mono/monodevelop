@@ -54,12 +54,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			var methodName = identifier.Identifier;
-			var state = context.GetResolverStateBefore(identifier);
 			var guessedType = CreateFieldAction.GuessType(context, identifier);
 			if (guessedType.Kind != TypeKind.Delegate) {
 				yield break;
 			}
 			var invocationMethod = guessedType.GetDelegateInvokeMethod();
+			var state = context.GetResolverStateBefore(identifier);
 			bool isStatic = state.CurrentMember.IsStatic;
 
 			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));

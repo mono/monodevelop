@@ -40,6 +40,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (identifier == null) {
 				yield break;
 			}
+			if (CreateFieldAction.IsInvocationTarget(identifier)) {
+				yield break;
+			}
 			var statement = context.GetNode<Statement>();
 			if (statement == null) {
 				yield break;
@@ -52,9 +55,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (guessedType == null) {
 				yield break;
 			}
-			
+			var state = context.GetResolverStateBefore(identifier);
+			bool isStatic = state.CurrentMember.IsStatic;
+
 			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Property)) { 
+			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Property, Modifiers.Private, isStatic)) { 
 				yield break;
 			}
 
@@ -65,6 +70,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Getter = new Accessor(),
 					Setter = new Accessor()
 				};
+				if (isStatic) {
+					decl.Modifiers |= Modifiers.Static;
+				}
 				script.InsertWithCursor(context.TranslateString("Create property"), decl, Script.InsertPosition.Before);
 			});
 		}

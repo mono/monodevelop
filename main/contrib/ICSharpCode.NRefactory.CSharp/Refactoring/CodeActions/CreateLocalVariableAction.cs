@@ -36,6 +36,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (identifier == null) {
 				yield break;
 			}
+			if (CreateFieldAction.IsInvocationTarget(identifier)) {
+				yield break;
+			}
 			var statement = context.GetNode<Statement>();
 			if (statement == null) {
 				yield break;
