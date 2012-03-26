@@ -315,13 +315,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			var comboRenderer = new CellRendererCombo ();
 			
 			var typeModel = new ListStore (typeof (string));
-			typeModel.AppendValues ("Array");
-			typeModel.AppendValues ("Dictionary");
-			typeModel.AppendValues ("Boolean");
-			typeModel.AppendValues ("Data");
-			typeModel.AppendValues ("Date");
-			typeModel.AppendValues ("Number");
-			typeModel.AppendValues ("String");
+			typeModel.AppendValues (PArray.Type);
+			typeModel.AppendValues (PDictionary.Type);
+			typeModel.AppendValues (PBoolean.Type);
+			typeModel.AppendValues (PData.Type);
+			typeModel.AppendValues (PData.Type);
+			typeModel.AppendValues (PNumber.Type);
+			typeModel.AppendValues (PString.Type);
 			comboRenderer.Model = typeModel;
 			comboRenderer.Mode = CellRendererMode.Editable;
 			comboRenderer.HasEntry = false;
