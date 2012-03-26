@@ -725,7 +725,7 @@ namespace MonoDevelop.TypeSystem
 					} else {
 						projectContents [project] = wrapper = new ProjectContentWrapper (project, context);
 					}
-					
+					wrapper.Content.Location = project.FileName;
 					referenceCounter [project] = 1;
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, context));
 					project.FileChangedInProject += OnFileChanged;
