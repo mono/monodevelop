@@ -62,7 +62,7 @@ namespace Mono.TextEditor
 
 		int LineCountMax {
 			get {
-				return Math.Max (1000, editor.Document.LineCount);
+				return System.Math.Max (1000, editor.Document.LineCount);
 			}
 		}
 
