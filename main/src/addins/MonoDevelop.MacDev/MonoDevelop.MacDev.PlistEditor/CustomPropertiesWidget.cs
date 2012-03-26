@@ -60,16 +60,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 		Dictionary<PObject, PListScheme.SchemaItem> CurrentTree {
 			get; set;
 		}
-
+		
+		PObject RootPObject {
+			get; set;
+		}
+		
+		
 		public PListScheme Scheme {
 			get; private set;
 		}
 		
-		PObject nsDictionary;
 		public void SetPListContainer (PObjectContainer value)
 		{
-			nsDictionary = value;
-			nsDictionary.Changed += delegate {
+			RootPObject = value;
+			RootPObject.Changed += delegate {
 				QueueDraw ();
 				RefreshTree ();
 			};
@@ -112,7 +116,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 						if (widget.treeStore.IterParent (out parentIter, iter))
 							parent = (PObject)widget.treeStore.GetValue (parentIter, 1);
 						else
-							parent = widget.nsDictionary;
+							parent = widget.RootPObject;
 					}
 					
 					if (parent is PArray) {
@@ -292,7 +296,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			addRenderer.Clicked += delegate {
 				// By default we assume we are adding something to the root dictionary/array
 				var iter = TreeIter.Zero;
-				var parent = nsDictionary;
+				var parent = RootPObject;
 				var parentKey = "";
 				
 				// Grab the selected row and find out what the parent is. If there is a parent, then we
@@ -534,14 +538,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 
 		void RefreshTree ()
 		{
-			var dict = nsDictionary as PDictionary;
+			var dict = RootPObject as PDictionary;
 			if (dict != null) {
 				var tree = PListScheme.Match (dict, Scheme);
 				RemoveOldEntries (CurrentTree, tree);
 				AddToTree (treeStore, Gtk.TreeIter.Zero, dict, tree);
 				CurrentTree = tree;
-			} else if (nsDictionary is PArray) {
-				AddToTree (treeStore, Gtk.TreeIter.Zero, (PArray)nsDictionary, null);
+			} else if (RootPObject is PArray) {
+				AddToTree (treeStore, Gtk.TreeIter.Zero, (PArray)RootPObject, null);
 			}
 		}
 		
