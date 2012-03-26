@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CreateLocalVariable.cs
 //  
 // Author:
@@ -23,107 +23,45 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using ICSharpCode.NRefactory.PatternMatching;
-using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
-using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[ContextAction("Create local variable", Description = "Creates a local variable for a undefined variable.")]
 	public class CreateLocalVariableAction : ICodeActionProvider
 	{
-		public List<IdentifierExpression> GetUnresolvedArguments (RefactoringContext context)
-		{
-			var expressions = new List<IdentifierExpression> ();
-			
-			var invocation = GetInvocation (context);
-			if (invocation != null) {
-				foreach (var arg in invocation.Arguments) {
-					IdentifierExpression identifier;
-					if (arg is DirectionExpression) {
-						identifier = ((DirectionExpression)arg).Expression as IdentifierExpression;
-					} else if (arg is NamedArgumentExpression) {
-						identifier = ((NamedArgumentExpression)arg).Expression as IdentifierExpression;
-					} else {
-						identifier = arg as IdentifierExpression;
-					}
-					if (identifier == null)
-						continue;
-						
-					if (context.Resolve (identifier) == null && GuessType (context, identifier) != null)
-						expressions.Insert (0, identifier);
-				}
-			}
-			return expressions;
-		}
-		
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			if (GetUnresolvedArguments(context).Count <= 0) {
-				yield break;
-			}
-			var identifier = CreateFieldAction.GetIdentifier(context);
+			var identifier = context.GetNode<IdentifierExpression>();
 			if (identifier == null) {
 				yield break;
 			}
-			if (context.GetNode<Statement>() == null) {
+			var statement = context.GetNode<Statement>();
+			if (statement == null) {
 				yield break;
 			}
-			if (!(context.Resolve(identifier).IsError && GuessType(context, identifier) != null)) {
-				yield break;
-			}
-			yield return new CodeAction (context.TranslateString("Create local variable"), script => {
-				var stmt = context.GetNode<Statement> ();
-				var unresolvedArguments = GetUnresolvedArguments (context);
-				if (unresolvedArguments.Count > 0) {
-					foreach (var id in unresolvedArguments) {
-						script.InsertBefore (stmt, GenerateLocalVariableDeclaration (context, id));
-					}
-					return;
-				}
-				
-				script.InsertBefore (stmt, GenerateLocalVariableDeclaration (context, CreateFieldAction.GetIdentifier (context)));
-			});
-		}
 
-		AstNode GenerateLocalVariableDeclaration (RefactoringContext context, IdentifierExpression identifier)
-		{
-			return new VariableDeclarationStatement () {
-				Type = GuessType (context, identifier),
-				Variables = { new VariableInitializer (identifier.Identifier) }
-			};
-		}
-		
-		InvocationExpression GetInvocation (RefactoringContext context)
-		{
-			return context.GetNode<InvocationExpression> ();
-		}
-		
-		AstType GuessType (RefactoringContext context, IdentifierExpression identifier)
-		{
-			var type = CreateFieldAction.GuessType (context, identifier);
-			if (type != null)
-				return type;
-			
-			if (identifier != null && (identifier.Parent is InvocationExpression || identifier.Parent.Parent is InvocationExpression)) {
-				var invocation = (identifier.Parent as InvocationExpression) ?? (identifier.Parent.Parent as InvocationExpression);
-				var result = context.Resolve (invocation).Type.GetDelegateInvokeMethod ();
-				if (result == null)
-					return null;
-				int i = 0;
-				foreach (var arg in invocation.Arguments) {
-					if (arg.Contains (identifier.StartLocation))
-						break;
-					i++;
-				}
-				if (result.Parameters.Count < i)
-					return null;
-				return context.CreateShortType (result.Parameters[i].Type);
+			if (!(context.Resolve(identifier).IsError)) {
+				yield break;
 			}
-			return null;
+			var guessedType = CreateFieldAction.GuessAstType(context, identifier);
+			if (guessedType == null) {
+				yield break;
+			}
+
+			yield return new CodeAction(context.TranslateString("Create local variable"), script => {
+				var initializer = new VariableInitializer(identifier.Identifier);
+				var decl = new VariableDeclarationStatement() {
+					Type = guessedType,
+					Variables = { initializer }
+				};
+				if (identifier.Parent is AssignmentExpression && ((AssignmentExpression)identifier.Parent).Left == identifier) {
+					initializer.Initializer = ((AssignmentExpression)identifier.Parent).Right.Clone ();
+					script.Replace(statement, decl);
+				} else {
+					script.InsertBefore(statement, decl);
+				}
+			});
 		}
 	}
 }

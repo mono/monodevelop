@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CreateProperty.cs
 //  
 // Author:
@@ -36,31 +36,32 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var identifier = CreateFieldAction.GetIdentifier(context);
+			var identifier = context.GetNode<IdentifierExpression>();
 			if (identifier == null) {
 				yield break;
 			}
-			if (!(context.Resolve(identifier).IsError && CreateFieldAction.GuessType(context, identifier) != null)) {
+			var statement = context.GetNode<Statement>();
+			if (statement == null) {
 				yield break;
 			}
-			yield return new CodeAction (context.TranslateString("Create property"), script => {
-				script.InsertWithCursor(context.TranslateString("Create property"), GeneratePropertyDeclaration(context, identifier), Script.InsertPosition.Before);
+
+			if (!(context.Resolve(identifier).IsError)) {
+				yield break;
+			}
+			var guessedType = CreateFieldAction.GuessAstType(context, identifier);
+			if (guessedType == null) {
+				yield break;
+			}
+
+			yield return new CodeAction(context.TranslateString("Create property"), script => {
+				var decl = new PropertyDeclaration() {
+					ReturnType = guessedType,
+					Name = identifier.Identifier,
+					Getter = new Accessor(),
+					Setter = new Accessor()
+				};
+				script.InsertWithCursor(context.TranslateString("Create property"), decl, Script.InsertPosition.Before);
 			});
-		}
-		
-		AstNode GeneratePropertyDeclaration (RefactoringContext context, IdentifierExpression identifier)
-		{
-			return new PropertyDeclaration () {
-				ReturnType = CreateFieldAction.GuessType (context, identifier),
-				Name = identifier.Identifier,
-				Getter = new Accessor (),
-				Setter = new Accessor ()
-			};
-		}
-		
-		IdentifierExpression GetIdentifier (RefactoringContext context)
-		{
-			return context.GetNode<IdentifierExpression> ();
 		}
 	}
 }

@@ -344,9 +344,9 @@
     <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\AffectedEntity.cs" />
     <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\DefaultRules.cs" />
     <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\InconsistentNamingIssue.cs" />
-    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\IRenameNameHandler.cs" />
     <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\NamingRule.cs" />
     <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\NamingStyle.cs" />
+    <Compile Include="Refactoring\CodeActions\CreateMethodDeclarationAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

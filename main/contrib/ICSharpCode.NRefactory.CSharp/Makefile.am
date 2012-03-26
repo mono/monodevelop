@@ -216,6 +216,7 @@ FILES =  \
 	Refactoring/CodeActions/CreateEventInvocatorAction.cs \
 	Refactoring/CodeActions/CreateFieldAction.cs \
 	Refactoring/CodeActions/CreateLocalVariableAction.cs \
+	Refactoring/CodeActions/CreateMethodDeclarationAction.cs \
 	Refactoring/CodeActions/CreatePropertyAction.cs \
 	Refactoring/CodeActions/FlipOperatorArgumentsAction.cs \
 	Refactoring/CodeActions/GenerateGetterAction.cs \
@@ -238,7 +239,6 @@ FILES =  \
 	Refactoring/CodeIssues/InconsistentNamingIssue/AffectedEntity.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/DefaultRules.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/InconsistentNamingIssue.cs \
-	Refactoring/CodeIssues/InconsistentNamingIssue/IRenameNameHandler.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/NamingRule.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/NamingStyle.cs \
 	Refactoring/CodeIssues/IssueCategories.cs \
