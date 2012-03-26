@@ -105,8 +105,6 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionRule.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryCodeIssueSource.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryIssueWrapper.cs \
-	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodCodeGenerator.cs \
-	MonoDevelop.CSharp.Refactoring/CreateMethod/CreateMethodHandler.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
 	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalCodeGenerator.cs \
