@@ -92,7 +92,6 @@ namespace MonoDevelop.Refactoring
 		
 	class ImportSymbolCompletionData : CompletionData
 	{
-		TextEditorData data;
 		IType type;
 		Ambience ambience;
 		ParsedDocument unit;
@@ -107,7 +106,7 @@ namespace MonoDevelop.Refactoring
 		{
 			this.doc = doc;
 			this.cache = cache;
-			this.data = doc.Editor;
+//			this.data = doc.Editor;
 			this.ambience = AmbienceService.GetAmbience (doc.Editor.MimeType);
 			this.type = type;
 			this.unit = doc.ParsedDocument;

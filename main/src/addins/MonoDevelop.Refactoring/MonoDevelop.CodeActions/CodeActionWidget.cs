@@ -39,7 +39,7 @@ namespace MonoDevelop.CodeActions
 {
 	public class CodeActionWidget : Gtk.EventBox
 	{
-		CodeActionEditorExtension ext;
+//		CodeActionEditorExtension ext;
 		MonoDevelop.Ide.Gui.Document document;
 		IEnumerable<CodeAction> fixes;
 		TextLocation loc;
@@ -47,7 +47,7 @@ namespace MonoDevelop.CodeActions
 		
 		public CodeActionWidget (CodeActionEditorExtension ext, MonoDevelop.Ide.Gui.Document document, TextLocation loc, IEnumerable<CodeAction> fixes)
 		{
-			this.ext = ext;
+//			this.ext = ext;
 			this.document = document;
 			this.loc = loc;
 			this.fixes = fixes;

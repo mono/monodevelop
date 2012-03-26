@@ -91,43 +91,23 @@ namespace MonoDevelop.Refactoring
 		
 		protected override void Run (object data)
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null)
-				return;
-			ResolveResult resolveResult;
-			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResult);
-			
-/*			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
-			string itemName = null;
-			if (item is IMember)
-				itemName = ((IMember)item).FullName;
-			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.FullName == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
-				item = eitem;
-				eitem = null;
-			}
-			ITypeDefinition eclass = null;
-			if (item is ITypeDefinition) {
-				if (((ITypeDefinition)item).Kind == TypeKind.Interface)
-					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
-					eclass = (IType)item;
-				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
-					item = eitem;
-					eitem = null;
-				}
-			}
-			*/
+//			var doc = IdeApp.Workbench.ActiveDocument;
+//			if (doc == null || doc.FileName == FilePath.Null)
+//				return;
+//			ResolveResult resolveResult;
+//			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResult);
 //			
 //			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
 //			string itemName = null;
 //			if (item is IMember)
-//				itemName = ((IMember)item).Name;
-//			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.Name == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
+//				itemName = ((IMember)item).FullName;
+//			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.FullName == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
 //				item = eitem;
 //				eitem = null;
 //			}
-//			IType eclass = null;
-//			if (item is IType) {
-//				if (((IType)item).ClassType == ClassType.Interface)
+//			ITypeDefinition eclass = null;
+//			if (item is ITypeDefinition) {
+//				if (((ITypeDefinition)item).Kind == TypeKind.Interface)
 //					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
 //					eclass = (IType)item;
 //				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
@@ -135,8 +115,6 @@ namespace MonoDevelop.Refactoring
 //					eitem = null;
 //				}
 //			}
-//			Refactorer refactorer = new Refactorer (ctx, doc.CompilationUnit, eclass, item, null);
-//			refactorer.FindDerivedClasses ();
 		}
 	}
 }

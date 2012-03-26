@@ -39,7 +39,6 @@ namespace MonoDevelop.Refactoring.Rename
 {
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
-		string fileName;
 		RenameRefactoring rename;
 		RefactoringOptions options;
 		
@@ -69,7 +68,7 @@ namespace MonoDevelop.Refactoring.Rename
 					this.Title = GettextCatalog.GetString ("Rename Interface");
 				else
 					this.Title = GettextCatalog.GetString ("Rename Class");
-				this.fileName = type.GetDefinition ().Region.FileName;
+//				this.fileName = type.GetDefinition ().Region.FileName;
 			} else if (options.SelectedItem is IField) {
 				this.Title = GettextCatalog.GetString ("Rename Field");
 			} else if (options.SelectedItem is IProperty) {
@@ -102,11 +101,11 @@ namespace MonoDevelop.Refactoring.Rename
 				} else {
 					entry.Text = member.Name;
 				}
-				fileName = member.Region.FileName;
+//				fileName = member.Region.FileName;
 			} else if (options.SelectedItem is IVariable) {
 				var lvar = (IVariable)options.SelectedItem;
 				entry.Text = lvar.Name;
-				this.fileName = lvar.Region.FileName;
+//				this.fileName = lvar.Region.FileName;
 			}
 			entry.SelectRegion (0, -1);
 			
