@@ -99,55 +99,20 @@ namespace MonoDevelop.MacDev.PlistEditor
 			void ShowPopup (Gdk.EventButton evnt)
 			{
 				Gtk.TreeIter iter;
-				bool hasSelection = Selection.GetSelected (out iter);
-				PObject obj = null;
-				if (hasSelection) {
-					obj = (PObject)widget.treeStore.GetValue (iter, 1);
-				} else {
+				if (!Selection.GetSelected (out iter))
 					return;
-				}
-					
+				
+				PObject obj = (PObject)widget.treeStore.GetValue (iter, 1);;
 				var menu = new Gtk.Menu ();
 				var newKey = new Gtk.MenuItem (GettextCatalog.GetString ("New key"));
 				menu.Append (newKey);
 				
-				newKey.Activated += delegate(object sender, EventArgs e) {
-					var newObj = new PString ("");
-					
-					PObject parent;
-					if (obj != null) {
-						parent = obj.Parent;
-					} else {
-						Gtk.TreeIter parentIter;
-						if (widget.treeStore.IterParent (out parentIter, iter))
-							parent = (PObject)widget.treeStore.GetValue (parentIter, 1);
-						else
-							parent = widget.RootPObject;
-					}
-					
-					if (parent is PArray) {
-						var arr = (PArray)parent;
-						arr.Add (newObj);
-						return;
-					}
-					
-					var dict = parent as PDictionary;
-					if (dict == null)
-						return;
-					
-					string name = "newNode";
-					while (dict.ContainsKey (name))
-						name += "_";
-					dict[name] = newObj;
-				};
+				newKey.Activated += widget.AddElement;
 				
-				if (hasSelection && obj != null) {
+				if (obj != null) {
 					var removeKey = new Gtk.MenuItem (GettextCatalog.GetString ("Remove key"));
 					menu.Append (removeKey);
-					removeKey.Activated += delegate(object sender, EventArgs e) {
-						//the change event handler removes it from the store
-						obj.Remove ();
-					};
+					removeKey.Activated += widget.RemoveElement;
 				}
 				
 				if (widget.Scheme != null) {
@@ -284,42 +249,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 			col = new TreeViewColumn { MinWidth = 25, Resizable = false, Sizing = Gtk.TreeViewColumnSizing.Fixed };
 			
 			var removeRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-remove", IconSize.Menu));
-			removeRenderer.Clicked += delegate {
-				TreeIter iter;
-				bool hasSelection = treeview.Selection.GetSelected (out iter);
-				PObject obj = null;
-				if (hasSelection) {
-					obj = (PObject)treeStore.GetValue (iter, 1);
-					obj.Remove ();
-				}
-			};
+			removeRenderer.Clicked += RemoveElement;
 			col.PackEnd (removeRenderer, false);
 			col.SetCellDataFunc (removeRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				removeRenderer.Visible = treeview.Selection.IterIsSelected (iter) && !AddKeyNode.Equals (treeStore.GetValue (iter, 0));
 			});
 			
 			var addRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-add", IconSize.Menu));
-			addRenderer.Clicked += delegate {
-				// By default we assume we are adding something to the root dictionary/array
-				var iter = TreeIter.Zero;
-				var parent = RootPObject;
-				var parentKey = "";
-				
-				// Grab the selected row and find out what the parent is. If there is a parent, then we
-				// will need it correlate against the schema to figure out what values are allowed to be
-				// entered here
-				if (treeview.Selection.GetSelected (out iter)) {
-					if (treeStore.IterParent (out iter, iter)) {
-						parentKey = (string) treeStore.GetValue (iter, 0);
-						parent = (PObject) treeStore.GetValue (iter, 1);
-					}
-
-					if (parent is PArray)
-						AddNewArrayElement ((PArray) parent, Scheme.GetKey (parentKey));
-					else if (parent is PDictionary)
-						AddNewDictionaryElement ((PDictionary) parent, Scheme.GetKey (parentKey));
-				}
-			};
+			addRenderer.Clicked += AddElement;
 			
 			col.PackEnd (addRenderer, false);
 			col.SetCellDataFunc (addRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
@@ -420,6 +357,38 @@ namespace MonoDevelop.MacDev.PlistEditor
 			});
 			treeview.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview.Model = treeStore;
+		}
+		
+		public void AddElement (object o, EventArgs e)
+		{
+			// By default we assume we are adding something to the root dictionary/array
+			TreeIter iter;
+			var parent = RootPObject;
+			var parentKey = "";
+			
+			// Grab the selected row and find out what the parent is. If there is a parent, then we
+			// will need it correlate against the schema to figure out what values are allowed to be
+			// entered here
+			if (treeview.Selection.GetSelected (out iter)) {
+				if (treeStore.IterParent (out iter, iter)) {
+					parentKey = (string) treeStore.GetValue (iter, 0);
+					parent = (PObject) treeStore.GetValue (iter, 1);
+				}
+
+				if (parent is PArray)
+					AddNewArrayElement ((PArray) parent, Scheme.GetKey (parentKey));
+				else if (parent is PDictionary)
+					AddNewDictionaryElement ((PDictionary) parent, Scheme.GetKey (parentKey));
+			}
+		}
+		
+		public void RemoveElement (object o, EventArgs e)
+		{
+			TreeIter iter;
+			if (treeview.Selection.GetSelected (out iter)) {
+				var obj = (PObject)treeStore.GetValue (iter, 1);
+				obj.Remove ();
+			}
 		}
 		
 		void AddNewArrayElement (PArray array, PListScheme.Key key)
