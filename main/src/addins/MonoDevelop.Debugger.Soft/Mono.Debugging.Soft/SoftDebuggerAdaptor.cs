@@ -926,6 +926,7 @@ namespace Mono.Debugging.Soft
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
 			if (!ctx.Options.AllowTargetInvoke)
 				return null;
+			
 			TypeMirror tm = (TypeMirror) ctx.Thread.Type.GetTypeObject ().Type;
 			TypeMirror stype = ctx.Session.GetType ("System.String");
 			if (stype == null) {
@@ -933,15 +934,18 @@ namespace Mono.Debugging.Soft
 				StringMirror ss = ctx.Thread.Domain.CreateString ("");
 				stype = ss.Type;
 			}
+			
 			TypeMirror[] ats = new TypeMirror[] { stype };
 			MethodMirror met = OverloadResolve (ctx, "GetType", tm, ats, false, true, true);
+			
 			try {
-				tm.InvokeMethod (ctx.Thread, met, new Value[] {(Value) CreateValue (ctx, typeName)});
+				tm.InvokeMethod (ctx.Thread, met, new Value[] {(Value) CreateValue (ctx, typeName)}, InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded);
 			} catch {
 				return null;
 			} finally {
 				ctx.Session.StackVersion++;
 			}
+			
 			return GetType (ctx, typeName);
 		}
 
