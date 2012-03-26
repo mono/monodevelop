@@ -27,12 +27,20 @@
 using System;
 using Mono.TextTemplating;
 using MonoDevelop.Core;
+using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextTemplating
 {
 	class MonoDevelopTemplatingHost : TemplateGenerator, IDisposable
 	{
 		TemplatingAppDomainRecycler.Handle domainHandle;
+		ProjectFile file;
+		
+		public MonoDevelopTemplatingHost (ProjectFile file)
+		{
+			this.file = file;
+		}
 		
 		public override AppDomain ProvideTemplatingAppDomain (string content)
 		{
@@ -45,14 +53,14 @@ namespace MonoDevelop.TextTemplating
 		protected override string ResolveAssemblyReference (string assemblyReference)
 		{
 			//FIXME: resolve from addins
-			var substituted = StringParserService.Parse (assemblyReference);
+			var substituted = StringParserService.Parse (assemblyReference, GetStringModel ());
 			return base.ResolveAssemblyReference (substituted);
 		}
 		
 		protected override bool LoadIncludeText (string requestFileName, out string content, out string location)
 		{
 			//FIXME: resolve from addins
-			var substituted = StringParserService.Parse (requestFileName);
+			var substituted = StringParserService.Parse (requestFileName, GetStringModel());
 			return base.LoadIncludeText (substituted, out content, out location);
 		}
 		
@@ -60,6 +68,11 @@ namespace MonoDevelop.TextTemplating
 		{
 			//FIXME: resolve from addins
 			return base.ResolveDirectiveProcessor (processorName);
+		}
+
+		protected IStringTagModel GetStringModel()
+		{
+			return file.Project.ParentSolution.GetStringTagModel();
 		}
 		
 		public void Dispose ()
