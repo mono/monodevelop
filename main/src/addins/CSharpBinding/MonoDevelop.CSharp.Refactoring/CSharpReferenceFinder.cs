@@ -59,9 +59,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			IncludeDocumentation = true;
 		}
 		
-		public void SetSearchedMembers (IEnumerable<object> searchedMembers)
+		public void SetSearchedMembers (IEnumerable<object> members)
 		{
-			this.searchedMembers = new List<object> (searchedMembers);
+			searchedMembers = new List<object> (members);
 			var firstMember = searchedMembers.FirstOrDefault ();
 			if (firstMember is INamedElement)
 				memberName = ((INamedElement)firstMember).Name;
@@ -170,19 +170,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 		
-		public override IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> possibleFiles, IEnumerable<object> searchedMembers)
+		public override IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> possibleFiles, IEnumerable<object> members)
 		{
 			if (project == null)
-				throw new ArgumentNullException ("Project", "Project not set.");
+				throw new ArgumentNullException ("project", "Project not set.");
 			if (content == null)
 				throw new ArgumentNullException ("content", "Project content not set.");
 			
 			SetPossibleFiles (possibleFiles);
-			SetSearchedMembers (searchedMembers);
+			SetSearchedMembers (members);
 			
-			var entity = searchedMembers.First () as IEntity;
 			var scopes = searchedMembers.Select (e => refFinder.GetSearchScopes (e as IEntity));
-			var compilation = entity != null ? entity.Compilation : content.CreateCompilation ();
+			var compilation = TypeSystemService.GetCompilation (project);
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
 				foreach (var newRef in FindInDocument (opendoc.Item2)) {
@@ -202,7 +201,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (unit == null)
 						continue;
 					
-					var storedFile = content != null ? content.GetFile (file) : null;
+					var storedFile = content.GetFile (file);
 					var parsedFile = storedFile as CSharpParsedFile;
 					
 					if (parsedFile == null && storedFile is ParsedDocumentDecorator) {
