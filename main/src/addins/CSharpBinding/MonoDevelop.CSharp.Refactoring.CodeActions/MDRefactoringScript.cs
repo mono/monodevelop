@@ -148,12 +148,20 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var tle = new TextLinkEditMode (document.Editor.Parent, 0, links);
 			tle.SetCaretPosition = false;
 			if (tle.ShouldStartTextLinkMode) {
+				document.Editor.Caret.Offset = segments [0].EndOffset;
 				tle.OldMode = document.Editor.CurrentMode;
 				tle.StartMode ();
 				document.Editor.CurrentMode = tle;
 			}
 		}
-
+		public override void Replace (int offset, int length, string newText)
+		{
+			var editor = document.Editor;
+			var caretOffset = editor.Caret.Offset;
+			var version = editor.Document.Version;
+			base.Replace (offset, length, newText);
+			editor.Caret.Offset = version.MoveOffsetTo (editor.Document.Version, caretOffset);
+		}
 		public override void Dispose ()
 		{
 			undoGroup.Dispose ();

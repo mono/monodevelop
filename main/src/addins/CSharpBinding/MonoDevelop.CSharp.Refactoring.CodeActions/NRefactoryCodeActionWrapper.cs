@@ -55,11 +55,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			foreach (var action in provider.GetActions (context)) {
 				yield return new MDRefactoringContextAction (GettextCatalog.GetString (action.Description ?? ""), ctx => {
 					var editor = document.Editor;
-					var offset = editor.Caret.Offset;
-					var version = editor.Document.Version;
 					using (var script = ctx.StartScript ())
 						action.Run (script);
-					editor.Caret.Offset = version.MoveOffsetTo (editor.Document.Version, offset, ICSharpCode.NRefactory.Editor.AnchorMovementType.AfterInsertion);
 				});
 			}
 		}

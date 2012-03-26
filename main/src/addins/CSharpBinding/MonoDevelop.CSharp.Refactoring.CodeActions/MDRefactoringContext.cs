@@ -110,21 +110,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 		
-		public override int SelectionStart {
+		public override TextLocation SelectionStart {
 			get {
-				return Document.Editor.SelectionRange.Offset;
+				return Document.Editor.MainSelection.Start;
 			}
 		}
 		
-		public override int SelectionEnd { 
+		public override TextLocation SelectionEnd { 
 			get {
-				return Document.Editor.SelectionRange.EndOffset;
-			}
-		}
-		
-		public override int SelectionLength {
-			get {
-				return Document.Editor.SelectionRange.Length;
+				return Document.Editor.MainSelection.End;
 			}
 		}
 

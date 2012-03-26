@@ -42,6 +42,18 @@ namespace Mono.TextEditor
 				return System.Math.Max (Anchor.Line, Lead.Line);
 			}
 		}
+
+		public DocumentLocation Start {
+			get {
+				return anchor < lead ? anchor : lead;
+			}
+		}
+		
+		public DocumentLocation End {
+			get {
+				return anchor < lead ? lead : anchor;
+			}
+		}
 		
 		public SelectionMode SelectionMode {
 			get;

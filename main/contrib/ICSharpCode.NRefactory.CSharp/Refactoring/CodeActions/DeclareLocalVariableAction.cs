@@ -64,6 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var varDecl = new VariableDeclarationStatement(context.CreateShortType(guessedType), name, expr.Clone());
 				if (expr.Parent is ExpressionStatement) {
 					script.Replace(expr.Parent, varDecl);
+					script.Select(varDecl.Variables.First().NameToken);
 				} else {
 					var containing = expr.Parent;
 					while (!(containing.Parent is BlockStatement)) {
@@ -71,19 +72,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 
 					script.InsertBefore(containing, varDecl);
-					script.Replace(expr, new IdentifierExpression(name));
+					var identifierExpression = new IdentifierExpression(name);
+					script.Replace(expr, identifierExpression);
+					script.Link(varDecl.Variables.First().NameToken, identifierExpression);
 				}
 			});
 
 			if (visitor.Matches.Count > 1) {
-				yield return new CodeAction(string.Format(context.TranslateString("Declare local variable (replace '{0}' occurrences)"), visitor.Matches), script => {
+				yield return new CodeAction(string.Format(context.TranslateString("Declare local variable (replace '{0}' occurrences)"), visitor.Matches.Count), script => {
 					var resolveResult = context.Resolve(expr);
 					var guessedType = resolveResult.Type;
 					if (resolveResult is MethodGroupResolveResult) {
 						guessedType = GetDelegateType(context, ((MethodGroupResolveResult)resolveResult).Methods.First(), expr);
 					}
+					var linkedNodes = new List<AstNode>();
 					var name = CreateMethodDeclarationAction.CreateBaseName(expr, guessedType);
 					var varDecl = new VariableDeclarationStatement(context.CreateShortType(guessedType), name, expr.Clone());
+					linkedNodes.Add(varDecl.Variables.First().NameToken);
 					var first = visitor.Matches [0];
 					if (first.Parent is ExpressionStatement) {
 						script.Replace(first.Parent, varDecl);
@@ -94,11 +99,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 
 						script.InsertBefore(containing, varDecl);
-						script.Replace(first, new IdentifierExpression(name));
+						var identifierExpression = new IdentifierExpression(name);
+						linkedNodes.Add(identifierExpression);
+						script.Replace(first, identifierExpression);
 					}
 					for (int i = 1; i < visitor.Matches.Count; i++) {
-						script.Replace(visitor.Matches[i], new IdentifierExpression(name));
+						var identifierExpression = new IdentifierExpression(name);
+						linkedNodes.Add(identifierExpression);
+						script.Replace(visitor.Matches [i], identifierExpression);
 					}
+					script.Link(linkedNodes.ToArray ());
 				});
 			}
 		}
