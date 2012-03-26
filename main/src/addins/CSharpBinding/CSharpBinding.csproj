@@ -283,7 +283,6 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringScript.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContextActionProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\CSharpInspector.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryIssueWrapper.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryCodeIssueSource.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionSource.cs" />

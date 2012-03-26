@@ -797,7 +797,6 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			protected override void ScanSpan (ref int i)
 			{
-				int fallback = i;
 				if (CSharpSyntaxMode.DisableConditionalHighlighting) {
 					base.ScanSpan (ref i);
 					return;

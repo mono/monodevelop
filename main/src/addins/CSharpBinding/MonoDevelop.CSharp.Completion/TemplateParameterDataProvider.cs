@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Completion
 	public class TemplateParameterDataProvider: IParameterDataProvider
 	{
 		int startOffset;
-		CSharpCompletionTextEditorExtension ext;
+		//CSharpCompletionTextEditorExtension ext;
 		
 		List<IType> types;
 		CSharpAmbience ambience = new CSharpAmbience ();
@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Completion
 		public TemplateParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IType> types)
 		{
 			this.startOffset = startOffset;
-			this.ext = ext;
+//			this.ext = ext;
 			this.types = new List<IType> (types);
 		}
 		

@@ -61,13 +61,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 
-		public CSharpParsedFile ParsedFile {
-			get {
-				Debug.Assert (!IsInvalid);
-				return resolver.ParsedFile;
-			}
-		}
-
 		public CompilationUnit Unit {
 			get {
 				Debug.Assert (!IsInvalid);

@@ -144,27 +144,27 @@ namespace MonoDevelop.CSharp
 			"equals"
 		});
 		
-		static HashSet<string> optionalKeywords = new HashSet<string> (new [] {
-			"where",
-			"get",
-			"set",
-			"add",
-			"value",
-			"remove",
-			"yield",
-			"select",
-			"group",
-			"by",
-			"into",
-			"from",
-			"ascending",
-			"descending",
-			"orderby",
-			"let",
-			"join",
-			"on",
-			"equals"
-		});
+//		static HashSet<string> optionalKeywords = new HashSet<string> (new [] {
+//			"where",
+//			"get",
+//			"set",
+//			"add",
+//			"value",
+//			"remove",
+//			"yield",
+//			"select",
+//			"group",
+//			"by",
+//			"into",
+//			"from",
+//			"ascending",
+//			"descending",
+//			"orderby",
+//			"let",
+//			"join",
+//			"on",
+//			"equals"
+//		});
 		
 		static CSharpAmbience ()
 		{

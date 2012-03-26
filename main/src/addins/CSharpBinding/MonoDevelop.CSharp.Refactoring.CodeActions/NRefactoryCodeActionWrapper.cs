@@ -54,7 +54,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var context = new MDRefactoringContext (document, loc);
 			foreach (var action in provider.GetActions (context)) {
 				yield return new MDRefactoringContextAction (GettextCatalog.GetString (action.Description ?? ""), ctx => {
-					var editor = document.Editor;
 					using (var script = ctx.StartScript ())
 						action.Run (script);
 				});

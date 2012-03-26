@@ -97,7 +97,6 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringScript.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionSource.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionWrapper.cs \
-	MonoDevelop.CSharp.Refactoring.CodeIssues/CSharpInspector.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionEditRuleDialog.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionPanel.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionPanelWidget.cs \

@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Completion
 {
 	public class DelegateDataProvider : IParameterDataProvider
 	{
-		CSharpCompletionTextEditorExtension ext;
+		//CSharpCompletionTextEditorExtension ext;
 		
 		int startOffset;
 		IType delegateType;
@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Completion
 		public DelegateDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType delegateType)
 		{
 			this.startOffset = startOffset;
-			this.ext = ext;
+//			this.ext = ext;
 			this.delegateType = delegateType;
 			this.delegateMethod = delegateType.GetDelegateInvokeMethod ();
 		}
@@ -105,11 +105,11 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public string GetDescription (int overload, int currentParameter)
 		{
-			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
-			
-			string name = delegateType.Name;
-			var parameters = new StringBuilder ();
-			int curLen = 0;
+//			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
+//			
+//			string name = delegateType.Name;
+//			var parameters = new StringBuilder ();
+//			int curLen = 0;
 			
 			var sb = new StringBuilder ();
 			

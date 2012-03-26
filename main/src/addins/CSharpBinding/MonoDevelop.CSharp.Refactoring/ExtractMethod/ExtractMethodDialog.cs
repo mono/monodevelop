@@ -123,7 +123,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 
 		bool ValidateName ()
 		{
-			string fileName = properties.DeclaringMember.Region.FileName;
 			string methodName = entry.Text;
 			if (HasMember (methodName)) {
 				labelWarning.Text = GettextCatalog.GetString ("A member with the name '{0}' already exists.", methodName);
@@ -149,7 +148,6 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 
 		bool HasMember (string name)
 		{
-			var ctx = options.Document.ProjectContent;
 			foreach (var member in properties.DeclaringMember.DeclaringType.GetMembers (m => m.Name == name)) {
 				var method = member as IMethod;
 				if (method == null)

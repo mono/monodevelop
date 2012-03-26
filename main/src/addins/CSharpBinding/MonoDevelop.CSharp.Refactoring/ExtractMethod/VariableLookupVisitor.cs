@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			set;
 		}
 		
-		TextLocation position;
+	//	TextLocation position;
 		public DomRegion CutRegion {
 			get;
 			set;
@@ -135,7 +135,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 		public VariableLookupVisitor (CSharpAstResolver resolver, TextLocation position)
 		{
 			this.resolver = resolver;
-			this.position = position;
+//			this.position = position;
 			this.MemberLocation = TextLocation.Empty;
 		}
 		

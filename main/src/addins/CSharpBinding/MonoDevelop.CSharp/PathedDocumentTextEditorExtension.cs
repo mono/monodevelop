@@ -109,7 +109,6 @@ namespace MonoDevelop.CSharp
 				string result;
 				if (stringCache.TryGetValue(rx, out result))
 					return result;
-				var pf = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
 				if (tag is IParsedFile) {
 					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
 				} else {
