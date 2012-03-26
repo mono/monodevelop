@@ -52,6 +52,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (guessedType == null) {
 				yield break;
 			}
+			
+			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Property)) { 
+				yield break;
+			}
 
 			yield return new CodeAction(context.TranslateString("Create property"), script => {
 				var decl = new PropertyDeclaration() {

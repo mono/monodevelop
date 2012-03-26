@@ -239,6 +239,7 @@ FILES =  \
 	Refactoring/CodeIssues/InconsistentNamingIssue/AffectedEntity.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/DefaultRules.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/InconsistentNamingIssue.cs \
+	Refactoring/CodeIssues/InconsistentNamingIssue/NamingConventionService.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/NamingRule.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/NamingStyle.cs \
 	Refactoring/CodeIssues/IssueCategories.cs \

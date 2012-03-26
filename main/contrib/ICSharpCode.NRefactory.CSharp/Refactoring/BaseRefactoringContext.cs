@@ -33,10 +33,11 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Editor;
+using System.ComponentModel.Design;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class BaseRefactoringContext
+	public abstract class BaseRefactoringContext : IServiceProvider
 	{
 		protected readonly CSharpAstResolver resolver;
 		readonly CancellationToken cancellationToken;
@@ -64,10 +65,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			this.cancellationToken = cancellationToken;
 		}
 
-		/// <summary>
-		/// Requests data that can be provided by the IDE
-		/// </summary>
-		public abstract T RequestData<T>();
 
 		#region Resolving
 		public ResolveResult Resolve (AstNode node)
@@ -111,6 +108,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return str;
 		}
+
+		#region IServiceProvider implementation
+		readonly ServiceContainer services = new ServiceContainer();
+		
+		/// <summary>
+		/// Gets a service container used to associate services with this context.
+		/// </summary>
+		public ServiceContainer Services {
+			get { return services; }
+		}
+		
+		/// <summary>
+		/// Retrieves a service from the refactoring context.
+		/// If the service is not found in the <see cref="Services"/> container.
+		/// </summary>
+		public object GetService(Type serviceType)
+		{
+			return services.GetService(serviceType);
+		}
+		#endregion
 	}
 	
 }

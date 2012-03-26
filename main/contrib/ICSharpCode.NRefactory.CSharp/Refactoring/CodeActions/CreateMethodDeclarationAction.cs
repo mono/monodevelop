@@ -60,6 +60,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 			}
 			var invocationMethod = guessedType.GetDelegateInvokeMethod();
+			bool isStatic = state.CurrentMember.IsStatic;
+
+			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
+				yield break;
+			}
 
 			yield return new CodeAction(context.TranslateString("Create delegate handler"), script => {
 				var decl = new MethodDeclaration() {
@@ -69,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				if (state.CurrentMember.IsStatic) {
+				if (isStatic) {
 					decl.Modifiers |= Modifiers.Static;
 				}
 
@@ -109,6 +115,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			var state = context.GetResolverStateBefore(invocation);
 			var guessedType = invocation.Parent is ExpressionStatement ? new PrimitiveType("void") : CreateFieldAction.GuessAstType(context, invocation);
+
+			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+			bool isStatic = invocation.Target is IdentifierExpression && state.CurrentMember.IsStatic;
+			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
+				yield break;
+			}
+
+
 			yield return new CodeAction(context.TranslateString("Create method"), script => {
 				var decl = new MethodDeclaration() {
 					ReturnType = guessedType,
@@ -117,7 +131,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				if (invocation.Target is IdentifierExpression && state.CurrentMember.IsStatic) {
+				if (isStatic) {
 					decl.Modifiers |= Modifiers.Static;
 				}
 

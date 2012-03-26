@@ -47,13 +47,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		class GatherVisitor : GatherVisitorBase
 		{
 			readonly InconsistentNamingIssue inspector;
+			readonly NamingConventionService service;
 			List<NamingRule> rules;
 
 			public GatherVisitor (BaseRefactoringContext ctx, InconsistentNamingIssue inspector) : base (ctx)
 			{
 				this.inspector = inspector;
-				
-				rules = new List<NamingRule> (ctx.RequestData<IEnumerable<NamingRule>> () ?? Enumerable.Empty<NamingRule> ());
+				service = (NamingConventionService)ctx.GetService (typeof (NamingConventionService));
 			}
 
 			void CheckName(AstNode node, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void CheckNamedResolveResult(ResolveResult resolveResult, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
 			{
-				foreach (var rule in rules) {
+				foreach (var rule in service.Rules) {
 					if (!rule.AffectedEntity.HasFlag(entity)) {
 						continue;
 					}
