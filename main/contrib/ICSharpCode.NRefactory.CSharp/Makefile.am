@@ -215,6 +215,7 @@ FILES =  \
 	Refactoring/CodeActions/CreateBackingStoreAction.cs \
 	Refactoring/CodeActions/CreateEventInvocatorAction.cs \
 	Refactoring/CodeActions/CreateFieldAction.cs \
+	Refactoring/CodeActions/CreateIndexerAction.cs \
 	Refactoring/CodeActions/CreateLocalVariableAction.cs \
 	Refactoring/CodeActions/CreateMethodDeclarationAction.cs \
 	Refactoring/CodeActions/CreatePropertyAction.cs \
