@@ -40,7 +40,7 @@ namespace MonoDevelop.DocFood
 	{
 		public List<Section> sections = new List<Section> ();
 		public Dictionary<string, string> tags = new Dictionary<string, string> ();
-		TextEditorData data;
+//		TextEditorData data;
 		
 		public DocGenerator ()
 		{
@@ -49,7 +49,7 @@ namespace MonoDevelop.DocFood
 		
 		public DocGenerator (TextEditorData data)
 		{
-			this.data = data;
+//			this.data = data;
 		}
 		
 		public static string GetBaseDocumentation (IEntity member)
@@ -123,7 +123,7 @@ namespace MonoDevelop.DocFood
 		}
 
 		public INamedElement member;
-		MemberVisitor visitor = new MemberVisitor ();
+//		MemberVisitor visitor = new MemberVisitor ();
 		string currentType;
 		int wordCount;
 		
@@ -346,12 +346,12 @@ namespace MonoDevelop.DocFood
 				}
 			}
 			
-			ITypeDefinition type;
-			if (member is ITypeDefinition) {
-				type = (ITypeDefinition)member;
-			} else {
-				type = ((IMember)member).DeclaringTypeDefinition;
-			}
+//			ITypeDefinition type;
+//			if (member is ITypeDefinition) {
+//				type = (ITypeDefinition)member;
+//			} else {
+//				type = ((IMember)member).DeclaringTypeDefinition;
+//			}
 			
 // TODO: Exceptions!
 //			this.currentType = "exception";

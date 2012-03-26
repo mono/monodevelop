@@ -228,8 +228,8 @@ namespace MonoDevelop.DocFood
 				
 				result.Append (indent);
 				result.Append ("/// ");
-				bool inTag = false;
-				int column = indent.Length + "/// ".Length;
+//				bool inTag = false;
+//				int column = indent.Length + "/// ".Length;
 				
 				result.AppendLine ();
 				result.Append (indent);
