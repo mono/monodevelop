@@ -137,8 +137,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public abstract NSObject Convert ();
 		
-		public abstract void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer);
-		
 		public abstract void SetValue (string text);
 		
 		public static implicit operator PObject (string value)
@@ -215,7 +213,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public abstract void Save (string fileName);
 	}
 	
-	public abstract class PValueObject<T> : PObject
+	public interface IPValueObject
+	{
+		object Value { get; set; }
+	}
+	
+	public abstract class PValueObject<T> : PObject, IPValueObject
 	{
 		T val;
 		public T Value {
@@ -228,6 +231,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		object IPValueObject.Value {
+			get { return Value; }
+			set { Value = (T) value; }
+		}
+		
 		public PValueObject (T value)
 		{
 			this.Value = value;
@@ -236,13 +244,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public PValueObject ()
 		{
 		}
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = true;
-			renderer.Text = Value.ToString ();
-		}
-		
+
 		public static implicit operator T (PValueObject<T> pObj)
 		{
 			return pObj != null ? pObj.Value : default(T);
@@ -416,14 +418,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			value = (T)obj;
 			return true;
 		}
-		
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = false;
-			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", dict.Count), dict.Count);
-		}
-		
+
 		public override void SetValue (string text)
 		{
 			throw new NotSupportedException ();
@@ -696,12 +691,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSArray.FromNSObjects (list.Select (x => x.Convert ()).ToArray ());
 		}
 		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = false;
-			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Count), Count);
-		}
-		
 		public override string ToString ()
 		{
 			return string.Format ("[PArray: Items={0}]", Count);
@@ -771,12 +760,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			return NSNumber.FromBoolean (Value);
 		}
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = true;
-			renderer.Text = Value ? GettextCatalog.GetString ("Yes") : GettextCatalog.GetString ("No");
-		}
 	}
 	
 	public class PData : PValueObject<byte[]>
@@ -807,12 +790,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override void SetValue (string text)
 		{
 			throw new NotSupportedException ();
-		}
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = false;
-			renderer.Text = string.Format ("byte[{0}]", Value.Length);
 		}
 	}
 	
@@ -896,22 +873,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override NSObject Convert ()
 		{
 			return new NSString (Value);
-		}
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			var key = display.ShowDescriptions && Parent != null ? display.Scheme.GetKey (Parent.Key) : null;
-			
-			renderer.Sensitive = true;
-			if (key != null) {
-				var val = key.Values.FirstOrDefault (v => v.Identifier == Value);
-				if (val != null) {
-					renderer.Text = GettextCatalog.GetString (val.Description);
-					return;
-				}
-			}
-			
-			base.RenderValue (display, renderer);
 		}
 	}
 	

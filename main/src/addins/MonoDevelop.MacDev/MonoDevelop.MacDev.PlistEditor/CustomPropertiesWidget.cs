@@ -255,12 +255,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			var addRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-add", IconSize.Menu));
 			addRenderer.Clicked += AddElement;
-			
 			col.PackEnd (addRenderer, false);
 			col.SetCellDataFunc (addRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				addRenderer.Visible = treeview.Selection.IterIsSelected (iter) && AddKeyNode.Equals (treeStore.GetValue (iter, 0));
 			});
 			treeview.AppendColumn (col);
+			
+			treeview.RowActivated += delegate(object o, RowActivatedArgs args) {
+				TreeIter iter;
+				if (treeStore.GetIter (out iter, args.Path) && AddKeyNode.Equals (treeStore.GetValue (iter, 0)))
+					AddElement (o, EventArgs.Empty);
+			};
 
 			var comboRenderer = new CellRendererCombo ();
 			
@@ -350,8 +355,44 @@ namespace MonoDevelop.MacDev.PlistEditor
 					renderer.Text = "";
 					return;
 				}
-				renderer.Editable = !(obj is PArray || obj is PDictionary || obj is PData);
-				obj.RenderValue (this, renderer);
+
+				renderer.Sensitive = !(obj is PDictionary || obj is PArray || obj is PData);
+
+				if (ShowDescriptions) {
+					var value = (string) tree_model.GetValue (iter, 0) ?? "";
+					var key = (PListScheme.SchemaItem) tree_model.GetValue (iter, 2) ?? PListScheme.Key.Empty;
+					
+					foreach (PListScheme.SchemaItem v in key.Values) {
+						if (v.Identifier == value) {
+							renderer.Text = v.Description ?? v.Identifier;
+							break;
+						}
+					}
+					return;
+				}
+
+				switch (obj.TypeString) {
+				case PDictionary.Type:
+					renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", ((PDictionary)obj).Count), ((PDictionary)obj).Count);
+					break;
+				case PArray.Type:
+					renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", ((PArray)obj).Count, ((PArray)obj).Count));
+					break;
+				case PBoolean.Type:
+					renderer.Text = ((PBoolean)obj).Value ? GettextCatalog.GetString ("Yes") : GettextCatalog.GetString ("No");
+					break;
+				case PData.Type:
+					renderer.Text = string.Format ("byte[{0}]", ((PData)obj).Value.Length);
+					break;
+				default:
+					if (obj is IPValueObject) {
+						renderer.Text = (((IPValueObject)obj).Value ?? "").ToString ();
+					} else {
+						renderer.Sensitive = false;
+						renderer.Text = GettextCatalog.GetString ("Could not render {0}.", obj.GetType ().Name);
+					}
+					break;
+				}
 			});
 			treeview.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview.Model = treeStore;
