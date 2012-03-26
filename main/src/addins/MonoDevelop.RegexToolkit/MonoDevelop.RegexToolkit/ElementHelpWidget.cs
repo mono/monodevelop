@@ -38,13 +38,13 @@ namespace MonoDevelop.RegexToolkit
 	public partial class ElementHelpWidget : Gtk.Bin
 	{
 		TreeStore elementsStore;
-		IWorkbenchWindow workbenchWindow;
-		RegexToolkitWidget regexWidget;
+//		IWorkbenchWindow workbenchWindow;
+//		RegexToolkitWidget regexWidget;
 
 		public ElementHelpWidget (IWorkbenchWindow workbenchWindow, RegexToolkitWidget regexWidget)
 		{
-			this.workbenchWindow = workbenchWindow;
-			this.regexWidget = regexWidget;
+//			this.workbenchWindow = workbenchWindow;
+//			this.regexWidget = regexWidget;
 			this.Build ();
 			
 			elementsStore = new Gtk.TreeStore (typeof(string), typeof(string), typeof(string), typeof(string));
