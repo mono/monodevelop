@@ -263,9 +263,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			Gtk.TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-				var member = (IUnresolvedEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+//				var member = (IUnresolvedEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
 				
-				var nav = SearchMember (member);
+//				var nav = SearchMember (member);
 				if (searchMode == SearchMode.Disassembler) {
 					this.notebook1.Page = 0;
 //						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
