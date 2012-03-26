@@ -36,6 +36,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
+			if (context.IsSomethingSelected) {
+				yield break;
+			}
 			AstType type;
 			var varDecl = GetVariableDeclarationStatement(context, out type);
 			if (varDecl == null) {

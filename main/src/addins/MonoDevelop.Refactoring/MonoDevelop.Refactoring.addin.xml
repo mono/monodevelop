@@ -51,7 +51,6 @@
 	
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
-		<Class id="IntegrateTemporaryVariable" class = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableRefactoring" />
 		<Class id="ImplementImplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementImplicit" />
 		<Class id="ImplementExplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementExplicit" />
 		<Class id="ImplementAbstract" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers" />
@@ -128,11 +127,6 @@
 					shortcut = "Alt|Return"
 					macShortcut = "Alt|Return" />
 		
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntegrateTemporaryVariable"
-					defaultHandler = "MonoDevelop.Refactoring.IntegrateTemporaryVariable.IntegrateTemporaryVariableHandler"
-					_label = "Integrate Temporary Variable"
-					shortcut = "Control|Alt|I" />
-					
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ImportSymbol"
 					defaultHandler = "MonoDevelop.Refactoring.ImportSymbolHandler"
 					_label = "Import Symbol..."

@@ -107,8 +107,6 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryIssueWrapper.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
-	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalCodeGenerator.cs \
-	MonoDevelop.CSharp.Refactoring/DeclareLocal/DeclareLocalHandler.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodHandler.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodRefactoring.cs \

@@ -33,11 +33,14 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Editor;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class RefactoringContext : BaseRefactoringContext
 	{
+
+
 		public RefactoringContext(CSharpAstResolver resolver, CancellationToken cancellationToken) : base  (resolver, cancellationToken)
 		{
 		}
@@ -51,17 +54,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return builder.ConvertType(fullType);
 		}
 		
-		public AstType CreateShortType (string ns, string name, int typeParameterCount = 0)
+		public AstType CreateShortType(string ns, string name, int typeParameterCount = 0)
 		{
 			foreach (var asm in Compilation.Assemblies) {
-				var def = asm.GetTypeDefinition (ns, name, typeParameterCount);
-				if (def != null)
-					return CreateShortType (def);
+				var def = asm.GetTypeDefinition(ns, name, typeParameterCount);
+				if (def != null) {
+					return CreateShortType(def);
+				}
 			}
 			
-			return new MemberType (new SimpleType (ns), name);
+			return new MemberType(new SimpleType(ns), name);
 		}
-		
+
+		public virtual IEnumerable<AstNode> GetSelectedNodes()
+		{
+			if (!IsSomethingSelected) {
+				return Enumerable.Empty<AstNode> ();
+			}
+			
+			return RootNode.GetNodesBetween(SelectionStart, SelectionEnd);
+		}
+
 		public AstNode GetNode ()
 		{
 			return RootNode.GetNodeAt (Location);
@@ -83,21 +96,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		public virtual bool IsSomethingSelected {
-			get { return this.SelectionLength > 0; }
+			get {
+				return SelectionStart != TextLocation.Empty;
+			}
 		}
 		
 		public virtual string SelectedText {
 			get { return string.Empty; }
 		}
 		
-		public virtual int SelectionStart {
-			get { return 0; }
+		public virtual TextLocation SelectionStart {
+			get {
+				return TextLocation.Empty;
+			}
 		}
-		public virtual int SelectionEnd {
-			get { return 0; }
-		}
-		public virtual int SelectionLength {
-			get { return 0; }
+		
+		public virtual TextLocation SelectionEnd {
+			get {
+				return TextLocation.Empty;
+			}
 		}
 
 		public abstract int GetOffset (TextLocation location);

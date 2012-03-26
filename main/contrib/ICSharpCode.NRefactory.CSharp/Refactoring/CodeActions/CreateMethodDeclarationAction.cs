@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return sb.Length == 0 ? "str" : sb.ToString();
 		}
 
-		static string CreateBaseName(AstNode node, IType type)
+		public static string CreateBaseName(AstNode node, IType type)
 		{
 			string name = null;
 			if (node is DirectionExpression) {
@@ -243,15 +243,57 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (pe.Value is string) {
 					name = CreateBaseNameFromString(pe.Value.ToString());
 				} else {
-					name = char.ToLower(type.Name [0]).ToString();
+					return char.ToLower(type.Name [0]).ToString();
 				}
 			} else {
-				name = type.Kind == TypeKind.Unknown ? "par" : type.Name;
+				if (type.Kind == TypeKind.Unknown) {
+					return "par";
+				}
+				name = GuessNameFromType(type);
 			}
 
 			name = char.ToLower(name [0]) + name.Substring(1);
 			return name;
 		}
+
+		static string GuessNameFromType(IType returnType)
+		{
+			switch (returnType.ReflectionName) {
+				case "System.Byte":
+				case "System.SByte":
+					return "b";
+				
+				case "System.Int16":
+				case "System.UInt16":
+				case "System.Int32":
+				case "System.UInt32":
+				case "System.Int64":
+				case "System.UInt64":
+					return "i";
+				
+				case "System.Boolean":
+					return "b";
+				
+				case "System.DateTime":
+					return "date";
+				
+				case "System.Char":
+					return "ch";
+				case "System.String":
+					return "str";
+				
+				case "System.Exception":
+					return "e";
+				case "System.Object":
+					return "obj";
+				case "System.Func":
+					return "func";
+				case "System.Action":
+					return "action";
+			}
+			return returnType.Name;
+		}
+		
 
 		string GetMethodName(InvocationExpression invocation)
 		{

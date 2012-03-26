@@ -52,7 +52,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		public virtual AstNode RootNode {
-			get { return resolver.RootNode; }
+			get {
+				return resolver.RootNode;
+			}
+		}
+
+		public virtual CSharpParsedFile ParsedFile {
+			get {
+				return resolver.ParsedFile;
+			}
 		}
 
 		public ICompilation Compilation {

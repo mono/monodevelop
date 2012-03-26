@@ -219,10 +219,12 @@ FILES =  \
 	Refactoring/CodeActions/CreateLocalVariableAction.cs \
 	Refactoring/CodeActions/CreateMethodDeclarationAction.cs \
 	Refactoring/CodeActions/CreatePropertyAction.cs \
+	Refactoring/CodeActions/DeclareLocalVariableAction.cs \
 	Refactoring/CodeActions/FlipOperatorArgumentsAction.cs \
 	Refactoring/CodeActions/GenerateGetterAction.cs \
 	Refactoring/CodeActions/GeneratePropertyAction.cs \
 	Refactoring/CodeActions/GenerateSwitchLabelsAction.cs \
+	Refactoring/CodeActions/InlineLocalVariableAction.cs \
 	Refactoring/CodeActions/InsertAnonymousMethodSignatureAction.cs \
 	Refactoring/CodeActions/IntroduceFormatItemAction.cs \
 	Refactoring/CodeActions/InvertIfAction.cs \
