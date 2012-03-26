@@ -166,16 +166,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return new MDRefactoringScript (this.Document, this.Document.GetFormattingOptions ());
 		}
 
-		public override T RequestData<T> ()
-		{
-			if (typeof(T).Equals (typeof(IEnumerable<NamingRule>))) {
-				var namingRules = Document.HasProject ? Document.Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
-				return (T)namingRules.Rules.Select (r => r.GetNRefactoryRule ());
-
-			}
-			return default (T);
-		}
-
 
 		static CSharpAstResolver CreateResolver (Document document)
 		{
@@ -198,6 +188,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				throw new ArgumentNullException ("document");
 			this.Document = document;
 			this.location = loc;
+			var policy = Document.HasProject ? Document.Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
+			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
+
 		}
 		
 		public override AstType CreateShortType (IType fullType)

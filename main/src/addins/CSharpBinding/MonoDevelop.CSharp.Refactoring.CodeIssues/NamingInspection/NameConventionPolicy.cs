@@ -56,6 +56,31 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			rules = new List<NameConventionRule> (DefaultRules.GetFdgRules ().Select (r => new NameConventionRule (r))).ToArray ();
 		}
 
+		class NamingConventionService : ICSharpCode.NRefactory.CSharp.Refactoring.NamingConventionService
+		{
+			NameConventionPolicy policy;
+			ICSharpCode.NRefactory.CSharp.Refactoring.NamingRule[] rules = null;
+			public override IEnumerable<ICSharpCode.NRefactory.CSharp.Refactoring.NamingRule> Rules {
+				get {
+					if (rules == null) {
+						this.rules = policy.Rules.Select (r => r.GetNRefactoryRule ()).ToArray ();
+					}
+					return rules;
+				}
+			}
+
+			public NamingConventionService (MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPolicy policy)
+			{
+				this.policy = policy;
+			}
+			
+		}
+
+		public ICSharpCode.NRefactory.CSharp.Refactoring.NamingConventionService CreateNRefactoryService ()
+		{
+			return new NamingConventionService (this);
+		}
+
 		#region IEquatable implementation
 		public bool Equals (NameConventionPolicy other)
 		{
