@@ -63,7 +63,6 @@ namespace MonoDevelop.SourceEditor
 		bool AutoInsertMatchingBracket {get; }
 		bool EnableCodeCompletion {get; }
 		bool UnderlineErrors {get; }
-		IndentStyle IndentStyle {get; }
 		EditorFontType EditorFontType {get; }
 		bool UseViModes {get; }
 	}

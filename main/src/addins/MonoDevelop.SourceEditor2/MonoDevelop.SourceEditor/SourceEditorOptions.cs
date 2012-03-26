@@ -371,7 +371,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		IndentStyle indentStyle;
-		public IndentStyle IndentStyle {
+		public override IndentStyle IndentStyle {
 			get {
 				return indentStyle;
 			}

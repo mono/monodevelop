@@ -352,7 +352,7 @@ namespace MonoDevelop.SourceEditor
 			int braceIndex = openBrackets.IndexOf ((char)ch);
 			var skipChars = GetTextEditorData ().SkipChars;
 			var skipChar = skipChars.Find (sc => sc.Char == (char)ch && sc.Offset == Caret.Offset);
-			bool startedAtomicOperation = false;
+//			bool startedAtomicOperation = false;
 
 			// special handling for escape chars inside ' and "
 			if (Caret.Offset > 0) {
@@ -377,7 +377,7 @@ namespace MonoDevelop.SourceEditor
 					}
 
 					if (count >= 0) {
-						startedAtomicOperation = true;
+//						startedAtomicOperation = true;
 						undoGroup = Document.OpenUndoGroup ();
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						
@@ -390,7 +390,7 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
 					if (!inString && !inComment && !inChar && ch == '"' && charBefore != '\\') {
-						startedAtomicOperation = true;
+//						startedAtomicOperation = true;
 						undoGroup = Document.OpenUndoGroup ();
 						GetTextEditorData ().EnsureCaretIsNotVirtual ();
 						insertionChar = '"';
@@ -637,8 +637,8 @@ namespace MonoDevelop.SourceEditor
 					var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
 					if (prettyPrinter != null) {
 						int endOffset = result.InsertPosition + result.Code.Length;
-						string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
-						var policies = document.Project != null ? document.Project.Policies : null;
+//						string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
+//						var policies = document.Project != null ? document.Project.Policies : null;
 						var oldVersion = Document.Version;
 						prettyPrinter.OnTheFlyFormat (document, result.InsertPosition, endOffset);
 

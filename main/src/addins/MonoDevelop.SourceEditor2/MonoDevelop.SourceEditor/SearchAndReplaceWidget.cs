@@ -521,7 +521,7 @@ But I leave it in in the case I've missed something. Mike
 		{
 			base.OnFocusChildSet (widget);
 			var mainResult = this.textEditor.TextViewMargin.MainSearchResult;
-			this.textEditor.TextViewMargin.HideSelection = widget == table && mainResult != null &&
+			this.textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid &&
 				this.textEditor.IsSomethingSelected && this.textEditor.SelectionRange.Offset == mainResult.Offset && this.textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
 			
 			if (this.textEditor.TextViewMargin.HideSelection)
