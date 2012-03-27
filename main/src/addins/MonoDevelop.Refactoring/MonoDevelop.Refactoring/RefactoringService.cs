@@ -211,11 +211,11 @@ namespace MonoDevelop.Refactoring
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					var result = new List<MonoDevelop.CodeActions.CodeAction> (GetValidActions (doc, loc).Result);
+					var result = new List<MonoDevelop.CodeActions.CodeAction> ();
 
 					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 					if (ext != null) {
-						foreach (var r in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc.Line, loc.Column))) {
+						foreach (var r in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc)).OrderBy (r => r.Level)) {
 							var fresult = r as FixableResult;
 							if (fresult == null)
 								continue;
@@ -224,7 +224,7 @@ namespace MonoDevelop.Refactoring
 							}
 						}
 					}
-					
+					result.AddRange (GetValidActions (doc, loc).Result);
 					callback (result);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
