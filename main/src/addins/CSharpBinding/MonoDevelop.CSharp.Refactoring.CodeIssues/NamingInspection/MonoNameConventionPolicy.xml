@@ -70,17 +70,33 @@
 		</NamingRule>
 		<NamingRule>
 			<Name>Fields (Non Private)</Name>
-			<AffectedEntity>Fields</AffectedEntity>
+			<AffectedEntity>Field, ReadonlyField</AffectedEntity>
 			<VisibilityMask>Internal, Protected, Public</VisibilityMask>
 			<NamingStyle>PascalCase</NamingStyle>
 			<IncludeInstanceMembers>True</IncludeInstanceMembers>
-			<IncludeStaticEntities>True</IncludeStaticEntities>
+			<IncludeStaticEntities>False</IncludeStaticEntities>
 		</NamingRule>
 		<NamingRule>
 			<Name>Fields (Private)</Name>
-			<AffectedEntity>Fields</AffectedEntity>
+			<AffectedEntity>Field, ReadonlyField</AffectedEntity>
 			<VisibilityMask>Private</VisibilityMask>
 			<NamingStyle>CamelCase</NamingStyle>
+			<IncludeInstanceMembers>True</IncludeInstanceMembers>
+			<IncludeStaticEntities>False</IncludeStaticEntities>
+		</NamingRule>
+		<NamingRule>
+			<Name>Static fields</Name>
+			<AffectedEntity>Field, ReadonlyField</AffectedEntity>
+			<VisibilityMask>VisibilityMask</VisibilityMask>
+			<NamingStyle>PascalCase</NamingStyle>
+			<IncludeInstanceMembers>False</IncludeInstanceMembers>
+			<IncludeStaticEntities>True</IncludeStaticEntities>
+		</NamingRule>
+		<NamingRule>
+			<Name>Constant Fields</Name>
+			<AffectedEntity>ConstantField</AffectedEntity>
+			<VisibilityMask>VisibilityMask</VisibilityMask>
+			<NamingStyle>PascalCase</NamingStyle>
 			<IncludeInstanceMembers>True</IncludeInstanceMembers>
 			<IncludeStaticEntities>True</IncludeStaticEntities>
 		</NamingRule>
@@ -118,6 +134,9 @@
 		</NamingRule>
 		<NamingRule>
 			<Name>Type Parameters</Name>
+			<RequiredPrefixes>
+				<String>T</String>
+			</RequiredPrefixes>
 			<AffectedEntity>TypeParameter</AffectedEntity>
 			<VisibilityMask>VisibilityMask</VisibilityMask>
 			<NamingStyle>PascalCase</NamingStyle>

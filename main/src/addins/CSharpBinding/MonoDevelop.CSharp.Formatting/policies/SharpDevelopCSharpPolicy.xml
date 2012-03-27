@@ -117,11 +117,11 @@ THE SOFTWARE.
 	<SpacesAfterSemicolon>True</SpacesAfterSemicolon>
 	<SpacesAfterTypecast>False</SpacesAfterTypecast>
 	
-	<IfElseBraceForcement>AddBraces</IfElseBraceForcement>
-	<ForBraceForcement>AddBraces</ForBraceForcement>
-	<ForEachBraceForcement>AddBraces</ForEachBraceForcement>
-	<WhileBraceForcement>AddBraces</WhileBraceForcement>
-	<UsingBraceForcement>AddBraces</UsingBraceForcement>
-	<FixedBraceForcement>AddBraces</FixedBraceForcement>
+	<IfElseBraceForcement>DoNotChange</IfElseBraceForcement>
+	<ForBraceForcement>DoNotChange</ForBraceForcement>
+	<ForEachBraceForcement>DoNotChange</ForEachBraceForcement>
+	<WhileBraceForcement>DoNotChange</WhileBraceForcement>
+	<UsingBraceForcement>DoNotChange</UsingBraceForcement>
+	<FixedBraceForcement>DoNotChange</FixedBraceForcement>
 	
 </CSharpFormattingPolicy>
