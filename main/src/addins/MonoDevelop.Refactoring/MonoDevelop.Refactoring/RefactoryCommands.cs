@@ -171,16 +171,16 @@ namespace MonoDevelop.Refactoring
 		
 		class FindRefs 
 		{
-			IEntity entity;
+			object obj;
 			
-			public FindRefs (IEntity entity)
+			public FindRefs (object obj)
 			{
-				this.entity = entity;
+				this.obj = obj;
 			}
 			
 			public void Run ()
 			{
-				FindReferencesHandler.FindRefs (entity);
+				FindReferencesHandler.FindRefs (obj);
 			}
 		}
 		
@@ -279,8 +279,8 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 			
-			if (item is IEntity /* || item is LocalVariable || item is IParameter*/) {
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item as IEntity).Run));
+			if (item is IEntity || item is ITypeParameter || item is IVariable) {
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item).Run));
 				added = true;
 			}
 			
