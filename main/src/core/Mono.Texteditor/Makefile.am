@@ -129,6 +129,7 @@ FILES =  \
 	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
 	Mono.TextEditor/SimpleEditMode.cs \
 	Mono.TextEditor/StringBuffer.cs \
+	Mono.TextEditor/SyntaxModeChangeEventArgs.cs \
 	Mono.TextEditor/TextDocument.cs \
 	Mono.TextEditor/TextEditor.cs \
 	Mono.TextEditor/TextEditorAccessibility.cs \

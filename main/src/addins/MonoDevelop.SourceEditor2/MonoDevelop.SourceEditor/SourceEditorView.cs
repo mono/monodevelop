@@ -156,6 +156,14 @@ namespace MonoDevelop.SourceEditor
 			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
 			
 			widget = new SourceEditorWidget (this);
+			widget.TextEditor.Document.SyntaxModeChanged += delegate(object sender, SyntaxModeChangeEventArgs e) {
+				var oldProvider = e.OldMode as IQuickTaskProvider;
+				if (oldProvider != null)
+					widget.RemoveQuickTaskProvider (oldProvider);
+				var newProvider = e.NewMode as IQuickTaskProvider;
+				if (newProvider != null)
+					widget.AddQuickTaskProvider (newProvider);
+			};
 			widget.TextEditor.Document.TextReplaced += delegate(object sender, DocumentChangeEventArgs args) {
 				if (!inLoad) {
 					if (widget.TextEditor.Document.IsInAtomicUndo) {

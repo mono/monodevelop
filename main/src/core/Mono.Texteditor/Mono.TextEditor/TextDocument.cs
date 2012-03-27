@@ -79,12 +79,23 @@ namespace Mono.TextEditor
 			set {
 				if (syntaxMode != null)
 					syntaxMode.Document = null;
+				var old = syntaxMode;
 				syntaxMode = value;
 				if (syntaxMode != null)
 					syntaxMode.Document = this;
+				OnSyntaxModeChanged (new SyntaxModeChangeEventArgs (old, syntaxMode));
 			}
 		}
-		
+
+		protected virtual void OnSyntaxModeChanged (Mono.TextEditor.SyntaxModeChangeEventArgs e)
+		{
+			var handler = SyntaxModeChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler<SyntaxModeChangeEventArgs> SyntaxModeChanged;
+
 		public object Tag {
 			get;
 			set;

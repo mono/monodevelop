@@ -101,10 +101,19 @@ namespace MonoDevelop.SourceEditor
 		public void AddQuickTaskProvider (IQuickTaskProvider provider)
 		{
 			quickTaskProvider.Add (provider);
-			mainsw.AddQuickTaskStrip (provider); 
+			mainsw.AddQuickTaskProvider (provider); 
 			if (secondsw != null)
-				secondsw.AddQuickTaskStrip (provider);
+				secondsw.AddQuickTaskProvider (provider);
 		}
+
+		public void RemoveQuickTaskProvider (IQuickTaskProvider provider)
+		{
+			quickTaskProvider.Remove (provider);
+			mainsw.RemoveQuickTaskProvider (provider); 
+			if (secondsw != null)
+				secondsw.RemoveQuickTaskProvider (provider);
+		}		
+		
 		
 		List<IUsageProvider> usageProvider = new List<IUsageProvider> ();
 		public void AddUsageTaskProvider (IUsageProvider provider)
@@ -226,18 +235,30 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					strip.Visible = false;
 				}
-				parent.quickTaskProvider.ForEach (p => AddQuickTaskStrip (p));
+				parent.quickTaskProvider.ForEach (p => AddQuickTaskProvider (p));
 			}
 			
-			public void AddQuickTaskStrip (IQuickTaskProvider p)
+			public void AddQuickTaskProvider (IQuickTaskProvider p)
 			{
 				if (!strip.Visible) {
 					strip.VAdjustment = scrolledWindow.Vadjustment;
 					scrolledWindow.ReplaceVScrollBar (strip);
 				}
-				p.TasksUpdated += (sender, e) => strip.Update (p);
+				p.TasksUpdated += HandleTasksUpdated; 
 			}
-			
+
+			void HandleTasksUpdated (object sender, EventArgs e)
+			{
+				strip.Update ((IQuickTaskProvider)sender);
+			}
+
+			public void RemoveQuickTaskProvider (IQuickTaskProvider provider)
+			{
+				if (provider != null)
+					provider.TasksUpdated -= HandleTasksUpdated;
+			}	
+
+
 			public void AddUsageProvider (IUsageProvider p)
 			{
 				if (!strip.Visible) {
@@ -550,7 +571,7 @@ namespace MonoDevelop.SourceEditor
 			while (count++ < 5 && parseInformationUpdaterWorkerThread.IsBusy)
 				Thread.Sleep (20);
 		}
-		
+
 		internal void SetLastActiveEditor (ExtensibleTextEditor editor)
 		{
 			this.lastActiveEditor = editor;
