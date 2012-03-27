@@ -473,7 +473,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (current is PDictionary) {
 				objs = ((PDictionary) current).Select (v => Tuple.Create (v.Key, v.Value));
 			} else if (current is PArray) {
-				objs = ((PArray) current).Select (v => Tuple.Create ("", v));
+				objs = ((PArray) current).Select (v => Tuple.Create (v is IPValueObject ? ((IPValueObject)v).Value.ToString () : "", v));
 			}
 			
 			foreach (var item in objs) {
