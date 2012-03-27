@@ -534,11 +534,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void RefreshKeyStore ()
 		{
+			keyStore.Clear ();
 			var sortedKeys = new List<PListScheme.Key> (Scheme.Keys);
-			sortedKeys.Sort ((x, y) => x.Description.CompareTo (y.Description));
-			
+			if (ShowDescriptions)
+				sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Description, y.Description));
+			else
+				sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Identifier, y.Identifier));
 			foreach (var key in sortedKeys)
-				keyStore.AppendValues (key.Description, key);
+				keyStore.AppendValues (key.Identifier, key);
 		}
 
 		void RefreshTree ()
