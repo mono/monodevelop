@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			Name = name;
 		}
-		
+
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitTypeParameterDeclaration (this);

@@ -46,6 +46,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return true;
 		}
+
+		/// <summary>
+		/// Gets a value indicating if 'var' keyword should be used or explicit types.
+		/// </summary>
+		public virtual bool UseExplicitTypes {
+			get;
+			set;
+		}
 		
 		public CancellationToken CancellationToken {
 			get { return cancellationToken; }
