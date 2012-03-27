@@ -239,9 +239,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 				
 				var key = Scheme.GetKey (id);
-				renderer.Editable = !(obj.Parent is PArray);
-				renderer.Sensitive = true;
-				renderer.Text = key != null && ShowDescriptions ? GettextCatalog.GetString (key.Description) : id;
+				var parentPArray = obj.Parent is PArray;
+				renderer.Editable = !parentPArray;
+				renderer.Sensitive = !parentPArray;
+				if (parentPArray)
+					renderer.Text = "";
+				else
+					renderer.Text = key != null && ShowDescriptions ? GettextCatalog.GetString (key.Description) : id;
 			});
 			treeview.AppendColumn (col);
 			
