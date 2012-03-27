@@ -108,7 +108,14 @@ namespace MonoDevelop.Ide.FindInFiles
 					yield return new SearchCollector.FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
 				yield break;
 			}
-			
+			if (node is ITypeParameter) {
+				string fileName = ((ITypeParameter)node).Region.FileName;
+				var doc = IdeApp.Workbench.GetDocument (fileName);
+				if (doc != null)
+					yield return new SearchCollector.FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
+				yield break;
+			}
+
 			var entity = (IEntity)node;
 			switch (scope) {
 			case RefactoryScope.DeclaringType:
@@ -159,7 +166,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			
 			IList<object> searchNodes = new [] { member };
-			if (member is IType) {
+			if (member is ITypeParameter) {
+				// nothing
+			} else if (member is IType) {
 				searchNodes = CollectMembers ((IType)member).ToList<object> ();
 			} else if (member is IEntity) {
 				var e = (IEntity)member;

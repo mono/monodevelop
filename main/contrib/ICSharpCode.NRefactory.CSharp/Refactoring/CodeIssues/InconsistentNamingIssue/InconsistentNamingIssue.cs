@@ -95,14 +95,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				CheckNamedResolveResult(resolveResult, entity, identifier, accessibilty);
 			}
 
-			bool CheckNamedResolveResult(ResolveResult resolveResult, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
+			bool CheckNamedResolveResult (ResolveResult resolveResult, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
 			{
 				bool wasHandled = false;
 				foreach (var rule in service.Rules) {
-					if (!rule.AffectedEntity.HasFlag(entity)) {
+					if (!rule.AffectedEntity.HasFlag (entity)) {
 						continue;
 					}
-					if (!rule.VisibilityMask.HasFlag(accessibilty)) {
+					if (!rule.VisibilityMask.HasFlag (accessibilty)) {
 						continue;
 					}
 					if (!rule.IncludeInstanceMembers || !rule.IncludeStaticEntities) {
@@ -110,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						if (resolveResult is MemberResolveResult) {
 							typeSystemEntity = ((MemberResolveResult)resolveResult).Member;
 						} else if (resolveResult is TypeResolveResult) { 
-							typeSystemEntity = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+							typeSystemEntity = ((TypeResolveResult)resolveResult).Type.GetDefinition ();
 						}
 						if (!rule.IncludeInstanceMembers) {
 							if (typeSystemEntity == null || !typeSystemEntity.IsStatic) {
@@ -124,33 +124,38 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					}
 					wasHandled = true;
-					if (!rule.IsValid(identifier.Name)) {
+					if (!rule.IsValid (identifier.Name)) {
 						IList<string> suggestedNames;
-						var msg = rule.GetErrorMessage(ctx, identifier.Name, out suggestedNames);
-						var actions = new List<CodeAction>(suggestedNames.Select(n => new CodeAction(string.Format(ctx.TranslateString("Rename to '{0}'"), n), (Script script) => {
+						var msg = rule.GetErrorMessage (ctx, identifier.Name, out suggestedNames);
+						var actions = new List<CodeAction> (suggestedNames.Select (n => new CodeAction (string.Format (ctx.TranslateString ("Rename to '{0}'"), n), (Script script) => {
 								if (resolveResult is MemberResolveResult) {
-									script.Rename(((MemberResolveResult)resolveResult).Member, n);
+									script.Rename (((MemberResolveResult)resolveResult).Member, n);
 								} else if (resolveResult is TypeResolveResult) {
-									var def = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+									var def = ((TypeResolveResult)resolveResult).Type.GetDefinition ();
 									if (def != null) {
-										script.Rename(def, n);
+										script.Rename (def, n);
 									} else {
-										script.RenameTypeParameter(((TypeResolveResult)resolveResult).Type, n);
+										script.RenameTypeParameter (((TypeResolveResult)resolveResult).Type, n);
 									}
 								} else if (resolveResult is LocalResolveResult) {
-									script.Rename(((LocalResolveResult)resolveResult).Variable, n);
+									script.Rename (((LocalResolveResult)resolveResult).Variable, n);
 								} else { 
-									script.Replace(identifier, Identifier.Create(n));
+									script.Replace (identifier, Identifier.Create (n));
 								}
 							}
 						)));
 
 						if (resolveResult is MemberResolveResult || resolveResult is TypeResolveResult || resolveResult is LocalResolveResult) {
-							actions.Add(new CodeAction(string.Format(ctx.TranslateString("Rename '{0}'..."), identifier.Name), (Script script) => {
+							actions.Add (new CodeAction (string.Format (ctx.TranslateString ("Rename '{0}'..."), identifier.Name), (Script script) => {
 								if (resolveResult is MemberResolveResult) {
-									script.Rename(((MemberResolveResult)resolveResult).Member);
+									script.Rename (((MemberResolveResult)resolveResult).Member);
 								} else if (resolveResult is TypeResolveResult) {
-									script.Rename(((TypeResolveResult)resolveResult).Type.GetDefinition());
+									var def = ((TypeResolveResult)resolveResult).Type.GetDefinition ();
+									if (def != null) {
+										script.Rename (def);
+									} else {
+										script.RenameTypeParameter (((TypeResolveResult)resolveResult).Type);
+									}
 								} else if (resolveResult is LocalResolveResult) {
 									script.Rename(((LocalResolveResult)resolveResult).Variable);
 								}

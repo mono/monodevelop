@@ -1230,14 +1230,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="compilation">The compilation.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
 		/// <param name="cancellationToken">Cancellation token that may be used to cancel the operation.</param>
-		public void FindTypeParameterReferences(IType typeParameter, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
+		public void FindTypeParameterReferences (IType typeParameter, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
 		                                ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
 			if (typeParameter == null)
-				throw new ArgumentNullException("typeParameter");
+				throw new ArgumentNullException ("typeParameter");
 			if (typeParameter.Kind != TypeKind.TypeParameter)
-				throw new ArgumentOutOfRangeException("typeParameter", "Only type parameters are allowed");
-			var searchScope = new SearchScope(c => new FindTypeParameterReferencesNavigator(typeParameter));
+				throw new ArgumentOutOfRangeException ("typeParameter", "Only type parameters are allowed");
+			var searchScope = new SearchScope (c => new FindTypeParameterReferencesNavigator ((ITypeParameter)typeParameter));
 			searchScope.declarationCompilation = compilation;
 			searchScope.accessibility = Accessibility.Private;
 			FindReferencesInFile(searchScope, parsedFile, compilationUnit, compilation, callback, cancellationToken);
@@ -1245,28 +1245,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		class FindTypeParameterReferencesNavigator : FindReferenceNavigator
 		{
-			readonly IType typeParameter;
+			readonly ITypeParameter typeParameter;
 			
-			public FindTypeParameterReferencesNavigator(IType typeParameter)
+			public FindTypeParameterReferencesNavigator(ITypeParameter typeParameter)
 			{
 				this.typeParameter = typeParameter;
 			}
 			
-			internal override bool CanMatch(AstNode node)
+			internal override bool CanMatch (AstNode node)
 			{
 				var type = node as SimpleType;
-				if (type != null)
+				if (type != null) {
 					return type.Identifier == typeParameter.Name;
+				}
 				var declaration = node as TypeParameterDeclaration;
-				if (declaration != null)
+				if (declaration != null) {
 					return declaration.Name == typeParameter.Name;
+				}
 				return false;
 			}
 			
-			internal override bool IsMatch(ResolveResult rr)
+			internal override bool IsMatch (ResolveResult rr)
 			{
 				var lrr = rr as TypeResolveResult;
-				return lrr != null && lrr.Type.Equals (typeParameter);
+				return lrr != null && lrr.Type.Kind == TypeKind.TypeParameter && ((ITypeParameter)lrr.Type).Region == typeParameter.Region;
 			}
 		}
 		#endregion

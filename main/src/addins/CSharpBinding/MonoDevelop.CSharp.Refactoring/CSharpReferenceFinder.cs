@@ -69,6 +69,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				memberName = firstMember.ToString ();
 			if (firstMember is IVariable)
 				memberName = ((IVariable)firstMember).Name;
+			if (firstMember is ITypeParameter)
+				memberName = ((ITypeParameter)firstMember).Name;
 		}
 		
 		void SetPossibleFiles (IEnumerable<FilePath> files)
@@ -165,6 +167,11 @@ namespace MonoDevelop.CSharp.Refactoring
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (r, astNode, editor.FileName, editor));
 					}, CancellationToken.None);
+				} else if (obj is ITypeParameter) {
+					refFinder.FindTypeParameterReferences ((ITypeParameter)obj, file, unit, doc.Compilation, (astNode, r) => { 
+						if (IsNodeValid (obj, astNode))
+							result.Add (GetReference (r, astNode, editor.FileName, editor));
+					}, CancellationToken.None);
 				}
 			}
 			return result;
@@ -176,7 +183,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				throw new ArgumentNullException ("project", "Project not set.");
 			if (content == null)
 				throw new ArgumentNullException ("content", "Project content not set.");
-			
 			SetPossibleFiles (possibleFiles);
 			SetSearchedMembers (members);
 			
