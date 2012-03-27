@@ -45,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 			ExtensibleTextEditor ed = (ExtensibleTextEditor)editor;
 			ICSharpCode.NRefactory.TypeSystem.DomRegion region;
 			var resolveResult = ed.GetLanguageItem (offset, out region);
-			if (resolveResult == null || resolveResult.Type.Kind == ICSharpCode.NRefactory.TypeSystem.TypeKind.Unknown)
+			if (resolveResult == null)
 				return null;
 			int startOffset = offset;
 			int endOffset = offset;
@@ -63,8 +63,8 @@ namespace MonoDevelop.SourceEditor
 				return null;
 			
 			var resolveResult = (ResolveResult)item.Item;
-			if (lastResult != null && !lastResult.IsError && lastWindow.IsRealized && 
-			    resolveResult != null && !resolveResult.IsError && lastResult.Type.Equals (resolveResult.Type))
+			if (lastResult != null && lastWindow.IsRealized && 
+			    resolveResult != null && lastResult.Type.Equals (resolveResult.Type))
 				return lastWindow;
 			var result = new LanguageItemWindow (ed, modifierState, resolveResult, null, doc.ParsedFile);
 			lastWindow = result;

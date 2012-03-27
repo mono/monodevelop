@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharp
 				return false;
 
 			result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
-			if (result == null || result .IsError || node is Statement)
+			if (result == null || node is Statement)
 				return false;
 			return true;
 		}

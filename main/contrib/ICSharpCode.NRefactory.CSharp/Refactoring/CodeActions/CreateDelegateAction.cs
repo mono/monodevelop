@@ -36,7 +36,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var simpleType = context.GetNode<SimpleType>();
-			System.Console.WriteLine("node:" + context.GetNode().Parent);
 			if (simpleType != null && (simpleType.Parent is EventDeclaration || simpleType.Parent is CustomEventDeclaration)) 
 				return GetActions(context, simpleType);
 
