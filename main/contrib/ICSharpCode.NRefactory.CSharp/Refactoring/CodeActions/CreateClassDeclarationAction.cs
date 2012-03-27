@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return GetActions(context, createExpression);
 			
 			var simpleType = context.GetNode<SimpleType>();
-			if (simpleType != null) 
+			if (simpleType != null && !(simpleType.Parent is EventDeclaration || simpleType.Parent is CustomEventDeclaration)) 
 				return GetActions(context, simpleType);
 
 			return Enumerable.Empty<CodeAction>();

@@ -152,7 +152,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return null;
 		}
 		
-		internal static string GetCorrectFileName (MDRefactoringContext context, TypeDeclaration type)
+		internal static string GetCorrectFileName (MDRefactoringContext context, EntityDeclaration type)
 		{
 			if (type == null)
 				return context.Document.FileName;

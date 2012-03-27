@@ -356,7 +356,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <param name='context'>
 		/// The Context in which the new type should be created.
 		/// </param>
-		public virtual void CreateNewType(TypeDeclaration newType, NewTypeContext context = NewTypeContext.CurrentNamespace)
+		public virtual void CreateNewType(AstNode newType, NewTypeContext context = NewTypeContext.CurrentNamespace)
 		{
 		}
 	}

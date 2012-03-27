@@ -188,11 +188,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			RenameRefactoring.RenameTypeParameter ((ITypeParameter)typeParameter, name);
 		}
 
-		public override void CreateNewType (TypeDeclaration newType, NewTypeContext ntctx)
+		public override void CreateNewType (AstNode newType, NewTypeContext ntctx)
 		{
 			if (newType == null)
 				throw new System.ArgumentNullException ("newType");
-			var correctFileName = MoveTypeToFile.GetCorrectFileName (context, newType);
+			var correctFileName = MoveTypeToFile.GetCorrectFileName (context, (EntityDeclaration)newType);
 			
 			var content = context.Document.Editor.Text;
 			
