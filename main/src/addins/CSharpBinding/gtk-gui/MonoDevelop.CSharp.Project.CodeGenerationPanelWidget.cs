@@ -247,13 +247,13 @@ namespace MonoDevelop.CSharp.Project
 			w18.Expand = false;
 			w18.Fill = false;
 			// Container child hbox60.Gtk.Box+BoxChild
-			this.warningLevelSpinButton = new global::Gtk.SpinButton (0, 4, 1);
+			this.warningLevelSpinButton = new global::Gtk.SpinButton (0D, 4D, 1D);
 			this.warningLevelSpinButton.CanFocus = true;
 			this.warningLevelSpinButton.Name = "warningLevelSpinButton";
-			this.warningLevelSpinButton.Adjustment.PageIncrement = 1;
-			this.warningLevelSpinButton.ClimbRate = 1;
+			this.warningLevelSpinButton.Adjustment.PageIncrement = 1D;
+			this.warningLevelSpinButton.ClimbRate = 1D;
 			this.warningLevelSpinButton.Numeric = true;
-			this.warningLevelSpinButton.Value = 2;
+			this.warningLevelSpinButton.Value = 2D;
 			this.hbox60.Add (this.warningLevelSpinButton);
 			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox60 [this.warningLevelSpinButton]));
 			w19.Position = 1;

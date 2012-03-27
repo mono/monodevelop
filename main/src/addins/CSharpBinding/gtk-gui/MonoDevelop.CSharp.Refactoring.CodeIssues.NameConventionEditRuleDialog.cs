@@ -22,9 +22,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		private global::Gtk.CheckButton checkbuttonInstanceMembers;
 		private global::Gtk.Table table2;
 		private global::Gtk.Entry entryPrefix;
+		private global::Gtk.Entry entryPrefixAllowed;
 		private global::Gtk.Entry entrySuffix;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label3;
+		private global::Gtk.Label label8;
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.Label label2;
 		private global::Gtk.VBox vbox4;
@@ -204,7 +206,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.table1]));
 			w15.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.table2 = new global::Gtk.Table (((uint)(3)), ((uint)(2)), false);
+			this.table2 = new global::Gtk.Table (((uint)(4)), ((uint)(2)), false);
 			this.table2.Name = "table2";
 			this.table2.RowSpacing = ((uint)(6));
 			this.table2.ColumnSpacing = ((uint)(6));
@@ -220,38 +222,62 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			w16.RightAttach = ((uint)(2));
 			w16.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
+			this.entryPrefixAllowed = new global::Gtk.Entry ();
+			this.entryPrefixAllowed.CanFocus = true;
+			this.entryPrefixAllowed.Name = "entryPrefixAllowed";
+			this.entryPrefixAllowed.IsEditable = true;
+			this.entryPrefixAllowed.InvisibleChar = '●';
+			this.table2.Add (this.entryPrefixAllowed);
+			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryPrefixAllowed]));
+			w17.TopAttach = ((uint)(1));
+			w17.BottomAttach = ((uint)(2));
+			w17.LeftAttach = ((uint)(1));
+			w17.RightAttach = ((uint)(2));
+			w17.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
 			this.entrySuffix = new global::Gtk.Entry ();
 			this.entrySuffix.CanFocus = true;
 			this.entrySuffix.Name = "entrySuffix";
 			this.entrySuffix.IsEditable = true;
 			this.entrySuffix.InvisibleChar = '●';
 			this.table2.Add (this.entrySuffix);
-			global::Gtk.Table.TableChild w17 = ((global::Gtk.Table.TableChild)(this.table2 [this.entrySuffix]));
-			w17.TopAttach = ((uint)(2));
-			w17.BottomAttach = ((uint)(3));
-			w17.LeftAttach = ((uint)(1));
-			w17.RightAttach = ((uint)(2));
-			w17.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table2 [this.entrySuffix]));
+			w18.TopAttach = ((uint)(3));
+			w18.BottomAttach = ((uint)(4));
+			w18.LeftAttach = ((uint)(1));
+			w18.RightAttach = ((uint)(2));
+			w18.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.Xalign = 0F;
+			this.label1.Xalign = 1F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Prefix:");
 			this.table2.Add (this.label1);
-			global::Gtk.Table.TableChild w18 = ((global::Gtk.Table.TableChild)(this.table2 [this.label1]));
-			w18.XOptions = ((global::Gtk.AttachOptions)(4));
-			w18.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table2 [this.label1]));
+			w19.XOptions = ((global::Gtk.AttachOptions)(4));
+			w19.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.Xalign = 0F;
+			this.label3.Xalign = 1F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Suffix:");
 			this.table2.Add (this.label3);
-			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table2 [this.label3]));
-			w19.TopAttach = ((uint)(2));
-			w19.BottomAttach = ((uint)(3));
-			w19.XOptions = ((global::Gtk.AttachOptions)(4));
-			w19.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table2 [this.label3]));
+			w20.TopAttach = ((uint)(3));
+			w20.BottomAttach = ((uint)(4));
+			w20.XOptions = ((global::Gtk.AttachOptions)(4));
+			w20.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.label8 = new global::Gtk.Label ();
+			this.label8.Name = "label8";
+			this.label8.Xalign = 1F;
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Optional Prefixes:");
+			this.table2.Add (this.label8);
+			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table2 [this.label8]));
+			w21.TopAttach = ((uint)(1));
+			w21.BottomAttach = ((uint)(2));
+			w21.XOptions = ((global::Gtk.AttachOptions)(4));
+			w21.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
@@ -259,19 +285,19 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.Xalign = 0F;
+			this.label2.Xalign = 1F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Style:");
 			this.vbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
-			w20.Position = 0;
-			w20.Expand = false;
-			w20.Fill = false;
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
+			w22.Position = 0;
+			w22.Expand = false;
+			w22.Fill = false;
 			this.table2.Add (this.vbox2);
-			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table2 [this.vbox2]));
-			w21.TopAttach = ((uint)(1));
-			w21.BottomAttach = ((uint)(2));
-			w21.XOptions = ((global::Gtk.AttachOptions)(4));
-			w21.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table2 [this.vbox2]));
+			w23.TopAttach = ((uint)(2));
+			w23.BottomAttach = ((uint)(3));
+			w23.XOptions = ((global::Gtk.AttachOptions)(4));
+			w23.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.vbox4 = new global::Gtk.VBox ();
 			this.vbox4.Name = "vbox4";
@@ -280,15 +306,14 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.radiobuttonPascalCase = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_PascalCase"));
 			this.radiobuttonPascalCase.CanFocus = true;
 			this.radiobuttonPascalCase.Name = "radiobuttonPascalCase";
-			this.radiobuttonPascalCase.Active = true;
 			this.radiobuttonPascalCase.DrawIndicator = true;
 			this.radiobuttonPascalCase.UseUnderline = true;
 			this.radiobuttonPascalCase.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.vbox4.Add (this.radiobuttonPascalCase);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonPascalCase]));
-			w22.Position = 0;
-			w22.Expand = false;
-			w22.Fill = false;
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonPascalCase]));
+			w24.Position = 0;
+			w24.Expand = false;
+			w24.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.radiobuttonCamelCase = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_camelCase"));
 			this.radiobuttonCamelCase.CanFocus = true;
@@ -297,10 +322,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.radiobuttonCamelCase.UseUnderline = true;
 			this.radiobuttonCamelCase.Group = this.radiobuttonPascalCase.Group;
 			this.vbox4.Add (this.radiobuttonCamelCase);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonCamelCase]));
-			w23.Position = 1;
-			w23.Expand = false;
-			w23.Fill = false;
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonCamelCase]));
+			w25.Position = 1;
+			w25.Expand = false;
+			w25.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.radiobuttonAllUpper = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_ALL__Upper"));
 			this.radiobuttonAllUpper.CanFocus = true;
@@ -309,10 +334,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.radiobuttonAllUpper.UseUnderline = true;
 			this.radiobuttonAllUpper.Group = this.radiobuttonPascalCase.Group;
 			this.vbox4.Add (this.radiobuttonAllUpper);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonAllUpper]));
-			w24.Position = 2;
-			w24.Expand = false;
-			w24.Fill = false;
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonAllUpper]));
+			w26.Position = 2;
+			w26.Expand = false;
+			w26.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.radiobuttonAllLower = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("all__l_ower"));
 			this.radiobuttonAllLower.CanFocus = true;
@@ -321,10 +346,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.radiobuttonAllLower.UseUnderline = true;
 			this.radiobuttonAllLower.Group = this.radiobuttonPascalCase.Group;
 			this.vbox4.Add (this.radiobuttonAllLower);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonAllLower]));
-			w25.Position = 3;
-			w25.Expand = false;
-			w25.Fill = false;
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonAllLower]));
+			w27.Position = 3;
+			w27.Expand = false;
+			w27.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.radiobuttonFirstUpper = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_First__upper"));
 			this.radiobuttonFirstUpper.CanFocus = true;
@@ -333,33 +358,33 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.radiobuttonFirstUpper.UseUnderline = true;
 			this.radiobuttonFirstUpper.Group = this.radiobuttonPascalCase.Group;
 			this.vbox4.Add (this.radiobuttonFirstUpper);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonFirstUpper]));
-			w26.Position = 4;
-			w26.Expand = false;
-			w26.Fill = false;
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radiobuttonFirstUpper]));
+			w28.Position = 4;
+			w28.Expand = false;
+			w28.Fill = false;
 			this.table2.Add (this.vbox4);
-			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.table2 [this.vbox4]));
-			w27.TopAttach = ((uint)(1));
-			w27.BottomAttach = ((uint)(2));
-			w27.LeftAttach = ((uint)(1));
-			w27.RightAttach = ((uint)(2));
-			w27.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w29 = ((global::Gtk.Table.TableChild)(this.table2 [this.vbox4]));
+			w29.TopAttach = ((uint)(2));
+			w29.BottomAttach = ((uint)(3));
+			w29.LeftAttach = ((uint)(1));
+			w29.RightAttach = ((uint)(2));
+			w29.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.hbox1.Add (this.table2);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.table2]));
-			w28.Position = 1;
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.table2]));
+			w30.Position = 1;
 			this.vbox3.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
-			w29.Position = 1;
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
+			w31.Position = 1;
 			w1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox3]));
-			w30.Position = 0;
-			w30.Padding = ((uint)(6));
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox3]));
+			w32.Position = 0;
+			w32.Padding = ((uint)(6));
 			// Internal child MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.ActionArea
-			global::Gtk.HButtonBox w31 = this.ActionArea;
-			w31.Name = "dialog1_ActionArea";
-			w31.Spacing = 10;
-			w31.BorderWidth = ((uint)(5));
-			w31.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w33 = this.ActionArea;
+			w33.Name = "dialog1_ActionArea";
+			w33.Spacing = 10;
+			w33.BorderWidth = ((uint)(5));
+			w33.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -369,9 +394,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w32 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w31 [this.buttonCancel]));
-			w32.Expand = false;
-			w32.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w34 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w33 [this.buttonCancel]));
+			w34.Expand = false;
+			w34.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -381,10 +406,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w33 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w31 [this.buttonOk]));
-			w33.Position = 1;
-			w33.Expand = false;
-			w33.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w35 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w33 [this.buttonOk]));
+			w35.Position = 1;
+			w35.Expand = false;
+			w35.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}

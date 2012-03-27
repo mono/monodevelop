@@ -83,7 +83,7 @@ namespace MonoDevelop.CodeActions
 			int mnemonic = 1;
 			foreach (CodeAction fix_ in fixes) {
 				var fix = fix_;
-				var escapedLabel = fix.Title.Replace ("_", "");
+				var escapedLabel = fix.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;

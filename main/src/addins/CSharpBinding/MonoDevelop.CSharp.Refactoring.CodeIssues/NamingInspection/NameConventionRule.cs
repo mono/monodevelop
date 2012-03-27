@@ -48,6 +48,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		}
 		
 		[ItemProperty]
+		public string[] AllowedPrefixes {
+			get { return wrappedRule.AllowedPrefixes; } 
+			set { wrappedRule.AllowedPrefixes = value;} 
+		}
+		
+		[ItemProperty]
 		public string[] RequiredSuffixes {
 			get { return wrappedRule.RequiredSuffixes; } 
 			set { wrappedRule.RequiredSuffixes = value;} 
@@ -136,6 +142,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 			if (RequiredSuffixes != null && RequiredSuffixes.Length > 0)
 				result.Append (RequiredSuffixes [0]);
+			if (AllowedPrefixes != null) {
+				string baseString = result.ToString ();
+				foreach (var str in AllowedPrefixes) {
+					result.Append (", " + str + baseString);
+				}
+
+			}
 			return result.ToString ();
 		}
 

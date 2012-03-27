@@ -123,9 +123,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			entryRuleName.Text = rule.Name ?? "";
 			if (rule.RequiredPrefixes != null)
 				entryPrefix.Text = rule.RequiredPrefixes.FirstOrDefault (); 
+			if (rule.AllowedPrefixes != null)
+				entryPrefixAllowed.Text = string.Join (", ", rule.AllowedPrefixes); 
 			if (rule.RequiredSuffixes != null)
 				entrySuffix.Text = rule.RequiredSuffixes.FirstOrDefault (); 
-			
+
 			radiobuttonPascalCase.Active = rule.NamingStyle == NamingStyle.PascalCase;
 			radiobuttonCamelCase.Active = rule.NamingStyle == NamingStyle.CamelCase;
 			radiobuttonAllLower.Active = rule.NamingStyle == NamingStyle.AllLower;
@@ -170,12 +172,20 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				rule.RequiredPrefixes = new [] { prefix };
 			}
 			
+			var allowedPrefix = entryPrefixAllowed.Text.Trim ();
+			if (string.IsNullOrEmpty (allowedPrefix)) {
+				rule.AllowedPrefixes = null;
+			} else {
+				rule.AllowedPrefixes = allowedPrefix.Split (',', ';').Select (s => s.Trim ()).ToArray ();
+			}
+			
 			var suffix = entrySuffix.Text.Trim ();
 			if (string.IsNullOrEmpty (suffix)) {
 				rule.RequiredSuffixes = null;
 			} else {
 				rule.RequiredSuffixes = new [] { suffix };
 			}
+
 			var ae = AffectedEntity.None;
 			TreeIter iter;
 			if (entityStore.GetIterFirst (out iter)) {

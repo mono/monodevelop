@@ -69,8 +69,24 @@
 			<IncludeStaticEntities>True</IncludeStaticEntities>
 		</NamingRule>
 		<NamingRule>
+			<Name>Static Readonly Fields</Name>
+			<AffectedEntity>ReadonlyField</AffectedEntity>
+			<VisibilityMask>VisibilityMask</VisibilityMask>
+			<NamingStyle>PascalCase</NamingStyle>
+			<IncludeInstanceMembers>False</IncludeInstanceMembers>
+			<IncludeStaticEntities>True</IncludeStaticEntities>
+		</NamingRule>
+		<NamingRule>
 			<Name>Fields (Non Private)</Name>
-			<AffectedEntity>Field, ReadonlyField</AffectedEntity>
+			<AffectedEntity>Field</AffectedEntity>
+			<VisibilityMask>Internal, Protected, Public</VisibilityMask>
+			<NamingStyle>PascalCase</NamingStyle>
+			<IncludeInstanceMembers>True</IncludeInstanceMembers>
+			<IncludeStaticEntities>True</IncludeStaticEntities>
+		</NamingRule>
+		<NamingRule>
+			<Name>ReadOnly Fields (Non Private)</Name>
+			<AffectedEntity>ReadonlyField</AffectedEntity>
 			<VisibilityMask>Internal, Protected, Public</VisibilityMask>
 			<NamingStyle>PascalCase</NamingStyle>
 			<IncludeInstanceMembers>True</IncludeInstanceMembers>
@@ -78,19 +94,27 @@
 		</NamingRule>
 		<NamingRule>
 			<Name>Fields (Private)</Name>
+			<AllowedPrefixes>
+				<String>_</String>
+				<String>m_</String>
+			</AllowedPrefixes>
 			<AffectedEntity>Field, ReadonlyField</AffectedEntity>
 			<VisibilityMask>Private</VisibilityMask>
 			<NamingStyle>CamelCase</NamingStyle>
 			<IncludeInstanceMembers>True</IncludeInstanceMembers>
-			<IncludeStaticEntities>False</IncludeStaticEntities>
+			<IncludeStaticEntities>True</IncludeStaticEntities>
 		</NamingRule>
 		<NamingRule>
-			<Name>Static fields</Name>
-			<AffectedEntity>Field, ReadonlyField</AffectedEntity>
-			<VisibilityMask>VisibilityMask</VisibilityMask>
-			<NamingStyle>PascalCase</NamingStyle>
-			<IncludeInstanceMembers>False</IncludeInstanceMembers>
-			<IncludeStaticEntities>True</IncludeStaticEntities>
+			<Name>ReadOnly Fields (Private)</Name>
+			<AllowedPrefixes>
+				<String>_</String>
+				<String>m_</String>
+			</AllowedPrefixes>
+			<AffectedEntity>ReadonlyField</AffectedEntity>
+			<VisibilityMask>Private</VisibilityMask>
+			<NamingStyle>CamelCase</NamingStyle>
+			<IncludeInstanceMembers>True</IncludeInstanceMembers>
+			<IncludeStaticEntities>False</IncludeStaticEntities>
 		</NamingRule>
 		<NamingRule>
 			<Name>Constant Fields</Name>

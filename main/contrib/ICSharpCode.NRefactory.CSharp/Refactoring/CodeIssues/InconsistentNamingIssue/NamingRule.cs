@@ -40,6 +40,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public string[] RequiredPrefixes { get; set; }
 
 		/// <summary>
+		/// If set, identifiers are allowed to be prefixed with one of these values.
+		/// </summary>
+		public string[] AllowedPrefixes { get; set; }
+
+		/// <summary>
 		/// If set, identifiers are required to be suffixed with one of these values.
 		/// </summary>
 		public string[] RequiredSuffixes { get; set; }
@@ -75,13 +80,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public bool IsValid(string name)
 		{
 			string id = name;
+			bool foundPrefix = false;
 			if (RequiredPrefixes != null && RequiredPrefixes.Length > 0) {
 				var prefix = RequiredPrefixes.FirstOrDefault(p => id.StartsWith(p));
 				if (prefix == null) {
 					return false;
 				}
 				id = id.Substring(prefix.Length);
-			} else if (ForbiddenPrefixes != null && ForbiddenPrefixes.Length > 0) {
+				foundPrefix = true;
+			}
+			
+			if (!foundPrefix && AllowedPrefixes != null && AllowedPrefixes.Length > 0) {
+				var prefix = AllowedPrefixes.FirstOrDefault(p => id.StartsWith(p));
+				if (prefix != null) {
+					id = id.Substring(prefix.Length);
+					foundPrefix = true;
+				}
+			}
+			
+			if (!foundPrefix && ForbiddenPrefixes != null && ForbiddenPrefixes.Length > 0) {
 				if (ForbiddenPrefixes.Any(p => id.StartsWith(p))) {
 					return false;
 				}
@@ -144,22 +161,30 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			bool missingRequiredPrefix = false;
 			bool missingRequiredSuffix = false;
-			string prefix = null;
+			string requiredPrefix = null;
+			string allowedPrefix = null;
 			string suffix = null;
 			
+			if (AllowedPrefixes != null && AllowedPrefixes.Length > 0) {
+				allowedPrefix = AllowedPrefixes.FirstOrDefault(p => id.StartsWith(p));
+				if (allowedPrefix != null)
+					id = id.Substring(allowedPrefix.Length);
+
+			}
+
 			if (RequiredPrefixes != null && RequiredPrefixes.Length > 0) {
-				prefix = RequiredPrefixes.FirstOrDefault(p => id.StartsWith(p));
-				if (prefix == null) {
+				requiredPrefix = RequiredPrefixes.FirstOrDefault(p => id.StartsWith(p));
+				if (requiredPrefix == null) {
 					errorMessage = string.Format(ctx.TranslateString("Name should have prefix '{0}'."), RequiredPrefixes [0]);
 					missingRequiredPrefix = true;
 				} else {
-					id = id.Substring(prefix.Length);
+					id = id.Substring(requiredPrefix.Length);
 				}
 			} else if (ForbiddenPrefixes != null && ForbiddenPrefixes.Length > 0) {
-				prefix = ForbiddenPrefixes.FirstOrDefault(p => id.StartsWith(p));
-				if (prefix != null) {
-					errorMessage = string.Format(ctx.TranslateString("Name has forbidden prefix '{0}'."), prefix);
-					id = id.Substring(prefix.Length);
+				requiredPrefix = ForbiddenPrefixes.FirstOrDefault(p => id.StartsWith(p));
+				if (requiredPrefix != null) {
+					errorMessage = string.Format(ctx.TranslateString("Name has forbidden prefix '{0}'."), requiredPrefix);
+					id = id.Substring(requiredPrefix.Length);
 				}
 			}
 			
@@ -231,9 +256,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					break;
 			}
 
-			if (prefix != null) {
+			if (requiredPrefix != null) {
 				for (int i = 0; i < suggestedNames.Count; i++) {
-					suggestedNames [i] = prefix + suggestedNames [i];
+					suggestedNames [i] = requiredPrefix + suggestedNames [i];
+				}
+			} else if (allowedPrefix != null) {
+				int count = suggestedNames.Count;
+				for (int i = 0; i < count; i++) {
+					suggestedNames.Add(suggestedNames [i]);
+					suggestedNames [i] = allowedPrefix + suggestedNames [i];
 				}
 			} else if (missingRequiredPrefix) {
 				for (int i = 0; i < suggestedNames.Count; i++) {

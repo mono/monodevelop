@@ -93,6 +93,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new NamingRule(AffectedEntity.Field | AffectedEntity.ReadonlyField) {
 				Name = "Fields (Private)",
 				NamingStyle = NamingStyle.CamelCase,
+				AllowedPrefixes = new [] { "_", "m_" },
 				VisibilityMask = Modifiers.Private
 			};
 			
@@ -100,6 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Name = "ReadOnly Fields (Private)",
 				NamingStyle = NamingStyle.CamelCase,
 				VisibilityMask = Modifiers.Private,
+				AllowedPrefixes = new [] { "_", "m_" },
 				IncludeStaticEntities = false
 			};
 
