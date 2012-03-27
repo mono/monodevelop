@@ -77,6 +77,7 @@ FILES =  \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \
 	MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs \
 	MonoDevelop.Ide.FindInFiles/MemberCollectorTests.cs \
+	MonoDevelop.Ide.FindInFiles/SearchCollectorTests.cs \
 	MonoDevelop.Ide.Gui/CompletionListWindowTests.cs \
 	MonoDevelop.Projects/LocalCopyTests.cs \
 	MonoDevelop.Projects/MakefileTests.cs \
