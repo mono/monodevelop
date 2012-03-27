@@ -245,7 +245,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (parentPArray)
 					renderer.Text = "";
 				else
-					renderer.Text = key != null && ShowDescriptions ? GettextCatalog.GetString (key.Description) : id;
+					renderer.Text = key != null && ShowDescriptions ? key.Description : id;
 			});
 			treeview.AppendColumn (col);
 			
@@ -540,8 +540,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 				sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Description, y.Description));
 			else
 				sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Identifier, y.Identifier));
+			
 			foreach (var key in sortedKeys)
-				keyStore.AppendValues (key.Identifier, key);
+				keyStore.AppendValues (ShowDescriptions ? key.Description : key.Identifier, key);
 		}
 
 		void RefreshTree ()
