@@ -99,9 +99,10 @@ namespace MonoDevelop.MacDev.Tests
 	<Key name = ""keyname"" type = ""Dictionary"" />
 </PListScheme>");
 			
-			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PDictionary> (obj, "#1");
-			Assert.AreEqual (0, ((PDictionary)obj).Count, "#2");
+			var obj = (PDictionary) scheme.Keys [0].Create ();
+			Assert.AreEqual (1, obj.Count, "#1");
+			Assert.IsTrue (obj.ContainsKey ("newNode"));
+			Assert.IsInstanceOf<PString> (obj ["newNode"], "#2");
 		}
 		
 		[Test]
@@ -115,9 +116,10 @@ namespace MonoDevelop.MacDev.Tests
 	</Key>
 </PListScheme>");
 			
-			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PDictionary> (obj, "#1");
-			Assert.AreEqual (0, ((PDictionary)obj).Count, "#2");
+			var obj = (PDictionary) scheme.Keys [0].Create ();
+			Assert.AreEqual (1, obj.Count, "1");
+			Assert.IsInstanceOf <PNumber> (obj ["key1"], "#2");
+			Assert.AreEqual (0, ((PNumber) obj ["key1"]).Value, "#3");
 		}
 		
 		[Test]
@@ -179,9 +181,11 @@ namespace MonoDevelop.MacDev.Tests
 	<Key name = ""keyname"" type = ""Array"" arrayType = ""Number"" />
 </PListScheme>");
 			
-			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PArray> (obj, "#1");
-			Assert.AreEqual (0, ((PArray)obj).Count, "#2");
+			var obj = (PArray) scheme.Keys [0].Create ();
+			Assert.AreEqual (1, obj.Count, "#1");
+			Assert.IsInstanceOf <PNumber> (obj [0], "#2");
+			Assert.AreEqual (0, ((PNumber) obj [0]).Value, "#3");
+			
 		}
 		
 		[Test]
@@ -195,9 +199,9 @@ namespace MonoDevelop.MacDev.Tests
 	</Key>
 </PListScheme>");
 			
-			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PArray> (obj, "#1");
-			Assert.AreEqual (0, ((PArray)obj).Count, "#2");
+			var obj = (PArray) scheme.Keys [0].Create ();
+			Assert.AreEqual (1, obj.Count, "#1");
+			Assert.AreEqual (6, ((PNumber)obj[0]).Value, "#2");
 		}
 		
 		[Test]
@@ -466,7 +470,7 @@ namespace MonoDevelop.MacDev.Tests
 	<Key name = ""key1"" type = ""Array"" arrayType = ""Dictionary"" >
 		<Value required = ""True"" >
 			<Value name = ""val1"" type = ""Number"" required = ""True"" />
-			<Value name = ""val2"" type = ""Array"" required = ""True"" />
+			<Value name = ""val2"" type = ""Array"" arrayType = ""String"" required = ""True"" />
 		</Value>
 	</Key>
 </PListScheme>");
@@ -477,7 +481,7 @@ namespace MonoDevelop.MacDev.Tests
 			root.Add ("key1", tree);
 			
 			var result = PListScheme.Match (root, scheme);
-			Assert.AreEqual (4, result.Count);
+			Assert.AreEqual (5, result.Count);
 			Assert.AreSame (result [tree], key, "#2");
 			
 			var dict = (PDictionary) tree[0];
@@ -488,6 +492,10 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var val2 = dict ["val2"];
 			Assert.AreSame (result [val2], key.Values [0].Values [1], "#5");
+			
+			var child = ((PArray) val2)[0];
+			Assert.AreSame (result [child], key.Values [0].Values [1], "#6");
+			Assert.IsInstanceOf <PString> (child, "#7");
 		}
 		
 		[Test]
@@ -497,7 +505,7 @@ namespace MonoDevelop.MacDev.Tests
 <PListScheme>
 	<Key name = ""key1"" type = ""Dictionary"">
 		<Value name = ""val1"" type = ""Number"" required = ""True"" />
-		<Value name = ""val2"" type = ""Array"" required = ""True"" />
+		<Value name = ""val2"" type = ""Array"" arrayType = ""Number"" required = ""True"" />
 	</Key>
 </PListScheme>");
 			
@@ -507,7 +515,7 @@ namespace MonoDevelop.MacDev.Tests
 			root.Add ("key1", tree);
 			
 			var result = PListScheme.Match (root, scheme);
-			Assert.AreEqual (3, result.Count);
+			Assert.AreEqual (4, result.Count);
 			Assert.AreSame (result [tree], key, "#2");
 			
 			var val1 = tree ["val1"];
@@ -515,6 +523,8 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var val2 = tree ["val2"];
 			Assert.AreSame (result [val2], key.Values [1], "#4");
+			Assert.IsInstanceOf<PNumber> (((PArray) val2) [0], "#5");
+			
 		}
 		
 		[Test]

@@ -54,12 +54,32 @@ namespace MonoDevelop.MacDev.PlistEditor
 						if (v.Required)
 							dictionary.Add (v.Identifier, v.Create ());
 					}
+					
+					// If nothing was required, create an initial one anyway
+					if (dictionary.Count == 0) {
+						var first = Values.FirstOrDefault ();
+						if (first == null) {
+							dictionary.Add ("newNode", PObject.Create (PString.Type));
+						} else {
+							dictionary.Add (first.Identifier ?? "newNode", first.Create ());
+						}
+					}
 					return dictionary;
 				} else if (Type == PArray.Type) {
 					var array = new PArray ();
 					foreach (var v in Values) {
 						if (v.Required)
 							array.Add (v.Create ());
+					}
+					
+					// If nothing was required, create an initial one anyway
+					if (array.Count == 0) {
+						var first = Values.FirstOrDefault ();
+						if (first == null) {
+							array.Add (PObject.Create (ArrayType));
+						} else {
+							array.Add (first.Create ());
+						}
 					}
 					return array;
 				} else if (Values.Any ()){
