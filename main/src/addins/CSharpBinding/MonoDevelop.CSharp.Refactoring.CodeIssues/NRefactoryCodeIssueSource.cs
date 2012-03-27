@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.IssueDescriptionAttribute), false);
 				if (attr == null || attr.Length != 1)
 					continue;
-				yield return new NRefactoryIssueWrapper (
+				yield return new NRefactoryIssueProvider (
 					(ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider)Activator.CreateInstance (t),
 					(ICSharpCode.NRefactory.CSharp.IssueDescriptionAttribute)attr [0]);
 			}

@@ -352,6 +352,8 @@
     <Compile Include="Refactoring\CodeActions\InlineLocalVariableAction.cs" />
     <Compile Include="Refactoring\CodeActions\DeclareLocalVariableAction.cs" />
     <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\WordParser.cs" />
+    <Compile Include="Refactoring\CodeActions\CreateClassDeclarationAction.cs" />
+    <Compile Include="Refactoring\CodeActions\CreateConstructorDeclarationAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

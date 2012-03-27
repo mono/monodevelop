@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			Actions = action ?? Enumerable.Empty<CodeAction> ();
 		}
 		
-		public CodeIssue(string description, TextLocation start, TextLocation end, CodeAction action) : this (description, start, end, new [] { action })
+		public CodeIssue(string description, TextLocation start, TextLocation end, CodeAction action) : this (description, start, end, action != null ? new [] { action } : null)
 		{
 		}
 	}

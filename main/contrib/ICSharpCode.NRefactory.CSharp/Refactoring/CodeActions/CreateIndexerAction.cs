@@ -37,13 +37,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var indexer = context.GetNode<IndexerExpression>();
-			if (indexer == null) { 
+			if (indexer == null)
 				yield break;
-			}
-			
-			if (!(context.Resolve(indexer).IsError)) {
+			if (!(context.Resolve(indexer).IsError))
 				yield break;
-			}
 
 			var state = context.GetResolverStateBefore(indexer);
 			var guessedType = CreateFieldAction.GuessAstType(context, indexer);
@@ -55,10 +52,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			bool isStatic;
 			if (createInOtherType) {
-				isStatic = targetResolveResult is TypeResolveResult;
-				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface) {
+				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
 					yield break;
-				}
+				isStatic = targetResolveResult is TypeResolveResult;
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+					yield break;
 			} else {
 				isStatic = indexer.Target is IdentifierExpression && state.CurrentMember.IsStatic;
 			}
@@ -77,12 +75,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					},
 				};
-				foreach (var parameter in CreateMethodDeclarationAction.GenerateParameters (context, indexer.Arguments)) {
-					decl.Parameters.Add(parameter);
-				}
-				if (isStatic) {
+				decl.Parameters.AddRange(CreateMethodDeclarationAction.GenerateParameters (context, indexer.Arguments));
+				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
-				}
 				
 				if (createInOtherType) {
 					if (targetResolveResult.Type.Kind == TypeKind.Interface) {

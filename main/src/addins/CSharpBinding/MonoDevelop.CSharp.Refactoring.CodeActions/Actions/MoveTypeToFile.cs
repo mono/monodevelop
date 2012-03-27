@@ -35,12 +35,19 @@ using System.IO;
 using System.Text;
 using MonoDevelop.Ide.StandardHeader;
 using MonoDevelop.Core.ProgressMonitoring;
+using ICSharpCode.NRefactory;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class MoveTypeToFile : MDRefactoringContextActionProvider
+	public class MoveTypeToFile : MonoDevelop.CodeActions.CodeActionProvider
 	{
-		protected override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
+		{
+			var context = new MDRefactoringContext (document, loc);
+			return GetActions (context);
+		}
+		protected IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context)
 		{
 			var type = GetTypeDeclaration (context);
 			if (type == null)
@@ -53,7 +60,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			} else {
 				title = String.Format (GettextCatalog.GetString ("_Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
 			}
-			yield return new MDRefactoringContextAction (title, ctx => {
+			yield return new MonoDevelop.CodeActions.DefaultCodeAction (title, (d, l) => {
+				var ctx = new MDRefactoringContext (d, l);
 				string correctFileName = GetCorrectFileName (ctx, type);
 				if (IsSingleType (ctx)) {
 					FileService.RenameFile (ctx.Document.FileName, correctFileName);
@@ -69,7 +77,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			});
 		}
 
-		void CreateNewFile (MDRefactoringContext context, TypeDeclaration type, string correctFileName)
+		static void CreateNewFile (MDRefactoringContext context, TypeDeclaration type, string correctFileName)
 		{
 			var content = context.Document.Editor.Text;
 			
@@ -144,7 +152,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return null;
 		}
 		
-		string GetCorrectFileName (MDRefactoringContext context, TypeDeclaration type)
+		internal static string GetCorrectFileName (MDRefactoringContext context, TypeDeclaration type)
 		{
 			if (type == null)
 				return context.Document.FileName;

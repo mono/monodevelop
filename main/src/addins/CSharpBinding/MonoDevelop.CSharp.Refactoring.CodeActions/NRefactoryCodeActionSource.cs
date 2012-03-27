@@ -38,7 +38,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var attr = t.GetCustomAttributes (typeof(ICSharpCode.NRefactory.CSharp.ContextActionAttribute), false);
 				if (attr == null || attr.Length != 1)
 					continue;
-				yield return new NRefactoryCodeActionWrapper (
+				yield return new NRefactoryCodeActionProvider (
 					(ICSharpCode.NRefactory.CSharp.Refactoring.ICodeActionProvider)Activator.CreateInstance (t),
 					(ICSharpCode.NRefactory.CSharp.ContextActionAttribute)attr [0]);
 			}

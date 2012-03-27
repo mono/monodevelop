@@ -278,11 +278,8 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContext.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringScript.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContextActionProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryIssueWrapper.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryCodeIssueSource.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionSource.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionWrapper.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionRule.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionEditRuleDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanel.cs" />
@@ -290,6 +287,9 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryIssueProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

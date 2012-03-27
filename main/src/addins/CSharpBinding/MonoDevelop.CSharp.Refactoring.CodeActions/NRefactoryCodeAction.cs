@@ -1,10 +1,10 @@
 // 
-// CSharpQuickFix.cs
+// NRefactoryCodeAction.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
@@ -34,11 +35,11 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class MDRefactoringContextAction : MonoDevelop.CodeActions.CodeAction
+	public class NRefactoryCodeAction : MonoDevelop.CodeActions.CodeAction
 	{
-		readonly Action<MDRefactoringContext> act;
+		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act;
 		
-		public MDRefactoringContextAction (string title, Action<MDRefactoringContext> act)
+		public NRefactoryCodeAction (string title, ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act)
 		{
 			this.Title = title;
 			this.act = act;
@@ -47,20 +48,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public override void Run (Document document, TextLocation loc)
 		{
 			var context = new MDRefactoringContext (document, loc);
-			act (context);
+			using (var script = context.StartScript ())
+				act.Run (script);
 		}
 	}
-
-	public abstract class MDRefactoringContextActionProvider : MonoDevelop.CodeActions.CodeActionProvider
-	{
-
-		protected abstract IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context);
-		
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
-		{
-			var context = new MDRefactoringContext (document, loc);
-			return GetActions (context);
-		}
-	}
+	
 }
-

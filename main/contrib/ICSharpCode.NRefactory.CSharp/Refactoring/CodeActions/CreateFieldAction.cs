@@ -52,15 +52,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (IsInvocationTarget(identifier)) {
 				yield break;
 			}
-			var statement = context.GetNode<Statement>();
+			var statement = identifier.GetParent<Statement>();
 			if (statement == null) {
 				yield break;
 			}
-
 			if (!(context.Resolve(identifier).IsError)) {
 				yield break;
 			}
-			
 			var guessedType = CreateFieldAction.GuessAstType(context, identifier);
 			if (guessedType == null) {
 				yield break;

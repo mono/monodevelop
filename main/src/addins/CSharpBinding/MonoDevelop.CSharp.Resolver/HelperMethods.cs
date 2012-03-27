@@ -90,12 +90,17 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
+		public static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this MonoDevelop.Ide.Gui.Document doc)
 		{
 			var policyParent = doc.Project != null ? doc.Project.Policies : null;
 			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 			var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			return codePolicy.CreateOptions ();
+			return codePolicy;
+		}
+
+		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
+		{
+			return GetFormattingPolicy (doc).CreateOptions ();
 		}
 		
 		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Projects.Project project)

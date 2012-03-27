@@ -93,17 +93,17 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring.CodeActions/Actions/MoveTypeToFile.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/ContextActionExtensions.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringContext.cs \
-	MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringContextActionProvider.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringScript.cs \
+	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeAction.cs \
+	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionProvider.cs \
 	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionSource.cs \
-	MonoDevelop.CSharp.Refactoring.CodeActions/NRefactoryCodeActionWrapper.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionEditRuleDialog.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionPanel.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionPanelWidget.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionPolicy.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionRule.cs \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryCodeIssueSource.cs \
-	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryIssueWrapper.cs \
+	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryIssueProvider.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodDialog.cs \

@@ -306,7 +306,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Gets the first child with the specified role.
 		/// Returns the role's null object if the child is not found.
 		/// </summary>
-		public T GetChildByRole<T> (Role<T> role) where T : AstNode
+		public T GetChildByRole<T>(Role<T> role) where T : AstNode
 		{
 			if (role == null)
 				throw new ArgumentNullException ("role");
@@ -318,6 +318,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return role.NullObject;
 		}
 		
+		public T GetParent<T>() where T : AstNode
+		{
+			return Ancestors.OfType<T>().FirstOrDefault();
+		}
+				
 		public AstNodeCollection<T> GetChildrenByRole<T> (Role<T> role) where T : AstNode
 		{
 			return new AstNodeCollection<T> (this, role);

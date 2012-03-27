@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
-	class NRefactoryIssueWrapper : CodeIssueProvider
+	class NRefactoryIssueProvider : CodeIssueProvider
 	{
 		ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
 
@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public NRefactoryIssueWrapper (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
+		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
 			MimeType = "text/x-csharp";
@@ -61,15 +61,23 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			var context = new MDRefactoringContext (document, document.Editor.Caret.Location);
 			foreach (var action in issueProvider.GetIssues (context)) {
-				var issue = new CodeIssue (GettextCatalog.GetString (action.Desription ?? ""), action.Start, action.End, (action.Actions ?? Enumerable.Empty<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> ()).Select (
-					act => new MDRefactoringContextAction (act.Description, ctx => {
-						var editor = document.Editor;
-						var offset = editor.Caret.Offset;
-						var version = editor.Document.Version;
-						using (var script = ctx.StartScript ())
-							act.Run (script);
-						editor.Caret.Offset = version.MoveOffsetTo (editor.Document.Version, offset, ICSharpCode.NRefactory.Editor.AnchorMovementType.AfterInsertion);
-					})));
+				if (action.Actions == null) {
+					LoggingService.LogError ("NRefactory actions == null in :" + Title);
+					continue;
+				}
+
+				var issue = new CodeIssue (
+					GettextCatalog.GetString (action.Desription ?? ""),
+					action.Start,
+					action.End,
+					action.Actions.Select (act => {
+						if (act == null) {
+							LoggingService.LogError ("NRefactory issue action was null in :" + Title);
+							return null;
+						}
+						return new NRefactoryCodeAction (act.Description, act);
+					}
+				));
 				yield return issue;
 			}
 		}

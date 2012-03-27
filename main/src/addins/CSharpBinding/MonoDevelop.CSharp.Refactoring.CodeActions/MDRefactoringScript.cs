@@ -35,6 +35,8 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Refactoring.Rename;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using System.IO;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -185,6 +187,37 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			RenameRefactoring.RenameTypeParameter ((ITypeParameter)typeParameter, name);
 		}
+
+		public override void CreateNewType (TypeDeclaration newType, NewTypeContext ntctx)
+		{
+			if (newType == null)
+				throw new System.ArgumentNullException ("newType");
+			var correctFileName = MoveTypeToFile.GetCorrectFileName (context, newType);
+			
+			var content = context.Document.Editor.Text;
+			
+			var types = new List<TypeDeclaration> (context.Unit.GetTypes ());
+			types.Sort ((x, y) => y.StartLocation.CompareTo (x.StartLocation));
+
+			foreach (var removeType in types) {
+				var start = context.GetOffset (removeType.StartLocation);
+				var end = context.GetOffset (removeType.EndLocation);
+				content = content.Remove (start, end - start);
+			}
+			
+			var insertLocation = context.GetOffset (types.First ().StartLocation);
+			var formattingPolicy = this.document.GetFormattingPolicy ();
+			content = content.Substring (0, insertLocation) + newType.GetText (formattingPolicy.CreateOptions ()) + content.Substring (insertLocation);
+
+			var formatter = new CSharpFormatter ();
+			content = formatter.FormatText (formattingPolicy, null, CSharpFormatter.MimeType, content, 0, content.Length);
+
+			File.WriteAllText (correctFileName, content);
+			document.Project.AddFile (correctFileName);
+			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (document.Project);
+			MonoDevelop.Ide.IdeApp.Workbench.OpenDocument (correctFileName);
+		}
+
 	}
 }
 

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using ICSharpCode.NRefactory;
+using System;
 
 namespace MonoDevelop.CodeActions
 {
@@ -41,6 +42,22 @@ namespace MonoDevelop.CodeActions
 		/// Performs the specified code action in document at loc.
 		/// </summary>
 		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
+	}
+
+	public class DefaultCodeAction : CodeAction
+	{
+		public Action<MonoDevelop.Ide.Gui.Document, TextLocation> act;
+
+		public DefaultCodeAction (string title, Action<MonoDevelop.Ide.Gui.Document, TextLocation> act)
+		{
+			Title = title;
+			this.act = act;
+		}
+
+		public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+		{
+			act (document, loc);
+		}
 	}
 
 }

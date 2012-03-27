@@ -105,14 +105,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public IEnumerable<CodeAction> GetActionsFromInvocation(RefactoringContext context, InvocationExpression invocation)
 		{
-			if (!(context.Resolve(invocation.Target).IsError)) {
+			if (!(context.Resolve(invocation.Target).IsError)) 
 				yield break;
-			}
 
 			var methodName = GetMethodName(invocation);
-			if (methodName == null) {
+			if (methodName == null)
 				yield break;
-			}
 			var state = context.GetResolverStateBefore(invocation);
 			var guessedType = invocation.Parent is ExpressionStatement ? new PrimitiveType("void") : CreateFieldAction.GuessAstType(context, invocation);
 
@@ -125,10 +123,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			bool isStatic;
 			if (createInOtherType) {
-				isStatic = targetResolveResult is TypeResolveResult;
-				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface) {
+				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
 					yield break;
-				}
+				isStatic = targetResolveResult is TypeResolveResult;
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+					yield break;
 			} else {
 				isStatic = invocation.Target is IdentifierExpression && state.CurrentMember.IsStatic;
 			}
@@ -146,9 +145,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				foreach (var parameter in GenerateParameters (context, invocation.Arguments)) {
-					decl.Parameters.Add(parameter);
-				}
+				decl.Parameters.AddRange(GenerateParameters (context, invocation.Arguments));
 				if (isStatic) {
 					decl.Modifiers |= Modifiers.Static;
 				}
@@ -159,7 +156,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						decl.Modifiers = Modifiers.None;
 					} else {
 						decl.Modifiers |= Modifiers.Public;
-
 					}
 
 					script.InsertWithCursor(context.TranslateString("Create method"), decl, targetResolveResult.Type.GetDefinition());

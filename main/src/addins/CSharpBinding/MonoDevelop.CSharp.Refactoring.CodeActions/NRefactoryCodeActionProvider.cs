@@ -36,12 +36,16 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	class NRefactoryCodeActionWrapper : MonoDevelop.CodeActions.CodeActionProvider
+	class NRefactoryCodeActionProvider : MonoDevelop.CodeActions.CodeActionProvider
 	{
-		ICSharpCode.NRefactory.CSharp.Refactoring.ICodeActionProvider provider;
+		readonly ICodeActionProvider provider;
 
-		public NRefactoryCodeActionWrapper (ICodeActionProvider provider, ContextActionAttribute attr)
+		public NRefactoryCodeActionProvider (ICodeActionProvider provider, ContextActionAttribute attr)
 		{
+			if (provider == null)
+				throw new System.ArgumentNullException ("provider");
+			if (attr == null)
+				throw new System.ArgumentNullException ("attr");
 			this.provider = provider;
 			Title = GettextCatalog.GetString (attr.Title ?? "");
 			Description = GettextCatalog.GetString (attr.Description ?? "");
@@ -52,11 +56,14 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
 			var context = new MDRefactoringContext (document, loc);
-			foreach (var action in provider.GetActions (context)) {
-				yield return new MDRefactoringContextAction (GettextCatalog.GetString (action.Description ?? ""), ctx => {
-					using (var script = ctx.StartScript ())
-						action.Run (script);
-				});
+			var actions = provider.GetActions (context);
+			if (actions == null) {
+				LoggingService.LogWarning (provider + " returned null actions.");
+				yield break;
+			}
+			foreach (var action_ in actions) {
+				var action = action_;
+				yield return new NRefactoryCodeAction (GettextCatalog.GetString (action.Description ?? ""), action);
 			}
 		}
 	}

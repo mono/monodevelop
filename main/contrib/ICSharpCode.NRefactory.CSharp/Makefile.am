@@ -213,6 +213,8 @@ FILES =  \
 	Refactoring/CodeActions/ConvertForeachToForAction.cs \
 	Refactoring/CodeActions/ConvertHexToDecAction.cs \
 	Refactoring/CodeActions/CreateBackingStoreAction.cs \
+	Refactoring/CodeActions/CreateClassDeclarationAction.cs \
+	Refactoring/CodeActions/CreateConstructorDeclarationAction.cs \
 	Refactoring/CodeActions/CreateEventInvocatorAction.cs \
 	Refactoring/CodeActions/CreateFieldAction.cs \
 	Refactoring/CodeActions/CreateIndexerAction.cs \

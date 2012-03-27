@@ -333,6 +333,32 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public virtual void Dispose()
 		{
 		}
+
+		public enum NewTypeContext {
+			/// <summary>
+			/// The class should be placed in a new file to the current namespace.
+			/// </summary>
+			CurrentNamespace,
+
+			/// <summary>
+			/// The class should be placed in the unit tests. (not implemented atm.)
+			/// </summary>
+			UnitTests
+		}
+
+		/// <summary>
+		/// Creates a new file containing the type, namespace and correct usings.
+		/// (Note: Should take care of IDE specific things, file headers, add to project, correct name).
+		/// </summary>
+		/// <param name='newType'>
+		/// New type to be created.
+		/// </param>
+		/// <param name='context'>
+		/// The Context in which the new type should be created.
+		/// </param>
+		public virtual void CreateNewType(TypeDeclaration newType, NewTypeContext context = NewTypeContext.CurrentNamespace)
+		{
+		}
 	}
 }
 
