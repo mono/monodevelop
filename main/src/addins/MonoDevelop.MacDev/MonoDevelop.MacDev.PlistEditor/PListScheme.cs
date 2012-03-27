@@ -119,8 +119,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 					ArrayType = AttributeToString (keyNode.Attributes ["arrayType"])
 				};
 				
-				if (keyNode.HasChildNodes)
+				if (keyNode.HasChildNodes) {
 					key.Values.AddRange (ParseValues (key.ArrayType ?? key.Type, keyNode.ChildNodes));
+				} else if (key.Type == PBoolean.Type) {
+					key.Values.Add (new Value { Identifier = "Yes", Description = "Yes" });
+					key.Values.Add (new Value { Identifier = "No", Description = "No" });
+				}
 				result.Keys.Add (key);
 			}
 			

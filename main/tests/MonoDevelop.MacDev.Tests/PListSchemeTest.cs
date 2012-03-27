@@ -64,6 +64,21 @@ namespace MonoDevelop.MacDev.Tests
 		}
 		
 		[Test]
+		public void BooleanKey_ImplicitValues ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Boolean"" />
+</PListScheme>");
+			
+			var key = scheme.GetKey ("keyname");
+			Assert.AreEqual ("Boolean", key.Type, "#1");
+			Assert.AreEqual (2, key.Values.Count, "#2");
+			Assert.AreEqual ("Yes", key.Values [0].Identifier, "#3");
+			Assert.AreEqual ("No", key.Values [1].Identifier, "#4");
+		}
+		
+		[Test]
 		public void CreateKey_Dictionary_NoValue ()
 		{
 			var scheme = Load (@"
