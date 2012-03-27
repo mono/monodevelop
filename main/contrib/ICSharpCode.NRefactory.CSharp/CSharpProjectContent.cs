@@ -46,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.assemblyName = pc.assemblyName;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles, Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
+			this.Location = pc.Location;
 		}
 		public string Location { get; set; }
 		public IEnumerable<IParsedFile> Files {
