@@ -52,6 +52,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			private set {
 				if (showDescriptions != value) {
 					showDescriptions = value;
+					RefreshKeyStore ();
 					QueueDraw ();
 				}
 			}
@@ -80,8 +81,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			RootPObject = value;
 			RootPObject.Changed += delegate {
-				QueueDraw ();
 				RefreshTree ();
+				QueueDraw ();
 			};
 			RefreshTree ();
 		}
