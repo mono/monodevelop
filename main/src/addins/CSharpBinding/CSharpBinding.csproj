@@ -254,10 +254,6 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\IndexerParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\VisitNamespaceNodesNavigator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\RemoveUnusedImportsRefactoring.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\RefactorImportsHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\RefactorImports\SortImportsRefactoring.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\TemplateParameterDataProvider.cs" />
@@ -297,7 +293,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -325,7 +320,6 @@
     <Folder Include="MonoDevelop.CSharp\" />
     <Folder Include="MonoDevelop.CSharp.Completion\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring\RefactorImports\" />
     <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
     <Folder Include="MonoDevelop.CSharp.Formatting\policies\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\" />

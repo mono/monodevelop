@@ -111,10 +111,6 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodRefactoring.cs \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.CSharp.Refactoring/HelperMethods.cs \
-	MonoDevelop.CSharp.Refactoring/RefactorImports/RefactorImportsHandler.cs \
-	MonoDevelop.CSharp.Refactoring/RefactorImports/RemoveUnusedImportsRefactoring.cs \
-	MonoDevelop.CSharp.Refactoring/RefactorImports/SortImportsRefactoring.cs \
-	MonoDevelop.CSharp.Refactoring/VisitNamespaceNodesNavigator.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/ResolveCommandHandler.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
