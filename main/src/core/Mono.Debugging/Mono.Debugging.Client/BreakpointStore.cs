@@ -190,7 +190,7 @@ namespace Mono.Debugging.Client
 			List<Breakpoint> list = new List<Breakpoint> ();
 			foreach (BreakEvent be in breakpoints) {
 				Breakpoint bp = be as Breakpoint;
-				if (bp != null && FileNameEquals (bp.FileName, filename) && bp.Line == line)
+				if (bp != null && FileNameEquals (bp.FileName, filename) && (bp.OriginalLine == line || bp.Line == line))
 					list.Add (bp);
 			}
 			return list.AsReadOnly ();
