@@ -505,8 +505,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (CurrentTree.ContainsKey (item)) {
 				if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
 					do {
-						if (treeStore.GetValue (subIter, 1) == item)
+						if (treeStore.GetValue (subIter, 1) == item) {
+							// If we have modified the value of an existing PObject, such
+							// as changing the value of a PNumber from '1' to '2', we will
+							// need to refresh the value in the treestore.
+							treeStore.SetValue (subIter, 0, id);
 							break;
+						}
 					} while (treeStore.IterNext (ref subIter));
 				}
 			} else {
