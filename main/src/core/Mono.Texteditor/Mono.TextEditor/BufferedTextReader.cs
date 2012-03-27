@@ -72,11 +72,11 @@ namespace Mono.TextEditor
 			if (buffer == null)
 				throw new ArgumentNullException ();
 			int lastOffset = System.Math.Min (this.buffer.Length, position + count);
-			int length     = lastOffset - position;
+			int length = lastOffset - position;
 			if (length <= 0)
 				return 0;
 			string text = this.buffer.GetTextAt (position, length);
-			text.CopyTo (0, buffer, index, count);
+			text.CopyTo (0, buffer, index, length);
 			position += length;
 			return length;
 		}
