@@ -85,6 +85,22 @@ namespace MonoDevelop.Ide.FindInFiles
 				project => TypeSystemService.GetCompilation (project).Assemblies.Any (a => a.AssemblyName == assemblyName));
 		}
 
+		static FileList CollectDeclaringFiles (IEntity entity, IEnumerable<string> fileNames)
+		{
+			var project = TypeSystemService.GetProject (entity);
+			var paths = fileNames.Distinct().Select (p => (FilePath)p);
+ 			return new SearchCollector.FileList (project, TypeSystemService.GetProjectContext (project), paths);
+		}
+		
+		public static FileList CollectDeclaringFiles (IEntity entity)
+		{
+			if (entity is ITypeDefinition)
+				return CollectDeclaringFiles (entity, (entity as ITypeDefinition).Parts.Select (p => p.Region.FileName));
+			if (entity is IMethod)
+				return CollectDeclaringFiles (entity, (entity as IMethod).Parts.Select (p => p.Region.FileName));
+			return CollectDeclaringFiles (entity, new [] { entity.Region.FileName });
+		}
+		
 		Project searchProject;
 		bool searchProjectAdded; // if the searchProject is added, we can stop collecting
 		Solution solution;

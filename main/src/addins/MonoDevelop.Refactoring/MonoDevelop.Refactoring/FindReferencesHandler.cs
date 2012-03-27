@@ -39,13 +39,13 @@ namespace MonoDevelop.Refactoring
 {
 	public class FindReferencesHandler : CommandHandler
 	{
-		public static void FindRefs (IEntity entity)
+		public static void FindRefs (object obj)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					foreach (var mref in ReferenceFinder.FindReferences (solution, entity, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
+					foreach (var mref in ReferenceFinder.FindReferences (solution, obj, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
 						monitor.ReportResult (mref);
 					}
 				} catch (Exception ex) {

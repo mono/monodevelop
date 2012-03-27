@@ -85,41 +85,51 @@ namespace MonoDevelop.Ide.FindInFiles
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, scope, monitor);
 		}
 		
-		static SearchCollector.FileList GetFileNamesForType (ITypeDefinition type)
+		static SearchCollector.FileList GetFileList (string fileName)
 		{
-			var paths = type.Parts.Select (p => p.Region.FileName).Distinct ().Select (p => (FilePath)p);
- 			return new SearchCollector.FileList (type.GetSourceProject (), type.GetProjectContent (), paths);
+			var doc = IdeApp.Workbench.GetDocument (fileName);
+			if (doc != null)
+				return new SearchCollector.FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
+			return null;
 		}
 
 		static IEnumerable<SearchCollector.FileList> GetFileNames (Solution solution, object node, RefactoryScope scope, 
 		                                                           IProgressMonitor monitor, IEnumerable<object> searchNodes)
 		{
-			// TODO: ((IEntity)member).Region is not accurate for partial types/methods
 			if (node is IVariable || scope == RefactoryScope.File) {
 				string fileName;
 				if (node is IEntity) {
 					fileName = ((IEntity)node).Region.FileName;
+				} else if (node is ITypeParameter) {
+					fileName = ((ITypeParameter)node).Region.FileName;
 				} else {
 					fileName = ((IVariable)node).Region.FileName;
 				}
-				var doc = IdeApp.Workbench.GetDocument (fileName);
-
-				if (doc != null)
-					yield return new SearchCollector.FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
+				var fileList =  GetFileList (fileName);
+				if (fileList != null)
+					yield return fileList;
 				yield break;
 			}
+			
 			if (node is ITypeParameter) {
-				string fileName = ((ITypeParameter)node).Region.FileName;
-				var doc = IdeApp.Workbench.GetDocument (fileName);
-				if (doc != null)
-					yield return new SearchCollector.FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
+				var typeParameter = node as ITypeParameter;
+				if (typeParameter.Owner != null) {
+					yield return SearchCollector.CollectDeclaringFiles (typeParameter.Owner);
+					yield break;
+				}
+				var fileList =  GetFileList (typeParameter.Region.FileName);
+				if (fileList != null)
+					yield return fileList;
 				yield break;
 			}
 
 			var entity = (IEntity)node;
 			switch (scope) {
 			case RefactoryScope.DeclaringType:
-				yield return GetFileNamesForType (entity.DeclaringTypeDefinition);
+				if (entity.DeclaringTypeDefinition != null)
+					yield return SearchCollector.CollectDeclaringFiles (entity.DeclaringTypeDefinition);
+				else
+					yield return SearchCollector.CollectDeclaringFiles (entity);
 				break;
 			case RefactoryScope.Project:
 				var sourceProject = TypeSystemService.GetProject (entity.Compilation.MainAssembly.UnresolvedAssembly.Location);
