@@ -79,6 +79,19 @@ namespace MonoDevelop.MacDev.Tests
 		}
 		
 		[Test]
+		public void CreateKey_Boolean ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Boolean"" />
+</PListScheme>");
+			
+			var key = scheme.GetKey ("keyname").Create ();
+			Assert.IsInstanceOf <PBoolean> (key, "#1");
+			Assert.IsTrue (((PBoolean) key).Value, "#2");
+		}
+		
+		[Test]
 		public void CreateKey_Dictionary_NoValue ()
 		{
 			var scheme = Load (@"
