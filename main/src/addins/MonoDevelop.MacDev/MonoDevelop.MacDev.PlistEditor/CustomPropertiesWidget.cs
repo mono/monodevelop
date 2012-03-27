@@ -325,49 +325,43 @@ namespace MonoDevelop.MacDev.PlistEditor
 					}
 				}
 			};
-			
+
 			propRenderer.Edited += delegate(object o, EditedArgs args) {
 				TreeIter iter;
+				string newText = args.NewText;
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
-				var pObject = (PObject)treeStore.GetValue (iter, 1);
-				if (pObject == null)
-					return;
-				string newText = args.NewText;
-				var key = Parent != null? Scheme.GetKey (pObject.Parent.Key) : null;
+
+				var obj = (PObject)treeStore.GetValue (iter, 1);
+				var key = (PListScheme.SchemaItem) treeStore.GetValue (iter, 2);
 				if (key != null) {
-					foreach (var val in key.Values) {
-						if (newText == val.Description) {
-							newText = val.Identifier;
-							break;
-						}
-					}
+					var value = key.Values.FirstOrDefault (v => v.Description == newText || v.Identifier == newText);
+					if (value != null)
+						newText = value.Identifier;
 				}
-				pObject.SetValue (newText);
+				obj.SetValue (newText);
 			};
 
 			treeview.AppendColumn (GettextCatalog.GetString ("Value"), propRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				var obj      = (PObject)tree_model.GetValue (iter, 1);
-				if (obj == null) {
+				var key      = (PListScheme.SchemaItem) tree_model.GetValue (iter, 2) ?? PListScheme.Key.Empty;
+
+				renderer.Sensitive = !(obj is PDictionary || obj is PArray || obj is PData);
+				renderer.Editable = renderer.Sensitive;
+				if (obj == null || !renderer.Sensitive) {
 					renderer.Editable = false;
 					renderer.Text = "";
 					return;
 				}
-
-				renderer.Sensitive = !(obj is PDictionary || obj is PArray || obj is PData);
-
+				
 				if (ShowDescriptions) {
-					var value = (string) tree_model.GetValue (iter, 0) ?? "";
-					var key = (PListScheme.SchemaItem) tree_model.GetValue (iter, 2) ?? PListScheme.Key.Empty;
-					
-					foreach (PListScheme.SchemaItem v in key.Values) {
-						if (v.Identifier == value) {
-							renderer.Text = v.Description ?? v.Identifier;
-							break;
-						}
+					var value = (string) tree_model.GetValue (iter, 0);
+					var item = key.Values.FirstOrDefault (v => v.Identifier == value);
+					if (item != null) {
+						renderer.Text = item.Description ?? item.Identifier;
+						return;
 					}
-					return;
 				}
 
 				switch (obj.TypeString) {
