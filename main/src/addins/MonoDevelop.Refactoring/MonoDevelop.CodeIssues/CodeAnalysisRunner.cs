@@ -60,7 +60,7 @@ namespace MonoDevelop.CodeIssues
 					if (severity == Severity.None)
 						return;
 					foreach (var r in provider.GetIssues (input, cancellationToken)) {
-						var fixes = new List<GenericFix> (r.Actions.Select (a => new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
+						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
 						result.Add (new InspectorResults (
 							provider, 
 							r.Region, 

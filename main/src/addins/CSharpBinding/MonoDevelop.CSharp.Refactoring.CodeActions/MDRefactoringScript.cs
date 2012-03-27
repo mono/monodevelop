@@ -205,8 +205,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				content = content.Remove (start, end - start);
 			}
 			
-			var insertLocation = context.GetOffset (types.First ().StartLocation);
+			var insertLocation = types.Count > 0 ? context.GetOffset (types.Last ().StartLocation) : -1;
 			var formattingPolicy = this.document.GetFormattingPolicy ();
+			if (insertLocation < 0 || insertLocation > content.Length)
+				insertLocation = content.Length;
 			content = content.Substring (0, insertLocation) + newType.GetText (formattingPolicy.CreateOptions ()) + content.Substring (insertLocation);
 
 			var formatter = new CSharpFormatter ();

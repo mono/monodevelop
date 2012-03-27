@@ -135,21 +135,24 @@ namespace MonoDevelop.CSharp.Highlighting
 					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
 					compilation = guiDocument.Compilation;
 					resolver = new CSharpAstResolver (compilation, unit, parsedFile);
-					if (src != null) {
-						src.Cancel ();
-					}
-					src = new CancellationTokenSource ();
-					var cancellationToken = src.Token;
-					System.Threading.Tasks.Task.Factory.StartNew (delegate {
-						var visitor = new QuickTaskVisitor (resolver, cancellationToken);
-						unit.AcceptVisitor (visitor);
-						if (!cancellationToken.IsCancellationRequested) {
-							Gtk.Application.Invoke (delegate {
-								quickTasks = visitor.QuickTasks;
-								OnTasksUpdated (EventArgs.Empty);
-							});
+					
+					if (guiDocument.Project != null) {
+						if (src != null) {
+							src.Cancel ();
 						}
-					}, cancellationToken);
+						src = new CancellationTokenSource ();
+						var cancellationToken = src.Token;
+						System.Threading.Tasks.Task.Factory.StartNew (delegate {
+							var visitor = new QuickTaskVisitor (resolver, cancellationToken);
+							unit.AcceptVisitor (visitor);
+							if (!cancellationToken.IsCancellationRequested) {
+								Gtk.Application.Invoke (delegate {
+									quickTasks = visitor.QuickTasks;
+									OnTasksUpdated (EventArgs.Empty);
+								});
+							}
+						}, cancellationToken);
+					}
 				}
 			}
 		}

@@ -53,6 +53,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			return true;
 		}
+
+		public bool HasValidRule(string name, AffectedEntity entity, Modifiers accessibilty = Modifiers.Private, bool isStatic = false)
+		{
+			foreach (var rule in Rules) {
+				if (!rule.AffectedEntity.HasFlag(entity)) {
+					continue;
+				}
+				if (!rule.VisibilityMask.HasFlag(accessibilty)) {
+					continue;
+				}
+				if (isStatic && !rule.IncludeStaticEntities || !isStatic && !rule.IncludeInstanceMembers) {
+					continue;
+				}
+				if (rule.IsValid(name)) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 }
 

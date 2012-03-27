@@ -36,10 +36,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var createExpression = context.GetNode<ObjectCreateExpression>();
-			if (createExpression == null) 
-				yield break;
+			if (createExpression != null) 
+				return GetActions(context, createExpression);
 			
-			var resolveResult = context.Resolve(createExpression) as UnknownIdentifierResolveResult;
+			var simpleType = context.GetNode<SimpleType>();
+			if (simpleType != null) 
+				return GetActions(context, simpleType);
+
+			return Enumerable.Empty<CodeAction>();
+		}
+
+		static IEnumerable<CodeAction> GetActions(RefactoringContext context, AstNode node)
+		{
+			var resolveResult = context.Resolve(node) as UnknownIdentifierResolveResult;
 			if (resolveResult == null)
 				yield break;
 
@@ -49,35 +58,76 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 
 			yield return new CodeAction(context.TranslateString("Create class"), script => {
-				script.CreateNewType(CreateClassDeclaration(context, createExpression));
+				script.CreateNewType(CreateType(context, service, node));
 			});
 
 			yield return new CodeAction(context.TranslateString("Create nested class"), script => {
-				script.InsertWithCursor(context.TranslateString("Create nested class"), CreateClassDeclaration(context, createExpression), Script.InsertPosition.Before);
+				script.InsertWithCursor(context.TranslateString("Create nested class"), CreateType(context, service, node), Script.InsertPosition.Before);
 			});
 		}
 
-		static TypeDeclaration CreateClassDeclaration(RefactoringContext context, ObjectCreateExpression createExpression)
+		static TypeDeclaration CreateType(RefactoringContext context, NamingConventionService service, AstNode node)
 		{
+			var result = node is SimpleType ?
+				CreateClassFromType(context, (SimpleType)node) : 
+				CreateClassFromObjectCreation(context, (ObjectCreateExpression)node);
+			
+			return AddBaseTypesAccordingToNamingRules(context, service, result);
+		}
+
+		static TypeDeclaration CreateClassFromType(RefactoringContext context, SimpleType simpleType)
+		{
+			TypeDeclaration result;
+			string className = simpleType.Identifier;
+
+			if (simpleType.Parent is Attribute) {
+				if (!className.EndsWith("Attribute"))
+					className += "Attribute";
+			}
+
+			result = new TypeDeclaration() { Name = className };
+			var entity = simpleType.GetParent<EntityDeclaration>();
+			if (entity != null)
+				result.Modifiers |= entity.Modifiers & ~Modifiers.Internal;
+
+			return result;
+		}
+
+		static TypeDeclaration CreateClassFromObjectCreation(RefactoringContext context, ObjectCreateExpression createExpression)
+		{
+			TypeDeclaration result;
 			string className = createExpression.Type.GetText();
 			if (!createExpression.Arguments.Any()) {
-				return new TypeDeclaration() { Name = className };
+				result = new TypeDeclaration() { Name = className };
+			} else {
+				var decl = new ConstructorDeclaration() {
+					Name = className,
+					Modifiers = Modifiers.Public,
+					Body = new BlockStatement() {
+						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+					}
+				};
+				result = new TypeDeclaration() {
+					Name = className,
+					Members = {
+						decl
+					}
+				};
+				decl.Parameters.AddRange(CreateMethodDeclarationAction.GenerateParameters(context, createExpression.Arguments));
 			}
-			var decl = new ConstructorDeclaration() {
-				Name = className,
-				Modifiers = Modifiers.Public,
-				Body = new BlockStatement() {
-					new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-				}
-			};
-			decl.Parameters.AddRange(CreateMethodDeclarationAction.GenerateParameters(context, createExpression.Arguments));
-			
-			return new TypeDeclaration() {
-				Name = className,
-				Members = {
-					decl
-				}
-			};
+			return result;
+		}
+		
+		static TypeDeclaration AddBaseTypesAccordingToNamingRules(RefactoringContext context, NamingConventionService service, TypeDeclaration result)
+		{
+			if (service.HasValidRule(result.Name, AffectedEntity.CustomAttributes, Modifiers.Public)) {
+				result.BaseTypes.Add(context.CreateShortType("System", "Attribute"));
+			} else if (service.HasValidRule(result.Name, AffectedEntity.CustomEventArgs, Modifiers.Public)) {
+				result.BaseTypes.Add(context.CreateShortType("System", "EventArgs"));
+			} else if (service.HasValidRule(result.Name, AffectedEntity.CustomExceptions, Modifiers.Public)) {
+				result.BaseTypes.Add(context.CreateShortType("System", "Exception"));
+			}
+			return result;
 		}
 	}
 }
