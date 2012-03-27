@@ -144,8 +144,10 @@ namespace MonoDevelop.CSharp.Highlighting
 						var visitor = new QuickTaskVisitor (resolver, cancellationToken);
 						unit.AcceptVisitor (visitor);
 						if (!cancellationToken.IsCancellationRequested) {
-							quickTasks = visitor.QuickTasks;
-							OnTasksUpdated (EventArgs.Empty);
+							Gtk.Application.Invoke (delegate {
+								quickTasks = visitor.QuickTasks;
+								OnTasksUpdated (EventArgs.Empty);
+							});
 						}
 					}, cancellationToken);
 				}
@@ -217,7 +219,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			"value"
 		};
 		
-		static HashSet<string> ContextualDehighlightKeywordList = new HashSet<string> (new string[] {
+		static readonly HashSet<string> ContextualDehighlightKeywordList = new HashSet<string> (new string[] {
 			"get", "set", "add", "remove", "var", "global", "partial", "where"
 		});
 		
