@@ -1509,6 +1509,7 @@
     <Compile Include="MonoDevelop.Ide.Extensions\ServiceUrlExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide\ProjectCreatedEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollector.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

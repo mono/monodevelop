@@ -390,6 +390,7 @@ FILES =  \
 	MonoDevelop.Ide.FindInFiles/MemberReference.cs \
 	MonoDevelop.Ide.FindInFiles/ReferencesFinder.cs \
 	MonoDevelop.Ide.FindInFiles/Scope.cs \
+	MonoDevelop.Ide.FindInFiles/SearchCollector.cs \
 	MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResult.cs \
 	MonoDevelop.Ide.FindInFiles/SearchResultPad.cs \

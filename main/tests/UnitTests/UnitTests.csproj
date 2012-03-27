@@ -228,6 +228,7 @@
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ImplementInterfaceTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ResolveNamespaceTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollectorTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollectorTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

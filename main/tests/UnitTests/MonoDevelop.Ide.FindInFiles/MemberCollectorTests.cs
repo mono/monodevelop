@@ -47,7 +47,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		List<IMember> CollectMembers (string code, string typeName, Predicate<IUnresolvedMember> filter1, Predicate<IMember> filter2,
 									  bool includeOverloads, bool matchDeclaringType)
 		{
-			var project = new UnknownProject { FileName = "test.csproj" };
+			var fileName = string.Format ("test{0}.csproj", Environment.TickCount); // use a new file name for each test to avoid conflicts
+			var project = new UnknownProject { FileName = fileName };
 
 			var solution = new Solution ();
 			solution.RootFolder.AddItem (project);
