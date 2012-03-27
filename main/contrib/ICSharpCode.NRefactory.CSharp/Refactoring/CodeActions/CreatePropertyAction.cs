@@ -83,10 +83,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				isStatic = identifier is IdentifierExpression && state.CurrentMember.IsStatic;
 			}
 
-			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			if (service != null && !service.IsValidName(propertyName, AffectedEntity.Property, Modifiers.Private, isStatic)) { 
-				yield break;
-			}
+//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+//			if (service != null && !service.IsValidName(propertyName, AffectedEntity.Property, Modifiers.Private, isStatic)) { 
+//				yield break;
+//			}
 
 			yield return new CodeAction(context.TranslateString("Create property"), script => {
 				var decl = new PropertyDeclaration() {

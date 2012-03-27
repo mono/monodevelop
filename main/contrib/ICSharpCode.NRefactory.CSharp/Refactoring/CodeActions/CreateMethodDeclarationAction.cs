@@ -132,10 +132,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				isStatic = invocation.Target is IdentifierExpression && state.CurrentMember.IsStatic;
 			}
 
-			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
-				yield break;
-			}
+//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+//			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
+//				yield break;
+//			}
 
 			yield return new CodeAction(context.TranslateString("Create method"), script => {
 				var decl = new MethodDeclaration() {
