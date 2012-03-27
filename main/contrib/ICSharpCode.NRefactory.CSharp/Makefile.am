@@ -245,6 +245,7 @@ FILES =  \
 	Refactoring/CodeIssues/InconsistentNamingIssue/NamingConventionService.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/NamingRule.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/NamingStyle.cs \
+	Refactoring/CodeIssues/InconsistentNamingIssue/WordParser.cs \
 	Refactoring/CodeIssues/IssueCategories.cs \
 	Refactoring/CodeIssues/NotImplementedExceptionIssue.cs \
 	Refactoring/CodeIssues/RedundantInternalIssue.cs \

@@ -34,16 +34,19 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Refactoring.Rename;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	public class MDRefactoringScript : DocumentScript
 	{
+		readonly MDRefactoringContext context;
 		readonly Document document;
 		readonly IDisposable undoGroup;
 
-		public MDRefactoringScript (Document document, CSharpFormattingOptions formattingOptions) : base(document.Editor.Document, formattingOptions)
+		public MDRefactoringScript (MDRefactoringContext context, Document document, CSharpFormattingOptions formattingOptions) : base(document.Editor.Document, formattingOptions)
 		{
+			this.context = context;
 			this.document = document;
 			undoGroup  = this.document.Editor.OpenUndoGroup ();
 		}
@@ -176,6 +179,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public override void Rename (IVariable entity, string name)
 		{
 			RenameRefactoring.RenameVariable (entity, name);
+		}
+
+		public override void RenameTypeParameter (IType type, string name = null)
+		{
+			// TODO
 		}
 	}
 }

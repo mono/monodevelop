@@ -1219,5 +1219,56 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		#endregion
+
+		#region Find Type Parameter References
+		/// <summary>
+		/// Finds all references of a given type parameter.
+		/// </summary>
+		/// <param name="typeParameter">The type parameter for which to look.</param>
+		/// <param name="parsedFile">The type system representation of the file being searched.</param>
+		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
+		/// <param name="compilation">The compilation.</param>
+		/// <param name="callback">Callback used to report the references that were found.</param>
+		/// <param name="cancellationToken">Cancellation token that may be used to cancel the operation.</param>
+		public void FindTypeParameterReferences(IType typeParameter, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
+		                                ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
+		{
+			if (typeParameter == null)
+				throw new ArgumentNullException("typeParameter");
+			if (typeParameter.Kind != TypeKind.TypeParameter)
+				throw new ArgumentOutOfRangeException("typeParameter", "Only type parameters are allowed");
+			var searchScope = new SearchScope(c => new FindTypeParameterReferencesNavigator(typeParameter));
+			searchScope.declarationCompilation = compilation;
+			searchScope.accessibility = Accessibility.Private;
+			FindReferencesInFile(searchScope, parsedFile, compilationUnit, compilation, callback, cancellationToken);
+		}
+		
+		class FindTypeParameterReferencesNavigator : FindReferenceNavigator
+		{
+			readonly IType typeParameter;
+			
+			public FindTypeParameterReferencesNavigator(IType typeParameter)
+			{
+				this.typeParameter = typeParameter;
+			}
+			
+			internal override bool CanMatch(AstNode node)
+			{
+				var type = node as SimpleType;
+				if (type != null)
+					return type.Identifier == typeParameter.Name;
+				var declaration = node as TypeParameterDeclaration;
+				if (declaration != null)
+					return declaration.Name == typeParameter.Name;
+				return false;
+			}
+			
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				var lrr = rr as TypeResolveResult;
+				return lrr != null && lrr.Type.Equals (typeParameter);
+			}
+		}
+		#endregion
 	}
 }

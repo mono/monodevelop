@@ -351,6 +351,7 @@
     <Compile Include="Refactoring\CodeActions\CreateIndexerAction.cs" />
     <Compile Include="Refactoring\CodeActions\InlineLocalVariableAction.cs" />
     <Compile Include="Refactoring\CodeActions\DeclareLocalVariableAction.cs" />
+    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\WordParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

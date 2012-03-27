@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public Script StartScript ()
 		{
-			return new MDRefactoringScript (this.Document, this.Document.GetFormattingOptions ());
+			return new MDRefactoringScript (this, this.Document, this.Document.GetFormattingOptions ());
 		}
 
 
