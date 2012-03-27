@@ -86,6 +86,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			return members;
 		}
 
+		static IEnumerable<ITypeDefinition> Import (ICompilation compilation, IEnumerable<ITypeDefinition> types)
+		{
+			return types.Select (t => compilation.Import (t));
+		}
+
 		/// <summary>
 		/// collect members with the same signature/name(if overloads are included) as the specified member
 		/// in the inheritance tree
@@ -93,7 +98,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		public static IEnumerable<IMember> CollectMembers (Solution solution, IMember member, ReferenceFinder.RefactoryScope scope,
 														   bool includeOverloads = true, bool matchDeclaringType = false)
 		{
-			if (member.EntityType == EntityType.Destructor || member.EntityType == EntityType.Operator)
+			if (solution == null || member.EntityType == EntityType.Destructor || member.EntityType == EntityType.Operator)
 				return new [] { member };
 
 			if (member.EntityType == EntityType.Constructor) {
@@ -107,8 +112,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				memberFilter = m => MatchParameters (m, member);
 
 			var declaringType = member.DeclaringTypeDefinition;
+			// only collect members in declaringType
 			if (matchDeclaringType)
 				return GetMembers (declaringType, member.Name, true, memberFilter);
+
 			if (declaringType.Kind != TypeKind.Class && declaringType.Kind != TypeKind.Interface)
 				return GetMembers (declaringType, member.Name, false, memberFilter);
 
@@ -126,35 +133,41 @@ namespace MonoDevelop.Ide.FindInFiles
 					return members;
 			}
 
-			IEnumerable<Project> projects;
-			if ((scope == ReferenceFinder.RefactoryScope.Solution || scope == ReferenceFinder.RefactoryScope.Unknown)) {
-				projects = solution.GetAllSolutionItems<Project> ();
+			IList<ICompilation> compilations;
+			if (scope == ReferenceFinder.RefactoryScope.Solution || scope == ReferenceFinder.RefactoryScope.Unknown) {
+				var projects = SearchCollector.CollectProjects (solution, searchTypes);
+				compilations = projects.Select (TypeSystemService.GetCompilation).ToList ();
 			} else {
-				projects = new [] { TypeSystemService.GetProject (member.Compilation.MainAssembly.UnresolvedAssembly.Location) };
+				compilations = new [] { member.Compilation };
 			}
 
 			var result = new List<IMember> ();
+			var mainAssemblies = new HashSet<string> (compilations.Select (c => c.MainAssembly.AssemblyName));
+			var searchedAssemblies = new HashSet<string> ();
 			var searchedTypes = new HashSet<string> ();
-			foreach (var p in projects) {
-				var compilation = TypeSystemService.GetCompilation (p);
 
-				var baseTypeImports = from t in searchTypes
-									  let import = compilation.Import (t)
-									  where import != null
-									  select import;
-				baseTypeImports = baseTypeImports.ToList ();
+			foreach (var compilation in compilations) {
+				var baseTypeImports = Import(compilation, searchTypes).Where (t => t != null).ToList ();
 				if (!baseTypeImports.Any ()) continue;
 
-				foreach (var type in compilation.GetAllTypeDefinitions ()) {
-					// members in base types will also be added
-					// because IsDerivedFrom return true for a type itself
-					if (!searchedTypes.Add (type.ReflectionName) || !baseTypeImports.Any (baseType => type.IsDerivedFrom (baseType)))
+				foreach (var assembly in compilation.Assemblies) {
+					// search main assemblies in their projects' own compilation, to avoid possible resolving problems
+					if ((mainAssemblies.Contains(assembly.AssemblyName) && assembly != compilation.MainAssembly) ||
+						!searchedAssemblies.Add (assembly.AssemblyName))
 						continue;
-					result.AddRange (GetMembers (type, member.Name, true, memberFilter));
+
+					foreach (var type in assembly.GetAllTypeDefinitions ()) {
+						// members in base types will also be added
+						// because IsDerivedFrom return true for a type itself
+						if (!searchedTypes.Add (type.ReflectionName) || !baseTypeImports.Any (baseType => type.IsDerivedFrom (baseType)))
+							continue;
+						result.AddRange (GetMembers (type, member.Name, true, memberFilter));
+					}
 				}
 			}
 			return result;
 		}
+	
 	}
 }
 

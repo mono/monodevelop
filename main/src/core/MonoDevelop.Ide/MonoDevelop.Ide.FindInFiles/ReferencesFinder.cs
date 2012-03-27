@@ -75,7 +75,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			return codon != null ? codon.CreateFinder () : null;
 		}
 		
-		
 		public static IEnumerable<MemberReference> FindReferences (object member, IProgressMonitor monitor = null)
 		{
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, RefactoryScope.Unknown, monitor);
@@ -86,83 +85,48 @@ namespace MonoDevelop.Ide.FindInFiles
 			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, scope, monitor);
 		}
 		
-		class FileList
-		{
-			public Project Project {
-				get;
-				private set;
-			}
-
-			public IProjectContent Content {
-				get;
-				private set;
-			}
-			
-			public IEnumerable<FilePath> Files {
-				get;
-				private set;
-			}
-			
-			public FileList (Project project, IProjectContent content, IEnumerable<FilePath> files)
-			{
-				this.Project = project;
-				this.Content = content;
-				this.Files = files;
-			}
-		}
-
-		static FileList GetFileNamesForType (ITypeDefinition type)
+		static SearchCollector.FileList GetFileNamesForType (ITypeDefinition type)
 		{
 			var paths = type.Parts.Select (p => p.Region.FileName).Distinct ().Select (p => (FilePath)p);
-			return new FileList (type.GetSourceProject (), type.GetProjectContent (), paths);
+ 			return new SearchCollector.FileList (type.GetSourceProject (), type.GetProjectContent (), paths);
 		}
 
-		static IEnumerable<FileList> GetFileNames (Solution solution, object member, RefactoryScope scope, IProgressMonitor monitor)
+		static IEnumerable<SearchCollector.FileList> GetFileNames (Solution solution, object node, RefactoryScope scope, 
+		                                                           IProgressMonitor monitor, IEnumerable<object> searchNodes)
 		{
-			if (scope == RefactoryScope.Unknown)
-				scope = GetScope (member);
-			switch (scope) {
-			case RefactoryScope.File:
+			// TODO: ((IEntity)member).Region is not accurate for partial types/methods
+			if (node is IVariable || scope == RefactoryScope.File) {
 				string fileName;
-				if (member is IEntity) {
-					fileName = ((IEntity)member).Region.FileName;
+				if (node is IEntity) {
+					fileName = ((IEntity)node).Region.FileName;
 				} else {
-					fileName = ((IVariable)member).Region.FileName;
+					fileName = ((IVariable)node).Region.FileName;
 				}
 				var doc = IdeApp.Workbench.GetDocument (fileName);
 
 				if (doc != null)
-					yield return new FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
-				break;
+					yield return new SearchCollector.FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
+				yield break;
+			}
+			
+			var entity = (IEntity)node;
+			switch (scope) {
 			case RefactoryScope.DeclaringType:
-				if (member is IEntity)
-					yield return GetFileNamesForType ((member as IEntity).DeclaringTypeDefinition);
+				yield return GetFileNamesForType (entity.DeclaringTypeDefinition);
 				break;
 			case RefactoryScope.Project:
-				var prj = TypeSystemService.GetProject ((IEntity)member);
-				if (prj == null)
-					yield break;
-				var ctx = TypeSystemService.GetProjectContext (prj);
-				if (ctx == null)
-					yield break;
-				yield return new FileList (prj, ctx, prj.Files.Select (f => f.FilePath));
+				var sourceProject = TypeSystemService.GetProject (entity.Compilation.MainAssembly.UnresolvedAssembly.Location);
+				foreach (var file in SearchCollector.CollectFiles (sourceProject, searchNodes.Cast<IEntity> ()))
+					yield return file;
 				break;
-			case RefactoryScope.Solution:
+			default:
+				var files = SearchCollector.CollectFiles (solution, searchNodes.Cast<IEntity> ()).ToList ();
 				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), solution.GetAllProjects ().Count);
-				var sourceProject = TypeSystemService.GetProject ((IEntity)member);
-				IEnumerable<Project> projects;
-				if (sourceProject == null) { 
-					// member is defined in a referenced assembly
-					projects = GetAllReferencingProjects (solution, ((IEntity)member).ParentAssembly.AssemblyName);
-				} else {
-					projects = GetAllReferencingProjects (solution, sourceProject);
-				}
-				foreach (var project in projects) {
+					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), files.Count);
+				foreach (var file in files) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
-					var currentDom = TypeSystemService.GetProjectContext (project);
-					yield return new FileList (project, currentDom, project.Files.Select (f => f.FilePath));
+					yield return file;
 					if (monitor != null)
 						monitor.Step (1);
 				}
@@ -170,12 +134,6 @@ namespace MonoDevelop.Ide.FindInFiles
 					monitor.EndTask ();
 				break;
 			}
-		}
-
-		static IEnumerable<Project> GetAllReferencingProjects (Solution solution, string assemblyName)
-		{
-			return solution.GetAllProjects ().Where (
-				project => TypeSystemService.GetCompilation (project).Assemblies.Any (a => a.AssemblyName == assemblyName));
 		}
 		
 		public static List<Project> GetAllReferencingProjects (Solution solution, Project sourceProject)
@@ -193,12 +151,16 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (member == null)
 				yield break;
-			IEnumerable<object> searchNodes = new [] { member };
+			if (solution == null && member is IEntity) {
+				var project = TypeSystemService.GetProject ((member as IEntity).Compilation.MainAssembly.UnresolvedAssembly.Location);
+				if (project == null)
+					yield break;
+				solution = project.ParentSolution;
+			}
+			
+			IList<object> searchNodes = new [] { member };
 			if (member is IType) {
-				var nodes = new List<object> ();
-				nodes.Add (member);
-				nodes.AddRange (((IType)member).GetConstructors ());
-				searchNodes = CollectMembers ((IType)member);
+				searchNodes = CollectMembers ((IType)member).ToList<object> ();
 			} else if (member is IEntity) {
 				var e = (IEntity)member;
 				if (e.EntityType == EntityType.Destructor) {
@@ -208,13 +170,13 @@ namespace MonoDevelop.Ide.FindInFiles
 					yield break;
 				}
 				if (member is IMember)
-					searchNodes = CollectMembers (solution, (IMember)member, scope);
+					searchNodes = CollectMembers (solution, (IMember)member, scope).ToList<object> ();
 			}
 			
 			// prepare references finder
 			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
 			var curList = new List<FilePath> ();
-			foreach (var info in GetFileNames (solution, member, scope, monitor)) {
+			foreach (var info in GetFileNames (solution, member, scope, monitor, searchNodes)) {
 				string oldMime = null;
 				foreach (var file in info.Files) {
 					if (monitor != null && monitor.IsCancelRequested)
@@ -268,29 +230,29 @@ namespace MonoDevelop.Ide.FindInFiles
 
 
 		public enum RefactoryScope{ Unknown, File, DeclaringType, Solution, Project}
-		static RefactoryScope GetScope (object o)
-		{
-			IEntity node = o as IEntity;
-			if (node == null)
-				return RefactoryScope.File;
-			
-			// TODO: RefactoringsScope.Hierarchy
-			switch (node.Accessibility) {
-			case Accessibility.Public:
-			case Accessibility.Protected:
-			case Accessibility.ProtectedOrInternal:
-				if (node.DeclaringTypeDefinition != null) {
-					var scope = GetScope (node.DeclaringTypeDefinition);
-					if (scope != RefactoryScope.Solution)
-						return RefactoryScope.Project;
-				}
-				return RefactoryScope.Solution;
-			case Accessibility.Internal:
-			case Accessibility.ProtectedAndInternal:
-				return RefactoryScope.Project;
-			}
-			return RefactoryScope.DeclaringType;
-		}
+//		static RefactoryScope GetScope (object o)
+//		{
+//			IEntity node = o as IEntity;
+//			if (node == null)
+//				return RefactoryScope.File;
+//			
+//			// TODO: RefactoringsScope.Hierarchy
+//			switch (node.Accessibility) {
+//			case Accessibility.Public:
+//			case Accessibility.Protected:
+//			case Accessibility.ProtectedOrInternal:
+//				if (node.DeclaringTypeDefinition != null) {
+//					var scope = GetScope (node.DeclaringTypeDefinition);
+//					if (scope != RefactoryScope.Solution)
+//						return RefactoryScope.Project;
+//				}
+//				return RefactoryScope.Solution;
+//			case Accessibility.Internal:
+//			case Accessibility.ProtectedAndInternal:
+//				return RefactoryScope.Project;
+//			}
+//			return RefactoryScope.DeclaringType;
+//		}
 	}
 	
 	[ExtensionNode (Description="A reference finder. The specified class needs to inherit from MonoDevelop.Projects.CodeGeneration.ReferenceFinder")]
