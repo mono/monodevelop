@@ -33,10 +33,9 @@ using System.Collections.Generic;
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class NameConventionPanelWidget : Gtk.Bin
+	partial class NameConventionPanelWidget : Gtk.Bin
 	{
 		TreeStore treeStore = new TreeStore (typeof(NameConventionRule));
-
 		NameConventionPolicy policy;
 
 		public NameConventionPolicy Policy {
@@ -48,7 +47,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				FillRules (policy.Rules);
 			}
 		}
-
 
 		public NameConventionPanelWidget ()
 		{
@@ -109,6 +107,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			var result = MessageService.ShowCustomDialog (diag);
 			if (result == (int)ResponseType.Ok)
 				treeStore.AppendValues (newRule);
+			OnPolicyChanged (EventArgs.Empty);
 		}
 
 		void EditSelectedEntry ()
@@ -118,8 +117,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				return;
 			var rule = treeStore.GetValue (iter, 0) as NameConventionRule;
 			var diag = new NameConventionEditRuleDialog (rule);
-			MessageService.ShowCustomDialog (diag);
+			int result = MessageService.ShowCustomDialog (diag);
 			treeviewConventions.QueueResize ();
+			if (result == (int)Gtk.ResponseType.Ok) 
+				OnPolicyChanged (EventArgs.Empty);
 		}
 		
 		void RemoveSelectedEntry ()
@@ -128,6 +129,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			if (!treeviewConventions.Selection.GetSelected (out iter))
 				return;
 			treeStore.Remove (ref iter);
+			OnPolicyChanged (EventArgs.Empty);
 		}
 
 		void FillRules (IEnumerable<NameConventionRule> rules)
@@ -137,6 +139,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				treeStore.AppendValues (rule);
 			}
 		}
+
+		protected virtual void OnPolicyChanged (EventArgs e)
+		{
+			var handler = PolicyChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public event EventHandler PolicyChanged;
 	}
 }
 

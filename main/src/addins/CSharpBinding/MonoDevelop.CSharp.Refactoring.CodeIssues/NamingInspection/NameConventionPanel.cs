@@ -48,7 +48,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public override Widget CreatePanelWidget ()
 		{
-			return panel = new NameConventionPanelWidget ();
+			panel = new NameConventionPanelWidget ();
+			panel.PolicyChanged += delegate {
+				UpdateSelectedNamedPolicy ();
+			};
+			return panel;
 		}
 		
 		protected override void LoadFrom (NameConventionPolicy policy)
