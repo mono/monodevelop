@@ -513,9 +513,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 			} else {
 				subIter = treeStore.InsertNodeBefore (FindOrAddNewEntry (iter));
 				treeStore.SetValues (subIter, id, item, tree [item]);
-
-				if (item is PArray || item is PDictionary)
-					FindOrAddNewEntry (subIter);
+				if (CurrentTree.Count > 0) {
+					treeview.ExpandToPath (treeStore.GetPath (subIter));
+					this.treeview.Selection.SelectIter (subIter);
+				}
+				
+				if (item is PArray || item is PDictionary) {
+					var newEntryIter = FindOrAddNewEntry (subIter);
+					if (CurrentTree.Count > 0)
+						treeview.ExpandToPath (treeStore.GetPath (newEntryIter));
+				}
 			}
 			
 			return subIter;
