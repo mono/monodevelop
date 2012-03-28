@@ -203,9 +203,7 @@ namespace Mono.TextEditor.PopupWindow
 		public InsertionCursorLayoutModeHelpWindow ()
 		{
 			titleLayout = new Pango.Layout (PangoContext);
-			titleLayout.FontDescription = Pango.FontDescription.FromString ("Serif 10");
 			descriptionLayout = new Pango.Layout (PangoContext);
-			descriptionLayout.FontDescription = Pango.FontDescription.FromString ("Serif 10");
 			descriptionLayout.SetMarkup ("<small>Use Up/Down to move to another location.\nPress Enter to select the location\nPress Esc to cancel this operation</small>");
 		}
 
