@@ -357,10 +357,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 				var obj      = (PObject)tree_model.GetValue (iter, 1);
 				var key      = (PListScheme.SchemaItem) tree_model.GetValue (iter, 2) ?? PListScheme.Key.Empty;
 
-				renderer.Sensitive = !(obj is PDictionary || obj is PArray || obj is PData);
+				renderer.Sensitive = obj != null && !(obj is PDictionary || obj is PArray || obj is PData);
 				renderer.Editable = renderer.Sensitive;
-				if (obj == null || !renderer.Sensitive) {
-					renderer.Editable = false;
+				if (!renderer.Sensitive) {
 					renderer.Text = "";
 					return;
 				}
