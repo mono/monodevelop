@@ -492,7 +492,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			
 			foreach (var item in objs) {
-				var key = tree [item.Item2] ?? PListScheme.Key.Empty;
 				var subIter = FindOrAddPObject (iter, item.Item1, item.Item2, tree);
 				AddToTree (treeStore, subIter, item.Item2, tree);
 			}

@@ -157,7 +157,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			foreach (var kp in dictionary) {
 				var key = scheme.GetKey (kp.Key);
 				if (key == null) {
-					results.Add (kp.Value, key);
+					Match (kp.Value, key, results);
 					continue;
 				}
 				
@@ -183,7 +183,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			results.Add (o, value);
 			if (o is PDictionary) {
 				foreach (var kp in ((PDictionary) o)) {
-					var subValue = value.Values.Where (k => k.Identifier == kp.Key).FirstOrDefault () ?? value;
+					var subValue = value == null ? null : value.Values.Where (k => k.Identifier == kp.Key).FirstOrDefault () ?? value;
 					Match (kp.Value, subValue, results);
 				}
 			} else if (o is PArray) {

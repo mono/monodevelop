@@ -37,6 +37,7 @@
     <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral">
       <Package>monodevelop-core-mac-addins</Package>
     </Reference>
+    <Reference Include="System.Core" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

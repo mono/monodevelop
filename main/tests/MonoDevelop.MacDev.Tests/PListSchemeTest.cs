@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 
@@ -460,6 +461,53 @@ namespace MonoDevelop.MacDev.Tests
 			Assert.IsInstanceOf<PListScheme.Value> (key.Values [0], "#2");
 			Assert.AreEqual ("ValidValue1", key.Values [0].Identifier, "#3");
 			Assert.IsNull (key.Values [0].Description, "#4");
+		}
+		
+		[Test]
+		public void WalkScheme_Array_NotPartOfScheme ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""key1"" type = ""Array"" arrayType = ""Dictionary"" />
+</PListScheme>");
+			
+			var tree = new PArray ();
+			tree.Add (new PNumber (0));
+			tree.Add (new PNumber (1));
+			
+			var root = new PDictionary ();
+			root.Add ("foo", tree);
+			
+			var result = PListScheme.Match (root, scheme);
+			Assert.AreEqual (3, result.Count, "#1");
+			Assert.IsNull (result [tree], "#2");
+			Assert.IsNull (result [tree [0]], "#3");
+			Assert.IsNull (result [tree [1]], "#4");
+		}
+		
+		[Test]
+		public void WalkScheme_Dictionary_NotPartOfScheme ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""key1"" type = ""Array"" arrayType = ""Dictionary"" />
+</PListScheme>");
+			
+			var dict = new PDictionary ();
+			dict.Add ("foo", new PNumber (1));
+			
+			var tree = new PArray ();
+			tree.Add (dict);
+			tree.Add (new PNumber (1));
+			
+			var root = new PDictionary ();
+			root.Add ("foo", tree);
+			
+			var result = PListScheme.Match (root, scheme);
+			var keys = result.Keys.ToArray ();
+			for (int i = 0; i < keys.Length; i++) {
+				Assert.IsNull (result [keys [i]], "#1." + i); 
+			}
 		}
 		
 		[Test]
