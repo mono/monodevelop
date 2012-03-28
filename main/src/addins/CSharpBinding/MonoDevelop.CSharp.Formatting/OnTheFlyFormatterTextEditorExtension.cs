@@ -63,23 +63,23 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
-			RunFormatter ();
-			/*
-			if (PropertyService.Get ("OnTheFlyFormatting", true)) {
-				var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
-				if (prettyPrinter != null && Project != null && text != null) {
-					try {
-						var policies = Project.Policies;
-						string newText = prettyPrinter.FormatText (policies, Document.Text, insertionOffset, insertionOffset + insertedChars);
-						if (!string.IsNullOrEmpty (newText)) {
-							int replaceResult = Replace (insertionOffset, insertedChars, newText);
-							Caret.Offset = insertionOffset + replaceResult;
-						}
-					} catch (Exception e) {
-						LoggingService.LogError ("Error formatting pasted text", e);
-					}
+			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
+			if (OnTheFlyFormatting) {
+				int i = insertionOffset + insertedChars;
+				while (i > insertionOffset) {			
+					char ch = Document.Editor.GetCharAt (i - 1);
+					if (ch != ' ' && ch != '\t') 
+						break;
+					i--;
 				}
-			}*/
+				int delta = insertionOffset + insertedChars - i;
+				if (delta > 0) {
+					Editor.Caret.Offset -= delta;
+					Editor.Remove (insertionOffset + insertedChars - delta, delta);
+				}
+			}
+
+			RunFormatter ();
 		}
 
 		public override void Dispose ()
