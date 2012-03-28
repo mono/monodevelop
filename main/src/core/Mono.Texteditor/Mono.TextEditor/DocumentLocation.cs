@@ -26,18 +26,16 @@
 //
 
 using System;
-using ICSharpCode.NRefactory;
 
 namespace Mono.TextEditor
 {
-	public struct DocumentLocation : IComparable<DocumentLocation>
+	public struct DocumentLocation : IComparable<DocumentLocation>, IEquatable<DocumentLocation>
 	{
 		public static readonly DocumentLocation Empty = new DocumentLocation (0, 0);
 		
 		public const int MinLine   = 1;
 		public const int MinColumn = 1;
-		
-		
+
 		public int Line { get; set; }
 		public int Column { get; set; }
 		
@@ -49,13 +47,13 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation (int line, int column) : this ()
 		{
-			this.Line = line;
-			this.Column = column;
+			Line = line;
+			Column = column;
 		}
 		
 		public override string ToString ()
 		{
-			return String.Format ("[DocumentLocation: Line={0}, Column={1}]", this.Line, this.Column);
+			return String.Format ("[DocumentLocation: Line={0}, Column={1}]", Line, Column);
 		}
 		
 		#region Operations
@@ -86,12 +84,12 @@ namespace Mono.TextEditor
 			return !(left < right);
 		}
 		
-		public static implicit operator TextLocation (DocumentLocation location)
+		public static implicit operator ICSharpCode.NRefactory.TextLocation (DocumentLocation location)
 		{
-			return new TextLocation (location.Line, location.Column);
+			return new ICSharpCode.NRefactory.TextLocation (location.Line, location.Column);
 		}
 		
-		public static implicit operator DocumentLocation(TextLocation location)
+		public static implicit operator DocumentLocation(ICSharpCode.NRefactory.TextLocation location)
 		{
 			return new DocumentLocation (location.Line, location.Column);
 		}
@@ -101,10 +99,18 @@ namespace Mono.TextEditor
 			return unchecked (Column.GetHashCode () * Line.GetHashCode ());
 		}
 		
-		public override bool Equals(object obj)
+		public override bool Equals (object obj)
 		{
 			return obj is DocumentLocation && (DocumentLocation)obj == this; 
 		}
+
+		#region IEquatable implementation
+		public bool Equals (DocumentLocation other)
+		{
+			return Line == other.Line && Column == other.Column;
+		}
+		#endregion
+
 		#endregion
 		
 		#region IComparable<DocumentLocation> implementation

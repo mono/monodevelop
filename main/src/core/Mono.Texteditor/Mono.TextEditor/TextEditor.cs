@@ -1775,11 +1775,16 @@ namespace Mono.TextEditor
 			return textEditorData.Insert (offset, value);
 		}
 		
+		public void Remove (DocumentRegion region)
+		{
+			textEditorData.Remove (region);
+		}
+		
 		public void Remove (TextSegment removeSegment)
 		{
 			textEditorData.Remove (removeSegment);
 		}
-		
+
 		public void Remove (int offset, int count)
 		{
 			textEditorData.Remove (offset, count);
@@ -1919,6 +1924,11 @@ namespace Mono.TextEditor
 			return Document.GetTextAt (segment);
 		}
 		
+		public string GetTextAt (DocumentRegion region)
+		{
+			return Document.GetTextAt (region);
+		}
+
 		public char GetCharAt (int offset)
 		{
 			return Document.GetCharAt (offset);

@@ -216,7 +216,14 @@ namespace Mono.TextEditor
 		/// </returns>
 		public override int GetHashCode ()
 		{
-			return this.Offset ^ this.Length;
+			return Offset ^ Length;
+		}
+
+		public DocumentRegion GetRegion (TextDocument document)
+		{
+			if (document == null)
+				throw new System.ArgumentNullException ("document");
+			return new DocumentRegion (document.OffsetToLocation (Offset), document.OffsetToLocation (EndOffset));
 		}
 
 		/// <summary>

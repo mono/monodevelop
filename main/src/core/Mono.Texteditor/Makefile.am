@@ -85,6 +85,7 @@ FILES =  \
 	Mono.TextEditor/DeleteActions.cs \
 	Mono.TextEditor/DocumentChangeEventArgs.cs \
 	Mono.TextEditor/DocumentLocation.cs \
+	Mono.TextEditor/DocumentRegion.cs \
 	Mono.TextEditor/DocumentUpdateRequest.cs \
 	Mono.TextEditor/EditMode.cs \
 	Mono.TextEditor/EmacsWordFindStrategy.cs \

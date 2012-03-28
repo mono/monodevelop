@@ -207,7 +207,7 @@ namespace Mono.TextEditor
 
 			if (atomicUndoLevel == 0) {
 				if (this.syntaxMode != null && !SuppressHighlightUpdate)
-					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
+					SyntaxModeService.WaitUpdate (this);
 			}
 			InterruptFoldWorker ();
 			//			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
@@ -287,11 +287,16 @@ namespace Mono.TextEditor
 			return buffer.GetTextAt (offset, count);
 		}
 		
+		public string GetTextAt (DocumentRegion region)
+		{
+			return GetTextAt (region.GetSegment (this));
+		}
+
 		public string GetTextAt (TextSegment segment)
 		{
 			return GetTextAt (segment.Offset, segment.Length);
 		}
-		
+
 		/// <summary>
 		/// Gets the line text without the delimiter.
 		/// </summary>

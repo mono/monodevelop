@@ -322,6 +322,11 @@ namespace Mono.TextEditor
 			Remove (removeSegment.Offset, removeSegment.Length);
 		}
 		
+		public void Remove (DocumentRegion region)
+		{
+			Remove (region.GetSegment (document));
+		}
+
 		public string FormatString (DocumentLocation loc, string str)
 		{
 			if (string.IsNullOrEmpty (str))
@@ -1143,6 +1148,11 @@ namespace Mono.TextEditor
 		{
 			return document.GetTextAt (offset, count);
 		}
+		
+		public string GetTextAt (DocumentRegion region)
+		{
+			return document.GetTextAt (region);
+		}
 
 		public string GetTextAt (TextSegment segment)
 		{
@@ -1363,8 +1373,7 @@ namespace Mono.TextEditor
 		}
 		
 		#endregion
-	
-	
+
 		#region SkipChars
 		public class SkipChar
 		{
