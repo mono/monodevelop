@@ -84,6 +84,19 @@ namespace MonoDevelop.Ide.Gui.Content
 				return null;
 			return codon.CreateResolver ();
 		}
+
+		public static ResolveResult GetLanguageItem (this MonoDevelop.Ide.Gui.Document document, int offset, out DomRegion expressionRegion)
+		{
+			if (document == null)
+				throw new System.ArgumentNullException ("document");
+
+			var textEditorResolver = TextEditorResolverService.GetProvider (document.Editor.Document.MimeType);
+			if (textEditorResolver != null) {
+				return textEditorResolver.GetLanguageItem (document, offset, out expressionRegion);
+			}
+			expressionRegion = DomRegion.Empty;
+			return null;
+		}
 	}
 	
 	[ExtensionNode (Description="A codon for text editor providers.")]

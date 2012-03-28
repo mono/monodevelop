@@ -185,13 +185,6 @@
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
-		<Command id = "MonoDevelop.CSharp.Resolver.Commands.Resolve"
-				defaultHandler = "MonoDevelop.CSharp.Resolver.ResolveCommandHandler"
-				type="array"
-				_label = "Resolve"/> 
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToPrevUsageHandler"
@@ -237,12 +230,6 @@
 		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">	
-		<CommandItem id = "MonoDevelop.CSharp.Resolver.Commands.Resolve"
-			insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"
-			insertbefore="MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Refactoring/CodeActionSource">

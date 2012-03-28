@@ -1063,7 +1063,10 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			if (nav == null) {
 				foreach (var definition in definitions.ToArray ()) {
-					foreach (var assemblyNameReference in loader.GetCecilObject (definition.UnresolvedAssembly).MainModule.AssemblyReferences) {
+					var cecilObject = loader.GetCecilObject (definition.UnresolvedAssembly);
+					if (cecilObject == null)
+						continue;
+					foreach (var assemblyNameReference in cecilObject.MainModule.AssemblyReferences) {
 						AddReferenceByAssemblyName (assemblyNameReference);
 					}
 				}

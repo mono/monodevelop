@@ -112,7 +112,6 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring/ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.CSharp.Refactoring/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
-	MonoDevelop.CSharp.Resolver/ResolveCommandHandler.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
 	MonoDevelop.CSharp/CSharpAmbience.cs \
 	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \

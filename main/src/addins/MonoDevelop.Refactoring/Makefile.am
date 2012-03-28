@@ -80,7 +80,8 @@ FILES =  \
 	MonoDevelop.Refactoring/RefactoringOptions.cs \
 	MonoDevelop.Refactoring/RefactoringPreviewDialog.cs \
 	MonoDevelop.Refactoring/RefactoringService.cs \
-	MonoDevelop.Refactoring/RefactoryCommands.cs
+	MonoDevelop.Refactoring/RefactoryCommands.cs \
+	MonoDevelop.Refactoring/ResolveCommandHandler.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

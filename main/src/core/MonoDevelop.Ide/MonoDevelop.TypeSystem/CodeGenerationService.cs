@@ -42,7 +42,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.TypeSystem
 {
-	public class CodeGenerationService
+	public static class CodeGenerationService
 	{
 		public static IUnresolvedMember AddCodeDomMember (Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
 		{
@@ -164,17 +164,17 @@ namespace MonoDevelop.TypeSystem
 			}
 		}
 		
-		static CodeGenerator CreateCodeGenerator (Ide.Gui.Document doc)
+		public static CodeGenerator CreateCodeGenerator (this Ide.Gui.Document doc)
 		{
 			return CodeGenerator.CreateGenerator (doc);
 		}
 		
-		static CodeGenerator CreateCodeGenerator (TextEditorData data, ICompilation compilation)
+		public static CodeGenerator CreateCodeGenerator (this TextEditorData data, ICompilation compilation)
 		{
 			return CodeGenerator.CreateGenerator (data, compilation);
 		}
 		
-		protected static IUnresolvedTypeDefinition GetMainPart (IType t)
+		static IUnresolvedTypeDefinition GetMainPart (IType t)
 		{
 			return t.GetDefinition ().Parts.First ();
 		}

@@ -79,7 +79,6 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-
 			expressionRegion = new DomRegion (node.StartLocation, node.EndLocation);
 			return result;
 		}

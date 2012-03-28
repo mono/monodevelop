@@ -40,13 +40,11 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.TypeSystem;
 
-namespace MonoDevelop.CSharp.Resolver
+namespace MonoDevelop.Refactoring
 {
-	public enum Commands {
-		Resolve
-	}
-
 	public class ResolveCommandHandler : CommandHandler
 	{
 		protected override void Update (CommandArrayInfo ainfo)
@@ -54,13 +52,12 @@ namespace MonoDevelop.CSharp.Resolver
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
 				return;
-			var location = doc.Editor.Caret.Location;
-
-			ResolveResult resolveResult;
-			AstNode node;
-			if (doc.TryResolveAt (location, out resolveResult, out node)) {
+			var caretOffset = doc.Editor.Caret.Offset;
+			
+			DomRegion region;
+			var resolveResult = doc.GetLanguageItem (caretOffset, out region);
+			if (resolveResult == null)
 				return;
-			}
 
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
@@ -70,7 +67,7 @@ namespace MonoDevelop.CSharp.Resolver
 			bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 			if (addUsing) {
 				foreach (string ns in possibleNamespaces) {
-					var info = resolveMenu.CommandInfos.Add ("using " + ns + ";", new System.Action (new AddImport (doc, resolveResult, ns, true).Run));
+					var info = resolveMenu.CommandInfos.Add (GettextCatalog.GetString ("Import Namespace {0}", ns), new System.Action (new AddImport (doc, resolveResult, ns, true).Run));
 					info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
 				}
 			}
@@ -81,7 +78,7 @@ namespace MonoDevelop.CSharp.Resolver
 					resolveMenu.CommandInfos.AddSeparator ();
 				
 				foreach (string ns in possibleNamespaces) {
-					resolveMenu.CommandInfos.Add (ns, new System.Action (new AddImport (doc, resolveResult, ns, false).Run));
+					resolveMenu.CommandInfos.Add (GettextCatalog.GetString ("Use {0}", ns + "." + doc.Editor.GetTextBetween (region.Begin, region.End)), new System.Action (new AddImport (doc, resolveResult, ns, false).Run));
 				}
 			}
 			
@@ -149,7 +146,7 @@ namespace MonoDevelop.CSharp.Resolver
 			var foundNamespaces = GetPossibleNamespaces (doc, resolveResult, location);
 			
 			if (!(resolveResult is AmbiguousTypeResolveResult)) {
-				var usedNamespaces = MonoDevelop.Refactoring.RefactoringOptions.GetUsedNamespaces (doc, location);
+				var usedNamespaces = RefactoringOptions.GetUsedNamespaces (doc, location);
 				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n));
 			}
 
@@ -228,7 +225,7 @@ namespace MonoDevelop.CSharp.Resolver
 			}
 		}
 
-		class AddImport
+		internal class AddImport
 		{
 			readonly Document doc;
 			readonly ResolveResult resolveResult;
@@ -255,8 +252,8 @@ namespace MonoDevelop.CSharp.Resolver
 					doc.Editor.Document.CommitLineUpdate (loc.Line);
 					return;
 				}
-				
-				var generator = new MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator ();
+
+				var generator = doc.CreateCodeGenerator ();
 
 				if (resolveResult is NamespaceResolveResult) {
 					generator.AddLocalNamespaceImport (doc, ns, loc);

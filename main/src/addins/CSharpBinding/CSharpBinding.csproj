@@ -267,7 +267,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatterTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\ResolveCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\ContextActionExtensions.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContext.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />

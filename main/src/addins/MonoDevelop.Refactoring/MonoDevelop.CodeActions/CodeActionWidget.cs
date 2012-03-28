@@ -33,7 +33,11 @@ using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CodeIssues;
-using MonoDevelop.AnalysisCore;
+
+using MonoDevelop.Ide.Gui.Content;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CodeActions
 {
@@ -53,7 +57,7 @@ namespace MonoDevelop.CodeActions
 			this.fixes = fixes;
 			Events = Gdk.EventMask.AllEventsMask;
 			icon = ImageService.GetPixbuf ("md-text-quickfix", Gtk.IconSize.Menu);
-			this.SetSizeRequest (Math.Max ((int)document.Editor.LineHeight , icon.Width) + 4, (int)document.Editor.LineHeight + 4);
+			SetSizeRequest (Math.Max ((int)document.Editor.LineHeight , icon.Width) + 4, (int)document.Editor.LineHeight + 4);
 			ShowAll ();
 			document.Editor.Parent.EditorOptionsChanged += HandleDocumentEditorParentEditorOptionsChanged;
 		}
@@ -75,19 +79,17 @@ namespace MonoDevelop.CodeActions
 		{
 			PopupQuickFixMenu (null);
 		}
-		
-		void PopupQuickFixMenu (Gdk.EventButton evt)
+
+		public void PopulateFixes (Gtk.Menu menu)
 		{
-			Gtk.Menu menu = new Gtk.Menu ();
-			
 			int mnemonic = 1;
-			foreach (CodeAction fix_ in fixes) {
+			foreach (var fix_ in fixes) {
 				var fix = fix_;
 				var escapedLabel = fix.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
 						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
-				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
+				var menuItem = new Gtk.MenuItem (label);
 				menuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
 				menuItem.Activated += delegate {
 					menu.Destroy ();
@@ -101,7 +103,7 @@ namespace MonoDevelop.CodeActions
 				var ir = analysisFix.Result as InspectorResults;
 				if (ir == null)
 					continue;
-
+			
 				if (first) {
 					menu.Add (new Gtk.SeparatorMenuItem ());
 					first = false;
@@ -109,13 +111,57 @@ namespace MonoDevelop.CodeActions
 				if (alreadyInserted.Contains (ir.Inspector))
 					continue;
 				alreadyInserted.Add (ir.Inspector);
-
+			
 				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", ir.Inspector.Title);
-				Gtk.MenuItem menuItem = new Gtk.MenuItem (label);
+				var menuItem = new Gtk.MenuItem (label);
 				menuItem.Activated += analysisFix.ShowOptions;
 				
 				menu.Add (menuItem);
 			}
+		}
+		
+		void PopupQuickFixMenu (Gdk.EventButton evt)
+		{
+			var menu = new Gtk.Menu ();
+
+			var caretOffset = document.Editor.Caret.Offset;
+			Gtk.Menu fixMenu = menu;
+			DomRegion region;
+			var resolveResult = document.GetLanguageItem (caretOffset, out region);
+			if (resolveResult != null) {
+				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (document, resolveResult);
+	
+				bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
+				if (addUsing) {
+					foreach (string ns_ in possibleNamespaces) {
+						string ns = ns_;
+						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Import Namespace {0}", ns));
+						menuItem.Activated += delegate {
+							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, true).Run ();
+						};
+						menu.Add (menuItem);
+					}
+				}
+				
+				bool resolveDirect = !(resolveResult is UnknownMemberResolveResult);
+				if (resolveDirect) {
+					foreach (string ns in possibleNamespaces) {
+						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Use {0}", ns + "." + document.Editor.GetTextBetween (region.Begin, region.End)));
+						menuItem.Activated += delegate {
+							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, false).Run ();
+						};
+						menu.Add (menuItem);
+					}
+				}
+				if (menu.Children.Any ()) {
+					fixMenu = new Gtk.Menu ();
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Quick Fixes"));
+					menuItem.Submenu = fixMenu;
+					menu.Add (menuItem);
+				}
+			}
+			
+			PopulateFixes (fixMenu);
 			
 			menu.ShowAll ();
 			menu.SelectFirst (true);
@@ -124,9 +170,9 @@ namespace MonoDevelop.CodeActions
 				menuPushed = false;
 				QueueDraw ();
 			};
-			var container = (TextEditorContainer)this.document.Editor.Parent.Parent;
+			var container = (TextEditorContainer)document.Editor.Parent.Parent;
 			var child = (TextEditorContainer.EditorContainerChild)container [this];
-			GtkWorkarounds.ShowContextMenu (menu, this.document.Editor.Parent, null, new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0));
+			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0));
 		}
 
 		class ContextActionRunner
