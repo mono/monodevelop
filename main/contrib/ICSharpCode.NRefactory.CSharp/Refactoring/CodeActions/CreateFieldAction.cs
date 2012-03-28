@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -85,10 +86,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		#region Type guessing
-		static int GetArgumentIndex(InvocationExpression invoke, AstNode parameter)
+		static int GetArgumentIndex(IEnumerable<Expression> arguments, AstNode parameter)
 		{
 			int argumentNumber = 0;
-			foreach (var arg in invoke.Arguments) {
+			foreach (var arg in arguments) {
 				if (arg == parameter) {
 					return argumentNumber;
 				}
@@ -99,7 +100,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		static IEnumerable<IType> GetAllValidTypesFromInvokation(RefactoringContext context, InvocationExpression invoke, AstNode parameter)
 		{
-			int index = GetArgumentIndex(invoke, parameter);
+			int index = GetArgumentIndex(invoke.Arguments, parameter);
 			if (index < 0) {
 				yield break;
 			}
@@ -114,6 +115,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
+		static IEnumerable<IType> GetAllValidTypesFromObjectCreation(RefactoringContext context, ObjectCreateExpression invoke, AstNode parameter)
+		{
+			int index = GetArgumentIndex(invoke.Arguments, parameter);
+			if (index < 0) {
+				yield break;
+			}
+					
+			var targetResult = context.Resolve(invoke.Type);
+			if (targetResult is TypeResolveResult) {
+				var type = ((TypeResolveResult)targetResult).Type;
+				if (type.Kind == TypeKind.Delegate && index == 0) {
+					yield return type;
+					yield break;
+				}
+				foreach (var constructor in type.GetConstructors ()) {
+					if (index < constructor.Parameters.Count) {
+						yield return constructor.Parameters [index].Type;
+					}
+				}
+			}
+		}
+
 		internal static IEnumerable<IType> GetValidTypes(RefactoringContext context, Expression expr)
 		{
 			if (expr.Parent is DirectionExpression) {
@@ -121,6 +144,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (parent is InvocationExpression) {
 					var invoke = (InvocationExpression)parent;
 					return GetAllValidTypesFromInvokation(context, invoke, expr.Parent);
+				}
+			}
+
+			if (expr.Parent is ObjectCreateExpression) {
+				var parent = expr.Parent;
+				if (parent is ObjectCreateExpression) {
+					var invoke = (ObjectCreateExpression)parent;
+					return GetAllValidTypesFromObjectCreation(context, invoke, expr);
 				}
 			}
 
