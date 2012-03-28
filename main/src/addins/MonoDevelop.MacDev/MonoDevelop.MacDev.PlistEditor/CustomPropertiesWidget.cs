@@ -434,71 +434,32 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void AddNewArrayElement (PArray array, PListScheme.SchemaItem key)
 		{
-			if (key == null) {
+			var value = PListScheme.AvailableValues (array, key, CurrentTree).FirstOrDefault ();
+			if (value == null) {
 				array.Add (PObject.Create (DefaultNewObjectType));
-				return;
-			}
-			
-			var usedValues = array;
-			var allowedValues = new List<PListScheme.Value> (key.Values);
-			foreach (var allowed in key.Values) {
-				foreach (var used in usedValues) {
-					if (used is PString && key.ArrayType == used.TypeString) {
-						if (((PString)used).Value == allowed.Identifier)
-							allowedValues.Remove (allowed);
-					} else if (used is PNumber && key.ArrayType == used.TypeString) {
-						if (((PNumber) used).Value.ToString () == allowed.Identifier) {
-							allowedValues.Remove (allowed);
-						}
-					}
-				}
-			}
-			
-			if (key.Values.Count == 0) {
-				array.Add (PObject.Create (key.ArrayType ?? DefaultNewObjectType));
-			} else if (allowedValues.Count > 0) {
-				var newKey = allowedValues.First ();
-				if (key.ArrayType == PString.Type) {
-					array.Add (new PString (newKey.Identifier));
-				} else if (key.ArrayType == PNumber.Type) {
-					array.Add (new PNumber (int.Parse (newKey.Identifier)));
-				} else {
-					array.Add (PObject.Create (key.ArrayType ?? DefaultNewObjectType));
-				}
+			} else {
+				array.Add (value.Create ());
 			}
 		}
 		
 		void AddNewDictionaryElement (PDictionary dict, PListScheme.SchemaItem key)
 		{
-			if (key == null) {
+			var value = PListScheme.AvailableValues (dict, key, CurrentTree).FirstOrDefault ();
+			if (value == null) {
 				string name = "newNode";
 				while (dict.ContainsKey (name))
 					name += "_";
 				dict.Add (name, PObject.Create (DefaultNewObjectType));
 			} else {
-				var values = key.Values.Cast<PListScheme.SchemaItem> ().ToList ();
-				foreach (var child in dict.Select (k => k.Value)) {
-					values.Remove (CurrentTree [child]);
-				}
-				
-				var value = values.FirstOrDefault ();
-				if (value != null)
-					dict.Add (value.Identifier, value.Create ());
+				dict.Add (value.Identifier, value.Create ());
 			}
 		}
 
 		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PObject current, Dictionary<PObject, PListScheme.SchemaItem> tree)
 		{
-			var objs = Enumerable.Empty<Tuple<string, PObject>> ();
-			if (current is PDictionary) {
-				objs = ((PDictionary) current).Select (v => Tuple.Create (v.Key, v.Value));
-			} else if (current is PArray) {
-				objs = ((PArray) current).Select (v => Tuple.Create (v is IPValueObject ? ((IPValueObject)v).Value.ToString () : "", v));
-			}
-			
-			foreach (var item in objs) {
-				var subIter = FindOrAddPObject (iter, item.Item1, item.Item2, tree);
-				AddToTree (treeStore, subIter, item.Item2, tree);
+			foreach (var item in PObject.ToEnumerable (current)) {
+				var subIter = FindOrAddPObject (iter, item.Key, item.Value, tree);
+				AddToTree (treeStore, subIter, item.Value, tree);
 			}
 		}
 		

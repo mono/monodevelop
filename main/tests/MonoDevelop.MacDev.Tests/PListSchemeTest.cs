@@ -32,6 +32,7 @@ using NUnit.Framework;
 
 using MonoDevelop.MacDev;
 using MonoDevelop.MacDev.PlistEditor;
+using System.Collections.Generic;
 
 namespace MonoDevelop.MacDev.Tests
 {
@@ -62,6 +63,186 @@ namespace MonoDevelop.MacDev.Tests
 			var key = scheme.GetKey ("keyname");
 			Assert.AreEqual ("Array", key.Type, "#1");
 			Assert.IsNull (key.ArrayType, "#2");
+		}
+	
+		[Test]
+		public void AvailableValues_Array_NoValues ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Array"" arrayType = ""Number"" />
+</PListScheme>");
+			
+			var root = new PDictionary ();
+			var key = scheme.GetKey ("keyname");
+			root.Add (key.Identifier, key.Create ());
+			
+			var tree = PListScheme.Match (root, scheme);
+			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			Assert.AreEqual (1, available.Count, "#1");
+		}
+		
+		[Test]
+		public void AvailableValues_Array_WithValues ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Array"" arrayType = ""Number"" >
+		<Value name = ""1"" />
+		<Value name = ""2"" />
+		<Value name = ""3"" />
+	</Key>
+</PListScheme>");
+			
+			var root = new PDictionary ();
+			var key = scheme.GetKey ("keyname");
+			root.Add (key.Identifier, key.Create ());
+			
+			var tree = PListScheme.Match (root, scheme);
+			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			Assert.AreEqual (2, available.Count, "#1");
+			
+			var array = (PArray) root ["keyname"];
+			Assert.AreEqual (1, array.Count, "#2");
+			Assert.AreEqual (1, ((PNumber) array [0]).Value, "#3");
+		}
+		
+		[Test]
+		public void AvailableValues_Array_WithUsedValues ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Array"" arrayType = ""Number"" >
+		<Value name = ""1"" />
+		<Value name = ""2"" />
+		<Value name = ""3"" />
+	</Key>
+</PListScheme>");
+			
+			var root = new PDictionary ();
+			var key = scheme.GetKey ("keyname");
+			root.Add (key.Identifier, key.Create ());
+			
+			var tree = PListScheme.Match (root, scheme);
+			var array = (PArray)root["keyname"];
+			
+			array.Clear ();
+			var available = PListScheme.AvailableValues (array, key, tree);
+			Assert.AreEqual (3, available.Count, "#1");
+			
+			array.Add (new PNumber (2));
+			tree = PListScheme.Match (root, scheme);
+			available = PListScheme.AvailableValues (array, key, tree);
+			Assert.AreEqual (2, available.Count, "#2");
+			
+			array.Add (new PNumber (1));
+			tree = PListScheme.Match (root, scheme);
+			available = PListScheme.AvailableValues (array, key, tree);
+			Assert.AreEqual (1, available.Count, "#3");
+			Assert.AreEqual ("3", available [0].Identifier, "#4");
+			
+			array.Add (new PNumber (3));
+			tree = PListScheme.Match (root, scheme);
+			available = PListScheme.AvailableValues (array, key, tree);
+			Assert.AreEqual (0, available.Count, "#5");
+		}
+
+		[Test]
+		public void AvailableValues_Boolean ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Boolean"" />
+</PListScheme>");
+			
+			var root = new PDictionary ();
+			var key = scheme.GetKey ("keyname");
+			root.Add (key.Identifier, key.Create ());
+			
+			var tree = PListScheme.Match (root, scheme);
+			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			Assert.AreEqual (2, available.Count, "#1");
+			Assert.AreEqual ("Yes", available [0].Identifier, "#1");
+			Assert.AreEqual ("Yes", available [0].Description, "#2");
+			Assert.AreEqual ("No", available [1].Identifier, "#3");
+			Assert.AreEqual ("No", available [1].Description, "#4");
+		}
+		
+		[Test]
+		public void AvailableValues_Number_NoValues ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Number"" />
+</PListScheme>");
+			
+			var root = new PDictionary ();
+			var key = scheme.GetKey ("keyname");
+			root.Add (key.Identifier, key.Create ());
+			
+			var tree = PListScheme.Match (root, scheme);
+			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			Assert.AreEqual (0, available.Count, "#1");
+		}
+		
+		[Test]
+		public void AvailableValues_Number_WithValues ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Number"">
+		<Value name = ""1"" />
+		<Value name = ""2"" />
+		<Value name = ""3"" />
+	</Key>
+</PListScheme>");
+			
+			var root = new PDictionary ();
+			var key = scheme.GetKey ("keyname");
+			root.Add (key.Identifier, key.Create ());
+			
+			var tree = PListScheme.Match (root, scheme);
+			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			Assert.AreEqual (3, available.Count, "#1");
+			Assert.AreEqual (1, ((PNumber) tree.First ().Key).Value, "#2");
+		}
+
+		[Test]
+		public void ArrayKey_ImplicitBooleanValue_AvailableValues ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Array"" arrayType = ""Boolean"" />
+</PListScheme>");
+			
+			var key = scheme.GetKey ("keyname");
+			Assert.AreEqual (1, key.Values.Count, "#1");
+		}
+		[Test]
+		public void ArrayKey_ImplicitDictionaryValue ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Array"" arrayType = ""Dictionary"" />
+</PListScheme>");
+			
+			var key = scheme.GetKey ("keyname");
+			Assert.AreEqual (1, key.Values.Count, "#1");
+		}
+		
+		[Test]
+		public void ArrayKey_ExplicitDictionaryValue ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Array"" arrayType = ""Dictionary"">
+		<Value />
+	</Key>
+</PListScheme>");
+			
+			var key = scheme.GetKey ("keyname");
+			Assert.AreEqual (1, key.Values.Count, "#1");
+			Assert.AreEqual (PDictionary.Type, key.Values [0].Type, "#2");
 		}
 		
 		[Test]
@@ -540,7 +721,7 @@ namespace MonoDevelop.MacDev.Tests
 			Assert.AreSame (result [val2], key.Values [0].Values [1], "#5");
 			
 			var child = ((PArray) val2)[0];
-			Assert.AreSame (result [child], key.Values [0].Values [1], "#6");
+			Assert.AreSame (result [child], key.Values [0].Values [1].Values [0], "#6");
 			Assert.IsInstanceOf <PString> (child, "#7");
 		}
 		

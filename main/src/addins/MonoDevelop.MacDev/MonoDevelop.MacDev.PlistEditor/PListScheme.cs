@@ -111,6 +111,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 	public partial class PListScheme
 	{
 		public static readonly PListScheme Empty = new PListScheme () { keys = new Key [0] };
+		static readonly Value BooleanYes = new Value { Identifier = "Yes", Description = "Yes", Type = "Boolean" };
+		static readonly Value BooleanNo = new Value { Identifier = "No", Description = "No", Type = "Boolean" };
 		
 		IList<Key> keys = new List<Key> ();
 
@@ -124,7 +126,29 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			return keys.FirstOrDefault (k => k.Identifier == id);
 		}
+		
+		public static IList<SchemaItem> AvailableValues (PObject obj, SchemaItem key, Dictionary<PObject, SchemaItem> tree)
+		{
+			if (obj is PBoolean)
+				return new [] { BooleanYes, BooleanNo };
+			
+			if (key == null)
+				return new SchemaItem [0];
+			
+			var values = key.Values.Cast<PListScheme.SchemaItem> ().ToList ();
 
+			// In this case every element in the array/dictionary is produced from this single Value
+			if ((obj is PDictionary || obj is PArray) && values.Count == 1 && values [0].Identifier == null)
+				return values;
+
+			// Strip out values which are already used. We can do this trivially as
+			// we have already matched every PObject to the SchemaItem which created it
+			foreach (var child in PObject.ToEnumerable  (obj))
+				values.Remove (tree [child.Value]);
+
+			return values;
+		}
+		
 		public static PListScheme Load (XmlReader reader)
 		{
 			var result = new PListScheme ();
@@ -139,13 +163,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 					ArrayType = AttributeToString (keyNode.Attributes ["arrayType"])
 				};
 				
-				if (keyNode.HasChildNodes) {
-					key.Values.AddRange (ParseValues (key.ArrayType ?? key.Type, keyNode.ChildNodes));
-				}
+				CreateChildValues (key, keyNode);
 				result.Keys.Add (key);
 			}
 			
 			return result;
+		}
+		
+		static void CreateChildValues (SchemaItem key, XmlNode node)
+		{
+			if (node.HasChildNodes)
+				key.Values.AddRange (ParseValues (key.ArrayType ?? key.Type, node.ChildNodes));
+			else if (key.Type == "Dictionary")
+				key.Values.Add (new Value { Type = "String", Description = "New value" });
+			else if (key.Type == "Array")
+				key.Values.Add (new Value { Type = key.ArrayType, Description = "New value" });
 		}
 		
 		public static Dictionary<PObject, SchemaItem> Match (PDictionary dictionary, PListScheme scheme)
@@ -178,19 +210,15 @@ namespace MonoDevelop.MacDev.PlistEditor
 		static void Match (PObject o, SchemaItem value, Dictionary<PObject, SchemaItem> results)
 		{
 			results.Add (o, value);
-			if (o is PDictionary) {
-				foreach (var kp in ((PDictionary) o)) {
-					var subValue = value == null ? null : value.Values.Where (k => k.Identifier == kp.Key).FirstOrDefault () ?? value;
-					Match (kp.Value, subValue, results);
-				}
-			} else if (o is PArray) {
-				foreach (var v in ((PArray) o)) {
-					Match (v, value, results);
-				}
+			
+			foreach (var kp in PObject.ToEnumerable (o)) {
+				var subValue = value != null ? value.Values.Where (k => k.Identifier == kp.Key).FirstOrDefault () : null;
+				if (subValue == null && value != null && value.Values.Count == 1 && value.Values [0].Identifier == null)
+					subValue = value.Values [0];
+				Match (kp.Value, subValue, results);
 			}
 		}
-		
-		
+
 		static IEnumerable<Value> ParseValues (string type, XmlNodeList nodeList)
 		{
 			List<Value> values = new List<Value> ();
@@ -208,9 +236,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (node.Attributes ["required"] != null)
 					v.Required = bool.Parse (node.Attributes ["required"].Value);
 				
-				if (node.HasChildNodes)
-					v.Values.AddRange (ParseValues (v.ArrayType ?? v.Type, node.ChildNodes));
-				
+				CreateChildValues (v, node);
 				values.Add (v);
 			}
 			return values;
