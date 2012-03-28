@@ -254,7 +254,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			treeview.AppendColumn (col);
 			
 			col = new TreeViewColumn { MinWidth = 25, Resizable = false, Sizing = Gtk.TreeViewColumnSizing.Fixed };
-			
+				
 			var removeRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-remove", IconSize.Menu));
 			removeRenderer.Clicked += RemoveElement;
 			col.PackEnd (removeRenderer, false);
@@ -538,8 +538,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void RefreshKeyStore ()
 		{
+			TreeIter iter;
+			IEnumerable<PListScheme.SchemaItem> keys = Scheme.Keys.Cast <PListScheme.SchemaItem> ();;
+			
+			if (treeview.Selection.GetSelected (out iter) && treeStore.IterParent (out iter, iter)) {
+				var selectedKey = iter.Equals (TreeIter.Zero) ? null : (PListScheme.SchemaItem) treeStore.GetValue (iter, 2);
+				keys = (selectedKey ?? PListScheme.Key.Empty).Values;
+			}
+			
 			keyStore.Clear ();
-			var sortedKeys = new List<PListScheme.Key> (Scheme.Keys);
+			var sortedKeys = new List<PListScheme.SchemaItem> (keys);
 			if (ShowDescriptions)
 				sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Description, y.Description));
 			else
