@@ -465,10 +465,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void AddNewDictionaryElement (PDictionary dict, PListScheme.SchemaItem key)
 		{
-			string name = "newNode";
-			while (dict.ContainsKey (name))
-				name += "_";
-			dict.Add (name, new PString (""));
+			if (key == null) {
+				string name = "newNode";
+				while (dict.ContainsKey (name))
+					name += "_";
+				dict.Add (name, PObject.Create (DefaultNewObjectType));
+			} else {
+				var values = key.Values.Cast<PListScheme.SchemaItem> ().ToList ();
+				foreach (var child in dict.Select (k => k.Value)) {
+					values.Remove (CurrentTree [child]);
+				}
+				
+				var value = values.FirstOrDefault ();
+				if (value != null)
+					dict.Add (value.Identifier, value.Create ());
+			}
 		}
 
 		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PObject current, Dictionary<PObject, PListScheme.SchemaItem> tree)
