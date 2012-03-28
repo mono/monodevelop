@@ -739,6 +739,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PBoolean : PValueObject<bool>
 	{
+		public const string Yes = "Yes";
+		public const string No = "No";
+		
 		public const string Type = "Boolean";
 		
 		public override string TypeString {
@@ -753,7 +756,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public override void SetValue (string text)
 		{
-			Value = text == GettextCatalog.GetString ("Yes");
+			if (text == Yes || text == GettextCatalog.GetString ("Yes"))
+				Value = true;
+			else if (text == No || text == GettextCatalog.GetString ("No"))
+				Value = false;
 		}
 		
 		public override NSObject Convert ()

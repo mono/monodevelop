@@ -74,9 +74,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var key = scheme.GetKey ("keyname");
 			Assert.AreEqual ("Boolean", key.Type, "#1");
-			Assert.AreEqual (2, key.Values.Count, "#2");
-			Assert.AreEqual ("Yes", key.Values [0].Identifier, "#3");
-			Assert.AreEqual ("No", key.Values [1].Identifier, "#4");
+			Assert.AreEqual (0, key.Values.Count, "#2");
 		}
 		
 		[Test]

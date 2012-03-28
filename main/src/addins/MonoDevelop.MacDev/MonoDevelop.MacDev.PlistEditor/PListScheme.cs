@@ -141,9 +141,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 				
 				if (keyNode.HasChildNodes) {
 					key.Values.AddRange (ParseValues (key.ArrayType ?? key.Type, keyNode.ChildNodes));
-				} else if (key.Type == PBoolean.Type) {
-					key.Values.Add (new Value { Identifier = "Yes", Description = "Yes", Type = "Boolean" });
-					key.Values.Add (new Value { Identifier = "No", Description = "No", Type = "Boolean" });
 				}
 				result.Keys.Add (key);
 			}

@@ -320,12 +320,18 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
 				
-				var item = (PListScheme.SchemaItem)treeStore.GetValue (iter, 2);
-				if (item != null) {
-					var descr = new List<string> (item.Values.Select (v => ShowDescriptions ? v.Description : v.Identifier));
-					descr.Sort ();
-					foreach (var val in descr) {
-						valueStore.AppendValues (val);
+				var obj = treeStore.GetValue (iter, 1);
+				if (obj is PBoolean) {
+					valueStore.AppendValues (PBoolean.Yes);
+					valueStore.AppendValues (PBoolean.No);
+				} else {
+					var key = (PListScheme.SchemaItem)treeStore.GetValue (iter, 2);
+					if (key != null) {
+						var descr = new List<string> (key.Values.Select (v => ShowDescriptions ? v.Description : v.Identifier));
+						descr.Sort ();
+						foreach (var val in descr) {
+							valueStore.AppendValues (val);
+						}
 					}
 				}
 			};
