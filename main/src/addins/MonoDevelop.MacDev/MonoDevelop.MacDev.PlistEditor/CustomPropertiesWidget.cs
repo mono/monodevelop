@@ -218,7 +218,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (dict != null) {
 					var keys = Scheme.Keys.Cast<PListScheme.SchemaItem> ();
 					if (treeStore.IterParent (out iter, iter)) {
-						keys = ((PListScheme.SchemaItem)treeStore.GetValue (iter, 2)).Values;
+						var subkey = (PListScheme.SchemaItem) treeStore.GetValue (iter, 2) ?? PListScheme.Key.Empty;
+						keys = subkey.Values;
 					}
 					
 					var key = keys.FirstOrDefault (k => k.Identifier == args.NewText || k.Description == args.NewText);
