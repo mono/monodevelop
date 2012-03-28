@@ -195,7 +195,7 @@ namespace MonoDevelop.Refactoring.Rename
 				tle.SetCaretPosition = false;
 				tle.SelectPrimaryLink = true;
 				if (tle.ShouldStartTextLinkMode) {
-					ModeHelpWindow helpWindow = new ModeHelpWindow ();
+					var helpWindow = new TableLayoutModeHelpWindow ();
 					helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 					helpWindow.TitleText = options.SelectedItem is IVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
 					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));

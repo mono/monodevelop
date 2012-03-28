@@ -80,15 +80,10 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			var declaringType = document.ParsedDocument.GetInnermostTypeDefinition (loc);
 			var type = options.ResolveResult.Type;
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (document, declaringType));
-			ModeHelpWindow helpWindow = new ModeHelpWindow ();
+			var mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (document, declaringType));
+			var helpWindow = new InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
-			helpWindow.TitleText = GettextCatalog.GetString ("<b>Implement abstract members -- Targeting</b>");
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Declare interface implementation</b> at target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
+			helpWindow.TitleText = GettextCatalog.GetString ("Implement Abstract Members");
 			mode.HelpWindow = helpWindow;
 			mode.CurIndex = mode.InsertionPoints.Count - 1;
 			mode.StartMode ();
@@ -100,7 +95,7 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 					
 					var def = type.GetDefinition ();
 					var missingAbstractMembers = def.Members.Where (member => member.IsAbstract && !declaringType.Members.Any (m => member.Name == m.Name));
-					StringBuilder sb = new StringBuilder ();
+					var sb = new StringBuilder ();
 					foreach (var member in missingAbstractMembers) {
 						if (sb.Length > 0) {
 							sb.Append (editor.EolMarker);

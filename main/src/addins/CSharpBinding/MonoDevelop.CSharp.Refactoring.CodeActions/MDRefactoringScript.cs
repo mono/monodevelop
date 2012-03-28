@@ -63,14 +63,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var editor = document.Editor;
 			DocumentLocation loc = document.Editor.Caret.Location;
 			var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (document, document.ParsedDocument.GetInnermostTypeDefinition (loc)));
-			var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
+			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
-			helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Accept</b> target point.")));
-			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this operation.")));
+			helpWindow.TitleText = operation;
 			mode.HelpWindow = helpWindow;
 			
 			switch (defaultPosition) {
@@ -119,14 +114,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var loc = part.Region.Begin;
 				var parsedDocument = loadedDocument.UpdateParseDocument ();
 				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (loadedDocument, parsedDocument.GetInnermostTypeDefinition (loc)));
-				var helpWindow = new Mono.TextEditor.PopupWindow.ModeHelpWindow ();
+				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
-				helpWindow.TitleText = string.Format (GettextCatalog.GetString ("<b>{0} -- Targeting</b>"), operation);
-				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Up</b>"), GettextCatalog.GetString ("Move to <b>previous</b> target point.")));
-				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Down</b>"), GettextCatalog.GetString ("Move to <b>next</b> target point.")));
-				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Enter</b>"), GettextCatalog.GetString ("<b>Accept</b> target point.")));
-				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this operation.")));
+				helpWindow.TitleText = operation;
 				mode.HelpWindow = helpWindow;
 				
 				mode.CurIndex = 0;

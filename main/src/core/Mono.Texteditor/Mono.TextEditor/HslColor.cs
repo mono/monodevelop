@@ -160,6 +160,13 @@ namespace Mono.TextEditor
 		{
 		}
 		
+		public static HslColor Parse (string color)
+		{
+			Gdk.Color col;
+			Gdk.Color.Parse (color, ref col);
+			return (HslColor)col;
+		}
+
 		public static double Brightness (Gdk.Color c)
 		{
 			double r = c.Red / (double)ushort.MaxValue;
