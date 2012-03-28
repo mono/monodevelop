@@ -320,18 +320,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
 				
-				var obj = treeStore.GetValue (iter, 1);
-				if (obj is PBoolean) {
-					valueStore.AppendValues (PBoolean.Yes);
-					valueStore.AppendValues (PBoolean.No);
-				} else {
-					var key = (PListScheme.SchemaItem)treeStore.GetValue (iter, 2);
-					if (key != null) {
-						var descr = new List<string> (key.Values.Select (v => ShowDescriptions ? v.Description : v.Identifier));
-						descr.Sort ();
-						foreach (var val in descr) {
-							valueStore.AppendValues (val);
-						}
+				var actualObj = (PObject) treeStore.GetValue (iter, 1);
+				
+				if (actualObj.Parent is PArray || actualObj.Parent is PDictionary)
+					treeStore.IterParent (out iter, iter);
+				
+				var obj = (PObject) treeStore.GetValue (iter, 1);
+				var key = (PListScheme.SchemaItem)treeStore.GetValue (iter, 2);
+				var values = PListScheme.AvailableValues (obj, key, CurrentTree);
+				if (values != null) {
+					// Always include the current item in the dropdown so the user can select
+					// the value that's already there.
+					values.Add (CurrentTree [actualObj]);
+					
+					var descr = new List<string> (values.Select (v => ShowDescriptions ? v.Description : v.Identifier));
+					descr.Sort ();
+					foreach (var val in descr) {
+						valueStore.AppendValues (val);
 					}
 				}
 			};
@@ -434,23 +439,24 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		void AddNewArrayElement (PArray array, PListScheme.SchemaItem key)
 		{
-			var value = PListScheme.AvailableValues (array, key, CurrentTree).FirstOrDefault ();
-			if (value == null) {
+			var values = PListScheme.AvailableValues (array, key, CurrentTree);
+			if (values == null) {
 				array.Add (PObject.Create (DefaultNewObjectType));
-			} else {
-				array.Add (value.Create ());
+			} else if (values.Any ()) {
+				array.Add (values.First ().Create ());
 			}
 		}
 		
 		void AddNewDictionaryElement (PDictionary dict, PListScheme.SchemaItem key)
 		{
-			var value = PListScheme.AvailableValues (dict, key, CurrentTree).FirstOrDefault ();
-			if (value == null) {
+			var values = PListScheme.AvailableValues (dict, key, CurrentTree);
+			if (values == null) {
 				string name = "newNode";
 				while (dict.ContainsKey (name))
 					name += "_";
 				dict.Add (name, PObject.Create (DefaultNewObjectType));
-			} else {
+			} else if (values.Any ()) {
+				var value = values.FirstOrDefault ();
 				dict.Add (value.Identifier, value.Create ());
 			}
 		}
@@ -515,11 +521,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 		void RefreshKeyStore ()
 		{
 			TreeIter iter;
-			IEnumerable<PListScheme.SchemaItem> keys = Scheme.Keys.Cast <PListScheme.SchemaItem> ();;
-			
-			if (treeview.Selection.GetSelected (out iter) && treeStore.IterParent (out iter, iter)) {
-				var selectedKey = iter.Equals (TreeIter.Zero) ? null : (PListScheme.SchemaItem) treeStore.GetValue (iter, 2);
-				keys = (selectedKey ?? PListScheme.Key.Empty).Values;
+			var keys = Scheme.Keys.Cast <PListScheme.SchemaItem> ();
+			if (treeview.Selection.GetSelected (out iter)) {
+				var currentObj = (PObject) treeStore.GetValue (iter, 1);
+				if (treeStore.IterParent (out iter, iter)) {
+					var obj = (PObject) treeStore.GetValue (iter, 1);
+					var key = (PListScheme.SchemaItem) treeStore.GetValue (iter, 2);
+					var k = PListScheme.AvailableValues (obj, key, CurrentTree);
+					k.Add (CurrentTree [currentObj]);
+					keys = k;
+				}
 			}
 			
 			keyStore.Clear ();
