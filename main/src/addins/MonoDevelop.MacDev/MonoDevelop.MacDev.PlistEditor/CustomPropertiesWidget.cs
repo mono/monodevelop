@@ -205,23 +205,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 			keyRenderer.Model = keyStore;
 			keyRenderer.Mode = CellRendererMode.Editable;
 			keyRenderer.TextColumn = 0;
+			keyRenderer.EditingStarted += delegate {
+				RefreshKeyStore ();
+			};
 			keyRenderer.Edited += delegate(object o, EditedArgs args) {
-				TreeIter selIter;
-				if (!treeStore.GetIterFromString (out selIter, args.Path)) 
+				TreeIter iter;
+				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
-				if (args.NewText == (string)treeStore.GetValue (selIter, 0))
-					return;
-				
-				var obj = (PObject)treeStore.GetValue (selIter, 1);
-				
+
+				var obj = (PObject) treeStore.GetValue (iter, 1);
 				var dict = obj.Parent as PDictionary;
-				if (dict == null)
-					return;
-				
-				var key = Scheme.Keys.FirstOrDefault (k => k.Identifier == args.NewText || k.Description == args.NewText);
-				var newKey = key != null ? key.Identifier : args.NewText;
-				
-				dict.ChangeKey (obj, newKey, key == null ? null : key.Create ());
+				if (dict != null) {
+					var keys = Scheme.Keys.Cast<PListScheme.SchemaItem> ();
+					if (treeStore.IterParent (out iter, iter)) {
+						keys = ((PListScheme.SchemaItem)treeStore.GetValue (iter, 2)).Values;
+					}
+					
+					var key = keys.FirstOrDefault (k => k.Identifier == args.NewText || k.Description == args.NewText);
+					var newKey = key == null ? args.NewText : key.Identifier;
+					dict.ChangeKey (obj, newKey, key == null ? null : key.Create ());
+				}
 			};
 			var col = new TreeViewColumn ();
 			col.Resizable = true;
@@ -238,7 +241,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 				}
 				
-				var key = Scheme.GetKey (id);
+				var key = (PListScheme.SchemaItem) tree_model.GetValue (iter, 2);
 				var parentPArray = obj.Parent is PArray;
 				renderer.Editable = !parentPArray;
 				renderer.Sensitive = !parentPArray;
@@ -396,21 +399,21 @@ namespace MonoDevelop.MacDev.PlistEditor
 			// By default we assume we are adding something to the root dictionary/array
 			TreeIter iter;
 			var parent = RootPObject;
-			var parentKey = "";
+			PListScheme.SchemaItem parentKey = null;
 			
 			// Grab the selected row and find out what the parent is. If there is a parent, then we
 			// will need it correlate against the schema to figure out what values are allowed to be
 			// entered here
 			if (treeview.Selection.GetSelected (out iter)) {
 				if (treeStore.IterParent (out iter, iter)) {
-					parentKey = (string) treeStore.GetValue (iter, 0);
 					parent = (PObject) treeStore.GetValue (iter, 1);
+					parentKey = (PListScheme.SchemaItem) treeStore.GetValue (iter, 2);
 				}
 
 				if (parent is PArray)
-					AddNewArrayElement ((PArray) parent, Scheme.GetKey (parentKey));
+					AddNewArrayElement ((PArray) parent, parentKey);
 				else if (parent is PDictionary)
-					AddNewDictionaryElement ((PDictionary) parent, Scheme.GetKey (parentKey));
+					AddNewDictionaryElement ((PDictionary) parent, parentKey);
 			}
 		}
 		
@@ -423,7 +426,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		void AddNewArrayElement (PArray array, PListScheme.Key key)
+		void AddNewArrayElement (PArray array, PListScheme.SchemaItem key)
 		{
 			if (key == null) {
 				array.Add (PObject.Create (DefaultNewObjectType));
@@ -459,7 +462,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		void AddNewDictionaryElement (PDictionary dict, PListScheme.Key key)
+		void AddNewDictionaryElement (PDictionary dict, PListScheme.SchemaItem key)
 		{
 			string name = "newNode";
 			while (dict.ContainsKey (name))
