@@ -74,6 +74,18 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return new PString ("<error>");
 		}
 		
+				
+		internal static IEnumerable<KeyValuePair<string, PObject>> ToEnumerable (PObject obj)
+		{
+			if (obj is PDictionary) {
+				return (PDictionary) obj;
+			} else if (obj is PArray) {
+				return ((PArray) obj).Select (k => new KeyValuePair<string, PObject> (k is IPValueObject ? ((IPValueObject) k).Value.ToString () : null, k));
+			} else {
+				return Enumerable.Empty <KeyValuePair<string, PObject>> ();
+			}
+		}
+		
 		
 		PObject parent;
 		public PObject Parent {
