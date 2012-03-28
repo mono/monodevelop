@@ -53,6 +53,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		List<Tuple<FilePath, MonoDevelop.Ide.Gui.Document>> openDocuments = new List<Tuple<FilePath, MonoDevelop.Ide.Gui.Document>> ();
 		
 		string memberName;
+		string keywordName;
 		
 		public CSharpReferenceFinder ()
 		{
@@ -63,8 +64,14 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			searchedMembers = new List<object> (members);
 			var firstMember = searchedMembers.FirstOrDefault ();
-			if (firstMember is INamedElement)
-				memberName = ((INamedElement)firstMember).Name;
+			if (firstMember is INamedElement) {
+				var namedElement = (INamedElement)firstMember;
+				memberName = namedElement.Name;
+
+				keywordName = CSharpAmbience.NetToCSharpTypeName (namedElement.FullName);
+				if (keywordName == namedElement.FullName)
+					keywordName = null;
+			}
 			if (firstMember is string)
 				memberName = firstMember.ToString ();
 			if (firstMember is IVariable)
@@ -136,8 +143,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is DestructorDeclaration)
 				node = ((DestructorDeclaration)node).NameToken;
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
-			
-			return new MemberReference (valid, region, editor.LocationToOffset (region.Begin), memberName.Length);
+
+			var length = node is PrimitiveType ? keywordName.Length : memberName.Length;
+			return new MemberReference (valid, region, editor.LocationToOffset (region.Begin), length);
 		}
 
 		bool IsNodeValid (object searchedMember, AstNode node)
@@ -199,7 +207,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			foreach (var file in files) {
 				string text = Mono.TextEditor.Utils.TextFileReader.ReadAllText (file);
-				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0)
+				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0 &&
+					(keywordName == null || text.IndexOf (keywordName, StringComparison.Ordinal) < 0))
 					continue;
 				using (var editor = TextEditorData.CreateImmutable (text)) {
 					editor.Document.FileName = file;
