@@ -41,6 +41,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {

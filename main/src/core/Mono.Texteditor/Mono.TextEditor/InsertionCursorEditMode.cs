@@ -99,10 +99,10 @@ namespace Mono.TextEditor
 		
 		public new TextEditor Editor {
 			get {
-				return this.editor;
+				return editor;
 			}
 			set {
-				this.editor = value;
+				editor = value;
 			}
 		}
 		
@@ -147,7 +147,7 @@ namespace Mono.TextEditor
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
 			editor.Destroyed += HandleEditorDestroy;
-			Gdk.Rectangle geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
+			var geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
 			int x = System.Math.Min (ox + editor.Allocation.Width - req.Width / 2, geometry.X + geometry.Width - req.Width);
 			int y = System.Math.Min (oy + editor.Allocation.Height - req.Height / 2, geometry.Y + geometry.Height - req.Height);
@@ -161,7 +161,7 @@ namespace Mono.TextEditor
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
 			editor.Destroyed += HandleEditorDestroy;
-			Gdk.Rectangle geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
+			var geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
 			x = System.Math.Min (x, geometry.X + geometry.Width - req.Width);
 			HelpWindow.Move (ox + x, oy + y - req.Height / 2);
@@ -190,7 +190,7 @@ namespace Mono.TextEditor
 		}
 		
 		public List<InsertionPoint> InsertionPoints {
-			get { return this.insertionPoints; }
+			get { return insertionPoints; }
 		}
 		
 		public InsertionCursorEditMode (TextEditor editor, List<InsertionPoint> insertionPoints)
@@ -278,7 +278,7 @@ namespace Mono.TextEditor
 			editor.TextViewMargin.RemoveDrawer (drawer);
 			editor.CurrentMode = oldMode;
 			
-			EventHandler<InsertionCursorEventArgs> handler = this.Exited;
+			var handler = Exited;
 			if (handler != null)
 				handler (this, e);
 			
@@ -316,7 +316,6 @@ namespace Mono.TextEditor
 				g.Fill ();
 			}
 
-			
 			public void CalculateLineStarts (out double x1, out double x2, out double delta)
 			{
 				TextEditor editor = mode.editor;
@@ -407,8 +406,8 @@ namespace Mono.TextEditor
 		
 		public InsertionCursorEventArgs (bool success, InsertionPoint insertionPoint)
 		{
-			this.Success = success;
-			this.InsertionPoint = insertionPoint;
+			Success = success;
+			InsertionPoint = insertionPoint;
 		}
 	}
 	

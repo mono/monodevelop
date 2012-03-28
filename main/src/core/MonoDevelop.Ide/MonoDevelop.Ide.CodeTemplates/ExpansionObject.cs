@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
 				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition), var);
-				if (!result.Type.IsReferenceType.Value)
+				if (result.Type.IsReferenceType.HasValue && !result.Type.IsReferenceType.Value)
 					return "Length";
 			}
 			return "Count";
