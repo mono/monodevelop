@@ -39,8 +39,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 	{
 		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act;
 		
-		public NRefactoryCodeAction (string title, ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act)
+		public NRefactoryCodeAction (string id, string title, ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act)
 		{
+			this.IdString = id;
 			this.Title = title;
 			this.act = act;
 		}

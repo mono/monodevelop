@@ -39,6 +39,16 @@ namespace MonoDevelop.CodeActions
 		public string Title { get; set; }
 
 		/// <summary>
+		/// Gets or sets the id string. The id is used to identify a specific code action.
+		/// </summary>
+		public string IdString { get; set; }
+
+		public CodeAction ()
+		{
+			IdString = GetType ().FullName;
+		}
+
+		/// <summary>
 		/// Performs the specified code action in document at loc.
 		/// </summary>
 		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);

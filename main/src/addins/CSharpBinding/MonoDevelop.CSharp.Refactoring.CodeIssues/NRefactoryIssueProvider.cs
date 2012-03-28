@@ -38,6 +38,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
 	class NRefactoryIssueProvider : CodeIssueProvider
 	{
+		readonly List<List<string>> actionIdList = new List<List<string>> ();
 		ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
 
 		public override string IdString {
@@ -60,25 +61,36 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public override IEnumerable<CodeIssue> GetIssues (Document document, CancellationToken cancellationToken)
 		{
 			var context = new MDRefactoringContext (document, document.Editor.Caret.Location);
+			int issueNum = 0;
 			foreach (var action in issueProvider.GetIssues (context)) {
 				if (action.Actions == null) {
 					LoggingService.LogError ("NRefactory actions == null in :" + Title);
 					continue;
 				}
-
+				if (actionIdList.Count <= issueNum)
+					actionIdList.Add (new List<string> ());
+				var actionId = actionIdList [issueNum];
+				int actionNum = 0;
+				
+				var actions = new List<MonoDevelop.CodeActions.CodeAction> ();
+				foreach (var act in action.Actions) {
+					if (act == null) {
+						LoggingService.LogError ("NRefactory issue action was null in :" + Title);
+						continue;
+					}
+					if (actionId.Count <= actionNum)
+						actionId.Add (issueProvider.GetType ().FullName + "'" + issueNum + "'" + actionNum);
+					actions.Add (new NRefactoryCodeAction (actionId[actionNum], act.Description, act));
+					actionNum++;
+				}
 				var issue = new CodeIssue (
 					GettextCatalog.GetString (action.Desription ?? ""),
 					action.Start,
 					action.End,
-					action.Actions.Select (act => {
-						if (act == null) {
-							LoggingService.LogError ("NRefactory issue action was null in :" + Title);
-							return null;
-						}
-						return new NRefactoryCodeAction (act.Description, act);
-					}
-				));
+					actions
+				);
 				yield return issue;
+				issueNum ++;
 			}
 		}
 	}

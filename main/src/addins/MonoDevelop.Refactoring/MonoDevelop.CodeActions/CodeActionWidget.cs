@@ -80,10 +80,39 @@ namespace MonoDevelop.CodeActions
 			PopupQuickFixMenu (null);
 		}
 
+		static CodeActionWidget ()
+		{
+			var usages = PropertyService.Get<Properties> ("CodeActionUsages", new Properties ());
+			foreach (var key in usages.Keys) {
+				CodeActionUsages [key] = usages.Get<int> (key);
+			}
+		}
+
+		static readonly Dictionary<string, int> CodeActionUsages = new Dictionary<string, int> ();
+		
+		static void ConfirmUsage (string id)
+		{
+			if (!CodeActionUsages.ContainsKey (id)) {
+				CodeActionUsages [id] = 1;
+			} else {
+				CodeActionUsages [id]++;
+			}
+			var usages = PropertyService.Get<Properties> ("CodeActionUsages", new Properties ());
+			usages.Set (id, CodeActionUsages [id]);
+		}
+
+		int GetUsage (string id)
+		{
+			int result;
+			if (!CodeActionUsages.TryGetValue (id, out result)) 
+				return 0;
+			return result;
+		}
+
 		public void PopulateFixes (Gtk.Menu menu)
 		{
 			int mnemonic = 1;
-			foreach (var fix_ in fixes) {
+			foreach (var fix_ in fixes.OrderByDescending (i => GetUsage (i.IdString))) {
 				var fix = fix_;
 				var escapedLabel = fix.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
@@ -92,6 +121,7 @@ namespace MonoDevelop.CodeActions
 				var menuItem = new Gtk.MenuItem (label);
 				menuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
 				menuItem.Activated += delegate {
+					ConfirmUsage (fix.IdString);
 					menu.Destroy ();
 				};
 				menu.Add (menuItem);
@@ -115,9 +145,12 @@ namespace MonoDevelop.CodeActions
 				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", ir.Inspector.Title);
 				var menuItem = new Gtk.MenuItem (label);
 				menuItem.Activated += analysisFix.ShowOptions;
-				
+				menuItem.Activated += delegate {
+					menu.Destroy ();
+				};
 				menu.Add (menuItem);
 			}
+
 		}
 		
 		void PopupQuickFixMenu (Gdk.EventButton evt)

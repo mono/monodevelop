@@ -38,6 +38,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	class NRefactoryCodeActionProvider : MonoDevelop.CodeActions.CodeActionProvider
 	{
+		readonly List<string> actionId = new List<string> ();
 		readonly ICodeActionProvider provider;
 
 		public NRefactoryCodeActionProvider (ICodeActionProvider provider, ContextActionAttribute attr)
@@ -61,9 +62,14 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				LoggingService.LogWarning (provider + " returned null actions.");
 				yield break;
 			}
+			int num = 0;
 			foreach (var action_ in actions) {
 				var action = action_;
-				yield return new NRefactoryCodeAction (GettextCatalog.GetString (action.Description ?? ""), action);
+				if (actionId.Count <= num) {
+					actionId.Add (provider.GetType ().FullName + "'" + num);
+				}
+				yield return new NRefactoryCodeAction (actionId[num], GettextCatalog.GetString (action.Description ?? ""), action);
+				num++;
 			}
 		}
 	}
