@@ -1,4 +1,4 @@
-// 
+﻿// 
 // EqualityMembersGenerator.cs
 //  
 // Author:
@@ -125,7 +125,7 @@ namespace MonoDevelop.CodeGeneration
 				var otherId = new IdentifierExpression ("other");
 				Expression binOp = null;
 				foreach (IMember member in includedMembers) {
-					Expression right = new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.Equality, new MemberReferenceExpression (otherId, member.Name));
+					Expression right = new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.Equality, new MemberReferenceExpression (otherId.Clone (), member.Name));
 					if (binOp == null) {
 						binOp = right;
 					} else {
