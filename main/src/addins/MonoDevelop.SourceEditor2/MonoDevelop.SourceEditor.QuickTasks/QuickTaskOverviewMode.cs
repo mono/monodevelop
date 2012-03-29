@@ -456,15 +456,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize) 
 				return;
-			var h = Allocation.Height - IndicatorHeight;
-			
-			const int barWidth = 8;
+
+			int barPadding = 3;
+			var allocH = Allocation.Height - (int) IndicatorHeight;
+			var adjUpper = vadjustment.Upper;
+			var barY = allocH * vadjustment.Value / adjUpper + barPadding;
+			var barH = allocH * (vadjustment.PageSize / adjUpper) - barPadding - barPadding;
+			int barWidth = Allocation.Width - barPadding - barPadding;
 			
 			MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, 
-				0.5 +(Allocation.Width - barWidth) / 2,
-				h * vadjustment.Value / vadjustment.Upper + cr.LineWidth + 0.5,
+				barPadding,
+				barY,
 				barWidth,
-				h * (vadjustment.PageSize / vadjustment.Upper),
+				barH,
 				barWidth / 2);
 			
 			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0));
