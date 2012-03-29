@@ -35,6 +35,7 @@ using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
+using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -100,16 +101,15 @@ namespace MonoDevelop.CSharp.Formatting
 			bool hadErrors = parser.HasErrors;
 			
 			if (hadErrors) {
-//				foreach (var e in parser.ErrorReportPrinter.Errors)
-//					Console.WriteLine (e.Message);
+				//				foreach (var e in parser.ErrorReportPrinter.Errors)
+				//					Console.WriteLine (e.Message);
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
 
 			var originalVersion = data.Document.Version;
 
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, data.Options.TabsToSpaces, data.Options.IndentationSize) {
-				HadErrors = hadErrors,
-				EolMarker = data.EolMarker
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, data.CreateNRefactoryTextEditorOptions ()) {
+				HadErrors = hadErrors
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor);
 			formattingVisitor.ApplyChanges (startOffset, endOffset - startOffset);

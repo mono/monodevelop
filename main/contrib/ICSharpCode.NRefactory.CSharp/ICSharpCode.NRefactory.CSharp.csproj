@@ -355,6 +355,7 @@
     <Compile Include="Refactoring\CodeActions\CreateClassDeclarationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateConstructorDeclarationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateDelegateAction.cs" />
+    <Compile Include="Formatter\TextEditorOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

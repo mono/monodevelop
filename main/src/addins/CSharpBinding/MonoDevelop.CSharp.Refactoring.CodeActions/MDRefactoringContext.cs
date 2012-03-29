@@ -85,9 +85,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 
-		public override string EolMarker {
+		public override ICSharpCode.NRefactory.CSharp.TextEditorOptions TextEditorOptions {
 			get {
-				return Document.Editor.EolMarker;
+				return Document.Editor.CreateNRefactoryTextEditorOptions ();
 			}
 		}
 		

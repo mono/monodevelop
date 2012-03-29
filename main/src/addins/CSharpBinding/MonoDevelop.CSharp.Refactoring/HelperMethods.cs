@@ -26,6 +26,7 @@
 using System;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -45,7 +46,24 @@ namespace MonoDevelop.CSharp.Refactoring
 				change.RemovedChars += line.DelimiterLength;
 			return change;
 		}
-		
+
+		public static ICSharpCode.NRefactory.CSharp.TextEditorOptions CreateNRefactoryTextEditorOptions (this TextEditorData doc)
+		{
+			return new ICSharpCode.NRefactory.CSharp.TextEditorOptions () {
+				TabsToSpaces = doc.Options.TabsToSpaces,
+				TabSize = doc.Options.TabSize,
+				IndentSize = doc.Options.TabSize,
+				ContinuationIndent = doc.Options.TabSize,
+				LabelIndent = -doc.Options.TabSize,
+				EolMarker = doc.EolMarker,
+				IndentBlankLines = doc.Options.IndentStyle != IndentStyle.Virtual
+			};
+		}
+
+
+
+
+
 		public static void RemoveNode (this TextEditorData editor, AstNode n)
 		{
 			var change = editor.GetRemoveNodeChange (n);

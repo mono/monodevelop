@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		readonly Document document;
 		readonly IDisposable undoGroup;
 
-		public MDRefactoringScript (MDRefactoringContext context, Document document, CSharpFormattingOptions formattingOptions) : base(document.Editor.Document, formattingOptions)
+		public MDRefactoringScript (MDRefactoringContext context, Document document, CSharpFormattingOptions formattingOptions) : base(document.Editor.Document, formattingOptions, document.Editor.CreateNRefactoryTextEditorOptions ())
 		{
 			this.context = context;
 			this.document = document;

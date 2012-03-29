@@ -89,8 +89,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		#region Text stuff
-		public virtual string EolMarker {
-			get { return Environment.NewLine; }
+		public virtual TextEditorOptions TextEditorOptions {
+			get {
+				return TextEditorOptions.Default;
+			}
 		}
 		
 		public virtual bool IsSomethingSelected {

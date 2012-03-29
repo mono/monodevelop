@@ -139,6 +139,7 @@ FILES =  \
 	Formatter/AstFormattingVisitor.cs \
 	Formatter/CSharpFormattingOptions.cs \
 	Formatter/Indent.cs \
+	Formatter/TextEditorOptions.cs \
 	OutputVisitor/CodeDomConvertVisitor.cs \
 	OutputVisitor/CSharpAmbience.cs \
 	OutputVisitor/CSharpOutputVisitor.cs \

@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -38,11 +38,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return originalDocument; }
 		}
 		readonly IDisposable undoGroup;
+
+		readonly TextEditorOptions options;
 		
-		public DocumentScript(IDocument document, CSharpFormattingOptions formattingOptions) : base(formattingOptions)
+		public DocumentScript(IDocument document, CSharpFormattingOptions formattingOptions, TextEditorOptions options) : base(formattingOptions)
 		{
 			this.originalDocument = document.CreateDocumentSnapshot();
 			this.currentDocument = document;
+			this.options = options;
 			Debug.Assert(currentDocument.Version.CompareAge(originalDocument.Version) == 0);
 			this.undoGroup = document.OpenUndoGroup();
 		}
@@ -98,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var segment = GetSegment(node);
 			var cu = CompilationUnit.Parse(currentDocument, "dummy.cs");
-			var formatter = new AstFormattingVisitor(this.FormattingOptions, currentDocument);
+			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, options);
 			cu.AcceptVisitor(formatter);
 			formatter.ApplyChanges(segment.Offset, segment.Length);
 		}

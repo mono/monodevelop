@@ -82,10 +82,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return (obj is TypePair) && Equals((TypePair)obj);
 			}
 			
-			public bool Equals (TypePair other)
+			public bool Equals(TypePair other)
 			{
-				if (this.FromType == null || this.ToType == null || other.FromType == null || other.ToType == null)
-					return false;
 				return this.FromType.Equals(other.FromType) && this.ToType.Equals(other.ToType);
 			}
 			

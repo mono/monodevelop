@@ -34,6 +34,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -133,9 +134,8 @@ namespace MonoDevelop.CSharp.Formatting
 				
 				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 				
-				var formattingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, data.Editor.Options.TabsToSpaces, data.Editor.Options.TabSize) {
-					HadErrors = hadErrors,
-					EolMarker = stubData.EolMarker
+				var formattingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, data.Editor.CreateNRefactoryTextEditorOptions ()) {
+					HadErrors = hadErrors
 				};
 				compilationUnit.AcceptVisitor (formattingVisitor);
 				return formattingVisitor;

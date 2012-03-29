@@ -39,7 +39,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Use 'var' keyword",
 	       Description = "Use implicitly typed local variable decaration",
 	       Category = IssueCategories.Opportunities,
-	       Severity = Severity.Hint)]
+	       Severity = Severity.Hint,
+	       IssueMarker = IssueMarker.None)]
 	public class UseVarKeywordIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
