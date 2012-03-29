@@ -60,8 +60,6 @@ namespace MonoDevelop.SourceEditor
 	{
 		SourceEditorWidget widget;
 		bool isDisposed = false;
-		FileSystemWatcher fileSystemWatcher;
-		static bool isInWrite = false;
 		DateTime lastSaveTime;
 		string loadedMimeType;
 		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
@@ -72,7 +70,6 @@ namespace MonoDevelop.SourceEditor
 		EventHandler<BreakpointEventArgs> breakpointAdded;
 		EventHandler<BreakpointEventArgs> breakpointRemoved;
 		EventHandler<BreakpointEventArgs> breakpointStatusChanged;
-		EventHandler<FileEventArgs> fileChanged;
 		List<LineSegment> breakpointSegments = new List<LineSegment> ();
 		LineSegment debugStackSegment;
 		LineSegment currentLineSegment;
@@ -85,7 +82,15 @@ namespace MonoDevelop.SourceEditor
 				return widget.TextEditor.Document;
 			}
 		}
-		
+
+		public DateTime LastSaveTime {
+			get {
+				return lastSaveTime;
+			}
+			internal set {
+				lastSaveTime = value;
+			}
+		}		
 		public ExtensibleTextEditor TextEditor {
 			get {
 				return widget.TextEditor;
@@ -184,7 +189,8 @@ namespace MonoDevelop.SourceEditor
 					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
 					if (marker != null) {
 						double oldHeight = marker.lastHeight;
-						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); // ensure that the line cache is renewed
+						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); 
+						// ensure that the line cache is renewed
 						double newHeight = marker.GetLineHeight (widget.TextEditor);
 						if (oldHeight != newHeight)
 							widget.Document.CommitLineToEndUpdate (widget.TextEditor.Document.OffsetToLineNumber (e.Line.Offset));
@@ -216,18 +222,11 @@ namespace MonoDevelop.SourceEditor
 				FireCompletionContextChanged ();
 			};
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
-			
+		
 			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
 			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
 			
-			fileSystemWatcher = new FileSystemWatcher ();
-			fileSystemWatcher.Created += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
-			fileSystemWatcher.Changed += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
-			
-			fileChanged = DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (GotFileChanged));
-			FileService.FileCreated += fileChanged;
-			FileService.FileChanged += fileChanged;
-			
+
 			this.WorkbenchWindowChanged += delegate {
 				if (WorkbenchWindow != null) {
 					widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext;
@@ -238,16 +237,10 @@ namespace MonoDevelop.SourceEditor
 			};
 			this.ContentNameChanged += delegate {
 				this.Document.FileName = this.ContentName;
-				isInWrite = true;
 				if (String.IsNullOrEmpty (ContentName) || !File.Exists (ContentName))
 					return;
 				
-				fileSystemWatcher.EnableRaisingEvents = false;
 				lastSaveTime = File.GetLastWriteTime (ContentName);
-				fileSystemWatcher.Path = Path.GetDirectoryName (ContentName);
-				fileSystemWatcher.Filter = Path.GetFileName (ContentName);
-				isInWrite = false;
-				fileSystemWatcher.EnableRaisingEvents = true;
 			};
 			ClipbardRingUpdated += UpdateClipboardRing;
 			
@@ -272,6 +265,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			Document.AddAnnotation (this);
+			FileRegistry.Add (this);
 		}
 		
 		MessageBubbleHighlightPopupWindow messageBubbleHighlightPopupWindow = null;
@@ -423,7 +417,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			isInWrite = true;
+			FileRegistry.SuspendFileWatch = true;
 			try {
 				object attributes = null;
 				if (File.Exists (fileName)) {
@@ -457,7 +451,7 @@ namespace MonoDevelop.SourceEditor
 					LoggingService.LogError ("Can't set file attributes", e);
 				}
 			} finally {
-				isInWrite = false;
+				FileRegistry.SuspendFileWatch = false;
 			}
 				
 //			if (encoding != null)
@@ -677,6 +671,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Dispose ()
 		{
+			FileRegistry.Remove (this);
 			RemoveAutoSaveTimer ();
 			
 			StoreSettings ();
@@ -695,12 +690,7 @@ namespace MonoDevelop.SourceEditor
 			DisposeErrorMarkers ();
 			
 			ClipbardRingUpdated -= UpdateClipboardRing;
-			if (fileSystemWatcher != null) {
-				fileSystemWatcher.EnableRaisingEvents = false;
-				fileSystemWatcher.Dispose ();
-				fileSystemWatcher = null;
-			}
-			
+
 			if (widget != null) {
 				widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
 				widget.TextEditor.Document.TextReplacing -= OnTextReplaced;
@@ -728,9 +718,6 @@ namespace MonoDevelop.SourceEditor
 			TaskService.Errors.TasksChanged -= UpdateTasks;
 			TaskService.JumpedToTask -= HandleTaskServiceJumpedToTask;
 			
-			FileService.FileCreated -= fileChanged;
-			FileService.FileChanged -= fileChanged;
-			
 			// This is not necessary but helps when tracking down memory leaks
 			
 			debugStackLineMarker = null;
@@ -749,35 +736,7 @@ namespace MonoDevelop.SourceEditor
 			return AmbienceService.GetAmbienceForFile (file);
 		}
 		
-		void GotFileChanged (object sender, FileEventArgs args)
-		{
-			if (!isDisposed && !string.IsNullOrEmpty (ContentName)) {
-				FilePath path = new FilePath (ContentName).CanonicalPath;
-				var f = args.FirstOrDefault (fi => fi.FileName.CanonicalPath == path);
-				if (f != null)
-					HandleFileChanged (f.FileName);
-			}
-		}
-		
-		void OnFileChanged (object sender, FileSystemEventArgs args)
-		{
-			if (args.ChangeType == WatcherChangeTypes.Changed || args.ChangeType == WatcherChangeTypes.Created) 
-				HandleFileChanged (args.FullPath);
-		}
-		
-		void HandleFileChanged (string fileName)
-		{
-			if (!isInWrite && fileName != ContentName)
-				return;
-			if (lastSaveTime == File.GetLastWriteTime (ContentName))
-				return;
-			
-			if (!IsDirty && IdeApp.Workbench.AutoReloadDocuments)
-				widget.Reload ();
-			else
-				widget.ShowFileChangedWarning ();
-		}
-		
+
 		bool CheckReadOnly (int line)
 		{
 			if (!writeAccessChecked && !IsUntitled) {

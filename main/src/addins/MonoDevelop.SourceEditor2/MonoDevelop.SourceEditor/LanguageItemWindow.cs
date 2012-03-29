@@ -48,7 +48,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			Ambience ambience = AmbienceService.GetAmbience (ed.Document.MimeType);
 			string tooltip = null;
-			Console.WriteLine ("RRR:" + result);
 			if (result is UnknownIdentifierResolveResult) {
 				tooltip = string.Format ("error CS0103: The name `{0}' does not exist in the current context", ((UnknownIdentifierResolveResult)result).Identifier);
 			} else if (result is UnknownMemberResolveResult) {

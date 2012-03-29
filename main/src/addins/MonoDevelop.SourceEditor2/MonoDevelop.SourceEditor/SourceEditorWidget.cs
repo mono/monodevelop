@@ -781,7 +781,7 @@ namespace MonoDevelop.SourceEditor
 			return str.Substring (0, leftOffset) + delimiter + str.Substring (rightOffset);
 		}
 		
-		public void ShowFileChangedWarning ()
+		public void ShowFileChangedWarning (bool multiple)
 		{
 			RemoveMessageBar ();
 			
@@ -792,15 +792,38 @@ namespace MonoDevelop.SourceEditor
 					"Do you want to keep your changes, or reload the file from disk?",
 					EllipsizeMiddle (Document.FileName, 50)));
 				
-				Button b1 = new Button (GettextCatalog.GetString("_Reload from disk"));
+				var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
 				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
-				b1.Clicked += new EventHandler (ClickedReload);
+				b1.Clicked += delegate {
+					Reload ();
+					view.TextEditor.GrabFocus ();
+				};
 				messageBar.ActionArea.Add (b1);
 				
-				Button b2 = new Button (GettextCatalog.GetString("_Keep changes"));
+				var b2 = new Button (GettextCatalog.GetString ("_Keep changes"));
 				b2.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
-				b2.Clicked += new EventHandler (ClickedIgnore);
+				b2.Clicked += delegate {
+					RemoveMessageBar ();
+					view.LastSaveTime = System.IO.File.GetLastWriteTime (view.ContentName);
+					view.WorkbenchWindow.ShowNotification = false;
+				};
 				messageBar.ActionArea.Add (b2);
+
+				if (multiple) {
+					var b3 = new Button (GettextCatalog.GetString ("_Reload all"));
+					b3.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+					b3.Clicked += delegate {
+						FileRegistry.ReloadAllChangedFiles ();
+					};
+					messageBar.ActionArea.Add (b3);
+	
+					var b4 = new Button (GettextCatalog.GetString ("_Ignore all"));
+					b4.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+					b4.Clicked += delegate {
+						FileRegistry.IgnoreAllChangedFiles ();
+					};
+					messageBar.ActionArea.Add (b4);
+				}
 			}
 			
 			view.IsDirty = true;
@@ -966,13 +989,7 @@ namespace MonoDevelop.SourceEditor
 			if (!TextEditor.Visible)
 				TextEditor.Visible = true;
 		}
-		
-		void ClickedReload (object sender, EventArgs args)
-		{
-			Reload ();
-			view.TextEditor.GrabFocus ();
-		}
-		
+
 		public void Reload ()
 		{
 			try {
@@ -986,13 +1003,7 @@ namespace MonoDevelop.SourceEditor
 				RemoveMessageBar ();
 			}
 		}
-		
-		void ClickedIgnore (object sender, EventArgs args)
-		{
-			RemoveMessageBar ();
-			view.WorkbenchWindow.ShowNotification = false;
-		}
-		
+
 		#region Status Bar Handling
 		MonoDevelop.SourceEditor.MessageBubbleTextMarker oldExpandedMarker;
 		void CaretPositionChanged (object o, DocumentLocationEventArgs args)

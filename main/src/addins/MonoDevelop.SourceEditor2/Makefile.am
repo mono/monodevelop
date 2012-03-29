@@ -37,6 +37,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \
 	MonoDevelop.SourceEditor/ExtensibleTextEditor.cs \
+	MonoDevelop.SourceEditor/FileRegistry.cs \
 	MonoDevelop.SourceEditor/GotoLineNumberWidget.cs \
 	MonoDevelop.SourceEditor/IdeViMode.cs \
 	MonoDevelop.SourceEditor/ISourceEditorOptions.cs \
