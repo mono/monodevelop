@@ -78,7 +78,7 @@ namespace MonoDevelop.MacDev.Tests
 			root.Add (key.Identifier, key.Create ());
 			
 			var tree = PListScheme.Match (root, scheme);
-			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			var available = PListScheme.AvailableValues (tree.First ().Key, tree);
 			Assert.AreEqual (1, available.Count, "#1");
 		}
 		
@@ -99,7 +99,7 @@ namespace MonoDevelop.MacDev.Tests
 			root.Add (key.Identifier, key.Create ());
 			
 			var tree = PListScheme.Match (root, scheme);
-			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			var available = PListScheme.AvailableValues (tree.First ().Key, tree);
 			Assert.AreEqual (2, available.Count, "#1");
 			
 			var array = (PArray) root ["keyname"];
@@ -127,23 +127,23 @@ namespace MonoDevelop.MacDev.Tests
 			var array = (PArray)root["keyname"];
 			
 			array.Clear ();
-			var available = PListScheme.AvailableValues (array, key, tree);
+			var available = PListScheme.AvailableValues (array, tree);
 			Assert.AreEqual (3, available.Count, "#1");
 			
 			array.Add (new PNumber (2));
 			tree = PListScheme.Match (root, scheme);
-			available = PListScheme.AvailableValues (array, key, tree);
+			available = PListScheme.AvailableValues (array, tree);
 			Assert.AreEqual (2, available.Count, "#2");
 			
 			array.Add (new PNumber (1));
 			tree = PListScheme.Match (root, scheme);
-			available = PListScheme.AvailableValues (array, key, tree);
+			available = PListScheme.AvailableValues (array, tree);
 			Assert.AreEqual (1, available.Count, "#3");
 			Assert.AreEqual ("3", available [0].Identifier, "#4");
 			
 			array.Add (new PNumber (3));
 			tree = PListScheme.Match (root, scheme);
-			available = PListScheme.AvailableValues (array, key, tree);
+			available = PListScheme.AvailableValues (array, tree);
 			Assert.AreEqual (0, available.Count, "#5");
 		}
 
@@ -160,7 +160,7 @@ namespace MonoDevelop.MacDev.Tests
 			root.Add (key.Identifier, key.Create ());
 			
 			var tree = PListScheme.Match (root, scheme);
-			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			var available = PListScheme.AvailableValues (tree.First ().Key, tree);
 			Assert.AreEqual (2, available.Count, "#1");
 			Assert.AreEqual ("Yes", available [0].Identifier, "#1");
 			Assert.AreEqual ("Yes", available [0].Description, "#2");
@@ -181,7 +181,7 @@ namespace MonoDevelop.MacDev.Tests
 			root.Add (key.Identifier, key.Create ());
 			
 			var tree = PListScheme.Match (root, scheme);
-			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			var available = PListScheme.AvailableValues (tree.First ().Key, tree);
 			Assert.AreEqual (0, available.Count, "#1");
 		}
 		
@@ -202,7 +202,7 @@ namespace MonoDevelop.MacDev.Tests
 			root.Add (key.Identifier, key.Create ());
 			
 			var tree = PListScheme.Match (root, scheme);
-			var available = PListScheme.AvailableValues (tree.First ().Key, key, tree);
+			var available = PListScheme.AvailableValues (tree.First ().Key, tree);
 			Assert.AreEqual (3, available.Count, "#1");
 			Assert.AreEqual (1, ((PNumber) tree.First ().Key).Value, "#2");
 		}

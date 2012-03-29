@@ -127,12 +127,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return keys.FirstOrDefault (k => k.Identifier == id);
 		}
 		
-		public static List<SchemaItem> AvailableValues (PObject obj, SchemaItem key, Dictionary<PObject, SchemaItem> tree)
+		public static List<SchemaItem> AvailableValues (PObject obj, Dictionary<PObject, SchemaItem> tree)
 		{
+			SchemaItem key;
 			if (obj is PBoolean)
 				return new List<SchemaItem> { BooleanYes, BooleanNo };
 			
-			if (key == null)
+			if (!tree.TryGetValue (obj, out key))
 				return null;
 			
 			var values = key.Values.Cast<PListScheme.SchemaItem> ().ToList ();
