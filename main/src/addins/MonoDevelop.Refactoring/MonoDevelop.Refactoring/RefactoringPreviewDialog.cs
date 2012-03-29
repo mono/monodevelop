@@ -108,7 +108,7 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
-			doc.Text = Mono.TextEditor.Utils.TextFileReader.ReadAllText (replaceChange.FileName);
+			doc.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (replaceChange.FileName);
 			DocumentLocation loc = doc.OffsetToLocation (replaceChange.Offset);
 			
 			string text = string.Format (GettextCatalog.GetString ("(Line:{0}, Column:{1})"), loc.Line, loc.Column);
@@ -137,7 +137,7 @@ namespace MonoDevelop.Refactoring
 				Mono.TextEditor.TextDocument originalDocument = new Mono.TextEditor.TextDocument ();
 				originalDocument.FileName = replaceChange.FileName;
 				if (openDocument == null) {
-					originalDocument.Text = Mono.TextEditor.Utils.TextFileReader.ReadAllText (replaceChange.FileName);
+					originalDocument.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (replaceChange.FileName);
 				} else {
 					originalDocument.Text = openDocument.Editor.Document.Text;
 				}

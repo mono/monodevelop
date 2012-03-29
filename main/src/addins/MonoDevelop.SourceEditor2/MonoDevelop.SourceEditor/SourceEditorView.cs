@@ -50,6 +50,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.SourceEditor.QuickTasks;
+using System.Text;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -380,9 +381,9 @@ namespace MonoDevelop.SourceEditor
 			Save (fileName, this.encoding);
 		}
 
-		public void Save (string fileName, string encoding)
+		public void Save (string fileName, Encoding encoding)
 		{
-			if (!widget.EnsureCorrectEolMarker (fileName, encoding))
+			if (!widget.EnsureCorrectEolMarker (fileName))
 				return;
 			if (widget.HasMessageBar)
 				return;
@@ -428,7 +429,14 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 				try {
-					TextFile.WriteFile (fileName, Document.Text, encoding, hadBom);
+					var writeEncoding = encoding;
+					var writeBom = hadBom;
+					var writeText = Document.Text;
+					if (writeEncoding == null) {
+						writeEncoding = Encoding.UTF8;
+						writeBom = !Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
+					}
+					Mono.TextEditor.Utils.TextFileUtility.WriteText (fileName, writeText, writeEncoding, writeBom);
 				} catch (InvalidEncodingException) {
 					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file witch current codepage."), 
 						GettextCatalog.GetString ("Some unicode characters in this file could not be saved with the current encoding.\nDo you want to resave this file as Unicode ?\nYou can choose another encoding in the 'save as' dialog."),
@@ -437,8 +445,8 @@ namespace MonoDevelop.SourceEditor
 						new AlertButton (GettextCatalog.GetString ("Save as Unicode")));
 					if (result != AlertButton.Cancel) {
 						this.hadBom = true;
-						this.encoding = "UTF-8";
-						TextFile.WriteFile (fileName, Document.Text, this.encoding, this.hadBom);
+						this.encoding = Encoding.UTF8;
+						Mono.TextEditor.Utils.TextFileUtility.WriteText (fileName, Document.Text, encoding, hadBom);
 					} else {
 						return;
 					}
@@ -494,7 +502,7 @@ namespace MonoDevelop.SourceEditor
 				widget.UpdateParsedDocument (foldingParser.Parse (Document.FileName, text));
 		}
 		
-		public void Load (string fileName, string encoding)
+		public void Load (string fileName, Encoding encoding)
 		{
 			// Handle the "reload" case.
 			if (ContentName == fileName)
@@ -515,14 +523,16 @@ namespace MonoDevelop.SourceEditor
 				this.encoding = encoding;
 				didLoadCleanly = false;
 			} else {
-				TextFile file = TextFile.ReadFile (fileName, encoding);
-				inLoad = true;
-				Document.Text = text = file.Text;
-				inLoad = false;
-				this.encoding = file.SourceEncoding;
-				this.hadBom = file.HadBOM;
-				didLoadCleanly = true;
 
+				inLoad = true;
+				if (encoding == null) {
+					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
+				} else {
+					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, encoding, out hadBom);
+				}
+				Document.Text = text;
+				inLoad = false;
+				didLoadCleanly = true;
 			}
 			
 			// TODO: Would be much easier if the view would be created after the containers.
@@ -605,7 +615,7 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void StoreSettings ()
 		{
-			Dictionary<int, bool> foldingStates = new Dictionary<int, bool> ();
+			var foldingStates = new Dictionary<int, bool> ();
 			foreach (var f in widget.TextEditor.Document.FoldSegments) {
 				foldingStates [f.Offset] = f.IsFolded;
 			}
@@ -621,10 +631,10 @@ namespace MonoDevelop.SourceEditor
 
 		bool warnOverwrite = false;
 		bool inLoad = false;
-		string encoding = null;
+		Encoding encoding = null;
 		bool hadBom = false;
 
-		public void Load (string fileName, string content, string encoding)
+		public void Load (string fileName, string content, Encoding encoding)
 		{
 			if (warnOverwrite) {
 				warnOverwrite = false;
@@ -642,7 +652,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 			UpdatePinnedWatches ();
-			this.IsDirty = false;
+			IsDirty = false;
 			Document.InformLoadComplete ();
 		}
 		
@@ -665,7 +675,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public string SourceEncoding {
+		public Encoding SourceEncoding {
 			get { return encoding; }
 		}
 		

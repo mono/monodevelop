@@ -153,7 +153,7 @@ namespace MonoDevelop.SourceEditor
 		public static string LoadAutoSave (string fileName)
 		{
 			string autoSaveFileName = GetAutoSaveFileName (fileName);
-			return Mono.TextEditor.Utils.TextFileReader.ReadAllText (autoSaveFileName);
+			return Mono.TextEditor.Utils.TextFileUtility.ReadAllText (autoSaveFileName);
 		}
 
 		public static void RemoveAutoSaveFile (string fileName)

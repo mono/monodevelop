@@ -839,7 +839,7 @@ namespace MonoDevelop.SourceEditor
 		
 		#region Eol marker check
 		bool useIncorrectMarkers;
-		internal bool EnsureCorrectEolMarker (string fileName, string encoding)
+		internal bool EnsureCorrectEolMarker (string fileName)
 		{
 			if (useIncorrectMarkers)
 				return true;
@@ -849,7 +849,7 @@ namespace MonoDevelop.SourceEditor
 				if (firstDelimiter != TextEditor.Options.DefaultEolMarker) {
 					switch (DefaultSourceEditorOptions.Instance.LineEndingConversion) {
 					case LineEndingConversion.Ask:
-						ShowIncorretEolMarkers (fileName, encoding);
+						ShowIncorretEolMarkers (fileName);
 						return false;
 					case LineEndingConversion.ConvertAlways:
 						ConvertLineEndings ();
@@ -874,7 +874,7 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.Text = newText.ToString ();
 		}
 
-		void ShowIncorretEolMarkers (string fileName, string encoding)
+		void ShowIncorretEolMarkers (string fileName)
 		{
 			RemoveMessageBar ();
 			
@@ -890,7 +890,7 @@ namespace MonoDevelop.SourceEditor
 				b1.Clicked += delegate(object sender, EventArgs e) {
 					try {
 						ConvertLineEndings ();
-						view.Save (fileName, encoding);
+						view.Save (fileName, view.SourceEncoding);
 					} finally {
 						RemoveMessageBar ();
 						view.WorkbenchWindow.ShowNotification = false;
@@ -905,7 +905,7 @@ namespace MonoDevelop.SourceEditor
 					RemoveMessageBar ();
 					view.WorkbenchWindow.ShowNotification = false;
 					
-					view.Save (fileName, encoding);
+					view.Save (fileName, view.SourceEncoding);
 				};
 				messageBar.ActionArea.Add (b2);
 			}

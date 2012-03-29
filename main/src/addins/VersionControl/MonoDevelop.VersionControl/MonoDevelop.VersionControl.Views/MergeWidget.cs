@@ -82,7 +82,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void Load (string fileName)
 		{
 			MainEditor.Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
-			MainEditor.Document.Text = Mono.TextEditor.Utils.TextFileReader.ReadAllText (fileName);
+			MainEditor.Document.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName);
 
 			this.CreateDiff ();
 			Show ();

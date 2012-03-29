@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			
 			foreach (var file in files) {
-				string text = Mono.TextEditor.Utils.TextFileReader.ReadAllText (file);
+				string text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (file);
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0 &&
 					(keywordName == null || text.IndexOf (keywordName, StringComparison.Ordinal) < 0))
 					continue;

@@ -40,14 +40,14 @@ namespace Mono.TextEditor.Tests
 		public void TestFallback ()
 		{
 			byte[] input = new byte[] { 0xFF, 0x10, 0xAA, (byte)'u' };
-			Assert.AreEqual ("?\u0010?u", TextFileReader.GetText (input));
+			Assert.AreEqual ("?\u0010?u", TextFileUtility.GetText (input));
 		}
 
 		[Test()]
 		public void TestCodePage858 ()
 		{
 			byte[] input = new byte[] { (byte)'/', (byte)'/', (byte)' ', 0x9D };
-			Assert.AreEqual ("// \u00D8", TextFileReader.GetText (input));
+			Assert.AreEqual ("// \u00D8", TextFileUtility.GetText (input));
 		}
 
 		[Test()]
@@ -55,7 +55,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var src = "Hello World\u2122";
 			byte[] input = Encoding.UTF8.GetBytes (src);
-			Assert.AreEqual (src, TextFileReader.GetText (input));
+			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
 
 		[Test()]
@@ -63,7 +63,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var src = "Hello World";
 			byte[] input = Encoding.Unicode.GetBytes (src);
-			Assert.AreEqual (src, TextFileReader.GetText (input));
+			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
 
 		[Test()]
@@ -71,7 +71,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var src = "Hello\u00A9 World\u2122";
 			byte[] input = Encoding.Unicode.GetBytes (src);
-			Assert.AreEqual (src, TextFileReader.GetText (input));
+			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
 
 		[Test()]
@@ -79,7 +79,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var src = "Hello World";
 			byte[] input = Encoding.BigEndianUnicode.GetBytes (src);
-			Assert.AreEqual (src, TextFileReader.GetText (input));
+			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
 
 		[Test()]
@@ -87,7 +87,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var src = "Hello\u00A9 World\u2122";
 			byte[] input = Encoding.BigEndianUnicode.GetBytes (src);
-			Assert.AreEqual (src, TextFileReader.GetText (input));
+			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
 
 		/// <summary>
@@ -98,7 +98,7 @@ namespace Mono.TextEditor.Tests
 		{
 			// 0xA9 == (c) was the problem for UTF8
 			byte[] input = new byte[] { (byte)'/', (byte)'/', (byte)' ', 0xA9 };
-			Assert.AreEqual ("// \u00A9", TextFileReader.GetText (input));
+			Assert.AreEqual ("// \u00A9", TextFileUtility.GetText (input));
 		}
 
 		[Test()]
@@ -106,7 +106,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var src = "Hello\u00A9 World\u00C1";
 			byte[] input = Encoding.GetEncoding (1252).GetBytes (src);
-			Assert.AreEqual (src, TextFileReader.GetText (input));
+			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
 
 		[Test()]
@@ -114,13 +114,13 @@ namespace Mono.TextEditor.Tests
 		{
 			var src = "Hello\u00A9 World\u2122";
 			byte[] input = Encoding.Unicode.GetBytes (src);
-			Assert.IsFalse (TextFileReader.IsBinary (input));
+			Assert.IsFalse (TextFileUtility.IsBinary (input));
 		}
 		
 		[Test()]
 		public void TestIsBinaryBinaryInput ()
 		{
-			Assert.IsTrue (TextFileReader.IsBinary (typeof (TextFileReaderTests).Assembly.Location));
+			Assert.IsTrue (TextFileUtility.IsBinary (typeof (TextFileReaderTests).Assembly.Location));
 		}
 	}
 }
