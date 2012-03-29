@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -157,23 +157,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				yield break;
 			}
-			
-			var names = new List<string> ();
-			int offset1 = document.GetOffset(type.StartLocation);
-			int offset2 = document.GetOffset(type.EndLocation);
-			
-			string name = document.GetText(offset1, offset2 - offset1);
-			int lastNameStart = 0;
-			for (int i = 1; i < name.Length; i++) {
-				if (Char.IsUpper(name [i])) {
-					names.Add(name.Substring(lastNameStart, i - lastNameStart));
-					lastNameStart = i;
-				}
+			string name;
+			if (type is SimpleType) {
+				name = ((SimpleType)type).Identifier;
+			} else if (type is MemberType) {
+				name = ((SimpleType)type).Identifier;
+			} else {
+				yield break;
 			}
-			
-			names.Add(name.Substring(lastNameStart, name.Length - lastNameStart));
-			
-			var possibleName = new StringBuilder ();
+
+			var names = WordParser.BreakWords(name);
+
+			var possibleName = new StringBuilder();
 			for (int i = 0; i < names.Count; i++) {
 				possibleName.Length = 0;
 				for (int j = i; j < names.Count; j++) {
@@ -320,7 +315,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (controlSpace && isAsExpression != null && isAsExpression.Node is VariableDeclarationStatement && token != "new") {
 						var parent = isAsExpression.Node as VariableDeclarationStatement;
 						var proposeNameList = new CompletionDataWrapper(this);
-					
+						if (parent.Variables.Count != 1)
+							return DefaultControlSpaceItems(isAsExpression, controlSpace);
+
 						foreach (var possibleName in GenerateNameProposals (parent.Type)) {
 							if (possibleName.Length > 0) {
 								proposeNameList.Result.Add(factory.CreateLiteralCompletionData(possibleName.ToString()));
