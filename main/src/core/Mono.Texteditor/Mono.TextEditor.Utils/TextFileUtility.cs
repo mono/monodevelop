@@ -34,12 +34,12 @@ namespace Mono.TextEditor.Utils
 	/// <summary>
 	/// This class handles text input from files, streams and byte arrays with auto-detect encoding.
 	/// </summary>
-	public static class TextFileReader
+	public static class TextFileUtility
 	{
 		readonly static int maxBomLength = 0;
 		readonly static Encoding[] encodingsWithBom;
 
-		static TextFileReader ()
+		static TextFileUtility ()
 		{
 			var encodings = new List<Encoding> ();
 
@@ -165,6 +165,26 @@ namespace Mono.TextEditor.Utils
 
 		#region file methods
 
+		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			if (text == null)
+				throw new ArgumentNullException ("text");
+			if (encoding == null)
+				throw new ArgumentNullException ("encoding");
+
+			using (var stream = new FileStream (fileName, FileMode.Create, FileAccess.Write, FileShare.Write)) {
+				if (hadBom) {
+					var bom = encoding.GetPreamble ();
+					if (bom != null && bom.Length > 0)
+						stream.Write (bom, 0, bom.Length);
+				}
+				byte[] bytes = encoding.GetBytes (text);
+				stream.Write (bytes, 0, bytes.Length);
+			}
+		}
+
 		public static string ReadAllText (string fileName)
 		{
 			bool hadBom;
@@ -180,8 +200,45 @@ namespace Mono.TextEditor.Utils
 				return GetText (stream, out hadBom, out encoding);
 			}
 		}
+		public static string ReadAllText (string fileName, Encoding encoding, out bool hadBom)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			if (encoding == null)
+				throw new ArgumentNullException ("encoding");
+			
+			byte[] content = File.ReadAllBytes (fileName);
+			byte[] bom = encoding.GetPreamble ();
+			if (bom != null && bom.Length > 0 && bom.Length <= content.Length) {
+				hadBom = true;
+				for (int i = 0; i < bom.Length; i++) {
+					if (content [i] != bom [i]) {
+						hadBom= false;
+						break;
+					}
+				}
+			} else {
+				hadBom = false;
+			}
+			return encoding.GetString (content);
+		}
 
 		#endregion
+
+		#region ASCII encoding check
+		public static bool IsASCII (string text)
+		{
+			if (text == null)
+				throw new ArgumentNullException ("text");
+			for (int i = 0; i < text.Length; i++) {
+				var ch = text [i];
+				if (ch > 0x7F)
+					return false;
+			}
+			return true;
+		}
+		#endregion
+
 
 		#region Binary check
 		public static bool IsBinary (byte[] bytes)

@@ -185,10 +185,10 @@
     <Compile Include="Mono.TextEditor\DocumentChangeEventArgs.cs" />
     <Compile Include="Mono.TextEditor\TextDocument.cs" />
     <Compile Include="Mono.TextEditor\TextSegment.cs" />
-    <Compile Include="Mono.TextEditor.Utils\TextFileReader.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ISyntaxMode.cs" />
     <Compile Include="Mono.TextEditor\SyntaxModeChangeEventArgs.cs" />
     <Compile Include="Mono.TextEditor\DocumentRegion.cs" />
+    <Compile Include="Mono.TextEditor.Utils\TextFileUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

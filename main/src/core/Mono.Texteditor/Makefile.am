@@ -57,7 +57,7 @@ FILES =  \
 	Mono.TextEditor.Utils/Diff.cs \
 	Mono.TextEditor.Utils/RedBlackTree.cs \
 	Mono.TextEditor.Utils/TextBreaker.cs \
-	Mono.TextEditor.Utils/TextFileReader.cs \
+	Mono.TextEditor.Utils/TextFileUtility.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \
 	Mono.TextEditor.Vi/ViActions.cs \
 	Mono.TextEditor.Vi/ViBuilderContext.cs \
