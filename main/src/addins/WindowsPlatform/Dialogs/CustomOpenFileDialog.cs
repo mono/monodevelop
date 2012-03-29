@@ -82,7 +82,7 @@ namespace MonoDevelop.Platform
 				
 				encodingBox = new EncodingBox (data.Action != Gtk.FileChooserAction.Save) {
 					Top = y,
-					SelectedEncodingId = data.Encoding,
+					SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0,
 				};
 				
 				Controls.AddRange (new Control [] { encodingLabel, encodingBox });
@@ -136,9 +136,9 @@ namespace MonoDevelop.Platform
 			ResumeLayout ();
 		}
 		
-		public string SelectedEncodingId {
+		public int SelectedEncodingId {
 			get {
-				return encodingBox == null ? null : encodingBox.SelectedEncodingId;
+				return encodingBox == null ? 0 : encodingBox.SelectedEncodingId;
 			}
 		}
 		

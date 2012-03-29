@@ -35,12 +35,13 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Platform;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Platform
 {
 	public class EncodingBox : ComboBox
 	{
-		TextEncoding [] encodings;
+		int [] encodings;
 		bool showAutoDetected;
 		
 		public EncodingBox (bool showAutoDetected)
@@ -50,21 +51,21 @@ namespace MonoDevelop.Platform
 			DropDownStyle = ComboBoxStyle.DropDownList;
 			
 			Populate (false);
-			SelectedEncodingId = null;
+			SelectedEncodingId = 0;
 		}
 		
-		public string SelectedEncodingId {
+		public int SelectedEncodingId {
 			get {
 				int selectedIndex = SelectedIndex;
 				if (selectedIndex < 0 || (showAutoDetected && selectedIndex == 0))
-					return null;
+					return 0;
 				
-				return encodings [showAutoDetected ? selectedIndex - 1 : selectedIndex].Id;
+				return encodings [showAutoDetected ? selectedIndex - 1 : selectedIndex];
 			}
 			set {
-				if (!String.IsNullOrEmpty (value))
+				if (value != 0)
 					for (int i = 0; i < encodings.Length; i++)
-						if (encodings [i].Id == value) {
+						if (encodings [i] == value) {
 							SelectedIndex = showAutoDetected ? i + 1 : i;
 							return;
 						}
@@ -75,9 +76,9 @@ namespace MonoDevelop.Platform
 		
 		void Populate (bool clear)
 		{	
-			encodings = TextEncoding.ConversionEncodings;
+			encodings = SeletedEncodings.ConversionEncodings;
 			if (encodings == null || encodings.Length == 0)
-				encodings = new TextEncoding [] { TextEncoding.GetEncoding (TextEncoding.DefaultEncoding) };
+				encodings = SeletedEncodings.DefaultEncodings;
 			
 			BeginUpdate ();
 					
