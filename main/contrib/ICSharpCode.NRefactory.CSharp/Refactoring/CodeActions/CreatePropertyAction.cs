@@ -24,9 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.PatternMatching;
-using System.Linq;
-using System.Threading;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -38,32 +35,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			Expression identifier = context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression) as Expression;
-			if (identifier == null) {
+			var identifier = context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression) as Expression;
+			if (identifier == null)
 				yield break;
-			}
-			if (CreateFieldAction.IsInvocationTarget(identifier)) {
+			if (CreateFieldAction.IsInvocationTarget(identifier))
 				yield break;
-			}
 
 			var propertyName = GetPropertyName(identifier);
-			if (propertyName == null) {
+			if (propertyName == null)
 				yield break;
-			}
 
 			var statement = context.GetNode<Statement>();
-			if (statement == null) {
+			if (statement == null)
 				yield break;
-			}
 
-			if (!(context.Resolve(identifier).IsError)) {
+			if (!(context.Resolve(identifier).IsError))
 				yield break;
-			}
 
 			var guessedType = CreateFieldAction.GuessAstType(context, identifier);
-			if (guessedType == null) {
+			if (guessedType == null)
 				yield break;
-			}
 			var state = context.GetResolverStateBefore(identifier);
 			
 			bool createInOtherType = false;
@@ -76,11 +67,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			bool isStatic;
 			if (createInOtherType) {
 				isStatic = targetResolveResult is TypeResolveResult;
-				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface) {
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
 					yield break;
-				}
 			} else {
-				isStatic = identifier is IdentifierExpression && state.CurrentMember.IsStatic;
+				if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
+					yield break;
+				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 			}
 
 //			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
@@ -95,9 +87,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Getter = new Accessor(),
 					Setter = new Accessor()
 				};
-				if (isStatic) {
+				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
-				}
 				
 				if (createInOtherType) {
 					if (targetResolveResult.Type.Kind == TypeKind.Interface) {
@@ -115,12 +106,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		static string GetPropertyName(Expression expr)
 		{
-			if (expr is IdentifierExpression) {
+			if (expr is IdentifierExpression) 
 				return ((IdentifierExpression)expr).Identifier;
-			}
-			if (expr is MemberReferenceExpression) {
+			if (expr is MemberReferenceExpression) 
 				return ((MemberReferenceExpression)expr).MemberName;
-			}
 
 			return null;
 		}

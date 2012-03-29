@@ -197,7 +197,11 @@ namespace MonoDevelop.Refactoring
 					if (editor != null) {
 						string disabledNodes = PropertyService.Get ("ContextActions." + editor.Document.MimeType, "") ?? "";
 						foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString) < 0)) {
-							result.AddRange (provider.GetActions (doc, loc, cancellationToken));
+							try {
+								result.AddRange (provider.GetActions (doc, loc, cancellationToken));
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
+							}
 						}
 					}
 				} catch (Exception ex) {

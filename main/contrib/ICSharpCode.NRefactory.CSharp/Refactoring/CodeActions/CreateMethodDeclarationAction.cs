@@ -37,35 +37,33 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var invocation = context.GetNode<InvocationExpression>();
-			if (invocation != null) {
-				return GetActionsFromInvocation(context, invocation);
-			}
 			var identifier = context.GetNode<IdentifierExpression>();
-			if (identifier != null) {
+			if (identifier != null && !(identifier.Parent is InvocationExpression && ((InvocationExpression)identifier.Parent).Target == identifier))
 				return GetActionsFromIdentifier(context, identifier);
-			}
+
+			var invocation = context.GetNode<InvocationExpression>();
+			if (invocation != null)
+				return GetActionsFromInvocation(context, invocation);
 			return Enumerable.Empty<CodeAction>();
 		}
 
 		public IEnumerable<CodeAction> GetActionsFromIdentifier(RefactoringContext context, IdentifierExpression identifier)
 		{
-			if (!(context.Resolve(identifier).IsError)) {
+			if (!(context.Resolve(identifier).IsError))
 				yield break;
-			}
 			var methodName = identifier.Identifier;
 			var guessedType = CreateFieldAction.GuessType(context, identifier);
-			if (guessedType.Kind != TypeKind.Delegate) {
+			if (guessedType.Kind != TypeKind.Delegate)
 				yield break;
-			}
 			var invocationMethod = guessedType.GetDelegateInvokeMethod();
 			var state = context.GetResolverStateBefore(identifier);
-			bool isStatic = state.CurrentMember.IsStatic;
+			if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
+				yield break;
+			bool isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 
 			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
+			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic))
 				yield break;
-			}
 
 			yield return new CodeAction(context.TranslateString("Create delegate handler"), script => {
 				var decl = new MethodDeclaration() {
@@ -75,9 +73,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				if (isStatic) {
+				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
-				}
 
 				foreach (var parameter in invocationMethod.Parameters) {
 					decl.Parameters.Add(new ParameterDeclaration(context.CreateShortType (parameter.Type), parameter.Name) {
@@ -91,15 +88,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		static ParameterModifier GetModifiers(IParameter parameter)
 		{
-			if (parameter.IsOut) {
+			if (parameter.IsOut)
 				return ParameterModifier.Out;
-			}
-			if (parameter.IsRef) {
+			if (parameter.IsRef)
 				return ParameterModifier.Ref;
-			}
-			if (parameter.IsParams) {
+			if (parameter.IsParams)
 				return ParameterModifier.Params;
-			}
 			return ParameterModifier.None;
 		}
 		
@@ -129,7 +123,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
 					yield break;
 			} else {
-				isStatic = invocation.Target is IdentifierExpression && state.CurrentMember.IsStatic;
+				if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
+					yield break;
+				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 			}
 
 //			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
@@ -146,9 +142,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 				};
 				decl.Parameters.AddRange(GenerateParameters (context, invocation.Arguments));
-				if (isStatic) {
+				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
-				}
 				
 				if (createInOtherType) {
 					if (targetResolveResult.Type.Kind == TypeKind.Interface) {
@@ -168,9 +163,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public static IEnumerable<ParameterDeclaration> GenerateParameters(RefactoringContext context, IEnumerable<Expression> arguments)
 		{
-			Dictionary<string, int> nameCounter = new Dictionary<string, int>();
+			var nameCounter = new Dictionary<string, int>();
 			foreach (var argument in arguments) {
-				ParameterModifier direction = ParameterModifier.None;
+				var direction = ParameterModifier.None;
 				AstNode node;
 				if (argument is DirectionExpression) {
 					var de = (DirectionExpression)argument;
@@ -206,9 +201,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					wordStart = true;
 					continue;
 				}
-				if (!char.IsLetter(ch)) {
+				if (!char.IsLetter(ch))
 					continue;
-				}
 				if (firstLetter) {
 					sb.Append(char.ToLower(ch));
 					firstLetter = false;
@@ -227,9 +221,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public static string CreateBaseName(AstNode node, IType type)
 		{
 			string name = null;
-			if (node is DirectionExpression) {
+			if (node is DirectionExpression)
 				node = ((DirectionExpression)node).Expression;
-			}
 			if (node is IdentifierExpression) {
 				name = ((IdentifierExpression)node).Identifier;
 			} else if (node is MemberReferenceExpression) {
@@ -242,9 +235,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return char.ToLower(type.Name [0]).ToString();
 				}
 			} else {
-				if (type.Kind == TypeKind.Unknown) {
+				if (type.Kind == TypeKind.Unknown)
 					return "par";
-				}
 				name = GuessNameFromType(type);
 			}
 
@@ -293,12 +285,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		string GetMethodName(InvocationExpression invocation)
 		{
-			if (invocation.Target is IdentifierExpression) {
+			if (invocation.Target is IdentifierExpression)
 				return ((IdentifierExpression)invocation.Target).Identifier;
-			}
-			if (invocation.Target is MemberReferenceExpression) {
+			if (invocation.Target is MemberReferenceExpression)
 				return ((MemberReferenceExpression)invocation.Target).MemberName;
-			}
 
 			return null;
 		}
