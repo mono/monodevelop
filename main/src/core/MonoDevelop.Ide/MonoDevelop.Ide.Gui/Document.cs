@@ -646,7 +646,7 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 				string currentParseText = editor.Text;
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
-				if (Project == null) {
+				if (Project == null && this.parsedDocument != null) {
 					singleFileContext = GetProjectContext ().UpdateProjectContent (singleFileContext.GetFile (currentParseFile), parsedDocument.ParsedFile);
 				}
 			} finally {

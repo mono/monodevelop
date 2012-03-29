@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DefaultRules.cs
 //  
 // Author:
@@ -73,6 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			yield return new NamingRule(AffectedEntity.ReadonlyField) {
 				Name = "Static Readonly Fields",
+				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal,
 				NamingStyle = NamingStyle.PascalCase,
 				IncludeInstanceMembers = false
 			};
@@ -94,7 +95,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Name = "Fields (Private)",
 				NamingStyle = NamingStyle.CamelCase,
 				AllowedPrefixes = new [] { "_", "m_" },
-				VisibilityMask = Modifiers.Private
+				VisibilityMask = Modifiers.Private,
+				IncludeStaticEntities = false
+			};
+			
+			yield return new NamingRule(AffectedEntity.Field) {
+				Name = "Static Fields (Private)",
+				NamingStyle = NamingStyle.CamelCase,
+				VisibilityMask = Modifiers.Private,
+				IncludeStaticEntities = true,
+				IncludeInstanceMembers = false
 			};
 			
 			yield return new NamingRule(AffectedEntity.ReadonlyField) {
@@ -139,4 +149,3 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 	}
 }
-

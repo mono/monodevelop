@@ -71,7 +71,7 @@
 		<NamingRule>
 			<Name>Static Readonly Fields</Name>
 			<AffectedEntity>ReadonlyField</AffectedEntity>
-			<VisibilityMask>VisibilityMask</VisibilityMask>
+			<VisibilityMask>Internal, Protected, Public</VisibilityMask>
 			<NamingStyle>PascalCase</NamingStyle>
 			<IncludeInstanceMembers>False</IncludeInstanceMembers>
 			<IncludeStaticEntities>True</IncludeStaticEntities>
@@ -102,6 +102,14 @@
 			<VisibilityMask>Private</VisibilityMask>
 			<NamingStyle>CamelCase</NamingStyle>
 			<IncludeInstanceMembers>True</IncludeInstanceMembers>
+			<IncludeStaticEntities>False</IncludeStaticEntities>
+		</NamingRule>
+		<NamingRule>
+			<Name>Static Fields (Private)</Name>
+			<AffectedEntity>Field</AffectedEntity>
+			<VisibilityMask>Private</VisibilityMask>
+			<NamingStyle>CamelCase</NamingStyle>
+			<IncludeInstanceMembers>False</IncludeInstanceMembers>
 			<IncludeStaticEntities>True</IncludeStaticEntities>
 		</NamingRule>
 		<NamingRule>
