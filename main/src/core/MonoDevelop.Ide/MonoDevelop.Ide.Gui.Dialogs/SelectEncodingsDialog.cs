@@ -37,6 +37,37 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
+	public static class SeletedEncodings
+	{
+		static int[] conversionEncodings = null;
+		public static int[] ConversionEncodings {
+			get {
+				if (conversionEncodings == null) {
+					string propertyEncodings = PropertyService.Get ("MonoDevelop.Ide.SelectEncodingsDialog.ConversionEncodings", string.Join (",", DefaultEncodings));
+					try {
+						conversionEncodings = propertyEncodings.Split (',').Select (e => int.Parse (e.Trim ())).ToArray ();
+					} catch (Exception) {
+						conversionEncodings = DefaultEncodings;
+					}
+				}
+
+				return conversionEncodings;
+			}
+			set {
+				conversionEncodings = value;
+				PropertyService.Set ("MonoDevelop.Ide.SelectEncodingsDialog.ConversionEncodings", string.Join (",", value));
+				Console.WriteLine ("set to:" + string.Join (",", value));
+			}
+		}
+		
+		const int ISO_8859_15 = 28605;
+		public readonly static int[] DefaultEncodings = new int[] { 
+			Encoding.UTF8.CodePage,
+			ISO_8859_15,
+			Encoding.Unicode.CodePage
+		};
+	}
+	
 	internal partial class SelectEncodingsDialog: Gtk.Dialog
 	{
 		ListStore storeAvail;
@@ -62,7 +93,7 @@ namespace MonoDevelop.Ide
 					storeAvail.AppendValues (enc.EncodingName, enc.WebName, e.CodePage);
 				}
 				
-				foreach (var e in ConversionEncodings) {
+				foreach (var e in SeletedEncodings.ConversionEncodings) {
 					var enc = Encoding.GetEncoding (e);
 					storeSelected.AppendValues (enc.EncodingName, enc.WebName, enc.CodePage);
 				}
@@ -71,33 +102,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		static int[] conversionEncodings = null;
-		public static int[] ConversionEncodings {
-			get {
-				if (conversionEncodings == null) {
-					string propertyEncodings = PropertyService.Get ("MonoDevelop.Ide.SelectEncodingsDialog.ConversionEncodings", string.Join (",", DefaultEncodings));
-					try {
-						conversionEncodings = propertyEncodings.Split (',').Select (e => int.Parse (e.Trim ())).ToArray ();
-					} catch (Exception) {
-						conversionEncodings = DefaultEncodings;
-					}
-				}
-
-				return conversionEncodings;
-			}
-			set {
-				conversionEncodings = value;
-				PropertyService.Set ("MonoDevelop.Ide.SelectEncodingsDialog.ConversionEncodings", string.Join (",", value));
-				Console.WriteLine ("set to:" + string.Join (",", value));
-			}
-		}
 		
-		const int ISO_8859_15 = 28605;
-		readonly static int[] DefaultEncodings = new int[] { 
-			Encoding.UTF8.CodePage,
-			ISO_8859_15,
-			Encoding.Unicode.CodePage
-		};
 
 		protected void OnRespond (object o, ResponseArgs args)
 		{
@@ -112,7 +117,7 @@ namespace MonoDevelop.Ide
 					list.Add (enc);
 				} while (storeSelected.IterNext (ref iter));
 			}
-			ConversionEncodings = list.ToArray ();
+			SeletedEncodings.ConversionEncodings = list.ToArray ();
 		}
 		
 		protected void OnAddClicked (object ob, EventArgs args)

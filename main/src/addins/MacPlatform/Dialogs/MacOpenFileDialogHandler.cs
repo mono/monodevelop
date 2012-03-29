@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Ide.Gui;
+using System.Text;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -48,7 +49,7 @@ namespace MonoDevelop.MacIntegration
 			
 			try {
 				bool directoryMode = data.Action != Gtk.FileChooserAction.Open
-					&& data.Action != Gtk.FileChooserAction.Save;
+						&& data.Action != Gtk.FileChooserAction.Save;
 				
 				if (data.Action == Gtk.FileChooserAction.Save) {
 					panel = new NSSavePanel ();
@@ -83,7 +84,7 @@ namespace MonoDevelop.MacIntegration
 					
 					if (data.ShowEncodingSelector) {
 						encodingSelector = new SelectEncodingPopUpButton (data.Action != Gtk.FileChooserAction.Save);
-						encodingSelector.SelectedEncodingId = data.Encoding;
+						encodingSelector.SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0;
 						
 						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")), true);
 						var encodingBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
@@ -103,7 +104,7 @@ namespace MonoDevelop.MacIntegration
 						if (encodingSelector != null) {
 							viewerSelector.Activated += delegate {
 								var idx = viewerSelector.IndexOfSelectedItem;
-								encodingSelector.Enabled = ! (idx == 0 && currentViewers[0] == null);
+								encodingSelector.Enabled = ! (idx == 0 && currentViewers [0] == null);
 							};
 						}
 						
@@ -148,7 +149,7 @@ namespace MonoDevelop.MacIntegration
 					bool slnViewerSelected = false;
 					if (viewerSelector != null) {
 						FillViewers (currentViewers, viewerSelector, closeSolutionButton, selection);
-						if (currentViewers.Count == 0 || currentViewers[0] != null) {
+						if (currentViewers.Count == 0 || currentViewers [0] != null) {
 							if (closeSolutionButton != null)
 								closeSolutionButton.Hidden = true;
 							slnViewerSelected = false;
@@ -164,8 +165,8 @@ namespace MonoDevelop.MacIntegration
 						var superFrame = box.View.Superview.Frame;
 						var frame = box.View.Frame;
 						//not sure why it's ceiling, but this matches the Cocoa layout
-						frame.X = (float) Math.Ceiling ((superFrame.Width - frame.Width) / 2);
-						frame.Y = (float) Math.Ceiling ((superFrame.Height - frame.Height) / 2);
+						frame.X = (float)Math.Ceiling ((superFrame.Width - frame.Width) / 2);
+						frame.Y = (float)Math.Ceiling ((superFrame.Height - frame.Height) / 2);
 						box.View.Frame = frame;
 					} 
 					if (encodingSelector != null)
@@ -186,7 +187,7 @@ namespace MonoDevelop.MacIntegration
 				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 				
 				if (encodingSelector != null)
-					data.Encoding = encodingSelector.SelectedEncodingId;
+					data.Encoding = encodingSelector.SelectedEncodingId > 0 ? Encoding.GetEncoding (encodingSelector.SelectedEncodingId) : null;
 				
 				if (viewerSelector != null ) {
 					if (closeSolutionButton != null)
