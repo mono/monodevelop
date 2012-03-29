@@ -207,7 +207,7 @@ namespace MonoDevelop.TypeSystem
 			try {
 				if (!File.Exists (fileName))
 					return null;
-				text = Mono.TextEditor.Utils.TextFileReader.ReadAllText (fileName);
+				text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName);
 			} catch (Exception) {
 				return null;
 			}

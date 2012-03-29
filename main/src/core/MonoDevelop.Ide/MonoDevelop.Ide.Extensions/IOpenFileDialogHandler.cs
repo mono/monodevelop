@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Gui;
+using System.Text;
 
 
 namespace MonoDevelop.Ide.Extensions
@@ -57,7 +58,7 @@ namespace MonoDevelop.Ide.Extensions
 		/// <summary>
 		/// Selected encoding. To be set by the handler.
 		/// </summary>
-		public string Encoding { get; set; }
+		public Encoding Encoding { get; set; }
 		
 		/// <summary>
 		/// Set to true if the workspace has to be closed before opening a solution. To be set by the handler.

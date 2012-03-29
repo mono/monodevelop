@@ -49,6 +49,7 @@ using System.Threading;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -309,13 +310,13 @@ namespace MonoDevelop.Ide.Gui
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsFile)
 				return;
 			
-			string encoding = null;
+			Encoding encoding = null;
 			
 			IEncodedTextContent tbuffer = GetContent <IEncodedTextContent> ();
 			if (tbuffer != null) {
 				encoding = tbuffer.SourceEncoding;
 				if (encoding == null)
-					encoding = TextEncoding.DefaultEncoding;
+					encoding = Encoding.Default;
 			}
 				
 			if (filename == null) {

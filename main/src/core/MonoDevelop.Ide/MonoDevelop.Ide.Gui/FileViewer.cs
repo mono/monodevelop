@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Desktop;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -88,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 			return OpenFile (filePath, null);
 		}
 		
-		public Document OpenFile (string filePath, string encoding)
+		public Document OpenFile (string filePath, Encoding encoding)
 		{
 			if (binding != null)
 				return IdeApp.Workbench.OpenDocument (filePath, -1, -1, OpenDocumentOptions.Default, encoding, binding);
