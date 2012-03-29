@@ -1,4 +1,4 @@
-// 
+﻿// 
 // QuickFixEditorExtension.cs
 //  
 // Author:
@@ -71,8 +71,16 @@ namespace MonoDevelop.CodeActions
 		public void CreateWidget (IEnumerable<CodeAction> fixes, TextLocation loc)
 		{
 			Fixes = fixes;
-			if (!fixes.Any ())
-				return;
+			if (!fixes.Any ()) {
+				ICSharpCode.NRefactory.TypeSystem.DomRegion region;
+				var resolveResult = document.GetLanguageItem (document.Editor.Caret.Offset, out region);
+				if (resolveResult != null) {
+					var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, resolveResult);
+					if (!possibleNamespaces.Any ())
+						return;
+				} else
+					return;
+			}
 			if (!QuickTaskStrip.EnableFancyFeatures)
 				return;
 			var editor = Document.Editor.Parent;

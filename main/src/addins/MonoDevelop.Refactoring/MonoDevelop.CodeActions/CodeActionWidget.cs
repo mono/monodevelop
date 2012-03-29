@@ -1,4 +1,4 @@
-// 
+﻿// 
 // QuickFixWidget.cs
 //  
 // Author:
@@ -186,7 +186,7 @@ namespace MonoDevelop.CodeActions
 						menu.Add (menuItem);
 					}
 				}
-				if (menu.Children.Any ()) {
+				if (menu.Children.Any () && fixes.Any ()) {
 					fixMenu = new Gtk.Menu ();
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Quick Fixes"));
 					menuItem.Submenu = fixMenu;
