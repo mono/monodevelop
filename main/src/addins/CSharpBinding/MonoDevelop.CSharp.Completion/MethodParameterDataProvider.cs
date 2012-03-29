@@ -1,4 +1,4 @@
-// NRefactoryParameterDataProvider.cs
+﻿// NRefactoryParameterDataProvider.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -27,19 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Xml;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Parser;
 using System.Text.RegularExpressions;
-using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.CSharp.Resolver;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using System.Linq;
@@ -303,11 +294,12 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public string GetParameterDescription (int overload, int paramIndex)
 		{
-			IMethod method = methods[overload];
+			IMethod method = methods [overload];
 			
 			if (paramIndex < 0 || paramIndex >= method.Parameters.Count)
 				return "";
-			
+			if (method.IsExtensionMethod)
+				paramIndex++;
 			return ambience.GetString (method, method.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
 		}
 		
@@ -315,8 +307,13 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (overload >= Count)
 				return -1;
-			IMethod method = methods[overload];
-			return method != null && method.Parameters != null ? method.Parameters.Count : 0;
+			IMethod method = methods [overload];
+			if (method == null || method.Parameters == null)
+				return 0;
+
+			if (method.IsExtensionMethod)
+				return method.Parameters.Count - 1;
+			return method.Parameters.Count;
 		}
 		
 		public bool AllowParameterList (int overload)
