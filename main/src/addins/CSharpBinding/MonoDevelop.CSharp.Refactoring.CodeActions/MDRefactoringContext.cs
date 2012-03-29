@@ -179,15 +179,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
 
 		}
-		
-		public override AstType CreateShortType (IType fullType)
-		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
-			
-			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
-			
-			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);			
-		}
+
 	}
 }
