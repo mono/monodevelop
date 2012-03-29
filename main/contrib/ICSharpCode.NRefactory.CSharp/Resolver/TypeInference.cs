@@ -614,35 +614,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Make lower bound inference from U to V.
 		/// C# 4.0 spec: §7.5.2.9 Lower-bound inferences
 		/// </summary>
-		void MakeLowerBoundInference(IType U, IType V)
+		void MakeLowerBoundInference (IType U, IType V)
 		{
-			Log.WriteLine(" MakeLowerBoundInference from " + U + " to " + V);
+			Log.WriteLine (" MakeLowerBoundInference from " + U + " to " + V);
 			
 			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
-			TP tp = GetTPForType(V);
+			TP tp = GetTPForType (V);
 			if (tp != null && tp.IsFixed == false) {
-				Log.WriteLine("  Add lower bound '" + U + "' to " + tp);
-				tp.LowerBounds.Add(U);
+				Log.WriteLine ("  Add lower bound '" + U + "' to " + tp);
+				tp.LowerBounds.Add (U);
 				return;
 			}
 			
 			// Handle array types:
 			ArrayType arrU = U as ArrayType;
 			ArrayType arrV = V as ArrayType;
-			ParameterizedType pV = V as ParameterizedType;
 			if (arrU != null && arrV != null && arrU.Dimensions == arrV.Dimensions) {
-				MakeLowerBoundInference(arrU.ElementType, arrV.ElementType);
-				return;
-			} else if (arrU != null && IsIEnumerableCollectionOrList(pV) && arrU.Dimensions == 1) {
-				MakeLowerBoundInference(arrU.ElementType, pV.GetTypeArgument(0));
+				MakeLowerBoundInference (arrU.ElementType, arrV.ElementType);
 				return;
 			}
 			// Handle parameterized types:
+			ParameterizedType pV = V as ParameterizedType;
 			if (pV != null) {
 				ParameterizedType uniqueBaseType = null;
 				foreach (IType baseU in U.GetAllBaseTypes()) {
 					ParameterizedType pU = baseU as ParameterizedType;
-					if (pU != null && object.Equals(pU.GetDefinition(), pV.GetDefinition()) && pU.TypeParameterCount == pV.TypeParameterCount) {
+					if (pU != null && object.Equals (pU.GetDefinition (), pV.GetDefinition ()) && pU.TypeParameterCount == pV.TypeParameterCount) {
 						if (uniqueBaseType == null)
 							uniqueBaseType = pU;
 						else
@@ -677,20 +674,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.Unindent();
 			}
 		}
-		
-		static bool IsIEnumerableCollectionOrList(ParameterizedType rt)
-		{
-			if (rt == null || rt.TypeParameterCount != 1)
-				return false;
-			switch (rt.GetDefinition().FullName) {
-				case "System.Collections.Generic.IList":
-				case "System.Collections.Generic.ICollection":
-				case "System.Collections.Generic.IEnumerable":
-					return true;
-				default:
-					return false;
-			}
-		}
 		#endregion
 		
 		#region MakeUpperBoundInference (§7.5.2.10)
@@ -713,15 +696,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Handle array types:
 			ArrayType arrU = U as ArrayType;
 			ArrayType arrV = V as ArrayType;
-			ParameterizedType pU = U as ParameterizedType;
 			if (arrV != null && arrU != null && arrU.Dimensions == arrV.Dimensions) {
 				MakeUpperBoundInference(arrU.ElementType, arrV.ElementType);
 				return;
-			} else if (arrV != null && IsIEnumerableCollectionOrList(pU) && arrV.Dimensions == 1) {
-				MakeUpperBoundInference(pU.GetTypeArgument(0), arrV.ElementType);
-				return;
 			}
 			// Handle parameterized types:
+			ParameterizedType pU = U as ParameterizedType;
 			if (pU != null) {
 				ParameterizedType uniqueBaseType = null;
 				foreach (IType baseV in V.GetAllBaseTypes()) {
