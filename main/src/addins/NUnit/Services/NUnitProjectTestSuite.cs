@@ -67,27 +67,31 @@ namespace MonoDevelop.NUnit
 			return null;
 		}
 
-		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
+		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string methodName)
 		{
+			if (fixtureTypeName == null)
+				return null;
 			var ctx = TypeSystemService.GetCompilation (project);
-			string ns, name;
-			int idx = fullClassName.LastIndexOf ('.');
-			if (idx < 0) {
-				ns = "";
-				name = fullClassName;
-			} else {
-				ns = fullClassName.Substring (0, idx);
-				name = fullClassName.Substring (idx + 1);
-			}
-			var cls = ctx.MainAssembly.GetTypeDefinition (ns, name, 0);
+			var cls = ctx.MainAssembly.GetTypeDefinition (fixtureTypeNamespace, fixtureTypeName, 0);
 			if (cls == null)
 				return null;
 			
-			foreach (var met in cls.GetMethods ()) {
-				if (met.Name == methodName)
-					return new SourceCodeLocation (cls.GetDefinition ().Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+			if (cls.Name != methodName) {
+				foreach (var met in cls.GetMethods ()) {
+					if (met.Name == methodName)
+						return new SourceCodeLocation (met.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+				}
+				
+				int idx = methodName != null ? methodName.IndexOf ('(') : -1;
+				if (idx > 0) {
+					methodName = methodName.Substring (0, idx);
+					foreach (var met in cls.GetMethods ()) {
+						if (met.Name == methodName)
+							return new SourceCodeLocation (met.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+					}
+				}
 			}
-			return new SourceCodeLocation (cls.GetDefinition ().Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn);
+			return new SourceCodeLocation (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn);
 		}
 		
 		public override void Dispose ()

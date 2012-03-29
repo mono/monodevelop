@@ -49,6 +49,16 @@ namespace MonoDevelop.NUnit
 		SolutionEntityItem ownerSolutionEntityItem;
 		UnitTestResultsStore results;
 		
+		public string FixtureTypeNamespace {
+			get;
+			set;
+		}
+		
+		public string FixtureTypeName {
+			get;
+			set;
+		}
+
 		protected UnitTest (string name)
 		{
 			this.name = name;

@@ -77,10 +77,14 @@ namespace MonoDevelop.NUnit
 				return;
 			
 			foreach (NunitTestInfo test in testInfo.Tests) {
+				UnitTest newTest;
 				if (test.Tests != null)
-					Tests.Add (new NUnitTestSuite (rootSuite, test));
+					newTest = new NUnitTestSuite (rootSuite, test);
 				else
-					Tests.Add (new NUnitTestCase (rootSuite, test, ClassName));
+					newTest = new NUnitTestCase (rootSuite, test, ClassName);
+				newTest.FixtureTypeName = test.FixtureTypeName;
+				newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
+				Tests.Add (newTest);
 			}
 		}
 		

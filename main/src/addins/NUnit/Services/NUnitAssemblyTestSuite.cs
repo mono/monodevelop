@@ -96,17 +96,10 @@ namespace MonoDevelop.NUnit
 		
 		internal SourceCodeLocation GetSourceCodeLocation (UnitTest test)
 		{
-			if (test is NUnitTestCase) {
-				NUnitTestCase t = (NUnitTestCase) test;
-				return GetSourceCodeLocation (t.ClassName, t.Name);
-			} else if (test is NUnitTestSuite) {
-				NUnitTestSuite t = (NUnitTestSuite) test;
-				return GetSourceCodeLocation (t.ClassName, null);
-			} else
-				return null;
+			return GetSourceCodeLocation (test.FixtureTypeNamespace, test.FixtureTypeName, test.Name);
 		}
 		
-		protected virtual SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
+		protected virtual SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string methodName)
 		{
 			return null;
 		}
@@ -247,10 +240,15 @@ namespace MonoDevelop.NUnit
 			if (ti.Tests == null)
 				return;
 			foreach (NunitTestInfo test in ti.Tests) {
+				UnitTest newTest;
 				if (test.Tests != null)
-					Tests.Add (new NUnitTestSuite (this, test));
+					newTest = new NUnitTestSuite (this, test);
 				else
-					Tests.Add (new NUnitTestCase (this, test, test.PathName));
+					newTest = new NUnitTestCase (this, test, test.PathName);
+				newTest.FixtureTypeName = test.FixtureTypeName;
+				newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
+				Tests.Add (newTest);
+
 			}
 			oldList = new UnitTest [Tests.Count];
 			Tests.CopyTo (oldList, 0);
