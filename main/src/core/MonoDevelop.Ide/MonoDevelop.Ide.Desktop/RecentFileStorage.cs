@@ -139,6 +139,11 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public RecentItem[] GetItemsInGroup (string group)
 		{
+			//don't create the file since we're just reading
+			if (!File.Exists (filePath)) {
+				 return new RecentItem[0];
+			}
+			
 			var c = cachedItemList;
 			if (c == null) {
 				List<RecentItem> list;
@@ -152,6 +157,11 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public void RemoveMissingFiles (params string[] groups)
 		{
+			//don't create the file since we're just reading
+			if (!File.Exists (filePath)) {
+				return;
+			}
+			
 			ModifyStore (list => RemoveMatches (list, item =>
 				item.IsFile && groups.Any (g => item.IsInGroup (g)) && !File.Exists (item.LocalPath)
 			));
@@ -260,6 +270,7 @@ namespace MonoDevelop.Ide.Desktop
 			int remainingTries = MAX_WAIT_TIME / RETRY_WAIT;
 			while (true) {
 				try {
+					Directory.CreateDirectory (Path.GetDirectoryName (filePath));
 					return File.Open (filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
 				} catch (Exception ex) {
 					//FIXME: will it work on Mono if we check that it's an access conflict, i.e. HResult is 0x80070020?
