@@ -448,7 +448,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			var values = PListScheme.AvailableValues (dict, CurrentTree);
 			if (values == null) {
-				string name = "newNode";
+				string name = "newProperty";
 				while (dict.ContainsKey (name))
 					name += "_";
 				dict.Add (name, PObject.Create (DefaultNewObjectType));
