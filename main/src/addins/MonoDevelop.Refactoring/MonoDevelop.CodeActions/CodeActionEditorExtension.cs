@@ -1,4 +1,4 @@
-﻿// 
+// 
 // QuickFixEditorExtension.cs
 //  
 // Author:
@@ -71,6 +71,8 @@ namespace MonoDevelop.CodeActions
 		public void CreateWidget (IEnumerable<CodeAction> fixes, TextLocation loc)
 		{
 			Fixes = fixes;
+			if (!QuickTaskStrip.EnableFancyFeatures)
+				return;
 			if (!fixes.Any ()) {
 				ICSharpCode.NRefactory.TypeSystem.DomRegion region;
 				var resolveResult = document.GetLanguageItem (document.Editor.Caret.Offset, out region);
@@ -81,8 +83,6 @@ namespace MonoDevelop.CodeActions
 				} else
 					return;
 			}
-			if (!QuickTaskStrip.EnableFancyFeatures)
-				return;
 			var editor = Document.Editor.Parent;
 			if (!editor.IsRealized)
 				return;
