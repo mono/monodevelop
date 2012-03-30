@@ -36,8 +36,19 @@ namespace Mono.TextEditor
 		public const int MinLine   = 1;
 		public const int MinColumn = 1;
 
-		public int Line { get; set; }
-		public int Column { get; set; }
+		readonly int line;
+		public int Line {
+			get {
+				return line;
+			}
+		}
+		
+		readonly int column;
+		public int Column {
+			get {
+				return column;
+			}
+		}
 		
 		public bool IsEmpty {
 			get {
@@ -47,8 +58,8 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation (int line, int column) : this ()
 		{
-			Line = line;
-			Column = column;
+			this.line = line;
+			this.column = column;
 		}
 		
 		public override string ToString ()

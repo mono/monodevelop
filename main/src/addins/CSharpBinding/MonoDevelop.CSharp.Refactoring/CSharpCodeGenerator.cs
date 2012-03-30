@@ -942,30 +942,31 @@ namespace MonoDevelop.CSharp.Refactoring
 				file.Caret.Location = caretLocation;
 				return;
 			}
-			
+			int caretLine = caretLocation.Line;
+			int caretColumn = caretLocation.Column;
 			if (trimmedline.StartsWith ("if") || 
-			    trimmedline.StartsWith ("while") ||
-			    trimmedline.StartsWith ("switch") ||
-			    trimmedline.StartsWith ("for") ||
-			    trimmedline.StartsWith ("foreach")) {
+				trimmedline.StartsWith ("while") ||
+				trimmedline.StartsWith ("switch") ||
+				trimmedline.StartsWith ("for") ||
+				trimmedline.StartsWith ("foreach")) {
 				if (!trimmedline.EndsWith (")")) {
 					file.Insert (lastPos, " () {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "}");
-					caretLocation.Column = maxColumn + 1;
+					caretColumn = maxColumn + 1;
 				} else {
 					file.Insert (lastPos, " {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "}");
-					caretLocation.Column = indent.Length + 1;
-					caretLocation.Line++;
+					caretColumn = indent.Length + 1;
+					caretLine++;
 				}
 			} else if (trimmedline.StartsWith ("do")) {
 				file.Insert (lastPos, " {" + file.EolMarker + indent + file.Options.IndentationString + file.EolMarker + indent + "} while ();");
-				caretLocation.Column = indent.Length + 1;
-				caretLocation.Line++;
+				caretColumn = indent.Length + 1;
+				caretLine++;
 			} else {
 				file.Insert (lastPos, ";" + file.EolMarker + indent);
-				caretLocation.Column = indent.Length;
-				caretLocation.Line++;
+				caretColumn = indent.Length;
+				caretLine++;
 			}
-			file.Caret.Location = caretLocation;
+			file.Caret.Location = new DocumentLocation (caretLine, caretColumn);
 		}
 		
 		

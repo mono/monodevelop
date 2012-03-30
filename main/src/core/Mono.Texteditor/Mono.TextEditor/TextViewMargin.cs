@@ -1643,11 +1643,11 @@ namespace Mono.TextEditor
 				if (isHandled)
 					return;
 				if (line != null && clickLocation.Column >= line.EditableLength + 1 && GetWidth (Document.GetTextAt (line.Segment) + "-") < args.X) {
-					clickLocation.Column = line.EditableLength + 1;
+					clickLocation = new DocumentLocation (clickLocation.Line, line.EditableLength + 1);
 					if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual) {
 						int indentationColumn = this.textEditor.GetTextEditorData ().GetVirtualIndentationColumn (clickLocation);
 						if (indentationColumn > clickLocation.Column)
-							clickLocation.Column = indentationColumn;
+							clickLocation = new DocumentLocation (clickLocation.Line, indentationColumn);
 					}
 				}
 

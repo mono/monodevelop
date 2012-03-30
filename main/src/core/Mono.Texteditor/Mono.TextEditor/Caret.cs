@@ -32,23 +32,23 @@ namespace Mono.TextEditor
 {
 	public class Caret
 	{
-		DocumentLocation location = new DocumentLocation (1, 1);
-		
+
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
 		
 		CaretMode mode;
 		
+		int line;
 		public int Line {
 			get {
-				return location.Line;
+				return line;
 			}
 			set {
-				if (location.Line != value) {
+				if (line != value) {
 					if (value < DocumentLocation.MinLine)
 						throw new ArgumentException ("Line < MinLine");
-					DocumentLocation old = location;
-					location.Line = value;
+					var old = Location;
+					line = value;
 					CheckLine ();
 					SetColumn ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
@@ -56,16 +56,17 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		int column;
 		public int Column {
 			get {
-				return location.Column;
+				return column;
 			}
 			set {
-				if (location.Column != value) {
+				if (column != value) {
 					if (value < DocumentLocation.MinColumn)
 						throw new ArgumentException ("Column < MinColumn");
-					DocumentLocation old = location;
-					location.Column = value;
+					var old = Location;
+					column = value;
 					CheckColumn ();
 					SetDesiredColumn ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
@@ -75,14 +76,15 @@ namespace Mono.TextEditor
 		
 		public DocumentLocation Location {
 			get {
-				return location;
+				return new DocumentLocation (Line, Column);
 			}
 			set {
-				if (location != value) {
+				if (Location != value) {
 					if (value.Line < DocumentLocation.MinLine || value.Column < DocumentLocation.MinColumn)
 						throw new ArgumentException ("invalid location: " + value);
-					DocumentLocation old = location;
-					location = value;
+					DocumentLocation old = Location;
+					line = value.Line;
+					column = value.Column;
 					CheckLine ();
 					CheckColumn ();
 					SetDesiredColumn ();
@@ -192,7 +194,7 @@ namespace Mono.TextEditor
 
 		void CheckLine ()
 		{
-			this.location.Line = System.Math.Min (this.location.Line, TextEditorData.Document.LineCount);
+			this.line = System.Math.Min (this.line, TextEditorData.Document.LineCount);
 		}
 
 		void CheckColumn ()
@@ -200,19 +202,19 @@ namespace Mono.TextEditor
 			var curLine = TextEditorData.Document.GetLine (this.Line);
 
 			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.EditableLength == 0) {
-				if (location.Column > DocumentLocation.MinColumn) {
-					var indentColumn = TextEditorData.GetVirtualIndentationColumn (location);
-					if (location.Column < indentColumn) {
-						location.Column = indentColumn;
+				if (column > DocumentLocation.MinColumn) {
+					var indentColumn = TextEditorData.GetVirtualIndentationColumn (Location);
+					if (column < indentColumn) {
+						column = indentColumn;
 						return;
 					}
-					if (location.Column == indentColumn)
+					if (column == indentColumn)
 						return;
 				}
 			}
 
 			if (!AllowCaretBehindLineEnd)
-				this.location.Column = System.Math.Min (curLine.EditableLength + 1, this.location.Column);
+				this.column = System.Math.Min (curLine.EditableLength + 1, this.column);
 		}
 
 		public void SetToOffsetWithDesiredColumn (int desiredOffset)
@@ -226,14 +228,14 @@ namespace Mono.TextEditor
 				if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual)
 					column = TextEditorData.GetVirtualIndentationColumn (desiredLineNumber, 1);
 			}
-			location = new DocumentLocation (desiredLineNumber, column);
+			Location = new DocumentLocation (desiredLineNumber, column);
 
 			var logicalDesiredColumn = desiredLine.GetLogicalColumn (TextEditorData, this.DesiredColumn);
 
 			if (logicalDesiredColumn <= desiredLine.EditableLength) {
 				int possibleOffset = TextEditorData.LocationToOffset (desiredLineNumber, logicalDesiredColumn);
 				if (!TextEditorData.Document.GetFoldingsFromOffset (possibleOffset).Any (f => f.IsFolded))
-					location = new DocumentLocation (desiredLineNumber, logicalDesiredColumn);
+					Location = new DocumentLocation (desiredLineNumber, logicalDesiredColumn);
 			}
 
 			OnPositionChanged (new DocumentLocationEventArgs (old));
@@ -252,13 +254,13 @@ namespace Mono.TextEditor
 			LineSegment curLine = TextEditorData.Document.GetLine (this.Line);
 			if (curLine == null)
 				return;
-			this.location.Column = System.Math.Max (DocumentLocation.MinColumn, this.Column);
-			this.location.Column = curLine.GetLogicalColumn (TextEditorData, this.DesiredColumn);
-			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.GetVisualColumn (TextEditorData, this.location.Column) < this.DesiredColumn) {
-				this.location.Column = TextEditorData.GetVirtualIndentationColumn (Line, this.location.Column);
+			this.column = System.Math.Max (DocumentLocation.MinColumn, this.Column);
+			this.column = curLine.GetLogicalColumn (TextEditorData, this.DesiredColumn);
+			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.GetVisualColumn (TextEditorData, this.column) < this.DesiredColumn) {
+				this.column = TextEditorData.GetVirtualIndentationColumn (Line, this.column);
 			} else {
 				if (!AllowCaretBehindLineEnd && this.Column > curLine.EditableLength + 1)
-					this.location.Column = System.Math.Min (curLine.EditableLength + 1, this.location.Column);
+					this.column = System.Math.Min (curLine.EditableLength + 1, this.column);
 			}
 		}
 		

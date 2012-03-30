@@ -344,7 +344,7 @@ namespace Mono.TextEditor
 					if (convertTabs) {
 						int tabWidth = TextViewMargin.GetNextTabstop (this, loc.Column) - loc.Column;
 						sb.Append (new string (' ', tabWidth));
-						loc.Column += tabWidth;
+						loc = new DocumentLocation (loc.Line, loc.Column + tabWidth);
 					} else 
 						goto default;
 					break;
@@ -354,12 +354,11 @@ namespace Mono.TextEditor
 					goto case '\n';
 				case '\n':
 					sb.Append (EolMarker);
-					loc.Line++;
-					loc.Column = 0;
+					loc = new DocumentLocation (loc.Line + 1, 1);
 					break;
 				default:
 					sb.Append (ch);
-					loc.Column++;
+					loc = new DocumentLocation (loc.Line, loc.Column + 1);
 					break;
 				}
 			}

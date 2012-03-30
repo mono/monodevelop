@@ -219,22 +219,21 @@ namespace Mono.TextEditor
 		{
 			if (!data.Caret.PreserveSelection)
 				data.ClearSelection ();
-			DocumentLocation newLocation = data.Caret.Location;
 
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			
+			int newColumn;
 			if (firstNonWhitespace) {
 
 				int homeMark = GetHomeMark (data.Document, line);
 				if (hop) {
-					newLocation.Column = data.Caret.Column == homeMark ? DocumentLocation.MinColumn : homeMark;
+					newColumn = data.Caret.Column == homeMark ? DocumentLocation.MinColumn : homeMark;
 				} else {
-					newLocation.Column = homeMark;
+					newColumn = homeMark;
 				}
 			} else {
-				newLocation.Column = DocumentLocation.MinColumn;
+				newColumn = DocumentLocation.MinColumn;
 			}
-			
+			var newLocation = new DocumentLocation (data.Caret.Line, newColumn);
 			// handle folding
 			IEnumerable<FoldSegment> foldings = data.Document.GetEndFoldings (line);
 			FoldSegment segment = null;
@@ -273,11 +272,9 @@ namespace Mono.TextEditor
 		{
 			if (!data.Caret.PreserveSelection)
 				data.ClearSelection ();
-			DocumentLocation newLocation = data.Caret.Location;
-			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			var line = data.Document.GetLine (data.Caret.Line);
+			var newLocation = new DocumentLocation (data.Caret.Line, line.EditableLength + 1);
 
-			newLocation.Column = line.EditableLength + 1;
-			
 			// handle folding
 			IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
 			FoldSegment segment = null;
