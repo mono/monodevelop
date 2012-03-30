@@ -146,7 +146,6 @@ namespace MonoDevelop.Ide.Desktop
 			
 			var c = cachedItemList;
 			if (c == null) {
-				List<RecentItem> list;
 				using (var fs = AcquireFileExclusive (filePath)) {
 					c = cachedItemList = ReadStore (fs);
 				}
