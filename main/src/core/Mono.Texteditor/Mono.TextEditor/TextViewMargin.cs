@@ -211,15 +211,14 @@ namespace Mono.TextEditor
 		{
 			if (textEditor.HighlightSearchPattern) {
 				DisposeSearchPatternWorker ();
-
 				SearchWorkerArguments args = new SearchWorkerArguments () {
-					FirstLine = this.YToLine (textEditor.VAdjustment.Value),
-					LastLine = this.YToLine (textEditor.Allocation.Height + textEditor.VAdjustment.Value),
+					FirstLine = YToLine (textEditor.VAdjustment.Value),
+					LastLine = YToLine (textEditor.Allocation.Height + textEditor.VAdjustment.Value),
 					OldRegions = selectedRegions,
-					Engine = this.textEditor.GetTextEditorData ().SearchEngine.Clone ()
+					Engine = textEditor.GetTextEditorData ().SearchEngine.Clone ()
 				};
 
-				if (string.IsNullOrEmpty (this.textEditor.SearchPattern)) {
+				if (string.IsNullOrEmpty (textEditor.SearchPattern)) {
 					if (selectedRegions.Count > 0) {
 						UpdateRegions (selectedRegions, args);
 						selectedRegions.Clear ();
@@ -239,7 +238,7 @@ namespace Mono.TextEditor
 			SearchWorkerArguments args = (SearchWorkerArguments)e.Argument;
 			System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)sender;
 			List<TextSegment> newRegions = new List<TextSegment> ();
-			int offset = 0;
+			int offset = args.Engine.SearchRequest.SearchRegion.IsInvalid ? 0 : args.Engine.SearchRequest.SearchRegion.Offset;
 			do {
 				if (worker.CancellationPending)
 					return;
@@ -1416,7 +1415,7 @@ namespace Mono.TextEditor
 			if (textEditor.HighlightSearchPattern) {
 				while (!(firstSearch = GetFirstSearchResult (o, offset + length)).IsInvalid) {
 					double x = pangoPosition;
-					HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, firstSearch.Offset, firstSearch.EndOffset, delegate(int start, int end) {
+					HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, System.Math.Max (lineOffset, firstSearch.Offset), System.Math.Min (lineOffset + line.EditableLength, firstSearch.EndOffset), delegate(int start, int end) {
 						uint startIndex = (uint)(start - offset);
 						uint endIndex = (uint)(end - offset);
 						if (startIndex < endIndex && endIndex <= layout.LineChars.Length) {

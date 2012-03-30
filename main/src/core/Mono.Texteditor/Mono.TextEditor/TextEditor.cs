@@ -2052,6 +2052,16 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public TextSegment SearchRegion {
+			get {
+				return this.textEditorData.SearchRequest.SearchRegion;
+			}
+			
+			set {
+				this.textEditorData.SearchRequest.SearchRegion = value;
+			}
+		}
+		
 		public SearchResult SearchForward (int fromOffset)
 		{
 			return textEditorData.SearchForward (fromOffset);
@@ -2236,6 +2246,11 @@ namespace Mono.TextEditor
 		{
 			if (!IsComposited || !Options.EnableAnimations || result == null)
 				return;
+			
+			// Don't animate multi line search results
+			if (OffsetToLineNumber (result.Segment.Offset) != OffsetToLineNumber (result.Segment.EndOffset))
+				return;
+			
 			TextViewMargin.MainSearchResult = result.Segment;
 			if (!TextViewMargin.MainSearchResult.IsInvalid) {
 				if (popupWindow != null) {

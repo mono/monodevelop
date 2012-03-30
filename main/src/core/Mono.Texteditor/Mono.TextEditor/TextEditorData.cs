@@ -993,6 +993,8 @@ namespace Mono.TextEditor
 			int result = 0;
 			using (var undo = OpenUndoGroup ()) {
 				int offset = 0;
+				if (!SearchRequest.SearchRegion.IsInvalid)
+					offset = SearchRequest.SearchRegion.Offset;
 				SearchResult searchResult; 
 				while (true) {
 					searchResult = SearchForward (offset);

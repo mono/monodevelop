@@ -1,4 +1,4 @@
-﻿// SourceEditorWidget.cs
+// SourceEditorWidget.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -1080,7 +1080,7 @@ namespace MonoDevelop.SourceEditor
 		Components.RoundedFrame gotoLineNumberWidgetFrame = null;
 		GotoLineNumberWidget   gotoLineNumberWidget   = null;
 		
-		public void SetSearchPattern ()
+		void SetSearchPattern ()
 		{
 			string selectedText = FormatPatternToSelectionOption (this.TextEditor.SelectedText);
 			
@@ -1196,18 +1196,10 @@ namespace MonoDevelop.SourceEditor
 		{
 			SetReplacePatternToSelection ();
 		}
-		
-		
+
 		void ShowSearchReplaceWidget (bool replace)
 		{
 			if (searchAndReplaceWidget == null) {
-				this.textEditor.SearchPattern = SearchAndReplaceWidget.searchPattern = "";
-				// reset pattern, to force an update
-				
-				if (TextEditor.IsSomethingSelected) {
-					SetSearchPattern ();
-				}
-				
 				KillWidgets ();
 				searchAndReplaceWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
 				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
@@ -1219,15 +1211,24 @@ namespace MonoDevelop.SourceEditor
 				this.TextEditorContainer.AddAnimatedWidget (searchAndReplaceWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
 //				this.PackEnd (searchAndReplaceWidget);
 //				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
-		//		searchAndReplaceWidget.ShowAll ();
+				//		searchAndReplaceWidget.ShowAll ();
 				this.textEditor.HighlightSearchPattern = true;
 				this.textEditor.TextViewMargin.RefreshSearchMarker ();
 				if (this.splittedTextEditor != null) {
 					this.splittedTextEditor.HighlightSearchPattern = true;
 					this.splittedTextEditor.TextViewMargin.RefreshSearchMarker ();
 				}
-				
 				ResetFocusChain ();
+
+				if (TextEditor.IsSomethingSelected) {
+					if (TextEditor.MainSelection.MinLine == TextEditor.MainSelection.MaxLine) {
+						SetSearchPattern ();
+					} else {
+						searchAndReplaceWidget.IsInSelectionSearchMode = true;
+						searchAndReplaceWidget.SelectionSegment = TextEditor.SelectionRange;
+					}
+				}
+				SetSearchPattern (SearchAndReplaceWidget.searchPattern);
 			} else {
 				if (TextEditor.IsSomethingSelected) {
 					SetSearchPattern ();
@@ -1279,7 +1280,7 @@ namespace MonoDevelop.SourceEditor
 			if (searchAndReplaceWidget != null) 
 				this.textEditor.IsCaseSensitive = searchAndReplaceWidget.IsCaseSensitive;
 			this.textEditor.IsWholeWordOnly = SearchAndReplaceWidget.IsWholeWordOnly;
-			
+			this.textEditor.SearchRegion = searchAndReplaceWidget.IsInSelectionSearchMode ? searchAndReplaceWidget.SelectionSegment : TextSegment.Invalid;
 			string error;
 			string pattern = SearchAndReplaceWidget.searchPattern;
 			if (searchAndReplaceWidget != null)
@@ -1382,7 +1383,6 @@ namespace MonoDevelop.SourceEditor
 			SetSearchPatternToSelection ();
 			
 			SetSearchOptions ();
-			SetSearchPattern();
 			TextEditor.GrabFocus ();
 			return FindNext ();
 		}
@@ -1391,7 +1391,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			SetSearchPatternToSelection ();
 			SetSearchOptions ();
-			SetSearchPattern();
 			TextEditor.GrabFocus ();
 			return FindPrevious ();
 		}
