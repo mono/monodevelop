@@ -690,8 +690,10 @@ namespace Mono.TextEditor
 			il.Emit (OpCodes.Ldloc, loc_obj);
 			il.Emit (OpCodes.Brfalse, IL_002b);
 			
+			var tref = typeof (GLib.Object).Assembly.GetType ("GLib.ToggleRef");
 			il.Emit (OpCodes.Ldloc, loc_obj);
-			il.Emit (OpCodes.Callvirt, typeof (GLib.Object).Assembly.GetType ("GLib.ToggleRef").GetProperty ("Target").GetGetMethod ());
+			il.Emit (OpCodes.Castclass, tref);
+			il.Emit (OpCodes.Callvirt, tref.GetProperty ("Target").GetGetMethod ());
 			il.Emit (OpCodes.Isinst, typeof (Gtk.Container));
 			il.Emit (OpCodes.Stloc, loc_container);
 			
