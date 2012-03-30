@@ -39,6 +39,9 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Projects.Policies;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.Ast;
+using ICSharpCode.NRefactory.PatternMatching;
 
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -461,14 +464,32 @@ namespace MonoDevelop.CSharp.Refactoring
 									continue;
 								foreach (var m  in type.Resolve ().Methods) {
 									if (m.HasBody && m.Name == method.Name) {
-										if (m.Body.Instructions.Count == 2) {
-											if (m.Body.Instructions [1].OpCode == OpCodes.Throw) {
-												skipBody = true;
-												break;
-											}
-										}
+										var context = new DecompilerContext (asm.MainModule);
+										
+										context.CurrentType = type;
+				
+										context.Settings = new DecompilerSettings () {
+											AnonymousMethods = true,
+											AutomaticEvents  = true,
+											AutomaticProperties = true,
+											ForEachStatement = true,
+											LockStatement = true
+										};
+				
+										var astBuilder = new AstBuilder (context);
+										astBuilder.AddMethod (m);
+										
+										astBuilder.RunTransformations (o => false);
+										
+										var visitor = new ThrowsExceptionVisitor ();
+										astBuilder.CompilationUnit.AcceptVisitor (visitor);
+										skipBody = visitor.Throws;
+										if (skipBody)
+											break;
 									}
 								}
+								if (skipBody)
+									break;
 							}
 						}
 					} catch (Exception) {
@@ -495,6 +516,8 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append (p.Name);
 						}
 						result.Append (");");
+					} else {
+						result.Append ("throw new System.NotImplementedException ();");
 					}
 					bodyEndOffset = result.Length;
 					AppendLine (result);
@@ -502,6 +525,17 @@ namespace MonoDevelop.CSharp.Refactoring
 				AppendBraceEnd (result, Policy.MethodBraceStyle);
 			}
 			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
+		}
+		
+		class ThrowsExceptionVisitor : DepthFirstAstVisitor
+		{
+			public bool Throws = false;
+			
+			public override void VisitBlockStatement (BlockStatement blockStatement)
+			{
+				if (blockStatement.Statements.Count == 1 && blockStatement.Statements.First () is ThrowStatement)
+					Throws = true;
+			}
 		}
 		
 		void AppendParameterList (StringBuilder result, CodeGenerationOptions options, IList<IParameter> parameters)
@@ -756,7 +790,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var policy = doc.Project != null ? doc.Project.Policies.Get <CSharpFormattingPolicy> () : null;
 			if (policy == null)
-				policy = this.Policy;
+				policy = Policy;
 			
 			var node = SearchUsingInsertionPoint (unit);
 			
@@ -811,7 +845,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			var policy = doc.Project != null ? doc.Project.Policies.Get <CSharpFormattingPolicy> () : null;
 			if (policy == null)
-				policy = this.Policy;
+				policy = Policy;
 			
 			
 			var node = SearchUsingInsertionPoint (nsDecl);
@@ -890,7 +924,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var caretLocation = file.Caret.Location;
 			
 			int pos = file.LocationToOffset (caretLocation.Line + 1, 1);
-			StringBuilder line = new StringBuilder ();
+			var line = new StringBuilder ();
 			int lineNr = caretLocation.Line + 1, column = 1, maxColumn = 1, lastPos = pos;
 			if (true) 
 				while (lineNr == caretLocation.Line + 1) {
