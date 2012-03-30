@@ -121,15 +121,17 @@ namespace MonoDevelop.VersionControl.Views
 		// todo: move to version control backend
 		IEnumerable<Conflict> Conflicts (Mono.TextEditor.TextDocument doc)
 		{
-			foreach (int mergeStart in doc.SearchForward ("<<<<<<<", 0)) {
+			int mergeStart = 0;
+			while ((mergeStart = doc.IndexOf ("<<<<<<<", mergeStart, doc.TextLength, StringComparison.Ordinal)) >= 0) {
 				LineSegment start = doc.GetLineByOffset (mergeStart);
 				if (start.Offset != mergeStart)
 					continue;
-				int dividerOffset = doc.SearchForward ("=======", mergeStart).First ();
+				int dividerOffset = doc.IndexOf ("=======", mergeStart, doc.TextLength, StringComparison.Ordinal);
 				LineSegment divider = doc.GetLineByOffset (dividerOffset);
 
-				int endOffset = doc.SearchForward (">>>>>>>", dividerOffset).First ();
+				int endOffset = doc.IndexOf (">>>>>>>", dividerOffset, doc.TextLength, StringComparison.Ordinal);
 				LineSegment end = doc.GetLineByOffset (endOffset);
+				mergeStart = dividerOffset;
 
 				yield return new Conflict (new TextSegment (start.EndOffset, divider.Offset - start.EndOffset),
 					new TextSegment (divider.EndOffset, end.Offset - divider.EndOffset),
