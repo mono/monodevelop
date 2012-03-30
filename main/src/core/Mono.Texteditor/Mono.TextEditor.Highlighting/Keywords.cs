@@ -56,7 +56,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 		
-		public virtual bool GetIsValid (ColorSheme style)
+		public virtual bool GetIsValid (ColorScheme style)
 		{
 			if (style.GetChunkStyle (Color) == null) {
 				System.Console.WriteLine("color:" + Color + " not found.");

@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		const int SearchResultColumn = 0;
 		const int DidReadColumn      = 1;
 		
-		Mono.TextEditor.Highlighting.ColorSheme highlightStyle;
+		Mono.TextEditor.Highlighting.ColorScheme highlightStyle;
 		
 		ScrolledWindow scrolledwindowLogView; 
 		PadTreeView treeviewSearchResults;
@@ -480,7 +480,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				int pos2 = FindPosition (markup, col + searchResult.Length, out tag);
 				if (pos1 >= 0 && pos2 >= 0) {
 					markup = tag.StartsWith ("span") ? markup.Insert (pos2, "</span></span><" + tag + ">") : markup.Insert (pos2, "</span>");
-					Color searchColor = Mono.TextEditor.Highlighting.ColorSheme.ToGdkColor (highlightStyle.SearchTextBg);
+					Color searchColor = Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (highlightStyle.SearchTextBg);
 					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
 					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
 					double delta = Math.Abs (b1 - b2);

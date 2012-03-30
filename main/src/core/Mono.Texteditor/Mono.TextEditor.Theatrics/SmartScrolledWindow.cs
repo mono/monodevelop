@@ -254,7 +254,7 @@ namespace Mono.TextEditor.Theatrics
 				cr.SharpLineY (alloc.X, alloc.Y, right, alloc.Y);
 				cr.SharpLineY (alloc.X, bottom, right, bottom);
 				
-				cr.Color = Mono.TextEditor.Highlighting.ColorSheme.ToCairoColor (Style.Dark (State));
+				cr.Color = Mono.TextEditor.Highlighting.ColorScheme.ToCairoColor (Style.Dark (State));
 				cr.Stroke ();
 			}
 			return base.OnExposeEvent (evnt);

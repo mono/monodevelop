@@ -1704,7 +1704,7 @@ namespace MonoDevelop.SourceEditor
 			this.LineSegment = line; // may be null if no line is assigned to the error.
 			this.Wave = true;
 			
-			ColorName = info.ErrorType == ErrorType.Warning ? Mono.TextEditor.Highlighting.ColorSheme.WarningUnderlineString : Mono.TextEditor.Highlighting.ColorSheme.ErrorUnderlineString;
+			ColorName = info.ErrorType == ErrorType.Warning ? Mono.TextEditor.Highlighting.ColorScheme.WarningUnderlineString : Mono.TextEditor.Highlighting.ColorScheme.ErrorUnderlineString;
 			
 			if (Info.Region.BeginLine == info.Region.EndLine) {
 				this.StartCol = Info.Region.BeginColumn;

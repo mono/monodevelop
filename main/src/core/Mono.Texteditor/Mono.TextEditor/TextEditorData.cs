@@ -210,10 +210,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		ColorSheme colorStyle;
-		public ColorSheme ColorStyle {
+		ColorScheme colorStyle;
+		public ColorScheme ColorStyle {
 			get {
-				return colorStyle ?? ColorSheme.Empty;
+				return colorStyle ?? ColorScheme.Empty;
 			}
 			set {
 				colorStyle = value;

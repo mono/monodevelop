@@ -1686,7 +1686,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Mono.TextEditor.Highlighting.ColorSheme ColorStyle {
+		public Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
 			get {
 				return this.textEditorData.ColorStyle;
 			}

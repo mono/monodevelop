@@ -59,7 +59,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 
-		public virtual bool GetIsValid (ColorSheme style)
+		public virtual bool GetIsValid (ColorScheme style)
 		{
 			return (string.IsNullOrEmpty (Color) || style.GetChunkStyle (Color) != null) &&
 			        (string.IsNullOrEmpty (TagColor) || style.GetChunkStyle (TagColor) != null) &&

@@ -37,18 +37,23 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System" />
@@ -172,7 +177,6 @@
     <Compile Include="Mono.TextEditor\SegmentTree.cs" />
     <Compile Include="Mono.TextEditor.Utils\RedBlackTree.cs" />
     <Compile Include="Mono.TextEditor\HeightTree.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\ColorSheme.cs" />
     <Compile Include="Mono.TextEditor\GtkWorkarounds.cs" />
     <Compile Include="Mono.TextEditor\Annotatable.cs" />
     <Compile Include="Mono.TextEditor\IndentStyle.cs" />
@@ -184,6 +188,7 @@
     <Compile Include="Mono.TextEditor\SyntaxModeChangeEventArgs.cs" />
     <Compile Include="Mono.TextEditor\DocumentRegion.cs" />
     <Compile Include="Mono.TextEditor.Utils\TextFileUtility.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\ColorScheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

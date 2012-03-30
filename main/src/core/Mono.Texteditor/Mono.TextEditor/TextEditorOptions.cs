@@ -469,7 +469,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual ColorSheme GetColorStyle (Gtk.Style widgetStyle)
+		public virtual ColorScheme GetColorStyle (Gtk.Style widgetStyle)
 		{
 			return SyntaxModeService.GetColorStyle (widgetStyle, ColorScheme);
 		}

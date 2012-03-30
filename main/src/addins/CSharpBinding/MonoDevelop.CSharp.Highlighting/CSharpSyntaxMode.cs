@@ -1,4 +1,4 @@
-﻿// 
+// 
 // SyntaxMode.cs
 //  
 // Author:
@@ -275,7 +275,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			return new CSharpSpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 		
-		public override ChunkParser CreateChunkParser (SpanParser spanParser, ColorSheme style, LineSegment line)
+		public override ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, LineSegment line)
 		{
 			EnsureGuiDocument ();
 			return new CSharpChunkParser (this, spanParser, style, line);
@@ -394,7 +394,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}*/
 			CSharpSyntaxMode csharpSyntaxMode;
 			
-			public CSharpChunkParser (CSharpSyntaxMode csharpSyntaxMode, SpanParser spanParser, ColorSheme style, LineSegment line) : base (csharpSyntaxMode, spanParser, style, line)
+			public CSharpChunkParser (CSharpSyntaxMode csharpSyntaxMode, SpanParser spanParser, ColorScheme style, LineSegment line) : base (csharpSyntaxMode, spanParser, style, line)
 			{
 				this.csharpSyntaxMode = csharpSyntaxMode;
 				foreach (var tag in CommentTag.SpecialCommentTags) {

@@ -33,9 +33,9 @@ using System.Globalization;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class ColorSheme
+	public class ColorScheme
 	{
-		public static ColorSheme Empty = new ColorSheme ();
+		public static ColorScheme Empty = new ColorScheme ();
 		
 		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
@@ -433,7 +433,7 @@ namespace Mono.TextEditor.Highlighting
 			                        alpha);
 		}
 		
-		protected ColorSheme ()
+		protected ColorScheme ()
 		{
 			SetStyle (DefaultString, 0, 0, 0, 255, 255, 255);
 			SetStyle (ReadOnlyTextBgString, 0xFA, 0xFA, 0xF8);
@@ -725,7 +725,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public const string NameAttribute = "name";
 		
-		static void ReadStyleTree (XmlReader reader, ColorSheme result, string curName, string curWeight, string curColor, string curBgColor)
+		static void ReadStyleTree (XmlReader reader, ColorScheme result, string curName, string curWeight, string curColor, string curBgColor)
 		{
 			string name    = reader.GetAttribute ("name"); 
 			string weight  = reader.GetAttribute ("weight") ?? curWeight;
@@ -750,9 +750,9 @@ namespace Mono.TextEditor.Highlighting
 			});
 		}
 		
-		public static ColorSheme LoadFrom (XmlReader reader)
+		public static ColorScheme LoadFrom (XmlReader reader)
 		{
-			var result = new ColorSheme ();
+			var result = new ColorScheme ();
 			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {
 				switch (reader.LocalName) {
 				case "EditorStyle":
@@ -815,9 +815,9 @@ namespace Mono.TextEditor.Highlighting
 			writer.Close ();
 		}
 		
-		public ColorSheme Clone ()
+		public ColorScheme Clone ()
 		{
-			ColorSheme clone = (ColorSheme)MemberwiseClone ();
+			ColorScheme clone = (ColorScheme)MemberwiseClone ();
 			clone.styleLookupTable = new Dictionary<string, ChunkStyle> (styleLookupTable);
 			return clone;
 		}

@@ -30,7 +30,7 @@ using System.Text;
 namespace Mono.TextEditor.Highlighting
 {
 	/// <summary>
-	/// The basic inferace for all syntax modes
+	/// The basic interface for all syntax modes
 	/// </summary>
 	public interface ISyntaxMode
 	{
@@ -57,7 +57,7 @@ namespace Mono.TextEditor.Highlighting
 		/// <param name='length'>
 		/// The length of the text converted to chunks.
 		/// </param>
-		IEnumerable<Chunk> GetChunks (ColorSheme style, LineSegment line, int offset, int length);
+		IEnumerable<Chunk> GetChunks (ColorScheme style, LineSegment line, int offset, int length);
 	}
 }
 

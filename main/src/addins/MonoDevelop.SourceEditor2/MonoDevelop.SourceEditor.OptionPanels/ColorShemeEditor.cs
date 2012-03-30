@@ -73,7 +73,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		}
 		
 		TextEditor textEditor;
-		ColorSheme colorSheme;
+		ColorScheme colorSheme;
 		Gtk.TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(ChunkStyle), typeof(ColorMetaData));
 		string fileName;
 		HighlightingPanel panel;
@@ -267,7 +267,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 		}
 
-		void ApplyStyle (ColorSheme sheme)
+		void ApplyStyle (ColorScheme sheme)
 		{
 			sheme.Name = entryName.Text;
 			sheme.Description = entryDescription.Text;
@@ -361,7 +361,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.checkbuttonItalic.Sensitive = true;
 		}
 		
-		public void SetSheme (ColorSheme style)
+		public void SetSheme (ColorScheme style)
 		{
 			if (style == null)
 				throw new ArgumentNullException ("style");

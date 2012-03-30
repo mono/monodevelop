@@ -50,7 +50,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public virtual bool GetIsValid (ColorSheme style)
+		public virtual bool GetIsValid (ColorScheme style)
 		{
 			foreach (Keywords keyword in keywords) {
 				if (!keyword.GetIsValid (style)) {

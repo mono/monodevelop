@@ -60,15 +60,15 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			switch (result.Level) {
 			case Severity.None:
-				return Mono.TextEditor.Highlighting.ColorSheme.DefaultString;
+				return Mono.TextEditor.Highlighting.ColorScheme.DefaultString;
 			case Severity.Error:
-				return Mono.TextEditor.Highlighting.ColorSheme.ErrorUnderlineString;
+				return Mono.TextEditor.Highlighting.ColorScheme.ErrorUnderlineString;
 			case Severity.Warning:
-				return Mono.TextEditor.Highlighting.ColorSheme.WarningUnderlineString;
+				return Mono.TextEditor.Highlighting.ColorScheme.WarningUnderlineString;
 			case Severity.Suggestion:
-				return Mono.TextEditor.Highlighting.ColorSheme.SuggestionUnderlineString;
+				return Mono.TextEditor.Highlighting.ColorScheme.SuggestionUnderlineString;
 			case Severity.Hint:
-				return Mono.TextEditor.Highlighting.ColorSheme.HintUnderlineString;
+				return Mono.TextEditor.Highlighting.ColorScheme.HintUnderlineString;
 			default:
 				throw new System.ArgumentOutOfRangeException ();
 			}
