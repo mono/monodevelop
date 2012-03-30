@@ -27,11 +27,9 @@
 //
 
 using System;
-using System.Collections;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Text;
 using System.Text;
 using System.Collections.Generic;
 
@@ -128,6 +126,23 @@ namespace MonoDevelop.Ide
 		protected void OnRemoveClicked (object ob, EventArgs args)
 		{
 			MoveItem (listSelected, storeSelected, listAvail, storeAvail);
+			EnsureItemIsSelected ();
+		}
+
+		void EnsureItemIsSelected ()
+		{
+			TreeModel model;
+			TreeIter iter;
+			// if the last item is removed no item is selected.
+			if (!listSelected.Selection.GetSelected (out model, out iter)) {
+				// Select last item
+				if (storeSelected.GetIterFirst (out iter)) {
+					TreeIter last = iter;
+					while (storeSelected.IterNext (ref iter))
+						last = iter;
+					listSelected.Selection.SelectIter (last);
+				}
+			}
 		}
 		
 		void MoveItem (TreeView sourceList, ListStore sourceStore, TreeView targetList, ListStore targetStore)
