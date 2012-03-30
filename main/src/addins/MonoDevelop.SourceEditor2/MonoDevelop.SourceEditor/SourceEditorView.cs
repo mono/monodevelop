@@ -1,4 +1,4 @@
-﻿// SourceEditorView.cs
+// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -1099,6 +1099,8 @@ namespace MonoDevelop.SourceEditor
 		#region IEditableTextBuffer
 		public bool EnableUndo {
 			get {
+				if (widget == null)
+					return false;
 				return /*this.TextEditor.PreeditOffset < 0 &&*/ this.Document.CanUndo && widget.EditorHasFocus;
 			}
 		}
@@ -1122,6 +1124,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool EnableRedo {
 			get {
+				if (widget == null)
+					return false;
 				return /*this.TextEditor.PreeditOffset < 0 && */ this.Document.CanRedo && widget.EditorHasFocus;
 			}
 		}
