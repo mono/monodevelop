@@ -6,16 +6,16 @@
 	url         = "http://www.monodevelop.com"
 	description = "HeapBuddy Profiler Add-in"
 	category    = "Profiling"
-	version     = "2.9.3">
+	version     = "2.9.4">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Profiling.HeapBuddy.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.9.3"/>
-		<Addin id="Ide" version="2.9.3"/>
-		<Addin id="Profiling" version="2.9.3"/>
+		<Addin id="Core" version="2.9.4"/>
+		<Addin id="Ide" version="2.9.4"/>
+		<Addin id="Profiling" version="2.9.4"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/Profiling/ContextMenu/ProfilingPad/HeapBuddyProfilingSnapshotNode" name = "HeapBuddy snapshot node context menu">
