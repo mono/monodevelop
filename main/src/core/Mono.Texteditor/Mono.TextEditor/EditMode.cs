@@ -105,9 +105,11 @@ namespace Mono.TextEditor
 			HideMouseCursor ();
 
 			using (var undo = Document.OpenUndoGroup ()) {
-				textEditorData.EnsureCaretIsNotVirtual ();
 				textEditorData.DeleteSelectedText (textEditorData.IsSomethingSelected ? textEditorData.MainSelection.SelectionMode != SelectionMode.Block : true);
-				
+				// Needs to be called after delete text, delete text handles virtual caret postitions itself,
+				// but afterwards the virtual position may need to be restored.
+				textEditorData.EnsureCaretIsNotVirtual ();
+
 				char ch = (char)unicodeKey;
 				if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
 					LineSegment line = Document.GetLine (Caret.Line);
