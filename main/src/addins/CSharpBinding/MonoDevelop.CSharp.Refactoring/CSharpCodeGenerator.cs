@@ -37,6 +37,8 @@ using ICSharpCode.NRefactory;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Projects.Policies;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -350,7 +352,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				for (int i = 0; i < method.TypeParameters.Count; i++) {
 					if (i > 0)
 						result.Append (", ");
-					var p = method.TypeParameters[i];
+					var p = method.TypeParameters [i];
 					result.Append (p.Name);
 				}
 				result.Append (">");
@@ -395,14 +397,14 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("class");
 						constraintCount++;
 					}
-//					bool hadInterfaces = false;
+					//					bool hadInterfaces = false;
 					foreach (var c in p.DirectBaseTypes.Where (validBaseType)) {
 						if (constraintCount != 0)
 							result.Append (", ");
 						constraintCount++;
 						AppendReturnType (result, options, c);
-//						if (c.Kind == TypeKind.Interface)
-//							hadInterfaces = true;
+						//						if (c.Kind == TypeKind.Interface)
+						//							hadInterfaces = true;
 					}
 				}
 			}
@@ -447,27 +449,53 @@ namespace MonoDevelop.CSharp.Refactoring
 				} else if (method.IsAbstract || !(method.IsVirtual || method.IsOverride) || method.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 					AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
 				} else {
+					bool skipBody = false;
+					// Analyze if the body consists just of a single throw instruction
+					// See: Bug 1373 - overriding [Model] class methods shouldn't insert base.Methods
+					// TODO: Extend this to user defined code.
+					try {
+						if (method.Region.FileName == null) {
+							var asm = AssemblyDefinition.ReadAssembly (method.ParentAssembly.UnresolvedAssembly.Location);
+							foreach (var type in asm.MainModule.Types) {
+								if (type.FullName != method.DeclaringType.FullName)
+									continue;
+								foreach (var m  in type.Resolve ().Methods) {
+									if (m.HasBody && m.Name == method.Name) {
+										if (m.Body.Instructions.Count == 2) {
+											if (m.Body.Instructions [1].OpCode == OpCodes.Throw) {
+												skipBody = true;
+												break;
+											}
+										}
+									}
+								}
+							}
+						}
+					} catch (Exception) {
+					}
 					AppendIndent (result);
 					bodyStartOffset = result.Length;
-					if (method.ReturnType.ReflectionName != typeof(void).FullName)
-						result.Append ("return ");
-					result.Append ("base.");
-					result.Append (method.Name);
-					if (Policy.BeforeMethodCallParentheses)
-						result.Append (" ");
-					result.Append ("(");
-					for (int i = 0; i < method.Parameters.Count; i++) {
-						if (i > 0)
-							result.Append (", ");
-						
-						var p = method.Parameters[i];
-						if (p.IsOut)
-							result.Append ("out ");
-						if (p.IsRef)
-							result.Append ("ref ");
-						result.Append (p.Name);
+					if (!skipBody) {
+						if (method.ReturnType.ReflectionName != typeof(void).FullName)
+							result.Append ("return ");
+						result.Append ("base.");
+						result.Append (method.Name);
+						if (Policy.BeforeMethodCallParentheses)
+							result.Append (" ");
+						result.Append ("(");
+						for (int i = 0; i < method.Parameters.Count; i++) {
+							if (i > 0)
+								result.Append (", ");
+							
+							var p = method.Parameters [i];
+							if (p.IsOut)
+								result.Append ("out ");
+							if (p.IsRef)
+								result.Append ("ref ");
+							result.Append (p.Name);
+						}
+						result.Append (");");
 					}
-					result.Append (");");
 					bodyEndOffset = result.Length;
 					AppendLine (result);
 				}

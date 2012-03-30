@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -84,6 +84,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public bool Equals(TypePair other)
 			{
+				if (this.FromType == null || this.ToType == null || other.FromType == null || other.ToType == null)
+					return false;
 				return this.FromType.Equals(other.FromType) && this.ToType.Equals(other.ToType);
 			}
 			
