@@ -160,8 +160,8 @@ namespace Mono.TextEditor
 				this.document.Folded += HandleTextEditorDataDocumentFolded;
 				this.document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
 
-				this.document.splitter.LineInserted += HandleDocumentsplitterhandleLineInserted;
-				this.document.splitter.LineRemoved += HandleDocumentsplitterhandleLineRemoved;
+				this.document.Splitter.LineInserted += HandleDocumentsplitterhandleLineInserted;
+				this.document.Splitter.LineRemoved += HandleDocumentsplitterhandleLineRemoved;
 			}
 		}
 
@@ -374,7 +374,7 @@ namespace Mono.TextEditor
 		public int Replace (int offset, int count, string value)
 		{
 			string formattedString = FormatString (offset, value);
-			((IBuffer)document).Replace (offset, count, formattedString);
+			document.Replace (offset, count, formattedString);
 			return formattedString.Length;
 		}
 			
@@ -430,8 +430,8 @@ namespace Mono.TextEditor
 			document.Folded -= HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated -= HandleTextEditorDataDocumentFoldTreeUpdated;
 			
-			document.splitter.LineInserted -= HandleDocumentsplitterhandleLineInserted;
-			document.splitter.LineRemoved -= HandleDocumentsplitterhandleLineRemoved;
+			document.Splitter.LineInserted -= HandleDocumentsplitterhandleLineInserted;
+			document.Splitter.LineRemoved -= HandleDocumentsplitterhandleLineRemoved;
 			
 			document = null;
 		}

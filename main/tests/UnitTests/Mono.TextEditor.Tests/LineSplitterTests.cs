@@ -64,7 +64,7 @@ namespace Mono.TextEditor.Tests
 			splitter.TextReplaced (null, new DocumentChangeEventArgs (0, "", buffer.Text));
 			
 			LineSegment lastLine = splitter.Get (2);
-			splitter.TextReplaced (null, new DocumentChangeEventArgs (lastLine.Offset, buffer.GetTextAt (lastLine), ""));
+			splitter.TextReplaced (null, new DocumentChangeEventArgs (lastLine.Offset, buffer.GetTextAt (lastLine.Offset, lastLine.Length), ""));
 			
 			Assert.AreEqual (3, splitter.Count);
 			

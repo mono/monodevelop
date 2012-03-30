@@ -340,7 +340,7 @@ namespace Mono.TextEditor
 			imContext.SurroundingDeleted += delegate (object o, SurroundingDeletedArgs args) {
 				//FIXME: UTF16 surrogates handling for offset and NChars? only matters for astral plane
 				var line = Document.GetLine (Caret.Line);
-				((IBuffer)Document).Remove (line.Offset + args.Offset, args.NChars);
+				Document.Remove (line.Offset + args.Offset, args.NChars);
 				args.RetVal = true;
 			};
 			

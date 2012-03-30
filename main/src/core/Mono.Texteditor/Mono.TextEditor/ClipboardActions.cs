@@ -298,14 +298,14 @@ namespace Mono.TextEditor
 							int col1 = curLine.GetLogicalColumn (data, startCol) - 1;
 							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol) - 1, curLine.EditableLength);
 							if (col1 < col2) {
-								((IBuffer)copiedDocument).Insert (copiedDocument.Length, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
-								((IBuffer)monoDocument).Insert (monoDocument.Length, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
+								copiedDocument.Insert (copiedDocument.Length, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
+								monoDocument.Insert (monoDocument.Length, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
 							}
 							if (lineNr < selection.MaxLine) {
 								// Clipboard line end needs to be system dependend and not the document one.
-								((IBuffer)copiedDocument).Insert (copiedDocument.Length, Environment.NewLine);
+								copiedDocument.Insert (copiedDocument.Length, Environment.NewLine);
 								// \r in mono document stands for block selection line end.
-								((IBuffer)monoDocument).Insert (monoDocument.Length, "\r");
+								monoDocument.Insert (monoDocument.Length, "\r");
 							}
 						}
 						line = data.Document.GetLine (selection.MinLine);

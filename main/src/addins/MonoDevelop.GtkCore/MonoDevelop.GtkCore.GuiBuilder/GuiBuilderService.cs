@@ -568,7 +568,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					bool isBlank, isBracket;
 					CheckLine (doc, line, out isBlank, out isBracket);
 					if (isBlank && previousWasBlank && line.Length > 0) {
-						((Mono.TextEditor.IBuffer)doc).Remove (line.Offset, line.Length);
+						doc.Remove (line.Offset, line.Length);
 						i--;
 					}
 					previousWasBlank = isBlank || isBracket;

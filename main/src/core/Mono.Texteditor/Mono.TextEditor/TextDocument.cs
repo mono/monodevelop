@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 	public class TextDocument : AbstractAnnotatable, IBuffer, ICSharpCode.NRefactory.Editor.IDocument
 	{
 		readonly IBuffer buffer;
-		internal readonly ILineSplitter splitter;
+		readonly ILineSplitter splitter;
 
 		ISyntaxMode syntaxMode = null;
 
@@ -57,7 +57,7 @@ namespace Mono.TextEditor
 			set {
 				if (mimeType != value) {
 					mimeType = value;
-					this.SyntaxMode = SyntaxModeService.GetSyntaxMode (this);
+					SyntaxMode = SyntaxModeService.GetSyntaxMode (this);
 				}
 			}
 		}
@@ -71,7 +71,13 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-		
+
+		internal ILineSplitter Splitter {
+			get {
+				return splitter;
+			}
+		}
+
 		public ISyntaxMode SyntaxMode {
 			get {
 				return syntaxMode ?? new SyntaxMode (this);
@@ -119,12 +125,11 @@ namespace Mono.TextEditor
 		public TextDocument () : this(new GapBuffer (), new LineSplitter ())
 		{
 		}
-		
+
 		public TextDocument (string text) : this()
 		{
 			Text = text;
 		}
-
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
@@ -134,7 +139,7 @@ namespace Mono.TextEditor
 				ReadOnly = true
 			};
 		}
-		
+
 		~TextDocument ()
 		{
 			if (foldSegmentWorker != null) {
@@ -163,40 +168,40 @@ namespace Mono.TextEditor
 		
 		public string Text {
 			get {
-				return this.buffer.Text;
+				return buffer.Text;
 			}
 			set {
 				if (!SuppressHighlightUpdate)
-					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
+					SyntaxModeService.WaitUpdate (this);
 				var args = new DocumentChangeEventArgs (0, Text, value);
-				this.OnTextReplacing (args);
-				this.buffer.Text = value;
+				OnTextReplacing (args);
+				buffer.Text = value;
 				splitter.Initalize (value);
 				ClearFoldSegments ();
-				this.OnTextReplaced (args);
-				this.OnTextSet (EventArgs.Empty);
-				this.CommitUpdateAll ();
-				this.ClearUndoBuffer ();
+				OnTextReplaced (args);
+				OnTextSet (EventArgs.Empty);
+				CommitUpdateAll ();
+				ClearUndoBuffer ();
 				versionProvider = new TextSourceVersionProvider ();
 			}
 		}
 
-		void IBuffer.Insert (int offset, string text)
+		public void Insert (int offset, string text)
 		{
-			((IBuffer)this).Replace (offset, 0, text);
+			Replace (offset, 0, text);
 		}
 		
-		void IBuffer.Remove (int offset, int count)
+		public void Remove (int offset, int count)
 		{
-			((IBuffer)this).Replace (offset, count, null);
+			Replace (offset, count, null);
 		}
 		
-		void IBuffer.Remove (TextSegment segment)
+		public void Remove (TextSegment segment)
 		{
-			((IBuffer)this).Remove (segment.Offset, segment.Length);
+			Remove (segment.Offset, segment.Length);
 		}
 
-		void IBuffer.Replace (int offset, int count, string value)
+		public void Replace (int offset, int count, string value)
 		{
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException ("offset", "must be > 0, was: " + offset);
@@ -205,24 +210,13 @@ namespace Mono.TextEditor
 			if (count < 0)
 				throw new ArgumentOutOfRangeException ("count", "must be > 0, was: " + count);
 
-			if (atomicUndoLevel == 0) {
-				if (this.syntaxMode != null && !SuppressHighlightUpdate)
-					SyntaxModeService.WaitUpdate (this);
-			}
 			InterruptFoldWorker ();
-			//			Mono.TextEditor.Highlighting.SyntaxModeService.WaitForUpdate (true);
-			//			Debug.Assert (count >= 0);
-			//			Debug.Assert (0 <= offset && offset + count <= Length);
+			
 			int oldLineCount = this.LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
 			OnTextReplacing (args);
 			value = args.InsertedText;
-			/* insert/repla
-			lock (syncObject) {
-				int endOffset = offset + count;
-				foldSegments = new List<FoldSegment> (foldSegments.Where (s => (s.Offset < offset || s.Offset >= endOffset) && 
-				                                                               (s.EndOffset <= offset || s.EndOffset >= endOffset)));
-			}*/	
+
 			UndoOperation operation = null;
 			if (!isInUndo) {
 				operation = new UndoOperation (args);
@@ -247,7 +241,7 @@ namespace Mono.TextEditor
 				operation.Setup (this, args);
 			
 			if (oldLineCount != LineCount)
-				this.CommitLineToEndUpdate (this.OffsetToLocation (offset).Line);
+				CommitLineToEndUpdate (OffsetToLocation (offset).Line);
 		}
 		
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -490,8 +484,8 @@ namespace Mono.TextEditor
 			internal void Setup (TextDocument doc, DocumentChangeEventArgs args)
 			{
 				if (args != null) {
-					this.startOffset = args.Offset;
-					this.length = args.InsertionLength;
+					startOffset = args.Offset;
+					length = args.InsertionLength;
 				}
 			}
 			
@@ -506,13 +500,13 @@ namespace Mono.TextEditor
 			
 			public virtual void Undo (TextDocument doc)
 			{
-				((IBuffer)doc).Replace (args.Offset, args.InsertionLength, args.RemovedText);
+				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText);
 				OnUndoDone ();
 			}
 			
 			public virtual void Redo (TextDocument doc)
 			{
-				((IBuffer)doc).Replace (args.Offset, args.RemovalLength, args.InsertedText);
+				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText);
 				OnRedoDone ();
 			}
 			
@@ -1662,22 +1656,12 @@ namespace Mono.TextEditor
 
 		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text)
 		{
-			((IBuffer)this).Insert (offset, text);
+			Insert (offset, text);
 		}
 
 		public void Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType defaultAnchorMovementType)
 		{
-			((IBuffer)this).Insert (offset, text);
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.Remove (int offset, int length)
-		{
-			((IBuffer)this).Remove (offset, length);
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.Replace (int offset, int length, string newText)
-		{
-			((IBuffer)this).Replace (offset, length, newText);
+			Insert (offset, text);
 		}
 
 		void ICSharpCode.NRefactory.Editor.IDocument.StartUndoableAction ()
@@ -1693,21 +1677,6 @@ namespace Mono.TextEditor
 		ICSharpCode.NRefactory.Editor.ITextAnchor ICSharpCode.NRefactory.Editor.IDocument.CreateAnchor (int offset)
 		{
 			throw new NotImplementedException ();
-		}
-
-		string ICSharpCode.NRefactory.Editor.IDocument.Text {
-			get {
-				return Text;
-			}
-			set {
-				Text = value;
-			}
-		}
-
-		int ICSharpCode.NRefactory.Editor.IDocument.LineCount {
-			get {
-				return LineCount;
-			}
 		}
 		#endregion
 
@@ -1731,7 +1700,7 @@ namespace Mono.TextEditor
 
 		public System.IO.TextReader CreateReader ()
 		{
-			return new BufferedTextReader (this.buffer);
+			return new BufferedTextReader (buffer);
 		}
 
 		public System.IO.TextReader CreateReader (int offset, int length)

@@ -86,13 +86,13 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		public int InsertText (int position, string text)
 		{
-			((IBuffer)document).Insert (position, text);
+			document.Insert (position, text);
 			return text.Length;
 		}
 		
 		public void DeleteText (int position, int length)
 		{
-			((IBuffer)document).Replace (position, length, "");
+			document.Replace (position, length, "");
 		}
 		
 		public int Length {

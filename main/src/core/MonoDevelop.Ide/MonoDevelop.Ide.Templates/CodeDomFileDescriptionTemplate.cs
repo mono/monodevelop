@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Templates
 				for (int i = 1; i <= doc.LineCount; i++) {
 					Mono.TextEditor.LineSegment line = doc.GetLine (i);
 					if (IsBlankLine (doc, line) && line.Length > 0) {
-						((Mono.TextEditor.IBuffer)doc).Remove (line.Offset, line.Length);
+						doc.Remove (line.Offset, line.Length);
 						i--;
 						continue;
 					}

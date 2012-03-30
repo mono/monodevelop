@@ -41,15 +41,10 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-		
-		void Insert (int offset, string value);
-		void Remove (int offset, int count);
-		void Remove (TextSegment segment);
 
 		void Replace (int offset, int count, string value);
 		
 		string GetTextAt (int offset, int count);
-		string GetTextAt (TextSegment segment);
 		char GetCharAt (int offset);
 		
 		IEnumerable<int> SearchForward (string pattern, int startIndex);

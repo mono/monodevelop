@@ -26,21 +26,6 @@ namespace Mono.TextEditor
 			set { buffer = value; }
 		}
 
-		void IBuffer.Insert (int offset, string value)
-		{
-			throw new NotSupportedException ("Operation not supported on this buffer.");
-		}
-
-		void IBuffer.Remove (int offset, int count)
-		{
-			throw new NotSupportedException ("Operation not supported on this buffer.");
-		}
-
-		void IBuffer.Remove (TextSegment segment)
-		{
-			throw new NotSupportedException ("Operation not supported on this buffer.");
-		}
-
 		void IBuffer.Replace (int offset, int count, string value)
 		{
 			throw new NotSupportedException ("Operation not supported on this buffer.");
@@ -49,11 +34,6 @@ namespace Mono.TextEditor
 		string IBuffer.GetTextAt (int offset, int count)
 		{
 			return buffer.Substring (offset, count);
-		}
-
-		string IBuffer.GetTextAt (TextSegment segment)
-		{
-			return buffer.Substring (segment.Offset, segment.Length);
 		}
 
 		char IBuffer.GetCharAt (int offset)

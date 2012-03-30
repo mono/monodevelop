@@ -113,7 +113,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var doc = new Mono.TextEditor.TextDocument (content);
 			for (int i = 1; i + 1 <= doc.LineCount; i++) {
 				if (IsBlankLine (doc, i) && IsBlankLine (doc, i + 1)) {
-					((IBuffer)doc).Remove (doc.GetLine (i));
+					doc.Remove (doc.GetLine (i));
 					i--;
 					continue;
 				}
@@ -129,7 +129,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (lineText == null)
 					break;
 				if (lineText.StartsWith ("//")) {
-					((IBuffer)doc).Remove (doc.GetLine (1));
+					doc.Remove (doc.GetLine (1));
 					continue;
 				}
 				break;

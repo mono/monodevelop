@@ -74,7 +74,7 @@ namespace Mono.TextEditor.Tests
 			"\n";
 			
 			document.Text = top;
-			((IBuffer)document).Insert (top.Length, text);
+			document.Insert (top.Length, text);
 			Assert.AreEqual (top + text, document.Text);
 		}
 		
@@ -95,10 +95,10 @@ namespace Mono.TextEditor.Tests
 			"1\n" +
 			"\n";
 			document.Text = top + testText;
-			((IBuffer)document).Remove (0, top.Length);
+			document.Remove (0, top.Length);
 			Assert.AreEqual (document.Text, testText);
 			
-			((IBuffer)document).Remove (0, document.Length);
+			document.Remove (0, document.Length);
 			LineSegment line = document.GetLine (1);
 			Assert.AreEqual (0, line.Offset);
 			Assert.AreEqual (0, line.Length);
@@ -116,7 +116,7 @@ namespace Mono.TextEditor.Tests
 			
 			Assert.AreEqual (document.GetLine (1).Length, document.Length);
 			
-			((IBuffer)document).Remove(0, document.Length);
+			document.Remove(0, document.Length);
 			
 			LineSegment line = document.GetLine (1);
 			Assert.AreEqual(0, line.Offset);
@@ -135,7 +135,7 @@ namespace Mono.TextEditor.Tests
 			
 			document.Text = top;
 			
-			((IBuffer)document).Insert (top.Length, testText);
+			document.Insert (top.Length, testText);
 			
 			LineSegment line = document.GetLine (document.LineCount);
 			
@@ -148,7 +148,7 @@ namespace Mono.TextEditor.Tests
 		{
 			var document = new Mono.TextEditor.TextDocument ();
 			for (int i = 0; i < 100; i++) {
-				((IBuffer)document).Insert (0, new string ('c', i) + Environment.NewLine);
+				document.Insert (0, new string ('c', i) + Environment.NewLine);
 			}
 			Assert.AreEqual (101, document.LineCount);
 			for (int i = 0; i < 100; i++) {
@@ -159,7 +159,7 @@ namespace Mono.TextEditor.Tests
 			
 			for (int i = 0; i < 100; i++) {
 				LineSegment line = document.GetLine (1);
-				((IBuffer)document).Remove (line.EditableLength, line.DelimiterLength);
+				document.Remove (line.EditableLength, line.DelimiterLength);
 			}
 			Assert.AreEqual (1, document.LineCount);
 		}
