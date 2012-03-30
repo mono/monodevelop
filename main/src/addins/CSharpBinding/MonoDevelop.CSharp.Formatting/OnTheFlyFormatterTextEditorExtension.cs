@@ -66,16 +66,31 @@ namespace MonoDevelop.CSharp.Formatting
 			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
 			if (OnTheFlyFormatting) {
 				int i = insertionOffset + insertedChars;
-				while (i > insertionOffset) {			
-					char ch = Document.Editor.GetCharAt (i - 1);
-					if (ch != ' ' && ch != '\t') 
-						break;
-					i--;
+				bool foundNonWsFollowUp = false;
+
+				var line = Document.Editor.GetLineByOffset (i);
+				if (line != null) {
+					for (int j = 0; j < line.Offset + line.EditableLength; j++) {
+						var ch = Document.Editor.GetCharAt (j);
+						if (ch != ' ' && ch != '\t') {
+							foundNonWsFollowUp = true;
+							break;
+						}
+					}
 				}
-				int delta = insertionOffset + insertedChars - i;
-				if (delta > 0) {
-					Editor.Caret.Offset -= delta;
-					Editor.Remove (insertionOffset + insertedChars - delta, delta);
+
+				if (!foundNonWsFollowUp) {
+					while (i > insertionOffset) {
+						char ch = Document.Editor.GetCharAt (i - 1);
+						if (ch != ' ' && ch != '\t') 
+							break;
+						i--;
+					}
+					int delta = insertionOffset + insertedChars - i;
+					if (delta > 0) {
+						Editor.Caret.Offset -= delta;
+						Editor.Remove (insertionOffset + insertedChars - delta, delta);
+					}
 				}
 			}
 
