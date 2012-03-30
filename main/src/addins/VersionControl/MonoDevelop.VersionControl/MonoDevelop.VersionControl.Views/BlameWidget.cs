@@ -228,7 +228,7 @@ namespace MonoDevelop.VersionControl.Views
 			editor.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top, childRectangle.Width - overviewWidth, childRectangle.Height));
 		
 			if (hScrollBar.Visible) {
-				hScrollBar.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Bottom, childRectangle.Width, hheight));
+				hScrollBar.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Y + childRectangle.Height, childRectangle.Width, hheight));
 				hScrollBar.Value = System.Math.Max (System.Math.Min (hAdjustment.Upper - hAdjustment.PageSize, hScrollBar.Value), hAdjustment.Lower);
 			}
 		}

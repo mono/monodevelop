@@ -31,7 +31,9 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+
 using MonoDevelop.Components.Commands.ExtensionNodes;
+using Mono.TextEditor;
 using Mono.Addins;
 
 namespace MonoDevelop.Components.Commands
@@ -42,9 +44,9 @@ namespace MonoDevelop.Components.Commands
 		Gtk.Window rootWidget;
 		KeyBindingManager bindings;
 		Gtk.AccelGroup accelGroup;
-		string mode;
 		uint statusUpdateWait = 500;
 		DateTime lastUserInteraction;
+		KeyboardShortcut[] chords;
 		
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
@@ -249,17 +251,33 @@ namespace MonoDevelop.Components.Commands
 			return cset;
 		}
 		
-		bool CanUseBinding (string mode, string binding)
+		bool CanUseBinding (KeyboardShortcut[] chords, KeyboardShortcut[] accels, out KeyBinding binding)
 		{
-			if (!bindings.BindingExists (binding))
-				return false;
-			
-			if (mode == null && bindings.ModeExists (binding)) {
-				// binding is a simple accel and is registered as a mode... modes take precedence
-				return false;
+			if (chords != null) {
+				foreach (var chord in chords) {
+					foreach (var accel in accels) {
+						binding = new KeyBinding (chord, accel);
+						if (bindings.BindingExists (binding))
+							return true;
+					}
+				}
+			} else {
+				foreach (var accel in accels) {
+					if (bindings.ChordExists (accel)) {
+						// Chords take precedence over bindings with the same shortcut.
+						binding = new KeyBinding (null, accel);
+						continue;
+					}
+					
+					binding = new KeyBinding (null, accel);
+					if (bindings.BindingExists (binding))
+						return true;
+				}
 			}
 			
-			return true;
+			binding = null;
+			
+			return false;
 		}
 		
 		bool isEnabled = true;
@@ -285,7 +303,7 @@ namespace MonoDevelop.Components.Commands
 			RegisterUserInteraction ();
 			
 			bool complete;
-			string accel = KeyBindingManager.AccelFromKey (e.Event, out complete);
+			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (e.Event, out complete);
 			
 			if (!complete) {
 				// incomplete accel
@@ -293,25 +311,20 @@ namespace MonoDevelop.Components.Commands
 				return;
 			}
 			
-			string binding = KeyBindingManager.Binding (mode, accel);
 			List<Command> commands = null;
+			KeyBinding binding;
 			
-			if (CanUseBinding (mode, binding)) {
+			if (CanUseBinding (chords, accels, out binding)) {
 				commands = bindings.Commands (binding);
 				e.RetVal = true;
-				mode = null;
-			} else if (mode != null && CanUseBinding (null, accel)) {
-				// fall back to accel
-				commands = bindings.Commands (accel);
+				chords = null;
+			} else if (bindings.AnyChordExists (accels)) {
 				e.RetVal = true;
-				mode = null;
-			} else if (bindings.ModeExists (accel)) {
-				e.RetVal = true;
-				mode = accel;
+				chords = accels;
 				return;
 			} else {
 				e.RetVal = false;
-				mode = null;
+				chords = null;
 				NotifyKeyPressed (e);
 				return;
 			}
@@ -330,13 +343,14 @@ namespace MonoDevelop.Components.Commands
 			// The command has not been handled.
 			// If there is at least a handler that sets the bypass flag, allow gtk to execute the default action
 			
-			if (commands.Count > 0 && !bypass)
+			if (commands.Count > 0 && !bypass) {
 				e.RetVal = true;
-			else {
+			} else {
 				e.RetVal = false;
 				NotifyKeyPressed (e);
 			}
-			mode = null;
+			
+			chords = null;
 		}
 		
 		void NotifyKeyPressed (Gtk.KeyPressEventArgs e)
@@ -1261,13 +1275,16 @@ namespace MonoDevelop.Components.Commands
 				return false;
 			
 			string accel = cmd.AccelKey;
-			if (accel == null)
+			KeyBinding binding;
+			
+			if (accel == null || !KeyBinding.TryParse (accel, out binding))
 				return DispatchCommand (commandId, dataItem, initialTarget, CommandSource.Keybinding);
 			
-			List<Command> list = bindings.Commands (accel);
-			if (list == null || list.Count == 1)
+			List<Command> list = bindings.Commands (binding);
+			if (list == null || list.Count == 1) {
 				// The command is not overloaded, so it can be handled normally.
 				return DispatchCommand (commandId, dataItem, initialTarget, CommandSource.Keybinding);
+			}
 			
 			CommandTargetRoute targetChain = new CommandTargetRoute (initialTarget);
 			

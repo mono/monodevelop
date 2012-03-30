@@ -473,8 +473,9 @@ namespace MonoDevelop.VersionControl.Views
 				Rectangle editorRectangle = new Rectangle (childRectangle.X + (editorWidth + middleAreaWidth) * i  , childRectangle.Top, editorWidth, childRectangle.Height);
 				editors[i].SizeAllocate (editorRectangle);
 
-				if (hScrollBarVisible)
-					hScrollBars[i].SizeAllocate (new Rectangle (editorRectangle.X, editorRectangle.Bottom, editorRectangle.Width, hheight));
+				if (hScrollBarVisible) {
+					hScrollBars[i].SizeAllocate (new Rectangle (editorRectangle.X, editorRectangle.Y + editorRectangle.Height, editorRectangle.Width, hheight));
+				}
 
 				if (headerWidgets != null)
 					headerWidgets[i].SizeAllocate (new Rectangle (editorRectangle.X, allocation.Y + 1, editorRectangle.Width, headerSize));

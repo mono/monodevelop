@@ -374,7 +374,7 @@ namespace Mono.TextEditor
 		{
 			public Gdk.Key Key;
 			public Gdk.ModifierType State;
-			public KeyboardShortcut[] Accels;
+			public KeyboardShortcut[] Shortcuts;
 		}
 		
 		//introduced in GTK 2.20
@@ -392,9 +392,9 @@ namespace Mono.TextEditor
 		/// <param name='evt'>The raw key event</param>
 		/// <param name='key'>The composed key</param>
 		/// <param name='mod'>The composed modifiers</param>
-		/// <param name='accels'>All the key/modifier decompositions that can be used as accelerators</param>
+		/// <param name='shortcuts'>All the key/modifier decompositions that can be used as accelerators</param>
 		public static void MapKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType state,
-			out KeyboardShortcut[] accels)
+		                            out KeyboardShortcut[] shortcuts)
 		{
 			//this uniquely identifies the raw key
 			ulong id;
@@ -403,12 +403,12 @@ namespace Mono.TextEditor
 			}
 			
 			MappedKeys mapped;
-			if (!mappedKeys.TryGetValue (id, out mapped)) {
+			if (!mappedKeys.TryGetValue (id, out mapped))
 				mappedKeys[id] = mapped = MapKeys (evt);
-			}
-			accels = mapped.Accels;
-			key = mapped.Key;
+			
+			shortcuts = mapped.Shortcuts;
 			state = mapped.State;
+			key = mapped.Key;
 		}
 		
 		static MappedKeys MapKeys (Gdk.EventKey evt)
@@ -449,6 +449,10 @@ namespace Mono.TextEditor
 			if ((modifier & Gdk.ModifierType.ShiftMask) != 0) {
 				keymap.TranslateKeyboardState (evt.HardwareKeycode, Gdk.ModifierType.ShiftMask, 0,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
+				
+				// Prevent consumption of non-Shift modifiers (that we didn't even provide!)
+				consumedModifiers &= Gdk.ModifierType.ShiftMask;
+				
 				var m = FixMacModifiers ((modifier & ~consumedModifiers), grp) & accelMods;
 				AddIfNotDuplicate (accelList, new KeyboardShortcut ((Gdk.Key)keyval, m));
 			}
@@ -457,10 +461,10 @@ namespace Mono.TextEditor
 			if (grp == 1) {
 				TranslateKeyboardState (evt.HardwareKeycode, modifier & ~Gdk.ModifierType.ShiftMask, 1,
 					out keyval, out effectiveGroup, out level, out consumedModifiers);
-				//somehow GTK on mac manages to consume a shift that we don't even pass to it
-				if (oldMacKeyHacks) {
-					consumedModifiers &= ~Gdk.ModifierType.ShiftMask;
-				}
+				
+				// Prevent consumption of Shift modifier (that we didn't even provide!)
+				consumedModifiers &= ~Gdk.ModifierType.ShiftMask;
+				
 				var m = FixMacModifiers ((modifier & ~consumedModifiers), 0) & accelMods;
 				AddIfNotDuplicate (accelList, new KeyboardShortcut ((Gdk.Key)keyval, m));
 			}
@@ -476,7 +480,7 @@ namespace Mono.TextEditor
 			//and also allow the fully mapped key as an accel
 			AddIfNotDuplicate (accelList, new KeyboardShortcut (mapped.Key, mapped.State & accelMods));
 			
-			mapped.Accels = accelList.ToArray ();
+			mapped.Shortcuts = accelList.ToArray ();
 			return mapped;
 		}
 		
@@ -742,39 +746,36 @@ namespace Mono.TextEditor
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
 	}
 	
-	public struct KeyboardShortcut : IEquatable<KeyboardShortcut>
+	public class KeyboardShortcut : IEquatable<KeyboardShortcut>
 	{
-		Gdk.Key key;
-		Gdk.ModifierType mod;
-		
 		public KeyboardShortcut (Gdk.Key key, Gdk.ModifierType mod)
 		{
-			this.key = key;
-			this.mod = mod;
+			Modifier = mod;
+			Key = key;
 		}
 		
 		public Gdk.Key Key {
-			get { return key; }
+			get; private set;
 		}
 		
 		public Gdk.ModifierType Modifier {
-			get { return mod; }
+			get; private set;
 		}
 		
 		public override bool Equals (object obj)
 		{
-			return obj is KeyboardShortcut && this.Equals ((KeyboardShortcut)obj);
+			return obj is KeyboardShortcut && this.Equals ((KeyboardShortcut) obj);
 		}
 		
 		public override int GetHashCode ()
 		{
 			//FIXME: we're only using a few bits of mod and mostly the lower bits of key - distribute it better
-			return (int)key ^ (int)mod;
+			return (int) Key ^ (int) Modifier;
 		}
 		
 		public bool Equals (KeyboardShortcut other)
 		{
-			return other.key == key && other.mod == mod;
+			return other.Key == Key && other.Modifier == Modifier;
 		}
 	}
 }
