@@ -1,4 +1,4 @@
-// 
+﻿// 
 // SyntaxMode.cs
 //  
 // Author:
@@ -682,6 +682,9 @@ namespace MonoDevelop.CSharp.Highlighting
 										symbols.Add (ss);
 								}
 							}
+							// Workaround for mcs defined symbol
+							if (configuration.TargetRuntime.RuntimeId == "Mono") 
+								symbols.Add ("__MonoCS__");
 						} else {
 							Console.WriteLine ("NO CONFIGURATION");
 						}
