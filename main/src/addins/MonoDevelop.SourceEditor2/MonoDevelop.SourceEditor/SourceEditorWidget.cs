@@ -1,4 +1,4 @@
-// SourceEditorWidget.cs
+﻿// SourceEditorWidget.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -838,31 +838,39 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#region Eol marker check
-		bool useIncorrectMarkers;
+		internal bool UseIncorrectMarkers { get; set; }
+		internal bool HasIncorrectEolMarker {
+			get {
+				var firstLine = Document.GetLine (1);
+				if (firstLine != null && firstLine.DelimiterLength > 0) {
+					string firstDelimiter = Document.GetTextAt (firstLine.EditableLength, firstLine.DelimiterLength);
+					return firstDelimiter != TextEditor.Options.DefaultEolMarker;
+				}
+				return false;
+			}
+		}
+
 		internal bool EnsureCorrectEolMarker (string fileName)
 		{
-			if (useIncorrectMarkers)
+			if (UseIncorrectMarkers)
 				return true;
-			var firstLine = Document.GetLine (1);
-			if (firstLine != null && firstLine.DelimiterLength > 0) {
-				string firstDelimiter = Document.GetTextAt (firstLine.EditableLength, firstLine.DelimiterLength);
-				if (firstDelimiter != TextEditor.Options.DefaultEolMarker) {
-					switch (DefaultSourceEditorOptions.Instance.LineEndingConversion) {
-					case LineEndingConversion.Ask:
-						ShowIncorretEolMarkers (fileName);
-						return false;
-					case LineEndingConversion.ConvertAlways:
-						ConvertLineEndings ();
-						return true;
-					default:
-						return true;
-					}
+
+			if (HasIncorrectEolMarker) {
+				switch (DefaultSourceEditorOptions.Instance.LineEndingConversion) {
+				case LineEndingConversion.Ask:
+					ShowIncorretEolMarkers (fileName, FileRegistry.HasMultipleIncorretEolMarkers);
+					return false;
+				case LineEndingConversion.ConvertAlways:
+					ConvertLineEndings ();
+					return true;
+				default:
+					return true;
 				}
 			}
 			return true;
 		}
 
-		void ConvertLineEndings ()
+		internal void ConvertLineEndings ()
 		{
 			string correctEol = TextEditor.Options.DefaultEolMarker;
 			var newText = new System.Text.StringBuilder ();
@@ -874,7 +882,7 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.Text = newText.ToString ();
 		}
 
-		void ShowIncorretEolMarkers (string fileName)
+		void ShowIncorretEolMarkers (string fileName, bool multiple)
 		{
 			RemoveMessageBar ();
 			
@@ -885,29 +893,42 @@ namespace MonoDevelop.SourceEditor
 					"Do you want to convert the line endings?",
 					EllipsizeMiddle (Document.FileName, 50)));
 				
-				Button b1 = new Button (GettextCatalog.GetString("_Convert"));
+				Button b1 = new Button (GettextCatalog.GetString ("_Convert"));
 				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);
 				b1.Clicked += delegate(object sender, EventArgs e) {
-					try {
-						ConvertLineEndings ();
-						view.Save (fileName, view.SourceEncoding);
-					} finally {
-						RemoveMessageBar ();
-						view.WorkbenchWindow.ShowNotification = false;
-					}
+					ConvertLineEndings ();
+					view.WorkbenchWindow.ShowNotification = false;
+					RemoveMessageBar ();
+					view.Save (fileName, view.SourceEncoding);
 				};
 				messageBar.ActionArea.Add (b1);
 				
-				Button b2 = new Button (GettextCatalog.GetString("_Keep line endings"));
+				Button b2 = new Button (GettextCatalog.GetString ("_Keep line endings"));
 				b2.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
 				b2.Clicked += delegate(object sender, EventArgs e) {
-					useIncorrectMarkers = true;
-					RemoveMessageBar ();
+					UseIncorrectMarkers = true;
 					view.WorkbenchWindow.ShowNotification = false;
-					
+					RemoveMessageBar ();
 					view.Save (fileName, view.SourceEncoding);
 				};
 				messageBar.ActionArea.Add (b2);
+
+				if (multiple) {
+					var b3 = new Button (GettextCatalog.GetString ("_Convert all files"));
+					b3.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+					b3.Clicked += delegate {
+						FileRegistry.ConvertLineEndingsInAllFiles ();
+					};
+					messageBar.ActionArea.Add (b3);
+	
+					var b4 = new Button (GettextCatalog.GetString ("_Keep in all files"));
+					b4.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
+					b4.Clicked += delegate {
+						FileRegistry.IgnoreLineEndingsInAllFiles ();
+					};
+					messageBar.ActionArea.Add (b4);
+				}
+
 			}
 			
 			vbox.PackStart (messageBar, false, false, CHILD_PADDING);
@@ -916,6 +937,11 @@ namespace MonoDevelop.SourceEditor
 
 			messageBar.QueueDraw ();
 			view.WorkbenchWindow.ShowNotification = true;
+			
+			// Ensure that one file with incorret EOL markers is shown.
+			var currentView = IdeApp.Workbench.ActiveDocument.PrimaryView as SourceEditorView;
+			if (currentView == null || !currentView.IsDirty || !currentView.SourceEditorWidget.HasIncorrectEolMarker || currentView.SourceEditorWidget.UseIncorrectMarkers)
+				view.WorkbenchWindow.SelectWindow ();
 		}
 		#endregion
 		public void ShowAutoSaveWarning (string fileName)

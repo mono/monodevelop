@@ -1,4 +1,4 @@
-// SourceEditorView.cs
+﻿// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -141,7 +141,6 @@ namespace MonoDevelop.SourceEditor
 				changedViews [0].SourceEditorWidget.ShowFileChangedWarning (false);
 			} else {
 				foreach (var view in changedViews) {
-					Console.WriteLine (view.ContentName);
 					view.SourceEditorWidget.ShowFileChangedWarning (true);
 				}
 				if (!changedViews.Contains (IdeApp.Workbench.ActiveDocument.PrimaryView as SourceEditorView))
@@ -166,5 +165,47 @@ namespace MonoDevelop.SourceEditor
 				view.WorkbenchWindow.ShowNotification = false;
 			}
 		}
+
+		#region EOL markers
+		public static bool HasMultipleIncorretEolMarkers {
+			get {
+				int count = 0;
+				foreach (var view in openFiles) {
+					if (!view.IsFile || !view.SourceEditorWidget.HasIncorrectEolMarker)
+						continue;
+					count++;
+					if (count > 1)
+						return true;
+				}
+				return false;
+			}
+		}
+
+		public static void ConvertLineEndingsInAllFiles ()
+		{
+			foreach (var view in openFiles) {
+				if (!view.IsFile || !view.SourceEditorWidget.HasIncorrectEolMarker)
+					continue;
+				
+				view.SourceEditorWidget.ConvertLineEndings ();
+				view.SourceEditorWidget.RemoveMessageBar ();
+				view.WorkbenchWindow.ShowNotification = false;
+				view.Save ();
+			}
+		}
+
+		public static void IgnoreLineEndingsInAllFiles ()
+		{
+			foreach (var view in openFiles) {
+				if (!view.IsFile || !view.SourceEditorWidget.HasIncorrectEolMarker)
+					continue;
+
+				view.SourceEditorWidget.UseIncorrectMarkers = true;
+				view.SourceEditorWidget.RemoveMessageBar ();
+				view.WorkbenchWindow.ShowNotification = false;
+				view.Save ();
+			}
+		}
+		#endregion
 	}
 } 

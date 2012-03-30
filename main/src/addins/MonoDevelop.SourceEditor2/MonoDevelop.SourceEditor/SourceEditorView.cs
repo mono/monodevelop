@@ -1,4 +1,4 @@
-// SourceEditorView.cs
+﻿// SourceEditorView.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -434,7 +434,10 @@ namespace MonoDevelop.SourceEditor
 					var writeText = Document.Text;
 					if (writeEncoding == null) {
 						writeEncoding = Encoding.UTF8;
-						writeBom = !Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
+						// Disabled. Shows up in the source control as diff, it's atm confusing for the users to see a change without
+						// changed files.
+						writeBom = false;
+//						writeBom =!Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
 					}
 					Mono.TextEditor.Utils.TextFileUtility.WriteText (fileName, writeText, writeEncoding, writeBom);
 				} catch (InvalidEncodingException) {
