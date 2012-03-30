@@ -70,7 +70,8 @@ REFERENCES = \
 	-r:$(PANGODIR)/pango-sharp.dll \
 	-r:$(GTKDIR)/gtk-sharp.dll \
 	-r:$(GDKDIR)/gdk-sharp.dll \
-	-r:$(GLIBDIR)/glib-sharp.dll
+	-r:$(GLIBDIR)/glib-sharp.dll \
+	-r:Mono.Posix.dll
 
 OPTIONS = \
 	--noframework --debug --optimize- --target:library -r:bin/FSharpBinding.Gui.dll --out:bin/FSharpBinding.dll

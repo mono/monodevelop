@@ -83,7 +83,7 @@ searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
 MDDIR=$RESULT
 echo "Successfully found MonoDevelop root directory." $MDDIR
 
-PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /opt/mono/lib/mono/2.0 )
+PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /opt/mono/lib/mono/2.0 /opt/fsharp/bin)
 searchpaths "F#" FSharp.Core.dll PATHS[@]
 FSDIR=$RESULT
 echo "Successfully found F# root directory." $FSDIR
