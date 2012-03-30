@@ -80,7 +80,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public MonoDevelop.SourceEditor.ExtensibleTextEditor TextEditor {
 			get {
-				return lastActiveEditor;
+				return lastActiveEditor ?? textEditor;
 			}
 		}
 		
@@ -756,6 +756,7 @@ namespace MonoDevelop.SourceEditor
 			this.mainsw.SetTextEditor (removedTextEditor);
 			this.mainsw.Vadjustment.Value = vadjustment; 
 			this.mainsw.Hadjustment.Value = hadjustment;
+			lastActiveEditor = textEditor;
 		}
 
 		
