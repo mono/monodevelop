@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DocGenerator.cs
 //  
 // Author:
@@ -384,45 +384,45 @@ namespace MonoDevelop.DocFood
 		void Init (IEntity member)
 		{
 			FillDocumentation (GetBaseDocumentation (member));
-//			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.EndLine > 1) {
-//				LineSegment start = data.Document.GetLine (member.Region.BeginLine);
-//				LineSegment end = data.Document.GetLine (member.BodyRegion.EndLine);
-//				if (start != null && end != null) {
-//					var result = provider.ParseFile ("class A {" + data.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset) + "}");
-//					result.AcceptVisitor (visitor, null);
-//				}
-//			}
+			//			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.EndLine > 1) {
+			//				LineSegment start = data.Document.GetLine (member.Region.BeginLine);
+			//				LineSegment end = data.Document.GetLine (member.BodyRegion.EndLine);
+			//				if (start != null && end != null) {
+			//					var result = provider.ParseFile ("class A {" + data.Document.GetTextAt (start.Offset, end.EndOffset - start.Offset) + "}");
+			//					result.AcceptVisitor (visitor, null);
+			//				}
+			//			}
 			foreach (var macro in DocConfig.Instance.Macros) {
 				tags.Add (macro.Key, macro.Value);
 			}
 			if (member.DeclaringTypeDefinition != null) {
-				tags["DeclaringType"] = "<see cref=\"" + member.DeclaringTypeDefinition.ReflectionName + "\"/>";
+				tags ["DeclaringType"] = "<see cref=\"" + member.DeclaringTypeDefinition.ReflectionName + "\"/>";
 				switch (member.DeclaringTypeDefinition.Kind) {
 				case TypeKind.Class:
-					tags["DeclaringTypeKind"] = "class";
+					tags ["DeclaringTypeKind"] = "class";
 					break;
 				case TypeKind.Delegate:
-					tags["DeclaringTypeKind"] = "delegate";
+					tags ["DeclaringTypeKind"] = "delegate";
 					break;
 				case TypeKind.Enum:
-					tags["DeclaringTypeKind"] = "enum";
+					tags ["DeclaringTypeKind"] = "enum";
 					break;
 				case TypeKind.Interface:
-					tags["DeclaringTypeKind"] = "interface";
+					tags ["DeclaringTypeKind"] = "interface";
 					break;
 				case TypeKind.Struct:
-					tags["DeclaringTypeKind"] = "struct";
+					tags ["DeclaringTypeKind"] = "struct";
 					break;
 				}
 			}
 			if (member is IMember)
-				tags["ReturnType"] = ((IMember)member).ReturnType != null ? "<see cref=\"" + ((IMember)member).ReturnType + "\"/>" : "";
-			tags["Member"] = "<see cref=\"" + member.Name+ "\"/>";
+				tags ["ReturnType"] = ((IMember)member).ReturnType != null ? "<see cref=\"" + ((IMember)member).ReturnType + "\"/>" : "";
+			tags ["Member"] = "<see cref=\"" + member.Name + "\"/>";
 
 			
 			if (member is IParameterizedMember) {
 				List<string> parameterNames = new List<string> (from p in ((IParameterizedMember)member).Parameters select p.Name);
-				tags["ParameterSentence"] = string.Join (" ", parameterNames.ToArray ());
+				tags ["ParameterSentence"] = string.Join (" ", parameterNames.ToArray ());
 				StringBuilder paramList = new StringBuilder ();
 				for (int i = 0; i < parameterNames.Count; i++) {
 					if (i > 0) {
@@ -432,22 +432,28 @@ namespace MonoDevelop.DocFood
 							paramList.Append (", ");
 						}
 					}
-					paramList.Append (parameterNames[i]);
+					paramList.Append (parameterNames [i]);
 				}
-				tags["ParameterList"] = paramList.ToString ();
+				tags ["ParameterList"] = paramList.ToString ();
 				for (int i = 0; i < ((IParameterizedMember)member).Parameters.Count; i++) {
-					tags["Parameter" + i +  ".Type"] = ((IParameterizedMember)member).Parameters[i].Type != null ? "<see cref=\"" + ((IParameterizedMember)member).Parameters[i].Type + "\"/>" : "";
-					tags["Parameter" + i +  ".Name"] = "<c>" + ((IParameterizedMember)member).Parameters[i].Name + "</c>";
+					tags ["Parameter" + i + ".Type"] = ((IParameterizedMember)member).Parameters [i].Type != null ? "<see cref=\"" + ((IParameterizedMember)member).Parameters [i].Type + "\"/>" : "";
+					tags ["Parameter" + i + ".Name"] = "<c>" + ((IParameterizedMember)member).Parameters [i].Name + "</c>";
 				}
 				
 				var property = member as IProperty;
 				if (property != null) {
-					if (property.CanGet && property.CanSet) {
-						tags["AccessText"] = "Gets or sets";
+					if (property.CanGet && property.CanSet && property.Getter.Accessibility != Accessibility.Private && property.Setter.Accessibility != Accessibility.Private) {
+						tags ["AccessText"] = "Gets or sets";
+					} else if (property.CanGet && property.Getter.Accessibility != Accessibility.Private) {
+						tags ["AccessText"] = "Gets";
+					} else if (property.Setter.Accessibility != Accessibility.Private) {
+						tags ["AccessText"] = "Sets";
+					} else if (property.CanGet && property.CanSet) {
+						tags ["AccessText"] = "Gets or sets";
 					} else if (property.CanGet) {
-						tags["AccessText"] = "Gets";
+						tags ["AccessText"] = "Gets";
 					} else {
-						tags["AccessText"] = "Sets";
+						tags ["AccessText"] = "Sets";
 					}
 				}
 			}
