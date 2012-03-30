@@ -267,7 +267,7 @@ namespace MonoDevelop.MacDev.Tests
 </PListScheme>");
 			
 			var key = scheme.GetKey ("keyname").Create ();
-			Assert.IsInstanceOf <PBoolean> (key, "#1");
+			IsInstanceOf <PBoolean> (key, "#1");
 			Assert.IsTrue (((PBoolean) key).Value, "#2");
 		}
 		
@@ -282,7 +282,7 @@ namespace MonoDevelop.MacDev.Tests
 			var obj = (PDictionary) scheme.Keys [0].Create ();
 			Assert.AreEqual (1, obj.Count, "#1");
 			Assert.IsTrue (obj.ContainsKey ("newNode"));
-			Assert.IsInstanceOf<PString> (obj ["newNode"], "#2");
+			IsInstanceOf<PString> (obj ["newNode"], "#2");
 		}
 		
 		[Test]
@@ -298,7 +298,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var obj = (PDictionary) scheme.Keys [0].Create ();
 			Assert.AreEqual (1, obj.Count, "1");
-			Assert.IsInstanceOf <PNumber> (obj ["key1"], "#2");
+			IsInstanceOf <PNumber> (obj ["key1"], "#2");
 			Assert.AreEqual (0, ((PNumber) obj ["key1"]).Value, "#3");
 		}
 		
@@ -314,7 +314,7 @@ namespace MonoDevelop.MacDev.Tests
 </PListScheme>");
 			
 			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PDictionary> (obj, "#1");
+			IsInstanceOf<PDictionary> (obj, "#1");
 			Assert.AreEqual (2, ((PDictionary)obj).Count, "#2");
 		}
 		
@@ -337,12 +337,12 @@ namespace MonoDevelop.MacDev.Tests
 </PListScheme>");
 			
 			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PDictionary> (obj, "#1");
+			IsInstanceOf<PDictionary> (obj, "#1");
 			
 			var dict = (PDictionary) obj;
 			Assert.AreEqual (2, dict.Count, "#2");
-			Assert.IsInstanceOf<PNumber> (dict ["key1"], "#3");
-			Assert.IsInstanceOf<PArray> (dict ["key2"], "#4");
+			IsInstanceOf<PNumber> (dict ["key1"], "#3");
+			IsInstanceOf<PArray> (dict ["key2"], "#4");
 			
 			var val1 = dict.Get<PNumber> ("key1");
 			Assert.AreEqual (5, val1.Value, "#5");
@@ -363,7 +363,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var obj = (PArray) scheme.Keys [0].Create ();
 			Assert.AreEqual (1, obj.Count, "#1");
-			Assert.IsInstanceOf <PNumber> (obj [0], "#2");
+			IsInstanceOf <PNumber> (obj [0], "#2");
 			Assert.AreEqual (0, ((PNumber) obj [0]).Value, "#3");
 			
 		}
@@ -397,13 +397,13 @@ namespace MonoDevelop.MacDev.Tests
 </PListScheme>");
 			
 			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PArray> (obj, "#1");
+			IsInstanceOf<PArray> (obj, "#1");
 			
 			var array = (PArray)obj;
 			Assert.AreEqual (2, array.Count, "#2");
 			
-			Assert.IsInstanceOf<PNumber> (array[0], "#3");
-			Assert.IsInstanceOf<PNumber> (array[1], "#4");
+			IsInstanceOf<PNumber> (array[0], "#3");
+			IsInstanceOf<PNumber> (array[1], "#4");
 			
 			Assert.AreEqual (6, ((PNumber)array[0]).Value, "#5");
 			Assert.AreEqual (12, ((PNumber)array[1]).Value, "#6");
@@ -418,7 +418,7 @@ namespace MonoDevelop.MacDev.Tests
 </PListScheme>");
 			
 			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PNumber> (obj, "#1");
+			IsInstanceOf<PNumber> (obj, "#1");
 			Assert.AreEqual (0, ((PNumber)obj).Value, "#2");
 		}
 		
@@ -434,7 +434,7 @@ namespace MonoDevelop.MacDev.Tests
 </PListScheme>");
 			
 			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PNumber> (obj, "#1");
+			IsInstanceOf<PNumber> (obj, "#1");
 			Assert.AreEqual (6, ((PNumber)obj).Value, "#2");
 		}
 
@@ -447,7 +447,7 @@ namespace MonoDevelop.MacDev.Tests
 </PListScheme>");
 			
 			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PString> (obj, "#1");
+			IsInstanceOf<PString> (obj, "#1");
 			Assert.AreEqual ("", ((PString)obj).Value, "#2");
 		}
 		
@@ -463,7 +463,7 @@ namespace MonoDevelop.MacDev.Tests
 </PListScheme>");
 			
 			var obj = scheme.Keys [0].Create ();
-			Assert.IsInstanceOf<PString> (obj, "#1");
+			IsInstanceOf<PString> (obj, "#1");
 			Assert.AreEqual ("foo", ((PString)obj).Value, "#2");
 		}
 		
@@ -512,8 +512,8 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var key = scheme.GetKey ("keyname");
 			Assert.AreEqual (2, key.Values.Count, "#2");
-			Assert.IsInstanceOf<PListScheme.Value> (key.Values [0], "#3");
-			Assert.IsInstanceOf<PListScheme.Value> (key.Values [1], "#4");
+			IsInstanceOf<PListScheme.Value> (key.Values [0], "#3");
+			IsInstanceOf<PListScheme.Value> (key.Values [1], "#4");
 			
 			var first = (PListScheme.Value) key.Values [0];
 			Assert.AreEqual ("dict1", first.Identifier, "#5");
@@ -637,7 +637,7 @@ namespace MonoDevelop.MacDev.Tests
 
 			var key = scheme.GetKey ("keyname");
 			Assert.AreEqual (1, key.Values.Count, "#1");
-			Assert.IsInstanceOf<PListScheme.Value> (key.Values [0], "#2");
+			IsInstanceOf<PListScheme.Value> (key.Values [0], "#2");
 			Assert.AreEqual ("ValidValue1", key.Values [0].Identifier, "#3");
 			Assert.IsNull (key.Values [0].Description, "#4");
 		}
@@ -722,7 +722,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var child = ((PArray) val2)[0];
 			Assert.AreSame (result [child], key.Values [0].Values [1].Values [0], "#6");
-			Assert.IsInstanceOf <PString> (child, "#7");
+			IsInstanceOf <PString> (child, "#7");
 		}
 		
 		[Test]
@@ -750,7 +750,7 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var val2 = tree ["val2"];
 			Assert.AreSame (result [val2], key.Values [1], "#4");
-			Assert.IsInstanceOf<PNumber> (((PArray) val2) [0], "#5");
+			IsInstanceOf<PNumber> (((PArray) val2) [0], "#5");
 			
 		}
 		
@@ -802,6 +802,14 @@ namespace MonoDevelop.MacDev.Tests
 		{
 			using (var reader = XmlReader.Create (new StringReader (value)))
 				return PListScheme.Load (reader);
+		}
+		
+		void IsInstanceOf<T> (object o, string message)
+		{
+			if (o == null || o.GetType () != typeof (T)) {
+				var error = string.Format ("Expected an object of type {0} but was {1}. {2}", typeof (T), o == null ? "<NULL>" : o.GetType ().FullName, message);
+				throw new NUnit.Framework.AssertionException (error);
+			}
 		}
 	}
 }
