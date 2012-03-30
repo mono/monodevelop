@@ -132,6 +132,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 			
 			image.Pixbuf = pixbuf;
+			
+			UpdateTooltip ();
 		}
 		
 		public ImageChooser ()
@@ -147,20 +149,22 @@ namespace MonoDevelop.MacDev.PlistEditor
 		void UpdateTooltip ()
 		{
 			if (imageSize != Size.Empty && RecommendedSize != Size.Empty && imageSize != RecommendedSize) {
-				if (!string.IsNullOrEmpty (description)) {
-					TooltipText = GettextCatalog.GetString ("{0} - the size of the current image does not match the recommended size of {1}x{2} pixels",
-					                                        description, RecommendedSize.Width, RecommendedSize.Height);
-				} else {
-					TooltipText = GettextCatalog.GetString ("The size of the current image does not match the recommended size of {0}x{1} pixels",
+				string warning = GettextCatalog.GetString ("<b>WARNING:</b> The size of the current image does not match the recommended size of {0}x{1} pixels.",
 					                                        RecommendedSize.Width, RecommendedSize.Height);
-				}
-			} else if (RecommendedSize != Size.Empty) {
+				
 				if (!string.IsNullOrEmpty (description))
-					TooltipText = GettextCatalog.GetString ("{0}, {1}x{2} pixels in size", description, RecommendedSize.Width, RecommendedSize.Height);
+					TooltipMarkup = GLib.Markup.EscapeText (description) + "\n\n" + warning;
 				else
-					TooltipText = GettextCatalog.GetString ("An image, {0}x{1} pixels in size", RecommendedSize.Width, RecommendedSize.Height);
+					TooltipMarkup = warning;
+			} else if (RecommendedSize != Size.Empty) {
+				string suggestion = GettextCatalog.GetString ("The recommended size of this image is {0}x{1} pixels.", RecommendedSize.Width, RecommendedSize.Height);
+				
+				if (!string.IsNullOrEmpty (description))
+					TooltipText = description + "\n\n" + suggestion;
+				else
+					TooltipText = suggestion;
 			} else if (string.IsNullOrEmpty (description)) {
-				TooltipText = GettextCatalog.GetString ("Choose an image");
+				TooltipText = GettextCatalog.GetString ("Choose an image.");
 			} else {
 				TooltipText = description;
 			}
