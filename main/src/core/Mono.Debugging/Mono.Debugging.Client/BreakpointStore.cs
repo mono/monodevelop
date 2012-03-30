@@ -172,27 +172,39 @@ namespace Mono.Debugging.Client
 		
 		public ReadOnlyCollection<Breakpoint> GetBreakpointsAtFile (string filename)
 		{
-			filename = System.IO.Path.GetFullPath (filename);
-			
 			List<Breakpoint> list = new List<Breakpoint> ();
+			
+			try {
+				filename = System.IO.Path.GetFullPath (filename);
+			} catch {
+				return list.AsReadOnly ();
+			}
+			
 			foreach (BreakEvent be in breakpoints) {
 				Breakpoint bp = be as Breakpoint;
 				if (bp != null && FileNameEquals (bp.FileName, filename))
 					list.Add (bp);
 			}
+			
 			return list.AsReadOnly ();
 		}
 		
 		public ReadOnlyCollection<Breakpoint> GetBreakpointsAtFileLine (string filename, int line)
 		{
-			filename = System.IO.Path.GetFullPath (filename);
-			
 			List<Breakpoint> list = new List<Breakpoint> ();
+			
+			try {
+				filename = System.IO.Path.GetFullPath (filename);
+			} catch {
+				return list.AsReadOnly ();
+			}
+			
 			foreach (BreakEvent be in breakpoints) {
 				Breakpoint bp = be as Breakpoint;
 				if (bp != null && FileNameEquals (bp.FileName, filename) && (bp.OriginalLine == line || bp.Line == line))
 					list.Add (bp);
 			}
+			
 			return list.AsReadOnly ();
 		}
 
