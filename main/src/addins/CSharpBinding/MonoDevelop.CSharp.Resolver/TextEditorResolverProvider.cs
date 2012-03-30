@@ -209,7 +209,11 @@ namespace MonoDevelop.CSharp.Resolver
 			StringBuilder s = new StringBuilder (150);
 			string doc = null;
 			if (result != null) {
-				if (result is LocalResolveResult) {
+				if (result is UnknownIdentifierResolveResult) {
+					s.Append (String.Format (GettextCatalog.GetString ("Unresolved identifier '{0}'"), ((UnknownIdentifierResolveResult)result).Identifier));
+				} else if (result.IsError) {
+					s.Append (GettextCatalog.GetString ("Resolve error."));
+				} else if (result is LocalResolveResult) {
 					var lr = (LocalResolveResult)result;
 					s.Append ("<small><i>");
 					s.Append (lr.IsParameter ? paramStr : localStr);
@@ -217,8 +221,6 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append (ambience.GetString (lr.Variable.Type, settings));
 					s.Append (" ");
 					s.Append (lr.Variable.Name);
-				} else if (result is UnknownIdentifierResolveResult) {
-					s.Append (String.Format (GettextCatalog.GetString ("Unresolved identifier '{0}'"), ((UnknownIdentifierResolveResult)result).Identifier));
 				} else if (result is MethodGroupResolveResult) {
 					var mrr = (MethodGroupResolveResult)result;
 					s.Append ("<small><i>");

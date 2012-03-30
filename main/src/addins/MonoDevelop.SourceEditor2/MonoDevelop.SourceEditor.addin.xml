@@ -83,7 +83,6 @@
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
-		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
 		<Class id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
 	</Extension>
 	

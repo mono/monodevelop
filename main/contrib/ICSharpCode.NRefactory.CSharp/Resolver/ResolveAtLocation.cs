@@ -30,20 +30,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
+		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			AstNode node;
-			return Resolve(compilation, parsedFile, cu, location, out node, cancellationToken);
+			return Resolve (compilation, parsedFile, cu, location, out node, cancellationToken);
 		}
 		
-		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
+		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
-			node = cu.GetNodeAt(location);
+			CSharpAstResolver resolver;
+			return Resolve (compilation, parsedFile, cu, location, out node, out resolver, cancellationToken);
+		}
+		
+		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node, out CSharpAstResolver resolver,
+		                                    CancellationToken cancellationToken = default(CancellationToken))
+		{
+			resolver = null;
+			node = cu.GetNodeAt (location);
 			if (node == null)
 				return null;
-			if (CSharpAstResolver.IsUnresolvableNode(node)) {
+			if (CSharpAstResolver.IsUnresolvableNode (node)) {
 				if (node is Identifier) {
 					node = node.Parent;
 				} else if (node.NodeType == NodeType.Token) {
@@ -65,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// For example, hovering with the mouse over an empty line between two methods causes
 				// node==TypeDeclaration, but we don't want to show any tooltip.
 				
-				if (!node.GetChildByRole(Roles.Identifier).IsNull) {
+				if (!node.GetChildByRole (Roles.Identifier).IsNull) {
 					// We'll suppress the tooltip for resolvable nodes if there is an identifier that
 					// could be hovered over instead:
 					return null;
@@ -84,12 +92,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				parentInvocation = node.Parent as InvocationExpression;
 			}
 			
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation, cu, parsedFile);
-			ResolveResult rr = resolver.Resolve(node, cancellationToken);
+			resolver = new CSharpAstResolver (compilation, cu, parsedFile);
+			ResolveResult rr = resolver.Resolve (node, cancellationToken);
 			if (rr is MethodGroupResolveResult && parentInvocation != null)
-				return resolver.Resolve(parentInvocation);
+				return resolver.Resolve (parentInvocation);
 			else
 				return rr;
 		}
+
 	}
 }
