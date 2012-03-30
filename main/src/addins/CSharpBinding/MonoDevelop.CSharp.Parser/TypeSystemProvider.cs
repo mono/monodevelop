@@ -292,7 +292,7 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 		
-		CompilerSettings GetCompilerArguments (MonoDevelop.Projects.Project project)
+		public static CompilerSettings GetCompilerArguments (MonoDevelop.Projects.Project project)
 		{
 			var compilerArguments = new CompilerSettings ();
 			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null)

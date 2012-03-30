@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.CSharp.Parser;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -120,11 +121,11 @@ namespace MonoDevelop.CSharp.Formatting
 			return sb.ToString ();
 		}
 		
-		static AstFormattingVisitor GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, string input)
+		static AstFormattingVisitor GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document document, string input)
 		{
 			using (var stubData = TextEditorData.CreateImmutable (input)) {
-				stubData.Document.FileName = data.FileName;
-				var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
+				stubData.Document.FileName = document.FileName;
+				var parser = document.HasProject ? new ICSharpCode.NRefactory.CSharp.CSharpParser (TypeSystemParser.GetCompilerArguments (document.Project)) : new ICSharpCode.NRefactory.CSharp.CSharpParser ();
 				var compilationUnit = parser.Parse (stubData);
 				bool hadErrors = parser.HasErrors;
 				// try it out, if the behavior is better when working only with correct code.
@@ -134,7 +135,7 @@ namespace MonoDevelop.CSharp.Formatting
 				
 				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 				
-				var formattingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, data.Editor.CreateNRefactoryTextEditorOptions ()) {
+				var formattingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, document.Editor.CreateNRefactoryTextEditorOptions ()) {
 					HadErrors = hadErrors
 				};
 				compilationUnit.AcceptVisitor (formattingVisitor);
