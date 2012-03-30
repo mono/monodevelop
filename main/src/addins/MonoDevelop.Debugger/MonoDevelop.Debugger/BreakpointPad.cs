@@ -53,6 +53,9 @@ namespace MonoDevelop.Debugger
 		TreeViewState treeState;
 		
 		EventHandler<BreakpointEventArgs> breakpointUpdatedHandler;
+		EventHandler<BreakpointEventArgs> breakpointRemovedHandler;
+		EventHandler<BreakpointEventArgs> breakpointAddedHandler;
+		EventHandler breakpointChangedHandler;
 		
 		enum Columns
 		{
@@ -155,11 +158,14 @@ namespace MonoDevelop.Debugger
 			
 			UpdateDisplay ();
 
-			breakpointUpdatedHandler = DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointUpdated));
+			breakpointUpdatedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointUpdated);
+			breakpointRemovedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointRemoved);
+			breakpointAddedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointAdded);
+			breakpointChangedHandler = DispatchService.GuiDispatch<EventHandler> (OnBreakpointChanged);
 			
-			DebuggingService.Breakpoints.BreakpointAdded += OnBpAdded;
-			DebuggingService.Breakpoints.BreakpointRemoved += OnBpRemoved;
-			DebuggingService.Breakpoints.Changed += OnBpChanged;
+			DebuggingService.Breakpoints.BreakpointAdded += breakpointAddedHandler;
+			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemovedHandler;
+			DebuggingService.Breakpoints.Changed += breakpointChangedHandler;
 			DebuggingService.Breakpoints.BreakpointUpdated += breakpointUpdatedHandler;
 			
 			DebuggingService.PausedEvent += OnDebuggerStatusCheck;
@@ -175,9 +181,9 @@ namespace MonoDevelop.Debugger
 		
 		public void Dispose ()
 		{
-			DebuggingService.Breakpoints.BreakpointAdded -= OnBpAdded;
-			DebuggingService.Breakpoints.BreakpointRemoved -= OnBpRemoved;
-			DebuggingService.Breakpoints.Changed -= OnBpChanged;
+			DebuggingService.Breakpoints.BreakpointAdded -= breakpointAddedHandler;
+			DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
+			DebuggingService.Breakpoints.Changed -= breakpointChangedHandler;
 			DebuggingService.Breakpoints.BreakpointUpdated -= breakpointUpdatedHandler;
 			
 			DebuggingService.PausedEvent -= OnDebuggerStatusCheck;
@@ -304,17 +310,17 @@ namespace MonoDevelop.Debugger
 			} while (store.IterNext (ref it));
 		}
 		
-		protected void OnBpAdded (object o, EventArgs args)
+		protected void OnBreakpointAdded (object o, EventArgs args)
 		{
 			UpdateDisplay ();	
 		}
 		
-		protected void OnBpRemoved (object o, EventArgs args)
+		protected void OnBreakpointRemoved (object o, EventArgs args)
 		{
 			UpdateDisplay ();	
 		}
 		
-		protected void OnBpChanged (object o, EventArgs args)
+		protected void OnBreakpointChanged (object o, EventArgs args)
 		{
 			UpdateDisplay ();	
 		}

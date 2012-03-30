@@ -5,6 +5,8 @@
 	<binding command="MonoDevelop.Ide.Commands.DebugCommands.StepOver" shortcut="F10" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="Control+U" />
 	<binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="Control+F4" />
+	<binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAll" shortcut="Control+Shift+S" />
+	<binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAs" shortcut="" />
 	<binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" shortcut="Control+-" />
 	<binding command="MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" shortcut="Control+Shift+-" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.Build" shortcut="Shift+F6" />

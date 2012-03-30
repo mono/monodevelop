@@ -82,13 +82,12 @@ namespace MonoDevelop.Projects.Text
 			
 			this.name = fileName;
 			
-			FileInfo f = new FileInfo (fileName);
 			ByteOrderMark bom = null;
 			byte[] content = null;
 			long nread;
 			
 		retry:
-			using (FileStream stream = f.Open (FileMode.Open, FileAccess.Read, FileShare.Read)) {
+			using (FileStream stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
 				if (encoding == null) {
 					if (ByteOrderMark.TryParse (stream, out bom))
 						stream.Seek (bom.Length, SeekOrigin.Begin);
@@ -96,7 +95,7 @@ namespace MonoDevelop.Projects.Text
 						stream.Seek (0, SeekOrigin.Begin);
 				}
 				
-				content = new byte [bom != null ? f.Length - bom.Length : f.Length];
+				content = new byte [bom != null ? stream.Length - bom.Length : stream.Length];
 				nread = 0;
 				
 				int n;
