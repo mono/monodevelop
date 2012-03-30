@@ -29,13 +29,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using Mono.TextEditor;
+
 // Terminology:
-//   mode: A 'mode' is a key binding prefix / modifier meant to allow a
-//         wider set of key bindings to exist. If you are familiar with
-//         GNU/Emacs, you might be familiar with the key binding for
-//         'Save'. This key binding would have a 'mode' of 'Control+x'
-//         and an accel of 'Control+s' - the full binding being:
-//         'Control+x Control+s'.
+//   chord: A 'chord' is a key binding prefix / modifier meant to allow a
+//          wider set of key bindings to exist. If you are familiar with
+//          GNU/Emacs, you might be familiar with the key binding for
+//          'Save'. This key binding would have a 'chord' of 'Control+x'
+//          and an accel of 'Control+s' - the full binding being:
+//          'Control+x Control+s'.
 //
 //   accel: A (possibly partial) key binding for some command/action.
 //          When combined with the mode prefix, results in the full key
@@ -48,8 +50,8 @@ namespace MonoDevelop.Components.Commands
 {
 	public class KeyBindingManager : IDisposable
 	{
-		Dictionary<string, List<Command>> bindings = new Dictionary<string, List<Command>> ();
-		Dictionary<string, int> modes = new Dictionary<string, int> ();
+		Dictionary<KeyBinding, List<Command>> bindings = new Dictionary<KeyBinding, List<Command>> ();
+		Dictionary<KeyboardShortcut, int> chords = new Dictionary<KeyboardShortcut, int> ();
 		List<Command> commands = new List<Command> ();
 		
 		static KeyBindingManager ()
@@ -98,6 +100,58 @@ namespace MonoDevelop.Components.Commands
 		
 		#region Static Public Helpers For Building Key-Binding Strings
 		
+		static bool KeyIsModifier (Gdk.Key key)
+		{
+			if (key.Equals (Gdk.Key.Control_L) || key.Equals (Gdk.Key.Control_R))
+				return true;
+			else if (key.Equals (Gdk.Key.Alt_L) || key.Equals (Gdk.Key.Alt_R))
+				return true;
+			else if (key.Equals (Gdk.Key.Shift_L) || key.Equals (Gdk.Key.Shift_R))
+				return true;
+			else if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
+				return true;
+			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_L))
+				return true;
+			
+			return false;
+		}
+		
+		static string ModifierToString (Gdk.ModifierType mod)
+		{
+			string label = string.Empty;
+			
+			if ((mod & Gdk.ModifierType.ControlMask) != 0)
+				label += "Control+";
+			if ((mod & Gdk.ModifierType.Mod1Mask) != 0)
+				label += "Alt+";
+			if ((mod & Gdk.ModifierType.ShiftMask) != 0)
+				label += "Shift+";
+			if ((mod & Gdk.ModifierType.MetaMask) != 0)
+				label += "Meta+";
+			if ((mod & Gdk.ModifierType.SuperMask) != 0)
+				label += "Super+";
+			
+			return label;
+		}
+		
+		static string ModifierKeyToString (Gdk.Key key)
+		{
+			string label = string.Empty;
+			
+			if (key.Equals (Gdk.Key.Control_L) || key.Equals (Gdk.Key.Control_R))
+				label += "Control+";
+			else if (key.Equals (Gdk.Key.Alt_L) || key.Equals (Gdk.Key.Alt_R))
+				label += "Alt+";
+			else if (key.Equals (Gdk.Key.Shift_L) || key.Equals (Gdk.Key.Shift_R))
+				label += "Shift+";
+			else if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
+				label += "Meta+";
+			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_L))
+				label += "Super+";
+			
+			return label;
+		}
+		
 		static string KeyToString (Gdk.Key key)
 		{
 			char c = (char) Gdk.Keyval.ToUnicode ((uint) key);
@@ -127,37 +181,56 @@ namespace MonoDevelop.Components.Commands
 			return key.ToString ();
 		}
 		
+		// This version is used by the CommandManager to track the keystrokes the user has hit for binding lookups.
+		public static KeyboardShortcut[] AccelsFromKey (Gdk.EventKey raw, out bool complete)
+		{
+			KeyboardShortcut[] shortcuts;
+			Gdk.ModifierType modifier;
+			Gdk.Key key;
+			
+			GtkWorkarounds.MapKeys (raw, out key, out modifier, out shortcuts);
+			complete = !KeyIsModifier (key);
+			
+			return shortcuts;
+		}
+		
+		// This version is used by the KeyBindingsPanel to display the keystrokes that the user has hit.
+		public static string AccelLabelFromKey (Gdk.EventKey raw, out bool complete)
+		{
+			KeyboardShortcut[] shortcuts;
+			Gdk.ModifierType modifier;
+			Gdk.Key key;
+			
+			GtkWorkarounds.MapKeys (raw, out key, out modifier, out shortcuts);
+			bool keyIsModifier = KeyIsModifier (key);
+			complete = !keyIsModifier;
+			
+			// The first shortcut is the fully decomposed version
+			string accel = ModifierToString (shortcuts[0].Modifier);
+			if (keyIsModifier)
+				return accel + ModifierKeyToString (shortcuts[0].Key);
+			
+			return accel + KeyToString (shortcuts[0].Key);
+		}
+		
+		static string AccelLabelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete)
+		{
+			string accel = ModifierToString (modifier);
+			
+			if ((complete = !KeyIsModifier (key)))
+				return accel + KeyToString (key);
+			
+			return accel + ModifierKeyToString (key);
+		}
+		
 		/// <summary>
 		/// Used for canonicalizing bindings after parsing them
 		/// </summary>
-		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier)
+		internal static string AccelLabelFromKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			bool complete;
-			return AccelFromKey (key, modifier, out complete);
-		}
-		
-		public static string AccelFromKey (Gdk.EventKey raw, out bool complete)
-		{
-			Gdk.Key key;
-			Gdk.ModifierType modifier;
-			Mono.TextEditor.KeyboardShortcut[] accels;
-			Mono.TextEditor.GtkWorkarounds.MapKeys (raw, out key, out modifier, out accels);
 			
-			//the first accel is the fully decomposed one
-			return AccelFromKey (accels[0].Key, accels[0].Modifier, out complete);
-		}
-		
-		static string AccelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete)
-		{
-			bool keyIsModifier;
-			string modifierlabel = ModifierToPartialAccel (modifier, key, out keyIsModifier);
-			complete = !keyIsModifier;
-			
-			if (keyIsModifier) {
-				return modifierlabel;
-			} else {
-				return modifierlabel + KeyToString (key);
-			}
+			return AccelLabelFromKey (key, modifier, out complete);
 		}
 		
 		static bool AccelToKeyPartial (string accel, ref int i, out uint key, out Gdk.ModifierType modifier)
@@ -185,6 +258,8 @@ namespace MonoDevelop.Components.Commands
 						k = (uint) Gdk.Key.space;
 					else if (str.Length > 1)
 						k = Gdk.Keyval.FromName (str);
+					else if (str[0] >= 'A' && str[0] <= 'Z')
+						k = (uint) str[0] + 32;
 					else
 						k = (uint) str[0];
 					
@@ -210,7 +285,7 @@ namespace MonoDevelop.Components.Commands
 			modifier = Gdk.ModifierType.None;
 			key = 0;
 			
-			if (accel == null || accel == String.Empty)
+			if (string.IsNullOrEmpty (accel))
 				return false;
 			
 			if (AccelToKeyPartial (accel, ref i, out key, out modifier) && i == accel.Length)
@@ -223,21 +298,23 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (AccelToKeyPartial (accel, out key, out modifier))
 				return true;
+			
 			modifier = Gdk.ModifierType.None;
 			key = 0;
+			
 			return false;
 		}
 		
-		static bool BindingToKeysPartial (string binding, out uint modeKey, out Gdk.ModifierType modeModifier, out uint key, out Gdk.ModifierType modifier)
+		static bool BindingToKeysPartial (string binding, out uint chordKey, out Gdk.ModifierType chordModifier, out uint key, out Gdk.ModifierType modifier)
 		{
 			int i = 0;
 			
-			modeModifier = Gdk.ModifierType.None;
-			modeKey = 0;
+			chordModifier = Gdk.ModifierType.None;
+			chordKey = 0;
 			modifier = Gdk.ModifierType.None;
 			key = 0;
 			
-			if (binding == null || binding == String.Empty)
+			if (string.IsNullOrEmpty (binding))
 				return false;
 			
 			if (!AccelToKeyPartial (binding, ref i, out key, out modifier))
@@ -253,68 +330,36 @@ namespace MonoDevelop.Components.Commands
 				return false;
 			}
 			
-			modeModifier = modifier;
-			modeKey = key;
+			chordModifier = modifier;
+			chordKey = key;
 			i++;
 			
 			return AccelToKeyPartial (binding, ref i, out key, out modifier) && i == binding.Length;
 		}
 		
-		public static bool BindingToKeys (string binding, out uint modeKey, out Gdk.ModifierType modeModifier, out uint key, out Gdk.ModifierType modifier)
+		public static bool BindingToKeys (string binding, out uint chordKey, out Gdk.ModifierType chordModifier, out uint key, out Gdk.ModifierType modifier)
 		{
-			if (BindingToKeysPartial (binding, out modeKey, out modeModifier, out key, out modifier))
+			if (BindingToKeysPartial (binding, out chordKey, out chordModifier, out key, out modifier))
 				return true;
 			
-			modeModifier = modifier = Gdk.ModifierType.None;
-			modeKey = key = 0;
+			chordModifier = modifier = Gdk.ModifierType.None;
+			chordKey = key = 0;
 			return false;
 		}
 				
-		public static string Binding (string mode, string accel)
+		public static string Binding (string chord, string accel)
 		{
-			if (mode == null) {
-				if (accel == String.Empty)
+			if (string.IsNullOrEmpty (chord)) {
+				if (string.IsNullOrEmpty (accel))
 					return null;
 				
 				return accel;
 			}
 			
-			if (accel == String.Empty)
-				return mode;
+			if (string.IsNullOrEmpty (accel))
+				return chord;
 			
-			return mode + "|" + accel;
-		}
-		
-		static string ModifierToPartialAccel (Gdk.ModifierType mod, Gdk.Key key, out bool keyIsModifier)
-		{
-			string label = String.Empty;
-			
-			if ((mod & Gdk.ModifierType.ControlMask) != 0)
-				label += "Control+";
-			if ((mod & Gdk.ModifierType.Mod1Mask) != 0)
-				label += "Alt+";
-			if ((mod & Gdk.ModifierType.ShiftMask) != 0)
-				label += "Shift+";
-			if ((mod & Gdk.ModifierType.MetaMask) != 0)
-				label += "Meta+";
-			if ((mod & Gdk.ModifierType.SuperMask) != 0)
-				label += "Super+";
-			
-			keyIsModifier = true;
-			if (key.Equals (Gdk.Key.Control_L) || key.Equals (Gdk.Key.Control_R))
-				label += "Control+";
-			else if (key.Equals (Gdk.Key.Alt_L) || key.Equals (Gdk.Key.Alt_R))
-				label += "Alt+";
-			else if (key.Equals (Gdk.Key.Shift_L) || key.Equals (Gdk.Key.Shift_R))
-				label += "Shift+";
-			else if (key.Equals (Gdk.Key.Meta_L) || key.Equals (Gdk.Key.Meta_R))
-				label += "Meta+";
-			else if (key.Equals (Gdk.Key.Super_L) || key.Equals (Gdk.Key.Super_L))
-				label += "Super+";
-			else
-				keyIsModifier = false;
-			
-			return label;
+			return chord + "|" + accel;
 		}
 		
 		#endregion
@@ -328,22 +373,34 @@ namespace MonoDevelop.Components.Commands
 		
 		public static string BindingToDisplayLabel (string binding, bool concise, bool includeIncomplete)
 		{
-			Gdk.ModifierType modeMod, mod;
-			string label = String.Empty;
-			uint modeKey, key;
+			Gdk.ModifierType chordMod, mod;
+			string label = string.Empty;
+			uint chordKey, key;
 			
 			if (includeIncomplete) {
-				BindingToKeysPartial (binding, out modeKey, out modeMod, out key, out mod);
-			} else if (!BindingToKeys (binding, out modeKey, out modeMod, out key, out mod)) {
+				BindingToKeysPartial (binding, out chordKey, out chordMod, out key, out mod);
+			} else if (!BindingToKeys (binding, out chordKey, out chordMod, out key, out mod)) {
 				return null;
 			}
 			
-			if (modeKey != 0) {
-				label += ModifierToDisplayLabel (modeMod, concise) + KeyToDisplayLabel ((Gdk.Key)modeKey) + (isMac? " " : "|");
-			}
+			if (chordKey != 0)
+				label += ModifierToDisplayLabel (chordMod, concise) + KeyToDisplayLabel ((Gdk.Key) chordKey) + (isMac ? " " : "|");
+			
 			label += ModifierToDisplayLabel (mod, concise);
 			if (key != 0)
-				label += KeyToDisplayLabel ((Gdk.Key)key);
+				label += KeyToDisplayLabel ((Gdk.Key) key);
+			
+			return label;
+		}
+		
+		public static string BindingToDisplayLabel (KeyBinding binding, bool concise)
+		{
+			string label = string.Empty;
+			
+			if (binding.Chord != null)
+				label += ModifierToDisplayLabel (binding.Chord.Modifier, concise) + KeyToDisplayLabel (binding.Chord.Key) + (isMac ? " " : "|");
+			
+			label += ModifierToDisplayLabel (binding.Accel.Modifier, concise) + KeyToDisplayLabel (binding.Accel.Key);
 			
 			return label;
 		}
@@ -371,11 +428,10 @@ namespace MonoDevelop.Components.Commands
 		
 		static string ModifierToDisplayLabel (Gdk.ModifierType mod, bool concise)
 		{
-			if (isMac) {
+			if (isMac)
 				return AppleMapModifierToSymbols (mod);
-			}
 			
-			string label = String.Empty;
+			string label = string.Empty;
 			
 			if ((mod & Gdk.ModifierType.ControlMask) != 0)
 				label += concise? "Ctrl+" : "Control+";
@@ -420,7 +476,7 @@ namespace MonoDevelop.Components.Commands
 			Gdk.Key key;
 			string str;
 			
-			if (shortcut == null || shortcut == String.Empty)
+			if (string.IsNullOrEmpty (shortcut))
 				return null;
 			
 			while (i < shortcut.Length) {
@@ -439,7 +495,7 @@ namespace MonoDevelop.Components.Commands
 					if (j < shortcut.Length)
 						Console.WriteLine ("WARNING: trailing data after Gdk.Key portion of shortcut {0}", shortcut);
 					
-					return AccelFromKey (key, mask);
+					return AccelLabelFromKey (key, mask);
 				}
 				
 				mask |= mod;
@@ -458,7 +514,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			int i = 0;
 			
-			if (shortcut == null || shortcut == String.Empty)
+			if (string.IsNullOrEmpty (shortcut))
 				return false;
 			
 			if (shortcut.Length == 1 && (shortcut[0] == '|' || shortcut[0] == '+')) {
@@ -474,107 +530,102 @@ namespace MonoDevelop.Components.Commands
 		
 		public static string CanonicalizeBinding (string binding)
 		{
-			Gdk.ModifierType modeMod, mod;
-			string accel, mode = null;
-			uint modeKey, key;
+			Gdk.ModifierType chordMod, mod;
+			string accel, chord = null;
+			uint chordKey, key;
 			
-			if (binding == null || binding == String.Empty)
+			if (string.IsNullOrEmpty (binding))
 				return null;
 			
 			if (IsShortcutFormat (binding))
 				return ShortcutToBinding (binding);
 			
-			if (!BindingToKeys (binding, out modeKey, out modeMod, out key, out mod)) {
+			if (!BindingToKeys (binding, out chordKey, out chordMod, out key, out mod)) {
 				Console.WriteLine ("WARNING: failed to canonicalize binding {0}", binding);
 				return null;
 			}
 			
-			if (modeKey != 0)
-				mode = AccelFromKey ((Gdk.Key) modeKey, modeMod);
+			if (chordKey != 0)
+				chord = AccelLabelFromKey ((Gdk.Key) chordKey, chordMod);
 			
-			accel = AccelFromKey ((Gdk.Key) key, mod);
+			accel = AccelLabelFromKey ((Gdk.Key) key, mod);
 			
-			return Binding (mode, accel);
+			return Binding (chord, accel);
 		}
 		
 		#endregion
 		
 		#region Public Methods
 		
-		public bool BindingExists (string binding)
+		public bool BindingExists (KeyBinding binding)
 		{
 			return bindings.ContainsKey (binding);
 		}
 		
-		public bool BindingExists (string mode, string accel)
+		public bool ChordExists (KeyboardShortcut chord)
 		{
-			return BindingExists (Binding (mode, accel));
+			return chords.ContainsKey (chord);
 		}
 		
-		public bool ModeExists (string mode)
+		public bool AnyChordExists (KeyboardShortcut[] chords)
 		{
-			return modes.ContainsKey (mode);
-		}
-		
-		string BindingMode (string binding)
-		{
-			bool plus = false;
-			int i;
-			
-			if (binding == null)
-				return null;
-			
-			for (i = 0; i < binding.Length; i++) {
-				if (!plus && binding[i] == '|')
-					return binding.Substring (0, i);
-				
-				if (binding[i] == '+')
-					plus = !plus;
-				else
-					plus = false;
+			foreach (var chord in chords) {
+				if (ChordExists (chord))
+					return true;
 			}
 			
-			return null;
+			return false;
 		}
 		
-		void SetBinding (Command command, string oldMode, string oldBinding, string newMode, string newBinding)
+		static bool ChordChanged (KeyBinding old, KeyBinding @new)
+		{
+			if (old == null && @new == null)
+				return false;
+			
+			if (old == null || @new == null)
+				return true;
+			
+			return !old.Chord.Equals (@new.Chord);
+		}
+		
+		void SetBinding (Command command, KeyBinding oldKeyBinding, KeyBinding newKeyBinding)
 		{
 			List<Command> list;
 			int refs;
 			
-			if (newMode != oldMode) {
+			if (ChordChanged (oldKeyBinding, newKeyBinding)) {
 				// keep track of valid modes
-				if (oldMode != null) {
-					if ((refs = modes[oldMode] - 1) == 0)
-						modes.Remove (oldMode);
+				if (oldKeyBinding != null && oldKeyBinding.Chord != null) {
+					if ((refs = chords[oldKeyBinding.Chord] - 1) == 0)
+						chords.Remove (oldKeyBinding.Chord);
 					else
-						modes[oldMode] = refs;
+						chords[oldKeyBinding.Chord] = refs;
 				}
 				
-				if (newMode != null) {
-					if (modes.ContainsKey (newMode)) {
-						modes[newMode]++;
-					} else
-						modes.Add (newMode, 1);
+				if (newKeyBinding != null && newKeyBinding.Chord != null) {
+					if (!chords.ContainsKey (newKeyBinding.Chord))
+						chords.Add (newKeyBinding.Chord, 1);
+					else
+						chords[newKeyBinding.Chord]++;
 				}
 			}
 			
-			if (oldBinding != null) {
-				list = bindings[oldBinding];
+			if (oldKeyBinding != null) {
+				list = bindings[oldKeyBinding];
 				list.Remove (command);
 				
 				if (list.Count == 0)
-					bindings.Remove (oldBinding);
+					bindings.Remove (oldKeyBinding);
 			}
 			
-			if (newBinding != null) {
-				if (!bindings.ContainsKey (newBinding)) {
+			if (newKeyBinding != null) {
+				if (!bindings.ContainsKey (newKeyBinding)) {
 					list = new List<Command> ();
 					list.Add (command);
 					
-					bindings.Add (newBinding, list);
+					bindings.Add (newKeyBinding, list);
 				} else {
-					list = bindings[newBinding];
+					list = bindings[newKeyBinding];
 					list.Add (command);
 				}
 			}
@@ -582,7 +633,16 @@ namespace MonoDevelop.Components.Commands
 		
 		void SetBinding (Command command, string oldBinding, string newBinding)
 		{
-			SetBinding (command, BindingMode (oldBinding), oldBinding, BindingMode (newBinding), newBinding);
+			KeyBinding oldKeyBinding;
+			KeyBinding newKeyBinding;
+			
+			if (!KeyBinding.TryParse (oldBinding, out oldKeyBinding))
+				oldKeyBinding = null;
+			
+			if (!KeyBinding.TryParse (newBinding, out newKeyBinding))
+				newKeyBinding = null;
+			
+			SetBinding (command, oldKeyBinding, newKeyBinding);
 		}
 		
 		void OnKeyBindingChanged (object o, KeyBindingChangedEventArgs args)
@@ -602,7 +662,7 @@ namespace MonoDevelop.Components.Commands
 				return;
 			}
 			
-			SetBinding (command, null, null, BindingMode (command.AccelKey), command.AccelKey);
+			SetBinding (command, null, command.AccelKey);
 			command.KeyBindingChanged += OnKeyBindingChanged;
 			commands.Add (command);
 		}
@@ -610,7 +670,6 @@ namespace MonoDevelop.Components.Commands
 		public void UnregisterCommand (Command command)
 		{
 			List<Command> list;
-			string mode;
 			int refs;
 			
 			if (!commands.Contains (command)) {
@@ -623,40 +682,28 @@ namespace MonoDevelop.Components.Commands
 			
 			if (string.IsNullOrEmpty (command.AccelKey))
 				return;
+			
+			KeyBinding binding;
+			if (!KeyBinding.TryParse (command.AccelKey, out binding))
+				return;
 
-			list = bindings[command.AccelKey];
+			list = bindings[binding];
 			list.Remove (command);
 			if (list.Count == 0)
-				bindings.Remove (command.AccelKey);
+				bindings.Remove (binding);
 			
-			mode = BindingMode (command.AccelKey);
-			if (mode != null && modes.ContainsKey (mode)) {
-				if ((refs = modes[mode] - 1) == 0)
-					modes.Remove (mode);
+			if (binding.Chord != null && chords.ContainsKey (binding.Chord)) {
+				if ((refs = chords[binding.Chord] - 1) == 0)
+					chords.Remove (binding.Chord);
 				else
-					modes[mode] = refs;
+					chords[binding.Chord] = refs;
 			}
-		}
-		
-		///
-		/// Returns the oldest registered command with the specified key binding.
-		///
-		public Command Command (string binding)
-		{
-			List<Command> list;
-			
-			if (!BindingExists (binding))
-				return null;
-			
-			list = bindings[binding];
-			
-			return list[0];
 		}
 		
 		///
 		/// Returns the list of commands registered for the specified key binding.
 		///
-		public List<Command> Commands (string binding)
+		public List<Command> Commands (KeyBinding binding)
 		{
 			if (!BindingExists (binding))
 				return null;
@@ -808,6 +855,86 @@ namespace MonoDevelop.Components.Commands
 		}
 		*/
 		#endregion
+	}
+	
+	public class KeyBinding
+	{
+		public KeyBinding (KeyboardShortcut chord, KeyboardShortcut accel)
+		{
+			Chord = chord;
+			Accel = accel;
+		}
+		
+		public static bool TryParse (string str, out KeyBinding binding)
+		{
+			Gdk.ModifierType chordModifier;
+			Gdk.ModifierType modifier;
+			uint chordKey;
+			uint key;
+			
+			if (!KeyBindingManager.BindingToKeys (str, out chordKey, out chordModifier, out key, out modifier)) {
+				binding = null;
+				return false;
+			}
+			
+			KeyboardShortcut accel = new KeyboardShortcut ((Gdk.Key) key, modifier);
+			KeyboardShortcut chord;
+			
+			if (chordKey != 0)
+				chord = new KeyboardShortcut ((Gdk.Key) chordKey, chordModifier);
+			else
+				chord = null;
+			
+			binding = new KeyBinding (chord, accel);
+			
+			return true;
+		}
+		
+		public KeyboardShortcut Chord {
+			get; private set;
+		}
+		
+		public KeyboardShortcut Accel {
+			get; private set;
+		}
+		
+		public override int GetHashCode ()
+		{
+			int code = Accel.GetHashCode ();
+			
+			if (Chord != null)
+				return Chord.GetHashCode () ^ code;
+			
+			return code;
+		}
+		
+		public override bool Equals (object obj)
+		{
+			KeyBinding binding = obj as KeyBinding;
+			
+			if (binding == null)
+				return false;
+			
+			if (Chord == null)
+				return binding.Chord == null && Accel.Equals (binding.Accel);
+			
+			if (binding.Chord == null)
+				return false;
+			
+			return Chord.Equals (binding.Chord) && Accel.Equals (binding.Accel);
+		}
+		
+		public override string ToString ()
+		{
+			string chord;
+			
+			if (Chord != null)
+				chord = KeyBindingManager.AccelLabelFromKey (Chord.Key, Chord.Modifier) + "|";
+			else
+				chord = string.Empty;
+			
+			return chord + KeyBindingManager.AccelLabelFromKey (Accel.Key, Accel.Modifier);
+		}
 	}
 	
 //#region KeyBindingException

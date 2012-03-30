@@ -76,7 +76,7 @@ namespace MonoDevelop.Components.Commands
 			get { return accelKey; }
 			set {
 				string binding = accelKey;
-				accelKey = value == String.Empty ? null : value;
+				accelKey = value == string.Empty ? null : value;
 				
 				if (KeyBindingChanged != null && accelKey != binding)
 					KeyBindingChanged (this, new KeyBindingChangedEventArgs (this, binding));
@@ -102,25 +102,22 @@ namespace MonoDevelop.Components.Commands
 	}
 	
 	public class KeyBindingChangedEventArgs {
-		Command command;
-		string binding;
-		
-		public KeyBindingChangedEventArgs (Command command, string oldBinding)
+		public KeyBindingChangedEventArgs (Command command, string oldKeyBinding)
 		{
-			this.command = command;
-			this.binding = oldBinding;
+			OldKeyBinding = oldKeyBinding;
+			Command = command;
 		}
 		
 		public Command Command {
-			get { return command; }
+			get; private set;
 		}
 		
 		public string OldKeyBinding {
-			get { return binding; }
+			get; private set;
 		}
 		
 		public string NewKeyBinding {
-			get { return command.AccelKey; }
+			get { return Command.AccelKey; }
 		}
 	}
 }
