@@ -485,9 +485,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			Document.MimeType = mimeType;
 			if (content != null) {
-				using (var reader = new StreamReader (content)) {
-					Document.Text = reader.ReadToEnd ();
-				}
+				Document.Text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out hadBom, out encoding);
 			}
 		}
 		
@@ -505,7 +503,7 @@ namespace MonoDevelop.SourceEditor
 				widget.UpdateParsedDocument (foldingParser.Parse (Document.FileName, text));
 		}
 		
-		public void Load (string fileName, Encoding encoding)
+		public void Load (string fileName, Encoding loadEncoding)
 		{
 			// Handle the "reload" case.
 			if (ContentName == fileName)
@@ -523,15 +521,15 @@ namespace MonoDevelop.SourceEditor
 			bool didLoadCleanly;
 			if (AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
-				this.encoding = encoding;
+				this.encoding = loadEncoding;
 				didLoadCleanly = false;
 			} else {
 
 				inLoad = true;
-				if (encoding == null) {
-					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
+				if (loadEncoding == null) {
+					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, out hadBom, out this.encoding);
 				} else {
-					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, encoding, out hadBom);
+					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, this.encoding, out hadBom);
 				}
 				Document.Text = text;
 				inLoad = false;
