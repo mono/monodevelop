@@ -191,7 +191,7 @@ namespace Mono.TextEditor
 					int offset = data.Document.LocationToOffset (line, col);
 					data.Caret.SetToOffsetWithDesiredColumn (MoveCaretOutOfFolding (data, offset));
 				} else {
-					data.Caret.Offset = data.Document.Length;
+					data.Caret.Offset = data.Document.TextLength;
 				}
 				return;
 			}
@@ -308,7 +308,7 @@ namespace Mono.TextEditor
 		{
 			if (!data.Caret.PreserveSelection)
 				data.ClearSelection ();
-			data.Caret.Offset = data.Document.Length;
+			data.Caret.Offset = data.Document.TextLength;
 		}
 				
 		public static void PageUp (TextEditorData data)

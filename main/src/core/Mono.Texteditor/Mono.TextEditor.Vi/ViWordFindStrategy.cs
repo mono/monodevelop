@@ -42,16 +42,16 @@ namespace Mono.TextEditor.Vi
 		public override int FindNextSubwordOffset (TextDocument doc, int offset)
 		{
 			int myoffset = offset;
-			if (0 > myoffset || doc.Length-1 <= myoffset){ return myoffset; }
+			if (0 > myoffset || doc.TextLength-1 <= myoffset){ return myoffset; }
 			
 			char c = doc.GetCharAt (myoffset);
 			CharacterClass initialClass = GetCharacterClass (c);
 			
-			while (GetCharacterClass (c) == initialClass && 0 <= myoffset && doc.Length-1 > myoffset) {
+			while (GetCharacterClass (c) == initialClass && 0 <= myoffset && doc.TextLength-1 > myoffset) {
 				c = doc.GetCharAt (++myoffset);
 			}
 			for (c = doc.GetCharAt (myoffset);
-			     char.IsWhiteSpace (c) && 0 <= myoffset && doc.Length-1 > myoffset;
+			     char.IsWhiteSpace (c) && 0 <= myoffset && doc.TextLength-1 > myoffset;
 			     c = doc.GetCharAt (++myoffset));
 			     
 			return (myoffset == offset)? myoffset+1: myoffset;
@@ -63,13 +63,13 @@ namespace Mono.TextEditor.Vi
 		public override int FindNextWordOffset (TextDocument doc, int offset)
 		{
 			int myoffset = offset;
-			if (0 > myoffset || doc.Length-1 <= myoffset){ return myoffset; }
+			if (0 > myoffset || doc.TextLength-1 <= myoffset){ return myoffset; }
 			
 			for (char c = doc.GetCharAt (myoffset);
-			     !char.IsWhiteSpace (c) && 0 <= myoffset && doc.Length-1 > myoffset;
+			     !char.IsWhiteSpace (c) && 0 <= myoffset && doc.TextLength-1 > myoffset;
 			     c = doc.GetCharAt (++myoffset));
 			for (char c = doc.GetCharAt (myoffset);
-			     char.IsWhiteSpace (c) && 0 <= myoffset && doc.Length-1 > myoffset;
+			     char.IsWhiteSpace (c) && 0 <= myoffset && doc.TextLength-1 > myoffset;
 			     c = doc.GetCharAt (++myoffset));
 			     
 			return (myoffset == offset)? myoffset+1: myoffset;
@@ -82,16 +82,16 @@ namespace Mono.TextEditor.Vi
 		{
 			int myoffset = offset-1;
 			char c;
-			if (0 > myoffset || doc.Length-1 <= myoffset){ return myoffset; }
+			if (0 > myoffset || doc.TextLength-1 <= myoffset){ return myoffset; }
 			
 			for (c = doc.GetCharAt (myoffset);
-			     char.IsWhiteSpace (c) && 0 <= myoffset && doc.Length-1 > myoffset;
+			     char.IsWhiteSpace (c) && 0 <= myoffset && doc.TextLength-1 > myoffset;
 			     c = doc.GetCharAt (--myoffset));
 			     
 			CharacterClass initialClass = GetCharacterClass (c);
 			
 			for (; GetCharacterClass (c) == initialClass && 
-			     0 <= myoffset && doc.Length-1 > myoffset;
+			     0 <= myoffset && doc.TextLength-1 > myoffset;
 			     c = doc.GetCharAt (--myoffset));
 			     
 			return (0 == myoffset)? myoffset: myoffset+1;
@@ -103,13 +103,13 @@ namespace Mono.TextEditor.Vi
 		public override int FindPrevWordOffset (TextDocument doc, int offset)
 		{
 			--offset;
-			if (0 > offset || doc.Length-1 <= offset){ return offset; }
+			if (0 > offset || doc.TextLength-1 <= offset){ return offset; }
 			
 			for (char c = doc.GetCharAt (offset);
-			     char.IsWhiteSpace (c) && 0 < offset && doc.Length > offset;
+			     char.IsWhiteSpace (c) && 0 < offset && doc.TextLength > offset;
 			     c = doc.GetCharAt (--offset));
 			for (char c = doc.GetCharAt (offset);
-			     !char.IsWhiteSpace (c) && 0 < offset && doc.Length > offset;
+			     !char.IsWhiteSpace (c) && 0 < offset && doc.TextLength > offset;
 			     c = doc.GetCharAt (--offset));
 			     
 			return (0 == offset)? offset: offset+1;

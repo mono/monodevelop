@@ -53,7 +53,7 @@ namespace Mono.TextEditor
 		{
 			for (int i = 0; i < list.Count; i++) {
 				string item = list[i];
-				if (offset + item.Length < document.Length) {
+				if (offset + item.Length < document.TextLength) {
 					if (document.GetTextAt (offset, item.Length) == item) 
 						return i;
 				}
@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 			List<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
 			List<string> stringQuotes       = GetList (document, "StringQuote");
 			int depth = -1;
-			while (offset >= 0 && offset < document.Length) {
+			while (offset >= 0 && offset < document.TextLength) {
 				if (worker != null && worker.CancellationPending)
 					return -1;
 				if (curStringQuote < 0) {
@@ -200,7 +200,7 @@ namespace Mono.TextEditor
 			if (!startsInLineComment)
 				offset = GetLastSourceCodePosition (document, offset);
 			
-			while (offset >= 0 && offset < document.Length) {
+			while (offset >= 0 && offset < document.TextLength) {
 				if (worker != null && worker.CancellationPending)
 					return -1;
 				char ch = document.GetCharAt (offset);

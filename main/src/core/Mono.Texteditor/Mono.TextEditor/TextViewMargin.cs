@@ -351,10 +351,10 @@ namespace Mono.TextEditor
 			}
 
 			int offset = Caret.Offset - 1;
-			if (Caret.Mode != CaretMode.Insert || (offset >= 0 && offset < Document.Length && !TextDocument.IsBracket (Document.GetCharAt (offset))))
+			if (Caret.Mode != CaretMode.Insert || (offset >= 0 && offset < Document.TextLength && !TextDocument.IsBracket (Document.GetCharAt (offset))))
 				offset++;
 			offset = System.Math.Max (0, offset);
-			if (highlightBracketOffset >= 0 && (offset >= Document.Length || !TextDocument.IsBracket (Document.GetCharAt (offset)))) {
+			if (highlightBracketOffset >= 0 && (offset >= Document.TextLength || !TextDocument.IsBracket (Document.GetCharAt (offset)))) {
 				int old = highlightBracketOffset;
 				highlightBracketOffset = -1;
 				if (old >= 0)
@@ -382,7 +382,7 @@ namespace Mono.TextEditor
 			matchingBracket = Document.GetMatchingBracketOffset (worker, offset);
 			if (worker.CancellationPending)
 				return;
-			if (matchingBracket == caretOffset && offset + 1 < Document.Length)
+			if (matchingBracket == caretOffset && offset + 1 < Document.TextLength)
 				matchingBracket = Document.GetMatchingBracketOffset (worker, offset + 1);
 			if (worker.CancellationPending)
 				return;
@@ -634,7 +634,7 @@ namespace Mono.TextEditor
 		{
 			var offset = Caret.Offset;
 			char caretChar;
-			if (offset >= 0 && offset < Document.Length) {
+			if (offset >= 0 && offset < Document.TextLength) {
 				caretChar = Document.GetCharAt (offset);
 			} else {
 				if (textEditor.Options.ShowEolMarkers) {
@@ -1779,7 +1779,7 @@ namespace Mono.TextEditor
 
 			StringBuilder textBuilder = new StringBuilder ();
 			int curOffset = previewSegment.Offset;
-			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.Length) {
+			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.TextLength) {
 				LineSegment line = Document.GetLineByOffset (curOffset);
 				string lineText = Document.GetTextAt (curOffset, line.Offset + line.EditableLength - curOffset);
 				textBuilder.Append (lineText);
@@ -2096,7 +2096,7 @@ namespace Mono.TextEditor
 					continue;
 
 				if (folding.IsFolded) {
-					markerLayout.SetText (Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.Length - offset))).Replace ("\t", new string (' ', textEditor.Options.TabSize)));
+					markerLayout.SetText (Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.TextLength - offset))).Replace ("\t", new string (' ', textEditor.Options.TabSize)));
 					markerLayout.GetPixelSize (out width, out height);
 					xPos += width;
 					offset = folding.EndLine.Offset + folding.EndColumn;

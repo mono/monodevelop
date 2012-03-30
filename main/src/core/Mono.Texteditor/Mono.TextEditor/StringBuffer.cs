@@ -17,7 +17,7 @@ namespace Mono.TextEditor
 		}
 
 		#region IBuffer Members
-		int IBuffer.Length {
+		int IBuffer.TextLength {
 			get { return buffer.Length; }
 		}
 
@@ -41,24 +41,29 @@ namespace Mono.TextEditor
 			return buffer[offset];
 		}
 
-		IEnumerable<int> IBuffer.SearchForward (string pattern, int startIndex)
+		int IBuffer.IndexOf (char c, int startIndex, int count)
 		{
-			throw new NotImplementedException();
+			return buffer.IndexOf (c, startIndex, count);
 		}
 
-		IEnumerable<int> IBuffer.SearchForwardIgnoreCase (string pattern, int startIndex)
+		int IBuffer.IndexOfAny (char[] anyOf, int startIndex, int count)
 		{
-			throw new NotImplementedException();
+			return buffer.IndexOfAny (anyOf, startIndex, count);
 		}
 
-		IEnumerable<int> IBuffer.SearchBackward (string pattern, int startIndex)
+		public int IndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
-			throw new NotImplementedException();
+			return buffer.IndexOf (searchText, startIndex, count, comparisonType);
 		}
 
-		IEnumerable<int> IBuffer.SearchBackwardIgnoreCase (string pattern, int startIndex)
+		int IBuffer.LastIndexOf (char c, int startIndex, int count)
 		{
-			throw new NotImplementedException();
+			return buffer.LastIndexOf (c, startIndex, count);
+		}
+
+		public int LastIndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			return buffer.LastIndexOf (searchText, startIndex, count, comparisonType);
 		}
 		#endregion
 	}

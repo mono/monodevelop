@@ -158,9 +158,9 @@ namespace Mono.TextEditor
 	//	public event EventHandler<LineEventArgs> LineInserted;
 		
 		#region Buffer implementation
-		public int Length {
+		public int TextLength {
 			get {
-				return this.buffer.Length;
+				return buffer.TextLength;
 			}
 		}
 
@@ -205,14 +205,14 @@ namespace Mono.TextEditor
 		{
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException ("offset", "must be > 0, was: " + offset);
-			if (offset > Length)
+			if (offset > TextLength)
 				throw new ArgumentOutOfRangeException ("offset", "must be <= Length, was: " + offset);
 			if (count < 0)
 				throw new ArgumentOutOfRangeException ("count", "must be > 0, was: " + count);
 
 			InterruptFoldWorker ();
 			
-			int oldLineCount = this.LineCount;
+			int oldLineCount = LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
 			OnTextReplacing (args);
 			value = args.InsertedText;
@@ -248,11 +248,11 @@ namespace Mono.TextEditor
 		{
 			if (startOffset < 0)
 				throw new ArgumentException ("startOffset < 0");
-			if (startOffset > Length)
+			if (startOffset > TextLength)
 				throw new ArgumentException ("startOffset > Length");
 			if (endOffset < 0)
 				throw new ArgumentException ("startOffset < 0");
-			if (endOffset > Length)
+			if (endOffset > TextLength)
 				throw new ArgumentException ("endOffset > Length");
 			
 			return buffer.GetTextAt (startOffset, endOffset - startOffset);
@@ -272,11 +272,11 @@ namespace Mono.TextEditor
 		{
 			if (offset < 0)
 				throw new ArgumentException ("startOffset < 0");
-			if (offset > Length)
+			if (offset > TextLength)
 				throw new ArgumentException ("startOffset > Length");
 			if (count < 0)
 				throw new ArgumentException ("count < 0");
-			if (offset + count > Length)
+			if (offset + count > TextLength)
 				throw new ArgumentException ("offset + count is beyond EOF");
 			return buffer.GetTextAt (offset, count);
 		}
@@ -317,26 +317,72 @@ namespace Mono.TextEditor
 			return buffer.GetCharAt (offset);
 		}
 		
-		public IEnumerable<int> SearchForward (string pattern, int startIndex)
+		/// <summary>
+		/// Gets the index of the first occurrence of the character in the specified array.
+		/// </summary>
+		/// <param name="c">Character to search for</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The first index where the character was found; or -1 if no occurrence was found.</returns>
+		public int IndexOf (char c, int startIndex, int count)
 		{
-			return buffer.SearchForward (pattern, startIndex);
+			return buffer.IndexOf (c, startIndex, count);
 		}
 		
-		public IEnumerable<int> SearchForwardIgnoreCase (string pattern, int startIndex)
+		/// <summary>
+		/// Gets the index of the first occurrence of any character in the specified array.
+		/// </summary>
+		/// <param name="anyOf">Characters to search for</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The first index where any character was found; or -1 if no occurrence was found.</returns>
+		public int IndexOfAny (char[] anyOf, int startIndex, int count)
 		{
-			return SearchForwardIgnoreCase (pattern, startIndex);
+			return buffer.IndexOfAny (anyOf, startIndex, count);
 		}
 		
-		public IEnumerable<int> SearchBackward (string pattern, int startIndex)
+		/// <summary>
+		/// Gets the index of the first occurrence of the specified search text in this text source.
+		/// </summary>
+		/// <param name="searchText">The search text</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <param name="comparisonType">String comparison to use.</param>
+		/// <returns>The first index where the search term was found; or -1 if no occurrence was found.</returns>
+		public int IndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
-			return SearchBackward (pattern, startIndex);
+			return buffer.IndexOf (searchText, startIndex, count, comparisonType);
 		}
 		
-		public IEnumerable<int> SearchBackwardIgnoreCase (string pattern, int startIndex)
+		/// <summary>
+		/// Gets the index of the last occurrence of the specified character in this text source.
+		/// </summary>
+		/// <param name="c">The search character</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The last index where the search term was found; or -1 if no occurrence was found.</returns>
+		/// <remarks>The search proceeds backwards from (startIndex+count) to startIndex.
+		/// This is different than the meaning of the parameters on string.LastIndexOf!</remarks>
+		public int LastIndexOf (char c, int startIndex, int count)
 		{
-			return SearchBackwardIgnoreCase (pattern, startIndex);
+			return buffer.LastIndexOf (c, startIndex, count);
 		}
 		
+		/// <summary>
+		/// Gets the index of the last occurrence of the specified search text in this text source.
+		/// </summary>
+		/// <param name="searchText">The search text</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <param name="comparisonType">String comparison to use.</param>
+		/// <returns>The last index where the search term was found; or -1 if no occurrence was found.</returns>
+		/// <remarks>The search proceeds backwards from (startIndex+count) to startIndex.
+		/// This is different than the meaning of the parameters on string.LastIndexOf!</remarks>
+		public int LastIndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
+		{
+			return buffer.LastIndexOf (searchText, startIndex, count, comparisonType);
+		}
+
 		protected virtual void OnTextReplaced (DocumentChangeEventArgs args)
 		{
 			if (TextReplaced != null)
@@ -401,7 +447,7 @@ namespace Mono.TextEditor
 			if (location.Line > this.splitter.Count || location.Line < DocumentLocation.MinLine)
 				return -1;
 			LineSegment line = GetLine (location.Line);
-			return System.Math.Min (Length, line.Offset + System.Math.Max (0, System.Math.Min (line.EditableLength, location.Column - 1)));
+			return System.Math.Min (TextLength, line.Offset + System.Math.Max (0, System.Math.Min (line.EditableLength, location.Column - 1)));
 		}
 		
 		public DocumentLocation OffsetToLocation (int offset)
@@ -1066,7 +1112,7 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)
 		{
-			if (offset < 0 || offset >= Length)
+			if (offset < 0 || offset >= TextLength)
 				return new FoldSegment[0];
 			return foldSegmentTree.GetSegmentsAt (offset);
 		}
@@ -1283,12 +1329,12 @@ namespace Mono.TextEditor
 		
 		public bool Contains (int offset)
 		{
-			return new TextSegment (0, Length).Contains (offset);
+			return new TextSegment (0, TextLength).Contains (offset);
 		}
 		
 		public bool Contains (TextSegment segment)
 		{
-			return new TextSegment (0, Length).Contains (segment);
+			return new TextSegment (0, TextLength).Contains (segment);
 		}
 		
 		
@@ -1389,7 +1435,7 @@ namespace Mono.TextEditor
 
 		{
 			return (offset == 0 || IsWordSeparator (GetCharAt (offset - 1))) &&
-				   (offset + length == Length || IsWordSeparator (GetCharAt (offset + length)));
+				   (offset + length == TextLength || IsWordSeparator (GetCharAt (offset + length)));
 		}
 		
 		public bool IsEmptyLine (LineSegment line)
@@ -1410,7 +1456,7 @@ namespace Mono.TextEditor
 		
 		public int GetMatchingBracketOffset (System.ComponentModel.BackgroundWorker worker, int offset)
 		{
-			if (offset < 0 || offset >= Length)
+			if (offset < 0 || offset >= TextLength)
 				return -1;
 			char ch = GetCharAt (offset);
 			int bracket = openBrackets.IndexOf (ch);
@@ -1718,31 +1764,6 @@ namespace Mono.TextEditor
 			return GetTextAt (segment.Offset, segment.Length);
 		}
 
-		int ICSharpCode.NRefactory.Editor.ITextSource.IndexOfAny (char[] anyOf, int startIndex, int count)
-		{
-			throw new NotImplementedException ();
-		}
-
-		int ICSharpCode.NRefactory.Editor.ITextSource.IndexOf(char c, int startIndex, int count)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		int ICSharpCode.NRefactory.Editor.ITextSource.IndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
-		{
-			throw new NotImplementedException ();
-		}
-
-		int ICSharpCode.NRefactory.Editor.ITextSource.LastIndexOf(char c, int startIndex, int count)
-		{
-			throw new NotImplementedException ();
-		}
-
-		int ICSharpCode.NRefactory.Editor.ITextSource.LastIndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
-		{
-			throw new NotImplementedException ();
-		}
-
 		public virtual ITextSourceVersion Version {
 			get {
 				return versionProvider.CurrentVersion;
@@ -1751,7 +1772,7 @@ namespace Mono.TextEditor
 
 		int ICSharpCode.NRefactory.Editor.ITextSource.TextLength {
 			get {
-				return Length;
+				return TextLength;
 			}
 		}
 

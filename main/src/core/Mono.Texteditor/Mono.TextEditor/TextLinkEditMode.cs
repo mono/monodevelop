@@ -502,7 +502,7 @@ namespace Mono.TextEditor
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
 				var s = link.Links [i];
 				int offset = s.Offset + baseOffset;
-				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.Length)
+				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.TextLength)
 					continue;
 				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText) {
 					Editor.Replace (offset, s.Length, link.CurrentText);

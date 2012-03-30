@@ -162,14 +162,14 @@ namespace Mono.TextEditor
 				return null;
 			var doc = this.textEditorData.Document;
 			
-			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= doc.Length && compiledPattern.Length > 0) {
+			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= doc.TextLength && compiledPattern.Length > 0) {
 				if (searchRequest.CaseSensitive) {
-					for (int i = 0; i < compiledPattern.Length && offset + i < doc.Length; i++) {
+					for (int i = 0; i < compiledPattern.Length && offset + i < doc.TextLength; i++) {
 						if (doc.GetCharAt (offset + i) != compiledPattern [i]) 
 							return null;
 					}
 				} else {
-					for (int i = 0; i < compiledPattern.Length && offset + i < doc.Length; i++) {
+					for (int i = 0; i < compiledPattern.Length && offset + i < doc.TextLength; i++) {
 						if (System.Char.ToUpper (doc.GetCharAt (offset + i)) != compiledPattern [i]) 
 							return null;
 					}
@@ -187,8 +187,8 @@ namespace Mono.TextEditor
 		{
 			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
 				// TODO: Optimize
-				for (int i = 0; i < this.textEditorData.Document.Length; i++) {
-					int offset = (fromOffset + i) % this.textEditorData.Document.Length;
+				for (int i = 0; i < this.textEditorData.Document.TextLength; i++) {
+					int offset = (fromOffset + i) % this.textEditorData.Document.TextLength;
 					if (worker != null && worker.CancellationPending)
 						return null; 
 					if (IsMatchAt (offset) && (searchRequest.SearchRegion.IsInvalid || searchRequest.SearchRegion.Contains (offset)))
@@ -202,8 +202,8 @@ namespace Mono.TextEditor
 		{
 			if (!string.IsNullOrEmpty (SearchRequest.SearchPattern)) {
 				// TODO: Optimize
-				for (int i = 0; i < this.textEditorData.Document.Length; i++) {
-					int offset = (fromOffset + this.textEditorData.Document.Length * 2 - 1 - i) % this.textEditorData.Document.Length;
+				for (int i = 0; i < this.textEditorData.Document.TextLength; i++) {
+					int offset = (fromOffset + this.textEditorData.Document.TextLength * 2 - 1 - i) % this.textEditorData.Document.TextLength;
 					if (worker != null && worker.CancellationPending)
 						return null;
 					if (IsMatchAt (offset) && (searchRequest.SearchRegion.IsInvalid || searchRequest.SearchRegion.Contains (offset)))

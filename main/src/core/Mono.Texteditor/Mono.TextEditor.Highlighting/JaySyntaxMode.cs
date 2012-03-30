@@ -165,7 +165,7 @@ namespace Mono.TextEditor.Highlighting
 									if (isInBlockComment) {
 										if (j > 0 && doc.GetCharAt (j - 1) == '*') 
 											isInBlockComment = false;
-									} else if (!isInString && !isInChar && j + 1 < doc.Length) {
+									} else if (!isInString && !isInChar && j + 1 < doc.TextLength) {
 										char nextChar = doc.GetCharAt (j + 1);
 										if (nextChar == '/')
 											isInLineComment = true;
@@ -178,7 +178,7 @@ namespace Mono.TextEditor.Highlighting
 										j++;
 									break;
 								case '@':
-									if (!(isInString || isInChar || isInLineComment || isInBlockComment) && j + 1 < doc.Length && doc.GetCharAt (j + 1) == '"') {
+									if (!(isInString || isInChar || isInLineComment || isInBlockComment) && j + 1 < doc.TextLength && doc.GetCharAt (j + 1) == '"') {
 										isInString = true;
 										isVerbatimString = true;
 										j++;
@@ -186,7 +186,7 @@ namespace Mono.TextEditor.Highlighting
 									break;
 								case '"':
 									if (!(isInChar || isInLineComment || isInBlockComment))  {
-										if (isInString && isVerbatimString && j + 1 < doc.Length && doc.GetCharAt (j + 1) == '"') {
+										if (isInString && isVerbatimString && j + 1 < doc.TextLength && doc.GetCharAt (j + 1) == '"') {
 											j++;
 										} else {
 											isInString = !isInString;

@@ -228,7 +228,7 @@ namespace Mono.TextEditor
 			int curOffset = offset;
 
 			StringBuilder result = new StringBuilder ();
-			while (curOffset < offset + length && curOffset < Document.Length) {
+			while (curOffset < offset + length && curOffset < Document.TextLength) {
 				LineSegment line = Document.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
 				Stack<ChunkStyle> styleStack = new Stack<ChunkStyle> ();
@@ -263,7 +263,7 @@ namespace Mono.TextEditor
 						styleStack.Push (chunkStyle);
 					}
 
-					for (int i = 0; i < chunk.Length && chunk.Offset + i < Document.Length; i++) {
+					for (int i = 0; i < chunk.Length && chunk.Offset + i < Document.TextLength; i++) {
 						char ch = Document.GetCharAt (chunk.Offset + i);
 						switch (ch) {
 						case '&':
@@ -807,7 +807,7 @@ namespace Mono.TextEditor
 				var segment = selection.GetSelectionRange (this);
 				if (Caret.Offset > segment.Offset)
 					Caret.Offset -= System.Math.Min (segment.Length, Caret.Offset - segment.Offset);
-				int len = System.Math.Min (segment.Length, Document.Length - segment.Offset);
+				int len = System.Math.Min (segment.Length, Document.TextLength - segment.Offset);
 				if (len > 0)
 					Remove (segment.Offset, len);
 				break;
@@ -957,9 +957,9 @@ namespace Mono.TextEditor
 			
 			int searchOffset;
 			if (startOffset < 0) {
-				searchOffset = Document.Length - 1;
+				searchOffset = Document.TextLength - 1;
 			} else {
-				searchOffset = (startOffset + Document.Length - 1) % Document.Length;
+				searchOffset = (startOffset + Document.TextLength - 1) % Document.TextLength;
 			}
 			SearchResult result = SearchBackward (searchOffset);
 			if (result != null) {
@@ -1117,7 +1117,7 @@ namespace Mono.TextEditor
 		#region Document delegation
 		public int Length {
 			get {
-				return document.Length;
+				return document.TextLength;
 			}
 		}
 

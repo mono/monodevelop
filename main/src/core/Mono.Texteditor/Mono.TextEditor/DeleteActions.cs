@@ -210,7 +210,7 @@ namespace Mono.TextEditor
 				data.DeleteSelectedText (data.MainSelection.SelectionMode != SelectionMode.Block);
 				return;
 			}
-			if (data.Caret.Offset >= data.Document.Length)
+			if (data.Caret.Offset >= data.Document.TextLength)
 				return;
 
 			using (var undoGroup = data.OpenUndoGroup()) {
@@ -220,7 +220,7 @@ namespace Mono.TextEditor
 				if (data.Caret.Column == line.EditableLength + 1) {
 					if (data.Caret.Line < data.Document.LineCount) { 
 						data.Remove (line.EndOffset - line.DelimiterLength, line.DelimiterLength);
-						if (line.EndOffset == data.Document.Length)
+						if (line.EndOffset == data.Document.TextLength)
 							line.DelimiterLength = 0;
 					}
 				} else {

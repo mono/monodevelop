@@ -100,7 +100,7 @@ namespace Mono.TextEditor
 		
 		internal static int ScanWord (TextDocument doc, int offset, bool forwardDirection)
 		{
-			if (offset < 0 || offset >= doc.Length)
+			if (offset < 0 || offset >= doc.TextLength)
 				return offset;
 			var line = doc.GetLineByOffset (offset);
 			char first = doc.GetCharAt (offset);

@@ -452,7 +452,7 @@ namespace Mono.TextEditor
 		{
 			if (IsSomethingSelected) {
 				var selectionRange = MainSelection.GetSelectionRange (textEditorData);
-				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length) {
+				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.TextLength) {
 					ClipboardActions.CopyToPrimary (this.textEditorData);
 				} else {
 					ClipboardActions.ClearPrimary ();
@@ -1886,7 +1886,7 @@ namespace Mono.TextEditor
 		#region Document delegation
 		public int Length {
 			get {
-				return Document.Length;
+				return Document.TextLength;
 			}
 		}
 
