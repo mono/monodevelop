@@ -811,7 +811,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			int offset = 0;
 			if (node != null) {
 				var loc = InsertUsingAfter (node) ? node.EndLocation : node.StartLocation;
-				offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
+				offset = doc.Editor.LocationToOffset (loc);
 			}
 			
 			lines = policy.BlankLinesAfterUsings;
@@ -873,7 +873,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else {
 				loc = nsDecl.LBraceToken.EndLocation;
 			}
-			offset = doc.Editor.LocationToOffset (loc.Line, loc.Column);
+			offset = doc.Editor.LocationToOffset (loc);
 			
 			lines = policy.BlankLinesAfterUsings;
 			lines -= CountBlankLines (doc, doc.Editor.OffsetToLineNumber (offset) + 1);

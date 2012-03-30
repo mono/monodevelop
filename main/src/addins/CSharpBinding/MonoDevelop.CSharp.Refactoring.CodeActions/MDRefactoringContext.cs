@@ -117,13 +117,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override int GetOffset (TextLocation location)
 		{
-			return Document.Editor.LocationToOffset (location.Line, location.Column);
+			return Document.Editor.LocationToOffset (location);
 		}
 		
 		public override TextLocation GetLocation (int offset)
 		{
-			var loc = Document.Editor.OffsetToLocation (offset);
-			return new TextLocation (loc.Line, loc.Column);
+			return Document.Editor.OffsetToLocation (offset);
 		}
 
 		public override string GetText (int offset, int length)

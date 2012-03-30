@@ -395,7 +395,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		List<string> GetUsedNamespaces ()
 		{
-			var scope = CSharpParsedFile.GetUsingScope (new TextLocation (document.Editor.Caret.Line, document.Editor.Caret.Column));
+			var scope = CSharpParsedFile.GetUsingScope (document.Editor.Caret.Location);
 			var result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);

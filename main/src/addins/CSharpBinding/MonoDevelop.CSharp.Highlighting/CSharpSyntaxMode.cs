@@ -445,7 +445,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return null;
 				
 				var loc = doc.OffsetToLocation (chunk.Offset);
-				var node = unit.GetNodeAt (new TextLocation (loc.Line, loc.Column), n => n is Identifier || n is AstType || n is CSharpTokenNode);
+				var node = unit.GetNodeAt (loc, n => n is Identifier || n is AstType || n is CSharpTokenNode);
 				var word = wordbuilder.ToString ();
 				string color;
 				if (csharpSyntaxMode.contextualHighlightKeywords.TryGetValue (word, out color)) {
@@ -558,7 +558,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					
 					var memberReferenceExpression = node as MemberReferenceExpression;
 					if (memberReferenceExpression != null) {
-						if (!memberReferenceExpression.MemberNameToken.Contains (loc.Line, loc.Column)) 
+						if (!memberReferenceExpression.MemberNameToken.Contains (loc)) 
 							return null;
 						
 						var result = csharpSyntaxMode.resolver.Resolve (memberReferenceExpression);

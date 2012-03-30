@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Resolver
 			if (unit == null || parsedFile == null || node == null)
 				return "";
 			
-			return data.GetTextBetween (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column);
+			return data.GetTextBetween (node.StartLocation, node.EndLocation);
 		}
 		
 		

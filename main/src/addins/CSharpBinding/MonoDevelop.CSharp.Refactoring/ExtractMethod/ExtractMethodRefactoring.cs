@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 					var member = doc.GetMember (buffer.Caret.Location);
 					if (member == null)
 						return false;
-					if (!member.BodyRegion.IsInside (buffer.Caret.Line, buffer.Caret.Column))
+					if (!member.BodyRegion.IsInside (buffer.Caret.Location))
 						return false;
 					return true;
 				}
@@ -276,7 +276,7 @@ namespace MonoDevelop.CSharp.Refactoring.ExtractMethod
 			var startLocation = data.OffsetToLocation (startOffset);
 			param.StartOffset = startOffset;
 			param.EndOffset = endOffset;
-			param.Nodes = new List<AstNode> (unit.GetNodesBetween (startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column));
+			param.Nodes = new List<AstNode> (unit.GetNodesBetween (startLocation, endLocation));
 			string text = options.Document.Editor.GetTextBetween (startLocation, endLocation);
 			
 			param.Text = RemoveIndent (text, GetIndent (data.GetTextBetween (data.GetLine (startLocation.Line).Offset, data.GetLine (endLocation.Line).EndOffset))).TrimEnd ('\n', '\r');
