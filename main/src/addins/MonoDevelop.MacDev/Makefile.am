@@ -102,7 +102,9 @@ FILES =  \
 	XcodeSyncing/XcodeSyncedItem.cs \
 	XcodeSyncing/XcodeSyncedType.cs 
 
-RES = MonoDevelop.MacDev.addin.xml
+RES =  \
+	icons/error.png \
+	MonoDevelop.MacDev.addin.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \
