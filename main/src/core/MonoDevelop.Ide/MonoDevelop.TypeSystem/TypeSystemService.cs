@@ -733,6 +733,7 @@ namespace MonoDevelop.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
+					wrapper.ReloadAssemblyReferences (project);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
 				}
