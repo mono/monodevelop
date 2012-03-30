@@ -126,10 +126,14 @@ namespace MonoDevelop.CSharp
 			
 			if (unit == null || parsedFile == null)
 				return false;
-
-			result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
-			if (result == null || node is Statement)
+			try {
+				result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
+				if (result == null || node is Statement)
+					return false;
+			} catch (Exception e) {
+				Console.WriteLine ("Got resolver exception:" + e);
 				return false;
+			}
 			return true;
 		}
 	}
