@@ -18,7 +18,7 @@ DEPS =  \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
 	$(top_builddir)/build/bin/OldNRefactory.dll \
-	$(top_builddir)/contrib/Mono.Cecil/src/bin/net_4_0_Debug/Mono.Cecil.dll
+	$(top_builddir)/build/bin/Mono.Cecil.dll
 
 
 REFS =  \
