@@ -41,8 +41,7 @@ namespace Mono.TextEditor
 		public DocumentChangeEventArgs (int offset, string removedText, string insertedText) : base (offset, removedText, insertedText)
 		{
 		}
-		
-		
+
 		public override string ToString ()
 		{
 			return string.Format ("[ReplaceEventArgs: Offset={0}, RemovedText={1}, RemovalLength={2}, InsertedText={3}, InsertionLength={4}]", Offset, RemovedText, RemovalLength, InsertedText, InsertionLength);

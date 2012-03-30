@@ -70,7 +70,6 @@ FILES =  \
 	Mono.TextEditor.Vi/ViMark.cs \
 	Mono.TextEditor.Vi/ViMode.cs \
 	Mono.TextEditor.Vi/ViWordFindStrategy.cs \
-	Mono.TextEditor/AbstractPartitioner.cs \
 	Mono.TextEditor/Annotatable.cs \
 	Mono.TextEditor/BookmarkActions.cs \
 	Mono.TextEditor/BookmarkMarker.cs \

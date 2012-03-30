@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 		
 		CaretMode mode;
 		
-		int line;
+		int line = DocumentLocation.MinLine;
 		public int Line {
 			get {
 				return line;
@@ -56,7 +56,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		int column;
+		int column = DocumentLocation.MinColumn;
 		public int Column {
 			get {
 				return column;
@@ -101,9 +101,10 @@ namespace Mono.TextEditor
 					return 0;
 				if (Line <= doc.LineCount) {
 					LineSegment line = doc.GetLine (Line);
-					if (line != null)
+					if (line != null) {
 						result = line.Offset;
-					result += System.Math.Min (Column - 1, line.EditableLength);
+						result += System.Math.Min (Column - 1, line.EditableLength);
+					}
 				}
 				return result;
 			}
@@ -223,19 +224,21 @@ namespace Mono.TextEditor
 
 			int desiredLineNumber = TextEditorData.Document.OffsetToLineNumber (desiredOffset);
 			var desiredLine = TextEditorData.Document.GetLine (desiredLineNumber);
-			int column = desiredOffset - desiredLine.Offset + 1;
-			if (desiredLine.EditableLength + 1 < this.Column && column == 1) {
+			int newColumn = desiredOffset - desiredLine.Offset + 1;
+			if (desiredLine.EditableLength + 1 < this.Column && newColumn == 1) {
 				if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual)
-					column = TextEditorData.GetVirtualIndentationColumn (desiredLineNumber, 1);
+					newColumn = TextEditorData.GetVirtualIndentationColumn (desiredLineNumber, 1);
 			}
-			Location = new DocumentLocation (desiredLineNumber, column);
+			
+			line = desiredLineNumber;
+			column = newColumn;
 
 			var logicalDesiredColumn = desiredLine.GetLogicalColumn (TextEditorData, this.DesiredColumn);
 
 			if (logicalDesiredColumn <= desiredLine.EditableLength) {
 				int possibleOffset = TextEditorData.LocationToOffset (desiredLineNumber, logicalDesiredColumn);
 				if (!TextEditorData.Document.GetFoldingsFromOffset (possibleOffset).Any (f => f.IsFolded))
-					Location = new DocumentLocation (desiredLineNumber, logicalDesiredColumn);
+					column = logicalDesiredColumn;
 			}
 
 			OnPositionChanged (new DocumentLocationEventArgs (old));
