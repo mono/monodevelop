@@ -56,6 +56,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			new Gtk.TargetEntry ("text/uri-list", 0, 100u)
 		};
 		
+		[Localizable (true)]
 		public string Description {
 			get { return description; }
 			set {
