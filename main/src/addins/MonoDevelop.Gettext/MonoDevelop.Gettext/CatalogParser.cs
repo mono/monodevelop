@@ -39,22 +39,19 @@ namespace MonoDevelop.Gettext
 	public abstract class CatalogParser
 	{
 		internal static readonly string[] LineSplitStrings = { "\n\r", "\r\n", "\r", "\n" };
-
-		//string fileName
-		string[] fileLines;
+		
 		string newLine;
-		int lineNumber = 0;
+		string fileName;
+		Encoding encoding;
 		
 		public CatalogParser (string fileName, Encoding encoding)
 		{
-	
+			
 			newLine = GetNewLine (fileName,encoding);
-			var fileLineList = File.ReadLines (fileName, encoding).ToList ();
-			fileLineList.Add ("");
-			fileLines = fileLineList.ToArray ();
-			// Previously string.Split was used to get the lines, 
-			// this resulted in an extra line after EOF
-			// The parse function relies on this to work right, so added it in. Messy.
+			
+			// parse command will open file later through streamreader
+			this.fileName = fileName;
+			this.encoding = encoding;
 			
 		}
 		
@@ -107,6 +104,10 @@ namespace MonoDevelop.Gettext
 		static bool ReadParam (string input, string pattern, out string output)
 		{
 			output = String.Empty;
+			
+			if (input == null)
+				return false;
+			
 			input = input.TrimStart (' ', '\t');
 			if (input.Length < pattern.Length)
 				return false;
@@ -118,11 +119,11 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 		
-		string ParseMessage (ref string line, ref string dummy, ref int lineNumber)
+		string ParseMessage (ref string line, ref string dummy, StreamReader sr)
 		{
 			StringBuilder result = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
 			
-			while ((line = fileLines[lineNumber++]) != String.Empty) {
+			while (!String.IsNullOrEmpty(line = sr.ReadLine ())) {
 				if (line[0] == '\t') 
 					line = line.Substring (1);
 				
@@ -138,9 +139,7 @@ namespace MonoDevelop.Gettext
 		// return false if parsing failed, true otherwise
 		public bool Parse ()
 		{
-			if (fileLines.Length == 0)
-				return false;
-			
+						
 			string line, dummy;
 			string mflags = String.Empty;
 			string mstr = String.Empty;
@@ -151,185 +150,190 @@ namespace MonoDevelop.Gettext
 			List<string> mtranslations = new List<string> ();
 			bool hasPlural = false;
 			
-			line = fileLines[lineNumber++];
-			if (line == String.Empty)
-				line = fileLines[lineNumber++];
-			
-			while (line != String.Empty)
+			using (StreamReader sr = new StreamReader(fileName,encoding))
 			{
-				// ignore empty special tags (except for automatic comments which we
-				// DO want to preserve):
-				while (line == "#," || line == "#:")
-					line = fileLines[lineNumber++];
+				line = sr.ReadLine ();
 				
-				// flags:
-				// Can't we have more than one flag, now only the last is kept ...
-				if (CatalogParser.ReadParam (line, "#, ", out dummy))
-				{
-					mflags = dummy; //"#, " +
-					line = fileLines[lineNumber++];
-				}
+				while (line == "")
+					line = sr.ReadLine();
 				
-				// auto comments:
-				if (CatalogParser.ReadParam (line, "#. ", out dummy) || CatalogParser.ReadParam (line, "#.", out dummy)) // second one to account for empty auto comments
-				{
-					mautocomments.Add (dummy);
-					line = fileLines[lineNumber++];
-				}
+				if (line == null)
+					return false;
 				
-				// references:
-				else if (CatalogParser.ReadParam (line, "#: ", out dummy))
+				while (line != null)
 				{
-					// A line may contain several references, separated by white-space.
-					// Each reference is in the form "path_name:line_number"
-					// (path_name may contain spaces)
-					dummy = dummy.Trim ();
-					while (dummy != String.Empty) {
-						int i = 0;
-						while (i < dummy.Length && dummy[i] != ':') {
-							i++;
-						}
-						while (i < dummy.Length && ! Char.IsWhiteSpace (dummy[i])) {
-							i++;
-						}
-						
-						//store paths as Unix-type paths, but internally use native style
-						string refpath = dummy.Substring (0, i);
-						if (MonoDevelop.Core.Platform.IsWindows) {
-							refpath = refpath.Replace ('/', '\\');
-						}
-						
-						mrefs.Add (refpath);
-						dummy = dummy.Substring (i).Trim ();
-					}
+					// ignore empty special tags (except for automatic comments which we
+					// DO want to preserve):
+					while (line == "#," || line == "#:")
+						line = sr.ReadLine();
 					
-					line = fileLines[lineNumber++];
-				}
-				
-				// msgid:
-				else if (CatalogParser.ReadParam (line, "msgid \"", out dummy) ||
-				         CatalogParser.ReadParam (line, "msgid\t\"", out dummy))
-				{
-					mstr = ParseMessage (ref line, ref dummy, ref lineNumber);
-				}
-				
-				// msgid_plural:
-				else if (CatalogParser.ReadParam (line, "msgid_plural \"", out dummy) ||
-				         CatalogParser.ReadParam (line, "msgid_plural\t\"", out dummy))
-				{
-					msgidPlural = ParseMessage (ref line, ref dummy, ref lineNumber);
-					hasPlural = true;
-				}
-
-				// msgstr:
-				else if (CatalogParser.ReadParam (line, "msgstr \"", out dummy) ||
-				         CatalogParser.ReadParam (line, "msgstr\t\"", out dummy))
-				{
-					if (hasPlural) {
-						// TODO: use logging
-						Console.WriteLine ("Broken catalog file: singular form msgstr used together with msgid_plural");
-						return false;
-					}
-					
-					
-					string str = ParseMessage (ref line, ref dummy, ref lineNumber);
-					mtranslations.Add (str);
-					
-					if (! OnEntry (mstr, String.Empty, false, mtranslations.ToArray (),
-					               mflags, mrefs.ToArray (), mcomment,
-					               mautocomments.ToArray ()))
+					// flags:
+					// Can't we have more than one flag, now only the last is kept ...
+					if (CatalogParser.ReadParam (line, "#, ", out dummy))
 					{
-						return false;
+						mflags = dummy; //"#, " +
+						line = sr.ReadLine ();
 					}
 					
-					mcomment = mstr = msgidPlural = mflags = String.Empty;
-					hasPlural = false;
-					mrefs.Clear ();
-					mautocomments.Clear ();
-					mtranslations.Clear ();
-				} else if (CatalogParser.ReadParam (line, "msgstr[", out dummy)) {
-					// msgstr[i]:
-					if (!hasPlural){
-						// TODO: use logging
-						Console.WriteLine ("Broken catalog file: plural form msgstr used without msgid_plural");
-						return false;
+					// auto comments:
+					if (CatalogParser.ReadParam (line, "#. ", out dummy) || CatalogParser.ReadParam (line, "#.", out dummy)) // second one to account for empty auto comments
+					{
+						mautocomments.Add (dummy);
+						line = sr.ReadLine ();
 					}
 					
-					int pos = dummy.IndexOf (']');
-					string idx = dummy.Substring (pos - 1, 1);
-					string label = "msgstr[" + idx + "]";
-					
-					while (CatalogParser.ReadParam (line, label + " \"", out dummy) || CatalogParser.ReadParam (line, label + "\t\"", out dummy)) {
-						StringBuilder str = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
-						
-						while ((line = fileLines[lineNumber++]) != String.Empty) {
-							if (line[0] == '\t')
-								line = line.Substring (1);
-							if (line[0] == '"' && line[line.Length - 1] == '"') {
-								str.Append (line.Substring (1, line.Length - 2));
-							} else {
-								if (ReadParam (line, "msgstr[", out dummy)) {
-									pos = dummy.IndexOf (']');
-									idx = dummy.Substring (pos - 1, 1);
-									label = "msgstr[" + idx + "]";
-								}
-								break;
+					// references:
+					else if (CatalogParser.ReadParam (line, "#: ", out dummy))
+					{
+						// A line may contain several references, separated by white-space.
+						// Each reference is in the form "path_name:line_number"
+						// (path_name may contain spaces)
+						dummy = dummy.Trim ();
+						while (dummy != String.Empty) {
+							int i = 0;
+							while (i < dummy.Length && dummy[i] != ':') {
+								i++;
 							}
+							while (i < dummy.Length && ! Char.IsWhiteSpace (dummy[i])) {
+								i++;
+							}
+							
+							//store paths as Unix-type paths, but internally use native style
+							string refpath = dummy.Substring (0, i);
+							if (MonoDevelop.Core.Platform.IsWindows) {
+								refpath = refpath.Replace ('/', '\\');
+							}
+							
+							mrefs.Add (refpath);
+							dummy = dummy.Substring (i).Trim ();
 						}
-						mtranslations.Add (str.ToString ());
+						
+						line = sr.ReadLine ();
 					}
 					
-					if (! OnEntry (mstr, msgidPlural, true, mtranslations.ToArray (),
-					               mflags, mrefs.ToArray (), mcomment,
-					               mautocomments.ToArray ()))
+					// msgid:
+					else if (CatalogParser.ReadParam (line, "msgid \"", out dummy) ||
+					         CatalogParser.ReadParam (line, "msgid\t\"", out dummy))
 					{
-						return false;
+						mstr = ParseMessage (ref line, ref dummy, sr);
 					}
 					
-					mcomment = mstr = msgidPlural = mflags = String.Empty;
-					hasPlural = false;
-					mrefs.Clear ();
-					mautocomments.Clear ();
-					mtranslations.Clear ();
-				}else if (CatalogParser.ReadParam (line, "#~ ", out dummy)) {
-					// deleted lines:
-					
-					List<string> deletedLines = new List<string> ();
-					deletedLines.Add (line);
-					while ((line = fileLines[lineNumber++]) != String.Empty) {
-						// if line does not start with "#~ " anymore, stop reading
-						if (! ReadParam (line, "#~ ", out dummy))
-							break;
-
+					// msgid_plural:
+					else if (CatalogParser.ReadParam (line, "msgid_plural \"", out dummy) ||
+					         CatalogParser.ReadParam (line, "msgid_plural\t\"", out dummy))
+					{
+						msgidPlural = ParseMessage (ref line, ref dummy, sr);
+						hasPlural = true;
+					}
+	
+					// msgstr:
+					else if (CatalogParser.ReadParam (line, "msgstr \"", out dummy) ||
+					         CatalogParser.ReadParam (line, "msgstr\t\"", out dummy))
+					{
+						if (hasPlural) {
+							// TODO: use logging
+							Console.WriteLine ("Broken catalog file: singular form msgstr used together with msgid_plural");
+							return false;
+						}
+						
+						string str = ParseMessage (ref line, ref dummy, sr);
+						mtranslations.Add (str);
+						
+						if (! OnEntry (mstr, String.Empty, false, mtranslations.ToArray (),
+						               mflags, mrefs.ToArray (), mcomment,
+						               mautocomments.ToArray ()))
+						{
+							return false;
+						}
+						
+						mcomment = mstr = msgidPlural = mflags = String.Empty;
+						hasPlural = false;
+						mrefs.Clear ();
+						mautocomments.Clear ();
+						mtranslations.Clear ();
+					} else if (CatalogParser.ReadParam (line, "msgstr[", out dummy)) {
+						// msgstr[i]:
+						if (!hasPlural){
+							// TODO: use logging
+							Console.WriteLine ("Broken catalog file: plural form msgstr used without msgid_plural");
+							return false;
+						}
+						
+						int pos = dummy.IndexOf (']');
+						string idx = dummy.Substring (pos - 1, 1);
+						string label = "msgstr[" + idx + "]";
+						
+						while (CatalogParser.ReadParam (line, label + " \"", out dummy) || CatalogParser.ReadParam (line, label + "\t\"", out dummy)) {
+							StringBuilder str = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
+							
+							while (!String.IsNullOrEmpty(line = sr.ReadLine ())) {
+								if (line[0] == '\t')
+									line = line.Substring (1);
+								if (line[0] == '"' && line[line.Length - 1] == '"') {
+									str.Append (line.Substring (1, line.Length - 2));
+								} else {
+									if (ReadParam (line, "msgstr[", out dummy)) {
+										pos = dummy.IndexOf (']');
+										idx = dummy.Substring (pos - 1, 1);
+										label = "msgstr[" + idx + "]";
+									}
+									break;
+								}
+							}
+							mtranslations.Add (str.ToString ());
+						}
+						
+						if (! OnEntry (mstr, msgidPlural, true, mtranslations.ToArray (),
+						               mflags, mrefs.ToArray (), mcomment,
+						               mautocomments.ToArray ()))
+						{
+							return false;
+						}
+						
+						mcomment = mstr = msgidPlural = mflags = String.Empty;
+						hasPlural = false;
+						mrefs.Clear ();
+						mautocomments.Clear ();
+						mtranslations.Clear ();
+					}else if (CatalogParser.ReadParam (line, "#~ ", out dummy)) {
+						// deleted lines:
+						
+						List<string> deletedLines = new List<string> ();
 						deletedLines.Add (line);
+						while (!String.IsNullOrEmpty(line = sr.ReadLine ())) {
+							// if line does not start with "#~ " anymore, stop reading
+							if (! ReadParam (line, "#~ ", out dummy))
+								break;
+	
+							deletedLines.Add (line);
+						}
+						if (! OnDeletedEntry (deletedLines.ToArray (), mflags, null, mcomment, mautocomments.ToArray ())) 
+							return false;
+						
+						mcomment = mstr = msgidPlural = mflags = String.Empty;
+						hasPlural = false;
+						mrefs.Clear ();
+						mautocomments.Clear ();
+						mtranslations.Clear ();
+					} else if (line != null && line[0] == '#') {
+						// comment:
+						
+						while (!String.IsNullOrEmpty (line) &&
+						       ((line[0] == '#' && line.Length < 2) ||
+							   (line[0] == '#' && line[1] != ',' && line[1] != ':' && line[1] != '.')))
+						{
+							mcomment += mcomment.Length > 0 ? '\n' + line : line;
+							line = sr.ReadLine ();
+						}
+					} else {
+						line = sr.ReadLine ();
+						
 					}
-					if (! OnDeletedEntry (deletedLines.ToArray (), mflags, null, mcomment, mautocomments.ToArray ())) 
-						return false;
 					
-					mcomment = mstr = msgidPlural = mflags = String.Empty;
-					hasPlural = false;
-					mrefs.Clear ();
-					mautocomments.Clear ();
-					mtranslations.Clear ();
-				} else if (line[0] == '#') {
-					// comment:
-					
-					while (line != String.Empty &&
-					       ((line[0] == '#' && line.Length < 2) ||
-						   (line[0] == '#' && line[1] != ',' && line[1] != ':' && line[1] != '.')))
-					{
-						mcomment += mcomment.Length > 0 ? '\n' + line : line;
-						line = fileLines[lineNumber++];
-					}
-				} else {
-					line = fileLines[lineNumber++];
-					
+					while (line == String.Empty)
+						line = sr.ReadLine ();
 				}
-				
-				while (line == String.Empty && lineNumber < fileLines.Length)
-					line = fileLines[lineNumber++];
 			}
-			
 			return true;
 		}
 		
