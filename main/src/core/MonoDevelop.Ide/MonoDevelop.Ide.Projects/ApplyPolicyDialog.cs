@@ -37,10 +37,16 @@ namespace MonoDevelop.Ide.Projects
 	{
 		IPolicyProvider policyProvider;
 		
+		PoliciesListSummaryTree tree;
+		
 		public ApplyPolicyDialog (IPolicyProvider policyProvider)
 		{
-			this.Build ();
 			this.policyProvider = policyProvider;
+			
+			this.Build ();
+			tree = new PoliciesListSummaryTree ();
+			policiesScroll.Add (tree);
+			tree.Show ();
 			
 			foreach (PolicySet pset in PolicyService.GetPolicySets ())
 				if (pset.Visible)
@@ -63,11 +69,22 @@ namespace MonoDevelop.Ide.Projects
 		 
 		protected void OnButtonOkClicked (object sender, System.EventArgs e)
 		{
-			PolicySet pset = GetPolicySet (true);
-			if (pset != null) {
+			PolicySet pset = null;
+			try {
+				pset = GetPolicySet (true);
 				policyProvider.Policies.Import (pset, false);
-				Respond (Gtk.ResponseType.Ok);
+			} catch (Exception ex) {
+				string msg;
+				if (pset == null) {
+					msg = GettextCatalog.GetString ("The policy set could not be loaded");
+				} else {
+					msg = GettextCatalog.GetString ("The policy set could not be applied");
+				}
+				MessageService.ShowException (ex, msg);
+				Respond (Gtk.ResponseType.Cancel);
+				return;
 			}
+			Respond (Gtk.ResponseType.Ok);
 		}
 		
 		PolicySet GetPolicySet (bool notifyErrors)
@@ -75,44 +92,39 @@ namespace MonoDevelop.Ide.Projects
 			if (radioCustom.Active) {
 				return PolicyService.GetPolicySet (combPolicies.ActiveText);
 			}
-			else {
-				if (string.IsNullOrEmpty (fileEntry.Path)) {
-					if (notifyErrors)
-						MessageService.ShowError (GettextCatalog.GetString ("File name not specified"));
-					return null;
-				}
-				try {
-					PolicySet pset = new PolicySet ();
-					pset.LoadFromFile (fileEntry.Path);
-					ExportProjectPolicyDialog.DefaultFileDialogPolicyDir = System.IO.Path.GetDirectoryName (fileEntry.Path);
-					return pset;
-				} catch (Exception ex) {
-					if (notifyErrors)
-						MessageService.ShowException (ex, GettextCatalog.GetString ("The policy set could not be loaded"));
-					return null;
-				}
+			
+			var f = fileEntry.Path;
+			if (string.IsNullOrEmpty (f) || !System.IO.File.Exists (f)) {
+				return null;
 			}
+			
+			var pset = new PolicySet ();
+			pset.LoadFromFile (fileEntry.Path);
+			ExportProjectPolicyDialog.DefaultFileDialogPolicyDir = System.IO.Path.GetDirectoryName (fileEntry.Path);
+			return pset;
 		}
 		
 		void UpdateContentLabels ()
 		{
 			PolicySet pset = GetPolicySet (false);
-			if (pset == null) {
-				labelChangesTitle.Hide ();
-				if (radioFile.Active) {
-					if (string.IsNullOrEmpty (fileEntry.Path) || !System.IO.File.Exists (fileEntry.Path)) {
-						labelChanges.Text = GettextCatalog.GetString ("Please select a valid policy file");
-					}
-					else {
-						labelChanges.Text = GettextCatalog.GetString ("The selected file is not a valid policies file");
-					}
-				}
-				else
-					labelChanges.Text = string.Empty;
+			tree.SetPolicies (pset);
+			if (tree.HasPolicies) {
+				buttonOk.Sensitive = true;
 				return;
 			}
-			labelChangesTitle.Show ();
-			labelChanges.Text = GetPoliciesDescription (pset);
+			
+			if (pset != null) {
+				tree.Message = GettextCatalog.GetString ("The selected policy is empty");
+			} else if (radioFile.Active) {
+				if (string.IsNullOrEmpty (fileEntry.Path) || !System.IO.File.Exists (fileEntry.Path)) {
+					tree.Message = GettextCatalog.GetString ("Please select a valid policy file");
+				} else {
+					tree.Message = GettextCatalog.GetString ("The selected file is not a valid policies file");
+				}
+			} else {
+				tree.Message = GettextCatalog.GetString ("Please select a policy");
+			}
+			buttonOk.Sensitive = false;
 		}
 		
 		public static string GetPoliciesDescription (PolicyContainer pset)
@@ -163,5 +175,104 @@ namespace MonoDevelop.Ide.Projects
 			UpdateContentLabels ();
 		}
 	}
+	
+	internal class PoliciesListSummaryTree : Gtk.TreeView
+	{
+		Gtk.ListStore store;
+		string message;
+		
+		public PoliciesListSummaryTree () : base (new Gtk.ListStore (typeof (string)))
+		{
+			CanFocus = false;
+			HeadersVisible = false;
+			store = (Gtk.ListStore) Model;
+			this.AppendColumn ("", new Gtk.CellRendererText (), "text", 0);
+		}
+		
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			if (HasPolicies) {
+				return base.OnExposeEvent (evnt);
+			}
+			
+			var win = evnt.Window;
+			win.Clear ();
+			if (string.IsNullOrEmpty (message)) {
+				return true;
+			}
+			
+			using (var layout = Mono.TextEditor.PangoUtil.CreateLayout (this)) {
+				layout.SetMarkup ("<i>" + GLib.Markup.EscapeText (message) + "</i>");
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+				var a = Allocation;
+				var x = (a.Width - w) / 2;
+				var y = (a.Height - h ) / 2;
+				win.DrawLayout (Style.TextGC (Gtk.StateType.Normal), x, y, layout);
+			}
+			return true;
+		}
+		
+		public bool HasPolicies { get; private set; }
+		
+		/// <summary>
+		/// Message to be shown if there are no policies.
+		/// </summary>
+		public string Message {
+			get { return message; }
+			set {
+				message = value;
+				if (!HasPolicies) {
+					QueueDraw ();
+				}
+			}
+		}
+		
+		public void SetPolicies (PolicyContainer pset)
+		{
+			if (pset == null) {
+				store.Clear ();
+				HasPolicies = false;
+				return;
+			}
+			
+			var content = new Dictionary<string, List<string>> ();
+			foreach (var p in pset.DirectGetAll ()) {
+				string name = PolicyService.GetPolicyTypeDescription (p.PolicyType);
+				List<string> scopes;
+				if (!content.TryGetValue (name, out scopes))
+					scopes = content [name] = new List<string> ();
+				scopes.Add (p.Scope ?? "");
+			}
+			
+			var sorted = content.ToList ();
+			sorted.Sort ((x, y) => x.Key.CompareTo(y.Key));
+			
+			store.Clear ();
+			
+			var sb = new StringBuilder ();
+			foreach (var pol in sorted) {
+				sb.Append (pol.Key);
+				if (pol.Value.Count != 1 || pol.Value[0].Length != 0) {
+					sb.Append (" (");
+					bool first = true;
+					if (pol.Value.Remove ("")) {
+						sb.Append (GettextCatalog.GetString ("default settings"));
+						first = false;
+					}
+					foreach (var s in pol.Value) {
+						if (!first)
+							sb.Append (", ");
+						sb.Append (s);
+						first = false;
+					}
+					sb.Append (")");
+				}
+				store.AppendValues (sb.ToString ());
+				sb.Length = 0;
+			}
+			
+			HasPolicies = sorted.Count > 0;
+		}
+	}
 }
-
