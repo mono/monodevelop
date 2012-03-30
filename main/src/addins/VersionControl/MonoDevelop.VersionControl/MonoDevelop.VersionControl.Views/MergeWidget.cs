@@ -203,14 +203,14 @@ namespace MonoDevelop.VersionControl.Views
 				Conflict conflict = currentConflicts[i];
 
 				string above = MainEditor.Document.GetTextBetween (curOffset, conflict.StartSegment.Offset);
-				editors[0].Insert (editors[0].Document.Length, above);
+				editors[0].Insert (editors[0].Document.TextLength, above);
 				int leftA = editors[0].Document.LineCount;
-				editors[0].Insert (editors[0].Document.Length, MainEditor.Document.GetTextAt (conflict.MySegment));
+				editors[0].Insert (editors[0].Document.TextLength, MainEditor.Document.GetTextAt (conflict.MySegment));
 				int leftB = editors[0].Document.LineCount;
 
-				editors[2].Insert (editors[2].Document.Length, above);
+				editors[2].Insert (editors[2].Document.TextLength, above);
 				int rightA = editors[2].Document.LineCount;
-				editors[2].Insert (editors[2].Document.Length, MainEditor.Document.GetTextAt (conflict.TheirSegment));
+				editors[2].Insert (editors[2].Document.TextLength, MainEditor.Document.GetTextAt (conflict.TheirSegment));
 				int rightB = editors[2].Document.LineCount;
 
 				int middleA = MainEditor.Document.OffsetToLineNumber (conflict.StartSegment.Offset);
@@ -223,9 +223,9 @@ namespace MonoDevelop.VersionControl.Views
 			if (currentConflicts.Count > 0)
 				endOffset = currentConflicts.Last ().EndSegment.EndOffset;
 
-			string lastPart = MainEditor.Document.GetTextBetween (endOffset, MainEditor.Document.Length);
-			editors[0].Insert (editors[0].Document.Length, lastPart);
-			editors[2].Insert (editors[2].Document.Length, lastPart);
+			string lastPart = MainEditor.Document.GetTextBetween (endOffset, MainEditor.Document.TextLength);
+			editors[0].Insert (editors[0].Document.TextLength, lastPart);
+			editors[2].Insert (editors[2].Document.TextLength, lastPart);
 
 			UpdateDiff ();
 		}

@@ -46,7 +46,7 @@ namespace Mono.TextEditor.Tests
 		{
 			GapBuffer buffer = new GapBuffer ();
 			buffer.Text = new string ('a', 100);
-			Assert.AreEqual (100, buffer.SearchBackward ("a", buffer.Length).Count ());
+			Assert.AreEqual (100, buffer.SearchBackward ("a", buffer.TextLength).Count ());
 		}
 		
 		[Test()]
@@ -56,7 +56,7 @@ namespace Mono.TextEditor.Tests
 			for (int i = 0; i < 100; i++) {
 				buffer.Insert (0, "a");
 			}
-			var idx = new List<int> (new [] { 0,  buffer.Length / 2, buffer.Length });
+			var idx = new List<int> (new [] { 0,  buffer.TextLength / 2, buffer.TextLength });
 			
 			idx.ForEach (i => buffer.Insert (i, "test"));
 			
@@ -86,7 +86,7 @@ namespace Mono.TextEditor.Tests
 				Assert.AreEqual (idx[i], results[i], (i + 1) +". match != " + idx[i] +  " was " + results[i]);
 			
 			// move gap to the end
-			buffer.Replace (buffer.Length - 1, 1, buffer.GetCharAt (buffer.Length - 1).ToString ());
+			buffer.Replace (buffer.TextLength - 1, 1, buffer.GetCharAt (buffer.TextLength - 1).ToString ());
 			
 			results = new List<int> (buffer.SearchForward ("test", 0));
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
@@ -101,7 +101,7 @@ namespace Mono.TextEditor.Tests
 			for (int i = 0; i < 100; i++) {
 				buffer.Insert (0, "a");
 			}
-			var idx = new List<int> (new [] { 0,  buffer.Length / 2, buffer.Length });
+			var idx = new List<int> (new [] { 0,  buffer.TextLength / 2, buffer.TextLength });
 			
 			idx.ForEach (i => buffer.Insert (i, "test"));
 			
@@ -131,7 +131,7 @@ namespace Mono.TextEditor.Tests
 				Assert.AreEqual (idx[i], results[i], (i + 1) +". match != " + idx[i] +  " was " + results[i]);
 			
 			// move gap to the end
-			buffer.Replace (buffer.Length - 1, 1, buffer.GetCharAt (buffer.Length - 1).ToString ());
+			buffer.Replace (buffer.TextLength - 1, 1, buffer.GetCharAt (buffer.TextLength - 1).ToString ());
 			
 			results = new List<int> (buffer.SearchForwardIgnoreCase ("TEST", 0));
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
@@ -146,14 +146,14 @@ namespace Mono.TextEditor.Tests
 			for (int i = 0; i < 100; i++) {
 				buffer.Insert (0, "a");
 			}
-			var idx = new List<int> (new [] { 0,  buffer.Length / 2, buffer.Length });
+			var idx = new List<int> (new [] { 0,  buffer.TextLength / 2, buffer.TextLength });
 			
 			idx.ForEach (i => buffer.Insert (i, "test"));
 			
 			// move gap to the beginning
 			buffer.Replace (idx[0], 1, buffer.GetCharAt (idx[0]).ToString ());
 			
-			List<int> results = new List<int> (buffer.SearchBackward ("test", buffer.Length));
+			List<int> results = new List<int> (buffer.SearchBackward ("test", buffer.TextLength));
 			
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
 			
@@ -163,7 +163,7 @@ namespace Mono.TextEditor.Tests
 			// move gap to the middle
 			buffer.Replace (idx[1], 1, buffer.GetCharAt (idx[1]).ToString ());
 			
-			results = new List<int> (buffer.SearchBackward ("test", buffer.Length));
+			results = new List<int> (buffer.SearchBackward ("test", buffer.TextLength));
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
 			for (int i = 0; i < idx.Count; i++)
 				Assert.AreEqual (idx[idx.Count -  1 - i], results[i], (i + 1) +". match != " + idx[idx.Count -  1 - i] +  " was " + results[i]);
@@ -171,16 +171,16 @@ namespace Mono.TextEditor.Tests
 			// move gap to the end
 			buffer.Replace (idx[2], 1, buffer.GetCharAt (idx[2]).ToString ());
 			
-			results = new List<int> (buffer.SearchBackward ("test", buffer.Length));
+			results = new List<int> (buffer.SearchBackward ("test", buffer.TextLength));
 			
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
 			for (int i = 0; i < idx.Count; i++)
 				Assert.AreEqual (idx[idx.Count -  1 - i], results[i], (i + 1) +". match != " + idx[idx.Count -  1 - i] +  " was " + results[i]);
 			
 			// move gap to the end
-			buffer.Replace (buffer.Length - 1, 1, buffer.GetCharAt (buffer.Length - 1).ToString ());
+			buffer.Replace (buffer.TextLength - 1, 1, buffer.GetCharAt (buffer.TextLength - 1).ToString ());
 			
-			results = new List<int> (buffer.SearchBackward ("test", buffer.Length));
+			results = new List<int> (buffer.SearchBackward ("test", buffer.TextLength));
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
 			for (int i = 0; i < idx.Count; i++)
 				Assert.AreEqual (idx[idx.Count -  1 - i], results[i], (i + 1) +". match != " + idx[idx.Count -  1 - i] +  " was " + results[i]);
@@ -193,14 +193,14 @@ namespace Mono.TextEditor.Tests
 			for (int i = 0; i < 100; i++) {
 				buffer.Insert (0, "a");
 			}
-			var idx = new List<int> (new [] { 0,  buffer.Length / 2, buffer.Length });
+			var idx = new List<int> (new [] { 0,  buffer.TextLength / 2, buffer.TextLength });
 			
 			idx.ForEach (i => buffer.Insert (i, "test"));
 			
 			// move gap to the beginning
 			buffer.Replace (idx[0], 1, buffer.GetCharAt (idx[0]).ToString ());
 			
-			List<int> results = new List<int> (buffer.SearchBackwardIgnoreCase ("TEST", buffer.Length));
+			List<int> results = new List<int> (buffer.SearchBackwardIgnoreCase ("TEST", buffer.TextLength));
 			
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
 			
@@ -210,7 +210,7 @@ namespace Mono.TextEditor.Tests
 			// move gap to the middle
 			buffer.Replace (idx[1], 1, buffer.GetCharAt (idx[1]).ToString ());
 			
-			results = new List<int> (buffer.SearchBackwardIgnoreCase ("TEST", buffer.Length));
+			results = new List<int> (buffer.SearchBackwardIgnoreCase ("TEST", buffer.TextLength));
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
 			for (int i = 0; i < idx.Count; i++)
 				Assert.AreEqual (idx[idx.Count -  1 - i], results[i], (i + 1) +". match != " + idx[idx.Count -  1 - i] +  " was " + results[i]);
@@ -218,15 +218,15 @@ namespace Mono.TextEditor.Tests
 			// move gap to the end
 			buffer.Replace (idx[2], 1, buffer.GetCharAt (idx[2]).ToString ());
 			
-			results = new List<int> (buffer.SearchBackwardIgnoreCase ("TEST", buffer.Length));
+			results = new List<int> (buffer.SearchBackwardIgnoreCase ("TEST", buffer.TextLength));
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
 			for (int i = 0; i < idx.Count; i++)
 				Assert.AreEqual (idx[idx.Count -  1 - i], results[i], (i + 1) +". match != " + idx[idx.Count -  1 - i] +  " was " + results[i]);
 			
 			// move gap to the end
-			buffer.Replace (buffer.Length - 1, 1, buffer.GetCharAt (buffer.Length - 1).ToString ());
+			buffer.Replace (buffer.TextLength - 1, 1, buffer.GetCharAt (buffer.TextLength - 1).ToString ());
 			
-			results = new List<int> (buffer.SearchBackwardIgnoreCase ("TEST", buffer.Length));
+			results = new List<int> (buffer.SearchBackwardIgnoreCase ("TEST", buffer.TextLength));
 			Assert.AreEqual (idx.Count, results.Count, "matches != " + idx.Count + " - found:" + results.Count);
 			for (int i = 0; i < idx.Count; i++)
 				Assert.AreEqual (idx[idx.Count -  1 - i], results[i], (i + 1) +". match != " + idx[idx.Count -  1 - i] +  " was " + results[i]);

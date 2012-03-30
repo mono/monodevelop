@@ -248,7 +248,7 @@ namespace MonoDevelop.SourceEditor
 		
 		IEnumerable<char> TextWithoutCommentsAndStrings {
 			get {
-				return from p in GetTextWithoutCommentsAndStrings (Document, 0, Document.Length) select p.Key;
+				return from p in GetTextWithoutCommentsAndStrings (Document, 0, Document.TextLength) select p.Key;
 			}
 		}
 		
@@ -268,7 +268,7 @@ namespace MonoDevelop.SourceEditor
 						if (isInBlockComment) {
 							if (pos > 0 && doc.GetCharAt (pos - 1) == '*') 
 								isInBlockComment = false;
-						} else  if (!isInString && !isInChar && pos + 1 < doc.Length) {
+						} else  if (!isInString && !isInChar && pos + 1 < doc.TextLength) {
 							char nextChar = doc.GetCharAt (pos + 1);
 							if (nextChar == '/')
 								isInLineComment = true;
@@ -345,7 +345,7 @@ namespace MonoDevelop.SourceEditor
 			// insert template when space is typed (currently disabled - it's annoying).
 			bool templateInserted = false;
 			//!inStringOrComment && (key == Gdk.Key.space) && DoInsertTemplate ();
-			bool returnBetweenBraces = key == Gdk.Key.Return && (state & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None && Caret.Offset > 0 && Caret.Offset < Document.Length && Document.GetCharAt (Caret.Offset - 1) == '{' && Document.GetCharAt (Caret.Offset) == '}' && !inStringOrComment;
+			bool returnBetweenBraces = key == Gdk.Key.Return && (state & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None && Caret.Offset > 0 && Caret.Offset < Document.TextLength && Document.GetCharAt (Caret.Offset - 1) == '{' && Document.GetCharAt (Caret.Offset) == '}' && !inStringOrComment;
 //			int initialOffset = Caret.Offset;
 			const string openBrackets = "{[('\"";
 			const string closingBrackets = "}])'\"";
@@ -535,10 +535,10 @@ namespace MonoDevelop.SourceEditor
 			int start = offset;
 			while (start > 0 && IsIdChar (Document.GetCharAt (start)))
 				start--;
-			while (offset < Document.Length && IsIdChar (Document.GetCharAt (offset)))
+			while (offset < Document.TextLength && IsIdChar (Document.GetCharAt (offset)))
 				offset++;
 			start++;
-			if (offset - start > 0 && start < Document.Length)
+			if (offset - start > 0 && start < Document.TextLength)
 				return Document.GetTextAt (start, offset - start);
 			else
 				return string.Empty;

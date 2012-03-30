@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Length {
 			get {
-				return document.Length;
+				return document.TextLength;
 			}
 		}
 		

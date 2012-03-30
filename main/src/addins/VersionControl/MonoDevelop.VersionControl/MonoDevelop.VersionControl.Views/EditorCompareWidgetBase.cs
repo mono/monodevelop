@@ -387,7 +387,7 @@ namespace MonoDevelop.VersionControl.Views
 		static void UpdateCaretPosition (Caret caret)
 		{
 			int offset = caret.Offset;
-			if (offset < 0 || offset > caret.TextEditorData.Document.Length)
+			if (offset < 0 || offset > caret.TextEditorData.Document.TextLength)
 				return;
 			DocumentLocation location = caret.TextEditorData.LogicalToVisualLocation (caret.Location);
 			IdeApp.Workbench.StatusBar.ShowCaretState (caret.Line,
@@ -633,7 +633,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			using (var undo = toEditor.OpenUndoGroup ()) {
 				var start = toEditor.Document.GetLine (hunk.InsertStart);
-				int toOffset = start != null ? start.Offset : toEditor.Document.Length;
+				int toOffset = start != null ? start.Offset : toEditor.Document.TextLength;
 				if (start != null && hunk.Inserted > 0) {
 					int line = Math.Min (hunk.InsertStart + hunk.Inserted - 1, toEditor.Document.LineCount);
 					var end = toEditor.Document.GetLine (line);

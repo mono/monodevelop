@@ -145,7 +145,7 @@ namespace Mono.TextEditor.Tests
 			Assert.IsTrue (data.IsSomethingSelected);
 			
 			Assert.AreEqual (data.SelectionRange.Offset, 0);
-			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.Length);
+			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.TextLength);
 			Assert.AreEqual (data.SelectionRange.EndOffset, data.Caret.Offset);
 		}
 		

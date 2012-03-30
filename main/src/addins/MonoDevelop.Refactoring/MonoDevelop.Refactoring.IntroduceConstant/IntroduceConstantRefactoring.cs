@@ -101,7 +101,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 					break;
 				start--;
 			}
-			while (end < data.Document.Length) {
+			while (end < data.Document.TextLength) {
 				if (data.Document.GetCharAt (end) == quote && (end == 0 || data.Document.GetCharAt (end - 1) != '\\'))
 					break;
 				end++;
@@ -112,7 +112,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 		string SearchNumber (TextEditorData data, out int start, out int end)
 		{
 			start = data.Caret.Offset;
-			while (start > 0 && start < data.Document.Length) {
+			while (start > 0 && start < data.Document.TextLength) {
 				char ch = data.Document.GetCharAt (start);
 				if (!(Char.IsNumber (ch) || ch == '.' || Char.ToUpper (ch) == 'E' || ch == '+' || ch == '-')) {
 					start++;
@@ -121,7 +121,7 @@ namespace MonoDevelop.Refactoring.IntroduceConstant
 				start--;
 			}
 			end = data.Caret.Offset;
-			while (end >= 0 && end < data.Document.Length) {
+			while (end >= 0 && end < data.Document.TextLength) {
 				char ch = data.Document.GetCharAt (end);
 				if (!(Char.IsNumber (ch) || ch == '.' || Char.ToUpper (ch) == 'E' || ch == '+' || ch == '-'))
 					break;

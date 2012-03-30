@@ -576,7 +576,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			int offset = doc.GetLine (realStartLine).Offset;
-			return doc.GetTextAt (offset, doc.Length - offset);
+			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
 		static void CheckLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.LineSegment line, out bool isBlank, out bool isBracket)

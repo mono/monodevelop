@@ -40,13 +40,13 @@ namespace Mono.TextEditor.Tests
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();
 			data.Document.Text = "Hello";
 			Assert.IsFalse (data.Document.CanUndo);
-			data.Caret.Offset = data.Document.Length;
+			data.Caret.Offset = data.Document.TextLength;
 			data.InsertAtCaret ("World");
 			Assert.IsTrue (data.Document.CanUndo);
 			data.Document.Undo ();
 			Assert.IsFalse (data.Document.CanUndo);
 			Assert.AreEqual (data.Document.Text, "Hello");
-			Assert.AreEqual (data.Document.Length, data.Caret.Offset);
+			Assert.AreEqual (data.Document.TextLength, data.Caret.Offset);
 		}
 		
 		[Test()]
@@ -55,9 +55,9 @@ namespace Mono.TextEditor.Tests
 			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
 			data.Document.Text = "Hello";
 			Assert.IsFalse (data.Document.CanUndo);
-			data.Caret.Offset = data.Document.Length;
+			data.Caret.Offset = data.Document.TextLength;
 			data.InsertAtCaret ("World");
-			Assert.AreEqual (data.Caret.Offset, data.Document.Length);
+			Assert.AreEqual (data.Caret.Offset, data.Document.TextLength);
 			Assert.IsTrue (data.Document.CanUndo);
 			data.Document.Undo ();
 			Assert.IsFalse (data.Document.CanUndo);
@@ -65,7 +65,7 @@ namespace Mono.TextEditor.Tests
 			Assert.IsTrue (data.Document.CanUndo);
 			
 			Assert.AreEqual (data.Document.Text, "HelloWorld");
-			Assert.AreEqual (data.Document.Length, data.Caret.Offset);
+			Assert.AreEqual (data.Document.TextLength, data.Caret.Offset);
 		}
 	}
 }

@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			int offset = doc.GetLine (realStartLine).Offset;
-			return doc.GetTextAt (offset, doc.Length - offset);
+			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
 		static bool IsBlankLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.LineSegment line)

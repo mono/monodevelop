@@ -41,7 +41,7 @@ namespace Mono.TextEditor.Tests
 			List<FoldSegment> result = new List<FoldSegment> ();
 			Stack<FoldSegment> foldSegments = new Stack<FoldSegment> ();
 			
-			for (int i = 0; i < doc.Length - 1; ++i) {
+			for (int i = 0; i < doc.TextLength - 1; ++i) {
 				char ch = doc.GetCharAt (i);
 				
 				if ((ch == '+' || ch == '-') && doc.GetCharAt(i + 1) == '[') {

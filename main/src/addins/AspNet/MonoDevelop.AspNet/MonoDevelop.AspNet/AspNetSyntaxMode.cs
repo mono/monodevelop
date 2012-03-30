@@ -119,7 +119,7 @@ namespace MonoDevelop.AspNet
 			{
 				bool inString = false;
 				StringBuilder langBuilder = new StringBuilder ();
-				while (j < doc.Length) {
+				while (j < doc.TextLength) {
 					char ch = doc.GetCharAt (j);
 					if (ch == '"' || ch == '\'') {
 						if (inString)
@@ -138,7 +138,7 @@ namespace MonoDevelop.AspNet
 			
 			protected override void ScanSpan (ref int i)
 			{
-				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) && i + 4 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetTextAt (i, 4) != "<%--" && doc.GetCharAt (i + 2) != '@') {
+				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) && i + 4 < doc.TextLength && doc.GetTextAt (i, 2) == "<%" && doc.GetTextAt (i, 4) != "<%--" && doc.GetCharAt (i + 2) != '@') {
 					var span = new CodeExpressionSpan (GetDefaultMime ());
 					FoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0 ? 3 : 2);
 					return;
@@ -149,22 +149,22 @@ namespace MonoDevelop.AspNet
 					while (k > 0 && doc.GetCharAt (k) != '<') {
 						k--;
 					}
-					if (k + 7 < doc.Length && doc.GetTextAt (k, 7) == "<script") {
+					if (k + 7 < doc.TextLength && doc.GetTextAt (k, 7) == "<script") {
 						int j = k + "<script".Length;
 						string mime = "application/javascript";
-						while (j < doc.Length && doc.GetCharAt (j) != '>') {
-							if (j + 8 < doc.Length && doc.GetTextAt (j, 8) == "language") {
+						while (j < doc.TextLength && doc.GetCharAt (j) != '>') {
+							if (j + 8 < doc.TextLength && doc.GetTextAt (j, 8) == "language") {
 								j += 8;
 								mime = GetMimeForLanguage (GetAttributeValue (ref j));
 								break;
 							}
-							if (j + 5 < doc.Length && doc.GetTextAt (j, 5) == "runat") {
+							if (j + 5 < doc.TextLength && doc.GetTextAt (j, 5) == "runat") {
 								j += 5;
 								GetAttributeValue (ref j);
 								mime = GetDefaultMime ();
 								break;
 							}
-							if (j + 4 < doc.Length && doc.GetTextAt (j, 4) == "type") {
+							if (j + 4 < doc.TextLength && doc.GetTextAt (j, 4) == "type") {
 								j += 4;
 								mime = GetAttributeValue (ref j);
 								break;
@@ -186,7 +186,7 @@ namespace MonoDevelop.AspNet
 			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
 			{
-				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 9 <= doc.Length && doc.GetTextAt (i, 9) == "</script>") {
+				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 9 <= doc.TextLength && doc.GetTextAt (i, 9) == "</script>") {
 					while (!(spanStack.Peek () is CodeDeclarationSpan)) {
 						FoundSpanEnd (spanStack.Peek (), i, 0);
 					}
@@ -196,7 +196,7 @@ namespace MonoDevelop.AspNet
 					return true;
 				}
 				
-				if (spanStack.Any (s => s is CodeExpressionSpan) && i + 2 < doc.Length && doc.GetTextAt (i, 2) == "%>") {
+				if (spanStack.Any (s => s is CodeExpressionSpan) && i + 2 < doc.TextLength && doc.GetTextAt (i, 2) == "%>") {
 					while (!(spanStack.Peek () is CodeExpressionSpan)) {
 						FoundSpanEnd (spanStack.Peek (), i, 0);
 					}

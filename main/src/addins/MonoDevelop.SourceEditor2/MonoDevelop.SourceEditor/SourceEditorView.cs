@@ -412,7 +412,7 @@ namespace MonoDevelop.SourceEditor
 				var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
 					using (var undo = TextEditor.OpenUndoGroup ()) {
-						formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.Length);
+						formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.TextLength);
 						wasEdited = false;
 					}
 				}
@@ -1241,7 +1241,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public int Length { 
 			get {
-				return this.widget.TextEditor.Document.Length;
+				return this.widget.TextEditor.Document.TextLength;
 			}
 		}
 
@@ -1405,7 +1405,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public int TextLength {
 			get {
-				return Document.Length;
+				return Document.TextLength;
 			}
 		}
 

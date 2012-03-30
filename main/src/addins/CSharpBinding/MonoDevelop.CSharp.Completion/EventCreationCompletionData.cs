@@ -77,14 +77,14 @@ namespace MonoDevelop.CSharp.Completion
 			
 			// Search opening bracket of member
 			int pos = callingMember != null ? editor.Document.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
-			while (pos < editor.Document.Length && editor.Document.GetCharAt (pos) != '{') {
+			while (pos < editor.Document.TextLength && editor.Document.GetCharAt (pos) != '{') {
 				pos++;
 			}
 			
 			// Search closing bracket of member
 			pos = editor.Document.GetMatchingBracketOffset (pos) + 1;
 			
-			pos = Math.Max (0, Math.Min (pos, editor.Document.Length - 1));
+			pos = Math.Max (0, Math.Min (pos, editor.Document.TextLength - 1));
 			
 			// Insert new event handler after closing bracket
 			string indent = editor.Document.GetLine (callingMember.Region.BeginLine).GetIndentation (editor.Document);

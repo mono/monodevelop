@@ -342,7 +342,7 @@ namespace MonoDevelop.VersionControl.Views
 				int idx = text.IndexOf (':');
 				if (text.StartsWith ("*") && idx >= 0 && idx < text.Length - 1) {
 					int offset = doc.GetLine (i).EndOffset;
-					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.Length - offset);
+					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.TextLength - offset);
 					break;
 				}
 			}

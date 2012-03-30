@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		public int Length {
 			get {
-				return document.Length;
+				return document.TextLength;
 			}
 		}
 		

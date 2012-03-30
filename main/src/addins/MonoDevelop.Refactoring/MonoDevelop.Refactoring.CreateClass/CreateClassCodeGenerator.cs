@@ -72,7 +72,7 @@ namespace MonoDevelop.Refactoring.CreateClass
 				int startPos = data.Document.LocationToOffset (options.ResolveResult.ResolvedExpression.Region.BeginLine, options.ResolveResult.ResolvedExpression.Region.BeginColumn);
 				if (startPos < 0)
 					return null;
-				for (int pos = startPos; pos < data.Document.Length; pos++) {
+				for (int pos = startPos; pos < data.Document.TextLength; pos++) {
 					char ch = data.Document.GetCharAt (pos);
 					if (ch == '(') {
 						int offset = data.Document.GetMatchingBracketOffset (pos);

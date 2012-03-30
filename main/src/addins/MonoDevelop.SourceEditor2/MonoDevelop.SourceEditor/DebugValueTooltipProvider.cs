@@ -56,7 +56,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
-			if (offset >= editor.Document.Length)
+			if (offset >= editor.Document.TextLength)
 				return null;
 			
 			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)

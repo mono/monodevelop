@@ -98,11 +98,11 @@ namespace Mono.TextEditor.Tests
 			document.Remove (0, top.Length);
 			Assert.AreEqual (document.Text, testText);
 			
-			document.Remove (0, document.Length);
+			document.Remove (0, document.TextLength);
 			LineSegment line = document.GetLine (1);
 			Assert.AreEqual (0, line.Offset);
 			Assert.AreEqual (0, line.Length);
-			Assert.AreEqual (0, document.Length);
+			Assert.AreEqual (0, document.TextLength);
 			Assert.AreEqual (1, document.LineCount);
 		}
 		
@@ -114,14 +114,14 @@ namespace Mono.TextEditor.Tests
 			string top    = "1234567890";
 			document.Text = top;
 			
-			Assert.AreEqual (document.GetLine (1).Length, document.Length);
+			Assert.AreEqual (document.GetLine (1).Length, document.TextLength);
 			
-			document.Remove(0, document.Length);
+			document.Remove(0, document.TextLength);
 			
 			LineSegment line = document.GetLine (1);
 			Assert.AreEqual(0, line.Offset);
 			Assert.AreEqual(0, line.Length);
-			Assert.AreEqual(0, document.Length);
+			Assert.AreEqual(0, document.TextLength);
 			Assert.AreEqual(1, document.LineCount);
 		}
 		

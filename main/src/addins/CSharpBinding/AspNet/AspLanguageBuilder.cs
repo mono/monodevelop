@@ -261,7 +261,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public int TextLength {
 				get {
-					return localInfo.HiddenDocument.Editor.Document.Length;
+					return localInfo.HiddenDocument.Editor.Document.TextLength;
 				}
 			}
 

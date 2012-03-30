@@ -112,9 +112,9 @@ namespace MonoDevelop.CSharpBinding.Refactoring.Tests
 						Assert.Fail ("unknown insertion point:" + ch);
 						break;
 					}
-					loc.Add (new InsertionPoint (data.Document.OffsetToLocation (data.Document.Length), insertBefore, insertAfter));
+					loc.Add (new InsertionPoint (data.Document.OffsetToLocation (data.Document.TextLength), insertBefore, insertAfter));
 				} else {
-					data.Insert (data.Document.Length, ch.ToString ());
+					data.Insert (data.Document.TextLength, ch.ToString ());
 				}
 			}
 			

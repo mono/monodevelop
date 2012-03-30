@@ -234,7 +234,7 @@ namespace MonoDevelop.Ide
 			var doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = provider.ReadString ();
 			int position = doc.LocationToOffset (part.Region.BeginLine, part.Region.BeginColumn);
-			while (position + part.Name.Length < doc.Length) {
+			while (position + part.Name.Length < doc.TextLength) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
 					break;
 				position++;

@@ -1064,7 +1064,7 @@ namespace MonoDevelop.SourceEditor
 		internal void UpdateLineCol ()
 		{
 			int offset = TextEditor.Caret.Offset;
-			if (offset < 0 || offset > TextEditor.Document.Length)
+			if (offset < 0 || offset > TextEditor.Document.TextLength)
 				return;
 			DocumentLocation location = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location);
 			IdeApp.Workbench.StatusBar.ShowCaretState (TextEditor.Caret.Line,
