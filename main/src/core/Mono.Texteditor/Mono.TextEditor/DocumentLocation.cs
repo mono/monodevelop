@@ -138,7 +138,7 @@ namespace Mono.TextEditor
 	
 	public class DocumentLocationEventArgs : System.EventArgs
 	{
-		DocumentLocation location;
+		readonly DocumentLocation location;
 		
 		public Mono.TextEditor.DocumentLocation Location {
 			get {

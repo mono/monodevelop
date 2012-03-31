@@ -181,7 +181,7 @@ namespace Mono.TextEditor
 		{
 			if (e.TextMarker is IExtendingTextMarker) {
 				int lineNumber = OffsetToLineNumber (e.Line.Offset);
-				textEditorData.heightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
+				textEditorData.HeightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
 			}
 		}
 		
@@ -407,7 +407,7 @@ namespace Mono.TextEditor
 					preeditLayout.GetSize (out w, out h);
 					var calcHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
 					if (LineHeight != calcHeight) {
-						textEditorData.heightTree.SetLineHeight (preeditLine, calcHeight);
+						textEditorData.HeightTree.SetLineHeight (preeditLine, calcHeight);
 						preeditHeightChange = true;
 						QueueDraw ();
 					}
@@ -419,7 +419,7 @@ namespace Mono.TextEditor
 				preeditCursorCharIndex = 0;
 				if (preeditHeightChange) {
 					preeditHeightChange = false;
-					textEditorData.heightTree.Rebuild ();
+					textEditorData.HeightTree.Rebuild ();
 					QueueDraw ();
 				}
 			}
@@ -669,7 +669,7 @@ namespace Mono.TextEditor
 				margin.OptionsChanged ();
 			}
 			SetAdjustments (Allocation);
-			textEditorData.heightTree.Rebuild ();
+			textEditorData.HeightTree.Rebuild ();
 			this.QueueResize ();
 		}
 		
@@ -1500,7 +1500,7 @@ namespace Mono.TextEditor
 		
 		void SetHAdjustment ()
 		{
-			textEditorData.heightTree.Rebuild ();
+			textEditorData.HeightTree.Rebuild ();
 			
 			if (textEditorData.HAdjustment == null)
 				return;
@@ -1529,7 +1529,7 @@ namespace Mono.TextEditor
 			SetHAdjustment ();
 			
 			if (this.textEditorData.VAdjustment != null) {
-				double maxY = textEditorData.heightTree.TotalHeight;
+				double maxY = textEditorData.HeightTree.TotalHeight;
 				if (maxY > allocation.Height)
 					maxY += EditorLineThreshold * this.LineHeight;
 				
@@ -2846,7 +2846,7 @@ namespace Mono.TextEditor
 		void UpdateLinesOnTextMarkerHeightChange (object sender, LineEventArgs e)
 		{
 			// TODO: Optimize
-			textEditorData.heightTree.Rebuild ();
+			textEditorData.HeightTree.Rebuild ();
 			
 			if (!e.Line.Markers.Any (m => m is IExtendingTextMarker))
 				return;

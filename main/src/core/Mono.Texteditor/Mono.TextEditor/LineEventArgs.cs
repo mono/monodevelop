@@ -31,8 +31,7 @@ namespace Mono.TextEditor
 {
 	public class LineEventArgs : System.EventArgs 
 	{
-		LineSegment line;
-		
+		readonly LineSegment line;
 		public LineSegment Line {
 			get {
 				return line;

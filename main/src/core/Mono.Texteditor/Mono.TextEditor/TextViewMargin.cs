@@ -2612,13 +2612,13 @@ namespace Mono.TextEditor
 		
 		public int YToLine (double yPos)
 		{			
-			var result = textEditor.GetTextEditorData ().heightTree.YToLineNumber (yPos);
+			var result = textEditor.GetTextEditorData ().HeightTree.YToLineNumber (yPos);
 			return result;
 		}
 		
 		public double LineToY (int logicalLine)
 		{
-			return textEditor.GetTextEditorData ().heightTree.LineNumberToY (logicalLine);
+			return textEditor.GetTextEditorData ().HeightTree.LineNumberToY (logicalLine);
 			
 			/*		double delta = 0;
 			var doc = Document;
@@ -2648,7 +2648,7 @@ namespace Mono.TextEditor
 				return extendingTextMarker.GetLineHeight (textEditor);
 			}
 			int lineNumber = textEditor.OffsetToLineNumber (line.Offset); 
-			var node = textEditor.GetTextEditorData ().heightTree.GetNodeByLine (lineNumber);
+			var node = textEditor.GetTextEditorData ().HeightTree.GetNodeByLine (lineNumber);
 			return node.height / node.count;
 		}
 		
