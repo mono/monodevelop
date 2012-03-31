@@ -171,8 +171,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		Dictionary<int, double> lineHeights = new Dictionary<int, double> ();
-		
 		public TextEditor () : this(new TextDocument ())
 		{
 		}
@@ -350,6 +348,9 @@ namespace Mono.TextEditor
 			
 			InitAnimations ();
 			this.Document.EndUndo += HandleDocumenthandleEndUndo;
+			this.textEditorData.HeightTree.LineUpdateFrom += delegate(object sender, HeightTree.HeightChangedEventArgs e) {
+				RedrawFromLine (e.Line);
+			};
 #if ATK
 			TextEditorAccessible.Factory.Init (this);
 #endif
@@ -2845,18 +2846,10 @@ namespace Mono.TextEditor
 
 		void UpdateLinesOnTextMarkerHeightChange (object sender, LineEventArgs e)
 		{
-			// TODO: Optimize
-			textEditorData.HeightTree.Rebuild ();
-			
 			if (!e.Line.Markers.Any (m => m is IExtendingTextMarker))
 				return;
-			double currentHeight = GetLineHeight (e.Line);
-			double h;
-			if (!lineHeights.TryGetValue (e.Line.Offset, out h))
-				h = LineHeight;
-			if (h != currentHeight)
-				textEditorData.Document.CommitLineToEndUpdate (textEditorData.Document.OffsetToLineNumber (e.Line.Offset));
-			lineHeights [e.Line.Offset] = currentHeight;
+			var line = textEditorData.Document.OffsetToLineNumber (e.Line.Offset);
+			textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
 		}
 
 		class SetCaret 

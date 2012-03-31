@@ -58,8 +58,6 @@ namespace Mono.TextEditor
 			if (caretOffset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
 				data.Remove (offset, caretOffset - offset);
 				data.Caret.Offset = offset;
-				if (oldLine != data.Caret.Line)
-					data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			}
 		}
 		
@@ -70,7 +68,6 @@ namespace Mono.TextEditor
 			int offset = subword? data.FindNextSubwordOffset (caretOffset) : data.FindNextWordOffset (caretOffset);
 			if (caretOffset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line))  {
 				data.Remove (caretOffset, offset - caretOffset);
-				data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			}
 		}
 		
@@ -100,7 +97,6 @@ namespace Mono.TextEditor
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			data.Remove (line.Offset, line.Length);
-			data.Document.CommitLineToEndUpdate (data.Caret.Line);
 			data.Caret.Column = DocumentLocation.MinColumn;
 		}
 		

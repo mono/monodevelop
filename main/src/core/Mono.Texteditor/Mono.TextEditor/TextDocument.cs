@@ -239,9 +239,6 @@ namespace Mono.TextEditor
 			UpdateUndoStackOnReplace (args);
 			if (operation != null)
 				operation.Setup (this, args);
-			
-			if (oldLineCount != LineCount)
-				CommitLineToEndUpdate (OffsetToLocation (offset).Line);
 		}
 		
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -1380,12 +1377,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void CommitLineToEndUpdate (int line)
-		{
-			RequestUpdate (new LineToEndUpdate (line));
-			CommitDocumentUpdate ();
-		}
-				
 		public void CommitLineUpdate (int line)
 		{
 			RequestUpdate (new LineUpdate (line));

@@ -193,8 +193,6 @@ namespace MonoDevelop.SourceEditor
 						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); 
 						// ensure that the line cache is renewed
 						double newHeight = marker.GetLineHeight (widget.TextEditor);
-						if (oldHeight != newHeight)
-							widget.Document.CommitLineToEndUpdate (widget.TextEditor.Document.OffsetToLineNumber (e.Line.Offset));
 					}
 				}
 			};

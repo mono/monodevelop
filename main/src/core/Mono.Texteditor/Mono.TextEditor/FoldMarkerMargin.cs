@@ -123,7 +123,6 @@ namespace Mono.TextEditor
 			}
 			editor.SetAdjustments ();
 			editor.Caret.MoveCaretBeforeFoldings ();
-			editor.QueueDraw ();
 		}
 		
 		internal protected override void MouseHover (MarginMouseEventArgs args)

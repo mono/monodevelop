@@ -69,8 +69,28 @@ namespace Mono.TextEditor
 				return;
 			}
 			node.count--;
+			OnLineUpdateFrom (new HeightChangedEventArgs (line));
 		}
 		
+		public event EventHandler<HeightChangedEventArgs> LineUpdateFrom;
+
+		protected virtual void OnLineUpdateFrom (HeightChangedEventArgs e)
+		{
+			var handler = this.LineUpdateFrom;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public class HeightChangedEventArgs : EventArgs
+		{
+			public int Line { get; set; }
+
+			public HeightChangedEventArgs (int line)
+			{
+				Line = line;
+			}
+		}
+
 		public void InsertLine (int line)
 		{
 			var node = GetNodeByLine (line);
@@ -85,8 +105,10 @@ namespace Mono.TextEditor
 				return;
 			}
 			node.count++;
+			OnLineUpdateFrom (new HeightChangedEventArgs (line));
 		}
-		
+
+
 		public void Rebuild ()
 		{
 			markers.Clear ();
@@ -153,6 +175,7 @@ namespace Mono.TextEditor
 					});
 				}
 			}
+			OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber));
 		}
 		
 		public class FoldMarker
@@ -181,6 +204,7 @@ namespace Mono.TextEditor
 			}
 			var result = new FoldMarker (lineNumber, count);
 			markers.Add (result);
+			OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
 			return result;
 		}
 		
@@ -197,6 +221,7 @@ namespace Mono.TextEditor
 				node.foldLevel--;
 				node.UpdateAugmentedData ();
 			}
+			OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
 		}
 
 		public double LineNumberToY (int lineNumber)

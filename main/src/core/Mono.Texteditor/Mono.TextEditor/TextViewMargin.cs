@@ -1730,7 +1730,6 @@ namespace Mono.TextEditor
 
 				if (autoScroll)
 					textEditor.Caret.ActivateAutoScrollWithoutMove ();
-				Document.CommitLineToEndUpdate (docLocation.Line);
 			}
 		}
 

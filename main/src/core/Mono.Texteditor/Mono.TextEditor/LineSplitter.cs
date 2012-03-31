@@ -378,7 +378,7 @@ namespace Mono.TextEditor
 			
 			tree.InsertAfter (segment, result);
 			result.UpdateAugmentedData ();
-			OnLineChanged (new LineEventArgs (result));
+			OnLineInserted (new LineEventArgs (result));
 			return result;
 		}
 
@@ -386,7 +386,6 @@ namespace Mono.TextEditor
 		{
 			return tree.ToString ();
 		}
-
 
 		void ChangeLength (TreeNode line, int newLength)
 		{

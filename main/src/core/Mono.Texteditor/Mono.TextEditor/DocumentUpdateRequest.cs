@@ -71,21 +71,6 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	public class LineToEndUpdate : DocumentUpdateRequest
-	{
-		int line;
-		
-		public LineToEndUpdate (int line)
-		{
-			this.line = line;
-		}
-		
-		public override void Update (TextEditor editor)
-		{
-			editor.RedrawFromLine (line);
-		}
-	}
-	
 	public class MultipleLineUpdate : DocumentUpdateRequest
 	{
 		int start, end;
