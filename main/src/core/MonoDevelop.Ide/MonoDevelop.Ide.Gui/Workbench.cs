@@ -409,9 +409,11 @@ namespace MonoDevelop.Ide.Gui
 				if (openFileInfo.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
-					if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
+					if (options.HasFlag (OpenDocumentOptions.BringToFront)) { 
 						Present ();
-						doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+						// check slow loading doc hasn't been closed by user
+						if (doc != null)
+							doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
 					}
 					return doc;
 				} else {
