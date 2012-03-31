@@ -821,12 +821,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			while (lines-- > 0) {
 				text.Append (doc.Editor.EolMarker);
 			}
-			using (var undo = doc.Editor.OpenUndoGroup ()) {
-				int caretOffset = doc.Editor.Caret.Offset;
-				int inserted = doc.Editor.Insert (offset, text.ToString ());
-				if (offset < caretOffset)
-					doc.Editor.Caret.Offset = caretOffset + inserted;
-			}
+			doc.Editor.InsertAtCaret (text.ToString ());
 			doc.Editor.Document.CommitUpdateAll ();
 		}
 		

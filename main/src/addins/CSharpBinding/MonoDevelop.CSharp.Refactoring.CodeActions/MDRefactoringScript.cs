@@ -149,14 +149,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				document.Editor.CurrentMode = tle;
 			}
 		}
-		public override void Replace (int offset, int length, string newText)
-		{
-			var editor = document.Editor;
-			var caretOffset = editor.Caret.Offset;
-			var version = editor.Document.Version;
-			base.Replace (offset, length, newText);
-			editor.Caret.Offset = version.MoveOffsetTo (editor.Document.Version, caretOffset);
-		}
+		
 		public override void Dispose ()
 		{
 			undoGroup.Dispose ();

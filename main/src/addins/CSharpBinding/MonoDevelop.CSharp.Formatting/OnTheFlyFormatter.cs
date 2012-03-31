@@ -167,7 +167,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 
 			// Do the actual formatting
-			var originalVersion = data.Editor.Document.Version;
+//			var originalVersion = data.Editor.Document.Version;
 			int caretOffset = data.Editor.Caret.Offset;
 
 			int realTextDelta = seg.Offset - formatStartOffset;
@@ -184,8 +184,8 @@ namespace MonoDevelop.CSharp.Formatting
 					return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
 				});
 
-				var currentVersion = data.Editor.Document.Version;
-				data.Editor.Caret.Offset = originalVersion.MoveOffsetTo (currentVersion, caretOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default);
+//				var currentVersion = data.Editor.Document.Version;
+//				data.Editor.Caret.Offset = originalVersion.MoveOffsetTo (currentVersion, caretOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default);
 			}
 		}
 	}
