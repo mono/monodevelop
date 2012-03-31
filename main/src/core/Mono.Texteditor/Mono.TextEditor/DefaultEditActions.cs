@@ -39,26 +39,30 @@ namespace Mono.TextEditor
 	{
 		public static void Up (TextEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.Lower, 
-			                                          data.VAdjustment.Value - data.VAdjustment.StepIncrement); 
+			var newValue = System.Math.Max (data.VAdjustment.Lower, data.VAdjustment.Value - data.VAdjustment.StepIncrement); 
+			if (data.Parent != null)
+				data.Parent.SmoothScrollTo (newValue);
 		}
 		
 		public static void Down (TextEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Min (data.VAdjustment.Upper - data.VAdjustment.PageSize, 
-			                                          data.VAdjustment.Value + data.VAdjustment.StepIncrement); 
+			var newValue = System.Math.Min (data.VAdjustment.Upper - data.VAdjustment.PageSize, data.VAdjustment.Value + data.VAdjustment.StepIncrement); 
+			if (data.Parent != null)
+				data.Parent.SmoothScrollTo (newValue);
 		}
 		
 		public static void PageUp (TextEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Max (data.VAdjustment.Lower, 
-			                                          data.VAdjustment.Value - data.VAdjustment.PageSize); 
+			var newValue = System.Math.Max (data.VAdjustment.Lower, data.VAdjustment.Value - data.VAdjustment.PageSize); 
+			if (data.Parent != null)
+				data.Parent.SmoothScrollTo (newValue);
 		}
 		
 		public static void PageDown (TextEditorData data)
 		{
-			data.VAdjustment.Value = System.Math.Min (data.VAdjustment.Upper - data.VAdjustment.PageSize, 
-			                                          data.VAdjustment.Value + data.VAdjustment.PageSize); 
+			var newValue = System.Math.Min (data.VAdjustment.Upper - data.VAdjustment.PageSize, data.VAdjustment.Value + data.VAdjustment.PageSize); 
+			if (data.Parent != null)
+				data.Parent.SmoothScrollTo (newValue);
 		}
 	}
 	

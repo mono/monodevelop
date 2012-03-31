@@ -1412,7 +1412,44 @@ namespace Mono.TextEditor
 		{
 			ScrollTo (new DocumentLocation (line, column));
 		}
-		
+
+//		class ScrollingActor
+//		{
+//			readonly TextEditor editor;
+//			readonly double targetValue;
+//			readonly double initValue;
+//			
+//			public ScrollingActor (Mono.TextEditor.TextEditor editor, double targetValue)
+//			{
+//				this.editor = editor;
+//				this.targetValue = targetValue;
+//				this.initValue = editor.VAdjustment.Value;
+//			}
+//
+//			public bool Step (Actor<ScrollingActor> actor)
+//			{
+//				if (actor.Expired) {
+//					editor.VAdjustment.Value = targetValue;
+//					return false;
+//				}
+//				var newValue = initValue + (targetValue - initValue) / 100   * actor.Percent;
+//				editor.VAdjustment.Value = newValue;
+//				return true;
+//			}
+//		}
+
+		internal void SmoothScrollTo (double value)
+		{
+			this.textEditorData.VAdjustment.Value = value;
+/*			Stage<ScrollingActor> scroll = new Stage<ScrollingActor> (50);
+			scroll.UpdateFrequency = 10;
+			var scrollingActor = new ScrollingActor (this, value);
+			scroll.Add (scrollingActor, 50);
+
+			scroll.ActorStep += scrollingActor.Step;
+			scroll.Play ();*/
+		}
+
 		public void ScrollTo (DocumentLocation p)
 		{
 			if (isDisposed || p.Line < 0 || p.Line > Document.LineCount || inCaretScroll)
