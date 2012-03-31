@@ -61,15 +61,18 @@ namespace Mono.TextEditor
 
 		public void RemoveLine (int line)
 		{
-			var node = GetNodeByLine (line);
-			if (node == null)
-				return;
-			if (node.count == 1) {
-				tree.Remove (node);
-				return;
+			try {
+				var node = GetNodeByLine (line);
+				if (node == null)
+					return;
+				if (node.count == 1) {
+					tree.Remove (node);
+					return;
+				}
+				node.count--;
+			} finally {
+				OnLineUpdateFrom (new HeightChangedEventArgs (line));
 			}
-			node.count--;
-			OnLineUpdateFrom (new HeightChangedEventArgs (line));
 		}
 		
 		public event EventHandler<HeightChangedEventArgs> LineUpdateFrom;
@@ -93,19 +96,22 @@ namespace Mono.TextEditor
 
 		public void InsertLine (int line)
 		{
-			var node = GetNodeByLine (line);
-			if (node == null)
-				return;
-			if (node.count == 1) {
-				var newLine = new HeightNode () {
-					count = 1,
-					height = editor.LineHeight
-				};
-				tree.InsertBefore (node, newLine);
-				return;
+			try {
+				var node = GetNodeByLine (line);
+				if (node == null)
+					return;
+				if (node.count == 1) {
+					var newLine = new HeightNode () {
+						count = 1,
+						height = editor.LineHeight
+					};
+					tree.InsertBefore (node, newLine);
+					return;
+				}
+				node.count++;
+			} finally {
+				OnLineUpdateFrom (new HeightChangedEventArgs (line));
 			}
-			node.count++;
-			OnLineUpdateFrom (new HeightChangedEventArgs (line));
 		}
 
 
