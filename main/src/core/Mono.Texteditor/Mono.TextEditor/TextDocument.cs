@@ -1099,7 +1099,6 @@ namespace Mono.TextEditor
 		public void ClearFoldSegments ()
 		{
 			InterruptFoldWorker ();
-			foldSegmentTree.RemoveListener (this);
 			foldSegmentTree = new SegmentTree<FoldSegment> ();
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
 			foldedSegments.Clear ();
