@@ -35,7 +35,7 @@ using System.Linq; //GB Added
 
 namespace MonoDevelop.Gettext
 {
-	//FIXME: use a StreamReader, implement a real parser
+	//FIXME: StreamReader has been implemeneted but not a real parser
 	public abstract class CatalogParser
 	{
 		internal static readonly string[] LineSplitStrings = { "\n\r", "\r\n", "\r", "\n" };
@@ -61,6 +61,7 @@ namespace MonoDevelop.Gettext
 			get { return newLine; }
 		}
 		
+		// Detects the characters used for newline from the 1st newline present in file
 		static string GetNewLine (string fileName, Encoding encoding) 
 		{
 			
@@ -100,7 +101,7 @@ namespace MonoDevelop.Gettext
 		
 		// If input begins with pattern, fill output with end of input (without
 		// pattern; strips trailing spaces) and return true.  Return false otherwise
-		// and don't touch output
+		// or if input is null
 		static bool ReadParam (string input, string pattern, out string output)
 		{
 			output = String.Empty;
@@ -119,6 +120,8 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 		
+		// returns value in dummy plus any trailing lines in sr enclosed in quotes
+		// next line is ready for parsing by function end
 		string ParseMessage (ref string line, ref string dummy, StreamReader sr)
 		{
 			StringBuilder result = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
@@ -155,7 +158,7 @@ namespace MonoDevelop.Gettext
 				line = sr.ReadLine ();
 				
 				while (line == "")
-					line = sr.ReadLine();
+					line = sr.ReadLine ();
 				
 				if (line == null)
 					return false;
@@ -165,7 +168,7 @@ namespace MonoDevelop.Gettext
 					// ignore empty special tags (except for automatic comments which we
 					// DO want to preserve):
 					while (line == "#," || line == "#:")
-						line = sr.ReadLine();
+						line = sr.ReadLine ();
 					
 					// flags:
 					// Can't we have more than one flag, now only the last is kept ...
@@ -266,7 +269,7 @@ namespace MonoDevelop.Gettext
 						while (CatalogParser.ReadParam (line, label + " \"", out dummy) || CatalogParser.ReadParam (line, label + "\t\"", out dummy)) {
 							StringBuilder str = new StringBuilder (dummy.Substring (0, dummy.Length - 1));
 							
-							while (!String.IsNullOrEmpty(line = sr.ReadLine ())) {
+							while (!String.IsNullOrEmpty (line = sr.ReadLine ())) {
 								if (line[0] == '\t')
 									line = line.Substring (1);
 								if (line[0] == '"' && line[line.Length - 1] == '"') {
@@ -300,7 +303,7 @@ namespace MonoDevelop.Gettext
 						
 						List<string> deletedLines = new List<string> ();
 						deletedLines.Add (line);
-						while (!String.IsNullOrEmpty(line = sr.ReadLine ())) {
+						while (!String.IsNullOrEmpty (line = sr.ReadLine ())) {
 							// if line does not start with "#~ " anymore, stop reading
 							if (! ReadParam (line, "#~ ", out dummy))
 								break;
@@ -318,9 +321,10 @@ namespace MonoDevelop.Gettext
 					} else if (line != null && line[0] == '#') {
 						// comment:
 						
+						//  added line[1] != '~' check as deleted lines where being wrongly detected as comments
 						while (!String.IsNullOrEmpty (line) &&
 						       ((line[0] == '#' && line.Length < 2) ||
-							   (line[0] == '#' && line[1] != ',' && line[1] != ':' && line[1] != '.')))
+							   (line[0] == '#' && line[1] != ',' && line[1] != ':' && line[1] != '.' && line[1] != '~'))) 
 						{
 							mcomment += mcomment.Length > 0 ? '\n' + line : line;
 							line = sr.ReadLine ();
