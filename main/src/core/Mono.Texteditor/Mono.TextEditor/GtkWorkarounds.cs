@@ -746,20 +746,29 @@ namespace Mono.TextEditor
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
 	}
 	
-	public class KeyboardShortcut : IEquatable<KeyboardShortcut>
+	public struct KeyboardShortcut : IEquatable<KeyboardShortcut>
 	{
-		public KeyboardShortcut (Gdk.Key key, Gdk.ModifierType mod)
+		public static readonly KeyboardShortcut Empty = new KeyboardShortcut ((Gdk.Key) 0, (Gdk.ModifierType) 0);
+		
+		Gdk.ModifierType modifier;
+		Gdk.Key key;
+		
+		public KeyboardShortcut (Gdk.Key key, Gdk.ModifierType modifier)
 		{
-			Modifier = mod;
-			Key = key;
+			this.modifier = modifier;
+			this.key = key;
 		}
 		
 		public Gdk.Key Key {
-			get; private set;
+			get { return key; }
 		}
 		
 		public Gdk.ModifierType Modifier {
-			get; private set;
+			get { return modifier; }
+		}
+		
+		public bool IsEmpty {
+			get { return Key == (Gdk.Key) 0; }
 		}
 		
 		public override bool Equals (object obj)
