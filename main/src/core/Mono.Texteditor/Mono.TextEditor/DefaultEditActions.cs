@@ -305,7 +305,7 @@ namespace Mono.TextEditor
 						data.FixVirtualIndentation ();
 						break;
 					}
-					data.InsertAtCaret (data.EolMarker);
+					data.Insert (data.Caret.Offset, data.EolMarker);
 					data.Caret.Column = indentCol;
 					break;
 				default:

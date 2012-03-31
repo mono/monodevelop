@@ -244,6 +244,29 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (3, data.Caret.Column);
 			Assert.AreEqual ("\n\n\n\n\n", data.Document.Text);
 		}
+		
+		[Test()]
+		public void TestAutoRemoveExistingIndentOnReturn ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\t\t\n\n";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			MiscActions.InsertNewLine (data);
+			MiscActions.InsertNewLine (data);
+			Assert.AreEqual (3, data.Caret.Column);
+			Assert.AreEqual ("\n\n\n\n\n", data.Document.Text);
+		}
+
+		[Test()]
+		public void TestRemoveExistingIndentWithBackspace ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\t\t\n\n";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (1, data.Caret.Column);
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
+		}
 
 
 		[Test()]
@@ -284,6 +307,33 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\t\t123", data.Document.Text);
 
 		}
+		
+		[Test()]
+		public void TestRemoveDoesntBreakCaretPosition ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "Hello\n\n";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			
+			data.Remove (0, "Hello".Length);
+
+			Assert.AreEqual ("\n\n", data.Document.Text);
+			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+		}
+		
+		[Test()]
+		public void TestInsertDoesntBreakCaretPosition ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\n";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			
+			data.Insert (0, "Hello");
+
+			Assert.AreEqual ("Hello\n\n", data.Document.Text);
+			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
+		}
+
 	}
 }
 

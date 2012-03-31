@@ -216,7 +216,6 @@ namespace Mono.TextEditor
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
 			OnTextReplacing (args);
 			value = args.InsertedText;
-
 			UndoOperation operation = null;
 			if (!isInUndo) {
 				operation = new UndoOperation (args);

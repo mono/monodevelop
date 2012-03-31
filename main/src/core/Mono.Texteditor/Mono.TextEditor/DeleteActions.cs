@@ -155,7 +155,10 @@ namespace Mono.TextEditor
 
 			if (data.Caret.Line == DocumentLocation.MinLine && data.Caret.Column == DocumentLocation.MinColumn)
 				return;
-
+			
+			// Virtual indentation needs to be fixed before to have the same behavior
+			// if it's there or not (otherwise user has to press multiple backspaces in some cases)
+			data.FixVirtualIndentation ();
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
 			if (data.Caret.Column > line.EditableLength + 1) {
 				data.Caret.Column = line.EditableLength + 1;
@@ -165,6 +168,8 @@ namespace Mono.TextEditor
 			} else {
 				removeCharBeforeCaret (data);
 			}
+			
+			// Needs to be fixed after, the line may just contain the indentation
 			data.FixVirtualIndentation ();
 		}
 		

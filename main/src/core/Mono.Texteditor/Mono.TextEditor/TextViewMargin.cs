@@ -2648,6 +2648,8 @@ namespace Mono.TextEditor
 			}
 			int lineNumber = textEditor.OffsetToLineNumber (line.Offset); 
 			var node = textEditor.GetTextEditorData ().HeightTree.GetNodeByLine (lineNumber);
+			if (node == null)
+				return LineHeight;
 			return node.height / node.count;
 		}
 		
