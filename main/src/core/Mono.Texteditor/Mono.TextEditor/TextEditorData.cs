@@ -30,6 +30,7 @@ using Gtk;
 using System.IO;
 using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
+using ICSharpCode.NRefactory.Editor;
 
 namespace Mono.TextEditor
 {
@@ -118,6 +119,7 @@ namespace Mono.TextEditor
 
 		void HandleDocTextSet (object sender, EventArgs e)
 		{
+			caret.SetDocument (document);
 			HeightTree.Rebuild ();
 			ClearSelection ();
 		}
@@ -155,6 +157,7 @@ namespace Mono.TextEditor
 				document.Undone += DocumentHandleUndone;
 				document.Redone += DocumentHandleRedone;
 				document.LineChanged += HandleDocLineChanged;
+				document.TextReplaced += HandleTextReplaced;
 
 				document.TextSet += HandleDocTextSet;
 				document.Folded += HandleTextEditorDataDocumentFolded;
@@ -163,6 +166,11 @@ namespace Mono.TextEditor
 				document.Splitter.LineInserted += HandleDocumentsplitterhandleLineInserted;
 				document.Splitter.LineRemoved += HandleDocumentsplitterhandleLineRemoved;
 			}
+		}
+
+		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
+		{
+			caret.UpdateCaretPosition ();
 		}
 
 
@@ -514,13 +522,13 @@ namespace Mono.TextEditor
 		}
 		
 		#region undo/redo handling
-		int       savedCaretPos;
+		DocumentLocation savedCaretPos;
 		Selection savedSelection;
 		//List<TextEditorDataState> states = new List<TextEditorDataState> ();
 
 		void OnBeginUndo (object sender, EventArgs args)
 		{
-			savedCaretPos  = Caret.Offset;
+			savedCaretPos  = Caret.Location;
 			savedSelection = Selection.Clone (MainSelection);
 		}
 
@@ -547,33 +555,33 @@ namespace Mono.TextEditor
 
 		class TextEditorDataState
 		{
-			int      undoCaretPos;
+			DocumentLocation undoCaretPos;
 			Selection undoSelection;
 
-			int      redoCaretPos;
+			DocumentLocation redoCaretPos;
 			Selection redoSelection;
 			
 			TextEditorData editor;
 			
-			public TextEditorDataState (TextEditorData editor, int caretPos, Selection selection)
+			public TextEditorDataState (TextEditorData editor, DocumentLocation caretPos, Selection selection)
 			{
 				this.editor        = editor;
 				undoCaretPos  = caretPos;
 				undoSelection = selection;
 				
-				redoCaretPos  = editor.Caret.Offset;
+				redoCaretPos  = editor.Caret.Location;
 				redoSelection = Mono.TextEditor.Selection.Clone (editor.MainSelection);
 			}
 			
 			public void UndoState ()
 			{
-				editor.Caret.Offset  = undoCaretPos;
+				editor.Caret.Location = undoCaretPos;
 				editor.MainSelection = undoSelection;
 			}
 			
 			public void RedoState ()
 			{
-				editor.Caret.Offset  = redoCaretPos;
+				editor.Caret.Location = redoCaretPos;
 				editor.MainSelection = redoSelection;
 			}
 		}
@@ -1076,12 +1084,14 @@ namespace Mono.TextEditor
 				} else {
 					virtualSpace = new string (' ', Caret.Column - 1 - line.EditableLength);
 				}
+				var oldPreserve = Caret.PreserveSelection;
+				Caret.PreserveSelection = true;
 				Insert (Caret.Offset, virtualSpace);
-
+				Caret.PreserveSelection = oldPreserve;
+			
 				// No need to reposition the caret, because it's already at the correct position
 				// The only difference is that the position is not virtual anymore.
 				return virtualSpace.Length;
-
 			}
 			return 0;
 		}
@@ -1127,6 +1137,12 @@ namespace Mono.TextEditor
 			}
 			set {
 				document.Text = value;
+			}
+		}
+
+		public ITextSourceVersion Version {
+			get {
+				return document.Version;
 			}
 		}
 

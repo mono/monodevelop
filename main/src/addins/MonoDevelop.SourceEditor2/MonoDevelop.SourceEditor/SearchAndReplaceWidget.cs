@@ -589,7 +589,7 @@ But I leave it in in the case I've missed something. Mike
 					return;
 				}
 				textEditor.StopSearchResultAnimation ();
-				textEditor.Caret.Offset = result.EndOffset;
+				textEditor.Caret.Location = textEditor.OffsetToLocation (result.EndOffset);
 				textEditor.SetSelection (result.Offset, result.EndOffset);
 				textEditor.CenterToCaret ();
 				textEditor.AnimateSearchResult (result);

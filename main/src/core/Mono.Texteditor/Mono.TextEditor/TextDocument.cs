@@ -179,10 +179,10 @@ namespace Mono.TextEditor
 				splitter.Initalize (value);
 				ClearFoldSegments ();
 				OnTextReplaced (args);
+				versionProvider = new TextSourceVersionProvider ();
 				OnTextSet (EventArgs.Empty);
 				CommitUpdateAll ();
 				ClearUndoBuffer ();
-				versionProvider = new TextSourceVersionProvider ();
 			}
 		}
 
@@ -1533,8 +1533,6 @@ namespace Mono.TextEditor
 			if (whitespaces > 0) {
 				var removeOffset = line.Offset + line.EditableLength - whitespaces;
 				data.Remove (removeOffset, whitespaces);
-				if (data.Caret.Offset < removeOffset)
-					data.Caret.Offset -= whitespaces;
 			}
 		}
 		#endregion

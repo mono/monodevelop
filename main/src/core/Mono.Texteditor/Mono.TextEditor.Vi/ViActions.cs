@@ -132,7 +132,6 @@ namespace Mono.TextEditor.Vi
 			length = (seg.Offset - startOffset) + seg.EditableLength;
 			// TODO: handle conversion issues ? 
 			data.Replace (startOffset, length, sb.ToString ());
-			data.Caret.Offset = lastSpaceOffset;
 		}
 		
 		public static void ToggleCase (TextEditorData data)
@@ -143,24 +142,24 @@ namespace Mono.TextEditor.Vi
 				
 				StringBuilder sb = new StringBuilder (data.SelectedText);
 				for (int i = 0; i < sb.Length; i++) {
-					char ch = sb[i];
+					char ch = sb [i];
 					if (Char.IsLower (ch))
-						sb[i] = Char.ToUpper (ch);
+						sb [i] = Char.ToUpper (ch);
 					else if (Char.IsUpper (ch))
-						sb[i] = Char.ToLower (ch);
+						sb [i] = Char.ToLower (ch);
 				}
 				data.Replace (data.SelectionRange.Offset, data.SelectionRange.Length, sb.ToString ());
-			}
-			else if (data.CanEdit (data.Caret.Line)) {
+			} else if (data.CanEdit (data.Caret.Line)) {
 				char ch = data.Document.GetCharAt (data.Caret.Offset);
 				if (Char.IsLower (ch))
 					ch = Char.ToUpper (ch);
 				else if (Char.IsUpper (ch))
 					ch = Char.ToLower (ch);
-				int length = data.Replace (data.Caret.Offset, 1, new string (ch, 1));
+				var caretOffset = data.Caret.Offset;
+				int length = data.Replace (caretOffset, 1, new string (ch, 1));
 				LineSegment seg = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column < seg.EditableLength)
-					data.Caret.Offset += length;
+					data.Caret.Offset = caretOffset + length;
 			}
 		}
 		

@@ -110,35 +110,22 @@ namespace Mono.TextEditor
 			
 			using (var undo = data.OpenUndoGroup ()) {
 				int first = -1;
-				int last  = 0;
-				foreach (LineSegment line in data.SelectedLines) {
+				int last = 0;
+				var anchor = data.MainSelection.Anchor;
+				var lead = data.MainSelection.Lead;
+				foreach (var line in data.SelectedLines) {
 					last = RemoveTabInLine (data, line);
 					if (first < 0)
 						first = last;
 				}
-				
-				if (data.IsSomethingSelected) 
-					SelectLineBlock (data, endLineNr, startLineNr);
-				
-				if (data.Caret.Column != DocumentLocation.MinColumn) {
-					data.Caret.PreserveSelection = true;
-					data.Caret.Column = System.Math.Max (DocumentLocation.MinColumn, data.Caret.Column - last);
-					data.Caret.PreserveSelection = false;
-				}
+				data.SetSelection (anchor.Line, System.Math.Max (DocumentLocation.MinColumn, anchor.Column - 1), 
+				                   lead.Line, System.Math.Max (DocumentLocation.MinColumn, lead.Column - 1));
+			
 			}
 			data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
 			data.Document.CommitDocumentUpdate ();
 		}
-		
-		static void SelectLineBlock (TextEditorData data, int endLineNr, int startLineNr)
-		{
-			if (startLineNr == endLineNr) {
-				data.MainSelection = new Selection (startLineNr, DocumentLocation.MinColumn, startLineNr + 1, DocumentLocation.MinColumn);
-				return;
-			}
-			LineSegment endLine = data.Document.GetLine (endLineNr);
-			data.MainSelection = new Selection (startLineNr, DocumentLocation.MinColumn, endLineNr, endLine.Length + 1);
-		}
+
 		
 		public static void RemoveTab (TextEditorData data)
 		{
@@ -150,7 +137,7 @@ namespace Mono.TextEditor
 			} else {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				int visibleColumn = 0;
-				for (int i = 0; i < data.Caret.Column; ++i)
+						for (int i = i < data.Caret.Column; ++i)
 					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? data.Options.TabSize : 1;
 				
 				int newColumn = ((visibleColumn / data.Options.IndentationSize) - 1) * data.Options.IndentationSize;
@@ -191,20 +178,16 @@ namespace Mono.TextEditor
 		{
 			int startLineNr, endLineNr;
 			GetSelectedLines (data, out startLineNr, out endLineNr);
-			
+			var anchor = data.MainSelection.Anchor;
+			var lead = data.MainSelection.Lead;
 			using (var undo = data.OpenUndoGroup ()) {
 				foreach (LineSegment line in data.SelectedLines) {
 					data.Insert (line.Offset, data.Options.IndentationString);
 				}
-				if (data.IsSomethingSelected) 
-					SelectLineBlock (data, endLineNr, startLineNr);
-				
-				if (data.Caret.Column != DocumentLocation.MinColumn) {
-					data.Caret.PreserveSelection = true;
-					data.Caret.Column++;
-					data.Caret.PreserveSelection = false;
-				}
 			}
+			var leadCol = lead.Column > 1 || lead < anchor ? lead.Column + 1 : 1;
+			var anchorCol = anchor.Column > 1 || anchor < lead ? anchor.Column + 1 : 1;
+			data.SetSelection (anchor.Line, anchorCol, lead.Line, leadCol);
 			data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
 			data.Document.CommitDocumentUpdate ();
 		}
@@ -240,8 +223,7 @@ namespace Mono.TextEditor
 				} else {
 					if (data.IsSomethingSelected)
 						data.DeleteSelectedText ();
-					int length = data.Insert (data.Caret.Offset, indentationString);
-					data.Caret.Column += length;
+					data.Insert (data.Caret.Offset, indentationString);
 				}
 			}
 		}
@@ -268,8 +250,7 @@ namespace Mono.TextEditor
 		{
 			using (var undo = data.OpenUndoGroup ()) {
 				data.EnsureCaretIsNotVirtual ();
-				data.Insert (data.Caret.Offset, data.EolMarker);
-				data.Caret.Offset += data.EolMarker.Length;
+				data.InsertAtCaret (data.EolMarker);
 				data.InsertAtCaret (data.GetIndentationString (data.Caret.Location));
 			}
 		}
@@ -284,16 +265,13 @@ namespace Mono.TextEditor
 					data.DeleteSelectedText ();
 				switch (data.Options.IndentStyle) {
 				case IndentStyle.None:
-					data.Insert (data.Caret.Offset, data.EolMarker);
-					data.Caret.Offset += data.EolMarker.Length;
+					data.InsertAtCaret (data.EolMarker);
 					break;
 				case IndentStyle.Auto:
 					data.EnsureCaretIsNotVirtual ();
 					var sb = new StringBuilder (data.EolMarker);
 					sb.Append (data.Document.GetLineIndent (data.Caret.Line));
-					int offset = data.Caret.Offset;
-					data.Insert (offset, sb.ToString ());
-					data.Caret.Offset = offset + sb.Length;
+					data.InsertAtCaret (sb.ToString ());
 					break;
 				case IndentStyle.Smart:
 					if (!data.HasIndentationTracker)
@@ -310,8 +288,7 @@ namespace Mono.TextEditor
 						data.FixVirtualIndentation ();
 						break;
 					}
-					data.Insert (data.Caret.Offset, data.EolMarker);
-					data.Caret.Offset += data.EolMarker.Length;
+					data.InsertAtCaret (data.EolMarker);
 					data.Caret.Column = indentCol;
 					break;
 				default:
@@ -463,9 +440,7 @@ namespace Mono.TextEditor
 				int lastCharOffset = lineAbove.Offset + lineAbove.EditableLength - 1;
 				ch = data.Document.GetCharAt (lastCharOffset);
 				data.Remove (lastCharOffset, 1);
-				data.Insert (data.Caret.Offset, ch.ToString ());
-				data.Document.CommitLineUpdate (data.Caret.Line - 1);
-				data.Caret.Offset++;
+				data.InsertAtCaret (ch.ToString ());
 				return;
 			}
 			

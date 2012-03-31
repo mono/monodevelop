@@ -169,7 +169,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			view.TextEditor.Replace (lastInsertPos, view.TextEditor.Caret.Offset - lastInsertPos, curWord);
 			view.TextEditor.Document.CommitLineUpdate (view.TextEditor.Caret.Line);
-			lastTriggerOffset = view.TextEditor.Caret.Offset = lastInsertPos + curWord.Length;
+			lastTriggerOffset = view.TextEditor.Caret.Offset;
 		}
 		
 		static int SearchEndPos (int offset, MonoDevelop.SourceEditor.SourceEditorView view)

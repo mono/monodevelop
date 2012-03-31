@@ -27,6 +27,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.Editor;
 
 namespace Mono.TextEditor
 {
@@ -50,6 +51,7 @@ namespace Mono.TextEditor
 					line = value;
 					CheckLine ();
 					SetColumn ();
+					UpdateCaretOffset ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
 			}
@@ -68,6 +70,7 @@ namespace Mono.TextEditor
 					column = value;
 					CheckColumn ();
 					SetDesiredColumn ();
+					UpdateCaretOffset ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
 			}
@@ -87,31 +90,32 @@ namespace Mono.TextEditor
 					CheckLine ();
 					CheckColumn ();
 					SetDesiredColumn ();
+					UpdateCaretOffset ();
 					OnPositionChanged (new DocumentLocationEventArgs (old));
 				}
 			}
 		}
 
+		ITextSourceVersion offsetVersion;
+		int caretOffset;
 		public int Offset {
 			get {
-				int result = 0;
-				var doc = TextEditorData.Document;
-				if (doc == null)
-					return 0;
-				if (Line <= doc.LineCount) {
-					LineSegment line = doc.GetLine (Line);
-					if (line != null) {
-						result = line.Offset;
-						result += System.Math.Min (Column - 1, line.EditableLength);
-					}
-				}
-				return result;
+				return caretOffset;
 			}
 			set {
-				int line = System.Math.Max (1, TextEditorData.Document.OffsetToLineNumber (value));
+				if (caretOffset == value)
+					return;
+				DocumentLocation old = Location;
+				caretOffset = value;
+				offsetVersion = TextEditorData.Document.Version;
+				line = System.Math.Max (1, TextEditorData.Document.OffsetToLineNumber (value));
 				var lineSegment = TextEditorData.Document.GetLine (line);
-				int column = lineSegment != null ? value - lineSegment.Offset + 1 : 1;
-				Location = new DocumentLocation (line, column);
+				column = lineSegment != null ? value - lineSegment.Offset + 1 : 1;
+				
+				CheckLine ();
+				CheckColumn ();
+				SetDesiredColumn ();
+				OnPositionChanged (new DocumentLocationEventArgs (old));
 			}
 		}
 
@@ -183,7 +187,7 @@ namespace Mono.TextEditor
 			AllowCaretBehindLineEnd = false;
 			DesiredColumn = DocumentLocation.MinColumn;
 		}
-		
+
 		/// <summary>
 		/// Activates auto scroll to caret on next caret move.
 		/// </summary>
@@ -194,7 +198,10 @@ namespace Mono.TextEditor
 
 		void CheckLine ()
 		{
-			line = System.Math.Min (line, TextEditorData.Document.LineCount);
+			if (line > TextEditorData.Document.LineCount) {
+				line = TextEditorData.Document.LineCount;
+				UpdateCaretOffset ();
+			}
 		}
 
 		void CheckColumn ()
@@ -206,6 +213,7 @@ namespace Mono.TextEditor
 					var indentColumn = TextEditorData.GetVirtualIndentationColumn (Location);
 					if (column < indentColumn) {
 						column = indentColumn;
+						UpdateCaretOffset ();
 						return;
 					}
 					if (column == indentColumn)
@@ -213,8 +221,13 @@ namespace Mono.TextEditor
 				}
 			}
 
-			if (!AllowCaretBehindLineEnd)
-				column = System.Math.Min (curLine.EditableLength + 1, column);
+			if (!AllowCaretBehindLineEnd) {
+				var max = curLine.EditableLength + 1;
+				if (column > max) {
+					column = max;
+					UpdateCaretOffset ();
+				}
+			}
 		}
 
 		public void SetToOffsetWithDesiredColumn (int desiredOffset)
@@ -240,6 +253,7 @@ namespace Mono.TextEditor
 					column = logicalDesiredColumn;
 			}
 
+			UpdateCaretOffset ();
 			OnPositionChanged (new DocumentLocationEventArgs (old));
 		}
 
@@ -309,6 +323,67 @@ namespace Mono.TextEditor
 				ModeChanged (this, EventArgs.Empty);
 		}
 		public event EventHandler ModeChanged;
+
+		public void UpdateCaretOffset ()
+		{
+			int result = 0;
+			var doc = TextEditorData.Document;
+			if (doc == null)
+				return;
+			if (Line <= doc.LineCount) {
+				LineSegment line = doc.GetLine (Line);
+				if (line != null) {
+					result = line.Offset;
+					result += System.Math.Min (Column - 1, line.EditableLength);
+				}
+			}
+			caretOffset = result;
+			offsetVersion = doc.Version;
+		}
+
+		internal void UpdateCaretPosition ()
+		{
+			var curVersion = TextEditorData.Version;
+			if (offsetVersion == null) {
+				offsetVersion = curVersion;
+				return;
+			}
+			var newOffset = offsetVersion.MoveOffsetTo (curVersion, caretOffset);
+			offsetVersion = curVersion;
+			if (newOffset == caretOffset)
+				return;
+
+			DocumentLocation old = Location;
+			var newLocation = TextEditorData.OffsetToLocation (newOffset);
+			int newColumn = newLocation.Column;
+			
+			var curLine = TextEditorData.GetLine (newLocation.Line);
+
+			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.EditableLength == 0) {
+				if (column > DocumentLocation.MinColumn) {
+					var indentColumn = TextEditorData.GetVirtualIndentationColumn (Location);
+					newColumn = indentColumn;
+				}
+			}
+			if (AllowCaretBehindLineEnd) {
+				if (column > curLine.EditableLength)
+					newColumn = column;
+			}
+
+			line = newLocation.Line;
+			column = newColumn;
+
+			SetDesiredColumn ();
+			UpdateCaretOffset ();
+			OnPositionChanged (new DocumentLocationEventArgs (old));
+		}
+
+		public void SetDocument (TextDocument doc)
+		{
+			line = column = 1;
+			offsetVersion = doc.Version;
+			caretOffset = 0;
+		}
 	}
 	
 	/// <summary>

@@ -426,11 +426,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 			template.InsertPosition = offset;
 			document.Editor.Insert (offset, template.Code);
 			
+			int newoffset;
 			if (template.CaretEndOffset >= 0) {
-				document.Editor.Caret.Offset = offset + template.CaretEndOffset; 
+				newoffset = offset + template.CaretEndOffset; 
 			} else {
-				document.Editor.Caret.Offset = offset + template.Code.Length; 
+				newoffset = offset + template.Code.Length; 
 			}
+
+			document.Editor.Caret.Location = document.Editor.OffsetToLocation (newoffset) ;
 			
 /*			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				string mt = DesktopService.GetMimeTypeForUri (document.FileName);

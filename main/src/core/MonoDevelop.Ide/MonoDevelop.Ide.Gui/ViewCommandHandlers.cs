@@ -476,7 +476,6 @@ namespace MonoDevelop.Ide.Gui
 					data.Document.Remove (info.Position, info.Length);
 					data.Document.CommitLineUpdate (data.Document.OffsetToLineNumber (info.Position));
 				}
-				data.Caret.Offset = Math.Min (data.Caret.Offset, data.Document.TextLength - 1);
 			}
 		}
 		

@@ -134,14 +134,12 @@ namespace Mono.TextEditor
 								length = textEditorData.Insert (lineSegment.Offset + insertOffset, textToInsert);
 							}
 							Caret.PreserveSelection = true;
-							Caret.Column += length - 1;
-							
+
 							textEditorData.MainSelection.Lead = new DocumentLocation (textEditorData.MainSelection.Lead.Line, Caret.Column + 1);
 							textEditorData.MainSelection.Anchor = new DocumentLocation (textEditorData.MainSelection.Anchor.Line, Caret.Column + 1);
 							Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
 						} else {
 							int length = textEditorData.Insert (Caret.Offset, text);
-							Caret.Column += length - 1;
 						}
 					} else {
 						int length = textEditorData.Replace (Caret.Offset, 1, ch.ToString ());
@@ -150,7 +148,7 @@ namespace Mono.TextEditor
 					}
 					// That causes unnecessary redraws:
 					//				bool autoScroll = Caret.AutoScrollToCaret;
-					Caret.Column++;
+//					Caret.Column++;
 					if (Caret.PreserveSelection)
 						Caret.PreserveSelection = false;
 					//				Caret.AutoScrollToCaret = autoScroll;

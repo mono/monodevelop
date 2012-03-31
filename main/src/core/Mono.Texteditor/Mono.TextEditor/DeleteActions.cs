@@ -147,7 +147,6 @@ namespace Mono.TextEditor
 					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
 						data.Remove (data.Document.GetLine (lineNumber).Offset + col - 1, 1);
 					}
-					data.Caret.Column--;
 					data.MainSelection.Lead = new DocumentLocation (data.MainSelection.Lead.Line, col);
 					data.MainSelection.Anchor = new DocumentLocation (data.MainSelection.Anchor.Line, col);
 					data.Caret.PreserveSelection = preserve;
@@ -166,7 +165,6 @@ namespace Mono.TextEditor
 				data.Caret.Column = line.EditableLength + 1;
 			} else if (data.Caret.Offset == line.Offset) {
 				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
-				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, lineAbove.EditableLength + 1);
 				data.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
 			} else {
 				removeCharBeforeCaret (data);
@@ -180,7 +178,6 @@ namespace Mono.TextEditor
 			if (offset <= 0)
 				return;
 			data.Remove (offset - 1, 1);
-			data.Caret.Column--;
 		}
 		
 		public static void Delete (TextEditorData data)
