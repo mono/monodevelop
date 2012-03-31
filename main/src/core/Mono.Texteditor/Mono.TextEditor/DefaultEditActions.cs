@@ -109,18 +109,35 @@ namespace Mono.TextEditor
 			GetSelectedLines (data, out startLineNr, out endLineNr);
 			
 			using (var undo = data.OpenUndoGroup ()) {
-				int first = -1;
-				int last = 0;
 				var anchor = data.MainSelection.Anchor;
 				var lead = data.MainSelection.Lead;
+				bool first = true;
+				bool removedFromLast = false;
+				bool removedFromFirst = false;
 				foreach (var line in data.SelectedLines) {
-					last = RemoveTabInLine (data, line);
-					if (first < 0)
-						first = last;
+					int remove = RemoveTabInLine (data, line);
+					removedFromLast |= remove > 0;
+					if (first) {
+						removedFromFirst = remove > 0;
+						first = false;
+					}
 				}
-				data.SetSelection (anchor.Line, System.Math.Max (DocumentLocation.MinColumn, anchor.Column - 1), 
-				                   lead.Line, System.Math.Max (DocumentLocation.MinColumn, lead.Column - 1));
-			
+
+				var ac = System.Math.Max (DocumentLocation.MinColumn, anchor.Column - 1);
+				var lc = System.Math.Max (DocumentLocation.MinColumn, lead.Column - 1);
+				
+				if (anchor < lead) {
+					if (!removedFromFirst)
+						ac = anchor.Column;
+					if (!removedFromLast)
+						lc = lead.Column;
+				} else {
+					if (!removedFromFirst)
+						lc = lead.Column;
+					if (!removedFromLast)
+						ac = anchor.Column;
+				}
+				data.SetSelection (anchor.Line, ac, lead.Line, lc);
 			}
 			data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
 			data.Document.CommitDocumentUpdate ();

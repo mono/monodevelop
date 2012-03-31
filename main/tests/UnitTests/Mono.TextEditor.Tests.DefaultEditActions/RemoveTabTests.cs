@@ -106,6 +106,30 @@ namespace Mono.TextEditor.Tests
 	123456789
 	123456789", reverse);
 		}
+		
+		[TestCase(false)]
+		[TestCase(true)]
+		public void TestRemoveTabCase4 (bool reverse)
+		{
+			var data = InsertTabTests.Create (
+@"123456789
+123[456789
+123d456789
+123]456789
+123456789
+123456789", reverse);
+
+
+			MiscActions.RemoveTab (data);
+
+			InsertTabTests.Check (data, 
+@"123456789
+123[456789
+123d456789
+123]456789
+123456789
+123456789", reverse);
+		}
 
 	}
 }
