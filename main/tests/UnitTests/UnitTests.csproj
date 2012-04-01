@@ -229,6 +229,7 @@
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ResolveNamespaceTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollectorTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollectorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -260,9 +261,6 @@
     <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
     <None Include="MonoDevelop.CSharpBinding.Refactoring\ExtractMethodTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding.Refactoring\IntroduceConstantRefactoringTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding.Refactoring\BaseRefactorerTests.cs" />
-    <None Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.AspNet\" />

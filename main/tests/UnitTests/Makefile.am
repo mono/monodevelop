@@ -65,6 +65,7 @@ FILES =  \
 	Mono.TextEditor.Tests/VirtualIndentModeTests.cs \
 	Mono.TextEditor.Tests/VirtualSpacesTests.cs \
 	Mono.TextEditor.Tests/ViTests.cs \
+	MonoDevelop.CSharpBinding.Refactoring/GenerateNewMemberTests.cs \
 	MonoDevelop.CSharpBinding.Refactoring/ImplementInterfaceTests.cs \
 	MonoDevelop.CSharpBinding.Refactoring/ResolveNamespaceTests.cs \
 	MonoDevelop.CSharpBinding/CSharpTextEditorIndentationTests.cs \
