@@ -123,10 +123,6 @@
 				type="array"
 				_label = "Refactory Operations" /> 
 		
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.IntroduceConstant"
-					defaultHandler = "MonoDevelop.Refactoring.CreateMethod.IntroduceConstantHandler"
-					_label = "_Introduce Constant..."/>
-		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"
 					_label = "Quick fix..."
 					shortcut = "Alt|Return"
