@@ -57,6 +57,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
 			var context = new MDRefactoringContext (document, loc);
+			if (context.IsInvalid || context.RootNode == null)
+				yield break;
 			var actions = provider.GetActions (context);
 			if (actions == null) {
 				LoggingService.LogWarning (provider + " returned null actions.");
