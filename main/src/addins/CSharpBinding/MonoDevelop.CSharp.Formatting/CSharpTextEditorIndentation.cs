@@ -434,8 +434,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 					if (trimmedPreviousLine.Length > "///".Length || nextLine.StartsWith ("///")) {
 						textEditorData.Insert (insertionPoint, "/// ");
-						if (textEditorData.Caret.Offset >= insertionPoint)
-							textEditorData.Caret.Offset += "/// ".Length;
 						return true;
 					}
 					//multi-line comments
@@ -464,7 +462,6 @@ namespace MonoDevelop.CSharp.Formatting
 					int indentSize = line.GetIndentation (textEditorData.Document).Length;
 					var insertedText = prevLine.GetIndentation (textEditorData.Document) + (trimmedPreviousLine.StartsWith ("\"") ? "" : "\t") + "\"";
 					textEditorData.Replace (line.Offset, indentSize, insertedText);
-					textEditorData.Caret.Offset = line.Offset + insertedText.Length;
 					return true;
 				}
 			}
