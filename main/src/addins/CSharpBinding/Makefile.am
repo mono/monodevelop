@@ -43,7 +43,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.cs \
 	gtk-gui/MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget.cs \
-	gtk-gui/MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs \
 	MonoDevelop.CSharp.CodeGeneration/AbstractGenerateAction.cs \
 	MonoDevelop.CSharp.CodeGeneration/CodeGenerationCommands.cs \
 	MonoDevelop.CSharp.CodeGeneration/CodeGenerationOptions.cs \
@@ -108,10 +107,6 @@ FILES =  \
 	MonoDevelop.CSharp.Refactoring.CodeIssues/NRefactoryIssueProvider.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpCodeGenerator.cs \
 	MonoDevelop.CSharp.Refactoring/CSharpReferenceFinder.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodDialog.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodHandler.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/ExtractMethodRefactoring.cs \
-	MonoDevelop.CSharp.Refactoring/ExtractMethod/VariableLookupVisitor.cs \
 	MonoDevelop.CSharp.Refactoring/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/HelperMethods.cs \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \

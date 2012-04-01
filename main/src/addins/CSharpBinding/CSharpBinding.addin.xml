@@ -210,17 +210,6 @@
 		         _label = "_Expand selection"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
-		<Class id="ExtractMethod" class = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ExtractMethod"
-				defaultHandler = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodHandler"
-				_label = "Extract Method"
-				shortcut = "Control|Alt|M"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
 		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
