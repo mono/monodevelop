@@ -246,5 +246,98 @@ $1234567890
 			CaretMoveActions.NextSubword (data);
 			Check (data, @"someLongWord$");
 		}
+
+		[Test()]
+		public void TestLineStart ()
+		{
+			var data = Create (@"      someLongWord$");
+			CaretMoveActions.LineStart (data);
+			Check (data, @"$      someLongWord");
+			CaretMoveActions.LineStart (data);
+			Check (data, @"$      someLongWord");
+		}
+
+		[Test()]
+		public void TestLineFirstNonWhitespace ()
+		{
+			var data = Create (@"      someLongWord$");
+			CaretMoveActions.LineFirstNonWhitespace (data);
+			Check (data, @"      $someLongWord");
+			CaretMoveActions.LineFirstNonWhitespace (data);
+			Check (data, @"      $someLongWord");
+		}
+
+		[Test()]
+		public void TestUpLineStart ()
+		{
+			var data = Create (@"line1
+someLongWord$");
+			CaretMoveActions.UpLineStart (data);
+			Check (data, @"$line1
+someLongWord");
+		}
+		
+		[Test()]
+		public void TestDownLineEnd ()
+		{
+			var data = Create (@"$line1
+someLongWord");
+			CaretMoveActions.DownLineEnd (data);
+			Check (data, @"line1
+someLongWord$");
+		}
+
+		[Test()]
+		public void TestPageDown ()
+		{
+			var data = Create (@"$1
+2
+3
+4
+5
+6");
+			data.VAdjustment = new Gtk.Adjustment (
+				0, 
+				0, 
+				data.LineCount * data.LineHeight,
+				data.LineHeight,
+				2 * data.LineHeight,
+				2 * data.LineHeight);
+			CaretMoveActions.PageDown (data);
+			Check (data, @"1
+2
+$3
+4
+5
+6");
+		}
+
+		[Test()]
+		public void TestPageUp ()
+		{
+			var data = Create (@"1
+2
+3
+$4
+5
+6");
+			data.VAdjustment = new Gtk.Adjustment (
+				0, 
+				0, 
+				data.LineCount * data.LineHeight,
+				data.LineHeight,
+				2 * data.LineHeight,
+				2 * data.LineHeight);
+			CaretMoveActions.PageUp (data);
+			Check (data, @"1
+$2
+3
+4
+5
+6");
+		}
+
+
+
 	}
 }
