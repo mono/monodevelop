@@ -1940,10 +1940,15 @@ namespace MonoDevelop.SourceEditor
 			var editorData = TextEditor.GetTextEditorData ();
 			if (TextEditor.IsSomethingSelected) {
 				using (var undo = TextEditor.OpenUndoGroup ()) {
-					int max = TextEditor.MainSelection.MaxLine;
+					var selection = TextEditor.MainSelection;
+					var anchor = selection.GetAnchorOffset (editorData);
+					var lead = selection.GetLeadOffset (editorData);
+					var version = TextEditor.Document.Version;
+					int max = selection.MaxLine;
 					for (int i = TextEditor.MainSelection.MinLine; i <= max; i++) {
 						formatter.CorrectIndenting (policies, editorData, i);
 					}
+					editorData.SetSelection (version.MoveOffsetTo (editorData.Document.Version, anchor), version.MoveOffsetTo (editorData.Document.Version, lead));
 				}
 			} else {
 				formatter.CorrectIndenting (policies, editorData, TextEditor.Caret.Line);
