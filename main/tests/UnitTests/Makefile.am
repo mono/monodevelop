@@ -39,13 +39,14 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	Mono.TextEditor.Tests.DefaultEditActions/BookmarkTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/BookmarkActionsTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/DeleteActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/SelectionActionTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/TextEditorTestBase.cs \
 	Mono.TextEditor.Tests/BufferTests.cs \
 	Mono.TextEditor.Tests/DocumentTests.cs \
 	Mono.TextEditor.Tests/EditActionsTest.cs \

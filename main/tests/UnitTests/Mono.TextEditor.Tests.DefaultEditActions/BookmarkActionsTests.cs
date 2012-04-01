@@ -26,32 +26,13 @@
 
 using System;
 using NUnit.Framework;
+using System.Linq;
 
-namespace Mono.TextEditor.Tests
+namespace Mono.TextEditor.Tests.Actions
 {
-	public class TextEditorTestBase
-	{
-		static bool firstRun = true;
-		
-		[TestFixtureSetUp]
-		public virtual void Setup ()
-		{
-			if (firstRun) {
-				Gtk.Application.Init ();
-				firstRun = false;
-			}
-		}
-
-		[TestFixtureTearDown]
-		public virtual void TearDown ()
-		{
-		}
-	}
-
 	[TestFixture()]
-	public class BookmarkTests : TextEditorTestBase
+	public class BookmarkActionsTests : TextEditorTestBase
 	{
-
 		internal static TextEditorData Create (string text)
 		{
 			TextEditorData result = new TextEditorData ();
@@ -113,6 +94,22 @@ $8
 			BookmarkActions.GotoNext (data);
 			Assert.AreEqual (2, data.Caret.Line);
 		}
-		
+
+		[Test()]
+		public void TestClearAll ()
+		{
+			TextEditorData data = Create (@"1
+@2
+3
+@4
+5
+@6
+7
+$8
+9");
+			Assert.AreEqual (3, data.Lines.Count (l => l.IsBookmarked));
+			BookmarkActions.ClearAll (data);
+			Assert.AreEqual (0, data.Lines.Count (l => l.IsBookmarked));
+		}
 	}
 }

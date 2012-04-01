@@ -25,17 +25,10 @@
 // THE SOFTWARE.
 using System;
 using NUnit.Framework;
-using MonoDevelop.Projects;
-using MonoDevelop.Core;
-using MonoDevelop.CSharpBinding.Refactoring;
 using MonoDevelop.CSharpBinding.Tests;
-using MonoDevelop.CSharp.Refactoring.ExtractMethod;
 using System.Collections.Generic;
 using MonoDevelop.CSharpBinding;
-using System.Text;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.CSharp.Resolver;
-using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
