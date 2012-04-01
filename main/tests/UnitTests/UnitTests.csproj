@@ -231,6 +231,7 @@
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\TextEditorTestBase.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\BookmarkActionsTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\FoldActionTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

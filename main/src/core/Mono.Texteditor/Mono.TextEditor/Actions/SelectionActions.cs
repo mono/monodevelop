@@ -139,8 +139,7 @@ namespace Mono.TextEditor
 			data.MainSelection = new Selection (new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn), data.Caret.Location);
 			data.Caret.PreserveSelection = false;
 		}
-		
-		
+
 		public static void MoveLeft (TextEditorData data)
 		{
 			Select (data, CaretMoveActions.Left);

@@ -42,6 +42,7 @@ FILES =  \
 	Mono.TextEditor.Tests.DefaultEditActions/BookmarkActionsTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/DeleteActionTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/FoldActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \

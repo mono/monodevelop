@@ -30,12 +30,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-using Gtk;
-using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	
 	public static class MiscActions
 	{
 		public static void GotoMatchingBracket (TextEditorData data)

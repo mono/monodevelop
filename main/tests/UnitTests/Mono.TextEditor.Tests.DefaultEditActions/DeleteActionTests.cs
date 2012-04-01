@@ -35,45 +35,39 @@ namespace Mono.TextEditor.Tests.Actions
 		[Test()]
 		public void TestBackspace ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234$567890");
-			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
+			var data = Create (@"1234$567890");
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (1, 4), data.Caret.Location);
-			Assert.AreEqual ("123567890", data.Document.Text);
+			Check (data, @"123$567890");
 		}
 		
 		[Test()]
 		public void TestBackspaceCase1 ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"$1234567890");
+			var data = Create (@"$1234567890");
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
-			Assert.AreEqual ("1234567890", data.Document.Text);
+			Check (data, @"$1234567890");
 		}
 		
 		[Test()]
 		public void TestDelete ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234$567890");
-			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
+			var data = Create (@"1234$567890");
 			DeleteActions.Delete (data);
-			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
-			Assert.AreEqual ("123467890", data.Document.Text);
+			Check (data, @"1234$67890");
 		}
 		
 		[Test()]
 		public void TestBackspaceDeleteCase1 ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234567890$");
+			var data = Create (@"1234567890$");
 			DeleteActions.Delete (data);
-			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
-			Assert.AreEqual ("1234567890", data.Document.Text);
+			Check (data, @"1234567890$");
 		}
 		
 		[Test()]
 		public void TestDeleteCaretLine ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234567890
+			var data = Create (@"1234567890
 1234$67890
 1234567890");
 			DeleteActions.CaretLine (data);
@@ -84,7 +78,7 @@ namespace Mono.TextEditor.Tests.Actions
 		[Test()]
 		public void TestDeleteCaretLineToEnd ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234567890
+			var data = Create (@"1234567890
 1234$67890
 1234567890");
 			DeleteActions.CaretLineToEnd (data);

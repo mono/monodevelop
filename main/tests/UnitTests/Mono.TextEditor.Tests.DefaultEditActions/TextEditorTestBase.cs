@@ -26,6 +26,8 @@
 
 using System;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Mono.TextEditor.Tests
 {
@@ -48,64 +50,106 @@ namespace Mono.TextEditor.Tests
 		}
 
 
+
 		public static TextEditorData Create (string content)
 		{
-			int caretIndex = content.IndexOf ("$");
-			if (caretIndex >= 0)
-				content = content.Substring (0, caretIndex) + content.Substring (caretIndex + 1);
+			var data = new TextEditorData ();
 
-			int selection1 = content.IndexOf ("<-");
-			int selection2 = content.IndexOf ("->");
-			
-			int selectionStart = 0;
-			int selectionEnd = 0;
-			if (0 <= selection1 && selection1 < selection2) {
-				content = content.Substring (0, selection2) + content.Substring (selection2 + 2);
-				content = content.Substring (0, selection1) + content.Substring (selection1 + 2);
-				selectionStart = selection1;
-				selectionEnd = selection2 - 2;
-				caretIndex = selectionEnd;
+			var sb = new StringBuilder ();
+			int caretIndex = -1, selectionStart = -1, selectionEnd = -1;
+			var foldSegments = new List<FoldSegment> ();
+			var foldStack = new Stack<FoldSegment> ();
+
+			for (int i = 0; i < content.Length; i++) {
+				var ch = content [i];
+				switch (ch) {
+				case '$':
+					caretIndex = sb.Length;
+					break;
+				case '<':
+					if (i + 1 < content.Length) {
+						if (content [i + 1] == '-') {
+							selectionStart = sb.Length;
+							i++;
+							break;
+						}
+					}
+					goto default;
+				case '-':
+					if (i + 1 < content.Length) {
+						var next = content [i + 1];
+						if (next == '>') {
+							selectionEnd = sb.Length;
+							i++;
+							break;
+						}
+						if (next == '[') {
+							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.None);
+							segment.IsFolded = false;
+							foldStack.Push (segment);
+							i++;
+							break;
+						}
+					}
+					goto default;
+				case '+':
+					if (i + 1 < content.Length) {
+						var next = content [i + 1];
+						if (next == '[') {
+							var segment = new FoldSegment (data.Document, "...", sb.Length, 0, FoldingType.None);
+							segment.IsFolded = true;
+							foldStack.Push (segment);
+							i++;
+							break;
+						}
+					}
+					goto default;
+				case ']':
+					if (foldStack.Count > 0) {
+						FoldSegment segment = foldStack.Pop ();
+						segment.Length = sb.Length - segment.Offset;
+						foldSegments.Add (segment);
+						break;
+					}
+					goto default;
+				default:
+					sb.Append (ch);
+					break;
+				}
 			}
 
-			var data = new TextEditorData ();
-			data.Text = content;
+			data.Text = sb.ToString ();
+
 			if (caretIndex >= 0)
 				data.Caret.Offset = caretIndex;
-			if (selection1 >= 0) {
+			if (selectionStart >= 0) {
 				if (caretIndex == selectionStart) {
 					data.SetSelection (selectionEnd, selectionStart);
 				} else {
 					data.SetSelection (selectionStart, selectionEnd);
 				}
 			}
+			if (foldSegments.Count > 0)
+				data.Document.UpdateFoldSegments (foldSegments, false);
 			return data;
 		}
 
 		public static void Check (TextEditorData data, string content)
 		{
-			int caretIndex = content.IndexOf ("$");
-			if (caretIndex >= 0)
-				content = content.Substring (0, caretIndex) + content.Substring (caretIndex + 1);
-
-			int selection1 = content.IndexOf ("<-");
-			int selection2 = content.IndexOf ("->");
-			
-			int selectionStart = 0;
-			int selectionEnd = 0;
-			if (0 <= selection1 && selection1 < selection2) {
-				content = content.Substring (0, selection2) + content.Substring (selection2 + 2);
-				content = content.Substring (0, selection1) + content.Substring (selection1 + 2);
-				selectionStart = selection1;
-				selectionEnd = selection2 - 2;
-				caretIndex = selectionEnd;
+			var checkDocument = Create (content);
+			Assert.AreEqual (checkDocument.Caret.Offset, data.Caret.Offset, "Caret offset mismatch.");
+			if (data.IsSomethingSelected || checkDocument.IsSomethingSelected)
+				Assert.AreEqual (checkDocument.SelectionRange, data.SelectionRange, "Selection mismatch.");
+			if (checkDocument.Document.HasFoldSegments || data.Document.HasFoldSegments) {
+				var list1 = new List<FoldSegment> (checkDocument.Document.FoldSegments);
+				var list2 = new List<FoldSegment> (data.Document.FoldSegments);
+				Assert.AreEqual (list1.Count, list2.Count, "Fold segment count mismatch.");
+				for (int i = 0; i < list1.Count; i++) {
+					Assert.AreEqual (list1 [i].Segment, list2 [i].Segment, "Fold " + i + " segment mismatch.");
+					Assert.AreEqual (list1 [i].IsFolded, list2 [i].IsFolded, "Fold " + i + " isFolded mismatch.");
+				}
 			}
-
-			if (caretIndex >= 0)
-				Assert.AreEqual (caretIndex, data.Caret.Offset, "Caret offset mismatch.");
-			if (selection1 >= 0) {
-				Assert.AreEqual (new TextSegment (selection1, selection2 - selection1), data.SelectionRange, "Selection mismatch.");
-			}
-			Assert.AreEqual (content, data.Text);
+			Assert.AreEqual (checkDocument.Text, data.Text);
 		}
 	}
 }
