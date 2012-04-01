@@ -260,7 +260,6 @@
     <None Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
     <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
-    <None Include="MonoDevelop.CSharpBinding.Refactoring\ExtractMethodTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.AspNet\" />
