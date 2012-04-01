@@ -30,22 +30,8 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class CaretMoveActionTests
+	public class CaretMoveActionTests : TextEditorTestBase
 	{
-		internal static TextEditorData Create (string text)
-		{
-			TextEditorData result = new TextEditorData ();
-			if (text.IndexOf ('$') >= 0) {
-				int caretOffset = text.IndexOf ('$');
-				result.Document.Text = text.Remove (caretOffset, 1);
-				result.Caret.Offset = caretOffset;
-			} else {
-				result.Document.Text = text;
-			}
-			return result;
-			
-		}
-		
 		[Test()]
 		public void TestCaretLeft ()
 		{
@@ -210,6 +196,30 @@ $1234567890
 			Assert.AreEqual (new DocumentLocation (1, 6), data.Caret.Location);
 			CaretMoveActions.ToDocumentEnd (data);
 			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
+		}
+
+		[Test()]
+		public void TestPreviousWord ()
+		{
+			var data = Create (@"word1 word2 word3$");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"word1 word2 $word3");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"word1 $word2 word3");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"$word1 word2 word3");
+		}
+
+		[Test()]
+		public void TestNextWord ()
+		{
+			var data = Create (@"$word1 word2 word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1$ word2 word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1 word2$ word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1 word2 word3$");
 		}
 	}
 }

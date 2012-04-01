@@ -46,5 +46,66 @@ namespace Mono.TextEditor.Tests
 		public virtual void TearDown ()
 		{
 		}
+
+
+		public static TextEditorData Create (string content)
+		{
+			int caretIndex = content.IndexOf ("$");
+			if (caretIndex >= 0)
+				content = content.Substring (0, caretIndex) + content.Substring (caretIndex + 1);
+
+			int selection1 = content.IndexOf ("<-");
+			int selection2 = content.IndexOf ("->");
+			
+			int selectionStart = 0;
+			int selectionEnd = 0;
+			if (0 <= selection1 && selection1 < selection2) {
+				content = content.Substring (0, selection2) + content.Substring (selection2 + 2);
+				content = content.Substring (0, selection1) + content.Substring (selection1 + 2);
+				selectionStart = selection1;
+				selectionEnd = selection2 - 2;
+				caretIndex = selectionEnd;
+			}
+
+			var data = new TextEditorData ();
+			data.Text = content;
+			if (caretIndex >= 0)
+				data.Caret.Offset = caretIndex;
+			if (selection1 >= 0) {
+				if (caretIndex == selectionStart) {
+					data.SetSelection (selectionEnd, selectionStart);
+				} else {
+					data.SetSelection (selectionStart, selectionEnd);
+				}
+			}
+			return data;
+		}
+
+		public static void Check (TextEditorData data, string content)
+		{
+			int caretIndex = content.IndexOf ("$");
+			if (caretIndex >= 0)
+				content = content.Substring (0, caretIndex) + content.Substring (caretIndex + 1);
+
+			int selection1 = content.IndexOf ("<-");
+			int selection2 = content.IndexOf ("->");
+			
+			int selectionStart = 0;
+			int selectionEnd = 0;
+			if (0 <= selection1 && selection1 < selection2) {
+				content = content.Substring (0, selection2) + content.Substring (selection2 + 2);
+				content = content.Substring (0, selection1) + content.Substring (selection1 + 2);
+				selectionStart = selection1;
+				selectionEnd = selection2 - 2;
+				caretIndex = selectionEnd;
+			}
+
+			if (caretIndex >= 0)
+				Assert.AreEqual (caretIndex, data.Caret.Offset, "Caret offset mismatch.");
+			if (selection1 >= 0) {
+				Assert.AreEqual (new TextSegment (selection1, selection2 - selection1), data.SelectionRange, "Selection mismatch.");
+			}
+			Assert.AreEqual (content, data.Text);
+		}
 	}
 }
