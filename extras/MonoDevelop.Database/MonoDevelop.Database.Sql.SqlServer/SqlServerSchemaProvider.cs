@@ -139,9 +139,9 @@ using MonoDevelop.Core;
 							}
 							reader.Close ();
 						}
-					 } catch (IOException ioex) {
+					 } catch (IOException) {
 						//FIXME: Avoid an IOException AND ObjectDisposedException (https://bugzilla.novell.com/show_bug.cgi?id=556406)
-					} catch (ObjectDisposedException dex) {
+					} catch (ObjectDisposedException) {
 					}
 					catch (Exception e) {
 					 	QueryService.RaiseException (e);

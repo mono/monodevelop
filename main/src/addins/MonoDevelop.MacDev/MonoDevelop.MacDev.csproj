@@ -149,6 +149,9 @@
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
       <LogicalName>MonoDevelop.MacDev.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\error.png">
+      <LogicalName>error.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="icons\application-x-mono-develop-xib.svg" />

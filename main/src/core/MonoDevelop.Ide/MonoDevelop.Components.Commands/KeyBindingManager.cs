@@ -213,6 +213,13 @@ namespace MonoDevelop.Components.Commands
 			return accel + KeyToString (shortcuts[0].Key);
 		}
 		
+		public static string AccelLabelFromKey (Gdk.EventKey raw)
+		{
+			bool complete;
+			
+			return AccelLabelFromKey (raw, out complete);
+		}
+		
 		static string AccelLabelFromKey (Gdk.Key key, Gdk.ModifierType modifier, out bool complete)
 		{
 			string accel = ModifierToString (modifier);
@@ -395,14 +402,14 @@ namespace MonoDevelop.Components.Commands
 		
 		public static string BindingToDisplayLabel (KeyBinding binding, bool concise)
 		{
-			string label = string.Empty;
+			string label;
 			
-			if (binding.Chord != null)
-				label += ModifierToDisplayLabel (binding.Chord.Modifier, concise) + KeyToDisplayLabel (binding.Chord.Key) + (isMac ? " " : "|");
+			if (!binding.Chord.IsEmpty)
+				label = ModifierToDisplayLabel (binding.Chord.Modifier, concise) + KeyToDisplayLabel (binding.Chord.Key) + (isMac ? " " : "|");
+			else
+				label = string.Empty;
 			
-			label += ModifierToDisplayLabel (binding.Accel.Modifier, concise) + KeyToDisplayLabel (binding.Accel.Key);
-			
-			return label;
+			return label + ModifierToDisplayLabel (binding.Accel.Modifier, concise) + KeyToDisplayLabel (binding.Accel.Key);
 		}
 		
 		static string KeyToDisplayLabel (Gdk.Key key)
@@ -489,6 +496,8 @@ namespace MonoDevelop.Components.Commands
 				if ((mod = ModifierMask (str)) == Gdk.ModifierType.None) {
 					if (str.Length > 1)
 						key = (Gdk.Key) Gdk.Key.Parse (typeof (Gdk.Key), str);
+					else if (str[0] >= 'a' && str[0] <= 'z')
+						key = (Gdk.Key) str[0] - 32;
 					else
 						key = (Gdk.Key) str[0];
 					
@@ -595,14 +604,14 @@ namespace MonoDevelop.Components.Commands
 			
 			if (ChordChanged (oldKeyBinding, newKeyBinding)) {
 				// keep track of valid modes
-				if (oldKeyBinding != null && oldKeyBinding.Chord != null) {
+				if (oldKeyBinding != null && !oldKeyBinding.Chord.IsEmpty) {
 					if ((refs = chords[oldKeyBinding.Chord] - 1) == 0)
 						chords.Remove (oldKeyBinding.Chord);
 					else
 						chords[oldKeyBinding.Chord] = refs;
 				}
 				
-				if (newKeyBinding != null && newKeyBinding.Chord != null) {
+				if (newKeyBinding != null && !newKeyBinding.Chord.IsEmpty) {
 					if (!chords.ContainsKey (newKeyBinding.Chord))
 						chords.Add (newKeyBinding.Chord, 1);
 					else
@@ -631,20 +640,6 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
-		void SetBinding (Command command, string oldBinding, string newBinding)
-		{
-			KeyBinding oldKeyBinding;
-			KeyBinding newKeyBinding;
-			
-			if (!KeyBinding.TryParse (oldBinding, out oldKeyBinding))
-				oldKeyBinding = null;
-			
-			if (!KeyBinding.TryParse (newBinding, out newKeyBinding))
-				newKeyBinding = null;
-			
-			SetBinding (command, oldKeyBinding, newKeyBinding);
-		}
-		
 		void OnKeyBindingChanged (object o, KeyBindingChangedEventArgs args)
 		{
 			SetBinding (args.Command, args.OldKeyBinding, args.NewKeyBinding);
@@ -662,7 +657,7 @@ namespace MonoDevelop.Components.Commands
 				return;
 			}
 			
-			SetBinding (command, null, command.AccelKey);
+			SetBinding (command, null, command.KeyBinding);
 			command.KeyBindingChanged += OnKeyBindingChanged;
 			commands.Add (command);
 		}
@@ -680,23 +675,19 @@ namespace MonoDevelop.Components.Commands
 			command.KeyBindingChanged -= OnKeyBindingChanged;
 			commands.Remove (command);
 			
-			if (string.IsNullOrEmpty (command.AccelKey))
-				return;
-			
-			KeyBinding binding;
-			if (!KeyBinding.TryParse (command.AccelKey, out binding))
+			if (command.KeyBinding == null)
 				return;
 
-			list = bindings[binding];
+			list = bindings[command.KeyBinding];
 			list.Remove (command);
 			if (list.Count == 0)
-				bindings.Remove (binding);
+				bindings.Remove (command.KeyBinding);
 			
-			if (binding.Chord != null && chords.ContainsKey (binding.Chord)) {
-				if ((refs = chords[binding.Chord] - 1) == 0)
-					chords.Remove (binding.Chord);
+			if (!command.KeyBinding.Chord.IsEmpty && chords.ContainsKey (command.KeyBinding.Chord)) {
+				if ((refs = chords[command.KeyBinding.Chord] - 1) == 0)
+					chords.Remove (command.KeyBinding.Chord);
 				else
-					chords[binding.Chord] = refs;
+					chords[command.KeyBinding.Chord] = refs;
 			}
 		}
 		
@@ -705,7 +696,7 @@ namespace MonoDevelop.Components.Commands
 		///
 		public List<Command> Commands (KeyBinding binding)
 		{
-			if (!BindingExists (binding))
+			if (binding == null || !BindingExists (binding))
 				return null;
 			
 			return bindings[binding];
@@ -857,11 +848,17 @@ namespace MonoDevelop.Components.Commands
 		#endregion
 	}
 	
-	public class KeyBinding
+	public class KeyBinding : IEquatable<KeyBinding>
 	{
 		public KeyBinding (KeyboardShortcut chord, KeyboardShortcut accel)
 		{
 			Chord = chord;
+			Accel = accel;
+		}
+		
+		public KeyBinding (KeyboardShortcut accel)
+		{
+			Chord = KeyboardShortcut.Empty;
 			Accel = accel;
 		}
 		
@@ -877,13 +874,8 @@ namespace MonoDevelop.Components.Commands
 				return false;
 			}
 			
+			KeyboardShortcut chord = new KeyboardShortcut ((Gdk.Key) chordKey, chordModifier);
 			KeyboardShortcut accel = new KeyboardShortcut ((Gdk.Key) key, modifier);
-			KeyboardShortcut chord;
-			
-			if (chordKey != 0)
-				chord = new KeyboardShortcut ((Gdk.Key) chordKey, chordModifier);
-			else
-				chord = null;
 			
 			binding = new KeyBinding (chord, accel);
 			
@@ -900,35 +892,26 @@ namespace MonoDevelop.Components.Commands
 		
 		public override int GetHashCode ()
 		{
-			int code = Accel.GetHashCode ();
-			
-			if (Chord != null)
-				return Chord.GetHashCode () ^ code;
-			
-			return code;
+			return Chord.GetHashCode () ^ Accel.GetHashCode ();
 		}
 		
 		public override bool Equals (object obj)
 		{
-			KeyBinding binding = obj as KeyBinding;
-			
-			if (binding == null)
-				return false;
-			
-			if (Chord == null)
-				return binding.Chord == null && Accel.Equals (binding.Accel);
-			
-			if (binding.Chord == null)
-				return false;
-			
-			return Chord.Equals (binding.Chord) && Accel.Equals (binding.Accel);
+			return obj is KeyBinding && Equals ((KeyBinding) obj);
 		}
+		
+		#region IEquatable[KeyBinding] implementation
+		public bool Equals (KeyBinding other)
+		{
+			return Chord.Equals (other.Chord) && Accel.Equals (other.Accel);
+		}
+		#endregion
 		
 		public override string ToString ()
 		{
 			string chord;
 			
-			if (Chord != null)
+			if (!Chord.IsEmpty)
 				chord = KeyBindingManager.AccelLabelFromKey (Chord.Key, Chord.Modifier) + "|";
 			else
 				chord = string.Empty;

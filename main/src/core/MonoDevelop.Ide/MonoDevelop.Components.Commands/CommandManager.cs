@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.TextEditor;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -47,6 +48,7 @@ namespace MonoDevelop.Components.Commands
 		uint statusUpdateWait = 500;
 		DateTime lastUserInteraction;
 		KeyboardShortcut[] chords;
+		string chord;
 		
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
@@ -251,6 +253,20 @@ namespace MonoDevelop.Components.Commands
 			return cset;
 		}
 		
+		bool isEnabled = true;
+		
+		/// <summary>
+		/// Gets or sets a value indicating whether the command manager is enabled. When disabled, all commands are disabled.
+		/// </summary>
+		public bool IsEnabled {
+			get {
+				return isEnabled;
+			}
+			set {
+				isEnabled = value;
+			}
+		}
+		
 		bool CanUseBinding (KeyboardShortcut[] chords, KeyboardShortcut[] accels, out KeyBinding binding)
 		{
 			if (chords != null) {
@@ -265,11 +281,11 @@ namespace MonoDevelop.Components.Commands
 				foreach (var accel in accels) {
 					if (bindings.ChordExists (accel)) {
 						// Chords take precedence over bindings with the same shortcut.
-						binding = new KeyBinding (null, accel);
+						binding = new KeyBinding (accel);
 						continue;
 					}
 					
-					binding = new KeyBinding (null, accel);
+					binding = new KeyBinding (accel);
 					if (bindings.BindingExists (binding))
 						return true;
 				}
@@ -280,19 +296,7 @@ namespace MonoDevelop.Components.Commands
 			return false;
 		}
 		
-		bool isEnabled = true;
-		
-		/// <summary>
-		/// Gets or sets a value indicating whether the command manager is enabled. When disabled, all commands are disabled.
-		/// </summary>
-		public bool IsEnabled {
-			get {
-				return isEnabled;
-			}
-			set {
-				isEnabled = value;
-			}
-		}
+		public event EventHandler<KeyBindingFailedEventArgs> KeyBindingFailed;
 		
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
@@ -318,13 +322,29 @@ namespace MonoDevelop.Components.Commands
 				commands = bindings.Commands (binding);
 				e.RetVal = true;
 				chords = null;
+				chord = null;
 			} else if (bindings.AnyChordExists (accels)) {
+				chord = KeyBindingManager.AccelLabelFromKey (e.Event);
 				e.RetVal = true;
 				chords = accels;
+				return;
+			} else if (chords != null) {
+				// Note: The user has entered a valid chord but the accel was invalid.
+				if (KeyBindingFailed != null) {
+					string accel = KeyBindingManager.AccelLabelFromKey (e.Event);
+					
+					KeyBindingFailed (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("The key combination ({0}, {1}) is not a command.", chord, accel)));
+				}
+				
+				e.RetVal = true;
+				chords = null;
+				chord = null;
 				return;
 			} else {
 				e.RetVal = false;
 				chords = null;
+				chord = null;
+				
 				NotifyKeyPressed (e);
 				return;
 			}
@@ -2240,6 +2260,16 @@ namespace MonoDevelop.Components.Commands
 	{
 		public Gdk.Key Key { get; internal set; }
 		public Gdk.ModifierType Modifiers { get; internal set; }
+	}
+	
+	public class KeyBindingFailedEventArgs : EventArgs
+	{
+		public string Message { get; private set; }
+		
+		public KeyBindingFailedEventArgs (string message)
+		{
+			Message = message;
+		}
 	}
 }
 

@@ -411,7 +411,7 @@ namespace Stetic {
 			return group;
 		}
 		
-		void AddProperty (PropertyDefinition prop, string cat, XmlElement obj)
+		void AddProperty (PropertyDefinition prop, string cat, bool translatable, XmlElement obj)
 		{
 			XmlElement groups = obj ["itemgroups"];
 			if (groups == null) {
@@ -421,6 +421,8 @@ namespace Stetic {
 			
 			XmlElement group = GetItemGroup (groups, cat, prop.DeclaringType.Name + " Properties");
 			XmlElement elem = group.OwnerDocument.CreateElement ("property");
+			if (translatable)
+				elem.SetAttribute ("translatable", "yes");
 			elem.SetAttribute ("name", prop.Name);
 			group.AppendChild (elem);
 		}
@@ -451,24 +453,34 @@ namespace Stetic {
 			foreach (PropertyDefinition prop in tdef.Properties) {
 				if (prop.GetMethod == null || !prop.GetMethod.IsPublic || prop.SetMethod == null || !prop.SetMethod.IsPublic)
 					continue;
+				
 				else if (Array.IndexOf (supported_types, prop.PropertyType.FullName) < 0)
 					continue;
+				
 				bool browsable = true;
+				bool translatable = false;
 				string category = String.Empty;
 				foreach (CustomAttribute attr in prop.CustomAttributes) {
 					switch (attr.Constructor.DeclaringType.FullName) {
 					case "System.ComponentModel.BrowsableAttribute":
 						if (attr.ConstructorArguments.Count > 0) {
-							object param = attr.ConstructorArguments [0];
+							object param = attr.ConstructorArguments [0].Value;
 							if (param.GetType () == typeof (bool))
 								browsable = (bool) param;
 						}
 						break;
 					case "System.ComponentModel.CategoryAttribute":
 						if (attr.ConstructorArguments.Count > 0) {
-							object param = attr.ConstructorArguments [0];
+							object param = attr.ConstructorArguments [0].Value;
 							if (param.GetType () == typeof (string))
 								category = (string) param;
+						}
+						break;
+					case "System.ComponentModel.LocalizableAttribute":
+						if (attr.ConstructorArguments.Count > 0) {
+							object param = attr.ConstructorArguments [0].Value;
+							if (param.GetType () == typeof (bool))
+								translatable = (bool) param;
 						}
 						break;
 					default:
@@ -478,7 +490,7 @@ namespace Stetic {
 						break;
 				}
 				if (browsable)
-					AddProperty (prop, category, obj);
+					AddProperty (prop, category, translatable, obj);
 			}
 		}
 	
@@ -498,7 +510,6 @@ namespace Stetic {
 
 		void AddEvents (TypeDefinition tdef, XmlElement obj)
 		{
-			
 			foreach (EventDefinition ev in tdef.Events) {
 				if (ev.AddMethod == null || !ev.AddMethod.IsPublic)
 					continue;
@@ -508,14 +519,14 @@ namespace Stetic {
 					switch (attr.Constructor.DeclaringType.FullName) {
 					case "System.ComponentModel.BrowsableAttribute":
 						if (attr.ConstructorArguments.Count > 0) {
-							object param = attr.ConstructorArguments [0];
+							object param = attr.ConstructorArguments [0].Value;
 							if (param.GetType () == typeof (bool))
 								browsable = (bool) param;
 						}
 						break;
 					case "System.ComponentModel.CategoryAttribute":
 						if (attr.ConstructorArguments.Count > 0) {
-							object param = attr.ConstructorArguments [0];
+							object param = attr.ConstructorArguments [0].Value;
 							if (param.GetType () == typeof (string))
 								category = (string) param;
 						}

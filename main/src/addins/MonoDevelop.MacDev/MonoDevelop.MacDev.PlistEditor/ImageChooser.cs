@@ -44,14 +44,30 @@ namespace MonoDevelop.MacDev.PlistEditor
 	[ToolboxItem(true)]
 	public class ImageChooser : Button
 	{
+		static Pixbuf WarningIcon = Pixbuf.LoadFromResource ("error.png");
+		
+		Size imageSize, displaySize, acceptedSize, recommendedSize;
+		Pixbuf scaledPixbuf;
+		string description;
 		Project project;
 		Gtk.Image image;
-		Pixbuf scaledPixbuf;
-		Size displaySize, acceptedSize;
 		
 		Gtk.TargetEntry[] targetEntryTypes = new Gtk.TargetEntry[] {
 			new Gtk.TargetEntry ("text/uri-list", 0, 100u)
 		};
+		
+		[Localizable (true)]
+		public string Description {
+			get { return description; }
+			set {
+				if (value == description)
+					return;
+				
+				description = value;
+				
+				UpdateTooltip ();
+			}
+		}
 		
 		public Size DisplaySize {
 			get { return displaySize; }
@@ -62,12 +78,30 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
-		
 		public Size AcceptedSize {
 			get { return acceptedSize; }
 			set {
+				if (value == acceptedSize)
+					return;
+				
+				recommendedSize = value;
 				acceptedSize = value;
-				TooltipText = GettextCatalog.GetString ("Image size {0}x{1}", value.Width, value.Height);
+				
+				UpdateTooltip ();
+				QueueDraw ();
+			}
+		}
+		
+		public Size RecommendedSize {
+			get { return recommendedSize; }
+			set {
+				if (value == recommendedSize)
+					return;
+				
+				recommendedSize = value;
+				
+				UpdateTooltip ();
+				QueueDraw ();
 			}
 		}
 		
@@ -84,6 +118,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			DestroyScaledPixbuf ();
 			
+			imageSize = pixbuf != null ? new Size (pixbuf.Width, pixbuf.Height) : Size.Empty;
+			
 			//scale image down to fit
 			if (pixbuf != null && (pixbuf.Width > DisplaySize.Width || pixbuf.Height > DisplaySize.Height)) {
 				if (DisplaySize.Width == 0 || displaySize.Height == 0)
@@ -95,7 +131,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 				destHeight =  Math.Max (1, Math.Min (DisplaySize.Height, destHeight));
 				scaledPixbuf = pixbuf = pixbuf.ScaleSimple (destWidth, destHeight, InterpType.Bilinear);
 			}
+			
 			image.Pixbuf = pixbuf;
+			
+			UpdateTooltip ();
 		}
 		
 		public ImageChooser ()
@@ -106,6 +145,30 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			Gtk.Drag.DestSet (this, DestDefaults.Drop, targetEntryTypes, DragAction.Link);
 			SupportedFormats = new List<string> { "png" };
+		}
+		
+		void UpdateTooltip ()
+		{
+			if (imageSize != Size.Empty && RecommendedSize != Size.Empty && imageSize != RecommendedSize) {
+				string warning = GettextCatalog.GetString ("<b>WARNING:</b> The size of the current image does not match the recommended size of {0}x{1} pixels.",
+					                                        RecommendedSize.Width, RecommendedSize.Height);
+				
+				if (!string.IsNullOrEmpty (description))
+					TooltipMarkup = GLib.Markup.EscapeText (description) + "\n\n" + warning;
+				else
+					TooltipMarkup = warning;
+			} else if (RecommendedSize != Size.Empty) {
+				string suggestion = GettextCatalog.GetString ("The recommended size of this image is {0}x{1} pixels.", RecommendedSize.Width, RecommendedSize.Height);
+				
+				if (!string.IsNullOrEmpty (description))
+					TooltipText = description + "\n\n" + suggestion;
+				else
+					TooltipText = suggestion;
+			} else if (string.IsNullOrEmpty (description)) {
+				TooltipText = GettextCatalog.GetString ("Choose an image.");
+			} else {
+				TooltipText = description;
+			}
 		}
 
 		public bool CheckImage (FilePath path)
@@ -126,7 +189,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 					errorMessage = GettextCatalog.GetString (
 							"Only images with size {0}x{1} are allowed. Picture was {2}x{3}.",
 							AcceptedSize.Width, AcceptedSize.Height, width, height);
-						
 				} else if (!SupportedFormats.Contains (type.Name)) {
 					var formats = string.Join (", ", SupportedFormats.Select (f => "'" + f + "'"));
 					errorTitle = GettextCatalog.GetString ("Invalid image selected");
@@ -152,9 +214,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 
 			try {
 				if (AcceptedSize.IsEmpty)
-					dialog.Title = GettextCatalog.GetString ("Select icon...");
+					dialog.Title = GettextCatalog.GetString ("Select image...");
 				else
-					dialog.Title = GettextCatalog.GetString ("Select icon ({0}x{1})...", AcceptedSize.Width, AcceptedSize.Height);
+					dialog.Title = GettextCatalog.GetString ("Select image ({0}x{1})...", RecommendedSize.Width, RecommendedSize.Height);
 				while (MessageService.RunCustomDialog (dialog) == (int)Gtk.ResponseType.Ok && dialog.SelectedFile != null) {
 					var path = dialog.SelectedFile.FilePath;
 					if (!CheckImage (path))
@@ -190,34 +252,48 @@ namespace MonoDevelop.MacDev.PlistEditor
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			var ret = base.OnExposeEvent (evnt);
-			if (image.Pixbuf != null)
-				return ret;
 			
-			using (var cr = CairoHelper.Create (evnt.Window)) {
-				cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
-				cr.Clip ();
-				var imgAlloc = image.Allocation;
-				cr.Translate (imgAlloc.X, imgAlloc.Y);
-				
-				using (var layout = new Pango.Layout (PangoContext)) {
-					layout.SetText (string.Format ("({0}x{1})", acceptedSize.Width, acceptedSize.Height));
-					layout.Width = (int) (imgAlloc.Width * Pango.Scale.PangoScale);
-					layout.Wrap = Pango.WrapMode.WordChar;
-					layout.Alignment = Pango.Alignment.Center;
-
-					int pw, ph;
-					layout.GetPixelSize (out pw, out ph);
-					cr.MoveTo (0, (imgAlloc.Height - ph) / 2);
-					cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
-					cr.ShowLayout (layout);
+			if (image.Pixbuf == null) {
+				using (var cr = CairoHelper.Create (evnt.Window)) {
+					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
+					cr.Clip ();
+					
+					var imgAlloc = image.Allocation;
+					cr.Translate (imgAlloc.X, imgAlloc.Y);
+					
+					using (var layout = new Pango.Layout (PangoContext)) {
+						layout.SetText (string.Format ("({0}x{1})", RecommendedSize.Width, RecommendedSize.Height));
+						layout.Width = (int) (imgAlloc.Width * Pango.Scale.PangoScale);
+						layout.Wrap = Pango.WrapMode.WordChar;
+						layout.Alignment = Pango.Alignment.Center;
+						
+						int pw, ph;
+						layout.GetPixelSize (out pw, out ph);
+						cr.MoveTo (0, (imgAlloc.Height - ph) / 2);
+						cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
+						cr.ShowLayout (layout);
+					}
+					
+					CairoExtensions.RoundedRectangle (cr, 5, 5, imgAlloc.Width - 10, imgAlloc.Height - 10, 5);
+					cr.LineWidth = 3;
+					cr.Color = new Cairo.Color (0.8, 0.8, 0.8);
+					cr.SetDash (new double[] { 12, 2 }, 0);
+					cr.Stroke ();
 				}
-				
-				CairoExtensions.RoundedRectangle (cr, 5, 5, imgAlloc.Width - 10, imgAlloc.Height - 10, 5);
-				cr.LineWidth = 3;
-				cr.Color = new Cairo.Color (0.8, 0.8, 0.8);
-				cr.SetDash (new double[] { 12, 2 }, 0);
-				cr.Stroke ();
+			} else if (RecommendedSize != Size.Empty && imageSize != RecommendedSize) {
+				using (var cr = CairoHelper.Create (evnt.Window)) {
+					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
+					cr.Clip ();
+					
+					var imgAlloc = image.Allocation;
+					cr.Translate (imgAlloc.X + displaySize.Width - WarningIcon.Width - 3, imgAlloc.Y + displaySize.Height - WarningIcon.Height);
+					
+					CairoHelper.SetSourcePixbuf (cr, WarningIcon, 0, 0);
+					cr.Rectangle (0, 0, WarningIcon.Width, WarningIcon.Height);
+					cr.Fill ();
+				}
 			}
+			
 			return ret;
 		}
 		
@@ -256,7 +332,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 						OnChanged (EventArgs.Empty);
 					}
 				}
-				
 			}
 		}
 	}
