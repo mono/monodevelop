@@ -39,8 +39,8 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFallback ()
 		{
-			byte[] input = new byte[] { 0xFF, 0x10, 0xAA, (byte)'u' };
-			Assert.AreEqual ("?\u0010?u", TextFileUtility.GetText (input));
+			byte[] input = new byte[] { 0xFF, 0x10, 0xAA, (byte)'u' , 0x8D};
+			Assert.AreEqual ("?\u0010?u?", TextFileUtility.GetText (input));
 		}
 
 		[Test()]
@@ -70,7 +70,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestUTF16MixedText ()
 		{
-			var src = "Hello\u00A9 World\u2122";
+			var src = "Hello\u00A9 World\u2122\u008D";
 			byte[] input = Encoding.Unicode.GetBytes (src);
 			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
@@ -87,7 +87,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestUTF16BEMixedText ()
 		{
-			var src = "Hello\u00A9 World\u2122";
+			var src = "Hello\u00A9\u008D World\u2122";
 			byte[] input = Encoding.BigEndianUnicode.GetBytes (src);
 			Assert.AreEqual (src, TextFileUtility.GetText (input));
 		}
