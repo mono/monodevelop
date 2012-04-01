@@ -221,5 +221,30 @@ $1234567890
 			CaretMoveActions.NextWord (data);
 			Check (data, @"word1 word2 word3$");
 		}
+
+		
+		[Test()]
+		public void TestPreviousSubword ()
+		{
+			var data = Create (@"someLongWord$");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"someLong$Word");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"some$LongWord");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"$someLongWord");
+		}
+
+		[Test()]
+		public void TestNextSubword ()
+		{
+			var data = Create (@"$someLongWord");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"some$LongWord");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"someLong$Word");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"someLongWord$");
+		}
 	}
 }
