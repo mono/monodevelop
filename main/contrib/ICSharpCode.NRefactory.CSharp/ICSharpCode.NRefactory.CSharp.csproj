@@ -356,6 +356,10 @@
     <Compile Include="Refactoring\CodeActions\CreateConstructorDeclarationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateDelegateAction.cs" />
     <Compile Include="Formatter\TextEditorOptions.cs" />
+    <Compile Include="Refactoring\CodeActions\IntroduceConstantAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractMethod\ExtractMethodAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractMethod\StaticVisitor.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableLookupVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

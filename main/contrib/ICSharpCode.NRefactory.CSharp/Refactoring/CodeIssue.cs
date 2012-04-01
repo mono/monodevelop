@@ -1,6 +1,6 @@
-// 
+﻿// 
 // InspectionIssue.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -46,17 +46,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			private set;
 		}
 
-		public IEnumerable<CodeAction> Actions {
+		public IList<CodeAction> Actions {
 			get;
 			private set;
 		}
 
-		public CodeIssue(string description, TextLocation start, TextLocation end, IEnumerable<CodeAction> action = null)
+		public CodeIssue(string description, TextLocation start, TextLocation end, IEnumerable<CodeAction> actions = null)
 		{
 			Desription = description;
 			Start = start;
 			End = end;
-			Actions = action ?? Enumerable.Empty<CodeAction> ();
+			if (actions != null)
+				Actions = actions.ToArray();
+			else
+				Actions = EmptyList<CodeAction>.Instance;
 		}
 		
 		public CodeIssue(string description, TextLocation start, TextLocation end, CodeAction action) : this (description, start, end, action != null ? new [] { action } : null)

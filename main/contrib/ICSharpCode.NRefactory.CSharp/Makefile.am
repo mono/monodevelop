@@ -224,12 +224,16 @@ FILES =  \
 	Refactoring/CodeActions/CreateMethodDeclarationAction.cs \
 	Refactoring/CodeActions/CreatePropertyAction.cs \
 	Refactoring/CodeActions/DeclareLocalVariableAction.cs \
+	Refactoring/CodeActions/ExtractMethod/ExtractMethodAction.cs \
+	Refactoring/CodeActions/ExtractMethod/StaticVisitor.cs \
+	Refactoring/CodeActions/ExtractMethod/VariableLookupVisitor.cs \
 	Refactoring/CodeActions/FlipOperatorArgumentsAction.cs \
 	Refactoring/CodeActions/GenerateGetterAction.cs \
 	Refactoring/CodeActions/GeneratePropertyAction.cs \
 	Refactoring/CodeActions/GenerateSwitchLabelsAction.cs \
 	Refactoring/CodeActions/InlineLocalVariableAction.cs \
 	Refactoring/CodeActions/InsertAnonymousMethodSignatureAction.cs \
+	Refactoring/CodeActions/IntroduceConstantAction.cs \
 	Refactoring/CodeActions/IntroduceFormatItemAction.cs \
 	Refactoring/CodeActions/InvertIfAction.cs \
 	Refactoring/CodeActions/RemoveBackingStoreAction.cs \

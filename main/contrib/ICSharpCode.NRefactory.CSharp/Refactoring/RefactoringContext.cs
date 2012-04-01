@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public virtual AstType CreateShortType (IType fullType)
 		{
-			var csResolver = resolver.GetResolverStateBefore(GetNode());
+			var csResolver = Resolver.GetResolverStateBefore(GetNode());
 			var builder = new TypeSystemAstBuilder(csResolver);
 			return builder.ConvertType(fullType);
 		}

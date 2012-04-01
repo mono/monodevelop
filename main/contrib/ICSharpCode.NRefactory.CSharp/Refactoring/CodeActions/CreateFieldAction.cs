@@ -195,11 +195,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (state != null && (state.CurrentMember.ReturnType is ParameterizedType)) {
 					var pt = (ParameterizedType)state.CurrentMember.ReturnType;
 					if (pt.FullName == "System.Collections.Generic.IEnumerable") {
-						return new [] { pt.TypeArguments.First () };
+						return new [] { pt.TypeArguments.First() };
 					}
 				}
 			}
 
+			if (expr.Parent is UnaryOperatorExpression) {
+				var uop = (UnaryOperatorExpression)expr.Parent;
+				switch (uop.Operator) {
+					case UnaryOperatorType.Not:
+						return new [] { context.Compilation.FindType(KnownTypeCode.Boolean) };
+					case UnaryOperatorType.Minus:
+					case UnaryOperatorType.Plus:
+					case UnaryOperatorType.Increment:
+					case UnaryOperatorType.Decrement:
+					case UnaryOperatorType.PostIncrement:
+					case UnaryOperatorType.PostDecrement:
+						return new [] { context.Compilation.FindType(KnownTypeCode.Int32) };
+				}
+			}
 			return Enumerable.Empty<IType>();
 		}
 		static readonly IType[] emptyTypes = new IType[0];

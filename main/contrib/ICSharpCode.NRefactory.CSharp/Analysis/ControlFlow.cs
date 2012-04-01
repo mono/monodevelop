@@ -403,25 +403,25 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				return CreateConnectedEndNode(expressionStatement, data);
 			}
 			
-			public override ControlFlowNode VisitIfElseStatement (IfElseStatement ifElseStatement, ControlFlowNode data)
+			public override ControlFlowNode VisitIfElseStatement(IfElseStatement ifElseStatement, ControlFlowNode data)
 			{
-				bool? cond = builder.EvaluateCondition (ifElseStatement.Condition);
-				ControlFlowNode trueBegin = builder.CreateStartNode (ifElseStatement.TrueStatement);
+				bool? cond = builder.EvaluateCondition(ifElseStatement.Condition);
+				ControlFlowNode trueBegin = builder.CreateStartNode(ifElseStatement.TrueStatement);
 				if (cond != false)
-					Connect (data, trueBegin, ControlFlowEdgeType.ConditionTrue);
-				ControlFlowNode trueEnd = ifElseStatement.TrueStatement.AcceptVisitor (this, trueBegin);
+					Connect(data, trueBegin, ControlFlowEdgeType.ConditionTrue);
+				ControlFlowNode trueEnd = ifElseStatement.TrueStatement.AcceptVisitor(this, trueBegin);
 				ControlFlowNode falseEnd;
 				if (ifElseStatement.FalseStatement.IsNull) {
 					falseEnd = null;
 				} else {
-					ControlFlowNode falseBegin = builder.CreateStartNode (ifElseStatement.FalseStatement);
+					ControlFlowNode falseBegin = builder.CreateStartNode(ifElseStatement.FalseStatement);
 					if (cond != true)
-						Connect (data, falseBegin, ControlFlowEdgeType.ConditionFalse);
-					falseEnd = ifElseStatement.FalseStatement.AcceptVisitor (this, falseBegin);
+						Connect(data, falseBegin, ControlFlowEdgeType.ConditionFalse);
+					falseEnd = ifElseStatement.FalseStatement.AcceptVisitor(this, falseBegin);
 				}
-				ControlFlowNode end = builder.CreateEndNode (ifElseStatement);
+				ControlFlowNode end = builder.CreateEndNode(ifElseStatement);
 				if (trueEnd != null)
-					Connect (trueEnd, end);
+					Connect(trueEnd, end);
 				if (falseEnd != null) {
 					Connect(falseEnd, end);
 				} else if (cond != true) {

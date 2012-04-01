@@ -46,8 +46,8 @@ namespace MonoDevelop.TypeSystem
 	
 	public abstract class ParsedDocument
 	{
-		DateTime lastWriteTime = DateTime.Now;
-		public DateTime LastWriteTime {
+		DateTime? lastWriteTime = DateTime.Now;
+		public DateTime? LastWriteTime {
 			get { return lastWriteTime; }
 			set { lastWriteTime = value; }
 		}

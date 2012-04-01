@@ -46,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			this.originalDocument = document.CreateDocumentSnapshot();
 			this.currentDocument = document;
 			this.options = options;
+			this.eolMarker = options.EolMarker;
 			Debug.Assert(currentDocument.Version.CompareAge(originalDocument.Version) == 0);
 			this.undoGroup = document.OpenUndoGroup();
 		}

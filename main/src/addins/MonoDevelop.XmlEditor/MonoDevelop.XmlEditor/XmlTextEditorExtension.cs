@@ -729,7 +729,7 @@ namespace MonoDevelop.XmlEditor
 			if (defaultSchemaCompletionData != null || doc == null || doc.XDocument == null || inferenceQueued)
 				return;
 			if (inferredCompletionData == null
-			    || (doc.LastWriteTime - inferredCompletionData.TimeStamp).TotalSeconds >= 5
+			    || (doc.LastWriteTime.Value - inferredCompletionData.TimeStamp).TotalSeconds >= 5
 			        && doc.Errors.Count <= inferredCompletionData.ErrorCount)
 			{
 				inferenceQueued = true;

@@ -73,9 +73,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			get { return fileName; }
 		}
 		
-		DateTime lastWriteTime = DateTime.UtcNow;
+		DateTime? lastWriteTime;
 		
-		public DateTime LastWriteTime {
+		public DateTime? LastWriteTime {
 			get { return lastWriteTime; }
 			set {
 				FreezableHelper.ThrowIfFrozen(this);

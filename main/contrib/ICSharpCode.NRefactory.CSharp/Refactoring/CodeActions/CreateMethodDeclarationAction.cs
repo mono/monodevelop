@@ -40,6 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var identifier = context.GetNode<IdentifierExpression>();
 			if (identifier != null && !(identifier.Parent is InvocationExpression && ((InvocationExpression)identifier.Parent).Target == identifier))
 				return GetActionsFromIdentifier(context, identifier);
+			
+			var memberReference = context.GetNode<MemberReferenceExpression>();
+			if (memberReference != null && !(memberReference.Parent is InvocationExpression && ((InvocationExpression)memberReference.Parent).Target == memberReference))
+				return GetActionsFromMemberReferenceExpression(context, memberReference);
 
 			var invocation = context.GetNode<InvocationExpression>();
 			if (invocation != null)
@@ -47,7 +51,53 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return Enumerable.Empty<CodeAction>();
 		}
 
-		public IEnumerable<CodeAction> GetActionsFromIdentifier(RefactoringContext context, IdentifierExpression identifier)
+		IEnumerable<CodeAction> GetActionsFromMemberReferenceExpression(RefactoringContext context, MemberReferenceExpression invocation)
+		{
+			if (!(context.Resolve(invocation).IsError)) 
+				yield break;
+
+			var methodName = invocation.MemberName;
+			var guessedType = CreateFieldAction.GuessType(context, invocation);
+			if (guessedType.Kind != TypeKind.Delegate)
+				yield break;
+			var invocationMethod = guessedType.GetDelegateInvokeMethod();
+
+			var state = context.GetResolverStateBefore(invocation);
+
+			ResolveResult targetResolveResult = context.Resolve(invocation.Target);
+			bool createInOtherType = !state.CurrentTypeDefinition.Equals(targetResolveResult.Type.GetDefinition());
+
+			bool isStatic;
+			if (createInOtherType) {
+				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
+					yield break;
+				isStatic = targetResolveResult is TypeResolveResult;
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+					yield break;
+			} else {
+				if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
+					yield break;
+				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
+			}
+
+//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+//			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
+//				yield break;
+//			}
+
+			yield return CreateAction(
+				context, 
+				methodName, 
+				context.CreateShortType(invocationMethod.ReturnType),
+				invocationMethod.Parameters.Select(parameter => new ParameterDeclaration(context.CreateShortType(parameter.Type), parameter.Name) { 
+					ParameterModifier = GetModifiers(parameter)
+				}),
+				createInOtherType,
+				isStatic,
+				targetResolveResult);
+		}
+		
+		IEnumerable<CodeAction> GetActionsFromIdentifier(RefactoringContext context, IdentifierExpression identifier)
 		{
 			if (!(context.Resolve(identifier).IsError))
 				yield break;
@@ -65,39 +115,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic))
 				yield break;
 
-			yield return new CodeAction(context.TranslateString("Create delegate handler"), script => {
-				var decl = new MethodDeclaration() {
-					ReturnType = context.CreateShortType(invocationMethod.ReturnType),
-					Name = methodName,
-					Body = new BlockStatement() {
-						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-					}
-				};
-				if (isStatic)
-					decl.Modifiers |= Modifiers.Static;
-
-				foreach (var parameter in invocationMethod.Parameters) {
-					decl.Parameters.Add(new ParameterDeclaration(context.CreateShortType (parameter.Type), parameter.Name) {
-						ParameterModifier = GetModifiers(parameter)
-					});
-				}
-				script.InsertWithCursor(context.TranslateString("Create delegate handler"), decl, Script.InsertPosition.Before);
-			});
-
+			yield return CreateAction(
+				context, 
+				methodName, 
+				context.CreateShortType(invocationMethod.ReturnType),
+				invocationMethod.Parameters.Select(parameter => new ParameterDeclaration(context.CreateShortType(parameter.Type), parameter.Name) { 
+					ParameterModifier = GetModifiers(parameter)
+				}),
+				false,
+				isStatic,
+				null);
 		}
 
-		static ParameterModifier GetModifiers(IParameter parameter)
-		{
-			if (parameter.IsOut)
-				return ParameterModifier.Out;
-			if (parameter.IsRef)
-				return ParameterModifier.Ref;
-			if (parameter.IsParams)
-				return ParameterModifier.Params;
-			return ParameterModifier.None;
-		}
-		
-		public IEnumerable<CodeAction> GetActionsFromInvocation(RefactoringContext context, InvocationExpression invocation)
+		IEnumerable<CodeAction> GetActionsFromInvocation(RefactoringContext context, InvocationExpression invocation)
 		{
 			if (!(context.Resolve(invocation.Target).IsError)) 
 				yield break;
@@ -133,15 +163,40 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 //				yield break;
 //			}
 
-			yield return new CodeAction(context.TranslateString("Create method"), script => {
+
+			yield return CreateAction(
+				context, 
+				methodName, 
+				guessedType,
+				GenerateParameters(context, invocation.Arguments),
+				createInOtherType,
+				isStatic,
+				targetResolveResult);
+		}
+
+		static ParameterModifier GetModifiers(IParameter parameter)
+		{
+			if (parameter.IsOut)
+				return ParameterModifier.Out;
+			if (parameter.IsRef)
+				return ParameterModifier.Ref;
+			if (parameter.IsParams)
+				return ParameterModifier.Params;
+			return ParameterModifier.None;
+		}
+
+		static CodeAction CreateAction(RefactoringContext context, string methodName, AstType returnType, IEnumerable<ParameterDeclaration> parameters, bool createInOtherType, bool isStatic, ResolveResult targetResolveResult)
+		{
+			return new CodeAction(context.TranslateString("Create method"), script => {
 				var decl = new MethodDeclaration() {
-					ReturnType = guessedType,
+					ReturnType = returnType,
 					Name = methodName,
 					Body = new BlockStatement() {
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				decl.Parameters.AddRange(GenerateParameters (context, invocation.Arguments));
+				decl.Parameters.AddRange(parameters);
+				
 				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
 				
@@ -267,6 +322,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				
 				case "System.Char":
 					return "ch";
+				case "System.Double":
+				case "System.Decimal":
+					return "d";
+				case "System.Single":
+					return "f";
 				case "System.String":
 					return "str";
 				
@@ -282,7 +342,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return returnType.Name;
 		}
 		
-
 		string GetMethodName(InvocationExpression invocation)
 		{
 			if (invocation.Target is IdentifierExpression)

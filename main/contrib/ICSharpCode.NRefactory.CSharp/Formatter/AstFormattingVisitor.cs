@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ApplyChanges(startOffset, length, script.Replace);
 		}
 		
-		public void ApplyChanges (int startOffset, int length, Action<int, int, string> documentReplace, Func<int, int, string, bool> filter = null)
+		public void ApplyChanges(int startOffset, int length, Action<int, int, string> documentReplace, Func<int, int, string, bool> filter = null)
 		{
 			int endOffset = startOffset + length;
 			TextReplaceAction previousChange = null;
@@ -861,22 +861,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			FixSemicolon(expressionStatement.SemicolonToken);
 		}
 
-		void VisitBlockWithoutFixingBraces (BlockStatement blockStatement, bool indent)
+		void VisitBlockWithoutFixingBraces(BlockStatement blockStatement, bool indent)
 		{
 			if (indent) {
-				curIndent.Push (IndentType.Block);
+				curIndent.Push(IndentType.Block);
 			}
 			foreach (var child in blockStatement.Children) {
 				if (child.Role == Roles.LBrace || child.Role == Roles.RBrace) {
 					continue;
 				}
 				if (child is Statement) {
-					FixStatementIndentation (child.StartLocation);
-					child.AcceptVisitor (this);
+					FixStatementIndentation(child.StartLocation);
+					child.AcceptVisitor(this);
 				} else {
 					// leave comments and pre processor directives at line start, if they are there.
 					if (child.StartLocation.Column > 1)
-						FixStatementIndentation (child.StartLocation);
+						FixStatementIndentation(child.StartLocation);
 				}
 			}
 			if (indent) {
@@ -1152,7 +1152,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		TextReplaceAction AddChange (int offset, int removedChars, string insertedText)
+		TextReplaceAction AddChange(int offset, int removedChars, string insertedText)
 		{
 			var action = new TextReplaceAction (offset, removedChars, insertedText);
 			changes.Add(action);

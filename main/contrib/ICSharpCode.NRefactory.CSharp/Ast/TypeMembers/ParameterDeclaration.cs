@@ -121,10 +121,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
-		public ParameterDeclaration(AstType type, string name)
+		public ParameterDeclaration(AstType type, string name, ParameterModifier modifier = ParameterModifier.None)
 		{
-			this.Type = type;
-			this.Name = name;
+			Type = type;
+			Name = name;
+			ParameterModifier = modifier;
 		}
 	}
 }

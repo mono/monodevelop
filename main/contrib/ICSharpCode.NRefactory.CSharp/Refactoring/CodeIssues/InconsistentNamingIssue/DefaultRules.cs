@@ -149,3 +149,4 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 	}
 }
+
