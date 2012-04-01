@@ -28,12 +28,7 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
-using Gtk;
-using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -173,7 +168,7 @@ namespace Mono.TextEditor
 			data.FixVirtualIndentation ();
 		}
 		
-		public static void RemoveCharBeforeCaret (TextEditorData data)
+		static void RemoveCharBeforeCaret (TextEditorData data)
 		{
 			int offset = data.Caret.Offset;
 			if (offset <= 0)
@@ -226,16 +221,6 @@ namespace Mono.TextEditor
 					data.Document.CommitLineUpdate (data.Caret.Line);
 				}
 				data.FixVirtualIndentation ();
-			}
-		}
-		
-		public static void DeleteSelection (TextEditorData data)
-		{
-			if (!data.CanEditSelection)
-				return;
-			if (data.IsSomethingSelected) {
-				data.DeleteSelectedText ();
-				return;
 			}
 		}
 	}

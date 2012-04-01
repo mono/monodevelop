@@ -30,7 +30,7 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class DeleteActionTests
+	public class DeleteActionTests : TextEditorTestBase
 	{
 		[Test()]
 		public void TestBackspace ()
@@ -91,6 +91,54 @@ namespace Mono.TextEditor.Tests.Actions
 			Assert.AreEqual (@"1234567890
 1234
 1234567890", data.Document.Text);
+		}
+
+		[Test()]
+		public void TestDeletePreviousWord ()
+		{
+			var data = Create (@"      word1 word2 word3$");
+			DeleteActions.PreviousWord (data);
+			Check (data, @"      word1 word2 $");
+			DeleteActions.PreviousWord (data);
+			Check (data, @"      word1 $");
+			DeleteActions.PreviousWord (data);
+			Check (data, @"      $");
+		}
+		
+		[Test()]
+		public void TestDeletePreviousSubword ()
+		{
+			var data = Create (@"      SomeLongWord$");
+			DeleteActions.PreviousSubword (data);
+			Check (data, @"      SomeLong$");
+			DeleteActions.PreviousSubword (data);
+			Check (data, @"      Some$");
+			DeleteActions.PreviousSubword (data);
+			Check (data, @"      $");
+		}
+
+		[Test()]
+		public void TestDeleteNextWord ()
+		{
+			var data = Create (@"      $word1 word2 word3");
+			DeleteActions.NextWord (data);
+			Check (data, @"      $ word2 word3");
+			DeleteActions.NextWord (data);
+			Check (data, @"      $ word3");
+			DeleteActions.NextWord (data);
+			Check (data, @"      $");
+		}
+
+		[Test()]
+		public void TestDeleteNextSubword ()
+		{
+			var data = Create (@"      $SomeLongWord");
+			DeleteActions.NextSubword (data);
+			Check (data, @"      $LongWord");
+			DeleteActions.NextSubword (data);
+			Check (data, @"      $Word");
+			DeleteActions.NextSubword (data);
+			Check (data, @"      $");
 		}
 	}
 }
