@@ -70,77 +70,78 @@ FILES =  \
 	Mono.TextEditor.Vi/ViMark.cs \
 	Mono.TextEditor.Vi/ViMode.cs \
 	Mono.TextEditor.Vi/ViWordFindStrategy.cs \
+	Mono.TextEditor/Actions/BookmarkActions.cs \
+	Mono.TextEditor/Actions/CaretMoveActions.cs \
+	Mono.TextEditor/Actions/ClipboardActions.cs \
+	Mono.TextEditor/Actions/DeleteActions.cs \
+	Mono.TextEditor/Actions/FoldActions.cs \
+	Mono.TextEditor/Actions/MiscActions.cs \
+	Mono.TextEditor/Actions/ScrollActions.cs \
+	Mono.TextEditor/Actions/SelectionActions.cs \
 	Mono.TextEditor/Annotatable.cs \
-	Mono.TextEditor/BookmarkActions.cs \
 	Mono.TextEditor/BookmarkMarker.cs \
-	Mono.TextEditor/BufferedTextReader.cs \
 	Mono.TextEditor/Caret.cs \
-	Mono.TextEditor/CaretMoveActions.cs \
-	Mono.TextEditor/ClipboardActions.cs \
-	Mono.TextEditor/CodeSegmentEditorWindow.cs \
-	Mono.TextEditor/CodeSegmentPreviewWindow.cs \
-	Mono.TextEditor/DashedLineMargin.cs \
-	Mono.TextEditor/DefaultEditActions.cs \
-	Mono.TextEditor/DeleteActions.cs \
-	Mono.TextEditor/DocumentChangeEventArgs.cs \
-	Mono.TextEditor/DocumentLocation.cs \
-	Mono.TextEditor/DocumentRegion.cs \
-	Mono.TextEditor/DocumentUpdateRequest.cs \
+	Mono.TextEditor/Document/BufferedTextReader.cs \
+	Mono.TextEditor/Document/DocumentChangeEventArgs.cs \
+	Mono.TextEditor/Document/DocumentLocation.cs \
+	Mono.TextEditor/Document/DocumentRegion.cs \
+	Mono.TextEditor/Document/DocumentUpdateRequest.cs \
+	Mono.TextEditor/Document/EmacsWordFindStrategy.cs \
+	Mono.TextEditor/Document/FoldingType.cs \
+	Mono.TextEditor/Document/FoldSegment.cs \
+	Mono.TextEditor/Document/GapBuffer.cs \
+	Mono.TextEditor/Document/IBuffer.cs \
+	Mono.TextEditor/Document/ILineSplitter.cs \
+	Mono.TextEditor/Document/IWordFindStrategy.cs \
+	Mono.TextEditor/Document/LineEventArgs.cs \
+	Mono.TextEditor/Document/LineSegment.cs \
+	Mono.TextEditor/Document/LineSplitter.cs \
+	Mono.TextEditor/Document/PrimitiveLineSplitter.cs \
+	Mono.TextEditor/Document/SegmentTree.cs \
+	Mono.TextEditor/Document/SharpDevelopWordFindStrategy.cs \
+	Mono.TextEditor/Document/StringBuffer.cs \
+	Mono.TextEditor/Document/SyntaxModeChangeEventArgs.cs \
+	Mono.TextEditor/Document/TextDocument.cs \
+	Mono.TextEditor/Document/TextSegment.cs \
 	Mono.TextEditor/EditMode.cs \
-	Mono.TextEditor/EmacsWordFindStrategy.cs \
-	Mono.TextEditor/FoldActions.cs \
-	Mono.TextEditor/FoldingScreenbackgroundRenderer.cs \
-	Mono.TextEditor/FoldingType.cs \
-	Mono.TextEditor/FoldMarkerMargin.cs \
-	Mono.TextEditor/FoldSegment.cs \
-	Mono.TextEditor/GapBuffer.cs \
-	Mono.TextEditor/GtkWorkarounds.cs \
-	Mono.TextEditor/GutterMargin.cs \
+	Mono.TextEditor/Gui/CodeSegmentEditorWindow.cs \
+	Mono.TextEditor/Gui/CodeSegmentPreviewWindow.cs \
+	Mono.TextEditor/Gui/DashedLineMargin.cs \
+	Mono.TextEditor/Gui/FoldingScreenbackgroundRenderer.cs \
+	Mono.TextEditor/Gui/FoldMarkerMargin.cs \
+	Mono.TextEditor/Gui/GtkWorkarounds.cs \
+	Mono.TextEditor/Gui/GutterMargin.cs \
+	Mono.TextEditor/Gui/HslColor.cs \
+	Mono.TextEditor/Gui/IAnimationDrawer.cs \
+	Mono.TextEditor/Gui/IBackgroundRenderer.cs \
+	Mono.TextEditor/Gui/IconMargin.cs \
+	Mono.TextEditor/Gui/ITooltipProvider.cs \
+	Mono.TextEditor/Gui/Margin.cs \
+	Mono.TextEditor/Gui/MarginDrawer.cs \
+	Mono.TextEditor/Gui/PangoUtil.cs \
+	Mono.TextEditor/Gui/TextEditor.cs \
+	Mono.TextEditor/Gui/TextEditorAccessibility.cs \
+	Mono.TextEditor/Gui/TextEditorContainer.cs \
+	Mono.TextEditor/Gui/TextViewMargin.cs \
 	Mono.TextEditor/HeightTree.cs \
 	Mono.TextEditor/HelperMethods.cs \
-	Mono.TextEditor/HslColor.cs \
-	Mono.TextEditor/IAnimationDrawer.cs \
-	Mono.TextEditor/IBackgroundRenderer.cs \
 	Mono.TextEditor/IBracketMatcher.cs \
-	Mono.TextEditor/IBuffer.cs \
-	Mono.TextEditor/IconMargin.cs \
 	Mono.TextEditor/IIndentationTracker.cs \
-	Mono.TextEditor/ILineSplitter.cs \
 	Mono.TextEditor/IndentStyle.cs \
 	Mono.TextEditor/InsertionCursorEditMode.cs \
 	Mono.TextEditor/ISearchEngine.cs \
 	Mono.TextEditor/ITextEditorOptions.cs \
-	Mono.TextEditor/ITooltipProvider.cs \
-	Mono.TextEditor/IWordFindStrategy.cs \
-	Mono.TextEditor/LineEventArgs.cs \
-	Mono.TextEditor/LineSegment.cs \
-	Mono.TextEditor/LineSplitter.cs \
 	Mono.TextEditor/LinkEventArgs.cs \
-	Mono.TextEditor/Margin.cs \
-	Mono.TextEditor/MarginDrawer.cs \
-	Mono.TextEditor/PangoUtil.cs \
 	Mono.TextEditor/Platform.cs \
-	Mono.TextEditor/PrimitiveLineSplitter.cs \
 	Mono.TextEditor/SearchRequest.cs \
 	Mono.TextEditor/SearchResult.cs \
-	Mono.TextEditor/SegmentTree.cs \
 	Mono.TextEditor/Selection.cs \
-	Mono.TextEditor/SelectionActions.cs \
-	Mono.TextEditor/SharpDevelopWordFindStrategy.cs \
 	Mono.TextEditor/SimpleEditMode.cs \
-	Mono.TextEditor/StringBuffer.cs \
-	Mono.TextEditor/SyntaxModeChangeEventArgs.cs \
-	Mono.TextEditor/TextDocument.cs \
-	Mono.TextEditor/TextEditor.cs \
-	Mono.TextEditor/TextEditorAccessibility.cs \
-	Mono.TextEditor/TextEditorContainer.cs \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextLinkEditMode.cs \
 	Mono.TextEditor/TextMarker.cs \
-	Mono.TextEditor/TextMarkerEvent.cs \
-	Mono.TextEditor/TextSegment.cs \
-	Mono.TextEditor/TextViewMargin.cs 
+	Mono.TextEditor/TextMarkerEvent.cs 
 	Mono.TextEditor.Highlighting/Match.cs \
 	Mono.TextEditor.Highlighting/Style.cs \
 	Mono.TextEditor.Highlighting/SyntaxMode.cs \

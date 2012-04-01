@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// Wraps the IBuffer interface to a System.IO.TextReader model.
 	/// </summary>
-	public class BufferedTextReader : System.IO.TextReader
+	class BufferedTextReader : System.IO.TextReader
 	{
 		int position = 0;
 		IBuffer buffer;
