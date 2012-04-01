@@ -84,8 +84,6 @@ namespace MonoDevelop.AssemblyBrowser
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
 			foreach (var type in ctx.TopLevelTypeDefinitions) {
-				if (publicOnly && !type.IsPublic)
-					continue;
 				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
 				if (!namespaces.ContainsKey (namespaceName))
 					namespaces [namespaceName] = new Namespace (namespaceName);
