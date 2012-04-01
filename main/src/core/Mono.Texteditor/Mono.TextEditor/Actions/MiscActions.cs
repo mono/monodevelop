@@ -325,10 +325,13 @@ namespace Mono.TextEditor
 			int lineStart = data.Caret.Line;
 			int lineEnd = data.Caret.Line;
 			bool setSelection = lineStart != lineEnd;
+			DocumentLocation anchor = DocumentLocation.Empty, lead = DocumentLocation.Empty;
 			if (data.IsSomethingSelected) {
 				setSelection = true;
 				lineStart = data.MainSelection.MinLine;
 				lineEnd = data.MainSelection.MaxLine;
+				anchor = data.MainSelection.Anchor;
+				lead = data.MainSelection.Lead;
 			}
 			
 			if (lineStart <= 0)
@@ -342,7 +345,7 @@ namespace Mono.TextEditor
 				string text = data.Document.GetTextAt (prevLine.Offset, prevLine.EditableLength);
 				List<TextMarker> prevLineMarkers = new List<TextMarker> (prevLine.Markers);
 				prevLine.ClearMarker ();
-				
+				var loc = data.Caret.Location;
 				for (int i = lineStart - 1; i <= lineEnd; i++) {
 					LineSegment cur = data.Document.GetLine (i);
 					LineSegment next = data.Document.GetLine (i + 1);
@@ -353,9 +356,9 @@ namespace Mono.TextEditor
 					}
 				}
 				
-				data.Caret.Line--;
+				data.Caret.Location = new DocumentLocation (loc.Line - 1, loc.Column);
 				if (setSelection)
-					data.SetSelection (data.Document.GetLine (lineStart - 1).Offset, data.Document.GetLine (lineEnd - 1).Offset + data.Document.GetLine (lineEnd - 1).EditableLength);
+					data.SetSelection (anchor.Line - 1, anchor.Column, lead.Line - 1, lead.Column);
 			}
 		}
 		
@@ -364,10 +367,13 @@ namespace Mono.TextEditor
 			int lineStart = data.Caret.Line;
 			int lineEnd = data.Caret.Line;
 			bool setSelection = lineStart != lineEnd;
+			DocumentLocation anchor = DocumentLocation.Empty, lead = DocumentLocation.Empty;
 			if (data.IsSomethingSelected) {
 				setSelection = true;
 				lineStart = data.MainSelection.MinLine;
 				lineEnd = data.MainSelection.MaxLine;
+				anchor = data.MainSelection.Anchor;
+				lead = data.MainSelection.Lead;
 			}
 			
 			if (lineStart <= 0)
@@ -383,7 +389,7 @@ namespace Mono.TextEditor
 				string text = data.Document.GetTextAt (nextLine.Offset, nextLine.EditableLength);
 				List<TextMarker> prevLineMarkers = new List<TextMarker> (nextLine.Markers);
 				nextLine.ClearMarker ();
-				
+				var loc = data.Caret.Location;
 				for (int i = lineEnd + 1; i >= lineStart; i--) {
 					LineSegment cur = data.Document.GetLine (i);
 					LineSegment prev = data.Document.GetLine (i - 1);
@@ -394,9 +400,9 @@ namespace Mono.TextEditor
 					}
 				}
 				
-				data.Caret.Line++;
+				data.Caret.Location = new DocumentLocation (loc.Line + 1, loc.Column);
 				if (setSelection)
-					data.SetSelection (data.Document.GetLine (lineStart + 1).Offset, data.Document.GetLine (lineEnd + 1).Offset + data.Document.GetLine (lineEnd + 1).EditableLength);
+					data.SetSelection (anchor.Line + 1, anchor.Column, lead.Line + 1, lead.Column);
 			}
 		}
 		

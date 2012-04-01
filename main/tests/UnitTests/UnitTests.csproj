@@ -190,7 +190,6 @@
     <Compile Include="Mono.TextEditor.Tests\SearchTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SelectionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\UndoRedoTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\InsertNewLineTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\InsertTabTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\RemoveTabTests.cs" />
     <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
@@ -202,7 +201,6 @@
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\SelectionActionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\EditActionsTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\BufferTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\InsertionModeTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
@@ -232,6 +230,7 @@
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\TextEditorTestBase.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\BookmarkActionsTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\FoldActionTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\MiscActionsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

@@ -43,14 +43,13 @@ FILES =  \
 	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/DeleteActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/FoldActionTests.cs \
-	Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/MiscActionsTest.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/SelectionActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/TextEditorTestBase.cs \
 	Mono.TextEditor.Tests/BufferTests.cs \
 	Mono.TextEditor.Tests/DocumentTests.cs \
-	Mono.TextEditor.Tests/EditActionsTest.cs \
 	Mono.TextEditor.Tests/FoldingTests.cs \
 	Mono.TextEditor.Tests/HeightTreeTests.cs \
 	Mono.TextEditor.Tests/InsertionModeTests.cs \

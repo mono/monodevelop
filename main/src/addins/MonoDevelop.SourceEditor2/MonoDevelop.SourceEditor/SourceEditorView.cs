@@ -527,7 +527,7 @@ namespace MonoDevelop.SourceEditor
 				if (loadEncoding == null) {
 					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, out hadBom, out this.encoding);
 				} else {
-					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, this.encoding, out hadBom);
+					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
 				Document.Text = text;
 				inLoad = false;
