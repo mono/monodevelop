@@ -47,12 +47,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			});
 		}
 		
-		static BlockStatement GetBlockStatement (RefactoringContext context)
+		static BlockStatement GetBlockStatement(RefactoringContext context)
 		{
-			var block = context.GetNode<BlockStatement> ();
+			var block = context.GetNode<BlockStatement>();
 			if (block == null || block.LBraceToken.IsNull || block.RBraceToken.IsNull)
 				return null;
-			if (!(block.Parent is Statement)) 
+			if (!(block.LBraceToken.IsInside(context.Location) || block.RBraceToken.IsInside(context.Location)))
+				return null;
+			if (!(block.Parent is Statement) || block.Parent is TryCatchStatement) 
 				return null;
 			if (block.Statements.Count != 1)
 				return null;
