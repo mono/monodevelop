@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.FontDescription = des;
 		}
 		
-		public void Reset ()
+		public void ResetState ()
 		{
 			if (win.DataProvider == null) {
 				selection = -1;
@@ -127,11 +127,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			categories.Clear ();
 			filteredItems.Clear ();
 			oldCompletionString = completionString = null;
-			selection = win.DataProvider.ItemCount == 0 ? -1 : 0;
+			selection = 0;
 			page = 0;
 			AutoSelect = false;
-			CalcVisibleRows ();
-			
+
 			if (SelectionChanged != null)
 				SelectionChanged (this, EventArgs.Empty);
 		}

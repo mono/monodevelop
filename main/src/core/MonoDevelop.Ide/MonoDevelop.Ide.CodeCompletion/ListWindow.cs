@@ -118,12 +118,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		protected void Reset ()
+		/// <summary>
+		/// This method is used to set the completion window to it's inital state.
+		/// This is required for re-using the window object.
+		/// </summary>
+		protected void ResetState ()
 		{
 			endOffset = -1;
-			list.Reset ();
-			if (DataProvider != null)
-				ResetSizes ();
+			list.ResetState ();
 		}
 		
 		protected int curXPos, curYPos;

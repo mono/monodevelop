@@ -210,9 +210,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				mutableList.Changed -= OnCompletionDataChanged;
 				HideFooter ();
 			}
+			ResetState ();
 			CompletionWidget = completionWidget;
 			CompletionDataList = list;
-			Reset ();
 
 			CompleteWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
 			
@@ -673,7 +673,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var tmp = this.List.AutoSelect;
 				// Fill the list before resetting so that we get the correct size
 				FillList ();
-				Reset ();
+				ResetSizes ();
 				this.List.AutoSelect = tmp;
 				if (last != null )
 					SelectEntry (last);
