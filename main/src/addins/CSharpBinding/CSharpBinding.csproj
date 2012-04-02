@@ -128,6 +128,7 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\build\bin\Mono.Cecil.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
