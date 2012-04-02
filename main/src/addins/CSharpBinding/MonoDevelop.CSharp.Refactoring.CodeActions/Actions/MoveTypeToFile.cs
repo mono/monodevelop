@@ -49,6 +49,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		}
 		protected IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context)
 		{
+			if (context.IsInvalid)
+				yield break;
 			var type = GetTypeDeclaration (context);
 			if (type == null)
 				yield break;
