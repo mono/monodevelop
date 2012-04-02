@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			vadjustment.Changed += RedrawOnUpdate;
 			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
 			TextEditor = parent.TextEditor;
-			TextEditor.Caret.PositionChanged += CaretPositionChanged;
+//			TextEditor.Caret.PositionChanged += CaretPositionChanged;
 			TextEditor.HighlightSearchPatternChanged += RedrawOnUpdate;
 			TextEditor.TextViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
 			TextEditor.TextViewMargin.MainSearchResultChanged += RedrawOnUpdate;
@@ -391,7 +391,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected void DrawCaret (Cairo.Context cr)
 		{
-			if (TextEditor.ColorStyle == null)
+			if (TextEditor.ColorStyle == null || caretLine < 0)
 				return;
 			double y = LineToY (caretLine);
 			cr.MoveTo (0, y - 4);

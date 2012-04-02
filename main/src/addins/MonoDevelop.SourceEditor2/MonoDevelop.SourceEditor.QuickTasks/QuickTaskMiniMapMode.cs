@@ -39,7 +39,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 	public class QuickTaskMiniMapMode : HBox
 	{
 		QuickTaskOverviewMode rightMap;
-	
 
 		public QuickTaskMiniMapMode (QuickTaskStrip parent)
 		{
@@ -48,9 +47,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			
 			rightMap = new QuickTaskOverviewMode (parent);
 			PackStart (rightMap, true, true, 0);
-
 		}
-
 
 		public class Minimpap : QuickTaskOverviewMode
 		{

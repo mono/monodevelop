@@ -181,10 +181,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		public void Update (IUsageProvider provider)
 		{
-			if (providerTasks == null)
+/*			if (providerTasks == null)
 				return;
 			providerUsages [provider] = new List<DocumentLocation> (provider.Usages);
-			OnTaskProviderUpdated (EventArgs.Empty);
+			OnTaskProviderUpdated (EventArgs.Empty);*/
 		}
 
 		protected virtual void OnTaskProviderUpdated (EventArgs e)
