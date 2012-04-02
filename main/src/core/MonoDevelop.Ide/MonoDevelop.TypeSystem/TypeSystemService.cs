@@ -517,9 +517,11 @@ namespace MonoDevelop.TypeSystem
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
 				var solution = (Solution)item;
-				Parallel.ForEach (solution.GetAllProjects (), project => Load (project));
-				solution.SolutionItemAdded += OnSolutionItemAdded;
-				solution.SolutionItemRemoved += OnSolutionItemRemoved;
+				Task.Factory.StartNew (delegate {
+					Parallel.ForEach (solution.GetAllProjects (), project => Load (project));
+					solution.SolutionItemAdded += OnSolutionItemAdded;
+					solution.SolutionItemRemoved += OnSolutionItemRemoved;
+				});
 			}
 		}
 		
