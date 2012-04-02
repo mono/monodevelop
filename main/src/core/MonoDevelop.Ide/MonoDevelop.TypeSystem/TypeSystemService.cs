@@ -400,6 +400,8 @@ namespace MonoDevelop.TypeSystem
 		
 		static void SerializeObject (string path, object obj)
 		{
+			if (obj == null)
+				throw new ArgumentNullException ("obj");
 			try {
 				using (var fs = new FileStream (path, FileMode.Create, FileAccess.Write)) {
 					using (var writer = new BinaryWriterWith7BitEncodedInts (fs)) {
@@ -408,7 +410,9 @@ namespace MonoDevelop.TypeSystem
 					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while writing type system cache.", e);
+				Console.WriteLine ("-----------------Serialize stack trace:");
+				Console.WriteLine (Environment.StackTrace);
+				LoggingService.LogError ("Error while writing type system cache. (object:" + obj.GetType () + ")", e);
 			}
 		}
 		
