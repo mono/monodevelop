@@ -78,7 +78,6 @@ namespace MonoDevelop.Ide
 			{
 				base.OnSizeRequested (ref requisition);
 				const int upperBound = 20;
-
 				if (Allocation.Width > 0 && Math.Abs (Allocation.Width - requisition.Width) < upperBound)
 					requisition.Width = Math.Max (Allocation.Width, requisition.Width);
 			}
@@ -164,9 +163,9 @@ namespace MonoDevelop.Ide
 			textStatusBarPanel.BorderWidth = 0;
 			textStatusBarPanel.ShadowType = ShadowType.None;
 			textStatusBarPanel.Add (statusBox);
-
+			
+			var eventCaretBox = new EventBox ();
 			var caretStatusBox = new HBox ();
-
 			modeLabel = new Label (" ");
 			caretStatusBox.PackEnd (modeLabel, false, false, 8);
 			
@@ -176,8 +175,8 @@ namespace MonoDevelop.Ide
 			caretStatusBox.GetSizeRequest (out w, out h);
 			caretStatusBox.WidthRequest = w;
 			caretStatusBox.HeightRequest = h;
-			
-			statusBox.PackEnd (caretStatusBox, false, false, 0);
+			eventCaretBox.Add (caretStatusBox);
+			statusBox.PackEnd (eventCaretBox, false, false, 0);
 			
 			statusIconBox = new HBox ();
 			statusIconBox.BorderWidth = 0;
