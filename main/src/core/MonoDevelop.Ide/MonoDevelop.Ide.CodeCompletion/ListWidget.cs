@@ -130,9 +130,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			selection = 0;
 			page = 0;
 			AutoSelect = false;
-
-			if (SelectionChanged != null)
-				SelectionChanged (this, EventArgs.Empty);
 		}
 		
 		public int SelectionIndex {
