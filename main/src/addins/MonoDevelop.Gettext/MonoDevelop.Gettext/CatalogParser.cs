@@ -142,7 +142,7 @@ namespace MonoDevelop.Gettext
 		// return false if parsing failed, true otherwise
 		public bool Parse ()
 		{
-						
+			
 			string line, dummy;
 			string mflags = String.Empty;
 			string mstr = String.Empty;
@@ -283,7 +283,7 @@ namespace MonoDevelop.Gettext
 									break;
 								}
 							}
-							mtranslations.Add (str.ToString ());
+							mtranslations.Add (StringEscaping.FromGettextFormat (str.ToString ()));
 						}
 						
 						if (! OnEntry (mstr, msgidPlural, true, mtranslations.ToArray (),
