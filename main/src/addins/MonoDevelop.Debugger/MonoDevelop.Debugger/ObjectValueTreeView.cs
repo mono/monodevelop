@@ -164,7 +164,7 @@ namespace MonoDevelop.Debugger
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleCol);
 			crpButton = new CellRendererIcon ();
-			crpButton.StockSize = (uint) Gtk.IconSize.Menu;
+			crpButton.StockSize = (uint)Gtk.IconSize.Menu;
 			crpButton.IconId = Gtk.Stock.Refresh;
 			valueCol.PackStart (crpButton, false);
 			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleCol);
@@ -216,10 +216,17 @@ namespace MonoDevelop.Debugger
 			this.EnableAutoTooltips ();
 			
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
+			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
+		}
+
+		void HandleCompletionWindowClosed (object sender, EventArgs e)
+		{
+			currentCompletionData = null;
 		}
 
 		protected override void OnDestroyed ()
 		{
+			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
 			crtExp.Edited -= OnExpEdited;
 			crtExp.EditingStarted -= OnExpEditing;
 			crtExp.EditingCanceled -= OnEditingCancelled;
@@ -943,14 +950,14 @@ namespace MonoDevelop.Debugger
 			}
 			
 			Gtk.Application.Invoke (delegate {
-				char c = (char) Gdk.Keyval.ToUnicode (args.Event.KeyValue);
+				char c = (char)Gdk.Keyval.ToUnicode (args.Event.KeyValue);
 				if (currentCompletionData == null && IsCompletionChar (c)) {
 					string exp = entry.Text.Substring (0, entry.CursorPosition);
 					currentCompletionData = GetCompletionData (exp);
 					if (currentCompletionData != null) {
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
 						CodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
-						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx, OnCompletionWindowClosed);
+						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
 					} else
 						currentCompletionData = null;
 				}
@@ -1237,11 +1244,7 @@ namespace MonoDevelop.Debugger
 			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
 		}
 		
-		void OnCompletionWindowClosed ()
-		{
-			currentCompletionData = null;
-		}
-		
+
 		#region ICompletionWidget implementation 
 		
 		CodeCompletionContext ICompletionWidget.CurrentCodeCompletionContext {
