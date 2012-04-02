@@ -517,11 +517,13 @@ namespace MonoDevelop.TypeSystem
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
 				var solution = (Solution)item;
+				Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
 				Task.Factory.StartNew (delegate {
-					Parallel.ForEach (solution.GetAllProjects (), project => Load (project));
-					solution.SolutionItemAdded += OnSolutionItemAdded;
-					solution.SolutionItemRemoved += OnSolutionItemRemoved;
+					ReloadAllReferences ();
 				});
+
+				solution.SolutionItemAdded += OnSolutionItemAdded;
+				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}
 		}
 		
@@ -706,7 +708,7 @@ namespace MonoDevelop.TypeSystem
 		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 		
-		public static void Load (Project project)
+		static void LoadProject (Project project)
 		{
 			if (IncLoadCount (project) != 1)
 				return;
@@ -735,7 +737,6 @@ namespace MonoDevelop.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
-					wrapper.ReloadAssemblyReferences (project);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
 				}
@@ -825,13 +826,13 @@ namespace MonoDevelop.TypeSystem
 				ws.ItemRemoved -= OnWorkspaceItemRemoved;
 			} else if (item is Solution) {
 				Solution solution = (Solution)item;
-				Parallel.ForEach (solution.GetAllProjects (), project => Unload (project));
+				Parallel.ForEach (solution.GetAllProjects (), project => UnloadProject (project));
 				solution.SolutionItemAdded -= OnSolutionItemAdded;
 				solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 			}
 		}
 		
-		public static void Unload (Project project)
+		public static void UnloadProject (Project project)
 		{
 			if (DecLoadCount (project) != 0)
 				return;
@@ -874,13 +875,13 @@ namespace MonoDevelop.TypeSystem
 		static void OnSolutionItemAdded (object sender, SolutionItemChangeEventArgs args)
 		{
 			if (args.SolutionItem is Project)
-				Load ((Project)args.SolutionItem);
+				LoadProject ((Project)args.SolutionItem);
 		}
 		
 		static void OnSolutionItemRemoved (object sender, SolutionItemChangeEventArgs args)
 		{
 			if (args.SolutionItem is Project)
-				Unload ((Project)args.SolutionItem);
+				UnloadProject ((Project)args.SolutionItem);
 		}
 		
 		#endregion
