@@ -1,3 +1,1 @@
-SUBDIRS = SharpCoco mdhost mdtool mdmonitor mdcrashlog MacCrashLogger
-
-include $(top_srcdir)/Makefile.include
+SUBDIRS = SharpCoco mdhost mdtool mdmonitor

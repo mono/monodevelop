@@ -3,7 +3,6 @@ build_sources = $(addprefix $(srcdir)/, $(FILES)) $(GENERATED_FILES)
 build_resources = $(addprefix $(srcdir)/, $(RES))
 build_test_sources = $(addprefix $(srcdir)/, $(TESTFILES)) $(GENERATED_FILES)
 
-
 # workaroundfor lack of abs_top_builddir variable in automake < 1.10. Will break if mdtool isn't 
 # launched from top_srcdir (i.e. where this script is located)
 abs_top_builddir ?= $(top_builddir)
