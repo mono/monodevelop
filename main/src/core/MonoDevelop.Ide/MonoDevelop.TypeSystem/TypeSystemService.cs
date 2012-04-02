@@ -708,7 +708,7 @@ namespace MonoDevelop.TypeSystem
 		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 		
-		static void LoadProject (Project project)
+		public static void LoadProject (Project project)
 		{
 			if (IncLoadCount (project) != 1)
 				return;

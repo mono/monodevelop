@@ -105,7 +105,7 @@ namespace project1 {
 			solution.RootFolder.AddItem (new UnknownProject { FileName = "dummy.csproj" });
 
 			project1.AddFile (new ProjectFile ("dummy.cs"));
-			TypeSystemService.Load (project1);
+			TypeSystemService.LoadProject (project1);
 			TypeSystemService.ParseFile (project1, "test.cs", "text/x-csharp", code1);
 			var compilation = TypeSystemService.GetCompilation (project1);
 
@@ -149,7 +149,7 @@ namespace project1 {
 			solution.RootFolder.AddItem (project2);
 			solution.RootFolder.AddItem (new UnknownProject { FileName = "project3.csproj" });
 
-			TypeSystemService.Load (project1);
+			TypeSystemService.LoadProject (project1);
 			TypeSystemService.ParseFile (project1, "test.cs", "text/x-csharp", code);
 			var compilation = TypeSystemService.GetCompilation (project1);
 
@@ -178,7 +178,7 @@ namespace project1 {
 				solution.RootFolder.AddItem (project);
 				project.AddFile (new ProjectFile (String.Format ("dummy{0}.cs", i)));
 				project.AddReference (typeof (object).Assembly.Location);
-				TypeSystemService.Load (project);
+				TypeSystemService.LoadProject (project);
 				TypeSystemService.GetProjectContentWrapper (project).ReloadAssemblyReferences (project);
 			}
 			solution.RootFolder.AddItem (new UnknownProject { FileName = "test.csproj" });

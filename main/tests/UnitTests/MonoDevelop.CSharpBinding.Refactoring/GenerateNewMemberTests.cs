@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var project = new UnknownProject ();
 			project.FileName = "test.csproj";
 			
-			TypeSystem.TypeSystemService.Load (project);
+			TypeSystem.TypeSystemService.LoadProject (project);
 
 			sev.Project = project;
 			tww.ViewContent = sev;

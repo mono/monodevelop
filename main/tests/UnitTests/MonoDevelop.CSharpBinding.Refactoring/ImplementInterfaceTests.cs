@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var project = new UnknownProject ();
 			project.FileName = "test.csproj";
 			
-			TypeSystem.TypeSystemService.Load (project);
+			TypeSystem.TypeSystemService.LoadProject (project);
 			
 			TypeSystem.TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", interfacecode);
 			TypeSystem.TypeSystemService.ParseFile (project, "stub.cs", "text/x-csharp", "class Stub {\n "+stubString+"}\n");
