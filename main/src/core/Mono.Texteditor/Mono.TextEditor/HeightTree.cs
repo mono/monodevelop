@@ -308,6 +308,8 @@ namespace Mono.TextEditor
 				return tree.Root.totalCount + logicalLine - tree.Root.totalCount;
 			int line = GetValidLine (logicalLine);
 			var node = GetNodeByLine (line);
+			if (node == null)
+				return tree.Root.totalCount + logicalLine - tree.Root.totalCount;
 			int delta = logicalLine - node.GetLineNumber ();
 			return node.GetVisibleLineNumber () + delta;
 		}
