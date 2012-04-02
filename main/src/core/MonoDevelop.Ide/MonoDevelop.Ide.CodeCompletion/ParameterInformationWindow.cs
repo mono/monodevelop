@@ -50,6 +50,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get {
 				return ext;
 			}
+			set {
+				ext = value;
+			}
 		}
 
 		ICompletionWidget widget;
@@ -57,13 +60,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get {
 				return widget;
 			}
+			set {
+				widget = value;
+			}
 		}
 		
-		public ParameterInformationWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		public ParameterInformationWindow ()
 		{
-			this.ext = ext;
-			this.widget = widget;
-			
 			heading = new Gtk.Label ("");
 			heading.Xalign = 0;
 			heading.Wrap = false;
@@ -92,7 +95,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vBox2.PackStart (mainBox, false, false, 0);
 			vBox2.PackStart (desc, true, true, 4);
 			Add (vBox2);
-			ShowAll ();
 			EnableTransparencyControl = true;
 		}
 		Dictionary<int, bool> doBreakParameters = new Dictionary<int, bool> ();
