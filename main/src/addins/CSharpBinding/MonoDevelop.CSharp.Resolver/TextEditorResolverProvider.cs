@@ -94,19 +94,19 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			var data = doc.Editor;
 			var loc = data.OffsetToLocation (offset);
-			var unit       = parsedDocument.GetAst<CompilationUnit> ();
+			var unit = parsedDocument.GetAst<CompilationUnit> ();
 			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
 			
 			if (unit == null || parsedFile == null) {
 				return null;
 			}
-			var node   = unit.GetNodeAt (loc.Line, loc.Column);
+			var node = unit.GetNodeAt (loc.Line, loc.Column);
 			if (node == null) {
 				return null;
 			}
 			
 			var resolver = new CSharpAstResolver (doc.Compilation, unit, parsedFile);
-			
+			resolver.ApplyNavigator (new NodeListResolveVisitorNavigator (node), CancellationToken.None);
 			var state = resolver.GetResolverStateBefore (node, CancellationToken.None);
 			return state.LookupSimpleNameOrTypeName (expression, new List<IType> (), SimpleNameLookupMode.Expression);
 		}

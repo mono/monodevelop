@@ -113,17 +113,10 @@ namespace MonoDevelop.CSharp
 		
 		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
 		{
-			CSharpAstResolver resolver;
-			return TryResolveAt (doc, loc, out result, out node, out resolver);
-		}
-
-		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node, out CSharpAstResolver resolver)
-		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
 			result = null;
 			node = null;
-			resolver = null;
 			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return false;
@@ -134,7 +127,7 @@ namespace MonoDevelop.CSharp
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node, out resolver);
+				result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
 				if (result == null || node is Statement)
 					return false;
 			} catch (Exception e) {

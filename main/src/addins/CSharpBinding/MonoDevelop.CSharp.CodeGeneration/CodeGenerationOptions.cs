@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System;
 using ICSharpCode.NRefactory;
+using System.Threading;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -118,7 +119,7 @@ namespace MonoDevelop.CodeGeneration
 				if (resolvedNode == null)
 					return null;
 				
-				var expr = new IdentifierExpression("foo");
+				var expr = new IdentifierExpression ("foo");
 				resolvedNode.Add (expr);
 				
 				var ctx = file.GetTypeResolveContext (Document.Compilation, Document.Editor.Caret.Location) as CSharpTypeResolveContext;
@@ -126,6 +127,7 @@ namespace MonoDevelop.CodeGeneration
 				var resolver = new CSharpResolver (ctx);
 				
 				var astResolver = new CSharpAstResolver (resolver, unit, file);
+				astResolver.ApplyNavigator (new NodeListResolveVisitorNavigator (expr), CancellationToken.None);
 				astResolver.Resolve (expr);
 				return astResolver.GetResolverStateBefore (expr);
 			});

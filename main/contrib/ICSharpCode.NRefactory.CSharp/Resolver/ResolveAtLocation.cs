@@ -30,24 +30,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
+		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			AstNode node;
-			return Resolve (compilation, parsedFile, cu, location, out node, cancellationToken);
+			return Resolve(compilation, parsedFile, cu, location, out node, cancellationToken);
 		}
 		
 		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
-			CSharpAstResolver resolver;
-			return Resolve (compilation, parsedFile, cu, location, out node, out resolver, cancellationToken);
-		}
-		
-		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node, out CSharpAstResolver resolver,
-		                                    CancellationToken cancellationToken = default(CancellationToken))
-		{
-			resolver = null;
 			node = cu.GetNodeAt (location);
 			if (node == null)
 				return null;
@@ -92,13 +84,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				parentInvocation = node.Parent as InvocationExpression;
 			}
 			
-			resolver = new CSharpAstResolver (compilation, cu, parsedFile);
-			ResolveResult rr = resolver.Resolve (node, cancellationToken);
+			CSharpAstResolver resolver = new CSharpAstResolver (compilation, cu, parsedFile);
+			resolver.ApplyNavigator (new NodeListResolveVisitorNavigator (node), cancellationToken);
+			ResolveResult rr = resolver.Resolve(node, cancellationToken);
 			if (rr is MethodGroupResolveResult && parentInvocation != null)
-				return resolver.Resolve (parentInvocation);
+				return resolver.Resolve(parentInvocation);
 			else
 				return rr;
 		}
-
 	}
 }
