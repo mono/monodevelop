@@ -45,7 +45,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
 		ICompletionData currentData;
 		Widget parsingMessage;
-		System.Action closedDelegate;
 		int initialWordLength;
 		int previousWidth = -1, previousHeight = -1;
 		
@@ -53,7 +52,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get;
 			set;
 		}
-		
+
 		public int X { get; private set; }
 		public int Y { get; private set; }
 		
@@ -70,9 +69,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		public CompletionListWindow (CompletionTextEditorExtension ext)
+		public CompletionListWindow ()
 		{
-			Ext = ext;
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
 			Events = Gdk.EventMask.PropertyChangeMask;
 			WindowTransparencyDecorator.Attach (this);
@@ -109,11 +107,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				completionDataList = null;
 			}
 
-			if (closedDelegate != null) {
-				closedDelegate ();
-				closedDelegate = null;
-			}
-			
 			HideDeclarationView ();
 			
 			if (declarationviewwindow != null) {
@@ -139,7 +132,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if ((ka & KeyActions.Complete) != 0) 
 				CompleteWord (ref ka, key, keyChar, modifier);
 			if ((ka & KeyActions.CloseWindow) != 0)
-				CompletionWindowManager.DestroyWindow (Ext);
+				CompletionWindowManager.HideWindow ();
 		}
 		
 		public void ToggleCategoryMode ()
@@ -166,7 +159,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				CompleteWord (ref ka, key, keyChar, modifier);
 
 			if ((ka & KeyActions.CloseWindow) != 0)
-				CompletionWindowManager.DestroyWindow (Ext);
+				CompletionWindowManager.HideWindow ();
 
 			if ((ka & KeyActions.Ignore) != 0)
 				return true;
@@ -182,7 +175,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					// this version doesn't work for my system - seems that I've a modifier active
 					// that gdk doesn't know about. How about the 2nd version - should close on left/rigt + shift/mod1/control/meta/super
 					if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)) != 0) {
-						CompletionWindowManager.DestroyWindow (Ext);
+						CompletionWindowManager.HideWindow ();
 						return false;
 					}
 					
@@ -193,7 +186,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							declarationviewwindow.OverloadRight ();
 						UpdateDeclarationView ();
 					} else {
-						CompletionWindowManager.DestroyWindow (Ext);
+						CompletionWindowManager.HideWindow ();
 						return false;
 					}
 					return true;
@@ -210,19 +203,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateDeclarationView ();
 		}
 		
-		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext, System.Action closedDelegate)
+		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;
 				mutableList.Changed -= OnCompletionDataChanged;
 				HideFooter ();
 			}
-			//initialWordLength = 0;
-			this.CompletionDataList = list;
-			this.CompleteWithSpaceOrPunctuation = MonoDevelop.Core.PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
+			CompletionWidget = completionWidget;
+			CompletionDataList = list;
+			Reset ();
+
+			CompleteWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
 			
-			this.CodeCompletionContext = completionContext;
-			this.closedDelegate = closedDelegate;
+			CodeCompletionContext = completionContext;
 			mutableList = completionDataList as IMutableCompletionDataList;
 			List.PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
 
@@ -233,12 +227,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (mutableList.IsChanging)
 					OnCompletionDataChanging (null, null);
 			}
-
-			this.CompletionWidget = completionWidget;
-
 			if (FillList ()) {
-// not neccessarry, because list window is not reused anymore:
-//				Reset (true);
 				this.AutoSelect = list.AutoSelect;
 				this.AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
 				this.CloseOnSquareBrackets = list.CloseOnSquareBrackets;
@@ -247,17 +236,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
 					UpdateWordSelection ();
-					initialWordLength = 0;//completionWidget.SelectedLength;
+					initialWordLength = 0;
+					//completionWidget.SelectedLength;
 					StartOffset = completionWidget.CaretOffset;
 					ResetSizes ();
 					ShowAll ();
 					UpdateWordSelection ();
 					UpdateDeclarationView ();
-					
 					//if there is only one matching result we take it by default
 					if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 						CompleteWord ();
-						CompletionWindowManager.DestroyWindow (Ext);
+						CompletionWindowManager.HideWindow ();
 					}
 					return true;
 				}
@@ -270,15 +259,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				//if there is only one matching result we take it by default
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 					CompleteWord ();
-					CompletionWindowManager.DestroyWindow (Ext);
+					CompletionWindowManager.HideWindow ();
 				} else {
 					ShowAll ();
 					UpdateDeclarationView ();
 				}
 				return true;
 			}
-			CompletionWindowManager.DestroyWindow (Ext);
-			
+			CompletionWindowManager.HideWindow ();
 			return false;
 		}
 		
@@ -299,9 +287,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			this.Style = CompletionWidget.GtkStyle;
 			
-			if (PropertyService.Get ("HideObsoleteItems", false))
+			if (PropertyService.Get ("HideObsoleteItems", false)) {
 				foreach (var item in completionDataList.Where (x => x.DisplayFlags.HasFlag (DisplayFlags.Obsolete)).ToList ())
 					completionDataList.Remove (item);
+			}
 			
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
@@ -400,10 +389,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateDeclarationView ();
 		}
 
+		protected override void OnHidden ()
+		{
+			HideDeclarationView ();
+			base.OnHidden ();
+		}
+
 		protected override void DoubleClick ()
 		{
 			CompleteWord ();
-			CompletionWindowManager.DestroyWindow (Ext);
+			CompletionWindowManager.HideWindow ();
 		}
 		
 		protected override void OnSelectionChanged ()
@@ -435,7 +430,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideDeclarationView ();
 				return;
 			}
-			var data = completionDataList[List.SelectionIndex];
+			var data = completionDataList [List.SelectionIndex];
 			
 			IEnumerable<ICompletionData> filteredOverloads;
 			if (data.HasOverloads) {
@@ -678,7 +673,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var tmp = this.List.AutoSelect;
 				// Fill the list before resetting so that we get the correct size
 				FillList ();
-				Reset (false);
+				Reset ();
 				this.List.AutoSelect = tmp;
 				if (last != null )
 					SelectEntry (last);

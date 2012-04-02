@@ -124,6 +124,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				selection = -1;
 				return;
 			}
+			categories.Clear ();
+			filteredItems.Clear ();
+			oldCompletionString = completionString = null;
 			selection = win.DataProvider.ItemCount == 0 ? -1 : 0;
 			page = 0;
 			AutoSelect = false;

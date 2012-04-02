@@ -57,7 +57,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Widget footer;
 		VBox vbox;
 		
-		protected CompletionTextEditorExtension Ext { get; set; }
+		public CompletionTextEditorExtension Extension {
+			get;
+			set;
+		}		
 		
 		public List<int> FilteredItems {
 			get {
@@ -115,8 +118,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		protected void Reset (bool clearWord)
+		protected void Reset ()
 		{
+			endOffset = -1;
 			list.Reset ();
 			if (DataProvider != null)
 				ResetSizes ();
@@ -202,6 +206,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				list.CloseOnSquareBrackets = value;
 			}
 		}
+		
 		protected int StartOffset {
 			get;
 			set;

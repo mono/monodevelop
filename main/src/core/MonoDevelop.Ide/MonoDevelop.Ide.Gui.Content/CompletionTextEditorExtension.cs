@@ -56,6 +56,13 @@ namespace MonoDevelop.Ide.Gui.Content
 			set;
 		}
 		
+		public CompletionTextEditorExtension ()
+		{
+			CompletionWindowManager.WindowClosed += delegate {
+				currentCompletionContext = null;
+			};
+		}
+
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);
@@ -67,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			currentCompletionContext.TriggerOffset = cpos;
 			currentCompletionContext.TriggerWordLength = wlen;
 			
-			CompletionWindowManager.ShowWindow (this, '\0', completionList, CompletionWidget, currentCompletionContext, OnCompletionWindowClosed);
+			CompletionWindowManager.ShowWindow (this, '\0', completionList, CompletionWidget, currentCompletionContext);
 		}
 
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
@@ -106,16 +113,6 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			if ((modifier & ignoreMods) != 0)
 				return res;
-			/*
-			if (Document.TextEditorData == null || Document.TextEditorData.IsSomethingSelected && Document.TextEditorData.SelectionMode != Mono.TextEditor.SelectionMode.Block) {
-				int posChange = Editor.CursorPosition - oldPos;
-				if (currentCompletionContext != null && (Math.Abs (posChange) > 1 || (Editor.TextLength - oldLen) != posChange)) {
-					currentCompletionContext = null;
-					CompletionWindowManager.HideWindow ();
-					ParameterInformationWindowManager.HideWindow ();
-					return res;
-				}
-			}*/
 			
 			// don't complete on block selection
 			if (!EnableCodeCompletion || Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
@@ -136,8 +133,7 @@ namespace MonoDevelop.Ide.Gui.Content
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				if (completionList != null) {
-					if (!CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, 
-					                                         currentCompletionContext, OnCompletionWindowClosed))
+					if (!CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, currentCompletionContext))
 						currentCompletionContext = null;
 				} else {
 					currentCompletionContext = null;
@@ -168,8 +164,7 @@ namespace MonoDevelop.Ide.Gui.Content
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				if (completionList != null)
-					CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, 
-					                                    currentCompletionContext, OnCompletionWindowClosed);
+					CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, currentCompletionContext);
 				else
 					currentCompletionContext = null;
 			}
@@ -181,15 +176,11 @@ namespace MonoDevelop.Ide.Gui.Content
 			return -1;
 		}
 		
-		void OnCompletionWindowClosed ()
-		{
-			currentCompletionContext = null;
-		}
-		
+
 		protected void OnCompletionContextChanged (object o, EventArgs a)
 		{
 			if (autoHideCompletionWindow) {
-				CompletionWindowManager.DestroyWindow (this);
+				CompletionWindowManager.HideWindow ();
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 			}
 		}
@@ -216,7 +207,6 @@ namespace MonoDevelop.Ide.Gui.Content
 				CompletionWindowManager.Wnd.ToggleCategoryMode ();
 				return;
 			}
-			
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -226,10 +216,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			currentCompletionContext.TriggerWordLength = wlen;
 			completionList = CodeCompletionCommand (currentCompletionContext);
-				
 			if (completionList != null)
-				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, 
-				                                    currentCompletionContext, OnCompletionWindowClosed);
+				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext);
 			else
 				currentCompletionContext = null;
 		}
@@ -249,7 +237,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
 			
 			if (completionList != null)
-				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext, OnCompletionWindowClosed);
+				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext);
 			else
 				currentCompletionContext = null;
 		}

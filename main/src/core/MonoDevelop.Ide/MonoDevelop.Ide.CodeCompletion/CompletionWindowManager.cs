@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static bool IsVisible {
 			get {
-				return wnd != null;
+				return wnd != null && wnd.Visible;
 			}
 		}
 		
@@ -79,27 +79,29 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		static CompletionWindowManager ()
 		{
+			IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
 		}
 		
 		// ext may be null, but then parameter completion don't work
-		public static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext, System.Action closedDelegate)
+		public static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
 			try {
 				if (wnd == null) {
-					wnd = new CompletionListWindow (ext);
+					wnd = new CompletionListWindow ();
 					wnd.WordCompleted += HandleWndWordCompleted;
 				}
+				wnd.Extension = ext;
 				try {
-					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext, closedDelegate)) {
+					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext)) {
 						if (list is IDisposable)
 							((IDisposable)list).Dispose ();
-						DestroyWindow (ext);
+						HideWindow ();
 						return false;
 					}
 					
 					if (ForceSuggestionMode)
 						wnd.AutoSelect = false;
-					
+					wnd.Show ();
 					OnWindowShown (EventArgs.Empty);
 					return true;
 				} catch (Exception ex) {
@@ -119,13 +121,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		public static event EventHandler<CodeCompletionContextEventArgs> WordCompleted;
-		
-		
-		internal static void DestroyWindow (CompletionTextEditorExtension ext)
+
+		static void DestroyWindow ()
 		{
 			if (wnd != null) {
 				wnd.Destroy ();
-				ParameterInformationWindowManager.UpdateWindow (ext, wnd.CompletionWidget);
 				wnd = null;
 			}
 			OnWindowClosed (EventArgs.Empty);
@@ -133,28 +133,32 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (wnd == null /*|| !wnd.Visible*/) {
+			if (!IsVisible)
 				return false;
-			}
 			return wnd.PreProcessKeyEvent (key, keyChar, modifier);
 		}
 		
 		public static void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (wnd == null)
+			if (!IsVisible)
 				return;
 			wnd.PostProcessKeyEvent (key, keyChar, modifier);
 		}
 		
 		public static void HideWindow ()
 		{
-			DestroyWindow (null);
+			if (!IsVisible)
+				return;
+			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
+			wnd.UpdateWordSelection ();
+			wnd.Hide ();
+			OnWindowClosed (EventArgs.Empty);
 		}
 		
 		
 		static void OnWindowClosed (EventArgs e)
 		{
-			EventHandler handler = WindowClosed;
+			var handler = WindowClosed;
 			if (handler != null)
 				handler (null, e);
 		}
@@ -163,7 +167,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		static void OnWindowShown (EventArgs e)
 		{
-			EventHandler handler = WindowShown;
+			var handler = WindowShown;
 			if (handler != null)
 				handler (null, e);
 		}
