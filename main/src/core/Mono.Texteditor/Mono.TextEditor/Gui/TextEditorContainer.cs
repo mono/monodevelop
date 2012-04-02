@@ -112,7 +112,8 @@ namespace Mono.TextEditor
 				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
 					info.X = x;
 					info.Y = y;
-					QueueResize ();
+					if (widget.Visible)
+						ResizeChild (Allocation, info);
 					break;
 				}
 			}
@@ -208,23 +209,27 @@ namespace Mono.TextEditor
 				textEditorWidget.SizeAllocate (allocation);
 			SetChildrenPositions (allocation);
 		}
-		
+
+		void ResizeChild (Rectangle allocation, EditorContainerChild child)
+		{
+			Requisition req = child.Child.SizeRequest ();
+			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
+			if (!child.FixedPosition) {
+				double zoom = textEditorWidget.Options.Zoom;
+				childRectangle.X = (int)(child.X * zoom - textEditorWidget.HAdjustment.Value);
+				childRectangle.Y = (int)(child.Y * zoom - textEditorWidget.VAdjustment.Value);
+			}
+			childRectangle.X += allocation.X;
+			childRectangle.Y += allocation.Y;
+			child.Child.SizeAllocate (childRectangle);
+		}
+
 		void SetChildrenPositions (Rectangle allocation)
 		{
 			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
 				if (child.Child == textEditorWidget)
 					continue;
-				Requisition req = child.Child.SizeRequest ();
-				var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
-				if (!child.FixedPosition) {
-					double zoom = textEditorWidget.Options.Zoom;
-					childRectangle.X = (int)(child.X * zoom - textEditorWidget.HAdjustment.Value);
-					childRectangle.Y = (int)(child.Y * zoom - textEditorWidget.VAdjustment.Value);
-				}
-				childRectangle.X += allocation.X;
-				childRectangle.Y += allocation.Y;
-				
-				child.Child.SizeAllocate (childRectangle);
+				ResizeChild (allocation, child);
 			}
 		}
 		

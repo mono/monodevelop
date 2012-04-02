@@ -32,8 +32,6 @@ using System.Threading.Tasks;
 using System.IO;
 using Mono.TextEditor;
 using System.Linq;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
 

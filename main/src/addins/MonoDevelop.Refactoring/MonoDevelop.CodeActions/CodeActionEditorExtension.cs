@@ -50,21 +50,17 @@ namespace MonoDevelop.CodeActions
 		{
 			if (widget == null)
 				return;
-			TextEditor editor = Document.Editor.Parent;
-			var container = editor.Parent as TextEditorContainer;
-			if (container != null) {
-				container.Remove (widget);
-				container.QueueDraw ();
-			}
-			widget.Destroy ();
-			widget = null;
+			widget.Hide ();
 		}
 		
 		public override void Dispose ()
 		{
 			CancelQuickFixTimer ();
 			document.DocumentParsed -= HandleDocumentDocumentParsed;
-			RemoveWidget ();
+			if (widget != null) {
+				widget.Destroy ();
+				widget = null;
+			}
 			base.Dispose ();
 		}
 		
@@ -86,14 +82,21 @@ namespace MonoDevelop.CodeActions
 			var editor = Document.Editor.Parent;
 			if (!editor.IsRealized)
 				return;
-			widget = new CodeActionWidget (this, Document, loc, fixes);
 			var container = Document.Editor.Parent.Parent as TextEditorContainer;
 			if (container == null) 
 				return;
-			container.AddTopLevelWidget (widget,
-				2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
-				-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
+			if (widget == null) {
+				widget = new CodeActionWidget (this, Document);
+				container.AddTopLevelWidget (widget,
+					2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
+					-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
+			} else {
+				container.MoveTopLevelWidget (widget,
+					2 + (int)Document.Editor.Parent.TextViewMargin.XOffset,
+					-2 + (int)document.Editor.Parent.LineToY (document.Editor.Caret.Line));
+			}
 			widget.Show ();
+			widget.SetFixes (fixes, loc);
 		}
 
 		public void CancelQuickFixTimer ()
