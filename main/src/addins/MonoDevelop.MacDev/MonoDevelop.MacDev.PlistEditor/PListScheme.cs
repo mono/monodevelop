@@ -126,26 +126,54 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			return keys.FirstOrDefault (k => k.Identifier == id);
 		}
-		
-		public static List<SchemaItem> AvailableValues (PObject obj, Dictionary<PObject, SchemaItem> tree)
+
+		public static List<SchemaItem> AvailableKeys (PObject obj, Dictionary<PObject, SchemaItem> tree)
 		{
 			SchemaItem key;
-			if (obj is PBoolean)
-				return new List<SchemaItem> { BooleanYes, BooleanNo };
-			
-			if (!tree.TryGetValue (obj, out key) || key == null)
+			if (!tree.TryGetValue (obj, out key))
 				return null;
 			
-			var values = key.Values.Cast<PListScheme.SchemaItem> ().ToList ();
-
+			var values = key.Values.Cast<SchemaItem> ().ToList ();
 			// In this case every element in the array/dictionary is produced from this single Value
 			if ((obj is PDictionary || obj is PArray) && values.Count == 1 && values [0].Identifier == null)
 				return values;
-
-			// Strip out values which are already used. We can do this trivially as
-			// we have already matched every PObject to the SchemaItem which created it
-			foreach (var child in PObject.ToEnumerable  (obj))
+			
+			foreach (var child in PObject.ToEnumerable (obj))
 				values.Remove (tree [child.Value]);
+			return values;
+		}
+
+		public static List<SchemaItem> AvailableValues (PObject obj, Dictionary<PObject, SchemaItem> tree)
+		{
+			SchemaItem key;
+
+			if (obj == null)
+				return null;
+			
+			if (!(obj is PNumber || obj is PBoolean || obj is PString))
+				return null;
+
+			if (obj is PBoolean)
+				return new List<SchemaItem> { BooleanYes, BooleanNo };
+
+			if (!tree.TryGetValue (obj, out key) || key == null)
+				return null;
+			
+			List<PListScheme.SchemaItem> values = null;
+			if (key.Values.Count > 0) {
+				values = key.Values.Cast<PListScheme.SchemaItem> ().ToList ();
+			} else if (obj.Parent != null) {
+				var parent = obj.Parent;
+				if (tree.TryGetValue (parent, out key)) {
+					values = key.Values.Cast<PListScheme.SchemaItem>().ToList ();
+
+					// Strip out values which are already used. We can do this trivially as
+					// we have already matched every PObject to the SchemaItem which created it
+					foreach (var child in PObject.ToEnumerable  (parent))
+						if (child.Value != obj)
+							values.Remove (tree [child.Value]);
+				}
+			}
 
 			return values;
 		}
@@ -175,10 +203,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			if (node.HasChildNodes)
 				key.Values.AddRange (ParseValues (key.ArrayType ?? key.Type, node.ChildNodes));
-			else if (key.Type == "Dictionary")
-				key.Values.Add (new Value { Type = "String", Description = "New value" });
-			else if (key.Type == "Array")
-				key.Values.Add (new Value { Type = key.ArrayType, Description = "New value" });
+//			else if (key.Type == "Dictionary")
+//				key.Values.Add (new Value { Type = "String", Description = "New value" });
+//			else if (key.Type == "Array")
+//				key.Values.Add (new Value { Type = key.ArrayType, Description = "New value" });
 		}
 		
 		public static Dictionary<PObject, SchemaItem> Match (PDictionary dictionary, PListScheme scheme)
