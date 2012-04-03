@@ -126,6 +126,8 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
+			if (src != null)
+				src.Cancel ();
 			if (guiDocument != null) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {
@@ -137,9 +139,6 @@ namespace MonoDevelop.CSharp.Highlighting
 					resolver = new CSharpAstResolver (compilation, unit, parsedFile);
 					
 					if (guiDocument.Project != null) {
-						if (src != null) {
-							src.Cancel ();
-						}
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
@@ -149,6 +148,9 @@ namespace MonoDevelop.CSharp.Highlighting
 								Gtk.Application.Invoke (delegate {
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);
+									var margin = guiDocument.Editor.Parent.TextViewMargin;
+									margin.PurgeLayoutCache ();
+									guiDocument.Editor.Parent.QueueDraw ();
 								});
 							}
 						}, cancellationToken);
@@ -377,7 +379,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				
 				public void Resolved (AstNode node, ResolveResult result)
 				{
-					
+
 				}
 				
 				public ResolveVisitorNavigationMode Scan (AstNode node)
@@ -401,7 +403,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					tags.Add (tag.Tag);
 				}
 			}
-			
+
+
+
+
 			#region IResolveVisitorNavigator implementation
 			ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
 			{

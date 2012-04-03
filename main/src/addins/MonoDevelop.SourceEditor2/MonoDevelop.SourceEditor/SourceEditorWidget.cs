@@ -522,11 +522,6 @@ namespace MonoDevelop.SourceEditor
 			if (this.isDisposed || document == null || this.view == null)
 				return;
 			
-			if (MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true) && TextEditor != null) {
-				var margin = TextEditor.TextViewMargin;
-				if (margin != null)
-					Gtk.Application.Invoke (delegate { margin.PurgeLayoutCache (); });
-			}
 			SetParsedDocument (document, parsedDocument != null);
 		}
 		

@@ -225,12 +225,10 @@ namespace MonoDevelop.CodeActions
 			
 			public void Run (object sender, EventArgs e)
 			{
-				// ensure that the Ast is recent.
-				document.UpdateParseDocument ();
 				act.Run (document, loc);
 			}
 		}
-//		
+		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (!evnt.TriggersContextMenu () && evnt.Button == 1)
