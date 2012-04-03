@@ -315,6 +315,7 @@ FILES =  \
 	MonoDevelop.Projects/ItemConfigurationSelector.cs \
 	MonoDevelop.Projects/IWorkspaceObject.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
+	MonoDevelop.Projects/PortableDotNetProject.cs \
 	MonoDevelop.Projects/Project.cs \
 	MonoDevelop.Projects/ProjectConfiguration.cs \
 	MonoDevelop.Projects/ProjectConvertTool.cs \

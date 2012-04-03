@@ -30,6 +30,13 @@
 			import="$(MSBuildBinPath)\Microsoft.CSharp.targets"
 			resourceHandler="MonoDevelop.CSharp.Project.CSharpResourceIdBuilder"
 			/>
+		<DotNetProjectSubtype
+			guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}"
+			type="MonoDevelop.Projects.PortableDotNetProject"
+			useXBuild="true">
+			<AddImport language="C#" projects="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+			<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+		</DotNetProjectSubtype>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">

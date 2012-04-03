@@ -201,6 +201,9 @@
     <EmbeddedResource Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\MonoNameConventionPolicy.xml">
       <LogicalName>MonoNameConventionPolicy.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\PortableLibrary.xpt.xml">
+      <LogicalName>PortableLibrary.xpt.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />

@@ -141,7 +141,8 @@ RES =  \
 	templates/EmptyCSharpFile.xft.xml \
 	templates/EmptyProject.xpt.xml \
 	templates/GtkSharp2Project.xpt.xml \
-	templates/Library.xpt.xml
+	templates/Library.xpt.xml \
+	templates/PortableLibrary.xpt.xml
 
 TESTFILES =  \
 	CSharpAmbience.cs \
