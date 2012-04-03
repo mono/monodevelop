@@ -302,9 +302,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			treeview.AppendColumn (GettextCatalog.GetString ("Type"), comboRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
+				var value = (string) tree_model.GetValue (iter, 0);
 				var obj   = (PObject)tree_model.GetValue (iter, 1);
 				var key   = (PListScheme.SchemaItem)tree_model.GetValue (iter, 2);
-				renderer.Editable = key == null;
+				renderer.Editable = key == null && !AddKeyNode.Equals (value);
 				renderer.ForegroundGdk = Style.Text (renderer.Editable ? StateType.Normal : StateType.Insensitive);
 				renderer.Text = obj == null ? "" : obj.TypeString;
 			});
