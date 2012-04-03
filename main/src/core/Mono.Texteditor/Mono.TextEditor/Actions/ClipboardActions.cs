@@ -407,8 +407,6 @@ namespace Mono.TextEditor
 								result = text.Length;
 								LineSegment curLine = data.Document.GetLine (data.Caret.Line);
 								data.Insert (curLine.Offset, text + data.EolMarker);
-								if (!preserveState)
-									data.Caret.Offset += text.Length + data.EolMarker.Length;
 							} else {
 								int offset = data.Caret.Offset;
 								data.InsertAtCaret (text);
@@ -457,7 +455,6 @@ namespace Mono.TextEditor
 								}
 							}
 							
-							data.Caret.Offset += textLength;
 							data.MainSelection.Anchor = new DocumentLocation (System.Math.Max (DocumentLocation.MinLine, data.Caret.Line == minLine ? maxLine : minLine), System.Math.Max (DocumentLocation.MinColumn, data.Caret.Column - textLength));
 							data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, data.Caret.Column);
 							data.Caret.PreserveSelection = false;
@@ -478,10 +475,7 @@ namespace Mono.TextEditor
 							
 							data.Caret.PreserveSelection = false;
 							if (!preserveState) {
-								data.Caret.Offset += textLength;
 							} else {
-								if (caretPos >= insertionOffset)
-									data.Caret.Offset += textLength;
 								if (!selection.IsInvalid) {
 									int offset = selection.Offset;
 									if (offset >= insertionOffset)

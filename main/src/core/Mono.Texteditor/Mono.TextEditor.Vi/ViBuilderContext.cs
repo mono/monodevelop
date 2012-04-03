@@ -113,9 +113,7 @@ namespace Mono.TextEditor.Vi
 						caret.Column += length - 1;
 					}
 				} else {
-					int length = data.Replace (caret.Offset, 1, ch.ToString ());
-					if (length > 1)
-						caret.Offset += length - 1;
+					data.Replace (caret.Offset, 1, ch.ToString ());
 				}
 				caret.Column++;
 				if (caret.PreserveSelection)

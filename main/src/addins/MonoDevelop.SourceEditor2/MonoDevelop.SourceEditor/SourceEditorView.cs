@@ -1159,9 +1159,9 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				TextEditor.DeleteSelectedText ();
-				int length = TextEditor.Insert (TextEditor.Caret.Offset, value);
-				TextEditor.SelectionRange = new TextSegment (TextEditor.Caret.Offset, length);
-				TextEditor.Caret.Offset += length; 
+				var offset = TextEditor.Caret.Offset;
+				int length = TextEditor.Insert (offset, value);
+				TextEditor.SelectionRange = new TextSegment (offset, length);
 			}
 		}
 

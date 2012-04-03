@@ -142,9 +142,7 @@ namespace Mono.TextEditor
 							int length = textEditorData.Insert (Caret.Offset, text);
 						}
 					} else {
-						int length = textEditorData.Replace (Caret.Offset, 1, ch.ToString ());
-						if (length > 1)
-							Caret.Offset += length - 1;
+						textEditorData.Replace (Caret.Offset, 1, ch.ToString ());
 					}
 					// That causes unnecessary redraws:
 					//				bool autoScroll = Caret.AutoScrollToCaret;
