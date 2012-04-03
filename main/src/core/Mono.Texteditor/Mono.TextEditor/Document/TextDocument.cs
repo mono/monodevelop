@@ -1077,8 +1077,6 @@ namespace Mono.TextEditor
 			} else {
 				foldedSegments = newFoldedSegments;
 				InformFoldTreeUpdated ();
-				if (foldedSegmentAdded || countChanged)
-					CommitUpdateAll ();
 			}
 		}
 		
@@ -1385,13 +1383,13 @@ namespace Mono.TextEditor
 		{
 			CommitLineUpdate (this.OffsetToLineNumber (line.Offset));
 		}
-					
+
 		public void CommitUpdateAll ()
 		{
 			RequestUpdate (new UpdateAll ());
 			CommitDocumentUpdate ();
 		}
-						
+
 		public void CommitMultipleLineUpdate (int start, int end)
 		{
 			RequestUpdate (new MultipleLineUpdate (start, end));

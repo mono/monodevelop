@@ -79,6 +79,8 @@ namespace Mono.TextEditor
 
 		protected virtual void OnLineUpdateFrom (HeightChangedEventArgs e)
 		{
+			if (rebuild)
+				return;
 			var handler = this.LineUpdateFrom;
 			if (handler != null)
 				handler (this, e);
@@ -114,30 +116,35 @@ namespace Mono.TextEditor
 			}
 		}
 
-
+		bool rebuild;
 		public void Rebuild ()
 		{
-			markers.Clear ();
-			tree.Count = 1;
-			double h = editor.LineCount * editor.LineHeight;
-			tree.Root = new HeightNode () {
-				height = h,
-				totalHeight = h,
-				totalCount = editor.LineCount,
-				totalVisibleCount = editor.LineCount,
-				count = editor.LineCount
-			};
-			
-			foreach (var extendedTextMarkerLine in editor.Document.LinesWithExtendingTextMarkers) {
-				int lineNumber = editor.OffsetToLineNumber (extendedTextMarkerLine.Offset);
-				double height = editor.GetLineHeight (extendedTextMarkerLine);
-				SetLineHeight (lineNumber, height);
-			}
-			
-			foreach (var segment in editor.Document.FoldedSegments.ToArray ()) {
-				int start = editor.OffsetToLineNumber (segment.Offset);
-				int end = editor.OffsetToLineNumber (segment.EndOffset);
-				segment.Marker = Fold (start, end - start);
+			rebuild = true;
+			try {
+				markers.Clear ();
+				tree.Count = 1;
+				double h = editor.LineCount * editor.LineHeight;
+				tree.Root = new HeightNode () {
+					height = h,
+					totalHeight = h,
+					totalCount = editor.LineCount,
+					totalVisibleCount = editor.LineCount,
+					count = editor.LineCount
+				};
+				
+				foreach (var extendedTextMarkerLine in editor.Document.LinesWithExtendingTextMarkers) {
+					int lineNumber = editor.OffsetToLineNumber (extendedTextMarkerLine.Offset);
+					double height = editor.GetLineHeight (extendedTextMarkerLine);
+					SetLineHeight (lineNumber, height);
+				}
+				
+				foreach (var segment in editor.Document.FoldedSegments.ToArray ()) {
+					int start = editor.OffsetToLineNumber (segment.Offset);
+					int end = editor.OffsetToLineNumber (segment.EndOffset);
+					segment.Marker = Fold (start, end - start);
+				}
+			} finally {
+				rebuild = false;
 			}
 		}
 		

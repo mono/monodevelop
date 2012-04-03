@@ -161,12 +161,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public virtual string GetTextWithoutMarkup (ColorScheme style, int offset, int length)
-		{
-			return doc.GetTextAt (offset, length);
-		}
-
-
 		public static string ColorToPangoMarkup (Gdk.Color color)
 		{
 			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);

@@ -181,7 +181,6 @@ namespace Mono.TextEditor.Theatrics
 			}
 			base.OnRemoved (widget);
 		}
-		
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
