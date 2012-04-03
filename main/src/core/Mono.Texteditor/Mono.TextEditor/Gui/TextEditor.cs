@@ -78,25 +78,15 @@ namespace Mono.TextEditor
 			get {
 				return textEditorData.Document;
 			}
-			set {
-				var oldDoc = textEditorData.Document;
-				if (oldDoc != null) {
-					oldDoc.TextReplaced -= OnDocumentStateChanged;
-					oldDoc.TextSet -= OnTextSet;
-					oldDoc.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 
-					oldDoc.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
-					oldDoc.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
-				}
-				
-				textEditorData.Document = value;
-				textEditorData.Document.TextReplaced += OnDocumentStateChanged;
-				textEditorData.Document.TextSet += OnTextSet;
-				textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
-				textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
-				textEditorData.Document.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
-			}
 		}
 
+		public bool IsDisposed {
+			get {
+				return textEditorData.IsDisposed;
+			}
+		}
+	
+		
 		
 		public Mono.TextEditor.Caret Caret {
 			get {
@@ -289,7 +279,11 @@ namespace Mono.TextEditor
 				CenterToCaret ();
 				StartCaretPulseAnimation ();
 			};
-			this.Document = doc;
+			textEditorData.Document.TextReplaced += OnDocumentStateChanged;
+			textEditorData.Document.TextSet += OnTextSet;
+			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
+			textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
+			textEditorData.Document.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
 
 			textEditorData.CurrentMode = initialMode;
 			
@@ -702,15 +696,13 @@ namespace Mono.TextEditor
 			if (popupWindow != null)
 				popupWindow.Destroy ();
 			
-			if (this.Document != null) {
-				this.Document.EndUndo -= HandleDocumenthandleEndUndo;
-				this.Document.TextReplaced -= OnDocumentStateChanged;
-				this.Document.TextSet -= OnTextSet;
-				this.Document.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 
-				this.Document.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
-				this.Document.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
-			}
-			
+			Document.EndUndo -= HandleDocumenthandleEndUndo;
+			Document.TextReplaced -= OnDocumentStateChanged;
+			Document.TextSet -= OnTextSet;
+			Document.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 
+			Document.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
+			Document.MarkerRemoved -= HandleTextEditorDataDocumentMarkerChange;
+
 			DisposeAnimations ();
 			
 			RemoveFocusOutTimerId ();

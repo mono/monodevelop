@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 	public class TextEditorData : IDisposable
 	{
 		ITextEditorOptions options;
-		TextDocument document; 
+		readonly TextDocument document; 
 		Caret      caret;
 		
 		static Adjustment emptyAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
@@ -98,6 +98,12 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public bool IsDisposed {
+			get;
+			protected set;
+		}
+
+		
 		public TextEditorData () : this (new TextDocument ())
 		{
 		}
@@ -110,7 +116,23 @@ namespace Mono.TextEditor
 			caret.PositionChanged += CaretPositionChanged;
 
 			options = TextEditorOptions.DefaultOptions;
-			Document = doc;
+			
+			document = doc;
+			document.BeginUndo += OnBeginUndo;
+			document.EndUndo += OnEndUndo;
+
+			document.Undone += DocumentHandleUndone;
+			document.Redone += DocumentHandleRedone;
+			document.LineChanged += HandleDocLineChanged;
+			document.TextReplaced += HandleTextReplaced;
+
+			document.TextSet += HandleDocTextSet;
+			document.Folded += HandleTextEditorDataDocumentFolded;
+			document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
+
+			document.Splitter.LineInserted += HandleDocumentsplitterhandleLineInserted;
+			document.Splitter.LineRemoved += HandleDocumentsplitterhandleLineRemoved;
+
 			SearchEngine = new BasicSearchEngine ();
 
 			HeightTree = new HeightTree (this);
@@ -147,24 +169,6 @@ namespace Mono.TextEditor
 		public TextDocument Document {
 			get {
 				return document;
-			}
-			set {
-				DetachDocument ();
-				document = value;
-				document.BeginUndo += OnBeginUndo;
-				document.EndUndo += OnEndUndo;
-
-				document.Undone += DocumentHandleUndone;
-				document.Redone += DocumentHandleRedone;
-				document.LineChanged += HandleDocLineChanged;
-				document.TextReplaced += HandleTextReplaced;
-
-				document.TextSet += HandleDocTextSet;
-				document.Folded += HandleTextEditorDataDocumentFolded;
-				document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
-
-				document.Splitter.LineInserted += HandleDocumentsplitterhandleLineInserted;
-				document.Splitter.LineRemoved += HandleDocumentsplitterhandleLineRemoved;
 			}
 		}
 
@@ -423,9 +427,6 @@ namespace Mono.TextEditor
 
 		void DetachDocument ()
 		{
-			if (document == null) 
-				return;
-			
 			document.BeginUndo -= OnBeginUndo;
 			document.EndUndo -= OnEndUndo;
 
@@ -439,12 +440,13 @@ namespace Mono.TextEditor
 			
 			document.Splitter.LineInserted -= HandleDocumentsplitterhandleLineInserted;
 			document.Splitter.LineRemoved -= HandleDocumentsplitterhandleLineRemoved;
-			
-			document = null;
 		}
 
 		public void Dispose ()
 		{
+			if (IsDisposed)
+				return;
+			IsDisposed = true;
 			options = options.Kill ();
 
 			DetachDocument ();
