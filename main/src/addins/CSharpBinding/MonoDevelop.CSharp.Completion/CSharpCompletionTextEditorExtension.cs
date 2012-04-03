@@ -231,6 +231,8 @@ namespace MonoDevelop.CSharp.Completion
 			list.AutoSelect = engine.AutoSelect;
 			list.DefaultCompletionString = engine.DefaultCompletionString;
 			list.CloseOnSquareBrackets = engine.CloseOnSquareBrackets;
+			if (ctrlSpace)
+				list.AutoCompleteUniqueMatch = true;
 			return list.Count > 0 ? list : null;
 		}
 		

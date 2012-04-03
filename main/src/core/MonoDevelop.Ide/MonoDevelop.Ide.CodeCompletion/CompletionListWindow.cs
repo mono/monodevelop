@@ -253,6 +253,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 						CompleteWord ();
 						CompletionWindowManager.HideWindow ();
+						return false;
 					}
 					return true;
 				}
@@ -266,6 +267,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (completionDataList.AutoCompleteUniqueMatch && IsUniqueMatch && !IsChanging) {
 					CompleteWord ();
 					CompletionWindowManager.HideWindow ();
+					return false;
 				} else {
 					ShowAll ();
 					UpdateDeclarationView ();

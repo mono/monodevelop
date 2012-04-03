@@ -236,12 +236,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public bool IsUniqueMatch {
 			get {
-/*				int pos = list.Selection + 1;
-				if (DataProvider.ItemCount > pos && 
-					DataProvider.GetText (pos).ToLower ().StartsWith (CurrentPartialWord.ToLower ()) || 
-					!(DataProvider.GetText (list.Selection).ToLower ().StartsWith (CurrentPartialWord.ToLower ())))
-					return false;
-				*/
+				list.FilterWords ();
 				return list.filteredItems.Count == 1;
 			}
 		}
