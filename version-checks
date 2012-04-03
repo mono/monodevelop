@@ -40,7 +40,7 @@ DEP[3]=monomac
 DEP_NAME[3]=MONOMAC
 DEP_PATH[3]=${top_srcdir}/../monomac
 DEP_MODULE[3]=git@github.com:mono/monomac.git
-DEP_NEEDED_VERSION[3]=6f321865d0e6757b8389360943157d9939ba33e6
+DEP_NEEDED_VERSION[3]=1e9617348b3d38f8694ea647978b098968fef165
 DEP_BRANCH_AND_REMOTE[3]="master origin/master"
 
 # other dependencies
