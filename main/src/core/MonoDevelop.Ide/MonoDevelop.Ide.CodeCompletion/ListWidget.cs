@@ -120,10 +120,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public void ResetState ()
 		{
-			if (win.DataProvider == null) {
-				selection = -1;
-				return;
-			}
 			categories.Clear ();
 			filteredItems.Clear ();
 			oldCompletionString = completionString = null;

@@ -199,15 +199,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 		static bool wasVisi;
 		static int lastW = -1, lastH = -1;
 		
-		internal static void UpdateWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		internal static void UpdateWindow (CompletionTextEditorExtension textEditorExtension, ICompletionWidget completionWidget)
 		{
 			// Updates the parameter information window from the information
 			// of the current method overload
 			if (methods.Count > 0) {
 				if (window == null) {
 					window = new ParameterInformationWindow ();
-					window.Ext = ext;
-					window.Widget = widget;
+					window.Ext = textEditorExtension;
+					window.Widget = completionWidget;
 					window.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
 						if (args.Allocation.Width == lastW && args.Allocation.Height == lastH && wasVisi == CompletionWindowManager.IsVisible)
 							return;
@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						
 						var ctx = window.Widget.CurrentCodeCompletionContext;
 						var md = methods [methods.Count - 1];
-						int cparam = ext != null ? ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
+						int cparam = window.Ext != null ? window.Ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
 						var geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 						window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
 						X = md.CompletionContext.TriggerXCoord;
@@ -261,12 +261,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 						lastH = -1;
 					};
 				} else {
-					window.Ext = ext;
-					window.Widget = widget;
+					window.Ext = textEditorExtension;
+					window.Widget = completionWidget;
 				}
 				wasAbove = false;
 				var lastMethod = methods [methods.Count - 1];
-				int curParam = ext != null ? ext.GetCurrentParameterIndex (lastMethod.MethodProvider.StartOffset) : 0;
+				int curParam = window.Ext != null ? window.Ext.GetCurrentParameterIndex (lastMethod.MethodProvider.StartOffset) : 0;
 				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, geometry2.Width);
 				window.ShowAll ();

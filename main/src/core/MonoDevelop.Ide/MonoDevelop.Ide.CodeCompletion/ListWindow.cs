@@ -122,8 +122,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		/// This method is used to set the completion window to it's inital state.
 		/// This is required for re-using the window object.
 		/// </summary>
-		protected void ResetState ()
+		protected virtual void ResetState ()
 		{
+			HideWhenWordDeleted = false;
 			endOffset = -1;
 			list.ResetState ();
 		}

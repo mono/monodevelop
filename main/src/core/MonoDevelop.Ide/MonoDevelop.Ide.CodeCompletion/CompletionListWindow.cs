@@ -205,6 +205,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
+			if (list == null)
+				throw new ArgumentNullException ("list");
+			if (completionContext == null)
+				throw new ArgumentNullException ("completionContext");
+			if (completionContext == null)
+				throw new ArgumentNullException ("completionContext");
 			if (mutableList != null) {
 				mutableList.Changing -= OnCompletionDataChanging;
 				mutableList.Changed -= OnCompletionDataChanged;
@@ -590,6 +596,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			declarationViewTimer = 0;
 			return false;
+		}
+		
+		protected override void ResetState ()
+		{
+			previousWidth = previousHeight = -1;
+			base.ResetState ();
 		}
 		
 		#region IListDataProvider

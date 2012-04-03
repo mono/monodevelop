@@ -25,11 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using Gtk;
-using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.CodeCompletion
