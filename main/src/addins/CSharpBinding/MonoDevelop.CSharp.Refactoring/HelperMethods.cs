@@ -60,10 +60,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			};
 		}
 
-
-
-
-
 		public static void RemoveNode (this TextEditorData editor, AstNode n)
 		{
 			var change = editor.GetRemoveNodeChange (n);

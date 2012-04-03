@@ -88,7 +88,9 @@ namespace MonoDevelop.CSharp.Formatting
 			data.Document.FileName = "toformat.cs";
 			if (textPolicy != null) {
 				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
-				data.Options.IndentationSize = data.Options.TabSize = textPolicy.TabWidth;
+				data.Options.TabSize = textPolicy.TabWidth;
+				data.Options.IndentationSize = textPolicy.IndentWidth;
+				data.Options.IndentStyle = textPolicy.IndentStyle;
 			}
 			data.Text = input;
 
@@ -108,7 +110,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 			var originalVersion = data.Document.Version;
 
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, data.CreateNRefactoryTextEditorOptions ()) {
+			var textEditorOptions = data.CreateNRefactoryTextEditorOptions ();
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, textEditorOptions) {
 				HadErrors = hadErrors
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor);
