@@ -204,7 +204,6 @@ namespace MonoDevelop.CodeActions
 			menuPushed = true;
 			menu.Destroyed += delegate {
 				menuPushed = false;
-				QueueDraw ();
 			};
 			var container = (TextEditorContainer)document.Editor.Parent.Parent;
 			var child = (TextEditorContainer.EditorContainerChild)container [this];
@@ -229,8 +228,6 @@ namespace MonoDevelop.CodeActions
 				// ensure that the Ast is recent.
 				document.UpdateParseDocument ();
 				act.Run (document, loc);
-
-				document.Editor.Document.CommitUpdateAll ();
 			}
 		}
 //		

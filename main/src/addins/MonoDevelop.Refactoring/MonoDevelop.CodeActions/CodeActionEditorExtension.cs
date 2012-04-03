@@ -140,6 +140,12 @@ namespace MonoDevelop.CodeActions
 			CursorPositionChanged ();
 		}
 		
+		[CommandUpdateHandler(RefactoryCommands.QuickFix)]
+		public void UpdateQuickFixCommand (CommandInfo ci)
+		{
+			ci.Enabled = widget != null && widget.Visible;
+		}
+		
 		[CommandHandler(RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
