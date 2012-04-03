@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			if (src != null)
 				src.Cancel ();
-			if (guiDocument != null) {
+			if (guiDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {
 					if (!parsedDocument.HasErrors)
