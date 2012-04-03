@@ -5,22 +5,39 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class MarkerPanel
 	{
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.Label GtkLabel9;
+		
 		private global::Gtk.Alignment alignment1;
+		
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.CheckButton showLineNumbersCheckbutton;
+		
 		private global::Gtk.CheckButton underlineErrorsCheckbutton;
+		
 		private global::Gtk.CheckButton highlightMatchingBracketCheckbutton;
+		
 		private global::Gtk.CheckButton highlightCurrentLineCheckbutton;
+		
 		private global::Gtk.CheckButton showRulerCheckbutton;
+		
 		private global::Gtk.CheckButton enableAnimationCheckbutton1;
+		
 		private global::Gtk.CheckButton enableHighlightUsagesCheckbutton;
+		
 		private global::Gtk.Label GtkLabel10;
+		
 		private global::Gtk.Alignment GtkAlignment;
+		
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.CheckButton showInvLinesCheckbutton;
+		
 		private global::Gtk.CheckButton showSpacesCheckbutton;
+		
 		private global::Gtk.CheckButton showTabsCheckbutton;
+		
 		private global::Gtk.CheckButton showEolCheckbutton;
 		
 		protected virtual void Build ()

@@ -105,11 +105,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.defaultEolMarker = TextStylePolicy.GetEolMarker (currentPolicy.EolMarker);
 			
-			base.TabsToSpaces          = currentPolicy.TabsToSpaces; // PropertyService.Get ("TabsToSpaces", false);
-			base.IndentationSize       = currentPolicy.TabWidth; //PropertyService.Get ("TabIndent", 4);
+			base.TabsToSpaces = currentPolicy.TabsToSpaces;
+			// PropertyService.Get ("TabsToSpaces", false);
+			base.TabSize = currentPolicy.TabWidth;
+			base.IndentationSize       = currentPolicy.IndentWidth; //PropertyService.Get ("TabIndent", 4);
 			base.RulerColumn           = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
 			base.AllowTabsAfterNonTabs = !currentPolicy.NoTabsAfterNonTabs; //PropertyService.Get ("AllowTabsAfterNonTabs", true);
-			base.RemoveTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
+			base.IndentStyle = currentPolicy.IndentStyle; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
 		}
 		
 		// Need to be picky about only updating individual properties when they change.
@@ -130,15 +132,6 @@ namespace MonoDevelop.SourceEditor
 					break;
 				case "UnderlineErrors":
 					this.UnderlineErrors = (bool)args.NewValue;
-					break;
-				case "IndentStyle":
-					if (args.NewValue == null) {
-						LoggingService.LogWarning ("tried to set indent style == null");
-					} else if (!(args.NewValue is IndentStyle)) {
-						LoggingService.LogWarning ("tried to set indent style to " + args.NewValue + " which isn't from type IndentStyle instead it is from:" + args.NewValue.GetType ());
-						this.IndentStyle = (IndentStyle)Enum.Parse (typeof(IndentStyle), args.NewValue.ToString ());
-					} else 
-						this.IndentStyle = (IndentStyle)args.NewValue;
 					break;
 				case "ShowLineNumberMargin":
 					base.ShowLineNumberMargin = (bool)args.NewValue;
@@ -211,7 +204,6 @@ namespace MonoDevelop.SourceEditor
 			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
 			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
-			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Auto);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
 			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", false);
@@ -365,20 +357,6 @@ namespace MonoDevelop.SourceEditor
 				if (value != this.underlineErrors) {
 					this.underlineErrors = value;
 					PropertyService.Set ("UnderlineErrors", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		IndentStyle indentStyle;
-		public override IndentStyle IndentStyle {
-			get {
-				return indentStyle;
-			}
-			set {
-				if (value != this.indentStyle) {
-					this.indentStyle = value;
-					PropertyService.Set ("IndentStyle", value);
 					OnChanged (EventArgs.Empty);
 				}
 			}

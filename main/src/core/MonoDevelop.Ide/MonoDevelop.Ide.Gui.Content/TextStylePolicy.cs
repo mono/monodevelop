@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Policies;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -40,13 +41,14 @@ namespace MonoDevelop.Ide.Gui.Content
 	[PolicyType ("Text file formatting")]
 	public sealed class TextStylePolicy : IEquatable<TextStylePolicy>
 	{
-		public TextStylePolicy (int fileWidth, int tabWidth, bool tabsToSpaces, bool noTabsAfterNonTabs, bool removeTrailingWhitespace, EolMarker eolMarker)
+		public TextStylePolicy (int fileWidth, int tabWidth, int indentWidth, bool tabsToSpaces, bool noTabsAfterNonTabs, IndentStyle indentStyle, EolMarker eolMarker)
 		{
 			FileWidth = fileWidth;
 			TabWidth = tabWidth;
+			IndentWidth = indentWidth;
 			TabsToSpaces = tabsToSpaces;
 			NoTabsAfterNonTabs = noTabsAfterNonTabs;
-			RemoveTrailingWhitespace = removeTrailingWhitespace;
+			IndentStyle = indentStyle;
 			EolMarker = eolMarker;
 		}
 		
@@ -65,11 +67,30 @@ namespace MonoDevelop.Ide.Gui.Content
 		[ItemProperty]
 		public bool TabsToSpaces { get; private set; }
 		
+		int indentWidth = 4;
 		[ItemProperty]
-		public bool NoTabsAfterNonTabs { get; private set; }
+		public int IndentWidth {
+			get {
+				return indentWidth;
+			}
+			private set {
+				indentWidth = value;
+			}
+		}
+		
+		IndentStyle indentStyle;
+		[ItemProperty]
+		public IndentStyle IndentStyle {
+			get {
+				return indentStyle;
+			}
+			private set {
+				indentStyle = value;
+			}
+		}
 		
 		[ItemProperty]
-		public bool RemoveTrailingWhitespace { get; private set; }
+		public bool NoTabsAfterNonTabs { get; private set; }
 		
 		[ItemProperty]
 		public EolMarker EolMarker { get; private set; }
@@ -86,19 +107,17 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			return Environment.NewLine;
 		}
-
-	
+		
 		public string GetEolMarker ()
 		{
 			return GetEolMarker (EolMarker);
 		}
-
-	
+		
 		public bool Equals (TextStylePolicy other)
 		{
 			return other != null && other.FileWidth == FileWidth && other.TabWidth == TabWidth
 				&& other.TabsToSpaces == TabsToSpaces && other.NoTabsAfterNonTabs == NoTabsAfterNonTabs
-				&& other.RemoveTrailingWhitespace == RemoveTrailingWhitespace && other.EolMarker == EolMarker;
+				&& other.IndentStyle == IndentStyle && other.IndentWidth == IndentWidth && other.EolMarker == EolMarker;
 		}
 	}
 }

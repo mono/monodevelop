@@ -1,8 +1,9 @@
-<TextStylePolicy scope="text/plain" allowDiffSerialize="True">
+<TextStylePolicy scope="text/plain">
 	<FileWidth>80</FileWidth>
 	<TabWidth>8</TabWidth>
+	<IndentWidth>8</IndentWidth>
 	<TabsToSpaces>False</TabsToSpaces>
 	<NoTabsAfterNonTabs>False</NoTabsAfterNonTabs>
-	<RemoveTrailingWhitespace>False</RemoveTrailingWhitespace>
+	<IndentStyle>Smart</IndentStyle>
 	<EolMarker>Native</EolMarker>
 </TextStylePolicy>

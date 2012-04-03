@@ -5,23 +5,41 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class HighlightingPanel
 	{
 		private global::Gtk.VBox vbox4;
+		
 		private global::Gtk.Label GtkLabel4;
+		
 		private global::Gtk.Alignment GtkAlignment3;
+		
 		private global::Gtk.VBox vbox6;
+		
 		private global::Gtk.CheckButton enableHighlightingCheckbutton;
+		
 		private global::Gtk.CheckButton enableSemanticHighlightingCheckbutton;
+		
 		private global::Gtk.Label GtkLabel5;
+		
 		private global::Gtk.Alignment GtkAlignment;
+		
 		private global::Gtk.VBox vbox5;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
 		private global::Gtk.TreeView styleTreeview;
+		
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.Button buttonNew;
+		
 		private global::Gtk.Button buttonEdit;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Button addButton;
+		
 		private global::Gtk.Button removeButton;
+		
 		private global::Gtk.Button buttonExport;
 		
 		protected virtual void Build ()

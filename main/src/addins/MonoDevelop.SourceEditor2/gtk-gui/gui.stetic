@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>..\..\MonoDevelop.SourceEditor2</images-root-path>
+    <images-root-path>../../MonoDevelop.SourceEditor2</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
@@ -646,7 +646,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" design-size="368 436">
+  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" design-size="397 436">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">

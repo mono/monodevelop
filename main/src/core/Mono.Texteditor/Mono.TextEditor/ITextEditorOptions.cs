@@ -45,7 +45,6 @@ namespace Mono.TextEditor
 		
 		bool AllowTabsAfterNonTabs { get; set; }
 		bool HighlightMatchingBracket { get; set; }
-		bool RemoveTrailingWhitespaces { get; set; }
 		bool TabsToSpaces { get; set; }
 		int IndentationSize { get; set; }
 		int TabSize { get; set; }
