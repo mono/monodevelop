@@ -146,9 +146,12 @@ namespace MonoDevelop.CSharp.Highlighting
 							unit.AcceptVisitor (visitor);
 							if (!cancellationToken.IsCancellationRequested) {
 								Gtk.Application.Invoke (delegate {
+									var editorData = guiDocument.Editor;
+									if (editorData == null)
+										return;
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);
-									var textEditor = guiDocument.Editor.Parent;
+									var textEditor = editorData.Parent;
 									if (textEditor != null) {
 										var margin = textEditor.TextViewMargin;
 										margin.PurgeLayoutCache ();
