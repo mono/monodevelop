@@ -97,8 +97,10 @@ namespace MonoDevelop.CSharp
 					memberList.AddRange (type.Members.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
 				} else if (tag is IMember) {
 					var member = (IMember)tag;
-					memberList.AddRange (member.DeclaringTypeDefinition.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
-					memberList.AddRange (member.DeclaringTypeDefinition.Members.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
+					if (member.DeclaringTypeDefinition != null) {
+						memberList.AddRange (member.DeclaringTypeDefinition.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
+						memberList.AddRange (member.DeclaringTypeDefinition.Members.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
+					}
 				}
 				memberList.Sort ((x, y) => String.Compare (x.Name, y.Name, StringComparison.OrdinalIgnoreCase));
 			}
