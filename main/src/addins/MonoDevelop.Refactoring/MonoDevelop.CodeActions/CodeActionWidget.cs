@@ -41,7 +41,7 @@ using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CodeActions
 {
-	public class CodeActionWidget : Gtk.EventBox
+	class CodeActionWidget : Gtk.EventBox
 	{
 //		CodeActionEditorExtension ext;
 		MonoDevelop.Ide.Gui.Document document;

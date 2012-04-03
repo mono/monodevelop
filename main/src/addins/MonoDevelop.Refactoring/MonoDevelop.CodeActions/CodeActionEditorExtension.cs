@@ -36,7 +36,7 @@ using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CodeActions
 {
-	public class CodeActionEditorExtension : TextEditorExtension 
+	class CodeActionEditorExtension : TextEditorExtension 
 	{
 		CodeActionWidget widget;
 		uint quickFixTimeout;
@@ -46,7 +46,7 @@ namespace MonoDevelop.CodeActions
 			private set;
 		}
 		
-		public void RemoveWidget ()
+		void RemoveWidget ()
 		{
 			if (widget == null)
 				return;
@@ -65,7 +65,7 @@ namespace MonoDevelop.CodeActions
 			base.Dispose ();
 		}
 		
-		public void CreateWidget (IEnumerable<CodeAction> fixes, TextLocation loc)
+		void CreateWidget (IEnumerable<CodeAction> fixes, TextLocation loc)
 		{
 			Fixes = fixes;
 			if (!QuickTaskStrip.EnableFancyFeatures)

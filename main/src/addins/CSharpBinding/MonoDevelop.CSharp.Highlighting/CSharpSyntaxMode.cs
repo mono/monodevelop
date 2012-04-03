@@ -148,9 +148,12 @@ namespace MonoDevelop.CSharp.Highlighting
 								Gtk.Application.Invoke (delegate {
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);
-									var margin = guiDocument.Editor.Parent.TextViewMargin;
-									margin.PurgeLayoutCache ();
-									guiDocument.Editor.Parent.QueueDraw ();
+									var textEditor = guiDocument.Editor.Parent;
+									if (textEditor != null) {
+										var margin = textEditor.TextViewMargin;
+										margin.PurgeLayoutCache ();
+										textEditor.QueueDraw ();
+									}
 								});
 							}
 						}, cancellationToken);
