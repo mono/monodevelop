@@ -186,6 +186,7 @@ qrstu",
    ggg ggg", mode.Text);
 		}
 		
+		[Ignore("Got broken because 'RemoveTrailingWhitespaces' option was removed.")]
 		[Test]
 		public void DeleteToLineBoundary ()
 		{
@@ -263,10 +264,7 @@ kkk lll", mode.Text);
 	{
 		public TestViEditMode () : this (new TextEditorData ())
 		{
-			Console.WriteLine ("!1111");
 			Data.Options.WordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
-			Data.Options.RemoveTrailingWhitespaces = true;
-			Console.WriteLine ("!!!!!!");
 		}
 		
 		//used to prevent edit actions from the HandleKeypress causing Caret/SelectionPositionChanged

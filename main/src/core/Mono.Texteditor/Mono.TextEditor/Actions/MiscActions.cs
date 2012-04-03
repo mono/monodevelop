@@ -269,6 +269,7 @@ namespace Mono.TextEditor
 				case IndentStyle.Virtual:
 					if (!data.HasIndentationTracker)
 						goto case IndentStyle.Auto;
+					data.FixVirtualIndentation ();
 					var curLine = data.GetLine (data.Caret.Line);
 					var indentCol = data.GetVirtualIndentationColumn (data.Caret.Location);
 					if (curLine.EditableLength >= data.Caret.Column) {
