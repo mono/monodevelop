@@ -130,7 +130,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public static List<SchemaItem> AvailableKeys (PObject obj, Dictionary<PObject, SchemaItem> tree)
 		{
 			SchemaItem key;
-			if (!tree.TryGetValue (obj, out key))
+			if (!tree.TryGetValue (obj, out key) || key == null)
 				return null;
 			
 			var values = key.Values.Cast<SchemaItem> ().ToList ();

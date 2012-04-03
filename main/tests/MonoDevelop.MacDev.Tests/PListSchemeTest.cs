@@ -103,6 +103,17 @@ namespace MonoDevelop.MacDev.Tests
 			Assert.AreEqual (0, available.Count, "#4");
 		}
 
+		
+		[Test]
+		public void AvailableKeys_Array_NotInScheme ()
+		{
+			var root = new PDictionary ();
+			root.Add ("foo", new PArray ());
+			
+			var available = PListScheme.AvailableKeys (root["foo"], PListScheme.Match (root, PListScheme.Empty));
+			Assert.IsNull (available, "#1");
+		}
+
 		[Test]
 		public void AvailableValues_String_NotInScheme ()
 		{
