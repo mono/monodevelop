@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RedundantInternalInspector.cs
 //  
 // Author:
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// <summary>
 	/// Finds redundant internal modifiers.
 	/// </summary>
-	[IssueDescription("Remove redunant 'internal' modifier",
+	[IssueDescription("Remove redundant 'internal' modifier",
 	       Description="Removes 'internal' modifiers that are not required.", 
 	       Category = IssueCategories.Redundancies,
 	       Severity = Severity.Hint,

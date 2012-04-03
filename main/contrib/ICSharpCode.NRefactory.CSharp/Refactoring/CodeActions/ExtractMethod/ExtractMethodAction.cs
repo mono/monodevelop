@@ -173,12 +173,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					invocation.Arguments.Add(argumentExpression);
 				}
 
-				script.InsertWithCursor(context.TranslateString("Extract method"), method, Script.InsertPosition.Before);
 				foreach (var node in statements.Skip (1)) {
 					script.Remove(node);
 				}
 				script.Replace(statements [0], new ExpressionStatement(invocation));
-//				script.Link(target, method.NameToken);
+				script.InsertWithCursor(context.TranslateString("Extract method"), method, Script.InsertPosition.Before);
+				//script.Link(target, method.NameToken);
 			});
 		}
 	}

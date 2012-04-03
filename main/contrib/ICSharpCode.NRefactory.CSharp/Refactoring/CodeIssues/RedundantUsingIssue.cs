@@ -1,6 +1,6 @@
-// 
+﻿// 
 // RedundantUsingInspector.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -38,12 +38,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// Finds redundant using declarations.
 	/// </summary>
 	[IssueDescription("Remove unused usings",
-	       Description = "Removes used declarations that are not required.",
-	       Category = IssueCategories.Redundancies,
-	       Severity = Severity.Hint,
-	       IssueMarker = IssueMarker.GrayOut)]
+	                  Description = "Removes used declarations that are not required.",
+	                  Category = IssueCategories.Redundancies,
+	                  Severity = Severity.Hint,
+	                  IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantUsingIssue : ICodeIssueProvider
 	{
+		List<string> namespacesToKeep = new List<string>();
+		
+		/// <summary>
+		/// The list of namespaces that should be kept even if they are not being used.
+		/// Used in SharpDevelop to always keep the "System" namespace around.
+		/// </summary>
+		public IList<string> NamespacesToKeep {
+			get { return namespacesToKeep; }
+		}
+		
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
@@ -55,22 +65,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		class GatherVisitor : GatherVisitorBase
 		{
 			readonly RedundantUsingIssue inspector;
-			Dictionary<UsingDeclaration, bool> usingDeclarations = new Dictionary<UsingDeclaration, bool> ();
-			
-			Stack<List<UsingDeclaration>> usingStack = new Stack<List<UsingDeclaration>> ();
+			Dictionary<UsingDeclaration, bool> isInUse = new Dictionary<UsingDeclaration, bool>();
+			Dictionary<string, UsingDeclaration> namespaceToUsingDecl = new Dictionary<string, UsingDeclaration>();
 			
 			public GatherVisitor (BaseRefactoringContext ctx, RedundantUsingIssue inspector) : base (ctx)
 			{
 				this.inspector = inspector;
-				usingStack.Push (new List<UsingDeclaration> ());
 			}
 
 			public void Collect()
 			{
-				foreach (var u in usingDeclarations.Where (u => !u.Value)) {
+				foreach (var u in isInUse.Where (u => !u.Value)) {
 					var decl = u.Key;
 					AddIssue(decl, ctx.TranslateString("Remove redundant usings"), script => {
-						foreach (var u2 in usingDeclarations.Where (a => !a.Value)) {
+						foreach (var u2 in isInUse.Where (a => !a.Value)) {
 							script.Remove (u2.Key);
 						}
 					}
@@ -81,30 +89,35 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 			{
 				base.VisitUsingDeclaration(usingDeclaration);
-				usingDeclarations [usingDeclaration] = false;
-				usingStack.Peek().Add(usingDeclaration);
+				var nrr = ctx.Resolve(usingDeclaration.Import) as NamespaceResolveResult;
+				if (nrr != null) {
+					isInUse[usingDeclaration] = inspector.namespacesToKeep.Contains(nrr.NamespaceName);
+					namespaceToUsingDecl[nrr.NamespaceName] = usingDeclaration;
+				}
 			}
 			
 			public override void VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration)
 			{
-				usingStack.Push(new List<UsingDeclaration> (usingStack.Peek()));
+				var oldNamespaceToUsingDecl = new Dictionary<string, UsingDeclaration>(namespaceToUsingDecl);
 				base.VisitNamespaceDeclaration(namespaceDeclaration);
-				usingStack.Pop();
+				namespaceToUsingDecl = oldNamespaceToUsingDecl;
 			}
 			
 			void UseNamespace(string ns)
 			{
-				foreach (var u in usingStack.Peek ()) {
-					if (u.Namespace == ns) {
-						usingDeclarations [u] = true;
-					}
+				UsingDeclaration decl;
+				if (namespaceToUsingDecl.TryGetValue(ns, out decl)) {
+					isInUse[decl] = true;
 				}
 			}
 
 			public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
 			{
 				base.VisitIdentifierExpression(identifierExpression);
-				UseNamespace(ctx.Resolve(identifierExpression).Type.Namespace);
+				var trr = ctx.Resolve(identifierExpression) as TypeResolveResult;
+				if (trr != null) {
+					UseNamespace(trr.Type.Namespace);
+				}
 			}
 
 			public override void VisitSimpleType(SimpleType simpleType)
@@ -116,13 +129,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitInvocationExpression (InvocationExpression invocationExpression)
 			{
 				base.VisitInvocationExpression (invocationExpression);
-				var mg = ctx.Resolve (invocationExpression) as CSharpInvocationResolveResult;
-				if (mg == null || !mg.IsExtensionMethodInvocation) {
-					return;
-				}
-				UseNamespace (mg.Member.DeclaringType.Namespace);
+				UseExtensionMethod(ctx.Resolve(invocationExpression));
 			}
 			
+			void UseExtensionMethod(ResolveResult rr)
+			{
+				var mg = rr as CSharpInvocationResolveResult;
+				if (mg != null && mg.IsExtensionMethodInvocation) {
+					UseNamespace (mg.Member.DeclaringType.Namespace);
+				}
+			}
+			
+			public override void VisitQueryExpression(QueryExpression queryExpression)
+			{
+				base.VisitQueryExpression(queryExpression);
+				foreach (var clause in queryExpression.Clauses) {
+					UseExtensionMethod(ctx.Resolve(clause));
+				}
+			}
 		}
 	}
 }

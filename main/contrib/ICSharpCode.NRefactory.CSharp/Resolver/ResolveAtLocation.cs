@@ -37,13 +37,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return Resolve(compilation, parsedFile, cu, location, out node, cancellationToken);
 		}
 		
-		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
+		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
-			node = cu.GetNodeAt (location);
+			node = cu.GetNodeAt(location);
 			if (node == null)
 				return null;
-			if (CSharpAstResolver.IsUnresolvableNode (node)) {
+			if (CSharpAstResolver.IsUnresolvableNode(node)) {
 				if (node is Identifier) {
 					node = node.Parent;
 				} else if (node.NodeType == NodeType.Token) {
@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// For example, hovering with the mouse over an empty line between two methods causes
 				// node==TypeDeclaration, but we don't want to show any tooltip.
 				
-				if (!node.GetChildByRole (Roles.Identifier).IsNull) {
+				if (!node.GetChildByRole(Roles.Identifier).IsNull) {
 					// We'll suppress the tooltip for resolvable nodes if there is an identifier that
 					// could be hovered over instead:
 					return null;
@@ -84,8 +84,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				parentInvocation = node.Parent as InvocationExpression;
 			}
 			
-			CSharpAstResolver resolver = new CSharpAstResolver (compilation, cu, parsedFile);
-			resolver.ApplyNavigator (new NodeListResolveVisitorNavigator (node), cancellationToken);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, cu, parsedFile);
+			resolver.ApplyNavigator(new NodeListResolveVisitorNavigator(node), cancellationToken);
 			ResolveResult rr = resolver.Resolve(node, cancellationToken);
 			if (rr is MethodGroupResolveResult && parentInvocation != null)
 				return resolver.Resolve(parentInvocation);

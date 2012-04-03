@@ -43,6 +43,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				yield break;
 
 			var state = context.GetResolverStateBefore(indexer);
+			if (state.CurrentTypeDefinition == null)
+				yield break;
 			var guessedType = CreateFieldAction.GuessAstType(context, indexer);
 
 			bool createInOtherType = false;

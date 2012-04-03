@@ -1200,7 +1200,8 @@ namespace ICSharpCode.NRefactory.Utils
 				il.Emit(OpCodes.Ldloc, instance); // instance
 				il.Emit(OpCodes.Ldarg_0); // instance, context
 				il.Emit(OpCodes.Call, readObject); // instance, context.ReadObject()
-				il.Emit(OpCodes.Stfld, field); // instance.field = context.ReadObject();
+				il.Emit(OpCodes.Castclass, fieldType);
+				il.Emit(OpCodes.Stfld, field); // instance.field = (fieldType) context.ReadObject();
 			}
 		}
 

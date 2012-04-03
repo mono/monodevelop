@@ -63,7 +63,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var invocationMethod = guessedType.GetDelegateInvokeMethod();
 
 			var state = context.GetResolverStateBefore(invocation);
-
+			if (state.CurrentTypeDefinition == null)
+				yield break;
 			ResolveResult targetResolveResult = context.Resolve(invocation.Target);
 			bool createInOtherType = !state.CurrentTypeDefinition.Equals(targetResolveResult.Type.GetDefinition());
 
@@ -75,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
 					yield break;
 			} else {
-				if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
+				if (state.CurrentMember == null)
 					yield break;
 				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 			}

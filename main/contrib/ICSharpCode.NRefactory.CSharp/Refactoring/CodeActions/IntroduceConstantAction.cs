@@ -78,11 +78,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Variables = { initializer }
 				};
 
-				script.InsertWithCursor(context.TranslateString("Create constant"), decl, Script.InsertPosition.Before);
-
 				var variableUsage = new IdentifierExpression(name);
 				script.Replace(pexpr, variableUsage);
-				script.Link(initializer.NameToken, variableUsage);
+//				script.Link(initializer.NameToken, variableUsage);
+				script.InsertWithCursor(context.TranslateString("Create constant"), decl, Script.InsertPosition.Before);
 			});
 		}
 	}
