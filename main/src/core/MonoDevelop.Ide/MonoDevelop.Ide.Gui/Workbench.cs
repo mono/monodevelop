@@ -880,7 +880,11 @@ namespace MonoDevelop.Ide.Gui
 				Document doc = WrapDocument (view.WorkbenchWindow);
 				if (view == currentView) {
 					Present ();
-					doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+					doc.RunWhenLoaded (() => {
+						var window = doc.Window;
+						if (window != null)
+							window.SelectWindow ();
+					});
 				}
 			}
 			
