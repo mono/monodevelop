@@ -994,15 +994,9 @@ namespace Mono.Debugging.Soft
 		public override object RuntimeInvoke (EvaluationContext gctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
-			ctx.AssertTargetInvokeAllowed ();
+			TypeMirror type = (TypeMirror) targetType;
 			
-			TypeMirror type;
-			if (target is ObjectMirror)
-				type = ((ObjectMirror) target).Type;
-			else if (target is StructMirror)
-				type = ((StructMirror) target).Type;
-			else
-				type = (TypeMirror) targetType;
+			ctx.AssertTargetInvokeAllowed ();
 			
 			TypeMirror[] types = new TypeMirror [argTypes.Length];
 			for (int n=0; n<argTypes.Length; n++)

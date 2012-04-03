@@ -434,7 +434,8 @@ namespace Mono.Debugging.Evaluation
 		{
 			if (!options.AllowMethodEvaluation)
 				throw CreateNotSupportedError ();
-
+			
+			bool invokeBaseMethod = false;
 			ValueReference target = null;
 			string methodName;
 			
@@ -450,6 +451,8 @@ namespace Mono.Debugging.Evaluation
 			if (invocationExpression.TargetObject is MemberReferenceExpression) {
 				MemberReferenceExpression field = (MemberReferenceExpression)invocationExpression.TargetObject;
 				target = (ValueReference) field.TargetObject.AcceptVisitor (this, data);
+				if (field.TargetObject is BaseReferenceExpression)
+					invokeBaseMethod = true;
 				methodName = field.MemberName;
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				IdentifierExpression exp = (IdentifierExpression) invocationExpression.TargetObject;
@@ -476,9 +479,12 @@ namespace Mono.Debugging.Evaluation
 			}
 			else
 				throw CreateNotSupportedError ();
-
+			
 			object vtype = target != null ? target.Type : ctx.Adapter.GetEnclosingType (ctx);
 			object vtarget = (target is TypeValueReference) || target == null ? null : target.Value;
+			
+			if (invokeBaseMethod)
+				vtype = ctx.Adapter.GetBaseType (ctx, vtype);
 			
 			object res = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, argtypes, args);
 			if (res != null)
