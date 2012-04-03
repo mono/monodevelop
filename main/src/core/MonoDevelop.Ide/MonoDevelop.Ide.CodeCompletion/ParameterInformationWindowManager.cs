@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						lastH = args.Allocation.Height;
 						wasVisi = CompletionWindowManager.IsVisible;
 						
-						var ctx = widget.CurrentCodeCompletionContext;
+						var ctx = window.Widget.CurrentCodeCompletionContext;
 						var md = methods [methods.Count - 1];
 						int cparam = ext != null ? ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
 						var geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));

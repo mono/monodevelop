@@ -395,6 +395,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.OnHidden ();
 		}
 
+		public void HideWindow ()
+		{
+			Hide ();
+			HideDeclarationView ();
+		}
+
 		protected override void DoubleClick ()
 		{
 			CompleteWord ();
@@ -550,7 +556,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				vert = listpos_y;
 			}*/
 			
-			if (declarationViewHidden) {
+			if (declarationViewHidden && Visible) {
 				declarationviewwindow.Move (this.Screen.Width + 1, vert);
 				declarationviewwindow.SetFixedWidth (-1);
 				declarationviewwindow.ReshowWithInitialSize ();

@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
 			wnd.UpdateWordSelection ();
-			wnd.Hide ();
+			wnd.HideWindow ();
 			OnWindowClosed (EventArgs.Empty);
 		}
 		
