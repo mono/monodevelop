@@ -85,7 +85,7 @@ namespace MonoDevelop.CodeGeneration
 				foreach (IProperty property in Options.EnclosingType.Properties) {
 					if (property.IsSynthetic)
 						continue;
-					if (property.CanGet && property.Getter != null)
+					if (!property.CanSet)
 						continue;
 					yield return property;
 				}
