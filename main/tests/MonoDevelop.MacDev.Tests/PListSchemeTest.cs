@@ -64,6 +64,17 @@ namespace MonoDevelop.MacDev.Tests
 			Assert.AreEqual ("Array", key.Type, "#1");
 			Assert.IsNull (key.ArrayType, "#2");
 		}
+		
+		[Test]
+		public void AvailableValues_NotKey ()
+		{
+			var root = new PDictionary ();
+			root.Add ("foo", new PString ("bar"));
+			
+			var tree = PListScheme.Match (root, PListScheme.Empty);
+			var available = PListScheme.AvailableValues (root, tree);
+			Assert.IsNull (available, "#1");
+		}
 	
 		[Test]
 		public void AvailableValues_Array_NoValues ()

@@ -133,7 +133,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			if (obj is PBoolean)
 				return new List<SchemaItem> { BooleanYes, BooleanNo };
 			
-			if (!tree.TryGetValue (obj, out key))
+			if (!tree.TryGetValue (obj, out key) || key == null)
 				return null;
 			
 			var values = key.Values.Cast<PListScheme.SchemaItem> ().ToList ();
