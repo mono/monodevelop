@@ -525,20 +525,23 @@ namespace MonoDevelop.MacDev.PlistEditor
 				if (treeStore.IterParent (out iter, iter)) {
 					var obj = (PObject) treeStore.GetValue (iter, 1);
 					var k = PListScheme.AvailableValues (obj, CurrentTree);
-					k.Add (CurrentTree [currentObj]);
+					if (k != null)
+						k.Add (CurrentTree [currentObj]);
 					keys = k;
 				}
 			}
 			
 			keyStore.Clear ();
-			var sortedKeys = new List<PListScheme.SchemaItem> (keys);
-			if (ShowDescriptions)
-				sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Description, y.Description));
-			else
-				sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Identifier, y.Identifier));
-			
-			foreach (var key in sortedKeys)
-				keyStore.AppendValues (ShowDescriptions ? key.Description : key.Identifier, key);
+			if (keys != null) {
+				var sortedKeys = new List<PListScheme.SchemaItem> (keys);
+				if (ShowDescriptions)
+					sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Description, y.Description));
+				else
+					sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Identifier, y.Identifier));
+				
+				foreach (var key in sortedKeys)
+					keyStore.AppendValues (ShowDescriptions ? key.Description : key.Identifier, key);
+			}
 		}
 
 		void RefreshTree ()
