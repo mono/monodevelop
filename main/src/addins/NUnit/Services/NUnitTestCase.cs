@@ -50,10 +50,6 @@ namespace MonoDevelop.NUnit
 			this.TestId = tinfo.TestId;
 		}
 		
-		public string ClassName {
-			get { return className; }
-		}
-		
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
 			return rootSuite.RunUnitTest (this, className, pathName, Name, testContext);

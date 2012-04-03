@@ -31,11 +31,11 @@ namespace MonoDevelop.DocFood.Options
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class NoTheReorderingWidget : Gtk.Bin
 	{
-		DocConfig config;
+//		DocConfig config;
 		
 		public NoTheReorderingWidget (DocConfig config)
 		{
-			this.config = config;
+//			this.config = config;
 			this.Build ();
 		}
 	}

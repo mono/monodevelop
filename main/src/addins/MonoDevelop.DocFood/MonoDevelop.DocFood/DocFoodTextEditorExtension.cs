@@ -27,9 +27,12 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
-using MonoDevelop.Projects.Dom;
 using System.Text;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
@@ -43,14 +46,14 @@ namespace MonoDevelop.DocFood
 			textEditorData = Document.Editor;
 		}
 		
-		string GenerateDocumentation (IMember member, string indent)
+		string GenerateDocumentation (IEntity member, string indent)
 		{
 			string doc = DocumentBufferHandler.GenerateDocumentation (textEditorData, member, indent);
 			int trimStart = (Math.Min (doc.Length-1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 		
-		string GenerateEmptyDocumentation (IMember member, string indent)
+		string GenerateEmptyDocumentation (IEntity member, string indent)
 		{
 			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (textEditorData, member, indent);
 			int trimStart = (Math.Min (doc.Length-1, indent.Length + "//".Length));
@@ -68,7 +71,7 @@ namespace MonoDevelop.DocFood
 			if (!text.EndsWith ("//"))
 				return base.KeyPress (key, keyChar, modifier);
 			
-			IMember member = GetMemberToDocument ();
+			var member = GetMemberToDocument ();
 			if (member == null)
 				return base.KeyPress (key, keyChar, modifier);
 			
@@ -103,22 +106,26 @@ namespace MonoDevelop.DocFood
 			return true;
 		}	
 		
-		IMember GetMemberToDocument ()
+		IEntity GetMemberToDocument ()
 		{
-			var parsedDocument = ProjectDomService.Parse (Document.Project, Document.FileName, Document.Editor.Document.Text);
-			IType type = parsedDocument.CompilationUnit.GetTypeAt (textEditorData.Caret.Line, textEditorData.Caret.Column);
+			var parsedDocument = Document.UpdateParseDocument ();
+			
+			var type = parsedDocument.GetInnermostTypeDefinition (textEditorData.Caret.Location);
 			if (type == null) {
-				foreach (var t in parsedDocument.CompilationUnit.Types) {
-					if (t.Location.Line > textEditorData.Caret.Line)
-						return t;
+				foreach (var t in parsedDocument.TopLevelTypeDefinitions) {
+					if (t.Region.BeginLine > textEditorData.Caret.Line) {
+						var ctx = (parsedDocument.ParsedFile as CSharpParsedFile).GetTypeResolveContext (Document.Compilation, t.Region.Begin);
+						return t.Resolve (ctx).GetDefinition ();
+					}
 				}
 				return null;
 			}
 			
 			IMember result = null;
-			foreach (IMember member in type.Members) {
-				if (member.Location > new DomLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Location < result.Location) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Location.Line)) {
-					result = member;
+			foreach (var member in type.Members) {
+				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
+					var ctx = (parsedDocument.ParsedFile as CSharpParsedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
+					result = member.CreateResolved (ctx);
 				}
 			}
 			return result;

@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 using MonoDevelop.Components.AutoTest;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide
 {
@@ -198,8 +199,8 @@ namespace MonoDevelop.Ide
 			};
 
 			// Perser service initialization
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.TrackFileChanges = true;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
+			TypeSystemService.TrackFileChanges = true;
+			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
 			
 			// Startup commands

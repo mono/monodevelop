@@ -24,16 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using NUnit.Framework;
 
 using MonoDevelop.CSharp.Parser;
 using Mono.TextEditor;
-using MonoDevelop.Projects.Dom;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
-namespace MonoDevelop.CSharpBinding.Tests
+namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
 	public class FoldingParserTests
@@ -42,7 +45,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		{
 			var parser = new CSharpFoldingParser ();
 			var sb = new StringBuilder ();
-			var openStack = new Stack<DomLocation>();
+			var openStack = new Stack<TextLocation>();
 			
 			int line = 1;
 			int col = 1;
@@ -53,10 +56,10 @@ namespace MonoDevelop.CSharpBinding.Tests
 				char ch = code [i];
 				switch (ch) {
 				case '[':
-					openStack.Push (new DomLocation (line, col));
+					openStack.Push (new TextLocation (line, col));
 					break;
 				case ']':
-					foldingList.Add (new DomRegion (openStack.Pop (), new DomLocation (line, col)));
+					foldingList.Add (new DomRegion (openStack.Pop (), new TextLocation (line, col)));
 					break;
 				default:
 					if (ch =='\n') {
@@ -71,7 +74,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			}
 			
 			var doc = parser.Parse ("a.cs", sb.ToString ());
-			var generatedFoldings = new List<FoldingRegion> (doc.GenerateFolds ());
+			var generatedFoldings = new List<FoldingRegion> (doc.Foldings);
 			Assert.AreEqual (foldingList.Count, generatedFoldings.Count, "Folding count differs.");
 			foreach (var generated in generatedFoldings) {
 				Assert.IsTrue (foldingList.Any (f => f == generated.Region), "fold not found:" + generated.Region);
@@ -154,8 +157,8 @@ using System;");
 	}
 	#endregion]
 }");
-			Assert.AreEqual (1, doc.AdditionalFolds.Count);
-			Assert.AreEqual ("TestRegion", doc.AdditionalFolds [0].Name);
+			Assert.AreEqual (1, doc.Foldings.Count ());
+			Assert.AreEqual ("TestRegion", doc.Foldings.First ().Name);
 		}
 		
 		[Test]
@@ -175,9 +178,9 @@ using System;");
 	}
 	#endregion]
 }");
-			Assert.AreEqual (2, doc.AdditionalFolds.Count);
-			Assert.AreEqual ("TestRegion", doc.AdditionalFolds [0].Name);
-			Assert.AreEqual ("TestRegion2", doc.AdditionalFolds [1].Name);
+			Assert.AreEqual (2, doc.Foldings.Count ());
+			Assert.AreEqual ("TestRegion", doc.Foldings.First ().Name);
+			Assert.AreEqual ("TestRegion2", doc.Foldings.Skip (1).First ().Name);
 		}
 		
 

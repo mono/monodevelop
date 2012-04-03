@@ -241,7 +241,7 @@ namespace MonoDevelop.CSharp.Project
 			this.allowUnsafeCodeCheckButton = new global::Gtk.CheckButton ();
 			this.allowUnsafeCodeCheckButton.CanFocus = true;
 			this.allowUnsafeCodeCheckButton.Name = "allowUnsafeCodeCheckButton";
-			this.allowUnsafeCodeCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Allow '_unsafe' code");
+			this.allowUnsafeCodeCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Allow \'_unsafe\' code");
 			this.allowUnsafeCodeCheckButton.DrawIndicator = true;
 			this.allowUnsafeCodeCheckButton.UseUnderline = true;
 			this.vbox3.Add (this.allowUnsafeCodeCheckButton);

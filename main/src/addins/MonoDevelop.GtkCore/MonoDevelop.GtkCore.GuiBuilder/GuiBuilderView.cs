@@ -37,7 +37,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.DesignerSupport.Toolbox; 
 using MonoDevelop.DesignerSupport;
 
@@ -367,13 +366,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void JumpToSignalHandler (Stetic.Signal signal)
 		{
-			IType cls = codeBinder.GetClass ();
+			var cls = codeBinder.GetClass ();
 			if (cls == null)
 				return;
-			foreach (IMethod met in cls.Methods) {
+			foreach (var met in cls.Methods) {
 				if (met.Name == signal.Handler) {
 					ShowPage (0);
-					JumpTo (met.Location.Line, met.Location.Column);
+					JumpTo (met.Region.BeginLine, met.Region.BeginColumn);
 					break;
 				}
 			}

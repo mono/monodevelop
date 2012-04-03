@@ -51,11 +51,6 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
-      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
-      <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
@@ -76,15 +71,28 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
+      <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
+      <Name>ICSharpCode.Decompiler</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -98,21 +106,30 @@
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\..\build\bin\Mono.Cecil.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">
@@ -154,20 +171,40 @@
     <EmbeddedResource Include="icons\csharp-project-16.png">
       <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoCSharpPolicy.xml">
-      <LogicalName>MonoCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.xml">
       <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\AllmanCSharpPolicy.xml">
+      <LogicalName>AllmanCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\InvariantTextStylePolicy.xml">
+      <LogicalName>InvariantTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\KRCSharpPolicy.xml">
+      <LogicalName>KRCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoCSharpPolicy.xml">
+      <LogicalName>MonoCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\SharpDevelopCSharpPolicy.xml">
+      <LogicalName>SharpDevelopCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\WhitesmithsCSharpPolicy.xml">
+      <LogicalName>WhitesmithsCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUCSharpPolicy.xml">
+      <LogicalName>GNUCSharpPolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUTextStylePolicy.xml">
+      <LogicalName>GNUTextStylePolicy.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\MonoNameConventionPolicy.xml">
+      <LogicalName>MonoNameConventionPolicy.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\NRefactoryResolver.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\ResolveVisitor.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\NewCSharpExpressionFinder.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\NRefactoryDocumentMetaInformation.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSyntaxMode.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextEditorIndentation.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.cs" />
@@ -176,8 +213,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentEngineStack.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormatter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpNRefactoryASTProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberAstVisitor.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpCompilerParameters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectParameters.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpResourceIdBuilder.cs" />
@@ -188,65 +223,70 @@
     <Compile Include="MonoDevelop.CSharp\CSharpBindingCompilerManager.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpEnhancedCodeProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpLanguageBinding.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CSharpTextEditorCompletion.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryIndexerParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NRefactoryTemplateParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightUsagesExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\MoveToUsagesHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\CompletionTextLinkMode.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpRefactorer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CreateMethod\CreateMethodHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Parser\McsParser.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodAstTransformer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\ExtractMethodRefactoring.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\VariableLookupVisitor.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicyPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\NewFormattingProfileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.NewFormattingProfileDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpFormattingProfileDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
-    <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
-    <Compile Include="MonoDevelop.CSharp.Formatting\TextEditorDataAdapter.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp\ExpandSelectionHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\DeclareLocalHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\CodeAnalysis.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\CSharpInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\CallGraph.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\CSharpNamingPolicy.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingRule.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\NamingInspection\NamingStyle.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\ConditionalToNullCoalescingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UseVarKeywordInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\UnusedUsingInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\StringIsNullOrEmptyInspector.cs" />
-    <Compile Include="MonoDevelop.CSharp.Inspection\Inspectors\NotImplementedExceptionInspector.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Inspection.NamingConventionSettingsDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContext.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\ContextActionWrappers.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\MDRefactoringContextAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.ContextAction\Actions\MoveTypeToFile.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\TypeSystemProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CompletionTextLinkMode.cs" />
+    <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\DelegateDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\IndexerParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\TemplateParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\CodeGenerationCommands.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\CodeGenerationOptions.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\CreateConstructorGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\EqualityMembersGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\GenerateCodeWindow.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\ICodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\OverrideMembersGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\PropertyGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\ToStringGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\WriteLineGenerator.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CodeGeneration.GenerateCodeWindow.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentVirtualSpaceManager.cs" />
+    <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatterTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\ContextActionExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContext.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringScript.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryCodeIssueSource.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionSource.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionRule.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionEditRuleDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanel.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryIssueProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeAction.cs" />
+    <Compile Include="MonoDevelop.CSharp.Tooltips\LanguageItemTooltipProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -276,13 +316,12 @@
     <Folder Include="MonoDevelop.CSharp.Project\" />
     <Folder Include="MonoDevelop.CSharp\" />
     <Folder Include="MonoDevelop.CSharp.Completion\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring\CreateMethod\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring\ExtractMethod\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring\DeclareLocal\" />
-    <Folder Include="MonoDevelop.CSharp.ContextAction\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\NamingInspection\" />
-    <Folder Include="MonoDevelop.CSharp.Inspection\Inspectors\" />
-    <Folder Include="MonoDevelop.CSharp.ContextAction\Actions\" />
+    <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
+    <Folder Include="MonoDevelop.CSharp.Formatting\policies\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\" />
+    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\" />
+    <Folder Include="MonoDevelop.CSharp.Tooltips\" />
   </ItemGroup>
 </Project>

@@ -131,6 +131,7 @@ namespace MonoDevelop.Projects.Dom
 		{
 			string lookupPath;
 			Dictionary<string, AssemblyDefinition> cache = new Dictionary<string, AssemblyDefinition> ();
+			DefaultAssemblyResolver resolver = new DefaultAssemblyResolver ();
 			
 			public SimpleAssemblyResolver (string lookupPath)
 			{
@@ -175,22 +176,22 @@ namespace MonoDevelop.Projects.Dom
 			#region IAssemblyResolver implementation
 			public AssemblyDefinition Resolve (AssemblyNameReference name)
 			{
-				return InternalResolve (name.FullName) ?? GlobalAssemblyResolver.Instance.Resolve (name);
+				return InternalResolve (name.FullName) ?? resolver.Resolve (name);
 			}
 
 			public AssemblyDefinition Resolve (AssemblyNameReference name, ReaderParameters parameters)
 			{
-				return InternalResolve (name.FullName) ?? GlobalAssemblyResolver.Instance.Resolve (name, parameters);
+				return InternalResolve (name.FullName) ?? resolver.Resolve (name, parameters);
 			}
 
 			public AssemblyDefinition Resolve (string fullName)
 			{
-				return InternalResolve (fullName) ?? GlobalAssemblyResolver.Instance.Resolve (fullName);
+				return InternalResolve (fullName) ?? resolver.Resolve (fullName);
 			}
 
 			public AssemblyDefinition Resolve (string fullName, ReaderParameters parameters)
 			{
-				return InternalResolve (fullName) ?? GlobalAssemblyResolver.Instance.Resolve (fullName, parameters);
+				return InternalResolve (fullName) ?? resolver.Resolve (fullName, parameters);
 			}
 			#endregion
 		}

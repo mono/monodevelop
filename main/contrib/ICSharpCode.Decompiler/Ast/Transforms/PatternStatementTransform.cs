@@ -140,7 +140,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		/// </summary>
 		static readonly AstNode variableAssignPattern = new ExpressionStatement(
 			new AssignmentExpression(
-				new NamedNode("variable", new IdentifierExpression()),
+				new NamedNode("variable", new IdentifierExpression(Pattern.AnyString)),
 				new AnyNode("initializer")
 			));
 		
@@ -158,12 +158,12 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			FinallyBlock = new BlockStatement {
 				new Choice {
 					{ "valueType",
-						new ExpressionStatement(InvokeDispose(new NamedNode("ident", new IdentifierExpression())))
+						new ExpressionStatement(InvokeDispose(new NamedNode("ident", new IdentifierExpression(Pattern.AnyString))))
 					},
 					{ "referenceType",
 						new IfElseStatement {
 							Condition = new BinaryOperatorExpression(
-								new NamedNode("ident", new IdentifierExpression()),
+								new NamedNode("ident", new IdentifierExpression(Pattern.AnyString)),
 								BinaryOperatorType.InEquality,
 								new NullReferenceExpression()
 							),
@@ -227,6 +227,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 							Name = variableName,
 							Initializer = m1.Get<Expression>("initializer").Single().Detach()
 						}.CopyAnnotationsFrom(node.Expression)
+							.WithAnnotation(m1.Get<AstNode>("variable").Single().Annotation<ILVariable>())
 					}
 				}.CopyAnnotationsFrom(node);
 			} else {
@@ -318,6 +319,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 					new NamedNode(
 						"enumeratorVariable",
 						new VariableInitializer {
+							Name = Pattern.AnyString,
 							Initializer = new AnyNode("collection").ToExpression().Invoke("GetEnumerator")
 						}
 					)
@@ -325,16 +327,19 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			},
 			EmbeddedStatement = new BlockStatement {
 				new Repeat(
-					new VariableDeclarationStatement { Type = new AnyNode(), Variables = { new VariableInitializer() } }.WithName("variablesOutsideLoop")
+					new VariableDeclarationStatement { Type = new AnyNode(), Variables = { new VariableInitializer(Pattern.AnyString) } }.WithName("variablesOutsideLoop")
 				).ToStatement(),
 				new WhileStatement {
 					Condition = new IdentifierExpressionBackreference("enumeratorVariable").ToExpression().Invoke("MoveNext"),
 					EmbeddedStatement = new BlockStatement {
 						new Repeat(
-							new VariableDeclarationStatement { Type = new AnyNode(), Variables = { new VariableInitializer() } }.WithName("variablesInsideLoop")
+							new VariableDeclarationStatement { 
+								Type = new AnyNode(), 
+								Variables = { new VariableInitializer(Pattern.AnyString) }
+							}.WithName("variablesInsideLoop")
 						).ToStatement(),
 						new AssignmentExpression {
-							Left = new IdentifierExpression().WithName("itemVariable"),
+							Left = new IdentifierExpression(Pattern.AnyString).WithName("itemVariable"),
 							Operator = AssignmentOperatorType.Assign,
 							Right = new IdentifierExpressionBackreference("enumeratorVariable").ToExpression().Member("Current")
 						},
@@ -382,7 +387,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				VariableName = itemVar.Identifier,
 				InExpression = m.Get<Expression>("collection").Single().Detach(),
 				EmbeddedStatement = newBody
-			};
+			}.WithAnnotation(itemVarDecl.Variables.Single().Annotation<ILVariable>());
 			if (foreachStatement.InExpression is BaseReferenceExpression) {
 				foreachStatement.InExpression = new ThisReferenceExpression().CopyAnnotationsFrom(foreachStatement.InExpression);
 			}
@@ -397,17 +402,17 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		#region foreach (non-generic)
 		ExpressionStatement getEnumeratorPattern = new ExpressionStatement(
 			new AssignmentExpression(
-				new NamedNode("left", new IdentifierExpression()),
+				new NamedNode("left", new IdentifierExpression(Pattern.AnyString)),
 				new AnyNode("collection").ToExpression().Invoke("GetEnumerator")
 			));
 		
 		TryCatchStatement nonGenericForeachPattern = new TryCatchStatement {
 			TryBlock = new BlockStatement {
 				new WhileStatement {
-					Condition = new IdentifierExpression().WithName("enumerator").Invoke("MoveNext"),
+					Condition = new IdentifierExpression(Pattern.AnyString).WithName("enumerator").Invoke("MoveNext"),
 					EmbeddedStatement = new BlockStatement {
 						new AssignmentExpression(
-							new IdentifierExpression().WithName("itemVar"),
+							new IdentifierExpression(Pattern.AnyString).WithName("itemVar"),
 							new Choice {
 								new Backreference("enumerator").ToExpression().Member("Current"),
 								new CastExpression {
@@ -422,7 +427,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			},
 			FinallyBlock = new BlockStatement {
 				new AssignmentExpression(
-					new IdentifierExpression().WithName("disposable"),
+					new IdentifierExpression(Pattern.AnyString).WithName("disposable"),
 					new Backreference("enumerator").ToExpression().CastAs(new TypePattern(typeof(IDisposable)))
 				),
 				new IfElseStatement {
@@ -471,10 +476,12 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			// We just care that we can move it in front of the loop:
 			if (declarationPoint != loop)
 				return null;
-			
-			ForeachStatement foreachStatement = new ForeachStatement();
-			foreachStatement.VariableType = itemVarDecl.Type.Clone();
-			foreachStatement.VariableName = itemVar.Identifier;
+
+			ForeachStatement foreachStatement = new ForeachStatement
+			{
+				VariableType = itemVarDecl.Type.Clone(),
+				VariableName = itemVar.Identifier,
+			}.WithAnnotation(itemVarDecl.Variables.Single().Annotation<ILVariable>());
 			BlockStatement body = new BlockStatement();
 			foreachStatement.EmbeddedStatement = body;
 			((BlockStatement)node.Parent).Statements.InsertBefore(node, foreachStatement);
@@ -508,7 +515,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		#region for
 		static readonly WhileStatement forPattern = new WhileStatement {
 			Condition = new BinaryOperatorExpression {
-				Left = new NamedNode("ident", new IdentifierExpression()),
+				Left = new NamedNode("ident", new IdentifierExpression(Pattern.AnyString)),
 				Operator = BinaryOperatorType.Any,
 				Right = new AnyNode("endExpr")
 			},
@@ -601,7 +608,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		#region lock
 		static readonly AstNode lockFlagInitPattern = new ExpressionStatement(
 			new AssignmentExpression(
-				new NamedNode("variable", new IdentifierExpression()),
+				new NamedNode("variable", new IdentifierExpression(Pattern.AnyString)),
 				new PrimitiveExpression(false)
 			));
 		
@@ -611,7 +618,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 					"Enter", new AnyNode("enter"),
 					new DirectionExpression {
 						FieldDirection = FieldDirection.Ref,
-						Expression = new NamedNode("flag", new IdentifierExpression())
+						Expression = new NamedNode("flag", new IdentifierExpression(Pattern.AnyString))
 					}),
 				new Repeat(new AnyNode()).ToStatement()
 			},
@@ -619,7 +626,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				new IfElseStatement {
 					Condition = new Backreference("flag"),
 					TrueStatement = new BlockStatement {
-						new TypePattern(typeof(System.Threading.Monitor)).ToType().Invoke("Exit", new NamedNode("exit", new IdentifierExpression()))
+						new TypePattern(typeof(System.Threading.Monitor)).ToType().Invoke("Exit", new NamedNode("exit", new IdentifierExpression(Pattern.AnyString)))
 					}
 				}
 			}};
@@ -677,10 +684,10 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				new IfElseStatement {
 					Condition = new Backreference("cachedDict").ToExpression().Invoke(
 						"TryGetValue",
-						new NamedNode("switchVar", new IdentifierExpression()),
+						new NamedNode("switchVar", new IdentifierExpression(Pattern.AnyString)),
 						new DirectionExpression {
 							FieldDirection = FieldDirection.Out,
-							Expression = new IdentifierExpression().WithName("intVar")
+							Expression = new IdentifierExpression(Pattern.AnyString).WithName("intVar")
 						}),
 					TrueStatement = new BlockStatement {
 						Statements = {
@@ -781,6 +788,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			Modifiers = Modifiers.Any,
 			ReturnType = new AnyNode(),
 			PrivateImplementationType = new OptionalNode(new AnyNode()),
+			Name = Pattern.AnyString,
 			Getter = new Accessor {
 				Attributes = { new Repeat(new AnyNode()) },
 				Modifiers = Modifiers.Any,
@@ -843,19 +851,20 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				new VariableDeclarationStatement { Type = new Backreference("type"), Variables = { new AnyNode() } },
 				new VariableDeclarationStatement { Type = new Backreference("type"), Variables = { new AnyNode() } },
 				new AssignmentExpression {
-					Left = new NamedNode("var1", new IdentifierExpression()),
+					Left = new NamedNode("var1", new IdentifierExpression(Pattern.AnyString)),
 					Operator = AssignmentOperatorType.Assign,
 					Right = new NamedNode(
 						"field",
 						new MemberReferenceExpression {
-							Target = new Choice { new ThisReferenceExpression(), new TypeReferenceExpression { Type = new AnyNode() } }
+							Target = new Choice { new ThisReferenceExpression(), new TypeReferenceExpression { Type = new AnyNode() } },
+							MemberName = Pattern.AnyString
 						})
 				},
 				new DoWhileStatement {
 					EmbeddedStatement = new BlockStatement {
-						new AssignmentExpression(new NamedNode("var2", new IdentifierExpression()), new IdentifierExpressionBackreference("var1")),
+						new AssignmentExpression(new NamedNode("var2", new IdentifierExpression(Pattern.AnyString)), new IdentifierExpressionBackreference("var1")),
 						new AssignmentExpression {
-							Left = new NamedNode("var3", new IdentifierExpression()),
+							Left = new NamedNode("var3", new IdentifierExpression(Pattern.AnyString)),
 							Operator = AssignmentOperatorType.Assign,
 							Right = new AnyNode("delegateCombine").ToExpression().Invoke(
 								new IdentifierExpressionBackreference("var2"),
@@ -980,34 +989,6 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			}
 			// Since the tryFinally instance is not changed, we can continue in the visitor as usual, so return null
 			return null;
-		}
-		#endregion
-		
-		#region Pattern Matching Helpers
-		sealed class TypePattern : Pattern
-		{
-			readonly string ns;
-			readonly string name;
-			
-			public TypePattern(Type type)
-			{
-				this.ns = type.Namespace;
-				this.name = type.Name;
-			}
-			
-			public override bool DoMatch(INode other, Match match)
-			{
-				AstNode o = other as AstNode;
-				if (o == null)
-					return false;
-				TypeReference tr = o.Annotation<TypeReference>();
-				return tr != null && tr.Namespace == ns && tr.Name == name;
-			}
-			
-			public override S AcceptVisitor<T, S>(IPatternAstVisitor<T, S> visitor, T data)
-			{
-				throw new NotImplementedException();
-			}
 		}
 		#endregion
 	}

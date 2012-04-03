@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Projects.Text;
+using System.Text;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.MacIntegration
 		MonoMac.ObjCRuntime.Selector addRemoveActivationSel = new MonoMac.ObjCRuntime.Selector ("addRemoveActivated:");
 		
 		NSMenuItem autoDetectedItem, addRemoveItem;
-		TextEncoding[] encodings;
+		int[] encodings;
 		
 		public SelectEncodingPopUpButton (bool showAutoDetected)
 		{
@@ -69,22 +70,22 @@ namespace MonoDevelop.MacIntegration
 			};
 			
 			Populate (false);
-			SelectedEncodingId = null;
+			SelectedEncodingId = 0;
 		}
 		
-		public string SelectedEncodingId {
+		public int SelectedEncodingId {
 			get {
 				var idx = Cell.MenuItem.Tag;
 				if (idx <= 0)
-					return null;
-				return encodings[idx - 1].Id;
+					return 0;
+				return encodings[idx - 1];
 			}
 			set {
 				NSMenuItem item = null;
-				if (!string.IsNullOrEmpty (value)) {
+				if (value > 0) {
 					int i = 1;
 					foreach (var e in encodings) {
-						if (e.Id == value) {
+						if (e == value) {
 							item = Menu.ItemWithTag (i);
 							break;
 						}
@@ -100,9 +101,9 @@ namespace MonoDevelop.MacIntegration
 			if (clear)
 				Menu.RemoveAllItems ();
 				
-			encodings = TextEncoding.ConversionEncodings;
+			encodings = SeletedEncodings.ConversionEncodings;
 			if (encodings == null || encodings.Length == 0)
-				encodings = new TextEncoding [] { TextEncoding.GetEncoding (TextEncoding.DefaultEncoding) };
+				encodings = SeletedEncodings.DefaultEncodings;
 			
 			if (autoDetectedItem != null) {
 				Menu.AddItem (autoDetectedItem);

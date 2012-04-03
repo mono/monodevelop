@@ -34,7 +34,6 @@ using System.CodeDom.Compiler;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -42,6 +41,8 @@ using MonoDevelop.Deployment;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.TypeSystem;
+
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -334,13 +335,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			if (saveToFile)
 				File.WriteAllText (fileName, text);
-			
-			if (ProjectDomService.HasDom (project)) {
-				// Only update the parser database if the project is actually loaded in the IDE.
-				ProjectDomService.Parse (project, fileName, text);
-				if (saveToFile) 
-					FileService.NotifyFileChanged (fileName);
-			}
+			TypeSystemService.ParseFile (project, fileName);
+//			
+//			if (ProjectDomService.HasDom (project)) {
+//				// Only update the parser database if the project is actually loaded in the IDE.
+//				ProjectDomService.Parse (project, fileName, text);
+//				if (saveToFile) 
+//					FileService.NotifyFileChanged (fileName);
+//			}
 
 			return fileName;
 		}
@@ -544,7 +546,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {
@@ -566,7 +568,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					bool isBlank, isBracket;
 					CheckLine (doc, line, out isBlank, out isBracket);
 					if (isBlank && previousWasBlank && line.Length > 0) {
-						((Mono.TextEditor.IBuffer)doc).Remove (line.Offset, line.Length);
+						doc.Remove (line.Offset, line.Length);
 						i--;
 					}
 					previousWasBlank = isBlank || isBracket;
@@ -574,10 +576,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			int offset = doc.GetLine (realStartLine).Offset;
-			return doc.GetTextAt (offset, doc.Length - offset);
+			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
-		static void CheckLine (Mono.TextEditor.Document doc, Mono.TextEditor.LineSegment line, out bool isBlank, out bool isBracket)
+		static void CheckLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.LineSegment line, out bool isBlank, out bool isBracket)
 		{
 			isBlank = true;
 			isBracket = false;

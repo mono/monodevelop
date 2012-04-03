@@ -26,56 +26,14 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public static class AnalysisOptions
 	{
-		const string OptionsProperty = "MonoDevelop.AnalysisCore";
-		
-		static Properties properties;
-		
-		static AnalysisOptions ()
-		{
-			properties = PropertyService.Get (OptionsProperty, new Properties());
-			LoadProperties ();
-		}
-		
-		static EventHandler changed;
-		
-		public static event EventHandler Changed {
-			add {
-				lock (properties) {
-					if (changed == null)
-						properties.PropertyChanged += HandlePropertiesChanged;
-					changed += value;
-				}
-			}
-			remove {
-				lock (properties) {
-					changed -= value;
-					if (changed == null)
-						properties.PropertyChanged -= HandlePropertiesChanged;
-				}
-			}
-		}
-
-		static void HandlePropertiesChanged (object sender, PropertyChangedEventArgs e)
-		{
-			LoadProperties ();
-			changed (null, EventArgs.Empty);
-		}
-		
-		static void LoadProperties ()
-		{
-			analysisEnabled = properties.Get ("AnalysisEnabled", true);
-		}
-		
-		static bool analysisEnabled;
-		
-		public static bool AnalysisEnabled {
-			get { return analysisEnabled; }
-			set { properties.Set ("AnalysisEnabled", value); }
+		public static PropertyWrapper<bool> AnalysisEnabled {
+			get { return QuickTaskStrip.EnableFancyFeatures; }
 		}
 	}
 }

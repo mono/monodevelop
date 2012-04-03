@@ -26,8 +26,7 @@
 
 using System;
 using System.Threading;
-
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -36,8 +35,8 @@ namespace MonoDevelop.CodeMetrics
 	{
 		private static void ClassEvaluateInheritanceTree (MetricsContext ctx, ClassProperties cls)
 		{
-			foreach (IType ob in cls.Class.SourceProjectDom.GetInheritanceTree (cls.Class)) {
-				if (ob.ClassType == MonoDevelop.Projects.Dom.ClassType.Class && ob != cls.Class && ob.Name!="Object") {
+			foreach (var ob in cls.Class.GetAllBaseTypeDefinitions ()) {
+				if (ob.Kind == TypeKind.Class && ob != cls.Class && ob.Name!="Object") {
 					cls.DepthOfInheritance++;
 					ClassProperties tmp = ctx.GetInstanceOf (ob);
 					// lock tmp here

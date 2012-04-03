@@ -7,7 +7,7 @@
        description = "The MonoDevelop IDE application."
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "2.8.8.1"
+       version     = "2.9.4"
        compatVersion = "2.7">
 	
 	<Runtime>
@@ -15,7 +15,7 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="2.8.8.1"/>
+		<Addin id="Core" version="2.9.4"/>
 	</Dependencies>
 
 	<!-- Extension ponts -->
@@ -155,6 +155,23 @@
 		<ExtensionNode name="Type" />
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Parser" name = "TypeSystemParser">
+		<ExtensionNode name="Parser" type="MonoDevelop.TypeSystem.TypeSystemParserNode"/>
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/FoldingParser">
+		<ExtensionNode name="Parser" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode"/>
+	</ExtensionPoint
+		>	
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Ambiences" name = "Language ambiences">
+		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
+		<ExtensionNode name="Ambience" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode" />
+	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/CodeGenerators">
+		<ExtensionNode name="Generator" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode"/>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

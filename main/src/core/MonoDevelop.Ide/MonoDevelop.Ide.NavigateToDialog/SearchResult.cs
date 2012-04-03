@@ -31,8 +31,8 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -68,57 +68,77 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		protected static string HighlightMatch (Widget widget, string text, string toMatch)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, false).GetMatch (text);
+			StringBuilder result = new StringBuilder ();
 			if (lane != null) {
-				StringBuilder result = new StringBuilder ();
 				int lastPos = 0;
 				for (int n=0; n < lane.Length; n++) {
 					int pos = lane[n];
 					if (pos - lastPos > 0)
-						result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, pos - lastPos)));
+						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
 					result.Append ("<span foreground=\"");
 					var color = Mono.TextEditor.HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
 						widget.Style.Text (StateType.Normal), 3)[2];
 					result.Append (color.ToPangoString ());
 					result.Append ("\">");
-					result.Append (GLib.Markup.EscapeText (text[pos].ToString ()));
+					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
 					result.Append ("</span>");
 					lastPos = pos + 1;
 				}
 				if (lastPos < text.Length)
-					result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, text.Length - lastPos)));
-				return result.ToString ();
+					MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, text.Length - lastPos));
+			} else {
+				MarkupUtilities.AppendEscapedString (result, text);
 			}
-			
-			return GLib.Markup.EscapeText (text);
+			return result.ToString ();
 		}
 	}
 	
 	class TypeSearchResult : MemberSearchResult
 	{
+		ITypeDefinition type;
+			
 		public override string File {
+			get { return type.Region.FileName; }
+		}
+		
+		public override Gdk.Pixbuf Icon {
 			get {
-				var cu = ((IType)member).CompilationUnit;
-				return cu != null ? cu.FileName : null;
+				return ImageService.GetPixbuf (type.GetStockIcon (), IconSize.Menu);
+			}
+		}
+		
+		public override int Row {
+			get { return type.Region.BeginLine; }
+		}
+		
+		public override int Column {
+			get { return type.Region.BeginColumn; }
+		}
+		
+		public override string PlainText {
+			get {
+				return Ambience.GetString (type, Flags);
 			}
 		}
 		
 		public override string Description {
 			get {
-				IType type = (IType)member;
-				if (useFullName) 
-					return type.SourceProject != null
-						? GettextCatalog.GetString ("from Project \"{0}\"", type.SourceProject.Name ?? "")
-						: GettextCatalog.GetString ("from \"{0}\"", (string)type.CompilationUnit.FileName ?? "");
-				if (type.SourceProject != null)
-					return GettextCatalog.GetString ("from Project \"{0} in {1}\"", type.SourceProject.Name ?? "", type.Namespace ?? "");
-				return GettextCatalog.GetString ("from \"{0} in {1}\"", (string)type.CompilationUnit.FileName ?? "", type.Namespace ?? "");
+				if (type.GetSourceProject () != null)
+					return GettextCatalog.GetString ("from Project \"{0} in {1}\"", type.GetSourceProject ().Name ?? "", type.Namespace ?? "");
+				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), File ?? "", type.Namespace ?? "");
 			}
 		}
 		
-		
-		public TypeSearchResult (string match, string matchedString, int rank, IType type, bool useFullName)
-			: base (match, matchedString, rank, type, useFullName)
+		public override string GetMarkupText (Widget widget)
 		{
+			if (useFullName)
+				return HighlightMatch (widget, Ambience.GetString (type, Flags), match);
+			return HighlightMatch (widget, type.Name, match);
+		}
+		
+		public TypeSearchResult (string match, string matchedString, int rank, ITypeDefinition type, bool useFullName) : base (match, matchedString, rank, null, useFullName)
+		{
+			this.type = type;
 		}
 	}
 	
@@ -184,26 +204,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public override string GetMarkupText (Widget widget)
-		{
-			if (useFullName)
-				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
-			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
-			settings.EmitNameCallback = delegate (INode domVisitable, ref string outString) {
-				if (domVisitable == member)
-					outString = HighlightMatch (widget, outString, match);
-			};
-			return Ambience.GetString (member, settings);
-		}
-		
-			/*	
-		public override string MarkupText {
-			get {
-				return useFullName ? HighlightMatch (Ambience.GetString (member, Flags | OutputFlags.IncludeMarkup), match) : base.MarkupText;
-			}
-		}*/
-
-		
 		public override string PlainText {
 			get {
 				return Ambience.GetString (member, Flags);
@@ -211,21 +211,21 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 		
 		public override string File {
-			get { return member.DeclaringType.CompilationUnit.FileName; }
+			get { return member.DeclaringTypeDefinition.Region.FileName; }
 		}
-
+		
 		public override Gdk.Pixbuf Icon {
 			get {
-				return ImageService.GetPixbuf (member.StockIcon, IconSize.Menu);
+				return ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu);
 			}
 		}
 		
 		public override int Row {
-			get { return member.Location.Line; }
+			get { return member.Region.BeginLine; }
 		}
 		
 		public override int Column {
-			get { return member.Location.Column; }
+			get { return member.Region.BeginColumn; }
 		}
 		
 		public override string Description {
@@ -234,20 +234,28 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public MemberSearchResult (string match, string matchedString, int rank, IMember member, bool useFullName)
-								: base (match, matchedString, rank)
+		public MemberSearchResult (string match, string matchedString, int rank, IMember member, bool useFullName) : base (match, matchedString, rank)
 		{
 			this.member = member;
 			this.useFullName = useFullName;
 		}
 		
-		protected Ambience Ambience { 
-			get {
-				IType type = member is IType ? (IType)member : member.DeclaringType;
-				if (type.SourceProject is DotNetProject)
-					return ((DotNetProject)type.SourceProject).Ambience;
-				return AmbienceService.DefaultAmbience;
-			}
+		public override string GetMarkupText (Widget widget)
+		{
+			if (useFullName)
+				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
+			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
+			settings.EmitNameCallback = delegate (object domVisitable, string outString) {
+				if (member == domVisitable)
+					outString = HighlightMatch (widget, outString, match);
+				return outString;
+			};
+			return Ambience.GetString (member, settings);
+		}
+		
+		internal Ambience Ambience { 
+			get;
+			set;
 		}
 	}
 }

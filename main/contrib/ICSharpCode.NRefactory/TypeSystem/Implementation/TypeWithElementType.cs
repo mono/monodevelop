@@ -22,7 +22,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	public abstract class TypeWithElementType : AbstractType
 	{
-		protected readonly IType elementType;
+		[CLSCompliant(false)]
+		protected IType elementType;
 		
 		protected TypeWithElementType(IType elementType)
 		{

@@ -26,43 +26,65 @@
 
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Refactoring
 {
 	public abstract class AbstractRefactoringCommandHandler : CommandHandler
 	{
 		protected abstract void Run (RefactoringOptions options);
+
+		protected virtual void Update (RefactoringOptions options, CommandInfo info)
+		{
+		}
+
+		public void UpdateCommandInfo (CommandInfo info)
+		{
+			Update (info);
+		}
+
 		public void Start (object data)
 		{
 			Run (data);
 		}
-		protected override void Run (object data)
+
+		RefactoringOptions CreateOptions ()
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
-				return;
-			
-			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
-			if (editor == null)
-				return;
-			
-			ProjectDom dom = doc.Dom;
+				return null;
 			
 			ResolveResult result;
-			INode item;
-			CurrentRefactoryOperationsHandler.GetItem (dom, doc, editor, out result, out item);
+			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out result);
 			
-			RefactoringOptions options = new RefactoringOptions () {
-				Document = doc,
-				Dom = dom,
+			return new RefactoringOptions (doc) {
 				ResolveResult = result,
-				SelectedItem = item is InstantiatedType ? ((InstantiatedType)item).UninstantiatedType : item
+				SelectedItem = item
 			};
-			Run (options);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			
+			var options = CreateOptions ();
+			if (options != null) {
+				Update (options, info);
+			} else {
+				info.Bypass = true;
+			}
+		}
+
+		protected override void Run (object data)
+		{
+			var options = CreateOptions ();
+			if (options != null)
+				Run (options);
 		}
 	}
 }

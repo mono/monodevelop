@@ -52,13 +52,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		internal static HighlightUsagesExtension GetHighlightUsageExtension (MonoDevelop.Ide.Gui.Document doc)
 		{
-			ITextEditorExtension ext = doc.EditorExtension;
-			while (ext != null) {
-				if (ext is HighlightUsagesExtension)
-					return (HighlightUsagesExtension)ext;
-				ext = ext.Next;
-			}
-			return null;
+			return doc.GetContent <HighlightUsagesExtension> ();
 		}
 		protected override void Run ()
 		{
@@ -68,33 +62,12 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			if (ext.IsTimerOnQueue)
 				ext.ForceUpdate ();
-			if (ext.Markers.Count == 0)
-				return;
-			
-			
-			if (ext.Markers.ContainsKey (doc.Editor.Caret.Line)) {
-				var marker = ext.Markers[doc.Editor.Caret.Line];
-				ISegment segment = null;
-				for (int i = 0; i < marker.Usages.Count; i++) {
-					if (marker.Usages[i].EndOffset < doc.Editor.Caret.Offset)
-						segment = marker.Usages[i];
-				}
-				if (segment != null) {
-					MoveToNextUsageHandler.MoveToSegment (doc, segment);
-					return;
-				}
+
+			var caretOffset = doc.Editor.Caret.Offset;
+			for (int i = 0; i < ext.UsagesSegments.Count; i++) {
+				if (ext.UsagesSegments [i].Contains (caretOffset))
+					MoveToNextUsageHandler.MoveToSegment (doc, ext.UsagesSegments [(i + ext.UsagesSegments.Count - 1) % ext.UsagesSegments.Count]);
 			}
-			
-			int max = int.MinValue;
-			foreach (var pair in ext.Markers) {
-				if (pair.Key > max && pair.Key < doc.Editor.Caret.Line)
-					max = pair.Key;
-			}
-			if (max >= 0) {
-				MoveToNextUsageHandler.MoveToSegment (doc, ext.Markers[max].Usages.Last ());
-				return;
-			}
-			MoveToNextUsageHandler.MoveToSegment (doc, ext.Markers.Last ().Value.Usages.Last ());
 		}
 	}
 	
@@ -122,38 +95,17 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (ext == null || ext.Markers.Count == 0)
 				return;
 			
-			if (ext.Markers.ContainsKey (doc.Editor.Caret.Line)) {
-				var marker = ext.Markers[doc.Editor.Caret.Line];
-				ISegment segment = null;
-				for (int i = 0; i < marker.Usages.Count; i++) {
-					if (marker.Usages[i].Offset > doc.Editor.Caret.Offset) {
-						segment = marker.Usages[i];
-						break;
-					}
-				}
-				if (segment != null) {
-					MoveToSegment (doc, segment);
-					return;
-				}
+			var caretOffset = doc.Editor.Caret.Offset;
+			for (int i = 0; i < ext.UsagesSegments.Count; i++) {
+				if (ext.UsagesSegments [i].Contains (caretOffset))
+					MoveToNextUsageHandler.MoveToSegment (doc, ext.UsagesSegments [(i + 1) % ext.UsagesSegments.Count]);
 			}
-			
-			int max = int.MinValue;
-			foreach (var pair in ext.Markers) {
-				if (pair.Key > doc.Editor.Caret.Line) {
-					max = pair.Key;
-					break;
-				}
-			}
-			
-			if (max >= 0) {
-				MoveToSegment (doc, ext.Markers[max].Usages.First ());
-				return;
-			}
-			MoveToSegment (doc, ext.Markers.First ().Value.Usages.First ());
 		}
 		
-		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, ISegment segment)
+		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, TextSegment segment)
 		{
+			if (segment.IsInvalid || segment.IsEmpty)
+				return;
 			TextEditorData data = doc.Editor;
 			data.Caret.Offset = segment.Offset;
 			data.Parent.ScrollTo (segment.EndOffset);

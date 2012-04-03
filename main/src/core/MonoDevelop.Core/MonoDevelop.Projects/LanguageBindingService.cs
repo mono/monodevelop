@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Projects.CodeGeneration;
-
 
 namespace MonoDevelop.Projects
 {
@@ -95,18 +93,6 @@ namespace MonoDevelop.Projects
 			}
 			CheckBindings ();
 			return languageBindings.FirstOrDefault (binding => binding.Language == language);
-		}
-		
-		public static IRefactorer GetRefactorerForFile (string fileName)
-		{
-			ILanguageBinding binding = GetBindingPerFileName (fileName);
-			return binding != null ? binding.Refactorer : null;
-		}
-		
-		public static IRefactorer GetRefactorerForLanguage (string language)
-		{
-			ILanguageBinding binding = GetBindingPerLanguageName (language);
-			return binding != null ? binding.Refactorer : null;
 		}
 	}
 }

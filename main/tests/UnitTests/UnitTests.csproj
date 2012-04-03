@@ -37,25 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="nunit.core">
       <HintPath>..\..\src\addins\NUnit\lib\nunit.core.dll</HintPath>
@@ -72,6 +54,30 @@
     <Reference Include="nunit.util">
       <HintPath>..\..\src\addins\NUnit\lib\nunit.util.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +161,11 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\contrib\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
@@ -168,69 +179,52 @@
     <Compile Include="MonoDevelop.Projects\WorkspaceTests.cs" />
     <Compile Include="MonoDevelop.Projects\PackagingTests.cs" />
     <Compile Include="MonoDevelop.Projects\MakefileTests.cs" />
-    <Compile Include="MonoDevelop.Projects\DomCompilationUnitTests.cs" />
-    <Compile Include="MonoDevelop.Projects\DomPersistenceTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TopLevelTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\MemberTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionBugTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionOperatorTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\ParameterCompletionTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionCSharp3Tests.cs" />
     <Compile Include="Mono.TextEditor.Tests\DocumentTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\LineSplitterTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SearchTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SelectionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\UndoRedoTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\InsertNewLineTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\InsertTabTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\RemoveTabTests.cs" />
     <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\TestParser.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionAccessibleTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\CodeCompletionCSharpTests.cs" />
-    <Compile Include="MonoDevelop.Projects\CompletionDatabaseTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\FoldingTests.cs" />
     <Compile Include="MonoDevelop.Projects\TextFormatterTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SyntaxHighlightingTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
-    <Compile Include="MonoDevelop.Projects\DomTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ExtractMethodTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\CreateBackingStoreTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\RemoveBackingStoreTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\DeclareLocalTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\IntegrateTemporaryVariableTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\IntroduceConstantRefactoringTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\IntroduceFormatItemRefactoringTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\CaretMoveActionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\DeleteActionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\SelectionActionTests.cs" />
-    <Compile Include="MonoDevelop.Projects.Gui\CompletionListWindowTests.cs" />
-    <Compile Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
-    <Compile Include="MonoDevelop.AspNet\AspNetTesting.cs" />
-    <Compile Include="MonoDevelop.Refactoring\BaseRefactorerTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\EditActionsTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\BufferTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\InsertionModeTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\CreateMethodTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ImplementInterfaceTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitUtilsTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SegmentTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\RedBlackTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\HeightTreeTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\BookmarkTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\MemberTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TestDocument.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\SmartIndentModeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\VirtualIndentModeTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextFileReaderTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\CompletionListWindowTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ImplementInterfaceTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ResolveNamespaceTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollectorTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollectorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\TextEditorTestBase.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\BookmarkActionsTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\FoldActionTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\MiscActionsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -251,12 +245,23 @@
   </ProjectExtensions>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="MonoDevelop.Projects\CompletionDatabaseTests.cs" />
+    <None Include="MonoDevelop.Projects\DomPersistenceTests.cs" />
+    <None Include="MonoDevelop.Projects\DomCompilationUnitTests.cs" />
+    <None Include="MonoDevelop.Xml.StateEngine\TestParser.cs" />
+    <None Include="MonoDevelop.Projects\DomTests.cs" />
+    <None Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
+    <None Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
+    <None Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
+    <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
+    <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.Refactoring\" />
-    <Folder Include="MonoDevelop.Projects.Gui\" />
     <Folder Include="MonoDevelop.AspNet\" />
     <Folder Include="MonoDevelop.VersionControl.Views\" />
     <Folder Include="MonoDevelop.VersionControl.Git\" />
+    <Folder Include="MonoDevelop.Ide.Gui\" />
+    <Folder Include="MonoDevelop.CSharpBinding.Refactoring\" />
+    <Folder Include="MonoDevelop.Ide.FindInFiles\" />
   </ItemGroup>
 </Project>

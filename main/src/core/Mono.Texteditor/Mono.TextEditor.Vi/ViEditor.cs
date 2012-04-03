@@ -57,7 +57,7 @@ namespace Mono.TextEditor.Vi
 		
 		public TextEditor Editor { get { return editMode.Editor; } }
 		public TextEditorData Data { get { return editMode.Data; } }
-		public Document Document { get { return Data.Document; } }
+		public TextDocument Document { get { return Data.Document; } }
 		ViBuilderContext Context { get; set; }
 		public string Message { get; private set; }
 		public ViEditorMode Mode { get; private set; }

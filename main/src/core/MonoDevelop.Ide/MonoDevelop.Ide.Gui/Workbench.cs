@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Components.Docking;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -335,7 +336,7 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (fileName, -1, -1, options, null, null);
 		}
 
-		public Document OpenDocument (FilePath fileName, string encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Document OpenDocument (FilePath fileName, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, -1, -1, options, encoding, null);
 		}
@@ -345,12 +346,12 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (fileName, line, column, options, null, null);
 		}
 
-		public Document OpenDocument (FilePath fileName, int line, int column, string encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Document OpenDocument (FilePath fileName, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, line, column, options, encoding, null);
 		}
 
-		internal Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options, string encoding, IViewDisplayBinding binding)
+		internal Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
@@ -409,9 +410,12 @@ namespace MonoDevelop.Ide.Gui
 				if (openFileInfo.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (openFileInfo.NewContent.WorkbenchWindow);
-					if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
+					if (doc != null && options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						Present ();
-						doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+						doc.RunWhenLoaded (() => {
+							if (doc.Window != null)
+								doc.Window.SelectWindow ();
+						});
 					}
 					return doc;
 				} else {
@@ -489,6 +493,9 @@ namespace MonoDevelop.Ide.Gui
 			ShowGlobalPreferencesDialog (parentWindow, null);
 		}
 		
+		static Properties properties = ((Properties) PropertyService.Get (
+			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
+			new Properties()));
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId)
 		{
 			if (parentWindow == null)
@@ -496,7 +503,7 @@ namespace MonoDevelop.Ide.Gui
 
 			OptionsDialog ops = new OptionsDialog (
 				parentWindow,
-				TextEditorProperties.Properties,
+				properties,
 				"/MonoDevelop/Ide/GlobalOptionsDialog");
 
 			try {
@@ -873,7 +880,11 @@ namespace MonoDevelop.Ide.Gui
 				Document doc = WrapDocument (view.WorkbenchWindow);
 				if (view == currentView) {
 					Present ();
-					doc.RunWhenLoaded (() => doc.Window.SelectWindow ());
+					doc.RunWhenLoaded (() => {
+						var window = doc.Window;
+						if (window != null)
+							window.SelectWindow ();
+					});
 				}
 			}
 			
@@ -1036,7 +1047,7 @@ namespace MonoDevelop.Ide.Gui
 		public int Column { get; set; }
 		public IViewDisplayBinding DisplayBinding { get; set; }
 		public IViewContent NewContent { get; set; }
-		public string Encoding { get; set; }
+		public Encoding Encoding { get; set; }
 		
 		public FileOpenInformation ()
 		{

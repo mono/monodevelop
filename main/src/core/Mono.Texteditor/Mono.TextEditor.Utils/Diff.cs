@@ -426,12 +426,12 @@ namespace Mono.TextEditor.Utils
 		// LCS()
 		
 		
-		public static string GetDiffString (Document baseDocument, Document changedDocument)
+		public static string GetDiffString (TextDocument baseDocument, TextDocument changedDocument)
 		{
 			return GetDiffString (baseDocument.Diff (changedDocument), baseDocument, changedDocument, baseDocument.FileName, changedDocument.FileName);
 		}
 		
-		public static string GetDiffString (IEnumerable<Hunk> diff, Document baseDocument, Document changedDocument, string baseFileName, string changedFileName)
+		public static string GetDiffString (IEnumerable<Hunk> diff, TextDocument baseDocument, TextDocument changedDocument, string baseFileName, string changedFileName)
 		{
 			if (diff == null)
 				return "";

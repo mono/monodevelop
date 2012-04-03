@@ -32,28 +32,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public sealed class SimpleInterningProvider : IInterningProvider
 	{
-		public SimpleInterningProvider()
-		{
-			// Intern the well-known types first; so that they are used when possible.
-			foreach (ITypeReference r in KnownTypeReference.AllKnownTypeReferences)
-				Intern(r);
-		}
-		
-		sealed class ReferenceComparer : IEqualityComparer<object>
-		{
-			public readonly static ReferenceComparer Instance = new ReferenceComparer();
-			
-			public new bool Equals(object a, object b)
-			{
-				return ReferenceEquals(a, b);
-			}
-			
-			public int GetHashCode(object obj)
-			{
-				return RuntimeHelpers.GetHashCode(obj);
-			}
-		}
-		
 		sealed class InterningComparer : IEqualityComparer<ISupportsInterning>
 		{
 			public bool Equals(ISupportsInterning x, ISupportsInterning y)
@@ -104,6 +82,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		Dictionary<ISupportsInterning, ISupportsInterning> supportsInternDict = new Dictionary<ISupportsInterning, ISupportsInterning>(new InterningComparer());
 		Dictionary<IEnumerable, IEnumerable> listDict = new Dictionary<IEnumerable, IEnumerable>(new ListComparer());
 		
+		int stackDepth = 0;
+		
 		public T Intern<T>(T obj) where T : class
 		{
 			if (obj == null)
@@ -111,22 +91,24 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			ISupportsInterning s = obj as ISupportsInterning;
 			if (s != null) {
 				ISupportsInterning output;
-				if (supportsInternDict.TryGetValue(s, out output)) {
-					obj = (T)output;
-				} else {
+				//if (supportsInternDict.TryGetValue(s, out output)) {
+				//	obj = (T)output;
+				//} else {
 					s.PrepareForInterning(this);
 					if (supportsInternDict.TryGetValue(s, out output))
 						obj = (T)output;
 					else
 						supportsInternDict.Add(s, s);
-				}
-			} else if (obj is IType || Type.GetTypeCode(obj.GetType()) >= TypeCode.Boolean) {
+				//}
+			} else if (Type.GetTypeCode(obj.GetType()) >= TypeCode.Boolean) {
+				// Intern primitive types (and strings) by value
 				object output;
 				if (byValueDict.TryGetValue(obj, out output))
 					obj = (T)output;
 				else
 					byValueDict.Add(obj, obj);
 			}
+			stackDepth--;
 			return obj;
 		}
 		
@@ -138,8 +120,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				T oldItem = list[i];
 				T newItem = Intern(oldItem);
 				if (oldItem != newItem) {
-					if (list.IsReadOnly)
-						list = new T[list.Count];
+					if (list.IsReadOnly) {
+						T[] array = new T[list.Count];
+						list.CopyTo(array, 0);
+						list = array;
+					}
 					list[i] = newItem;
 				}
 			}

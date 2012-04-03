@@ -17,12 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Utils
 {
 	/// <summary>
 	/// Holds 16 boolean values.
 	/// </summary>
+	[Serializable]
+	[CLSCompliant(false)]
 	public struct BitVector16 : IEquatable<BitVector16>
 	{
 		ushort data;
@@ -74,7 +77,7 @@ namespace ICSharpCode.NRefactory.Utils
 		
 		public override string ToString()
 		{
-			return data.ToString("x4");
+			return data.ToString("x4", CultureInfo.InvariantCulture);
 		}
 	}
 }

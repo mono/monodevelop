@@ -915,7 +915,7 @@ namespace Mono.TextEditor.Vi
 		public string RegexReplace (System.Text.RegularExpressions.Match match)
 		{
 			string line = null;
-			ISegment segment = null;
+			var segment = TextSegment.Invalid;
 
 			if (Data.IsSomethingSelected) {
 				// Operate on selection
@@ -923,7 +923,9 @@ namespace Mono.TextEditor.Vi
 				segment = Data.SelectionRange;
 			} else {
 				// Operate on current line
-				segment = Data.Document.GetLine (Caret.Line);
+				var lineSegment = Data.Document.GetLine (Caret.Line);
+				if (lineSegment != null)
+					segment = lineSegment;
 				line = Data.Document.GetTextBetween (segment.Offset, segment.EndOffset);
 			}
 

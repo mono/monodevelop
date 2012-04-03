@@ -1,7 +1,6 @@
 <Addin id        = "SubversionAddinWindows"
        namespace = "MonoDevelop"
-       version   = "2.8.8.1">
-
+       version   = "2.9.4">
   <Header>
     <Name>Subversion Add-in</Name>
     <Description>Subversion support for the Version Control Add-in</Description>
@@ -13,10 +12,10 @@
   </Header>
   
 	<Dependencies>
-		<Addin id="Core" version="2.8.8.1"/>
-		<Addin id="Ide" version="2.8.8.1"/>
-		<Addin id="VersionControl" version="2.8.8.1"/>
-		<Addin id="VersionControl.Subversion" version="2.8.8.1"/>
+		<Addin id="Core" version="2.9.4"/>
+		<Addin id="Ide" version="2.9.4"/>
+		<Addin id="VersionControl" version="2.9.4"/>
+		<Addin id="VersionControl.Subversion" version="2.9.4"/>
 	</Dependencies>
 
 	<Runtime>

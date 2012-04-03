@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		const int SearchResultColumn = 0;
 		const int DidReadColumn      = 1;
 		
-		Mono.TextEditor.Highlighting.ColorSheme highlightStyle;
+		Mono.TextEditor.Highlighting.ColorScheme highlightStyle;
 		
 		ScrolledWindow scrolledwindowLogView; 
 		PadTreeView treeviewSearchResults;
@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			Document doc = GetDocument (searchResult);
+			var doc = GetDocument (searchResult);
 			if (doc == null)
 				return;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
@@ -454,7 +454,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			}
 			
-			Document doc = GetDocument (searchResult);
+			var doc = GetDocument (searchResult);
 			if (doc == null) {
 				textRenderer.Markup = "Can't create document for:" + searchResult.FileName;
 				return;
@@ -467,8 +467,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 			int indent = line.GetIndentation (doc).Length;
-			string markup = doc.SyntaxMode != null ? 
-				doc.SyntaxMode.GetMarkup (doc, new TextEditorOptions (), highlightStyle, line.Offset + indent, line.EditableLength - indent, true, !isSelected, false) : 
+			var data = new Mono.TextEditor.TextEditorData (doc);
+			data.ColorStyle = highlightStyle;
+			string markup = doc.SyntaxMode != null ?
+				data.GetMarkup (line.Offset + indent, line.EditableLength - indent, true, !isSelected, false) :
 				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
 			
 			if (!isSelected) {
@@ -478,7 +480,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				int pos2 = FindPosition (markup, col + searchResult.Length, out tag);
 				if (pos1 >= 0 && pos2 >= 0) {
 					markup = tag.StartsWith ("span") ? markup.Insert (pos2, "</span></span><" + tag + ">") : markup.Insert (pos2, "</span>");
-					Color searchColor = Mono.TextEditor.Highlighting.ColorSheme.ToGdkColor (highlightStyle.SearchTextBg);
+					Color searchColor = Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (highlightStyle.SearchTextBg);
 					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
 					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
 					double delta = Math.Abs (b1 - b2);
@@ -546,16 +548,16 @@ namespace MonoDevelop.Ide.FindInFiles
 
 
 
-		readonly Dictionary<string, Document> documents = new Dictionary<string, Document> ();
+		readonly Dictionary<string, TextDocument> documents = new Dictionary<string, TextDocument> ();
 		
-		Document GetDocument (SearchResult result)
+		TextDocument GetDocument (SearchResult result)
 		{
-			Document doc;
+			TextDocument doc;
 			if (!documents.TryGetValue (result.FileName, out doc)) {
 				var content = result.FileProvider.ReadString ();
 				if (content == null)
 					return null;
-				doc = Document.CreateImmutableDocument (content);
+				doc = TextDocument.CreateImmutableDocument (content);
 				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
 				
 				documents [result.FileName] = doc;	
@@ -600,7 +602,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		DocumentLocation GetLocation (SearchResult searchResult)
 		{
-			Document doc = GetDocument (searchResult);
+			var doc = GetDocument (searchResult);
 			if (doc == null)
 				return DocumentLocation.Empty;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
@@ -636,7 +638,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (result == null)
 					continue;
 				DocumentLocation loc = GetLocation (result);
-				Document doc = GetDocument (result);
+				var doc = GetDocument (result);
 				if (doc == null)
 					continue;
 				LineSegment line = doc.GetLine (loc.Line);
@@ -704,7 +706,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			treeviewSearchResults.Selection.SelectIter (iter);
 			treeviewSearchResults.ScrollToCell (store.GetPath (iter), treeviewSearchResults.Columns [0], false, 0, 0);
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-			Document doc = GetDocument (searchResult);
+			var doc = GetDocument (searchResult);
 			if (doc == null)
 				return null;
 			DocumentLocation location = doc.OffsetToLocation (searchResult.Offset);

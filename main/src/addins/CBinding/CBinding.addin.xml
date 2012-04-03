@@ -6,16 +6,16 @@
        url         = "http://www.monodevelop.com"
        description = "C/C++ Language binding"
        category    = "Language bindings"
-       version     = "2.8.8.1">
+       version     = "2.9.4">
 
 	<Dependencies>
-		<Addin id = "Core" version = "2.8.8.1"/>
-		<Addin id = "Ide" version = "2.8.8.1"/>
-		<Addin id = "Deployment" version = "2.8.8.1"/>
-		<Addin id = "Deployment.Linux" version = "2.8.8.1"/>
-		<Addin id = "SourceEditor2" version = "2.8.8.1" />
-		<Addin id = "DesignerSupport" version = "2.8.8.1" />
-		<Addin id = "Refactoring" version = "2.8.8.1" />
+		<Addin id = "Core" version = "2.9.4"/>
+		<Addin id = "Ide" version = "2.9.4"/>
+		<Addin id = "Deployment" version = "2.9.4"/>
+		<Addin id = "Deployment.Linux" version = "2.9.4"/>
+		<Addin id = "SourceEditor2" version = "2.9.4" />
+		<Addin id = "DesignerSupport" version = "2.9.4" />
+		<Addin id = "Refactoring" version = "2.9.4" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -241,7 +241,7 @@
 	    </Runtime>
 	    
 		<Dependencies>
-			<Addin id = "MonoDevelop.Autotools" version = "2.8.8.1"/>
+			<Addin id = "MonoDevelop.Autotools" version = "2.9.4"/>
 		</Dependencies>
 		
 		<Extension path = "/Autotools/SimpleSetups">
@@ -250,9 +250,8 @@
 	</Module>
 -->
 	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Parser class = "CBinding.Parser.CDocumentParser" id = "CDocumentParser"
-			fileExtensions=".c,.cpp,.cxx,.cc,.h,.hpp,.hh,.hxx,.m,.mm,.M" />
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class="CBinding.Parser.CDocumentParser" mimeType = "text/x-csrc, text/x-chdr, text/x-c++src, text/x-c++hdr, text/x-objcsrc, text/x-objc++src" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">

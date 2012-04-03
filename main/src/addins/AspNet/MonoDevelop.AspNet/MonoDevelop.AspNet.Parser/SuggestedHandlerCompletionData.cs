@@ -31,8 +31,9 @@ using System.CodeDom;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.DesignerSupport;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -41,9 +42,9 @@ namespace MonoDevelop.AspNet.Parser
 		Project project;
 		CodeMemberMethod methodInfo;
 		IType codeBehindClass;
-		IType codeBehindClassPart;
+		IUnresolvedTypeDefinition codeBehindClassPart;
 		
-		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, IType codeBehindClass, IType codeBehindClassPart)
+		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, IType codeBehindClass, IUnresolvedTypeDefinition codeBehindClassPart)
 		{
 			this.project = project;
 			this.methodInfo = methodInfo;
@@ -86,9 +87,9 @@ namespace MonoDevelop.AspNet.Parser
 			
 			//generate the codebehind method
 			if (codeBehindClassPart != null && project != null)
-				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClassPart, methodInfo, false);
+				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClassPart, methodInfo, false);
 			else
-				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClass, methodInfo, false);
+				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClass.GetDefinition ().Parts.First (), methodInfo, false);
 		}
 	}
 }

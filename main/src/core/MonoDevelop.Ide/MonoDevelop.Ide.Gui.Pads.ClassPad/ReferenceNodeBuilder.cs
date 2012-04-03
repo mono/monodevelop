@@ -31,10 +31,9 @@ using System.Collections.Generic;
 using System.IO;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -81,18 +80,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			ProjectReference pref = (ProjectReference) dataObject;
+			// TODO: Type system conversion.
+/*			ProjectReference pref = (ProjectReference) dataObject;
 			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration)) {
-				ICompilationUnit unit = DomCecilCompilationUnit.Load (fileName, false, true);
+				var unit = new CecilLoader ().LoadAssemblyFile (fileName);
 				if (unit == null)
 					continue;
-				foreach (IType type in unit.Types) {
-					if (type.IsSpecialName || type.Name.Contains ("<") || type.Name.Contains (">") || type.Name.Contains ("$"))
+				foreach (var type in unit.GetTypes ()) {
+					if (type.IsSynthetic)
 						continue;
 					if (String.IsNullOrEmpty (type.Namespace)) {
-						builder.AddChild (new ClassData (null, type));
+						builder.AddChild (new ClassData (unit, null, type));
 						continue;
 					}
 					string ns = type.Namespace;
@@ -104,9 +104,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 					if (namespaces.ContainsKey (ns))
 						continue;
 					namespaces[ns] = true;
-					builder.AddChild (new CompilationUnitNamespaceData (unit, ns));
+					builder.AddChild (new CompilationUnitNamespaceData (null, ns));
 				}
-			}
+			}*/
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

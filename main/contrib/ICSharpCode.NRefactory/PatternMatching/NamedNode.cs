@@ -49,10 +49,5 @@ namespace ICSharpCode.NRefactory.PatternMatching
 			match.Add(this.groupName, other);
 			return childNode.DoMatch(other, match);
 		}
-		
-		public override S AcceptVisitor<T, S>(IPatternAstVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitNamedNode(this, data);
-		}
 	}
 }

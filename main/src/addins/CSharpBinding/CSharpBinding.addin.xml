@@ -6,15 +6,22 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
        category    = "Language bindings"
-       version     = "2.8.8.1">
+       version     = "2.9.4">
 	
 	<Dependencies>
-		<Addin id="Core" version="2.8.8.1"/>
-		<Addin id="Ide" version="2.8.8.1"/>
-		<Addin id="SourceEditor2" version="2.8.8.1"/>
-		<Addin id="Refactoring" version="2.8.8.1"/>
+		<Addin id="Core" version="2.9.4"/>
+		<Addin id="Ide" version="2.9.4"/>
+		<Addin id="SourceEditor2" version="2.9.4"/>
+		<Addin id="Refactoring" version="2.9.4"/>
 	</Dependencies>
 	
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
+				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
+				_label = "S_how Code Generation Window" 
+				shortcut = "Alt|Insert" />
+	</Extension>
+		
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProject 
 			language="C#" 
@@ -77,26 +84,15 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpTextEditorCompletion" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.OnTheFlyFormatterTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
 		<SerializationMap resource="md1format.xml" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-<!--		<Parser class = "MonoDevelop.CSharp.Parser.NRefactoryParser" fileExtensions=".cs" /> -->
-		<Parser class = "MonoDevelop.CSharp.Parser.McsParser" fileExtensions=".cs" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/FoldingParser">
-		<Parser class = "MonoDevelop.CSharp.Parser.CSharpFoldingParser" mimeType="text/x-csharp" />
-	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/Ambiences">
-		<Class id = "C#" class = "MonoDevelop.CSharp.CSharpAmbience" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
@@ -114,153 +110,77 @@
 		<Formatter mimeType="text/x-csharp" class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/TypeSystem/Ambiences">
+		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class="MonoDevelop.CSharp.Parser.TypeSystemParser" mimeType = "text/x-csharp" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/TypeSystem/FoldingParser">
+		<Parser class = "MonoDevelop.CSharp.Parser.CSharpFoldingParser" mimeType="text/x-csharp" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/TypeSystem/CodeGenerators">
+		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
 		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="MonoCSharpPolicy.xml" />
+		<Policies resource="MonoNameConventionPolicy.xml" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="KR" _name="K&amp;R style" allowDiffSerialize="true">
+			<Policies resource="KRCSharpPolicy.xml" />
+			<Policies resource="InvariantTextStylePolicy.xml" />
+		</PolicySet>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="1TBS" _name="SharpDevelop style (1TBS)" allowDiffSerialize="true">
+			<Policies resource="SharpDevelopCSharpPolicy.xml" />
+			<Policies resource="InvariantTextStylePolicy.xml" />
+		</PolicySet>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="Allman" _name="Allman style" allowDiffSerialize="true">
+			<Policies resource="AllmanCSharpPolicy.xml" />
+			<Policies resource="InvariantTextStylePolicy.xml" />
+		</PolicySet>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="Whitesmiths" _name="Whitesmiths style" allowDiffSerialize="true">
+			<Policies resource="WhitesmithsCSharpPolicy.xml" />
+			<Policies resource="InvariantTextStylePolicy.xml" />
+		</PolicySet>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
+		<PolicySet id="GNU" _name="GNU style" allowDiffSerialize="true">
+			<Policies resource="GNUCSharpPolicy.xml" />
+			<Policies resource="GNUTextStylePolicy.xml" />
+		</PolicySet>
+	</Extension>
+
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Refactoring/ASTProvider">
-		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpNRefactoryASTProvider" />
-	</Extension>
-	<!--
-	<Extension path = "/MonoDevelop/Refactoring/ContextActions">
-		<Action mimeType="text/x-csharp"
-			_title = "Create event invocator"
-			_description = "Creates a standard OnXXX event method."
-			class = "MonoDevelop.CSharp.ContextAction.CreateEventInvocator" />
-		<Action mimeType="text/x-csharp"
-			_title = "Generate getter"
-			_description = "Generates a getter for a field."
-			class = "MonoDevelop.CSharp.ContextAction.GenerateGetter" />
-		<Action mimeType="text/x-csharp"
-			_title = "Create local variable"
-			_description = "Creates a local variable for a undefined variable."
-			class = "MonoDevelop.CSharp.ContextAction.CreateLocalVariable" />
-		<Action mimeType="text/x-csharp"
-			_title = "Create field"
-			_description = "Creates a field for a undefined variable."
-			class = "MonoDevelop.CSharp.ContextAction.CreateField" />
-		<Action mimeType="text/x-csharp"
-			_title = "Create property"
-			_description = "Creates a property for a undefined variable."
-			class = "MonoDevelop.CSharp.ContextAction.CreateProperty" />
-		
-		<Action mimeType="text/x-csharp"
-			_title = "Add another accessor"
-			_description = "Adds second accessor to a property."
-			class = "MonoDevelop.CSharp.ContextAction.AddAnotherAccessor" />
-		<Action mimeType="text/x-csharp"
-			_title = "Check if parameter is null"
-			_description = "Checks function parameter is not null."
-			class = "MonoDevelop.CSharp.ContextAction.CheckIfParameterIsNull" />
-		<Action mimeType="text/x-csharp"
-			_title = "Convert dec to hex."
-			_description = "Convert dec to hex."
-			class = "MonoDevelop.CSharp.ContextAction.ConvertDecToHex" />
-		<Action mimeType="text/x-csharp"
-			_title = "Convert hex to dec."
-			_description = "Convert hex to dec."
-			class = "MonoDevelop.CSharp.ContextAction.ConvertHexToDec" />
-		<Action mimeType="text/x-csharp"
-			_title = "Convert 'foreach' loop to 'for'"
-			_description = "Works on 'foreach' loops that allow direct access to its elements."
-			class = "MonoDevelop.CSharp.ContextAction.ConvertForeachToFor" />
-		<Action mimeType="text/x-csharp"
-			_title = "Generate switch labels"
-			_description = "Creates switch lables for enumerations."
-			class = "MonoDevelop.CSharp.ContextAction.GenerateSwitchLabels" />
-		<Action mimeType="text/x-csharp"
-			_title = "Swaps left and right arguments."
-			_description = "Swaps left and right arguments."
-			class = "MonoDevelop.CSharp.ContextAction.FlipOperatorArguments" />
-		<Action mimeType="text/x-csharp"
-			_title = "Use string.Empty"
-			_description = 'Replaces "" with string.Empty'
-			class = "MonoDevelop.CSharp.ContextAction.ReplaceEmptyString" />
-			
-			
-		<Action mimeType="text/x-csharp"
-			_title = "Use 'var' keyword"
-			_description = "Converts local variable declaration to be implicit typed."
-			class = "MonoDevelop.CSharp.ContextAction.UseVarKeyword" />
-		<Action mimeType="text/x-csharp"
-			_title = "Use explicit type"
-			_description = "Converts local variable declaration to be explicit typed."
-			class = "MonoDevelop.CSharp.ContextAction.UseExplicitType" />
-		<Action mimeType="text/x-csharp"
-			_title = "Invert if"
-			_description = "Inverts an 'if ... else' expression."
-			class = "MonoDevelop.CSharp.ContextAction.InvertIf" />
-		<Action mimeType="text/x-csharp"
-			_title = "Create backing store for auto property"
-			_description = "Creates a backing field for an auto property."
-			class = "MonoDevelop.CSharp.ContextAction.CreateBackingStore" />
-		<Action mimeType="text/x-csharp"
-			_title = "Remove backing store for property"
-			_description = "Removes the backing store of a property and creates an auto property."
-			class = "MonoDevelop.CSharp.ContextAction.RemoveBackingStore" />
+	<Extension path = "/MonoDevelop/Refactoring/CodeActions">
 		<Action mimeType="text/x-csharp"
 			_title = "Move type to another file"
 			_description = "Moves current type to another file that matches the name of the type."
-			class = "MonoDevelop.CSharp.ContextAction.MoveTypeToFile" />
-		<Action mimeType="text/x-csharp"
-			_title = "Split string literal"
-			_description = "Splits string literal into two."
-			class = "MonoDevelop.CSharp.ContextAction.SplitString" />
-		<Action mimeType="text/x-csharp"
-			_title = "Introduce format item"
-			_description = "Creates a string.format call with the selection as parameter."
-			class = "MonoDevelop.CSharp.ContextAction.IntroduceFormatItem" />
-		<Action mimeType="text/x-csharp"
-			_title = "Split local variable declaration and assignment"
-			_description = "Splits local variable declaration and assignment."
-			class = "MonoDevelop.CSharp.ContextAction.SplitDeclarationAndAssignment" />
-		<Action mimeType="text/x-csharp"
-			_title = "Remove braces"
-			_description = "Removes redundant braces around a statement."
-			class = "MonoDevelop.CSharp.ContextAction.RemoveBraces" />
-		<Action mimeType="text/x-csharp"
-			_title = "Insert anonymous method signature"
-			_description = "Inserts a signature to parameterless anonymous methods."
-			class = "MonoDevelop.CSharp.ContextAction.InsertAnonymousMethodSignature" /> 
+			class = "MonoDevelop.CSharp.Refactoring.CodeActions.MoveTypeToFile" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Refactoring/Inspectors">
-		<Inspector mimeType="text/x-csharp"
-			_title = "'?:' expression can be converted to '??' expression"
-			_description = "'?:' expression can be converted to '??' expression."
-			severity = "Suggestion"
-			class = "MonoDevelop.CSharp.Inspection.ConditionalToNullCoalescingInspector" />
-		<Inspector mimeType="text/x-csharp"
-			_title = "Remove unused usings"
-			_description = "Removes used declarations that are not required."
-			severity = "Warning"
-			class = "MonoDevelop.CSharp.Inspection.UnusedUsingInspector" />
-		<Inspector mimeType="text/x-csharp"
-			_title = "Show NotImplementedException"
-			_description = "Shows NotImplementedException throws in the quick task bar."
-			severity = "Suggestion"
-			class = "MonoDevelop.CSharp.Inspection.NotImplementedExceptionInspector" />
-		<Inspector mimeType="text/x-csharp"
-			_title = "Use string.IsNullOrEmpty"
-			_description = "Uses shorter string.IsNullOrEmpty call instead of a longer condition."
-			severity = "Suggestion"
-			class = "MonoDevelop.CSharp.Inspection.StringIsNullOrEmptyInspector" />
-			
-		<Inspector mimeType="text/x-csharp"
-			_title = "Use implicitly typed local variable decaration"
-			_description = "Use implicitly typed local variable decaration"
-			severity = "Suggestion"
-			class = "MonoDevelop.CSharp.Inspection.UseVarKeywordInspector" />
-	</Extension>
-	-->
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
 	</Extension>
@@ -290,41 +210,45 @@
 		         _label = "_Expand selection"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/CodeGenerators">
-		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
+	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
+		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
-		<Class id="CreateMethod" class = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodCodeGenerator" />
-		<Class id="ExtractMethod" class = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodRefactoring" />
-		<Class id="DeclareLocal" class = "MonoDevelop.CSharp.Refactoring.DeclareLocal.DeclareLocalCodeGenerator" />
+	<Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
+		<Source class ="MonoDevelop.CSharp.Refactoring.CodeActions.NRefactoryCodeActionSource"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CreateMethod"
-				defaultHandler = "MonoDevelop.CSharp.Refactoring.CreateMethod.CreateMethodHandler"
-				_label = "Create Method"/>
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ExtractMethod"
-				defaultHandler = "MonoDevelop.CSharp.Refactoring.ExtractMethod.ExtractMethodHandler"
-				_label = "Extract Method"
-				shortcut = "Control|Alt|M"/>
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.DeclareLocal"
-				defaultHandler = "MonoDevelop.CSharp.Refactoring.DeclareLocal.DeclareLocalHandler"
-				_label = "_Declare Local" 
-				shortcut = "Control+dead_circumflex"/> 
+	<Extension path = "/MonoDevelop/Refactoring/CodeIssueSource">
+		<Source class ="MonoDevelop.CSharp.Refactoring.CodeIssues.NRefactoryCodeIssueSource"/>
 	</Extension>
-<!--
-	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Rule _name="C# Code Analysis" input="Document" 
-			func="MonoDevelop.CSharp.Inspection.CodeAnalysis.Check" />
-	</Extension>-->
+	
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+	</Extension>
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+	</Extension>
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
+	</Extension>
 	
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="Autotools" version="2.8.8.1"/>
+			<Addin id="Autotools" version="2.9.4"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
@@ -336,7 +260,7 @@
 			<Import assembly="MonoDevelop.CSharpBinding.AspNet.dll"/>
 		</Runtime>
 		<Dependencies>
-			<Addin id="AspNet" version="2.8.8.1"/>
+			<Addin id="AspNet" version="2.9.4"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
 			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />

@@ -6,14 +6,14 @@
        url         = "http://www.monodevelop.com/"
        description = "Support for editing, compiling, and running Moonlight/Silverlight projects."
        category    = "Web Development"
-       version     = "2.8.8.1">
+       version     = "2.9.4">
 	
 	<Dependencies>
-		<Addin id="Core" version="2.8.8.1"/>
-		<Addin id="Ide" version="2.8.8.1"/>
-		<Addin id="DesignerSupport" version="2.8.8.1"/>
-		<Addin id="Deployment" version="2.8.8.1"/>
-		<Addin id="AspNet" version="2.8.8.1" />
+		<Addin id="Core" version="2.9.4"/>
+		<Addin id="Ide" version="2.9.4"/>
+		<Addin id="DesignerSupport" version="2.9.4"/>
+		<Addin id="Deployment" version="2.9.4"/>
+		<Addin id="AspNet" version="2.9.4" />
 	</Dependencies>
 	
 	<Runtime>
@@ -63,8 +63,8 @@
 		</MimeType>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/DomParser">
-		<Parser class = "MonoDevelop.Moonlight.MoonlightParser" insertbefore="XmlParser" fileExtensions=".xaml" />
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class = "MonoDevelop.Moonlight.MoonlightParser" insertbefore="XmlParser" mimeType="application/xaml+xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

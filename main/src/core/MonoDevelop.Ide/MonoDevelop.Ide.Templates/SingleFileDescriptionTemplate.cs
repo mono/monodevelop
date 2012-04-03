@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.Templates
 					fileName = fileName + defaultExtension;
 				}
 				else if (!string.IsNullOrEmpty  (language)) {
-					ILanguageBinding languageBinding = GetLanguageBinding (language);
+					var languageBinding = GetLanguageBinding (language);
 					fileName = languageBinding.GetFileName (fileName);
 				} 
 			}
@@ -280,7 +280,7 @@ namespace MonoDevelop.Ide.Templates
 				ms.Write (data, 0, data.Length);
 			}
 			
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = content;
 			
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain")
@@ -405,7 +405,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		protected ILanguageBinding GetLanguageBinding (string language)
 		{
-			ILanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language);
+			var binding = LanguageBindingService.GetBindingPerLanguageName (language);
 			if (binding == null)
 				throw new InvalidOperationException ("Language '" + language + "' not found");
 			return binding;

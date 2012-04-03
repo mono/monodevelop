@@ -101,6 +101,7 @@
 	<Style name="marker.whitespace" color="aluminium3"/>
 	<Style name="marker.invalidline" color="orange1"/>
 	<Style name="marker.bracket" color="aluminium4" bgColor="aluminium5"/>
+	<Style name="marker.usages" color="aluminium4" bgColor="aluminium5"/>
 	
 	<Style name="marker.bookmark.color1" color="aluminium1"/>
 	<Style name="marker.bookmark.color2" color="aluminium4"/>
@@ -174,5 +175,6 @@
 	
 	<Style name="keyword.semantic.type" color="IdentifierVim"/>
 	<Style name="keyword.semantic.field" color="NormalVim" weight="Italic"/>
+	<Style name="keyword.semantic.error" color="scarletred1"/>
 	
 </EditorStyle>

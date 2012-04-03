@@ -99,10 +99,10 @@ namespace Mono.TextEditor
 		
 		public new TextEditor Editor {
 			get {
-				return this.editor;
+				return editor;
 			}
 			set {
-				this.editor = value;
+				editor = value;
 			}
 		}
 		
@@ -147,7 +147,7 @@ namespace Mono.TextEditor
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
 			editor.Destroyed += HandleEditorDestroy;
-			Gdk.Rectangle geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
+			var geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
 			int x = System.Math.Min (ox + editor.Allocation.Width - req.Width / 2, geometry.X + geometry.Width - req.Width);
 			int y = System.Math.Min (oy + editor.Allocation.Height - req.Height / 2, geometry.Y + geometry.Height - req.Height);
@@ -161,7 +161,7 @@ namespace Mono.TextEditor
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
 			editor.Destroyed += HandleEditorDestroy;
-			Gdk.Rectangle geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
+			var geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
 			x = System.Math.Min (x, geometry.X + geometry.Width - req.Width);
 			HelpWindow.Move (ox + x, oy + y - req.Height / 2);
@@ -190,7 +190,7 @@ namespace Mono.TextEditor
 		}
 		
 		public List<InsertionPoint> InsertionPoints {
-			get { return this.insertionPoints; }
+			get { return insertionPoints; }
 		}
 		
 		public InsertionCursorEditMode (TextEditor editor, List<InsertionPoint> insertionPoints)
@@ -243,12 +243,12 @@ namespace Mono.TextEditor
 			editor.TextViewMargin.AddDrawer (drawer);
 			editor.CurrentMode = this;
 			
-			editor.ScrollTo (insertionPoints[CurIndex].Location);
+			editor.ScrollTo (insertionPoints [CurIndex].Location);
 			editor.QueueDraw ();
 			
-			SetHelpWindowPosition ();
 			ShowHelpWindow (false);
 			editor.SizeAllocated += HandleEditorSizeAllocated;
+			SetHelpWindowPosition ();
 		}
 		
 		public override void DestroyHelpWindow ()
@@ -261,14 +261,12 @@ namespace Mono.TextEditor
 		{
 			SetHelpWindowPosition ();
 		}
-		
+		const int HelpWindowMargin = 2;
 		void SetHelpWindowPosition ()
 		{
-			int y = (int)(editor.LineToY (insertionPoints[CurIndex].Location.Line) - editor.VAdjustment.Value);
-			double x1, x2, d;
-			drawer.CalculateLineStarts (out x1, out x2, out d);
-			
-			PositionHelpWindow ((int)x2 + 8, y);
+			int y = (int)(editor.LineToY (insertionPoints [CurIndex].Location.Line) - editor.VAdjustment.Value);
+
+			PositionHelpWindow (editor.Allocation.Width - HelpWindow.Allocation.Width - HelpWindowMargin, y);
 		}
 		
 		protected virtual void OnExited (InsertionCursorEventArgs e)
@@ -278,7 +276,7 @@ namespace Mono.TextEditor
 			editor.TextViewMargin.RemoveDrawer (drawer);
 			editor.CurrentMode = oldMode;
 			
-			EventHandler<InsertionCursorEventArgs> handler = this.Exited;
+			var handler = Exited;
 			if (handler != null)
 				handler (this, e);
 			
@@ -290,7 +288,9 @@ namespace Mono.TextEditor
 		class CursorDrawer : MarginDrawer
 		{
 			InsertionCursorEditMode mode;
-			
+			static readonly Cairo.Color LineColor = HslColor.Parse ("#7f6a00");
+
+
 			public CursorDrawer (InsertionCursorEditMode mode)
 			{
 				this.mode = mode;
@@ -298,7 +298,7 @@ namespace Mono.TextEditor
 			
 			void DrawArrow (Cairo.Context g, double x, double y)
 			{
-				TextEditor editor = mode.editor;
+				var editor = mode.editor;
 				double phi = 1.618;
 				double arrowLength = editor.LineHeight * phi;
 				double arrowHeight = editor.LineHeight / phi;
@@ -316,78 +316,52 @@ namespace Mono.TextEditor
 				g.Fill ();
 			}
 
-			
-			public void CalculateLineStarts (out double x1, out double x2, out double delta)
+			public double GetLineIndentationStart ()
 			{
 				TextEditor editor = mode.editor;
-				
-				LineSegment lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
-				LineSegment lineBelow = editor.Document.GetLine (mode.CurrentInsertionPoint.Line);
-				
-				double aboveStart = 0, aboveEnd = editor.TextViewMargin.XOffset;
-				double /*belowStart = 0,*/ belowEnd = editor.TextViewMargin.XOffset;
+
+				var lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
+				var lineBelow = editor.Document.GetLine (mode.CurrentInsertionPoint.Line);
+
+				double aboveStart = 0/*, aboveEnd = editor.TextViewMargin.XOffset*/;
+				double belowStart = 0/*, belowEnd = editor.TextViewMargin.XOffset*/;
 				int l = 0, tmp;
 				if (lineAbove != null) {
 					var wrapper = editor.TextViewMargin.GetLayout (lineAbove);
 					wrapper.Layout.IndexToLineX (lineAbove.GetIndentation (editor.Document).Length, true, out l, out tmp);
 					aboveStart = tmp / Pango.Scale.PangoScale;
-					aboveEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;
+					//aboveEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;
 					
 					if (wrapper.IsUncached)
 						wrapper.Dispose ();
 				}
 				if (lineBelow != null) {
 					var wrapper = editor.TextViewMargin.GetLayout (lineBelow);
-					int index = lineAbove != null ? lineAbove.GetIndentation (editor.Document).Length : 0;
-					if (index == 0) {
-						tmp = 0;
-					} else if (index >= lineBelow.EditableLength) {
-						tmp = wrapper.PangoWidth;
-					} else {
-						wrapper.Layout.IndexToLineX (index, true, out l, out tmp);
-					}
-					
-					//belowStart = tmp / Pango.Scale.PangoScale;
-					belowEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;
+					wrapper.Layout.IndexToLineX (lineBelow.GetIndentation (editor.Document).Length, true, out l, out tmp);
+
+					belowStart = tmp / Pango.Scale.PangoScale;
+					//belowEnd = wrapper.PangoWidth / Pango.Scale.PangoScale;
 					if (wrapper.IsUncached)
 						wrapper.Dispose ();
 				}
-					
-				delta = editor.LineHeight / 3;
-				x1 = editor.TextViewMargin.XOffset - editor.HAdjustment.Value;
-				x2 = x1;
-				if (aboveStart < belowEnd) {
-					//x1 += aboveStart;
-					x2 += belowEnd;
-				} else if (aboveStart > belowEnd) {
-					delta *= -1;
-					//x1 += belowEnd;
-					x2 += aboveStart;
-				} else {
-					//x1 += System.Math.Min (aboveStart, belowStart);
-					x2 += System.Math.Max (aboveEnd, belowEnd);
-					if (x1 == x2)
-						x2 += 50;
-				}
+				var x1 = editor.TextViewMargin.XOffset - editor.HAdjustment.Value;
+				return x1 + System.Math.Max (aboveStart, belowStart);
 			}
-			
+
 			public override void Draw (Cairo.Context cr, Cairo.Rectangle erea)
 			{
 				TextEditor editor = mode.editor;
 				
 				double y = editor.LineToY (mode.CurrentInsertionPoint.Line) - editor.VAdjustment.Value; 
-				double x1, x2, d;
-				CalculateLineStarts (out x1, out x2, out d);
-					
-				cr.MoveTo (x1, y + d);
-				cr.LineTo (x1, y);
+				double x = GetLineIndentationStart ();
+				double x2 = editor.Allocation.Width - mode.HelpWindow.Allocation.Width - InsertionCursorEditMode.HelpWindowMargin * 2;
+				cr.MoveTo (x, y);
 				cr.LineTo (x2, y);
-				cr.LineTo (x2, y - d);
-				
-				cr.Color = new Cairo.Color (1.0, 0, 0);
+
+				cr.Color = LineColor;
 				cr.Stroke ();
 				
-				DrawArrow (cr, x1 - 4, y);
+//				DrawArrow (cr, x - 4, y);
 			}
 		}
 	}
@@ -407,8 +381,8 @@ namespace Mono.TextEditor
 		
 		public InsertionCursorEventArgs (bool success, InsertionPoint insertionPoint)
 		{
-			this.Success = success;
-			this.InsertionPoint = insertionPoint;
+			Success = success;
+			InsertionPoint = insertionPoint;
 		}
 	}
 	

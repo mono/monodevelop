@@ -27,25 +27,11 @@
 using System;
 using NUnit.Framework;
 
-namespace Mono.TextEditor.Tests
+namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class CaretMoveActionTests
+	public class CaretMoveActionTests : TextEditorTestBase
 	{
-		internal static TextEditorData Create (string text)
-		{
-			TextEditorData result = new TextEditorData ();
-			if (text.IndexOf ('$') >= 0) {
-				int caretOffset = text.IndexOf ('$');
-				result.Document.Text = text.Remove (caretOffset, 1);
-				result.Caret.Offset = caretOffset;
-			} else {
-				result.Document.Text = text;
-			}
-			return result;
-			
-		}
-		
 		[Test()]
 		public void TestCaretLeft ()
 		{
@@ -211,16 +197,144 @@ $1234567890
 			CaretMoveActions.ToDocumentEnd (data);
 			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
+
+		[Test()]
+		public void TestPreviousWord ()
 		{
-			Gtk.Application.Init ();
+			var data = Create (@"word1 word2 word3$");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"word1 word2 $word3");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"word1 $word2 word3");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"$word1 word2 word3");
+		}
+
+		[Test()]
+		public void TestNextWord ()
+		{
+			var data = Create (@"$word1 word2 word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1$ word2 word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1 word2$ word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1 word2 word3$");
+		}
+
+		
+		[Test()]
+		public void TestPreviousSubword ()
+		{
+			var data = Create (@"someLongWord$");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"someLong$Word");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"some$LongWord");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"$someLongWord");
+		}
+
+		[Test()]
+		public void TestNextSubword ()
+		{
+			var data = Create (@"$someLongWord");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"some$LongWord");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"someLong$Word");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"someLongWord$");
+		}
+
+		[Test()]
+		public void TestLineStart ()
+		{
+			var data = Create (@"      someLongWord$");
+			CaretMoveActions.LineStart (data);
+			Check (data, @"$      someLongWord");
+			CaretMoveActions.LineStart (data);
+			Check (data, @"$      someLongWord");
+		}
+
+		[Test()]
+		public void TestLineFirstNonWhitespace ()
+		{
+			var data = Create (@"      someLongWord$");
+			CaretMoveActions.LineFirstNonWhitespace (data);
+			Check (data, @"      $someLongWord");
+			CaretMoveActions.LineFirstNonWhitespace (data);
+			Check (data, @"      $someLongWord");
+		}
+
+		[Test()]
+		public void TestUpLineStart ()
+		{
+			var data = Create (@"line1
+someLongWord$");
+			CaretMoveActions.UpLineStart (data);
+			Check (data, @"$line1
+someLongWord");
 		}
 		
-		[TestFixtureTearDown] 
-		public void Dispose()
+		[Test()]
+		public void TestDownLineEnd ()
 		{
+			var data = Create (@"$line1
+someLongWord");
+			CaretMoveActions.DownLineEnd (data);
+			Check (data, @"line1
+someLongWord$");
+		}
+
+		[Test()]
+		public void TestPageDown ()
+		{
+			var data = Create (@"$1
+2
+3
+4
+5
+6");
+			data.VAdjustment = new Gtk.Adjustment (
+				0, 
+				0, 
+				data.LineCount * data.LineHeight,
+				data.LineHeight,
+				2 * data.LineHeight,
+				2 * data.LineHeight);
+			CaretMoveActions.PageDown (data);
+			Check (data, @"1
+2
+$3
+4
+5
+6");
+		}
+
+		[Test()]
+		public void TestPageUp ()
+		{
+			var data = Create (@"1
+2
+3
+$4
+5
+6");
+			data.VAdjustment = new Gtk.Adjustment (
+				0, 
+				0, 
+				data.LineCount * data.LineHeight,
+				data.LineHeight,
+				2 * data.LineHeight,
+				2 * data.LineHeight);
+			CaretMoveActions.PageUp (data);
+			Check (data, @"1
+$2
+3
+4
+5
+6");
 		}
 	}
 }

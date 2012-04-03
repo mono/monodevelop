@@ -31,9 +31,9 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide;
+using MonoDevelop.TypeSystem;
+using System;
 
 namespace MonoDevelop.NUnit
 {
@@ -67,18 +67,31 @@ namespace MonoDevelop.NUnit
 			return null;
 		}
 
-		protected override SourceCodeLocation GetSourceCodeLocation (string fullClassName, string methodName)
+		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string methodName)
 		{
-			ProjectDom ctx = ProjectDomService.GetProjectDom (project);
-			IType cls = ctx.GetType (fullClassName);
+			if (fixtureTypeName == null)
+				return null;
+			var ctx = TypeSystemService.GetCompilation (project);
+			var cls = ctx.MainAssembly.GetTypeDefinition (fixtureTypeNamespace, fixtureTypeName, 0);
 			if (cls == null)
 				return null;
 			
-			foreach (IMethod met in cls.Methods) {
-				if (met.Name == methodName)
-					return new SourceCodeLocation (cls.CompilationUnit.FileName, met.Location.Line, met.Location.Column);
+			if (cls.Name != methodName) {
+				foreach (var met in cls.GetMethods ()) {
+					if (met.Name == methodName)
+						return new SourceCodeLocation (met.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+				}
+				
+				int idx = methodName != null ? methodName.IndexOf ('(') : -1;
+				if (idx > 0) {
+					methodName = methodName.Substring (0, idx);
+					foreach (var met in cls.GetMethods ()) {
+						if (met.Name == methodName)
+							return new SourceCodeLocation (met.Region.FileName, met.Region.BeginLine, met.Region.BeginColumn);
+					}
+				}
 			}
-			return new SourceCodeLocation (cls.CompilationUnit.FileName, cls.Location.Line, cls.Location.Column);
+			return new SourceCodeLocation (cls.Region.FileName, cls.Region.BeginLine, cls.Region.BeginColumn);
 		}
 		
 		public override void Dispose ()

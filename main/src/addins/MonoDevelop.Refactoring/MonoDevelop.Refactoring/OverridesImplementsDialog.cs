@@ -123,7 +123,7 @@ namespace MonoDevelop.Refactoring
 			buttonUnselectAll.Clicked += delegate { SelectAll (false); };
 
 			refactorer = IdeApp.Workspace.GetCodeRefactorer (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			ambience = AmbienceService.GetAmbienceForFile (cls.CompilationUnit.FileName);
+			ambience = AmbienceService.GetAmbienceForFile (cls.GetDefinition ().Region.FileName);
 			PopulateTreeView ();
 			UpdateOKButton ();
 		}
@@ -242,7 +242,7 @@ namespace MonoDevelop.Refactoring
 			try {
 				StringBuilder code = new StringBuilder ();
 				CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Editor.Document.MimeType, editor.Editor.Options.TabsToSpaces, editor.Editor.Options.TabSize, editor.Editor.EolMarker);
-				IType declaringType = editor.CompilationUnit.GetTypeAt (cls.Location.Line, cls.Location.Column) ?? cls;
+				IType declaringType = editor.GetType (cls.Location.Line, cls.Location.Column) ?? cls;
 
 				foreach (KeyValuePair<IType, IEnumerable<TreeIter>> kvp in GetAllClasses ()) {
 					if (code.Length > 0) {

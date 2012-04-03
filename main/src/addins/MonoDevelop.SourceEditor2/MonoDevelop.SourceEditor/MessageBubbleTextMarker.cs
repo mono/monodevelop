@@ -103,7 +103,8 @@ namespace MonoDevelop.SourceEditor
 
 		Task task;
 		LineSegment lineSegment;
-		int editorAllocHeight = -1, lastLineLength = -1;
+//		int editorAllocHeight = -1;
+//		int lastLineLength = -1;
 		internal double lastHeight = 0;
 
 		public double GetLineHeight (TextEditor editor)

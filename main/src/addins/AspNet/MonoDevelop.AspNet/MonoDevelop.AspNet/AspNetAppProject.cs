@@ -37,7 +37,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Deployment;
 using MonoDevelop.Core.Assemblies;
@@ -46,7 +45,9 @@ using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Deployment;
 using MonoDevelop.AspNet.Gui;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet
 {
@@ -330,7 +331,7 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		public ProjectDom ResolveAssemblyDom (string assemblyName)
+		public ICompilation ResolveAssemblyDom (string assemblyName)
 		{
 			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
@@ -342,20 +343,20 @@ namespace MonoDevelop.AspNet
 				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
 					foreach (string refPath in reference.GetReferencedFileNames (null))
 						if (Path.GetFileName (refPath) == dllName)
-							return ProjectDomService.GetAssemblyDom (TargetRuntime, refPath);
+							return TypeSystemService.LoadAssemblyContext (TargetRuntime, refPath);
 				} else if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
 					var p = ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
 					if (p == null) {
 						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' could not be found", reference.Reference, this.Name);
 						continue;
 					}
-					return ProjectDomService.GetProjectDom (p);
+					return TypeSystemService.GetCompilation (p);
 				}
 			}
 			
 			string path = GetAssemblyPath (assemblyName);
 			if (path != null)
-				return ProjectDomService.GetAssemblyDom (TargetRuntime, path);
+				return TypeSystemService.LoadAssemblyContext (TargetRuntime, path);
 			return null;
 		}
 		
@@ -688,9 +689,9 @@ namespace MonoDevelop.AspNet
 		{
 			string typeName = GetCodebehindTypeName (fileName);
 			if (typeName != null) {
-				var dom = ProjectDomService.GetProjectDom (this);
+				var dom = TypeSystemService.GetCompilation (this);
 				if (dom != null)
-					return dom.GetType (typeName, true);
+					return dom.LookupType (typeName);
 			}
 			return null;
 		}
@@ -710,7 +711,7 @@ namespace MonoDevelop.AspNet
 			protected override string GenerateInfo (string filename)
 			{
 				try {
-					var doc = ProjectDomService.Parse (Project, filename) as AspNetParsedDocument;
+					var doc = TypeSystemService.ParseFile (filename, DesktopService.GetMimeTypeForUri (filename), File.ReadAllText (filename)) as AspNetParsedDocument;
 					if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
 						return doc.Info.InheritedClass;
 				} catch (Exception ex) {

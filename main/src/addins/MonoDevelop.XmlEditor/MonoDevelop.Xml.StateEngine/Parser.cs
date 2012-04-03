@@ -30,8 +30,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide.Gui.Content;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Xml.StateEngine
 		bool buildTree;
 		
 		int position;
-		DomLocation location;
+		TextLocation location;
 		int stateTag;
 		StringBuilder keywordBuilder;
 		int currentStateLength;
@@ -90,7 +91,7 @@ namespace MonoDevelop.Xml.StateEngine
 		#region IDocumentStateEngine
 		
 		public int Position { get { return position; } }
-		public DomLocation Location { get { return location; } }
+		public TextLocation Location { get { return location; } }
 		
 		public void Reset ()
 		{
@@ -98,8 +99,7 @@ namespace MonoDevelop.Xml.StateEngine
 			previousState = rootState;
 			position = 0;
 			stateTag = 0;
-			location.Line = 1;
-			location.Column = 1;
+			location = new TextLocation (1, 1);
 			keywordBuilder = new StringBuilder ();
 			currentStateLength = 0;
 			nodes = new NodeStack ();
@@ -126,10 +126,9 @@ namespace MonoDevelop.Xml.StateEngine
 			try {
 				//track line, column
 				if (c == '\n') {
-					location.Line++;
-					location.Column = 1;
+					location = new TextLocation (location.Line + 1, 1);
 				} else {
-					location.Column++;
+					location = new TextLocation (location.Line, location.Column + 1);
 				}
 				
 				position++;
@@ -236,8 +235,8 @@ namespace MonoDevelop.Xml.StateEngine
 				builder.AppendLine ("Errors=");
 				foreach (Error err in errors) {
 					builder.Append (' ', 4);
-					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Region.Start.Line,
-					                      err.Region.Start.Column, err.Message);
+					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Region.BeginLine,
+					                      err.Region.BeginColumn, err.Message);
 				}
 			}
 			
@@ -252,11 +251,11 @@ namespace MonoDevelop.Xml.StateEngine
 			set { stateTag = value; }
 		}
 		
-		DomLocation IParseContext.LocationMinus (int colOffset)
+		TextLocation IParseContext.LocationMinus (int colOffset)
 		{
 			int col = Location.Column - colOffset;
 			System.Diagnostics.Debug.Assert (col > 0);
-			return new DomLocation (Location.Line, col);
+			return new TextLocation (Location.Line, col);
 		}
 		
 		DomRegion LocationCurrentChar {
@@ -283,37 +282,37 @@ namespace MonoDevelop.Xml.StateEngine
 		void IParseContext.LogError (string message)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, LocationCurrentChar, message));
+				InternalLogError (new Error (ErrorType.Error, message, LocationCurrentChar));
 		}
 		
 		void IParseContext.LogWarning (string message)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, LocationCurrentChar, message));
+				InternalLogError (new Error (ErrorType.Warning, message, LocationCurrentChar));
 		}
 		
-		void IParseContext.LogError (string message, DomLocation location)
+		void IParseContext.LogError (string message, TextLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, location, message));
+				InternalLogError (new Error (ErrorType.Error, message, location));
 		}
 		
-		void IParseContext.LogWarning (string message, DomLocation location)
+		void IParseContext.LogWarning (string message, TextLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, location, message));
+				InternalLogError (new Error (ErrorType.Warning, message, location));
 		}
 		
 		void IParseContext.LogError (string message, DomRegion region)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, region, message));
+				InternalLogError (new Error (ErrorType.Error, message, region));
 		}
 		
 		void IParseContext.LogWarning (string message, DomRegion region)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, region, message));
+				InternalLogError (new Error (ErrorType.Warning, message, region));
 		}
 		
 		void InternalLogError (Error err)
@@ -367,15 +366,15 @@ namespace MonoDevelop.Xml.StateEngine
 		int StateTag { get; set; }
 		StringBuilder KeywordBuilder { get; }
 		int CurrentStateLength { get; }
-		DomLocation Location { get; }
-		DomLocation LocationMinus (int colOffset);
+		TextLocation Location { get; }
+		TextLocation LocationMinus (int colOffset);
 		State PreviousState { get; }
 		NodeStack Nodes { get; }
 		bool BuildTree { get; }
 		void LogError (string message);
 		void LogWarning (string message);
-		void LogError (string message, DomLocation location);
-		void LogWarning (string message, DomLocation location);
+		void LogError (string message, TextLocation location);
+		void LogWarning (string message, TextLocation location);
 		void LogError (string message, DomRegion region);
 		void LogWarning (string message, DomRegion region);
 		void EndAll (bool pop);

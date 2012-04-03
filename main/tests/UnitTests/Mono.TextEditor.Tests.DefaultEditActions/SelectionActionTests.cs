@@ -27,7 +27,7 @@
 using System;
 using NUnit.Framework;
 
-namespace Mono.TextEditor.Tests
+namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
 	public class SelectionActionTests
@@ -145,7 +145,7 @@ namespace Mono.TextEditor.Tests
 			Assert.IsTrue (data.IsSomethingSelected);
 			
 			Assert.AreEqual (data.SelectionRange.Offset, 0);
-			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.Length);
+			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.TextLength);
 			Assert.AreEqual (data.SelectionRange.EndOffset, data.Caret.Offset);
 		}
 		
@@ -163,17 +163,6 @@ namespace Mono.TextEditor.Tests
 			Assert.IsTrue (data.IsSomethingSelected);
 			data.Caret.Offset = 0;
 			Assert.IsFalse (data.IsSomethingSelected);
-		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
 		}
 	}
 }

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Text;
 using System.Windows.Forms;
 using CustomControls.Controls;
 using MonoDevelop.Core;
@@ -82,7 +83,7 @@ namespace MonoDevelop.Platform
 				data.SelectedFiles = paths;
 				
 				if (dlg.SelectedEncodingId != null)
-					data.Encoding = dlg.SelectedEncodingId;
+					data.Encoding = dlg.SelectedEncodingId > 0 ? Encoding.GetEncoding (dlg.SelectedEncodingId) : null;
 				if (dlg.SelectedViewer != null)
 					data.SelectedViewer = dlg.SelectedViewer;
 				

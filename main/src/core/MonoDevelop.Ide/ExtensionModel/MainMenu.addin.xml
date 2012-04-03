@@ -204,12 +204,12 @@
 		<SeparatorItem id ="AddinManagerSeparator" /> 
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
 		<SeparatorItem id = "OptionsSection" />
 		<Condition id="Platform" value="windows">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies" />
 		</Condition>
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
 	</ItemSet>
 
 	<ItemSet id = "Window" _label = "_Window">

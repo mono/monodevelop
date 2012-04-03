@@ -50,6 +50,16 @@ namespace MonoDevelop.SourceEditor
 		internal static string searchPattern = String.Empty;
 		internal static string replacePattern = String.Empty;
 
+		public TextSegment SelectionSegment {
+			get;
+			set;
+		}
+
+		public bool IsInSelectionSearchMode {
+			get;
+			set;
+		}
+
 		SourceEditorWidget widget;
 		Mono.TextEditor.TextEditorContainer textEditorContainer;
 		MonoDevelop.SourceEditor.ExtensibleTextEditor textEditor;
@@ -314,6 +324,16 @@ namespace MonoDevelop.SourceEditor
 				UpdateSearchEntry ();
 			};
 			searchEntry.Menu.Add (regexSearch);
+			
+			CheckMenuItem inselectionSearch = new CheckMenuItem (MonoDevelop.Core.GettextCatalog.GetString ("_Search In Selection"));
+			inselectionSearch.Active = IsInSelectionSearchMode;
+			inselectionSearch.DrawAsRadio = false;
+			inselectionSearch.Toggled += delegate {
+				IsInSelectionSearchMode = inselectionSearch.Active;
+				UpdateSearchEntry ();
+			};
+			searchEntry.Menu.Add (inselectionSearch);
+
 			List<string> history = GetHistory (seachHistoryProperty);
 			if (history.Count > 0) {
 				searchEntry.Menu.Add (new SeparatorMenuItem ());
@@ -520,8 +540,8 @@ But I leave it in in the case I've missed something. Mike
 		protected override void OnFocusChildSet (Widget widget)
 		{
 			base.OnFocusChildSet (widget);
-			ISegment mainResult = this.textEditor.TextViewMargin.MainSearchResult;
-			this.textEditor.TextViewMargin.HideSelection = widget == table && mainResult != null &&
+			var mainResult = this.textEditor.TextViewMargin.MainSearchResult;
+			this.textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid &&
 				this.textEditor.IsSomethingSelected && this.textEditor.SelectionRange.Offset == mainResult.Offset && this.textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
 			
 			if (this.textEditor.TextViewMargin.HideSelection)
@@ -569,7 +589,7 @@ But I leave it in in the case I've missed something. Mike
 					return;
 				}
 				textEditor.StopSearchResultAnimation ();
-				textEditor.Caret.Offset = result.EndOffset;
+				textEditor.Caret.Location = textEditor.OffsetToLocation (result.EndOffset);
 				textEditor.SetSelection (result.Offset, result.EndOffset);
 				textEditor.CenterToCaret ();
 				textEditor.AnimateSearchResult (result);
@@ -677,10 +697,10 @@ But I leave it in in the case I've missed something. Mike
 				return;
 			}
 			
-		//	bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
+			//	bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
 			string errorMsg;
 			bool valid = textEditor.SearchEngine.IsValidPattern (searchPattern, out errorMsg);
-		//	error |= !valid;
+			//	error |= !valid;
 			
 			if (!valid) {
 				IdeApp.Workbench.StatusBar.ShowError (errorMsg);
@@ -697,8 +717,8 @@ But I leave it in in the case I've missed something. Mike
 				int resultIndex = 0;
 				int foundIndex = -1;
 				int caretOffset = textEditor.Caret.Offset;
-				ISegment foundSegment = null;
-				foreach (ISegment searchResult in textEditor.TextViewMargin.SearchResults) {
+				TextSegment foundSegment = TextSegment.Invalid;
+				foreach (var searchResult in textEditor.TextViewMargin.SearchResults) {
 					if (searchResult.Offset <= caretOffset && caretOffset <= searchResult.EndOffset) {
 						foundIndex = resultIndex + 1;
 						foundSegment = searchResult;

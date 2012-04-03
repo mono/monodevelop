@@ -5,28 +5,51 @@ namespace MonoDevelop.SourceEditor
 	internal partial class SearchAndReplaceWidget
 	{
 		private global::Gtk.Table table;
+		
 		private global::Gtk.Button buttonSearchMode;
+		
 		private global::Gtk.Arrow searchButtonModeArrow;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::MonoDevelop.Components.SearchEntry searchEntry;
+		
 		private global::Gtk.Button buttonSearchBackward;
+		
 		private global::Gtk.EventBox eventbox2;
+		
 		private global::Gtk.Image image2;
+		
 		private global::Gtk.Button buttonSearchForward;
+		
 		private global::Gtk.EventBox eventbox3;
+		
 		private global::Gtk.Image image3;
+		
 		private global::Gtk.Button closeButton;
+		
 		private global::Gtk.EventBox eventbox4;
+		
 		private global::Gtk.Image image4;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Entry entryReplace;
+		
 		private global::Gtk.Button buttonReplace;
+		
 		private global::Gtk.EventBox eventbox5;
+		
 		private global::Gtk.Image image5;
+		
 		private global::Gtk.Button buttonReplaceAll;
+		
 		private global::Gtk.HBox hbox3;
+		
 		private global::Gtk.EventBox eventbox6;
+		
 		private global::Gtk.Image image6;
+		
 		private global::Gtk.Label label1;
 		
 		protected virtual void Build ()

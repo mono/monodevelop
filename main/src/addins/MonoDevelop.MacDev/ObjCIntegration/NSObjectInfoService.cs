@@ -32,8 +32,10 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.TypeSystem;
+
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 
@@ -48,36 +50,43 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		static readonly char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
 		static readonly char[] splitActionParamsChars = { ' ', '\t', '\n', '\r', '*', '(', ')' };
 		
-		readonly IReturnType nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType,
+		readonly string typeNamespace;
+		readonly string nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType,
 			iboutletAttType, ibactionAttType;
 		
-		static Dictionary<ProjectDom,NSObjectProjectInfo> infos = new Dictionary<ProjectDom, NSObjectProjectInfo> ();
+		static Dictionary<TypeSystemService.ProjectContentWrapper,NSObjectProjectInfo> infos = new Dictionary<TypeSystemService.ProjectContentWrapper, NSObjectProjectInfo> ();
+		
+		static NSObjectInfoService ()
+		{
+			TypeSystemService.ProjectUnloaded += HandleDomUnloaded;
+		}
 		
 		public NSObjectInfoService (string wrapperRoot)
 		{
 			this.WrapperRoot = wrapperRoot;
-			string foundation = wrapperRoot + ".Foundation";
-			connectAttType = new DomReturnType (foundation, "ConnectAttribute");
-			exportAttType = new DomReturnType (foundation, "ExportAttribute");
-			iboutletAttType = new DomReturnType (foundation, "OutletAttribute");
-			ibactionAttType = new DomReturnType (foundation, "ActionAttribute");
-			registerAttType = new DomReturnType (foundation, "RegisterAttribute");
-			modelAttType = new DomReturnType (foundation, "ModelAttribute");
-			nsobjectType = new DomReturnType (foundation, "NSObject");
+			typeNamespace = wrapperRoot + ".Foundation";
+			connectAttType = "ConnectAttribute";
+			exportAttType = "ExportAttribute";
+			iboutletAttType = "OutletAttribute";
+			ibactionAttType = "ActionAttribute";
+			registerAttType = "RegisterAttribute";
+			modelAttType = "ModelAttribute";
+			nsobjectType = "NSObject";
 		}
 		
 		public string WrapperRoot { get; private set; }
 		
-		public NSObjectProjectInfo GetProjectInfo (DotNetProject project)
+		public NSObjectProjectInfo GetProjectInfo (DotNetProject project, IAssembly lookinAssembly = null)
 		{
-			var dom = ProjectDomService.GetProjectDom (project);
+			var dom = TypeSystemService.GetProjectContentWrapper (project);
 			if (dom == null)
 				return null;
-			
-			return GetProjectInfo (dom);
+			project.ReferenceAddedToProject += HandleDomReferencesUpdated;
+			project.ReferenceRemovedFromProject += HandleDomReferencesUpdated;
+			return GetProjectInfo (dom, lookinAssembly);
 		}
 		
-		public NSObjectProjectInfo GetProjectInfo (ProjectDom dom)
+		public NSObjectProjectInfo GetProjectInfo (TypeSystemService.ProjectContentWrapper dom, IAssembly lookinAssembly = null)
 		{
 			NSObjectProjectInfo info;
 			
@@ -85,24 +94,25 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				if (infos.TryGetValue (dom, out info))
 					return info;
 				
+				var nso = dom.Compilation.LookupType (typeNamespace, nsobjectType);
 				//only include DOMs that can resolve NSObject
-				var nso = dom.GetType (nsobjectType);
-				if (nso == null) {
+				if (nso == null || nso.Kind == TypeKind.Unknown) {
 					infos[dom] = null;
 					return null;
 				}
 				
-				info = new NSObjectProjectInfo (dom, this);
+				info = new NSObjectProjectInfo (dom, this, lookinAssembly);
 				infos[dom] = info;
-				dom.Unloaded += HandleDomUnloaded;
-				dom.ReferencesUpdated += HandleDomReferencesUpdated;
 			}
 			return info;
 		}
 
-		static void HandleDomReferencesUpdated (object sender, EventArgs e)
+		static void HandleDomReferencesUpdated (object sender, ProjectReferenceEventArgs e)
 		{
-			var dom = (ProjectDom)sender;
+			var project = (DotNetProject)sender;
+			var dom = TypeSystemService.GetProjectContentWrapper (project);
+			if (dom == null)
+				return;
 			NSObjectProjectInfo info;
 			lock (infos) {
 				if (!infos.TryGetValue (dom, out info))
@@ -111,91 +121,95 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			info.SetNeedsUpdating ();
 		}
 
-		static void HandleDomUnloaded (object sender, EventArgs e)
+		static void HandleDomUnloaded (object sender, ProjectUnloadEventArgs e)
 		{
-			var dom = (ProjectDom)sender;
+			var project = (DotNetProject)e.Project;
+			var dom = e.Wrapper;
+			if (dom == null)
+				return;
 			lock (infos) {
-				dom.Unloaded -= HandleDomUnloaded;
-				dom.ReferencesUpdated -= HandleDomReferencesUpdated;
+				project.ReferenceAddedToProject -= HandleDomReferencesUpdated;
+				project.ReferenceRemovedFromProject -= HandleDomReferencesUpdated;
 				infos.Remove (dom);
 			}
 		}
 		
-		internal IEnumerable<NSObjectTypeInfo> GetRegisteredObjects (ProjectDom dom)
+		internal IEnumerable<NSObjectTypeInfo> GetRegisteredObjects (TypeSystemService.ProjectContentWrapper dom, IAssembly assembly)
 		{
-			var nso = dom.GetType (nsobjectType);
-			
-			if (nso == null)
+			var nso = dom.Compilation.LookupType (typeNamespace, nsobjectType);
+			if (nso == null || nso.Kind == TypeKind.Unknown)
 				throw new Exception ("Could not get NSObject from type database");
 			
 			//FIXME: only emit this for the wrapper NS
-			yield return new NSObjectTypeInfo ("NSObject", nsobjectType.FullName, null, null, false, false, false);
+//			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition ().FullName, null, null, false, false, false);
+			int cnt = 0, infcnt=0, models=0;
 			
-			foreach (var type in dom.GetSubclasses (nso, false)) {
-				var info = ConvertType (dom, type);
-				if (info != null)
-					yield return info;
+			foreach (var contextType in assembly.GetAllTypeDefinitions ()) {
+				if (contextType.IsDerivedFrom (nso)) {
+					var info = ConvertType (dom, contextType);
+					if (info != null)
+						yield return info;
+				}
 			}
 		}
 		
-		NSObjectTypeInfo ConvertType (ProjectDom dom, IType type)
+		NSObjectTypeInfo ConvertType (TypeSystemService.ProjectContentWrapper dom, ITypeDefinition type)
 		{
 			string objcName = null;
 			bool isModel = false;
 			bool registeredInDesigner = true;
-			
-			foreach (var part in type.Parts) {
-				foreach (var att in part.Attributes) {
-					if (att.AttributeType.FullName == registerAttType.FullName) {
-						if (type.SourceProject != null) {
-							registeredInDesigner &=
-								MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.CompilationUnit.FileName);
-						}
-						
-						//type registered with an explicit type name are up to the user to provide a valid name
-						// Note that the attribute now takes one *or* two parameters.
-						if (att.PositionalArguments.Count == 1 || att.PositionalArguments.Count == 2)
-							objcName = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
-						//non-nested types in the root namespace have names accessible from obj-c
-						else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
-							objcName = type.Name;
+			foreach (var att in type.Attributes) {
+				var attType = att.AttributeType;
+				if (attType.Equals (dom.Compilation.LookupType (typeNamespace, registerAttType)))  {
+					if (type.GetProjectContent () != null) {
+						registeredInDesigner &=
+							MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (att.Region.FileName);
 					}
 					
-					if (att.AttributeType.FullName == modelAttType.FullName) {
-						isModel = true;
-					}
+					//type registered with an explicit type name are up to the user to provide a valid name
+					var posArgs = att.PositionalArguments;
+					if (posArgs.Count == 1 || posArgs.Count == 2)
+						objcName = posArgs[0].ConstantValue as string;
+					//non-nested types in the root namespace have names accessible from obj-c
+					else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
+						objcName = type.Name;
+				}
+				if (attType.Equals (dom.Compilation.LookupType (typeNamespace, modelAttType))) {
+					isModel = true;
 				}
 			}
-			
 			if (string.IsNullOrEmpty (objcName))
 				return null;
-			
-			var info = new NSObjectTypeInfo (objcName, type.DecoratedFullName, null, type.BaseType.DecoratedFullName, isModel,
-				type.SourceProject != null, registeredInDesigner);
+			string baseType = type.DirectBaseTypes.First ().FullName;
+			if (baseType == "System.Object")
+				baseType = null;
+			var info = new NSObjectTypeInfo (objcName, type.FullName, null, baseType, isModel,
+					type.GetSourceProject () != null, registeredInDesigner);
 			
 			if (info.IsUserType) {
 				UpdateTypeMembers (dom, info, type);
-				info.DefinedIn = type.Parts.Select (p => (string) p.CompilationUnit.FileName).ToArray ();
+				info.DefinedIn = type.Parts.Select (p => (string) p.Region.FileName).ToArray ();
 			}
 			
 			return info;
 		}
 		
-		void UpdateTypeMembers (ProjectDom dom, NSObjectTypeInfo info, IType type)
+		void UpdateTypeMembers (TypeSystemService.ProjectContentWrapper dom, NSObjectTypeInfo info, ITypeDefinition type)
 		{
 			info.Actions.Clear ();
 			info.Outlets.Clear ();
-			
 			foreach (var prop in type.Properties) {
 				foreach (var att in prop.Attributes) {
-					bool isIBOutlet = att.AttributeType.FullName == iboutletAttType.FullName;
+					var attType = att.AttributeType;
+					bool isIBOutlet = attType.Equals (dom.Compilation.LookupType (typeNamespace, iboutletAttType));
 					if (!isIBOutlet) {
-						if (att.AttributeType.FullName != connectAttType.FullName)
+						if (!attType.Equals (dom.Compilation.LookupType (typeNamespace, connectAttType)))
 							continue;
 					}
 					string name = null;
-					if (att.PositionalArguments.Count == 1)
-						name = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
+					var posArgs = att.PositionalArguments;
+					if (posArgs.Count == 1)
+						name = posArgs[0].ConstantValue as string;
 					if (string.IsNullOrEmpty (name))
 						name = prop.Name;
 					
@@ -203,11 +217,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					// with the name 'view' on subclasses of MonoTouch.UIKit.UIViewController to avoid 
 					// conflicts with the view property mapped there
 					if (name == "view")
-						if (dom.GetInheritanceTree (type).Any (p => p.FullName == "MonoTouch.UIKit.UIViewController"))
+						if (type.GetAllBaseTypeDefinitions ().Any (p => p.FullName == "MonoTouch.UIKit.UIViewController"))
 							continue;
 					
 					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.FullName);
-					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.DeclaringType.CompilationUnit.FileName))
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.Region.FileName))
 						ol.IsDesigner = true;
 					info.Outlets.Add (ol);
 					break;
@@ -216,20 +230,22 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			foreach (var meth in type.Methods) {
 				foreach (var att in meth.Attributes) {
-					bool isIBAction = att.AttributeType.FullName == ibactionAttType.FullName;
+					var attType = att.AttributeType;
+					bool isIBAction = attType.Equals (dom.Compilation.LookupType (typeNamespace, ibactionAttType));
 					if (!isIBAction) {
-						if (att.AttributeType.FullName != exportAttType.FullName)
+						if (!attType.Equals (dom.Compilation.LookupType (typeNamespace, exportAttType)))
 							continue;
 					}
 					bool isDesigner =  MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (
-						meth.DeclaringType.CompilationUnit.FileName);
+						meth.DeclaringTypeDefinition.Region.FileName);
 					//only support Export from old designer files, user code must be IBAction
 					if (!isDesigner && !isIBAction)
 						continue;
 					
 					string[] name = null;
-					if (att.PositionalArguments.Count == 1) {
-						var n = (string)((System.CodeDom.CodePrimitiveExpression)att.PositionalArguments[0]).Value;
+					var posArgs = att.PositionalArguments;
+					if (posArgs.Count == 1 || posArgs.Count == 2) {
+						var n = posArgs[0].ConstantValue as string;
 						if (!string.IsNullOrEmpty (n))
 							name = n.Split (colonChar);
 					}
@@ -239,9 +255,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						string label = name != null && i < name.Length? name[i] : null;
 						if (label != null && label.Length == 0)
 							label = null;
-						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.ReturnType.FullName));
+						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.Type.FullName));
 					}
-					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.DeclaringType.CompilationUnit.FileName))
+					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.Region.FileName))
 						action.IsDesigner = true;
 					info.Actions.Add (action);
 					break;
@@ -352,4 +368,5 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		Removed,
 		Modified
 	}
+	
 }

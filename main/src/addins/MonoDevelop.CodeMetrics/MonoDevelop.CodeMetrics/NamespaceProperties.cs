@@ -36,10 +36,8 @@ using MonoDevelop.Core;
  
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 
 //add reference to configure.in file
 
@@ -141,47 +139,45 @@ namespace MonoDevelop.CodeMetrics
 			FilePath="";
 		}
 		
-		internal void AddInstance (IType type)
+		internal void AddInstance (ITypeDefinition type)
 		{
 			// Do not include classes that have somehow already been included
 			StringBuilder key = new StringBuilder("");
 			key.Append(type.FullName);
 			
 			foreach(var typeArg in type.TypeParameters) {
-				foreach(var constraint in typeArg.Constraints) {
-					key.Append(" " + constraint.Name);
+				foreach(var constraint in typeArg.DirectBaseTypes) {
+					key.Append(" " + constraint);
 				}
 			}
 	
-			switch(type.ClassType)
+			switch(type.Kind)
 			{
-			case ClassType.Class:
+			case TypeKind.Class:
 				AddClass(type, key);
 				break;
-			case ClassType.Delegate:
+			case TypeKind.Delegate:
 				AddDelegate(type, key);
 				break;
-			case ClassType.Enum:
+			case TypeKind.Enum:
 				AddEnum(type, key);
 				break;
-			case ClassType.Interface:
+			case TypeKind.Interface:
 				AddInterface(type, key);
 				break;
-			case ClassType.Struct:
+			case TypeKind.Struct:
 				AddStruct(type, key);
-				break;
-			case ClassType.Unknown:
 				break;
 			}
 		}
 		
-		private void AddClass (IType cls, StringBuilder key)
+		private void AddClass (ITypeDefinition cls, StringBuilder key)
 		{
 			lock(Classes)
 			{
 				foreach(var typeArg in cls.TypeParameters) {
-					foreach(var constraint in typeArg.Constraints) {
-						key.Append(constraint.Name);
+					foreach(var constraint in typeArg.DirectBaseTypes) {
+						key.Append(constraint.ToString ());
 					}
 				}
 				if(Classes.ContainsKey(key.ToString()))
@@ -190,13 +186,13 @@ namespace MonoDevelop.CodeMetrics
 			}	
 		}
 		
-		private void AddStruct (IType strct, StringBuilder key)
+		private void AddStruct (ITypeDefinition strct, StringBuilder key)
 		{
 			lock(Structs)
 			{
 				foreach(var typeArg in strct.TypeParameters) {
-					foreach(var constraint in typeArg.Constraints) {
-						key.Append(constraint.Name);
+					foreach(var constraint in typeArg.DirectBaseTypes) {
+						key.Append(constraint.ToString ());
 					}
 				}
 				if(Structs.ContainsKey(key.ToString()))
@@ -205,13 +201,13 @@ namespace MonoDevelop.CodeMetrics
 			}
 		}
 		
-		private void AddInterface (IType interfce, StringBuilder key)
+		private void AddInterface (ITypeDefinition interfce, StringBuilder key)
 		{
 			lock(Interfaces)
 			{
 				foreach(var typeArg in interfce.TypeParameters) {
-					foreach(var constraint in typeArg.Constraints) {
-						key.Append(constraint.Name);
+					foreach(var constraint in typeArg.DirectBaseTypes) {
+						key.Append(constraint.ToString ());
 					}
 				}
 				if(Interfaces.ContainsKey(key.ToString()))
@@ -220,13 +216,13 @@ namespace MonoDevelop.CodeMetrics
 			}
 		}
 		
-		private void AddEnum (IType enm, StringBuilder key)
+		private void AddEnum (ITypeDefinition enm, StringBuilder key)
 		{
 			lock(Enums)
 			{
 				foreach(var typeArg in enm.TypeParameters) {
-					foreach(var constraint in typeArg.Constraints) {
-						key.Append(constraint.Name);
+					foreach(var constraint in typeArg.DirectBaseTypes) {
+						key.Append(constraint.ToString ());
 					}
 				}
 				if(Enums.ContainsKey(key.ToString()))
@@ -235,13 +231,13 @@ namespace MonoDevelop.CodeMetrics
 			}
 		}
 		
-		private void AddDelegate (IType dlgte, StringBuilder key)
+		private void AddDelegate (ITypeDefinition dlgte, StringBuilder key)
 		{
 			lock(Delegates)
 			{
 				foreach(var typeArg in dlgte.TypeParameters) {
-					foreach(var constraint in typeArg.Constraints) {
-						key.Append(constraint.Name);
+					foreach(var constraint in typeArg.DirectBaseTypes) {
+						key.Append(constraint.ToString ());
 					}
 				}
 				if(Delegates.ContainsKey(key.ToString()))

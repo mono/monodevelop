@@ -30,15 +30,8 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class Chunk : Segment
+	public class Chunk
 	{
-		public virtual ChunkStyle GetChunkStyle (ColorSheme style)
-		{
-			if (style == null)
-				return null;
-			return style.GetChunkStyle (Style);
-		}
-
 		public Chunk Next {
 			get;
 			set;
@@ -56,24 +49,37 @@ namespace Mono.TextEditor
 			set { spanStack = value; }
 		}
 
+		public int Offset {
+			get;
+			set;
+		}
+
+		public int Length {
+			get;
+			set;
+		}
+
+		public int EndOffset {
+			get {
+				return Offset + Length;
+			}
+		}
+
 		public Chunk ()
 		{
 			Next = null;
 		}
 		
-		public Chunk (int offset, int length, string styleName) : base (offset, length)
+		public Chunk (int offset, int length, string styleName)
 		{
 			this.Style = styleName;
+			this.Offset = offset;
+			this.Length = length;
 		}
 
-		
-		public virtual string GetText (Document doc)
+		public static implicit operator TextSegment (Chunk chunk)
 		{
-			return doc.GetTextAt (this);
-		}
-		public virtual char GetCharAt (Document doc, int offset)
-		{
-			return doc.GetCharAt (offset);
+			return new TextSegment (chunk.Offset, chunk.Length);
 		}
 	}
 }

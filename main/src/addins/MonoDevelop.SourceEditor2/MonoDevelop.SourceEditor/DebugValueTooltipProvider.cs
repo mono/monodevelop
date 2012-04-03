@@ -31,30 +31,32 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Debugger;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class DebugValueTooltipProvider: ITooltipProvider
+	public class DebugValueTooltipProvider: ITooltipProvider, IDisposable
 	{
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
 		
 		public DebugValueTooltipProvider()
 		{
-			DebuggingService.CurrentFrameChanged += delegate {
-				// Clear the cached values every time the current frame changes
-				cachedValues.Clear ();
-			};
+			DebuggingService.CurrentFrameChanged += HandleCurrentFrameChanged;
+		}
+
+		void HandleCurrentFrameChanged (object sender, EventArgs e)
+		{
+			// Clear the cached values every time the current frame changes
+			cachedValues.Clear ();
 		}
 
 		#region ITooltipProvider implementation 
 		
 		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
-			if (offset >= editor.Document.Length)
+			if (offset >= editor.Document.TextLength)
 				return null;
 			
 			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)
@@ -64,7 +66,7 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null)
 				return null;
 			
-			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
+			var ed = (ExtensibleTextEditor)editor;
 			
 			string expression = null;
 			int startOffset = 0, length = 0;
@@ -73,21 +75,26 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				length = ed.SelectionRange.Length;
 			} else {
-				ResolveResult res = ed.GetLanguageItem (offset);
+				ICSharpCode.NRefactory.TypeSystem.DomRegion expressionRegion;
+				ResolveResult res = ed.GetLanguageItem (offset, out expressionRegion);
 /*				if (res is MemberResolveResult) {
 					MemberResolveResult mr = (MemberResolveResult) res;
 					if (mr.ResolvedMember == null && mr.ResolvedType != null)
 						expression = mr.ResolvedType.FullName;
 				}
 				if (expression == null)*/
-				if (res != null && res.ResolvedExpression != null) {
-					MemberResolveResult mr = res as MemberResolveResult;
-					if (mr != null && mr.ResolvedMember == null && mr.ResolvedType != null)
-						expression = mr.ResolvedType.FullName;
+				if (res != null && !res.IsError) {
+					var mr = res as MemberResolveResult;
+					if (mr != null && mr.Member == null && mr.Type != null)
+						expression = mr.Type.FullName;
 					else {
-						expression = res.ResolvedExpression.Expression;
-						startOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.Start.Line, res.ResolvedExpression.Region.Start.Column);
-						int endOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.End.Line, res.ResolvedExpression.Region.End.Column);
+						if (expressionRegion.IsEmpty)
+							return null;
+						var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
+						var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
+						expression = ed.GetTextBetween (start, end);
+						startOffset = editor.Document.LocationToOffset (start);
+						int endOffset = editor.Document.LocationToOffset (end);
 						length = endOffset - startOffset;
 					}
 				}
@@ -143,5 +150,11 @@ namespace MonoDevelop.SourceEditor
 		
 		#endregion 
 		
+		#region IDisposable implementation
+		public void Dispose ()
+		{
+			DebuggingService.CurrentFrameChanged -= HandleCurrentFrameChanged;
+		}
+		#endregion
 	}
 }

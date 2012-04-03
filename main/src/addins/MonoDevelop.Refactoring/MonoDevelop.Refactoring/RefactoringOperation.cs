@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring
 {
@@ -55,7 +56,7 @@ namespace MonoDevelop.Refactoring
 		
 		public virtual bool IsValid (RefactoringOptions options)
 		{
-			return false;
+			return true;
 		}
 		
 		public virtual List<Change> PerformChanges (RefactoringOptions options, object properties)
@@ -65,9 +66,9 @@ namespace MonoDevelop.Refactoring
 
 		public virtual void Run (RefactoringOptions options)
 		{
-			List<Change> changes = PerformChanges (options, null);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+			var changes = PerformChanges (options, null);
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Name, null);
+			RefactoringService.AcceptChanges (monitor, changes);
 		}
 	}
 }

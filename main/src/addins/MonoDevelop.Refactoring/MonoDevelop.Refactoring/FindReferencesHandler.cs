@@ -24,54 +24,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
+using System;
+using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Refactoring;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.FindInFiles;
+using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Refactoring
 {
 	public class FindReferencesHandler : CommandHandler
 	{
+		public static void FindRefs (object obj)
+		{
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					foreach (var mref in ReferenceFinder.FindReferences (solution, obj, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
+						monitor.ReportResult (mref);
+					}
+				} catch (Exception ex) {
+					if (monitor != null)
+						monitor.ReportError ("Error finding references", ex);
+					else
+						LoggingService.LogError ("Error finding references", ex);
+				} finally {
+					if (monitor != null)
+						monitor.Dispose ();
+				}
+			});
+		}
 		protected override void Run (object data)
 		{
-			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			ITextBuffer editor = doc.GetContent<ITextBuffer> ();
-			if (editor == null)
+			ResolveResult resolveResoult;
+			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
+			var entity = item as IEntity;
+			if (entity == null)
 				return;
-			int line, column;
-			editor.GetLineColumnFromPosition (editor.CursorPosition, out line, out column);
-			ProjectDom ctx = doc.Dom;
-			
-			ResolveResult resolveResult;
-			INode item;
-			CurrentRefactoryOperationsHandler.GetItem (ctx, doc, editor, out resolveResult, out item);
-			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
-			string itemName = null;
-			if (item is IMember)
-				itemName = ((IMember)item).FullName;
-			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.FullName == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
-				item = eitem;
-				eitem = null;
-			}
-			IType eclass = null;
-			if (item is IType) {
-				if (((IType)item).ClassType == ClassType.Interface)
-					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
-					eclass = (IType)item;
-				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
-					item = eitem;
-					eitem = null;
-				}
-			}
-			Refactorer refactorer = new Refactorer (ctx, doc.CompilationUnit, eclass, item, null);
-			refactorer.FindReferences ();
+			FindRefs (entity);
 		}
 	}
 }

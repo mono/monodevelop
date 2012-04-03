@@ -91,14 +91,24 @@ namespace MonoDevelop.NUnit.External
 		NunitTestInfo BuildTestInfo (Test test)
 		{
 			NunitTestInfo ti = new NunitTestInfo ();
-			
 			// The name of inherited tests include the base class name as prefix.
 			// That prefix has to be removed
 			string tname = test.TestName.Name;
 			int i = tname.LastIndexOf ('.');
 			if (i != -1)
 				tname = tname.Substring (i + 1);
-			
+			if (test.FixtureType != null) {
+				ti.FixtureTypeName = test.FixtureType.Name;
+				ti.FixtureTypeNamespace = test.FixtureType.Namespace;
+			} else if (test.TestType == "ParameterizedTest") {
+				ti.FixtureTypeName = test.Parent.FixtureType.Name;
+				ti.FixtureTypeNamespace = test.Parent.FixtureType.Namespace;
+				Console.WriteLine ("---------------------------------");
+				Console.WriteLine (test.GetType ());
+				Console.WriteLine (tname);
+				Console.WriteLine (test.TestName);
+				Console.WriteLine (test.Description);
+			}
 			ti.Name = tname;
 			ti.TestId = test.TestName.FullName;
 
@@ -139,6 +149,8 @@ namespace MonoDevelop.NUnit.External
 		public string Name;
 		public string PathName;
 		public string TestId;
+		public string FixtureTypeName;
+		public string FixtureTypeNamespace;
 		public NunitTestInfo[] Tests;
 	}
 		

@@ -255,7 +255,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		void FileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
-			if (!SyncingEnabled || updatingProjectFiles)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("Files removed from project '{0}'", dnp.Name);
@@ -280,7 +280,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 
 		void FileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
-			if (!SyncingEnabled || updatingProjectFiles)
+			if (!SyncingEnabled)
 				return;
 			
 			XC4Debug.Log ("Files added to project '{0}'", dnp.Name);
@@ -444,12 +444,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.EndTask ();
 				
 				updatingProjectFiles = true;
-				bool filesRemoved = false;
 				bool filesAdded = false;
 				bool typesAdded = false;
 				
-				// First, copy any changed/added files to MonoDevelop's project directory.
-				CopyNewAndModifiedFiles (monitor, changeCtx);
+				// First, copy any changed/added resource files to MonoDevelop's project directory.
+				CopyFilesToMD (monitor, changeCtx);
 				
 				// Then update CLI types.
 				if (UpdateCliTypes (monitor, changeCtx, out typesAdded))
@@ -459,25 +458,19 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (AddCustomClassesFromUIDefinitionFiles (monitor, changeCtx))
 					typesAdded = true;
 				
-				// Now add any newly created files to our DotNetProject.
-				if (AddNewFilesToProject (monitor, changeCtx))
+				// Finally, add any newly created resource files to the DotNetProject.
+				if (AddFilesToMD (monitor, changeCtx))
 					filesAdded = true;
 				
-				// Finally, remove any files deleted by the user in Xcode from our DotNetProject.
-				if (RemoveDeletedFilesFromProject (monitor, changeCtx))
-					filesRemoved = true;
-				
 				// Save the DotNetProject.
-				if (filesAdded || filesRemoved || typesAdded)
+				if (filesAdded || typesAdded)
 					Ide.IdeApp.ProjectOperations.Save (dnp);
 				
 				// Notify MonoDevelop of file changes.
-				var modified = new List<XcodeSyncFileBackJob> (changeCtx.FileSyncJobs.Where (job => job.Status == XcodeSyncFileStatus.Modified));
-				if (modified.Count > 0) {
-					Gtk.Application.Invoke (delegate {
-						FileService.NotifyFilesChanged (modified.Select (job => job.Original));
-					});
-				}
+				Gtk.Application.Invoke (delegate {
+					// FIXME: this should probably filter out any IsFreshlyAdded file jobs
+					FileService.NotifyFilesChanged (changeCtx.FileSyncJobs.Select (f => f.Original));
+				});
 				
 				if (typesAdded && xcode.CheckRunning ())
 					UpdateXcodeProject (monitor);
@@ -491,29 +484,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			}
 		}
 		
-		static bool SyncFile (IProgressMonitor monitor, XcodeSyncBackContext context, XcodeSyncFileBackJob file)
-		{
-			if (!Directory.Exists (file.Original.ParentDirectory))
-				Directory.CreateDirectory (file.Original.ParentDirectory);
-			
-			var tempFile = file.Original.ParentDirectory.Combine (".#" + file.Original.ParentDirectory.FileName);
-			FilePath path = context.ProjectDir.Combine (file.SyncedRelative);
-			
-			if (File.Exists (path)) {
-				File.Copy (path, tempFile);
-				FileService.SystemRename (tempFile, file.Original);
-				
-				DateTime mtime = File.GetLastWriteTime (file.Original);
-				context.SetSyncTime (file.SyncedRelative, mtime);
-				return true;
-			} else {
-				monitor.ReportWarning (string.Format ("'{0}' does not exist.", file.SyncedRelative));
-				return false;
-			}
-		}
-		
 		/// <summary>
-		/// Syncs modified resource files from the Xcode project (back) to the MonoDevelop project directory.
+		/// Copies resource files from the Xcode project (back) to the MonoDevelop project directory.
 		/// </summary>
 		/// <param name='monitor'>
 		/// A progress monitor.
@@ -521,24 +493,32 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		/// <param name='context'>
 		/// The sync context.
 		/// </param>
-		void CopyNewAndModifiedFiles (IProgressMonitor monitor, XcodeSyncBackContext context)
+		void CopyFilesToMD (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
 			if (context.FileSyncJobs.Count == 0)
 				return;
 			
-			var modified = new List<XcodeSyncFileBackJob> (context.FileSyncJobs.Where (job => job.IsNewOrModified));
-			if (modified.Count == 0)
-				return;
+			monitor.BeginStepTask ("Copying files from Xcode back to MonoDevelop...", context.FileSyncJobs.Count, 1);
 			
-			monitor.BeginStepTask (string.Format ("Copying new and modified files from Xcode back to {0}...", dnp.Name), modified.Count, 1);
-			
-			foreach (var file in modified) {
-				if (file.Status == XcodeSyncFileStatus.Modified)
-					monitor.Log.WriteLine ("Copying modified file '{0}'", file.SyncedRelative);
-				else
-					monitor.Log.WriteLine ("Copying new file '{0}'", file.SyncedRelative);
+			foreach (var file in context.FileSyncJobs) {
+				monitor.Log.WriteLine ("Copying {0} file from Xcode: {1}", file.IsFreshlyAdded ? "new" : "changed", file.SyncedRelative);
 				
-				SyncFile (monitor, context, file);
+				if (!Directory.Exists (file.Original.ParentDirectory))
+					Directory.CreateDirectory (file.Original.ParentDirectory);
+				
+				var tempFile = file.Original.ParentDirectory.Combine (".#" + file.Original.ParentDirectory.FileName);
+				FilePath path = context.ProjectDir.Combine (file.SyncedRelative);
+				
+				if (File.Exists (path)) {
+					File.Copy (path, tempFile);
+					FileService.SystemRename (tempFile, file.Original);
+					
+					DateTime mtime = File.GetLastWriteTime (file.Original);
+					context.SetSyncTime (file.SyncedRelative, mtime);
+				} else {
+					monitor.ReportWarning (string.Format ("'{0}' does not exist.", file.SyncedRelative));
+				}
+				
 				monitor.Step (1);
 			}
 			
@@ -546,7 +526,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		}
 		
 		/// <summary>
-		/// Adds any newly created content files to MonoDevelop's DotNetProject.
+		/// Adds any newly created resource files to MonoDevelop's DotNetProject.
 		/// </summary>
 		/// <param name='monitor'>
 		/// A progress monitor.
@@ -557,69 +537,26 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		/// <returns>
 		/// Returns whether or not new files were added to the project.
 		/// </returns>
-		bool AddNewFilesToProject (IProgressMonitor monitor, XcodeSyncBackContext context)
+		bool AddFilesToMD (IProgressMonitor monitor, XcodeSyncBackContext context)
 		{
+			bool filesAdded = false;
+			
 			if (context.FileSyncJobs.Count == 0)
 				return false;
 			
-			var added = new List<XcodeSyncFileBackJob> (context.FileSyncJobs.Where (job => job.Status == XcodeSyncFileStatus.Added));
-			if (added.Count == 0)
-				return false;
-			
-			monitor.BeginStepTask (string.Format ("Adding new files to {0}...", dnp.Name), added.Count, 1);
-			
-			foreach (var file in added) {
-				if (File.Exists (file.Original)) {
-					monitor.Log.WriteLine ("Adding '{0}'", file.SyncedRelative);
-					
-					string buildAction = BuildAction.Content;
-					
-					if (HasInterfaceDefinitionExtension (file.Original))
-						buildAction = BuildAction.InterfaceDefinition;
-					
-					context.Project.AddFile (file.Original, buildAction);
-				}
+			foreach (var file in context.FileSyncJobs) {
+				if (!file.IsFreshlyAdded)
+					continue;
 				
-				monitor.Step (1);
+				monitor.Log.WriteLine ("Adding '{0}' to project '{1}'", file.SyncedRelative, dnp.Name);
+				
+				FilePath path = new FilePath (file.Original);
+				string buildAction = HasInterfaceDefinitionExtension (path) ? BuildAction.InterfaceDefinition : BuildAction.Content;
+				context.Project.AddFile (path, buildAction);
+				filesAdded = true;
 			}
 			
-			monitor.EndTask ();
-			
-			return true;
-		}
-		
-		/// <summary>
-		/// Removes any deleted files from the DotNetProject.
-		/// </summary>
-		/// <param name='monitor'>
-		/// A progress monitor.
-		/// </param>
-		/// <param name='context'>
-		/// The sync context.
-		/// </param>
-		/// <returns>
-		/// Returns whether or not any files were removed from the project.
-		/// </returns>
-		bool RemoveDeletedFilesFromProject (IProgressMonitor monitor, XcodeSyncBackContext context)
-		{
-			if (context.FileSyncJobs.Count == 0)
-				return false;
-			
-			var removed = new List<XcodeSyncFileBackJob> (context.FileSyncJobs.Where (job => job.Status == XcodeSyncFileStatus.Removed));
-			if (removed.Count == 0)
-				return false;
-			
-			monitor.BeginStepTask (string.Format ("Removing deleted files from {0}...", dnp.Name), removed.Count, 1);
-			
-			foreach (var file in removed) {
-				monitor.Log.WriteLine ("Removing '{0}'", file.SyncedRelative);
-				context.Project.Files.Remove (file.Original);
-				monitor.Step (1);
-			}
-			
-			monitor.EndTask ();
-			
-			return true;
+			return filesAdded;
 		}
 		
 		protected virtual IEnumerable<NSObjectTypeInfo> GetCustomTypesFromUIDefinition (FilePath fileName)

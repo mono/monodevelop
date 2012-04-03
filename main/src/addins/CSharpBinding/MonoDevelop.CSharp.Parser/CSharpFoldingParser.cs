@@ -24,10 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
- 
+using MonoDevelop.TypeSystem;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+
 namespace MonoDevelop.CSharp.Parser
 {
 	public unsafe class CSharpFoldingParser : IFoldingParser
@@ -92,14 +94,14 @@ namespace MonoDevelop.CSharp.Parser
 
 		public unsafe ParsedDocument Parse (string fileName, string content)
 		{
-			var regionStack = new Stack<Tuple<string, DomLocation>> ();
-			var result = new ParsedDocument (fileName);
+			var regionStack = new Stack<Tuple<string, TextLocation>> ();
+			var result = new DefaultParsedDocument (fileName);
 			bool inSingleComment = false, inMultiLineComment = false;
 			bool inString = false, inVerbatimString = false;
 			bool inChar = false;
 			bool inLineStart = true, hasStartedAtLine = false;
 			int line = 1, column = 1;
-			var startLoc = DomLocation.Empty;
+			var startLoc = TextLocation.Empty;
 			
 			fixed (char* startPtr = content) {
 				char* endPtr = startPtr + content.Length;
@@ -113,7 +115,7 @@ namespace MonoDevelop.CSharp.Parser
 						ptr++;
 
 						if (StartsIdentifier (ptr, endPtr, "region")) {
-							var regionLocation = new DomLocation (line, column);
+							var regionLocation = new TextLocation (line, column);
 							column++;
 							ptr += "region".Length;
 							column += "region".Length;
@@ -145,14 +147,14 @@ namespace MonoDevelop.CSharp.Parser
 							if (nextCh == '/') {
 								hasStartedAtLine = inLineStart;
 								beginPtr = ptr + 2;
-								startLoc = new DomLocation (line, column);
+								startLoc = new TextLocation (line, column);
 								ptr++;
 								column++;
 								inSingleComment = true;
 							} else if (nextCh == '*') {
 								hasStartedAtLine = inLineStart;
 								beginPtr = ptr + 2;
-								startLoc = new DomLocation (line, column);
+								startLoc = new TextLocation (line, column);
 								ptr++;
 								column++;
 								inMultiLineComment = true;
@@ -167,8 +169,9 @@ namespace MonoDevelop.CSharp.Parser
 								ptr += 2;
 								column += 2;
 								inMultiLineComment = false;
-								result.Add (new Comment () {
-									Region = new DomRegion (startLoc, new DomLocation (line, column)),
+								result.Add (new MonoDevelop.TypeSystem.Comment () {
+									Region = new DomRegion (startLoc, new TextLocation (line, column)),
+									OpenTag = "/*",
 									CommentType = CommentType.MultiLine,
 									Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
 									CommentStartsLine = hasStartedAtLine
@@ -191,9 +194,11 @@ namespace MonoDevelop.CSharp.Parser
 							bool isDocumentation = *beginPtr == '/';
 							if (isDocumentation)
 								beginPtr++;
-							result.Add (new Comment () { 
-								Region = new DomRegion (startLoc, new DomLocation (line, column)),
+							
+							result.Add (new MonoDevelop.TypeSystem.Comment () { 
+								Region = new DomRegion (startLoc, new TextLocation (line, column)),
 								CommentType = CommentType.SingleLine, 
+								OpenTag = "//",
 								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
 								CommentStartsLine = hasStartedAtLine,
 								IsDocumentation = isDocumentation
@@ -239,6 +244,9 @@ namespace MonoDevelop.CSharp.Parser
 					column++;
 					ptr++;
 				}
+			}
+			foreach (var fold in result.Comments.ToFolds ()) {
+				result.Add (fold);
 			}
 			return result;
 		}

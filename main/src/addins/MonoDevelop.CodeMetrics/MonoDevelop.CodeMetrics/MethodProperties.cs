@@ -36,13 +36,10 @@ using MonoDevelop.Core;
  
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
 //add reference to configure.in file
 
 namespace MonoDevelop.CodeMetrics
@@ -50,7 +47,7 @@ namespace MonoDevelop.CodeMetrics
 	public sealed class MethodProperties : IProperties
 	{
 		private readonly IMethod mthd;
-		private readonly ICSharpCode.OldNRefactory.Ast.INode mthdAst;
+		private readonly AstNode mthdAst;
 		
 		public List<string> ParameterList;
 		
@@ -58,7 +55,7 @@ namespace MonoDevelop.CodeMetrics
 			get; private set; 
 		}
 		
-		public ICSharpCode.OldNRefactory.Ast.INode MethodAST {
+		public AstNode MethodAST {
 			get; private set;
 		}
 		
@@ -135,18 +132,18 @@ namespace MonoDevelop.CodeMetrics
 			mthdAst = null;
 			ParameterList = new List<string> (0);
 			foreach(var param in m.Parameters) {
-				ParameterList.Add(param.ReturnType.FullName);
+				ParameterList.Add(param.Type.ToString ());
 			}
 			
 			AfferentCoupling=0;
 			EfferentCoupling=0;
 			FilePath="";
 			this.FullName = mthd.FullName;
-			this.StartLine = mthd.BodyRegion.Start.Line;
-			this.EndLine = mthd.BodyRegion.End.Line;
+			this.StartLine = mthd.BodyRegion.BeginLine;
+			this.EndLine = mthd.BodyRegion.EndLine;
 		}
 		
-		public MethodProperties (ICSharpCode.OldNRefactory.Ast.INode m, ClassProperties prop)
+		public MethodProperties (AstNode m, ClassProperties prop)
 		{
 			mthd=null;
 			ParameterList = new List<string> (0);
@@ -172,7 +169,7 @@ namespace MonoDevelop.CodeMetrics
 		public void VisitMethodMember(MethodDeclaration node, ClassProperties prop)
 		{
 			foreach(var param in node.Parameters) {
-				ParameterList.Add(param.TypeReference.Type);
+				ParameterList.Add(param.Type.ToString ());
 			}
 			this.StartLine = node.Body.StartLocation.Line;
 			this.EndLine = node.Body.EndLocation.Line;
@@ -181,7 +178,7 @@ namespace MonoDevelop.CodeMetrics
 		public void VisitConstructorMember(ConstructorDeclaration node, ClassProperties prop)
 		{
 			foreach(var param in node.Parameters) {
-				ParameterList.Add(param.TypeReference.Type);
+				ParameterList.Add(param.Type.ToString ());
 			}
 			this.StartLine = node.Body.StartLocation.Line;
 			this.EndLine = node.Body.EndLocation.Line;

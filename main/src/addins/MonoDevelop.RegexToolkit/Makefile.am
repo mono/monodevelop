@@ -4,6 +4,7 @@ ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.RegexToolkit.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
 
@@ -21,12 +22,11 @@ REFS =  \
 FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
-	gtk-gui/MonoDevelop.RegexToolkit.RegexLibraryWindow.cs \
-	gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWindow.cs \
+	gtk-gui/MonoDevelop.RegexToolkit.ElementHelpWidget.cs \
+	gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs \
 	MonoDevelop.RegexToolkit/Commands.cs \
-	MonoDevelop.RegexToolkit/RegexLibraryWindow.cs \
-	MonoDevelop.RegexToolkit/RegexToolkitWindow.cs \
-	MonoDevelop.RegexToolkit/Webservices.cs
+	MonoDevelop.RegexToolkit/ElementHelpWidget.cs \
+	MonoDevelop.RegexToolkit/RegexToolkitWidget.cs
 
 RES =  \
 	gtk-gui/gui.stetic \

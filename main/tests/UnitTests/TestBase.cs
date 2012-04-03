@@ -29,9 +29,9 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.TypeSystem;
 
 namespace UnitTests
 {
@@ -68,7 +68,7 @@ namespace UnitTests
 			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
 			Runtime.Initialize (true);
 			Gtk.Application.Init ();
-			ProjectDomService.TrackFileChanges = true;
+			TypeSystemService.TrackFileChanges = true;
 			DesktopService.Initialize ();
 			MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
 				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_2_0);

@@ -30,28 +30,52 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Mono.TextEditor.Tests.Actions;
 
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
 	public class FoldingTests
 	{
-		[TestFixtureSetUp] 
-		public void SetUp()
+		public static TextEditorData Create (string content)
 		{
-			Gtk.Application.Init ();
+			int caretIndex = content.IndexOf ("$");
+			if (caretIndex >= 0)
+				content = content.Substring (0, caretIndex) + content.Substring (caretIndex + 1);
+
+			int selection1 = content.IndexOf ("<-");
+			int selection2 = content.IndexOf ("->");
+			
+			int selectionStart = 0;
+			int selectionEnd = 0;
+			if (0 <= selection1 && selection1 < selection2) {
+				content = content.Substring (0, selection2) + content.Substring (selection2 + 2);
+				content = content.Substring (0, selection1) + content.Substring (selection1 + 2);
+				selectionStart = selection1;
+				selectionEnd = selection2 - 2;
+				caretIndex = selectionEnd;
+			}
+
+			var data = new TextEditorData ();
+			data.Text = content;
+			if (caretIndex >= 0)
+				data.Caret.Offset = caretIndex;
+			if (selection1 >= 0) {
+				if (caretIndex == selectionStart) {
+					data.SetSelection (selectionEnd, selectionStart);
+				} else {
+					data.SetSelection (selectionStart, selectionEnd);
+				}
+			}
+			return data;
 		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}		
-		static List<FoldSegment> GetFoldSegments (Document doc)
+
+		static List<FoldSegment> GetFoldSegments (TextDocument doc)
 		{
 			List<FoldSegment> result = new List<FoldSegment> ();
 			Stack<FoldSegment> foldSegments = new Stack<FoldSegment> ();
 			
-			for (int i = 0; i < doc.Length - 1; ++i) {
+			for (int i = 0; i < doc.TextLength - 1; ++i) {
 				char ch = doc.GetCharAt (i);
 				
 				if ((ch == '+' || ch == '-') && doc.GetCharAt(i + 1) == '[') {
@@ -70,7 +94,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLogicalToVisualLine ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[1
 +[2
 3
@@ -98,7 +122,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLogicalToVisualLineStartLine ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[1
 -[2
 3
@@ -124,7 +148,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestVisualToLogicalLineStartLine ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[1
 -[2
 3
@@ -150,7 +174,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestVisualToLogicalLineCase2 ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[1
 +[2
 3
@@ -178,7 +202,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestVisualToLogicalLineCase3 ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[1
 +[2
 3
@@ -205,7 +229,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestUpdateFoldSegmentBug ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[0
 1
 +[2
@@ -256,7 +280,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug682466 ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"0
 1
 2
@@ -280,7 +304,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestVisualToLogicalLine ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[0
 +[1
 2
@@ -309,7 +333,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestCaretRight ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"1234567890
 1234567890
 123$4+[567890
@@ -325,7 +349,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestCaretLeft ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"1234567890
 1234567890
 1234+[567890
@@ -341,7 +365,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestCaretLeftCase2 ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"1234567890
 1234567890
 1234+[567890
@@ -358,7 +382,7 @@ $1234567890");
 		[Test()]
 		public void TestUpdateFoldSegmentBug2 ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[1
 2
 +[3
@@ -389,7 +413,7 @@ $1234567890");
 		[Test()]
 		public void TestGetStartFoldingsGetStartFoldings ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"+[1
 2
 3
@@ -421,7 +445,7 @@ $1234567890");
 		[Test()]
 		public void TestIsFoldedSetFolded ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[1
 2
 3
@@ -449,7 +473,7 @@ $1234567890");
 		[Test()]
 		public void TestIsFoldedUnsetFolded ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"-[1
 2
 3
@@ -477,7 +501,7 @@ $1234567890");
 		[Test()]
 		public void TestCaretDown ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"AAAAAAAA
 AAAAAAAA$
 AAAAAAAA+[BBBBBBB
@@ -499,7 +523,7 @@ AAAAAAAA
 		[Test()]
 		public void TestCaretUp ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"AAAAAAAA
 AAAAAAAA
 AAAAAAAA+[BBBBBBB
@@ -520,7 +544,7 @@ AAAAAAAA$
 		[Test()]
 		public void TestCaretUpCase2 ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"AAAAAAAA
 AAAAAAAA
 AA+[AAAAAABBBBBBB
@@ -544,7 +568,7 @@ AAAAAAAA$
 		[Test()]
 		public void TestBug1134 ()
 		{
-			var data = CaretMoveActionTests.Create (
+			var data = Create (
 @"0
 1
 -[2

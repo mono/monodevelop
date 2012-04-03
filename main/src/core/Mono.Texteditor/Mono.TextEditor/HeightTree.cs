@@ -61,54 +61,90 @@ namespace Mono.TextEditor
 
 		public void RemoveLine (int line)
 		{
-			var node = GetNodeByLine (line);
-			if (node == null)
-				return;
-			if (node.count == 1) {
-				tree.Remove (node);
-				return;
+			try {
+				var node = GetNodeByLine (line);
+				if (node == null)
+					return;
+				if (node.count == 1) {
+					tree.Remove (node);
+					return;
+				}
+				node.count--;
+			} finally {
+				OnLineUpdateFrom (new HeightChangedEventArgs (line));
 			}
-			node.count--;
 		}
 		
+		public event EventHandler<HeightChangedEventArgs> LineUpdateFrom;
+
+		protected virtual void OnLineUpdateFrom (HeightChangedEventArgs e)
+		{
+			if (rebuild)
+				return;
+			var handler = this.LineUpdateFrom;
+			if (handler != null)
+				handler (this, e);
+		}
+		
+		public class HeightChangedEventArgs : EventArgs
+		{
+			public int Line { get; set; }
+
+			public HeightChangedEventArgs (int line)
+			{
+				Line = line;
+			}
+		}
+
 		public void InsertLine (int line)
 		{
-			var node = GetNodeByLine (line);
-			if (node == null)
-				return;
-			if (node.count == 1) {
-				var newLine = new HeightNode () {
-					count = 1,
-					height = editor.LineHeight
-				};
-				tree.InsertBefore (node, newLine);
-				return;
+			try {
+				var node = GetNodeByLine (line);
+				if (node == null)
+					return;
+				if (node.count == 1) {
+					var newLine = new HeightNode () {
+						count = 1,
+						height = editor.LineHeight
+					};
+					tree.InsertBefore (node, newLine);
+					return;
+				}
+				node.count++;
+			} finally {
+				OnLineUpdateFrom (new HeightChangedEventArgs (line));
 			}
-			node.count++;
 		}
-		
+
+		bool rebuild;
 		public void Rebuild ()
 		{
-			tree.Count = 1;
-			double h = editor.LineCount * editor.LineHeight;
-			tree.Root = new HeightNode () {
-				height = h,
-				totalHeight = h,
-				totalCount = editor.LineCount,
-				totalVisibleCount = editor.LineCount,
-				count = editor.LineCount
-			};
-			
-			foreach (var extendedTextMarkerLine in editor.Document.LinesWithExtendingTextMarkers) {
-				int lineNumber = editor.OffsetToLineNumber (extendedTextMarkerLine.Offset);
-				double height = editor.GetLineHeight (extendedTextMarkerLine);
-				SetLineHeight (lineNumber, height);
-			}
-			
-			foreach (var segment in editor.Document.FoldedSegments.ToArray ()) {
-				int start = editor.OffsetToLineNumber (segment.Offset);
-				int end = editor.OffsetToLineNumber (segment.EndOffset);
-				segment.Marker = Fold (start, end - start);
+			rebuild = true;
+			try {
+				markers.Clear ();
+				tree.Count = 1;
+				double h = editor.LineCount * editor.LineHeight;
+				tree.Root = new HeightNode () {
+					height = h,
+					totalHeight = h,
+					totalCount = editor.LineCount,
+					totalVisibleCount = editor.LineCount,
+					count = editor.LineCount
+				};
+				
+				foreach (var extendedTextMarkerLine in editor.Document.LinesWithExtendingTextMarkers) {
+					int lineNumber = editor.OffsetToLineNumber (extendedTextMarkerLine.Offset);
+					double height = editor.GetLineHeight (extendedTextMarkerLine);
+					SetLineHeight (lineNumber, height);
+				}
+				
+				foreach (var segment in editor.Document.FoldedSegments.ToArray ()) {
+					int start = editor.OffsetToLineNumber (segment.Offset);
+					int end = editor.OffsetToLineNumber (segment.EndOffset);
+					segment.Marker = Fold (start, end - start);
+				}
+			} finally {
+				rebuild = false;
 			}
 		}
 		
@@ -152,6 +188,7 @@ namespace Mono.TextEditor
 					});
 				}
 			}
+			OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber));
 		}
 		
 		public class FoldMarker
@@ -166,7 +203,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		HashSet<FoldMarker> markers = new HashSet<FoldMarker> ();
+		readonly HashSet<FoldMarker> markers = new HashSet<FoldMarker> ();
 		
 		public FoldMarker Fold (int lineNumber, int count)
 		{
@@ -180,9 +217,10 @@ namespace Mono.TextEditor
 			}
 			var result = new FoldMarker (lineNumber, count);
 			markers.Add (result);
+			OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
 			return result;
 		}
-
+		
 		public void Unfold (FoldMarker marker, int lineNumber, int count)
 		{
 			if (marker == null || !markers.Contains (marker))
@@ -196,6 +234,7 @@ namespace Mono.TextEditor
 				node.foldLevel--;
 				node.UpdateAugmentedData ();
 			}
+			OnLineUpdateFrom (new HeightChangedEventArgs (lineNumber - 1));
 		}
 
 		public double LineNumberToY (int lineNumber)
@@ -276,6 +315,8 @@ namespace Mono.TextEditor
 				return tree.Root.totalCount + logicalLine - tree.Root.totalCount;
 			int line = GetValidLine (logicalLine);
 			var node = GetNodeByLine (line);
+			if (node == null)
+				return tree.Root.totalCount + logicalLine - tree.Root.totalCount;
 			int delta = logicalLine - node.GetLineNumber ();
 			return node.GetVisibleLineNumber () + delta;
 		}

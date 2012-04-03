@@ -346,7 +346,7 @@ namespace MonoDevelop.ValaBinding
 		#endregion
 		
 		// Yoinked from C# binding
-		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		void UpdatePath (object sender, Mono.TextEditor.TextDocumentLocationEventArgs e)
 		{
 			var unit = Document.CompilationUnit;
 			if (unit == null)

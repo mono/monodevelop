@@ -5,26 +5,47 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class ColorShemeEditor
 	{
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.Entry entryName;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.Entry entryDescription;
+		
 		private global::Gtk.HPaned hpaned1;
+		
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
 		private global::Gtk.TreeView treeviewColors;
+		
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.ColorButton colorbuttonBg;
+		
 		private global::Gtk.ColorButton colorbuttonFg;
+		
 		private global::Gtk.Label label4;
+		
 		private global::Gtk.Label label5;
+		
 		private global::Gtk.CheckButton checkbuttonBold;
+		
 		private global::Gtk.CheckButton checkbuttonItalic;
+		
 		private global::Gtk.Label label6;
+		
 		private global::Gtk.ScrolledWindow scrolledwindowTextEditor;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 		
 		protected virtual void Build ()

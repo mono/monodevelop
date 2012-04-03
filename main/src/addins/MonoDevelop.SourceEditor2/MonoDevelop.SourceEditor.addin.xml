@@ -7,16 +7,16 @@
        description = "Provides a text editor for the MonoDevelop based on Mono.TextEditor"
        category    = "MonoDevelop Core"
        flags       = "Hidden"
-       version     = "2.8.8.1">
+       version     = "2.9.4">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.SourceEditor2.dll"/>
 	</Runtime>
 	
 	<Dependencies>
-	    <Addin id="Core" version="2.8.8.1"/>
-		<Addin id="Ide" version="2.8.8.1"/>
-		<Addin id="Debugger" version="2.8.8.1"/>
+	    <Addin id="Core" version="2.9.4"/>
+		<Addin id="Ide" version="2.9.4"/>
+		<Addin id="Debugger" version="2.9.4"/>
 	</Dependencies>
 
 	<!-- Extension points -->
@@ -34,6 +34,11 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar" name = "Scroll bar context menu">
+		<Description>Context menu for the navigation bar.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor" name = "Editor context menu">
 		<Description>Context menu for the editor's icon margin.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
@@ -78,7 +83,6 @@
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
-		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
 		<Class id="CompileError" class="MonoDevelop.SourceEditor.CompileErrorTooltipProvider" />
 	</Extension>
 	
@@ -120,6 +124,23 @@
 				_label = ""
 				type="array"/>
 				
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top"
+				_label = "_Top"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Bottom"
+				_label = "_Bottom"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgUp"
+				_label = "_Page Up"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgDown"
+				_label = "P_age Down"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowScrollBar"
+				_label = "Show _Scroll Bar Mode"
+				type="radio"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowTasks"
+				_label = "Show _Tasks"
+				type="radio"/>
+		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMinimap"
+				_label = "Show _Minimap"
+				type="radio"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
@@ -143,6 +164,22 @@
 		<SeparatorItem id = "Separator3" />
 		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar">
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Bottom" />
+		<SeparatorItem id = "Separator1" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgUp" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgDown" />
+		<SeparatorItem id = "Separator2" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowScrollBar" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowTasks" />
+		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMinimap" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/NavigationBar">
+		<CommandItem id = "MonoDevelop.SourceEditor.NavigationBarCommands.ToggleNavPanelViews" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/IconContextMenu/Editor">

@@ -619,7 +619,7 @@ namespace MonoDevelop.Gettext
 			this.isUpdating = true;
 			try {
 				currentEntry = entry;
-				this.texteditorOriginal.Caret.Offset = 0;
+				this.texteditorOriginal.Caret.Location = new DocumentLocation (1, 1);
 				this.texteditorOriginal.Document.Text = entry != null ? entry.String : "";
 				this.texteditorOriginal.VAdjustment.Value = this.texteditorOriginal.HAdjustment.Value = 0;
 				
@@ -632,7 +632,7 @@ namespace MonoDevelop.Gettext
 				this.notebookTranslated.ShowTabs = entry != null && entry.HasPlural;
 				
 				if (entry != null && entry.HasPlural) {
-					this.texteditorPlural.Caret.Offset = 0;
+					this.texteditorPlural.Caret.Location = new DocumentLocation (1, 1);
 					this.texteditorPlural.Document.Text = entry.PluralString;
 					this.texteditorPlural.VAdjustment.Value = this.texteditorPlural.HAdjustment.Value = 0;
 //					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {

@@ -41,6 +41,7 @@ using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Core.Instrumentation;
+using System.Text;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -1352,7 +1353,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 				}
 				if (node == null)
-					node = new DataValue (bprop.Name, Projects.Dom.Output.AmbienceService.UnescapeText (bprop.Value));
+					node = new DataValue (bprop.Name, UnescapeText (bprop.Value));
 				
 				ConvertFromMsbuildFormat (node);
 				ditem.ItemData.Add (node);
@@ -1552,7 +1553,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string GetXmlString (DataNode node)
 		{
 			if (node is DataValue)
-				return Projects.Dom.Output.AmbienceService.EscapeText (((DataValue)node).Value);
+				return EscapeText (((DataValue)node).Value);
 			else {
 				StringWriter sw = new StringWriter ();
 				XmlTextWriter xw = new XmlTextWriter (sw);
@@ -1604,6 +1605,84 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static readonly IList<string> UnsupportedItems = new string[] {
 			"BootstrapperFile", "AppDesigner", "WebReferences", "WebReferenceUrl", "Service"
 		};
+		
+		public static string EscapeText (string text)
+		{
+			var result = new StringBuilder ();
+			foreach (char ch in text) {
+				switch (ch) {
+				case '<':
+					result.Append ("&lt;");
+					break;
+				case '>':
+					result.Append ("&gt;");
+					break;
+				case '&':
+					result.Append ("&amp;");
+					break;
+				case '\'':
+					result.Append ("&apos;");
+					break;
+				case '"':
+					result.Append ("&quot;");
+					break;
+				default:
+					int charValue = (int)ch;
+					if (IsSpecialChar (charValue)) {
+						result.AppendFormat ("&#x{0:X};", charValue);
+					} else {
+						result.Append (ch);
+					}
+					break;
+				}
+			}
+			return result.ToString ();
+		}
+		
+		static bool IsSpecialChar (int charValue)
+		{
+			return 
+				0x01 <= charValue && charValue <= 0x08 ||
+				0x0B <= charValue && charValue <= 0x0C ||
+				0x0E <= charValue && charValue <= 0x1F ||
+				0x7F <= charValue && charValue <= 0x84 ||
+				0x86 <= charValue && charValue <= 0x9F;
+		}
+		
+		public static string UnescapeText (string text)
+		{
+			var sb = new StringBuilder ();
+			for (int i = 0; i < text.Length; i++) {
+				char ch = text [i];
+				if (ch == '&') {
+					int end = text.IndexOf (';', i);
+					if (end == -1)
+						break;
+					string entity = text.Substring (i + 1, end - i - 1);
+					switch (entity) {
+					case "lt":
+						sb.Append ('<');
+						break;
+					case "gt":
+						sb.Append ('>');
+						break;
+					case "amp":
+						sb.Append ('&');
+						break;
+					case "apos":
+						sb.Append ('\'');
+						break;
+					case "quot":
+						sb.Append ('"');
+						break;
+					}
+					i = end;
+				} else {
+					sb.Append (ch);
+				}
+			}
+			return sb.ToString ();	
+		}
 	}
 	
 	class MSBuildSerializer: DataSerializer

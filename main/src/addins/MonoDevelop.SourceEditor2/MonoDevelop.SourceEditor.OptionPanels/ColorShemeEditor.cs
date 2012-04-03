@@ -73,7 +73,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		}
 		
 		TextEditor textEditor;
-		ColorSheme colorSheme;
+		ColorScheme colorSheme;
 		Gtk.TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(ChunkStyle), typeof(ColorMetaData));
 		string fileName;
 		HighlightingPanel panel;
@@ -114,6 +114,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 			new ColorMetaData ("marker.bracket", GettextCatalog.GetString ("Bracket marker"), ColorsAvailable.FgBg),
 			
+			new ColorMetaData ("marker.usages", GettextCatalog.GetString ("Usages marker"), ColorsAvailable.FgBg),
 			
 			new ColorMetaData ("marker.bookmark.color1", GettextCatalog.GetString ("Bookmark marker color 1"), ColorsAvailable.Fg),
 			new ColorMetaData ("marker.bookmark.color2", GettextCatalog.GetString ("Bookmark marker color 2"), ColorsAvailable.Fg),
@@ -199,6 +200,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 			new ColorMetaData ("keyword.semantic.type", GettextCatalog.GetString ("Types (semantic)"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.semantic.field", GettextCatalog.GetString ("Field (semantic)"), ColorsAvailable.Text),
+			new ColorMetaData ("keyword.semantic.error", GettextCatalog.GetString ("Error (semantic)"), ColorsAvailable.Text),
 			
 			new ColorMetaData ("keyword", GettextCatalog.GetString ("Keywords"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.access", GettextCatalog.GetString ("Access keywords"), ColorsAvailable.Text),
@@ -265,7 +267,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 		}
 
-		void ApplyStyle (ColorSheme sheme)
+		void ApplyStyle (ColorScheme sheme)
 		{
 			sheme.Name = entryName.Text;
 			sheme.Description = entryDescription.Text;
@@ -280,6 +282,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 		}
 
+		public static void RefreshAllColors ()
+		{
+			foreach (var doc in Ide.IdeApp.Workbench.Documents) {
+				var editor = doc.Editor;
+				if (editor == null)
+					continue;
+				doc.UpdateParseDocument ();
+				editor.Parent.TextViewMargin.PurgeLayoutCache ();
+				editor.Document.CommitUpdateAll ();
+			}
+		
+		}
+
 		void HandleButtonOkClicked (object sender, EventArgs e)
 		{
 			ApplyStyle (colorSheme);
@@ -289,6 +304,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			} catch (Exception ex) {
 				MessageService.ShowException (ex);
 			}
+			RefreshAllColors ();
 		}
 
 		void Stylechanged (object sender, EventArgs e)
@@ -345,7 +361,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.checkbuttonItalic.Sensitive = true;
 		}
 		
-		public void SetSheme (ColorSheme style)
+		public void SetSheme (ColorScheme style)
 		{
 			if (style == null)
 				throw new ArgumentNullException ("style");
@@ -369,6 +385,7 @@ class Example
 				colorStore.AppendValues (data.Description, style.GetChunkStyle (data.Name), data);
 			}
 			Stylechanged (null, null);
+			
 		}
 	}
 }

@@ -416,6 +416,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			return meth;
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[NSObjectTypeInfo: ObjCName={0}, CliName={1}, IsModel={2}, BaseObjCType={3}, BaseCliType={4}, BaseIsModel={5}, IsUserType={6}, IsRegisteredInDesigner={7}, Outlets={8}, Actions={9}, DefinedIn={10}, UserTypeReferences={11}]", ObjCName, CliName, IsModel, BaseObjCType, BaseCliType, BaseIsModel, IsUserType, IsRegisteredInDesigner, Outlets, Actions, DefinedIn, UserTypeReferences);
+		}
 	}
 	
 	class ObjectiveCGenerationException : Exception

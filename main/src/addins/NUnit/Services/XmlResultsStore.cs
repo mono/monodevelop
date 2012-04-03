@@ -280,7 +280,7 @@ namespace MonoDevelop.NUnit
 		string GetRootFileName (string configuration, DateTime date)
 		{
 			// Filter out all invalid path characters in the file name (see: Bug 3023 - Running NUnit tests throws ArgumentException: Illegal Characters in path)
-			var filteredConfiguration = new string (configuration.Where (c => !Path.InvalidPathChars.Any (i => c == i)).ToArray ());
+			var filteredConfiguration = new string (configuration.Where (c => !Path.GetInvalidPathChars ().Any (i => c == i)).ToArray ());
 			return storeId + "-" + filteredConfiguration + "-" + date.ToString ("yyyy-MM-dd", CultureInfo.InvariantCulture) + ".xml";
 		}
 		

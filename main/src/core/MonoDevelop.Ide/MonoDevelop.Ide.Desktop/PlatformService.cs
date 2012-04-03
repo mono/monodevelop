@@ -77,8 +77,10 @@ namespace MonoDevelop.Ide.Desktop
 		public string GetMimeTypeForUri (string uri)
 		{
 			if (!String.IsNullOrEmpty (uri)) {
-				FileInfo file = new FileInfo (uri);
-				MimeTypeNode mt = FindMimeTypeForFile (file.Name);
+// Creating file infos is expensive, should be avoided 
+//				FileInfo file = new FileInfo (uri);
+//				MimeTypeNode mt = FindMimeTypeForFile (file.Name);
+				MimeTypeNode mt = FindMimeTypeForFile (uri);
 				if (mt != null)
 					return mt.Id;
 			}

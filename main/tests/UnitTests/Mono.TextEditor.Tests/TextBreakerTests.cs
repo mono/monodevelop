@@ -33,12 +33,12 @@ using System.Collections.Generic;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class TextBreakerTests
+	public class TextBreakerTests : TextEditorTestBase
 	{
 		[Test()]
 		public void TestTextBreakerWithSingleWord ()
 		{
-			List<ISegment> segments = BreakAllLines ("Word");
+			var segments = BreakAllLines ("Word");
 			Assert.That (segments.Count, Is.EqualTo (1));
 			Assert.That (segments [0].Offset, Is.EqualTo (0));
 			Assert.That (segments [0].Length, Is.EqualTo (4));
@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestTextBreakerWithSingleWordWrappedInSpaces ()
 		{
-			List<ISegment> segments = BreakAllLines (" Word ");
+			var segments = BreakAllLines (" Word ");
 			Assert.That (segments.Count, Is.EqualTo (3));
 			Assert.That (segments [0].Offset, Is.EqualTo (0));
 			Assert.That (segments [0].Length, Is.EqualTo (1));
@@ -60,7 +60,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestTextBreakerWithMultipleLines ()
 		{
-			List<ISegment> segments = BreakAllLines ("SomeText\nTwo Words");
+			var segments = BreakAllLines ("SomeText\nTwo Words");
 			Assert.That (segments.Count, Is.EqualTo (4));
 			Assert.That (segments [0].Offset, Is.EqualTo (0));
 			Assert.That (segments [0].Length, Is.EqualTo (8));
@@ -75,14 +75,14 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void Bug666274_CheckLeftHandSideWordBreaking ()
 		{
-			List<ISegment> segments = BreakAllLines ("			//Set points in panel");
+			var segments = BreakAllLines ("			//Set points in panel");
 			Assert.That(segments.Count, Is.EqualTo(12));
 		}
 
 		[Test()]
 		public void Bug666274_CheckRightHandSideWordBreaking ()
 		{
-			List<ISegment> segments = BreakAllLines (@"			if (WarFoundryCore.CurrentArmy != null)
+			var segments = BreakAllLines (@"			if (WarFoundryCore.CurrentArmy != null)
 			{
 				lblTotalPoints.Text = Translation.GetTranslation(""statusPanelPoints"", ""{0}pts of {1} pts"", WarFoundryCore.CurrentArmy.Points, WarFoundryCore.CurrentArmy.MaxPoints);
 			}
@@ -95,23 +95,17 @@ namespace Mono.TextEditor.Tests
 
 		public TextEditor CreateEditor (string editorText)
 		{
-			return new TextEditor (new Document (editorText));
+			return new TextEditor (new TextDocument (editorText));
 		}
 
-		public List<ISegment> BreakAllLines (String editorText)
+		public List<TextSegment> BreakAllLines (String editorText)
 		{
 			return BreakAllLines (CreateEditor (editorText));
 		}
 
-		public List<ISegment> BreakAllLines (TextEditor editor)
+		public List<TextSegment> BreakAllLines (TextEditor editor)
 		{
 			return TextBreaker.BreakLinesIntoWords (editor.Document, 1, editor.LineCount, false);
-		}
-
-		[TestFixtureSetUp] 
-		public void SetUp ()
-		{
-			Gtk.Application.Init ();
 		}
 	}
 }

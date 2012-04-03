@@ -34,7 +34,7 @@ namespace Mono.TextEditor.Utils
 	public class TextBreaker
 	{
 		/// <summary>
-		/// Breaks the lines into words in the form of a list of <see cref="ISegment">ISegments</see>. A 'word' is defined as an identifier (a series of letters, digits or underscores)
+		/// Breaks the lines into words in the form of a list of <see cref="TextSegment">TextSegments</see>. A 'word' is defined as an identifier (a series of letters, digits or underscores)
 		/// or a single non-identifier character (including white space characters)
 		/// </summary>
 		/// <returns>
@@ -49,14 +49,14 @@ namespace Mono.TextEditor.Utils
 		/// <param name='lineCount'>
 		/// The number of lines to get words from
 		/// </param>
-		public static List<ISegment> BreakLinesIntoWords (TextEditor editor, int startLine, int lineCount)
+		public static List<TextSegment> BreakLinesIntoWords (TextEditor editor, int startLine, int lineCount, bool includeDelimiter = true)
 		{
-			return BreakLinesIntoWords (editor.Document, startLine, lineCount);
+			return BreakLinesIntoWords (editor.Document, startLine, lineCount, includeDelimiter);
 		}
 
 		
 		/// <summary>
-		/// Breaks the lines into words in the form of a list of <see cref="ISegment">ISegments</see>. A 'word' is defined as an identifier (a series of letters, digits or underscores)
+		/// Breaks the lines into words in the form of a list of <see cref="TextSegment">TextSegments</see>. A 'word' is defined as an identifier (a series of letters, digits or underscores)
 		/// or a single non-identifier character (including white space characters)
 		/// </summary>
 		/// <returns>
@@ -71,9 +71,9 @@ namespace Mono.TextEditor.Utils
 		/// <param name='lineCount'>
 		/// The number of lines to get words from
 		/// </param>
-		public static List<ISegment> BreakLinesIntoWords (Document document, int startLine, int lineCount, bool includeDelimiter = true)
+		public static List<TextSegment> BreakLinesIntoWords (TextDocument document, int startLine, int lineCount, bool includeDelimiter = true)
 		{
-			var result = new List<ISegment> ();
+			var result = new List<TextSegment> ();
 			for (int line = startLine; line < startLine + lineCount; line++) {
 				var lineSegment = document.GetLine (line);
 				int offset = lineSegment.Offset;
@@ -84,19 +84,19 @@ namespace Mono.TextEditor.Utils
 					bool isIdentifierPart = char.IsLetterOrDigit (ch) || ch == '_';
 					if (!isIdentifierPart) {
 						if (wasIdentifierPart) {
-							result.Add (new Mono.TextEditor.Segment (offset + lastWordEnd, i - lastWordEnd));
+							result.Add (new TextSegment (offset + lastWordEnd, i - lastWordEnd));
 						}
-						result.Add (new Mono.TextEditor.Segment (offset + i, 1));
+						result.Add (new TextSegment (offset + i, 1));
 						lastWordEnd = i + 1;
 					}
 					wasIdentifierPart = isIdentifierPart;
 				}
 				
 				if (lastWordEnd != lineSegment.EditableLength) {
-					result.Add (new Mono.TextEditor.Segment (offset + lastWordEnd, lineSegment.EditableLength - lastWordEnd));
+					result.Add (new TextSegment (offset + lastWordEnd, lineSegment.EditableLength - lastWordEnd));
 				}
 				if (includeDelimiter && lineSegment.DelimiterLength > 0)
-					result.Add (new Mono.TextEditor.Segment (lineSegment.Offset + lineSegment.EditableLength, lineSegment.DelimiterLength));
+					result.Add (new TextSegment (lineSegment.Offset + lineSegment.EditableLength, lineSegment.DelimiterLength));
 			}
 			
 			return result;

@@ -2,25 +2,45 @@
 // Authors:
 //   Ben Motmans  <ben.motmans@gmail.com>
 //
+
 // Copyright (c) 2007 Ben Motmans
+
 //
+
 // Permission is hereby granted, free of charge, to any person obtaining a copy
+
 // of this software and associated documentation files (the "Software"), to deal
+
 // in the Software without restriction, including without limitation the rights
+
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+
 // copies of the Software, and to permit persons to whom the Software is
+
 // furnished to do so, subject to the following conditions:
+
 // 
+
 // The above copyright notice and this permission notice shall be included in
+
 // all copies or substantial portions of the Software.
+
 // 
+
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+
 // THE SOFTWARE.
+
 //
 
 using Gtk;
@@ -417,32 +437,6 @@ namespace MonoDevelop.Database.Components
 			
 			sbyte b = (sbyte)obj;
 			return b.ToString ("N");
-		}
-
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Copy)]
-		protected void CopyCommand ()
-		{
-			Gtk.TreePath[] selectedRows = grid.Selection.GetSelectedRows ();
-			string result = String.Empty;
-			TreeIter iter;
-			for (int i = 0; i < selectedRows.Length; i++) {
-				store.GetIter (out iter,selectedRows[i]);
-				string [] row = new string[columnCount];
-				for (int j = 0; j < columnCount; j++) {
-					object val = store.GetValue (iter,j);
-					row[j] =  val != null ? val.ToString (): String.Empty;
-				}
-				result += String.Join ("\t",row);
-				result += System.Environment.NewLine;
-			}
-			Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = result;
-		}
-
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.SelectAll)]
-		protected void SelectAllCommand ()
-		{
-			grid.Selection.SelectAll ();
 		}
 		
 		[CommandHandler (DataGridCommands.VisualizeAsList)]

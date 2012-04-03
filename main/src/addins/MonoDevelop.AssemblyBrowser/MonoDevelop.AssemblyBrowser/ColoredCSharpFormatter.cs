@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using ICSharpCode.NRefactory;
 
 using System;
 using System.Text;
@@ -33,30 +34,59 @@ using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	public class ReferenceSegment : Segment
+	public class ReferenceSegment
 	{
+		public TextSegment Segment {
+			get;
+			set;
+		}
+
 		public object Reference {
 			get;
 			set;
 		}
 		
-		public ReferenceSegment (int offset, int length, object reference) : base (offset, length)
+		public ReferenceSegment (int offset, int length, object reference)
 		{
 			this.Reference = reference;
+			this.Segment = new TextSegment (offset, length);
+		}
+
+		public int Offset {
+			get {
+				return Segment.Offset;
+			}
+		}
+
+		public int Length {
+			get {
+				return Segment.Length;
+			}
+		}
+
+		public int EndOffset {
+			get {
+				return Segment.EndOffset;
+			}
+		}
+
+		public static implicit operator TextSegment (ReferenceSegment referenceSegment)
+		{
+			return referenceSegment.Segment;
 		}
 	}
 	
 		
-	public class ColoredCSharpFormatter : ITextOutput
+	public class ColoredCSharpFormatter : ICSharpCode.Decompiler.ITextOutput
 	{
 		public StringBuilder sb = new StringBuilder();
-		Document doc;
+		TextDocument doc;
 		bool write_indent;
 		int indent;
 		public List<FoldSegment>      FoldSegments       = new List<FoldSegment>();
 		public List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
 		
-		public ColoredCSharpFormatter (Document doc)
+		public ColoredCSharpFormatter (TextDocument doc)
 		{
 			this.doc = doc;
 		}
@@ -75,9 +105,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		public TextOutputLocation Location {
+		public TextLocation Location {
 			get {
-				return new TextOutputLocation () { Line = currentLine, Column = 1};
+				return new TextLocation (currentLine, 1);
 			}
 		}
 		
@@ -119,13 +149,17 @@ namespace MonoDevelop.AssemblyBrowser
 			currentLine++;
 		}
 
-		public void WriteDefinition (string text, object definition)
+		public void WriteDefinition (string text, object definition, bool isLocal)
 		{
 			WriteIndent ();
 			sb.Append (text);
 		}
 
-		public void WriteReference (string text, object reference)
+		public void AddDebuggerMemberMapping (ICSharpCode.Decompiler.MemberMapping memberMapping)
+		{
+		}
+
+		public void WriteReference (string text, object reference, bool isLocal)
 		{
 			WriteIndent ();
 			ReferencedSegments.Add (new ReferenceSegment (sb.Length, text.Length, reference));

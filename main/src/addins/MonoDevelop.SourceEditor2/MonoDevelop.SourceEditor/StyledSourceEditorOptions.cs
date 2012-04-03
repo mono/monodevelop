@@ -30,6 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -102,15 +103,22 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public bool TabsToSpaces {
-			get { return CurrentPolicy.TabsToSpaces; }
+		public int IndentationSize {
+			get { return CurrentPolicy.IndentWidth; }
 			set {
 				throw new NotSupportedException ();
 			}
 		}
 
-		public bool RemoveTrailingWhitespaces {
-			get { return CurrentPolicy.RemoveTrailingWhitespace; }
+		public IndentStyle IndentStyle {
+			get { return CurrentPolicy.IndentStyle; }
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public bool TabsToSpaces {
+			get { return CurrentPolicy.TabsToSpaces; }
 			set {
 				throw new NotSupportedException ();
 			}
@@ -123,25 +131,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public int IndentationSize {
-			get { return TabSize; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
 		public string IndentationString {
 			get { return this.TabsToSpaces ? new string (' ', this.TabSize) : "\t"; }
 		}
 
 		#region ITextEditorOptions implementation
-
-		public bool AutoIndent {
-			get { return DefaultSourceEditorOptions.Instance.AutoIndent; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
 
 		public bool CanResetZoom {
 			get { return DefaultSourceEditorOptions.Instance.CanResetZoom; }
@@ -193,7 +187,7 @@ namespace MonoDevelop.SourceEditor
 			set { throw new NotSupportedException (); }
 		}
 
-		public Mono.TextEditor.Highlighting.ColorSheme GetColorStyle (Gtk.Style widgetStyle)
+		public Mono.TextEditor.Highlighting.ColorScheme GetColorStyle (Gtk.Style widgetStyle)
 		{
 			return DefaultSourceEditorOptions.Instance.GetColorStyle (widgetStyle);
 		}
@@ -314,10 +308,6 @@ namespace MonoDevelop.SourceEditor
 
 		public bool EnableSemanticHighlighting {
 			get { return DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting; }
-		}
-
-		public IndentStyle IndentStyle {
-			get { return DefaultSourceEditorOptions.Instance.IndentStyle; }
 		}
 
 		public bool TabIsReindent {

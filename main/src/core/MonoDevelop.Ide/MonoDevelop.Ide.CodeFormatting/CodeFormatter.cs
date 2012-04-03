@@ -26,10 +26,11 @@
 
 using System;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -84,36 +85,21 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// A <see cref="System.Object"/> that must be from type Mono.TextEditorData.
 		/// </param>
 		/// <param name="dom">
-		/// A <see cref="ProjectDom"/>
+		/// A <see cref="ITypeResolveContext"/>
 		/// </param>
 		/// <param name="unit">
-		/// A <see cref="ICompilationUnit"/>
+		/// A <see cref="IParsedFile"/>
 		/// </param>
 		/// <param name="caretLocation">
-		/// A <see cref="DomLocation"/> that should be the end location to which the parsing should occur.
+		/// A <see cref="TextLocation"/> that should be the end location to which the parsing should occur.
 		/// </param>
-		public void OnTheFlyFormat (PolicyContainer policyParent, TextEditorData data,
-			IType callingType, IMember callingMember, ProjectDom dom, ICompilationUnit unit,
-			DomLocation endLocation)
+		public void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsOnTheFlyFormatting)
 				throw new InvalidOperationException ("On the fly formatting not supported");
 			
-			adv.OnTheFlyFormat (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain,
-				data, callingType, callingMember, dom, unit, endLocation);
-		}
-		
-		public void OnTheFlyFormat (PolicyContainer policyParent, TextEditorData data,
-			int startOffset, int endOffset)
-		{
-			var adv = formatter as IAdvancedCodeFormatter;
-			if (adv == null || !adv.SupportsOnTheFlyFormatting)
-				throw new InvalidOperationException ("On the fly formatting not supported");
-			if (startOffset >= endOffset)
-				return;
-			adv.OnTheFlyFormat (policyParent ?? PolicyService.DefaultPolicies, mimeTypeChain,
-				data, startOffset, endOffset);
+			adv.OnTheFlyFormat (doc, startOffset, endOffset);
 		}
 		
 		public void CorrectIndenting (PolicyContainer policyParent, TextEditorData data, int line)

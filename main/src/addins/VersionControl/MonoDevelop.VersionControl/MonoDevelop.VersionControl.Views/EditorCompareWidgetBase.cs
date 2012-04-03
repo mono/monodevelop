@@ -275,12 +275,12 @@ namespace MonoDevelop.VersionControl.Views
 			diffCache.Clear ();
 		}
 		
-		static List<ISegment> BreakTextInWords (TextEditor editor, int start, int count)
+		static List<TextSegment> BreakTextInWords (TextEditor editor, int start, int count)
 		{
 			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
-		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
+		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
 		{
 			List<Cairo.Rectangle> result = new List<Cairo.Rectangle> ();
 			int startOffset = -1;
@@ -387,7 +387,7 @@ namespace MonoDevelop.VersionControl.Views
 		static void UpdateCaretPosition (Caret caret)
 		{
 			int offset = caret.Offset;
-			if (offset < 0 || offset > caret.TextEditorData.Document.Length)
+			if (offset < 0 || offset > caret.TextEditorData.Document.TextLength)
 				return;
 			DocumentLocation location = caret.TextEditorData.LogicalToVisualLocation (caret.Location);
 			IdeApp.Workbench.StatusBar.ShowCaretState (caret.Line,
@@ -572,15 +572,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		Dictionary<Mono.TextEditor.Document, TextEditorData> dict = new Dictionary<Mono.TextEditor.Document, TextEditorData> ();
+		Dictionary<Mono.TextEditor.TextDocument, TextEditorData> dict = new Dictionary<Mono.TextEditor.TextDocument, TextEditorData> ();
 
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 
-		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
 			foreach (var data in localUpdate.ToArray ()) {
 				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Replace (e.Offset, e.Count, e.Value);
+				data.Replace (e.Offset, e.RemovalLength, e.InsertedText);
 				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 				data.Document.CommitUpdateAll ();
 			}
@@ -612,13 +612,13 @@ namespace MonoDevelop.VersionControl.Views
 			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 		}
 
-		void HandleDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			var data = dict[(Document)sender];
+			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
 			var editor = info.Document.GetContent<IEditableTextFile> ();
-			editor.DeleteText (e.Offset, e.Count);
-			editor.InsertText (e.Offset, e.Value);
+			editor.DeleteText (e.Offset, e.RemovalLength);
+			editor.InsertText (e.Offset, e.InsertedText);
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}
@@ -633,7 +633,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			using (var undo = toEditor.OpenUndoGroup ()) {
 				var start = toEditor.Document.GetLine (hunk.InsertStart);
-				int toOffset = start != null ? start.Offset : toEditor.Document.Length;
+				int toOffset = start != null ? start.Offset : toEditor.Document.TextLength;
 				if (start != null && hunk.Inserted > 0) {
 					int line = Math.Min (hunk.InsertStart + hunk.Inserted - 1, toEditor.Document.LineCount);
 					var end = toEditor.Document.GetLine (line);

@@ -30,7 +30,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 	/// <summary>
 	/// Disassembles type and member definitions.
 	/// </summary>
-	public sealed class ReflectionDisassembler : BaseCodeMappings
+	public sealed class ReflectionDisassembler
 	{
 		ITextOutput output;
 		CancellationToken cancellationToken;
@@ -45,9 +45,6 @@ namespace ICSharpCode.Decompiler.Disassembler
 			this.output = output;
 			this.cancellationToken = cancellationToken;
 			this.methodBodyDisassembler = new MethodBodyDisassembler(output, detectControlStructure, cancellationToken);
-			
-			this.CodeMappings = new Dictionary<int, List<MemberMapping>>();
-			this.DecompiledMemberReferences = new Dictionary<int, MemberReference>();
 		}
 		
 		#region Disassemble Method
@@ -126,10 +123,10 @@ namespace ICSharpCode.Decompiler.Disassembler
 				output.Write("pinvokeimpl");
 				if (method.HasPInvokeInfo && method.PInvokeInfo != null) {
 					PInvokeInfo info = method.PInvokeInfo;
-					output.Write("(\"" + NRefactory.CSharp.OutputVisitor.ConvertString(info.Module.Name) + "\"");
+					output.Write("(\"" + NRefactory.CSharp.CSharpOutputVisitor.ConvertString(info.Module.Name) + "\"");
 					
 					if (!string.IsNullOrEmpty(info.EntryPoint) && info.EntryPoint != method.Name)
-						output.Write(" as \"" + NRefactory.CSharp.OutputVisitor.ConvertString(info.EntryPoint) + "\"");
+						output.Write(" as \"" + NRefactory.CSharp.CSharpOutputVisitor.ConvertString(info.EntryPoint) + "\"");
 					
 					if (info.IsNoMangle)
 						output.Write(" nomangle");
@@ -163,7 +160,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 			output.WriteLine();
 			output.Indent();
 			if (method.ExplicitThis) {
-				output.Write("instance explicit ");			
+				output.Write("instance explicit ");
 			} else if (method.HasThis) {
 				output.Write("instance ");
 			}
@@ -220,9 +217,9 @@ namespace ICSharpCode.Decompiler.Disassembler
 			
 			if (method.HasBody) {
 				// create IL code mappings - used in debugger
-				CreateCodeMappings(method.MetadataToken.ToInt32(), currentMember);
-				MemberMapping methodMapping = method.CreateCodeMapping(this.CodeMappings[method.MetadataToken.ToInt32()], currentMember);
+				MemberMapping methodMapping = new MemberMapping(method);
 				methodBodyDisassembler.Disassemble(method.Body, methodMapping);
+				output.AddDebuggerMemberMapping(methodMapping);
 			}
 			
 			CloseBlock("end of method " + DisassemblerHelpers.Escape(method.DeclaringType.Name) + "::" + DisassemblerHelpers.Escape(method.Name));
@@ -344,7 +341,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 			output.Write(" = ");
 			if (na.Argument.Value is string) {
 				// secdecls use special syntax for strings
-				output.Write("string('{0}')", NRefactory.CSharp.OutputVisitor.ConvertString((string)na.Argument.Value).Replace("'", "\'"));
+				output.Write("string('{0}')", NRefactory.CSharp.CSharpOutputVisitor.ConvertString((string)na.Argument.Value).Replace("'", "\'"));
 			} else {
 				WriteConstant(na.Argument.Value);
 			}
@@ -572,10 +569,10 @@ namespace ICSharpCode.Decompiler.Disassembler
 					if (cmi == null)
 						goto default;
 					output.Write("custom(\"{0}\", \"{1}\"",
-					             NRefactory.CSharp.OutputVisitor.ConvertString(cmi.ManagedType.FullName),
-					             NRefactory.CSharp.OutputVisitor.ConvertString(cmi.Cookie));
+					             NRefactory.CSharp.CSharpOutputVisitor.ConvertString(cmi.ManagedType.FullName),
+					             NRefactory.CSharp.CSharpOutputVisitor.ConvertString(cmi.Cookie));
 					if (cmi.Guid != Guid.Empty || !string.IsNullOrEmpty(cmi.UnmanagedType)) {
-						output.Write(", \"{0}\", \"{1}\"", cmi.Guid.ToString(), NRefactory.CSharp.OutputVisitor.ConvertString(cmi.UnmanagedType));
+						output.Write(", \"{0}\", \"{1}\"", cmi.Guid.ToString(), NRefactory.CSharp.CSharpOutputVisitor.ConvertString(cmi.UnmanagedType));
 					}
 					output.Write(')');
 					break;
@@ -676,9 +673,6 @@ namespace ICSharpCode.Decompiler.Disassembler
 		
 		public void DisassembleField(FieldDefinition field)
 		{
-			// create mappings for decompiled fields only
-			this.DecompiledMemberReferences.Add(field.MetadataToken.ToInt32(), field);
-			
 			output.WriteDefinition(".field ", field);
 			WriteEnum(field.Attributes & FieldAttributes.FieldAccessMask, fieldVisibility);
 			const FieldAttributes hasXAttributes = FieldAttributes.HasDefault | FieldAttributes.HasFieldMarshal | FieldAttributes.HasFieldRVA;
@@ -749,6 +743,7 @@ namespace ICSharpCode.Decompiler.Disassembler
 		{
 			if (method == null)
 				return;
+			
 			output.Write(keyword);
 			output.Write(' ');
 			method.WriteTo(output);
