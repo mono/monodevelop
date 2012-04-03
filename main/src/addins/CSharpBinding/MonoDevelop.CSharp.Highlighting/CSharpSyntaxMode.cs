@@ -146,6 +146,8 @@ namespace MonoDevelop.CSharp.Highlighting
 							unit.AcceptVisitor (visitor);
 							if (!cancellationToken.IsCancellationRequested) {
 								Gtk.Application.Invoke (delegate {
+									if (cancellationToken.IsCancellationRequested)
+										return;
 									var editorData = guiDocument.Editor;
 									if (editorData == null)
 										return;
@@ -271,6 +273,10 @@ namespace MonoDevelop.CSharp.Highlighting
 				guiDocument = null;
 			}
 			if (guiDocument != null) {
+				guiDocument.Closed += delegate {
+					if (src != null)
+						src.Cancel ();
+				};
 				guiDocument.DocumentParsed += HandleDocumentParsed;
 				highlightedSegmentCache = new HighlightingSegmentTree ();
 				highlightedSegmentCache.InstallListener (guiDocument.Editor.Document);
