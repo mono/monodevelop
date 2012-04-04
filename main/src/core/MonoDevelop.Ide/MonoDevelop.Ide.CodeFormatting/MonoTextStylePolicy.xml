@@ -3,6 +3,6 @@
 	<TabWidth>8</TabWidth>
 	<TabsToSpaces>False</TabsToSpaces>
 	<NoTabsAfterNonTabs>False</NoTabsAfterNonTabs>
-	<RemoveTrailingWhitespace>False</RemoveTrailingWhitespace>
+	<RemoveTrailingWhitespace>True</RemoveTrailingWhitespace>
 	<EolMarker>Native</EolMarker>
 </TextStylePolicy>
