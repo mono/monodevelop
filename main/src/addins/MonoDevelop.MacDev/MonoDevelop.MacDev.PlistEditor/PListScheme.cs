@@ -132,14 +132,27 @@ namespace MonoDevelop.MacDev.PlistEditor
 			SchemaItem key;
 			if (!tree.TryGetValue (obj, out key) || key == null)
 				return null;
-			
+
 			var values = key.Values.Cast<SchemaItem> ().ToList ();
-			// In this case every element in the array/dictionary is produced from this single Value
-			if ((obj is PDictionary || obj is PArray) && values.Count == 1 && values [0].Identifier == null)
-				return values;
-			
-			foreach (var child in PObject.ToEnumerable (obj))
-				values.Remove (tree [child.Value]);
+
+			if (obj is PArray || obj is PDictionary) {
+				if (values.Count == 0) {
+					// If the key has no Values specified, then we can add anything. In
+					// the case of PArray, we implicitly know the type which can be added.
+					values.Add (new Value {
+						Identifier = GettextCatalog.GetString ("New element"),
+						Description = GettextCatalog.GetString ("New element"),
+						Type = obj is PArray ? key.ArrayType : PString.Type
+					});
+				} else if (values.Count == 1 && values [0].Identifier == null) {
+					// In this case every element in the array/dictionary is produced from this single Value
+				} else {
+					// Remove all elements which have already been instantiated
+					foreach (var child in PObject.ToEnumerable (obj))
+						values.Remove (tree [child.Value]);
+				}
+			}
+
 			return values;
 		}
 

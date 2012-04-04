@@ -103,7 +103,6 @@ namespace MonoDevelop.MacDev.Tests
 			Assert.AreEqual (0, available.Count, "#4");
 		}
 
-		
 		[Test]
 		public void AvailableKeys_Array_NotInScheme ()
 		{
@@ -112,6 +111,57 @@ namespace MonoDevelop.MacDev.Tests
 			
 			var available = PListScheme.AvailableKeys (root["foo"], PListScheme.Match (root, PListScheme.Empty));
 			Assert.IsNull (available, "#1");
+		}
+
+		[Test]
+		public void AvailableKeys_Array_NumberType ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Array"" arrayType = ""Number"" />
+</PListScheme>");
+
+			var value = new PArray ();
+			var root = new PDictionary ();
+			root.Add ("keyname", value);
+			
+			var available = PListScheme.AvailableKeys (value, PListScheme.Match (root, scheme));
+			Assert.AreEqual (1, available.Count, "#1");
+			Assert.AreEqual (PNumber.Type, available [0].Type, "#2");
+		}
+
+		[Test]
+		public void AvailableKeys_Array_StringType ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Array"" arrayType = ""String"" />
+</PListScheme>");
+
+			var value = new PArray ();
+			var root = new PDictionary ();
+			root.Add ("keyname", value);
+			
+			var available = PListScheme.AvailableKeys (value, PListScheme.Match (root, scheme));
+			Assert.AreEqual (1, available.Count, "#1");
+			Assert.AreEqual (PString.Type, available [0].Type, "#2");
+		}
+
+		[Test]
+		public void AvailableKeys_Dictionary ()
+		{
+			var scheme = Load (@"
+<PListScheme>
+	<Key name = ""keyname"" type = ""Dictionary"" />
+</PListScheme>");
+
+			var value = new PDictionary ();
+			var root = new PDictionary ();
+			root.Add ("keyname", value);
+			
+			var available = PListScheme.AvailableKeys (value, PListScheme.Match (root, scheme));
+			Assert.AreEqual (1, available.Count, "#1");
+			Assert.AreEqual (PString.Type, available [0].Type, "#2");
 		}
 
 		[Test]
