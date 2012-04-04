@@ -5,29 +5,53 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class BehaviorPanel
 	{
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.Label GtkLabel5;
+		
 		private global::Gtk.Alignment alignment3;
+		
 		private global::Gtk.VBox vbox4;
+		
 		private global::Gtk.CheckButton autoInsertBraceCheckbutton;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Label fixed1;
+		
 		private global::Gtk.CheckButton smartSemicolonPlaceCheckbutton;
+		
 		private global::Gtk.CheckButton checkbuttonOnTheFlyFormatting;
+		
 		private global::Gtk.CheckButton checkbuttonFormatOnSave;
+		
 		private global::Gtk.CheckButton checkbuttonAutoSetSearchPatternCasing;
+		
 		private global::Gtk.Label GtkLabel6;
+		
 		private global::Gtk.Alignment GtkAlignment;
+		
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.ComboBox indentationCombobox;
+		
 		private global::Gtk.CheckButton tabAsReindentCheckbutton;
+		
 		private global::Gtk.Label GtkLabel8;
+		
 		private global::Gtk.Alignment alignment4;
+		
 		private global::Gtk.VBox vbox5;
+		
 		private global::Gtk.CheckButton useViModesCheck;
+		
 		private global::Gtk.HBox hbox3;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.ComboBox controlLeftRightCombobox;
 		
 		protected virtual void Build ()

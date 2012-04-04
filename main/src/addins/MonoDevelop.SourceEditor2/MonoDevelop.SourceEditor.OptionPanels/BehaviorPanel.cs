@@ -38,7 +38,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			indentationCombobox.InsertText (0, GettextCatalog.GetString ("None"));
 			indentationCombobox.InsertText (1, GettextCatalog.GetString ("Automatic"));
 			indentationCombobox.InsertText (2, GettextCatalog.GetString ("Smart"));
-			indentationCombobox.InsertText (3, GettextCatalog.GetString ("Virtual"));
+//			indentationCombobox.InsertText (3, GettextCatalog.GetString ("Virtual"));
 
 			controlLeftRightCombobox.InsertText (0, GettextCatalog.GetString ("MonoDevelop"));
 			controlLeftRightCombobox.InsertText (1, GettextCatalog.GetString ("Emacs"));

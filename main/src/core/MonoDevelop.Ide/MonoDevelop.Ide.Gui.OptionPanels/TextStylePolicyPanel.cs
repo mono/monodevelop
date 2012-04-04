@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void LoadFrom (TextStylePolicy policy)
 		{
 			tabWidthSpin.Value = policy.TabWidth;
+			indentWidthSpin.Value = policy.IndentWidth;
 			tabsAfterNonTabsCheck.Active = !policy.NoTabsAfterNonTabs;
 			tabsToSpaceCheck.Active = policy.TabsToSpaces;
 			removeTrailingWhitespaceCheck.Active = policy.RemoveTrailingWhitespace;
@@ -90,8 +91,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public TextStylePolicy GetPolicy ()
 		{
 			return new TextStylePolicy (
-				(int) columnWidthSpin.Value,
-				(int) tabWidthSpin.Value,
+				(int)columnWidthSpin.Value,
+				(int)tabWidthSpin.Value,
+				(int)indentWidthSpin.Value,
 				tabsToSpaceCheck.Active,
 				!tabsAfterNonTabsCheck.Active,
 				removeTrailingWhitespaceCheck.Active,

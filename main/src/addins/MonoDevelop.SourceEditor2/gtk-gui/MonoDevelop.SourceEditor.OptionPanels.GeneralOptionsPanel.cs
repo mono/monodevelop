@@ -5,34 +5,63 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	internal partial class GeneralOptionsPanel
 	{
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.Label GtkLabel13;
+		
 		private global::Gtk.Alignment alignment2;
+		
 		private global::Gtk.VBox vbox4;
+		
 		private global::Gtk.CheckButton codeCompletioncheckbutton;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Fixed fixed1;
+		
 		private global::Gtk.CheckButton autoCodeCompletionCheckbutton;
+		
 		private global::Gtk.HBox hbox3;
+		
 		private global::Gtk.Fixed fixed2;
+		
 		private global::Gtk.CheckButton spaceOrPunctiuationCheckbutton;
+		
 		private global::Gtk.HBox hbox4;
+		
 		private global::Gtk.Fixed fixed3;
+		
 		private global::Gtk.CheckButton enableParameterInsightCheckbutton;
+		
 		private global::Gtk.HBox hbox5;
+		
 		private global::Gtk.Fixed fixed4;
+		
 		private global::Gtk.CheckButton hideObsoleteItemsCheckbutton;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.ComboBox comboboxLineEndings;
+		
 		private global::Gtk.Label GtkLabel14;
+		
 		private global::Gtk.Alignment alignment3;
+		
 		private global::Gtk.VBox vbox5;
+		
 		private global::Gtk.CheckButton foldingCheckbutton;
+		
 		private global::Gtk.CheckButton foldregionsCheckbutton;
+		
 		private global::Gtk.CheckButton foldCommentsCheckbutton;
+		
 		private global::Gtk.Label GtkLabel15;
+		
 		private global::Gtk.Alignment alignment4;
+		
 		private global::Gtk.VBox vbox6;
+		
 		private global::Gtk.CheckButton antiAliasingCheckbutton;
 		
 		protected virtual void Build ()

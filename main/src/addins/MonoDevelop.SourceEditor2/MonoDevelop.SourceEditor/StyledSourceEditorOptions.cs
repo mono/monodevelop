@@ -125,7 +125,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public int IndentationSize {
-			get { return TabSize; }
+			get { return CurrentPolicy.IndentWidth; }
 			set {
 				throw new NotSupportedException ();
 			}
@@ -311,7 +311,11 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public IndentStyle IndentStyle {
-			get { return DefaultSourceEditorOptions.Instance.IndentStyle; }
+			get {
+				if (DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Smart && CurrentPolicy.RemoveTrailingWhitespace)
+					return IndentStyle.Virtual;
+				return DefaultSourceEditorOptions.Instance.IndentStyle;
+			}
 			set {
 				throw new NotSupportedException ("Use property 'IndentStyle' instead.");
 			}

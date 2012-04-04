@@ -5,12 +5,19 @@ namespace MonoDevelop.SourceEditor
 	internal partial class GotoLineNumberWidget
 	{
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Entry entryLineNumber;
+		
 		private global::Gtk.Button buttonGoToLine;
+		
 		private global::Gtk.EventBox eventbox2;
+		
 		private global::Gtk.Image image2;
+		
 		private global::Gtk.Button closeButton;
+		
 		private global::Gtk.EventBox eventbox1;
+		
 		private global::Gtk.Image image1;
 		
 		protected virtual void Build ()

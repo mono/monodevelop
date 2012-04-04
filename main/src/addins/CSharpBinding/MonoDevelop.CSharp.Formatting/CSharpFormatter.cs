@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp.Formatting
 				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
 				data.Options.TabSize = textPolicy.TabWidth;
 				data.Options.IndentationSize = textPolicy.IndentWidth;
-				data.Options.IndentStyle = textPolicy.IndentStyle;
+				data.Options.IndentStyle = textPolicy.RemoveTrailingWhitespace ? IndentStyle.Virtual : IndentStyle.Smart;
 			}
 			data.Text = input;
 
