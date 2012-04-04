@@ -52,7 +52,6 @@ namespace Mono.TextEditor
 			int offset = subword ? data.FindPrevSubwordOffset (caretOffset) : data.FindPrevWordOffset (caretOffset);
 			if (caretOffset != offset && data.CanEdit (oldLine) && data.CanEdit (data.Caret.Line)) {
 				data.Remove (offset, caretOffset - offset);
-				data.Caret.Offset = offset;
 			}
 		}
 		
