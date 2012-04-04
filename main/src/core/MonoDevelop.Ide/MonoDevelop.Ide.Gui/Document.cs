@@ -168,14 +168,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Project Project {
 			get { return Window.ViewContent.Project; }
-			set { 
+/*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
 					singleFileContext = null;
 				// File needs to be in sync with the project, otherwise the parsed document at start may be invalid.
 				// better solution: create the document with the project attached.
 				StartReparseThread ();
-			}
+			}*/
 		}
 		
 		IProjectContent singleFileContext;
@@ -582,20 +582,20 @@ namespace MonoDevelop.Ide.Gui
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
 			
-			RunWhenLoaded (() => ReparseDocument ());
 		}
 		
 		internal void OnDocumentAttached ()
 		{
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
-			if (editor != null)
+			if (editor != null) {
 				InitializeEditor (editor);
+				RunWhenLoaded (() => ReparseDocument ());
+			}
 			
 			window.Document = this;
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
-			
 		}
 		
 		/// <summary>
