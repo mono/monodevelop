@@ -94,7 +94,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (var view in openFiles) {
 				if (!view.IsFile)
 					continue;
-				if (view.LastSaveTime == File.GetLastWriteTime (view.ContentName))
+				if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (view.ContentName))
 					continue;
 				if (!view.IsDirty && IdeApp.Workbench.AutoReloadDocuments)
 					view.SourceEditorWidget.Reload ();
@@ -121,7 +121,7 @@ namespace MonoDevelop.SourceEditor
 				if (!view.IsFile)
 					continue;
 				if (string.Equals (view.ContentName, fileName, fileNameComparer)) {
-					if (view.LastSaveTime == File.GetLastWriteTime (fileName))
+					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (fileName))
 						continue;
 					if (!view.IsDirty && IdeApp.Workbench.AutoReloadDocuments)
 						view.SourceEditorWidget.Reload ();
@@ -151,7 +151,7 @@ namespace MonoDevelop.SourceEditor
 		public static void IgnoreAllChangedFiles ()
 		{
 			foreach (var view in GetAllChangedFiles ()) {
-				view.LastSaveTime = File.GetLastWriteTime (view.ContentName);
+				view.LastSaveTimeUtc = File.GetLastWriteTime (view.ContentName);
 				view.SourceEditorWidget.RemoveMessageBar ();
 				view.WorkbenchWindow.ShowNotification = false;
 			}

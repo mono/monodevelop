@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
-		DateTime lastSaveTime;
+		DateTime lastSaveTimeUtc;
 		string loadedMimeType;
 		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
 		TextMarker currentDebugLineMarker;
@@ -84,12 +84,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public DateTime LastSaveTime {
+		public DateTime LastSaveTimeUtc {
 			get {
-				return lastSaveTime;
+				return lastSaveTimeUtc;
 			}
 			internal set {
-				lastSaveTime = value;
+				lastSaveTimeUtc = value;
 			}
 		}		
 		public ExtensibleTextEditor TextEditor {
@@ -239,7 +239,7 @@ namespace MonoDevelop.SourceEditor
 				if (String.IsNullOrEmpty (ContentName) || !File.Exists (ContentName))
 					return;
 				
-				lastSaveTime = File.GetLastWriteTime (ContentName);
+				lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
 			};
 			ClipbardRingUpdated += UpdateClipboardRing;
 			
@@ -452,7 +452,7 @@ namespace MonoDevelop.SourceEditor
 						return;
 					}
 				}
-				lastSaveTime = File.GetLastWriteTime (fileName);
+				lastSaveTimeUtc = File.GetLastWriteTimeUtc (fileName);
 				try {
 					if (attributes != null)
 						DesktopService.SetFileAttributes (fileName, attributes);
@@ -556,7 +556,7 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			ContentName = fileName;
-			lastSaveTime = File.GetLastWriteTime (ContentName);			
+			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);			
 			RunFirstTimeFoldUpdate (text);
 			
 			widget.TextEditor.Caret.Offset = 0;

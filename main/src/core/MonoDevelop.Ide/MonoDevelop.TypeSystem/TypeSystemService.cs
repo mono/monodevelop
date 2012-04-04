@@ -1073,7 +1073,7 @@ namespace MonoDevelop.TypeSystem
 		class AssemblyContext : IUnresolvedAssembly
 		{
 			public string FileName;
-			public DateTime LastWriteTime;
+			public DateTime LastWriteTimeUtc;
 			
 			[NonSerialized]
 			internal LazyAssemblyLoader CtxLoader;
@@ -1246,7 +1246,7 @@ namespace MonoDevelop.TypeSystem
 			try {
 				var result = new AssemblyContext () {
 					FileName = fileName,
-					LastWriteTime = File.GetLastWriteTime (fileName)
+					LastWriteTimeUtc = File.GetLastWriteTimeUtc (fileName)
 				};
 				SerializeObject (Path.Combine (cache, "assembly.descriptor"), result);
 				
@@ -1526,7 +1526,7 @@ namespace MonoDevelop.TypeSystem
 		{
 			if (parsedFile == null)
 				return true;
-			return System.IO.File.GetLastWriteTime (file.FilePath) > parsedFile.LastWriteTime;
+			return System.IO.File.GetLastWriteTimeUtc (file.FilePath) > parsedFile.LastWriteTime;
 		}
 
 		static void CheckModifiedFiles (Project project, ProjectContentWrapper content)
@@ -1564,10 +1564,10 @@ namespace MonoDevelop.TypeSystem
 		static void CheckModifiedFile (AssemblyContext context)
 		{
 			try {
-				var writeTime = File.GetLastWriteTime (context.FileName);
-				if (writeTime != context.LastWriteTime) {
+				var writeTime = File.GetLastWriteTimeUtc (context.FileName);
+				if (writeTime != context.LastWriteTimeUtc) {
 					string cache = GetCacheDirectory (context.FileName);
-					context.LastWriteTime = writeTime;
+					context.LastWriteTimeUtc = writeTime;
 					if (cache != null) {
 						SerializeObject (Path.Combine (cache, "assembly.descriptor"), context);
 						context.CtxLoader = new LazyAssemblyLoader (context.FileName, cache);

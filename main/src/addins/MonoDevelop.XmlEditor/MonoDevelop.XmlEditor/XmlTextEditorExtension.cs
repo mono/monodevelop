@@ -729,14 +729,14 @@ namespace MonoDevelop.XmlEditor
 			if (defaultSchemaCompletionData != null || doc == null || doc.XDocument == null || inferenceQueued)
 				return;
 			if (inferredCompletionData == null
-			    || (doc.LastWriteTime.Value - inferredCompletionData.TimeStamp).TotalSeconds >= 5
+			    || (doc.LastWriteTimeUtc - inferredCompletionData.TimeStampUtc).TotalSeconds >= 5
 			        && doc.Errors.Count <= inferredCompletionData.ErrorCount)
 			{
 				inferenceQueued = true;
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					InferredXmlCompletionProvider newData = new InferredXmlCompletionProvider ();
 					newData.Populate (doc.XDocument);
-					newData.TimeStamp = DateTime.Now;
+					newData.TimeStampUtc = DateTime.UtcNow;
 					newData.ErrorCount = doc.Errors.Count;
 					this.inferenceQueued = false;
 					this.inferredCompletionData = newData;

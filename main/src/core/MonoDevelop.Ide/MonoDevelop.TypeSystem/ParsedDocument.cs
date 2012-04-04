@@ -46,10 +46,10 @@ namespace MonoDevelop.TypeSystem
 	
 	public abstract class ParsedDocument
 	{
-		DateTime? lastWriteTime = DateTime.Now;
-		public DateTime? LastWriteTime {
-			get { return lastWriteTime; }
-			set { lastWriteTime = value; }
+		DateTime lastWriteTimeUtc = DateTime.UtcNow;
+		public DateTime LastWriteTimeUtc {
+			get { return lastWriteTimeUtc; }
+			set { lastWriteTimeUtc = value; }
 		}
 		
 		[NonSerialized]
@@ -237,6 +237,7 @@ namespace MonoDevelop.TypeSystem
 	
 	public class DefaultParsedDocument : ParsedDocument, IParsedFile
 	{
+
 		public override IParsedFile ParsedFile {
 			get { return this; }
 		}
@@ -314,6 +315,17 @@ namespace MonoDevelop.TypeSystem
 		{
 			this.errors.AddRange (errors);
 		}
+
+		#region IParsedFile implementation
+		DateTime? IParsedFile.LastWriteTime {
+			get {
+				return LastWriteTimeUtc;
+			}
+			set {
+				LastWriteTimeUtc = value.HasValue ? value.Value : DateTime.UtcNow;
+			}
+		}
+		#endregion
 	}
 	
 	[Serializable]

@@ -800,7 +800,7 @@ namespace MonoDevelop.SourceEditor
 				b2.Image = ImageService.GetImage (Gtk.Stock.Cancel, IconSize.Button);
 				b2.Clicked += delegate {
 					RemoveMessageBar ();
-					view.LastSaveTime = System.IO.File.GetLastWriteTime (view.ContentName);
+					view.LastSaveTimeUtc = System.IO.File.GetLastWriteTimeUtc (view.ContentName);
 					view.WorkbenchWindow.ShowNotification = false;
 				};
 				messageBar.ActionArea.Add (b2);

@@ -957,7 +957,7 @@ namespace MonoDevelop.Ide.Gui
 					foreach (FilePath file in files) {
 						try {
 							FileInfo fi = new FileInfo (file);
-							FileData fd = new FileData (file, fi.Exists ? fi.LastWriteTime : DateTime.MinValue);
+							FileData fd = new FileData (file, fi.Exists ? fi.LastWriteTimeUtc : DateTime.MinValue);
 							fileStatus.Add (fd);
 						} catch {
 							// Ignore
@@ -983,9 +983,9 @@ namespace MonoDevelop.Ide.Gui
 						try {
 							FileInfo fi = new FileInfo (fd.File);
 							if (fi.Exists) {
-								if (fi.LastWriteTime != fd.Time)
+								if (fi.LastWriteTimeUtc != fd.TimeUtc)
 									modified.Add (fd.File);
-							} else if (fd.Time != DateTime.MinValue) {
+							} else if (fd.TimeUtc != DateTime.MinValue) {
 								FileService.NotifyFileRemoved (fd.File);
 							}
 						} catch {
@@ -1011,14 +1011,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		struct FileData
 		{
-			public FileData (FilePath file, DateTime time)
+			public FileData (FilePath file, DateTime timeUtc)
 			{
 				this.File = file;
-				this.Time = time;
+				this.TimeUtc = timeUtc;
 			}
 			
 			public FilePath File;
-			public DateTime Time;
+			public DateTime TimeUtc;
 		}
 		
 		protected virtual void OnDocumentOpened (DocumentEventArgs e)
