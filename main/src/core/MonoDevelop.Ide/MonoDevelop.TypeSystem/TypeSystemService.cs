@@ -1136,9 +1136,11 @@ namespace MonoDevelop.TypeSystem
 			
 			public IUnresolvedAssembly Assembly {
 				get {
-					if (assembly != null)
-						return assembly;
-					return assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
+					lock (this) {
+						if (assembly != null)
+							return assembly;
+						return assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
+					}
 				}
 			}
 			
@@ -1159,7 +1161,6 @@ namespace MonoDevelop.TypeSystem
 					}
 				} catch (Exception) {
 				}
-
 				var asm = ReadAssembly (fileName);
 				if (asm == null)
 					return null;
