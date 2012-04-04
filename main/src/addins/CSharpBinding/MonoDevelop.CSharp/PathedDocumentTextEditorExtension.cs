@@ -332,8 +332,8 @@ namespace MonoDevelop.CSharp
 				curMember = null;
 			if (curType == lastType && lastMember == curMember)
 				return;
-			if (curType != null && lastType != null && curType.StartLocation == lastType.StartLocation &&
-				curMember != null && lastMember != null && curMember.StartLocation == lastMember.StartLocation)
+			if (curType != null && lastType != null && curType.StartLocation == lastType.StartLocation && GetEntityMarkup (curType) == GetEntityMarkup (lastType) &&
+				curMember != null && lastMember != null && curMember.StartLocation == lastMember.StartLocation && GetEntityMarkup (curMember) == GetEntityMarkup (lastMember))
 				return;
 
 			lastType = curType;

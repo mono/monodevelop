@@ -73,13 +73,17 @@ namespace MonoDevelop.CSharp
 
 		void AppendParameter (StringBuilder sb, IEnumerable<ParameterDeclaration> parameters)
 		{
-			if (!parameters.Any ()) 
-				return;
 			if (options.SpaceBeforeMethodDeclarationParentheses)
 				sb.Append (" ");
 			sb.Append ("(");
-			if (options.SpaceWithinMethodDeclarationParentheses)
+			var hasParameters = parameters.Any ();
+			if (!hasParameters && options.SpaceBetweenEmptyMethodDeclarationParentheses) {
+				sb.Append (" )");
+				return;
+			}
+			if (hasParameters && options.SpaceWithinMethodDeclarationParentheses)
 				sb.Append (" ");
+
 			bool first = true;
 			foreach (var param in parameters) {
 				if (!first) {
@@ -93,7 +97,7 @@ namespace MonoDevelop.CSharp
 				}
 				sb.Append (param.GetText (options));
 			}
-			if (options.SpaceWithinMethodDeclarationParentheses)
+			if (hasParameters && options.SpaceWithinMethodDeclarationParentheses)
 				sb.Append (" ");
 			sb.Append (")");
 		}
