@@ -159,6 +159,8 @@ namespace MonoDevelop.TypeSystem
 				}
 			});
 			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
+				if (!TrackFileChanges)
+					return;
 				foreach (var file in e) {
 					// Open documents are handled by the Document class itself.
 					if (IdeApp.Workbench.GetDocument (file.FileName) != null)
@@ -1521,9 +1523,9 @@ namespace MonoDevelop.TypeSystem
 		{
 			try {
 				while (trackingFileChanges) {
-					/*if (!WaitForParseJob (5000))
-						CheckModifiedFiles ();
-					else*/ if (trackingFileChanges)
+					WaitForParseJob (5000);
+//						CheckModifiedFiles ();
+					if (trackingFileChanges)
 						ConsumeParsingQueue ();
 				}
 			} catch (Exception ex) {
