@@ -601,6 +601,11 @@ namespace MonoDevelop.TypeSystem
 		[Serializable]
 		public class ProjectContentWrapper
 		{
+			public bool IsDirty {
+				get;
+				set;
+			}
+
 			IProjectContent content;
 
 			public IProjectContent Content {
@@ -644,6 +649,7 @@ namespace MonoDevelop.TypeSystem
 					throw new ArgumentNullException ("content");
 				this.Project = project;
 				this.content = content.SetAssemblyName (project.Name);
+				this.IsDirty = true;
 			}
 			
 			public IEnumerable<Project> ReferencedProjects {
@@ -1548,12 +1554,15 @@ namespace MonoDevelop.TypeSystem
 					modifiedFiles = new List<ProjectFile> ();
 				modifiedFiles.Add (file);
 			}
-			
-			// check if file needs to be removed from project content 
-			foreach (var file in content.Content.Files) {
-				if (project.GetProjectFile (file.FileName) == null)
-					content.UpdateContent (c => c.UpdateProjectContent (file, null));
+			if (content.IsDirty) {
+				// check if file needs to be removed from project content 
+				foreach (var file in content.Content.Files) {
+					if (project.GetProjectFile (file.FileName) == null)
+						content.UpdateContent (c => c.UpdateProjectContent (file, null));
+				}
+				content.IsDirty = false;
 			}
+			
 			
 			if (modifiedFiles == null)
 				return;
