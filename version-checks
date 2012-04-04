@@ -33,7 +33,7 @@ DEP[2]=maccore
 DEP_NAME[2]=MACCORE
 DEP_PATH[2]=${top_srcdir}/../maccore
 DEP_MODULE[2]=git@github.com:mono/maccore.git
-DEP_NEEDED_VERSION[2]=aa80f34fd51928b2f9140ca0feced33419f1f265
+DEP_NEEDED_VERSION[2]=e82e9c57878fe71360fefc17d26346f5fbd2dfea
 DEP_BRANCH_AND_REMOTE[2]="master origin/master"
 
 DEP[3]=monomac
