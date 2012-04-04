@@ -260,11 +260,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				renderer.BackgroundGdk = style.GotBackgroundColorAssigned ? style.BackgroundColor : Style.Base (StateType.Normal);
 			} else {
 				var b = Math.Abs (HslColor.Brightness (style.Color) - HslColor.Brightness (Style.Text (StateType.Normal)));
-				Console.WriteLine (data.Description  + ":" + b);
 				renderer.ForegroundGdk = b < 0.4 ? Style.Background (StateType.Normal) : Style.Text (StateType.Normal);
 				renderer.BackgroundGdk = style.Color;
 			}
-			
 		}
 
 		void ApplyStyle (ColorScheme sheme)
@@ -313,13 +311,17 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (!this.treeviewColors.Selection.GetSelected (out iter))
 				return;
 			ChunkProperties prop = ChunkProperties.None;
-			if (checkbuttonBold.Active)
+			if (checkbuttonBold.Sensitive && checkbuttonBold.Active)
 				prop |= ChunkProperties.Bold;
-			if (checkbuttonItalic.Active)
+			if (checkbuttonItalic.Sensitive && checkbuttonItalic.Active)
 				prop |= ChunkProperties.Italic;
 			ChunkStyle oldStyle = (ChunkStyle)colorStore.GetValue (iter, 1);
 			bool useBgColor = colorbuttonBg.Alpha > 0 && (colorbuttonBg.Color.Pixel != oldStyle.BackgroundColor.Pixel || oldStyle.GotBackgroundColorAssigned);
-			colorStore.SetValue (iter, 1, useBgColor? new ChunkStyle (colorbuttonFg.Color, colorbuttonBg.Color, prop) : new ChunkStyle (colorbuttonFg.Color, prop));
+			if (colorbuttonBg.Sensitive && colorbuttonFg.Sensitive) {
+				colorStore.SetValue (iter, 1, useBgColor ? new ChunkStyle (colorbuttonFg.Color, colorbuttonBg.Color, prop) : new ChunkStyle (colorbuttonFg.Color, prop));
+			} else if (colorbuttonFg.Sensitive) {
+				colorStore.SetValue (iter, 1, new ChunkStyle (colorbuttonFg.Color, prop));
+			}
 			
 			var newStyle = colorSheme.Clone ();
 			ApplyStyle (newStyle);
@@ -352,8 +354,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 			this.label5.Visible = this.colorbuttonBg.Visible = (data.ColorsAvailable & ColorsAvailable.Bg) != 0;
 			this.colorbuttonBg.Sensitive = true;
-			this.colorbuttonBg.Alpha = chunkStyle.GotBackgroundColorAssigned ? ushort.MaxValue : (ushort)0;
-			
+			this.colorbuttonBg.Alpha = chunkStyle.GotBackgroundColorAssigned ? (ushort)(ushort.MaxValue * chunkStyle.CairoBackgroundColor.A) : (ushort)0;
 			this.checkbuttonBold.Visible = (data.ColorsAvailable & ColorsAvailable.FontAttributes) != 0;
 			this.checkbuttonBold.Sensitive = true;
 			
