@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.informationHeaderLabel = new global::Gtk.Label ();
 			this.informationHeaderLabel.Name = "informationHeaderLabel";
 			this.informationHeaderLabel.Xalign = 0F;
-			this.informationHeaderLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Project Information</b>");
+			this.informationHeaderLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Project Information</b>");
 			this.informationHeaderLabel.UseMarkup = true;
 			this.informationHeaderLabel.UseUnderline = true;
 			this.vbox47.Add (this.informationHeaderLabel);
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.defaultNamespaceLabel = new global::Gtk.Label ();
 			this.defaultNamespaceLabel.Name = "defaultNamespaceLabel";
 			this.defaultNamespaceLabel.Xalign = 0F;
-			this.defaultNamespaceLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Default Namespace:");
+			this.defaultNamespaceLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Default Namespace:");
 			this.table11.Add (this.defaultNamespaceLabel);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table11 [this.defaultNamespaceLabel]));
 			w3.TopAttach = ((uint)(3));
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.descriptionLabel.Name = "descriptionLabel";
 			this.descriptionLabel.Xalign = 0F;
 			this.descriptionLabel.Yalign = 0F;
-			this.descriptionLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Description:");
+			this.descriptionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("_Description:");
 			this.descriptionLabel.UseUnderline = true;
 			this.table11.Add (this.descriptionLabel);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table11 [this.descriptionLabel]));
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.checkSolutionVersion = new global::Gtk.CheckButton ();
 			this.checkSolutionVersion.CanFocus = true;
 			this.checkSolutionVersion.Name = "checkSolutionVersion";
-			this.checkSolutionVersion.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Get version from parent solution");
+			this.checkSolutionVersion.Label = global::Mono.Unix.Catalog.GetString ("Get version from parent solution");
 			this.checkSolutionVersion.DrawIndicator = true;
 			this.checkSolutionVersion.UseUnderline = true;
 			this.hbox1.Add (this.checkSolutionVersion);
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Version:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Version:");
 			this.table11.Add (this.label1);
 			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table11 [this.label1]));
 			w8.TopAttach = ((uint)(1));
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.nameLabel = new global::Gtk.Label ();
 			this.nameLabel.Name = "nameLabel";
 			this.nameLabel.Xalign = 0F;
-			this.nameLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Name:");
+			this.nameLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("_Name:");
 			this.nameLabel.UseUnderline = true;
 			this.table11.Add (this.nameLabel);
 			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table11 [this.nameLabel]));
@@ -216,7 +216,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.onProjectLoadHeaderLabel = new global::Gtk.Label ();
 			this.onProjectLoadHeaderLabel.Name = "onProjectLoadHeaderLabel";
 			this.onProjectLoadHeaderLabel.Xalign = 0F;
-			this.onProjectLoadHeaderLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>On Project Load</b>");
+			this.onProjectLoadHeaderLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>On Project Load</b>");
 			this.onProjectLoadHeaderLabel.UseMarkup = true;
 			this.onProjectLoadHeaderLabel.UseUnderline = true;
 			this.vbox41.Add (this.onProjectLoadHeaderLabel);
@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child hbox26.Gtk.Box+BoxChild
 			this.newFilesOnLoadCheckButton = new global::Gtk.CheckButton ();
 			this.newFilesOnLoadCheckButton.Name = "newFilesOnLoadCheckButton";
-			this.newFilesOnLoadCheckButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Search for new _files on load");
+			this.newFilesOnLoadCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Search for new _files on load");
 			this.newFilesOnLoadCheckButton.DrawIndicator = true;
 			this.newFilesOnLoadCheckButton.UseUnderline = true;
 			this.hbox26.Add (this.newFilesOnLoadCheckButton);
@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child hbox27.Gtk.Box+BoxChild
 			this.autoInsertNewFilesCheckButton = new global::Gtk.CheckButton ();
 			this.autoInsertNewFilesCheckButton.Name = "autoInsertNewFilesCheckButton";
-			this.autoInsertNewFilesCheckButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Automatically _include found files");
+			this.autoInsertNewFilesCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Automatically _include found files");
 			this.autoInsertNewFilesCheckButton.DrawIndicator = true;
 			this.autoInsertNewFilesCheckButton.UseUnderline = true;
 			this.hbox27.Add (this.autoInsertNewFilesCheckButton);

@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.vbox2.Name = "vbox2";
 			this.vbox2.Spacing = 6;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radioSingle = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Single startup project:"));
+			this.radioSingle = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Single startup project:"));
 			this.radioSingle.CanFocus = true;
 			this.radioSingle.Name = "radioSingle";
 			this.radioSingle.DrawIndicator = true;
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radioMulti = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Multiple startup projects:"));
+			this.radioMulti = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Multiple startup projects:"));
 			this.radioMulti.CanFocus = true;
 			this.radioMulti.Name = "radioMulti";
 			this.radioMulti.DrawIndicator = true;

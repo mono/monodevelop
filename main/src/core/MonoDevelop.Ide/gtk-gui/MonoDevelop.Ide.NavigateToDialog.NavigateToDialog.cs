@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.NavigateToDialog.NavigateToDialog
 			this.Name = "MonoDevelop.Ide.NavigateToDialog.NavigateToDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Navigate to");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Navigate to");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Search for:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Search for:");
 			this.label1.UseUnderline = true;
 			this.hbox1.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.labelResults = new global::Gtk.Label ();
 			this.labelResults.Name = "labelResults";
 			this.labelResults.Xalign = 0F;
-			this.labelResults.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Results: Enter search term to start.");
+			this.labelResults.LabelProp = global::Mono.Unix.Catalog.GetString ("_Results: Enter search term to start.");
 			this.labelResults.UseUnderline = true;
 			w1.Add (this.labelResults);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.labelResults]));

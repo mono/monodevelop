@@ -306,6 +306,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.radiobuttonPascalCase = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_PascalCase"));
 			this.radiobuttonPascalCase.CanFocus = true;
 			this.radiobuttonPascalCase.Name = "radiobuttonPascalCase";
+			this.radiobuttonPascalCase.Active = true;
 			this.radiobuttonPascalCase.DrawIndicator = true;
 			this.radiobuttonPascalCase.UseUnderline = true;
 			this.radiobuttonPascalCase.Group = new global::GLib.SList (global::System.IntPtr.Zero);

@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label93 = new global::Gtk.Label ();
 			this.label93.Name = "label93";
 			this.label93.Xalign = 0F;
-			this.label93.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Output</b>");
+			this.label93.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Output</b>");
 			this.label93.UseMarkup = true;
 			this.vbox67.Add (this.label93);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.label93]));
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label98 = new global::Gtk.Label ();
 			this.label98.Name = "label98";
 			this.label98.Xalign = 0F;
-			this.label98.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Assembly _name:");
+			this.label98.LabelProp = global::Mono.Unix.Catalog.GetString ("Assembly _name:");
 			this.label98.UseUnderline = true;
 			this.table10.Add (this.label98);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table10 [this.label98]));
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label99 = new global::Gtk.Label ();
 			this.label99.Name = "label99";
 			this.label99.Xalign = 0F;
-			this.label99.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Output _path:");
+			this.label99.LabelProp = global::Mono.Unix.Catalog.GetString ("Output _path:");
 			this.label99.UseUnderline = true;
 			this.table10.Add (this.label99);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table10 [this.label99]));

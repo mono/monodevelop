@@ -23,7 +23,7 @@ namespace MonoDevelop.Ide.Fonts
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Fonts:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Fonts:");
 			this.label1.UseUnderline = true;
 			this.vbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));

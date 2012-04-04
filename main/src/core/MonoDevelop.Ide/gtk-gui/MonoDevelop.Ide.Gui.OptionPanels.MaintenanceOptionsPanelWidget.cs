@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.checkInstr = new global::Gtk.CheckButton ();
 			this.checkInstr.CanFocus = true;
 			this.checkInstr.Name = "checkInstr";
-			this.checkInstr.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Enable MonoDevelop Instrumentation");
+			this.checkInstr.Label = global::Mono.Unix.Catalog.GetString ("Enable MonoDevelop Instrumentation");
 			this.checkInstr.DrawIndicator = true;
 			this.checkInstr.UseUnderline = true;
 			this.vbox2.Add (this.checkInstr);
@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.checkAutoTest = new global::Gtk.CheckButton ();
 			this.checkAutoTest.CanFocus = true;
 			this.checkAutoTest.Name = "checkAutoTest";
-			this.checkAutoTest.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Enable automated test support");
+			this.checkAutoTest.Label = global::Mono.Unix.Catalog.GetString ("Enable automated test support");
 			this.checkAutoTest.DrawIndicator = true;
 			this.checkAutoTest.UseUnderline = true;
 			this.vbox2.Add (this.checkAutoTest);

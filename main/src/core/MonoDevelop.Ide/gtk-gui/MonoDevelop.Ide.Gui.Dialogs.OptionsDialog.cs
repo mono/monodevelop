@@ -22,7 +22,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Gui.Dialogs.OptionsDialog
 			this.Name = "MonoDevelop.Ide.Gui.Dialogs.OptionsDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Options");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Options");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.OptionsDialog.VBox
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.labelTitle = new global::Gtk.Label ();
 			this.labelTitle.Name = "labelTitle";
 			this.labelTitle.Xalign = 0F;
-			this.labelTitle.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<span weight=\"bold\" size=\"x-large\">Title</span>");
+			this.labelTitle.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\"bold\" size=\"x-large\">Title</span>");
 			this.labelTitle.UseMarkup = true;
 			this.hbox2.Add (this.labelTitle);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.labelTitle]));

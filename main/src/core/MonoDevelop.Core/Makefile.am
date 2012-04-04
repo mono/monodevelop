@@ -20,6 +20,7 @@ FILES =  \
 	MonoDevelop.Core.Assemblies/ComposedAssemblyContext.cs \
 	MonoDevelop.Core.Assemblies/CustomRuntimeExecutionModeSet.cs \
 	MonoDevelop.Core.Assemblies/DirectoryAssemblyContext.cs \
+	MonoDevelop.Core.Assemblies/Framework.cs \
 	MonoDevelop.Core.Assemblies/IAssemblyContext.cs \
 	MonoDevelop.Core.Assemblies/LibraryPcFileCache.cs \
 	MonoDevelop.Core.Assemblies/MonoFrameworkBackend.cs \

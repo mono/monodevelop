@@ -96,6 +96,7 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.GeneralProjectOptionsWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.OutputOptionsPanelWidget.cs \
+	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanelWidget.cs \
@@ -610,6 +611,7 @@ FILES =  \
 	MonoDevelop.Ide.Projects.OptionPanels/GeneralProjectOptions.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/OutputOptionsPanel.cs \
+	MonoDevelop.Ide.Projects.OptionPanels/PortableRuntimeOptionsPanel.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/RunOptionsPanel.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/RuntimeOptionsPanel.cs \
 	MonoDevelop.Ide.Projects.OptionPanels/SolutionItemConfigurationsPanel.cs \

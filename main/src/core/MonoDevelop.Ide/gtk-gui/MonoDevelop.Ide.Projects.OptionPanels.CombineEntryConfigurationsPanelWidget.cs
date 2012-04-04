@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.renameButton = new global::Gtk.Button ();
 			this.renameButton.Name = "renameButton";
 			this.renameButton.UseUnderline = true;
-			this.renameButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Rename");
+			this.renameButton.Label = global::Mono.Unix.Catalog.GetString ("Rename");
 			this.vbox76.Add (this.renameButton);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox76 [this.renameButton]));
 			w6.Position = 3;

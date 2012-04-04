@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.DeleteConfigDialog
 			this.Name = "MonoDevelop.Ide.Projects.DeleteConfigDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Delete Configuration");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Delete Configuration");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			// Internal child MonoDevelop.Ide.Projects.DeleteConfigDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label107 = new global::Gtk.Label ();
 			this.label107.Name = "label107";
 			this.label107.Xalign = 0F;
-			this.label107.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Are you sure you want to delete this configuration?");
+			this.label107.LabelProp = global::Mono.Unix.Catalog.GetString ("Are you sure you want to delete this configuration?");
 			this.vbox80.Add (this.label107);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox80 [this.label107]));
 			w3.Position = 0;
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child vbox80.Gtk.Box+BoxChild
 			this.deleteChildrenCheck = new global::Gtk.CheckButton ();
 			this.deleteChildrenCheck.Name = "deleteChildrenCheck";
-			this.deleteChildrenCheck.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Delete also configurations in solution items");
+			this.deleteChildrenCheck.Label = global::Mono.Unix.Catalog.GetString ("Delete also configurations in solution items");
 			this.deleteChildrenCheck.Active = true;
 			this.deleteChildrenCheck.DrawIndicator = true;
 			this.deleteChildrenCheck.UseUnderline = true;

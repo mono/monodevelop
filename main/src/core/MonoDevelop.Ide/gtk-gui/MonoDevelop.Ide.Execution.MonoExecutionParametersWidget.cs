@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Execution
 			w3.Add (w4);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w6 = new global::Gtk.Label ();
-			w6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Clear All Options");
+			w6.LabelProp = global::Mono.Unix.Catalog.GetString ("Clear All Options");
 			w6.UseUnderline = true;
 			w3.Add (w6);
 			w2.Add (w3);
@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Execution
 			this.buttonPreview.CanFocus = true;
 			this.buttonPreview.Name = "buttonPreview";
 			this.buttonPreview.UseUnderline = true;
-			this.buttonPreview.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Preview Options");
+			this.buttonPreview.Label = global::Mono.Unix.Catalog.GetString ("Preview Options");
 			this.vbox4.Add (this.buttonPreview);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.buttonPreview]));
 			w11.Position = 1;

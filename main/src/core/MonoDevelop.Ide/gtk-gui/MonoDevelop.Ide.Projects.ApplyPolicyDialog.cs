@@ -27,7 +27,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.ApplyPolicyDialog
 			this.Name = "MonoDevelop.Ide.Projects.ApplyPolicyDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Apply Policies");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Apply Policies");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Projects.ApplyPolicyDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects
 			this.vbox2.Name = "vbox2";
 			this.vbox2.Spacing = 6;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radioCustom = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Apply stock or custom policy set"));
+			this.radioCustom = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Apply stock or custom policy set"));
 			this.radioCustom.CanFocus = true;
 			this.radioCustom.Name = "radioCustom";
 			this.radioCustom.DrawIndicator = true;
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Policy:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Policy:");
 			this.hbox1.Add (this.label2);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
 			w3.Position = 0;
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Projects
 			w6.Expand = false;
 			w6.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radioFile = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Apply policies from file"));
+			this.radioFile = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Apply policies from file"));
 			this.radioFile.CanFocus = true;
 			this.radioFile.Name = "radioFile";
 			this.radioFile.DrawIndicator = true;
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("File:");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("File:");
 			this.hbox2.Add (this.label3);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label3]));
 			w8.Position = 0;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Projects
 			this.labelChangesTitle = new global::Gtk.Label ();
 			this.labelChangesTitle.Name = "labelChangesTitle";
 			this.labelChangesTitle.Xalign = 0F;
-			this.labelChangesTitle.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Policies to set or replace:");
+			this.labelChangesTitle.LabelProp = global::Mono.Unix.Catalog.GetString ("Policies to set or replace:");
 			this.vbox4.Add (this.labelChangesTitle);
 			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.labelChangesTitle]));
 			w13.Position = 0;
@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonOk.CanFocus = true;
 			this.buttonOk.Name = "buttonOk";
 			this.buttonOk.UseUnderline = true;
-			this.buttonOk.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Apply policies");
+			this.buttonOk.Label = global::Mono.Unix.Catalog.GetString ("_Apply policies");
 			w17.Add (this.buttonOk);
 			global::Gtk.ButtonBox.ButtonBoxChild w19 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w17 [this.buttonOk]));
 			w19.Position = 1;

@@ -13,7 +13,7 @@ namespace MonoDevelop.Ide.Execution
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Execution.MonoExecutionParametersPreview
 			this.Name = "MonoDevelop.Ide.Execution.MonoExecutionParametersPreview";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Options Preview");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Options Preview");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			// Internal child MonoDevelop.Ide.Execution.MonoExecutionParametersPreview.VBox

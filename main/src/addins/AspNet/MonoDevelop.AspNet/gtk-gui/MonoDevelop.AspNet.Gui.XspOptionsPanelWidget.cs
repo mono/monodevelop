@@ -53,7 +53,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>General Options</b>");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>General Options</b>");
 			this.label1.UseMarkup = true;
 			this.vbox1.Add (this.label1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
@@ -97,7 +97,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
 			this.label7.Xalign = 0F;
-			this.label7.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Port number:");
+			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Port number:");
 			this.table2.Add (this.label7);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table2 [this.label7]));
 			w4.TopAttach = ((uint)(1));
@@ -108,7 +108,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
 			this.label8.Xalign = 0F;
-			this.label8.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("IP address:");
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("IP address:");
 			this.table2.Add (this.label8);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table2 [this.label8]));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -137,7 +137,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.verboseCheck = new global::Gtk.CheckButton ();
 			this.verboseCheck.CanFocus = true;
 			this.verboseCheck.Name = "verboseCheck";
-			this.verboseCheck.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Verbose console output");
+			this.verboseCheck.Label = global::Mono.Unix.Catalog.GetString ("Verbose console output");
 			this.verboseCheck.DrawIndicator = true;
 			this.verboseCheck.UseUnderline = true;
 			this.vbox2.Add (this.verboseCheck);
@@ -159,7 +159,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Security</b>");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Security</b>");
 			this.label2.UseMarkup = true;
 			this.vbox1.Add (this.label2);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label2]));
@@ -187,7 +187,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
 			this.label10.Xalign = 0F;
-			this.label10.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("SSL mode:");
+			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("SSL mode:");
 			this.table3.Add (this.label10);
 			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table3 [this.label10]));
 			w13.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -196,7 +196,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
 			this.label9.Xalign = 0F;
-			this.label9.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("SSL protocol:");
+			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("SSL protocol:");
 			this.table3.Add (this.label9);
 			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table3 [this.label9]));
 			w14.TopAttach = ((uint)(1));
@@ -237,7 +237,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0F;
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>SSL Key</b>");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>SSL Key</b>");
 			this.label3.UseMarkup = true;
 			this.vbox1.Add (this.label3);
 			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label3]));
@@ -333,7 +333,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
 			this.label11.Xalign = 0F;
-			this.label11.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Key type:");
+			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("Key type:");
 			this.table4.Add (this.label11);
 			global::Gtk.Table.TableChild w28 = ((global::Gtk.Table.TableChild)(this.table4 [this.label11]));
 			w28.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -342,7 +342,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label12 = new global::Gtk.Label ();
 			this.label12.Name = "label12";
 			this.label12.Xalign = 0F;
-			this.label12.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Key location:");
+			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Key location:");
 			this.table4.Add (this.label12);
 			global::Gtk.Table.TableChild w29 = ((global::Gtk.Table.TableChild)(this.table4 [this.label12]));
 			w29.TopAttach = ((uint)(1));
@@ -353,7 +353,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label13 = new global::Gtk.Label ();
 			this.label13.Name = "label13";
 			this.label13.Xalign = 0F;
-			this.label13.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Certificate location:");
+			this.label13.LabelProp = global::Mono.Unix.Catalog.GetString ("Certificate location:");
 			this.table4.Add (this.label13);
 			global::Gtk.Table.TableChild w30 = ((global::Gtk.Table.TableChild)(this.table4 [this.label13]));
 			w30.TopAttach = ((uint)(2));
@@ -364,7 +364,7 @@ namespace MonoDevelop.AspNet.Gui
 			this.label14 = new global::Gtk.Label ();
 			this.label14.Name = "label14";
 			this.label14.Xalign = 0F;
-			this.label14.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Password:");
+			this.label14.LabelProp = global::Mono.Unix.Catalog.GetString ("Password:");
 			this.table4.Add (this.label14);
 			global::Gtk.Table.TableChild w31 = ((global::Gtk.Table.TableChild)(this.table4 [this.label14]));
 			w31.TopAttach = ((uint)(3));

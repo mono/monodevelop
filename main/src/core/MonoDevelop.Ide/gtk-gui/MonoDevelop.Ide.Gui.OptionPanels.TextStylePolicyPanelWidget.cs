@@ -5,41 +5,23 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	internal partial class TextStylePolicyPanelWidget
 	{
 		private global::Gtk.VBox vbox1;
-		
 		private global::Gtk.HBox hbox1;
-		
 		private global::Gtk.Label label1;
-		
 		private global::Gtk.SpinButton columnWidthSpin;
-		
 		private global::Gtk.Label label5;
-		
 		private global::Gtk.HBox hbox2;
-		
 		private global::Gtk.Label label6;
-		
 		private global::Gtk.ComboBox lineEndingCombo;
-		
 		private global::Gtk.Alignment alignment2;
-		
 		private global::Gtk.Label label3;
-		
 		private global::Gtk.Alignment alignment1;
-		
 		private global::Gtk.VBox vbox2;
-		
 		private global::Gtk.Table table1;
-		
 		private global::Gtk.SpinButton indentWidthSpin;
-		
 		private global::Gtk.Label label7;
-		
 		private global::Gtk.Label label9;
-		
 		private global::Gtk.SpinButton tabWidthSpin;
-		
 		private global::Gtk.CheckButton tabsToSpaceCheck;
-		
 		private global::Gtk.CheckButton tabsAfterNonTabsCheck;
 		
 		private global::Gtk.CheckButton removeTrailingWhitespaceCheck;

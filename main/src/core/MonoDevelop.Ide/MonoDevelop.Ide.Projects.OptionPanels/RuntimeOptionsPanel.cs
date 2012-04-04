@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		public override bool IsVisible ()
 		{
-			return ConfiguredProject is DotNetProject;
+			return (ConfiguredProject is DotNetProject) && !(ConfiguredProject is PortableDotNetProject);
 		}
 		
 		public override Widget CreatePanelWidget()
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 
 		public void Store ()
-		{	
+		{
 			if (project == null || runtimeVersionCombo.Active == -1)
 				return;
 			project.TargetFramework = frameworks [runtimeVersionCombo.Active];

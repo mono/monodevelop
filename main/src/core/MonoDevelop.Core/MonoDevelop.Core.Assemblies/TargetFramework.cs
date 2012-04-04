@@ -26,12 +26,14 @@
 //
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Core.Serialization;
+using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
+
 using Mono.Addins;
-using MonoDevelop.Core.AddIns;
 using Mono.PkgConfig;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -52,6 +54,7 @@ namespace MonoDevelop.Core.Assemblies
 		ClrVersion clrVersion;
 
 		List<TargetFrameworkMoniker> includedFrameworks = new List<TargetFrameworkMoniker> ();
+		List<Framework> supportedFrameworks = new List<Framework> ();
 
 		internal bool RelationsBuilt;
 		
@@ -202,6 +205,10 @@ namespace MonoDevelop.Core.Assemblies
 			return new TargetFrameworkMoniker (id.Identifier, version);	
 		}
 		
+		public List<Framework> SupportedFrameworks {
+			get { return supportedFrameworks; }
+		}
+		
 		[ItemProperty]
 		[ItemProperty ("Assembly", Scope="*")]
 		internal AssemblyInfo[] Assemblies {
@@ -223,7 +230,7 @@ namespace MonoDevelop.Core.Assemblies
 		public static TargetFramework FromFrameworkDirectory (TargetFrameworkMoniker moniker, FilePath dir)
 		{
 			var fxList = dir.Combine ("RedistList", "FrameworkList.xml");
-			if (!System.IO.File.Exists (fxList))
+			if (!File.Exists (fxList))
 				return null;
 			
 			var fx = new TargetFramework (moniker);
@@ -321,7 +328,14 @@ namespace MonoDevelop.Core.Assemblies
 						}
 					}
 				}
+				
 				fx.Assemblies = assemblies.ToArray ();
+			}
+			
+			var supportedFrameworksDir = dir.Combine ("SupportedFrameworks");
+			if (Directory.Exists (supportedFrameworksDir)) {
+				foreach (var sfx in Directory.EnumerateFiles (supportedFrameworksDir))
+					fx.SupportedFrameworks.Add (Framework.Load (fx, sfx));
 			}
 			
 			return fx;

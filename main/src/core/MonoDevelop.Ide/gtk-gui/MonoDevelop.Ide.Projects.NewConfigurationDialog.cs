@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.NewConfigurationDialog
 			this.Name = "MonoDevelop.Ide.Projects.NewConfigurationDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("New Configuration");
+			this.Title = global::Mono.Unix.Catalog.GetString ("New Configuration");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			// Internal child MonoDevelop.Ide.Projects.NewConfigurationDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Name:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Name:");
 			this.table1.Add (this.label1);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Platform:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Platform:");
 			this.table1.Add (this.label2);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w5.TopAttach = ((uint)(1));
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child vbox77.Gtk.Box+BoxChild
 			this.createChildrenCheck = new global::Gtk.CheckButton ();
 			this.createChildrenCheck.Name = "createChildrenCheck";
-			this.createChildrenCheck.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Create configurations for all solution items");
+			this.createChildrenCheck.Label = global::Mono.Unix.Catalog.GetString ("Create configurations for all solution items");
 			this.createChildrenCheck.Active = true;
 			this.createChildrenCheck.DrawIndicator = true;
 			this.createChildrenCheck.UseUnderline = true;
