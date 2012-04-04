@@ -148,6 +148,7 @@ namespace MonoDevelop.Projects
 			if (projectCreateInfo != null) {
 				Name = projectCreateInfo.ProjectName;
 				binPath = projectCreateInfo.BinPath;
+				defaultNamespace = SanitisePotentialNamespace (projectCreateInfo.ProjectName);
 			} else {
 				binPath = ".";
 			}
