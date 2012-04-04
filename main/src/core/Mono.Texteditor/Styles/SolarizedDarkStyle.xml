@@ -150,7 +150,8 @@ THE SOFTWARE.
 		<Style name="declaration" color="yellow"/>
 		<Style name="access" color="yellow"/>
 		<Style name="semantic.type" color="blue"/>
-		<Style name="semantic.field" color="base00" weight="Italic"/>
+		<Style name="semantic.field" color="violet"/>
+		<Style name="semantic.property" color="violet"/>
 		<Style name="semantic.error" color="red"/>
 	</Style>
 </EditorStyle>

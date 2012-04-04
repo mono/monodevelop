@@ -543,8 +543,20 @@ namespace MonoDevelop.CSharp.Highlighting
 							endOffset = chunk.Offset + ((Identifier)node).Name.Length;
 							return "keyword.semantic.type";
 						}
-						
-						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration || node.Parent is FixedVariableInitializer /*|| node.Parent is EnumMemberDeclaration*/) {
+
+						if (node.Parent is PropertyDeclaration) {
+							endOffset = chunk.Offset + ((Identifier)node).Name.Length;
+							return "keyword.semantic.property";
+						}
+
+						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration) {
+							var field = node.Parent.Parent as FieldDeclaration;
+							if (field.Modifiers.HasFlag (Modifiers.Const) || field.Modifiers.HasFlag (Modifiers.Static | Modifiers.Readonly))
+								return null;
+							endOffset = chunk.Offset + ((Identifier)node).Name.Length;
+							return "keyword.semantic.field";
+						}
+						if (node.Parent is FixedVariableInitializer /*|| node.Parent is EnumMemberDeclaration*/) {
 							endOffset = chunk.Offset + ((Identifier)node).Name.Length;
 							return "keyword.semantic.field";
 						}
@@ -560,9 +572,16 @@ namespace MonoDevelop.CSharp.Highlighting
 						
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
-							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
+							if (member is IField) {
+								var field = member as IField;
+								if (field.IsConst || field.IsStatic && field.IsReadOnly)
+									return null;
 								endOffset = chunk.Offset + id.Identifier.Length;
 								return "keyword.semantic.field";
+							}
+							if (member is IProperty) {
+								endOffset = chunk.Offset + id.Identifier.Length;
+								return "keyword.semantic.property";
 							}
 						}
 						if (result is TypeResolveResult) {
