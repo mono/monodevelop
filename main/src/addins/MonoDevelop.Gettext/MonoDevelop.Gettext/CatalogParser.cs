@@ -38,7 +38,7 @@ namespace MonoDevelop.Gettext
 	//FIXME: StreamReader has been implemeneted but not a real parser
 	public abstract class CatalogParser
 	{
-		internal static readonly string[] LineSplitStrings = { "\n\r", "\r\n", "\r", "\n" };
+		internal static readonly string[] LineSplitStrings = { "\r\n", "\r", "\n" };
 		
 		string newLine;
 		string fileName;
@@ -75,14 +75,10 @@ namespace MonoDevelop.Gettext
 					if (curr[0] == '\n') {
 						if (foundchar == '\r')
 							return "\r\n";
-						else if (foundchar == 'x')
-							foundchar = '\n';
-						else if (foundchar == '\n')
+						else 
 							return "\n";
 					} else if (curr[0] == '\r') {
-						if (foundchar == '\n')
-							return "\n\r";
-						else if (foundchar == 'x')
+						if (foundchar == 'x')
 							foundchar = '\r';
 						else if (foundchar == '\r')
 							return  "\r";
