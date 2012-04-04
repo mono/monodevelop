@@ -235,10 +235,12 @@ namespace MonoDevelop.TypeSystem
 					insertLine = NewLineInsertion.Eol;
 				}
 				// search for line start
-				var line = data.GetLine (type.BodyRegion.EndLine);
 				int col = type.BodyRegion.EndColumn - 1;
-				while (col > 1 && char.IsWhiteSpace (data.GetCharAt (line.Offset + col - 2)))
-					col--;
+				var line = data.GetLine (type.BodyRegion.EndLine);
+				if (line != null) {
+					while (col > 1 && char.IsWhiteSpace (data.GetCharAt (line.Offset + col - 2)))
+						col--;
+				}
 				result.Add (new InsertionPoint (new DocumentLocation (type.BodyRegion.EndLine, col), insertLine, NewLineInsertion.Eol));
 				CheckEndPoint (data.Document, result [result.Count - 1], result.Count == 1);
 			}

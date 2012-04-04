@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Cecil;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.TypeSystem
 {
@@ -98,7 +99,66 @@ namespace MonoDevelop.TypeSystem
 				return 3;
 			return 0;
 		}
+
+		public static string GetStockIcon (this EntityDeclaration element)
+		{
+			Accessibility acc = Accessibility.None;
+			// type accessibility
+			acc = Accessibility.Internal;
+			if (element.HasModifier (Modifiers.Public)) {
+				acc = Accessibility.Public;
+			} else if (element.HasModifier (Modifiers.Protected)) {
+				acc = Accessibility.Protected;
+			} else if (element.HasModifier (Modifiers.Private)) {
+				acc = Accessibility.Private;
+			}
+			
+			if (element is TypeDeclaration) {
+				var type = element as TypeDeclaration;
+				switch (type.ClassType) {
+				case ClassType.Class:
+					return typeIconTable [0, ModifierToOffset (acc)];
+				case ClassType.Struct:
+					return typeIconTable [3, ModifierToOffset (acc)];
+				case ClassType.Interface:
+					return typeIconTable [2, ModifierToOffset (acc)];
+				case ClassType.Enum:
+					return typeIconTable [1, ModifierToOffset (acc)];
+				default:
+					throw new ArgumentOutOfRangeException ();
+				}
+			}
+			if (element is DelegateDeclaration)
+				return typeIconTable [4, ModifierToOffset (acc)];
+
+			// member accessibility
+			acc = Accessibility.Private;
+			if (element.HasModifier (Modifiers.Public)) {
+				acc = Accessibility.Public;
+			} else if (element.HasModifier (Modifiers.Protected)) {
+				acc = Accessibility.Protected;
+			} else if (element.HasModifier (Modifiers.Internal)) {
+				acc = Accessibility.Internal;
+			}
+
+			if (element is MethodDeclaration) {
+				var method = element as MethodDeclaration;
+				if (method.IsExtensionMethod)
+					return extensionMethodIconTable [ModifierToOffset (acc)];
+				return methodIconTable [ModifierToOffset (acc)];
+			}
+			if (element is OperatorDeclaration || element is ConstructorDeclaration || element is DestructorDeclaration || element is Accessor)
+				return methodIconTable [ModifierToOffset (acc)];
+
+			if (element is PropertyDeclaration)
+				return propertyIconTable [ModifierToOffset (acc)];
+			if (element is EventDeclaration || element is CustomEventDeclaration)
+				return eventIconTable [ModifierToOffset (acc)];
+
+			return fieldIconTable [ModifierToOffset (acc)];
+		}
 		
+
 		public static string GetStockIcon (this INamedElement element)
 		{
 			if (element is IType)

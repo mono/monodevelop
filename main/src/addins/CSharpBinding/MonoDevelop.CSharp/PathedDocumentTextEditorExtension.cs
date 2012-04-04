@@ -34,9 +34,8 @@ using MonoDevelop.Core;
 using MonoDevelop.CSharp.Completion;
 using System.Linq;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using System.Threading;
+using ICSharpCode.NRefactory.CSharp;
+using System.Text;
 
 namespace MonoDevelop.CSharp
 {
@@ -68,70 +67,115 @@ namespace MonoDevelop.CSharp
 		
 		class DataProvider : DropDownBoxListWindow.IListDataProvider
 		{
+			readonly PathedDocumentTextEditorExtension ext;
 			object tag;
-			Ambience amb;
-			List<IEntity> memberList = new List<IEntity> ();
-			Document Document {
-				get;
-				set;
-			}
-			
-			public DataProvider (Document doc, object tag, Ambience amb)
+			List<AstNode> memberList = new List<AstNode> ();
+
+			public DataProvider (PathedDocumentTextEditorExtension ext, object tag)
 			{
-				this.Document = doc;
+				if (ext == null)
+					throw new ArgumentNullException ("ext");
+				this.ext = ext;
 				this.tag = tag;
-				this.amb = amb;
 				Reset ();
 			}
 			
 			#region IListDataProvider implementation
 			public void Reset ()
 			{
-				stringCache.Clear ();
 				memberList.Clear ();
-				if (tag is IParsedFile) {
-					memberList.AddRange (this.Document.Compilation.GetAllTypeDefinitions ().Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
-				} else if (tag is ITypeDefinition) {
-					var type = (ITypeDefinition)tag;
-					memberList.AddRange (type.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
-					memberList.AddRange (type.Members.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
-				} else if (tag is IMember) {
-					var member = (IMember)tag;
-					if (member.DeclaringTypeDefinition != null) {
-						memberList.AddRange (member.DeclaringTypeDefinition.NestedTypes.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
-						memberList.AddRange (member.DeclaringTypeDefinition.Members.Where (t => t.Region.FileName == this.Document.FileName && !t.IsSynthetic));
+				if (tag is CompilationUnit) {
+					var unit = tag as CompilationUnit;
+					memberList.AddRange (unit.GetTypes (true));
+				} else if (tag is TypeDeclaration) {
+					var type = (TypeDeclaration)tag;
+					foreach (var member in type.Members) {
+						if (member is FieldDeclaration) {
+							foreach (var variable in ((FieldDeclaration)member).Variables)
+								memberList.Add (variable);
+						} else {
+							memberList.Add (member);
+						}
+					}
+				} else if (tag is Accessor) {
+					var acc = (Accessor)tag;
+					var parent = (EntityDeclaration)acc.Parent;
+					memberList.AddRange (parent.Children.OfType<Accessor> ());
+				} else if (tag is EntityDeclaration) {
+					var entity = (EntityDeclaration)tag;
+					var type = (TypeDeclaration)entity.Parent;
+					foreach (var member in type.Members) {
+						if (member is FieldDeclaration) {
+							foreach (var variable in ((FieldDeclaration)member).Variables)
+								memberList.Add (variable);
+						} else {
+							memberList.Add (member);
+						}
+					}
+				} 
+
+				memberList.Sort ((x, y) => String.Compare (GetName (x), GetName(y), StringComparison.OrdinalIgnoreCase));
+			}
+
+			string GetName (AstNode node)
+			{
+				if (tag is CompilationUnit) {
+					var type = node as TypeDeclaration;
+					if (type != null) {
+						var sb = new StringBuilder ();
+						sb.Append (type.Name);
+						while (type.Parent is TypeDeclaration) {
+							type = type.Parent as TypeDeclaration;
+							sb.Insert (0, type.Name + ".");
+						}
+						return sb.ToString ();
 					}
 				}
-				memberList.Sort ((x, y) => String.Compare (x.Name, y.Name, StringComparison.OrdinalIgnoreCase));
-			}
-			
-			Dictionary<IEntity, string> stringCache = new Dictionary<IEntity, string> ();
-			string GetString (Ambience amb, IEntity rx)
-			{
-				string result;
-				if (stringCache.TryGetValue(rx, out result))
-					return result;
-				if (tag is IParsedFile) {
-					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
-				} else {
-					result = amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates);
-				}
 				
-				stringCache[rx] = result;
-				return result;
+				if (node is Accessor) {
+					if (node.Role == PropertyDeclaration.GetterRole)
+						return "get";
+					if (node.Role == PropertyDeclaration.SetterRole)
+						return "set";
+					if (node.Role == CustomEventDeclaration.AddAccessorRole) 
+						return "add";
+					if (node.Role == CustomEventDeclaration.RemoveAccessorRole)
+						return "remove";
+					return node.GetText ();
+				}
+				if (node is EntityDeclaration)
+					return ((EntityDeclaration)node).Name;
+				return ((VariableInitializer)node).Name;
 			}
-			
+
 			public string GetMarkup (int n)
 			{
-				var m = memberList[n];
-				if (m.IsObsolete ())
-					return "<s>" + GLib.Markup.EscapeText (GetString (amb, m)) + "</s>";
-				return GLib.Markup.EscapeText (GetString (amb, m));
+				var node = memberList [n];
+				if (tag is CompilationUnit) {
+					var type = node;
+					if (type != null) {
+						var sb = new StringBuilder ();
+						sb.Append (ext.GetEntityMarkup (type));
+						while (type.Parent is TypeDeclaration) {
+							sb.Insert (0, ext.GetEntityMarkup (type.Parent) + ".");
+							type = type.Parent;
+						}
+						return sb.ToString ();
+					}
+				}
+				return ext.GetEntityMarkup (node);
 			}
 			
 			public Gdk.Pixbuf GetIcon (int n)
 			{
-				return ImageService.GetPixbuf (memberList[n].GetStockIcon (), Gtk.IconSize.Menu);
+				string icon;
+				var node = memberList [n];
+				if (node is EntityDeclaration) {
+					icon = ((EntityDeclaration)node).GetStockIcon ();
+				} else {
+					icon = ((EntityDeclaration)node.Parent).GetStockIcon ();
+				}
+				return ImageService.GetPixbuf (icon, Gtk.IconSize.Menu);
 			}
 			
 			public object GetTag (int n)
@@ -141,10 +185,19 @@ namespace MonoDevelop.CSharp
 			
 			public void ActivateItem (int n)
 			{
-				var member = memberList[n];
-				MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
-				if (extEditor != null)
-					extEditor.SetCaretTo (Math.Max (1, member.Region.BeginLine), Math.Max (1, member.Region.BeginColumn));
+				var node = memberList [n];
+				var extEditor = ext.Document.GetContent<IExtensibleTextEditor> ();
+				if (extEditor != null) {
+					int line, col;
+					if (node is EntityDeclaration && !(node is Accessor)) {
+						line = Math.Max (1, ((EntityDeclaration)node).NameToken.StartLocation.Line);
+						col = Math.Max (1, ((EntityDeclaration)node).NameToken.StartLocation.Column);
+					} else {
+						line = node.StartLocation.Line;
+						col = node.StartLocation.Column;
+					}
+					extEditor.SetCaretTo (line, col);
+				}
 			}
 			
 			public int IconCount {
@@ -217,7 +270,7 @@ namespace MonoDevelop.CSharp
 			if (path == null || index < 0 || index >= path.Length)
 				return null;
 			var tag = path [index].Tag;
-			var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Document) : new DataProvider (Document, tag, GetAmbience ()));
+			var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Document) : new DataProvider (this, tag));
 			window.SelectItem (path [index].Tag);
 			return window;
 		}
@@ -227,7 +280,7 @@ namespace MonoDevelop.CSharp
 			private set;
 		}
 		
-		PathEntry GetRegionEntry (ParsedDocument unit, Mono.TextEditor.DocumentLocation loc)
+		static PathEntry GetRegionEntry (ParsedDocument unit, Mono.TextEditor.DocumentLocation loc)
 		{
 			PathEntry entry;
 			if (!unit.UserRegions.Any ())
@@ -249,91 +302,87 @@ namespace MonoDevelop.CSharp
 			CurrentPath = new PathEntry[0];
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));	
 		}
-		IUnresolvedTypeDefinition lastType;
-		IUnresolvedMember lastMember = new DefaultUnresolvedField ();
-		
+
+		TypeDeclaration lastType;
+		EntityDeclaration lastMember;
+		AstAmbience amb;
+		string GetEntityMarkup (AstNode node)
+		{
+			if (amb == null)
+				return "";
+			return amb.GetEntityMarkup (node);
+		}
+
 		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
-			var unit = Document.ParsedDocument;
-			if (unit == null || unit.ParsedFile == null)
+			var parsedDocument = Document.ParsedDocument;
+			if (parsedDocument == null || parsedDocument.ParsedFile == null)
 				return;
+			amb = new AstAmbience (document.GetFormattingOptions ());
 			
-			var offset = Document.Editor.Caret.Offset;
+			var unit = parsedDocument.GetAst<CompilationUnit> ();
+			if (unit == null)
+				return;
+
 			var loc = Document.Editor.Caret.Location;
-			var ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
-			
-			var unresolvedType = ext.GetTypeAt (offset);
-			var unresolvedMember = ext.GetMemberAt (offset);
-			if (unresolvedType == lastType && lastMember == unresolvedMember)
+
+			var curType = unit.GetNodeAt<TypeDeclaration> (loc);
+			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);
+			if (curType == curMember)
+				curMember = null;
+			if (curType == lastType && lastMember == curMember)
 				return;
-			lastType = unresolvedType;
-			lastMember = unresolvedMember;
+			if (curType != null && lastType != null && curType.StartLocation == lastType.StartLocation &&
+				curMember != null && lastMember != null && curMember.StartLocation == lastMember.StartLocation)
+				return;
+
+			lastType = curType;
+			lastMember = curMember;
 			
-			if (unresolvedType == null) {
+			if (curType == null) {
 				if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is IParsedFile)
 					return;
 				var prevPath = CurrentPath;
-				CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit.ParsedFile } };
+				CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit } };
 				OnPathChanged (new DocumentPathChangedEventArgs (prevPath));	
 				return;
 			}
 			
 			//	ThreadPool.QueueUserWorkItem (delegate {
 			var result = new List<PathEntry> ();
-			var amb = GetAmbience ();
-			var resolveCtx = unit.GetTypeResolveContext (document.Compilation, loc);
-			ITypeDefinition typeDef;
-			try {
-				var resolved = unresolvedType.Resolve (resolveCtx);
-				if (resolved == null) {
-					ClearPath ();
-					return;
+
+			if (curType != null) {
+				var type = curType;
+				while (type != null) {
+					var declaringType = type.Parent as TypeDeclaration;
+					result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (AstNode)declaringType ?? unit });
+					type = declaringType;
 				}
-				typeDef = resolved.GetDefinition ();
-			} catch (Exception) {
-				ClearPath ();
-				return;
-			}
-			if (typeDef != null) {
-				var curType = typeDef;
-				while (curType != null) {
-					var flags = OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup;
-					if (curType.DeclaringTypeDefinition == null)
-						flags |= OutputFlags.UseFullInnerTypeName;
-					var markup = amb.GetString ((IEntity)curType, flags);
-					result.Insert (0, new PathEntry (ImageService.GetPixbuf (curType.GetStockIcon (), Gtk.IconSize.Menu), curType.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = (object)curType.DeclaringTypeDefinition ?? unit.ParsedFile });
-					curType = curType.DeclaringTypeDefinition;
-				}
-			}
-			IMember member = null;
-			if (ext.typeSystemSegmentTree != null) {
-				try {
-					if (unresolvedMember != null)
-						member = unresolvedMember.CreateResolved (resolveCtx);
-				} catch (Exception) {
-					ClearPath ();
-					return;
-				}
-			} else {
-				member = typeDef != null && typeDef.Kind != TypeKind.Delegate ? typeDef.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (loc)) : null;
 			}
 				
-			if (member != null) {
-				var markup = amb.GetString (member, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.ReformatDelegates | OutputFlags.IncludeMarkup);
-				result.Add (new PathEntry (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu), member.IsObsolete () ? "<s>" + markup + "</s>" : markup) { Tag = member });
+			if (curMember != null) {
+				result.Add (new PathEntry (ImageService.GetPixbuf (curMember.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (curMember)) { Tag = curMember });
+				if (curMember is Accessor) {
+					var parent = curMember.Parent as EntityDeclaration;
+					if (parent != null)
+						result.Insert (result.Count - 1, new PathEntry (ImageService.GetPixbuf (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
+				}
 			}
 				
-			var entry = GetRegionEntry (unit, loc);
+			var entry = GetRegionEntry (parsedDocument, loc);
 			if (entry != null)
 				result.Add (entry);
 				
 			PathEntry noSelection = null;
-			if (typeDef == null) {
-				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit.ParsedFile };
-			} else if (member == null && typeDef.Kind != TypeKind.Delegate) 
-				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = typeDef };
+			if (curType == null) {
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
+			} else if (curMember == null) { 
+				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
+			}
+
 			if (noSelection != null) 
 				result.Add (noSelection);
+
 			var prev = CurrentPath;
 			if (prev != null && prev.Length == result.Count) {
 				bool equals = true;
