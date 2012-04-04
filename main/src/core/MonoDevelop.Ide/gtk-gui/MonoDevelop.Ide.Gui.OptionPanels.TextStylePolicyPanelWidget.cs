@@ -34,9 +34,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		private global::Gtk.SpinButton indentWidthSpin;
 		
-		private global::Gtk.Label label7;
+		private global::Gtk.Label label2;
 		
-		private global::Gtk.Label label8;
+		private global::Gtk.Label label7;
 		
 		private global::Gtk.Label label9;
 		
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.indentWidthSpin.Adjustment.PageIncrement = 2;
 			this.indentWidthSpin.ClimbRate = 1;
 			this.indentWidthSpin.Numeric = true;
-			this.indentWidthSpin.Value = 4;
+			this.indentWidthSpin.Value = 6;
 			this.table1.Add (this.indentWidthSpin);
 			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.indentWidthSpin]));
 			w11.TopAttach = ((uint)(1));
@@ -181,37 +181,37 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w11.XOptions = ((global::Gtk.AttachOptions)(4));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
+			this.label2 = new global::Gtk.Label ();
+			this.label2.Name = "label2";
+			this.label2.Xalign = 1F;
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("_Indentation mode:");
+			this.label2.UseUnderline = true;
+			this.table1.Add (this.label2);
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
+			w12.TopAttach = ((uint)(2));
+			w12.BottomAttach = ((uint)(3));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
 			this.label7.Xalign = 1F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("_Tab width:");
 			this.label7.UseUnderline = true;
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
-			w12.XOptions = ((global::Gtk.AttachOptions)(4));
-			w12.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label8 = new global::Gtk.Label ();
-			this.label8.Name = "label8";
-			this.label8.Xalign = 1F;
-			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("_Indent width:");
-			this.label8.UseUnderline = true;
-			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
-			w13.TopAttach = ((uint)(1));
-			w13.BottomAttach = ((uint)(2));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w13.XOptions = ((global::Gtk.AttachOptions)(4));
 			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
 			this.label9.Xalign = 1F;
-			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("_Indentation mode:");
+			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("_Indent width:");
 			this.label9.UseUnderline = true;
 			this.table1.Add (this.label9);
 			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.label9]));
-			w14.TopAttach = ((uint)(2));
-			w14.BottomAttach = ((uint)(3));
+			w14.TopAttach = ((uint)(1));
+			w14.BottomAttach = ((uint)(2));
 			w14.XOptions = ((global::Gtk.AttachOptions)(4));
 			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.tabWidthSpin.Adjustment.PageIncrement = 2;
 			this.tabWidthSpin.ClimbRate = 1;
 			this.tabWidthSpin.Numeric = true;
-			this.tabWidthSpin.Value = 4;
+			this.tabWidthSpin.Value = 6;
 			this.table1.Add (this.tabWidthSpin);
 			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.tabWidthSpin]));
 			w15.LeftAttach = ((uint)(1));
@@ -242,7 +242,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.tabsToSpaceCheck.UseUnderline = true;
 			this.vbox2.Add (this.tabsToSpaceCheck);
 			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.tabsToSpaceCheck]));
-			w17.Position = 2;
+			w17.Position = 1;
 			w17.Expand = false;
 			w17.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
@@ -254,25 +254,26 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.tabsAfterNonTabsCheck.UseUnderline = true;
 			this.vbox2.Add (this.tabsAfterNonTabsCheck);
 			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.tabsAfterNonTabsCheck]));
-			w18.Position = 3;
+			w18.Position = 2;
 			w18.Expand = false;
 			w18.Fill = false;
 			this.alignment1.Add (this.vbox2);
 			this.vbox1.Add (this.alignment1);
 			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
 			w20.Position = 3;
+			w20.Expand = false;
+			w20.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.label7.MnemonicWidget = this.tabWidthSpin;
-			this.label8.MnemonicWidget = this.tabWidthSpin;
-			this.Hide ();
+			this.label9.MnemonicWidget = this.tabWidthSpin;
+			this.Show ();
 			this.columnWidthSpin.ValueChanged += new global::System.EventHandler (this.UpdateState);
 			this.lineEndingCombo.Changed += new global::System.EventHandler (this.UpdateState);
 			this.tabWidthSpin.ValueChanged += new global::System.EventHandler (this.UpdateState);
 			this.indentWidthSpin.ValueChanged += new global::System.EventHandler (this.UpdateState);
-			this.indentationCombobox.Changed += new global::System.EventHandler (this.UpdateState);
 			this.tabsToSpaceCheck.Toggled += new global::System.EventHandler (this.UpdateState);
 			this.tabsAfterNonTabsCheck.Toggled += new global::System.EventHandler (this.UpdateState);
 		}
