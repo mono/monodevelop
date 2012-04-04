@@ -37,7 +37,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class AmbienceService
 	{

@@ -47,7 +47,7 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.SourceEditor.QuickTasks;
 using System.Text;

@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	[Serializable]
 	public class MonoDocDocumentationProvider : IDocumentationProvider

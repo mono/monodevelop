@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var project = new UnknownProject ();
 			project.FileName = "test.csproj";
 			
-			TypeSystem.TypeSystemService.LoadProject (project);
+			TypeSystemService.LoadProject (project);
 
 			sev.Project = project;
 			tww.ViewContent = sev;
@@ -110,7 +110,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 				}
 			}
 			
-			var parsedFile = TypeSystem.TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", data.Document.Text);
+			var parsedFile = TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", data.Document.Text);
 
 			var foundPoints = CodeGenerationService.GetInsertionPoints (doc.Editor, parsedFile, parsedFile.TopLevelTypeDefinitions.First ());
 			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");

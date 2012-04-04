@@ -40,7 +40,7 @@ using S = MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
 using System.Text;
 using Mono.TextEditor;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.Completion;

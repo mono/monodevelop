@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad

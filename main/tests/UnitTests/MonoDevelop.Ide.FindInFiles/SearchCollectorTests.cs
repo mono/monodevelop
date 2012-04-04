@@ -30,7 +30,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using NUnit.Framework;
 
 namespace MonoDevelop.Ide.FindInFiles

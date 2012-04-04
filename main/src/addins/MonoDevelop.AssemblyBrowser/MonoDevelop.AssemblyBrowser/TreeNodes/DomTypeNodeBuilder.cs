@@ -40,7 +40,7 @@ using ICSharpCode.Decompiler;
 using System.Threading;
 using Mono.TextEditor;
 using System.Collections.Generic;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 

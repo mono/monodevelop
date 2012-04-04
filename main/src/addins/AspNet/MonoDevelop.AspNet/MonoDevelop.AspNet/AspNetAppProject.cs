@@ -46,7 +46,7 @@ using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Deployment;
 using MonoDevelop.AspNet.Gui;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet

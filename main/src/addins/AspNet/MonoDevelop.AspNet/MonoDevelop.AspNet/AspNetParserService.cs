@@ -31,7 +31,7 @@ using System;
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet
 {

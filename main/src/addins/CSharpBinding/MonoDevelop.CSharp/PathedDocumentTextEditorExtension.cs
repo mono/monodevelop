@@ -28,7 +28,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Completion;

@@ -27,7 +27,7 @@ using System;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {

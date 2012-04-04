@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharpBinding
 {

@@ -41,7 +41,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {

@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.Ide;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 
 namespace MonoDevelop.GtkCore

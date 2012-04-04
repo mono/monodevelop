@@ -32,7 +32,7 @@ using System.Xml.Serialization;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.DesignerSupport

@@ -43,7 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core.Assemblies;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AspNet

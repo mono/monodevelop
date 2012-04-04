@@ -46,7 +46,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Extensions;
 using System.Linq;
 using System.Threading;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;

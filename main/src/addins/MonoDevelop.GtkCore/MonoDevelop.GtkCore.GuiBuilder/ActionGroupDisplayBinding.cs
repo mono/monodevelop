@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder

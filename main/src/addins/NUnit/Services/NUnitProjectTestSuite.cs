@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using System;
 
 namespace MonoDevelop.NUnit

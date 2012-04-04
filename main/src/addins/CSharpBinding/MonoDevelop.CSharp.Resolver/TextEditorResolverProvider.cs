@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using System.Linq;
 using System.Collections.Generic;

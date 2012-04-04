@@ -34,7 +34,7 @@ using Mono.TextEditor.PopupWindow;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring.ImplementInterface
 {

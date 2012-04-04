@@ -31,7 +31,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {

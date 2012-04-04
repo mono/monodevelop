@@ -1,4 +1,4 @@
-// ConditionalRegion.cs
+// PreProcessorDefine.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -24,65 +24,35 @@
 // THE SOFTWARE.
 //
 using System;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
-	[Serializable]
-	public class ConditionBlock
+	public class PreProcessorDefine
 	{
-		public string Flag {
+		public string Define {
 			get;
 			set;
 		}
 		
-		public DomRegion Region {
+		public TextLocation Location {
 			get;
 			set;
 		}
 		
-		public TextLocation Start {
-			get;
-			set;
-		}
-		
-		public TextLocation End {
-			get;
-			set;
-		}
-		
-		public ConditionBlock (string flag) : this (flag, TextLocation.Empty)
+		public PreProcessorDefine ()
 		{
 		}
-
-		public ConditionBlock (string flag, TextLocation start)
+		
+		public PreProcessorDefine (string define, TextLocation location)
 		{
-			this.Flag = flag;
-			this.Start = start;
-			this.Region = DomRegion.Empty;
-		}
-	}
-	
-	[Serializable]
-	public class ConditionalRegion : ConditionBlock
-	{
-		public DomRegion ElseBlock {
-			get;
-			set;
+			this.Define = define;
+			this.Location = location;
 		}
 		
-		List<ConditionBlock> conditionBlocks = new List<ConditionBlock> ();
-
-		public List<ConditionBlock> ConditionBlocks {
-			get {
-				return conditionBlocks;
-			}
-		}
-		
-		public ConditionalRegion (string flag) : base (flag)
+		public override string ToString ()
 		{
+			return string.Format ("[PreProcessorDefine: Define={0}, Location={1}]", Define, Location);
 		}
 	}
 }

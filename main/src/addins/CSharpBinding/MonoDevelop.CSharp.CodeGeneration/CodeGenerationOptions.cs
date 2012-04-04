@@ -30,7 +30,7 @@ using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System;

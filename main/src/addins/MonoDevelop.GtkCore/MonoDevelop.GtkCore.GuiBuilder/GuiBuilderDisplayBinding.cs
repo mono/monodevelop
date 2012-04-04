@@ -29,7 +29,7 @@
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder

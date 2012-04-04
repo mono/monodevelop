@@ -31,11 +31,11 @@ using Mono.Addins;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Projects.Policies;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public abstract class CodeGenerator
 	{

@@ -36,7 +36,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;

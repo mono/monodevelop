@@ -27,7 +27,7 @@
 using System;
 using System.IO;
 using Mono.TextTemplating;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 

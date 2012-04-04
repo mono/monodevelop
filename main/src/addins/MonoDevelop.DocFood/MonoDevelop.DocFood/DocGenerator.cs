@@ -32,7 +32,7 @@ using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {

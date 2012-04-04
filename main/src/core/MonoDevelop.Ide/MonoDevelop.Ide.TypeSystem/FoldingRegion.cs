@@ -26,7 +26,7 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	[Serializable]
 	public class FoldingRegion

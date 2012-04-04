@@ -37,7 +37,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;

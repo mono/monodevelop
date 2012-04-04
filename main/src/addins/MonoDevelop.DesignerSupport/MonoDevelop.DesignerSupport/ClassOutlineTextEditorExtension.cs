@@ -37,7 +37,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.DesignerSupport

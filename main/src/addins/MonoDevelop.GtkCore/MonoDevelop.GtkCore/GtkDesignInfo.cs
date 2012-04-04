@@ -37,7 +37,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.NodeBuilders;
 using MonoDevelop.Ide;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.GtkCore
 {

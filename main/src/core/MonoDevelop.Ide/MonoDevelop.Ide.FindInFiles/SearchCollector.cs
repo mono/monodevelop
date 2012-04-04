@@ -29,7 +29,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {

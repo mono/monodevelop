@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Mono.TextTemplating;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TextTemplating.Parser

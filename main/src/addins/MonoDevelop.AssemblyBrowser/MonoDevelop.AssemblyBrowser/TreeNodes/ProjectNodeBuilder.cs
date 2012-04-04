@@ -39,7 +39,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.IO;
 using MonoDevelop.Projects;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {

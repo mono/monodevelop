@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {

@@ -36,7 +36,7 @@ using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Gui;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Refactoring
 {

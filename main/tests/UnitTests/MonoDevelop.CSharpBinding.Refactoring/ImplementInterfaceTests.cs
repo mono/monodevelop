@@ -30,6 +30,7 @@ using System.Linq;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
@@ -44,15 +45,15 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var project = new UnknownProject ();
 			project.FileName = "test.csproj";
 			
-			TypeSystem.TypeSystemService.LoadProject (project);
+			TypeSystemService.LoadProject (project);
 			
-			TypeSystem.TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", interfacecode);
-			TypeSystem.TypeSystemService.ParseFile (project, "stub.cs", "text/x-csharp", "class Stub {\n "+stubString+"}\n");
+			TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", interfacecode);
+			TypeSystemService.ParseFile (project, "stub.cs", "text/x-csharp", "class Stub {\n "+stubString+"}\n");
 			
-			var wrapper = TypeSystem.TypeSystemService.GetProjectContentWrapper (project);
+			var wrapper = TypeSystemService.GetProjectContentWrapper (project);
 			wrapper.UpdateContent (c => c.AddAssemblyReferences (new [] { Mscorlib, SystemCore }));
 			
-			var pctx = TypeSystem.TypeSystemService.GetCompilation (project);
+			var pctx = TypeSystemService.GetCompilation (project);
 			
 			var stubType = pctx.MainAssembly.GetTypeDefinition ("", "Stub", 0);
 			var iface = pctx.MainAssembly.GetTypeDefinition ("", "ITest", 0);

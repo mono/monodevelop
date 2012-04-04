@@ -36,7 +36,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Project
 {

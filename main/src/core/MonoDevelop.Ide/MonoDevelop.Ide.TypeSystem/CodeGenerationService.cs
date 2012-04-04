@@ -35,11 +35,11 @@ using MonoDevelop.Projects;
 using System.CodeDom.Compiler;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class CodeGenerationService
 	{

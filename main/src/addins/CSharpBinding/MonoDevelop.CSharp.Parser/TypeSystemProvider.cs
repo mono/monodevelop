@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
@@ -181,20 +181,20 @@ namespace MonoDevelop.CSharp.Parser
 		
 		void VisitComment (ParsedDocument result, SpecialsBag.Comment comment, string[] tagComments)
 		{
-			var cmt = new MonoDevelop.TypeSystem.Comment (comment.Content);
+			var cmt = new MonoDevelop.Ide.TypeSystem.Comment (comment.Content);
 			cmt.CommentStartsLine = comment.StartsLine;
 			switch (comment.CommentType) {
 			case SpecialsBag.CommentType.Multi:
-				cmt.CommentType = MonoDevelop.TypeSystem.CommentType.Block;
+				cmt.CommentType = MonoDevelop.Ide.TypeSystem.CommentType.Block;
 				cmt.OpenTag = "/*";
 				cmt.ClosingTag = "*/";
 				break;
 			case SpecialsBag.CommentType.Single:
-				cmt.CommentType = MonoDevelop.TypeSystem.CommentType.SingleLine;
+				cmt.CommentType = MonoDevelop.Ide.TypeSystem.CommentType.SingleLine;
 				cmt.OpenTag = "//";
 				break;
 			case SpecialsBag.CommentType.Documentation:
-				cmt.CommentType = MonoDevelop.TypeSystem.CommentType.Documentation;
+				cmt.CommentType = MonoDevelop.Ide.TypeSystem.CommentType.Documentation;
 				cmt.IsDocumentation = true;
 				cmt.OpenTag = "///";
 				break;
@@ -205,7 +205,7 @@ namespace MonoDevelop.CSharp.Parser
 				int idx = comment.Content.IndexOf (tag);
 				if (idx < 0)
 					continue;
-				result.Add (new MonoDevelop.TypeSystem.Tag (tag, comment.Content, cmt.Region));
+				result.Add (new MonoDevelop.Ide.TypeSystem.Tag (tag, comment.Content, cmt.Region));
 			}
 		}
 		

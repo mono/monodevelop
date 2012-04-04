@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;

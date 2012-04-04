@@ -29,7 +29,7 @@
 using System;
 using System.Text;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	internal static class MarkupUtilities
 	{

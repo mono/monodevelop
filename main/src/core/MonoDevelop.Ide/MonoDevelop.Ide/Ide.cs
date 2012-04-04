@@ -43,7 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 using MonoDevelop.Components.AutoTest;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide
 {

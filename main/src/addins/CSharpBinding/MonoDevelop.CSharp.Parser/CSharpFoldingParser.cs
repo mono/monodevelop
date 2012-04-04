@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
@@ -169,10 +169,10 @@ namespace MonoDevelop.CSharp.Parser
 								ptr += 2;
 								column += 2;
 								inMultiLineComment = false;
-								result.Add (new MonoDevelop.TypeSystem.Comment () {
+								result.Add (new MonoDevelop.Ide.TypeSystem.Comment () {
 									Region = new DomRegion (startLoc, new TextLocation (line, column)),
 									OpenTag = "/*",
-									CommentType = MonoDevelop.TypeSystem.CommentType.Block,
+									CommentType = MonoDevelop.Ide.TypeSystem.CommentType.Block,
 									Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
 									CommentStartsLine = hasStartedAtLine
 								});
@@ -195,9 +195,9 @@ namespace MonoDevelop.CSharp.Parser
 							if (isDocumentation)
 								beginPtr++;
 							
-							result.Add (new MonoDevelop.TypeSystem.Comment () { 
+							result.Add (new MonoDevelop.Ide.TypeSystem.Comment () { 
 								Region = new DomRegion (startLoc, new TextLocation (line, column)),
-								CommentType = MonoDevelop.TypeSystem.CommentType.SingleLine, 
+								CommentType = MonoDevelop.Ide.TypeSystem.CommentType.SingleLine, 
 								OpenTag = "//",
 								Text = content.Substring ((int)(beginPtr - startPtr), (int)(ptr - beginPtr)),
 								CommentStartsLine = hasStartedAtLine,

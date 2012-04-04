@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory;
 using Mono.TextEditor;

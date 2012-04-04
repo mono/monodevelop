@@ -34,7 +34,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
 using ICSharpCode.OldNRefactory;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Parser;
 using System.IO;

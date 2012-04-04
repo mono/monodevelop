@@ -37,7 +37,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.AspNet.Parser;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet
 {

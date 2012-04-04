@@ -48,7 +48,7 @@ using MonoDevelop.AspNet.StateEngine;
 using System.Text;
 using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Completion;

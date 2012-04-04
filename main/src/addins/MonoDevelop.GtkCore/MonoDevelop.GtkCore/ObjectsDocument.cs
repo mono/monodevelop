@@ -34,7 +34,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 
 namespace MonoDevelop.GtkCore

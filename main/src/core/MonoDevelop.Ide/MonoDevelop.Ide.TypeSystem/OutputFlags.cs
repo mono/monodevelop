@@ -28,7 +28,7 @@
 
 using System;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	[Flags]
 	public enum OutputFlags {

@@ -30,7 +30,7 @@ using System;
 using System.Collections.Generic;
 
 using MonoDevelop.AspNet.Parser.Dom;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser

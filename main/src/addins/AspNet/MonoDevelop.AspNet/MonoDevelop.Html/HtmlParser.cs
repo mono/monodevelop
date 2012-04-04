@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 

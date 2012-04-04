@@ -42,7 +42,7 @@ using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 

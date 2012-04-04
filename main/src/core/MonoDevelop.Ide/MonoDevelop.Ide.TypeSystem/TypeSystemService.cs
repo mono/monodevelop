@@ -47,7 +47,7 @@ using System.Threading.Tasks;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.CSharp;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class TypeSystemServiceExt
 	{

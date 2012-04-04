@@ -31,7 +31,7 @@ using System.Text;
 using MonoDevelop.Core;
 using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using System.Linq;
 

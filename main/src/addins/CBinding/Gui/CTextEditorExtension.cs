@@ -45,7 +45,7 @@ using MonoDevelop.Components.Commands;
 
 using CBinding.Parser;
 using Mono.TextEditor;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 

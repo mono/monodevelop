@@ -42,7 +42,7 @@ using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
 using System.ComponentModel;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;

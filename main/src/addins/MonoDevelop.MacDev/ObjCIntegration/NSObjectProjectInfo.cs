@@ -32,7 +32,7 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Projects;
 
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;

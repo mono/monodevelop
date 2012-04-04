@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
 
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	[Flags]
 	public enum ParsedDocumentFlags

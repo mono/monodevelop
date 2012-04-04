@@ -41,7 +41,7 @@ using MonoDevelop.Deployment;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder

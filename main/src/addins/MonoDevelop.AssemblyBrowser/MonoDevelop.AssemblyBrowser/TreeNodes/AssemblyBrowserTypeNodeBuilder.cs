@@ -41,7 +41,7 @@ namespace MonoDevelop.AssemblyBrowser
 			private set; 
 		}
 		
-		protected MonoDevelop.TypeSystem.Ambience Ambience {
+		protected MonoDevelop.Ide.TypeSystem.Ambience Ambience {
 			get {
 				return Widget.Ambience; 
 			}

@@ -37,7 +37,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components;
 
 using Gtk;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace CBinding.Parser

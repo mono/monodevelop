@@ -33,7 +33,7 @@ using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Core;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;

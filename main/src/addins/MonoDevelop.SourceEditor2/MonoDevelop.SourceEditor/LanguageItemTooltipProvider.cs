@@ -27,7 +27,7 @@
 
 using System;
 using Mono.TextEditor;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor

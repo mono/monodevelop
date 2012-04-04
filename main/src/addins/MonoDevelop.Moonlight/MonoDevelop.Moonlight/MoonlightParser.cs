@@ -33,7 +33,7 @@ using System.Linq;
 using System.Xml;
 
 using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Projects;

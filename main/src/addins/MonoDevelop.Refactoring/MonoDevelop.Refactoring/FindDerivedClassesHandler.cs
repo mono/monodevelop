@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Projects;

@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
 
 namespace MonoDevelop.CodeMetrics

@@ -674,6 +674,26 @@ FILES =  \
 	MonoDevelop.Ide.Templates/SolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/TextFileDescriptionTemplate.cs \
 	MonoDevelop.Ide.Templates/XmlCodeDomReader.cs \
+	MonoDevelop.Ide.TypeSystem/Ambience.cs \
+	MonoDevelop.Ide.TypeSystem/AmbienceService.cs \
+	MonoDevelop.Ide.TypeSystem/CodeGenerationService.cs \
+	MonoDevelop.Ide.TypeSystem/CodeGenerator.cs \
+	MonoDevelop.Ide.TypeSystem/Comment.cs \
+	MonoDevelop.Ide.TypeSystem/ConditionalRegion.cs \
+	MonoDevelop.Ide.TypeSystem/FoldingRegion.cs \
+	MonoDevelop.Ide.TypeSystem/ITypeSystemParser.cs \
+	MonoDevelop.Ide.TypeSystem/MarkupUtilities.cs \
+	MonoDevelop.Ide.TypeSystem/MonoDocDocumentationProvider.cs \
+	MonoDevelop.Ide.TypeSystem/NetAmbience.cs \
+	MonoDevelop.Ide.TypeSystem/OutputFlags.cs \
+	MonoDevelop.Ide.TypeSystem/OutputSettings.cs \
+	MonoDevelop.Ide.TypeSystem/ParsedDocument.cs \
+	MonoDevelop.Ide.TypeSystem/PreProcessorDefine.cs \
+	MonoDevelop.Ide.TypeSystem/ProjectContentEventArgs.cs \
+	MonoDevelop.Ide.TypeSystem/StockIcons.cs \
+	MonoDevelop.Ide.TypeSystem/Tag.cs \
+	MonoDevelop.Ide.TypeSystem/TypeSystemParserNode.cs \
+	MonoDevelop.Ide.TypeSystem/TypeSystemService.cs \
 	MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs \
 	MonoDevelop.Ide.Updater/IUpdateHandler.cs \
 	MonoDevelop.Ide.Updater/UpdateCheckHandler.cs \
@@ -713,27 +733,7 @@ FILES =  \
 	MonoDevelop.Ide/ProjectOperations.cs \
 	MonoDevelop.Ide/RootWorkspace.cs \
 	MonoDevelop.Ide/Services.cs \
-	MonoDevelop.Ide/WebBrowserService.cs \
-	MonoDevelop.TypeSystem/Ambience.cs \
-	MonoDevelop.TypeSystem/AmbienceService.cs \
-	MonoDevelop.TypeSystem/CodeGenerationService.cs \
-	MonoDevelop.TypeSystem/CodeGenerator.cs \
-	MonoDevelop.TypeSystem/Comment.cs \
-	MonoDevelop.TypeSystem/ConditionalRegion.cs \
-	MonoDevelop.TypeSystem/FoldingRegion.cs \
-	MonoDevelop.TypeSystem/ITypeSystemParser.cs \
-	MonoDevelop.TypeSystem/MarkupUtilities.cs \
-	MonoDevelop.TypeSystem/MonoDocDocumentationProvider.cs \
-	MonoDevelop.TypeSystem/NetAmbience.cs \
-	MonoDevelop.TypeSystem/OutputFlags.cs \
-	MonoDevelop.TypeSystem/OutputSettings.cs \
-	MonoDevelop.TypeSystem/ParsedDocument.cs \
-	MonoDevelop.TypeSystem/PreProcessorDefine.cs \
-	MonoDevelop.TypeSystem/ProjectContentEventArgs.cs \
-	MonoDevelop.TypeSystem/StockIcons.cs \
-	MonoDevelop.TypeSystem/Tag.cs \
-	MonoDevelop.TypeSystem/TypeSystemParserNode.cs \
-	MonoDevelop.TypeSystem/TypeSystemService.cs
+	MonoDevelop.Ide/WebBrowserService.cs
 
 RES =  \
 	branding/AboutImage.png \

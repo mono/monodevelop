@@ -30,7 +30,7 @@ using MonoDevelop.Projects.Policies;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public class OutputSettings
 	{

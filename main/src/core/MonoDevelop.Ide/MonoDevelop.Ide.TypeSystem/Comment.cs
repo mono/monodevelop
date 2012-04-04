@@ -28,7 +28,7 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public enum CommentType
 	{

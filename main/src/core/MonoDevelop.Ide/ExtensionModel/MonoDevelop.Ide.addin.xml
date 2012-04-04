@@ -156,7 +156,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Parser" name = "TypeSystemParser">
-		<ExtensionNode name="Parser" type="MonoDevelop.TypeSystem.TypeSystemParserNode"/>
+		<ExtensionNode name="Parser" type="MonoDevelop.Ide.TypeSystem.TypeSystemParserNode"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/FoldingParser">

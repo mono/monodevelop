@@ -998,7 +998,7 @@ namespace MonoDevelop.Ide
 		{
 			try {
 //				Mono.Profiler.RuntimeControls.EnableProfiler ();
-				MonoDevelop.TypeSystem.TypeSystemService.Load (item);
+				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item);
 //				Mono.Profiler.RuntimeControls.DisableProfiler ();
 //				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
 			} catch (Exception ex) {
@@ -1056,7 +1056,7 @@ namespace MonoDevelop.Ide
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
 			
-			MonoDevelop.TypeSystem.TypeSystemService.Unload (item);
+			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
 //			ParserDatabase.Unload (item);
 			
 			NotifyDescendantItemRemoved (this, args);

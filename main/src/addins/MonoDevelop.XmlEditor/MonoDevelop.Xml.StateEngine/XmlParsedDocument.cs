@@ -28,7 +28,7 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Xml.StateEngine

@@ -31,7 +31,7 @@ using System.CodeDom;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide;
 using System.Collections.ObjectModel;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.IO;
@@ -221,7 +221,7 @@ namespace MonoDevelop.CSharp
 			return netTypeName;
 		}
 		
-		#region implemented abstract members of MonoDevelop.TypeSystem.Ambience
+		#region implemented abstract members of MonoDevelop.Ide.TypeSystem.Ambience
 		public override string GetIntrinsicTypeName (string reflectionName)
 		{
 			return NetToCSharpTypeName (reflectionName);

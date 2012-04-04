@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {

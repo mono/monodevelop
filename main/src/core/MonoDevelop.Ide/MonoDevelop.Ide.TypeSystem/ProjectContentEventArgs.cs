@@ -1,20 +1,21 @@
-// PreProcessorDefine.cs
-//
+// 
+// ProjectContentEventArgs.cs
+//  
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
-//
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
-//
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,37 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 using System;
-using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
-	public class PreProcessorDefine
+	[Serializable]
+	public sealed class ProjectContentEventArgs : EventArgs
 	{
-		public string Define {
+		public Project Project {
 			get;
-			set;
+			private set;
 		}
 		
-		public TextLocation Location {
-			get;
-			set;
+		public IProjectContent Content {
+			get; 
+			private set;
 		}
 		
-		public PreProcessorDefine ()
+		public ProjectContentEventArgs (Project project, IProjectContent content)
 		{
-		}
-		
-		public PreProcessorDefine (string define, TextLocation location)
-		{
-			this.Define = define;
-			this.Location = location;
-		}
-		
-		public override string ToString ()
-		{
-			return string.Format ("[PreProcessorDefine: Define={0}, Location={1}]", Define, Location);
+			this.Project = project;
+			this.Content = content;
 		}
 	}
 }
+

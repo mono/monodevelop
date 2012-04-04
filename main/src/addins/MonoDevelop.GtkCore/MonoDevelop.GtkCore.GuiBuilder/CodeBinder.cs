@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 

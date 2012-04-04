@@ -29,7 +29,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;

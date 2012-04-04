@@ -44,7 +44,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.SourceEditor;
 

@@ -34,7 +34,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Cecil;
 using System.Linq;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public abstract class Ambience
 	{

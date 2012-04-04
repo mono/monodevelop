@@ -39,7 +39,7 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using Mono.Cecil;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AssemblyBrowser

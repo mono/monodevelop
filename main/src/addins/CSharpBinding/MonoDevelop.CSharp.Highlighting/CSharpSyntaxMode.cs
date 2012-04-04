@@ -39,7 +39,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using ICSharpCode.NRefactory.Semantics;

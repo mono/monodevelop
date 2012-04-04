@@ -43,7 +43,7 @@ using Gtk;
 using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using Mono.TextEditor;
 

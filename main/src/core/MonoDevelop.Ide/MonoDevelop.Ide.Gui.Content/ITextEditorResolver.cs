@@ -33,7 +33,7 @@ using Mono.TextEditor;
 using Mono.Addins;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Content
 {

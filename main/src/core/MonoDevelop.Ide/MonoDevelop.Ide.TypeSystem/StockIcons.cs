@@ -28,7 +28,7 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Cecil;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class Stock
 	{

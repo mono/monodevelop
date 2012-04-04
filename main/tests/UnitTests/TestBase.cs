@@ -31,7 +31,7 @@ using NUnit.Framework;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Assemblies;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace UnitTests
 {

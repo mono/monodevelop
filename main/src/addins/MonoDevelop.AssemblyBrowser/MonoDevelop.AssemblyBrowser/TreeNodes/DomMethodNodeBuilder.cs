@@ -41,7 +41,7 @@ using ICSharpCode.Decompiler;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
 using Mono.TextEditor;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.IO;

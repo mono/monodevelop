@@ -42,7 +42,7 @@ using System.IO;
 using System.Linq;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {

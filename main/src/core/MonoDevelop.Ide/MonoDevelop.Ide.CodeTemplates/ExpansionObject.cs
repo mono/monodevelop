@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor.PopupWindow;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;

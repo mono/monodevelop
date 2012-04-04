@@ -32,7 +32,7 @@ using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
-namespace MonoDevelop.TypeSystem
+namespace MonoDevelop.Ide.TypeSystem
 {
 	public class NetAmbience : Ambience
 	{

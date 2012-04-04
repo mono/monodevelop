@@ -33,7 +33,7 @@ using System.Linq;
 using System.Xml;
 
 using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.XmlEditor
 {

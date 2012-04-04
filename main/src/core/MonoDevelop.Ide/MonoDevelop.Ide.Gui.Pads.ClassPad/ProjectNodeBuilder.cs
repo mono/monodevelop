@@ -35,7 +35,7 @@ using System.Text;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 

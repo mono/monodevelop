@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.StateEngine;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.TypeSystem; 
+using MonoDevelop.Ide.TypeSystem; 
 
 namespace MonoDevelop.Moonlight
 {
