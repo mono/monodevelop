@@ -343,6 +343,7 @@ namespace Mono.TextEditor
 			InitAnimations ();
 			this.Document.EndUndo += HandleDocumenthandleEndUndo;
 			this.textEditorData.HeightTree.LineUpdateFrom += delegate(object sender, HeightTree.HeightChangedEventArgs e) {
+//				Console.WriteLine ("redraw from :" + e.Line);
 				RedrawFromLine (e.Line);
 			};
 #if ATK

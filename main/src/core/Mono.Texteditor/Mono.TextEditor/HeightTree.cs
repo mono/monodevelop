@@ -71,7 +71,7 @@ namespace Mono.TextEditor
 				}
 				node.count--;
 			} finally {
-				OnLineUpdateFrom (new HeightChangedEventArgs (line));
+				OnLineUpdateFrom (new HeightChangedEventArgs (line - 1));
 			}
 		}
 		
