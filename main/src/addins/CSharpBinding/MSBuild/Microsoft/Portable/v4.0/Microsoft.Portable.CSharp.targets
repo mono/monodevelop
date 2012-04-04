@@ -1,0 +1,33 @@
+<!-- Note: This is a dummy CSharp.targets file that tries to map Portable Library Project targets to something available in Mono on Mac -->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<PropertyGroup>
+   		<TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+   		<TargetFrameworkVersion>4.0</TargetFrameworkVersion>
+   	</PropertyGroup>
+   	
+   	<PropertyGroup Condition = "Exists ('/Developer/MonoTouch/License.rtf')">
+   		<TargetFrameworkIdentifier>MonoTouch</TargetFrameworkIdentifier>
+   		<TargetFrameworkVersion>1.0</TargetFrameworkVersion>
+   	</PropertyGroup>
+   	
+   	<PropertyGroup Condition = "Exists ('/Developer/MonoAndroid/License.rtf')">
+   		<TargetFrameworkVersion>1.0</TargetFrameworkVersion>
+   	</PropertyGroup>
+   	
+   	<Import Project="$(MSBuildToolsPath)\Novell\Novell.MonoDroid.CSharp.targets" Condition = "Exists ('/Developer/MonoAndroid/License.rtf') And !Exists ('/Developer/MonoTouch/License.rtf')"/>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" Condition = "!Exists ('/Developer/MonoAndroid/License.rtf')"/>
+    
+    <PropertyGroup>
+    	<BuildDependsOn>
+        	PortableCompatWarning;
+        	$(BuildDependsOn);
+    	</BuildDependsOn>
+	</PropertyGroup>
+	
+	<Target Name="PortableCompatWarning">
+    	<Warning Text="This is not really a Portable Library Project."/>
+	</Target>
+    
+</Project>

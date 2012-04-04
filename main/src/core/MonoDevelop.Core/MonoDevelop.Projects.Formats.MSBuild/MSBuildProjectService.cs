@@ -33,6 +33,7 @@ using System.Xml;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Mono.Addins;
+using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
@@ -446,6 +447,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return new RemoteProjectBuilder (file, binDir, builder);
 				}
 				
+				string customBuildPaths = string.Empty;
+				foreach (var dir in AddinManager.GetExtensionNodes<FilePathExtensionNode> ("/MonoDevelop/ProjectModel/MSBuildTargets"))
+					customBuildPaths += ":" + dir.FilePath;
 
 				//always start the remote process explicitly, even if it's using the current runtime and fx
 				//else it won't pick up the assembly redirects from the builder exe
@@ -458,6 +462,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					RedirectStandardInput = true,
 				};
 				runtime.GetToolsExecutionEnvironment (toolsFx).MergeTo (pinfo);
+				
+				if (!string.IsNullOrEmpty (customBuildPaths)) {
+					pinfo.EnvironmentVariables["MSBuildExtensionsPath32"] = customBuildPaths;
+					pinfo.EnvironmentVariables["MSBuildExtensionsPath"] = customBuildPaths;
+				}
 				
 				Process p = null;
 				try {

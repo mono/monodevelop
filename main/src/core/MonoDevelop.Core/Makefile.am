@@ -9,6 +9,7 @@ FILES =  \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeSetNode.cs \
+	MonoDevelop.Core.AddIns/FilePathExtensionNode.cs \
 	MonoDevelop.Core.AddIns/ITargetRuntimeFactory.cs \
 	MonoDevelop.Core.AddIns/MimeTypeExtensionNode.cs \
 	MonoDevelop.Core.AddIns/PackageExtensionNode.cs \
