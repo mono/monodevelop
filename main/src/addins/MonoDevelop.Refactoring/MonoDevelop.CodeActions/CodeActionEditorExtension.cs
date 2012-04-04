@@ -114,7 +114,7 @@ namespace MonoDevelop.CodeActions
 			RemoveWidget ();
 			CancelQuickFixTimer ();
 			
-			if (Document.ParsedDocument != null) {
+			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null) {
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Document.Editor.Caret.Location;
 					RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<CodeAction> fixes) {
