@@ -845,6 +845,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		public static IProgressMonitor GetLoggingMonitor ()
 		{
+			if (writer == null)
+				return new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ();
+			
 			return new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor (writer) { EnableTimeStamp = true, WrapText = false };
 		}
 	}
