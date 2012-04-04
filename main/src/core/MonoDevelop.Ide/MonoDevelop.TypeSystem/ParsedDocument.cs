@@ -31,8 +31,6 @@ using System.Linq;
 using System.Threading;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 
 namespace MonoDevelop.TypeSystem
@@ -43,7 +41,7 @@ namespace MonoDevelop.TypeSystem
 		None            = 0,
 		NonSerializable = 1
 	}
-	
+
 	public abstract class ParsedDocument
 	{
 		DateTime lastWriteTimeUtc = DateTime.UtcNow;
@@ -394,7 +392,7 @@ namespace MonoDevelop.TypeSystem
 			for (int i = 0; i < comments.Count; i++) {
 				Comment comment = comments [i];
 				
-				if (comment.CommentType == CommentType.MultiLine) {
+				if (comment.CommentType == CommentType.Block) {
 					int startOffset = 0;
 					while (startOffset < comment.Text.Length) {
 						char ch = comment.Text [startOffset];

@@ -37,7 +37,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.TypeSystem;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.TypeSystem

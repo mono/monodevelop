@@ -26,11 +26,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.TypeSystem
 {
+	public enum CommentType
+	{
+		Block,
+		SingleLine,
+		Documentation
+	}
+
 	[Serializable]
 	public class Comment
 	{

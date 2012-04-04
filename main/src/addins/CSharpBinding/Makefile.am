@@ -112,6 +112,7 @@ FILES =  \
 	MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs \
 	MonoDevelop.CSharp.Tooltips/LanguageItemTooltipProvider.cs \
 	MonoDevelop.CSharp/AstAmbience.cs \
+	MonoDevelop.CSharp/AstStockIcons.cs \
 	MonoDevelop.CSharp/CSharpAmbience.cs \
 	MonoDevelop.CSharp/CSharpBindingCompilerManager.cs \
 	MonoDevelop.CSharp/CSharpEnhancedCodeProvider.cs \

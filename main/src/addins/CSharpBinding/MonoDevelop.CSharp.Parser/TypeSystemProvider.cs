@@ -185,16 +185,16 @@ namespace MonoDevelop.CSharp.Parser
 			cmt.CommentStartsLine = comment.StartsLine;
 			switch (comment.CommentType) {
 			case SpecialsBag.CommentType.Multi:
-				cmt.CommentType = CommentType.MultiLine;
+				cmt.CommentType = MonoDevelop.TypeSystem.CommentType.Block;
 				cmt.OpenTag = "/*";
 				cmt.ClosingTag = "*/";
 				break;
 			case SpecialsBag.CommentType.Single:
-				cmt.CommentType = CommentType.SingleLine;
+				cmt.CommentType = MonoDevelop.TypeSystem.CommentType.SingleLine;
 				cmt.OpenTag = "//";
 				break;
 			case SpecialsBag.CommentType.Documentation:
-				cmt.CommentType = CommentType.SingleLine;
+				cmt.CommentType = MonoDevelop.TypeSystem.CommentType.Documentation;
 				cmt.IsDocumentation = true;
 				cmt.OpenTag = "///";
 				break;

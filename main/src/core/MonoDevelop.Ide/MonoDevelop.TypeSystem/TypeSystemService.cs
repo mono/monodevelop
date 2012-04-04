@@ -41,11 +41,11 @@ using MonoDevelop.Core.Collections;
 using System.Xml;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core.AddIns;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.TypeSystem
 {

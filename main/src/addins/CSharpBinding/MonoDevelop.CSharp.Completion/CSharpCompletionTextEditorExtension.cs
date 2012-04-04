@@ -561,7 +561,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (string name)
 		{
-			return new CompletionData (name, Stock.Namespace);
+			return new CompletionData (name, AstStockIcons.Namespace);
 		}
 
 		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
