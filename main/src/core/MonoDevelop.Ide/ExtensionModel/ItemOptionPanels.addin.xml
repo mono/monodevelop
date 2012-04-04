@@ -38,6 +38,9 @@
 			<Condition id="ItemType" value="Project">
 				<Panel id = "RuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanel"/>
 			</Condition>
+			<Condition id="ItemType" value="Project">
+				<Panel id = "PortableRuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanel"/>
+			</Condition>
 			<Condition id="ItemType" value="Solution">
 				<Panel id = "SolutionGeneral" _label = "Build" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineBuildOptions"/>
 			</Condition>
