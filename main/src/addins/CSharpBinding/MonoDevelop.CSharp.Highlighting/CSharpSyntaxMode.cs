@@ -128,21 +128,19 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			if (src != null)
 				src.Cancel ();
+			resolver = null;
 			if (guiDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {
-					if (!parsedDocument.HasErrors)
-						highlightedSegmentCache.Clear ();
 					unit = parsedDocument.GetAst<CompilationUnit> ();
 					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
 					compilation = guiDocument.Compilation;
-					resolver = new CSharpAstResolver (compilation, unit, parsedFile);
-					
 					if (guiDocument.Project != null) {
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
-							var visitor = new QuickTaskVisitor (resolver, cancellationToken);
+							var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
+							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							unit.AcceptVisitor (visitor);
 							if (!cancellationToken.IsCancellationRequested) {
 								Gtk.Application.Invoke (delegate {
@@ -151,11 +149,14 @@ namespace MonoDevelop.CSharp.Highlighting
 									var editorData = guiDocument.Editor;
 									if (editorData == null)
 										return;
+									resolver = newResolver;
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);
 									var textEditor = editorData.Parent;
 									if (textEditor != null) {
 										var margin = textEditor.TextViewMargin;
+										if (!parsedDocument.HasErrors)
+											highlightedSegmentCache.Clear ();
 										margin.PurgeLayoutCache ();
 										textEditor.QueueDraw ();
 									}
@@ -280,6 +281,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				guiDocument.DocumentParsed += HandleDocumentParsed;
 				highlightedSegmentCache = new HighlightingSegmentTree ();
 				highlightedSegmentCache.InstallListener (guiDocument.Editor.Document);
+				if (guiDocument.ParsedDocument != null)
+					HandleDocumentParsed (this, EventArgs.Empty);
 			}
 		}
 		
@@ -415,9 +418,6 @@ namespace MonoDevelop.CSharp.Highlighting
 					tags.Add (tag.Tag);
 				}
 			}
-
-
-
 
 			#region IResolveVisitorNavigator implementation
 			ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
