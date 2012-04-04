@@ -339,9 +339,9 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 
 				var obj = (PObject)treeStore.GetValue (iter, 1);
-				var key = (PListScheme.SchemaItem) treeStore.GetValue (iter, 2);
-				if (key != null) {
-					var value = key.Values.FirstOrDefault (v => v.Description == newText || v.Identifier == newText);
+				var values = PListScheme.AvailableValues (obj, CurrentTree);
+				if (values != null) {
+					var value = values.FirstOrDefault (v => v.Description == newText || v.Identifier == newText);
 					if (value != null)
 						newText = value.Identifier;
 				}
