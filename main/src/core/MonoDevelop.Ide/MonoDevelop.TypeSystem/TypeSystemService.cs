@@ -318,22 +318,20 @@ namespace MonoDevelop.TypeSystem
 			string result;
 			var nameNoExtension = Path.GetFileNameWithoutExtension (filename);
 			var derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
-		
 			try {
 				// First try to access what we think could be the correct file directly
 				if (CheckCacheDirectoryIsCorrect (filename, derivedDataPath.Combine (nameNoExtension), out result))
 					return result;
-
+				
 				if (Directory.Exists (derivedDataPath)) {
 					var subDirs = Directory.GetDirectories (derivedDataPath);
 					// next check any directory which contains the filename
 					foreach (var subDir in subDirs.Where (s=> s.Contains (nameNoExtension)))
-						if (CheckCacheDirectoryIsCorrect (filename, derivedDataPath.Combine (subDir), out result))
+						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result))
 							return result;
-
 					// Finally check every remaining directory
 					foreach (var subDir in subDirs.Where (s=> !s.Contains (nameNoExtension)))
-						if (CheckCacheDirectoryIsCorrect (filename, derivedDataPath.Combine (subDir), out result))
+						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result))
 							return result;
 				}
 			} catch (Exception e) {
@@ -349,8 +347,7 @@ namespace MonoDevelop.TypeSystem
 			
 			try {
 				if (!File.Exists (dataPath))
-				    return false;
-				    
+					return false;
 				using (var reader = XmlReader.Create (dataPath)) {
 					while (reader.Read ()) {
 						if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File") {
@@ -389,7 +386,7 @@ namespace MonoDevelop.TypeSystem
 				string cacheDir = GetName (baseName, i);
 				
 				Directory.CreateDirectory (cacheDir);
-				
+
 				System.IO.File.WriteAllText (Path.Combine (cacheDir, "data.xml"), string.Format ("<DerivedData><File name=\"{0}\"/></DerivedData>", fileName));
 				return cacheDir;
 			} catch (Exception e) {
@@ -482,8 +479,9 @@ namespace MonoDevelop.TypeSystem
 		static void LoadProjectCache (Project project)
 		{
 			string cacheDir = GetCacheDirectory (project.FileName);
-			if (cacheDir == null)
+			if (cacheDir == null) {
 				return;
+			}
 			
 			TouchCache (cacheDir);
 			var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
