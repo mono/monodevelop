@@ -103,20 +103,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public int IndentationSize {
-			get { return CurrentPolicy.IndentWidth; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
-		public IndentStyle IndentStyle {
-			get { return CurrentPolicy.IndentStyle; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
 		public bool TabsToSpaces {
 			get { return CurrentPolicy.TabsToSpaces; }
 			set {
@@ -124,8 +110,22 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		public bool RemoveTrailingWhitespaces {
+			get { return CurrentPolicy.RemoveTrailingWhitespace; }
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
 		public bool AllowTabsAfterNonTabs {
 			get { return !CurrentPolicy.NoTabsAfterNonTabs; }
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public int IndentationSize {
+			get { return TabSize; }
 			set {
 				throw new NotSupportedException ();
 			}
@@ -308,6 +308,13 @@ namespace MonoDevelop.SourceEditor
 
 		public bool EnableSemanticHighlighting {
 			get { return DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting; }
+		}
+
+		public IndentStyle IndentStyle {
+			get { return DefaultSourceEditorOptions.Instance.IndentStyle; }
+			set {
+				throw new NotSupportedException ("Use property 'IndentStyle' instead.");
+			}
 		}
 
 		public bool TabIsReindent {

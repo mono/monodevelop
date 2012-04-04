@@ -468,7 +468,12 @@ namespace Mono.TextEditor
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
 		{
 			if (!caret.PreserveSelection)
-				ClearSelection ();
+				this.ClearSelection ();
+			if (Options.RemoveTrailingWhitespaces && args.Location.Line != Caret.Line) {
+				LineSegment line = Document.GetLine (args.Location.Line);
+				if (line != null && line.WasChanged)
+					TextDocument.RemoveTrailingWhitespaces (this, line);
+			}
 		}
 		
 		public bool CanEdit (int line)

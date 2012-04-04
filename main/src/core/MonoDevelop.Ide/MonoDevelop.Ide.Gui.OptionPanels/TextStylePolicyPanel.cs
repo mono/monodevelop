@@ -30,7 +30,6 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Dialogs;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -63,21 +62,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public TextStylePolicyPanelWidget (TextStylePolicyPanel panel)
 		{
-			this.Build ();
+			this.Build();
 			this.panel = panel;
 			
 			//NOTE: order corresponds to EolMarker enum values
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Native"));
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Mac"));
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Unix"));
-			// Using "Windows" is too short, otherwise the translation get's confused. Mike
-			lineEndingCombo.AppendText (GettextCatalog.GetString ("Microsoft Windows"));
-			
-			indentationCombobox.InsertText (0, GettextCatalog.GetString ("None"));
-			indentationCombobox.InsertText (1, GettextCatalog.GetString ("Automatic"));
-			indentationCombobox.InsertText (2, GettextCatalog.GetString ("Smart"));
-			indentationCombobox.InsertText (3, GettextCatalog.GetString ("Virtual"));
-			
+			lineEndingCombo.AppendText (GettextCatalog.GetString ("Microsoft Windows")); // Using "Windows" is too short, otherwise the translation get's confused. Mike
 		}
 		
 		protected virtual void UpdateState (object sender, System.EventArgs e)
@@ -88,10 +80,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void LoadFrom (TextStylePolicy policy)
 		{
 			tabWidthSpin.Value = policy.TabWidth;
-			indentWidthSpin.Value = policy.IndentWidth;
 			tabsAfterNonTabsCheck.Active = !policy.NoTabsAfterNonTabs;
 			tabsToSpaceCheck.Active = policy.TabsToSpaces;
-			indentationCombobox.Active = (int)policy.IndentStyle;
+			removeTrailingWhitespaceCheck.Active = policy.RemoveTrailingWhitespace;
 			columnWidthSpin.Value = policy.FileWidth;
 			lineEndingCombo.Active = (int) policy.EolMarker;
 		}
@@ -99,13 +90,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public TextStylePolicy GetPolicy ()
 		{
 			return new TextStylePolicy (
-				(int)columnWidthSpin.Value,
-				(int)tabWidthSpin.Value,
-				(int)indentWidthSpin.Value,
+				(int) columnWidthSpin.Value,
+				(int) tabWidthSpin.Value,
 				tabsToSpaceCheck.Active,
 				!tabsAfterNonTabsCheck.Active,
-				(IndentStyle)indentationCombobox.Active,
-				(EolMarker)lineEndingCombo.Active);
+				removeTrailingWhitespaceCheck.Active,
+				(EolMarker) lineEndingCombo.Active);
 		}
 	}
 }

@@ -28,10 +28,9 @@ THE SOFTWARE.
 
 <TextStylePolicy scope="text/plain">
 	<FileWidth>120</FileWidth>
-	<TabWidth>4</TabWidth>
-	<IndentWidth>2</IndentWidth>
+	<TabWidth>2</TabWidth>
 	<TabsToSpaces>True</TabsToSpaces>
 	<NoTabsAfterNonTabs>False</NoTabsAfterNonTabs>
-	<IndentStyle>Virtual</IndentStyle>
+	<RemoveTrailingWhitespace>False</RemoveTrailingWhitespace>
 	<EolMarker>Unix</EolMarker>
 </TextStylePolicy>
