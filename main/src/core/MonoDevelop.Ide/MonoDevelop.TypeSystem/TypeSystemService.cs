@@ -1255,10 +1255,9 @@ namespace MonoDevelop.TypeSystem
 				} else {
 					RemoveCache (cache);
 				}
-			} else {
-				cache = CreateCacheDirectory (fileName);
 			}
-			
+			cache = CreateCacheDirectory (fileName);
+
 			try {
 				var result = new AssemblyContext () {
 					FileName = fileName,
