@@ -31,6 +31,7 @@ using Mono.Cecil;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -104,7 +105,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return member.CreateResolved (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
 			}
 			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			var ctx = TypeSystem.TypeSystemService.GetCompilation (project);
+			var ctx = TypeSystemService.GetCompilation (project);
 			return member.CreateResolved (ctx.TypeResolveContext);
 		}
 		
@@ -116,7 +117,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return type.Resolve (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
 			}
 			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			var ctx = TypeSystem.TypeSystemService.GetCompilation (project);
+			var ctx = TypeSystemService.GetCompilation (project);
 			return ctx.MainAssembly.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameters.Count);
 		}
 	}
