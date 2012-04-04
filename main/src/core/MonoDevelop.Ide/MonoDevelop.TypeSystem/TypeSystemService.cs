@@ -158,6 +158,21 @@ namespace MonoDevelop.TypeSystem
 					break;
 				}
 			});
+			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
+				foreach (var file in e) {
+					// Open documents are handled by the Document class itself.
+					if (IdeApp.Workbench.GetDocument (file.FileName) != null)
+						continue;
+					//
+					lock (projectWrapperUpdateLock) {
+						foreach (var wrapper in projectContents.Values) {
+							var projectFile = wrapper.Project.Files.GetFile (file.FileName);
+							if (projectFile != null)
+								QueueParseJob (wrapper, new [] { projectFile });
+						}
+					}
+				}
+			};
 		}
 		
 		static ITypeSystemParser GetParser (string mimeType)
@@ -524,6 +539,7 @@ namespace MonoDevelop.TypeSystem
 				Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
 				Task.Factory.StartNew (delegate {
 					ReloadAllReferences ();
+					CheckModifiedFiles ();
 				});
 
 				solution.SolutionItemAdded += OnSolutionItemAdded;
@@ -1507,9 +1523,9 @@ namespace MonoDevelop.TypeSystem
 		{
 			try {
 				while (trackingFileChanges) {
-					if (!WaitForParseJob (5000))
+					/*if (!WaitForParseJob (5000))
 						CheckModifiedFiles ();
-					else if (trackingFileChanges)
+					else*/ if (trackingFileChanges)
 						ConsumeParsingQueue ();
 				}
 			} catch (Exception ex) {
