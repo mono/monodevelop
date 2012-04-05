@@ -74,8 +74,10 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			}
 			var loc = doc.Editor.OffsetToLocation (offset);
-			if (loc.Column > 1 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (loc)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (loc.Line, loc.Column - 1)))
-				loc = new DocumentLocation (loc.Line, loc.Column - 1);
+			if (loc.Column > 1 && offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1))) {
+				offset--;
+				loc = doc.Editor.OffsetToLocation (offset);
+			}
 			ResolveResult result;
 			AstNode node;
 
