@@ -288,9 +288,22 @@ namespace Mono.TextEditor
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret)
 		{
 			Gtk.MenuPositionFunc posFunc = null;
-			
-			if (parent != null) {
+
+			var existingParent = menu.AttachWidget;
+			if (existingParent != null) {
+				if (parent != null) {
+					menu.Detach ();
+					existingParent = null;
+				} else {
+					parent = existingParent;
+				}
+			}
+			if (existingParent == null && parent != null) {
+				menu.Hidden += HandleHidden;
 				menu.AttachToWidget (parent, null);
+			}
+
+			if (parent != null) {
 				posFunc = delegate (Gtk.Menu m, out int x, out int y, out bool pushIn) {
 					Gdk.Window window = evt != null? evt.Window : parent.GdkWindow;
 					window.GetOrigin (out x, out y);
@@ -358,6 +371,13 @@ namespace Mono.TextEditor
 			}
 			
 			menu.Popup (null, null, posFunc, button, time);
+		}
+
+		static void HandleHidden (object sender, EventArgs e)
+		{
+			var menu = ((Gtk.Menu)sender);
+			menu.Detach ();
+			menu.Hidden -= HandleHidden;
 		}
 		
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt)
