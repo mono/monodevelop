@@ -454,6 +454,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			msproject.Save (fileName);
 		}
 		
+		void LoadConfiguration (MSBuildSerializer serializer, List<ConfigData> configData, string conf, string platform)
+		{
+			MSBuildPropertySet grp = GetMergedConfiguration (configData, conf, platform, null);
+			SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
+			
+			config.Platform = platform;
+			DataItem data = ReadPropertyGroupMetadata (serializer, grp, config);
+			serializer.Deserialize (config, data);
+			EntityItem.Configurations.Add (config);
+			
+			if (config is DotNetProjectConfiguration) {
+				DotNetProjectConfiguration dpc = (DotNetProjectConfiguration) config;
+				if (dpc.CompilationParameters != null) {
+					data = ReadPropertyGroupMetadata (serializer, grp, dpc.CompilationParameters);
+					serializer.Deserialize (dpc.CompilationParameters, data);
+				}
+			}
+		}
+		
 		void Load (IProgressMonitor monitor, MSBuildProject msproject)
 		{
 			timer.Trace ("Initialize serialization");
@@ -505,40 +524,72 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Read configurations
 			
 			List<ConfigData> configData = GetConfigData (msproject, false);
+			List<ConfigData> partialConfigurations = new List<ConfigData> ();
+			HashSet<string> handledConfigurations = new HashSet<string> ();
+			var configurations = new HashSet<string> ();
+			var platforms = new HashSet<string> ();
 			
 			MSBuildPropertyGroup mergedToProjectProperties = ExtractMergedtoprojectProperties (ser, globalGroup, EntityItem.CreateConfiguration ("Dummy"));
 			configData.Insert (0, new ConfigData (Unspecified, Unspecified, mergedToProjectProperties));
-
-			// Create a project configuration for each configuration/platform combination
-
-			var platforms = new HashSet<string> ();
-			var configurations = new HashSet<string> ();
-			foreach (ConfigData cgrp in configData) {
-				if (cgrp.Platform != Unspecified)
-					platforms.Add (cgrp.Platform);
-				if (cgrp.Config != Unspecified)
-					configurations.Add (cgrp.Config);
+			
+			// Load configurations, skipping the dummy config at index 0.
+			for (int i = 1; i < configData.Count; i++) {
+				ConfigData cgrp = configData[i];
+				string platform = cgrp.Platform;
+				string conf = cgrp.Config;
+				
+				if (platform != Unspecified)
+					platforms.Add (platform);
+				
+				if (conf != Unspecified)
+					configurations.Add (conf);
+				
+				if (conf == Unspecified || platform == Unspecified) {
+					// skip partial configurations for now...
+					partialConfigurations.Add (cgrp);
+					continue;
+				}
+				
+				string key = conf + "|" + platform;
+				if (handledConfigurations.Contains (key))
+					continue;
+				
+				LoadConfiguration (ser, configData, conf, platform);
+				
+				handledConfigurations.Add (key);
 			}
 			
-			if (platforms.Count == 0)
-				platforms.Add (string.Empty); // AnyCpu
-
-			foreach (string platform in platforms) {
-				foreach (string conf in configurations) {
-					
-					MSBuildPropertySet grp = GetMergedConfiguration (configData, conf, platform, null);
-					SolutionItemConfiguration config = EntityItem.CreateConfiguration (conf);
-					
-					config.Platform = platform;
-					DataItem data = ReadPropertyGroupMetadata (ser, grp, config);
-					ser.Deserialize (config, data);
-					EntityItem.Configurations.Add (config);
-					
-					if (config is DotNetProjectConfiguration) {
-						DotNetProjectConfiguration dpc = (DotNetProjectConfiguration) config;
-						if (dpc.CompilationParameters != null) {
-							data = ReadPropertyGroupMetadata (ser, grp, dpc.CompilationParameters);
-							ser.Deserialize (dpc.CompilationParameters, data);
+			// Now we can load any partial configurations by combining them with known configs or platforms.
+			if (partialConfigurations.Count > 0) {
+				if (platforms.Count == 0)
+					platforms.Add (string.Empty); // AnyCpu
+				
+				foreach (ConfigData cgrp in partialConfigurations) {
+					if (cgrp.Config != Unspecified && cgrp.Platform == Unspecified) {
+						string conf = cgrp.Config;
+						
+						foreach (var platform in platforms) {
+							string key = conf + "|" + platform;
+							
+							if (handledConfigurations.Contains (key))
+								continue;
+							
+							LoadConfiguration (ser, configData, conf, platform);
+							
+							handledConfigurations.Add (key);
+						}
+					} else if (cgrp.Config == Unspecified && cgrp.Platform != Unspecified) {
+						string platform = cgrp.Platform;
+						
+						foreach (var conf in configurations) {
+							string key = conf + "|" + platform;
+							
+							if (handledConfigurations.Contains (key))
+								continue;
+							
+							LoadConfiguration (ser, configData, conf, platform);
+							
+							handledConfigurations.Add (key);
 						}
 					}
 				}
