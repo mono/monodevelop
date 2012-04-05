@@ -33,103 +33,108 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
-	
-	partial class GotoLineNumberWidget : Gtk.Bin
+	public partial class GotoLineNumberWidget : Gtk.Bin
 	{
-		SourceEditorWidget widget;
+		readonly TextEditor textEditor;
+		readonly Widget frame;
+
 		double vSave, hSave;
 		DocumentLocation caretSave;
 		bool cleanExit = false;
 		
-		Widget container;
 		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
 		{
-			int newX = widget.TextEditor.Allocation.Width - this.Allocation.Width - 8;
-			TextEditorContainer.EditorContainerChild containerChild = ((Mono.TextEditor.TextEditorContainer.EditorContainerChild)widget.TextEditorContainer[container]);
+			int newX = textEditor.Allocation.Width - this.Allocation.Width - 8;
+			var wc = (TextEditorContainer)textEditor.Parent;
+			TextEditorContainer.EditorContainerChild containerChild = ((TextEditorContainer.EditorContainerChild)wc [frame]);
 			if (newX != containerChild.X) {
-				this.entryLineNumber.WidthRequest = widget.Vbox.Allocation.Width / 4;
+				this.entryLineNumber.WidthRequest = textEditor.Allocation.Width / 4;
 				containerChild.X = newX;
-				widget.TextEditorContainer.QueueResize ();
+				textEditor.QueueResize ();
 			}
 		}
-		
-		public GotoLineNumberWidget (SourceEditorWidget widget, Widget container)
+
+		void CloseWidget ()
 		{
-			this.container = container;
+			Destroy ();
+		}
+
+		public GotoLineNumberWidget (TextEditor textEditor, Widget frame)
+		{
+			this.textEditor = textEditor;
+			this.frame = frame;
 			this.Build ();
 			
-			this.widget = widget;
 			StoreWidgetState ();
-			widget.TextEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
+			textEditor.Parent.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			
 			//HACK: GTK rendering issue on Mac, images don't repaint unless we put them in visible eventboxes
-			if (MonoDevelop.Core.Platform.IsMac) {
-				foreach (var eb in new [] { eventbox1, eventbox2 }) {
+			if (MonoDevelop.Core.Platform.IsMac) {
+				foreach (var eb in new [] { eventbox1, eventbox2 }) {
 					eb.VisibleWindow = true;
 					eb.ModifyBg (StateType.Normal, new Gdk.Color (230, 230, 230));
 				}
 			}
 			this.closeButton.Clicked += delegate {
 				RestoreWidgetState ();
-				widget.RemoveSearchWidget ();
+				CloseWidget ();
 			};
 			
 			this.buttonGoToLine.Clicked += delegate {
 				cleanExit = true;
 				GotoLine ();
-				widget.RemoveSearchWidget ();
+				CloseWidget ();
 			};
 			
 			foreach (Gtk.Widget child in this.Children) {
 				child.KeyPressEvent += delegate (object sender, Gtk.KeyPressEventArgs args) {
-					if (args.Event.Key == Gdk.Key.Escape)  {
+					if (args.Event.Key == Gdk.Key.Escape) {
 						RestoreWidgetState ();
-						widget.RemoveSearchWidget ();
+						CloseWidget ();
 					}
 				};
 			}
 			
 			Gtk.Widget oldWidget = null;
-			this.FocusChildSet += delegate (object sender, Gtk.FocusChildSetArgs args)  {
+			this.FocusChildSet += delegate (object sender, Gtk.FocusChildSetArgs args) {
 				// only store state when the focus comes from a non child widget
 				if (args.Widget != null && oldWidget == null)
 					StoreWidgetState ();
 				oldWidget = args.Widget;
 			};
 			
-			this.entryLineNumber.Changed +=  delegate {
+			this.entryLineNumber.Changed += delegate {
 				PreviewLine ();
 			};
 				
 			this.entryLineNumber.Activated += delegate {
 				cleanExit = true;
 				GotoLine ();
-				widget.RemoveSearchWidget ();
+				CloseWidget ();
 			};
 		}
 		
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			widget.TextEditorContainer.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
-			
+			textEditor.Parent.SizeAllocated -= HandleViewTextEditorhandleSizeAllocated;
 		}
 
 		
 		void StoreWidgetState ()
 		{
-			this.vSave  = widget.TextEditor.VAdjustment.Value;
-			this.hSave  = widget.TextEditor.HAdjustment.Value;
-			this.caretSave =  widget.TextEditor.Caret.Location;
+			this.vSave = textEditor.VAdjustment.Value;
+			this.hSave = textEditor.HAdjustment.Value;
+			this.caretSave = textEditor.Caret.Location;
 		}
 		
 		void RestoreWidgetState ()
 		{
 			if (cleanExit)
 				return;
-			widget.TextEditor.VAdjustment.Value = this.vSave;
-			widget.TextEditor.HAdjustment.Value = this.hSave;
-			widget.TextEditor.Caret.Location    = this.caretSave;
+			textEditor.VAdjustment.Value = this.vSave;
+			textEditor.HAdjustment.Value = this.hSave;
+			textEditor.Caret.Location    = this.caretSave;
 		}
 		
 		int TargetLine {
@@ -148,8 +153,8 @@ namespace MonoDevelop.SourceEditor
 		void GotoLine ()
 		{
 			try {
-				widget.TextEditor.Caret.Line = TargetLine;
-				widget.TextEditor.CenterToCaret ();
+				textEditor.Caret.Line = TargetLine;
+				textEditor.CenterToCaret ();
 			} catch (System.Exception) { 
 			}
 		}
@@ -166,14 +171,14 @@ namespace MonoDevelop.SourceEditor
 			}
 			try {
 				int targetLine = TargetLine;
-				if (targetLine >= widget.TextEditor.Document.LineCount || targetLine < 0) {
-					targetLine = Math.Max (1, Math.Min (widget.TextEditor.Document.LineCount, targetLine));
+				if (targetLine >= textEditor.Document.LineCount || targetLine < 0) {
+					targetLine = Math.Max (1, Math.Min (textEditor.Document.LineCount, targetLine));
 					
 				} else {
 					this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 				}
-				widget.TextEditor.Caret.Line = targetLine;
-				widget.TextEditor.CenterToCaret ();
+				textEditor.Caret.Line = targetLine;
+				textEditor.CenterToCaret ();
 			} catch (System.Exception) { 
 				this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, errorColor);
 			}
