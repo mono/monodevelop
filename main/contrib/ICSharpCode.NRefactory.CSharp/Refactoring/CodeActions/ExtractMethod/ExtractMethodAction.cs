@@ -37,16 +37,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 	[ContextAction("Extract method", Description = "Creates a new method out of selected text.")]
 	public class ExtractMethodAction : ICodeActionProvider
 	{
-		public IEnumerable<CodeAction> GetActions (RefactoringContext context)
+		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			if (!context.IsSomethingSelected)
 				yield break;
-			var selected = new List<AstNode> (context.GetSelectedNodes ());
+			var selected = new List<AstNode>(context.GetSelectedNodes());
 			if (selected.Count == 0)
 				yield break;
 
 			if (selected.Count == 1 && selected [0] is Expression) {
-				var codeAction = CreateFromExpression (context, (Expression)selected [0]);
+				var codeAction = CreateFromExpression(context, (Expression)selected [0]);
 				if (codeAction == null)
 					yield break;
 				yield return codeAction;
@@ -56,7 +56,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				if (!(node is Statement))
 					yield break;
 			}
-
 			var action = CreateFromStatements (context, new List<Statement> (selected.OfType<Statement> ()));
 			if (action != null)
 				yield return action;

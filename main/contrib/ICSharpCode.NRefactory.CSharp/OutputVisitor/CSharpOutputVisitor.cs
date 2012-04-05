@@ -519,6 +519,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteEmbeddedStatement(Statement embeddedStatement)
 		{
 			if (embeddedStatement.IsNull) {
+				NewLine();
 				return;
 			}
 			BlockStatement block = embeddedStatement as BlockStatement;
@@ -1584,7 +1585,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				node.AcceptVisitor(this);
 			}
 			CloseBrace(style);
-			NewLine();
+			if (!(blockStatement.Parent is Expression))
+				NewLine();
 			EndNode(blockStatement);
 		}
 		
@@ -1694,9 +1696,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			forStatement.Condition.AcceptVisitor(this);
 			Space(policy.SpaceBeforeForSemicolon);
 			WriteToken(Roles.Semicolon);
-			Space(policy.SpaceAfterForSemicolon);
-			
-			WriteCommaSeparatedList(forStatement.Iterators);
+			if (forStatement.Iterators.Any()) {
+				Space(policy.SpaceAfterForSemicolon);
+				WriteCommaSeparatedList(forStatement.Iterators);
+			}
 			
 			Space(policy.SpacesWithinForParentheses);
 			RPar();

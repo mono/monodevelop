@@ -96,7 +96,7 @@ namespace MonoDevelop.Refactoring
 			return stub.ToString ();
 		}
 
-		static ResolveResult GetHeuristicResult (Document doc)
+		static ResolveResult GetHeuristicResult (Document doc, DocumentLocation location)
 		{
 			int offset = doc.Editor.Caret.Offset;
 			bool wasLetter = false, wasWhitespaceAfterLetter = false;
@@ -134,15 +134,19 @@ namespace MonoDevelop.Refactoring
 				doc.Compilation, 
 				doc.ParsedDocument.ParsedFile as CSharpParsedFile,
 				unit,
-				doc.Editor.Caret.Location);
+				location);
 		}
 
 		public static HashSet<string> GetPossibleNamespaces (Document doc, ResolveResult resolveResult)
 		{
-			if (resolveResult == null || resolveResult.Type.FullName == "System.Void") 
-				resolveResult = GetHeuristicResult (doc) ?? resolveResult;
-
 			var location = doc.Editor.Caret.Location;
+			if (location.Column > 1 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (location)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (location.Line, location.Column - 1))) {
+				location = new DocumentLocation (location.Line, location.Column - 1);
+			}
+
+			if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
+				resolveResult = GetHeuristicResult (doc, location) ?? resolveResult;
+
 			var foundNamespaces = GetPossibleNamespaces (doc, resolveResult, location);
 			
 			if (!(resolveResult is AmbiguousTypeResolveResult)) {

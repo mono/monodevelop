@@ -312,7 +312,17 @@ namespace Mono.TextEditor
 		{
 			return buffer.GetCharAt (offset);
 		}
-		
+
+		public char GetCharAt (DocumentLocation location)
+		{
+			return buffer.GetCharAt (LocationToOffset (location));
+		}
+
+		public char GetCharAt (int line, int column)
+		{
+			return buffer.GetCharAt (LocationToOffset (line, column));
+		}
+
 		/// <summary>
 		/// Gets the index of the first occurrence of the character in the specified array.
 		/// </summary>

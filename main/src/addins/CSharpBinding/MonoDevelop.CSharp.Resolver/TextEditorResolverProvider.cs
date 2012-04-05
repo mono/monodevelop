@@ -55,6 +55,8 @@ namespace MonoDevelop.CSharp.Resolver
 			if (doc == null)
 				return "";
 			var loc = data.OffsetToLocation (offset);
+			if (loc.Column > 1 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (loc)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (loc.Line, loc.Column - 1)))
+				loc = new DocumentLocation (loc.Line, loc.Column - 1);
 			var unit       = doc.ParsedDocument.GetAst<CompilationUnit> ();
 			var parsedFile = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
 			var node       = unit.GetNodeAt<Expression> (loc.Line, loc.Column);
@@ -72,6 +74,8 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			}
 			var loc = doc.Editor.OffsetToLocation (offset);
+			if (loc.Column > 1 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (loc)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (loc.Line, loc.Column - 1)))
+				loc = new DocumentLocation (loc.Line, loc.Column - 1);
 			ResolveResult result;
 			AstNode node;
 
@@ -94,13 +98,14 @@ namespace MonoDevelop.CSharp.Resolver
 				return null;
 			var data = doc.Editor;
 			var loc = data.OffsetToLocation (offset);
+
 			var unit = parsedDocument.GetAst<CompilationUnit> ();
 			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
 			
 			if (unit == null || parsedFile == null) {
 				return null;
 			}
-			var node = unit.GetNodeAt (loc.Line, loc.Column);
+			var node = unit.GetNodeAt (loc);
 			if (node == null) {
 				return null;
 			}

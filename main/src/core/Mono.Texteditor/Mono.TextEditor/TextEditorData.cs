@@ -1175,6 +1175,16 @@ namespace Mono.TextEditor
 			return document.GetCharAt (offset);
 		}
 		
+		public char GetCharAt (DocumentLocation location)
+		{
+			return document.GetCharAt (location);
+		}
+
+		public char GetCharAt (int line, int column)
+		{
+			return document.GetCharAt (line, column);
+		}
+
 		public string GetLineText (int line)
 		{
 			return Document.GetLineText (line);

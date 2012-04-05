@@ -73,19 +73,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return RootNode.GetNodesBetween(SelectionStart, SelectionEnd);
 		}
 
-		public AstNode GetNode ()
+		public AstNode GetNode()
 		{
-			return RootNode.GetNodeAt (Location);
+			return RootNode.GetAdjacentNodeAt (Location);
 		}
 		
-		public AstNode GetNode (Predicate<AstNode> pred)
+		public AstNode GetNode(Predicate<AstNode> pred)
 		{
-			return RootNode.GetNodeAt (Location, pred);
+			return RootNode.GetAdjacentNodeAt(Location, pred) ?? RootNode.GetNodeAt(Location, pred);
 		}
 		
-		public T GetNode<T> () where T : AstNode
+		public T GetNode<T>() where T : AstNode
 		{
-			return RootNode.GetNodeAt<T> (Location);
+			return RootNode.GetAdjacentNodeAt<T>(Location) ?? RootNode.GetNodeAt<T>(Location);
 		}
 		
 		#region Text stuff
