@@ -341,7 +341,7 @@ namespace MonoDevelop.VersionControl.Views
 				string text = doc.GetLineText (i).Trim ();
 				int idx = text.IndexOf (':');
 				if (text.StartsWith ("*") && idx >= 0 && idx < text.Length - 1) {
-					int offset = doc.GetLine (i).EndOffset;
+					int offset = doc.GetLine (i).EndOffsetIncludingDelimiter;
 					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.TextLength - offset);
 					break;
 				}

@@ -104,15 +104,15 @@ namespace Mono.TextEditor
 				return;
 			
 			var startNode = GetNodeAtOffset (offset);
-			int charsRemoved = startNode.EndOffset - offset;
-			if (offset + length < startNode.EndOffset) {
+			int charsRemoved = startNode.EndOffsetIncludingDelimiter - offset;
+			if (offset + length < startNode.EndOffsetIncludingDelimiter) {
 				ChangeLength (startNode, startNode.LengthIncludingDelimiter - length);
 				return;
 			}
 			var endNode = GetNodeAtOffset (offset + length);
 			if (endNode == null)
 				return;
-			int charsLeft = endNode.EndOffset - (offset + length);
+			int charsLeft = endNode.EndOffsetIncludingDelimiter - (offset + length);
 			if (startNode == endNode) {
 				ChangeLength (startNode, startNode.LengthIncludingDelimiter - length);
 				return;

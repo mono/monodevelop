@@ -158,7 +158,7 @@ namespace Mono.TextEditor
 				data.Caret.Column = line.Length + 1;
 			} else if (data.Caret.Offset == line.Offset) {
 				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
-				data.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
+				data.Remove (lineAbove.EndOffsetIncludingDelimiter - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
 			} else {
 				removeCharBeforeCaret (data);
 			}
@@ -211,8 +211,8 @@ namespace Mono.TextEditor
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column == line.Length + 1) {
 					if (data.Caret.Line < data.Document.LineCount) { 
-						data.Remove (line.EndOffset - line.DelimiterLength, line.DelimiterLength);
-						if (line.EndOffset == data.Document.TextLength)
+						data.Remove (line.EndOffsetIncludingDelimiter - line.DelimiterLength, line.DelimiterLength);
+						if (line.EndOffsetIncludingDelimiter == data.Document.TextLength)
 							line.DelimiterLength = 0;
 					}
 				} else {

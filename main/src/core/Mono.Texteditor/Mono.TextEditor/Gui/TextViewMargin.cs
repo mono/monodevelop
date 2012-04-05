@@ -896,7 +896,7 @@ namespace Mono.TextEditor
 					uint endIndex = (uint)(startIndex + chunk.Length);
 					oldEndIndex = endIndex;
 
-					HandleSelection(lineOffset, logicalRulerColumn, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
+					HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 						if (containsPreedit) {
 							if (textEditor.preeditOffset < start)
 								start += (int)preeditLength;
@@ -932,7 +932,7 @@ namespace Mono.TextEditor
 						atts.AddForegroundAttribute (SelectionColor.Color, si, ei);
 						if (!wrapper.StartSet)
 							wrapper.SelectionStartIndex = (int)si;
-						wrapper.SelectionEndIndex   = (int)ei;
+						wrapper.SelectionEndIndex = (int)ei;
 					});
 
 					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
@@ -963,7 +963,7 @@ namespace Mono.TextEditor
 			wrapper.PangoWidth = w;
 
 			selectionStart = System.Math.Max (line.Offset - 1, selectionStart);
-			selectionEnd = System.Math.Min (line.EndOffset + 1, selectionEnd);
+			selectionEnd = System.Math.Min (line.EndOffsetIncludingDelimiter + 1, selectionEnd);
 			descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
 			if (!containsPreedit)
 				layoutDict[line] = descriptor;
@@ -1780,7 +1780,7 @@ namespace Mono.TextEditor
 				string lineText = Document.GetTextAt (curOffset, line.Offset + line.Length - curOffset);
 				textBuilder.Append (lineText);
 				textBuilder.AppendLine ();
-				curOffset = line.EndOffset + indentLength;
+				curOffset = line.EndOffsetIncludingDelimiter + indentLength;
 			}
 
 			codeSegmentEditorWindow.Text = textBuilder.ToString ();
@@ -1980,7 +1980,7 @@ namespace Mono.TextEditor
 				//textEditor.SetSelectLines (loc.Line, textEditor.MainSelection.Anchor.Line);
 				LineSegment line1 = textEditor.Document.GetLine (loc.Line);
 				LineSegment line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
-				Caret.Offset = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffset;
+				Caret.Offset = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffsetIncludingDelimiter;
 				if (textEditor.MainSelection != null)
 					textEditor.MainSelection.Lead = Caret.Location;
 				break;
@@ -2183,7 +2183,7 @@ namespace Mono.TextEditor
 			int offset = line.Offset;
 			int caretOffset = Caret.Offset;
 			bool isEolFolded = false;
-		restart:
+			restart:
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 			
 			foreach (FoldSegment folding in foldings) {
@@ -2237,7 +2237,7 @@ namespace Mono.TextEditor
 			
 			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
 			// and the caret position is calculated in DrawLinePart.
-			if (line.EndOffset - offset >= 0)
+			if (line.EndOffsetIncludingDelimiter - offset >= 0)
 				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref pangoPosition, ref isSelectionDrawn, y, area.X + area.Width);
 			
 			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.Length);

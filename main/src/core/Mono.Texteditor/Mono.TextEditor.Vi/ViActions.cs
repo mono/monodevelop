@@ -166,7 +166,7 @@ namespace Mono.TextEditor.Vi
 		public static void Right (TextEditorData data)
 		{
 			LineSegment segment = data.Document.GetLine (data.Caret.Line);
-			if (segment.EndOffset-1 > data.Caret.Offset) {
+			if (segment.EndOffsetIncludingDelimiter-1 > data.Caret.Offset) {
 				CaretMoveActions.Right (data);
 				RetreatFromLineEnd (data);
 			}

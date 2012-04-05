@@ -356,7 +356,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			foreach (LineSegment line in doc.Lines) {
 				string curLineIndent = line.GetIndentation (doc);
 				int offset = Math.Min (curLineIndent.Length, indent.Length);
-				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffset));
+				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffsetIncludingDelimiter));
 			}
 			return result.ToString ();
 		}

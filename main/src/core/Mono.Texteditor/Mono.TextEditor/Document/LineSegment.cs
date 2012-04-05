@@ -98,6 +98,12 @@ namespace Mono.TextEditor
 
 		public int EndOffset {
 			get {
+				return Offset + Length;
+			}
+		}
+
+		public int EndOffsetIncludingDelimiter {
+			get {
 				return Offset + LengthIncludingDelimiter;
 			}
 		}
@@ -240,7 +246,7 @@ namespace Mono.TextEditor
 
 		public bool Contains (TextSegment segment)
 		{
-			return Offset <= segment.Offset && segment.EndOffset <= EndOffset;
+			return Offset <= segment.Offset && segment.EndOffset <= EndOffsetIncludingDelimiter;
 		}
 
 		public static implicit operator TextSegment (LineSegment line)
@@ -257,12 +263,6 @@ namespace Mono.TextEditor
 		int ICSharpCode.NRefactory.Editor.IDocumentLine.TotalLength {
 			get {
 				return LengthIncludingDelimiter;
-			}
-		}
-
-		int ICSharpCode.NRefactory.Editor.IDocumentLine.DelimiterLength {
-			get {
-				return DelimiterLength;
 			}
 		}
 
@@ -287,26 +287,6 @@ namespace Mono.TextEditor
 		bool ICSharpCode.NRefactory.Editor.IDocumentLine.IsDeleted {
 			get {
 				return false;
-			}
-		}
-		#endregion
-
-		#region TextSegment implementation
-		int ICSharpCode.NRefactory.Editor.ISegment.Offset {
-			get {
-				return Offset;
-			}
-		}
-
-		int ICSharpCode.NRefactory.Editor.ISegment.Length {
-			get {
-				return Length;
-			}
-		}
-
-		int ICSharpCode.NRefactory.Editor.ISegment.EndOffset {
-			get {
-				return Offset + Length;
 			}
 		}
 		#endregion

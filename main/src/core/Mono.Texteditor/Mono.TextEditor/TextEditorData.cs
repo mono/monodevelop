@@ -301,11 +301,11 @@ namespace Mono.TextEditor
 					}
 				}
 				while (styleStack.Count > 0) {
-					result.Append("</span>");
+					result.Append ("</span>");
 					styleStack.Pop ();
 				}
 
-				curOffset = line.EndOffset;
+				curOffset = line.EndOffsetIncludingDelimiter;
 				if (removeIndent)
 					curOffset += indentLength;
 				if (result.Length > 0 && curOffset < offset + length)
@@ -797,7 +797,7 @@ namespace Mono.TextEditor
 		public void SetSelectLines (int from, int to)
 		{
 			MainSelection = new Selection (document.OffsetToLocation (Document.GetLine (from).Offset), 
-			                               document.OffsetToLocation (Document.GetLine (to).EndOffset));
+			                               document.OffsetToLocation (Document.GetLine (to).EndOffsetIncludingDelimiter));
 		}
 
 		internal void DeleteSelection (Selection selection)

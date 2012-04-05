@@ -133,8 +133,8 @@ namespace MonoDevelop.VersionControl.Views
 				LineSegment end = doc.GetLineByOffset (endOffset);
 				mergeStart = dividerOffset + 1;
 
-				yield return new Conflict (new TextSegment (start.EndOffset, divider.Offset - start.EndOffset),
-					new TextSegment (divider.EndOffset, end.Offset - divider.EndOffset),
+				yield return new Conflict (new TextSegment (start.EndOffsetIncludingDelimiter, divider.Offset - start.EndOffsetIncludingDelimiter),
+					new TextSegment (divider.EndOffsetIncludingDelimiter, end.Offset - divider.EndOffsetIncludingDelimiter),
 					start,
 					divider,
 					end);

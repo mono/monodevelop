@@ -61,7 +61,7 @@ namespace Mono.TextEditor
 			if (lineSegment != null) {
 				for (int i = 0; i < foldSegments.Count; i++) {
 					FoldSegment segment = foldSegments [i];
-					if (segment.StartLine.Offset <= lineSegment.Offset && lineSegment.EndOffset <= segment.EndLine.EndOffset) {
+					if (segment.StartLine.Offset <= lineSegment.Offset && lineSegment.EndOffsetIncludingDelimiter <= segment.EndLine.EndOffsetIncludingDelimiter) {
 						foundSegment = i;
 						roles [i] = Roles.Between;
 						if (segment.StartLine.Offset == lineSegment.Offset) {

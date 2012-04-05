@@ -119,14 +119,14 @@ namespace Mono.TextEditor
 			if (fromLine == toLine + 1) {
 				if ((fromLine - data.MainSelection.Lead.Line) != 2) {
 					var fromSegment = data.Document.GetLine (fromLine);
-					data.SetSelection (fromSegment.EndOffset, toSegment.Offset);
+					data.SetSelection (fromSegment.EndOffsetIncludingDelimiter, toSegment.Offset);
 				} else {
-					data.SetSelection (toSegment.Offset, toSegment.EndOffset);
+					data.SetSelection (toSegment.Offset, toSegment.EndOffsetIncludingDelimiter);
 				}
 			}
-			//else just extend the selection
-			else {
-				int toOffset = (toLine < fromLine)? toSegment.Offset: toSegment.EndOffset;
+			//else just extend the selection else
+			{
+				int toOffset = (toLine < fromLine) ? toSegment.Offset : toSegment.EndOffsetIncludingDelimiter;
 				data.ExtendSelectionTo (toOffset);
 			}
 			data.Caret.PreserveSelection = false;

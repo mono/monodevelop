@@ -305,7 +305,7 @@ namespace Mono.TextEditor
 		public string GetLineText (int line, bool includeDelimiter)
 		{
 			var lineSegment = GetLine (line);
-			return includeDelimiter ? GetTextAt (lineSegment) : GetTextAt (lineSegment.Offset, lineSegment.Length);
+			return GetTextAt (lineSegment.Offset, includeDelimiter ? lineSegment.LengthIncludingDelimiter : lineSegment.Length);
 		}
 		
 		public char GetCharAt (int offset)
