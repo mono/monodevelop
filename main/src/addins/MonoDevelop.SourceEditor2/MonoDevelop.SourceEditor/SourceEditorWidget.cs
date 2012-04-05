@@ -1071,18 +1071,6 @@ namespace MonoDevelop.SourceEditor
 		Components.RoundedFrame gotoLineNumberWidgetFrame = null;
 		GotoLineNumberWidget   gotoLineNumberWidget   = null;
 		
-		void SetSearchPattern ()
-		{
-			string selectedText = FormatPatternToSelectionOption (this.TextEditor.SelectedText);
-			
-			if (!String.IsNullOrEmpty (selectedText)) {
-				this.SetSearchPattern (selectedText);
-				SearchAndReplaceWidget.searchPattern = selectedText;
-				SearchAndReplaceWidget.UpdateSearchHistory (selectedText);
-				TextEditor.TextViewMargin.MainSearchResult = TextEditor.SelectionRange;
-			}
-		}
-		
 		bool KillWidgets ()
 		{
 			bool result = false;
@@ -1110,26 +1098,6 @@ namespace MonoDevelop.SourceEditor
 			if (!isDisposed)
 				ResetFocusChain ();
 			return result;
-		}
-		
-		public void SetSearchPattern (string searchPattern)
-		{
-			this.textEditor.SearchPattern = searchPattern;
-			if (this.splittedTextEditor != null)
-				this.splittedTextEditor.SearchPattern = searchPattern;
-		}
-		
-		public bool DisableAutomaticSearchPatternCaseMatch {
-			get;
-			set;
-		}
-		
-		internal void CheckSearchPatternCasing (string searchPattern)
-		{
-			if (!DisableAutomaticSearchPatternCaseMatch && PropertyService.Get ("AutoSetPatternCasing", true)) {
-				searchAndReplaceWidget.IsCaseSensitive = searchPattern.Any (ch => Char.IsUpper (ch));
-				SetSearchOptions ();
-			}
 		}
 		
 		internal bool RemoveSearchWidget ()
@@ -1192,14 +1160,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (searchAndReplaceWidget == null) {
 				KillWidgets ();
-				searchAndReplaceWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
+				searchAndReplaceWidgetFrame = new RoundedFrame ();
 				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
-				searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (vbox.Style.Background (StateType.Normal)));
+				searchAndReplaceWidgetFrame.SetFillColor (CairoExtensions.GdkColorToCairoColor (vbox.Style.Background (StateType.Normal)));
 				
-				searchAndReplaceWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (this, searchAndReplaceWidgetFrame);
-				
+				searchAndReplaceWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (TextEditor, searchAndReplaceWidgetFrame);
+				searchAndReplaceWidget.Destroyed += (sender, e) => RemoveSearchWidget ();
 				searchAndReplaceWidgetFrame.ShowAll ();
-				this.TextEditorContainer.AddAnimatedWidget (searchAndReplaceWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+				this.TextEditorContainer.AddAnimatedWidget (searchAndReplaceWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
 //				this.PackEnd (searchAndReplaceWidget);
 //				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 				//		searchAndReplaceWidget.ShowAll ();
@@ -1211,31 +1179,21 @@ namespace MonoDevelop.SourceEditor
 				}
 				ResetFocusChain ();
 
-				if (TextEditor.IsSomethingSelected) {
-					if (TextEditor.MainSelection.MinLine == TextEditor.MainSelection.MaxLine) {
-						SetSearchPattern ();
-					} else {
-						searchAndReplaceWidget.IsInSelectionSearchMode = true;
-						searchAndReplaceWidget.SelectionSegment = TextEditor.SelectionRange;
-					}
-				}
-				SetSearchPattern (SearchAndReplaceWidget.searchPattern);
 			} else {
 				if (TextEditor.IsSomethingSelected) {
-					SetSearchPattern ();
+					searchAndReplaceWidget.SetSearchPattern ();
 				}
 			}
 			searchAndReplaceWidget.UpdateSearchPattern ();
 			searchAndReplaceWidget.IsReplaceMode = replace;
 			if (searchAndReplaceWidget.SearchFocused) {
 				if (replace) {
-					this.Replace ();
+					searchAndReplaceWidget.Replace ();
 				} else {
 					this.FindNext ();
 				}
 			}
 			searchAndReplaceWidget.Focus ();
-			SetSearchOptions ();
 		}
 		
 		public void ShowGotoLineNumberWidget ()
@@ -1259,41 +1217,7 @@ namespace MonoDevelop.SourceEditor
 			gotoLineNumberWidget.Focus ();
 		}
 		
-		internal void SetSearchOptions ()
-		{
-			if (SearchAndReplaceWidget.SearchEngine == SearchAndReplaceWidget.DefaultSearchEngine) {
-				if (!(this.textEditor.SearchEngine is BasicSearchEngine))
-					this.textEditor.SearchEngine = new BasicSearchEngine ();
-			} else {
-				if (!(this.textEditor.SearchEngine is RegexSearchEngine))
-					this.textEditor.SearchEngine = new RegexSearchEngine ();
-			}
-			if (searchAndReplaceWidget != null) 
-				this.textEditor.IsCaseSensitive = searchAndReplaceWidget.IsCaseSensitive;
-			this.textEditor.IsWholeWordOnly = SearchAndReplaceWidget.IsWholeWordOnly;
-			this.textEditor.SearchRegion = searchAndReplaceWidget.IsInSelectionSearchMode ? searchAndReplaceWidget.SelectionSegment : TextSegment.Invalid;
-			string error;
-			string pattern = SearchAndReplaceWidget.searchPattern;
-			if (searchAndReplaceWidget != null)
-				pattern = searchAndReplaceWidget.SearchPattern;
-			
-			bool valid = this.textEditor.SearchEngine.IsValidPattern (pattern, out error);
-			
-			if (valid) {
-				this.textEditor.SearchPattern = pattern;
-			}
-			this.textEditor.QueueDraw ();
-			if (this.splittedTextEditor != null) {
-				if (searchAndReplaceWidget != null)
-					this.splittedTextEditor.IsCaseSensitive = searchAndReplaceWidget.IsCaseSensitive;
-				this.splittedTextEditor.IsWholeWordOnly = SearchAndReplaceWidget.IsWholeWordOnly;
-				if (valid) {
-					this.splittedTextEditor.SearchPattern = pattern;
-				}
-				this.splittedTextEditor.QueueDraw ();
-			}
-		}
-		
+
 		public SearchResult FindNext ()
 		{
 			return FindNext (true);
@@ -1301,7 +1225,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public SearchResult FindNext (bool focus)
 		{
-			SetSearchOptions ();
 			SearchResult result = TextEditor.FindNext (true);
 			if (focus) {
 				TextEditor.GrabFocus ();
@@ -1326,7 +1249,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public SearchResult FindPrevious (bool focus)
 		{
-			SetSearchOptions ();
 			SearchResult result = TextEditor.FindPrevious (true);
 			if (focus) {
 				TextEditor.GrabFocus ();
@@ -1345,14 +1267,13 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 
-		string FormatPatternToSelectionOption (string pattern)
+		internal static string FormatPatternToSelectionOption (string pattern)
 		{
 			return MonoDevelop.Ide.FindInFiles.FindInFilesDialog.FormatPatternToSelectionOption (pattern, SearchAndReplaceWidget.SearchEngine == SearchAndReplaceWidget.RegexSearchEngine);
 		}
 		
 		void SetSearchPatternToSelection ()
 		{
-			SetSearchPattern ();
 			if (TextEditor.IsSomethingSelected) {
 				var pattern = FormatPatternToSelectionOption (TextEditor.SelectedText);
 					
@@ -1372,8 +1293,6 @@ namespace MonoDevelop.SourceEditor
 		public SearchResult FindNextSelection ()
 		{
 			SetSearchPatternToSelection ();
-			
-			SetSearchOptions ();
 			TextEditor.GrabFocus ();
 			return FindNext ();
 		}
@@ -1381,31 +1300,10 @@ namespace MonoDevelop.SourceEditor
 		public SearchResult FindPreviousSelection ()
 		{
 			SetSearchPatternToSelection ();
-			SetSearchOptions ();
 			TextEditor.GrabFocus ();
 			return FindPrevious ();
 		}
 		
-		public void Replace ()
-		{
-			SetSearchOptions ();
-			TextEditor.Replace (searchAndReplaceWidget.ReplacePattern);
-			TextEditor.GrabFocus ();
-		}
-		
-		public void ReplaceAll ()
-		{
-			SetSearchOptions ();
-			int number = TextEditor.ReplaceAll (searchAndReplaceWidget.ReplacePattern);
-			if (number == 0) {
-				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
-			} else {
-				IdeApp.Workbench.StatusBar.ShowMessage (
-					GettextCatalog.GetPluralString ("Found and replaced one occurrence",
-					                                "Found and replaced {0} occurrences", number, number));
-			}
-			TextEditor.GrabFocus ();
-		}
 		#endregion
 	
 		public Mono.TextEditor.TextDocument Document {
