@@ -72,7 +72,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		DocumentationPanel documentationPanel = new DocumentationPanel ();
 		TextEditorContainer textEditorContainer;
-		TextEditor inspectEditor;
+		readonly TextEditor inspectEditor;
 		
 		public AssemblyBrowserWidget ()
 		{
@@ -1158,7 +1158,6 @@ namespace MonoDevelop.AssemblyBrowser
 			if (inspectEditor != null) {
 				inspectEditor.LinkRequest -= InspectEditorhandleLinkRequest;
 				inspectEditor.Destroy ();
-				inspectEditor = null;
 			}
 			
 			if (this.UIManager != null) {
@@ -1251,30 +1250,57 @@ namespace MonoDevelop.AssemblyBrowser
 		[CommandHandler (SearchCommands.Find)]
 		public void ShowSearchWidget ()
 		{
-			searchentry1.Entry.GrabFocus ();
+			if (searchAndReplaceWidget == null) {
+				popupWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
+				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+				popupWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				popupWidgetFrame.Show ();
+				
+				popupWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (inspectEditor, popupWidgetFrame);
+				searchAndReplaceWidget.Destroyed += (sender, e) => {
+					DestroyFrames ();
+					if (inspectEditor.IsRealized)
+						inspectEditor.GrabFocus ();
+				};
+				searchAndReplaceWidget.UpdateSearchPattern ();
+				textEditorContainer.AddAnimatedWidget (popupWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+				searchAndReplaceWidget.IsReplaceMode = false;
+			}
+			
+			searchAndReplaceWidget.Focus ();
 		}
 
-		MonoDevelop.Components.RoundedFrame gotoLineNumberWidgetFrame;
+		MonoDevelop.Components.RoundedFrame popupWidgetFrame;
 
 		GotoLineNumberWidget gotoLineNumberWidget;
+		SearchAndReplaceWidget searchAndReplaceWidget;
+		void DestroyFrames ()
+		{
+			if (popupWidgetFrame != null) {
+				popupWidgetFrame.Destroy ();
+				popupWidgetFrame = null;
+				gotoLineNumberWidget = null;
+				searchAndReplaceWidget = null;
+			}
+		}
 
 		[CommandHandler (SearchCommands.GotoLineNumber)]
 		public void ShowGotoLineNumberWidget ()
 		{
 			if (gotoLineNumberWidget == null) {
-				gotoLineNumberWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
+				DestroyFrames ();
+				popupWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
 				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
-				gotoLineNumberWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				popupWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				popupWidgetFrame.Show ();
 				
-				gotoLineNumberWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (inspectEditor, gotoLineNumberWidgetFrame);
+				popupWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (inspectEditor, popupWidgetFrame);
 				gotoLineNumberWidget.Destroyed += (sender, e) => {
-					gotoLineNumberWidgetFrame.Destroy ();
-					gotoLineNumberWidgetFrame = null;
-					gotoLineNumberWidget = null;
-					inspectEditor.GrabFocus ();
+					DestroyFrames ();
+					if (inspectEditor.IsRealized)
+						inspectEditor.GrabFocus ();
 				};
-				gotoLineNumberWidgetFrame.ShowAll ();
-				textEditorContainer.AddAnimatedWidget (gotoLineNumberWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
+				textEditorContainer.AddAnimatedWidget (popupWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
 			}
 			
 			gotoLineNumberWidget.Focus ();

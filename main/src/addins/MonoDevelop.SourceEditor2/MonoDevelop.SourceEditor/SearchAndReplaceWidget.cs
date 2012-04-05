@@ -120,10 +120,7 @@ namespace MonoDevelop.SourceEditor
 			this.textEditor = textEditor;
 			textEditorContainer = textEditor.Parent as TextEditorContainer;
 			this.frame = frame;
-			
-			
 			textEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
-			textEditor.HighlightSearchPattern = true;
 			textEditor.TextViewMargin.SearchRegionsUpdated += HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
 			textEditor.Caret.PositionChanged += HandleWidgetTextEditorCaretPositionChanged;
 			SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
@@ -154,7 +151,6 @@ namespace MonoDevelop.SourceEditor
 				buttonReplace,
 				buttonReplaceAll
 			};
-			
 			FilterHistory (seachHistoryProperty);
 			FilterHistory (replaceHistoryProperty);
 			//HACK: GTK rendering issue on Mac, images don't repaint unless we put them in visible eventboxes
@@ -291,6 +287,14 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			SetSearchPattern (searchPattern);
+			textEditor.HighlightSearchPattern = true;
+			textEditor.TextViewMargin.RefreshSearchMarker ();
+			Console.WriteLine ("readonly" + textEditor.Document.ReadOnly);
+			if (textEditor.Document.ReadOnly) {
+				buttonSearchMode.Visible = false;
+				IsReplaceMode = false;
+			}
+			
 		}
 
 		public bool DisableAutomaticSearchPatternCaseMatch {
@@ -566,15 +570,14 @@ But I leave it in in the case I've missed something. Mike
 		public bool IsReplaceMode {
 			get { return isReplaceMode; }
 			set {
-				if (value == isReplaceMode)
-					return;
-				
 				isReplaceMode = value;
 				searchButtonModeArrow.ArrowType = isReplaceMode ? ArrowType.Up : ArrowType.Down;
 				table.RowSpacing = isReplaceMode ? 6u : 0u;
 				foreach (Widget widget in replaceWidgets) {
 					widget.Visible = isReplaceMode;
 				}
+				if (textEditor.Document.ReadOnly)
+					buttonSearchMode.Visible = false;
 			}
 		}
 		protected override void OnFocusChildSet (Widget widget)

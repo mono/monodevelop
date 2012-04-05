@@ -1171,8 +1171,6 @@ namespace MonoDevelop.SourceEditor
 //				this.PackEnd (searchAndReplaceWidget);
 //				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 				//		searchAndReplaceWidget.ShowAll ();
-				this.textEditor.HighlightSearchPattern = true;
-				this.textEditor.TextViewMargin.RefreshSearchMarker ();
 				if (this.splittedTextEditor != null) {
 					this.splittedTextEditor.HighlightSearchPattern = true;
 					this.splittedTextEditor.TextViewMargin.RefreshSearchMarker ();
