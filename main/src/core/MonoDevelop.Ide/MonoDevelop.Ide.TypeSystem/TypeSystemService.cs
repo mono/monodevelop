@@ -1013,6 +1013,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static AssemblyDefinition ReadAssembly (string fileName)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
 			ReaderParameters parameters = new ReaderParameters ();
 			parameters.AssemblyResolver = new DefaultAssemblyResolver (); // new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
@@ -1278,25 +1280,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				return null;
 			}
 		}
-		
-		public static ICompilation LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, string fileName)
+
+		public static IUnresolvedAssembly LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, MonoDevelop.Core.Assemblies.TargetFramework fx, string fileName)
 		{
-			var asm = ReadAssembly (fileName);
-			if (asm == null)
+			if (File.Exists (fileName))
+				return LoadAssemblyContext (fileName);
+			var corLibRef = runtime.AssemblyContext.GetAssemblyForVersion (fileName, null, fx);
+			if (corLibRef == null)
 				return null;
-			var loc = runtime.AssemblyContext.GetAssemblyLocation ("mscorlib", null);
-			
-			var mscorlibAsm = loc != fileName ? ReadAssembly (loc) : asm;
-			
-			var loader = new CecilLoader ();
-			loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
-			
-			var unresolvedAssembly = loader.LoadAssembly (asm);
-			var corLibLoader = new CecilLoader ();
-			
-			var mscorlib = corLibLoader.LoadAssembly (mscorlibAsm);
-			
-			return new SimpleCompilation (unresolvedAssembly, mscorlib);
+			return LoadAssemblyContext (corLibRef.Location);
 		}
 		
 		public static IProjectContent GetProjectContext (Project project)

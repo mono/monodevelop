@@ -343,7 +343,7 @@ namespace MonoDevelop.AspNet
 				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
 					foreach (string refPath in reference.GetReferencedFileNames (null))
 						if (Path.GetFileName (refPath) == dllName)
-							return TypeSystemService.LoadAssemblyContext (TargetRuntime, refPath);
+							return new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, refPath));
 				} else if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
 					var p = ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
 					if (p == null) {
@@ -356,7 +356,7 @@ namespace MonoDevelop.AspNet
 			
 			string path = GetAssemblyPath (assemblyName);
 			if (path != null)
-				return TypeSystemService.LoadAssemblyContext (TargetRuntime, path);
+				return new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, path));
 			return null;
 		}
 		

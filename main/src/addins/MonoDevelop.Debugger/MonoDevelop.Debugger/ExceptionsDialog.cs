@@ -76,17 +76,19 @@ namespace MonoDevelop.Debugger
 
 		void LoadExceptions ()
 		{
-			ICompilation dom;
-			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
-				dom = TypeSystemService.GetCompilation (IdeApp.ProjectOperations.CurrentSelectedProject);
-			else {
-				string asm = typeof(Uri).Assembly.Location;
-				// no nead to unload this assembly context, it's not cached.
-				dom = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, asm);
-			}
 			classes.Add ("System.Exception");
-			foreach (var t in dom.FindType (typeof (System.Exception)).GetSubTypeDefinitions ())
-				classes.Add (t.ReflectionName);
+			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				var dom = TypeSystemService.GetCompilation (IdeApp.ProjectOperations.CurrentSelectedProject);
+				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+					classes.Add (t.ReflectionName);
+			} else {
+				// no nead to unload this assembly context, it's not cached.
+				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.FullName);
+				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.FullName);
+				var dom = new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (unresolvedAssembly, mscorlib);
+				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+					classes.Add (t.ReflectionName);
+			}
 		}
 
 		void FillExceptions ()
