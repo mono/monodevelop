@@ -361,6 +361,7 @@ namespace MonoDevelop.SourceEditor
 					skipChar = null;
 			}
 			char insertionChar = '\0';
+			bool insertMatchingBracket = false;
 			IDisposable undoGroup = null;
 			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0) {
 				if (!inStringOrComment) {
@@ -377,32 +378,22 @@ namespace MonoDevelop.SourceEditor
 					}
 
 					if (count >= 0) {
-//						startedAtomicOperation = true;
-						undoGroup = Document.OpenUndoGroup ();
-						GetTextEditorData ().EnsureCaretIsNotVirtual ();
-						
-						int offset = Caret.Offset;
+						insertMatchingBracket = true;
 						insertionChar = closingBrace;
-						Insert (offset, closingBrace.ToString ());
-						Caret.Offset = offset;
-						GetTextEditorData ().SetSkipChar (offset, insertionChar);
 					}
 				} else {
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
 					if (!inString && !inComment && !inChar && ch == '"' && charBefore != '\\') {
-//						startedAtomicOperation = true;
-						undoGroup = Document.OpenUndoGroup ();
-						GetTextEditorData ().EnsureCaretIsNotVirtual ();
+						insertMatchingBracket = true;
 						insertionChar = '"';
-						int offset = Caret.Offset;
-						Insert (Caret.Offset, "\"");
-						Caret.Offset = offset;
-						GetTextEditorData ().SetSkipChar (offset, '"');
 					}
 				}
 			}
 			
 			//Console.WriteLine (Caret.Offset + "/" + insOff);
+			if (insertMatchingBracket)
+				undoGroup = Document.OpenUndoGroup ();
+
 			if (skipChar != null) {
 				Caret.Offset++;
 				skipChars.Remove (skipChar);
@@ -418,8 +409,14 @@ namespace MonoDevelop.SourceEditor
 						HitReturn ();
 				}
 			}
-			if (undoGroup != null)
+			if (insertMatchingBracket) {
+				GetTextEditorData ().EnsureCaretIsNotVirtual ();
+				int offset = Caret.Offset;
+				Insert (offset, insertionChar.ToString ());
+				Caret.Offset = offset;
+				GetTextEditorData ().SetSkipChar (offset, insertionChar);
 				undoGroup.Dispose ();
+			}
 			return templateInserted || result;
 		}
 		
