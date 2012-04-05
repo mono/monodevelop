@@ -1689,7 +1689,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return null;
 		}
 		
-		void AddVirtuals(List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
+		void AddVirtuals (List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
 		{
 			if (curType == null) {
 				return;
@@ -1703,16 +1703,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					continue;
 				}
 				
-				var data = factory.CreateNewOverrideCompletionData(declarationBegin, currentType, m);
+				var data = factory.CreateNewOverrideCompletionData (declarationBegin, currentType, m);
 				// check if the member is already implemented
-				bool foundMember = curType.GetMembers().Any(cm => SignatureComparer.Ordinal.Equals(cm, m) && cm.DeclaringTypeDefinition == curType.GetDefinition());
+				bool foundMember = curType.GetMembers ().Any (cm => SignatureComparer.Ordinal.Equals (cm, m) && cm.DeclaringTypeDefinition == curType.GetDefinition ());
 				if (foundMember) {
 					continue;
 				}
-				if (alreadyInserted.Any(cm => SignatureComparer.Ordinal.Equals(cm, m)))
+				if (alreadyInserted.Any (cm => SignatureComparer.Ordinal.Equals (cm, m)))
 					continue;
 				alreadyInserted.Add (m);
-				data.CompletionCategory = col.GetCompletionCategory(curType);
+				Console.WriteLine (m.DeclaringTypeDefinition.FullName);
+				data.CompletionCategory = col.GetCompletionCategory(m.DeclaringTypeDefinition);
 				col.Add(data);
 			}
 		}
