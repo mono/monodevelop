@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -1689,7 +1689,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return null;
 		}
 		
-		void AddVirtuals (List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
+		void AddVirtuals(List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
 		{
 			if (curType == null) {
 				return;
@@ -1703,16 +1703,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					continue;
 				}
 				
-				var data = factory.CreateNewOverrideCompletionData (declarationBegin, currentType, m);
+				var data = factory.CreateNewOverrideCompletionData(declarationBegin, currentType, m);
 				// check if the member is already implemented
-				bool foundMember = curType.GetMembers ().Any (cm => SignatureComparer.Ordinal.Equals (cm, m) && cm.DeclaringTypeDefinition == curType.GetDefinition ());
+				bool foundMember = curType.GetMembers().Any(cm => SignatureComparer.Ordinal.Equals(cm, m) && cm.DeclaringTypeDefinition == curType.GetDefinition());
 				if (foundMember) {
 					continue;
 				}
-				if (alreadyInserted.Any (cm => SignatureComparer.Ordinal.Equals (cm, m)))
+				if (alreadyInserted.Any(cm => SignatureComparer.Ordinal.Equals(cm, m)))
 					continue;
 				alreadyInserted.Add (m);
-				Console.WriteLine (m.DeclaringTypeDefinition.FullName);
 				data.CompletionCategory = col.GetCompletionCategory(m.DeclaringTypeDefinition);
 				col.Add(data);
 			}
@@ -2516,132 +2515,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return document.GetText(i, endOffset - i);
 		}
-		
-		bool GetParameterCompletionCommandOffset(out int cpos)
-		{
-			// Start calculating the parameter offset from the beginning of the
-			// current member, instead of the beginning of the file. 
-			cpos = offset - 1;
-			var mem = currentMember;
-			if (mem == null || (mem is IType)) {
-				return false;
-			}
-			int startPos = document.GetOffset(mem.Region.BeginLine, mem.Region.BeginColumn);
-			int parenDepth = 0;
-			int chevronDepth = 0;
-			while (cpos > startPos) {
-				char c = document.GetCharAt(cpos);
-				if (c == ')') {
-					parenDepth++;
-				}
-				if (c == '>') {
-					chevronDepth++;
-				}
-				if (parenDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
-					int p = GetCurrentParameterIndex(cpos + 1, startPos);
-					if (p != -1) {
-						cpos++;
-						return true;
-					} else {
-						return false;
-					}
-				}
-				if (c == '(') {
-					parenDepth--;
-				}
-				if (c == '<') {
-					chevronDepth--;
-				}
-				cpos--;
-			}
-			return false;
-		}
-		
-		int GetCurrentParameterIndex(int offset, int memberStart)
-		{
-			int cursor = this.offset;
-			int i = offset;
-			
-			if (i > cursor) {
-				return -1;
-			}
-			if (i == cursor) { 
-				return 1;
-			}
-			// parameters are 1 based
-			int index = memberStart + 1;
-			int parentheses = 0;
-			int bracket = 0;
-			bool insideQuote = false, insideString = false, insideSingleLineComment = false, insideMultiLineComment = false;
-			do {
-				char c = document.GetCharAt(i - 1);
-				switch (c) {
-					case '\\':
-						if (insideString || insideQuote) {
-							i++;
-						}
-						break;
-					case '\'':
-						if (!insideString && !insideSingleLineComment && !insideMultiLineComment) {
-							insideQuote = !insideQuote;
-						}
-						break;
-					case '"':
-						if (!insideQuote && !insideSingleLineComment && !insideMultiLineComment) {
-							insideString = !insideString;
-						}
-						break;
-					case '/':
-						if (!insideQuote && !insideString && !insideMultiLineComment) {
-							if (document.GetCharAt(i) == '/') {
-								insideSingleLineComment = true;
-							}
-							if (document.GetCharAt(i) == '*') {
-								insideMultiLineComment = true;
-							}
-						}
-						break;
-					case '*':
-						if (insideMultiLineComment && document.GetCharAt(i) == '/') {
-							insideMultiLineComment = false;
-						}
-						break;
-					case '\n':
-					case '\r':
-						insideSingleLineComment = false;
-						break;
-					case '{':
-						if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment) {
-							bracket++;
-						}
-						break;
-					case '}':
-						if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment) {
-							bracket--;
-						}
-						break;
-					case '(':
-						if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment) {
-							parentheses++;
-						}
-						break;
-					case ')':
-						if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment) {
-							parentheses--;
-						}
-						break;
-					case ',':
-						if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment && parentheses == 1 && bracket == 0) {
-							index++;
-						}
-						break;
-				}
-				i++;
-			} while (i <= cursor && parentheses >= 0);
-			
-			return parentheses != 1 || bracket > 0 ? -1 : index;
-		}
-		
+
 		#endregion
 		
 		#region Preprocessor

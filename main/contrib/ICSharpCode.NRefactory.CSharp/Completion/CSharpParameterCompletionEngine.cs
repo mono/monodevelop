@@ -217,6 +217,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (invoke == null) {
 						invoke = GetTypeBeforeCursor();
 						if (invoke != null) {
+							if (GetCurrentParameterIndex(document.GetOffset(invoke.Node.StartLocation), offset) < 0)
+								return null;
 							var typeExpression = ResolveExpression(invoke);
 							if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError) {
 								return null;
@@ -226,6 +228,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						return null;
 					}
+					if (GetCurrentParameterIndex(document.GetOffset(invoke.Node.StartLocation), offset) < 0)
+						return null;
 					if (invoke.Node is ObjectCreateExpression) {
 						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type, invoke.Unit);
 						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Item1.Type);
@@ -334,16 +338,34 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return 0;
 			}
 			var parameter = new Stack<int>();
+			var bracketStack = new Stack<Stack<int>>();
 			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
 			for (int i = triggerOffset; i < endOffset; i++) {
 				char ch = document.GetCharAt(i);
 				char nextCh = i + 1 < document.TextLength ? document.GetCharAt(i + 1) : '\0';
 				switch (ch) {
+					case '{':
+						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
+							break;
+						}
+						bracketStack.Push(parameter);
+						parameter = new Stack<int>();
+						break;
 					case '(':
 						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
 							break;
 						}
 						parameter.Push(0);
+						break;
+					case '}':
+						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
+							break;
+						}
+						if (bracketStack.Count > 0) {
+							parameter = bracketStack.Pop();
+						} else {
+							return -1;
+						}
 						break;
 					case ')':
 						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
@@ -440,51 +462,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						break;
 				}
 			}
-			if (parameter.Count == 0) {
+			if (parameter.Count == 0 || bracketStack.Count > 0) {
 				return -1;
 			}
 			return parameter.Pop() + 1;
 		}
-
-		
-		/*
-		public override bool GetParameterCompletionCommandOffset (out int cpos)
-		{
-			// Start calculating the parameter offset from the beginning of the
-			// current member, instead of the beginning of the file. 
-			cpos = textEditorData.Caret.Offset - 1;
-			var parsedDocument = Document.ParsedDocument;
-			if (parsedDocument == null)
-				return false;
-			IMember mem = currentMember;
-			if (mem == null || (mem is IType))
-				return false;
-			int startPos = textEditorData.LocationToOffset (mem.Region.BeginLine, mem.Region.BeginColumn);
-			int parenDepth = 0;
-			int chevronDepth = 0;
-			while (cpos > startPos) {
-				char c = textEditorData.GetCharAt (cpos);
-				if (c == ')')
-					parenDepth++;
-				if (c == '>')
-					chevronDepth++;
-				if (parenDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
-					int p = MethodParameterDataProvider.GetCurrentParameterIndex (CompletionWidget, cpos + 1, startPos);
-					if (p != -1) {
-						cpos++;
-						return true;
-					} else {
-						return false;
-					}
-				}
-				if (c == '(')
-					parenDepth--;
-				if (c == '<')
-					chevronDepth--;
-				cpos--;
-			}
-			return false;
-		}*/
 	}
 }
 
