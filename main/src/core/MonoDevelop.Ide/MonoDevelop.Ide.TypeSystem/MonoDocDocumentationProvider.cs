@@ -61,7 +61,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			DocumentationComment result;
 			if (commentCache.TryGetValue (idString, out result))
 				return result;
-			Console.WriteLine ("generate for:" + idString);
 			XmlDocument doc = null;
 			try {
 				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
