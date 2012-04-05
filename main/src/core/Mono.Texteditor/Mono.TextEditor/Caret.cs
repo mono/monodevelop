@@ -352,13 +352,11 @@ namespace Mono.TextEditor
 			offsetVersion = curVersion;
 			if (newOffset == caretOffset)
 				return;
-
 			DocumentLocation old = Location;
 			var newLocation = TextEditorData.OffsetToLocation (newOffset);
 			int newColumn = newLocation.Column;
 			
 			var curLine = TextEditorData.GetLine (newLocation.Line);
-
 			if (TextEditorData.HasIndentationTracker && TextEditorData.Options.IndentStyle == IndentStyle.Virtual && curLine.EditableLength == 0) {
 				if (column > DocumentLocation.MinColumn) {
 					var indentColumn = TextEditorData.GetVirtualIndentationColumn (Location);
@@ -366,7 +364,7 @@ namespace Mono.TextEditor
 				}
 			}
 			if (AllowCaretBehindLineEnd) {
-				if (column > curLine.EditableLength)
+				if (curLine != null && column > curLine.EditableLength)
 					newColumn = column;
 			}
 

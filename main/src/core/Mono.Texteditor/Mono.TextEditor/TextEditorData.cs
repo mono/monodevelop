@@ -412,15 +412,12 @@ namespace Mono.TextEditor
 						Insert (lineSegment.Offset + insertOffset, textToInsert);
 					}
 					Caret.PreserveSelection = true;
-					Caret.Column += text.Length;
 					MainSelection.Lead = new DocumentLocation (MainSelection.Lead.Line, Caret.Column);
 					MainSelection.Anchor = new DocumentLocation (MainSelection.Anchor.Line, Caret.Column);
 					Document.CommitMultipleLineUpdate (MainSelection.MinLine, MainSelection.MaxLine);
 				} else {
 					EnsureCaretIsNotVirtual ();
-					int offset = Caret.Offset;
-					int length = Insert (offset, text);
-					Caret.Offset = offset + length;
+					Insert (Caret.Offset, text);
 				}
 			}
 		}
@@ -469,11 +466,6 @@ namespace Mono.TextEditor
 		{
 			if (!caret.PreserveSelection)
 				this.ClearSelection ();
-			if (Options.RemoveTrailingWhitespaces && args.Location.Line != Caret.Line) {
-				LineSegment line = Document.GetLine (args.Location.Line);
-				if (line != null && line.WasChanged)
-					TextDocument.RemoveTrailingWhitespaces (this, line);
-			}
 		}
 		
 		public bool CanEdit (int line)
