@@ -74,16 +74,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 					cmd.CurrentOverload ++;
 				else
 					cmd.CurrentOverload = 0;
+				window.ChangeOverload ();
 				UpdateWindow (ext, widget);
 				return true;
-			}
-			else if (key == Gdk.Key.Up) {
+			} else if (key == Gdk.Key.Up) {
 				if (cmd.MethodProvider.Count <= 1)
 					return false;
 				if (cmd.CurrentOverload > 0)
 					cmd.CurrentOverload --;
 				else
 					cmd.CurrentOverload = cmd.MethodProvider.Count - 1;
+				window.ChangeOverload ();
 				UpdateWindow (ext, widget);
 				return true;
 			}
@@ -232,7 +233,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			if (methods.Count == 0) {
 				if (window != null) {
-					window.Hide ();
+					window.HideParameterInfo ();
 					wasAbove = false;
 					wasVisi = false;
 					lastW = -1;
@@ -241,6 +242,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			}
 		}
+
 	
 		static void PositionParamaterInfoWindow (Rectangle allocation)
 		{

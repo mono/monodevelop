@@ -98,13 +98,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			EnableTransparencyControl = true;
 		}
 		Dictionary<int, bool> doBreakParameters = new Dictionary<int, bool> ();
+
+		int lastParam;
 		public void ShowParameterInfo (IParameterDataProvider provider, int overload, int _currentParam, int maxSize)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");
 			int numParams = System.Math.Max (0, provider.GetParameterCount (overload));
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
-			
+			if (lastParam == currentParam)
+				return;
+			lastParam = currentParam;
+
 			string[] paramText = new string[numParams];
 			for (int i = 0; i < numParams; i++) {
 				string txt = provider.GetParameterDescription (overload, i);
@@ -138,7 +143,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			QueueResize ();
 		}
+
+		public void ChangeOverload ()
+		{
+			lastParam = -1;
+		}
 		
+		public void HideParameterInfo ()
+		{
+			ChangeOverload ();
+			Hide ();
+		}
+
 		// The wrapping of Gtk.Label wasn't exactly what's needed in that case
 		class DescriptionLabel : Gtk.DrawingArea
 		{
