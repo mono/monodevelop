@@ -167,10 +167,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region IUnresolvedAssembly implementation
 		[Serializable]
-		sealed class CecilUnresolvedAssembly : DefaultUnresolvedAssembly, IDocumentationProvider
+		sealed class CecilUnresolvedAssembly : DefaultUnresolvedAssembly, IDocumentationProvider, IDocumentationProviderContainer
 		{
-			readonly IDocumentationProvider documentationProvider;
-			
+			[NonSerialized]
+			IDocumentationProvider documentationProvider;
+
+			public IDocumentationProvider DocumentationProvider {
+				get {
+					return documentationProvider;
+				}
+				set {
+					documentationProvider = value;
+				}
+			}
+
 			public CecilUnresolvedAssembly(string assemblyName, IDocumentationProvider documentationProvider)
 				: base(assemblyName)
 			{

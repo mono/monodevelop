@@ -48,4 +48,19 @@ namespace ICSharpCode.NRefactory.Documentation
 		/// </summary>
 		DocumentationComment GetDocumentation(IUnresolvedEntity entity, IEntity resolvedEntity);
 	}
+
+	/// <summary>
+	/// Provides a IDocumentationProvider
+	/// </summary>
+	public interface IDocumentationProviderContainer
+	{
+		/// <summary>
+		/// Gets or sets the documentation provider for the specified entity.
+		/// </summary>
+		/// <value>
+		IDocumentationProvider DocumentationProvider {
+			get;
+			set;
+		}
+	}
 }

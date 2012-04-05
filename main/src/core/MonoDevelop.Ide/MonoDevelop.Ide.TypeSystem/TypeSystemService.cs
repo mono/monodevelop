@@ -1172,8 +1172,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					if (File.Exists (assemblyPath)) {
 						var deserializedAssembly = DeserializeObject <IUnresolvedAssembly> (assemblyPath);
-						if (deserializedAssembly != null)
+						if (deserializedAssembly != null) {
+							var provider = deserializedAssembly as IDocumentationProviderContainer;
+							if (provider != null)
+								provider.DocumentationProvider = new CombinedDocumentationProvider (fileName);
 							return deserializedAssembly;
+						}
 					}
 				} catch (Exception) {
 				}
@@ -1184,6 +1188,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				IUnresolvedAssembly assembly;
 				try {
 					var loader = new CecilLoader ();
+					loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
 					assembly = loader.LoadAssembly (asm);
 					assembly.Location = fileName;
 				} catch (Exception e) {
