@@ -45,6 +45,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region IDocumentationProvider implementation
+		[NonSerialized]
+		readonly Dictionary<string, DocumentationComment> commentCache = new Dictionary<string, DocumentationComment> ();
+
 		public DocumentationComment GetDocumentation (IEntity entity)
 		{
 			if (entity == null)
@@ -54,31 +57,39 @@ namespace MonoDevelop.Ide.TypeSystem
 			// shouldn't try it again. A corrupt .zip file could cause long tooltip delays otherwise.
 			if (hadError)
 				return null;
+			var idString = entity.GetIdString ();
+			DocumentationComment result;
+			if (commentCache.TryGetValue (idString, out result))
+				return result;
+			Console.WriteLine ("generate for:" + idString);
 			XmlDocument doc = null;
 			try {
+				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
 				if (entity.EntityType == EntityType.TypeDefinition) {
-					var idString = entity.GetIdString ();
-					doc = MonoDevelop.Projects.HelpService.HelpTree.GetHelpXml (idString);
+					doc = helpTree.GetHelpXml (idString);
 				} else {
 					var parentId = entity.DeclaringTypeDefinition.GetIdString ();
-					doc = MonoDevelop.Projects.HelpService.HelpTree.GetHelpXml (parentId);
+
+					doc = helpTree.GetHelpXml (parentId);
 					if (doc == null)
 						return null;
 					XmlNode node = SelectNode (doc, entity);
 					
 					if (node != null)
-						return new DocumentationComment (node.OuterXml, new SimpleTypeResolveContext (entity));
+						return commentCache [idString] = new DocumentationComment (node.OuterXml, new SimpleTypeResolveContext (entity));
 //					var node = doc.SelectSingleNode ("/Type/Members/Member")
 //					return new DocumentationComment (doc.OuterXml, new SimpleTypeResolveContext (entity));
 				}
 			} catch (Exception e) {
-				hadError =  true;
+				hadError = true;
 				LoggingService.LogError ("Error while reading monodoc file.", e);
 				throw e;
 			}
-			if (doc == null)
+			if (doc == null) {
+				commentCache [idString] = null;
 				return null;
-			return new DocumentationComment (doc.OuterXml, new SimpleTypeResolveContext (entity));
+			}
+			return commentCache [idString] = new DocumentationComment (doc.OuterXml, new SimpleTypeResolveContext (entity));
 		}
 
 		public XmlNode SelectNode (XmlDocument doc, IEntity entity)

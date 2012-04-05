@@ -99,15 +99,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		Dictionary<int, bool> doBreakParameters = new Dictionary<int, bool> ();
 
-		int lastParam;
+		int lastParam = -2;
 		public void ShowParameterInfo (IParameterDataProvider provider, int overload, int _currentParam, int maxSize)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");
 			int numParams = System.Math.Max (0, provider.GetParameterCount (overload));
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
-			if (lastParam == currentParam)
+			if (lastParam == currentParam) {
 				return;
+			}
 			lastParam = currentParam;
 
 			string[] paramText = new string[numParams];
@@ -146,7 +147,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void ChangeOverload ()
 		{
-			lastParam = -1;
+			lastParam = -2;
 		}
 		
 		public void HideParameterInfo ()
