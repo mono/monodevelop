@@ -86,6 +86,12 @@ namespace Mono.TextEditor
 
 		public TextSegment Segment {
 			get {
+				return new TextSegment (Offset, Length);
+			}
+		}
+
+		public TextSegment SegmentIncludingDelimiter {
+			get {
 				return new TextSegment (Offset, LengthIncludingDelimiter);
 			}
 		}
