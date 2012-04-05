@@ -46,6 +46,8 @@ using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using Mono.TextEditor.Theatrics;
+using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -69,7 +71,8 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		DocumentationPanel documentationPanel = new DocumentationPanel ();
-		Mono.TextEditor.TextEditor inspectEditor;
+		TextEditorContainer textEditorContainer;
+		TextEditor inspectEditor;
 		
 		public AssemblyBrowserWidget ()
 		{
@@ -116,7 +119,7 @@ namespace MonoDevelop.AssemblyBrowser
 				ShowTabs = false,
 				HighlightCaretLine = true,
 			};
-			inspectEditor = new Mono.TextEditor.TextEditor (new Mono.TextEditor.TextDocument (), options);
+			inspectEditor = new TextEditor (new TextDocument (), options);
 			inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
 			
 			this.inspectEditor.Document.ReadOnly = true;
@@ -156,7 +159,11 @@ namespace MonoDevelop.AssemblyBrowser
 //				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
-			this.scrolledwindowEditor.Child = this.inspectEditor;
+			textEditorContainer = new TextEditorContainer (inspectEditor);
+			notebookInspection.Add (textEditorContainer);
+			var notebookChild = ((Notebook.NotebookChild)(notebookInspection [textEditorContainer]));
+			notebookChild.Position = 1;
+
 //			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
 			
 //			this.vpaned1.ExposeEvent += VPaneExpose;
@@ -166,16 +173,16 @@ namespace MonoDevelop.AssemblyBrowser
 //				this.inspectLabel.Selectable = false;
 			};*/
 
-			this.languageCombobox.AppendText (GettextCatalog.GetString ("Summary"));
-			this.languageCombobox.AppendText (GettextCatalog.GetString ("IL"));
-			this.languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
-			this.languageCombobox.Active = PropertyService.Get ("AssemblyBrowser.InspectLanguage", 2);
-			this.languageCombobox.Changed += LanguageComboboxhandleChanged;
-			this.searchentry1.Ready = true;
-			this.searchentry1.WidthRequest = 200;
-			this.searchentry1.Visible = true;
-			this.searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for types or members");
-			this.searchentry1.InnerEntry.Changed += SearchEntryhandleChanged;
+			languageCombobox.AppendText (GettextCatalog.GetString ("Summary"));
+			languageCombobox.AppendText (GettextCatalog.GetString ("IL"));
+			languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
+			languageCombobox.Active = PropertyService.Get ("AssemblyBrowser.InspectLanguage", 2);
+			languageCombobox.Changed += LanguageComboboxhandleChanged;
+			searchentry1.Ready = true;
+			searchentry1.WidthRequest = 200;
+			searchentry1.Visible = true;
+			searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for types or members");
+			searchentry1.InnerEntry.Changed += SearchEntryhandleChanged;
 			
 			CheckMenuItem checkMenuItem = this.searchentry1.AddFilterOption (0, GettextCatalog.GetString ("Types"));
 			checkMenuItem.Active = true;
@@ -1246,6 +1253,33 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			searchentry1.Entry.GrabFocus ();
 		}
+
+		MonoDevelop.Components.RoundedFrame gotoLineNumberWidgetFrame;
+
+		GotoLineNumberWidget gotoLineNumberWidget;
+
+		[CommandHandler (SearchCommands.GotoLineNumber)]
+		public void ShowGotoLineNumberWidget ()
+		{
+			if (gotoLineNumberWidget == null) {
+				gotoLineNumberWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
+				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
+				gotoLineNumberWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
+				
+				gotoLineNumberWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (inspectEditor, gotoLineNumberWidgetFrame);
+				gotoLineNumberWidget.Destroyed += (sender, e) => {
+					gotoLineNumberWidgetFrame.Destroy ();
+					gotoLineNumberWidgetFrame = null;
+					gotoLineNumberWidget = null;
+					inspectEditor.GrabFocus ();
+				};
+				gotoLineNumberWidgetFrame.ShowAll ();
+				textEditorContainer.AddAnimatedWidget (gotoLineNumberWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
+			}
+			
+			gotoLineNumberWidget.Focus ();
+		}
+
 	
 		#region NavigationHistory
 		Stack<ITreeNavigator> navigationBackwardHistory = new Stack<ITreeNavigator> ();

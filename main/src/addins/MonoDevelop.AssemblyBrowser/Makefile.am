@@ -41,6 +41,7 @@ RES =  \
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
+	$(top_builddir)/build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
 	$(top_builddir)/build/bin/ICSharpCode.Decompiler.dll \
 	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
