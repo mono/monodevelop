@@ -473,7 +473,7 @@ namespace MonoDevelop.AspNet.Gui
 				
 				foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
-						list.Add (prop.Name, prop.GetStockIcon (), prop.Documentation);
+						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetDocumentationSummary (prop));
 				return;
 			}
 		}
@@ -617,14 +617,14 @@ namespace MonoDevelop.AspNet.Gui
 			//add atts only if they're not already in the tag
 			foreach (var prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 				if (prop.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
-					if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
-						list.Add (prop.Name, prop.GetStockIcon (), prop.Documentation);
+				if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
+					list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetDocumentationSummary (prop));
 			
 			//similarly add events
 			foreach (var eve in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
 				string eveName = "On" + eve.Name;
 				if (eve.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
-					list.Add (eveName, eve.GetStockIcon (), eve.Documentation);
+					list.Add (eveName, eve.GetStockIcon (), AmbienceService.GetDocumentationSummary (eve));
 			}
 		}
 		
@@ -633,7 +633,7 @@ namespace MonoDevelop.AspNet.Gui
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
 			Debug.Assert (attName.IsValid && !attName.HasPrefix);
 			
-			IType controlClass = HasDoc? refman.GetControlType (tagName.Prefix, tagName.Name) : null;
+			IType controlClass = HasDoc ? refman.GetControlType (tagName.Prefix, tagName.Name) : null;
 			
 			if (controlClass == null) {
 				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
@@ -663,8 +663,7 @@ namespace MonoDevelop.AspNet.Gui
 							return;
 						
 						foreach (IMethod meth 
-						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, ev))
-						{
+						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, ev)) {
 							list.Add (meth.Name, "md-method",
 							    GettextCatalog.GetString ("A compatible method in the CodeBehind class"));
 						}
@@ -710,7 +709,7 @@ namespace MonoDevelop.AspNet.Gui
 					return;
 				}
 				//color completion
-				if (prop.ReturnType.Equals (projectDatabase.FindType (typeof (System.Drawing.Color)))) {
+				if (prop.ReturnType.Equals (projectDatabase.FindType (typeof(System.Drawing.Color)))) {
 					System.Drawing.ColorConverter conv = new System.Drawing.ColorConverter ();
 					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
 						if (c.IsSystemColor)
@@ -726,7 +725,7 @@ namespace MonoDevelop.AspNet.Gui
 				if (retCls != null && retCls.Kind == TypeKind.Enum) {
 					foreach (var enumVal in retCls.GetFields ())
 						if (enumVal.IsPublic && enumVal.IsStatic)
-							list.Add (enumVal.Name, "md-literal", enumVal.Documentation);
+							list.Add (enumVal.Name, "md-literal", AmbienceService.GetDocumentationSummary (enumVal));
 					return;
 				}
 			}
