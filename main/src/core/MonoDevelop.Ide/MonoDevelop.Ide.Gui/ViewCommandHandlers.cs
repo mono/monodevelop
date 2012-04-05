@@ -266,7 +266,7 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnUppercaseSelection (CommandInfo info)
 		{
 			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
-			info.Enabled = buffer != null && buffer.CursorPosition < buffer.Length;
+			info.Enabled = buffer != null;
 		}
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]
@@ -307,7 +307,7 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnLowercaseSelection (CommandInfo info)
 		{
 			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
-			info.Enabled = buffer != null && buffer.CursorPosition < buffer.Length;
+			info.Enabled = buffer != null;
 		}
 		
 
