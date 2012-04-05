@@ -145,7 +145,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildTargets" name = "Custom MSBuild Targets">
-		<ExtensionNode name="Directory" type="MonoDevelop.Ide.Extensions.FilePathExtensionNode"/>
+		<ExtensionNode name="Directory" type="MonoDevelop.Core.AddIns.FilePathExtensionNode"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
