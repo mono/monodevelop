@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.CSharp.Parser;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -173,16 +174,20 @@ namespace MonoDevelop.CSharp.Formatting
 			int realTextDelta = seg.Offset - formatStartOffset;
 			int startDelta = 1;
 			using (var undo = data.Editor.OpenUndoGroup ()) {
-				changes.ApplyChanges (formatStartOffset + startDelta, Math.Max (0, formatLength - startDelta - 1), delegate (int replaceOffset, int replaceLength, string insertText) {
-					int translatedOffset = realTextDelta + replaceOffset;
-					data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
-					data.Editor.Replace (translatedOffset, replaceLength, insertText);
-				}, (replaceOffset, replaceLength, insertText) => {
-					int translatedOffset = realTextDelta + replaceOffset;
-					if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length)
-						return true;
-					return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
-				});
+				try {
+					changes.ApplyChanges (formatStartOffset + startDelta, Math.Max (0, formatLength - startDelta - 1), delegate (int replaceOffset, int replaceLength, string insertText) {
+						int translatedOffset = realTextDelta + replaceOffset;
+						data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
+						data.Editor.Replace (translatedOffset, replaceLength, insertText);
+					}, (replaceOffset, replaceLength, insertText) => {
+						int translatedOffset = realTextDelta + replaceOffset;
+						if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length)
+							return true;
+						return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
+					});
+				} catch (Exception e) {
+					LoggingService.LogError ("Error in on the fly formatter", e);
+				}
 
 //				var currentVersion = data.Editor.Document.Version;
 //				data.Editor.Caret.Offset = originalVersion.MoveOffsetTo (currentVersion, caretOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default);

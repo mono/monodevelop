@@ -115,7 +115,12 @@ namespace MonoDevelop.CSharp.Formatting
 				HadErrors = hadErrors
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor);
-			formattingVisitor.ApplyChanges (startOffset, endOffset - startOffset);
+			try {
+				formattingVisitor.ApplyChanges (startOffset, endOffset - startOffset);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error in code formatter", e);
+				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
+			}
 
 			// check if the formatter has produced errors
 			parser = new CSharpParser ();
