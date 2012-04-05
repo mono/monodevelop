@@ -903,7 +903,10 @@ namespace MonoDevelop.AspNet.Gui
 			if (n is TagNode) {
 				TagNode tn = (TagNode) n;
 				name = tn.TagName;
-				string att = tn.Attributes["id"] as string;
+				string att = null;
+				if (tn.Attributes != null) {
+					att = tn.Attributes["id"] as string;
+				}
 				if (att != null)
 					name = "<" + name + "#" + att + ">";
 				else
