@@ -47,12 +47,12 @@ namespace Mono.TextEditor.Tests
 				Assert.AreEqual (i * 2, splitter.Get (i + 1).Offset);
 				Assert.AreEqual (1, splitter.Get (i + 1).EditableLength);
 				Assert.AreEqual (1, splitter.Get (i + 1).DelimiterLength);
-				Assert.AreEqual (2, splitter.Get (i + 1).Length);
+				Assert.AreEqual (2, splitter.Get (i + 1).LengthIncludingDelimiter);
 			}
 			Assert.AreEqual (3 * 2, splitter.Get (4).Offset);
 			Assert.AreEqual (0, splitter.Get (4).EditableLength);
 			Assert.AreEqual (0, splitter.Get (4).DelimiterLength);
-			Assert.AreEqual (0, splitter.Get (4).Length);
+			Assert.AreEqual (0, splitter.Get (4).LengthIncludingDelimiter);
 		}
 		
 		[Test()]
@@ -64,14 +64,14 @@ namespace Mono.TextEditor.Tests
 			splitter.TextReplaced (null, new DocumentChangeEventArgs (0, "", buffer.Text));
 			
 			LineSegment lastLine = splitter.Get (2);
-			splitter.TextReplaced (null, new DocumentChangeEventArgs (lastLine.Offset, buffer.GetTextAt (lastLine.Offset, lastLine.Length), ""));
+			splitter.TextReplaced (null, new DocumentChangeEventArgs (lastLine.Offset, buffer.GetTextAt (lastLine.Offset, lastLine.LengthIncludingDelimiter), ""));
 			
 			Assert.AreEqual (3, splitter.Count);
 			
 			Assert.AreEqual (2 * 2, splitter.Get (3).Offset);
 			Assert.AreEqual (0, splitter.Get (3).EditableLength);
 			Assert.AreEqual (0, splitter.Get (3).DelimiterLength);
-			Assert.AreEqual (0, splitter.Get (3).Length);
+			Assert.AreEqual (0, splitter.Get (3).LengthIncludingDelimiter);
 		}
 	}
 }

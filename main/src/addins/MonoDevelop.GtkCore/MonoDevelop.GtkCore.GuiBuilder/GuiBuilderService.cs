@@ -567,8 +567,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					Mono.TextEditor.LineSegment line = doc.GetLine (i);
 					bool isBlank, isBracket;
 					CheckLine (doc, line, out isBlank, out isBracket);
-					if (isBlank && previousWasBlank && line.Length > 0) {
-						doc.Remove (line.Offset, line.Length);
+					if (isBlank && previousWasBlank && line.LengthIncludingDelimiter > 0) {
+						doc.Remove (line.Offset, line.LengthIncludingDelimiter);
 						i--;
 					}
 					previousWasBlank = isBlank || isBracket;
@@ -583,7 +583,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			isBlank = true;
 			isBracket = false;
-			for (int i = 0; i < line.Length; i++) {
+			for (int i = 0; i < line.LengthIncludingDelimiter; i++) {
 				char c = doc.GetCharAt (line.Offset + i);
 				if (c == '{') {
 					isBracket = true;

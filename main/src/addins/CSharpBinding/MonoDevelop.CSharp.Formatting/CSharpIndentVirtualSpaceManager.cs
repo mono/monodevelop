@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.Formatting
 			string curIndent = line.GetIndentation (data.Document);
 			int nlwsp = curIndent.Length;
 //			int o = offset > pos + nlwsp ? offset - (pos + nlwsp) : 0;
-			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.Length && data.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
+			if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
 				return ctx.ThisLineIndent;
 			}
 			return curIndent;

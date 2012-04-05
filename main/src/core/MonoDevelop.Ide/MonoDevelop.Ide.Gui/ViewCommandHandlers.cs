@@ -399,7 +399,7 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnDeleteLine ()
 		{
 			var line = doc.Editor.Document.GetLine (doc.Editor.Caret.Line);
-			doc.Editor.Remove (line.Offset, line.Length);
+			doc.Editor.Remove (line.Offset, line.LengthIncludingDelimiter);
 		}
 		
 		struct RemoveInfo

@@ -106,7 +106,7 @@ namespace Mono.TextEditor
 			var startNode = GetNodeAtOffset (offset);
 			int charsRemoved = startNode.EndOffset - offset;
 			if (offset + length < startNode.EndOffset) {
-				ChangeLength (startNode, startNode.Length - length);
+				ChangeLength (startNode, startNode.LengthIncludingDelimiter - length);
 				return;
 			}
 			var endNode = GetNodeAtOffset (offset + length);
@@ -114,7 +114,7 @@ namespace Mono.TextEditor
 				return;
 			int charsLeft = endNode.EndOffset - (offset + length);
 			if (startNode == endNode) {
-				ChangeLength (startNode, startNode.Length - length);
+				ChangeLength (startNode, startNode.LengthIncludingDelimiter - length);
 				return;
 			}
 			var iter = startNode;
@@ -125,7 +125,7 @@ namespace Mono.TextEditor
 				iter = iter.GetNextNode ();
 				RemoveLine (line);
 			} while (line != endNode);
-			ChangeLength (startNode, startNode.Length - charsRemoved + charsLeft, endNode.DelimiterLength);
+			ChangeLength (startNode, startNode.LengthIncludingDelimiter - charsRemoved + charsLeft, endNode.DelimiterLength);
 		}
 
 		//bool inInit;
@@ -197,7 +197,7 @@ namespace Mono.TextEditor
 				if (delimiter.IsInvalid)
 					break;
 
-				int newLineLength = lineOffset + line.Length - (offset + textOffset);
+				int newLineLength = lineOffset + line.LengthIncludingDelimiter - (offset + textOffset);
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
 				int curLineLength = offset + delimiterEndOffset - lineOffset;
 				int oldDelimiterLength = line.DelimiterLength;
@@ -208,7 +208,7 @@ namespace Mono.TextEditor
 			}
 
 			if (textOffset != text.Length)
-				ChangeLength (line, line.Length + text.Length - textOffset);
+				ChangeLength (line, line.LengthIncludingDelimiter + text.Length - textOffset);
 		}
 
 		internal struct Delimiter
@@ -268,7 +268,7 @@ namespace Mono.TextEditor
 							if (node.parent.left != null)
 								offset += node.parent.left.TotalLength;
 							if (node.parent != null)
-								offset += node.parent.Length;
+								offset += node.parent.LengthIncludingDelimiter;
 						}
 						node = node.parent;
 					}
@@ -295,7 +295,7 @@ namespace Mono.TextEditor
 			public void UpdateAugmentedData ()
 			{
 				int count = 1;
-				int totalLength = Length;
+				int totalLength = LengthIncludingDelimiter;
 			
 				if (left != null) {
 					count += left.Count;
@@ -394,7 +394,7 @@ namespace Mono.TextEditor
 
 		void ChangeLength (TreeNode line, int newLength, int delimiterLength)
 		{
-			line.Length = newLength;
+			line.LengthIncludingDelimiter = newLength;
 			line.DelimiterLength = delimiterLength;
 			OnLineChanged (new LineEventArgs (line));
 			line.UpdateAugmentedData ();
@@ -438,7 +438,7 @@ namespace Mono.TextEditor
 				} else {
 					if (node.left != null)
 						i -= node.left.TotalLength;
-					i -= node.Length;
+					i -= node.LengthIncludingDelimiter;
 					if (i < 0)
 						return node;
 					node = node.right;

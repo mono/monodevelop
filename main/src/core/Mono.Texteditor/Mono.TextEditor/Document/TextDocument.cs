@@ -452,7 +452,7 @@ namespace Mono.TextEditor
 			if (lineNr < DocumentLocation.MinLine)
 				return DocumentLocation.Empty;
 			LineSegment line = GetLine (lineNr);
-			return new DocumentLocation (lineNr, System.Math.Min (line.Length, offset - line.Offset) + 1);
+			return new DocumentLocation (lineNr, System.Math.Min (line.LengthIncludingDelimiter, offset - line.Offset) + 1);
 		}
 
 		public string GetLineIndent (int lineNumber)
@@ -702,7 +702,7 @@ namespace Mono.TextEditor
 				
 			int lineOffset = line.Offset;
 			int lastLineEnd = line.Offset - line.DelimiterLength;
-			int lineEndOffset = lineOffset + line.Length;
+			int lineEndOffset = lineOffset + line.LengthIncludingDelimiter;
 			foreach (UndoOperation op in undoStack) {
 				if (op.ChangedLine (lineOffset, lastLineEnd, lineEndOffset)) {
 					if (savePoint != null) {
@@ -1563,7 +1563,7 @@ namespace Mono.TextEditor
 			int i = 0;
 			var result = new int[LineCount];
 			foreach (LineSegment line in Lines) {
-				string lineText = buffer.GetTextAt (line.Offset, includeEol ? line.Length : line.EditableLength);
+				string lineText = buffer.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.EditableLength);
 				int curCode;
 				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
 					codeDictionary[lineText] = curCode = ++codeCounter;

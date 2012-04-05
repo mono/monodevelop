@@ -90,7 +90,7 @@ namespace Mono.TextEditor
 			if (data.Document.LineCount <= 1 || !data.CanEdit (data.Caret.Line))
 				return;
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			data.Remove (line.Offset, line.Length);
+			data.Remove (line.Offset, line.LengthIncludingDelimiter);
 			data.Caret.Column = DocumentLocation.MinColumn;
 		}
 		
@@ -105,7 +105,7 @@ namespace Mono.TextEditor
 				int physColumn = data.Caret.Column - 1;
 				if (physColumn == line.EditableLength) {
 					// Nothing after the cursor, delete the end-of-line sequence
-					data.Remove (line.Offset + physColumn, line.Length - physColumn);
+					data.Remove (line.Offset + physColumn, line.LengthIncludingDelimiter - physColumn);
 				} else {
 					// Delete from cursor position to the end of the line
 					data.Remove (line.Offset + physColumn, line.EditableLength - physColumn);

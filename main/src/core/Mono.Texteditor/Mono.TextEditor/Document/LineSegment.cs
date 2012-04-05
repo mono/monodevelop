@@ -50,7 +50,7 @@ namespace Mono.TextEditor
 
 		public int EditableLength {
 			get {
-				return Length - DelimiterLength;
+				return LengthIncludingDelimiter - DelimiterLength;
 			}
 		}
 
@@ -79,20 +79,20 @@ namespace Mono.TextEditor
 
 		public abstract int Offset { get; set; }
 
-		public int Length {
+		public int LengthIncludingDelimiter {
 			get;
 			set;
 		}
 
 		public TextSegment Segment {
 			get {
-				return new TextSegment (Offset, Length);
+				return new TextSegment (Offset, LengthIncludingDelimiter);
 			}
 		}
 
 		public int EndOffset {
 			get {
-				return Offset + Length;
+				return Offset + LengthIncludingDelimiter;
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace Mono.TextEditor
 
 		protected LineSegment (int length, int delimiterLength)
 		{
-			Length          = length;
+			LengthIncludingDelimiter          = length;
 			DelimiterLength = delimiterLength;
 		}
 
@@ -175,7 +175,7 @@ namespace Mono.TextEditor
 		{
 			var result = new StringBuilder ();
 			int offset = Offset;
-			int max = System.Math.Min (offset + Length, doc.TextLength);
+			int max = System.Math.Min (offset + LengthIncludingDelimiter, doc.TextLength);
 			for (int i = offset; i < max; i++) {
 				char ch = doc.GetCharAt (i);
 				if (ch != ' ' && ch != '\t')
@@ -229,7 +229,7 @@ namespace Mono.TextEditor
 		public bool Contains (int offset)
 		{
 			int o = Offset;
-			return o <= offset && offset < o + Length;
+			return o <= offset && offset < o + LengthIncludingDelimiter;
 		}
 
 		public bool Contains (TextSegment segment)
@@ -239,18 +239,18 @@ namespace Mono.TextEditor
 
 		public static implicit operator TextSegment (LineSegment line)
 		{
-			return new TextSegment (line.Offset, line.Length);
+			return new TextSegment (line.Offset, line.LengthIncludingDelimiter);
 		}
 
 		public override string ToString ()
 		{
-			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", Offset, Length, DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
+			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", Offset, LengthIncludingDelimiter, DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
 		}
 
 		#region IDocumentLine implementation
 		int ICSharpCode.NRefactory.Editor.IDocumentLine.TotalLength {
 			get {
-				return Length;
+				return LengthIncludingDelimiter;
 			}
 		}
 
@@ -277,11 +277,11 @@ namespace Mono.TextEditor
 				throw new NotImplementedException ();
 			}
 		}
-		
+
 		bool ICSharpCode.NRefactory.Editor.IDocumentLine.IsDeleted {
 			get {
 				return false;
-			} 
+			}
 		}
 		#endregion
 

@@ -274,7 +274,7 @@ namespace Mono.TextEditor.Highlighting
 								break;
 						}
 						line.StartSpan = spanStack.Clone();
-						parser.ParseSpans(line.Offset, line.Length);
+						parser.ParseSpans(line.Offset, line.LengthIncludingDelimiter);
 						while (spanStack.Count > 0 && !EndsWithContinuation(spanStack.Peek(), line))
 							parser.PopSpan();
 					}

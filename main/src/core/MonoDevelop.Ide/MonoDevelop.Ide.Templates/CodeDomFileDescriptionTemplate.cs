@@ -107,8 +107,8 @@ namespace MonoDevelop.Ide.Templates
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				for (int i = 1; i <= doc.LineCount; i++) {
 					Mono.TextEditor.LineSegment line = doc.GetLine (i);
-					if (IsBlankLine (doc, line) && line.Length > 0) {
-						doc.Remove (line.Offset, line.Length);
+					if (IsBlankLine (doc, line) && line.LengthIncludingDelimiter > 0) {
+						doc.Remove (line.Offset, line.LengthIncludingDelimiter);
 						i--;
 						continue;
 					}

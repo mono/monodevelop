@@ -327,7 +327,7 @@ namespace Mono.TextEditor
 					selection = data.MainSelection;
 				} else {
 					selection = new Selection (new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn),
-					                           new DocumentLocation (data.Caret.Line, data.Document.GetLine (data.Caret.Line).Length));
+					                           new DocumentLocation (data.Caret.Line, data.Document.GetLine (data.Caret.Line).LengthIncludingDelimiter));
 				}
 				CopyData (data, selection);
 				

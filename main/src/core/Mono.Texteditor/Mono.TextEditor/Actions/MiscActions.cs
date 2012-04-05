@@ -47,7 +47,7 @@ namespace Mono.TextEditor
 		
 		public static int RemoveTabInLine (TextEditorData data, LineSegment line)
 		{
-			if (line.Length == 0)
+			if (line.LengthIncludingDelimiter == 0)
 				return 0;
 			char ch = data.Document.GetCharAt (line.Offset); 
 			if (ch == '\t') {

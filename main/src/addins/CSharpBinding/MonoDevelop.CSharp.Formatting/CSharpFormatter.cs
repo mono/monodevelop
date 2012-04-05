@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Formatting
 			string curIndent = lineSegment.GetIndentation (data.Document);
 
 			int nlwsp = curIndent.Length;
-			if (!tracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.Length && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
+			if (!tracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
 				string newIndent = tracker.Engine.ThisLineIndent;
 				if (newIndent != curIndent) 
