@@ -6,7 +6,7 @@
        url         = "http://md-xed.sourceforge.net"
        description = "XML Editor"
        category    = "IDE extensions"
-       version     = "2.9.4">
+       version     = "2.9.5">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.XmlEditor.dll" />
@@ -21,10 +21,10 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="2.9.4"/>
-		<Addin id="Ide" version="2.9.4"/>
-		<Addin id="DesignerSupport" version="2.9.4"/>
-		<Addin id="SourceEditor2" version="2.9.4"/>
+		<Addin id="Core" version="2.9.5"/>
+		<Addin id="Ide" version="2.9.5"/>
+		<Addin id="DesignerSupport" version="2.9.5"/>
+		<Addin id="SourceEditor2" version="2.9.5"/>
 	</Dependencies>
 	
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileAssociations">

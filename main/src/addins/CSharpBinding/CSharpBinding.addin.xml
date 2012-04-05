@@ -6,13 +6,13 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
        category    = "Language bindings"
-       version     = "2.9.4">
+       version     = "2.9.5">
 	
 	<Dependencies>
-		<Addin id="Core" version="2.9.4"/>
-		<Addin id="Ide" version="2.9.4"/>
-		<Addin id="SourceEditor2" version="2.9.4"/>
-		<Addin id="Refactoring" version="2.9.4"/>
+		<Addin id="Core" version="2.9.5"/>
+		<Addin id="Ide" version="2.9.5"/>
+		<Addin id="SourceEditor2" version="2.9.5"/>
+		<Addin id="Refactoring" version="2.9.5"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -259,7 +259,7 @@
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="Autotools" version="2.9.4"/>
+			<Addin id="Autotools" version="2.9.5"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
@@ -271,7 +271,7 @@
 			<Import assembly="MonoDevelop.CSharpBinding.AspNet.dll"/>
 		</Runtime>
 		<Dependencies>
-			<Addin id="AspNet" version="2.9.4"/>
+			<Addin id="AspNet" version="2.9.5"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
 			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />

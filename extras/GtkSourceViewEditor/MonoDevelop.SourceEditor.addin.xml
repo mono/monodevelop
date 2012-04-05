@@ -6,15 +6,15 @@
        url         = ""
        description = "Provides a text editor for the MonoDevelop IDE based on GtkSourceView 2"
        category    = "MonoDevelop Core"
-       version     = "2.9.4">
+       version     = "2.9.5">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.SourceEditor.dll"/>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="2.9.4"/>
-		<Addin id="Ide" version="2.9.4"/>
+	    <Addin id="Core" version="2.9.5"/>
+		<Addin id="Ide" version="2.9.5"/>
 	</Dependencies>
 
 	<!-- Extension points -->
