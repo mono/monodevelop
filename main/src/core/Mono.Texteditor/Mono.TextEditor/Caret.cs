@@ -175,9 +175,9 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		TextEditorData TextEditorData {
+		public TextEditorData TextEditorData {
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
