@@ -201,7 +201,7 @@ namespace Mono.TextEditor
 				if (Document.LineCount > 0) {
 					LineSegment line = Document.GetLine (DocumentLocation.MinLine);
 					if (line.DelimiterLength > 0) 
-						eol = Document.GetTextAt (line.EditableLength, line.DelimiterLength);
+						eol = Document.GetTextAt (line.Length, line.DelimiterLength);
 				}
 				return !String.IsNullOrEmpty (eol) ? eol : Options.DefaultEolMarker;
 			}
@@ -242,7 +242,7 @@ namespace Mono.TextEditor
 			StringBuilder result = new StringBuilder ();
 			while (curOffset < offset + length && curOffset < Document.TextLength) {
 				LineSegment line = Document.GetLineByOffset (curOffset);
-				int toOffset = System.Math.Min (line.Offset + line.EditableLength, offset + length);
+				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				Stack<ChunkStyle> styleStack = new Stack<ChunkStyle> ();
 				foreach (var chunk in mode.GetChunks (ColorStyle, line, curOffset, toOffset - curOffset)) {
 
@@ -400,12 +400,12 @@ namespace Mono.TextEditor
 						var lineSegment = GetLine (lineNumber);
 						int insertOffset = lineSegment.GetLogicalColumn (this, visualInsertLocation.Column) - 1;
 						string textToInsert;
-						if (lineSegment.EditableLength < insertOffset) {
-							int visualLastColumn = lineSegment.GetVisualColumn (this, lineSegment.EditableLength + 1);
+						if (lineSegment.Length < insertOffset) {
+							int visualLastColumn = lineSegment.GetVisualColumn (this, lineSegment.Length + 1);
 							int charsToInsert = visualInsertLocation.Column - visualLastColumn;
 							int spaceCount = charsToInsert % Options.TabSize;
 							textToInsert = new string ('\t', (charsToInsert - spaceCount) / Options.TabSize) + new string (' ', spaceCount) + text;
-							insertOffset = lineSegment.EditableLength;
+							insertOffset = lineSegment.Length;
 						} else {
 							textToInsert = text;
 						}
@@ -458,8 +458,8 @@ namespace Mono.TextEditor
 			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
 				return;
 			var line = Document.GetLine (Caret.Line);
-			if (line != null && line.EditableLength > 0 && GetIndentationString (Caret.Location) == Document.GetTextAt (line.Offset, line.EditableLength))
-				Remove (line.Offset, line.EditableLength);
+			if (line != null && line.Length > 0 && GetIndentationString (Caret.Location) == Document.GetTextAt (line.Offset, line.Length))
+				Remove (line.Offset, line.Length);
 		}
 
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
@@ -823,7 +823,7 @@ namespace Mono.TextEditor
 				for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 					LineSegment curLine = Document.GetLine (lineNr);
 					int col1 = curLine.GetLogicalColumn (this, startCol) - 1;
-					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, endCol) - 1, curLine.EditableLength);
+					int col2 = System.Math.Min (curLine.GetLogicalColumn (this, endCol) - 1, curLine.Length);
 					if (col1 >= col2)
 						continue;
 					Remove (curLine.Offset + col1, col2 - col1);
@@ -1071,12 +1071,12 @@ namespace Mono.TextEditor
 			LineSegment line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return 0;
-			if (Caret.Column > line.EditableLength + 1) {
+			if (Caret.Column > line.Length + 1) {
 				string virtualSpace;
-				if (HasIndentationTracker && line.EditableLength == 0) {
+				if (HasIndentationTracker && line.Length == 0) {
 					virtualSpace = GetIndentationString (Caret.Location);
 				} else {
-					virtualSpace = new string (' ', Caret.Column - 1 - line.EditableLength);
+					virtualSpace = new string (' ', Caret.Column - 1 - line.Length);
 				}
 				var oldPreserve = Caret.PreserveSelection;
 				Caret.PreserveSelection = true;

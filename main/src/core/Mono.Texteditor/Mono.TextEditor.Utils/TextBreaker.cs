@@ -79,7 +79,7 @@ namespace Mono.TextEditor.Utils
 				int offset = lineSegment.Offset;
 				bool wasIdentifierPart = false;
 				int lastWordEnd = 0;
-				for (int i = 0; i < lineSegment.EditableLength; i++) {
+				for (int i = 0; i < lineSegment.Length; i++) {
 					char ch = document.GetCharAt (offset + i);
 					bool isIdentifierPart = char.IsLetterOrDigit (ch) || ch == '_';
 					if (!isIdentifierPart) {
@@ -92,11 +92,11 @@ namespace Mono.TextEditor.Utils
 					wasIdentifierPart = isIdentifierPart;
 				}
 				
-				if (lastWordEnd != lineSegment.EditableLength) {
-					result.Add (new TextSegment (offset + lastWordEnd, lineSegment.EditableLength - lastWordEnd));
+				if (lastWordEnd != lineSegment.Length) {
+					result.Add (new TextSegment (offset + lastWordEnd, lineSegment.Length - lastWordEnd));
 				}
 				if (includeDelimiter && lineSegment.DelimiterLength > 0)
-					result.Add (new TextSegment (lineSegment.Offset + lineSegment.EditableLength, lineSegment.DelimiterLength));
+					result.Add (new TextSegment (lineSegment.Offset + lineSegment.Length, lineSegment.DelimiterLength));
 			}
 			
 			return result;

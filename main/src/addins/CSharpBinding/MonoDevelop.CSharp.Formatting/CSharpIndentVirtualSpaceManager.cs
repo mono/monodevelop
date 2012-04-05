@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			// Get context to the end of the line w/o changing the main engine's state
 			var ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
-			for (int max = offset; max < line.Offset + line.EditableLength; max++) {
+			for (int max = offset; max < line.Offset + line.Length; max++) {
 				ctx.Push (data.Document.GetCharAt (max));
 			}
 //			int pos = line.Offset;
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var line = data.GetLine (lineNumber);
 			if (line == null)
 				return "";
-			int offset = line.Offset + Math.Min (line.EditableLength, column - 1);
+			int offset = line.Offset + Math.Min (line.Length, column - 1);
  
 			stateTracker.UpdateEngine (offset);
 			return stateTracker.Engine.NewLineIndent;

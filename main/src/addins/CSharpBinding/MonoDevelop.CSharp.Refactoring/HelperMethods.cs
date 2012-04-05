@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			// remove EOL, when line is empty
 			var line = editor.GetLineByOffset (change.Offset);
-			if (line != null && line.EditableLength == change.RemovedChars)
+			if (line != null && line.Length == change.RemovedChars)
 				change.RemovedChars += line.DelimiterLength;
 			return change;
 		}

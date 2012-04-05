@@ -218,7 +218,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					LineSegment lineSegment = data.GetLine (member.Region.BeginLine);
 					if (lineSegment == null)
 						continue;
-					domLocation = new TextLocation (member.Region.BeginLine, lineSegment.EditableLength + 1);
+					domLocation = new TextLocation (member.Region.BeginLine, lineSegment.Length + 1);
 				}
 				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
 			}
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				result.RemoveAt (result.Count - 1); 
 				NewLineInsertion insertLine;
 				var lineBefore = data.GetLine (type.BodyRegion.EndLine - 1);
-				if (lineBefore != null && lineBefore.EditableLength == lineBefore.GetIndentation (data.Document).Length) {
+				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data.Document).Length) {
 					insertLine = NewLineInsertion.None;
 				} else {
 					insertLine = NewLineInsertion.Eol;
@@ -261,7 +261,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			if (doc.GetLineIndent (line).Length + 1 < point.Location.Column)
 				point.LineBefore = NewLineInsertion.BlankLine;
-			if (point.Location.Column < line.EditableLength + 1)
+			if (point.Location.Column < line.Length + 1)
 				point.LineAfter = NewLineInsertion.Eol;
 		}
 		
@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			if (doc.GetLineIndent (line).Length + 1 == point.Location.Column) {
 				int lineNr = point.Location.Line;
-				while (lineNr > 1 && doc.GetLineIndent (lineNr - 1).Length == doc.GetLine (lineNr - 1).EditableLength) {
+				while (lineNr > 1 && doc.GetLineIndent (lineNr - 1).Length == doc.GetLine (lineNr - 1).Length) {
 					lineNr--;
 				}
 				line = doc.GetLine (lineNr);
@@ -281,7 +281,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			if (doc.GetLineIndent (line).Length + 1 < point.Location.Column)
 				point.LineBefore = NewLineInsertion.Eol;
-			if (point.Location.Column < line.EditableLength + 1)
+			if (point.Location.Column < line.Length + 1)
 				point.LineAfter = isEndPoint ? NewLineInsertion.Eol : NewLineInsertion.BlankLine;
 		}
 		
@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			int bodyEndOffset = doc.LocationToOffset (line, column) + 1;
 			LineSegment curLine = doc.GetLine (line);
 			if (curLine != null) {
-				if (bodyEndOffset < curLine.Offset + curLine.EditableLength) {
+				if (bodyEndOffset < curLine.Offset + curLine.Length) {
 					// case1: positition is somewhere inside the start line
 					return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
 				}
@@ -301,7 +301,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (nextLine == null) // check for 1 line case.
 				return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
 			
-			for (int i = nextLine.Offset; i < nextLine.Offset + nextLine.EditableLength; i++) {
+			for (int i = nextLine.Offset; i < nextLine.Offset + nextLine.Length; i++) {
 				char ch = doc.GetCharAt (i);
 				if (!char.IsWhiteSpace (ch)) {
 					// case2: next line contains non ws chars.

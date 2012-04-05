@@ -755,7 +755,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			int result = 0;
 			LineSegment line;
-			while ((line = doc.Editor.GetLine (startLine + result)) != null && doc.Editor.GetLineIndent (line).Length == line.EditableLength) {
+			while ((line = doc.Editor.GetLine (startLine + result)) != null && doc.Editor.GetLineIndent (line).Length == line.Length) {
 				result++;
 			}
 		

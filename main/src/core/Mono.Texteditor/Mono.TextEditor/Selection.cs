@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 					return chunk.Offset - col + loc.Column;
 				col += chunk.Length;
 			}
-			return line.Offset + line.EditableLength;
+			return line.Offset + line.Length;
 		}
 		
 		public int GetAnchorOffset (TextEditorData data)

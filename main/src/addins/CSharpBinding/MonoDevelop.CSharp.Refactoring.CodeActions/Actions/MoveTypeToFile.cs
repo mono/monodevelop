@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		static bool IsBlankLine (TextDocument doc, int i)
 		{
 			var line = doc.GetLine (i);
-			return line.EditableLength == line.GetIndentation (doc).Length;
+			return line.Length == line.GetIndentation (doc).Length;
 		}
 
 		static string StripDoubleBlankLines (string content)

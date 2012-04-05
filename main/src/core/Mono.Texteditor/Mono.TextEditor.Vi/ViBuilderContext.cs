@@ -91,10 +91,10 @@ namespace Mono.TextEditor.Vi
 			
 			if (!char.IsControl (ch) && data.CanEdit (caret.Line)) {
 				LineSegment line = doc.GetLine (caret.Line);
-				if (caret.IsInInsertMode || caret.Column >= line.EditableLength + 1) {
+				if (caret.IsInInsertMode || caret.Column >= line.Length + 1) {
 					string text;
 					if (data.HasIndentationTracker) {
-						text = caret.Column > line.EditableLength + 1 ? data.GetIndentationString (caret.Location) + ch.ToString () : ch.ToString ();
+						text = caret.Column > line.Length + 1 ? data.GetIndentationString (caret.Location) + ch.ToString () : ch.ToString ();
 					} else {
 						text = ch.ToString ();
 					}

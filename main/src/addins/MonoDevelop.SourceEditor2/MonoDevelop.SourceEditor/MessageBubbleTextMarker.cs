@@ -341,7 +341,7 @@ namespace MonoDevelop.SourceEditor
 //			int eh = GetErrorCountBounds ().Item2;
 			double x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 			
-			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset + lineSegment.EditableLength) : false;
+			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset + lineSegment.Length) : false;
 			
 			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;

@@ -138,7 +138,7 @@ namespace Mono.TextEditor
 		{
 			LineSegment line = data.Document.GetLine (lineNumber);
 			
-			DocumentLocation result = new DocumentLocation (lineNumber, line.EditableLength + 1);
+			DocumentLocation result = new DocumentLocation (lineNumber, line.Length + 1);
 			
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in data.Document.GetStartFoldings (line)) {

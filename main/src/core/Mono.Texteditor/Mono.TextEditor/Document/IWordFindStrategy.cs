@@ -104,7 +104,7 @@ namespace Mono.TextEditor
 				return offset;
 			var line = doc.GetLineByOffset (offset);
 			char first = doc.GetCharAt (offset);
-			while (offset >= line.Offset && offset < line.Offset + line.EditableLength) {
+			while (offset >= line.Offset && offset < line.Offset + line.Length) {
 				char ch = doc.GetCharAt (offset);
 				if (char.IsWhiteSpace (first) && !char.IsWhiteSpace (ch)
 				    || IsNoIdentifierPart (first) && !IsNoIdentifierPart (ch)
@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 
 				offset = forwardDirection ? offset + 1 : offset - 1;
 			}
-			return System.Math.Min (line.Offset + line.EditableLength,
+			return System.Math.Min (line.Offset + line.Length,
 			                        System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 		

@@ -854,7 +854,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			void ScanPreProcessorElseIf (ref int i)
 			{
 				LineSegment line = doc.GetLineByOffset (i);
-				int length = line.Offset + line.EditableLength - i;
+				int length = line.Offset + line.Length - i;
 				string parameter = doc.GetTextAt (i + 5, length - 5);
 					
 				AstNode expr;

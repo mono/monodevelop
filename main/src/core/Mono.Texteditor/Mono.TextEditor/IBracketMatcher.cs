@@ -152,7 +152,7 @@ namespace Mono.TextEditor
 			List<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
 			List<string> stringQuotes       = GetList (document, "StringQuote");
 			
-			for (int i = 0 ; i < line.EditableLength; i++) {
+			for (int i = 0 ; i < line.Length; i++) {
 				int offset = line.Offset + i;
 				// check line comments
 				if (!isInBlockComment && curStringQuote < 0) {

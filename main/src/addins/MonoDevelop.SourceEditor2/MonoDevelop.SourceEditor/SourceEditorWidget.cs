@@ -839,7 +839,7 @@ namespace MonoDevelop.SourceEditor
 			get {
 				var firstLine = Document.GetLine (1);
 				if (firstLine != null && firstLine.DelimiterLength > 0) {
-					string firstDelimiter = Document.GetTextAt (firstLine.EditableLength, firstLine.DelimiterLength);
+					string firstDelimiter = Document.GetTextAt (firstLine.Length, firstLine.DelimiterLength);
 					return firstDelimiter != TextEditor.Options.DefaultEolMarker;
 				}
 				return false;
@@ -871,7 +871,7 @@ namespace MonoDevelop.SourceEditor
 			string correctEol = TextEditor.Options.DefaultEolMarker;
 			var newText = new System.Text.StringBuilder ();
 			foreach (var line in Document.Lines) {
-				newText.Append (TextEditor.GetTextAt (line.Offset, line.EditableLength));
+				newText.Append (TextEditor.GetTextAt (line.Offset, line.Length));
 				if (line.DelimiterLength > 0)
 					newText.Append (correctEol);
 			}
@@ -1484,16 +1484,16 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					startLine = endLine = Document.GetLine (textEditor.Caret.Line);
 				}
-				string startLineText = Document.GetTextAt (startLine.Offset, startLine.EditableLength);
-				string endLineText = Document.GetTextAt (endLine.Offset, endLine.EditableLength);
+				string startLineText = Document.GetTextAt (startLine.Offset, startLine.Length);
+				string endLineText = Document.GetTextAt (endLine.Offset, endLine.Length);
 				if (startLineText.StartsWith (blockStart) && endLineText.EndsWith (blockEnd)) {
-					textEditor.Remove (endLine.Offset + endLine.EditableLength - blockEnd.Length, blockEnd.Length);
+					textEditor.Remove (endLine.Offset + endLine.Length - blockEnd.Length, blockEnd.Length);
 					textEditor.Remove (startLine.Offset, blockStart.Length);
 					if (TextEditor.IsSomethingSelected) {
 						TextEditor.SelectionAnchor -= blockEnd.Length;
 					}
 				} else {
-					textEditor.Insert (endLine.Offset + endLine.EditableLength, blockEnd);
+					textEditor.Insert (endLine.Offset + endLine.Length, blockEnd);
 					textEditor.Insert (startLine.Offset, blockStart);
 					if (TextEditor.IsSomethingSelected) {
 						TextEditor.SelectionAnchor += blockEnd.Length;
@@ -1517,7 +1517,7 @@ namespace MonoDevelop.SourceEditor
 			string commentTag = lineComments [0];
 
 			foreach (LineSegment line in this.textEditor.SelectedLines) {
-				if (line.GetIndentation (TextEditor.Document).Length == line.EditableLength)
+				if (line.GetIndentation (TextEditor.Document).Length == line.Length)
 					continue;
 				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
@@ -1577,10 +1577,10 @@ namespace MonoDevelop.SourceEditor
 				if (TextEditor.IsSomethingSelected) {
 					if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
 						if (anchorColumn != 0) 
-							TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor + commentTag.Length));
+							TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.Length, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor + commentTag.Length));
 					} else {
 						if (anchorColumn != 0) {
-							TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + commentTag.Length));
+							TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.Length, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn + commentTag.Length));
 						} else {
 	//						TextEditor.SelectionAnchor = anchorLine.Offset;
 						}
@@ -1626,9 +1626,9 @@ namespace MonoDevelop.SourceEditor
 				
 				if (TextEditor.IsSomethingSelected) {
 					if (TextEditor.SelectionAnchor < TextEditor.Caret.Offset) {
-						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor - first));
+						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.Length, System.Math.Max (anchorLine.Offset, TextEditor.SelectionAnchor - first));
 					} else {
-						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.EditableLength, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
+						TextEditor.SelectionAnchor = System.Math.Min (anchorLine.Offset + anchorLine.Length, System.Math.Max (anchorLine.Offset, anchorLine.Offset + anchorColumn - last));
 					}
 				}
 				

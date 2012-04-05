@@ -419,7 +419,7 @@ namespace Mono.TextEditor.Vi
 						return;
 						
 					case 'x':
-						if (Data.Caret.Column == Data.Document.GetLine (Data.Caret.Line).EditableLength + 1)
+						if (Data.Caret.Column == Data.Document.GetLine (Data.Caret.Line).Length + 1)
 							return;
 						Status = string.Empty;
 						if (!Data.IsSomethingSelected)

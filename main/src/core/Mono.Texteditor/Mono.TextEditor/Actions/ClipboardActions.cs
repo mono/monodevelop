@@ -142,7 +142,7 @@ namespace Mono.TextEditor
 
 				foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
 					bool appendSpace = false;
-					foreach (Chunk chunk in mode.GetChunks (style, line, line.Offset, line.EditableLength)) {
+					foreach (Chunk chunk in mode.GetChunks (style, line, line.Offset, line.Length)) {
 						int start = System.Math.Max (selection.Offset, chunk.Offset);
 						int end = System.Math.Min (chunk.EndOffset, selection.EndOffset);
 						ChunkStyle chunkStyle = style.GetChunkStyle (chunk);
@@ -296,7 +296,7 @@ namespace Mono.TextEditor
 						for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 							LineSegment curLine = data.Document.GetLine (lineNr);
 							int col1 = curLine.GetLogicalColumn (data, startCol) - 1;
-							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol) - 1, curLine.EditableLength);
+							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol) - 1, curLine.Length);
 							if (col1 < col2) {
 								copiedDocument.Insert (copiedDocument.TextLength, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
 								monoDocument.Insert (monoDocument.TextLength, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
@@ -393,9 +393,9 @@ namespace Mono.TextEditor
 									curLine = data.Document.GetLine (lineNr + i);
 									if (lines [i].Length > 0) {
 										lineCol = curLine.GetLogicalColumn (data, visCol);
-										if (curLine.EditableLength + 1 < lineCol) {
-											result += lineCol - curLine.EditableLength;
-											data.Insert (curLine.Offset + curLine.EditableLength, new string (' ', lineCol - curLine.EditableLength));
+										if (curLine.Length + 1 < lineCol) {
+											result += lineCol - curLine.Length;
+											data.Insert (curLine.Offset + curLine.Length, new string (' ', lineCol - curLine.Length));
 										}
 										data.Insert (curLine.Offset + lineCol, lines [i]);
 										result += lines [i].Length;
@@ -441,12 +441,12 @@ namespace Mono.TextEditor
 							for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
 								LineSegment lineSegment = data.GetLine (lineNumber);
 								int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
-								if (lineSegment.EditableLength < insertOffset) {
-									int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.EditableLength + 1);
+								if (lineSegment.Length < insertOffset) {
+									int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.Length + 1);
 									int charsToInsert = visualInsertLocation.Column - visualLastColumn;
 									int spaceCount = charsToInsert % data.Options.TabSize;
 									string textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
-									insertOffset = lineSegment.EditableLength;
+									insertOffset = lineSegment.Length;
 									int insertedChars = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
 									data.PasteText (lineSegment.Offset + insertOffset, textToInsert, insertedChars);
 								} else {

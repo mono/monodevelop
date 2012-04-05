@@ -153,13 +153,13 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (101, document.LineCount);
 			for (int i = 0; i < 100; i++) {
 				LineSegment line = document.GetLine (i + 1 );
-				Assert.AreEqual (99 - i, line.EditableLength);
+				Assert.AreEqual (99 - i, line.Length);
 				Assert.AreEqual (Environment.NewLine.Length, line.DelimiterLength);
 			}
 			
 			for (int i = 0; i < 100; i++) {
 				LineSegment line = document.GetLine (1);
-				document.Remove (line.EditableLength, line.DelimiterLength);
+				document.Remove (line.Length, line.DelimiterLength);
 			}
 			Assert.AreEqual (1, document.LineCount);
 		}

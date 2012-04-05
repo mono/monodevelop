@@ -111,9 +111,9 @@ namespace MonoDevelop.DocFood
 			LineSegment line;
 			do {
 				line = data.Document.GetLine (lineNr--);
-			} while (lineNr > 0 && data.Document.GetLineIndent (line).Length == line.EditableLength);
+			} while (lineNr > 0 && data.Document.GetLineIndent (line).Length == line.Length);
 			int start = data.Document.GetLineIndent (line).Length;
-			if (start + 3 < line.EditableLength && data.Document.GetTextAt (start, 3) == "///")
+			if (start + 3 < line.Length && data.Document.GetTextAt (start, 3) == "///")
 				return false;
 			return true;
 		}

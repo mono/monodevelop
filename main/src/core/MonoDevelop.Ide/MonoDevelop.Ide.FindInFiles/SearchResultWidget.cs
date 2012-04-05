@@ -470,8 +470,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			var data = new Mono.TextEditor.TextEditorData (doc);
 			data.ColorStyle = highlightStyle;
 			string markup = doc.SyntaxMode != null ?
-				data.GetMarkup (line.Offset + indent, line.EditableLength - indent, true, !isSelected, false) :
-				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.EditableLength));
+				data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
+				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.Length));
 			
 			if (!isSelected) {
 				int col = searchResult.Offset - line.Offset - indent;
@@ -643,7 +643,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					continue;
 				LineSegment line = doc.GetLine (loc.Line);
 				
-				sb.AppendFormat ("{0} ({1}, {2}):{3}", result.FileName, loc.Line, loc.Column, doc.GetTextAt (line.Offset, line.EditableLength));
+				sb.AppendFormat ("{0} ({1}, {2}):{3}", result.FileName, loc.Line, loc.Column, doc.GetTextAt (line.Offset, line.Length));
 				sb.AppendLine ();
 			}
 			Clipboard clipboard = Clipboard.Get (Atom.Intern ("CLIPBOARD", false));

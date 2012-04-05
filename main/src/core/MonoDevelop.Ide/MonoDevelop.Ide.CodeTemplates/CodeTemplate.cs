@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			for (int i = 1; i < data.LineCount; i++) {
 				var line = data.GetLine (i + 1);
-				if (line.EditableLength > 0)
+				if (line.Length > 0)
 					data.Insert (line.Offset, lineIndent);
 			}
 		}

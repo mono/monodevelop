@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 				var line = Document.Editor.GetLineByOffset (i);
 				if (line != null) {
-					for (int j = 0; j < line.Offset + line.EditableLength; j++) {
+					for (int j = 0; j < line.Offset + line.Length; j++) {
 						var ch = Document.Editor.GetCharAt (j);
 						if (ch != ' ' && ch != '\t') {
 							foundNonWsFollowUp = true;

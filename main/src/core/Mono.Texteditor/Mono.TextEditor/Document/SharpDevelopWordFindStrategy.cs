@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 				return offset;
 			
 			int result    = offset;
-			int endOffset = line.Offset + line.EditableLength;
+			int endOffset = line.Offset + line.Length;
 			if (result == endOffset) {
 				line = doc.GetLine (lineNumber + 1);
 				if (line != null)
@@ -89,7 +89,7 @@ namespace Mono.TextEditor
 			if (result == line.Offset) {
 				line = doc.GetLine (lineNumber - 1);
 				if (line != null)
-					result = line.Offset + line.EditableLength;
+					result = line.Offset + line.Length;
 				return result;
 			}
 			

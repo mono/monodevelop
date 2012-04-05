@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 				char ch = (char)unicodeKey;
 				if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
 					LineSegment line = Document.GetLine (Caret.Line);
-					if (Caret.IsInInsertMode || Caret.Column >= line.EditableLength + 1) {
+					if (Caret.IsInInsertMode || Caret.Column >= line.Length + 1) {
 						string text = ch.ToString ();
 						if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
 							int length = 0;
@@ -122,12 +122,12 @@ namespace Mono.TextEditor
 								LineSegment lineSegment = textEditorData.GetLine (lineNumber);
 								int insertOffset = lineSegment.GetLogicalColumn (textEditorData, visualInsertLocation.Column) - 1;
 								string textToInsert;
-								if (lineSegment.EditableLength < insertOffset) {
-									int visualLastColumn = lineSegment.GetVisualColumn (textEditorData, lineSegment.EditableLength + 1);
+								if (lineSegment.Length < insertOffset) {
+									int visualLastColumn = lineSegment.GetVisualColumn (textEditorData, lineSegment.Length + 1);
 									int charsToInsert = visualInsertLocation.Column - visualLastColumn;
 									int spaceCount = charsToInsert % editor.Options.TabSize;
 									textToInsert = new string ('\t', (charsToInsert - spaceCount) / editor.Options.TabSize) + new string (' ', spaceCount) + text;
-									insertOffset = lineSegment.EditableLength;
+									insertOffset = lineSegment.Length;
 								} else {
 									textToInsert = text;
 								}

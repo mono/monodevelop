@@ -260,7 +260,7 @@ namespace MonoDevelop.VersionControl.Views
 			var point = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset), true);
 			Cairo.Point point2;
 			var line = editor.GetLineByOffset (startOffset);
-			if (line.Offset + line.EditableLength < endOffset) {
+			if (line.Offset + line.Length < endOffset) {
 				point2 = new Cairo.Point ((int)(point.X + editor.TextViewMargin.CharWidth * (endOffset - startOffset)), point.Y);
 			} else {
 				point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (endOffset), true);

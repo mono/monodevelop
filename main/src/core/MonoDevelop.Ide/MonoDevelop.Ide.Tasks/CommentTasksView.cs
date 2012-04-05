@@ -479,7 +479,7 @@ namespace MonoDevelop.Ide.Tasks
 							doc.Editor.SetCaretTo (task.Line, task.Column);
 							line = line.Substring (0, index);
 							var ls = doc.Editor.Document.GetLine (task.Line);
-							doc.Editor.Replace (ls.Offset, ls.EditableLength, line);
+							doc.Editor.Replace (ls.Offset, ls.Length, line);
 							comments.Remove (task);
 						}
 					}

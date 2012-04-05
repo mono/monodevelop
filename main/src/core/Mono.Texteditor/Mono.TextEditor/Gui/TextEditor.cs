@@ -2344,7 +2344,7 @@ namespace Mono.TextEditor
 				int lineNr = Editor.Document.OffsetToLineNumber (Result.Offset);
 				ISyntaxMode mode = Editor.Document.SyntaxMode != null && Editor.Options.EnableSyntaxHighlighting ? Editor.Document.SyntaxMode : new SyntaxMode (Editor.Document);
 				int logicalRulerColumn = line.GetLogicalColumn (Editor.GetTextEditorData (), Editor.Options.RulerColumn);
-				var lineLayout = Editor.textViewMargin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, line.EditableLength, -1, -1);
+				var lineLayout = Editor.textViewMargin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, line.Length, -1, -1);
 				if (lineLayout == null)
 					return Gdk.Rectangle.Zero;
 				
@@ -2665,7 +2665,7 @@ namespace Mono.TextEditor
 		{
 			LineSegment longest = longestLine;
 			foreach (LineSegment line in Document.Lines) {
-				if (longest == null || line.EditableLength > longest.EditableLength)
+				if (longest == null || line.Length > longest.Length)
 					longest = line;
 			}
 			if (longest != longestLine) {

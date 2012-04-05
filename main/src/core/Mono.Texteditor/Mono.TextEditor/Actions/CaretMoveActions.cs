@@ -50,11 +50,11 @@ namespace Mono.TextEditor
 			
 			if (data.Caret.Column > DocumentLocation.MinColumn) {
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
-				if (data.Caret.Column > line.EditableLength + 1) {
+				if (data.Caret.Column > line.Length + 1) {
 					if (data.Caret.AllowCaretBehindLineEnd) {
 						data.Caret.Column--;
 					} else {
-						data.Caret.Column = line.EditableLength + 1;
+						data.Caret.Column = line.Length + 1;
 					}
 				} else {
 					int offset = data.Caret.Offset - 1;
@@ -65,7 +65,7 @@ namespace Mono.TextEditor
 				}
 			} else if (data.Caret.Line > DocumentLocation.MinLine) {
 				LineSegment prevLine = data.Document.GetLine (data.Caret.Line - 1);
-				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, prevLine.EditableLength + 1);
+				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, prevLine.Length + 1);
 			}
 		}
 		
@@ -101,14 +101,14 @@ namespace Mono.TextEditor
 				return;
 			}
 
-			if (data.Caret.Column >= line.EditableLength + 1) {
+			if (data.Caret.Column >= line.Length + 1) {
 				int nextColumn;
 				if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual && data.Caret.Column == DocumentLocation.MinColumn) {
 					nextColumn = data.GetVirtualIndentationColumn (data.Caret.Location);
 				} else if (data.Caret.AllowCaretBehindLineEnd) {
 					nextColumn = data.Caret.Column + 1;
 				} else {
-					nextColumn = line.EditableLength + 1;
+					nextColumn = line.Length + 1;
 				}
 
 				if (data.Caret.Column < nextColumn) {
@@ -209,7 +209,7 @@ namespace Mono.TextEditor
 		static int GetHomeMark (TextDocument document, LineSegment line)
 		{
 			int result;
-			for (result = 0; result < line.EditableLength; result++)
+			for (result = 0; result < line.Length; result++)
 				if (!Char.IsWhiteSpace (document.GetCharAt (line.Offset + result)))
 					return result + 1;
 			return result + 1;
@@ -273,7 +273,7 @@ namespace Mono.TextEditor
 			if (!data.Caret.PreserveSelection)
 				data.ClearSelection ();
 			var line = data.Document.GetLine (data.Caret.Line);
-			var newLocation = new DocumentLocation (data.Caret.Line, line.EditableLength + 1);
+			var newLocation = new DocumentLocation (data.Caret.Line, line.Length + 1);
 
 			// handle folding
 			IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);

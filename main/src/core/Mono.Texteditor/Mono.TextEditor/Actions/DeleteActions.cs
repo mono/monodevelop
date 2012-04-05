@@ -103,12 +103,12 @@ namespace Mono.TextEditor
 			using (var undo = data.OpenUndoGroup ()) {
 				data.EnsureCaretIsNotVirtual ();
 				int physColumn = data.Caret.Column - 1;
-				if (physColumn == line.EditableLength) {
+				if (physColumn == line.Length) {
 					// Nothing after the cursor, delete the end-of-line sequence
 					data.Remove (line.Offset + physColumn, line.LengthIncludingDelimiter - physColumn);
 				} else {
 					// Delete from cursor position to the end of the line
-					data.Remove (line.Offset + physColumn, line.EditableLength - physColumn);
+					data.Remove (line.Offset + physColumn, line.Length - physColumn);
 				}
 			}
 			data.Document.CommitLineUpdate (data.Caret.Line);
@@ -154,8 +154,8 @@ namespace Mono.TextEditor
 			// if it's there or not (otherwise user has to press multiple backspaces in some cases)
 			data.FixVirtualIndentation ();
 			LineSegment line = data.Document.GetLine (data.Caret.Line);
-			if (data.Caret.Column > line.EditableLength + 1) {
-				data.Caret.Column = line.EditableLength + 1;
+			if (data.Caret.Column > line.Length + 1) {
+				data.Caret.Column = line.Length + 1;
 			} else if (data.Caret.Offset == line.Offset) {
 				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
 				data.Remove (lineAbove.EndOffset - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
@@ -192,7 +192,7 @@ namespace Mono.TextEditor
 					col--;
 					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
 						LineSegment lineSegment = data.Document.GetLine (lineNumber);
-						if (col < lineSegment.EditableLength)
+						if (col < lineSegment.Length)
 							data.Remove (lineSegment.Offset + col, 1);
 					}
 					data.Caret.PreserveSelection = preserve;
@@ -209,7 +209,7 @@ namespace Mono.TextEditor
 				data.EnsureCaretIsNotVirtual ();
 
 				LineSegment line = data.Document.GetLine (data.Caret.Line);
-				if (data.Caret.Column == line.EditableLength + 1) {
+				if (data.Caret.Column == line.Length + 1) {
 					if (data.Caret.Line < data.Document.LineCount) { 
 						data.Remove (line.EndOffset - line.DelimiterLength, line.DelimiterLength);
 						if (line.EndOffset == data.Document.TextLength)

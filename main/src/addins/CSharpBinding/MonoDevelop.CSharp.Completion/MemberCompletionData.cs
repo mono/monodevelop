@@ -160,7 +160,7 @@ namespace MonoDevelop.CSharp.Completion
 				var line = Editor.GetLine (Editor.Caret.Line);
 				var method = (IMethod)Entity;
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
-				var end = line.Offset + line.EditableLength;
+				var end = line.Offset + line.Length;
 				string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
 				if (Policy.BeforeMethodCallParentheses)
 					text += " ";

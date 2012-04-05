@@ -299,13 +299,13 @@ namespace Mono.TextEditor
 		public string GetLineText (int line)
 		{
 			var lineSegment = GetLine (line);
-			return lineSegment != null ? GetTextAt (lineSegment.Offset, lineSegment.EditableLength) : null;
+			return lineSegment != null ? GetTextAt (lineSegment.Offset, lineSegment.Length) : null;
 		}
 		
 		public string GetLineText (int line, bool includeDelimiter)
 		{
 			var lineSegment = GetLine (line);
-			return includeDelimiter ? GetTextAt (lineSegment) : GetTextAt (lineSegment.Offset, lineSegment.EditableLength);
+			return includeDelimiter ? GetTextAt (lineSegment) : GetTextAt (lineSegment.Offset, lineSegment.Length);
 		}
 		
 		public char GetCharAt (int offset)
@@ -443,7 +443,7 @@ namespace Mono.TextEditor
 			if (location.Line > this.splitter.Count || location.Line < DocumentLocation.MinLine)
 				return -1;
 			LineSegment line = GetLine (location.Line);
-			return System.Math.Min (TextLength, line.Offset + System.Math.Max (0, System.Math.Min (line.EditableLength, location.Column - 1)));
+			return System.Math.Min (TextLength, line.Offset + System.Math.Max (0, System.Math.Min (line.Length, location.Column - 1)));
 		}
 		
 		public DocumentLocation OffsetToLocation (int offset)
@@ -1119,7 +1119,7 @@ namespace Mono.TextEditor
 		{
 			if (line == null)
 				return new FoldSegment[0];
-			return foldSegmentTree.GetSegmentsOverlapping (line.Offset, line.EditableLength).Cast<FoldSegment> ();
+			return foldSegmentTree.GetSegmentsOverlapping (line.Offset, line.Length).Cast<FoldSegment> ();
 		}
 
 		public IEnumerable<FoldSegment> GetStartFoldings (int lineNumber)
@@ -1427,7 +1427,7 @@ namespace Mono.TextEditor
 		
 		public bool IsEmptyLine (LineSegment line)
 		{
-			for (int i = 0; i < line.EditableLength; i++) {
+			for (int i = 0; i < line.Length; i++) {
 				char ch = GetCharAt (line.Offset + i);
 				if (!Char.IsWhiteSpace (ch)) 
 					return false;
@@ -1509,7 +1509,7 @@ namespace Mono.TextEditor
 			if (line == null)
 				return;
 			int whitespaces = 0;
-			for (int i = line.EditableLength - 1; i >= 0; i--) {
+			for (int i = line.Length - 1; i >= 0; i--) {
 				if (Char.IsWhiteSpace (data.Document.GetCharAt (line.Offset + i))) {
 					whitespaces++;
 				} else {
@@ -1518,7 +1518,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (whitespaces > 0) {
-				var removeOffset = line.Offset + line.EditableLength - whitespaces;
+				var removeOffset = line.Offset + line.Length - whitespaces;
 				data.Remove (removeOffset, whitespaces);
 			}
 		}
@@ -1563,7 +1563,7 @@ namespace Mono.TextEditor
 			int i = 0;
 			var result = new int[LineCount];
 			foreach (LineSegment line in Lines) {
-				string lineText = buffer.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.EditableLength);
+				string lineText = buffer.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.Length);
 				int curCode;
 				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
 					codeDictionary[lineText] = curCode = ++codeCounter;

@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Vi
 			while (line <= data.Document.LineCount) {
 				line++;
 				LineSegment nextLine = data.Document.GetLine (line);
-				if (currentLine.EditableLength != 0 && nextLine.EditableLength == 0) {
+				if (currentLine.Length != 0 && nextLine.Length == 0) {
 					data.Caret.Offset = nextLine.Offset;
 					return;
 				}
@@ -69,7 +69,7 @@ namespace Mono.TextEditor.Vi
 			while (line > DocumentLocation.MinLine) {
 				line--;
 				LineSegment previousLine = data.Document.GetLine (line);
-				if (currentLine.EditableLength != 0 && previousLine.EditableLength == 0) {
+				if (currentLine.Length != 0 && previousLine.Length == 0) {
 					data.Caret.Offset = previousLine.Offset;
 					return;
 				}
@@ -82,7 +82,7 @@ namespace Mono.TextEditor.Vi
 		public static void NewLineBelow (TextEditorData data)
 		{
 			LineSegment currentLine = data.Document.GetLine (data.Caret.Line);
-			data.Caret.Offset = currentLine.Offset + currentLine.EditableLength;
+			data.Caret.Offset = currentLine.Offset + currentLine.Length;
 			MiscActions.InsertNewLine (data);
 		}
 		
@@ -96,7 +96,7 @@ namespace Mono.TextEditor.Vi
 			}
 			
 			LineSegment currentLine = data.Document.GetLine (data.Caret.Line - 1);
-			data.Caret.Offset = currentLine.Offset + currentLine.EditableLength;
+			data.Caret.Offset = currentLine.Offset + currentLine.Length;
 			MiscActions.InsertNewLine (data);
 		}
 		
@@ -129,7 +129,7 @@ namespace Mono.TextEditor.Vi
 				sb.Append (" ");
 				sb.Append (data.Document.GetTextAt (seg).Trim ());
 			}
-			length = (seg.Offset - startOffset) + seg.EditableLength;
+			length = (seg.Offset - startOffset) + seg.Length;
 			// TODO: handle conversion issues ? 
 			data.Replace (startOffset, length, sb.ToString ());
 		}
@@ -158,7 +158,7 @@ namespace Mono.TextEditor.Vi
 				var caretOffset = data.Caret.Offset;
 				int length = data.Replace (caretOffset, 1, new string (ch, 1));
 				LineSegment seg = data.Document.GetLine (data.Caret.Line);
-				if (data.Caret.Column < seg.EditableLength)
+				if (data.Caret.Column < seg.Length)
 					data.Caret.Offset = caretOffset + length;
 			}
 		}

@@ -321,7 +321,7 @@ kkk lll", mode.Text);
 		public string GetLine (int line)
 		{
 			var seg = Document.GetLine (line);
-			return Document.GetTextAt (seg.Offset, seg.EditableLength);
+			return Document.GetTextAt (seg.Offset, seg.Length);
 		}
 		
 		public char GetChar (int offset)

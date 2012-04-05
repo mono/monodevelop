@@ -263,10 +263,10 @@ namespace MonoDevelop.CSharp.Formatting
 			int offset = data.Caret.Offset;
 			int lastNonWsOffset = offset;
 
-			int max = curLine.Offset + curLine.EditableLength;
+			int max = curLine.Offset + curLine.Length;
 
 			// if the line ends with ';' the line end is not the correct place for a new semicolon.
-			if (curLine.EditableLength > 0 && data.Document.GetCharAt (max - 1) == ';')
+			if (curLine.Length > 0 && data.Document.GetCharAt (max - 1) == ';')
 				return offset;
 
 			bool isInString = false , isInChar= false , isVerbatimString= false;
@@ -425,7 +425,7 @@ namespace MonoDevelop.CSharp.Formatting
 				//check previous line was a doc comment
 				//check there's a following line?
 				if (trimmedPreviousLine.StartsWith ("///")) {
-					if (textEditorData.GetTextAt (line.Offset, line.EditableLength).TrimStart ().StartsWith ("///"))
+					if (textEditorData.GetTextAt (line.Offset, line.Length).TrimStart ().StartsWith ("///"))
 						return false;
 					//check that the newline command actually inserted a newline
 					textEditorData.EnsureCaretIsNotVirtual ();
@@ -438,7 +438,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 					//multi-line comments
 				} else if (stateTracker.Engine.IsInsideMultiLineComment) {
-					if (textEditorData.GetTextAt (line.Offset, line.EditableLength).TrimStart ().StartsWith ("*"))
+					if (textEditorData.GetTextAt (line.Offset, line.Length).TrimStart ().StartsWith ("*"))
 						return false;
 					textEditorData.EnsureCaretIsNotVirtual ();
 					string commentPrefix = string.Empty;
@@ -457,7 +457,7 @@ namespace MonoDevelop.CSharp.Formatting
 					return true;
 				} else if (stateTracker.Engine.IsInsideStringLiteral) {
 					textEditorData.EnsureCaretIsNotVirtual ();
-					textEditorData.Insert (prevLine.Offset + prevLine.EditableLength, "\" +");
+					textEditorData.Insert (prevLine.Offset + prevLine.Length, "\" +");
 
 					int indentSize = line.GetIndentation (textEditorData.Document).Length;
 					var insertedText = prevLine.GetIndentation (textEditorData.Document) + (trimmedPreviousLine.StartsWith ("\"") ? "" : "\t") + "\"";
@@ -476,7 +476,7 @@ namespace MonoDevelop.CSharp.Formatting
 			LineSegment line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
-			for (int max = cursor; max < line.Offset + line.EditableLength; max++) {
+			for (int max = cursor; max < line.Offset + line.Length; max++) {
 				ctx.Push (textEditorData.Document.GetCharAt (max));
 			}
 			

@@ -166,7 +166,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (start == null || end == null) {
 					return base.OnMotionNotifyEvent (evnt);
 				}
-				var showSegment = new TextSegment (start.Offset, end.Offset + end.EditableLength - start.Offset);
+				var showSegment = new TextSegment (start.Offset, end.Offset + end.Length - start.Offset);
 				
 				if (previewWindow != null) {
 					previewWindow.SetSegment (showSegment, false);
