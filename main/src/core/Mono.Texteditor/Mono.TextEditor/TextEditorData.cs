@@ -128,10 +128,6 @@ namespace Mono.TextEditor
 
 			document.TextSet += HandleDocTextSet;
 			document.Folded += HandleTextEditorDataDocumentFolded;
-			document.FoldTreeUpdated += HandleTextEditorDataDocumentFoldTreeUpdated;
-
-			document.Splitter.LineInserted += HandleDocumentsplitterhandleLineInserted;
-			document.Splitter.LineRemoved += HandleDocumentsplitterhandleLineRemoved;
 
 			SearchEngine = new BasicSearchEngine ();
 
@@ -177,16 +173,6 @@ namespace Mono.TextEditor
 			caret.UpdateCaretPosition ();
 		}
 
-
-		void HandleDocumentsplitterhandleLineRemoved (object sender, LineEventArgs e)
-		{
-			HeightTree.RemoveLine (OffsetToLineNumber (e.Line.Offset));
-		}
-
-		void HandleDocumentsplitterhandleLineInserted (object sender, LineEventArgs e)
-		{
-			HeightTree.InsertLine (OffsetToLineNumber (e.Line.Offset));
-		}
 
 		/// <value>
 		/// The eol mark used in this document - it's taken from the first line in the document,
@@ -433,10 +419,6 @@ namespace Mono.TextEditor
 			
 			document.TextSet -= HandleDocTextSet;
 			document.Folded -= HandleTextEditorDataDocumentFolded;
-			document.FoldTreeUpdated -= HandleTextEditorDataDocumentFoldTreeUpdated;
-			
-			document.Splitter.LineInserted -= HandleDocumentsplitterhandleLineInserted;
-			document.Splitter.LineRemoved -= HandleDocumentsplitterhandleLineRemoved;
 		}
 
 		public void Dispose ()
@@ -445,7 +427,7 @@ namespace Mono.TextEditor
 				return;
 			IsDisposed = true;
 			options = options.Kill ();
-
+			HeightTree.Dispose ();
 			DetachDocument ();
 		}
 
@@ -1357,7 +1339,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal HeightTree HeightTree;
+		internal readonly HeightTree HeightTree;
 		
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
 		{
@@ -1382,10 +1364,6 @@ namespace Mono.TextEditor
 			return HeightTree.VisualToLogicalLine (visualLineNumber);
 		}
 		
-		void HandleTextEditorDataDocumentFoldTreeUpdated (object sender, EventArgs e)
-		{
-			HeightTree.Rebuild ();
-		}
 
 		void HandleTextEditorDataDocumentFolded (object sender, FoldSegmentEventArgs e)
 		{

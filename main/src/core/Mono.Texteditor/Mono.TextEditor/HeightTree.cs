@@ -28,6 +28,8 @@ using System.Linq;
 using Mono.TextEditor.Utils;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using Gtk;
 
 namespace Mono.TextEditor
 {
@@ -35,13 +37,12 @@ namespace Mono.TextEditor
 	/// The height tree stores the heights of lines and provides a performant y <--> lineNumber conversion.
 	/// It takes care of message bubble heights and the height of folded sections.
 	/// </summary>
-	public class HeightTree
+	public class HeightTree : IDisposable
 	{
 		// TODO: Add support for line word wrap to the text editor - with the height tree this is possible.
-		
 		internal RedBlackTree<HeightNode> tree = new RedBlackTree<HeightNode> ();
-		TextEditorData editor;
-		
+		readonly TextEditorData editor;
+
 		public double TotalHeight {
 			get {
 				return tree.Root.totalHeight;
@@ -57,9 +58,36 @@ namespace Mono.TextEditor
 		public HeightTree (TextEditorData editor)
 		{
 			this.editor = editor;
+			this.editor.Document.Splitter.LineRemoved += HandleLineRemoved;
+			this.editor.Document.Splitter.LineInserted += HandleLineInserted;
+			this.editor.Document.FoldTreeUpdated += HandleFoldTreeUpdated;
 		}
 
-		public void RemoveLine (int line)
+		void HandleLineInserted (object sender, LineEventArgs e)
+		{
+			InsertLine (editor.OffsetToLineNumber (e.Line.Offset));
+		}
+
+		void HandleLineRemoved (object sender, LineEventArgs e)
+		{
+			RemoveLine (editor.OffsetToLineNumber (e.Line.Offset));
+		}
+
+		public void Dispose ()
+		{
+			this.editor.Document.Splitter.LineRemoved -= HandleLineRemoved;
+			this.editor.Document.Splitter.LineInserted -= HandleLineInserted;
+			this.editor.Document.FoldTreeUpdated -= HandleFoldTreeUpdated;
+		}
+
+		void HandleFoldTreeUpdated (object sender, EventArgs e)
+		{
+			Application.Invoke (delegate {
+				Rebuild ();
+			});
+		}
+
+		void RemoveLine (int line)
 		{
 			try {
 				var node = GetNodeByLine (line);
@@ -96,7 +124,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public void InsertLine (int line)
+		void InsertLine (int line)
 		{
 			try {
 				var node = GetNodeByLine (line);
@@ -223,6 +251,7 @@ namespace Mono.TextEditor
 		
 		public void Unfold (FoldMarker marker, int lineNumber, int count)
 		{
+
 			if (marker == null || !markers.Contains (marker))
 				return;
 			markers.Remove (marker);
@@ -338,6 +367,8 @@ namespace Mono.TextEditor
 				return tree.Root.totalCount + visualLineNumber - tree.Root.totalVisibleCount;
 			int line = GetValidVisualLine (visualLineNumber);
 			var node = GetNodeByVisibleLine (line);
+			if (node == null)
+				return tree.Root.totalCount + visualLineNumber - tree.Root.totalVisibleCount;
 			int delta = visualLineNumber - node.GetVisibleLineNumber ();
 			return node.GetLineNumber () + delta;
 		}
