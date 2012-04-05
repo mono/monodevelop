@@ -168,8 +168,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			public override CellEditable StartEditing (Gdk.Event evnt, Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, CellRendererState flags)
 			{
-				if (evnt.Type == Gdk.EventType.ButtonPress)
-					OnClicked (EventArgs.Empty);
+				try {
+					if (evnt.Type == Gdk.EventType.ButtonPress)
+						OnClicked (EventArgs.Empty);
+				} catch (Exception ex) {
+					GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+				}
 				return base.StartEditing (evnt, widget, path, background_area, cell_area, flags);
 			}
 			
@@ -205,28 +209,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			keyRenderer.Model = keyStore;
 			keyRenderer.Mode = CellRendererMode.Editable;
 			keyRenderer.TextColumn = 0;
-			keyRenderer.EditingStarted += delegate {
-				RefreshKeyStore ();
-			};
-			keyRenderer.Edited += delegate(object o, EditedArgs args) {
-				TreeIter iter;
-				if (!treeStore.GetIterFromString (out iter, args.Path)) 
-					return;
-
-				var obj = (PObject) treeStore.GetValue (iter, 1);
-				var dict = obj.Parent as PDictionary;
-				if (dict != null) {
-					var keys = Scheme.Keys.Cast<PListScheme.SchemaItem> ();
-					if (treeStore.IterParent (out iter, iter)) {
-						var subkey = (PListScheme.SchemaItem) treeStore.GetValue (iter, 2) ?? PListScheme.Key.Empty;
-						keys = subkey.Values;
-					}
-					
-					var key = keys.FirstOrDefault (k => k.Identifier == args.NewText || k.Description == args.NewText);
-					var newKey = key == null ? args.NewText : key.Identifier;
-					dict.ChangeKey (obj, newKey, key == null ? null : key.Create ());
-				}
-			};
+			keyRenderer.EditingStarted += KeyRendererEditingStarted;
+			keyRenderer.Edited += KeyRendererEditingFinished;
 			var col = new TreeViewColumn ();
 			col.Resizable = true;
 			col.Title = GettextCatalog.GetString ("Property");
@@ -315,38 +299,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 			propRenderer.Model = valueStore;
 			propRenderer.Mode = CellRendererMode.Editable;
 			propRenderer.TextColumn = 0;
-			propRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
-				valueStore.Clear ();
-				TreeIter iter;
-				if (!treeStore.GetIterFromString (out iter, args.Path)) 
-					return;
-				
-				var obj = (PObject) treeStore.GetValue (iter, 1);
-				var values = PListScheme.AvailableValues (obj, CurrentTree);
-				if (values != null) {
-					var descr = new List<string> (values.Select (v => ShowDescriptions ? v.Description : v.Identifier));
-					descr.Sort ();
-					foreach (var val in descr) {
-						valueStore.AppendValues (val);
-					}
-				}
-			};
-
-			propRenderer.Edited += delegate(object o, EditedArgs args) {
-				TreeIter iter;
-				string newText = args.NewText;
-				if (!treeStore.GetIterFromString (out iter, args.Path)) 
-					return;
-
-				var obj = (PObject)treeStore.GetValue (iter, 1);
-				var values = PListScheme.AvailableValues (obj, CurrentTree);
-				if (values != null) {
-					var value = values.FirstOrDefault (v => v.Description == newText || v.Identifier == newText);
-					if (value != null)
-						newText = value.Identifier;
-				}
-				obj.SetValue (newText);
-			};
+			propRenderer.EditingStarted += PropRendererEditingStarted;
+			propRenderer.Edited += PropRendererEditingFinished;
 
 			treeview.AppendColumn (GettextCatalog.GetString ("Value"), propRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
@@ -395,7 +349,85 @@ namespace MonoDevelop.MacDev.PlistEditor
 			treeview.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview.Model = treeStore;
 		}
+
+		void KeyRendererEditingStarted (object o, EditingStartedArgs args)
+		{
+			try {
+				RefreshKeyStore ();
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+			}
+		}
+
+		void KeyRendererEditingFinished (object o, EditedArgs args)
+		{
+			try {
+				TreeIter iter;
+				if (!treeStore.GetIterFromString (out iter, args.Path)) 
+					return;
+
+				var obj = (PObject) treeStore.GetValue (iter, 1);
+				var dict = obj.Parent as PDictionary;
+				if (dict != null) {
+					var keys = Scheme.Keys.Cast<PListScheme.SchemaItem> ();
+					if (treeStore.IterParent (out iter, iter)) {
+						var subkey = (PListScheme.SchemaItem) treeStore.GetValue (iter, 2) ?? PListScheme.Key.Empty;
+						keys = subkey.Values;
+					}
+					
+					var key = keys.FirstOrDefault (k => k.Identifier == args.NewText || k.Description == args.NewText);
+					var newKey = key == null ? args.NewText : key.Identifier;
+					dict.ChangeKey (obj, newKey, key == null ? null : key.Create ());
+				}
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+			}
+		}
+
+		void PropRendererEditingStarted (object o, EditingStartedArgs args)
+		{
+			try {
+				valueStore.Clear ();
+	
+				TreeIter iter;
+				if (!treeStore.GetIterFromString (out iter, args.Path)) 
+					return;
+				
+				var obj = (PObject) treeStore.GetValue (iter, 1);
+				var values = PListScheme.AvailableValues (obj, CurrentTree);
+				if (values != null) {
+					var descr = new List<string> (values.Select (v => ShowDescriptions ? v.Description : v.Identifier));
+					descr.Sort ();
+					foreach (var val in descr) {
+						valueStore.AppendValues (val);
+					}
+				}
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+			}
+		}
 		
+		void PropRendererEditingFinished (object o, EditedArgs args)
+		{
+			try {
+				TreeIter iter;
+				string newText = args.NewText;
+				if (!treeStore.GetIterFromString (out iter, args.Path)) 
+					return;
+	
+				var obj = (PObject)treeStore.GetValue (iter, 1);
+				var values = PListScheme.AvailableValues (obj, CurrentTree);
+				if (values != null) {
+					var value = values.FirstOrDefault (v => v.Description == newText || v.Identifier == newText);
+					if (value != null)
+						newText = value.Identifier;
+				}
+				obj.SetValue (newText);
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+			}
+		}
+
 		public void AddElement (object o, EventArgs e)
 		{
 			// By default we assume we are adding something to the root dictionary/array
