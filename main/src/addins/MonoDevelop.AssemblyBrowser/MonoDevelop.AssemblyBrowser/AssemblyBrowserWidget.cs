@@ -1244,9 +1244,7 @@ namespace MonoDevelop.AssemblyBrowser
 		[CommandHandler (SearchCommands.Find)]
 		public void ShowSearchWidget ()
 		{
-			//this.searchWidget.Visible = true;
-			this.notebook1.Page = 1;
-//			this.searchEntry.GrabFocus ();
+			searchentry1.Entry.GrabFocus ();
 		}
 	
 		#region NavigationHistory
