@@ -211,7 +211,7 @@ namespace MonoDevelop.SourceEditor
 			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
 			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
-			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Auto);
+			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Smart);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
 			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", false);
