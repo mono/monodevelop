@@ -269,15 +269,17 @@ namespace Mono.TextEditor
 				case IndentStyle.Virtual:
 					if (!data.HasIndentationTracker)
 						goto case IndentStyle.Auto;
-					data.FixVirtualIndentation ();
-					var curLine = data.GetLine (data.Caret.Line);
+					var oldLine = data.Caret.Line;
+					var curLine = data.GetLine (oldLine);
 					var indentCol = data.GetVirtualIndentationColumn (data.Caret.Location);
 					if (curLine.Length >= data.Caret.Column) {
 						NewLineSmartIndent (data);
 						data.FixVirtualIndentation ();
+						data.FixVirtualIndentation (oldLine);
 						break;
 					}
 					data.Insert (data.Caret.Offset, data.EolMarker);
+					data.FixVirtualIndentation (oldLine);
 					data.Caret.Column = indentCol;
 					break;
 				default:

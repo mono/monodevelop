@@ -334,6 +334,18 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (data.IndentationTracker.GetVirtualIndentationColumn (2, 1), data.Caret.Column);
 		}
 
+
+		[Test()]
+		public void TestReturnOnNonEmptyLine ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\t\tFoo\t\tBar\n\n";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			MiscActions.InsertNewLine (data);
+			Assert.AreEqual (3, data.Caret.Column);
+			Assert.AreEqual ("\n\n\t\tFoo\t\tBar\n\n", data.Document.Text);
+		}
+
 	}
 }
 

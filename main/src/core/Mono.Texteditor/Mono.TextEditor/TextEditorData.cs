@@ -462,6 +462,15 @@ namespace Mono.TextEditor
 				Remove (line.Offset, line.Length);
 		}
 
+		public void FixVirtualIndentation (int lineNumber)
+		{
+			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
+				return;
+			var line = Document.GetLine (lineNumber);
+			if (line != null && line.Length > 0 && GetIndentationString (lineNumber, line.Length + 1) == Document.GetTextAt (line.Offset, line.Length))
+				Remove (line.Offset, line.Length);
+		}
+
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args)
 		{
 			if (!caret.PreserveSelection)
