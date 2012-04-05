@@ -412,8 +412,9 @@ namespace MonoDevelop.SourceEditor
 			if (insertMatchingBracket) {
 				GetTextEditorData ().EnsureCaretIsNotVirtual ();
 				int offset = Caret.Offset;
+				Caret.AutoUpdatePosition = false;
 				Insert (offset, insertionChar.ToString ());
-				Caret.Offset = offset;
+				Caret.AutoUpdatePosition = true;
 				GetTextEditorData ().SetSkipChar (offset, insertionChar);
 				undoGroup.Dispose ();
 			}

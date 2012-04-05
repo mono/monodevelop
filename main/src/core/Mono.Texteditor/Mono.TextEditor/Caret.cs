@@ -174,18 +174,27 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-		
-		public TextEditorData TextEditorData {
+
+		TextEditorData TextEditorData {
 			get;
-			private set;
+			set;
 		}
-		
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="T:Mono.TextEditor.Caret"/> will listen to text chagne events to update the caret position.
+		/// </summary>
+		public bool AutoUpdatePosition {
+			get;
+			set;
+		}
+
 		public Caret (TextEditorData editor)
 		{
 			TextEditorData = editor;
 			IsVisible = true;
 			AllowCaretBehindLineEnd = false;
 			DesiredColumn = DocumentLocation.MinColumn;
+			AutoUpdatePosition = true;
 		}
 
 		/// <summary>
@@ -350,7 +359,7 @@ namespace Mono.TextEditor
 			}
 			var newOffset = offsetVersion.MoveOffsetTo (curVersion, caretOffset);
 			offsetVersion = curVersion;
-			if (newOffset == caretOffset)
+			if (newOffset == caretOffset || !AutoUpdatePosition)
 				return;
 			DocumentLocation old = Location;
 			var newLocation = TextEditorData.OffsetToLocation (newOffset);
