@@ -1007,6 +1007,10 @@ namespace MonoDevelop.Ide.Gui
 				foreach (FilePath file in item.GetItemFiles (true))
 					yield return file;
 			}
+			foreach (Document doc in documents) {
+				if (!doc.HasProject && doc.IsFile)
+					yield return doc.FileName;
+			}
 		}
 		
 		struct FileData
