@@ -1497,7 +1497,7 @@ namespace Mono.TextEditor
 						if (textEditor.preeditString != null && textEditor.preeditCursorCharIndex > 0) {
 							curIndex = byteIndex = 0;
 							int preeditUtf8ByteIndex = (int)TranslateToUTF8Index (textEditor.preeditString.ToCharArray (),
-								(uint) textEditor.preeditCursorCharIndex,
+								(uint)textEditor.preeditCursorCharIndex,
 								ref curIndex, ref byteIndex);
 							utf8ByteIndex += preeditUtf8ByteIndex;
 						}
@@ -1508,7 +1508,8 @@ namespace Mono.TextEditor
 			}
 
 			foreach (TextMarker marker in line.Markers.Where (m => m.IsVisible)) {
-				marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+				if (layout.Layout != null)
+					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
 
 			pangoPosition += layout.PangoWidth;
