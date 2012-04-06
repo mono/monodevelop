@@ -171,8 +171,6 @@ namespace Mono.TextEditor
 				return buffer.Text;
 			}
 			set {
-				if (!SuppressHighlightUpdate)
-					SyntaxModeService.WaitUpdate (this);
 				var args = new DocumentChangeEventArgs (0, Text, value);
 				OnTextReplacing (args);
 				buffer.Text = value;
