@@ -245,74 +245,113 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 
 		#region Context helper methods
-		protected bool IsInsideCommentOrString ()
+		public class MiniLexer
 		{
-			var text = GetMemberTextToCaret ();
-			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
-			
-			for (int i = 0; i < text.Item1.Length - 1; i++) {
-				char ch = text.Item1 [i];
-				char nextCh = text.Item1 [i + 1];
-				
-				switch (ch) {
-				case '/':
-					if (inString || inChar || inVerbatimString)
-						break;
-					if (nextCh == '/') {
-						i++;
-						inSingleComment = true;
-					}
-					if (nextCh == '*')
-						inMultiLineComment = true;
-					break;
-				case '*':
-					if (inString || inChar || inVerbatimString || inSingleComment)
-						break;
-					if (nextCh == '/') {
-						i++;
-						inMultiLineComment = false;
-					}
-					break;
-				case '@':
-					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
-						break;
-					if (nextCh == '"') {
-						i++;
-						inVerbatimString = true;
-					}
-					break;
-				case '\n':
-				case '\r':
-					inSingleComment = false;
-					inString = false;
-					inChar = false;
-					break;
-				case '\\':
-					if (inString || inChar)
-						i++;
-					break;
-				case '"':
-					if (inSingleComment || inMultiLineComment || inChar)
-						break;
-					if (inVerbatimString) {
-						if (nextCh == '"') {
-							i++;
+			readonly string text;
+
+			public bool IsFistNonWs = true;
+			public bool IsInSingleComment = false;
+			public bool IsInString = false;
+			public bool IsInVerbatimString = false;
+			public bool IsInChar = false;
+			public bool IsInMultiLineComment = false;
+			public bool IsInPreprocessorDirective = false;
+
+			public MiniLexer(string text)
+			{
+				this.text = text;
+			}
+
+			public void Parse(Action<char> act = null)
+			{
+				Parse(0, text.Length, act);
+			}
+
+			public void Parse(int start, int length, Action<char> act = null)
+			{
+				for (int i = start; i < length; i++) {
+					char ch = text [i];
+					char nextCh = i + 1 < text.Length ? text [i + 1] : '\0';
+					switch (ch) {
+						case '#':
+							if (IsFistNonWs)
+								IsInPreprocessorDirective = true;
 							break;
-						}
-						inVerbatimString = false;
-						break;
+						case '/':
+							if (IsInString || IsInChar || IsInVerbatimString)
+								break;
+							if (nextCh == '/') {
+								i++;
+								IsInSingleComment = true;
+							}
+							if (nextCh == '*')
+								IsInMultiLineComment = true;
+							break;
+						case '*':
+							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)
+								break;
+							if (nextCh == '/') {
+								i++;
+								IsInMultiLineComment = false;
+							}
+							break;
+						case '@':
+							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment || IsInMultiLineComment)
+								break;
+							if (nextCh == '"') {
+								i++;
+								IsInVerbatimString = true;
+							}
+							break;
+						case '\n':
+						case '\r':
+							IsInSingleComment = false;
+							IsInString = false;
+							IsInChar = false;
+							IsFistNonWs = true;
+							break;
+						case '\\':
+							if (IsInString || IsInChar)
+								i++;
+							break;
+						case '"':
+							if (IsInSingleComment || IsInMultiLineComment || IsInChar)
+								break;
+							if (IsInVerbatimString) {
+								if (nextCh == '"') {
+									i++;
+									break;
+								}
+								IsInVerbatimString = false;
+								break;
+							}
+							IsInString = !IsInString;
+							break;
+						case '\'':
+							if (IsInSingleComment || IsInMultiLineComment || IsInString || IsInVerbatimString)
+								break;
+							IsInChar = !IsInChar;
+							break;
 					}
-					inString = !inString;
-					break;
-				case '\'':
-					if (inSingleComment || inMultiLineComment || inString || inVerbatimString)
-						break;
-					inChar = !inChar;
-					break;
+					if (act != null)
+						act(ch);
+					IsFistNonWs &= ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
 				}
 			}
-			
-			return inSingleComment || inString || inVerbatimString || inChar || inMultiLineComment;
+		}
+
+		protected bool IsInsideCommentStringOrDirective()
+		{
+			var text = GetMemberTextToCaret();
+			var lexer = new MiniLexer(text.Item1);
+			lexer.Parse();
+			return
+				lexer.IsInSingleComment || 
+				lexer.IsInString ||
+				lexer.IsInVerbatimString ||
+				lexer.IsInChar ||
+				lexer.IsInMultiLineComment || 
+				lexer.IsInPreprocessorDirective;
 		}
 
 		protected bool IsInsideDocComment ()

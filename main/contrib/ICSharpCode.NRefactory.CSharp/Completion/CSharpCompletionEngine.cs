@@ -207,6 +207,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return CreateCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
 		}
 
+		bool IsInPreprocessorDirective()
+		{
+			var text = GetMemberTextToCaret().Item1;
+			var miniLexer = new MiniLexer(text);
+			miniLexer.Parse();
+			return miniLexer.IsInPreprocessorDirective;
+		}
+
 		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace)
 		{
 			ExpressionResult expr;
@@ -216,17 +224,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			// Magic key completion
 				case ':':
 				case '.':
-					if (IsInsideCommentOrString()) {
+					if (IsInsideCommentStringOrDirective()) {
 						return Enumerable.Empty<ICompletionData>();
 					}
 					return HandleMemberReferenceCompletion(GetExpressionBeforeCursor());
 				case '#':
-					if (IsInsideCommentOrString()) {
+					if (!IsInPreprocessorDirective())
 						return null;
-					}
 					return GetDirectiveCompletionData();
-			
-// XML doc completion
+			// XML doc completion
 				case '<':
 					if (IsInsideDocComment()) {
 						return GetXmlDocumentationCompletionData();
@@ -265,7 +271,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			// Parameter completion
 				case '(':
-					if (IsInsideCommentOrString()) {
+					if (IsInsideCommentStringOrDirective()) {
 						return null;
 					}
 					var invoke = GetInvocationBeforeCursor(true);
@@ -303,12 +309,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 			// Completion on space:
 				case ' ':
-					if (IsInsideCommentOrString()) {
-						return null;
-					}
-				
 					int tokenIndex = offset;
 					string token = GetPreviousToken(ref tokenIndex, false);
+					if (IsInsideCommentStringOrDirective()) {
+						if (IsInPreprocessorDirective())
+							return HandleKeywordCompletion(tokenIndex, token);
+						return null;
+					}
 				// check propose name, for context <variable name> <ctrl+space> (but only in control space context)
 				//IType isAsType = null;
 					var isAsExpression = GetExpressionAt(offset);
@@ -475,7 +482,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return keywordCompletion;
 			// Automatic completion
 				default:
-					if (IsInsideCommentOrString()) {
+					if (IsInsideCommentStringOrDirective()) {
 						return null;
 					}
 					if (IsInLinqContext(offset)) {
@@ -565,7 +572,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					}
 					
-					if (identifierStart == null && !string.IsNullOrEmpty(token) && !IsInsideCommentOrString() && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
+					if (identifierStart == null && !string.IsNullOrEmpty(token) && !IsInsideCommentStringOrDirective() && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
 						char last = token [token.Length - 1];
 						if (char.IsLetterOrDigit(last) || last == '_' || token == ">") {
 							return HandleKeywordCompletion(tokenIndex, token);
@@ -862,7 +869,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		bool IsInLinqContext(int offset)
 		{
 			string token;
-			while (null != (token = GetPreviousToken (ref offset, true)) && !IsInsideCommentOrString ()) {
+			while (null != (token = GetPreviousToken (ref offset, true)) && !IsInsideCommentStringOrDirective ()) {
 				if (token == "from") {
 					return true;
 				}
@@ -1166,7 +1173,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> HandleKeywordCompletion(int wordStart, string word)
 		{
-			if (IsInsideCommentOrString()) {
+			if (IsInsideCommentStringOrDirective()) {
+				if (IsInPreprocessorDirective()) {
+					if (word == "if" || word == "elif") {
+						if (wordStart > 0 && document.GetCharAt(wordStart - 1) == '#') {
+							return factory.CreatePreProcessorDefinesCompletionData();
+						}
+					}
+				}
 				return null;
 			}
 			switch (word) {
@@ -1485,12 +1499,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //						}
 //					}
 //					return CreateCtrlSpaceCompletionData (completionContext, null);
-				case "if":
-				case "elif":
-					if (wordStart > 0 && document.GetCharAt(wordStart - 1) == '#') { 
-						return factory.CreatePreProcessorDefinesCompletionData();
-					}
-					return null;
 				case "yield":
 					var yieldDataList = new CompletionDataWrapper(this);
 					DefaultCompletionString = "return";
