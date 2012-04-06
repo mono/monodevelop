@@ -118,8 +118,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public void GenerateObjcType (string directory, string[] frameworks)
 		{
-			if (IsModel)
-				throw new ArgumentException ("Cannot generate definition for model");
+			if (IsModel) {
+				// We don't generate header files for protocols.
+				return;
+			}
 			
 			string hFilePath = Path.Combine (directory, ObjCName + ".h");
 			string mFilePath = Path.Combine (directory, ObjCName + ".m");
