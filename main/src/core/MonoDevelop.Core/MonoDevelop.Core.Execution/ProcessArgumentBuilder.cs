@@ -164,6 +164,18 @@ namespace MonoDevelop.Core.Execution
 					escaped = false;
 				} else if (qchar == '\0' && (c == ' ' || c == '\t')) {
 					break;
+				} else if (qchar == '\0' && (c == '\'' || c == '"')) {
+					string sofar = builder.ToString ();
+					string embedded;
+					
+					if ((embedded = GetArgument (builder, buf, i, out endIndex, out ex)) == null)
+						return null;
+					
+					i = endIndex;
+					builder.Clear ();
+					builder.Append (sofar);
+					builder.Append (embedded);
+					continue;
 				} else {
 					builder.Append (c);
 				}
