@@ -2224,6 +2224,8 @@ namespace Mono.TextEditor
 					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
 						SetVisibleCaretPosition ((int)(pangoPosition / Pango.Scale.PangoScale), y);
 					pangoPosition += width;
+					if (caretOffset == foldOffset + folding.Length && !string.IsNullOrEmpty (folding.Description))
+						SetVisibleCaretPosition ((int)(pangoPosition / Pango.Scale.PangoScale), y);
 
 					if (folding.EndLine != line) {
 						line = folding.EndLine;

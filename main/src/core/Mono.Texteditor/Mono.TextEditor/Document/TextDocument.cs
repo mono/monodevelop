@@ -1043,11 +1043,13 @@ namespace Mono.TextEditor
 				
 				if (oldIndex < oldSegments.Count && offset == oldSegments [oldIndex].Offset) {
 					FoldSegment curSegment = oldSegments [oldIndex];
+					if (curSegment.IsFolded && newFoldSegment.Length != curSegment.Length)
+						curSegment.IsFolded = newFoldSegment.IsFolded = false;
 					curSegment.Length = newFoldSegment.Length;
 					curSegment.Description = newFoldSegment.Description;
 					curSegment.EndColumn = curSegment.EndOffset - curSegment.EndLine.Offset + 1;
 					curSegment.Column = offset - curSegment.StartLine.Offset + 1;
-					
+
 					if (newFoldSegment.IsFolded) {
 						foldedSegmentAdded |= !curSegment.IsFolded;
 						curSegment.isFolded = true;
