@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -210,7 +211,7 @@ namespace MonoDevelop.Refactoring
 				return (IEnumerable<MonoDevelop.CodeActions.CodeAction>)result;
 			}, cancellationToken);
 		}
-		
+
 		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<MonoDevelop.CodeActions.CodeAction>> callback)
 		{
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
@@ -235,5 +236,23 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 		}	
+
+		public static DocumentLocation GetCorrectResolveLocation (Document doc, DocumentLocation location)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			var editor = doc.Editor;
+			if (editor == null || location.Column == 1)
+				return location;
+
+			var line = editor.GetLine (location.Line);
+			if (line == null || location.Column >= line.Length)
+				return location;
+
+			int offset = editor.LocationToOffset (location);
+			if (offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1)))
+				return new DocumentLocation (location.Line, location.Column - 1);
+			return location;
+		}
 	}
 }

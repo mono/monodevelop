@@ -40,6 +40,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -54,9 +55,7 @@ namespace MonoDevelop.CSharp.Resolver
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return "";
-			var loc = data.OffsetToLocation (offset);
-			if (loc.Column > 1 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (loc)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (loc.Line, loc.Column - 1)))
-				loc = new DocumentLocation (loc.Line, loc.Column - 1);
+			var loc = RefactoringService.GetCorrectResolveLocation (data.OffsetToLocation (offset));
 			var unit       = doc.ParsedDocument.GetAst<CompilationUnit> ();
 			var parsedFile = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
 			var node       = unit.GetNodeAt<Expression> (loc.Line, loc.Column);
@@ -73,11 +72,7 @@ namespace MonoDevelop.CSharp.Resolver
 				expressionRegion = DomRegion.Empty;
 				return null;
 			}
-			var loc = doc.Editor.OffsetToLocation (offset);
-			if (loc.Column > 1 && offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1))) {
-				offset--;
-				loc = doc.Editor.OffsetToLocation (offset);
-			}
+			var loc = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.OffsetToLocation (offset));
 			ResolveResult result;
 			AstNode node;
 

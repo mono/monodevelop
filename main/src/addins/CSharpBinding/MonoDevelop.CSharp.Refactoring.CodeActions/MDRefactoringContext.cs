@@ -173,9 +173,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			this.Document = document;
-			if (loc.Column > 1 && !char.IsLetterOrDigit (document.Editor.GetCharAt (loc)) && char.IsLetterOrDigit (document.Editor.GetCharAt (loc.Line, loc.Column - 1)))
-				loc = new DocumentLocation (loc.Line, loc.Column - 1);
-			this.location = loc;
+			this.location = RefactoringService.GetCorrectResolveLocation (document, loc);
 			var policy = Document.HasProject ? Document.Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
 

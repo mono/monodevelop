@@ -139,10 +139,7 @@ namespace MonoDevelop.Refactoring
 
 		public static HashSet<string> GetPossibleNamespaces (Document doc, ResolveResult resolveResult)
 		{
-			var location = doc.Editor.Caret.Location;
-			if (location.Column > 1 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (location)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (location.Line, location.Column - 1))) {
-				location = new DocumentLocation (location.Line, location.Column - 1);
-			}
+			var location = RefactoringService.GetCorrectResolveLocation (doc.Editor.Caret.Location);
 
 			if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
 				resolveResult = GetHeuristicResult (doc, location) ?? resolveResult;
