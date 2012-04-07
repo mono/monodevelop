@@ -360,6 +360,7 @@
     <Compile Include="Refactoring\CodeActions\ExtractMethod\ExtractMethodAction.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractMethod\StaticVisitor.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableLookupVisitor.cs" />
+    <Compile Include="Refactoring\CodeActions\SpecializedCodeAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

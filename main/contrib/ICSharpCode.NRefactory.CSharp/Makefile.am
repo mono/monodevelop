@@ -240,6 +240,7 @@ FILES =  \
 	Refactoring/CodeActions/RemoveBracesAction.cs \
 	Refactoring/CodeActions/RemoveRegionAction.cs \
 	Refactoring/CodeActions/ReplaceEmptyStringAction.cs \
+	Refactoring/CodeActions/SpecializedCodeAction.cs \
 	Refactoring/CodeActions/SplitDeclarationAndAssignmentAction.cs \
 	Refactoring/CodeActions/SplitStringAction.cs \
 	Refactoring/CodeActions/UseExplicitTypeAction.cs \
