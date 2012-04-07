@@ -67,7 +67,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public ParameterInformationWindow ()
 		{
-			DestroyWithParent = true;
 			heading = new Gtk.Label ("");
 			heading.Xalign = 0;
 			heading.Wrap = false;

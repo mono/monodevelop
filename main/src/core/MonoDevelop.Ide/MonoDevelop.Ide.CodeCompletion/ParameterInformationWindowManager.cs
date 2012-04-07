@@ -207,7 +207,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (methods.Count > 0) {
 				if (window == null) {
 					window = new ParameterInformationWindow ();
-					window.Parent = IdeApp.Workbench.RootWindow;
 					window.Ext = textEditorExtension;
 					window.Widget = completionWidget;
 					window.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
