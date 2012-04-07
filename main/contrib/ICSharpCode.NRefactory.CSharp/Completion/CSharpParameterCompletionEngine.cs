@@ -173,6 +173,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					if (invoke.Node is ObjectCreateExpression) {
 						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type, invoke.Unit);
+						if (createType.Item1.Type.Kind == TypeKind.Unknown)
+							return null;
 						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Item1.Type);
 					}
 				
