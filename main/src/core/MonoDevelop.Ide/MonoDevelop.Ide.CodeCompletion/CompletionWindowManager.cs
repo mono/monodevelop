@@ -84,6 +84,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			try {
 				if (wnd == null) {
 					wnd = new CompletionListWindow ();
+					wnd.Parent = IdeApp.Workbench.RootWindow;
 					wnd.WordCompleted += HandleWndWordCompleted;
 				}
 				wnd.Extension = ext;

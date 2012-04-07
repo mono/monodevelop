@@ -71,6 +71,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public CompletionListWindow ()
 		{
+			DestroyWithParent = true;
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
 			Events = Gdk.EventMask.PropertyChangeMask;
 			WindowTransparencyDecorator.Attach (this);
