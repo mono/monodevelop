@@ -285,7 +285,7 @@ namespace Mono.TextEditor
 				}
 			}
 			if (segment != null) 
-				newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn); 
+				newLocation = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
 			if (newLocation != data.Caret.Location)
 				data.Caret.Location = newLocation;
 			

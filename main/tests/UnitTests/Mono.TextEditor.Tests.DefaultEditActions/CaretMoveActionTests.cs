@@ -198,7 +198,48 @@ $1234567890
 			CaretMoveActions.LineHome (data);
 			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
 		}
+
+		[Test()]
+		public void TestCaretLineHomeWithFolding ()
+		{
+			var data = Create (@"
+	Hello
+	+[Hello
+	Hello
+	Hello]$
+	Hello
+");
+			CaretMoveActions.LineHome (data);
+			Check (data, @"
+	Hello
+$	+[Hello
+	Hello
+	Hello]
+	Hello
+");
+		}
+
+		[Test()]
+		public void TestCaretLineEndWithFolding ()
+		{
+			var data = Create (@"
+	Hello
+$	+[Hello
+	Hello
+	Hello]
+	Hello
+");
+			CaretMoveActions.LineEnd (data);
+			Check (data, @"
+	Hello
+	+[Hello
+	Hello
+	Hello]$
+	Hello
+");
+		}
 		
+
 		[Test()]
 		public void TestCaretLineEnd ()
 		{
