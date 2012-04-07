@@ -32,7 +32,7 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class RemoveTabTests
+	public class RemoveTabTests : TextEditorTestBase
 	{
 		[TestCase(false)]
 		[TestCase(true)]
@@ -129,6 +129,20 @@ namespace Mono.TextEditor.Tests.Actions
 123]456789
 123456789
 123456789", reverse);
+		}
+
+		[Test]
+		public void TestRemoveTabWithoutSelection ()
+		{
+			var data = Create (@"
+	1
+	$2
+	3");
+			MiscActions.RemoveTab (data);
+			Check (data, @"
+	1
+$2
+	3");
 		}
 
 	}

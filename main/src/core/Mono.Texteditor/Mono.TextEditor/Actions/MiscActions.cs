@@ -117,28 +117,14 @@ namespace Mono.TextEditor
 		
 		public static void RemoveTab (TextEditorData data)
 		{
-			if (!data.CanEditSelection)
+			if (data.IsSomethingSelected) {
+				if (data.CanEditSelection)
+					RemoveIndentSelection (data);
 				return;
-//			if (data.IsMultiLineSelection) {
-				RemoveIndentSelection (data);
-/*				return;
-			} else {
-				LineSegment line = data.Document.GetLine (data.Caret.Line);
-				int visibleColumn = 0;
-						for (int i = i < data.Caret.Column; ++i)
-					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? data.Options.TabSize : 1;
-				
-				int newColumn = ((visibleColumn / data.Options.IndentationSize) - 1) * data.Options.IndentationSize;
-				
-				visibleColumn = 0;
-				for (int i = 0; i < data.Caret.Column; ++i) {
-					visibleColumn += data.Document.GetCharAt (line.Offset + i) == '\t' ? data.Options.TabSize : 1;
-					if (visibleColumn >= newColumn) {
-						data.Caret.Column = i;
-						break;
-					}
-				}
-			}*/
+			}
+			var line = data.Document.GetLine (data.Caret.Line);
+			if (line != null)
+				RemoveTabInLine (data, line);
 		}
 		
 		public static void GetSelectedLines (TextEditorData data, out int startLineNr, out int endLineNr)

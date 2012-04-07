@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Resolver
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return "";
-			var loc = RefactoringService.GetCorrectResolveLocation (data.OffsetToLocation (offset));
+			var loc = RefactoringService.GetCorrectResolveLocation (doc, data.OffsetToLocation (offset));
 			var unit       = doc.ParsedDocument.GetAst<CompilationUnit> ();
 			var parsedFile = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
 			var node       = unit.GetNodeAt<Expression> (loc.Line, loc.Column);
