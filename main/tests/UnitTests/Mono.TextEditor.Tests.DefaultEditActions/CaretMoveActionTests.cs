@@ -68,6 +68,20 @@ $1234567890
 			CaretMoveActions.Left (data);
 			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 		}
+
+		[Test()]
+		public void TestCaretLeftAfterFolding ()
+		{
+			var data = Create (
+@"
+	+[Fold]$
+");
+			CaretMoveActions.Left (data);
+			Check (data, 
+@"
+	$+[Fold]
+");
+		}
 		
 		[Test()]
 		public void TestCaretRight ()
@@ -104,6 +118,20 @@ $1234567890
 			Assert.AreEqual (new DocumentLocation (5, 11), data.Caret.Location);
 			CaretMoveActions.Right (data);
 			Assert.AreEqual (new DocumentLocation (5, 11), data.Caret.Location);
+		}
+
+		[Test()]
+		public void TestCaretRightBeforeFolding ()
+		{
+			var data = Create (
+@"
+	$+[Fold]
+");
+			CaretMoveActions.Right (data);
+			Check (data, 
+@"
+	+[Fold]$
+");
 		}
 		
 		[Test()]
