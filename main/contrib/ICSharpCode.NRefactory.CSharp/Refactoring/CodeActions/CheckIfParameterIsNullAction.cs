@@ -33,39 +33,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// Creates a 'if (param == null) throw new System.ArgumentNullException ();' contruct for a parameter.
 	/// </summary>
 	[ContextAction("Check if parameter is null", Description = "Checks function parameter is not null.")]
-	public class CheckIfParameterIsNullAction : ICodeActionProvider
+	public class CheckIfParameterIsNullAction : SpecializedCodeAction<ParameterDeclaration>
 	{
-		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
+		protected override CodeAction GetAction(RefactoringContext context, ParameterDeclaration parameter)
 		{
-			var parameter = GetParameterDeclaration(context);
-			if (parameter == null) {
-				yield break;
-			}
-			
 			var bodyStatement = parameter.Parent.GetChildByRole(Roles.Body);
-			
-			if (bodyStatement == null) {
-				yield break;
-			}
-			
+			if (bodyStatement == null)
+				return null;
 			var type = context.ResolveType(parameter.Type);
-			if (type.IsReferenceType == false || HasNullCheck(parameter)) {
-				yield break;
-			}
+			if (type.IsReferenceType == false || HasNullCheck(parameter)) 
+				return null;
 			
-			yield return new CodeAction (context.TranslateString("Add null check for parameter"), script => {
+			return new CodeAction (context.TranslateString("Add null check for parameter"), script => {
 				var statement = new IfElseStatement () {
 					Condition = new BinaryOperatorExpression (new IdentifierExpression (parameter.Name), BinaryOperatorType.Equality, new NullReferenceExpression ()),
 					TrueStatement = new ThrowStatement (new ObjectCreateExpression (context.CreateShortType("System", "ArgumentNullException"), new PrimitiveExpression (parameter.Name)))
 				};
-
 				script.AddTo(bodyStatement, statement);
 			});
-		}
-		
-		static ParameterDeclaration GetParameterDeclaration (RefactoringContext context)
-		{
-			return context.GetNode<ICSharpCode.NRefactory.CSharp.ParameterDeclaration> ();
 		}
 
 		static bool HasNullCheck (ParameterDeclaration parameter)

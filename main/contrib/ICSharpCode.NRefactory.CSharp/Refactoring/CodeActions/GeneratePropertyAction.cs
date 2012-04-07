@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var initializer = GetVariableInitializer(context);
+			var initializer = context.GetNode<VariableInitializer>();
 			if (initializer == null || !initializer.NameToken.Contains(context.Location.Line, context.Location.Column)) {
 				yield break;
 			}
@@ -92,10 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				ret.Expression.IsMatch (new MemberReferenceExpression (new ThisReferenceExpression (), initializer.Name));
 		}
 		
-		VariableInitializer GetVariableInitializer (RefactoringContext context)
-		{
-			return context.GetNode<VariableInitializer> ();
-		}
+
 	}
 }
 

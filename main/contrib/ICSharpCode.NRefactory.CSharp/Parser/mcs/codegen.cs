@@ -83,6 +83,8 @@ namespace Mono.CSharp
 
 		Label? return_label;
 
+		List<IExpressionCleanup> epilogue_expressions;
+
 		public EmitContext (IMemberContext rc, ILGenerator ig, TypeSpec return_type, SourceMethodBuilder methodSymbols)
 		{
 			this.member_context = rc;
@@ -134,6 +136,12 @@ namespace Mono.CSharp
 		public bool EmitAccurateDebugInfo {
 			get {
 				return (flags & Options.AccurateDebugInfo) != 0;
+			}
+		}
+
+		public bool HasMethodSymbolBuilder {
+			get {
+				return methodSymbols != null;
 			}
 		}
 
@@ -190,7 +198,24 @@ namespace Mono.CSharp
 			}
 		}
 
+		public List<IExpressionCleanup> StatementEpilogue {
+			get {
+				return epilogue_expressions;
+			}
+		}
+
 		#endregion
+
+		public void AddStatementEpilog (IExpressionCleanup cleanupExpression)
+		{
+			if (epilogue_expressions == null) {
+				epilogue_expressions = new List<IExpressionCleanup> ();
+			} else if (epilogue_expressions.Contains (cleanupExpression)) {
+				return;
+			}
+
+			epilogue_expressions.Add (cleanupExpression);
+		}
 
 		public void AssertEmptyStack ()
 		{
@@ -810,6 +835,17 @@ namespace Mono.CSharp
 			ig.Emit (OpCodes.Ldarg_0);
 		}
 
+		public void EmitEpilogue ()
+		{
+			if (epilogue_expressions == null)
+				return;
+
+			foreach (var e in epilogue_expressions)
+				e.EmitCleanup (this);
+
+			epilogue_expressions = null;
+		}
+
 		/// <summary>
 		///   Returns a temporary storage for a variable of type t as 
 		///   a local variable in the current body.
@@ -1060,9 +1096,11 @@ namespace Mono.CSharp
 				return false;
 
 			//
-			// It's non-virtual and will never be null
+			// It's non-virtual and will never be null and it can be determined
+			// whether it's known value or reference type by verifier
 			//
-			if (!method.IsVirtual && (instance is This || instance is New || instance is ArrayCreation || instance is DelegateCreation))
+			if (!method.IsVirtual && (instance is This || instance is New || instance is ArrayCreation || instance is DelegateCreation) &&
+				!instance.Type.IsGenericParameter)
 				return false;
 
 			return true;

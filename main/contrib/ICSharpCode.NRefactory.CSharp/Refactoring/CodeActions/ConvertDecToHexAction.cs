@@ -37,16 +37,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var pexpr = context.GetNode<PrimitiveExpression>();
-			if (pexpr == null || pexpr.LiteralValue.StartsWith("0X", System.StringComparison.OrdinalIgnoreCase)) {
+			if (pexpr == null || pexpr.LiteralValue.StartsWith("0X", System.StringComparison.OrdinalIgnoreCase))
 				yield break;
-			}
-			if (!((pexpr.Value is int) || (pexpr.Value is long) || (pexpr.Value is short) || (pexpr.Value is sbyte) ||
-				(pexpr.Value is uint) || (pexpr.Value is ulong) || (pexpr.Value is ushort) || (pexpr.Value is byte))) {
+
+			var value = pexpr.Value;
+			if (value is string)
 				yield break;
-			}
-			
+
 			yield return new CodeAction(context.TranslateString("Convert dec to hex"), script => {
-				script.Replace(pexpr, new PrimitiveExpression (pexpr.Value, string.Format("0x{0:x}", pexpr.Value)));
+				script.Replace(pexpr, new PrimitiveExpression (value, string.Format("0x{0:x}", value)));
 			});
 		}
 	}

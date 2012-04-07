@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using Mono.CompilerServices.SymbolWriter;
+using System.Diagnostics;
 
 #if STATIC
 using IKVM.Reflection;
@@ -25,17 +26,35 @@ using System.Reflection.Emit;
 
 namespace Mono.CSharp {
 
-	public abstract class CompilerGeneratedClass : Class
+	public abstract class CompilerGeneratedContainer : ClassOrStruct
 	{
-		protected CompilerGeneratedClass (TypeContainer parent, MemberName name, Modifiers mod)
-			: base (parent, name, mod | Modifiers.COMPILER_GENERATED, null)
+		protected CompilerGeneratedContainer (TypeContainer parent, MemberName name, Modifiers mod)
+			: this (parent, name, mod, MemberKind.Class)
 		{
+		}
+
+		protected CompilerGeneratedContainer (TypeContainer parent, MemberName name, Modifiers mod, MemberKind kind)
+			: base (parent, name, null, kind)
+		{
+			Debug.Assert ((mod & Modifiers.AccessibilityMask) != 0);
+
+			ModFlags = mod | Modifiers.COMPILER_GENERATED | Modifiers.SEALED;
+			spec = new TypeSpec (Kind, null, this, null, ModFlags);
 		}
 
 		protected void CheckMembersDefined ()
 		{
 			if (HasMembersDefined)
 				throw new InternalErrorException ("Helper class already defined!");
+		}
+
+		protected override bool DoDefineMembers ()
+		{
+			if (Kind == MemberKind.Class && !IsStatic && !PartialContainer.HasInstanceConstructor) {
+				DefineDefaultConstructor (false);
+			}
+
+			return base.DoDefineMembers ();
 		}
 
 		protected static MemberName MakeMemberName (MemberBase host, string name, int unique_id, TypeParameters tparams, Location loc)
@@ -59,9 +78,17 @@ namespace Mono.CSharp {
 		{
 			return "<" + host + ">" + typePrefix + "__" + name + id.ToString ("X");
 		}
+
+		protected override TypeSpec[] ResolveBaseTypes (out FullNamedExpression base_class)
+		{
+			base_type = Compiler.BuiltinTypes.Object;
+
+			base_class = null;
+			return null;
+		}
 	}
 
-	public class HoistedStoreyClass : CompilerGeneratedClass
+	public class HoistedStoreyClass : CompilerGeneratedContainer
 	{
 		public sealed class HoistedField : Field
 		{
@@ -86,8 +113,8 @@ namespace Mono.CSharp {
 
 		protected TypeParameterMutator mutator;
 
-		public HoistedStoreyClass (TypeDefinition parent, MemberName name, TypeParameters tparams, Modifiers mod)
-			: base (parent, name, mod | Modifiers.PRIVATE)
+		public HoistedStoreyClass (TypeDefinition parent, MemberName name, TypeParameters tparams, Modifiers mods, MemberKind kind)
+			: base (parent, name, mods | Modifiers.PRIVATE, kind)
 		{
 
 			if (tparams != null) {
@@ -173,7 +200,7 @@ namespace Mono.CSharp {
 
 			protected override void DoEmit (EmitContext ec)
 			{
-				hoisted_this.EmitHoistingAssignment (ec);
+				hoisted_this.EmitAssign (ec, new CompilerGeneratedThis (ec.CurrentType, loc), false, false);
 			}
 
 			protected override void CloneTo (CloneContext clonectx, Statement target)
@@ -185,7 +212,7 @@ namespace Mono.CSharp {
 		// Unique storey ID
 		public readonly int ID;
 
-		public readonly Block OriginalSourceBlock;
+		public readonly ExplicitBlock OriginalSourceBlock;
 
 		// A list of StoreyFieldPair with local field keeping parent storey instance
 		List<StoreyFieldPair> used_parent_storeys;
@@ -193,6 +220,7 @@ namespace Mono.CSharp {
 
 		// A list of hoisted parameters
 		protected List<HoistedParameter> hoisted_params;
+		List<HoistedParameter> hoisted_local_params;
 		protected List<HoistedVariable> hoisted_locals;
 
 		// Hoisted this
@@ -201,9 +229,11 @@ namespace Mono.CSharp {
 		// Local variable which holds this storey instance
 		public Expression Instance;
 
-		public AnonymousMethodStorey (Block block, TypeDefinition parent, MemberBase host, TypeParameters tparams, string name)
+		bool initialize_hoisted_this;
+
+		public AnonymousMethodStorey (ExplicitBlock block, TypeDefinition parent, MemberBase host, TypeParameters tparams, string name, MemberKind kind)
 			: base (parent, MakeMemberName (host, name, parent.Module.CounterAnonymousContainers, tparams, block.StartLocation),
-				tparams, Modifiers.SEALED)
+				tparams, 0, kind)
 		{
 			OriginalSourceBlock = block;
 			ID = parent.Module.CounterAnonymousContainers++;
@@ -212,18 +242,10 @@ namespace Mono.CSharp {
 		public void AddCapturedThisField (EmitContext ec)
 		{
 			TypeExpr type_expr = new TypeExpression (ec.CurrentType, Location);
-			Field f = AddCompilerGeneratedField ("<>f__this", type_expr);
-			f.Define ();
+			Field f = AddCompilerGeneratedField ("$this", type_expr);
 			hoisted_this = new HoistedThis (this, f);
 
-			// Inflated type instance has to be updated manually
-			if (Instance.Type is InflatedTypeSpec) {
-				var inflator = new TypeParameterInflator (this, Instance.Type, TypeParameterSpec.EmptyTypes, TypeSpec.EmptyTypes);
-				Instance.Type.MemberCache.AddMember (f.Spec.InflateMember (inflator));
-
-				inflator = new TypeParameterInflator (this, f.Parent.CurrentType, TypeParameterSpec.EmptyTypes, TypeSpec.EmptyTypes);
-				f.Parent.CurrentType.MemberCache.AddMember (f.Spec.InflateMember (inflator));
-			}
+			initialize_hoisted_this = true;
 		}
 
 		public Field AddCapturedVariable (string name, TypeSpec type)
@@ -283,38 +305,93 @@ namespace Mono.CSharp {
 			used_parent_storeys.Add (new StoreyFieldPair (storey, f));
 		}
 
-		public void CaptureLocalVariable (ResolveContext ec, LocalVariable local_info)
+		public void CaptureLocalVariable (ResolveContext ec, LocalVariable localVariable)
 		{
-			ec.CurrentBlock.Explicit.HasCapturedVariable = true;
-			if (ec.CurrentBlock.Explicit != local_info.Block.Explicit)
-				AddReferenceFromChildrenBlock (ec.CurrentBlock.Explicit);
+			if (this is StateMachine) {
+				if (ec.CurrentBlock.ParametersBlock != localVariable.Block.ParametersBlock)
+					ec.CurrentBlock.Explicit.HasCapturedVariable = true;
+			} else {
+				ec.CurrentBlock.Explicit.HasCapturedVariable = true;
+			}
 
-			if (local_info.HoistedVariant != null)
-				return;
+			var hoisted = localVariable.HoistedVariant;
+			if (hoisted != null && hoisted.Storey != this && hoisted.Storey.Kind == MemberKind.Struct) {
+				// TODO: It's too late the field is defined in HoistedLocalVariable ctor
+				hoisted.Storey.hoisted_locals.Remove (hoisted);
+				hoisted = null;
+			}
 
-			HoistedVariable var = new HoistedLocalVariable (this, local_info, GetVariableMangledName (local_info));
-			local_info.HoistedVariant = var;
+			if (hoisted == null) {
+				hoisted = new HoistedLocalVariable (this, localVariable, GetVariableMangledName (localVariable));
+				localVariable.HoistedVariant = hoisted;
 
-			if (hoisted_locals == null)
-				hoisted_locals = new List<HoistedVariable> ();
+				if (hoisted_locals == null)
+					hoisted_locals = new List<HoistedVariable> ();
 
-			hoisted_locals.Add (var);
+				hoisted_locals.Add (hoisted);
+			}
+
+			if (ec.CurrentBlock.Explicit != localVariable.Block.Explicit)
+				hoisted.Storey.AddReferenceFromChildrenBlock (ec.CurrentBlock.Explicit);
 		}
 
-		public void CaptureParameter (ResolveContext ec, ParameterReference param_ref)
+		public void CaptureParameter (ResolveContext ec, ParametersBlock.ParameterInfo parameterInfo, ParameterReference parameterReference)
 		{
-			ec.CurrentBlock.Explicit.HasCapturedVariable = true;
-			AddReferenceFromChildrenBlock (ec.CurrentBlock.Explicit);
+			if (!(this is StateMachine)) {
+				ec.CurrentBlock.Explicit.HasCapturedVariable = true;
+			}
 
-			if (param_ref.GetHoistedVariable (ec) != null)
-				return;
+			var hoisted = parameterInfo.Parameter.HoistedVariant;
 
-			if (hoisted_params == null)
-				hoisted_params = new List<HoistedParameter> (2);
+			if (parameterInfo.Block.StateMachine is AsyncTaskStorey) {
+				//
+				// Another storey in same block exists but state machine does not
+				// have parameter captured. We need to add it there as well to
+				// proxy parameter value correctly.
+				//
+				if (hoisted == null && parameterInfo.Block.StateMachine != this) {
+					var storey = parameterInfo.Block.StateMachine;
 
-			var expr = new HoistedParameter (this, param_ref);
-			param_ref.Parameter.HoistedVariant = expr;
-			hoisted_params.Add (expr);
+					hoisted = new HoistedParameter (storey, parameterReference);
+					parameterInfo.Parameter.HoistedVariant = hoisted;
+
+					if (storey.hoisted_params == null)
+						storey.hoisted_params = new List<HoistedParameter> ();
+
+					storey.hoisted_params.Add (hoisted);
+				}
+
+				//
+				// Lift captured parameter from value type storey to reference type one. Otherwise
+				// any side effects would be done on a copy
+				//
+				if (hoisted != null && hoisted.Storey != this && hoisted.Storey.Kind == MemberKind.Struct) {
+					if (hoisted_local_params == null)
+						hoisted_local_params = new List<HoistedParameter> ();
+
+					hoisted_local_params.Add (hoisted);
+					hoisted = null;
+				}
+			}
+
+			if (hoisted == null) {
+				hoisted = new HoistedParameter (this, parameterReference);
+				parameterInfo.Parameter.HoistedVariant = hoisted;
+
+				if (hoisted_params == null)
+					hoisted_params = new List<HoistedParameter> ();
+
+				hoisted_params.Add (hoisted);
+			}
+
+			//
+			// Register link between current block and parameter storey. It will
+			// be used when setting up storey definition to deploy storey reference
+			// when parameters are used from multiple blocks
+			//
+			if (ec.CurrentBlock.Explicit != parameterInfo.Block) {
+				hoisted.Storey.AddReferenceFromChildrenBlock (ec.CurrentBlock.Explicit);
+			}
 		}
 
 		TypeExpr CreateStoreyTypeExpression (EmitContext ec)
@@ -429,7 +506,11 @@ namespace Mono.CSharp {
 				Instance = fexpr;
 			} else {
 				var local = TemporaryVariableReference.Create (source.Type, block, Location);
-				local.EmitAssign (ec, source);
+				if (source.Type.IsStruct) {
+					local.LocalInfo.CreateBuilder (ec);
+				} else {
+					local.EmitAssign (ec, source);
+				}
 
 				Instance = local;
 			}
@@ -458,6 +539,7 @@ namespace Mono.CSharp {
 					FieldExpr f_set_expr = new FieldExpr (fs, Location);
 					f_set_expr.InstanceExpression = instace_expr;
 
+					// TODO: CompilerAssign expression
 					SimpleAssign a = new SimpleAssign (f_set_expr, sf.Storey.GetStoreyInstanceExpression (ec));
 					if (a.Resolve (rc) != null)
 						a.EmitStatement (ec);
@@ -465,10 +547,10 @@ namespace Mono.CSharp {
 			}
 
 			//
-			// Define hoisted `this' in top-level storey only 
+			// Initialize hoisted `this' only once, everywhere else will be
+			// referenced indirectly
 			//
-			if (OriginalSourceBlock.Explicit.HasCapturedThis && !(Parent is AnonymousMethodStorey)) {
-				AddCapturedThisField (ec);
+			if (initialize_hoisted_this) {
 				rc.CurrentBlock.AddScopeStatement (new ThisInitializer (hoisted_this));
 			}
 
@@ -485,9 +567,20 @@ namespace Mono.CSharp {
 			ec.CurrentAnonymousMethod = ae;
 		}
 
-		protected virtual void EmitHoistedParameters (EmitContext ec, IList<HoistedParameter> hoisted)
+		protected virtual void EmitHoistedParameters (EmitContext ec, List<HoistedParameter> hoisted)
 		{
 			foreach (HoistedParameter hp in hoisted) {
+				//
+				// Parameters could be proxied via local fields for value type storey
+				//
+				if (hoisted_local_params != null) {
+					var local_param = hoisted_local_params.Find (l => l.Parameter.Parameter == hp.Parameter.Parameter);
+					var source = new FieldExpr (local_param.Field, Location);
+					source.InstanceExpression = new CompilerGeneratedThis (CurrentType, Location);
+					hp.EmitAssign (ec, source, false, false);
+					continue;
+				}
+
 				hp.EmitHoistingAssignment (ec);
 			}
 		}
@@ -560,7 +653,12 @@ namespace Mono.CSharp {
 		}
 
 		public HoistedThis HoistedThis {
-			get { return hoisted_this; }
+			get {
+				return hoisted_this;
+			}
+			set {
+				hoisted_this = value;
+			}
 		}
 
 		public IList<ExplicitBlock> ReferencesFromChildrenBlock {
@@ -626,6 +724,12 @@ namespace Mono.CSharp {
 		{
 			this.storey = storey;
 			this.field = field;
+		}
+
+		public AnonymousMethodStorey Storey {
+			get {
+				return storey;
+			}
 		}
 
 		public void AddressOf (EmitContext ec, AddressOp mode)
@@ -709,7 +813,7 @@ namespace Mono.CSharp {
 
 	public class HoistedParameter : HoistedVariable
 	{
-		sealed class HoistedFieldAssign : Assign
+		sealed class HoistedFieldAssign : CompilerAssign
 		{
 			public HoistedFieldAssign (Expression target, Expression source)
 				: base (target, source, source.Location)
@@ -740,23 +844,32 @@ namespace Mono.CSharp {
 			this.parameter = hp.parameter;
 		}
 
+		#region Properties
+
 		public Field Field {
 			get {
 				return field;
 			}
 		}
 
+		public ParameterReference Parameter {
+			get {
+				return parameter;
+			}
+		}
+
+		#endregion
+
 		public void EmitHoistingAssignment (EmitContext ec)
 		{
 			//
 			// Remove hoisted redirection to emit assignment from original parameter
 			//
-			HoistedVariable temp = parameter.Parameter.HoistedVariant;
+			var temp = parameter.Parameter.HoistedVariant;
 			parameter.Parameter.HoistedVariant = null;
 
-			Assign a = new HoistedFieldAssign (GetFieldExpression (ec), parameter);
-			if (a.Resolve (new ResolveContext (ec.MemberContext)) != null)
-				a.EmitStatement (ec);
+			var a = new HoistedFieldAssign (GetFieldExpression (ec), parameter);
+			a.EmitStatement (ec);
 
 			parameter.Parameter.HoistedVariant = temp;
 		}
@@ -781,13 +894,6 @@ namespace Mono.CSharp {
 			get {
 				return field;
 			}
-		}
-
-		public void EmitHoistingAssignment (EmitContext ec)
-		{
-			SimpleAssign a = new SimpleAssign (GetFieldExpression (ec), new CompilerGeneratedThis (ec.CurrentType, field.Location));
-			if (a.Resolve (new ResolveContext (ec.MemberContext)) != null)
-				a.EmitStatement (ec);
 		}
 	}
 
@@ -1003,12 +1109,8 @@ namespace Mono.CSharp {
 			}
 
 			using (ec.Set (ResolveContext.Options.ProbingMode | ResolveContext.Options.InferReturnType)) {
-				var body = CompatibleMethodBody (ec, tic, InternalType.Arglist, delegate_type);
+				var body = CompatibleMethodBody (ec, tic, null, delegate_type);
 				if (body != null) {
-					if (Block.IsAsync) {
-						AsyncInitializer.Create (ec, body.Block, body.Parameters, ec.CurrentMemberDefinition.Parent.PartialContainer, null, loc);
-					}
-
 					am = body.Compatible (ec, body);
 				} else {
 					am = null;
@@ -1080,6 +1182,10 @@ namespace Mono.CSharp {
 					} else {
 						int errors = ec.Report.Errors;
 
+						if (Block.IsAsync) {
+							ec.Report.Error (1989, loc, "Async lambda expressions cannot be converted to expression trees");
+						}
+
 						using (ec.Set (ResolveContext.Options.ExpressionTreeConversion)) {
 							am = body.Compatible (ec);
 						}
@@ -1091,18 +1197,6 @@ namespace Mono.CSharp {
 							am = CreateExpressionTree (ec, delegate_type);
 					}
 				} else {
-					if (Block.IsAsync) {
-						var rt = body.ReturnType;
-						if (rt.Kind != MemberKind.Void &&
-							rt != ec.Module.PredefinedTypes.Task.TypeSpec &&
-							!rt.IsGenericTask) {
-							ec.Report.Error (4010, loc, "Cannot convert async {0} to delegate type `{1}'",
-								GetSignatureForError (), type.GetSignatureForError ());
-						}
-
-						AsyncInitializer.Create (ec, body.Block, body.Parameters, ec.CurrentMemberDefinition.Parent.PartialContainer, rt, loc);
-					}
-
 					am = body.Compatible (ec);
 				}
 			} catch (CompletionResult) {
@@ -1143,7 +1237,7 @@ namespace Mono.CSharp {
 
 				for (int i = 0; i < delegate_parameters.Count; i++) {
 					Parameter.Modifier i_mod = delegate_parameters.FixedParameters [i].ModFlags;
-					if (i_mod == Parameter.Modifier.OUT) {
+					if ((i_mod & Parameter.Modifier.OUT) != 0) {
 						if (!ec.IsInProbingMode) {
 							ec.Report.Error (1688, loc,
 								"Cannot convert anonymous method block without a parameter list to delegate type `{0}' because it has one or more `out' parameters",
@@ -1230,7 +1324,19 @@ namespace Mono.CSharp {
 
 			ParametersBlock b = ec.IsInProbingMode ? (ParametersBlock) Block.PerformClone () : Block;
 
-			return CompatibleMethodFactory (return_type, delegate_type, p, b);
+			if (b.IsAsync) {
+				var rt = return_type;
+				if (rt != null && rt.Kind != MemberKind.Void && rt != ec.Module.PredefinedTypes.Task.TypeSpec && !rt.IsGenericTask) {
+					ec.Report.Error (4010, loc, "Cannot convert async {0} to delegate type `{1}'",
+						GetSignatureForError (), delegate_type.GetSignatureForError ());
+
+					return null;
+				}
+
+				b = b.ConvertToAsyncTask (ec, ec.CurrentMemberDefinition.Parent.PartialContainer, p, return_type, loc);
+			}
+
+			return CompatibleMethodFactory (return_type ?? InternalType.Arglist, delegate_type, p, b);
 		}
 
 		protected virtual AnonymousMethodBody CompatibleMethodFactory (TypeSpec return_type, TypeSpec delegate_type, ParametersCompiled p, ParametersBlock b)
@@ -1330,6 +1436,15 @@ namespace Mono.CSharp {
 		public abstract bool IsIterator { get; }
 		public abstract AnonymousMethodStorey Storey { get; }
 
+		//
+		// The block that makes up the body for the anonymous method
+		//
+		public ParametersBlock Block {
+			get {
+				return block;
+			}
+		}
+
 		public AnonymousExpression Compatible (ResolveContext ec)
 		{
 			return Compatible (ec, this);
@@ -1403,16 +1518,6 @@ namespace Mono.CSharp {
 				b = b.Parent == null ? null : b.Parent.Explicit;
 			} while (b != null);
 		}
-
-		//
-		// The block that makes up the body for the anonymous method
-		//
-		public ParametersBlock Block {
-			get {
-				return block;
-			}
-		}
-
 	}
 
 	public class AnonymousMethodBody : AnonymousExpression
@@ -1500,19 +1605,49 @@ namespace Mono.CSharp {
 			//
 
 			Modifiers modifiers;
-			if (Block.HasCapturedVariable || Block.HasCapturedThis) {
-				storey = FindBestMethodStorey ();
+			TypeDefinition parent = null;
+
+			var src_block = Block.Original.Explicit;
+			if (src_block.HasCapturedVariable || src_block.HasCapturedThis) {
+				parent = storey = FindBestMethodStorey ();
+
+				if (storey == null) {
+					var sm = src_block.ParametersBlock.TopBlock.StateMachine;
+
+					//
+					// Remove hoisted this demand when simple instance method is enough
+					//
+					if (src_block.HasCapturedThis) {
+						src_block.ParametersBlock.TopBlock.RemoveThisReferenceFromChildrenBlock (src_block);
+
+						//
+						// Special case where parent class is used to emit instance method
+						// because currect storey is of value type (async host) and we don't
+						// want to create another childer storey to host this reference only
+						//
+						if (sm != null && sm.Kind == MemberKind.Struct)
+							parent = sm.Parent.PartialContainer;
+					}
+
+					//
+					// For iterators we can host everything in one class
+					//
+					if (sm is IteratorStorey)
+						parent = storey = sm;
+				}
+
 				modifiers = storey != null ? Modifiers.INTERNAL : Modifiers.PRIVATE;
 			} else {
 				if (ec.CurrentAnonymousMethod != null)
-					storey = ec.CurrentAnonymousMethod.Storey;
+					parent = storey = ec.CurrentAnonymousMethod.Storey;
 
 				modifiers = Modifiers.STATIC | Modifiers.PRIVATE;
 			}
 
-			var parent = storey != null ? storey : ec.CurrentTypeDefinition.Parent.PartialContainer;
+			if (parent == null)
+				parent = ec.CurrentTypeDefinition.Parent.PartialContainer;
 
-			string name = CompilerGeneratedClass.MakeName (parent != storey ? block_name : null,
+			string name = CompilerGeneratedContainer.MakeName (parent != storey ? block_name : null,
 				"m", null, ec.Module.CounterAnonymousMethods++);
 
 			MemberName member_name;
@@ -1570,7 +1705,7 @@ namespace Mono.CSharp {
 
 					am_cache = new Field (parent, new TypeExpression (cache_type, loc),
 						Modifiers.STATIC | Modifiers.PRIVATE | Modifiers.COMPILER_GENERATED,
-						new MemberName (CompilerGeneratedClass.MakeName (null, "f", "am$cache", id), loc), null);
+						new MemberName (CompilerGeneratedContainer.MakeName (null, "f", "am$cache", id), loc), null);
 					am_cache.Define ();
 					parent.AddField (am_cache);
 				} else {
@@ -1610,10 +1745,22 @@ namespace Mono.CSharp {
 				ec.EmitNull ();
 			} else if (storey != null) {
 				Expression e = storey.GetStoreyInstanceExpression (ec).Resolve (new ResolveContext (ec.MemberContext));
-				if (e != null)
+				if (e != null) {
 					e.Emit (ec);
+				}
 			} else {
 				ec.EmitThis ();
+
+				//
+				// Special case for value type storey where this is not lifted but
+				// droped off to parent class
+				//
+				for (var b = Block.Parent; b != null; b = b.Parent) {
+					if (b.ParametersBlock.StateMachine != null) {
+						ec.Emit (OpCodes.Ldfld, b.ParametersBlock.StateMachine.HoistedThis.Field.Spec);
+						break;
+					}
+				}
 			}
 
 			var delegate_method = method.Spec;
@@ -1624,9 +1771,7 @@ namespace Mono.CSharp {
 				// Mutate anonymous method instance type if we are in nested
 				// hoisted generic anonymous method storey
 				//
-				if (ec.CurrentAnonymousMethod != null &&
-					ec.CurrentAnonymousMethod.Storey != null &&
-					ec.CurrentAnonymousMethod.Storey.Mutator != null) {
+				if (ec.IsAnonymousStoreyMutateRequired) {
 					t = storey.Mutator.Mutate (t);
 				}
 
@@ -1679,7 +1824,7 @@ namespace Mono.CSharp {
 	//
 	// Anonymous type container
 	//
-	public class AnonymousTypeClass : CompilerGeneratedClass
+	public class AnonymousTypeClass : CompilerGeneratedContainer
 	{
 		public const string ClassNamePrefix = "<>__AnonType";
 		public const string SignatureForError = "anonymous type";
@@ -1687,7 +1832,7 @@ namespace Mono.CSharp {
 		readonly IList<AnonymousTypeParameter> parameters;
 
 		private AnonymousTypeClass (ModuleContainer parent, MemberName name, IList<AnonymousTypeParameter> parameters, Location loc)
-			: base (parent, name, (parent.Evaluator != null ? Modifiers.PUBLIC : 0) | Modifiers.SEALED)
+			: base (parent, name, parent.Evaluator != null ? Modifiers.PUBLIC : Modifiers.INTERNAL)
 		{
 			this.parameters = parameters;
 		}
@@ -1740,7 +1885,7 @@ namespace Mono.CSharp {
 			c.Block = new ToplevelBlock (parent.Module.Compiler, c.ParameterInfo, loc);
 
 			// 
-			// Create fields and contructor body with field initialization
+			// Create fields and constructor body with field initialization
 			//
 			bool error = false;
 			for (int i = 0; i < parameters.Count; ++i) {
