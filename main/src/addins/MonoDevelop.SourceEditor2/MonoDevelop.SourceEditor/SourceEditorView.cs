@@ -2099,7 +2099,12 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (EditCommands.IndentSelection)]
 		public void IndentSelection ()
 		{
-			Mono.TextEditor.MiscActions.IndentSelection (widget.TextEditor.GetTextEditorData ());
+			if (widget.TextEditor.IsSomethingSelected) {
+				MiscActions.IndentSelection (widget.TextEditor.GetTextEditorData ());
+			} else {
+				int offset = widget.TextEditor.LocationToOffset (widget.TextEditor.Caret.Line, 1);
+				widget.TextEditor.Insert (offset, widget.TextEditor.Options.IndentationString);
+			}
 		}
 		
 		[CommandHandler (EditCommands.UnIndentSelection)]
