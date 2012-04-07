@@ -75,7 +75,8 @@ namespace Mono.TextEditor
 		
 		public static void RemoveIndentSelection (TextEditorData data)
 		{
-			Debug.Assert (data.IsSomethingSelected);
+			if (!data.IsSomethingSelected)
+				return;
 			int startLineNr, endLineNr;
 			GetSelectedLines (data, out startLineNr, out endLineNr);
 			

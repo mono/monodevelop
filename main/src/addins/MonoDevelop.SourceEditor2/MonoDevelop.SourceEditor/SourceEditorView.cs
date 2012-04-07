@@ -2105,7 +2105,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (EditCommands.UnIndentSelection)]
 		public void UnIndentSelection ()
 		{
-			Mono.TextEditor.MiscActions.RemoveIndentSelection (widget.TextEditor.GetTextEditorData ());
+			Mono.TextEditor.MiscActions.RemoveTab (widget.TextEditor.GetTextEditorData ());
 		}
 		
 		[CommandHandler (EditCommands.InsertGuid)]
