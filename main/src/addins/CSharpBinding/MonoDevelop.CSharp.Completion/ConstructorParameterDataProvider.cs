@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Completion
 			var ctx = ext.CSharpParsedFile.GetTypeResolveContext (ext.Compilation, ext.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
 
 			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, ext.Compilation.MainAssembly);
-			bool isProtectedAllowed = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.IsDerivedFrom (type.GetDefinition ()) : false;
+			bool isProtectedAllowed = ctx.CurrentTypeDefinition != null && type.GetDefinition () != null ? ctx.CurrentTypeDefinition.IsDerivedFrom (type.GetDefinition ()) : false;
 						
 			foreach (var method in type.GetConstructors ()) {
 				Console.WriteLine ("constructor:" + method);
