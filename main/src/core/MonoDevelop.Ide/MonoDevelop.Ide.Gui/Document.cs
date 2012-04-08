@@ -616,6 +616,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void SetProject (Project project)
 		{
+			if (Window.ViewContent.Project == project)
+				return;
 			while (editorExtension != null) {
 				try {
 					editorExtension.Dispose ();

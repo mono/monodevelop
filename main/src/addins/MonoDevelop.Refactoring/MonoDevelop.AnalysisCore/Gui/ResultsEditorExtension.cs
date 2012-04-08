@@ -81,6 +81,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		void Enable ()
 		{
+			if (enabled)
+				return;
 			Document.DocumentParsed += OnDocumentParsed;
 			if (Document.ParsedDocument != null)
 				OnDocumentParsed (null, null);
@@ -96,6 +98,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		void Disable ()
 		{
+			if (!enabled)
+				return;
 			Document.DocumentParsed -= OnDocumentParsed;
 			CancelTask ();
 			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
