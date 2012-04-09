@@ -70,7 +70,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 			get { return enabled; }
 			set {
 				if (enabled != value) {
-					enabled = value;
 					if (value)
 						Enable ();
 					else
@@ -83,6 +82,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			if (enabled)
 				return;
+			enabled = true;
 			Document.DocumentParsed += OnDocumentParsed;
 			if (Document.ParsedDocument != null)
 				OnDocumentParsed (null, null);
@@ -100,6 +100,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			if (!enabled)
 				return;
+			enabled = false;
 			Document.DocumentParsed -= OnDocumentParsed;
 			CancelTask ();
 			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
