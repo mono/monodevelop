@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -117,19 +118,12 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 		
-		public List<FilePath> GetFilesToDelete ()
+		public List<FilePath> GetFilesToDelete (Solution parentSol = null)
 		{
 			List<FilePath> files = new List<FilePath> ();
 			
 			if (radioDeleteAll.Active) {
-				files.Add (item.BaseDirectory);
-				if (item.BaseDirectory != item.ItemDirectory) {
-					foreach (FilePath f in item.GetItemFiles (false)) {
-						if (!f.IsChildPathOf (item.BaseDirectory))
-							files.Add (f);
-					}
-				}
-				return files;
+				return GetAllFilesToDelete (item, parentSol);
 			}
 			
 			foreach (Gtk.TreeIter it in paths.Values) {
@@ -137,21 +131,99 @@ namespace MonoDevelop.Ide.Projects
 					files.Add ((string) store.GetValue (it, 3));
 			}
 			
-			// If a directory is selected, remove all files of that directory,
-			// since the dir will be deleted as a whole
-			
+			return CleanFiles (files);
+		}
+		
+		/// <summary>
+		/// If a directory is selected, remove all files of that directory,
+		/// since the dir will be deleted as a whole
+		/// </summary>
+		List<FilePath> CleanFiles (IEnumerable<FilePath> files)
+		{
 			List<FilePath> cleaned = new List<FilePath> (files);
 			foreach (FilePath path in files) {
-				if (Directory.Exists (path)) {
-					for (int n=0; n<cleaned.Count; n++) {
-						if (cleaned [n].IsChildPathOf (path)) {
-							cleaned.RemoveAt (n);
-							n--;
-						}
+				if (Directory.Exists (path))
+					cleaned.RemoveAll (file => file.IsChildPathOf (path));
+			}
+			
+			return cleaned;
+		}
+		
+		/// <summary>
+		/// Gets all files (and directories) in the project that should be deleted
+		/// </summary>
+		List<FilePath> GetAllFilesToDelete(IWorkspaceFileObject item, Solution parentSol)
+		{
+			var result = new HashSet<FilePath> ();
+			foreach (var path in item.GetItemFiles (false).Select (p => p.FullPath)) {
+				result.Add (path);
+				var tmp = path + "~";
+				if (File.Exists (tmp))
+					result.Add (tmp);
+			}
+			
+			var prj = item as Project;
+			if (prj == null || parentSol == null || prj.BaseDirectory != parentSol.BaseDirectory) {
+				result.Add (item.BaseDirectory.FullPath);
+			} else {
+				foreach (var sd in knownSubdirs) {
+					var subdir = prj.BaseDirectory.Combine (sd);
+					if (Directory.Exists (subdir))
+						result.Add (subdir.FullPath);
+				}
+				foreach (var ext in knownExtensions) {
+					var filename = prj.FileName.ChangeExtension (ext);
+					if (File.Exists (filename))
+						result.Add (filename.FullPath);
+				}
+				
+				foreach (var file in prj.Files) {
+					// shouldn't delete links
+					if (file.IsLink) continue;
+					var path = file.FilePath.FullPath;
+					if (Directory.Exists (path)) {
+						result.Add (path);
+					} else {
+						result.Add (path);
+						var tmp = path + "~";
+						if (File.Exists (tmp))
+							result.Add (tmp);
 					}
 				}
+				var cleanedList = CleanFiles (result);
+				result.Clear ();
+				foreach (var path in cleanedList)
+					result.Add (path);
+				
+				// collect parent directories that should be deleted
+				bool dirAdded;
+				do {
+					var parentDirs = result.Select (path => path.ParentDirectory).Distinct ();
+					dirAdded = parentDirs.Any (
+						dir => dir.IsChildPathOf (prj.BaseDirectory) && CollectDirectoriesToDelete (dir, result));
+				} while (dirAdded);
 			}
-			return cleaned;
+			
+			return CleanFiles (result);
+		}
+		
+		/// <summary>
+		/// Collect directories that have no children after deletion and thus should also be deleted
+		/// </summary>
+		/// <returns>
+		/// return true if the specified dir is added to result
+		/// </returns>
+		bool CollectDirectoriesToDelete (FilePath dir, ISet<FilePath> result)
+		{
+			var children = Directory.EnumerateFiles (dir).Concat (Directory.EnumerateDirectories (dir)).ToArray ();
+			// check if all children are to delete
+			if (children.All (child => result.Contains (child))) {
+				foreach (var child in children)
+					result.Remove (child);
+				result.Add (dir);
+				return true;
+			}
+			return false;
 		}
 		
 		ChildInfo FillDirRec (Gtk.TreeIter iter, IWorkspaceFileObject item, HashSet<string> itemFiles, HashSet<string> knownPaths, FilePath dir, bool forceSet)

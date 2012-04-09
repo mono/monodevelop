@@ -776,10 +776,14 @@ namespace MonoDevelop.Ide
 				ConfirmProjectDeleteDialog dlg = new ConfirmProjectDeleteDialog (prj);
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					
+					// we need this because after the project is removed from the solution,
+					// ParentSolution will be null
+					Solution sol = prj.ParentSolution;
+					
 					// Remove the project before removing the files to avoid unnecessary events
 					RemoveItemFromSolution (prj);
 					
-					List<FilePath> files = dlg.GetFilesToDelete ();
+					List<FilePath> files = dlg.GetFilesToDelete (sol);
 					dlg.Destroy ();
 					using (IProgressMonitor monitor = new MessageDialogProgressMonitor (true)) {
 						monitor.BeginTask (GettextCatalog.GetString ("Deleting Files..."), files.Count);
