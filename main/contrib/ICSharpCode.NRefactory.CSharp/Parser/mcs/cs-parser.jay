@@ -1521,12 +1521,18 @@ fixed_parameter
 		$$ = new Parameter ((FullNamedExpression) $3, lt.Value, (Parameter.Modifier) $2, (Attributes) $1, lt.Location);
 		lbag.AddLocation ($$, parameterModifierLocation);
 	  }
+	| attribute_sections error
+	  {
+		Error_SyntaxError (yyToken);
+	  	Location l = GetLocation ($2);
+		$$ = new Parameter (null, null, Parameter.Modifier.NONE, (Attributes) $1, l);
+	  }
 	| opt_attributes
 	  opt_parameter_modifier
 	  parameter_type
 	  error
 	  {
-		Error_SyntaxError (yyToken);	  
+		Error_SyntaxError (yyToken);
 	  	Location l = GetLocation ($4);
 		$$ = new Parameter ((FullNamedExpression) $3, null, (Parameter.Modifier) $2, (Attributes) $1, l);
 		lbag.AddLocation ($$, parameterModifierLocation);
@@ -3325,10 +3331,10 @@ argument_list
 		lbag.AppendTo (list, GetLocation ($2));
 		$$ = list;
 	  }
-	| argument_list COMMA
+	| argument_list COMMA error
 	  {
-	  	report.Error (839, GetLocation ($2), "An argument is missing");
-	  	$$ = $1;
+		Error_SyntaxError (yyToken);
+		$$ = $1;
 	  }
 	| COMMA error
 	  {
@@ -3385,10 +3391,12 @@ element_access
 	  }
 	| primary_expression OPEN_BRACKET_EXPR expression_list_arguments error
 	  {
+		Error_SyntaxError (yyToken);
 		$$ = new ElementAccess ((Expression) $1, (Arguments) $3, GetLocation ($2));
 	  }
 	| primary_expression OPEN_BRACKET_EXPR error
 	  {
+		Error_SyntaxError (yyToken);
 		$$ = new ElementAccess ((Expression) $1, null, GetLocation ($2));
 	  }
 	;
@@ -3529,8 +3537,9 @@ array_creation_expression
 	  }
 	| NEW new_expr_type error
 	  {
-		Error_SyntaxError (1526, yyToken, "Unexpected symbol");
-		$$ = new ArrayCreation ((FullNamedExpression) $2, null, GetLocation ($1));
+		Error_SyntaxError (yyToken);
+		// It can be any of new expression, create the most common one
+		$$ = new New ((FullNamedExpression) $2, null, GetLocation ($1));
 	  }
 	;
 
@@ -5582,6 +5591,11 @@ continue_statement
 		$$ = new Continue (GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($2));
 	  }
+	| CONTINUE error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new Continue (GetLocation ($1));
+	  }
 	;
 
 goto_statement
@@ -5609,6 +5623,11 @@ return_statement
 		$$ = new Return ((Expression) $2, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($3));
 	  }
+	| RETURN error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new Return (null, GetLocation ($1));
+	  }
 	;
 
 throw_statement
@@ -5616,6 +5635,11 @@ throw_statement
 	  {
 		$$ = new Throw ((Expression) $2, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($3));
+	  }
+	| THROW error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new Throw (null, GetLocation ($1));
 	  }
 	;
 
@@ -6793,7 +6817,7 @@ public void parse ()
 			report.Error (-25, lexer.Location, "Parsing error");
 		} else {
 			// Used by compiler-tester to test internal errors
-			if (yacc_verbose_flag > 0)
+			if (yacc_verbose_flag > 0 || e is FatalException)
 				throw;
 		
 			report.Error (589, lexer.Location, "Internal compiler error during parsing" + e);
