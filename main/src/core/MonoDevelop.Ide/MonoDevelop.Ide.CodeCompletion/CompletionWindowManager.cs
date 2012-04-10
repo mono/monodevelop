@@ -75,7 +75,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		static CompletionWindowManager ()
 		{
-			IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
+			if (IdeApp.Workbench != null)
+				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
 		}
 		
 		// ext may be null, but then parameter completion don't work

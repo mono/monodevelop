@@ -128,10 +128,15 @@ namespace Mono.TextEditor
 
 			document.TextSet += HandleDocTextSet;
 			document.Folded += HandleTextEditorDataDocumentFolded;
-
+			document.FoldTreeUpdated += HandleFoldTreeUpdated;
 			SearchEngine = new BasicSearchEngine ();
 
 			HeightTree = new HeightTree (this);
+			HeightTree.Rebuild ();
+		}
+
+		void HandleFoldTreeUpdated (object sender, EventArgs e)
+		{
 			HeightTree.Rebuild ();
 		}
 
@@ -419,6 +424,7 @@ namespace Mono.TextEditor
 			
 			document.TextSet -= HandleDocTextSet;
 			document.Folded -= HandleTextEditorDataDocumentFolded;
+			document.FoldTreeUpdated -= HandleFoldTreeUpdated;
 		}
 
 		public void Dispose ()

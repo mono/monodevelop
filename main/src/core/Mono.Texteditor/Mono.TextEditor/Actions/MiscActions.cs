@@ -151,6 +151,8 @@ namespace Mono.TextEditor
 
 		public static void IndentSelection (TextEditorData data)
 		{
+			if (!data.IsSomethingSelected)
+				return;
 			int startLineNr, endLineNr;
 			GetSelectedLines (data, out startLineNr, out endLineNr);
 			var anchor = data.MainSelection.Anchor;
