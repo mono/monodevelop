@@ -143,40 +143,45 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GeneratedCodeMember.Unknown;
 			}
 
-			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
+			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 			{
 				if (typeDeclaration.ClassType == ClassType.Enum)
 					return;
-				var entities = new List<EntityDeclaration>(typeDeclaration.Members);
-				entities.Sort((x, y) => {
-					int i1 = settings.CodeMemberOrder.IndexOf(GetCodeMemberCategory(x));
-					int i2 = settings.CodeMemberOrder.IndexOf(GetCodeMemberCategory(y));
+				var entities = new List<EntityDeclaration> (typeDeclaration.Members);
+				entities.Sort ((x, y) => {
+					int i1 = settings.CodeMemberOrder.IndexOf (GetCodeMemberCategory (x));
+					int i2 = settings.CodeMemberOrder.IndexOf (GetCodeMemberCategory (y));
 					if (i1 != i2)
-						return i1.CompareTo(i2);
+						return i1.CompareTo (i2);
 					if (settings.SubOrderAlphabetical)
-						return (x.Name ?? "").CompareTo((y.Name ?? ""));
-					return entities.IndexOf(x).CompareTo(entities.IndexOf(y));
+						return (x.Name ?? "").CompareTo ((y.Name ?? ""));
+					return entities.IndexOf (x).CompareTo (entities.IndexOf (y));
 				});
-				typeDeclaration.Members.Clear();
-				typeDeclaration.Members.AddRange(entities);
+				typeDeclaration.Members.Clear ();
+				typeDeclaration.Members.AddRange (entities);
 
 				if (settings.GenerateCategoryComments) {
 					var curCat = GeneratedCodeMember.Unknown;
 					foreach (var mem in entities) {
-						var cat = GetCodeMemberCategory(mem);
+						if (mem.NextSibling is EntityDeclaration)
+							mem.Parent.InsertChildAfter (mem, new UnixNewLine (), Roles.NewLine);
+
+						var cat = GetCodeMemberCategory (mem);
 						if (cat == curCat)
 							continue;
 						curCat = cat;
-						var label = settings.GetCategoryLabel(curCat);
-						if (string.IsNullOrEmpty(label))
+						var label = settings.GetCategoryLabel (curCat);
+						if (string.IsNullOrEmpty (label))
 							continue;
 
-						var cmt = new Comment("", CommentType.SingleLine);
-						var cmt2 = new Comment(" " + label, CommentType.SingleLine);
-						var cmt3 = new Comment("", CommentType.SingleLine);
-						mem.Parent.InsertChildsBefore(mem, Roles.Comment, cmt, cmt2, cmt3);
-						mem.Parent.InsertChildBefore(cmt, new UnixNewLine(), Roles.NewLine);
-						mem.Parent.InsertChildAfter(cmt3, new UnixNewLine(), Roles.NewLine);
+						var cmt = new Comment ("", CommentType.SingleLine);
+						var cmt2 = new Comment (" " + label, CommentType.SingleLine);
+						var cmt3 = new Comment ("", CommentType.SingleLine);
+						mem.Parent.InsertChildsBefore (mem, Roles.Comment, cmt, cmt2, cmt3);
+						if (cmt.PrevSibling is EntityDeclaration)
+							mem.Parent.InsertChildBefore (cmt, new UnixNewLine (), Roles.NewLine);
+
+						mem.Parent.InsertChildAfter (cmt3, new UnixNewLine (), Roles.NewLine);
 					}
 				}
 			}
