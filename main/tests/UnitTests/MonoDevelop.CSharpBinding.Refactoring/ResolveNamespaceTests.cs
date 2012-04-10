@@ -257,6 +257,53 @@ namespace My
 			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
 		}
 		#endregion
+
+		/// <summary>
+		/// Bug 4361 - Cannot 'resolve' an unknown type
+		/// </summary>
+		[Test ()]
+		public void TestBug4361 ()
+		{
+			var result = GetResult (@"using System;
+
+namespace sadfhgjhkfj
+{
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            while (true) {
+                var t = new Thre$ad
+            }
+        }
+    }
+}");
+			foreach (var a in result)
+				Console.WriteLine (a);
+			Assert.IsTrue (result.Contains ("System.Threading"));
+		}
+
+		[Test ()]
+		public void TestBug4361Case2 ()
+		{
+			var result = GetResult (@"using System;
+
+namespace sadfhgjhkfj
+{
+    class MainClass
+    {
+        public static void Main (string[] args)
+        {
+            while (true) {
+                var t = new Thre$ad[0];
+            }
+        }
+    }
+}");
+			foreach (var a in result)
+				Console.WriteLine (a);
+			Assert.IsTrue (result.Contains ("System.Threading"));
+		}
 	}
 }
 
