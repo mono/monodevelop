@@ -52,6 +52,7 @@ namespace Mono.TextEditor
 			char ch = data.Document.GetCharAt (line.Offset); 
 			if (ch == '\t') {
 				data.Remove (line.Offset, 1);
+				data.Document.CommitLineUpdate (line);
 				return 1;
 			} else if (ch == ' ') {
 				int removeCount = 0;
@@ -60,7 +61,7 @@ namespace Mono.TextEditor
 					if (ch == ' ') {
 						removeCount ++;
 						i++;
-					} else  if (ch == '\t') {
+					} else if (ch == '\t') {
 						removeCount ++;
 						i += data.Options.TabSize;
 					} else {
@@ -68,6 +69,7 @@ namespace Mono.TextEditor
 					}
 				}
 				data.Remove (line.Offset, removeCount);
+				data.Document.CommitLineUpdate (line);
 				return removeCount;
 			}
 			return 0;
