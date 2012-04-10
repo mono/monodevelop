@@ -83,7 +83,7 @@
 	<!-- environment -->
 	<Style name="text" color="NormalVim" bgColor="BlackVim"/>
 	<Style name="text.background.readonly" color="BlackVim"/>
-	<Style name="text.selection" color="NormalVim" bgColor="VisualBGVim"/>
+	<Style name="text.selection" color="NormalVim" bgColor="#2647DD"/>
 	<Style name="text.selection.inactive" color="aluminium1" bgColor="aluminium4"/>
 	<Style name="text.background.searchresult" color="VisualBGVim"/>
 	<Style name="text.link" color="butter2"/>
