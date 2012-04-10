@@ -335,7 +335,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					List.MoveToCategory (-1);
 					return KeyActions.Ignore;
 				}
-				if (SelectionEnabled && list.filteredItems.Count < 2)
+				if (SelectionEnabled && list.filteredItems.Count < 1)
 					return KeyActions.CloseWindow | KeyActions.Process;
 				if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/) {
 					AutoCompleteEmptyMatch = AutoSelect = true;
@@ -368,7 +368,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					List.MoveToCategory (1);
 					return KeyActions.Ignore;
 				}
-				if (SelectionEnabled && list.filteredItems.Count < 2)
+				if (SelectionEnabled && list.filteredItems.Count < 1)
 					return KeyActions.CloseWindow | KeyActions.Process;
 				
 				if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/) {
