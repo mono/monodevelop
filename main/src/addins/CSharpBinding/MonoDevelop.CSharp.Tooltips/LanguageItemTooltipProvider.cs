@@ -268,7 +268,7 @@ namespace MonoDevelop.SourceEditor
 					s.Append (typeString);
 					s.Append ("</i></small>\n");
 				}
-				settings.OutputFlags |= OutputFlags.UseFullName;
+				settings.OutputFlags |= OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName;
 				s.Append (ambience.GetString (tr.Type, settings));
 				doc = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
 			}
