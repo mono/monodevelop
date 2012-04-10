@@ -234,7 +234,18 @@ namespace ICSharpCode.Decompiler
 			set {
 				if (showXmlDocumentation != value) {
 					showXmlDocumentation = value;
-					OnPropertyChanged("ShowXmlDocumentation");
+					OnPropertyChanged ("ShowXmlDocumentation");
+				}
+			}
+		}
+
+		bool hideNonPublicMembers = false;
+		public bool HideNonPublicMembers {
+			get { return hideNonPublicMembers; }
+			set {
+				if (hideNonPublicMembers != value) {
+					hideNonPublicMembers = value;
+					OnPropertyChanged ("HideNonPublicMembers");
 				}
 			}
 		}

@@ -55,14 +55,15 @@ namespace MonoDevelop.AssemblyBrowser
 	[System.ComponentModel.ToolboxItem(true)]
 	partial class AssemblyBrowserWidget : Gtk.Bin
 	{
-		public ExtensibleTreeView TreeView {
+		public AssemblyBrowserTreeView TreeView {
 			get;
 			private set;
 		}
 		
 		public bool PublicApiOnly {
-			get;
-			private set;
+			get {
+				return TreeView.PublicApiOnly;
+			}
 		}
 		
 		Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
@@ -73,13 +74,35 @@ namespace MonoDevelop.AssemblyBrowser
 		DocumentationPanel documentationPanel = new DocumentationPanel ();
 		TextEditorContainer textEditorContainer;
 		readonly TextEditor inspectEditor;
-		
+
+		public class AssemblyBrowserTreeView : ExtensibleTreeView
+		{
+			bool publicApiOnly = true;
+
+			public bool PublicApiOnly {
+				get {
+					return publicApiOnly;
+				}
+				set {
+					if (publicApiOnly == value)
+						return;
+					publicApiOnly = value;
+					GetRootNode ().Options ["PublicApiOnly"] = publicApiOnly;
+					RefreshTree ();
+				}
+			}
+
+			public AssemblyBrowserTreeView (NodeBuilder[] builders, TreePadOption[] options) : base (builders, options)
+			{
+			}
+		}
+
 		public AssemblyBrowserWidget ()
 		{
 			this.Build ();
 			loader = new CecilLoader (true);
 			loader.IncludeInternalMembers = true;
-			TreeView = new ExtensibleTreeView (new NodeBuilder[] { 
+			TreeView = new AssemblyBrowserTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
 				new ProjectNodeBuilder (this),
 				new AssemblyNodeBuilder (this),
@@ -206,8 +229,8 @@ namespace MonoDevelop.AssemblyBrowser
 			comboboxVisibilty.InsertText (1, GettextCatalog.GetString ("All members"));
 			comboboxVisibilty.Active = 0;
 			comboboxVisibilty.Changed += delegate {
-				PublicApiOnly = comboboxVisibilty.Active == 0;
-				this.TreeView.GetRootNode ().Options ["PublicApiOnly"] = PublicApiOnly;
+				TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
+
 				FillInspectLabel ();
 			};
 			/*
@@ -489,7 +512,7 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 					try {
 						if (nav.DataItem is TypeDefinition && nav.Options ["PublicApiOnly"]) {
-							nav.Options ["PublicApiOnly"] = false;
+							nav.Options ["PublicApiOnly"] = PublicApiOnly;
 							nav.MoveToFirstChild ();
 							result = SearchMember (nav, helpUrl);
 							if (result != null)
@@ -1000,7 +1023,7 @@ namespace MonoDevelop.AssemblyBrowser
 			case 2:
 				inspectEditor.Options.ShowFoldMargin = true;
 				this.inspectEditor.Document.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.Decompile (inspectEditor.GetTextEditorData (), nav));
+				SetReferencedSegments (builder.Decompile (inspectEditor.GetTextEditorData (), nav, PublicApiOnly));
 				break;
 			default:
 				inspectEditor.Options.ShowFoldMargin = false;

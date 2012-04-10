@@ -175,15 +175,25 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type));
 		}
-		
-		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator)
+
+		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			if (type == null)
 				return null;
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, b => b.AddType (type));
+			var settings = new DecompilerSettings () {
+				AnonymousMethods = true,
+				AutomaticEvents  = true,
+				AutomaticProperties = true,
+				ForEachStatement = true,
+				LockStatement = true,
+				HideNonPublicMembers = publicOnly
+			};
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
+				builder.AddType (type);
+			}, settings);
 		}
 		
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)

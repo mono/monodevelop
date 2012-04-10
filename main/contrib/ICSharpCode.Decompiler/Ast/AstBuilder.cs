@@ -64,44 +64,62 @@ namespace ICSharpCode.Decompiler.Ast
 			this.DecompileMethodBodies = true;
 		}
 		
-		public static bool MemberIsHidden(MemberReference member, DecompilerSettings settings)
+		public static bool MemberIsHidden (MemberReference member, DecompilerSettings settings)
 		{
 			MethodDefinition method = member as MethodDefinition;
 			if (method != null) {
 				if (method.IsGetter || method.IsSetter || method.IsAddOn || method.IsRemoveOn)
 					return true;
-				if (settings.AnonymousMethods && method.Name.StartsWith("<", StringComparison.Ordinal) && method.IsCompilerGenerated())
+				if (settings.HideNonPublicMembers && !method.IsPublic)
+					return true;
+				if (settings.AnonymousMethods && method.Name.StartsWith ("<", StringComparison.Ordinal) && method.IsCompilerGenerated ())
 					return true;
 			}
 
 			TypeDefinition type = member as TypeDefinition;
 			if (type != null) {
+				if (settings.HideNonPublicMembers && !type.IsPublic)
+					return true;
 				if (type.DeclaringType != null) {
-					if (settings.AnonymousMethods && type.Name.StartsWith("<>c__DisplayClass", StringComparison.Ordinal) && type.IsCompilerGenerated())
+					if (settings.AnonymousMethods && type.Name.StartsWith ("<>c__DisplayClass", StringComparison.Ordinal) && type.IsCompilerGenerated ())
 						return true;
-					if (settings.YieldReturn && YieldReturnDecompiler.IsCompilerGeneratorEnumerator(type))
+					if (settings.YieldReturn && YieldReturnDecompiler.IsCompilerGeneratorEnumerator (type))
 						return true;
-				} else if (type.IsCompilerGenerated()) {
-					if (type.Name.StartsWith("<PrivateImplementationDetails>", StringComparison.Ordinal))
+				} else if (type.IsCompilerGenerated ()) {
+					if (type.Name.StartsWith ("<PrivateImplementationDetails>", StringComparison.Ordinal))
 						return true;
-					if (type.IsAnonymousType())
+					if (type.IsAnonymousType ())
 						return true;
 				}
 			}
 			
 			FieldDefinition field = member as FieldDefinition;
 			if (field != null) {
-				if (field.IsCompilerGenerated()) {
-					if (settings.AnonymousMethods && field.Name.StartsWith("CS$<>", StringComparison.Ordinal))
+				if (settings.HideNonPublicMembers && !field.IsPublic)
+					return true;
+				if (field.IsCompilerGenerated ()) {
+					if (settings.AnonymousMethods && field.Name.StartsWith ("CS$<>", StringComparison.Ordinal))
 						return true;
-					if (settings.AutomaticProperties && field.Name.StartsWith("<", StringComparison.Ordinal) && field.Name.EndsWith("BackingField", StringComparison.Ordinal))
+					if (settings.AutomaticProperties && field.Name.StartsWith ("<", StringComparison.Ordinal) && field.Name.EndsWith ("BackingField", StringComparison.Ordinal))
 						return true;
 				}
 				// event-fields are not [CompilerGenerated]
-				if (settings.AutomaticEvents && field.DeclaringType.Events.Any(ev => ev.Name == field.Name))
+				if (settings.AutomaticEvents && field.DeclaringType.Events.Any (ev => ev.Name == field.Name))
 					return true;
 			}
-			
+
+			PropertyDefinition property = member as PropertyDefinition;
+			if (property != null) {
+				if (settings.HideNonPublicMembers && (property.GetMethod == null || !property.GetMethod.IsPublic) && (property.SetMethod == null || !property.SetMethod.IsPublic))
+					return true;
+			}
+
+			EventDefinition evt = member as EventDefinition;
+			if (evt != null) {
+				if (settings.HideNonPublicMembers && (evt.AddMethod == null || !evt.AddMethod.IsPublic) && (evt.RemoveMethod == null || !evt.RemoveMethod.IsPublic))
+					return true;
+			}
+
 			return false;
 		}
 		
