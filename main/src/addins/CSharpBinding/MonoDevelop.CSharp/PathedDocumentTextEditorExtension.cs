@@ -93,6 +93,9 @@ namespace MonoDevelop.CSharp
 						if (member is FieldDeclaration) {
 							foreach (var variable in ((FieldDeclaration)member).Variables)
 								memberList.Add (variable);
+						} else if (member is EventDeclaration) {
+							foreach (var variable in ((EventDeclaration)member).Variables)
+								memberList.Add (variable);
 						} else {
 							memberList.Add (member);
 						}

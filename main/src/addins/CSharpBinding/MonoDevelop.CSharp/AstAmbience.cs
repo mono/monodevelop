@@ -170,6 +170,11 @@ namespace MonoDevelop.CSharp
 				if (!field.Variables.Any ())
 					return "";
 				sb.Append (field.Variables.First ().Name);
+			} else if (e is EventDeclaration) {
+				var evt = (EventDeclaration)e;
+				if (!evt.Variables.Any ())
+					return "";
+				sb.Append (evt.Variables.First ().Name);
 			} else if (e is EntityDeclaration) {
 				var entity = (EntityDeclaration)e;
 				sb.Append (entity.Name);
