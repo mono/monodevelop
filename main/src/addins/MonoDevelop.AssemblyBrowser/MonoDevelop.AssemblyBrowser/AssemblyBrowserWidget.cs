@@ -182,9 +182,12 @@ namespace MonoDevelop.AssemblyBrowser
 //				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
+			var scrolledWindow = new SmartScrolledWindow ();
+			scrolledWindow.Show ();
 			textEditorContainer = new TextEditorContainer (inspectEditor);
-			notebookInspection.Add (textEditorContainer);
-			var notebookChild = ((Notebook.NotebookChild)(notebookInspection [textEditorContainer]));
+			scrolledWindow.Child = textEditorContainer;
+			notebookInspection.Add (scrolledWindow);
+			var notebookChild = ((Notebook.NotebookChild)(notebookInspection [scrolledWindow]));
 			notebookChild.Position = 1;
 
 //			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
