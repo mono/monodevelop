@@ -370,7 +370,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			// This should also check the types are in the correct mscorlib
 			Func<IType, bool> validBaseType = t => t.FullName != "System.Object" && t.FullName != "System.ValueType";
-			if (!options.ExplicitDeclaration && typeParameters.Any (p => p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || p.HasValueTypeConstraint || p.DirectBaseTypes.Any (validBaseType))) {
+
+			bool isFromInterface = method.DeclaringType != null && method.DeclaringTypeDefinition.Kind == TypeKind.Interface;
+
+			if (!options.ExplicitDeclaration && isFromInterface && typeParameters.Any (p => p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || p.HasValueTypeConstraint || p.DirectBaseTypes.Any (validBaseType))) {
 				result.Append (" where ");
 				int typeParameterCount = 0;
 				foreach (var p in typeParameters) {
