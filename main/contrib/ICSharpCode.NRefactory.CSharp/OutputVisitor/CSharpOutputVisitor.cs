@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteSpecials(AstNode start, AstNode end)
 		{
 			for (AstNode pos = start; pos != end; pos = pos.NextSibling) {
-				if (pos.Role == Roles.Comment || pos.Role == Roles.PreProcessorDirective) {
+				if (pos.Role == Roles.Comment || pos.Role == Roles.NewLine || pos.Role == Roles.PreProcessorDirective) {
 					pos.AcceptVisitor(this);
 				}
 			}
@@ -2376,7 +2376,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			formatter.EndNode(comment);
 			lastWritten = LastWritten.Whitespace;
 		}
-		
+
+		public void VisitNewLine(NewLineNode newLineNode)
+		{
+			formatter.StartNode(newLineNode);
+			formatter.NewLine();
+			formatter.EndNode(newLineNode);
+		}
+
+		public void VisitWhitespace(WhitespaceNode whitespaceNode)
+		{
+			// unused
+		}
+
+		public void VisitText(TextNode textNode)
+		{
+			// unused
+		}
+
 		public void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
 		{
 			formatter.StartNode(preProcessorDirective);

@@ -3608,6 +3608,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return null;
 		}
+
+		ResolveResult IAstVisitor<ResolveResult>.VisitNewLine (NewLineNode comment)
+		{
+			return null;
+		}
+
+		ResolveResult IAstVisitor<ResolveResult>.VisitWhitespace(WhitespaceNode whitespaceNode)
+		{
+			return null;
+		}
+		
+		ResolveResult IAstVisitor<ResolveResult>.VisitText(TextNode textNode)
+		{
+			return null;
+		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective)
 		{

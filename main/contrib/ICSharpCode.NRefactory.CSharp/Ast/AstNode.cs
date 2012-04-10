@@ -366,6 +366,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				lastChild = child;
 			}
 		}
+
+		public void InsertChildsBefore<T>(AstNode nextSibling, Role<T> role, params T[] child) where T : AstNode
+		{
+			foreach (var cur in child) {
+				InsertChildBefore(nextSibling, cur, role);
+			}
+		}
 		
 		public void InsertChildBefore<T> (AstNode nextSibling, T child, Role<T> role) where T : AstNode
 		{

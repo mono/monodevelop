@@ -45,6 +45,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.IO;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -157,8 +158,9 @@ namespace MonoDevelop.AssemblyBrowser
 				setData (astBuilder);
 				
 				astBuilder.RunTransformations (o => false);
+				GeneratedCodeSettings.Default.Apply (astBuilder.CompilationUnit);
 				var output = new ColoredCSharpFormatter (data.Document);
-				ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions options = codePolicy.CreateOptions ();
+				CSharpFormattingOptions options = codePolicy.CreateOptions ();
 				astBuilder.GenerateCode (output, options);
 				output.SetDocumentData ();
 				return output.ReferencedSegments;

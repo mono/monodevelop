@@ -137,6 +137,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		void VisitPrimitiveType(PrimitiveType primitiveType);
 		
 		void VisitComment(Comment comment);
+		void VisitNewLine(NewLineNode newLineNode);
+		void VisitWhitespace(WhitespaceNode whitespaceNode);
+		void VisitText(TextNode textNode);
 		void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective);
 		void VisitDocumentationReference(DocumentationReference documentationReference);
 		
@@ -265,6 +268,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitPrimitiveType(PrimitiveType primitiveType);
 		
 		S VisitComment(Comment comment);
+		S VisitWhitespace(WhitespaceNode whitespaceNode);
+		S VisitText(TextNode textNode);
+		S VisitNewLine(NewLineNode newLineNode);
 		S VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective);
 		S VisitDocumentationReference(DocumentationReference documentationReference);
 		
@@ -393,6 +399,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitPrimitiveType(PrimitiveType primitiveType, T data);
 		
 		S VisitComment(Comment comment, T data);
+		S VisitNewLine(NewLineNode newLineNode, T data);
+		S VisitWhitespace(WhitespaceNode whitespaceNode, T data);
+		S VisitText(TextNode textNode, T data);
 		S VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective, T data);
 		S VisitDocumentationReference(DocumentationReference documentationReference, T data);
 		

@@ -361,6 +361,10 @@
     <Compile Include="Refactoring\CodeActions\ExtractMethod\StaticVisitor.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="Refactoring\CodeActions\SpecializedCodeAction.cs" />
+    <Compile Include="Formatter\GeneratedCodeSettings.cs" />
+    <Compile Include="Ast\GeneralScope\NewLineNode.cs" />
+    <Compile Include="Ast\GeneralScope\TextNode.cs" />
+    <Compile Include="Ast\GeneralScope\WhitespaceNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
