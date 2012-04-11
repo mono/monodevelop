@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				script.InsertWithCursor(context.TranslateString("Extract method"), method, Script.InsertPosition.Before);
 				var target = new IdentifierExpression(methodName);
 				script.Replace(expression, new InvocationExpression(target));
-				script.Link(target, method.NameToken);
+//				script.Link(target, method.NameToken);
 			});
 		}
 
