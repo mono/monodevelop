@@ -68,7 +68,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
 			this.label8.Xalign = 0F;
-			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("_Regular Expression");
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Regular Expression");
 			this.label8.UseUnderline = true;
 			this.vbox6.Add (this.label8);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.label8]));
@@ -94,7 +94,7 @@ namespace MonoDevelop.RegexToolkit
 			this.checkbuttonReplace = new global::Gtk.CheckButton ();
 			this.checkbuttonReplace.CanFocus = true;
 			this.checkbuttonReplace.Name = "checkbuttonReplace";
-			this.checkbuttonReplace.Label = global::Mono.Unix.Catalog.GetString ("_Replace");
+			this.checkbuttonReplace.Label = global::Mono.Unix.Catalog.GetString ("Replace");
 			this.checkbuttonReplace.Active = true;
 			this.checkbuttonReplace.DrawIndicator = true;
 			this.checkbuttonReplace.UseUnderline = true;
@@ -149,7 +149,7 @@ namespace MonoDevelop.RegexToolkit
 			w7.Add (w8);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w10 = new global::Gtk.Label ();
-			w10.LabelProp = global::Mono.Unix.Catalog.GetString ("_Start Regular Expression");
+			w10.LabelProp = global::Mono.Unix.Catalog.GetString ("Start Regular E_xpression");
 			w10.UseUnderline = true;
 			w7.Add (w10);
 			w6.Add (w7);
@@ -182,7 +182,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
 			this.label10.Xalign = 0F;
-			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("_Options:");
+			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("Options:");
 			this.label10.UseMarkup = true;
 			this.label10.UseUnderline = true;
 			this.vbox4.Add (this.label10);
@@ -222,7 +222,7 @@ namespace MonoDevelop.RegexToolkit
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
 			this.label9.Xalign = 0F;
-			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("_Input:");
+			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Input:");
 			this.label9.UseMarkup = true;
 			this.label9.UseUnderline = true;
 			this.HelpWidget.Add (this.label9);

@@ -58,7 +58,7 @@ namespace MonoDevelop.RegexToolkit
 				if (regexThread != null && regexThread.IsAlive) {
 					regexThread.Abort ();
 					regexThread.Join ();
-					SetButtonStart (GettextCatalog.GetString ("_Start Regular Expression"), "gtk-media-play");
+					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-media-play");
 					regexThread = null;
 					return;
 				}
@@ -70,7 +70,7 @@ namespace MonoDevelop.RegexToolkit
 				regexThread.IsBackground = true;
 				regexThread.Name = "regex thread";
 				regexThread.Start ();
-				SetButtonStart (GettextCatalog.GetString ("_Stop execution"), "gtk-media-stop");
+				SetButtonStart (GettextCatalog.GetString ("Stop e_xecution"), "gtk-media-stop");
 				
 				SetFindMode (!checkbuttonReplace.Active);
 			};
@@ -166,7 +166,7 @@ namespace MonoDevelop.RegexToolkit
 			} finally {
 				regexThread = null;
 				Application.Invoke (delegate {
-					SetButtonStart (GettextCatalog.GetString ("_Start Regular Expression"), "gtk-media-play");
+					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-media-play");
 				});
 			}
 		}
