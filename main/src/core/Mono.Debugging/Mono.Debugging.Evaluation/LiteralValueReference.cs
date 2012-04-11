@@ -105,8 +105,11 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object Type {
 			get {
-				if (!objCreated && objLiteral)
-					type = Context.Adapter.GetValueType (Context, Value);
+#pragma warning disable 219
+				// This assures that value and type are set.
+				var v = Value;
+#pragma warning restore 219
+				
 				return type;
 			}
 		}
