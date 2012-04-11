@@ -151,6 +151,9 @@ namespace MonoDevelop.RegexToolkit
 							i++;
 						}
 					}
+					if (this.expandMatches.Active) {
+						this.resultsTreeview.ExpandAll ();
+					}
 					if (!String.IsNullOrEmpty (replacement))
 						this.replaceResultTextview.Buffer.Text = regex.Replace (input, replacement);
 				});
