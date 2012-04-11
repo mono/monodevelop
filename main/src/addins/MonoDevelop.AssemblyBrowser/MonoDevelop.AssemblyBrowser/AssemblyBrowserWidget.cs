@@ -171,13 +171,10 @@ namespace MonoDevelop.AssemblyBrowser
 				
 				if (referencedSegment.Reference is FieldDefinition)
 					return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
-				
-/*				if (referencedSegment.Reference is TypeReference) {
-					var returnType = DomCecilMethod.GetReturnType ((TypeReference)referencedSegment.Reference);
-					if (returnType.GenericArguments.Count == 0)
-						return "T:" + returnType.FullName;
-					return "T:" + returnType.FullName + "`" + returnType.GenericArguments.Count;
-				}*/
+
+				if (referencedSegment.Reference is TypeReference) {
+					return new XmlDocIdGenerator ().GetXmlDocPath ((TypeReference)referencedSegment.Reference);
+				}
 				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
