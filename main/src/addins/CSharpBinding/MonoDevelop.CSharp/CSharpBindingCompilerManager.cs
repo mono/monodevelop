@@ -288,8 +288,22 @@ namespace MonoDevelop.CSharp
 				monitor.ReportError (message, e);
 				return null;
 			}
+
+			string corlibRef = "";
+			if (!compilerParameters.NoStdLib) {
+				if (compilerName == "mcs" && !project.TargetFramework.Id.Equals (TargetFrameworkMoniker.NET_1_1)) {
+					string corlib = project.AssemblyContext.GetAssemblyFullName ("mscorlib", project.TargetFramework);
+					if (corlib != null) {
+						corlib = project.AssemblyContext.GetAssemblyLocation (corlib, project.TargetFramework);
+						if (corlib != null && !alreadyAddedReference.Contains (corlib))
+							corlibRef = " \"/r:" + corlib + "\" ";
+						
+						sb.AppendLine ("-nostdlib");
+					}
+				}
+			}
 			
-			monitor.Log.WriteLine (compilerName + " /noconfig " + sb.ToString ().Replace ('\n',' '));
+			monitor.Log.WriteLine (compilerName + " /noconfig " + corlibRef + sb.ToString ().Replace ('\n',' '));
 			
 			string workingDir = ".";
 			if (configuration.ParentItem != null) {
