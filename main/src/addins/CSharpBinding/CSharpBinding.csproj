@@ -302,9 +302,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MSBuild\Microsoft\Portable\v4.0\Microsoft.Portable.CSharp.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -338,9 +335,5 @@
     <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\" />
     <Folder Include="MonoDevelop.CSharp.Tooltips\" />
-    <Folder Include="MSBuild\" />
-    <Folder Include="MSBuild\Microsoft\" />
-    <Folder Include="MSBuild\Microsoft\Portable\" />
-    <Folder Include="MSBuild\Microsoft\Portable\v4.0\" />
   </ItemGroup>
 </Project>

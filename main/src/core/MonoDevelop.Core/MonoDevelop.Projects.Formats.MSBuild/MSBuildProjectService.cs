@@ -45,7 +45,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public static class MSBuildProjectService
 	{
-		const string CustomBuildTargetsExtensionPath = "/MonoDevelop/ProjectModel/MSBuildTargets";
 		const string ItemTypesExtensionPath = "/MonoDevelop/ProjectModel/MSBuildItemTypes";
 		public const string GenericItemGuid = "{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}";
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
@@ -459,27 +458,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					RedirectStandardInput = true,
 				};
 				runtime.GetToolsExecutionEnvironment (toolsFx).MergeTo (pinfo);
-				
-				string customBuildPaths = string.Empty;
-				foreach (var dir in AddinManager.GetExtensionNodes<FilePathExtensionNode> (CustomBuildTargetsExtensionPath)) {
-					if (!string.IsNullOrEmpty (customBuildPaths))
-						customBuildPaths += Path.PathSeparator + dir.FilePath;
-					else
-						customBuildPaths = dir.FilePath;
-				}
-				
-				if (!string.IsNullOrEmpty (customBuildPaths)) {
-					string[] buildPathVars = new string[] { "MSBuildExtensionsPath64", "MSBuildExtensionsPath32", "MSBuildExtensionsPath" };
-					string buildPaths;
-					
-					foreach (var env in buildPathVars) {
-						buildPaths = pinfo.EnvironmentVariables[env];
-						if (!string.IsNullOrEmpty (buildPaths))
-							pinfo.EnvironmentVariables[env] = buildPaths + Path.PathSeparator + customBuildPaths;
-						else
-							pinfo.EnvironmentVariables[env] = customBuildPaths;
-					}
-				}
 				
 				Process p = null;
 				try {

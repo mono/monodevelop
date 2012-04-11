@@ -38,10 +38,6 @@
 			<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 		</DotNetProjectSubtype>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/ProjectModel/MSBuildTargets">
-		<Directory path = "MSBuild"/>
-	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "CSharpEmptyFile" resource = "EmptyCSharpFile.xft.xml"/>

@@ -144,10 +144,6 @@
 		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildImportProvider"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildTargets" name = "Custom MSBuild Targets">
-		<ExtensionNode name="Directory" type="MonoDevelop.Core.AddIns.FilePathExtensionNode"/>
-	</ExtensionPoint>
-	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
 		<ExtensionNode name="Source" type="MonoDevelop.Projects.Extensions.MonoDocSourceNode" />
 	</ExtensionPoint>
