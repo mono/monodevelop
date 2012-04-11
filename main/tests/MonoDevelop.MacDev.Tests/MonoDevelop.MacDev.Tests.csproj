@@ -37,6 +37,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral">
       <Package>monodevelop-core-mac-addins</Package>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -64,6 +65,10 @@
     <ProjectReference Include="..\..\contrib\Mono.Cecil\src\symbols\mdb\Mono.Cecil.Mdb.csproj">
       <Project>{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}</Project>
       <Name>Mono.Cecil.Mdb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MacPlatform\MacPlatform.csproj">
+      <Project>{50D6768C-C072-4E79-AFC5-C1C40767EF45}</Project>
+      <Name>MacPlatform</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
