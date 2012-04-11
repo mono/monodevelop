@@ -219,5 +219,18 @@ namespace Mono.TextEditor
 		{
 			Select (data, CaretMoveActions.DownLineEnd);
 		}
+
+		public static void ExpandSelectionToLine (TextEditorData data)
+		{
+			var curLineSegment = data.GetLine (data.Caret.Line).SegmentIncludingDelimiter;
+			var range = data.SelectionRange;
+			var selection = TextSegment.FromBounds (
+				System.Math.Min (range.Offset, curLineSegment.Offset),
+				System.Math.Max (range.EndOffset, curLineSegment.EndOffset));
+			data.Caret.PreserveSelection = true;
+			data.Caret.Offset = selection.EndOffset;
+			data.Caret.PreserveSelection = false;
+			data.SelectionRange = selection;
+		}
 	}
 }

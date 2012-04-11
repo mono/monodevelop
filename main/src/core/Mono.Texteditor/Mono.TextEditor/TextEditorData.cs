@@ -691,6 +691,10 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the selection range. If nothing is selected (Caret.Offset, 0) is returned.
+		/// </summary>
 		public TextSegment SelectionRange {
 			get {
 				return MainSelection != null ? MainSelection.GetSelectionRange (this) : new TextSegment (Caret.Offset, 0);

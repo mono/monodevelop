@@ -226,6 +226,13 @@ namespace Mono.TextEditor
 			return new DocumentRegion (document.OffsetToLocation (Offset), document.OffsetToLocation (EndOffset));
 		}
 
+		public static TextSegment FromBounds (int startOffset, int endOffset)
+		{
+			if (startOffset > endOffset)
+				throw new ArgumentOutOfRangeException ("endOffset", "endOffset < startOffset");
+			return new TextSegment (startOffset, endOffset - startOffset);
+		}
+
 		/// <summary>
 		/// Returns a <see cref="System.String"/> that represents the current <see cref="Mono.TextEditor.TextSegment"/>.
 		/// </summary>

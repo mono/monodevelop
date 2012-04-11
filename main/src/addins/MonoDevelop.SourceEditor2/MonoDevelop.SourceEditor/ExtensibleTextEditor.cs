@@ -883,6 +883,12 @@ namespace MonoDevelop.SourceEditor
 			RunAction (SelectionActions.MoveToDocumentStart);
 		}
 
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelectionToLine)]
+		internal void OnExpandSelectionToLine ()
+		{
+			RunAction (SelectionActions.ExpandSelectionToLine);
+		}
+
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd)]
 		internal void OnSelectionMoveToDocumentEnd ()
 		{
