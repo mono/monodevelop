@@ -8,6 +8,13 @@ all:
 clean:
 	$(XBUILD) src/symbols/mdb/Mono.Cecil.Mdb.csproj $(XBUILD_ARGS)
 
+assemblydir = $(MD_ASSEMBLY_DIR)
+assembly_DATA = \
+	$(BINDIR)/Mono.Cecil.dll \
+	$(BINDIR)/Mono.Cecil.dll.mdb  \
+	$(BINDIR)/Mono.Cecil.Mdb.dll \
+	$(BINDIR)/Mono.Cecil.Mdb.dll.mdb
+
 EXTRA_DIST = \
 	$(wildcard src/*.cs)		\
 	$(wildcard src/*.csproj)	\
