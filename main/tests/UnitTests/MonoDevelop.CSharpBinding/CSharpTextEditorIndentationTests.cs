@@ -161,6 +161,17 @@ namespace MonoDevelop.CSharpBinding
 			CheckOutput (data, "\t\t\"Hello\" +" + eolMarker + "\t\t\"$World\"");
 		}
 
+		/// <summary>
+		/// Bug 3214 - Unclosed String causes 'Enter' key to produce appended String line.
+		/// </summary>
+		[Test]
+		public void TestBug3214 ()
+		{
+			var data = Create ("\"Hello\n\t$");
+			MiscActions.InsertNewLine (data);
+
+			CheckOutput (data, "\"Hello\n\t" + eolMarker + "\t$");
+		}
 	}
 }
 

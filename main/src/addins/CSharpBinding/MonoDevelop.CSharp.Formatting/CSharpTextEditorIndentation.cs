@@ -47,6 +47,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.SourceEditor;
+using ICSharpCode.NRefactory.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -456,6 +457,10 @@ namespace MonoDevelop.CSharp.Formatting
 					textEditorData.Caret.Offset = line.Offset + insertedText.Length;
 					return true;
 				} else if (stateTracker.Engine.IsInsideStringLiteral) {
+					var lexer = new CSharpCompletionEngineBase.MiniLexer (textEditorData.Document.GetTextAt (0, prevLine.EndOffset));
+					lexer.Parse ();
+					if (!lexer.IsInString)
+						return false;
 					textEditorData.EnsureCaretIsNotVirtual ();
 					textEditorData.Insert (prevLine.Offset + prevLine.Length, "\" +");
 
