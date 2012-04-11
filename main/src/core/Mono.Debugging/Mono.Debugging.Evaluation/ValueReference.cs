@@ -210,7 +210,7 @@ namespace Mono.Debugging.Evaluation
 			try {
 				object val = Value;
 				if (ctx.Adapter.IsClassInstance (Context, val))
-					return ctx.Adapter.GetMembersSorted (GetChildrenContext (options), this, ctx.Adapter.GetValueType (Context, val), val);
+					return ctx.Adapter.GetMembersSorted (GetChildrenContext (options), this, Type, val);
 			} catch {
 				// Ignore
 			}
