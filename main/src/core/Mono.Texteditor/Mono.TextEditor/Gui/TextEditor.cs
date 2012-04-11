@@ -696,7 +696,8 @@ namespace Mono.TextEditor
 		{
 			if (popupWindow != null)
 				popupWindow.Destroy ();
-			
+
+			HideTooltip ();
 			Document.EndUndo -= HandleDocumenthandleEndUndo;
 			Document.TextReplaced -= OnDocumentStateChanged;
 			Document.TextSet -= OnTextSet;
