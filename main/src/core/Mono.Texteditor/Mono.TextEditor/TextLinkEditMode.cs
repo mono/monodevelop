@@ -383,12 +383,13 @@ namespace Mono.TextEditor
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			if (window != null) {
-				ListWindowKeyAction action = window.ProcessKey (key, modifier);
+			var wnd = window;
+			if (wnd != null) {
+				ListWindowKeyAction action = wnd.ProcessKey (key, modifier);
 				if ((action & ListWindowKeyAction.Complete) == ListWindowKeyAction.Complete)
 					CompleteWindow ();
 				if ((action & ListWindowKeyAction.CloseWindow) == ListWindowKeyAction.CloseWindow) {
-					closedLink = (TextLink)window.DataProvider;
+					closedLink = (TextLink)wnd.DataProvider;
 					DestroyWindow ();
 				}
 				if ((action & ListWindowKeyAction.Complete) == ListWindowKeyAction.Complete)
@@ -428,7 +429,7 @@ namespace Mono.TextEditor
 				if ((modifier & Gdk.ModifierType.ControlMask) != 0)
 				if (link != null && !link.IsIdentifier)
 					goto default;
-				if (window != null) {
+				if (wnd != null) {
 					CompleteWindow ();
 				} else {
 					ExitTextLinkMode ();
