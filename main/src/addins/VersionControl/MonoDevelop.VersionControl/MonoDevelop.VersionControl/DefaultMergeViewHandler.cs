@@ -28,19 +28,16 @@ using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.VersionControl.Views;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl
 {
-	public class DefaultMergeViewHandler : IFastMergeViewHandler
+	public class DefaultMergeViewHandler : IMergeViewHandler
 	{
-		public bool CanHandle (VersionControlItem item)
+		public bool CanHandle (VersionControlItem item, IViewContent primaryView)
 		{
-			return DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (item.Path));
-		}
-		
-		public IMergeView CreateView (VersionControlItem item, IViewContent primaryView)
-		{
-			return CreateView (new VersionControlDocumentInfo (primaryView, item, item.Repository));
+			return (primaryView == null || primaryView.GetContent <ITextFile> () != null)
+				&& DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (item.Path));
 		}
 
 		public IMergeView CreateView (VersionControlDocumentInfo info)

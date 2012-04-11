@@ -72,12 +72,11 @@ namespace MonoDevelop.VersionControl.Views
 		void TryAttachView <T>(Document document, VersionControlDocumentInfo info, string type)
 			where T : IAttachableViewContent
 		{
-			var handlers = AddinManager.GetExtensionObjects<IVersionControlViewHandler<T>> (type).Where (h => h.CanHandle (info.Item)).ToArray ();
-			var handler = handlers.OfType<IFastVersionControlViewHandler<T>> ().FirstOrDefault ();
+			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler<T>> (type)
+				.Where (h => h.CanHandle (info.Item, info.Document))
+				.FirstOrDefault ();
 			if (handler != null)
 				document.Window.AttachViewContent (handler.CreateView (info));
-			else if (handlers.Length > 0)
-				document.Window.AttachViewContent (handlers [0].CreateView (info.Item, document.PrimaryView));
 		}
 	}
 }
