@@ -336,7 +336,7 @@ namespace Mono.TextEditor
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
 		System.ComponentModel.BackgroundWorker highlightBracketWorker;
 		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
-		Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
+		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 
 		void UpdateBracketHighlighting (object sender, EventArgs e)
 		{
@@ -542,7 +542,7 @@ namespace Mono.TextEditor
 
 			textEditor.GetTextEditorData ().SearchChanged -= HandleSearchChanged;
 
-			arrowCursor.Dispose ();
+			textLinkCursor.Dispose ();
 			xtermCursor.Dispose ();
 
 			DisposeGCs ();
@@ -1934,7 +1934,7 @@ namespace Mono.TextEditor
 				string link = GetLink != null ? GetLink (args) : null;
 
 				if (!String.IsNullOrEmpty (link)) {
-					base.cursor = arrowCursor;
+					base.cursor = textLinkCursor;
 				} else {
 					base.cursor = hoverResult.Cursor ?? xtermCursor;
 				}
