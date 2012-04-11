@@ -239,12 +239,10 @@ namespace MonoDevelop.Refactoring.Rename
 					return result;
 					
 				if (properties.RenameFile && options.SelectedItem is IType) {
-					var cls = (ITypeDefinition)options.SelectedItem;
+					var cls = ((IType)options.SelectedItem).GetDefinition ();
 					int currentPart = 1;
 					HashSet<string> alreadyRenamed = new HashSet<string> ();
 					foreach (var part in cls.Parts) {
-						if (options.Document != null && part.Region.FileName != options.Document.FileName && System.IO.Path.GetFileNameWithoutExtension (part.Region.FileName) != System.IO.Path.GetFileNameWithoutExtension (options.Document.FileName))
-							continue;
 						if (alreadyRenamed.Contains (part.Region.FileName))
 							continue;
 						alreadyRenamed.Add (part.Region.FileName);

@@ -160,8 +160,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (string.IsNullOrEmpty (memberName))
 				return Enumerable.Empty<MemberReference> ();
 			var editor = doc.Editor;
-			var unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
-			var file = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return Enumerable.Empty<MemberReference> ();
+			var unit = parsedDocument.GetAst<CompilationUnit> ();
+			var file = parsedDocument.ParsedFile as CSharpParsedFile;
 			var result = new List<MemberReference> ();
 			
 			foreach (var obj in searchedMembers) {

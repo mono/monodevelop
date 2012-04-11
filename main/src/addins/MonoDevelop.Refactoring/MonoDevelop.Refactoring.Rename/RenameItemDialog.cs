@@ -51,8 +51,8 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 			this.Build ();
 
-			if (options.SelectedItem is ITypeDefinition) {
-				var type = (ITypeDefinition)options.SelectedItem;
+			if (options.SelectedItem is IType) {
+				var type = ((IType)options.SelectedItem).GetDefinition ();
 				if (type.DeclaringType == null) {
 					// not supported for inner types
 					this.renameFileFlag.Visible = true;
