@@ -112,7 +112,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			var ext = System.IO.Path.GetExtension (uri);
 			string mime = null;
-			if (mimemap.Value.TryGetValue (ext, out mime))
+			if (ext != null && mimemap.Value.TryGetValue (ext, out mime))
 				return mime;
 			return null;
 		}
