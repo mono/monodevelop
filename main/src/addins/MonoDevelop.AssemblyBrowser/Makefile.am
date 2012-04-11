@@ -33,7 +33,10 @@ FILES =  \
 	MonoDevelop.AssemblyBrowser/TreeNodes/ModuleReferenceNodeBuilder.cs \
 	MonoDevelop.AssemblyBrowser/TreeNodes/NamespaceBuilder.cs \
 	MonoDevelop.AssemblyBrowser/TreeNodes/ProjectNodeBuilder.cs \
-	MonoDevelop.AssemblyBrowser/TreeNodes/ResourceNodeBuilder.cs 
+	MonoDevelop.AssemblyBrowser/TreeNodes/ResourceNodeBuilder.cs \
+	XmlDocIdLib/CompatibilityType.cs \
+	XmlDocIdLib/OperatorType.cs \
+	XmlDocIdLib/XmlDocIdGenerator.cs 
 
 RES =  \
 	gtk-gui/gui.stetic \

@@ -48,6 +48,7 @@ using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.TextEditor.Theatrics;
 using MonoDevelop.SourceEditor;
+using XmlDocIdLib;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -153,33 +154,31 @@ namespace MonoDevelop.AssemblyBrowser
 				var referencedSegment = ReferencedSegments != null ? ReferencedSegments.FirstOrDefault (seg => seg.Segment.Contains (offset)) : null;
 				if (referencedSegment == null)
 					return null;
-				return null;
-// TODO: Type system conversion.
-//				if (referencedSegment.Reference is TypeDefinition)
-//					return new DomCecilType ((TypeDefinition)referencedSegment.Reference).HelpUrl;
-//				
-//				if (referencedSegment.Reference is MethodDefinition)
-//					return new DomCecilMethod ((MethodDefinition)referencedSegment.Reference).HelpUrl;
-//				
-//				if (referencedSegment.Reference is PropertyDefinition)
-//					return new DomCecilProperty ((PropertyDefinition)referencedSegment.Reference).HelpUrl;
-//				
-//				if (referencedSegment.Reference is FieldDefinition)
-//					return new DomCecilField ((FieldDefinition)referencedSegment.Reference).HelpUrl;
-//				
-//				if (referencedSegment.Reference is EventDefinition)
-//					return new DomCecilEvent ((EventDefinition)referencedSegment.Reference).HelpUrl;
-//				
-//				if (referencedSegment.Reference is FieldDefinition)
-//					return new DomCecilField ((FieldDefinition)referencedSegment.Reference).HelpUrl;
-//				
-//				if (referencedSegment.Reference is TypeReference) {
-//					var returnType = DomCecilMethod.GetReturnType ((TypeReference)referencedSegment.Reference);
-//					if (returnType.GenericArguments.Count == 0)
-//						return "T:" + returnType.FullName;
-//					return "T:" + returnType.FullName + "`" + returnType.GenericArguments.Count;
-//				}
-//				return referencedSegment.Reference.ToString ();
+				if (referencedSegment.Reference is TypeDefinition)
+					return new XmlDocIdGenerator ().GetXmlDocPath ((TypeDefinition)referencedSegment.Reference);
+				
+				if (referencedSegment.Reference is MethodDefinition)
+					return new XmlDocIdGenerator ().GetXmlDocPath ((MethodDefinition)referencedSegment.Reference);
+				
+				if (referencedSegment.Reference is PropertyDefinition)
+					return new XmlDocIdGenerator ().GetXmlDocPath ((PropertyDefinition)referencedSegment.Reference);
+				
+				if (referencedSegment.Reference is FieldDefinition)
+					return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
+				
+				if (referencedSegment.Reference is EventDefinition)
+					return new XmlDocIdGenerator ().GetXmlDocPath ((EventDefinition)referencedSegment.Reference);
+				
+				if (referencedSegment.Reference is FieldDefinition)
+					return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
+				
+/*				if (referencedSegment.Reference is TypeReference) {
+					var returnType = DomCecilMethod.GetReturnType ((TypeReference)referencedSegment.Reference);
+					if (returnType.GenericArguments.Count == 0)
+						return "T:" + returnType.FullName;
+					return "T:" + returnType.FullName + "`" + returnType.GenericArguments.Count;
+				}*/
+				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
 			var scrolledWindow = new SmartScrolledWindow ();
@@ -451,7 +450,27 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			return "unknown entity: " + member;
 		}
-		
+
+		static string GetIdString (MethodDefinition methodDefinition)
+		{
+			var sb = new StringBuilder ();
+			sb.Append ("M:");
+			sb.Append (methodDefinition.FullName);
+			if (methodDefinition.HasGenericParameters) {
+				sb.Append ("`");
+				sb.Append (methodDefinition.GenericParameters.Count);
+			}
+//			AppendHelpParameterList (sb, method.Parameters);
+			return sb.ToString ();
+		}
+
+		static string GetIdString (TypeDefinition typeDefinition)
+		{
+			if (!typeDefinition.HasGenericParameters)
+				return "T:" + typeDefinition.FullName;
+			return "T:" + typeDefinition.FullName + "`" + typeDefinition.GenericParameters.Count;
+		}		
+
 		bool IsMatch (ITreeNavigator nav, string helpUrl, bool searchType)
 		{
 			var member = nav.DataItem as IUnresolvedEntity;

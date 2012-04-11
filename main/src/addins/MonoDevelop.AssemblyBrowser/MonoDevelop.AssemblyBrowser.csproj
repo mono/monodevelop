@@ -151,6 +151,9 @@
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyReferenceFolder.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\AssemblyLoader.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\TreeNodes\ProjectNodeBuilder.cs" />
+    <Compile Include="XmlDocIdLib\CompatibilityType.cs" />
+    <Compile Include="XmlDocIdLib\OperatorType.cs" />
+    <Compile Include="XmlDocIdLib\XmlDocIdGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -178,5 +181,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <Folder Include="MonoDevelop.AssemblyBrowser\TreeNodes\" />
+    <Folder Include="XmlDocIdLib\" />
   </ItemGroup>
 </Project>
