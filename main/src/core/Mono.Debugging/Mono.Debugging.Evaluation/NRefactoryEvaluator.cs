@@ -490,7 +490,7 @@ namespace Mono.Debugging.Evaluation
 			if (res != null)
 				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, res);
 			else
-				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, new EvaluationResult ("No return value."));
+				return LiteralValueReference.CreateVoidReturnLiteral (ctx, name);
 		}
 		
 		public override object VisitInnerClassTypeReference (ICSharpCode.OldNRefactory.Ast.InnerClassTypeReference innerClassTypeReference, object data)

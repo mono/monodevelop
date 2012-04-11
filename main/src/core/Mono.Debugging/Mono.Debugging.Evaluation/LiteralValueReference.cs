@@ -63,6 +63,17 @@ namespace Mono.Debugging.Evaluation
 			return val;
 		}
 		
+		public static LiteralValueReference CreateVoidReturnLiteral (EvaluationContext ctx, string name)
+		{
+			LiteralValueReference val = new LiteralValueReference (ctx);
+			val.name = name;
+			val.value = val.objValue = new EvaluationResult ("No return value.");
+			val.type = typeof (EvaluationResult);
+			val.objLiteral = true;
+			val.objCreated = true;
+			return val;
+		}
+		
 		public override object ObjectValue {
 			get {
 				if (objLiteral)

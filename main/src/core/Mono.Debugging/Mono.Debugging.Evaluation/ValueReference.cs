@@ -198,7 +198,7 @@ namespace Mono.Debugging.Evaluation
 		public virtual ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			try {
-				return ctx.Adapter.GetObjectValueChildren (GetChildrenContext (options), this, Value, index, count);
+				return ctx.Adapter.GetObjectValueChildren (GetChildrenContext (options), this, Type, Value, index, count);
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
 				return new ObjectValue [] { Mono.Debugging.Client.ObjectValue.CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly) };
