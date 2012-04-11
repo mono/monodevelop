@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			newProperty.Getter.Body = BlockStatement.Null;
 			newProperty.Setter.Body = BlockStatement.Null;
 			
-			yield return new CodeAction(context.TranslateString("Remove backing store"), script => {
+			yield return new CodeAction(context.TranslateString("Convert to auto property"), script => {
 				script.Rename((IEntity)field, newProperty.Name);
 				script.Remove (context.RootNode.GetNodeAt<FieldDeclaration> (field.Region.Begin));
 				script.Replace (property, newProperty);

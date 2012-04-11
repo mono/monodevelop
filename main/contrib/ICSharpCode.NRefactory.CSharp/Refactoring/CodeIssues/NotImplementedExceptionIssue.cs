@@ -37,11 +37,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[IssueDescription("Show NotImplementedExceptions", Description="Shows NotImplementedException throws in the quick task bar.", Category = IssueCategories.Notifications, Severity = Severity.Suggestion, IssueMarker = IssueMarker.None)]
 	public class NotImplementedExceptionIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			var visitor = new GatherVisitor (context, this);
-			context.RootNode.AcceptVisitor (visitor);
-			return visitor.FoundIssues;
+			return new GatherVisitor(context, this).GetIssues();
 		}
 
 		class GatherVisitor : GatherVisitorBase

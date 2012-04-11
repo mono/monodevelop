@@ -29,17 +29,38 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// A base class for writing issue provider visitor implementations.
+	/// </summary>
 	class GatherVisitorBase : DepthFirstAstVisitor
 	{
 		protected readonly BaseRefactoringContext ctx;
 
 		public readonly List<CodeIssue> FoundIssues = new List<CodeIssue> ();
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.GatherVisitorBase"/> class.
+		/// </summary>
+		/// <param name='ctx'>
+		/// The refactoring context.
+		/// </param>
 		public GatherVisitorBase (BaseRefactoringContext ctx)
 		{
 			this.ctx = ctx;
 		}
-		
+
+		/// <summary>
+		/// Gets all the issues using the context root node as base.
+		/// </summary>
+		/// <returns>
+		/// The issues.
+		/// </returns>
+		public IEnumerable<CodeIssue> GetIssues()
+		{
+			ctx.RootNode.AcceptVisitor(this);
+			return FoundIssues;
+		}
+
 		protected override void VisitChildren (AstNode node)
 		{
 			if (ctx.CancellationToken.IsCancellationRequested)

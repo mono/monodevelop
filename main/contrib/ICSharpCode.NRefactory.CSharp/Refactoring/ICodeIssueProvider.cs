@@ -28,8 +28,17 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
+	/// <summary>
+	/// The code issue provider gets a list of all code issues in a compilation unit.
+	/// </summary>
 	public interface ICodeIssueProvider
 	{
+		/// <summary>
+		/// Gets all code issues inside a compilation unit.
+		/// </summary>
+		/// <param name='context'>
+		/// The refactoring context of the issues to get.
+		/// </param>
 		IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context);
 	}
 }

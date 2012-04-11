@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return namespacesToKeep; }
 		}
 		
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
 			context.RootNode.AcceptVisitor (visitor);

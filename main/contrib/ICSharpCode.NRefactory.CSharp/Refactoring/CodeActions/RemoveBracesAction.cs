@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return null;
 			if (!(block.Parent is Statement) || block.Parent is TryCatchStatement) 
 				return null;
-			if (block.Statements.Count != 1)
+			if (block.Statements.Count != 1 || block.Statements.First () is VariableDeclarationStatement) 
 				return null;
 			return block;
 		}

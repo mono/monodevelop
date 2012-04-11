@@ -34,6 +34,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Editor;
 using System.ComponentModel.Design;
+using ICSharpCode.NRefactory.CSharp.Analysis;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -119,7 +120,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return resolver.GetConversion(expression, cancellationToken);
 		}
 		#endregion
-		
+
+		#region Code Analyzation
+		/// <summary>
+		/// Creates a new definite assignment analysis object with a given root statement.
+		/// </summary>
+		/// <returns>
+		/// The definite assignment analysis object.
+		/// </returns>
+		/// <param name='root'>
+		/// The root statement.
+		/// </param>
+		public DefiniteAssignmentAnalysis CreateDefiniteAssignmentAnalysis (Statement root)
+		{
+			return new DefiniteAssignmentAnalysis (root, resolver, CancellationToken);
+		}
+		#endregion
+
 		/// <summary>
 		/// Translates the english input string to the context language.
 		/// </summary>

@@ -27,18 +27,36 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
+	/// <summary>
+	/// A code action provides a code transformation with a description.
+	/// </summary>
 	public class CodeAction
 	{
+		/// <summary>
+		/// Gets the description.
+		/// </summary>
 		public string Description {
 			get;
 			private set;
 		}
 
+		/// <summary>
+		/// Gets the code transformation.
+		/// </summary>
 		public Action<Script> Run {
 			get;
 			private set;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction"/> class.
+		/// </summary>
+		/// <param name='description'>
+		/// The description.
+		/// </param>
+		/// <param name='action'>
+		/// The code transformation.
+		/// </param>
 		public CodeAction (string description, Action<Script> action)
 		{
 			if (action == null) {

@@ -2570,7 +2570,7 @@ enum_declaration
 			report.Error (1675, name.Location, "Enums cannot have type parameters");
 		}
 		
-		push_current_container (new Enum (current_container, (TypeExpression) $5, (Modifiers) $2, name, (Attributes) $1), null);
+		push_current_container (new Enum (current_container, (FullNamedExpression) $5, (Modifiers) $2, name, (Attributes) $1), null);
 		if ($5 != null) {
 			lbag.AddMember (current_container, GetModifierLocations (), GetLocation ($3), savedLocation, GetLocation ($7));
 		} else {
@@ -2605,14 +2605,8 @@ opt_enum_base
 	: /* empty */
 	| COLON type
 	 {
-	 	var te = $2 as TypeExpression;
-		if (te == null || !EnumSpec.IsValidUnderlyingType (te.Type)) {
-			Enum.Error_1008 (GetLocation ($2), report);
-			$$ = null;
-		} else {
-			savedLocation = GetLocation ($1);
-			$$ = $2;
-		}
+		savedLocation = GetLocation ($1);
+		$$ = $2;
 	 }
 	| COLON error
 	 {
@@ -4117,6 +4111,11 @@ conditional_expression
 		$$ = new Conditional (new BooleanExpression ((Expression) $1), (Expression) $3, (Expression) $5, GetLocation ($2));
 		lbag.AddLocation ($$, GetLocation ($4));
 	  }
+	| null_coalescing_expression INTERR expression error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new Conditional (new BooleanExpression ((Expression) $1), (Expression) $3, null, GetLocation ($2));
+	  }
 	;
 
 assignment_expression
@@ -5309,6 +5308,11 @@ switch_label
 	 	$$ = new SwitchLabel ((Expression) $2, GetLocation ($1));
 	 	lbag.AddLocation ($$, GetLocation ($3));
 	 }
+	| CASE constant_expression error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new SwitchLabel ((Expression) $2, GetLocation ($1));
+	  }
 	| DEFAULT_COLON
 	  {
 		$$ = new SwitchLabel (null, GetLocation ($1));

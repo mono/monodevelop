@@ -41,11 +41,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	       IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantInternalIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			var visitor = new GatherVisitor (context, this);
-			context.RootNode.AcceptVisitor (visitor);
-			return visitor.FoundIssues;
+			return new GatherVisitor(context, this).GetIssues();
 		}
 
 		class GatherVisitor : GatherVisitorBase

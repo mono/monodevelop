@@ -29,28 +29,58 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
+	/// <summary>
+	/// A code issue marks a region of text with an issue and can provide solution actions for this issue.
+	/// </summary>
 	public class CodeIssue
 	{
+		/// <summary>
+		/// Gets the desription of the issue.
+		/// </summary>
 		public string Desription {
 			get;
 			private set;
 		}
-		
+
+		/// <summary>
+		/// Gets the issue start location.
+		/// </summary>
 		public TextLocation Start {
 			get;
 			private set;
 		}
 		
+		/// <summary>
+		/// Gets the issue end location.
+		/// </summary>
 		public TextLocation End {
 			get;
 			private set;
 		}
 
+		/// <summary>
+		/// Gets a list of potential solutions for the issue.
+		/// </summary>
 		public IList<CodeAction> Actions {
 			get;
 			private set;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue"/> class.
+		/// </summary>
+		/// <param name='description'>
+		/// The desription of the issue.
+		/// </param>
+		/// <param name='start'>
+		/// The issue start location.
+		/// </param>
+		/// <param name='end'>
+		/// the issue end location.
+		/// </param>
+		/// <param name='actions'>
+		/// A list of potential solutions for the issue.
+		/// </param>
 		public CodeIssue(string description, TextLocation start, TextLocation end, IEnumerable<CodeAction> actions = null)
 		{
 			Desription = description;
@@ -62,6 +92,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Actions = EmptyList<CodeAction>.Instance;
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.CSharp.Refactoring.CodeIssue"/> class.
+		/// </summary>
+		/// <param name='description'>
+		/// The desription of the issue.
+		/// </param>
+		/// <param name='start'>
+		/// The issue start location.
+		/// </param>
+		/// <param name='end'>
+		/// the issue end location.
+		/// </param>
+		/// <param name='action'>
+		/// A potential solution for the issue.
+		/// </param>
 		public CodeIssue(string description, TextLocation start, TextLocation end, CodeAction action) : this (description, start, end, action != null ? new [] { action } : null)
 		{
 		}
