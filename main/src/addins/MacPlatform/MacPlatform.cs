@@ -111,7 +111,7 @@ namespace MonoDevelop.MacIntegration
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
 			var ext = System.IO.Path.GetExtension (uri);
-			if (mimemap != null && mimemap.ContainsKey (ext))
+			if (mimemap != null && ext != null && mimemap.ContainsKey (ext))
 				return mimemap [ext];
 			return null;
 		}
