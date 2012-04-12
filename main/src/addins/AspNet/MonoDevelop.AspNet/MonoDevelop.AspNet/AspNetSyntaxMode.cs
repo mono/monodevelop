@@ -74,6 +74,7 @@ namespace MonoDevelop.AspNet
 					End = new Regex ("<%");
 					Color = "template";
 					TagColor = "template.tag";
+					StopAtEol = false;
 				}
 			}
 			
