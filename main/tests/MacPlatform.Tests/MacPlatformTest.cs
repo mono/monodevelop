@@ -36,7 +36,8 @@ namespace MacPlatform.Tests
 			return base.OnGetMimeTypeForUri (url);
 		}
 	}
-
+	
+	[TestFixture]
 	public class MacPlatformTest
 	{
 		[Test]
