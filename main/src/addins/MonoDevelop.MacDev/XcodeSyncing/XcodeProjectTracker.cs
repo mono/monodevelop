@@ -381,7 +381,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			try {
 				var pinfo = infoService.GetProjectInfo (dnp);
 				if (pinfo == null)
-					throw new Exception ("Did not get project info");
+					return true;
 				// FIXME: report progress
 				pinfo.Update (true);
 				userTypes = pinfo.GetTypes ().Where (t => t.IsUserType).ToList ();
