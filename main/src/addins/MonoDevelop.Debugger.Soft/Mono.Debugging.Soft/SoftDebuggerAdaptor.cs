@@ -1014,6 +1014,7 @@ namespace Mono.Debugging.Soft
 		{
 			List<MethodMirror> candidates = new List<MethodMirror> ();
 			TypeMirror currentType = type;
+			
 			while (currentType != null) {
 				//
 				// Use a simple cached stored in SoftDebuggerSession, since
@@ -1021,17 +1022,20 @@ namespace Mono.Debugging.Soft
 				//
 				var cache = ctx.Session.OverloadResolveCache;
 				MethodMirror[] methods = null;
+				
 				if (ctx.CaseSensitive) {
 					lock (cache) {
 						cache.TryGetValue (Tuple.Create (currentType, methodName), out methods);
 					}
 				}
+				
 				if (methods == null) {
 					if (currentType.VirtualMachine.Version.AtLeast (2, 7))
 						methods = currentType.GetMethodsByNameFlags (methodName, BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static, !ctx.CaseSensitive);
 					else
 						methods = currentType.GetMethods ();
 				}
+				
 				if (ctx.CaseSensitive) {
 					lock (cache) {
 						cache [Tuple.Create (currentType, methodName)] = methods;
@@ -1045,11 +1049,16 @@ namespace Mono.Debugging.Soft
 							candidates.Add (met);
 					}
 				}
+				
 				if (methodName == ".ctor")
 					break; // Can't create objects using constructor from base classes
-				currentType = currentType.BaseType;
+				
+				// Make sure that we always pull in at least System.Object methods (this is mostly needed for cases where 'type' was an interface)
+				if (currentType.BaseType == null && currentType.FullName != "System.Object")
+					currentType = ctx.Session.GetType ("System.Object");
+				else
+					currentType = currentType.BaseType;
 			}
-			
 
 			return OverloadResolve (ctx, type.Name, methodName, argtypes, candidates, throwIfNotFound);
 		}
