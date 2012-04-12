@@ -346,7 +346,11 @@ namespace MonoDevelop.CSharp
 			
 			var typeDef = type as ITypeDefinition ?? type.GetDefinition ();
 			if (typeDef != null) {
-				sb.Append (typeDef.Name);
+				if (settings.UseFullName) {
+					sb.Append (typeDef.FullName);
+				} else {
+					sb.Append (typeDef.Name);
+				}
 				
 				if (typeDef.TypeParameterCount > 0) {
 					sb.Append (settings.Markup ("<"));
@@ -474,8 +478,8 @@ namespace MonoDevelop.CSharp
 				return GetTypeReferenceString (type, settings);
 			
 			var result = new StringBuilder ();
-			
-			
+
+
 			var def = type;
 			AppendModifiers (result, settings, def);
 			if (settings.IncludeKeywords)
@@ -490,6 +494,8 @@ namespace MonoDevelop.CSharp
 				result.Append (settings.Markup (" "));
 			}
 			
+			if (settings.UseFullName && !string.IsNullOrEmpty (type.Namespace)) 
+				result.Append (type.Namespace + ".");
 			
 			if (settings.UseFullInnerTypeName && type.DeclaringTypeDefinition != null) {
 				bool includeGenerics = settings.IncludeGenerics;

@@ -278,7 +278,6 @@ namespace MonoDevelop.CSharp.Completion
 			if (curParameter != null) {
 				var returnType = curParameter.Type;
 				if (returnType.Kind == TypeKind.Delegate) {
-					Console.WriteLine (sb.ToString());
 					if (sb.Length > 0) {
 						sb.AppendLine ();
 						sb.AppendLine ();

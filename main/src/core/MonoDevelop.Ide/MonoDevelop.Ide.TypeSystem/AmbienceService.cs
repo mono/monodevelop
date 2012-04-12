@@ -137,7 +137,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			public string FormatBody (string body)
 			{
-				return SmallText ? "<small>" + body.Trim () + Environment.NewLine + "</small>" : body.Trim () + Environment.NewLine;
+				var str = body.Trim ();
+				if (string.IsNullOrEmpty (str))
+					return "";
+				return SmallText ? "<small>" + str + Environment.NewLine + "</small>" : str + Environment.NewLine;
 			}
 		}
 		
@@ -387,7 +390,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 		end:
-			return result.ToString ();
+			return result.ToString ().Trim ();
 		}
 		
 		public static string GetDocumentationMarkup (string doc, DocumentationFormatOptions options)
@@ -459,7 +462,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							}
 							break;
 						case "param":
-							string paramName = xml.GetAttribute ("name") != null ? xml ["name"].Trim (): "";
+							string paramName = xml.GetAttribute ("name") != null ? xml ["name"].Trim () : "";
 								
 							var body = options.FormatBody (ParseBody (xml, xml.Name, options));
 							if (!IsEmptyDocumentation (body)) {
