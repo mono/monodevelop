@@ -46,8 +46,8 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="MonoMac">
-      <HintPath>..\..\..\..\extras\MonoDevelop.MonoMac\MonoDevelop.MonoMac\MonoMac.dll</HintPath>
       <Private>False</Private>
+      <HintPath>..\..\..\..\external\monomac\src\MonoMac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

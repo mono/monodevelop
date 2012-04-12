@@ -24,27 +24,12 @@ DEP_BRANCH_AND_REMOTE[0]="master origin/master"
 DEP[1]=heap-shot
 DEP_NAME[1]=HEAPSHOT
 DEP_PATH[1]=${top_srcdir}/../heap-shot
-DEP_MODULE[1]=git@github.com:mono/heap-shot.git
+DEP_MODULE[1]=git://github.com/mono/heap-shot.git
 DEP_NEEDED_VERSION[1]=552005b42194a80af313393f06ca7dcfe91ec957
 DEP_BRANCH_AND_REMOTE[1]="master origin/master"
 
-#monomac & maccore both for macdoc
-DEP[2]=maccore
-DEP_NAME[2]=MACCORE
-DEP_PATH[2]=${top_srcdir}/../maccore
-DEP_MODULE[2]=git@github.com:mono/maccore.git
-DEP_NEEDED_VERSION[2]=e82e9c57878fe71360fefc17d26346f5fbd2dfea
-DEP_BRANCH_AND_REMOTE[2]="master origin/master"
-
-DEP[3]=monomac
-DEP_NAME[3]=MONOMAC
-DEP_PATH[3]=${top_srcdir}/../monomac
-DEP_MODULE[3]=git@github.com:mono/monomac.git
-DEP_NEEDED_VERSION[3]=ac5a706fc63b65bb9bea1009eca222e76708831d
-DEP_BRANCH_AND_REMOTE[3]="master origin/master"
-
 # other dependencies
-# DEP[4]=...
+# DEP[2]=...
 # ...
 
 function fetch_variables
