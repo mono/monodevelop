@@ -414,6 +414,7 @@ namespace MonoDevelop.Debugger
 		
 		public void RemoveExpression (string exp)
 		{
+			cachedValues.Remove (exp);
 			valueNames.Remove (exp);
 			Refresh ();
 		}
@@ -850,11 +851,14 @@ namespace MonoDevelop.Debugger
 				string exp = (string) store.GetValue (it, NameCol);
 				if (args.NewText == exp)
 					return;
+				
 				int i = valueNames.IndexOf (exp);
 				if (args.NewText.Length != 0)
 					valueNames [i] = args.NewText;
 				else
 					valueNames.RemoveAt (i);
+				
+				cachedValues.Remove (exp);
 				Refresh ();
 			}
 		}
@@ -1094,9 +1098,8 @@ namespace MonoDevelop.Debugger
 				TreeIter it;
 				if (store.GetIter (out it, tp)) {
 					string exp = (string) store.GetValue (it, NameCol);
-					int i = valueNames.IndexOf (exp);
-					if (i != -1)
-						valueNames.RemoveAt (i);
+					cachedValues.Remove (exp);
+					valueNames.Remove (exp);
 				}
 			}
 			Refresh ();
