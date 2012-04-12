@@ -82,7 +82,7 @@ namespace Mono.TextEditor
 			using (var undo = editor.OpenUndoGroup ()) {
 				text = editor.FormatString (Location, text);
 				
-				LineSegment line = editor.Document.GetLineByOffset (offset);
+				DocumentLine line = editor.Document.GetLineByOffset (offset);
 				int insertionOffset = line.Offset + Location.Column - 1;
 				offset = insertionOffset;
 				InsertNewLine (editor, LineBefore, ref offset);

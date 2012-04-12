@@ -8,7 +8,7 @@ namespace Mono.TextEditor
 	{
 		int Count { get; }
 
-		IEnumerable<LineSegment> Lines { get; }
+		IEnumerable<DocumentLine> Lines { get; }
 
 		void Clear ();
 
@@ -18,17 +18,17 @@ namespace Mono.TextEditor
 		/// <param name="text"></param>
 		void Initalize (string text);
 
-		LineSegment Get (int number);
-		LineSegment GetLineByOffset (int offset);
+		DocumentLine Get (int number);
+		DocumentLine GetLineByOffset (int offset);
 		int OffsetToLineNumber (int offset);
 
 		void TextReplaced (object sender, DocumentChangeEventArgs args);
 		void TextRemove (int offset, int length);
 		void TextInsert (int offset, string text);
 
-		IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine);
-		IEnumerable<LineSegment> GetLinesStartingAt (int startLine);
-		IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine);
+		IEnumerable<DocumentLine> GetLinesBetween (int startLine, int endLine);
+		IEnumerable<DocumentLine> GetLinesStartingAt (int startLine);
+		IEnumerable<DocumentLine> GetLinesReverseStartingAt (int startLine);
 
 		event EventHandler<LineEventArgs> LineChanged;
 		event EventHandler<LineEventArgs> LineInserted;

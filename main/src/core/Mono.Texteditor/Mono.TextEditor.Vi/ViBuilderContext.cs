@@ -90,7 +90,7 @@ namespace Mono.TextEditor.Vi
 			data.DeleteSelectedText (data.IsSomethingSelected ? data.MainSelection.SelectionMode != SelectionMode.Block : true);
 			
 			if (!char.IsControl (ch) && data.CanEdit (caret.Line)) {
-				LineSegment line = doc.GetLine (caret.Line);
+				DocumentLine line = doc.GetLine (caret.Line);
 				if (caret.IsInInsertMode || caret.Column >= line.Length + 1) {
 					string text;
 					if (data.HasIndentationTracker) {

@@ -121,7 +121,7 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 
-		public virtual IEnumerable<Chunk> GetChunks (ColorScheme style, LineSegment line, int offset, int length)
+		public virtual IEnumerable<Chunk> GetChunks (ColorScheme style, DocumentLine line, int offset, int length)
 		{
 			SpanParser spanParser = CreateSpanParser (line, null);
 			ChunkParser chunkParser = CreateChunkParser (spanParser, style, line);
@@ -171,7 +171,7 @@ namespace Mono.TextEditor.Highlighting
 			int curOffset = offset;
 			int indentLength = int.MaxValue;
 			while (curOffset < offset + length) {
-				LineSegment line = doc.GetLineByOffset (curOffset);
+				DocumentLine line = doc.GetLineByOffset (curOffset);
 				if (!skipFirstLine) {
 					indentLength = System.Math.Min (indentLength, line.GetIndentation (doc).Length);
 				} else {
@@ -182,12 +182,12 @@ namespace Mono.TextEditor.Highlighting
 			return indentLength == int.MaxValue ? 0 : indentLength;
 		}
 
-		public virtual SpanParser CreateSpanParser (LineSegment line, CloneableStack<Span> spanStack)
+		public virtual SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
 		{
 			return new SpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 
-		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, LineSegment line)
+		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, DocumentLine line)
 		{
 			return new ChunkParser (this, spanParser, style, line);
 		}
@@ -436,11 +436,11 @@ namespace Mono.TextEditor.Highlighting
 			readonly string defaultStyle = "text";
 			protected SpanParser spanParser;
 			protected TextDocument doc;
-			protected LineSegment line;
+			protected DocumentLine line;
 			internal int lineOffset;
 			protected SyntaxMode mode;
 
-			public ChunkParser (SyntaxMode mode, SpanParser spanParser, ColorScheme style, LineSegment line)
+			public ChunkParser (SyntaxMode mode, SpanParser spanParser, ColorScheme style, DocumentLine line)
 			{
 				this.mode = mode;
 				this.doc = mode.Document;

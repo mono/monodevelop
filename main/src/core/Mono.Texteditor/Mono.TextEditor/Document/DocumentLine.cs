@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public abstract class LineSegment : ICSharpCode.NRefactory.Editor.IDocumentLine
+	public abstract class DocumentLine : ICSharpCode.NRefactory.Editor.IDocumentLine
 	{
 		List<TextMarker> markers;
 
@@ -162,14 +162,14 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Gets the next line. Returns null if this is the last line in the document.
 		/// </summary>
-		public abstract LineSegment NextLine { get; }
+		public abstract DocumentLine NextLine { get; }
 
 		/// <summary>
 		/// Gets the previous line. Returns null if this is the first line in the document.
 		/// </summary>
-		public abstract LineSegment PreviousLine { get; }
+		public abstract DocumentLine PreviousLine { get; }
 
-		protected LineSegment (int length, int delimiterLength)
+		protected DocumentLine (int length, int delimiterLength)
 		{
 			LengthIncludingDelimiter          = length;
 			DelimiterLength = delimiterLength;
@@ -293,7 +293,7 @@ namespace Mono.TextEditor
 			return Offset <= segment.Offset && segment.EndOffset <= EndOffsetIncludingDelimiter;
 		}
 
-		public static implicit operator TextSegment (LineSegment line)
+		public static implicit operator TextSegment (DocumentLine line)
 		{
 			return new TextSegment (line.Offset, line.LengthIncludingDelimiter);
 		}

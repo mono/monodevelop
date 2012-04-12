@@ -89,7 +89,7 @@ namespace Mono.TextEditor
 		{
 			if (data.Document.LineCount <= 1 || !data.CanEdit (data.Caret.Line))
 				return;
-			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			DocumentLine line = data.Document.GetLine (data.Caret.Line);
 			data.Remove (line.Offset, line.LengthIncludingDelimiter);
 			data.Caret.Column = DocumentLocation.MinColumn;
 		}
@@ -153,11 +153,11 @@ namespace Mono.TextEditor
 			// Virtual indentation needs to be fixed before to have the same behavior
 			// if it's there or not (otherwise user has to press multiple backspaces in some cases)
 			data.FixVirtualIndentation ();
-			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			DocumentLine line = data.Document.GetLine (data.Caret.Line);
 			if (data.Caret.Column > line.Length + 1) {
 				data.Caret.Column = line.Length + 1;
 			} else if (data.Caret.Offset == line.Offset) {
-				LineSegment lineAbove = data.Document.GetLine (data.Caret.Line - 1);
+				DocumentLine lineAbove = data.Document.GetLine (data.Caret.Line - 1);
 				data.Remove (lineAbove.EndOffsetIncludingDelimiter - lineAbove.DelimiterLength, lineAbove.DelimiterLength);
 			} else {
 				removeCharBeforeCaret (data);
@@ -191,7 +191,7 @@ namespace Mono.TextEditor
 					data.Caret.PreserveSelection = true;
 					col--;
 					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
-						LineSegment lineSegment = data.Document.GetLine (lineNumber);
+						DocumentLine lineSegment = data.Document.GetLine (lineNumber);
 						if (col < lineSegment.Length)
 							data.Remove (lineSegment.Offset + col, 1);
 					}
@@ -208,7 +208,7 @@ namespace Mono.TextEditor
 			using (var undoGroup = data.OpenUndoGroup()) {
 				data.EnsureCaretIsNotVirtual ();
 
-				LineSegment line = data.Document.GetLine (data.Caret.Line);
+				DocumentLine line = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column == line.Length + 1) {
 					if (data.Caret.Line < data.Document.LineCount) { 
 						data.Remove (line.EndOffsetIncludingDelimiter - line.DelimiterLength, line.DelimiterLength);

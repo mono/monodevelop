@@ -1035,7 +1035,7 @@ namespace MonoDevelop.SourceEditor
 		void CaretPositionChanged (object o, DocumentLocationEventArgs args)
 		{
 			UpdateLineCol ();
-			LineSegment curLine = TextEditor.Document.GetLine (TextEditor.Caret.Line);
+			DocumentLine curLine = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			MonoDevelop.SourceEditor.MessageBubbleTextMarker marker = null;
 			if (curLine != null && curLine.Markers.Any (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker)) {
 				marker = (MonoDevelop.SourceEditor.MessageBubbleTextMarker)curLine.Markers.First (m => m is MonoDevelop.SourceEditor.MessageBubbleTextMarker);
@@ -1375,8 +1375,8 @@ namespace MonoDevelop.SourceEditor
 			string blockEnd = blockEnds[0];
 
 			using (var undo = Document.OpenUndoGroup ()) {
-				LineSegment startLine;
-				LineSegment endLine;
+				DocumentLine startLine;
+				DocumentLine endLine;
 	
 				if (TextEditor.IsSomethingSelected) {
 					startLine = Document.GetLineByOffset (textEditor.SelectionRange.Offset);
@@ -1416,7 +1416,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			string commentTag = lineComments [0];
 
-			foreach (LineSegment line in this.textEditor.SelectedLines) {
+			foreach (DocumentLine line in this.textEditor.SelectedLines) {
 				if (line.GetIndentation (TextEditor.Document).Length == line.Length)
 					continue;
 				string text = Document.GetTextAt (line);
@@ -1435,7 +1435,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
 		{
-			LineSegment line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
+			DocumentLine line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			if (line == null) {
 				info.Visible = false;
 				return;
@@ -1446,7 +1446,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void OnToggleErrorTextMarker ()
 		{
-			LineSegment line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
+			DocumentLine line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
 			if (line == null)
 				return;
 			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
@@ -1465,11 +1465,11 @@ namespace MonoDevelop.SourceEditor
 			if (endLineNr < 0)
 				endLineNr = Document.LineCount;
 			
-			LineSegment anchorLine = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
+			DocumentLine anchorLine = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
 			int anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
 			
 			using (var undo = Document.OpenUndoGroup ()) {
-				foreach (LineSegment line in TextEditor.SelectedLines) {
+				foreach (DocumentLine line in TextEditor.SelectedLines) {
 //					if (line.GetIndentation (TextEditor.Document).Length == line.EditableLength)
 //						continue;
 					TextEditor.Insert (line.Offset, commentTag);
@@ -1505,13 +1505,13 @@ namespace MonoDevelop.SourceEditor
 			int endLineNr   = TextEditor.IsSomethingSelected ? Document.OffsetToLineNumber (TextEditor.SelectionRange.EndOffset) : TextEditor.Caret.Line;
 			if (endLineNr < 0)
 				endLineNr = Document.LineCount;
-			LineSegment anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
+			DocumentLine anchorLine   = TextEditor.IsSomethingSelected ? TextEditor.Document.GetLineByOffset (TextEditor.SelectionAnchor) : null;
 			int         anchorColumn = TextEditor.IsSomethingSelected ? TextEditor.SelectionAnchor - anchorLine.Offset : -1;
 			
 			using (var undo = Document.OpenUndoGroup ()) {
 				int first = -1;
 				int last  = 0;
-				foreach (LineSegment line in TextEditor.SelectedLines) {
+				foreach (DocumentLine line in TextEditor.SelectedLines) {
 					string text = Document.GetTextAt (line);
 					string trimmedText = text.TrimStart ();
 					int length = 0;
@@ -1588,7 +1588,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		public Error Info { get; private set; }
 		
-		public ErrorMarker (Error info, LineSegment line)
+		public ErrorMarker (Error info, DocumentLine line)
 		{
 			this.Info = info;
 			this.LineSegment = line; // may be null if no line is assigned to the error.

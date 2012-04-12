@@ -149,7 +149,7 @@ namespace MonoDevelop.CSharp.Formatting
 			lastInsertedSemicolon = -1;
 			if (keyChar == ';' && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get ("SmartSemicolonPlacement", false)) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
-				LineSegment curLine = textEditorData.Document.GetLine (textEditorData.Caret.Line);
+				DocumentLine curLine = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 				string text = textEditorData.Document.GetTextAt (curLine);
 				if (text.EndsWith (";") || text.Trim ().StartsWith ("for"))
 					return retval;
@@ -259,7 +259,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return base.KeyPress (key, keyChar, modifier);
 		}
 
-		static int GuessSemicolonInsertionOffset (TextEditorData data, LineSegment curLine)
+		static int GuessSemicolonInsertionOffset (TextEditorData data, DocumentLine curLine)
 		{
 			int offset = data.Caret.Offset;
 			int lastNonWsOffset = offset;
@@ -413,11 +413,11 @@ namespace MonoDevelop.CSharp.Formatting
 		public static bool FixLineStart (TextEditorData textEditorData, DocumentStateTracker<CSharpIndentEngine> stateTracker, int lineNumber)
 		{
 			if (lineNumber > DocumentLocation.MinLine) {
-				LineSegment line = textEditorData.Document.GetLine (lineNumber);
+				DocumentLine line = textEditorData.Document.GetLine (lineNumber);
 				if (line == null)
 					return false;
 
-				LineSegment prevLine = textEditorData.Document.GetLine (lineNumber - 1);
+				DocumentLine prevLine = textEditorData.Document.GetLine (lineNumber - 1);
 				if (prevLine == null)
 					return false;
 				string trimmedPreviousLine = textEditorData.Document.GetTextAt (prevLine).TrimStart ();
@@ -478,7 +478,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			string newIndent = string.Empty;
 			int cursor = textEditorData.Caret.Offset;
-			LineSegment line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
+			DocumentLine line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
 			for (int max = cursor; max < line.Offset + line.Length; max++) {

@@ -564,7 +564,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				bool previousWasBlank = false;
 				for (int i = 1; i <= doc.LineCount; i++) {
-					Mono.TextEditor.LineSegment line = doc.GetLine (i);
+					Mono.TextEditor.DocumentLine line = doc.GetLine (i);
 					bool isBlank, isBracket;
 					CheckLine (doc, line, out isBlank, out isBracket);
 					if (isBlank && previousWasBlank && line.LengthIncludingDelimiter > 0) {
@@ -579,7 +579,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
-		static void CheckLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.LineSegment line, out bool isBlank, out bool isBracket)
+		static void CheckLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.DocumentLine line, out bool isBlank, out bool isBracket)
 		{
 			isBlank = true;
 			isBracket = false;

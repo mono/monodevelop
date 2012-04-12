@@ -353,7 +353,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var doc = new TextDocument ();
 			doc.Text = text;
 			var result = new StringBuilder ();
-			foreach (LineSegment line in doc.Lines) {
+			foreach (DocumentLine line in doc.Lines) {
 				string curLineIndent = line.GetIndentation (doc);
 				int offset = Math.Min (curLineIndent.Length, indent.Length);
 				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffsetIncludingDelimiter));
@@ -366,7 +366,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var doc = new TextDocument ();
 			doc.Text = text;
 			var result = new StringBuilder ();
-			foreach (LineSegment line in doc.Lines) {
+			foreach (DocumentLine line in doc.Lines) {
 				if (result.Length > 0)
 					result.Append (indent);
 				result.Append (doc.GetTextAt (line));

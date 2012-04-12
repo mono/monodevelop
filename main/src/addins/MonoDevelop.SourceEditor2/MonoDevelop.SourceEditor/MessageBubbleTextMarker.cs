@@ -102,7 +102,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		Task task;
-		LineSegment lineSegment;
+		DocumentLine lineSegment;
 //		int editorAllocHeight = -1;
 //		int lastLineLength = -1;
 		internal double lastHeight = 0;
@@ -173,7 +173,7 @@ namespace MonoDevelop.SourceEditor
 //		}
 
 		string initialText;
-		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, LineSegment lineSegment, bool isError, string errorMessage)
+		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, DocumentLine lineSegment, bool isError, string errorMessage)
 		{
 			this.cache = cache;
 			this.task = task;
@@ -632,7 +632,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		#region IIconBarMarker implementation
 
-		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double x, double y, double width, double height)
+		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
 		{
 			if (DebuggingService.IsDebugging)
 				return;

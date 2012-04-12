@@ -460,7 +460,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			}
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
-			LineSegment line = doc.GetLine (lineNr);
+			DocumentLine line = doc.GetLine (lineNr);
 			if (line == null) {
 				textRenderer.Markup = "Invalid line number " + lineNr + " from offset: " + searchResult.Offset;
 				return;
@@ -606,7 +606,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (doc == null)
 				return DocumentLocation.Empty;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
-			LineSegment line = doc.GetLine (lineNr);
+			DocumentLine line = doc.GetLine (lineNr);
 			return new DocumentLocation (lineNr, searchResult.Offset - line.Offset + 1);
 		}
 		
@@ -641,7 +641,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				var doc = GetDocument (result);
 				if (doc == null)
 					continue;
-				LineSegment line = doc.GetLine (loc.Line);
+				DocumentLine line = doc.GetLine (loc.Line);
 				
 				sb.AppendFormat ("{0} ({1}, {2}):{3}", result.FileName, loc.Line, loc.Column, doc.GetTextAt (line.Offset, line.Length));
 				sb.AppendLine ();

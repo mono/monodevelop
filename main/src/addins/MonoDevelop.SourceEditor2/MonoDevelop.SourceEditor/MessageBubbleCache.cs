@@ -38,7 +38,7 @@ namespace MonoDevelop.SourceEditor
 		internal Gdk.Pixbuf warningPixbuf;
 		
 		internal Dictionary<string, LayoutDescriptor> textWidthDictionary = new Dictionary<string, LayoutDescriptor> ();
-		internal Dictionary<LineSegment, double> lineWidthDictionary = new Dictionary<LineSegment, double> ();
+		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
 		
 		internal TextEditor editor;
 		
@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 			SetColors ();
 		}
 
-		public bool RemoveLine (LineSegment line)
+		public bool RemoveLine (DocumentLine line)
 		{
 			if (!lineWidthDictionary.ContainsKey (line))
 				return false;

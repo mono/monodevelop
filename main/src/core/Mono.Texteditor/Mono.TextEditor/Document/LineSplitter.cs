@@ -34,9 +34,9 @@ namespace Mono.TextEditor
 {
 	public class LineSplitter : ILineSplitter
 	{
-		public IEnumerable<LineSegment> Lines {
+		public IEnumerable<DocumentLine> Lines {
 			get {
-				foreach (LineSegment line in tree)
+				foreach (DocumentLine line in tree)
 					yield return line;
 			}
 		}
@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 			Clear ();
 		}
 
-		public IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine)
+		public IEnumerable<DocumentLine> GetLinesBetween (int startLine, int endLine)
 		{
 			var startNode = GetNode (startLine - 1);
 			if (startNode == null)
@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 			} while (startNode != null && curLine++ < endLine);
 		}
 
-		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
+		public IEnumerable<DocumentLine> GetLinesStartingAt (int startLine)
 		{
 			var startNode = GetNode (startLine - 1);
 			if (startNode == null)
@@ -69,7 +69,7 @@ namespace Mono.TextEditor
 			} while (startNode != null);
 		}
 
-		public IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine)
+		public IEnumerable<DocumentLine> GetLinesReverseStartingAt (int startLine)
 		{
 			var startNode = GetNode (startLine);
 			if (startNode == null)
@@ -80,12 +80,12 @@ namespace Mono.TextEditor
 			} while (startNode != null);
 		}
 
-		public LineSegment Get (int number)
+		public DocumentLine Get (int number)
 		{
 			return GetNode (number - 1);
 		}
 
-		public LineSegment GetLineByOffset (int offset)
+		public DocumentLine GetLineByOffset (int offset)
 		{
 			return Get (OffsetToLineNumber (offset));
 		}
@@ -257,7 +257,7 @@ namespace Mono.TextEditor
 		}
 
 		#region Line segment tree
-		class TreeNode : LineSegment, IRedBlackTreeNode
+		class TreeNode : DocumentLine, IRedBlackTreeNode
 		{
 			public override int LineNumber {
 				get {
@@ -295,7 +295,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public override LineSegment NextLine {
+			public override DocumentLine NextLine {
 				get {
 					if (right != null)
 						return right.GetOuterLeft ();
@@ -309,7 +309,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public override LineSegment PreviousLine {
+			public override DocumentLine PreviousLine {
 				get {
 					if (left != null)
 						return left.GetOuterRight ();

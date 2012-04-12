@@ -71,13 +71,13 @@ namespace Mono.TextEditor
 			}
 		}*/
 		
-		public LineSegment StartLine { 
+		public DocumentLine StartLine { 
 			get {
 				return doc.GetLineByOffset (Offset);
 			} 
 		}
 		
-		public LineSegment EndLine {
+		public DocumentLine EndLine {
 			get {
 				return doc.GetLineByOffset (EndOffset);
 			}

@@ -72,7 +72,7 @@ namespace Mono.TextEditor
 		{
 			base.MousePressed (args);
 			
-			LineSegment lineSegment = args.LineSegment;
+			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
 				foreach (TextMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
@@ -85,7 +85,7 @@ namespace Mono.TextEditor
 		{
 			base.MouseReleased (args);
 			
-			LineSegment lineSegment = args.LineSegment;
+			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
 				foreach (TextMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
@@ -98,7 +98,7 @@ namespace Mono.TextEditor
 		{
 			base.MouseHover (args);
 			args.Editor.TooltipText = null;
-			LineSegment lineSegment = args.LineSegment;
+			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
 				foreach (TextMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
@@ -107,7 +107,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, LineSegment lineSegment, int line, double x, double y, double lineHeight)
+		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
 			ctx.Rectangle (x, y, Width, lineHeight);
 			ctx.Color = backgroundColor;
@@ -158,12 +158,12 @@ namespace Mono.TextEditor
 			private set;
 		}
 
-		public LineSegment LineSegment {
+		public DocumentLine LineSegment {
 			get;
 			private set;
 		}
 		
-		public BookmarkMarginDrawEventArgs (TextEditor editor, Cairo.Context context, LineSegment line, int lineNumber, double xPos, double yPos)
+		public BookmarkMarginDrawEventArgs (TextEditor editor, Cairo.Context context, DocumentLine line, int lineNumber, double xPos, double yPos)
 		{
 			this.Editor = editor;
 			this.Context    = context;

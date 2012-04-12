@@ -43,10 +43,10 @@ namespace Mono.TextEditor.Vi
 			}
 			
 			int line = data.Caret.Line + 1;
-			LineSegment currentLine = data.Document.GetLine (line);
+			DocumentLine currentLine = data.Document.GetLine (line);
 			while (line <= data.Document.LineCount) {
 				line++;
-				LineSegment nextLine = data.Document.GetLine (line);
+				DocumentLine nextLine = data.Document.GetLine (line);
 				if (currentLine.Length != 0 && nextLine.Length == 0) {
 					data.Caret.Offset = nextLine.Offset;
 					return;
@@ -65,10 +65,10 @@ namespace Mono.TextEditor.Vi
 			}
 			
 			int line = data.Caret.Line - 1;
-			LineSegment currentLine = data.Document.GetLine (line);
+			DocumentLine currentLine = data.Document.GetLine (line);
 			while (line > DocumentLocation.MinLine) {
 				line--;
-				LineSegment previousLine = data.Document.GetLine (line);
+				DocumentLine previousLine = data.Document.GetLine (line);
 				if (currentLine.Length != 0 && previousLine.Length == 0) {
 					data.Caret.Offset = previousLine.Offset;
 					return;
@@ -81,7 +81,7 @@ namespace Mono.TextEditor.Vi
 		
 		public static void NewLineBelow (TextEditorData data)
 		{
-			LineSegment currentLine = data.Document.GetLine (data.Caret.Line);
+			DocumentLine currentLine = data.Document.GetLine (data.Caret.Line);
 			data.Caret.Offset = currentLine.Offset + currentLine.Length;
 			MiscActions.InsertNewLine (data);
 		}
@@ -95,7 +95,7 @@ namespace Mono.TextEditor.Vi
 				return;
 			}
 			
-			LineSegment currentLine = data.Document.GetLine (data.Caret.Line - 1);
+			DocumentLine currentLine = data.Document.GetLine (data.Caret.Line - 1);
 			data.Caret.Offset = currentLine.Offset + currentLine.Length;
 			MiscActions.InsertNewLine (data);
 		}
@@ -118,7 +118,7 @@ namespace Mono.TextEditor.Vi
 			if (endLine > data.Document.LineCount)
 				return;
 			
-			LineSegment seg = data.Document.GetLine (startLine);
+			DocumentLine seg = data.Document.GetLine (startLine);
 			startOffset = seg.Offset;
 			StringBuilder sb = new StringBuilder (data.Document.GetTextAt (seg).TrimEnd ());
 			lastSpaceOffset = startOffset + sb.Length;
@@ -157,7 +157,7 @@ namespace Mono.TextEditor.Vi
 					ch = Char.ToLower (ch);
 				var caretOffset = data.Caret.Offset;
 				int length = data.Replace (caretOffset, 1, new string (ch, 1));
-				LineSegment seg = data.Document.GetLine (data.Caret.Line);
+				DocumentLine seg = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column < seg.Length)
 					data.Caret.Offset = caretOffset + length;
 			}
@@ -165,7 +165,7 @@ namespace Mono.TextEditor.Vi
 		
 		public static void Right (TextEditorData data)
 		{
-			LineSegment segment = data.Document.GetLine (data.Caret.Line);
+			DocumentLine segment = data.Document.GetLine (data.Caret.Line);
 			if (segment.EndOffsetIncludingDelimiter-1 > data.Caret.Offset) {
 				CaretMoveActions.Right (data);
 				RetreatFromLineEnd (data);

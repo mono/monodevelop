@@ -132,7 +132,7 @@ namespace Mono.TextEditor
 		bool StartsInLineComment (TextDocument document, int offset)
 		{
 			List<string> lineComments = GetList (document, "LineComment");
-			LineSegment line = document.GetLineByOffset (offset);
+			DocumentLine line = document.GetLineByOffset (offset);
 			for (int i = line.Offset ; i < offset; i++) {
 				if (StartsWithListMember (document, lineComments, i) >= 0)
 					return true;
@@ -142,7 +142,7 @@ namespace Mono.TextEditor
 		
 		int GetLastSourceCodePosition (TextDocument document, int lineOffset)
 		{
-			LineSegment line = document.GetLineByOffset (lineOffset);
+			DocumentLine line = document.GetLineByOffset (lineOffset);
 			bool isInBlockComment = false;
 			bool isInLineComment  = false;
 			int  curStringQuote   = -1;

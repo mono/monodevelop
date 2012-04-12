@@ -99,7 +99,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (document.Text, testText);
 			
 			document.Remove (0, document.TextLength);
-			LineSegment line = document.GetLine (1);
+			DocumentLine line = document.GetLine (1);
 			Assert.AreEqual (0, line.Offset);
 			Assert.AreEqual (0, line.LengthIncludingDelimiter);
 			Assert.AreEqual (0, document.TextLength);
@@ -118,7 +118,7 @@ namespace Mono.TextEditor.Tests
 			
 			document.Remove(0, document.TextLength);
 			
-			LineSegment line = document.GetLine (1);
+			DocumentLine line = document.GetLine (1);
 			Assert.AreEqual(0, line.Offset);
 			Assert.AreEqual(0, line.LengthIncludingDelimiter);
 			Assert.AreEqual(0, document.TextLength);
@@ -137,7 +137,7 @@ namespace Mono.TextEditor.Tests
 			
 			document.Insert (top.Length, testText);
 			
-			LineSegment line = document.GetLine (document.LineCount);
+			DocumentLine line = document.GetLine (document.LineCount);
 			
 			Assert.AreEqual (top.Length - 1, line.Offset);
 			Assert.AreEqual (testText.Length + 1, line.LengthIncludingDelimiter);
@@ -152,13 +152,13 @@ namespace Mono.TextEditor.Tests
 			}
 			Assert.AreEqual (101, document.LineCount);
 			for (int i = 0; i < 100; i++) {
-				LineSegment line = document.GetLine (i + 1 );
+				DocumentLine line = document.GetLine (i + 1 );
 				Assert.AreEqual (99 - i, line.Length);
 				Assert.AreEqual (Environment.NewLine.Length, line.DelimiterLength);
 			}
 			
 			for (int i = 0; i < 100; i++) {
-				LineSegment line = document.GetLine (1);
+				DocumentLine line = document.GetLine (1);
 				document.Remove (line.Length, line.DelimiterLength);
 			}
 			Assert.AreEqual (1, document.LineCount);

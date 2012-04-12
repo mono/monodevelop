@@ -294,7 +294,7 @@ namespace Mono.TextEditor
 						int startCol = System.Math.Min (visStart.Column, visEnd.Column);
 						int endCol = System.Math.Max (visStart.Column, visEnd.Column);
 						for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
-							LineSegment curLine = data.Document.GetLine (lineNr);
+							DocumentLine curLine = data.Document.GetLine (lineNr);
 							int col1 = curLine.GetLogicalColumn (data, startCol) - 1;
 							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol) - 1, curLine.Length);
 							if (col1 < col2) {
@@ -382,7 +382,7 @@ namespace Mono.TextEditor
 								int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
 								int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
 								int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, col);
-								LineSegment curLine;
+								DocumentLine curLine;
 								int lineCol = col;
 								result = 0;
 								for (int i = 0; i < lines.Length; i++) {
@@ -405,7 +405,7 @@ namespace Mono.TextEditor
 								}
 							} else if (pasteLine) {
 								result = text.Length;
-								LineSegment curLine = data.Document.GetLine (data.Caret.Line);
+								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
 								data.Insert (curLine.Offset, text + data.EolMarker);
 							} else {
 								int offset = data.Caret.Offset;
@@ -439,7 +439,7 @@ namespace Mono.TextEditor
 							int maxLine = data.MainSelection.MaxLine;
 							var visualInsertLocation = data.LogicalToVisualLocation (data.Caret.Location);
 							for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
-								LineSegment lineSegment = data.GetLine (lineNumber);
+								DocumentLine lineSegment = data.GetLine (lineNumber);
 								int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
 								if (lineSegment.Length < insertOffset) {
 									int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.Length + 1);

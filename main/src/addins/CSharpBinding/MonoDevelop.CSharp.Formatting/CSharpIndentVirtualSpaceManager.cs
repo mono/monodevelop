@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Formatting
 		string GetIndentationString (int offset, DocumentLocation loc)
 		{
 			stateTracker.UpdateEngine (Math.Min (data.Length, offset + 1));
-			LineSegment line = data.Document.GetLine (loc.Line);
+			DocumentLine line = data.Document.GetLine (loc.Line);
 
 			// Get context to the end of the line w/o changing the main engine's state
 			var ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();

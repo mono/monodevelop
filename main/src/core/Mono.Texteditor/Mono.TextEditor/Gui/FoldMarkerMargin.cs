@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 	public class FoldMarkerMargin : Margin
 	{
 		TextEditor editor;
-		LineSegment lineHover;
+		DocumentLine lineHover;
 		Pango.Layout layout;
 		
 		double foldSegmentSize = 8;
@@ -80,7 +80,7 @@ namespace Mono.TextEditor
 		{
 			if (!IsInCodeFocusMode) 
 				return;
-			LineSegment lineSegment = editor.Document.GetLine (editor.Caret.Line);
+			DocumentLine lineSegment = editor.Document.GetLine (editor.Caret.Line);
 			if (lineSegment == null) {
 				RemoveBackgroundRenderer ();
 				return;
@@ -129,7 +129,7 @@ namespace Mono.TextEditor
 		{
 			base.MouseHover (args);
 			
-			LineSegment lineSegment = null;
+			DocumentLine lineSegment = null;
 			if (args.LineSegment != null) {
 				lineSegment = args.LineSegment;
 				if (lineHover != lineSegment) {
@@ -265,7 +265,7 @@ namespace Mono.TextEditor
 		List<FoldSegment> containingFoldings = new List<FoldSegment> ();
 		List<FoldSegment> endFoldings        = new List<FoldSegment> ();
 		
-		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment lineSegment, int line, double x, double y, double lineHeight)
+		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
 			foldSegmentSize = marginWidth * 4 / 6;
 			foldSegmentSize -= (foldSegmentSize) % 2;

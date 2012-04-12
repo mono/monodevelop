@@ -240,7 +240,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 			
 			
-			bool EndsWithContinuation (Span span, LineSegment line)
+			bool EndsWithContinuation (Span span, DocumentLine line)
 			{
 				return !span.StopAtEol || span.StopAtEol && !string.IsNullOrEmpty (span.Continuation) &&
 					line != null && doc.GetTextAt (line).Trim ().EndsWith (span.Continuation);

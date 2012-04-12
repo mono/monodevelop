@@ -70,7 +70,7 @@ data.Document.Text =
 123456789";
 			
 			data.SelectionAnchor = 3;
-			LineSegment line = data.Document.GetLine (3);
+			DocumentLine line = data.Document.GetLine (3);
 			
 			Assert.IsFalse (data.IsSomethingSelected);
 			data.ExtendSelectionTo (line.Offset + 3);

@@ -49,7 +49,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (data.Caret.Column > DocumentLocation.MinColumn) {
-				LineSegment line = data.Document.GetLine (data.Caret.Line);
+				DocumentLine line = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column > line.Length + 1) {
 					if (data.Caret.AllowCaretBehindLineEnd) {
 						data.Caret.Column--;
@@ -64,7 +64,7 @@ namespace Mono.TextEditor
 					data.Caret.Offset = offset;
 				}
 			} else if (data.Caret.Line > DocumentLocation.MinLine) {
-				LineSegment prevLine = data.Document.GetLine (data.Caret.Line - 1);
+				DocumentLine prevLine = data.Document.GetLine (data.Caret.Line - 1);
 				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, prevLine.Length + 1);
 			}
 		}
@@ -87,7 +87,7 @@ namespace Mono.TextEditor
 				return;
 			}
 			
-			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			DocumentLine line = data.Document.GetLine (data.Caret.Line);
 			IEnumerable<FoldSegment > foldings = data.Document.GetStartFoldings (line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
@@ -206,7 +206,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		static int GetHomeMark (TextDocument document, LineSegment line)
+		static int GetHomeMark (TextDocument document, DocumentLine line)
 		{
 			int result;
 			for (result = 0; result < line.Length; result++)
@@ -220,7 +220,7 @@ namespace Mono.TextEditor
 			if (!data.Caret.PreserveSelection)
 				data.ClearSelection ();
 
-			LineSegment line = data.Document.GetLine (data.Caret.Line);
+			DocumentLine line = data.Document.GetLine (data.Caret.Line);
 			int newColumn;
 			if (firstNonWhitespace) {
 

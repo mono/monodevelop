@@ -109,7 +109,7 @@ namespace Mono.TextEditor
 			bool extendSelection = (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
 			if (lineNumber <= editor.Document.LineCount) {
 				DocumentLocation loc = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
-				LineSegment line = args.LineSegment;
+				DocumentLine line = args.LineSegment;
 				if (args.Type == EventType.TwoButtonPress) {
 					if (line != null)
 						editor.MainSelection = new Selection (loc, GetLineEndLocation (editor.GetTextEditorData (), lineNumber));
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 		
 		public static DocumentLocation GetLineEndLocation (TextEditorData data, int lineNumber)
 		{
-			LineSegment line = data.Document.GetLine (lineNumber);
+			DocumentLine line = data.Document.GetLine (lineNumber);
 			
 			DocumentLocation result = new DocumentLocation (lineNumber, line.Length + 1);
 			
@@ -191,7 +191,7 @@ namespace Mono.TextEditor
 			lineNumberHighlightGC = editor.ColorStyle.LineNumberFgHighlighted;
 		}
 		
-		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment lineSegment, int line, double x, double y, double lineHeight)
+		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
 			cr.Rectangle (x, y, Width, lineHeight);
 			cr.Color = lineNumberBgGC;

@@ -286,13 +286,13 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 		
-		public override SpanParser CreateSpanParser (LineSegment line, CloneableStack<Span> spanStack)
+		public override SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
 		{
 			EnsureGuiDocument ();
 			return new CSharpSpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 		
-		public override ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, LineSegment line)
+		public override ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, DocumentLine line)
 		{
 			EnsureGuiDocument ();
 			return new CSharpChunkParser (this, spanParser, style, line);
@@ -411,7 +411,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}*/
 			CSharpSyntaxMode csharpSyntaxMode;
 			
-			public CSharpChunkParser (CSharpSyntaxMode csharpSyntaxMode, SpanParser spanParser, ColorScheme style, LineSegment line) : base (csharpSyntaxMode, spanParser, style, line)
+			public CSharpChunkParser (CSharpSyntaxMode csharpSyntaxMode, SpanParser spanParser, ColorScheme style, DocumentLine line) : base (csharpSyntaxMode, spanParser, style, line)
 			{
 				this.csharpSyntaxMode = csharpSyntaxMode;
 				foreach (var tag in CommentTag.SpecialCommentTags) {
@@ -853,7 +853,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			void ScanPreProcessorElseIf (ref int i)
 			{
-				LineSegment line = doc.GetLineByOffset (i);
+				DocumentLine line = doc.GetLineByOffset (i);
 				int length = line.Offset + line.Length - i;
 				string parameter = doc.GetTextAt (i + 5, length - 5);
 					

@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 		int FindNextWordOffset (TextDocument doc, int offset, bool subword)
 		{
 			int lineNumber   = doc.OffsetToLineNumber (offset);
-			LineSegment line = doc.GetLine (lineNumber);
+			DocumentLine line = doc.GetLine (lineNumber);
 			if (line == null)
 				return offset;
 			
@@ -81,7 +81,7 @@ namespace Mono.TextEditor
 		int FindPrevWordOffset (TextDocument doc, int offset, bool subword)
 		{
 			int lineNumber = doc.OffsetToLineNumber (offset);
-			LineSegment line = doc.GetLine (lineNumber);
+			DocumentLine line = doc.GetLine (lineNumber);
 			if (line == null)
 				return offset;
 			

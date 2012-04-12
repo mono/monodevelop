@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var member in type.Members) {
 				TextLocation domLocation = member.BodyRegion.End;
 				if (domLocation.Line <= 0) {
-					LineSegment lineSegment = data.GetLine (member.Region.BeginLine);
+					DocumentLine lineSegment = data.GetLine (member.Region.BeginLine);
 					if (lineSegment == null)
 						continue;
 					domLocation = new TextLocation (member.Region.BeginLine, lineSegment.Length + 1);
@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void CheckEndPoint (TextDocument doc, InsertionPoint point, bool isStartPoint)
 		{
-			LineSegment line = doc.GetLine (point.Location.Line);
+			DocumentLine line = doc.GetLine (point.Location.Line);
 			if (line == null)
 				return;
 			
@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static void CheckStartPoint (TextDocument doc, InsertionPoint point, bool isEndPoint)
 		{
-			LineSegment line = doc.GetLine (point.Location.Line);
+			DocumentLine line = doc.GetLine (point.Location.Line);
 			if (line == null)
 				return;
 			if (doc.GetLineIndent (line).Length + 1 == point.Location.Column) {
@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static InsertionPoint GetInsertionPosition (TextDocument doc, int line, int column)
 		{
 			int bodyEndOffset = doc.LocationToOffset (line, column) + 1;
-			LineSegment curLine = doc.GetLine (line);
+			DocumentLine curLine = doc.GetLine (line);
 			if (curLine != null) {
 				if (bodyEndOffset < curLine.Offset + curLine.Length) {
 					// case1: positition is somewhere inside the start line
@@ -297,7 +297,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			
 			// -> if position is at line end check next line
-			LineSegment nextLine = doc.GetLine (line + 1);
+			DocumentLine nextLine = doc.GetLine (line + 1);
 			if (nextLine == null) // check for 1 line case.
 				return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
 			

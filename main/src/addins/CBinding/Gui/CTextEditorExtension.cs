@@ -137,7 +137,7 @@ namespace CBinding
 			return -1;
 		}
 		
-		static int GetClosingBraceForLine (TextEditorData editor, LineSegment line, out int openingLine)
+		static int GetClosingBraceForLine (TextEditorData editor, DocumentLine line, out int openingLine)
 		{
 			int offset = SearchMatchingBracket (editor, line.Offset, '{', '}', -1);
 			if (offset == -1) {

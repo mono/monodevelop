@@ -79,7 +79,7 @@ namespace Mono.TextEditor
 		public static void ClearAll (TextEditorData data)
 		{
 			bool redraw = false;
-			foreach (LineSegment line in data.Document.Lines) {
+			foreach (DocumentLine line in data.Document.Lines) {
 				redraw |= line.IsBookmarked;
 				line.IsBookmarked = false;
 			}

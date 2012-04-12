@@ -55,7 +55,7 @@ namespace Mono.TextEditor
 			this.roles = new Roles[this.foldSegments.Count];
 		}
 
-		public void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment lineSegment, double x, double y, double lineHeight)
+		public void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, double x, double y, double lineHeight)
 		{
 			int foundSegment = -1;
 			if (lineSegment != null) {
@@ -98,12 +98,12 @@ namespace Mono.TextEditor
 				double xPos = textViewMargin.XOffset;
 				double rectangleWidth = editor.Allocation.Width - xPos;
 				if (segment >= 0) {
-					LineSegment segmentStartLine = foldSegments [segment].StartLine;
+					DocumentLine segmentStartLine = foldSegments [segment].StartLine;
 					lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentStartLine, segmentStartLine.Offset, segmentStartLine.Length, -1, -1);
 					Pango.Rectangle rectangle = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
 					xPos = System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value));
 					
-					LineSegment segmentEndLine = foldSegments [segment].EndLine;
+					DocumentLine segmentEndLine = foldSegments [segment].EndLine;
 					lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentEndLine, segmentEndLine.Offset, segmentEndLine.Length, -1, -1);
 					rectangle = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
 					xPos = System.Math.Min (xPos, System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangle.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));

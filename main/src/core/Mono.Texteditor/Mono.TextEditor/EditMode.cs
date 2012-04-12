@@ -112,14 +112,14 @@ namespace Mono.TextEditor
 
 				char ch = (char)unicodeKey;
 				if (!char.IsControl (ch) && textEditorData.CanEdit (Caret.Line)) {
-					LineSegment line = Document.GetLine (Caret.Line);
+					DocumentLine line = Document.GetLine (Caret.Line);
 					if (Caret.IsInInsertMode || Caret.Column >= line.Length + 1) {
 						string text = ch.ToString ();
 						if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
 							int length = 0;
 							var visualInsertLocation = editor.LogicalToVisualLocation (Caret.Location);
 							for (int lineNumber = textEditorData.MainSelection.MinLine; lineNumber <= textEditorData.MainSelection.MaxLine; lineNumber++) {
-								LineSegment lineSegment = textEditorData.GetLine (lineNumber);
+								DocumentLine lineSegment = textEditorData.GetLine (lineNumber);
 								int insertOffset = lineSegment.GetLogicalColumn (textEditorData, visualInsertLocation.Column) - 1;
 								string textToInsert;
 								if (lineSegment.Length < insertOffset) {

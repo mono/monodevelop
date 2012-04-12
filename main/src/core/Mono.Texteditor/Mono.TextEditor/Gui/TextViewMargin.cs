@@ -178,12 +178,12 @@ namespace Mono.TextEditor
 			RemoveCachedLine (e.Line);
 		}
 
-		List<LineSegment> linesToRemove = new List<LineSegment> ();
+		List<DocumentLine> linesToRemove = new List<DocumentLine> ();
 		void HandleVAdjustmentValueChanged (object sender, EventArgs e)
 		{
 			int startLine = (int)(textEditor.GetTextEditorData ().VAdjustment.Value / LineHeight);
 			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / LineHeight) + 1;
-			foreach (LineSegment line in layoutDict.Keys) {
+			foreach (DocumentLine line in layoutDict.Keys) {
 				int curLine = Document.OffsetToLineNumber (line.Offset);
 				if (startLine - 5 >= curLine || endLine + 5 <= curLine) {
 					linesToRemove.Add (line);
@@ -714,7 +714,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void GetSelectionOffsets (LineSegment line, out int selectionStart, out int selectionEnd)
+		void GetSelectionOffsets (DocumentLine line, out int selectionStart, out int selectionEnd)
 		{
 			selectionStart = -1;
 			selectionEnd = -1;
@@ -758,7 +758,7 @@ namespace Mono.TextEditor
 				private set;
 			}
 
-			protected LineDescriptor (LineSegment line, int offset, int length)
+			protected LineDescriptor (DocumentLine line, int offset, int length)
 			{
 				this.Offset = offset;
 				this.Length = length;
@@ -766,7 +766,7 @@ namespace Mono.TextEditor
 				this.Spans = line.StartSpan;
 			}
 
-			public bool Equals (LineSegment line, int offset, int length, out bool isInvalid)
+			public bool Equals (DocumentLine line, int offset, int length, out bool isInvalid)
 			{
 				isInvalid = MarkerLength != line.MarkerCount || !line.StartSpan.Equals (Spans);
 				return offset == Offset && Length == length && !isInvalid;
@@ -788,7 +788,7 @@ namespace Mono.TextEditor
 				private set;
 			}
 
-			public LayoutDescriptor (LineSegment line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(line, offset, length)
+			public LayoutDescriptor (DocumentLine line, int offset, int length, LayoutWrapper layout, int selectionStart, int selectionEnd) : base(line, offset, length)
 			{
 				this.Layout = layout;
 				if (selectionEnd >= 0) {
@@ -805,7 +805,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public bool Equals (LineSegment line, int offset, int length, int selectionStart, int selectionEnd, out bool isInvalid)
+			public bool Equals (DocumentLine line, int offset, int length, int selectionStart, int selectionEnd, out bool isInvalid)
 			{
 				int selStart = 0, selEnd = 0;
 				if (selectionEnd >= 0) {
@@ -835,9 +835,9 @@ namespace Mono.TextEditor
 			}
 		}
 
-		Dictionary<LineSegment, LayoutDescriptor> layoutDict = new Dictionary<LineSegment, LayoutDescriptor> ();
+		Dictionary<DocumentLine, LayoutDescriptor> layoutDict = new Dictionary<DocumentLine, LayoutDescriptor> ();
 		
-		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, LineSegment line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
+		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
 			LayoutDescriptor descriptor;
@@ -969,7 +969,7 @@ namespace Mono.TextEditor
 			return wrapper;
 		}
 
-		public void RemoveCachedLine (LineSegment line)
+		public void RemoveCachedLine (DocumentLine line)
 		{
 			if (line == null)
 				return;
@@ -1006,14 +1006,14 @@ namespace Mono.TextEditor
 				get;
 				private set;
 			}
-			public ChunkDescriptor (LineSegment line, int offset, int length, Chunk[] chunk) : base(line, offset, length)
+			public ChunkDescriptor (DocumentLine line, int offset, int length, Chunk[] chunk) : base(line, offset, length)
 			{
 				this.Chunk = chunk;
 			}
 		}
 
-		Dictionary<LineSegment, ChunkDescriptor> chunkDict = new Dictionary<LineSegment, ChunkDescriptor> ();
-		IEnumerable<Chunk> GetCachedChunks (ISyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorScheme style, LineSegment line, int offset, int length)
+		Dictionary<DocumentLine, ChunkDescriptor> chunkDict = new Dictionary<DocumentLine, ChunkDescriptor> ();
+		IEnumerable<Chunk> GetCachedChunks (ISyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line, int offset, int length)
 		{
 			ChunkDescriptor descriptor;
 			if (chunkDict.TryGetValue (line, out descriptor)) {
@@ -1031,7 +1031,7 @@ namespace Mono.TextEditor
 
 		public void ForceInvalidateLine (int lineNr)
 		{
-			LineSegment line = Document.GetLine (lineNr);
+			DocumentLine line = Document.GetLine (lineNr);
 			LayoutDescriptor descriptor;
 			if (line != null && layoutDict.TryGetValue (line, out descriptor)) {
 				descriptor.Dispose ();
@@ -1197,7 +1197,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, LineSegment line, int offset, int length, int selectionStart, int selectionEnd)
+		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			return CreateLinePartLayout (mode, line, -1, offset, length, selectionStart, selectionEnd);
 		}
@@ -1319,7 +1319,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public LayoutWrapper GetLayout (LineSegment line)
+		public LayoutWrapper GetLayout (DocumentLine line)
 		{
 			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			return CreateLinePartLayout (mode, line, line.Offset, line.Length, -1, -1);
@@ -1340,7 +1340,7 @@ namespace Mono.TextEditor
 			cr.Stroke ();
 		}
 
-		void DrawLinePart (Cairo.Context cr, LineSegment line, int lineNumber, int logicalRulerColumn, int offset, int length, ref double pangoPosition, ref bool isSelectionDrawn, double y, double maxX)
+		void DrawLinePart (Cairo.Context cr, DocumentLine line, int lineNumber, int logicalRulerColumn, int offset, int length, ref double pangoPosition, ref bool isSelectionDrawn, double y, double maxX)
 		{
 			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			int selectionStart;
@@ -1547,7 +1547,7 @@ namespace Mono.TextEditor
 			return TextSegment.Invalid;
 		}
 
-		void DrawEolMarker (Cairo.Context cr, LineSegment line, bool selected, double x, double y)
+		void DrawEolMarker (Cairo.Context cr, DocumentLine line, bool selected, double x, double y)
 		{
 			Pango.Layout layout;
 			switch (line.DelimiterLength) {
@@ -1626,7 +1626,7 @@ namespace Mono.TextEditor
 				clickLocation = trans.PointToLocation (args.X, args.Y);
 				if (clickLocation.Line < DocumentLocation.MinLine || clickLocation.Column < DocumentLocation.MinColumn)
 					return;
-				LineSegment line = Document.GetLine (clickLocation.Line);
+				DocumentLine line = Document.GetLine (clickLocation.Line);
 				bool isHandled = false;
 				if (line != null) {
 					foreach (TextMarker marker in line.Markers) {
@@ -1776,7 +1776,7 @@ namespace Mono.TextEditor
 			StringBuilder textBuilder = new StringBuilder ();
 			int curOffset = previewSegment.Offset;
 			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.TextLength) {
-				LineSegment line = Document.GetLineByOffset (curOffset);
+				DocumentLine line = Document.GetLineByOffset (curOffset);
 				string lineText = Document.GetTextAt (curOffset, line.Offset + line.Length - curOffset);
 				textBuilder.Append (lineText);
 				textBuilder.AppendLine ();
@@ -1867,7 +1867,7 @@ namespace Mono.TextEditor
 //			return null;
 //		};
 
-		public LineSegment HoveredLine {
+		public DocumentLine HoveredLine {
 			get;
 			set;
 		}
@@ -1978,8 +1978,8 @@ namespace Mono.TextEditor
 				break;
 			case MouseSelectionMode.WholeLine:
 				//textEditor.SetSelectLines (loc.Line, textEditor.MainSelection.Anchor.Line);
-				LineSegment line1 = textEditor.Document.GetLine (loc.Line);
-				LineSegment line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
+				DocumentLine line1 = textEditor.Document.GetLine (loc.Line);
+				DocumentLine line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
 				Caret.Offset = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffsetIncludingDelimiter;
 				if (textEditor.MainSelection != null)
 					textEditor.MainSelection.Lead = Caret.Location;
@@ -2071,7 +2071,7 @@ namespace Mono.TextEditor
 			if (lineNr < 0)
 				return result;
 
-			LineSegment line = lineNr <= Document.LineCount ? Document.GetLine (lineNr) : null;
+			DocumentLine line = lineNr <= Document.LineCount ? Document.GetLine (lineNr) : null;
 			//			int xStart = XOffset;
 			int y = (int)(LineToY (lineNr) - textEditor.VAdjustment.Value);
 			//			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
@@ -2151,7 +2151,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment line, int lineNr, double x, double y, double _lineHeight)
+		protected internal override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine line, int lineNr, double x, double y, double _lineHeight)
 		{
 //			double xStart = System.Math.Max (area.X, XOffset);
 //			xStart = System.Math.Max (0, xStart);
@@ -2335,7 +2335,7 @@ namespace Mono.TextEditor
 		{
 			TextViewMargin margin;
 			int lineNumber;
-			LineSegment line;
+			DocumentLine line;
 			int xPos = 0;
 			
 			public bool WasInLine {
@@ -2484,7 +2484,7 @@ namespace Mono.TextEditor
 		
 		public Cairo.Point LocationToPoint (DocumentLocation loc, bool useAbsoluteCoordinates)
 		{
-			LineSegment line = Document.GetLine (loc.Line);
+			DocumentLine line = Document.GetLine (loc.Line);
 			if (line == null)
 				return new Cairo.Point (-1, -1);
 			int x = (int)(ColumnToX (line, loc.Column) + this.XOffset + this.TextStartPosition);
@@ -2492,7 +2492,7 @@ namespace Mono.TextEditor
 			return useAbsoluteCoordinates ? new Cairo.Point (x, y) : new Cairo.Point (x - (int)this.textEditor.HAdjustment.Value, y - (int)this.textEditor.VAdjustment.Value);
 		}
 		
-		public double ColumnToX (LineSegment line, int column)
+		public double ColumnToX (DocumentLine line, int column)
 		{
 			column--;
 			if (line == null || line.Length == 0 || column < 0)
@@ -2635,7 +2635,7 @@ namespace Mono.TextEditor
 			return visualLine * LineHeight + delta;*/
 		}
 		
-		public double GetLineHeight (LineSegment line)
+		public double GetLineHeight (DocumentLine line)
 		{
 			if (line == null)
 				return LineHeight;

@@ -59,9 +59,9 @@ namespace Mono.TextEditor
 	
 	public class TextMarker
 	{
-		LineSegment lineSegment;
+		DocumentLine lineSegment;
 		
-		public LineSegment LineSegment {
+		public DocumentLine LineSegment {
 			get {
 				return lineSegment;
 			}
@@ -108,7 +108,7 @@ namespace Mono.TextEditor
 		string style;
 		int startColumn;
 		int endColumn;
-		LineSegment line;
+		DocumentLine line;
 		UrlType urlType;
 		TextDocument doc;
 		
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public UrlMarker (TextDocument doc, LineSegment line, string url, UrlType urlType, string style, int startColumn, int endColumn)
+		public UrlMarker (TextDocument doc, DocumentLine line, string url, UrlType urlType, string style, int startColumn, int endColumn)
 		{
 			this.doc = doc;
 			this.line = line;
@@ -198,7 +198,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public interface IIconBarMarker
 	{
-		void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double xPos, double yPos, double width, double height);
+		void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double xPos, double yPos, double width, double height);
 		void MousePress (MarginMouseEventArgs args);
 		void MouseRelease (MarginMouseEventArgs args);
 		void MouseHover (MarginMouseEventArgs args);

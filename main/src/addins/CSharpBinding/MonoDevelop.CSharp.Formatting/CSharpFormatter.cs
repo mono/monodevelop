@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public override void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
 			TextEditorData data, int line)
 		{
-			LineSegment lineSegment = data.Document.GetLine (line);
+			DocumentLine lineSegment = data.Document.GetLine (line);
 			if (lineSegment == null)
 				return;
 

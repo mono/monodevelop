@@ -123,14 +123,14 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			int mergeStart = 0;
 			while ((mergeStart = doc.IndexOf ("<<<<<<<", mergeStart, doc.TextLength - mergeStart, StringComparison.Ordinal)) >= 0) {
-				LineSegment start = doc.GetLineByOffset (mergeStart);
+				DocumentLine start = doc.GetLineByOffset (mergeStart);
 				if (start.Offset != mergeStart)
 					continue;
 				int dividerOffset = doc.IndexOf ("=======", mergeStart, doc.TextLength - mergeStart, StringComparison.Ordinal);
-				LineSegment divider = doc.GetLineByOffset (dividerOffset);
+				DocumentLine divider = doc.GetLineByOffset (dividerOffset);
 
 				int endOffset = doc.IndexOf (">>>>>>>", dividerOffset, doc.TextLength - dividerOffset, StringComparison.Ordinal);
-				LineSegment end = doc.GetLineByOffset (endOffset);
+				DocumentLine end = doc.GetLineByOffset (endOffset);
 				mergeStart = dividerOffset + 1;
 
 				yield return new Conflict (new TextSegment (start.EndOffsetIncludingDelimiter, divider.Offset - start.EndOffsetIncludingDelimiter),
@@ -169,7 +169,7 @@ namespace MonoDevelop.VersionControl.Views
 			LeftDiff  = new List<Mono.TextEditor.Utils.Hunk> (editors[0].Document.Diff (MainEditor.Document));
 			RightDiff = new List<Mono.TextEditor.Utils.Hunk> (editors[2].Document.Diff (MainEditor.Document));
 
-			LineSegment line;
+			DocumentLine line;
 			LeftDiff.RemoveAll (item => null != (line = MainEditor.Document.GetLine (item.InsertStart)) &&
 				currentConflicts.Any (c => c.StartSegment.Offset <= line.Offset && line.Offset < c.EndSegment.EndOffset));
 			RightDiff.RemoveAll (item => null != (line = MainEditor.Document.GetLine (item.InsertStart)) &&

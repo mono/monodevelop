@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 		
 		public string GetIndentationString (int offset)
 		{
-			LineSegment line = doc.GetLineByOffset (offset);
+			DocumentLine line = doc.GetLineByOffset (offset);
 			if (line == null)
 				return "";
 			return line.GetIndentation (doc);
@@ -68,7 +68,7 @@ namespace Mono.TextEditor
 		
 		public string GetIndentationString (int lineNumber, int column)
 		{
-			LineSegment line = doc.GetLine (lineNumber);
+			DocumentLine line = doc.GetLine (lineNumber);
 			if (line == null)
 				return "";
 			return line.GetIndentation (doc);

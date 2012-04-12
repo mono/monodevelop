@@ -65,7 +65,7 @@ namespace MonoDevelop.DocFood
 			if (keyChar != '/')
 				return base.KeyPress (key, keyChar, modifier);
 			
-			LineSegment line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
+			DocumentLine line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 			string text = textEditorData.Document.GetTextAt (line.Offset, line.Length);
 			
 			if (!text.EndsWith ("//"))
@@ -96,7 +96,7 @@ namespace MonoDevelop.DocFood
 		bool IsEmptyBetweenLines (int start, int end)
 		{
 			for (int i = start + 1; i < end - 1; i++) {
-				LineSegment lineSegment = textEditorData.GetLine (i);
+				DocumentLine lineSegment = textEditorData.GetLine (i);
 				if (lineSegment == null)
 					break;
 				if (lineSegment.Length != textEditorData.GetLineIndent (lineSegment).Length)

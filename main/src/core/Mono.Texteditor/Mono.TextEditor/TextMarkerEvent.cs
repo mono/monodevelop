@@ -34,7 +34,7 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public TextMarkerEvent (LineSegment line, TextMarker textMarker) : base (line)
+		public TextMarkerEvent (DocumentLine line, TextMarker textMarker) : base (line)
 		{
 			this.TextMarker = textMarker;
 		}

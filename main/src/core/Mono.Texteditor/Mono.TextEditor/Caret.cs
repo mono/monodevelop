@@ -340,7 +340,7 @@ namespace Mono.TextEditor
 			if (doc == null)
 				return;
 			if (Line <= doc.LineCount) {
-				LineSegment line = doc.GetLine (Line);
+				DocumentLine line = doc.GetLine (Line);
 				if (line != null) {
 					result = line.Offset;
 					result += System.Math.Min (Column - 1, line.Length);

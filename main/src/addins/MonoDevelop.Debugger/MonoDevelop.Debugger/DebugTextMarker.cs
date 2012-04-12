@@ -57,7 +57,7 @@ namespace MonoDevelop.Debugger
 			this.editor = editor;
 		}
 		
-		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double x, double y, double width, double height)
+		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
 		{
 			double size;
 			if (width > height) {

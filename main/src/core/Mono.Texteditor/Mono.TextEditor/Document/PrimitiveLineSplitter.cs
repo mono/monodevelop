@@ -12,7 +12,7 @@ namespace Mono.TextEditor
 		int textLength;
 		List<LineSplitter.Delimiter> delimiters = new List<LineSplitter.Delimiter> ();
 
-		sealed class PrimitiveLineSegment : LineSegment
+		sealed class PrimitiveLineSegment : DocumentLine
 		{
 			readonly PrimitiveLineSplitter splitter;
 			readonly int lineNumber;
@@ -25,13 +25,13 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public override LineSegment NextLine {
+			public override DocumentLine NextLine {
 				get {
 					return splitter.Get (lineNumber + 1);
 				}
 			}
 
-			public override LineSegment PreviousLine {
+			public override DocumentLine PreviousLine {
 				get {
 					return splitter.Get (lineNumber - 1);
 				}
@@ -49,7 +49,7 @@ namespace Mono.TextEditor
 			get { return delimiters.Count + 1; }
 		}
 
-		public IEnumerable<LineSegment> Lines {
+		public IEnumerable<DocumentLine> Lines {
 			get { return GetLinesStartingAt (DocumentLocation.MinLine); }
 		}
 
@@ -78,7 +78,7 @@ namespace Mono.TextEditor
 			textLength = 0;
 		}
 
-		public LineSegment Get (int number)
+		public DocumentLine Get (int number)
 		{
 			number--;
 			if (number < 0)
@@ -96,7 +96,7 @@ namespace Mono.TextEditor
 			return new PrimitiveLineSegment (this, number, startOffset, endOffset - startOffset, delimiterLength);
 		}
 
-		public LineSegment GetLineByOffset (int offset)
+		public DocumentLine GetLineByOffset (int offset)
 		{
 			return Get (OffsetToLineNumber (offset));
 		}
@@ -126,19 +126,19 @@ namespace Mono.TextEditor
 			throw new NotSupportedException ("Operation not supported on this line splitter.");
 		}
 
-		public IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine)
+		public IEnumerable<DocumentLine> GetLinesBetween (int startLine, int endLine)
 		{
 			for (int i = startLine; i <= endLine; i++)
 				yield return Get (i);
 		}
 
-		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
+		public IEnumerable<DocumentLine> GetLinesStartingAt (int startLine)
 		{
 			for (int i = startLine; i <= Count; i++)
 				yield return Get (i);
 		}
 
-		public IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine)
+		public IEnumerable<DocumentLine> GetLinesReverseStartingAt (int startLine)
 		{
 			for (int i = startLine; i-- > DocumentLocation.MinLine;)
 				yield return Get (i);

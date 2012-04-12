@@ -240,7 +240,7 @@ namespace Mono.TextEditor
 					link.CurrentText = Editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, link.PrimaryLink.Length);
 				foreach (TextSegment segment in link.Links) {
 					Editor.Document.EnsureOffsetIsUnfolded (baseOffset + segment.Offset);
-					LineSegment line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
+					DocumentLine line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
 					if (line.GetMarker (typeof(TextLinkMarker)) != null)
 						continue;
 					TextLinkMarker marker = (TextLinkMarker)line.GetMarker (typeof(TextLinkMarker));

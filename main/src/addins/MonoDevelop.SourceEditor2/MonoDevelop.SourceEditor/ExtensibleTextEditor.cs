@@ -309,7 +309,7 @@ namespace MonoDevelop.SourceEditor
 				return true;
 
 			bool inStringOrComment = false;
-			LineSegment line = Document.GetLine (Caret.Line);
+			DocumentLine line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return true;
 			bool inChar = false;
@@ -433,7 +433,7 @@ namespace MonoDevelop.SourceEditor
 		internal string GetErrorInformationAt (int offset)
 		{
 			DocumentLocation location = Document.OffsetToLocation (offset);
-			LineSegment line = Document.GetLine (location.Line);
+			DocumentLine line = Document.GetLine (location.Line);
 			if (line == null)
 				return null;
 			var error = line.Markers.FirstOrDefault (m => m is ErrorMarker) as ErrorMarker;

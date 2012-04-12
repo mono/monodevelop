@@ -412,7 +412,7 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Line Splitter operations
-		public IEnumerable<LineSegment> Lines {
+		public IEnumerable<DocumentLine> Lines {
 			get {
 				return splitter.Lines;
 			}
@@ -424,17 +424,17 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public IEnumerable<LineSegment> GetLinesBetween (int startLine, int endLine)
+		public IEnumerable<DocumentLine> GetLinesBetween (int startLine, int endLine)
 		{
 			return splitter.GetLinesBetween (startLine, endLine);
 		}
 
-		public IEnumerable<LineSegment> GetLinesStartingAt (int startLine)
+		public IEnumerable<DocumentLine> GetLinesStartingAt (int startLine)
 		{
 			return splitter.GetLinesStartingAt (startLine);
 		}
 
-		public IEnumerable<LineSegment> GetLinesReverseStartingAt (int startLine)
+		public IEnumerable<DocumentLine> GetLinesReverseStartingAt (int startLine)
 		{
 			return splitter.GetLinesReverseStartingAt (startLine);
 		}
@@ -450,7 +450,7 @@ namespace Mono.TextEditor
 //				throw new ArgumentException ("column < MinColumn");
 			if (location.Line > this.splitter.Count || location.Line < DocumentLocation.MinLine)
 				return -1;
-			LineSegment line = GetLine (location.Line);
+			DocumentLine line = GetLine (location.Line);
 			return System.Math.Min (TextLength, line.Offset + System.Math.Max (0, System.Math.Min (line.Length, location.Column - 1)));
 		}
 		
@@ -459,7 +459,7 @@ namespace Mono.TextEditor
 			int lineNr = splitter.OffsetToLineNumber (offset);
 			if (lineNr < DocumentLocation.MinLine)
 				return DocumentLocation.Empty;
-			LineSegment line = GetLine (lineNr);
+			DocumentLine line = GetLine (lineNr);
 			return new DocumentLocation (lineNr, System.Math.Min (line.LengthIncludingDelimiter, offset - line.Offset) + 1);
 		}
 
@@ -468,14 +468,14 @@ namespace Mono.TextEditor
 			return GetLineIndent (GetLine (lineNumber));
 		}
 		
-		public string GetLineIndent (LineSegment segment)
+		public string GetLineIndent (DocumentLine segment)
 		{
 			if (segment == null)
 				return "";
 			return segment.GetIndentation (this);
 		}
 		
-		public LineSegment GetLine (int lineNumber)
+		public DocumentLine GetLine (int lineNumber)
 		{
 			if (lineNumber < DocumentLocation.MinLine)
 				return null;
@@ -483,7 +483,7 @@ namespace Mono.TextEditor
 			return splitter.Get (lineNumber);
 		}
 		
-		public LineSegment GetLineByOffset (int offset)
+		public DocumentLine GetLineByOffset (int offset)
 		{
 			return splitter.GetLineByOffset (offset);
 		}
@@ -703,7 +703,7 @@ namespace Mono.TextEditor
 			Changed
 		}
 		
-		public LineState GetLineState (LineSegment line)
+		public LineState GetLineState (DocumentLine line)
 		{
 			if (line == null)
 				return LineState.Unchanged;
@@ -1058,8 +1058,8 @@ namespace Mono.TextEditor
 						newFoldedSegments.Add (curSegment);
 					oldIndex++;
 				} else {
-					LineSegment startLine = splitter.GetLineByOffset (offset);
-					LineSegment endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
+					DocumentLine startLine = splitter.GetLineByOffset (offset);
+					DocumentLine endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
 					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
 					newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
@@ -1125,7 +1125,7 @@ namespace Mono.TextEditor
 			return GetFoldingContaining(this.GetLine (lineNumber));
 		}
 				
-		public IEnumerable<FoldSegment> GetFoldingContaining (LineSegment line)
+		public IEnumerable<FoldSegment> GetFoldingContaining (DocumentLine line)
 		{
 			if (line == null)
 				return new FoldSegment[0];
@@ -1137,7 +1137,7 @@ namespace Mono.TextEditor
 			return GetStartFoldings (this.GetLine (lineNumber));
 		}
 		
-		public IEnumerable<FoldSegment> GetStartFoldings (LineSegment line)
+		public IEnumerable<FoldSegment> GetStartFoldings (DocumentLine line)
 		{
 			if (line == null)
 				return new FoldSegment[0];
@@ -1149,7 +1149,7 @@ namespace Mono.TextEditor
 			return GetStartFoldings (this.GetLine (lineNumber));
 		}
 		
-		public IEnumerable<FoldSegment> GetEndFoldings (LineSegment line)
+		public IEnumerable<FoldSegment> GetEndFoldings (DocumentLine line)
 		{
 			foreach (FoldSegment segment in GetFoldingContaining (line)) {
 				if (segment.EndLine.Offset == line.Offset)
@@ -1222,7 +1222,7 @@ namespace Mono.TextEditor
 
 		
 		List<TextMarker> extendingTextMarkers = new List<TextMarker> ();
-		public IEnumerable<LineSegment> LinesWithExtendingTextMarkers {
+		public IEnumerable<DocumentLine> LinesWithExtendingTextMarkers {
 			get {
 				return from marker in extendingTextMarkers where marker.LineSegment != null select marker.LineSegment;
 			}
@@ -1233,12 +1233,12 @@ namespace Mono.TextEditor
 			AddMarker (this.GetLine (lineNumber), marker);
 		}
 		
-		public void AddMarker (LineSegment line, TextMarker marker)
+		public void AddMarker (DocumentLine line, TextMarker marker)
 		{
 			AddMarker (line, marker, true);
 		}
 		
-		public void AddMarker (LineSegment line, TextMarker marker, bool commitUpdate)
+		public void AddMarker (DocumentLine line, TextMarker marker, bool commitUpdate)
 		{
 			if (line == null || marker == null)
 				return;
@@ -1295,12 +1295,12 @@ namespace Mono.TextEditor
 			RemoveMarker (this.GetLine (lineNumber), type);
 		}
 		
-		public void RemoveMarker (LineSegment line, Type type)
+		public void RemoveMarker (DocumentLine line, Type type)
 		{
 			RemoveMarker (line, type, true);
 		}
 		
-		public void RemoveMarker (LineSegment line, Type type, bool updateLine)
+		public void RemoveMarker (DocumentLine line, Type type, bool updateLine)
 		{
 			if (line == null || type == null)
 				return;
@@ -1389,7 +1389,7 @@ namespace Mono.TextEditor
 			CommitDocumentUpdate ();
 		}
 		
-		public void CommitLineUpdate (LineSegment line)
+		public void CommitLineUpdate (DocumentLine line)
 		{
 			CommitLineUpdate (this.OffsetToLineNumber (line.Offset));
 		}
@@ -1435,7 +1435,7 @@ namespace Mono.TextEditor
 				   (offset + length == TextLength || IsWordSeparator (GetCharAt (offset + length)));
 		}
 		
-		public bool IsEmptyLine (LineSegment line)
+		public bool IsEmptyLine (DocumentLine line)
 		{
 			for (int i = 0; i < line.Length; i++) {
 				char ch = GetCharAt (line.Offset + i);
@@ -1514,7 +1514,7 @@ namespace Mono.TextEditor
 
 		}
 		
-		public static void RemoveTrailingWhitespaces (TextEditorData data, LineSegment line)
+		public static void RemoveTrailingWhitespaces (TextEditorData data, DocumentLine line)
 		{
 			if (line == null)
 				return;
@@ -1572,7 +1572,7 @@ namespace Mono.TextEditor
 		{
 			int i = 0;
 			var result = new int[LineCount];
-			foreach (LineSegment line in Lines) {
+			foreach (DocumentLine line in Lines) {
 				string lineText = buffer.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.Length);
 				int curCode;
 				if (!codeDictionary.TryGetValue (lineText, out curCode)) {

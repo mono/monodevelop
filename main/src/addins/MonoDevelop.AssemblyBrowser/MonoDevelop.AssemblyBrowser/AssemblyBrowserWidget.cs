@@ -1001,7 +1001,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (ReferencedSegments == null)
 				return;
 			foreach (var seg in refs) {
-				LineSegment line = inspectEditor.GetLineByOffset (seg.Offset);
+				DocumentLine line = inspectEditor.GetLineByOffset (seg.Offset);
 				if (line == null)
 					continue;
 				// FIXME: ILSpy sometimes gives reference segments for punctuation. See http://bugzilla.xamarin.com/show_bug.cgi?id=2918

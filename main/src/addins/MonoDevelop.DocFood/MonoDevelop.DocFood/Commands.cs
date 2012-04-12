@@ -108,7 +108,7 @@ namespace MonoDevelop.DocFood
 		static bool NeedsDocumentation (TextEditorData data, IUnresolvedEntity member)
 		{
 			int lineNr = member.Region.BeginLine;
-			LineSegment line;
+			DocumentLine line;
 			do {
 				line = data.Document.GetLine (lineNr--);
 			} while (lineNr > 0 && data.Document.GetLineIndent (line).Length == line.Length);
@@ -120,7 +120,7 @@ namespace MonoDevelop.DocFood
 		
 		static string GetIndent (TextEditorData data, IEntity member, out int offset)
 		{
-			LineSegment line = data.Document.GetLine (member.Region.BeginLine);
+			DocumentLine line = data.Document.GetLine (member.Region.BeginLine);
 			offset = line.Offset;
 			return data.Document.GetLineIndent (line);
 		}

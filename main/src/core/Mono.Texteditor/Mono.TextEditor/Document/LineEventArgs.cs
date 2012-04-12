@@ -31,14 +31,14 @@ namespace Mono.TextEditor
 {
 	public class LineEventArgs : System.EventArgs 
 	{
-		readonly LineSegment line;
-		public LineSegment Line {
+		readonly DocumentLine line;
+		public DocumentLine Line {
 			get {
 				return line;
 			}
 		}
 		
-		public LineEventArgs (LineSegment line)
+		public LineEventArgs (DocumentLine line)
 		{
 			this.line = line;
 		}

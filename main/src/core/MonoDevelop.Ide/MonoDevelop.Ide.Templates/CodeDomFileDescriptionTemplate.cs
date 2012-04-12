@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Templates
 			// We reformat the C# generated output to the user's coding style anyway, but the reformatter preserves blank lines
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				for (int i = 1; i <= doc.LineCount; i++) {
-					Mono.TextEditor.LineSegment line = doc.GetLine (i);
+					Mono.TextEditor.DocumentLine line = doc.GetLine (i);
 					if (IsBlankLine (doc, line) && line.LengthIncludingDelimiter > 0) {
 						doc.Remove (line.Offset, line.LengthIncludingDelimiter);
 						i--;
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Templates
 			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
-		static bool IsBlankLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.LineSegment line)
+		static bool IsBlankLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.DocumentLine line)
 		{
 			for (int i = 0; i < line.Length; i++) {
 				if (!Char.IsWhiteSpace (doc.GetCharAt (line.Offset + i)))

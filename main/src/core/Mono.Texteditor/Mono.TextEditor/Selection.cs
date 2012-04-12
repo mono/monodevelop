@@ -103,7 +103,7 @@ namespace Mono.TextEditor
 		// when calculating the selection offsets.
 		int PosToOffset (TextEditorData data, DocumentLocation loc) 
 		{
-			LineSegment line = data.GetLine (loc.Line);
+			DocumentLine line = data.GetLine (loc.Line);
 			if (line == null)
 				return 0;
 			var startChunk = data.GetChunks (line, line.Offset, line.LengthIncludingDelimiter);

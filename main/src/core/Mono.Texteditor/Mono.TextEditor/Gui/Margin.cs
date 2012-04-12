@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 			marginDrawer.Remove (drawer);
 		}
 		
-		internal protected abstract void Draw (Cairo.Context cr, Cairo.Rectangle area, LineSegment line, int lineNumber, double x, double y, double lineHeight);
+		internal protected abstract void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine line, int lineNumber, double x, double y, double lineHeight);
 		
 		internal protected virtual void OptionsChanged ()
 		{
@@ -165,8 +165,8 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		LineSegment line;
-		public LineSegment LineSegment {
+		DocumentLine line;
+		public DocumentLine LineSegment {
 			get {
 				if (line == null) {
 					if (LineNumber < DocumentLocation.MinLine)
