@@ -606,8 +606,11 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitConditionalExpression (ICSharpCode.OldNRefactory.Ast.ConditionalExpression conditionalExpression, object data)
 		{
-			ValueReference vc = (ValueReference) conditionalExpression.Condition.AcceptVisitor (this, data);
-			bool cond = (bool) vc.ObjectValue;
+			ValueReference val = (ValueReference) conditionalExpression.Condition.AcceptVisitor (this, data);
+			if (val is TypeValueReference)
+				throw CreateNotSupportedError ();
+			
+			bool cond = (bool) val.ObjectValue;
 			if (cond)
 				return conditionalExpression.TrueExpression.AcceptVisitor (this, data);
 			else
