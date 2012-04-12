@@ -12,7 +12,7 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:$(MONOMAC_SRC) \
+	-r:../../../../external/monomac/src/MonoMac.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
