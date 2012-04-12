@@ -85,11 +85,20 @@ namespace MonoDevelop.SourceEditor
 				if (expression == null)*/
 				if (res != null && !res.IsError) {
 					var mr = res as MemberResolveResult;
-					if (mr != null && mr.Member == null && mr.Type != null)
+					
+					if (mr != null && mr.Member == null && mr.Type != null) {
 						expression = mr.Type.FullName;
-					else {
+					} else if (res is LocalResolveResult) {
+						var lr = (LocalResolveResult) res;
+						
+						// Capture only the local variable portion of the expression...
+						expressionRegion = lr.Variable.Region;
+					}
+					
+					if (expression == null) {
 						if (expressionRegion.IsEmpty)
 							return null;
+						
 						var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
 						var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
 						expression = ed.GetTextBetween (start, end);
