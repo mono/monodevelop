@@ -39,7 +39,7 @@
                           <widget class="Gtk.Label" id="label8">
                             <property name="MemberName" />
                             <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">_Regular Expression</property>
+                            <property name="LabelProp" translatable="yes">Regular Expression</property>
                             <property name="UseUnderline">True</property>
                             <property name="MnemonicWidget">inputTextview</property>
                           </widget>
@@ -72,7 +72,7 @@
                               <widget class="Gtk.CheckButton" id="checkbuttonReplace">
                                 <property name="MemberName" />
                                 <property name="CanFocus">True</property>
-                                <property name="Label" translatable="yes">_Replace</property>
+                                <property name="Label" translatable="yes">Replace</property>
                                 <property name="Active">True</property>
                                 <property name="DrawIndicator">True</property>
                                 <property name="HasLabel">True</property>
@@ -104,13 +104,30 @@
                                 <property name="MemberName" />
                                 <property name="Spacing">6</property>
                                 <child>
+                                  <widget class="Gtk.CheckButton" id="expandMatches">
+                                    <property name="MemberName" />
+                                    <property name="CanFocus">True</property>
+                                    <property name="Label" translatable="yes">Expand matches</property>
+                                    <property name="Active">True</property>
+                                    <property name="DrawIndicator">True</property>
+                                    <property name="HasLabel">True</property>
+                                    <property name="UseUnderline">True</property>
+                                    <property name="BorderWidth">3</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="Position">0</property>
+                                    <property name="AutoSize">False</property>
+                                    <property name="Expand">False</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <widget class="Gtk.Button" id="buttonStart">
                                     <property name="MemberName" />
                                     <property name="CanDefault">True</property>
                                     <property name="CanFocus">True</property>
                                     <property name="Type">TextAndIcon</property>
                                     <property name="Icon">stock:gtk-media-play Menu</property>
-                                    <property name="Label" translatable="yes">_Start Regular Expression</property>
+                                    <property name="Label" translatable="yes">Start Regular E_xpression</property>
                                     <property name="UseUnderline">True</property>
                                   </widget>
                                   <packing>
@@ -152,7 +169,7 @@
                           <widget class="Gtk.Label" id="label10">
                             <property name="MemberName" />
                             <property name="Xalign">0</property>
-                            <property name="LabelProp" translatable="yes">_Options:</property>
+                            <property name="LabelProp" translatable="yes">Options:</property>
                             <property name="UseMarkup">True</property>
                             <property name="UseUnderline">True</property>
                             <property name="MnemonicWidget">optionsTreeview</property>
@@ -206,7 +223,7 @@
                       <widget class="Gtk.Label" id="label9">
                         <property name="MemberName" />
                         <property name="Xalign">0</property>
-                        <property name="LabelProp" translatable="yes">_Input:</property>
+                        <property name="LabelProp" translatable="yes">Input:</property>
                         <property name="UseMarkup">True</property>
                         <property name="UseUnderline">True</property>
                         <property name="MnemonicWidget">inputTextview</property>

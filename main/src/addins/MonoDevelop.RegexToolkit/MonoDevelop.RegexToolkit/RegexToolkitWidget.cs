@@ -58,7 +58,7 @@ namespace MonoDevelop.RegexToolkit
 				if (regexThread != null && regexThread.IsAlive) {
 					regexThread.Abort ();
 					regexThread.Join ();
-					SetButtonStart (GettextCatalog.GetString ("_Start Regular Expression"), "gtk-media-play");
+					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-media-play");
 					regexThread = null;
 					return;
 				}
@@ -70,7 +70,7 @@ namespace MonoDevelop.RegexToolkit
 				regexThread.IsBackground = true;
 				regexThread.Name = "regex thread";
 				regexThread.Start ();
-				SetButtonStart (GettextCatalog.GetString ("_Stop execution"), "gtk-media-stop");
+				SetButtonStart (GettextCatalog.GetString ("Stop e_xecution"), "gtk-media-stop");
 				
 				SetFindMode (!checkbuttonReplace.Active);
 			};
@@ -135,7 +135,8 @@ namespace MonoDevelop.RegexToolkit
 				Regex regex = new Regex (pattern, options);
 				Application.Invoke (delegate {
 					this.resultStore.Clear ();
-					foreach (Match match in regex.Matches (input)) {
+					var matches = regex.Matches (input);
+					foreach (Match match in matches) {
 						TreeIter iter = this.resultStore.AppendValues (Stock.Find, String.Format (GettextCatalog.GetString ("Match '{0}'"), match.Value), match.Index, match.Length);
 						int i = 0;
 						foreach (Group group in match.Groups) {
@@ -151,6 +152,12 @@ namespace MonoDevelop.RegexToolkit
 							i++;
 						}
 					}
+					if (matches.Count == 0) {
+						this.resultStore.AppendValues (Stock.Find, GettextCatalog.GetString ("No matches"));
+					}
+					if (this.expandMatches.Active) {
+						this.resultsTreeview.ExpandAll ();
+					}
 					if (!String.IsNullOrEmpty (replacement))
 						this.replaceResultTextview.Buffer.Text = regex.Replace (input, replacement);
 				});
@@ -163,7 +170,7 @@ namespace MonoDevelop.RegexToolkit
 			} finally {
 				regexThread = null;
 				Application.Invoke (delegate {
-					SetButtonStart (GettextCatalog.GetString ("_Start Regular Expression"), "gtk-media-play");
+					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-media-play");
 				});
 			}
 		}
