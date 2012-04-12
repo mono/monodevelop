@@ -837,10 +837,14 @@ namespace MonoDevelop.SourceEditor
 		internal bool UseIncorrectMarkers { get; set; }
 		internal bool HasIncorrectEolMarker {
 			get {
+				if (textEditor.IsDisposed) {
+					LoggingService.LogWarning ("SourceEditorWidget.cs: HasIncorrectEolMarker was called on disposed source editor widget." + Environment.NewLine + Environment.StackTrace);
+					return false;
+				}
 				var firstLine = Document.GetLine (1);
 				if (firstLine != null && firstLine.DelimiterLength > 0) {
 					string firstDelimiter = Document.GetTextAt (firstLine.Length, firstLine.DelimiterLength);
-					return firstDelimiter != TextEditor.Options.DefaultEolMarker;
+					return firstDelimiter != textEditor.Options.DefaultEolMarker;
 				}
 				return false;
 			}
