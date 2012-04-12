@@ -656,7 +656,7 @@ namespace Mono.Debugging.Evaluation
 					if (!(bool)val)
 						return LiteralValueReference.CreateObjectLiteral (ctx, name, false);
 					ValueReference vr = (ValueReference) rightExp.AcceptVisitor (this, data);
-					if (ctx.Adapter.GetTypeName (ctx, vr.Type) != "System.Boolean")
+					if (vr == null || ctx.Adapter.GetTypeName (ctx, vr.Type) != "System.Boolean")
 						throw CreateParseError ("Right operand of logical And must be a boolean");
 					return vr;
 				}
@@ -667,7 +667,7 @@ namespace Mono.Debugging.Evaluation
 					if ((bool)val)
 						return LiteralValueReference.CreateObjectLiteral (ctx, name, true);
 					ValueReference vr = (ValueReference) rightExp.AcceptVisitor (this, data);
-					if (ctx.Adapter.GetTypeName (ctx, vr.Type) != "System.Boolean")
+					if (vr == null || ctx.Adapter.GetTypeName (ctx, vr.Type) != "System.Boolean")
 						throw CreateParseError ("Right operand of logical Or must be a boolean");
 					return vr;
 				}
