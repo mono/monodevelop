@@ -61,7 +61,7 @@ endif
 $(MONOMAC_SRC):
 	make -C $(top_srcdir)/../external/monomac/src
 
-$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
+$(ASSEMBLY): $(MONOMAC_SRC) $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -unsafe $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
