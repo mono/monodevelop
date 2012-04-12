@@ -621,7 +621,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AppendMissingClosingBrackets(wrapper, memberText, appendSemicolon);
 			wrapper.Append(afterContinuation);
 			if (closingBrackets > 0) { 
-				wrapper.Append(new string ('}', closingBrackets));
+				wrapper.Append(new string('}', closingBrackets));
 			}
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {

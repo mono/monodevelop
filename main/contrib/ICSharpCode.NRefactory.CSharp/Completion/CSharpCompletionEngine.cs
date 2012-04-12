@@ -215,6 +215,30 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return miniLexer.IsInPreprocessorDirective;
 		}
 
+		IEnumerable<ICompletionData> HandleObjectInitializer(CompilationUnit unit, AstNode n)
+		{
+			var p = n.Parent;
+			while (p != null && !(p is ObjectCreateExpression)) {
+				p = p.Parent;
+			}
+			if (p != null) {
+				var contextList = new CompletionDataWrapper(this);
+				var initializerResult = ResolveExpression(p, unit);
+				if (initializerResult != null && initializerResult.Item1.Type.Kind != TypeKind.Unknown) {
+
+					foreach (var m in initializerResult.Item1.Type.GetMembers (m => m.IsPublic && (m.EntityType == EntityType.Property || m.EntityType == EntityType.Field))) {
+						contextList.AddMember(m);
+					}
+					var enumerableType = typeof(IEnumerable<>).ToTypeReference().Resolve(ctx);
+					// check if we may be in a collection initializer, or enumerable initializer
+					if (enumerableType.Kind == TypeKind.Unknown || !initializerResult.Item1.Type.GetDefinition().IsDerivedFrom(enumerableType.GetDefinition())) {
+						return contextList.Result;
+					}
+				}
+			}
+			return null;
+		}
+
 		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace)
 		{
 			ExpressionResult expr;
@@ -611,24 +635,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					
 					// Handle object/enumerable initialzer expressions: "new O () { P$"
 					if (n is IdentifierExpression && n.Parent is ArrayInitializerExpression) {
-						var p = n.Parent;
-						while (p != null && !(p is ObjectCreateExpression)) {
-							p = p.Parent;
-						}
-						if (p != null) {
-							var initializerResult = ResolveExpression(p, identifierStart.Unit);
-							if (initializerResult != null && initializerResult.Item1.Type.Kind != TypeKind.Unknown) {
-
-								foreach (var m in initializerResult.Item1.Type.GetMembers (m => m.IsPublic && (m.EntityType == EntityType.Property || m.EntityType == EntityType.Field))) {
-									contextList.AddMember(m);
-								}
-								var enumerableType = typeof(IEnumerable<>).ToTypeReference().Resolve(ctx);
-								// check if we may be in a collection initializer, or enumerable initializer
-								if (enumerableType.Kind == TypeKind.Unknown || !initializerResult.Item1.Type.GetDefinition().IsDerivedFrom(enumerableType.GetDefinition())) {
-									return contextList.Result;
-								}
-							}
-						}
+						var result = HandleObjectInitializer(identifierStart.Unit, n);
+						if (result != null)
+							return result;
 					}
 
 					if (n != null && n.Parent is InvocationExpression) {
@@ -922,7 +931,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> DefaultControlSpaceItems(ExpressionResult xp = null, bool controlSpace = true)
 		{
-			var wrapper = new CompletionDataWrapper (this);
+			var wrapper = new CompletionDataWrapper(this);
 			if (offset >= document.TextLength) {
 				offset = document.TextLength - 1;
 			}
@@ -942,10 +951,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				rr = ResolveExpression(node, xp.Unit);
 				unit = xp.Unit;
 			} else {
-				unit = ParseStub("a");
+				unit = ParseStub("a", false);
 				node = unit.GetNodeAt(location);
 				rr = ResolveExpression(node, unit);
 			}
+
+
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -958,7 +969,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AutoCompleteEmptyMatch = false;
 				return wrapper.Result;
 			}
-			
+
 			if (node is Identifier && node.Parent is ParameterDeclaration) {
 				if (!controlSpace) {
 					return null;
@@ -983,6 +994,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddCustom("base");
 					return wrapper.Result;
 				}
+			}
+
+			var initializer = node != null ? node.Parent as ArrayInitializerExpression : null;
+			if (initializer != null) {
+				var result = HandleObjectInitializer(unit, initializer);
+				if (result != null)
+					return result;
 			}
 			CSharpResolver csResolver = null;
 			if (rr != null) {
