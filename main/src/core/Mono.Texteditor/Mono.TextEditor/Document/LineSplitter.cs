@@ -259,6 +259,22 @@ namespace Mono.TextEditor
 		#region Line segment tree
 		class TreeNode : LineSegment, IRedBlackTreeNode
 		{
+			public override int LineNumber {
+				get {
+					var node = this;
+					int index = left != null ? left.Count : 0;
+					while (node.parent != null) {
+						if (node == node.parent.right) {
+							if (node.parent.left != null)
+								index += node.parent.left.Count;
+							index++;
+						}
+						node = node.parent;
+					}
+					return index + 1;
+				}
+			}
+
 			public override int Offset {
 				get {
 					var node = this;
@@ -276,6 +292,34 @@ namespace Mono.TextEditor
 				}
 				set {
 					throw new NotSupportedException ();
+				}
+			}
+
+			public override LineSegment NextLine {
+				get {
+					if (right != null)
+						return right.GetOuterLeft ();
+					TreeNode lastNode;
+					TreeNode node = this;
+					do {
+						lastNode = node;
+						node = node.parent;
+					} while (node != null && node.right == lastNode);
+					return node;
+				}
+			}
+
+			public override LineSegment PreviousLine {
+				get {
+					if (left != null)
+						return left.GetOuterRight ();
+					TreeNode lastNode;
+					TreeNode node = this;
+					do {
+						lastNode = node;
+						node = node.parent;
+					} while (node != null && node.left == lastNode);
+					return node;
 				}
 			}
 	

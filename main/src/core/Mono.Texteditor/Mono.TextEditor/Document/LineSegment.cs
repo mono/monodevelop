@@ -48,12 +48,20 @@ namespace Mono.TextEditor
 			}
 		}
 
+		/// <summary>
+		/// Gets the length of the line.
+		/// </summary>
+		/// <remarks>The length does not include the line delimeter.</remarks>
 		public int Length {
 			get {
 				return LengthIncludingDelimiter - DelimiterLength;
 			}
 		}
 
+		/// <summary>
+		/// Gets the length of the line terminator.
+		/// Returns 1 or 2; or 0 at the end of the document.
+		/// </summary>
 		public int DelimiterLength {
 			get;
 			set;
@@ -77,38 +85,58 @@ namespace Mono.TextEditor
 			}
 		}
 
+		/// <summary>
+		/// Gets the start offset of the line.
+		/// </summary>
 		public abstract int Offset { get; set; }
 
+		/// <summary>
+		/// Gets the length of the line including the line delimiter.
+		/// </summary>
 		public int LengthIncludingDelimiter {
 			get;
 			set;
 		}
 
+		/// <summary>
+		/// Gets the text segment of the line.
+		/// </summary>
+		/// <remarks>The text segment does not include the line delimeter.</remarks>
 		public TextSegment Segment {
 			get {
 				return new TextSegment (Offset, Length);
 			}
 		}
 
+		/// <summary>
+		/// Gets the text segment of the line including the line delimiter.
+		/// </summary>
 		public TextSegment SegmentIncludingDelimiter {
 			get {
 				return new TextSegment (Offset, LengthIncludingDelimiter);
 			}
 		}
 
+		/// <summary>
+		/// Gets the end offset of the line.
+		/// </summary>
+		/// <remarks>The end offset does not include the line delimeter.</remarks>
 		public int EndOffset {
 			get {
 				return Offset + Length;
 			}
 		}
 
+		/// <summary>
+		/// Gets the end offset of the line including the line delimiter.
+		/// </summary>
 		public int EndOffsetIncludingDelimiter {
 			get {
 				return Offset + LengthIncludingDelimiter;
 			}
 		}
 
-		public bool IsBookmarked  {
+		public bool IsBookmarked {
 			get {
 				if (markers == null)
 					return false;
@@ -124,6 +152,22 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+
+		/// <summary>
+		/// Gets the number of this line.
+		/// The first line has the number 1.
+		/// </summary>
+		public abstract int LineNumber { get; }
+
+		/// <summary>
+		/// Gets the next line. Returns null if this is the last line in the document.
+		/// </summary>
+		public abstract LineSegment NextLine { get; }
+
+		/// <summary>
+		/// Gets the previous line. Returns null if this is the first line in the document.
+		/// </summary>
+		public abstract LineSegment PreviousLine { get; }
 
 		protected LineSegment (int length, int delimiterLength)
 		{
@@ -263,12 +307,6 @@ namespace Mono.TextEditor
 		int ICSharpCode.NRefactory.Editor.IDocumentLine.TotalLength {
 			get {
 				return LengthIncludingDelimiter;
-			}
-		}
-
-		int ICSharpCode.NRefactory.Editor.IDocumentLine.LineNumber {
-			get {
-				throw new NotImplementedException ();
 			}
 		}
 

@@ -867,7 +867,6 @@ namespace Mono.TextEditor
 					Console.WriteLine (chunk);
 				}
 			}
-			var spanStack = line.StartSpan;
 			int lineOffset = line.Offset;
 			string lineText = textBuilder.ToString ();
 			uint preeditLength = 0;
@@ -884,7 +883,6 @@ namespace Mono.TextEditor
 			uint oldEndIndex = 0;
 			foreach (Chunk chunk in chunks) {
 				ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
-				spanStack = chunk.SpanStack ?? spanStack;
 				foreach (TextMarker marker in line.Markers)
 					chunkStyle = marker.GetStyle (chunkStyle);
 
@@ -955,7 +953,8 @@ namespace Mono.TextEditor
 			}
 			wrapper.LineChars = lineChars;
 			wrapper.Layout.SetText (lineText);
-			wrapper.EolSpanStack = spanStack;
+			var nextLine = line.NextLine;
+			wrapper.EolSpanStack = nextLine != null ? nextLine.StartSpan : null;
 			atts.AssignTo (wrapper.Layout);
 			atts.Dispose ();
 			int w, h;

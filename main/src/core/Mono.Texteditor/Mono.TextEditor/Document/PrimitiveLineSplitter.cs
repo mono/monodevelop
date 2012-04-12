@@ -14,10 +14,33 @@ namespace Mono.TextEditor
 
 		sealed class PrimitiveLineSegment : LineSegment
 		{
+			readonly PrimitiveLineSplitter splitter;
+			readonly int lineNumber;
+
 			public override int Offset { get; set; }
 
-			public PrimitiveLineSegment (int offset, int length, int delimiterLength) : base(length, delimiterLength)
+			public override int LineNumber {
+				get {
+					return lineNumber;
+				}
+			}
+
+			public override LineSegment NextLine {
+				get {
+					return splitter.Get (lineNumber + 1);
+				}
+			}
+
+			public override LineSegment PreviousLine {
+				get {
+					return splitter.Get (lineNumber - 1);
+				}
+			}
+
+			public PrimitiveLineSegment (PrimitiveLineSplitter splitter, int lineNumber, int offset, int length, int delimiterLength) : base(length, delimiterLength)
 			{
+				this.splitter = splitter;
+				this.lineNumber = lineNumber;
 				Offset = offset;
 			}
 		}
@@ -70,7 +93,7 @@ namespace Mono.TextEditor
 				endOffset = textLength;
 				delimiterLength = 0;
 			}
-			return new PrimitiveLineSegment (startOffset, endOffset - startOffset, delimiterLength);
+			return new PrimitiveLineSegment (this, number, startOffset, endOffset - startOffset, delimiterLength);
 		}
 
 		public LineSegment GetLineByOffset (int offset)
