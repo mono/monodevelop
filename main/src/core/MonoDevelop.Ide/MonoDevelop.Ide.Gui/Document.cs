@@ -672,6 +672,8 @@ namespace MonoDevelop.Ide.Gui
 					singleFileContext = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
 					singleFileContext = singleFileContext.AddAssemblyReferences (new [] { Mscorlib, SystemCore });
 				}
+				if (parsedDocument != null)
+					return singleFileContext.UpdateProjectContent (null, parsedDocument.ParsedFile);
 				return singleFileContext;
 			}
 			
