@@ -79,8 +79,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public NSObjectProjectInfo GetProjectInfo (DotNetProject project, IAssembly lookinAssembly = null)
 		{
 			var dom = TypeSystemService.GetProjectContentWrapper (project);
-			if (dom == null)
-				return null;
 			project.ReferenceAddedToProject += HandleDomReferencesUpdated;
 			project.ReferenceRemovedFromProject += HandleDomReferencesUpdated;
 			return GetProjectInfo (dom, lookinAssembly);
@@ -96,10 +94,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				
 				var nso = dom.Compilation.LookupType (typeNamespace, nsobjectType);
 				//only include DOMs that can resolve NSObject
-				if (nso == null || nso.Kind == TypeKind.Unknown) {
-					infos[dom] = null;
+				if (nso == null || nso.Kind == TypeKind.Unknown)
 					return null;
-				}
 				
 				info = new NSObjectProjectInfo (dom, this, lookinAssembly);
 				infos[dom] = info;
