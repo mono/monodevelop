@@ -227,8 +227,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int curParam = window.Ext != null ? window.Ext.GetCurrentParameterIndex (lastMethod.MethodProvider.StartOffset) : 0;
 				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, geometry2.Width);
+				window.ChangeOverload ();
 				PositionParamaterInfoWindow (window.Allocation);
-				window.ShowAll ();
+				window.Show ();
 			}
 			
 			if (methods.Count == 0) {

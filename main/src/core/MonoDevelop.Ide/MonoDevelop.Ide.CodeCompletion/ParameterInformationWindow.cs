@@ -96,6 +96,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vBox2.PackStart (desc, true, true, 4);
 			Add (vBox2);
 			EnableTransparencyControl = true;
+			ShowAll ();
 		}
 		Dictionary<int, bool> doBreakParameters = new Dictionary<int, bool> ();
 
@@ -121,7 +122,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			string text = provider.GetHeading (overload, paramText, currentParam);
 			heading.Markup = text;
 			desc.Markup = provider.GetDescription (overload, currentParam);
-			
 			if (provider.Count > 1) {
 				count.Show ();
 				goPrev.Show ();
