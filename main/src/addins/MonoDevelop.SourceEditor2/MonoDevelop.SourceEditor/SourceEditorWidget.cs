@@ -626,7 +626,7 @@ namespace MonoDevelop.SourceEditor
 			// If the line is already underlined
 			if (errors.Any (em => em.LineSegment == line))
 				return;
-			ErrorMarker error = new ErrorMarker (info, line);
+			ErrorMarker error = new ErrorMarker (textEditor.Document, info, line);
 			errors.Add (error);
 			doc.AddMarker (line, error);
 		}
@@ -1588,19 +1588,27 @@ namespace MonoDevelop.SourceEditor
 	{
 		public Error Info { get; private set; }
 		
-		public ErrorMarker (Error info, DocumentLine line)
+		public ErrorMarker (TextDocument doc, Error info, DocumentLine line)
 		{
-			this.Info = info;
-			this.LineSegment = line; // may be null if no line is assigned to the error.
-			this.Wave = true;
+			Info = info;
+			LineSegment = line;
+			// may be null if no line is assigned to the error.
+			Wave = true;
 			
 			ColorName = info.ErrorType == ErrorType.Warning ? Mono.TextEditor.Highlighting.ColorScheme.WarningUnderlineString : Mono.TextEditor.Highlighting.ColorScheme.ErrorUnderlineString;
-			
-			if (Info.Region.BeginLine == info.Region.EndLine) {
-				this.StartCol = Info.Region.BeginColumn;
-				this.EndCol = Info.Region.EndColumn;
+			StartCol = Info.Region.BeginColumn + 1;
+			if (Info.Region.EndColumn > StartCol) {
+				EndCol = Info.Region.EndColumn;
 			} else {
-				this.StartCol = this.EndCol = 0;
+				var start = line.Offset + StartCol - 1;
+				int o = start + 1;
+				while (o < line.EndOffset) {
+					char ch = doc.GetCharAt (o);
+					if (!(char.IsLetterOrDigit (ch) || ch == '_'))
+						break;
+					o++;
+				}
+				EndCol = Info.Region.BeginColumn + o - start + 1;
 			}
 		}
 	}

@@ -313,6 +313,7 @@ namespace MonoDevelop.CSharp.Parser
 			compilerArguments.Unsafe = par.UnsafeCode;
 			compilerArguments.Version = ConvertLanguageVersion (par.LangVersion);
 			compilerArguments.Checked = par.GenerateOverflowChecks;
+			compilerArguments.TabSize = 1;
 			
 			// TODO: Warning options need to be set in the report object.
 			
