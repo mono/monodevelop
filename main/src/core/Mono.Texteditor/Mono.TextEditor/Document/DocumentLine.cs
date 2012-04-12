@@ -33,6 +33,9 @@ using System.Linq;
 
 namespace Mono.TextEditor
 {
+	/// <summary>
+	/// A line inside a <see cref="T:Mono.TextEditor.TextDocument"/>.
+	/// </summary>
 	public abstract class DocumentLine : ICSharpCode.NRefactory.Editor.IDocumentLine
 	{
 		List<TextMarker> markers;
@@ -42,6 +45,7 @@ namespace Mono.TextEditor
 				return markers ?? Enumerable.Empty<TextMarker> ();
 			}
 		}
+
 		public int MarkerCount {
 			get {
 				return markers != null ? markers.Count : 0;
@@ -66,7 +70,6 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-
 
 		public bool WasChanged {
 			get;
@@ -282,12 +285,30 @@ namespace Mono.TextEditor
 			return result;
 		}
 
+		/// <summary>
+		/// Determines whether this line contains the specified offset. 
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if this line contains the specified offset (upper bound exclusive); otherwise, <c>false</c>.
+		/// </returns>
+		/// <param name='offset'>
+		/// The offset.
+		/// </param>
 		public bool Contains (int offset)
 		{
 			int o = Offset;
 			return o <= offset && offset < o + LengthIncludingDelimiter;
 		}
 
+		/// <summary>
+		/// Determines whether this line contains the specified segment. 
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if this line contains the specified segment (upper bound inclusive); otherwise, <c>false</c>.
+		/// </returns>
+		/// <param name='segment'>
+		/// The segment.
+		/// </param>
 		public bool Contains (TextSegment segment)
 		{
 			return Offset <= segment.Offset && segment.EndOffset <= EndOffsetIncludingDelimiter;
@@ -295,12 +316,12 @@ namespace Mono.TextEditor
 
 		public static implicit operator TextSegment (DocumentLine line)
 		{
-			return new TextSegment (line.Offset, line.LengthIncludingDelimiter);
+			return line.Segment;
 		}
 
 		public override string ToString ()
 		{
-			return String.Format ("[LineSegment: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", Offset, LengthIncludingDelimiter, DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
+			return String.Format ("[DocumentLine: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", Offset, LengthIncludingDelimiter, DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
 		}
 
 		#region IDocumentLine implementation
