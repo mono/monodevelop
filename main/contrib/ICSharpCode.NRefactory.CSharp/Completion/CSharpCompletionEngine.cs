@@ -243,7 +243,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			ExpressionResult expr;
 			Tuple<ResolveResult, CSharpResolver> resolveResult;
-			
 			switch (completionChar) {
 			// Magic key completion
 				case ':':
@@ -300,6 +299,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					var invoke = GetInvocationBeforeCursor(true);
 					if (invoke == null) {
+						if (controlSpace)
+							return DefaultControlSpaceItems(invoke);
 						return null;
 					}
 					if (invoke.Node is TypeOfExpression) {
@@ -317,7 +318,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (controlSpace) {
 						return DefaultControlSpaceItems(invoke);
 					}
-				
 					return null;
 				case '=':
 					return controlSpace ? DefaultControlSpaceItems() : null;
@@ -955,7 +955,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = unit.GetNodeAt(location);
 				rr = ResolveExpression(node, unit);
 			}
-
 
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
