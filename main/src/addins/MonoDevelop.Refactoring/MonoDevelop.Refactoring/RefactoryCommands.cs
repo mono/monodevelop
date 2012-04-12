@@ -206,7 +206,7 @@ namespace MonoDevelop.Refactoring
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 			
-			var parsedDocument = doc.UpdateParseDocument ();
+			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return;
 			
