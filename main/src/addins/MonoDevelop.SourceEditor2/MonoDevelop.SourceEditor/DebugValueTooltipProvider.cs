@@ -133,6 +133,11 @@ namespace MonoDevelop.SourceEditor
 							} else {
 								return null;
 							}
+						} else if (mr.Member is IField) {
+							var field = (IField) mr.Member;
+							
+							expression = field.Name;
+							length = expression.Length;
 						} else {
 							return null;
 						}
