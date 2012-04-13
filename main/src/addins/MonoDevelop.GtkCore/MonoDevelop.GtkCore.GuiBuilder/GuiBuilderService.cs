@@ -330,7 +330,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				};
 				provider.GenerateCodeFromCompileUnit (cu, fileStream, options);
 				text = fileStream.ToString ();
-				text = FormatGeneratedFile (fileName, text, provider);
+				text = FormatGeneratedFile (fileName, text, project, provider);
 			}
 			
 			if (saveToFile)
@@ -482,10 +482,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						timer.Trace ("Generating code for " + unit.Name);
 						provider.GenerateCodeFromCompileUnit (unit, sw, codeGeneratorOptions);
 						string content = sw.ToString ();
-						string eol = pol.GetEolMarker ();
-									
+								
 						timer.Trace ("Formatting code");
-						content = FormatGeneratedFile (fname, content, provider);
+						content = FormatGeneratedFile (fname, content, project, provider);
 						timer.Trace ("Writing code");
 						File.WriteAllText (fname, content);
 					} finally {
@@ -527,19 +526,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return pfile.FilePath;
 		}
 		
-		static string FormatGeneratedFile (string file, string content, CodeDomProvider provider)
+		static string FormatGeneratedFile (string file, string content, Project project, CodeDomProvider provider)
 		{
 			content = StripHeaderAndBlankLines (content, provider);
-			
-			var pol = PolicyService.InvariantPolicies.Get<TextStylePolicy> ();
-			string eol = pol.GetEolMarker ();
-			if (Environment.NewLine != eol)
-				content = content.Replace (Environment.NewLine, eol);
-			
+
 			string mt = DesktopService.GetMimeTypeForUri (file);
 			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
 			if (formatter != null)
 				content = formatter.FormatText (PolicyService.InvariantPolicies, content);
+			
+			// The project policies should be taken for generated files (windows git eol problem)
+			var pol = project.Policies.Get<TextStylePolicy> (DesktopService.GetMimeTypeForUri (file));
+			string eol = pol.GetEolMarker ();
+			if (Environment.NewLine != eol)
+				content = content.Replace (Environment.NewLine, eol);
 			
 			return content;
 		}
