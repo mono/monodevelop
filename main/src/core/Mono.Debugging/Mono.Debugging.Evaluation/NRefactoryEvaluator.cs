@@ -644,6 +644,77 @@ namespace Mono.Debugging.Evaluation
 			return EvaluateBinaryOperatorExpression (left, binaryOperatorExpression.Right, binaryOperatorExpression.Op, data);
 		}
 		
+		static string GetCommonOperationType (object v1, object v2)
+		{
+			if (v1 is double || v2 is double)
+				return "System.Double";
+			
+			if (v1 is float || v2 is float)
+				return "System.Double";
+			
+			return "System.Int64";
+		}
+		
+		object EvaluateOperation (BinaryOperatorType op, double v1, double v2)
+		{
+			switch (op) {
+			case BinaryOperatorType.Add: return v1 + v2;
+			case BinaryOperatorType.DivideInteger:
+			case BinaryOperatorType.Divide: return v1 / v2;
+			case BinaryOperatorType.Multiply: return v1 * v2;
+			case BinaryOperatorType.Subtract: return v1 - v2;
+			case BinaryOperatorType.GreaterThan: return v1 > v2;
+			case BinaryOperatorType.GreaterThanOrEqual: return v1 >= v2;
+			case BinaryOperatorType.LessThan: return v1 < v2;
+			case BinaryOperatorType.LessThanOrEqual: return v1 <= v2;
+			case BinaryOperatorType.ReferenceEquality:
+			case BinaryOperatorType.Equality: return v1 == v2;
+			case BinaryOperatorType.ReferenceInequality:
+			case BinaryOperatorType.InEquality: return v1 != v2;
+			default: throw CreateParseError ("Invalid binary operator.");
+			}
+		}
+		
+		object EvaluateOperation (BinaryOperatorType op, long v1, long v2)
+		{
+			switch (op) {
+			case BinaryOperatorType.Add: return v1 + v2;
+			case BinaryOperatorType.BitwiseAnd: return v1 & v2;
+			case BinaryOperatorType.BitwiseOr: return v1 | v2;
+			case BinaryOperatorType.ExclusiveOr: return v1 ^ v2;
+			case BinaryOperatorType.DivideInteger:
+			case BinaryOperatorType.Divide: return v1 / v2;
+			case BinaryOperatorType.Modulus: return v1 % v2;
+			case BinaryOperatorType.Multiply: return v1 * v2;
+			case BinaryOperatorType.Power: return v1 ^ v2;
+			case BinaryOperatorType.ShiftLeft: return v1 << (int) v2;
+			case BinaryOperatorType.ShiftRight: return v1 >> (int) v2;
+			case BinaryOperatorType.Subtract: return v1 - v2;
+			case BinaryOperatorType.GreaterThan: return v1 > v2;
+			case BinaryOperatorType.GreaterThanOrEqual: return v1 >= v2;
+			case BinaryOperatorType.LessThan: return v1 < v2;
+			case BinaryOperatorType.LessThanOrEqual: return v1 <= v2;
+			case BinaryOperatorType.ReferenceEquality:
+			case BinaryOperatorType.Equality: return v1 == v2;
+			case BinaryOperatorType.ReferenceInequality:
+			case BinaryOperatorType.InEquality: return v1 != v2;
+			default: throw CreateParseError ("Invalid binary operator.");
+			}
+		}
+		
+		void ConvertValues<T> (EvaluationContext ctx, object actualV1, object actualV2, object toType, out T v1, out T v2)
+		{
+			try {
+				object c1 = ctx.Adapter.Cast (ctx, actualV1, toType);
+				v1 = (T) ctx.Adapter.TargetObjectToObject (ctx, c1);
+				
+				object c2 = ctx.Adapter.Cast (ctx, actualV2, toType);
+				v2 = (T) ctx.Adapter.TargetObjectToObject (ctx, c2);
+			} catch {
+				throw CreateParseError ("Invalid operands in binary operator");
+			}
+		}
+		
 		object EvaluateBinaryOperatorExpression (ValueReference left, ICSharpCode.OldNRefactory.Ast.Expression rightExp, BinaryOperatorType oper, object data)
 		{
 			// Shortcut ops
@@ -714,43 +785,20 @@ namespace Mono.Debugging.Evaluation
 			if (val1 == null || val2 == null || (val1 is bool) || (val2 is bool))
 				throw CreateParseError ("Invalid operands in binary operator");
 			
-			long v1, v2;
-			object longType = ctx.Adapter.GetType (ctx, "System.Int64");
-			
-			try {
-				object c1 = ctx.Adapter.Cast (ctx, targetVal1, longType);
-				v1 = (long) ctx.Adapter.TargetObjectToObject (ctx, c1);
-					
-				object c2 = ctx.Adapter.Cast (ctx, targetVal2, longType);
-				v2 = (long) ctx.Adapter.TargetObjectToObject (ctx, c2);
-			} catch {
-				throw CreateParseError ("Invalid operands in binary operator");
-			}
-			
+			string opTypeName = GetCommonOperationType (val1, val2);
+			object opType = ctx.Adapter.GetType (ctx, opTypeName);
 			object res;
 			
-			switch (oper) {
-				case BinaryOperatorType.Add: res = v1 + v2; break;
-				case BinaryOperatorType.BitwiseAnd: res = v1 & v2; break;
-				case BinaryOperatorType.BitwiseOr: res = v1 | v2; break;
-				case BinaryOperatorType.ExclusiveOr: res = v1 ^ v2; break;
-				case BinaryOperatorType.DivideInteger:
-				case BinaryOperatorType.Divide: res = v1 / v2; break;
-				case BinaryOperatorType.Modulus: res = v1 % v2; break;
-				case BinaryOperatorType.Multiply: res = v1 * v2; break;
-				case BinaryOperatorType.Power: res = v1 ^ v2; break;
-				case BinaryOperatorType.ShiftLeft: res = v1 << (int)v2; break;
-				case BinaryOperatorType.ShiftRight: res = v1 >> (int)v2; break;
-				case BinaryOperatorType.Subtract: res = v1 - v2; break;
-				case BinaryOperatorType.GreaterThan: res = v1 > v2; break;
-				case BinaryOperatorType.GreaterThanOrEqual: res = v1 >= v2; break;
-				case BinaryOperatorType.LessThan: res = v1 < v2; break;
-				case BinaryOperatorType.LessThanOrEqual: res = v1 <= v2; break;
-				case BinaryOperatorType.ReferenceEquality:
-				case BinaryOperatorType.Equality: res = v1 == v2; break;
-				case BinaryOperatorType.ReferenceInequality:
-				case BinaryOperatorType.InEquality: res = v1 != v2; break;
-				default: throw CreateParseError ("Invalid binary operator.");
+			if (opTypeName == "System.Double") {
+				double v1, v2;
+				
+				ConvertValues<double> (ctx, targetVal1, targetVal2, opType, out v1, out v2);
+				res = EvaluateOperation (oper, v1, v2);
+			} else {
+				long v1, v2;
+				
+				ConvertValues<long> (ctx, targetVal1, targetVal2, opType, out v1, out v2);
+				res = EvaluateOperation (oper, v1, v2);
 			}
 			
 			if (!(res is bool))
