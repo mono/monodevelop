@@ -43,6 +43,7 @@ namespace MacPlatform.Tests
 		[Test]
 		public void GetMimeType_text ()
 		{
+			// Verify no exception is thrown
 			var platform = new MacPlatformServiceTest ();
 			platform.GetMimeType ("test.txt");
 		}
@@ -50,6 +51,7 @@ namespace MacPlatform.Tests
 		[Test]
 		public void GetMimeType_NoExtension ()
 		{
+			// Verify no exception is thrown
 			var platform = new MacPlatformServiceTest ();
 			platform.GetMimeType ("test");
 		}
@@ -57,6 +59,7 @@ namespace MacPlatform.Tests
 		[Test]
 		public void GetMimeType_Null ()
 		{
+			// Verify no exception is thrown
 			var platform = new MacPlatformServiceTest ();
 			platform.GetMimeType (null);
 		}
