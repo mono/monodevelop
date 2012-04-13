@@ -36,6 +36,13 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
+	public enum SearchResultType
+	{
+		File,
+		Type,
+		Member
+	}
+
 	abstract class SearchResult
 	{
 		protected string match;
@@ -44,7 +51,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			return HighlightMatch (widget, PlainText, match);
 		}
-		
+
+		public abstract SearchResultType SearchResultType { get; }
 		public abstract string PlainText  { get; }
 		
 		public int Rank { get; private set; }
@@ -97,6 +105,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		ITypeDefinition type;
 			
+		public override SearchResultType SearchResultType { get { return SearchResultType.Type; } }
+
 		public override string File {
 			get { return type.Region.FileName; }
 		}
@@ -146,7 +156,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		ProjectFile file;
 		bool useFileName;
-		
+
+		public override SearchResultType SearchResultType { get { return SearchResultType.File; } }
+
 		public override string PlainText {
 			get {
 				if (useFileName)
@@ -197,6 +209,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		protected bool useFullName;
 		protected IMember member;
 		
+		public override SearchResultType SearchResultType { get { return SearchResultType.Member; } }
+
 		protected virtual OutputFlags Flags {
 			get {
 				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics

@@ -494,6 +494,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			{
 				var r = o2.Rank.CompareTo (o1.Rank);
 				if (r == 0)
+					r = o1.SearchResultType.CompareTo (o2.SearchResultType);
+				if (r == 0)
 					return String.CompareOrdinal (o1.MatchedString, o2.MatchedString);
 				return r;
 			}
