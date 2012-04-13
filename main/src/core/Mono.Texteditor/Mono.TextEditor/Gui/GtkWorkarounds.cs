@@ -288,21 +288,13 @@ namespace Mono.TextEditor
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret)
 		{
 			Gtk.MenuPositionFunc posFunc = null;
-
-			var existingParent = menu.AttachWidget;
-			if (existingParent != null) {
-				if (parent != null) {
-					menu.Detach ();
-					existingParent = null;
-				} else {
-					parent = existingParent;
-				}
-			}
-			if (existingParent == null && parent != null) {
-				menu.Hidden += HandleHidden;
-				menu.AttachToWidget (parent, null);
-			}
-
+			
+			// NOTE: we don't gtk_menu_attach_to_widget to the parent because it seems to cause issues.
+			// The expanders in other treeviews in MD stop working when we detach it, and detaching is necessary
+			// to prevent memory leaks.
+			// Attaching means menu moves when parent is moved and is destroyed when parent is destroyed. Neither is
+			// particularly important for us.
+			// See https://bugzilla.xamarin.com/show_bug.cgi?id=4388
 			if (parent != null) {
 				posFunc = delegate (Gtk.Menu m, out int x, out int y, out bool pushIn) {
 					Gdk.Window window = evt != null? evt.Window : parent.GdkWindow;
@@ -371,13 +363,6 @@ namespace Mono.TextEditor
 			}
 			
 			menu.Popup (null, null, posFunc, button, time);
-		}
-
-		static void HandleHidden (object sender, EventArgs e)
-		{
-			var menu = ((Gtk.Menu)sender);
-			menu.Detach ();
-			menu.Hidden -= HandleHidden;
 		}
 		
 		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt)
