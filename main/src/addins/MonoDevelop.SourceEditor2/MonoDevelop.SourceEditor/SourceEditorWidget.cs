@@ -1600,6 +1600,10 @@ namespace MonoDevelop.SourceEditor
 			if (Info.Region.EndColumn > StartCol) {
 				EndCol = Info.Region.EndColumn;
 			} else {
+				if (line == null) {
+					EndCol = StartCol + 1;
+					return;
+				}
 				var start = line.Offset + StartCol - 1;
 				int o = start + 1;
 				while (o < line.EndOffset) {
