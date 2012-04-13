@@ -259,8 +259,7 @@ namespace MonoDevelop.SourceEditor
 			TaskService.Errors.TasksRemoved += UpdateTasks;
 			TaskService.JumpedToTask += HandleTaskServiceJumpedToTask;
 			IdeApp.Preferences.ShowMessageBubblesChanged += HandleIdeAppPreferencesShowMessageBubblesChanged;
-			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
-			errorListPad.TaskToggled += HandleErrorListPadTaskToggled;
+			TaskService.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			Document.AddAnnotation (this);
@@ -694,7 +693,7 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged -= HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;
 			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
-			errorListPad.TaskToggled -= HandleErrorListPadTaskToggled;
+			TaskService.TaskToggled -= HandleErrorListPadTaskToggled;
 			
 			DisposeErrorMarkers ();
 			

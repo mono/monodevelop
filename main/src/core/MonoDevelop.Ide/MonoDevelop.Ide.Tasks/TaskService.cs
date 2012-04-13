@@ -185,7 +185,15 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		public static event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
-	
+
+		public static event EventHandler<TaskEventArgs> TaskToggled;
+
+		public static void FireTaskToggleEvent (object sender, TaskEventArgs e)
+		{
+			var handler = TaskToggled;
+			if (handler != null)
+				handler (sender, e);
+		}
 	}
 }
 
