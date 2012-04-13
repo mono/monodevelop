@@ -130,7 +130,7 @@ namespace Mono.TextEditor
 		{
 			return !left.Equals(right);
 		}
-
+#if !STANDALONE
 		public static implicit operator ICSharpCode.NRefactory.TypeSystem.DomRegion (DocumentRegion location)
 		{
 			return new ICSharpCode.NRefactory.TypeSystem.DomRegion (location.Begin, location.End);
@@ -140,7 +140,7 @@ namespace Mono.TextEditor
 		{
 			return new DocumentRegion (location.Begin, location.End);
 		}
-
+#endif
 		public TextSegment GetSegment (TextDocument document)
 		{
 			if (document == null)

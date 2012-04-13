@@ -137,6 +137,14 @@ FILES =  \
 	Mono.TextEditor/SearchResult.cs \
 	Mono.TextEditor/Selection.cs \
 	Mono.TextEditor/SimpleEditMode.cs \
+	Mono.TextEditor/Standalone/IDocument.cs \
+	Mono.TextEditor/Standalone/IDocumentLine.cs \
+	Mono.TextEditor/Standalone/ISegment.cs \
+	Mono.TextEditor/Standalone/ITextAnchor.cs \
+	Mono.TextEditor/Standalone/ITextSource.cs \
+	Mono.TextEditor/Standalone/TextChangeEventArgs.cs \
+	Mono.TextEditor/Standalone/TextLocation.cs \
+	Mono.TextEditor/Standalone/TextSourceVersionProvider.cs \
 	Mono.TextEditor/TextEditorData.cs \
 	Mono.TextEditor/TextEditorOptions.cs \
 	Mono.TextEditor/TextLinkEditMode.cs \
