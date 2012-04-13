@@ -160,6 +160,8 @@ namespace MonoDevelop.SourceEditor
 			if (val == null || val.IsUnknown || val.IsNotSupported)
 				return null;
 			
+			val.Name = expression;
+			
 			return new TooltipItem (val, startOffset, length);
 		}
 		
