@@ -87,6 +87,7 @@ namespace MonoDevelop.SourceEditor
 					return null;
 				
 				if (res is NamespaceResolveResult ||
+				    res is TypeResolveResult ||
 				    res is ErrorResolveResult)
 					return null;
 				
