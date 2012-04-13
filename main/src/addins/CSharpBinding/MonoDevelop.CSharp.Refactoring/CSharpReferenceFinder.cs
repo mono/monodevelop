@@ -144,7 +144,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				node = ((DestructorDeclaration)node).NameToken;
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 
-			var length = node is PrimitiveType ? keywordName.Length : memberName.Length;
+			var length = node is PrimitiveType ? keywordName.Length : node.EndLocation.Column - node.StartLocation.Column;
 			return new MemberReference (valid, region, editor.LocationToOffset (region.Begin), length);
 		}
 
