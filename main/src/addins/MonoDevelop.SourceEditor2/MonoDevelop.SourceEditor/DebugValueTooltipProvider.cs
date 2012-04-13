@@ -80,72 +80,69 @@ namespace MonoDevelop.SourceEditor
 				ICSharpCode.NRefactory.TypeSystem.DomRegion expressionRegion;
 				ResolveResult res = ed.GetLanguageItem (offset, out expressionRegion);
 				
-				if (res != null && !res.IsError) {
-					if (expressionRegion.IsEmpty)
+				if (res == null || res.IsError || res.GetType () == typeof (ResolveResult))
+					return null;
+				
+				if (expressionRegion.IsEmpty)
+					return null;
+				
+				if (res is NamespaceResolveResult ||
+				    res is ErrorResolveResult)
+					return null;
+				
+				var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
+				var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
+				
+				startOffset = editor.Document.LocationToOffset (start);
+				int endOffset = editor.Document.LocationToOffset (end);
+				length = endOffset - startOffset;
+				
+				if (res is LocalResolveResult) {
+					var lr = (LocalResolveResult) res;
+					
+					// Capture only the local variable portion of the expression...
+					expression = lr.Variable.Name;
+					length = expression.Length;
+					
+					// Calculate start offset based on the end offset because we don't want to include the type information.
+					startOffset = endOffset - length;
+				} else if (res is InvocationResolveResult) {
+					var ir = (InvocationResolveResult) res;
+					
+					if (ir.Member.Name != ".ctor")
 						return null;
 					
-					if (res is NamespaceResolveResult ||
-					    res is ErrorResolveResult)
-						return null;
+					expression = ir.Member.DeclaringType.FullName;
+				} else if (res is MemberResolveResult) {
+					var mr = (MemberResolveResult) res;
 					
-					var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
-					var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
-					
-					startOffset = editor.Document.LocationToOffset (start);
-					int endOffset = editor.Document.LocationToOffset (end);
-					length = endOffset - startOffset;
-					
-					if (res is LocalResolveResult) {
-						var lr = (LocalResolveResult) res;
+					if (mr.TargetResult == null) {
+						// User is hovering over a member definition...
 						
-						// Capture only the local variable portion of the expression...
-						expression = lr.Variable.Name;
-						length = expression.Length;
-						
-						// Calculate start offset based on the end offset because we don't want to include the type information.
-						startOffset = endOffset - length;
-					} else if (res is InvocationResolveResult) {
-						var ir = (InvocationResolveResult) res;
-						
-						if (ir.Member.Name != ".ctor")
-							return null;
-						
-						expression = ir.Member.DeclaringType.FullName;
-					} else if (res is MemberResolveResult) {
-						var mr = (MemberResolveResult) res;
-						
-						if (mr.TargetResult == null) {
-							// User is hovering over a member definition...
+						if (mr.Member is IProperty) {
+							// Visual Studio will evaluate Properties if you hover over their definitions...
+							var prop = (IProperty) mr.Member;
 							
-							if (mr.Member is IProperty) {
-								// Visual Studio will evaluate Properties if you hover over their definitions...
-								var prop = (IProperty) mr.Member;
+							if (prop.CanGet) {
+								if (prop.IsStatic)
+									expression = prop.FullName;
+								else
+									expression = prop.Name;
 								
-								if (prop.CanGet) {
-									if (prop.IsStatic)
-										expression = prop.FullName;
-									else
-										expression = "this." + prop.Name;
-									
-									length = expression.Length;
-								} else {
-									return null;
-								}
+								length = expression.Length;
 							} else {
 								return null;
 							}
+						} else {
+							return null;
 						}
-						
-						// If the TargetResult is not null, then treat it like any other ResolveResult.
 					}
 					
-					if (expression == null) {
-						if (expressionRegion.IsEmpty)
-							return null;
-						
-						expression = ed.GetTextBetween (start, end);
-					}
+					// If the TargetResult is not null, then treat it like any other ResolveResult.
 				}
+				
+				if (expression == null)
+					expression = ed.GetTextBetween (start, end);
 			}
 			
 			if (string.IsNullOrEmpty (expression))
@@ -156,8 +153,10 @@ namespace MonoDevelop.SourceEditor
 				val = frame.GetExpressionValue (expression, false);
 				cachedValues [expression] = val;
 			}
+			
 			if (val == null || val.IsUnknown || val.IsNotSupported)
 				return null;
+			
 			return new TooltipItem (val, startOffset, length);
 		}
 		
