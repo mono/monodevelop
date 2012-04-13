@@ -129,8 +129,6 @@ namespace MonoDevelop.SourceEditor
 									expression = prop.FullName;
 								else
 									expression = prop.Name;
-								
-								length = expression.Length;
 							} else {
 								return null;
 							}
@@ -138,7 +136,6 @@ namespace MonoDevelop.SourceEditor
 							var field = (IField) mr.Member;
 							
 							expression = field.Name;
-							length = expression.Length;
 						} else {
 							return null;
 						}
