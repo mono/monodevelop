@@ -100,7 +100,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				IAssembly asm = assembly.Resolve (context);
 				if (asm != null) {
 					type = asm.GetTypeDefinition (nameSpace, name, typeParameterCount);
-				} else {
+				}
+				if (type == null) {
 					type = ResolveInContext (context);
 				}
 			}
