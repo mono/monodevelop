@@ -67,15 +67,6 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var method in m) {
 				if (method.IsConstructor)
 					continue;
-				if (method.Parameters.Count > 0) {
-					Console.WriteLine ("Met:");
-					Console.WriteLine (method);
-					Console.WriteLine (method.ReturnType);
-					Console.WriteLine ("par:");
-					Console.WriteLine (method.Parameters.First ());
-					Console.WriteLine (method.Parameters.First ().Type + "/" + method.Parameters.First ().Type.GetType ());
-				}
-
 				string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
 				if (alreadyAdded.Contains (str))
 					continue;

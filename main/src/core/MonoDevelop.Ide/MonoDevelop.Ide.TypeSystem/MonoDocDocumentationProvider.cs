@@ -25,13 +25,12 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml;
-using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.Documentation;
+using System.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -132,7 +131,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					bool matched = true;
 					for (int i = 0; i < p.Count; i++) {
-						var idString = AmbienceService.GetAmbience ("text/x-csharp").GetString (p [i].Type, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName);
+						var idString = GetTypeString (p [i].Type);
 						if (idString != paramList [i].Attributes ["Type"].Value) {
 							matched = false;
 							break;
@@ -148,6 +147,65 @@ namespace MonoDevelop.Ide.TypeSystem
 				return result;
 			}
 			return null;
+		}
+		
+
+		static string GetTypeString (IType t)
+		{
+			if (t.Kind == TypeKind.Unknown)
+				return t.Name;
+			
+			if (t.Kind == TypeKind.TypeParameter)
+				return t.FullName;
+			
+			var typeWithElementType = t as TypeWithElementType;
+			if (typeWithElementType != null) {
+				var sb = new StringBuilder ();
+			
+				if (typeWithElementType is PointerType) {
+					sb.Append ("*");
+				} 
+				sb.Append (GetTypeString (typeWithElementType.ElementType));
+
+				if (typeWithElementType is ArrayType) {
+					sb.Append ("[");
+					sb.Append (new string (',', ((ArrayType)t).Dimensions - 1));
+					sb.Append ("]");
+				}
+				return sb.ToString ();
+			}
+			
+			ITypeDefinition typeDef = t.GetDefinition ();
+			if (typeDef == null)
+				return "";
+			
+			var result = new StringBuilder ();
+
+			result.Append (typeDef.Namespace + ".");
+			
+			if (typeDef.DeclaringTypeDefinition != null) {
+				string typeString = GetTypeString (typeDef.DeclaringTypeDefinition);
+				result.Append (typeString);
+				result.Append (".");
+			}
+
+			result.Append (typeDef.Name);
+
+			if (typeDef.TypeParameterCount > 0) {
+				result.Append ("<");
+				for (int i = 0; i < typeDef.TypeParameterCount; i++) {
+					if (i > 0)
+						result.Append (",");
+					if (t is ParameterizedType) {
+						result.Append (GetTypeString (((ParameterizedType)t).TypeArguments [i]));
+					} else {
+						result.Append (typeDef.TypeParameters [i].FullName);
+					}
+				}
+				result.Append (">");
+			}
+			
+			return result.ToString ();
 		}
 		
 		#endregion
