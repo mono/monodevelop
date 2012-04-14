@@ -445,6 +445,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			return i;
 		}
 
+		int ForceSpacesBeforeRemoveNewLines(AstNode n)
+		{
+			if (n == null || n.IsNull) {
+				return 0;
+			}
+			int offset = document.GetOffset(n.StartLocation);
+			int i = offset - 1;
+			while (i >= 0) {
+				char ch = document.GetCharAt(i);
+				if (!IsSpacing(ch) && ch != '\r' && ch != '\n')
+					break;
+				i--;
+			}
+			var length = System.Math.Max(0, (offset - 1) - i);
+			AddChange(i + 1, length, " ");
+			return i;
+		}
+
 		public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 		{
 			FormatAttributedNode(propertyDeclaration);
@@ -873,8 +891,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (child is Statement) {
 					FixStatementIndentation(child.StartLocation);
 					child.AcceptVisitor(this);
+				} else if (child is Comment) {
+					child.AcceptVisitor(this);
 				} else {
-					// leave comments and pre processor directives at line start, if they are there.
+					// pre processor directives at line start, if they are there.
 					if (child.StartLocation.Column > 1)
 						FixStatementIndentation(child.StartLocation);
 				}
@@ -893,7 +913,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitComment(Comment comment)
 		{
-			if (comment.StartsLine && !HadErrors && comment.StartLocation.Column > 1) {
+			if (comment.StartsLine && !HadErrors && (!policy.KeepCommentsAtFirstColumn || comment.StartLocation.Column > 1)) {
 				FixIndentation(comment.StartLocation);
 			}
 		}
@@ -1410,18 +1430,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			var lastLoc = variableDeclarationStatement.StartLocation;
 			foreach (var initializer in variableDeclarationStatement.Variables) {
-				var indent = !(initializer.Initializer is AnonymousMethodExpression);
-				if (indent) {
-					curIndent.Push(IndentType.Block);
-				}
 				if (lastLoc.Line != initializer.StartLocation.Line) {
 					FixStatementIndentation(initializer.StartLocation);
 					lastLoc = initializer.StartLocation;
 				}
 				initializer.AcceptVisitor(this);
-				if (indent) {
-					curIndent.Pop ();
-				}
 			}
 
 			FormatCommas(variableDeclarationStatement, policy.SpaceBeforeLocalVariableDeclarationComma, policy.SpaceAfterLocalVariableDeclarationComma);
@@ -1679,12 +1692,40 @@ namespace ICSharpCode.NRefactory.CSharp
 			base.VisitArrayCreateExpression(arrayObjectCreateExpression);
 		}
 
+		public override void VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression)
+		{
+			if (policy.ArrayInitializerWrapping == Wrapping.WrapAlways) {
+				EnforceBraceStyle(policy.ArrayInitializerBraceStyle, arrayInitializerExpression.LBraceToken, arrayInitializerExpression.RBraceToken);
+				curIndent.Push(IndentType.Block);
+				foreach (var init in arrayInitializerExpression.Elements) {
+					FixStatementIndentation(init.StartLocation);
+					init.AcceptVisitor(this);
+				}
+				curIndent.Pop();
+			} else if (policy.ArrayInitializerWrapping == Wrapping.DoNotWrap) {
+				ForceSpacesBeforeRemoveNewLines(arrayInitializerExpression.LBraceToken);
+				ForceSpacesBeforeRemoveNewLines(arrayInitializerExpression.RBraceToken);
+				foreach (var init in arrayInitializerExpression.Elements) {
+					ForceSpacesBeforeRemoveNewLines(init);
+					init.AcceptVisitor(this);
+				}
+			} else {
+				base.VisitArrayInitializerExpression(arrayInitializerExpression);
+			}
+		}
+
 		public override void VisitLambdaExpression(LambdaExpression lambdaExpression)
 		{
 			ForceSpacesAfter(lambdaExpression.ArrowToken, true);
 			ForceSpacesBefore(lambdaExpression.ArrowToken, true);
 
 			base.VisitLambdaExpression(lambdaExpression);
+		}
+
+		public override void VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression)
+		{
+			ForceSpacesAfter(namedArgumentExpression.ColonToken, policy.SpaceInNamedArgumentAfterDoubleColon);
+			base.VisitNamedArgumentExpression(namedArgumentExpression);
 		}
 
 		#endregion

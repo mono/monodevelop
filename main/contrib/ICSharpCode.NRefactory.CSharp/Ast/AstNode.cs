@@ -1,4 +1,4 @@
-﻿// 
+// 
 // AstNode.cs
 //
 // Author:
@@ -831,7 +831,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (IsNull)
 				return "";
 			var w = new StringWriter ();
-			AcceptVisitor (new CSharpOutputVisitor (w, formattingOptions ?? new CSharpFormattingOptions ()));
+			AcceptVisitor (new CSharpOutputVisitor (w, formattingOptions ?? FormattingOptionsFactory.CreateMono ()));
 			return w.ToString ();
 		}
 		

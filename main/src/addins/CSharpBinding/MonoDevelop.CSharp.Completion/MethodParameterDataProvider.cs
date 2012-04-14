@@ -67,6 +67,15 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var method in m) {
 				if (method.IsConstructor)
 					continue;
+				if (method.Parameters.Count > 0) {
+					Console.WriteLine ("Met:");
+					Console.WriteLine (method);
+					Console.WriteLine (method.ReturnType);
+					Console.WriteLine ("par:");
+					Console.WriteLine (method.Parameters.First ());
+					Console.WriteLine (method.Parameters.First ().Type + "/" + method.Parameters.First ().Type.GetType ());
+				}
+
 				string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
 				if (alreadyAdded.Contains (str))
 					continue;
@@ -206,7 +215,7 @@ namespace MonoDevelop.CSharp.Completion
 				flags |= OutputFlags.StaticUsage;
 			
 			var m = methods [overload];
-			
+
 			string name = m.EntityType == EntityType.Constructor || m.EntityType == EntityType.Destructor ? m.DeclaringType.Name : m.Name;
 			var parameters = new StringBuilder ();
 			int curLen = 0;

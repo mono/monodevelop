@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Formatting
 		CSharpFormattingPolicy profile;
 		Gtk.TreeStore indentOptions, bacePositionOptions, newLineOptions, whiteSpaceOptions;
 		
-		static Dictionary<ArrayInitializerPlacement, string> arrayInitializerTranslationDictionary = new Dictionary<ArrayInitializerPlacement, string> ();
+		static Dictionary<Wrapping, string> arrayInitializerTranslationDictionary = new Dictionary<Wrapping, string> ();
 		static Dictionary<BraceStyle, string> braceStyleTranslationDictionary = new Dictionary<BraceStyle, string> ();
 		static Dictionary<BraceForcement, string> braceForcementTranslationDictionary = new Dictionary<BraceForcement, string> ();
 		static Dictionary<PropertyFormatting, string> propertyFormattingTranslationDictionary = new Dictionary<PropertyFormatting, string> ();
@@ -62,32 +62,33 @@ namespace MonoDevelop.CSharp.Formatting
 			propertyFormattingTranslationDictionary [PropertyFormatting.ForceOneLine] = GettextCatalog.GetString ("Force one line");
 			propertyFormattingTranslationDictionary [PropertyFormatting.ForceNewLine] = GettextCatalog.GetString ("Force new line");
 			
-			arrayInitializerTranslationDictionary [ArrayInitializerPlacement.AlwaysNewLine] = GettextCatalog.GetString ("Always new line");
-			arrayInitializerTranslationDictionary [ArrayInitializerPlacement.AlwaysSameLine] = GettextCatalog.GetString ("Always same line");
+			arrayInitializerTranslationDictionary [Wrapping.DoNotWrap] = GettextCatalog.GetString ("Do not Wrap");
+			arrayInitializerTranslationDictionary [Wrapping.WrapAlways] = GettextCatalog.GetString ("Wrap always");
+			arrayInitializerTranslationDictionary [Wrapping.WrapIfTooLong] = GettextCatalog.GetString ("Wrap if too long");
 		}
 		
 		public static string TranslateValue (object value)
 		{
 			if (value is BraceStyle)
-				return braceStyleTranslationDictionary[(BraceStyle)value];
+				return braceStyleTranslationDictionary [(BraceStyle)value];
 			if (value is BraceForcement) 
-				return braceForcementTranslationDictionary[(BraceForcement)value];
+				return braceForcementTranslationDictionary [(BraceForcement)value];
 			if (value is PropertyFormatting)
-				return propertyFormattingTranslationDictionary[(PropertyFormatting)value];
-			if (value is ArrayInitializerPlacement)
-				return arrayInitializerTranslationDictionary[(ArrayInitializerPlacement)value];
+				return propertyFormattingTranslationDictionary [(PropertyFormatting)value];
+			if (value is Wrapping)
+				return arrayInitializerTranslationDictionary [(Wrapping)value];
 			throw new Exception ("unknown property type: " + value);
 		}
 		
 		public static object ConvertProperty (Type propertyType, string newText)
 		{
-			if (propertyType == typeof (BraceStyle))
+			if (propertyType == typeof(BraceStyle))
 				return braceStyleTranslationDictionary.First (p => p.Value == newText).Key;
-			if (propertyType == typeof (BraceForcement)) 
+			if (propertyType == typeof(BraceForcement)) 
 				return braceForcementTranslationDictionary.First (p => p.Value == newText).Key;
-			if (propertyType == typeof (PropertyFormatting)) 
+			if (propertyType == typeof(PropertyFormatting)) 
 				return propertyFormattingTranslationDictionary.First (p => p.Value == newText).Key;
-			if (propertyType == typeof (ArrayInitializerPlacement))
+			if (propertyType == typeof(Wrapping))
 				return arrayInitializerTranslationDictionary.First (p => p.Value == newText).Key;
 			throw new Exception ("unknown property type: " + propertyType);
 		}

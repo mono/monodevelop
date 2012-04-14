@@ -141,6 +141,7 @@ FILES =  \
 	CSharpProjectContent.cs \
 	Formatter/AstFormattingVisitor.cs \
 	Formatter/CSharpFormattingOptions.cs \
+	Formatter/FormattingOptionsFactory.cs \
 	Formatter/GeneratedCodeSettings.cs \
 	Formatter/Indent.cs \
 	Formatter/TextEditorOptions.cs \

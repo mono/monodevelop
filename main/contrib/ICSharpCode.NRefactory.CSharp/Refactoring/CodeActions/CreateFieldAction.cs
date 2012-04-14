@@ -95,13 +95,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return -1;
 		}
 
-		static IEnumerable<IType> GetAllValidTypesFromInvokation(RefactoringContext context, InvocationExpression invoke, AstNode parameter)
+		static IEnumerable<IType> GetAllValidTypesFromInvokation(CSharpAstResolver resolver, InvocationExpression invoke, AstNode parameter)
 		{
 			int index = GetArgumentIndex(invoke.Arguments, parameter);
 			if (index < 0)
 				yield break;
 					
-			var targetResult = context.Resolve(invoke.Target);
+			var targetResult = resolver.Resolve(invoke.Target);
 			if (targetResult is MethodGroupResolveResult) {
 				foreach (var method in ((MethodGroupResolveResult)targetResult).Methods) {
 					if (index < method.Parameters.Count) {
@@ -111,13 +111,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		static IEnumerable<IType> GetAllValidTypesFromObjectCreation(RefactoringContext context, ObjectCreateExpression invoke, AstNode parameter)
+		static IEnumerable<IType> GetAllValidTypesFromObjectCreation(CSharpAstResolver resolver, ObjectCreateExpression invoke, AstNode parameter)
 		{
 			int index = GetArgumentIndex(invoke.Arguments, parameter);
 			if (index < 0)
 				yield break;
-					
-			var targetResult = context.Resolve(invoke.Type);
+
+			var targetResult = resolver.Resolve(invoke.Type);
 			if (targetResult is TypeResolveResult) {
 				var type = ((TypeResolveResult)targetResult).Type;
 				if (type.Kind == TypeKind.Delegate && index == 0) {
@@ -131,13 +131,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		internal static IEnumerable<IType> GetValidTypes(RefactoringContext context, Expression expr)
+		internal static IEnumerable<IType> GetValidTypes(CSharpAstResolver resolver, Expression expr)
 		{
 			if (expr.Parent is DirectionExpression) {
 				var parent = expr.Parent.Parent;
 				if (parent is InvocationExpression) {
 					var invoke = (InvocationExpression)parent;
-					return GetAllValidTypesFromInvokation(context, invoke, expr.Parent);
+					return GetAllValidTypesFromInvokation(resolver, invoke, expr.Parent);
 				}
 			}
 
@@ -145,7 +145,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var parent = expr.Parent;
 				if (parent is ObjectCreateExpression) {
 					var invoke = (ObjectCreateExpression)parent;
-					return GetAllValidTypesFromObjectCreation(context, invoke, expr);
+					return GetAllValidTypesFromObjectCreation(resolver, invoke, expr);
 				}
 			}
 
@@ -153,45 +153,45 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var parent = expr.Parent;
 				if (parent is InvocationExpression) {
 					var invoke = (InvocationExpression)parent;
-					return GetAllValidTypesFromInvokation(context, invoke, expr);
+					return GetAllValidTypesFromInvokation(resolver, invoke, expr);
 				}
 			}
 			
 			if (expr.Parent is VariableInitializer) {
 				var initializer = (VariableInitializer)expr.Parent;
-				return new [] { context.Resolve(initializer).Type };
+				return new [] { resolver.Resolve(initializer).Type };
 			}
 			
 			if (expr.Parent is CastExpression) {
 				var cast = (CastExpression)expr.Parent;
-				return new [] { context.Resolve(cast.Type).Type };
+				return new [] { resolver.Resolve(cast.Type).Type };
 			}
 			
 			if (expr.Parent is AsExpression) {
 				var cast = (AsExpression)expr.Parent;
-				return new [] { context.Resolve(cast.Type).Type };
+				return new [] { resolver.Resolve(cast.Type).Type };
 			}
 
 			if (expr.Parent is AssignmentExpression) {
 				var assign = (AssignmentExpression)expr.Parent;
 				var other = assign.Left == expr ? assign.Right : assign.Left;
-				return new [] { context.Resolve(other).Type };
+				return new [] { resolver.Resolve(other).Type };
 			}
 
 			if (expr.Parent is BinaryOperatorExpression) {
 				var assign = (BinaryOperatorExpression)expr.Parent;
 				var other = assign.Left == expr ? assign.Right : assign.Left;
-				return new [] { context.Resolve(other).Type };
+				return new [] { resolver.Resolve(other).Type };
 			}
 			
 			if (expr.Parent is ReturnStatement) {
-				var state = context.GetResolverStateBefore(expr);
+				var state = resolver.GetResolverStateBefore(expr);
 				if (state != null)
 					return new [] { state.CurrentMember.ReturnType };
 			}
 
 			if (expr.Parent is YieldReturnStatement) {
-				var state = context.GetResolverStateBefore(expr);
+				var state = resolver.GetResolverStateBefore(expr);
 				if (state != null && (state.CurrentMember.ReturnType is ParameterizedType)) {
 					var pt = (ParameterizedType)state.CurrentMember.ReturnType;
 					if (pt.FullName == "System.Collections.Generic.IEnumerable") {
@@ -204,14 +204,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var uop = (UnaryOperatorExpression)expr.Parent;
 				switch (uop.Operator) {
 					case UnaryOperatorType.Not:
-						return new [] { context.Compilation.FindType(KnownTypeCode.Boolean) };
+						return new [] { resolver.Compilation.FindType(KnownTypeCode.Boolean) };
 					case UnaryOperatorType.Minus:
 					case UnaryOperatorType.Plus:
 					case UnaryOperatorType.Increment:
 					case UnaryOperatorType.Decrement:
 					case UnaryOperatorType.PostIncrement:
 					case UnaryOperatorType.PostDecrement:
-						return new [] { context.Compilation.FindType(KnownTypeCode.Int32) };
+						return new [] { resolver.Compilation.FindType(KnownTypeCode.Int32) };
 				}
 			}
 			return Enumerable.Empty<IType>();
@@ -219,7 +219,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static readonly IType[] emptyTypes = new IType[0];
 		internal static AstType GuessAstType(RefactoringContext context, Expression expr)
 		{
-			var type = GetValidTypes(context, expr).ToArray();
+			var type = GetValidTypes(context.Resolver, expr).ToArray();
 			var typeInference = new TypeInference(context.Compilation);
 			typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
 			var inferedType = typeInference.FindTypeInBounds(type, emptyTypes);
@@ -230,7 +230,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		internal static IType GuessType(RefactoringContext context, Expression expr)
 		{
-			var type = GetValidTypes(context, expr).ToArray();
+			var type = GetValidTypes(context.Resolver, expr).ToArray();
 			var typeInference = new TypeInference(context.Compilation);
 			typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
 			var inferedType = typeInference.FindTypeInBounds(type, emptyTypes);

@@ -232,7 +232,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				using (var stringWriter = new System.IO.StringWriter ()) {
 					var formatter = new TextWriterOutputFormatter (stringWriter);
 					stringWriter.NewLine = EolMarker; 
-					var visitor = new CSharpOutputVisitor (formatter, new CSharpFormattingOptions ());
+					var visitor = new CSharpOutputVisitor (formatter, FormattingOptionsFactory.CreateMono ());
 					var shortType = CreateShortType (def.Compilation, file, loc, resolved);
 					shortType.AcceptVisitor (visitor);
 					

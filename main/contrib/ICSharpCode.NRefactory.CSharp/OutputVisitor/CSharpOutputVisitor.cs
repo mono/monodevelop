@@ -660,7 +660,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void PrintInitializerElements(AstNodeCollection<Expression> elements)
 		{
 			BraceStyle style;
-			if (policy.PlaceArrayInitializersOnNewLine == ArrayInitializerPlacement.AlwaysNewLine) {
+			if (policy.ArrayInitializerWrapping == Wrapping.WrapAlways) {
 				style = BraceStyle.NextLine;
 			} else {
 				style = BraceStyle.EndOfLine;

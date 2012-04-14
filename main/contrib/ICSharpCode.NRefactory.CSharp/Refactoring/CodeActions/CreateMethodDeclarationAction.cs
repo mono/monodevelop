@@ -137,6 +137,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (methodName == null)
 				yield break;
 			var state = context.GetResolverStateBefore(invocation);
+			if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
+				yield break;
 			var guessedType = invocation.Parent is ExpressionStatement ? new PrimitiveType("void") : CreateFieldAction.GuessAstType(context, invocation);
 
 			bool createInOtherType = false;
@@ -154,8 +156,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
 					yield break;
 			} else {
-				if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
-					yield break;
 				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 			}
 
