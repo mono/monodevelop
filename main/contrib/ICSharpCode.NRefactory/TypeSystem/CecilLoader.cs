@@ -117,6 +117,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			currentAssembly.AssemblyAttributes.AddRange(assemblyAttributes);
 			currentAssembly.ModuleAttributes.AddRange(assemblyAttributes);
 			
+			// Register type forwarders:
+			foreach (ExportedType type in assemblyDefinition.MainModule.ExportedTypes) {
+				if (type.IsForwarder) {
+					int typeParameterCount;
+					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
+					var typeRef = new GetClassTypeReference(GetAssemblyReference(type.Scope), type.Namespace, name, typeParameterCount);
+					typeRef = this.InterningProvider.Intern(typeRef);
+					var key = new FullNameAndTypeParameterCount(type.Namespace, name, typeParameterCount);
+					currentAssembly.AddTypeForwarder(key, typeRef);
+				}
+			}
+			
 			// Create and register all types:
 			List<TypeDefinition> cecilTypeDefs = new List<TypeDefinition>();
 			List<DefaultUnresolvedTypeDefinition> typeDefs = new List<DefaultUnresolvedTypeDefinition>();
@@ -346,7 +358,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Read Attributes
 		#region Assembly Attributes
-		static readonly ITypeReference typeForwardedToAttributeTypeRef = typeof(TypeForwardedToAttribute).ToTypeReference();
 		static readonly ITypeReference assemblyVersionAttributeTypeRef = typeof(System.Reflection.AssemblyVersionAttribute).ToTypeReference();
 		
 		void AddAttributes(AssemblyDefinition assembly, IList<IUnresolvedAttribute> outputList)
@@ -363,34 +374,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				var assemblyVersion = new DefaultUnresolvedAttribute(assemblyVersionAttributeTypeRef, new[] { KnownTypeReference.String });
 				assemblyVersion.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.String, assembly.Name.Version.ToString()));
 				outputList.Add(assemblyVersion);
-			}
-			
-			// TypeForwardedToAttribute
-			foreach (ExportedType type in assembly.MainModule.ExportedTypes) {
-				if (type.IsForwarder) {
-					int typeParameterCount;
-					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
-					var typeForwardedTo = new DefaultUnresolvedAttribute(typeForwardedToAttributeTypeRef, new[] { KnownTypeReference.Type });
-					var typeRef = new GetClassTypeReference(GetAssemblyReference(type.Scope), type.Namespace, name, typeParameterCount);
-					typeForwardedTo.PositionalArguments.Add(new TypeOfConstantValue(typeRef));
-					outputList.Add(typeForwardedTo);
-				}
-			}
-		}
-		
-		[Serializable]
-		sealed class TypeOfConstantValue : IConstantValue
-		{
-			readonly ITypeReference typeRef;
-			
-			public TypeOfConstantValue(ITypeReference typeRef)
-			{
-				this.typeRef = typeRef;
-			}
-			
-			public ResolveResult Resolve(ITypeResolveContext context)
-			{
-				return new TypeOfResolveResult(context.Compilation.FindType(KnownTypeCode.Type), typeRef.Resolve(context));
 			}
 		}
 		#endregion

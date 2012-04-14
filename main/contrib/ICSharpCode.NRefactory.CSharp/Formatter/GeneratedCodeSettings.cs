@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					return isStatic ? GeneratedCodeMember.StaticMethods : GeneratedCodeMember.InstanceMethods;
 				if (x is OperatorDeclaration)
 					return GeneratedCodeMember.Operators;
-				if (x is EventDeclaration)
+				if (x is EventDeclaration || x is CustomEventDeclaration)
 					return isStatic ? GeneratedCodeMember.StaticEvents : GeneratedCodeMember.InstanceEvents;
 
 				if (x is TypeDeclaration)

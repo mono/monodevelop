@@ -72,37 +72,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public string Namespace { get { return nameSpace; } }
 		public string Name { get { return name; } }
 		public int TypeParameterCount { get { return typeParameterCount; } }
-
-		IType ResolveInContext (ITypeResolveContext context)
-		{
-			IType type = null;
-			var compilation = context.Compilation;
-			foreach (var asm in new[] {
-				context.CurrentAssembly
-			}.Concat (compilation.Assemblies)) {
-				if (asm != null) {
-					type = asm.GetTypeDefinition (nameSpace, name, typeParameterCount);
-					if (type != null)
-						return type;
-				}
-			}
-			return type;
-		}		
-
-		public IType Resolve (ITypeResolveContext context)
+		
+		public IType Resolve(ITypeResolveContext context)
 		{
 			if (context == null)
-				throw new ArgumentNullException ("context");
+				throw new ArgumentNullException("context");
+			
 			IType type = null;
 			if (assembly == null) {
-				type = ResolveInContext (context);
-			} else {
-				IAssembly asm = assembly.Resolve (context);
-				if (asm != null) {
-					type = asm.GetTypeDefinition (nameSpace, name, typeParameterCount);
+				var compilation = context.Compilation;
+				foreach (var asm in new[] { context.CurrentAssembly }.Concat(compilation.Assemblies)) {
+					if (asm != null) {
+						type = asm.GetTypeDefinition(nameSpace, name, typeParameterCount);
+						if (type != null)
+							return type;
+					}
 				}
-				if (type == null) {
-					type = ResolveInContext (context);
+			} else {
+				IAssembly asm = assembly.Resolve(context);
+				if (asm != null) {
+					type = asm.GetTypeDefinition(nameSpace, name, typeParameterCount);
 				}
 			}
 			return type ?? new UnknownType(nameSpace, name, typeParameterCount);
