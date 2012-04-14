@@ -157,7 +157,7 @@ namespace ICSharpCode.Decompiler.Ast
 			var outputFormatter = new TextOutputFormatter(output);
 			if (formattingPolicy == null)  {
 					
-				formattingPolicy = new CSharpFormattingOptions();
+				formattingPolicy = FormattingOptionsFactory.CreateMono ();
 				// disable whitespace in front of parentheses:
 				formattingPolicy.SpaceBeforeMethodCallParentheses = false;
 				formattingPolicy.SpaceBeforeMethodDeclarationParentheses = false;
