@@ -32,11 +32,11 @@ assemblydir = $(MD_ASSEMBLY_DIR)
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config
 
 ASSEMBLY20 = $(top_builddir)/build/bin/MSBuild/2.0/MonoDevelop.Projects.Formats.MSBuild.exe
-assembly20dir = $(MD_ASSEMBLY_DIR)\MSBuild\2.0
+assembly20dir = $(MD_ASSEMBLY_DIR)/MSBuild/2.0
 assembly20_DATA = $(ASSEMBLY20) $(ASSEMBLY20).mdb $(ASSEMBLY20).config
 
 ASSEMBLY35 = $(top_builddir)/build/bin/MSBuild/3.5/MonoDevelop.Projects.Formats.MSBuild.exe
-assembly35dir = $(MD_ASSEMBLY_DIR)\MSBuild\3.5
+assembly35dir = $(MD_ASSEMBLY_DIR)/MSBuild/3.5
 assembly35_DATA = $(ASSEMBLY35) $(ASSEMBLY35).mdb $(ASSEMBLY35).config
 
 .PHONY: $(ASSEMBLY) $(ASSEMBLY).mdb $(ASSEMBLY).config $(ASSEMBLY20) $(ASSEMBLY20).mdb $(ASSEMBLY20).config $(ASSEMBLY35) $(ASSEMBLY35).mdb $(ASSEMBLY35).config

@@ -38,7 +38,7 @@ namespace MonoDevelop.SourceEditor
 		internal Gdk.Pixbuf warningPixbuf;
 		
 		internal Dictionary<string, LayoutDescriptor> textWidthDictionary = new Dictionary<string, LayoutDescriptor> ();
-		internal Dictionary<LineSegment, double> lineWidthDictionary = new Dictionary<LineSegment, double> ();
+		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
 		
 		internal TextEditor editor;
 		
@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 			SetColors ();
 		}
 
-		public bool RemoveLine (LineSegment line)
+		public bool RemoveLine (DocumentLine line)
 		{
 			if (!lineWidthDictionary.ContainsKey (line))
 				return false;
@@ -109,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void SetColors ()
 		{
-			ColorSheme style = editor.ColorStyle;
+			ColorScheme style = editor.ColorStyle;
 			if (style == null)
 				style = new DefaultStyle (editor.Style);
 			errorGc = (HslColor)(style.GetChunkStyle ("bubble.error").Color);
@@ -158,7 +158,7 @@ namespace MonoDevelop.SourceEditor
 			string typeString = isError ? "error" : "warning";
 			Cairo.Color[,,,,] colorMatrix = new Cairo.Color[2, 2, 3, 2, 2];
 			
-			ColorSheme style = editor.ColorStyle;
+			ColorScheme style = editor.ColorStyle;
 			if (style == null)
 				style = new DefaultStyle (editor.Style);
 			
@@ -181,7 +181,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
-			var selectionColor = ColorSheme.ToCairoColor (style.Selection.BackgroundColor);
+			var selectionColor = ColorScheme.ToCairoColor (style.Selection.BackgroundColor);
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < 3; k++) {

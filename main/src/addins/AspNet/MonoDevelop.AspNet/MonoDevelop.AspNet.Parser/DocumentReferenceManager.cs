@@ -36,14 +36,13 @@ using System.Globalization;
 using MonoDevelop.Core;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using System.IO;
 using System.Linq;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -89,7 +88,7 @@ namespace MonoDevelop.AspNet.Parser
 				
 				var ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
-					ProjectDom dom = TypeCtx.ResolveAssembly (ard.Assembly);
+					var dom = TypeCtx.ResolveAssembly (ard.Assembly);
 					if (dom == null)
 						continue;
 					
@@ -150,7 +149,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
-			return GetControlCompletionData (new DomType ("System.Web.UI.Control"));
+			return GetControlCompletionData (TypeSystemService.GetCompilation (Project).LookupType ("System.Web.UI", "Control"));
 		}
 		
 		public IEnumerable<CompletionData> GetControlCompletionData (IType baseType)
@@ -211,7 +210,7 @@ namespace MonoDevelop.AspNet.Parser
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
 					string assembly = ard.Assembly;
-					ProjectDom dom = TypeCtx.ResolveAssembly (ard.Assembly);
+					var dom = TypeCtx.ResolveAssembly (ard.Assembly);
 					if (dom == null)
 						continue;
 					type = WebTypeContext.AssemblyTypeLookup (dom, ard.Namespace, tagName);
@@ -365,7 +364,7 @@ namespace MonoDevelop.AspNet.Parser
 			Doc.Info.RegisteredTags.Add (directive);
 			
 			var line = Math.Max (node.Location.EndLine, node.Location.BeginLine);
-			var pos = editor.Document.LocationToOffset (line, editor.Document.GetLine (line - 1).EditableLength);
+			var pos = editor.Document.LocationToOffset (line, editor.Document.GetLine (line - 1).Length);
 			if (pos < 0)
 				return;
 			
@@ -415,20 +414,20 @@ namespace MonoDevelop.AspNet.Parser
 			return usings;
 		}
 		
-		public IList<ProjectDom> GetDoms ()
+		public IList<ICompilation> GetDoms ()
 		{
 			var asms = new HashSet<string> (Project.RegistrationCache.GetAssembliesForPath (DirectoryPath));
 			foreach (var s in Doc.Info.Assemblies)
 				asms.Add (s.Name);
 			
-			var doms = new List<ProjectDom> ();
-			doms.Add (TypeCtx.ProjectDom);
-			
+			var doms = new List<ICompilation> ();
+			doms.Add (TypeCtx.Compilation);
+/*			
 			foreach (var asmName in asms) {
 				var dom = TypeCtx.ResolveAssembly (asmName);
 				if (dom != null)
 					doms.Add (dom);
-			}
+			}*/
 			return doms;
 		}
 	}
@@ -445,10 +444,9 @@ namespace MonoDevelop.AspNet.Parser
 		}
 		
 		public override string Description {
-			get {
+			get { 
 				if (base.Description == null && cls != null)
-					base.Description = DocumentationService.GetCodeCompletionDescription (
-						cls, AmbienceService.DefaultAmbience);
+					base.Description = AmbienceService.GetDocumentationSummary (cls.GetDefinition ());
 				return base.Description;
 			}
 			set { base.Description = value;	}

@@ -27,13 +27,45 @@
 //
 
 using System;
-using System.Collections;
+using System.Linq;
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Text;
+using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
+	public static class SeletedEncodings
+	{
+		static int[] conversionEncodings = null;
+		public static int[] ConversionEncodings {
+			get {
+				if (conversionEncodings == null) {
+					string propertyEncodings = PropertyService.Get ("MonoDevelop.Ide.SelectEncodingsDialog.ConversionEncodings", string.Join (",", DefaultEncodings));
+					try {
+						conversionEncodings = propertyEncodings.Split (',').Select (e => int.Parse (e.Trim ())).ToArray ();
+					} catch (Exception) {
+						conversionEncodings = DefaultEncodings;
+					}
+				}
+
+				return conversionEncodings;
+			}
+			set {
+				conversionEncodings = value;
+				PropertyService.Set ("MonoDevelop.Ide.SelectEncodingsDialog.ConversionEncodings", string.Join (",", value));
+				Console.WriteLine ("set to:" + string.Join (",", value));
+			}
+		}
+		
+		const int ISO_8859_15 = 28605;
+		public readonly static int[] DefaultEncodings = new int[] { 
+			Encoding.UTF8.CodePage,
+			ISO_8859_15,
+			Encoding.Unicode.CodePage
+		};
+	}
+	
 	internal partial class SelectEncodingsDialog: Gtk.Dialog
 	{
 		ListStore storeAvail;
@@ -43,44 +75,47 @@ namespace MonoDevelop.Ide
 		{
 			Build ();
 			try {
-				storeAvail = new ListStore (typeof(string), typeof(string));
+				storeAvail = new ListStore (typeof(string), typeof(string), typeof(int));
 				listAvail.Model = storeAvail;
 				listAvail.AppendColumn ("Name", new Gtk.CellRendererText (), "text", 0);
 				listAvail.AppendColumn ("Encoding", new Gtk.CellRendererText (), "text", 1);
 				
-				storeSelected = new ListStore (typeof(string), typeof(string));
+				storeSelected = new ListStore (typeof(string), typeof(string), typeof(int));
 				listSelected.Model = storeSelected;
 				listSelected.AppendColumn ("Name", new Gtk.CellRendererText (), "text", 0);
 				listSelected.AppendColumn ("Encoding", new Gtk.CellRendererText (), "text", 1);
 				
-				foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
-					if (!((IList)TextEncoding.ConversionEncodings).Contains (e))
-						storeAvail.AppendValues (e.Name, e.Id);
+				foreach (var e in Encoding.GetEncodings ()) {
+					//					if (!((IList)TextEncoding.ConversionEncodings).Contains (e))
+					var enc = e.GetEncoding ();
+					storeAvail.AppendValues (enc.EncodingName, enc.WebName, e.CodePage);
 				}
 				
-				foreach (TextEncoding e in TextEncoding.ConversionEncodings)
-					storeSelected.AppendValues (e.Name, e.Id);
+				foreach (var e in SeletedEncodings.ConversionEncodings) {
+					var enc = Encoding.GetEncoding (e);
+					storeSelected.AppendValues (enc.EncodingName, enc.WebName, enc.CodePage);
+				}
 			} catch (Exception  ex) {
 				LoggingService.LogError (ex.ToString ());
 			}
 		}
 		
+		
+
 		protected void OnRespond (object o, ResponseArgs args)
 		{
 			if (args.ResponseId != Gtk.ResponseType.Ok)
 				return;
 				
 			TreeIter iter;
-			ArrayList list = new ArrayList ();
+			var list = new List<int> ();
 			if (storeSelected.GetIterFirst (out iter)) {
 				do {
-					string id = (string) storeSelected.GetValue (iter, 1);
-					TextEncoding enc = TextEncoding.GetEncoding (id);
+					var enc = (int)storeSelected.GetValue (iter, 2);
 					list.Add (enc);
-				}
-				while (storeSelected.IterNext (ref iter));
+				} while (storeSelected.IterNext (ref iter));
 			}
-			TextEncoding.ConversionEncodings = (TextEncoding[]) list.ToArray (typeof(TextEncoding));
+			SeletedEncodings.ConversionEncodings = list.ToArray ();
 		}
 		
 		protected void OnAddClicked (object ob, EventArgs args)
@@ -91,6 +126,23 @@ namespace MonoDevelop.Ide
 		protected void OnRemoveClicked (object ob, EventArgs args)
 		{
 			MoveItem (listSelected, storeSelected, listAvail, storeAvail);
+			EnsureItemIsSelected ();
+		}
+
+		void EnsureItemIsSelected ()
+		{
+			TreeModel model;
+			TreeIter iter;
+			// if the last item is removed no item is selected.
+			if (!listSelected.Selection.GetSelected (out model, out iter)) {
+				// Select last item
+				if (storeSelected.GetIterFirst (out iter)) {
+					TreeIter last = iter;
+					while (storeSelected.IterNext (ref iter))
+						last = iter;
+					listSelected.Selection.SelectIter (last);
+				}
+			}
 		}
 		
 		void MoveItem (TreeView sourceList, ListStore sourceStore, TreeView targetList, ListStore targetStore)
@@ -99,7 +151,7 @@ namespace MonoDevelop.Ide
 			TreeIter iter;
 			
 			if (sourceList.Selection.GetSelected (out model, out iter)) {
-				TreeIter newiter = targetStore.AppendValues (sourceStore.GetValue (iter, 0), sourceStore.GetValue (iter, 1));
+				TreeIter newiter = targetStore.AppendValues (sourceStore.GetValue (iter, 0), sourceStore.GetValue (iter, 1), sourceStore.GetValue (iter, 2));
 				targetList.Selection.SelectIter (newiter);
 				
 				TreeIter oldIter = iter;

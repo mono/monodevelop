@@ -33,10 +33,11 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
+
 
 namespace MonoDevelop.GtkCore
 {
@@ -91,7 +92,7 @@ namespace MonoDevelop.GtkCore
 			string fileName = fileTemplate.GetFileName (policyParent, project, language, directory, name);
 			fileTemplate.AddToProject (policyParent, project, language, directory, name);
 
-			ProjectDomService.Parse (project, fileName);
+			TypeSystemService.ParseFile (project, fileName);
 			
 			DotNetProject netProject = project as DotNetProject;
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";

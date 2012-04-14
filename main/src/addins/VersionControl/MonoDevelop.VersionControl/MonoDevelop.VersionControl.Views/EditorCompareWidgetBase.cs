@@ -260,7 +260,7 @@ namespace MonoDevelop.VersionControl.Views
 			var point = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset), true);
 			Cairo.Point point2;
 			var line = editor.GetLineByOffset (startOffset);
-			if (line.Offset + line.EditableLength < endOffset) {
+			if (line.Offset + line.Length < endOffset) {
 				point2 = new Cairo.Point ((int)(point.X + editor.TextViewMargin.CharWidth * (endOffset - startOffset)), point.Y);
 			} else {
 				point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (endOffset), true);
@@ -275,12 +275,12 @@ namespace MonoDevelop.VersionControl.Views
 			diffCache.Clear ();
 		}
 		
-		static List<ISegment> BreakTextInWords (TextEditor editor, int start, int count)
+		static List<TextSegment> BreakTextInWords (TextEditor editor, int start, int count)
 		{
 			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
-		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
+		List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
 		{
 			List<Cairo.Rectangle> result = new List<Cairo.Rectangle> ();
 			int startOffset = -1;
@@ -387,7 +387,7 @@ namespace MonoDevelop.VersionControl.Views
 		static void UpdateCaretPosition (Caret caret)
 		{
 			int offset = caret.Offset;
-			if (offset < 0 || offset > caret.TextEditorData.Document.Length)
+			if (offset < 0 || offset > caret.TextEditorData.Document.TextLength)
 				return;
 			DocumentLocation location = caret.TextEditorData.LogicalToVisualLocation (caret.Location);
 			IdeApp.Workbench.StatusBar.ShowCaretState (caret.Line,
@@ -473,8 +473,9 @@ namespace MonoDevelop.VersionControl.Views
 				Rectangle editorRectangle = new Rectangle (childRectangle.X + (editorWidth + middleAreaWidth) * i  , childRectangle.Top, editorWidth, childRectangle.Height);
 				editors[i].SizeAllocate (editorRectangle);
 
-				if (hScrollBarVisible)
-					hScrollBars[i].SizeAllocate (new Rectangle (editorRectangle.X, editorRectangle.Bottom, editorRectangle.Width, hheight));
+				if (hScrollBarVisible) {
+					hScrollBars[i].SizeAllocate (new Rectangle (editorRectangle.X, editorRectangle.Y + editorRectangle.Height, editorRectangle.Width, hheight));
+				}
 
 				if (headerWidgets != null)
 					headerWidgets[i].SizeAllocate (new Rectangle (editorRectangle.X, allocation.Y + 1, editorRectangle.Width, headerSize));
@@ -571,15 +572,15 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		Dictionary<Mono.TextEditor.Document, TextEditorData> dict = new Dictionary<Mono.TextEditor.Document, TextEditorData> ();
+		Dictionary<Mono.TextEditor.TextDocument, TextEditorData> dict = new Dictionary<Mono.TextEditor.TextDocument, TextEditorData> ();
 
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 
-		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
 			foreach (var data in localUpdate.ToArray ()) {
 				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Replace (e.Offset, e.Count, e.Value);
+				data.Replace (e.Offset, e.RemovalLength, e.InsertedText);
 				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 				data.Document.CommitUpdateAll ();
 			}
@@ -611,13 +612,13 @@ namespace MonoDevelop.VersionControl.Views
 			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 		}
 
-		void HandleDataDocumentTextReplaced (object sender, ReplaceEventArgs e)
+		void HandleDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			var data = dict[(Document)sender];
+			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
 			var editor = info.Document.GetContent<IEditableTextFile> ();
-			editor.DeleteText (e.Offset, e.Count);
-			editor.InsertText (e.Offset, e.Value);
+			editor.DeleteText (e.Offset, e.RemovalLength);
+			editor.InsertText (e.Offset, e.InsertedText);
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}
@@ -632,18 +633,18 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			using (var undo = toEditor.OpenUndoGroup ()) {
 				var start = toEditor.Document.GetLine (hunk.InsertStart);
-				int toOffset = start != null ? start.Offset : toEditor.Document.Length;
+				int toOffset = start != null ? start.Offset : toEditor.Document.TextLength;
 				if (start != null && hunk.Inserted > 0) {
 					int line = Math.Min (hunk.InsertStart + hunk.Inserted - 1, toEditor.Document.LineCount);
 					var end = toEditor.Document.GetLine (line);
-					toEditor.Remove (start.Offset, end.EndOffset - start.Offset);
+					toEditor.Remove (start.Offset, end.EndOffsetIncludingDelimiter - start.Offset);
 				}
 	
 				if (hunk.Removed > 0) {
 					start = fromEditor.Document.GetLine (Math.Min (hunk.RemoveStart, fromEditor.Document.LineCount));
 					int line = Math.Min (hunk.RemoveStart + hunk.Removed - 1, fromEditor.Document.LineCount);
 					var end = fromEditor.Document.GetLine (line);
-					toEditor.Insert (toOffset, start.Offset == end.EndOffset ? toEditor.EolMarker : fromEditor.Document.GetTextBetween (start.Offset, end.EndOffset));
+					toEditor.Insert (toOffset, start.Offset == end.EndOffsetIncludingDelimiter ? toEditor.EolMarker : fromEditor.Document.GetTextBetween (start.Offset, end.EndOffsetIncludingDelimiter));
 				}
 			}
 		}

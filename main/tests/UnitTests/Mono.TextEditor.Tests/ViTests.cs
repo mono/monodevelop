@@ -33,7 +33,7 @@ using System.Text;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture]
-	public class ViTests
+	public class ViTests : TextEditorTestBase
 	{
 		[Test]
 		public void ColumnMotion ()
@@ -186,6 +186,7 @@ qrstu",
    ggg ggg", mode.Text);
 		}
 		
+		[Ignore("Got broken because 'RemoveTrailingWhitespaces' option was removed.")]
 		[Test]
 		public void DeleteToLineBoundary ()
 		{
@@ -257,27 +258,13 @@ kkk lll", mode.Text);
 			var s = ViKeyNotation.ToString (keys);
 			Assert.AreEqual (command, s);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
 	}
 	
 	class TestViEditMode : ViEditMode
 	{
 		public TestViEditMode () : this (new TextEditorData ())
 		{
-			Console.WriteLine ("!1111");
 			Data.Options.WordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
-			Data.Options.RemoveTrailingWhitespaces = true;
-			Console.WriteLine ("!!!!!!");
 		}
 		
 		//used to prevent edit actions from the HandleKeypress causing Caret/SelectionPositionChanged
@@ -305,7 +292,7 @@ kkk lll", mode.Text);
 			get { return base.Data; }
 		}
 		
-		public new Document Document {
+		public new TextDocument Document {
 			get { return base.Document; }
 		}
 		
@@ -334,7 +321,7 @@ kkk lll", mode.Text);
 		public string GetLine (int line)
 		{
 			var seg = Document.GetLine (line);
-			return Document.GetTextAt (seg.Offset, seg.EditableLength);
+			return Document.GetTextAt (seg.Offset, seg.Length);
 		}
 		
 		public char GetChar (int offset)

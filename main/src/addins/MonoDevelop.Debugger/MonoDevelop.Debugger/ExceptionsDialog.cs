@@ -29,11 +29,11 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Debugger
 {
@@ -41,7 +41,6 @@ namespace MonoDevelop.Debugger
 	{
 		ListStore storeExceptions;
 		ListStore storeSelection;
-		bool systemLoaded;
 		HashSet<string> classes = new HashSet<string> ();
 		TreeViewState tstateExc;
 		TreeViewState tstateSel;
@@ -77,20 +76,19 @@ namespace MonoDevelop.Debugger
 
 		void LoadExceptions ()
 		{
-			ProjectDom dom;
-			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
-				dom = ProjectDomService.GetProjectDom (IdeApp.ProjectOperations.CurrentSelectedProject);
-			else {
-				string asm = typeof(Uri).Assembly.Location;
-				if (!systemLoaded) {
-					ProjectDomService.LoadAssembly (Runtime.SystemAssemblyService.CurrentRuntime, asm);
-					systemLoaded = true;
-				}
-				dom = ProjectDomService.GetAssemblyDom (Runtime.SystemAssemblyService.CurrentRuntime, asm);
-			}
 			classes.Add ("System.Exception");
-			foreach (IType t in dom.GetSubclasses (dom.GetType ("System.Exception", true)))
-				classes.Add (t.FullName);
+			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				var dom = TypeSystemService.GetCompilation (IdeApp.ProjectOperations.CurrentSelectedProject);
+				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+					classes.Add (t.ReflectionName);
+			} else {
+				// no nead to unload this assembly context, it's not cached.
+				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.FullName);
+				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.FullName);
+				var dom = new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (unresolvedAssembly, mscorlib);
+				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+					classes.Add (t.ReflectionName);
+			}
 		}
 
 		void FillExceptions ()
@@ -122,13 +120,6 @@ namespace MonoDevelop.Debugger
 				if (storeSelection.GetIterFirst (out it))
 					treeSelected.Selection.SelectIter (it);
 			}
-		}
-
-		protected override void OnDestroyed ()
-		{
-			if (systemLoaded)
-				ProjectDomService.UnloadAssembly (Runtime.SystemAssemblyService.CurrentRuntime, typeof(Uri).Assembly.Location);
-			base.OnDestroyed ();
 		}
 
 		protected virtual void OnEntryFilterChanged (object sender, System.EventArgs e)

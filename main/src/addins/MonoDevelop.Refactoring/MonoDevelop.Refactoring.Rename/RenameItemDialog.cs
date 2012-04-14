@@ -29,17 +29,16 @@ using System;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.CodeGeneration;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
-		string fileName;
 		RenameRefactoring rename;
 		RefactoringOptions options;
 		
@@ -53,23 +52,23 @@ namespace MonoDevelop.Refactoring.Rename
 			this.Build ();
 
 			if (options.SelectedItem is IType) {
-				IType type = (IType)options.SelectedItem;
+				var type = ((IType)options.SelectedItem).GetDefinition ();
 				if (type.DeclaringType == null) {
 					// not supported for inner types
 					this.renameFileFlag.Visible = true;
 					this.renameFileFlag.Active = true;
 					// if more than one type is in the file, only rename the file as defilt if the file name contains the type name
 					// see Bug 603938 - Renaming a Class in a file with multiple classes renames the file
-					if (options.Document.CompilationUnit != null && options.Document.CompilationUnit.Types.Count > 1) 
+					if (options.Document != null && options.Document.ParsedDocument.TopLevelTypeDefinitions.Count > 1) 
 						this.renameFileFlag.Active = options.Document.FileName.FileNameWithoutExtension.Contains (type.Name);
 				} else {
 					this.renameFileFlag.Active = false;
 				}
-				if (type.ClassType == ClassType.Interface)
+				if (type.Kind == TypeKind.Interface)
 					this.Title = GettextCatalog.GetString ("Rename Interface");
 				else
 					this.Title = GettextCatalog.GetString ("Rename Class");
-				this.fileName = type.CompilationUnit.FileName;
+				//				this.fileName = type.GetDefinition ().Region.FileName;
 			} else if (options.SelectedItem is IField) {
 				this.Title = GettextCatalog.GetString ("Rename Field");
 			} else if (options.SelectedItem is IProperty) {
@@ -80,31 +79,39 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			} else if (options.SelectedItem is IEvent) {
 				this.Title = GettextCatalog.GetString ("Rename Event");
-			} else if (options.SelectedItem is IMethod) {
-				this.Title = GettextCatalog.GetString ("Rename Method");
+			} else if (options.SelectedItem is IMethod) { 
+				var m = (IMethod)options.SelectedItem;
+				if (m.IsConstructor || m.IsDestructor) {
+					this.Title = GettextCatalog.GetString ("Rename Class");
+				} else {
+					this.Title = GettextCatalog.GetString ("Rename Method");
+				}
 			} else if (options.SelectedItem is IParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Parameter");
-			} else if (options.SelectedItem is LocalVariable) {
+			} else if (options.SelectedItem is IVariable) {
 				this.Title = GettextCatalog.GetString ("Rename Variable");
+			} else if (options.SelectedItem is ITypeParameter) {
+				this.Title = GettextCatalog.GetString ("Rename Type Parameter");
 			} else {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
 			
-			if (options.SelectedItem is IMember) {
-				IMember member = (IMember)options.SelectedItem;
-				entry.Text = member.Name;
-				if (!(member is IType) && member.DeclaringType != null)
-					this.fileName = member.DeclaringType.CompilationUnit.FileName;
-			} else if (options.SelectedItem is LocalVariable) {
-				LocalVariable lvar = (LocalVariable)options.SelectedItem;
-				entry.Text = lvar.Name;
-				this.fileName = lvar.FileName;
-			} else {
-				IParameter par = options.SelectedItem as IParameter;
-				if (par != null) {
-					entry.Text = par.Name;
-					this.fileName = par.DeclaringMember.DeclaringType.CompilationUnit.FileName;
+			if (options.SelectedItem is IEntity) {
+				var member = (IEntity)options.SelectedItem;
+				if (member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
+					entry.Text = member.DeclaringType.Name;
+				} else {
+					entry.Text = member.Name;
 				}
+				//				fileName = member.Region.FileName;
+			} else if (options.SelectedItem is ITypeParameter) {
+				var lvar = (ITypeParameter)options.SelectedItem;
+				entry.Text = lvar.Name;
+				//				this.fileName = lvar.Region.FileName;
+			} else if (options.SelectedItem is IVariable) {
+				var lvar = (IVariable)options.SelectedItem;
+				entry.Text = lvar.Name;
+				//				this.fileName = lvar.Region.FileName;
 			}
 			entry.SelectRegion (0, -1);
 			
@@ -120,19 +127,20 @@ namespace MonoDevelop.Refactoring.Rename
 
 		bool ValidateName ()
 		{
-			INameValidator nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
-			if (nameValidator == null)
-				return true;
-			ValidationResult result = nameValidator.ValidateName (this.options.SelectedItem, entry.Text);
-			if (!result.IsValid) {
-				imageWarning.IconName = Gtk.Stock.DialogError;
-			} else if (result.HasWarning) {
-				imageWarning.IconName = Gtk.Stock.DialogWarning;
-			} else {
-				imageWarning.IconName = Gtk.Stock.Apply;
-			}
-			labelWarning.Text = result.Message;
-			return result.IsValid;
+			return true; // TODO: Name validation.
+//			var nameValidator = MonoDevelop.Projects.LanguageBindingService.GetRefactorerForFile (fileName ?? "default.cs");
+//			if (nameValidator == null)
+//				return true;
+//			ValidationResult result = nameValidator.ValidateName (this.options.SelectedItem, entry.Text);
+//			if (!result.IsValid) {
+//				imageWarning.IconName = Gtk.Stock.DialogError;
+//			} else if (result.HasWarning) {
+//				imageWarning.IconName = Gtk.Stock.DialogWarning;
+//			} else {
+//				imageWarning.IconName = Gtk.Stock.Apply;
+//			}
+//			labelWarning.Text = result.Message;
+//			return result.IsValid;
 		}
 
 		void OnEntryChanged (object sender, EventArgs e)
@@ -162,7 +170,7 @@ namespace MonoDevelop.Refactoring.Rename
 			((Widget)this).Destroy ();
 			List<Change> changes = rename.PerformChanges (options, properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-			RefactoringService.AcceptChanges (monitor, options.Dom, changes);
+			RefactoringService.AcceptChanges (monitor, changes);
 		}
 		
 		void OnPreviewClicked (object sender, EventArgs e)
@@ -170,7 +178,7 @@ namespace MonoDevelop.Refactoring.Rename
 			var properties = Properties;
 			((Widget)this).Destroy ();
 			List<Change> changes = rename.PerformChanges (options, properties);
-			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (options.Dom, changes));
+			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
 		}
 	}
 		

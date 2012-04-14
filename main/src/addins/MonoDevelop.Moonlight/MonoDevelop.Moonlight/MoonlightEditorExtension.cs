@@ -29,10 +29,10 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Xml.StateEngine; 
+using MonoDevelop.Xml.StateEngine;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem; 
 
 namespace MonoDevelop.Moonlight
 {
@@ -47,47 +47,28 @@ namespace MonoDevelop.Moonlight
 		
 		#region Code completion
 		
-//		static ProjectDom GetMLDom (MoonlightProject project)
+//		static ITypeResolveContext GetMLDom (MoonlightProject project)
 //		{
-//			return ProjectDomService.GetAssemblyDom (
+//			return TypeSystemService.GetAssemblyDom (
 //				MonoDevelop.Core.Runtime.SystemAssemblyService.GetAssemblyNameForVersion (
 //					"System.Windows", GetProjectTargetFramework (project)));
 //		}
 		
-		public static IEnumerable<IType> ListControlClasses (ProjectDom database, string namespac)
+		public static IEnumerable<IType> ListControlClasses (ICompilation database, INamespace namespac)
 		{
 			if (database == null)
 				yield break;
 			
-			DomReturnType swd = new DomReturnType ("System.Windows.DependencyObject");
+			var swd = database.LookupType ("System.Windows", "DependencyObject");
 			
 			//return classes if they derive from system.web.ui.control
-			foreach (IMember mem in database.GetNamespaceContents (namespac, true, true)) {
-				IType cls = mem as IType;
+			foreach (var cls in namespac.Types) {
 				if (cls != null && !cls.IsAbstract && cls.IsPublic && cls.IsBaseType (swd))
 					yield return cls;
 			}
 		}
 		
-		static IEnumerable<MonoDevelop.Projects.Dom.IProperty> GetAllProperties (
-		    MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase,
-		    MonoDevelop.Projects.Dom.IType cls)
-		{
-			foreach (MonoDevelop.Projects.Dom.IType type in projectDatabase.GetInheritanceTree (cls))
-				foreach (MonoDevelop.Projects.Dom.IProperty prop in type.Properties)
-					yield return prop;
-		}
-		
-		static IEnumerable<MonoDevelop.Projects.Dom.IEvent> GetAllEvents (
-		    MonoDevelop.Projects.Dom.Parser.ProjectDom projectDatabase,
-		    MonoDevelop.Projects.Dom.IType cls)
-		{
-			foreach (MonoDevelop.Projects.Dom.IType type in projectDatabase.GetInheritanceTree (cls))
-				foreach (MonoDevelop.Projects.Dom.IEvent ev in type.Events)
-					yield return ev;
-		}
-		
-		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : MonoDevelop.Projects.Dom.IMember
+		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : IMember
 		{
 			Dictionary <string, bool> existingItems = new Dictionary<string,bool> ();
 			foreach (T item in members) {
@@ -98,35 +79,35 @@ namespace MonoDevelop.Moonlight
 			}
 		}
 		
-		static void AddControlMembers (CompletionDataList list,  ProjectDom database, IType controlClass, 
+		static void AddControlMembers (CompletionDataList list, IType controlClass, 
 		                               Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
-			foreach (IProperty prop in GetUniqueMembers<MonoDevelop.Projects.Dom.IProperty> (GetAllProperties (database, controlClass)))
+			foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 				if (prop.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
-					list.Add (prop.Name, prop.StockIcon, prop.Documentation);
+					list.Add (prop.Name, prop.GetStockIcon (), prop.Documentation);
 			
 			//similarly add events
-			foreach (MonoDevelop.Projects.Dom.IEvent eve 
-			    in GetUniqueMembers<MonoDevelop.Projects.Dom.IEvent> (GetAllEvents (database, controlClass))) {
+			foreach (var eve 
+			    in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
 				string eveName = eve.Name;
 				if (eve.IsPublic && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
-					list.Add (eveName, eve.StockIcon, eve.Documentation);
+					list.Add (eveName, eve.GetStockIcon (), eve.Documentation);
 			}
 		}
 		
-		ProjectDom GetDb ()
+		ICompilation GetDb ()
 		{
-			return Document.Dom;
+			return Document.Compilation;
 		}
 		
-		void GetType (IAttributedXObject attributedOb, Action<IType, ProjectDom> action)
+		void GetType (IAttributedXObject attributedOb, Action<IType, ICompilation> action)
 		{
-			ProjectDom database = GetDb ();
+			var database = GetDb ();
 			if (database == null)
 				return;
 			foreach (string namespc in namespaces) {
-				IType controlType = database.GetType (namespc + "." + attributedOb.Name.Name);
+				var controlType = database.MainAssembly.GetTypeDefinition (namespc, attributedOb.Name.Name, 0);
 				if (controlType != null) {
 					action (controlType, database);
 					break;
@@ -137,20 +118,25 @@ namespace MonoDevelop.Moonlight
 		string[] namespaces = { "System.Windows.Media", "System.Windows.Media.Animation",
 			"System.Windows.Controls", "System.Windows.Shapes" };
 		
-		protected override void GetElementCompletions(CompletionDataList list)
+		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			base.GetElementCompletions (list);
-			ProjectDom database = GetDb ();
+			var database = GetDb ();
 			if (database == null)
 				return;
 			
-			IType type = database.GetType ("System.Windows.DependencyObject");
+			IType type = database.LookupType ("System.Windows", "DependencyObject");
 			if (type == null)
 				return;
 			
-			foreach (string namespc in namespaces)
-				foreach (IType t in ListControlClasses (database, namespc))
-					list.Add (t.Name, Gtk.Stock.GoForward, t.Documentation);
+			foreach (string namespc in namespaces) {
+				INamespace ns = database.RootNamespace;
+				foreach (var sn in namespc.Split ('.')) {
+					ns = ns.GetChildNamespace (sn);
+				}
+				foreach (IType t in ListControlClasses (database, ns))
+					list.Add (t.Name, Gtk.Stock.GoForward, t.GetDefinition ().Documentation);
+			}
 		}
 		
 //		static MonoDevelop.Core.TargetFramework GetProjectTargetFramework (MoonlightProject project)
@@ -165,8 +151,8 @@ namespace MonoDevelop.Moonlight
 			if (!existingAtts.ContainsKey ("x:Name"))
 				list.Add ("x:Name");
 			
-			GetType (attributedOb, delegate (IType type, ProjectDom dom) {
-				AddControlMembers (list, dom, type, existingAtts);
+			GetType (attributedOb, delegate (IType type, ICompilation dom) {
+				AddControlMembers (list, type, existingAtts);
 			});
 			return list.Count > 0? list : null;
 		}
@@ -174,21 +160,21 @@ namespace MonoDevelop.Moonlight
 		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject attributedOb, XAttribute att)
 		{
 			var list = base.GetAttributeValueCompletions (attributedOb, att) ?? new CompletionDataList ();
-			
-			GetType (attributedOb, delegate (IType type, ProjectDom dom) {
-				foreach (IProperty prop in GetAllProperties (dom, type)) {
+			var ctx = document.Compilation;
+			GetType (attributedOb, delegate (IType type, ICompilation dom) {
+				foreach (IProperty prop in type.GetProperties ()) {
 					if (prop.Name != att.Name.FullName)
 						continue;
 					
 					//boolean completion
-					if (prop.ReturnType.FullName == "System.Boolean") {
+					if (prop.ReturnType.Equals (ctx.FindType (typeof (bool)))) {
 						list.Add ("true", "md-literal");
 						list.Add ("false", "md-literal");
 						return;
 					}
 					
 					//color completion
-					if (prop.ReturnType.FullName == "System.Windows.Media.Color") {
+					if (prop.ReturnType.ReflectionName == "System.Windows.Media.Color") {
 						System.Drawing.ColorConverter conv = new System.Drawing.ColorConverter ();
 						foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
 							if (c.IsSystemColor)
@@ -200,9 +186,9 @@ namespace MonoDevelop.Moonlight
 					}
 					
 					//enum completion
-					MonoDevelop.Projects.Dom.IType retCls = dom.GetType (prop.ReturnType);
-					if (retCls != null && retCls.ClassType == MonoDevelop.Projects.Dom.ClassType.Enum) {
-						foreach (MonoDevelop.Projects.Dom.IField enumVal in retCls.Fields)
+					var retCls = prop.ReturnType;
+					if (retCls != null && retCls.Kind == TypeKind.Enum) {
+						foreach (var enumVal in retCls.GetFields ())
 							if (enumVal.IsPublic && enumVal.IsStatic)
 								list.Add (enumVal.Name, "md-literal", enumVal.Documentation);
 						return;

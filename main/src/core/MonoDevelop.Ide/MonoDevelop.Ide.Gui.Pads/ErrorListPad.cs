@@ -765,21 +765,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			msgBtn.Image.Show ();
 		}
 		
-		public event EventHandler<TaskEventArgs> TaskToggled;
-		protected virtual void OnTaskToggled (TaskEventArgs e)
-		{
-			EventHandler<TaskEventArgs> handler = this.TaskToggled;
-			if (handler != null)
-				handler (this, e);
-		}
-		
 		private void ItemToggled (object o, ToggledArgs args)
 		{
 			Gtk.TreeIter iter;
-			if (store.GetIterFromString(out iter, args.Path)) {
-				Task task = (Task) store.GetValue(iter, DataColumns.Task);
+			if (store.GetIterFromString (out iter, args.Path)) {
+				Task task = (Task)store.GetValue (iter, DataColumns.Task);
 				task.Completed = !task.Completed;
-				OnTaskToggled (new TaskEventArgs (task));
+				TaskService.FireTaskToggleEvent (this, new TaskEventArgs (task));
 			}
 		}
 

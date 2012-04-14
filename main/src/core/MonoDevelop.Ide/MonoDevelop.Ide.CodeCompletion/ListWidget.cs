@@ -31,6 +31,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -85,6 +86,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 		
+		public bool CloseOnSquareBrackets {
+			get;
+			set;
+		}
+		
+			
 		static bool inCategoryMode;
 		public bool InCategoryMode {
 			get { return inCategoryMode; }
@@ -111,19 +118,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.FontDescription = des;
 		}
 		
-		public void Reset ()
+		public void ResetState ()
 		{
-			if (win.DataProvider == null) {
-				selection = -1;
-				return;
-			}
-			selection = win.DataProvider.ItemCount == 0 ? -1 : 0;
+			categories.Clear ();
+			filteredItems.Clear ();
+			oldCompletionString = completionString = null;
+			selection = 0;
 			page = 0;
 			AutoSelect = false;
-			CalcVisibleRows ();
-			
-			if (SelectionChanged != null)
-				SelectionChanged (this, EventArgs.Empty);
 		}
 		
 		public int SelectionIndex {
@@ -137,7 +139,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public int Selection {
 			get { return selection; }
 			set {
-				value = Math.Min (filteredItems.Count - 1, Math.Max (0, value));
 				if (value != selection) {
 					selection = value;
 					UpdatePage ();
@@ -368,12 +369,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return;
 				
 			//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, width, rowHeight);
-				
-				Gdk.Pixbuf icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
-				window.DrawPixbuf (fgGCNormal, icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+				int x = 2;
+				if (!string.IsNullOrEmpty (category.CompletionCategory.Icon)) {
+					var icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
+					window.DrawPixbuf (fgGCNormal, icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+					x = icon.Width + 4;
+				}
 				
 				layout.SetMarkup ("<span weight='bold'>" + category.CompletionCategory.DisplayText + "</span>");
-				window.DrawLayout (textGCInsensitive, icon.Width + 4, ypos, layout);
+				window.DrawLayout (textGCInsensitive, x, ypos, layout);
 				layout.SetMarkup ("");
 			}, delegate (Category curCategory, int item, int ypos) {
 				
@@ -546,20 +550,34 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return result;
 		}
 		
+		string oldCompletionString = null;
 		public void FilterWords ()
 		{
-			filteredItems.Clear ();
 			categories.Clear ();
 			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
-			for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
-				if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
-					CompletionCategory completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
-					GetCategory (completionCategory).Items.Add (filteredItems.Count);
-					filteredItems.Add (newSelection);
+				
+			if (oldCompletionString == null || !CompletionString.StartsWith (oldCompletionString)) {
+				filteredItems.Clear ();
+				for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
+					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
+						var completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
+						GetCategory (completionCategory).Items.Add (filteredItems.Count);
+						filteredItems.Add (newSelection);
+					}
+				}
+			} else {
+				var oldItems = filteredItems;
+				filteredItems = new List<int> ();
+				foreach (int newSelection in oldItems) {
+					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
+						var completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
+						GetCategory (completionCategory).Items.Add (filteredItems.Count);
+						filteredItems.Add (newSelection);
+					}
 				}
 			}
 			categories.Sort (delegate (Category left, Category right) {
-				return right.CompletionCategory != null ? right.CompletionCategory.CompareTo (left.CompletionCategory) : -1;
+				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
 			});
 			
 			SelectFirstItemInCategory ();
@@ -567,6 +585,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdatePage ();
 			
 			OnWordsFiltered (EventArgs.Empty);
+			oldCompletionString = CompletionString;
 		}
 		
 		void SelectFirstItemInCategory ()

@@ -92,7 +92,7 @@ namespace MonoDevelop.Xml.StateEngine
 						XElement el = context.Nodes.Pop () as XElement;
 						if (el != null)
 							context.LogError (string.Format (
-								"Unclosed tag '{0}' at line {1}, column {2}.", el.Name.FullName, el.Region.Start.Line, el.Region.Start.Column),
+								"Unclosed tag '{0}' at line {1}, column {2}.", el.Name.FullName, el.Region.BeginLine, el.Region.BeginColumn),
 								ct.Region);
 						popCount--;
 					}

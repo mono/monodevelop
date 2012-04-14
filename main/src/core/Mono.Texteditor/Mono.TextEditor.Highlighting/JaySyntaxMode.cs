@@ -34,7 +34,7 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class JaySyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
-		public JaySyntaxMode ()
+		public JaySyntaxMode (TextDocument doc) : base (doc)
 		{
 			ResourceXmlProvider provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("JaySyntaxMode")));
 			using (XmlReader reader = provider.Open ()) {
@@ -51,9 +51,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public override SpanParser CreateSpanParser (Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
+		public override SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
 		{
-			return new JaySpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
+			return new JaySpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 		
 		class JayBlockSpan : Span
@@ -101,7 +101,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		protected class JaySpanParser : SpanParser
 		{
-			public JaySpanParser (Document doc, SyntaxMode mode, CloneableStack<Span> spanStack) : base (doc, mode, spanStack)
+			public JaySpanParser (SyntaxMode mode, CloneableStack<Span> spanStack) : base (mode, spanStack)
 			{
 			}
 			
@@ -165,7 +165,7 @@ namespace Mono.TextEditor.Highlighting
 									if (isInBlockComment) {
 										if (j > 0 && doc.GetCharAt (j - 1) == '*') 
 											isInBlockComment = false;
-									} else if (!isInString && !isInChar && j + 1 < doc.Length) {
+									} else if (!isInString && !isInChar && j + 1 < doc.TextLength) {
 										char nextChar = doc.GetCharAt (j + 1);
 										if (nextChar == '/')
 											isInLineComment = true;
@@ -178,7 +178,7 @@ namespace Mono.TextEditor.Highlighting
 										j++;
 									break;
 								case '@':
-									if (!(isInString || isInChar || isInLineComment || isInBlockComment) && j + 1 < doc.Length && doc.GetCharAt (j + 1) == '"') {
+									if (!(isInString || isInChar || isInLineComment || isInBlockComment) && j + 1 < doc.TextLength && doc.GetCharAt (j + 1) == '"') {
 										isInString = true;
 										isVerbatimString = true;
 										j++;
@@ -186,7 +186,7 @@ namespace Mono.TextEditor.Highlighting
 									break;
 								case '"':
 									if (!(isInChar || isInLineComment || isInBlockComment))  {
-										if (isInString && isVerbatimString && j + 1 < doc.Length && doc.GetCharAt (j + 1) == '"') {
+										if (isInString && isVerbatimString && j + 1 < doc.TextLength && doc.GetCharAt (j + 1) == '"') {
 											j++;
 										} else {
 											isInString = !isInString;

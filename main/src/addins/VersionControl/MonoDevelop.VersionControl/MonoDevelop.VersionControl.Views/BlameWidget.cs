@@ -228,7 +228,7 @@ namespace MonoDevelop.VersionControl.Views
 			editor.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Top, childRectangle.Width - overviewWidth, childRectangle.Height));
 		
 			if (hScrollBar.Visible) {
-				hScrollBar.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Bottom, childRectangle.Width, hheight));
+				hScrollBar.SizeAllocate (new Rectangle (childRectangle.X, childRectangle.Y + childRectangle.Height, childRectangle.Width, hheight));
 				hScrollBar.Value = System.Math.Max (System.Math.Min (hAdjustment.Upper - hAdjustment.PageSize, hScrollBar.Value), hAdjustment.Lower);
 			}
 		}
@@ -335,14 +335,14 @@ namespace MonoDevelop.VersionControl.Views
 				sb.Append (ch);
 			}
 			
-			Document doc = new Document ();
+			var doc = new TextDocument ();
 			doc.Text = sb.ToString ();
 			for (int i = 1; i <= doc.LineCount; i++) {
 				string text = doc.GetLineText (i).Trim ();
 				int idx = text.IndexOf (':');
 				if (text.StartsWith ("*") && idx >= 0 && idx < text.Length - 1) {
-					int offset = doc.GetLine (i).EndOffset;
-					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.Length - offset);
+					int offset = doc.GetLine (i).EndOffsetIncludingDelimiter;
+					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.TextLength - offset);
 					break;
 				}
 			}
@@ -560,11 +560,11 @@ namespace MonoDevelop.VersionControl.Views
 			/// <summary>
 			/// Marks necessary lines modified when text is replaced
 			/// </summary>
-			private void EditorDocumentTextReplacing (object sender, ReplaceEventArgs e)
+			private void EditorDocumentTextReplacing (object sender, DocumentChangeEventArgs e)
 			{
-				int  startLine = widget.Editor.Document.OffsetToLineNumber (e.Offset),
-				     endLine = widget.Editor.Document.OffsetToLineNumber (e.Offset + Math.Max (e.Count, e.Value != null ? e.Value.Length : 0)),
-				     lineCount = 0;
+				int startLine = widget.Editor.Document.OffsetToLineNumber (e.Offset),
+					endLine = widget.Editor.Document.OffsetToLineNumber (e.Offset + Math.Max (e.RemovalLength, e.InsertionLength)),
+					lineCount = 0;
 				string[] tokens = null;
 				
 				if (startLine < endLine) {
@@ -575,14 +575,14 @@ namespace MonoDevelop.VersionControl.Views
 					
 					if (lineCount > 0)
 						annotations.RemoveRange (startLine - 1, lineCount);
-					if (!string.IsNullOrEmpty (e.Value)) {
+					if (!string.IsNullOrEmpty (e.InsertedText)) {
 						for (int i=0; i<lineCount; ++i)
 							annotations.Insert (startLine - 1, locallyModified);
 					}
 					return;
-				} else if (0 == e.Count) {
-						// insert
-						tokens = e.Value.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
+				} else if (0 == e.RemovalLength) {
+					// insert
+					tokens = e.InsertedText.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
 						lineCount = tokens.Length - 1;
 						for (int i=0; i<lineCount; ++i) {
 							annotations.Insert (Math.Min (startLine, annotations.Count), locallyModified);

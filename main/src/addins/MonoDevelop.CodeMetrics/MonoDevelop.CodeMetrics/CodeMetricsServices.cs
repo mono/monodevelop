@@ -33,14 +33,10 @@ using MonoDevelop.Core;
  
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
-
 using Mono.TextEditor;
-
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -48,8 +44,8 @@ namespace MonoDevelop.CodeMetrics
 	{
 		public static void AddTypes (ProjectProperties projectprop, MetricsContext ctx)
 		{
-			ProjectDom dom = ProjectDomService.GetProjectDom (projectprop.Project);
-			foreach (IType ob in dom.Types) {
+			var dom = TypeSystemService.GetCompilation (projectprop.Project);
+			foreach (var ob in dom.MainAssembly.GetAllTypeDefinitions ()) {
 				projectprop.AddInstance(ob);
 			}
 		}
@@ -138,7 +134,7 @@ namespace MonoDevelop.CodeMetrics
 			results.Append(GettextCatalog.GetString("\nInner classes : ") + item.InnerClassCount);
 			results.Append(GettextCatalog.GetString("\nStructs : ") + item.StructCount);
 			results.Append(GettextCatalog.GetString("\nMethods : ") + item.MethodCount);
-			results.Append(GettextCatalog.GetString("\nProperties : ") + item.Class.PropertyCount);
+			results.Append(GettextCatalog.GetString("\nProperties : ") + item.Class.Properties.Count ());
 			results.Append(GettextCatalog.GetString("\nLack of cohesion of methods : ") + item.LCOM);
 			results.Append(GettextCatalog.GetString("\nLack of cohesion of methods (Henderson-Sellers) : ") + item.LCOM_HS);
 			return results;
@@ -160,8 +156,8 @@ namespace MonoDevelop.CodeMetrics
 		{
 			StringBuilder results = new StringBuilder();
 			results.Append(GettextCatalog.GetString("\nName : " + item.FullName));
-			results.Append(GettextCatalog.GetString("\nTotal number of fields : " + item.Struct.FieldCount));
-			results.Append(GettextCatalog.GetString("\nTotal number of properties : " + item.Struct.PropertyCount));
+			results.Append(GettextCatalog.GetString("\nTotal number of fields : " + item.Struct.Fields.Count ()));
+			results.Append(GettextCatalog.GetString("\nTotal number of properties : " + item.Struct.Properties.Count ()));
 			return results;
 		}
 		
@@ -169,8 +165,8 @@ namespace MonoDevelop.CodeMetrics
 		{
 			StringBuilder results = new StringBuilder();
 			results.Append(GettextCatalog.GetString("\nName : " + item.FullName));
-			results.Append(GettextCatalog.GetString("\nTotal number of properties : " + item.Interface.PropertyCount));
-			results.Append(GettextCatalog.GetString("\nTotal number of methods : " + item.Interface.MethodCount));
+			results.Append(GettextCatalog.GetString("\nTotal number of properties : " + item.Interface.Properties.Count ()));
+			results.Append(GettextCatalog.GetString("\nTotal number of methods : " + item.Interface.Methods.Count ()));
 			return results;
 		}
 		
@@ -178,8 +174,8 @@ namespace MonoDevelop.CodeMetrics
 		{
 			StringBuilder results = new StringBuilder();
 			results.Append(GettextCatalog.GetString("\nName : " + item.FullName));
-			results.Append(GettextCatalog.GetString("\nReturn Type : " + item.Delegate.ReturnType));
-			results.Append(GettextCatalog.GetString("\nTotal number of parameters : " + item.Delegate.Parameters.Count));
+			results.Append(GettextCatalog.GetString("\nReturn Type : " + item.Delegate.GetDelegateInvokeMethod ().ReturnType));
+			results.Append(GettextCatalog.GetString("\nTotal number of parameters : " + item.Delegate.GetDelegateInvokeMethod ().Parameters.Count));
 			return results;
 		}
 		
@@ -187,7 +183,7 @@ namespace MonoDevelop.CodeMetrics
 		{
 			StringBuilder results = new StringBuilder();
 			results.Append(GettextCatalog.GetString("\nName : " + item.FullName));
-			results.Append(GettextCatalog.GetString("\nTotal number of inner types : " + item.Enum.InnerTypeCount));
+			results.Append(GettextCatalog.GetString("\nTotal number of inner types : " + item.Enum.NestedTypes.Count));
 			return results;
 		}
 	}

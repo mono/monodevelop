@@ -31,9 +31,9 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Ide.Gui.Components;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -42,6 +42,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return ((IMember)dataObject).Name;
+		}
+		
+		protected Ambience Ambience {
+			get {
+				return AmbienceService.DefaultAmbience;
+			}
 		}
 		
 		public override Type CommandHandlerType {
@@ -59,8 +65,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				else if (v1 > v2) return 1;
 			}
 			if (thisNode.Options ["GroupByAccess"]) {
-				int v1 = GetAccessSortValue (((IMember)thisNode.DataItem).Modifiers);
-				int v2 = GetAccessSortValue (((IMember)otherNode.DataItem).Modifiers);
+				int v1 = GetAccessSortValue (((IEntity)thisNode.DataItem).Accessibility);
+				int v2 = GetAccessSortValue (((IEntity)otherNode.DataItem).Accessibility);
 				if (v1 < v2) return -1;
 				else if (v1 > v2) return 1;
 			}
@@ -76,12 +82,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return 4;
 		}
 		
-		int GetAccessSortValue (Modifiers mods)
+		int GetAccessSortValue (Accessibility mods)
 		{
-			if ((mods & Modifiers.Private) != 0) return 0;
-			if ((mods & Modifiers.Internal) != 0) return 1;
-			if ((mods & Modifiers.Protected) != 0) return 2;
-			if ((mods & Modifiers.Public) != 0) return 3;
+			if ((mods & Accessibility.Private) != 0) return 0;
+			if ((mods & Accessibility.Internal) != 0) return 1;
+			if ((mods & Accessibility.Protected) != 0) return 2;
+			if ((mods & Accessibility.Public) != 0) return 3;
 			return 4;
 		}
 	}

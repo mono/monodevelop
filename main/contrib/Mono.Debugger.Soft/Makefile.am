@@ -2,10 +2,11 @@ ASSEMBLY_DIR=$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft
 ASSEMBLY=$(ASSEMBLY_DIR)/Mono.Debugger.Soft.dll
 
 REFS =  \
+	-r:../../build/bin/Mono.Cecil.dll \
 	-r:System \
 	-r:System.Core
 
-DEPS = ../../build/bin/Mono.Cecil.dll
+DEPS =
 
 SIGNING_KEY=$(srcdir)/mono.snk
 

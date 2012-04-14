@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using MonoDevelop.AnalysisCore.Extensions;
+using System.Threading;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.AnalysisCore
 	// It yields Results from the tree's leaves via the intermediate nodes.
 	interface IRuleTreeNode
 	{
-		IEnumerable<Result> Analyze (object input);
+		IEnumerable<Result> Analyze (object input, CancellationToken cancellationToken);
 	}
 
 	sealed class RuleTreeLeaf : IRuleTreeNode
@@ -58,11 +59,11 @@ namespace MonoDevelop.AnalysisCore
 		//re-use to reduce pointless allocations
 		public static Result[] Empty = new Result[0];
 		
-		public IEnumerable<Result> Analyze (object input)
+		public IEnumerable<Result> Analyze (object input, CancellationToken cancellationToken)
 		{
 			//we construct the tree such that only a rule with an output of Result can be a leaf
 			//therefore its result must be castable to IEnumerable<Result>.
-			var results = (IEnumerable<Result>) rule.Analyze (input);
+			var results = (IEnumerable<Result>)rule.Analyze (input, cancellationToken);
 			if (results == null)
 				return Empty;
 			
@@ -95,10 +96,10 @@ namespace MonoDevelop.AnalysisCore
 		public IRuleTreeNode[] Children { get { return children; } }
 	
 		// This handles walking the tree - running this node's rule, and collecting results from child nodes
-		public IEnumerable<Result> Analyze (object input)
+		public IEnumerable<Result> Analyze (object input, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			// It's not a leaf node, so it has children which all expect the object output by this rule
-			var intermediate = rule.Analyze (input);
+			var intermediate = rule.Analyze (input, cancellationToken);
 	
 			// Rules may return null, in which case there is no point running their children
 			// This allows "adaptor" rules, which can check an input's type or state to choose whether to return an output 
@@ -107,7 +108,7 @@ namespace MonoDevelop.AnalysisCore
 	
 			//collect the results from all the children
 			//TODO: this could be parallelized trivially, since the tree nodes and the rules do not have any state
-			return children.SelectMany (child => child.Analyze (intermediate));
+			return children.SelectMany (child => child.Analyze (intermediate, cancellationToken));
 		}
 	}
 	
@@ -130,9 +131,9 @@ namespace MonoDevelop.AnalysisCore
 		
 		public RuleTreeType TreeType { get { return treeType; } }
 		
-		public IEnumerable<Result> Analyze (object input)
+		public IEnumerable<Result> Analyze (object input, CancellationToken cancellationToken)
 		{
-			return children.SelectMany (child => child.Analyze (input));
+			return children.SelectMany (child => child.Analyze (input, cancellationToken));
 		}
 		
 		public string GetTreeStructure ()

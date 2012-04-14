@@ -245,6 +245,8 @@ namespace MonoDevelop.MacIntegration
 						System.Console.WriteLine("WARNING: Could not map key ({0})", key);
 						return false;
 					}
+				} else {
+					charCode = (ushort) char.ToUpper ((char) charCode);
 				}
 			}
 			

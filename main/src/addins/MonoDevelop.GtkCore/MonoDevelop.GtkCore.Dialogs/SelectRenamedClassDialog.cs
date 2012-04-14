@@ -31,8 +31,10 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using Glade;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
+
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
@@ -62,8 +64,8 @@ namespace MonoDevelop.GtkCore.Dialogs
 			
 			treeClasses.AppendColumn (column);
 			
-			foreach (IType cls in classes) {
-				Pixbuf pic = ImageService.GetPixbuf (cls.StockIcon);
+			foreach (var cls in classes) {
+				Pixbuf pic = ImageService.GetPixbuf (cls.GetStockIcon ());
 				store.AppendValues (pic, cls.FullName);
 			}
 		}

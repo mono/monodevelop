@@ -39,7 +39,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public SyntaxMode SyntaxMode {
 			get {
-				return GetInstance () as SyntaxMode;
+				return CreateInstance () as SyntaxMode;
 			}
 		}
 

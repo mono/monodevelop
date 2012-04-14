@@ -27,14 +27,15 @@
 //
 
 using System;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface IEncodedTextContent
 	{
-		void Load (string fileName, string encoding);
-		void Save (string fileName, string encoding);
+		void Load (string fileName, Encoding encoding);
+		void Save (string fileName, Encoding encoding);
 		
-		string SourceEncoding { get; }		
+		Encoding SourceEncoding { get; }		
 	}
 }

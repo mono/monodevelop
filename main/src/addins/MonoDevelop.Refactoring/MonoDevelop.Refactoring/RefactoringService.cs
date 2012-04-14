@@ -27,34 +27,47 @@
 using System;
 using System.Collections.Generic;
 using Mono.Addins;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.CodeGeneration;
-using MonoDevelop.Projects.Dom;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
-using MonoDevelop.Inspection;
+using ICSharpCode.NRefactory;
+using System.Threading.Tasks;
+using System.Threading;
+using MonoDevelop.CodeActions;
+using MonoDevelop.CodeIssues;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Refactoring
 {
-	using MonoDevelop.ContextAction;
-
 	public static class RefactoringService
 	{
 		static List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static List<INRefactoryASTProvider> astProviders = new List<INRefactoryASTProvider>();
-		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
-		static List<ContextActionAddinNode> contextActions = new List<ContextActionAddinNode> ();
-		static List<InspectorAddinNode> inspectors = new List<InspectorAddinNode> ();
+		static List<CodeActionProvider> contextActions = new List<CodeActionProvider> ();
+		static List<CodeIssueProvider> inspectors = new List<CodeIssueProvider> ();
 		
-		public static IEnumerable<ContextActionAddinNode> ContextAddinNodes {
+		public static IEnumerable<CodeActionProvider> ContextAddinNodes {
 			get {
 				return contextActions;
 			}
 		} 
+
+		public static void AddProvider (CodeActionProvider provider)
+		{
+			contextActions.Add (provider);
+		}
 		
+		public static void AddProvider (CodeIssueProvider provider)
+		{
+			inspectors.Add (provider);
+		}
+
+		public static List<CodeIssueProvider> Inspectors {
+			get {
+				return inspectors;
+			}
+		}
+
 		static RefactoringService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -68,46 +81,41 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ASTProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+			
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeActions", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					astProviders.Add ((INRefactoryASTProvider)args.ExtensionObject);
+					contextActions.Add (((CodeActionAddinNode)args.ExtensionNode).Action);
 					break;
 				case ExtensionChange.Remove:
-					astProviders.Remove ((INRefactoryASTProvider)args.ExtensionObject);
-					break;
-				}
-			});
-
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeGenerators", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					codeGenerators.Add ((ICodeGenerator)args.ExtensionObject);
-					break;
-				case ExtensionChange.Remove:
-					codeGenerators.Remove ((ICodeGenerator)args.ExtensionObject);
+					contextActions.Remove (((CodeActionAddinNode)args.ExtensionNode).Action);
 					break;
 				}
 			});
 			
-//			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/ContextActions", delegate(object sender, ExtensionNodeEventArgs args) {
-//				switch (args.Change) {
-//				case ExtensionChange.Add:
-//					contextActions.Add ((ContextActionAddinNode)args.ExtensionNode);
-//					break;
-//				case ExtensionChange.Remove:
-//					contextActions.Remove ((ContextActionAddinNode)args.ExtensionNode);
-//					break;
-//				}
-//			});
-//			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Inspectors", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeActionSource", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					inspectors.Add ((InspectorAddinNode)args.ExtensionNode);
+					contextActions.AddRange (((ICodeActionProviderSource)args.ExtensionObject).GetProviders ());
+					break;
+				}
+			});
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssues", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					inspectors.Add (((CodeIssueAddinNode)args.ExtensionNode).Inspector);
 					break;
 				case ExtensionChange.Remove:
-					inspectors.Remove ((InspectorAddinNode)args.ExtensionNode);
+					inspectors.Remove (((CodeIssueAddinNode)args.ExtensionNode).Inspector);
+					break;
+				}
+			});
+			
+		AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssueSource", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					inspectors.AddRange (((ICodeIssueProviderSource)args.ExtensionObject).GetProviders ());
 					break;
 				}
 			});
@@ -117,12 +125,6 @@ namespace MonoDevelop.Refactoring
 		public static IEnumerable<RefactoringOperation> Refactorings {
 			get {
 				return refactorings;
-			}
-		}
-		
-		public static IEnumerable<ICodeGenerator> CodeGenerators {
-			get {
-				return codeGenerators;
 			}
 		}
 		
@@ -147,14 +149,14 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes)
+		public static void AcceptChanges (IProgressMonitor monitor, List<Change> changes)
 		{
-			AcceptChanges (monitor, dom, changes, MonoDevelop.Ide.TextFileProvider.Instance);
+			AcceptChanges (monitor, changes, MonoDevelop.Ide.TextFileProvider.Instance);
 		}
 		
-		public static void AcceptChanges (IProgressMonitor monitor, ProjectDom dom, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
+		public static void AcceptChanges (IProgressMonitor monitor, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
 		{
-			var rctx = new RefactorerContext (dom, fileProvider, null);
+			var rctx = new RefactoringOptions (null);
 			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
 			for (int i = 0; i < changes.Count; i++) {
@@ -182,45 +184,75 @@ namespace MonoDevelop.Refactoring
 			TextReplaceChange.FinishRefactoringOperation ();
 		}
 		
-		public static INRefactoryASTProvider GetASTProvider (string mimeType)
+		public static IEnumerable<CodeIssueProvider> GetInspectors (string mimeType)
 		{
-			foreach (INRefactoryASTProvider provider in astProviders) {
-				if (provider.CanGenerateASTFrom (mimeType)) {
-					return provider;
-				}
-			}
-			return null;
+			return inspectors.Where (i => i.MimeType == mimeType);
 		}
-		
-		public static IEnumerable<InspectorAddinNode> GetInspectors (string mimeTye)
+
+		public static Task<IEnumerable<MonoDevelop.CodeActions.CodeAction>> GetValidActions (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return inspectors.Where (i => i.MimeType == mimeTye);
-		}
-		
-		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, DomLocation loc, Action<List<ContextAction>> callback)
-		{
-			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+			return Task.Factory.StartNew (delegate {
+				var result = new List<MonoDevelop.CodeActions.CodeAction> ();
 				try {
-					string disabledNodes = PropertyService.Get ("ContextActions." + doc.Editor.Document.MimeType, "") ?? "";
-					
-					var availableFixes = new List<ContextAction> (contextActions.Where (fix => disabledNodes.IndexOf (fix.Type.FullName) < 0 && fix.Action.IsValid (doc, loc)).Select (fix => fix.Action));
-					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
-					if (ext != null) {
-						foreach (var result in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc.Line, loc.Column))) {
-							var fresult = result as FixableResult;
-							if (fresult == null)
-								continue;
-							foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
-								availableFixes.Add (new AnalysisContextAction (result, action));
+					var editor = doc.Editor;
+					if (editor != null) {
+						string disabledNodes = PropertyService.Get ("ContextActions." + editor.Document.MimeType, "") ?? "";
+						foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString) < 0)) {
+							try {
+								result.AddRange (provider.GetActions (doc, loc, cancellationToken));
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
 							}
 						}
 					}
-					
-					callback (availableFixes);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error in analysis service", ex);
+				}
+				return (IEnumerable<MonoDevelop.CodeActions.CodeAction>)result;
+			}, cancellationToken);
+		}
+
+		public static void QueueQuickFixAnalysis (MonoDevelop.Ide.Gui.Document doc, TextLocation loc, Action<List<MonoDevelop.CodeActions.CodeAction>> callback)
+		{
+			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					var result = new List<MonoDevelop.CodeActions.CodeAction> ();
+
+					var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
+					if (ext != null) {
+						foreach (var r in ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc)).OrderBy (r => r.Level)) {
+							var fresult = r as FixableResult;
+							if (fresult == null)
+								continue;
+							foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
+								result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r));
+							}
+						}
+					}
+					result.AddRange (GetValidActions (doc, loc).Result);
+					callback (result);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
 				}
 			});
 		}	
+
+		public static DocumentLocation GetCorrectResolveLocation (Document doc, DocumentLocation location)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			var editor = doc.Editor;
+			if (editor == null || location.Column == 1)
+				return location;
+
+			var line = editor.GetLine (location.Line);
+			if (line == null || location.Column >= line.Length)
+				return location;
+
+			int offset = editor.LocationToOffset (location);
+			if (offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1)))
+				return new DocumentLocation (location.Line, location.Column - 1);
+			return location;
+		}
 	}
 }

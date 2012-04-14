@@ -363,9 +363,17 @@ namespace Mono.Debugging.Evaluation
 		{
 			return GetObjectValueChildren (ctx, objectSource, GetValueType (ctx, obj), obj, firstItemIndex, count, true);
 		}
+		
+		public ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, IObjectSource objectSource, object type, object obj, int firstItemIndex, int count)
+		{
+			return GetObjectValueChildren (ctx, objectSource, type, obj, firstItemIndex, count, true);
+		}
 
 		public virtual ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, IObjectSource objectSource, object type, object obj, int firstItemIndex, int count, bool dereferenceProxy)
 		{
+			if (obj is EvaluationResult)
+				return new ObjectValue[0];
+			
 			if (IsArray (ctx, obj)) {
 				ArrayElementGroup agroup = new ArrayElementGroup (ctx, CreateArrayAdaptor (ctx, obj));
 				return agroup.GetChildren (ctx.Options);

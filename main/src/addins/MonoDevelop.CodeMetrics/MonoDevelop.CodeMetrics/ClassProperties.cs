@@ -35,14 +35,11 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 //using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 //using MonoDevelop.Projects.Dom.Parser;
 //using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
-
-using ICSharpCode.OldNRefactory;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 //add reference to configure.in file
 
@@ -50,7 +47,7 @@ namespace MonoDevelop.CodeMetrics
 {
 	public class ClassProperties : IProperties
 	{
-		private IType cls;
+		private ITypeDefinition cls;
 		
 		public Dictionary<string, ClassProperties> InnerClasses {
 			get; private set;
@@ -80,7 +77,7 @@ namespace MonoDevelop.CodeMetrics
 			get; private set;
 		}
 		
-		internal IType Class {
+		internal ITypeDefinition Class {
 			get { return cls; }
 		}
 		
@@ -122,7 +119,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		private void AddMethod ()
 		{
-			foreach (IMethod method in Class.Methods) {
+			foreach (var method in Class.Methods) {
 				if(method.Name==".ctor")
 					continue;
 				try {
@@ -156,7 +153,7 @@ namespace MonoDevelop.CodeMetrics
 		
 		public int InnerTypeCount {
 			get {
-				return Class.InnerTypeCount;
+				return Class.NestedTypes.Count;
 			}
 		}
 		
@@ -192,21 +189,21 @@ namespace MonoDevelop.CodeMetrics
 		
 		private void EvaluateInnerTypeCount()
 		{
-			foreach (IType type in Class.InnerTypes) {
-				switch (type.ClassType) {
-				case MonoDevelop.Projects.Dom.ClassType.Class:
+			foreach (var type in Class.NestedTypes) {
+				switch (type.Kind) {
+				case TypeKind.Class:
 					AddInnerClass(type); 
 					break;
-				case MonoDevelop.Projects.Dom.ClassType.Enum:
+				case TypeKind.Enum:
 					AddInnerEnum(type);
 					break;
-				case MonoDevelop.Projects.Dom.ClassType.Interface:
+				case TypeKind.Interface:
 					AddInnerInterface(type);
 					break;
-				case MonoDevelop.Projects.Dom.ClassType.Struct:
+				case TypeKind.Struct:
 					AddInnerStruct(type);
 					break;
-				case MonoDevelop.Projects.Dom.ClassType.Delegate:
+				case TypeKind.Delegate:
 					AddInnerDelegate(type);
 					break;
 				}
@@ -214,32 +211,32 @@ namespace MonoDevelop.CodeMetrics
 		}
 		
 	
-		private void AddInnerClass(IType type)
+		private void AddInnerClass(ITypeDefinition type)
 		{
 			if(!InnerClasses.ContainsKey(type.FullName))
 				InnerClasses.Add(type.FullName, new ClassProperties(type));
 		}
 	
 		
-		private void AddInnerEnum(IType type)
+		private void AddInnerEnum(ITypeDefinition type)
 		{
 			if(!InnerEnums.ContainsKey(type.FullName))
 				InnerEnums.Add(type.FullName, new EnumProperties(type));
 		}
 		
-		private void AddInnerInterface(IType type)
+		private void AddInnerInterface(ITypeDefinition type)
 		{
 			if(!InnerInterfaces.ContainsKey(type.FullName))
 				InnerInterfaces.Add(type.FullName, new InterfaceProperties(type));
 		}
 		
-		private void AddInnerStruct(IType type)
+		private void AddInnerStruct(ITypeDefinition type)
 		{
 			if(!InnerStructs.ContainsKey(type.FullName))
 				InnerStructs.Add(type.FullName, new StructProperties(type));
 		}
 		
-		private void AddInnerDelegate(IType type)
+		private void AddInnerDelegate(ITypeDefinition type)
 		{
 			if(!InnerDelegates.ContainsKey(type.FullName))
 				InnerDelegates.Add(type.FullName, new DelegateProperties(type));
@@ -265,16 +262,13 @@ namespace MonoDevelop.CodeMetrics
 		
 		public int ConstructorCount {
 			get {
-				return Class.ConstructorCount;
+				return Class.Methods.Where (m => m.IsConstructor).Count ();
 			}
 		}
 		
 		public bool IsDocumented {
 			get {
-				if (Class.Documentation != "")
-					return true;
-				else
-					return false;
+				return Class.Documentation != null;
 			}
 		}
 		
@@ -282,7 +276,7 @@ namespace MonoDevelop.CodeMetrics
 			get; private set;
 		}
 		
-		public ClassProperties (IType c)
+		public ClassProperties (ITypeDefinition c)
 		{
 			cls = c;
 			
@@ -300,10 +294,10 @@ namespace MonoDevelop.CodeMetrics
 			AddField ();
 			
 			this.FieldCount = this.Fields.Count;
-			this.EventCount = this.Class.EventCount;
-			this.MethodCount = this.Methods.Count;
-			this.StartLine = this.Class.BodyRegion.Start.Line;
-			this.EndLine = this.Class.BodyRegion.End.Line;
+			this.EventCount = this.Class.Events.Count ();
+			this.MethodCount = this.Methods.Count ();
+			this.StartLine = this.Class.BodyRegion.BeginLine;
+			this.EndLine = this.Class.BodyRegion.EndLine;
 		}
 		
 		public int DepthOfInheritance {
@@ -411,7 +405,7 @@ namespace MonoDevelop.CodeMetrics
 		{
 			StringBuilder paramString = new StringBuilder();
 			foreach(IParameter param in method.Parameters)
-				paramString.Append(param.ReturnType.Name + " ");
+				paramString.Append(param.Type + " ");
 			return paramString.ToString();
 		}
 	}

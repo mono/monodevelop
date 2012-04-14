@@ -3,19 +3,20 @@ ASSEMBLY = $(top_builddir)/build/bin/ICSharpCode.Decompiler.dll
   
 
 REFS =  \
+	-r:../../build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	-r:../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:../../build/bin/Mono.Cecil.dll \
 	-r:System \
 	-r:System.Core \
 	-r:System.Xml \
 	-r:System.Xml.Linq
-	
+
+SIGNING_KEY=$(srcdir)/../ICSharpCode.NRefactory/ICSharpCode.NRefactory.snk
 
 FILES =  \
 	Ast/Annotations.cs \
 	Ast/AstBuilder.cs \
 	Ast/AstMethodBodyBuilder.cs \
-	Ast/CecilTypeResolveContext.cs \
 	Ast/CommentStatement.cs \
 	Ast/DecompilerContext.cs \
 	Ast/NameVariables.cs \
@@ -25,9 +26,12 @@ FILES =  \
 	Ast/Transforms/CombineQueryExpressions.cs \
 	Ast/Transforms/ContextTrackingVisitor.cs \
 	Ast/Transforms/ConvertConstructorCallIntoInitializer.cs \
+	Ast/Transforms/CustomPatterns.cs \
 	Ast/Transforms/DecimalConstantTransform.cs \
 	Ast/Transforms/DeclareVariables.cs \
 	Ast/Transforms/DelegateConstruction.cs \
+	Ast/Transforms/ExpressionTreeConverter.cs \
+	Ast/Transforms/FlattenSwitchBlocks.cs \
 	Ast/Transforms/IntroduceExtensionMethods.cs \
 	Ast/Transforms/IntroduceQueryExpressions.cs \
 	Ast/Transforms/IntroduceUnsafeModifier.cs \
@@ -75,14 +79,12 @@ FILES =  \
 	ILAst/YieldReturnDecompiler.cs \
 	ITextOutput.cs \
 	PlainTextOutput.cs \
-	Properties/AssemblyInfo.cs \
 	ReferenceResolvingException.cs \
-	Tests/CallOverloadedMethod.cs \
 	TextOutputWriter.cs 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY): $(build_sources)
-	$(CSC) $(CSC_FLAGS) -define:NET35 -debug -out:$@ -target:library $(REFS) $(build_sources)
+	$(CSC) $(CSC_FLAGS) -keyfile:"$(SIGNING_KEY)" -define:NET35 -debug -out:$@ -target:library $(REFS) $(build_sources)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 

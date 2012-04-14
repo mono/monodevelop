@@ -97,7 +97,7 @@ namespace MonoDevelop.SourceEditor
 				curState = AbbrevState.SearchForward;
 				goto case AbbrevState.SearchForward;
 			case AbbrevState.SearchForward:
-				while (offset < view.TextEditor.Document.Length) {
+				while (offset < view.TextEditor.Document.TextLength) {
 					if (IsMatchAt (view, offset, abbrevWord)) {
 						int endOffset = SearchEndPos (offset, view);
 						string curWord = view.TextEditor.Document.GetTextBetween (offset, endOffset);
@@ -117,9 +117,9 @@ namespace MonoDevelop.SourceEditor
 			case AbbrevState.SearchOtherBuffers:
 				foreach (Document curDoc in IdeApp.Workbench.Documents) {
 					SourceEditorView otherView = curDoc.GetContent<SourceEditorView> ();
-					if (curDoc == doc && otherView == null)
+					if (curDoc == doc || otherView == null || otherView.Document == null)
 						continue;
-					for (int i = 0; i < otherView.Document.Length; i++) {
+					for (int i = 0; i < otherView.Document.TextLength; i++) {
 						if (IsMatchAt (otherView, i, abbrevWord)) {
 							int endOffset = SearchEndPos (i, otherView);
 							string curWord = otherView.TextEditor.Document.GetTextBetween (i, endOffset);
@@ -169,12 +169,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			view.TextEditor.Replace (lastInsertPos, view.TextEditor.Caret.Offset - lastInsertPos, curWord);
 			view.TextEditor.Document.CommitLineUpdate (view.TextEditor.Caret.Line);
-			lastTriggerOffset = view.TextEditor.Caret.Offset = lastInsertPos + curWord.Length;
+			lastTriggerOffset = view.TextEditor.Caret.Offset;
 		}
 		
 		static int SearchEndPos (int offset, MonoDevelop.SourceEditor.SourceEditorView view)
 		{
-			while (offset < view.TextEditor.Document.Length && IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset))) {
+			while (offset < view.TextEditor.Document.TextLength && IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset))) {
 				offset++;
 			}
 			return offset;
@@ -182,11 +182,11 @@ namespace MonoDevelop.SourceEditor
 		
 		static bool IsMatchAt (MonoDevelop.SourceEditor.SourceEditorView view, int offset, string abbrevWord)
 		{
-			if (offset + abbrevWord.Length >= view.TextEditor.Document.Length)
+			if (offset + abbrevWord.Length >= view.TextEditor.Document.TextLength)
 				return false;
 			if (offset > 0 && IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset - 1)))
 				return false;
-			if (offset + abbrevWord.Length < view.TextEditor.Document.Length && !IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset + abbrevWord.Length)))
+			if (offset + abbrevWord.Length < view.TextEditor.Document.TextLength && !IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset + abbrevWord.Length)))
 				return false;
 			return view.TextEditor.Document.GetTextAt (offset, abbrevWord.Length) == abbrevWord;
 		}

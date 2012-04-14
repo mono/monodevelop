@@ -21,6 +21,7 @@ REFS =  \
 	-r:../../build/AddIns/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.dll \
 	-r:../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
 	-r:../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Git.dll \
+	-r:../../build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	-r:../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:../../build/bin/Mono.TextEditor.dll \
 	-r:../../build/bin/MonoDevelop.Core.dll \
@@ -38,16 +39,17 @@ REFS =  \
 	-r:System.Xml
 
 FILES =  \
-	Mono.TextEditor.Tests.DefaultEditActions/BookmarkTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/BookmarkActionsTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/CaretMoveActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/DeleteActionTests.cs \
-	Mono.TextEditor.Tests.DefaultEditActions/InsertNewLineTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/FoldActionTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/InsertTabTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/MiscActionsTest.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/RemoveTabTests.cs \
 	Mono.TextEditor.Tests.DefaultEditActions/SelectionActionTests.cs \
+	Mono.TextEditor.Tests.DefaultEditActions/TextEditorTestBase.cs \
 	Mono.TextEditor.Tests/BufferTests.cs \
 	Mono.TextEditor.Tests/DocumentTests.cs \
-	Mono.TextEditor.Tests/EditActionsTest.cs \
 	Mono.TextEditor.Tests/FoldingTests.cs \
 	Mono.TextEditor.Tests/HeightTreeTests.cs \
 	Mono.TextEditor.Tests/InsertionModeTests.cs \
@@ -56,32 +58,29 @@ FILES =  \
 	Mono.TextEditor.Tests/SearchTests.cs \
 	Mono.TextEditor.Tests/SegmentTreeTests.cs \
 	Mono.TextEditor.Tests/SelectionTests.cs \
+	Mono.TextEditor.Tests/SmartIndentModeTests.cs \
 	Mono.TextEditor.Tests/SyntaxHighlightingTests.cs \
 	Mono.TextEditor.Tests/TextBreakerTests.cs \
 	Mono.TextEditor.Tests/TextFileReaderTests.cs \
 	Mono.TextEditor.Tests/UndoRedoTests.cs \
+	Mono.TextEditor.Tests/VirtualIndentModeTests.cs \
 	Mono.TextEditor.Tests/VirtualSpacesTests.cs \
 	Mono.TextEditor.Tests/ViTests.cs \
-	MonoDevelop.AspNet/AspNetCompletionTests.cs \
-	MonoDevelop.AspNet/AspNetTesting.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionAccessibleTests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionBugTests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionCSharp3Tests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionCSharpTests.cs \
-	MonoDevelop.CSharpBinding/CodeCompletionOperatorTests.cs \
+	MonoDevelop.CSharpBinding.Refactoring/GenerateNewMemberTests.cs \
+	MonoDevelop.CSharpBinding.Refactoring/ImplementInterfaceTests.cs \
+	MonoDevelop.CSharpBinding.Refactoring/ResolveNamespaceTests.cs \
+	MonoDevelop.CSharpBinding/CSharpTextEditorIndentationTests.cs \
 	MonoDevelop.CSharpBinding/FindMemberVisitorTests.cs \
 	MonoDevelop.CSharpBinding/FoldingParserTests.cs \
 	MonoDevelop.CSharpBinding/MemberTests.cs \
-	MonoDevelop.CSharpBinding/ParameterCompletionTests.cs \
+	MonoDevelop.CSharpBinding/OnTheFlyFormatterTests.cs \
 	MonoDevelop.CSharpBinding/ProjectDomTests.cs \
+	MonoDevelop.CSharpBinding/TestDocument.cs \
 	MonoDevelop.CSharpBinding/TestViewContent.cs \
 	MonoDevelop.CSharpBinding/TestWorkbenchWindow.cs \
-	MonoDevelop.CSharpBinding/TopLevelTests.cs \
-	MonoDevelop.Projects.Gui/CompletionListWindowTests.cs \
-	MonoDevelop.Projects/CompletionDatabaseTests.cs \
-	MonoDevelop.Projects/DomCompilationUnitTests.cs \
-	MonoDevelop.Projects/DomPersistenceTests.cs \
-	MonoDevelop.Projects/DomTests.cs \
+	MonoDevelop.Ide.FindInFiles/MemberCollectorTests.cs \
+	MonoDevelop.Ide.FindInFiles/SearchCollectorTests.cs \
+	MonoDevelop.Ide.Gui/CompletionListWindowTests.cs \
 	MonoDevelop.Projects/LocalCopyTests.cs \
 	MonoDevelop.Projects/MakefileTests.cs \
 	MonoDevelop.Projects/MdsTests.cs \
@@ -93,23 +92,8 @@ FILES =  \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/TextFormatterTests.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
-	MonoDevelop.Refactoring/BaseRefactorerTests.cs \
-	MonoDevelop.Refactoring/CreateBackingStoreTests.cs \
-	MonoDevelop.Refactoring/CreateMethodTests.cs \
-	MonoDevelop.Refactoring/DeclareLocalTests.cs \
-	MonoDevelop.Refactoring/ExtractMethodTests.cs \
-	MonoDevelop.Refactoring/GenerateNewMemberTests.cs \
-	MonoDevelop.Refactoring/ImplementInterfaceTests.cs \
-	MonoDevelop.Refactoring/IntegrateTemporaryVariableTests.cs \
-	MonoDevelop.Refactoring/IntroduceConstantRefactoringTests.cs \
-	MonoDevelop.Refactoring/IntroduceFormatItemRefactoringTests.cs \
-	MonoDevelop.Refactoring/RemoveBackingStoreTests.cs \
 	MonoDevelop.VersionControl.Git/GitUtilsTests.cs \
 	MonoDevelop.VersionControl.Views/EditorCompareWidgetBaseTest.cs \
-	MonoDevelop.Xml.StateEngine/AspNetParsingTests.cs \
-	MonoDevelop.Xml.StateEngine/HtmlParsingTests.cs \
-	MonoDevelop.Xml.StateEngine/ParsingTests.cs \
-	MonoDevelop.Xml.StateEngine/TestParser.cs \
 	TestBase.cs \
 	Util.cs
 

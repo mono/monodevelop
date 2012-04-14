@@ -52,6 +52,40 @@ namespace MonoDevelop.MacDev.PlistEditor
 			int arg2,
 			out IntPtr arg3);
 		
+		public static PObject Create (string type)
+		{
+			switch (type) {
+			case "Array":
+				return new PArray ();
+			case "Dictionary":
+				return new PDictionary ();
+			case "Boolean":
+				return new PBoolean (true);
+			case "Data":
+				return new PData (new byte[0]);
+			case "Date":
+				return new PDate (DateTime.Now);
+			case "Number":
+				return new PNumber (0);
+			case "String":
+				return new PString ("");
+			}
+			LoggingService.LogError ("Unknown pobject type:" + type);
+			return new PString ("<error>");
+		}
+		
+				
+		internal static IEnumerable<KeyValuePair<string, PObject>> ToEnumerable (PObject obj)
+		{
+			if (obj is PDictionary) {
+				return (PDictionary) obj;
+			} else if (obj is PArray) {
+				return ((PArray) obj).Select (k => new KeyValuePair<string, PObject> (k is IPValueObject ? ((IPValueObject) k).Value.ToString () : null, k));
+			} else {
+				return Enumerable.Empty <KeyValuePair<string, PObject>> ();
+			}
+		}
+		
 		
 		PObject parent;
 		public PObject Parent {
@@ -114,8 +148,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		public abstract NSObject Convert ();
-		
-		public abstract void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer);
 		
 		public abstract void SetValue (string text);
 		
@@ -185,7 +217,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 		}
-		
 	}
 	
 	public abstract class PObjectContainer : PObject
@@ -194,7 +225,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public abstract void Save (string fileName);
 	}
 	
-	public abstract class PValueObject<T> : PObject
+	public interface IPValueObject
+	{
+		object Value { get; set; }
+	}
+	
+	public abstract class PValueObject<T> : PObject, IPValueObject
 	{
 		T val;
 		public T Value {
@@ -207,6 +243,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		object IPValueObject.Value {
+			get { return Value; }
+			set { Value = (T) value; }
+		}
+		
 		public PValueObject (T value)
 		{
 			this.Value = value;
@@ -215,13 +256,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public PValueObject ()
 		{
 		}
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = true;
-			renderer.Text = Value.ToString ();
-		}
-		
+
 		public static implicit operator T (PValueObject<T> pObj)
 		{
 			return pObj != null ? pObj.Value : default(T);
@@ -230,12 +265,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PDictionary : PObjectContainer, IEnumerable<KeyValuePair<string, PObject>>
 	{
+		public const string Type = "Dictionary";
 		Dictionary<string, PObject> dict;
 		List<string> order;
 		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Dictionary");
+				return Type;
 			}
 		}
 		
@@ -394,14 +430,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			value = (T)obj;
 			return true;
 		}
-		
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = false;
-			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", dict.Count), dict.Count);
-		}
-		
+
 		public override void SetValue (string text)
 		{
 			throw new NotSupportedException ();
@@ -547,11 +576,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PArray : PObjectContainer, IEnumerable<PObject>
 	{
+		public const string Type = "Array";
 		List<PObject> list;
 		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Array");
+				return Type;
 			}
 		}
 		
@@ -673,12 +703,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 			return NSArray.FromNSObjects (list.Select (x => x.Convert ()).ToArray ());
 		}
 		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = false;
-			renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", Count), Count);
-		}
-		
 		public override string ToString ()
 		{
 			return string.Format ("[PArray: Items={0}]", Count);
@@ -727,9 +751,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PBoolean : PValueObject<bool>
 	{
+		public const string Yes = "Yes";
+		public const string No = "No";
+		
+		public const string Type = "Boolean";
+		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Boolean");
+				return Type;
 			}
 		}
 		
@@ -739,28 +768,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public override void SetValue (string text)
 		{
-			Value = text == GettextCatalog.GetString ("Yes");
+			if (text == Yes || text == GettextCatalog.GetString ("Yes"))
+				Value = true;
+			else if (text == No || text == GettextCatalog.GetString ("No"))
+				Value = false;
 		}
 		
 		public override NSObject Convert ()
 		{
 			return NSNumber.FromBoolean (Value);
 		}
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = true;
-			renderer.Text = Value ? GettextCatalog.GetString ("Yes") : GettextCatalog.GetString ("No");
-		}
 	}
 	
 	public class PData : PValueObject<byte[]>
 	{
+		public const string Type = "Data";
 		static readonly byte[] Empty = new byte [0];
 		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Data");
+				return Type;
 			}
 		}
 		
@@ -782,21 +809,16 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			throw new NotSupportedException ();
 		}
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			renderer.Sensitive = false;
-			renderer.Text = string.Format ("byte[{0}]", Value.Length);
-		}
 	}
 	
 	public class PDate : PValueObject<DateTime>
 	{
+		public const string Type = "Date";
 		internal static DateTime referenceDate = new DateTime (2001, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Date");
+				return Type;
 			}
 		}
 		
@@ -818,9 +840,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PNumber : PValueObject<int>
 	{
+		public const string Type = "Number";
+		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("Number");
+				return Type;
 			}
 		}
 		
@@ -843,9 +867,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 	
 	public class PString : PValueObject<string>
 	{
+		public const string Type = "String";
+		
 		public override string TypeString {
 			get {
-				return GettextCatalog.GetString ("String");
+				return Type;
 			}
 		}
 		
@@ -865,22 +891,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override NSObject Convert ()
 		{
 			return new NSString (Value);
-		}
-		
-		public override void RenderValue (IRawPListDisplayWidget display, CellRendererCombo renderer)
-		{
-			var key = display.ShowDescriptions && Parent != null ? display.Scheme.GetKey (Parent.Key) : null;
-			
-			renderer.Sensitive = true;
-			if (key != null) {
-				var val = key.Values.FirstOrDefault (v => v.Identifier == Value);
-				if (val != null) {
-					renderer.Text = GettextCatalog.GetString (val.Description);
-					return;
-				}
-			}
-			
-			base.RenderValue (display, renderer);
 		}
 	}
 	

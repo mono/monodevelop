@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog
 			this.Name = "MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Delete Project");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Delete Project");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			// Internal child MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.VBox
@@ -37,14 +37,14 @@ namespace MonoDevelop.Ide.Projects
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Please select which files and folders you want to delete:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Please select which files and folders you want to delete:");
 			this.vbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radioDeleteAll = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Delete the project file and the whole project directory:"));
+			this.radioDeleteAll = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Delete the project file and the whole project directory:"));
 			this.radioDeleteAll.CanFocus = true;
 			this.radioDeleteAll.Name = "radioDeleteAll";
 			this.radioDeleteAll.DrawIndicator = true;
@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Projects
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radioDeleteSel = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Delete the following files and folders:"));
+			this.radioDeleteSel = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Delete the following files and folders:"));
 			this.radioDeleteSel.CanFocus = true;
 			this.radioDeleteSel.Name = "radioDeleteSel";
 			this.radioDeleteSel.DrawIndicator = true;

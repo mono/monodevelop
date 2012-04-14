@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.descLabel.Name = "descLabel";
 			this.descLabel.Xalign = 0F;
 			this.descLabel.Yalign = 0F;
-			this.descLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Description:");
+			this.descLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("_Description:");
 			this.descLabel.UseUnderline = true;
 			this.table14.Add (this.descLabel);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table14 [this.descLabel]));
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.versLabel = new global::Gtk.Label ();
 			this.versLabel.Name = "versLabel";
 			this.versLabel.Xalign = 0F;
-			this.versLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Version:");
+			this.versLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("_Version:");
 			this.versLabel.UseUnderline = true;
 			this.table14.Add (this.versLabel);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table14 [this.versLabel]));

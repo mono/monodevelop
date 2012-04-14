@@ -101,6 +101,10 @@ namespace Mono.Debugging.Client
 		//	protected set { column = value; }
 		//}
 		
+		public int OriginalLine {
+			get { return line; }
+		}
+		
 		public int Line {
 			get { return adjustedLine == -1 ? line : adjustedLine; }
 			protected set { line = value; }

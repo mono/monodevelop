@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Desktop;
 using System.Collections.Generic;
 using MonoDevelop.Components.AutoTest;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide
 {
@@ -151,6 +152,7 @@ namespace MonoDevelop.Ide
 			
 			commandService.CommandTargetScanStarted += CommandServiceCommandTargetScanStarted;
 			commandService.CommandTargetScanFinished += CommandServiceCommandTargetScanFinished;
+			commandService.KeyBindingFailed += KeyBindingFailed;
 
 			KeyBindingService.LoadBindingsFromExtensionPath ("/MonoDevelop/Ide/KeyBindingSchemes");
 			KeyBindingService.LoadCurrentBindings ("MD2");
@@ -197,8 +199,8 @@ namespace MonoDevelop.Ide
 			};
 
 			// Perser service initialization
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.TrackFileChanges = true;
-			MonoDevelop.Projects.Dom.Parser.ProjectDomService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
+			TypeSystemService.TrackFileChanges = true;
+			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
 			
 			// Startup commands
@@ -278,6 +280,11 @@ namespace MonoDevelop.Ide
 				UpdateInstrumentationIcon ();
 			};
 			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
+		}
+
+		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
+		{
+			Ide.IdeApp.Workbench.StatusBar.ShowMessage (e.Message);
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell

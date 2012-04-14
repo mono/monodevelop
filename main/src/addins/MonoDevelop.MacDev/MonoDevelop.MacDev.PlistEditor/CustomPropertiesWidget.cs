@@ -38,62 +38,53 @@ namespace MonoDevelop.MacDev.PlistEditor
 	[System.ComponentModel.ToolboxItem(true)]
 	public class CustomPropertiesWidget : VBox, IRawPListDisplayWidget
 	{
-		const string AddKeyNode = "Add new entry";
+		static readonly string AddKeyNode = GettextCatalog.GetString ("Add new entry");
+		const string DefaultNewObjectType = PString.Type;
 		
-		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject));
+		TreeStore treeStore = new TreeStore (typeof(string), typeof (PObject), typeof (PListScheme.SchemaItem));
 		Gtk.ListStore keyStore = new ListStore (typeof (string), typeof (PListScheme.Key));
 		Gtk.ListStore valueStore = new ListStore (typeof (string), typeof (string));
 		PopupTreeView treeview;
-		PListScheme scheme;
-		HashSet<PObject> expandedObjects = new HashSet<PObject> ();
 		bool showDescriptions = true;
-		
+	
 		public bool ShowDescriptions {
 			get { return showDescriptions; }
-		}
-		
-		void SetShowDescriptions (bool value)
-		{
-			showDescriptions = value;
-			QueueDraw ();
-		}
-		
-		public PListScheme Scheme {
-			get {
-				return scheme;
+			private set {
+				if (showDescriptions != value) {
+					showDescriptions = value;
+					RefreshKeyStore ();
+					QueueDraw ();
+				}
 			}
 		}
 		
-		PObject nsDictionary;
+		/// <summary>
+		/// The Dictionary representing all the PObjects in the GtkTreeView and the corresponding SchemaItem they
+		/// were instantiated from.
+		/// </summary>
+		/// <value>
+		/// The current tree.
+		/// </value>
+		Dictionary<PObject, PListScheme.SchemaItem> CurrentTree {
+			get; set;
+		}
+		
+		PObject RootPObject {
+			get; set;
+		}
+
+		public PListScheme Scheme {
+			get; private set;
+		}
+		
 		public void SetPListContainer (PObjectContainer value)
 		{
-			nsDictionary = value;
-			nsDictionary.Changed += delegate {
+			RootPObject = value;
+			RootPObject.Changed += delegate {
+				RefreshTree ();
 				QueueDraw ();
 			};
 			RefreshTree ();
-		}
-		
-		public static PObject CreateNewObject (string type)
-		{
-			switch (type) {
-			case "Array":
-				return new PArray ();
-			case "Dictionary":
-				return new PDictionary ();
-			case "Boolean":
-				return new PBoolean (true);
-			case "Data":
-				return new PData (new byte[0]);
-			case "Date":
-				return new PDate (DateTime.Now);
-			case "Number":
-				return new PNumber (0);
-			case "String":
-				return new PString ("");
-			}
-			LoggingService.LogError ("Unknown pobject type:" + type);
-			return new PString ("<error>");
 		}
 		
 		class PopupTreeView : MonoDevelop.Components.ContextMenuTreeView
@@ -109,63 +100,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 			void ShowPopup (Gdk.EventButton evnt)
 			{
 				Gtk.TreeIter iter;
-				bool hasSelection = Selection.GetSelected (out iter);
-				PObject obj = null;
-				if (hasSelection) {
-					obj = (PObject)widget.treeStore.GetValue (iter, 1);
-				} else {
+				if (!Selection.GetSelected (out iter))
 					return;
-				}
-					
+
 				var menu = new Gtk.Menu ();
 				var newKey = new Gtk.MenuItem (GettextCatalog.GetString ("New key"));
+				newKey.Activated += widget.AddElement;
 				menu.Append (newKey);
-				
-				newKey.Activated += delegate(object sender, EventArgs e) {
-					var newObj = new PString ("");
-					
-					PObject parent;
-					if (obj != null) {
-						parent = obj.Parent;
-					} else {
-						Gtk.TreeIter parentIter;
-						if (widget.treeStore.IterParent (out parentIter, iter))
-							parent = (PObject)widget.treeStore.GetValue (parentIter, 1);
-						else
-							parent = widget.nsDictionary;
-					}
-					
-					if (parent is PArray) {
-						var arr = (PArray)parent;
-						arr.Add (newObj);
-						return;
-					}
-					
-					var dict = parent as PDictionary;
-					if (dict == null)
-						return;
-					
-					string name = "newNode";
-					while (dict.ContainsKey (name))
-						name += "_";
-					dict[name] = newObj;
-				};
-				
-				if (hasSelection && obj != null) {
+
+				if (widget.treeStore.GetValue (iter, 1) != null) {
 					var removeKey = new Gtk.MenuItem (GettextCatalog.GetString ("Remove key"));
 					menu.Append (removeKey);
-					removeKey.Activated += delegate(object sender, EventArgs e) {
-						//the change event handler removes it from the store
-						obj.Remove ();
-					};
+					removeKey.Activated += widget.RemoveElement;
 				}
 				
-				if (widget.scheme != null) {
+				if (widget.Scheme != PListScheme.Empty) {
 					menu.Append (new Gtk.SeparatorMenuItem ());
 					var showDescItem = new Gtk.CheckMenuItem (GettextCatalog.GetString ("Show descriptions"));
 					showDescItem.Active = widget.ShowDescriptions;
 					showDescItem.Activated += delegate {
-						widget.SetShowDescriptions (!widget.ShowDescriptions);
+						widget.ShowDescriptions = !widget.ShowDescriptions;
 					};
 					menu.Append (showDescItem);
 				}
@@ -173,7 +127,6 @@ namespace MonoDevelop.MacDev.PlistEditor
 				IdeApp.CommandService.ShowContextMenu (this, evnt, menu, this);
 			}
 
-			
 			protected override void OnSizeRequested (ref Requisition requisition)
 			{
 				base.OnSizeRequested (ref requisition);
@@ -184,12 +137,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			}
 		}
-		
-		public CustomPropertiesWidget ()
-			: this (null)
-		{
-		}
-		
+
 		class CellRendererButton : CellRenderer
 		{
 			Gdk.Pixbuf pixbuf;
@@ -220,8 +168,12 @@ namespace MonoDevelop.MacDev.PlistEditor
 			
 			public override CellEditable StartEditing (Gdk.Event evnt, Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, CellRendererState flags)
 			{
-				if (evnt.Type == Gdk.EventType.ButtonPress)
-					OnClicked (EventArgs.Empty);
+				try {
+					if (evnt.Type == Gdk.EventType.ButtonPress)
+						OnClicked (EventArgs.Empty);
+				} catch (Exception ex) {
+					GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+				}
 				return base.StartEditing (evnt, widget, path, background_area, cell_area, flags);
 			}
 			
@@ -235,37 +187,30 @@ namespace MonoDevelop.MacDev.PlistEditor
 			}
 		}
 		
+		public CustomPropertiesWidget ()
+			: this (null)
+		{
+		}
+		
 		public CustomPropertiesWidget (PListScheme scheme)
 		{
-			this.scheme = scheme = scheme ?? PListScheme.Empty;
-			treeview = new PopupTreeView  (this);
+			Scheme = scheme ?? PListScheme.Empty;
+			CurrentTree = new Dictionary<PObject, PListScheme.SchemaItem> ();
+			treeview = new PopupTreeView  (this) { DoubleBuffered = true };
 			treeview.HeadersClickable = true;
-			this.PackStart (treeview, true, true, 0);
-			ShowAll ();
 			
+			RefreshKeyStore ();
+			PackStart (treeview, true, true, 0);
+			FindOrAddNewEntry (TreeIter.Zero);
+			ShowAll ();
+
 			var keyRenderer = new CellRendererCombo ();
 			keyRenderer.Editable = true;
 			keyRenderer.Model = keyStore;
 			keyRenderer.Mode = CellRendererMode.Editable;
 			keyRenderer.TextColumn = 0;
-			keyRenderer.Edited += delegate(object o, EditedArgs args) {
-				TreeIter selIter;
-				if (!treeStore.GetIterFromString (out selIter, args.Path)) 
-					return;
-				if (args.NewText == (string)treeStore.GetValue (selIter, 0))
-					return;
-				
-				var obj = (PObject)treeStore.GetValue (selIter, 1);
-				
-				var dict = obj.Parent as PDictionary;
-				if (dict == null)
-					return;
-				
-				var key = scheme.Keys.FirstOrDefault (k => k.Identifier == args.NewText || k.Description == args.NewText);
-				var newKey = key != null ? key.Identifier : args.NewText;
-				
-				dict.ChangeKey (obj, newKey, key == null || obj.TypeString == key.Type ? null : CreateNewObject (key.Type));
-			};
+			keyRenderer.EditingStarted += KeyRendererEditingStarted;
+			keyRenderer.Edited += KeyRendererEditingFinished;
 			var col = new TreeViewColumn ();
 			col.Resizable = true;
 			col.Title = GettextCatalog.GetString ("Property");
@@ -281,80 +226,50 @@ namespace MonoDevelop.MacDev.PlistEditor
 					return;
 				}
 				
-				var key = scheme.GetKey (id);
-				renderer.Editable = !(obj.Parent is PArray);
-				renderer.Sensitive = true;
-				renderer.Text = key != null && ShowDescriptions ? GettextCatalog.GetString (key.Description) : id;
+				var key = (PListScheme.SchemaItem) tree_model.GetValue (iter, 2);
+				var parentPArray = obj.Parent is PArray;
+				renderer.Editable = !parentPArray;
+				renderer.Sensitive = !parentPArray;
+				if (parentPArray)
+					renderer.Text = "";
+				else
+					renderer.Text = key != null && ShowDescriptions ? key.Description : id;
 			});
 			treeview.AppendColumn (col);
 			
-			col = new TreeViewColumn { MinWidth = 25, Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Autosize };
-			
+			col = new TreeViewColumn { MinWidth = 25, Resizable = false, Sizing = Gtk.TreeViewColumnSizing.Fixed };
+				
 			var removeRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-remove", IconSize.Menu));
-			removeRenderer.Clicked += delegate {
-				TreeIter iter;
-				bool hasSelection = treeview.Selection.GetSelected (out iter);
-				PObject obj = null;
-				if (hasSelection) {
-					obj = (PObject)treeStore.GetValue (iter, 1);
-					obj.Remove ();
-				}
-			};
+			removeRenderer.Clicked += RemoveElement;
 			col.PackEnd (removeRenderer, false);
 			col.SetCellDataFunc (removeRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				removeRenderer.Visible = treeview.Selection.IterIsSelected (iter) && !AddKeyNode.Equals (treeStore.GetValue (iter, 0));
 			});
 			
 			var addRenderer = new CellRendererButton (ImageService.GetPixbuf ("gtk-add", IconSize.Menu));
-			addRenderer.Clicked += delegate {
-				Gtk.TreeIter iter = Gtk.TreeIter.Zero;
-				if (!treeview.Selection.GetSelected (out iter))
-					return;
-				
-				PObject obj = null;
-				if (treeStore.IterParent (out iter, iter))
-					obj = (PObject) treeStore.GetValue (iter, 1);
-				obj = obj ?? nsDictionary;
-
-				var newObj = new PString ("");
-				if (obj is PArray) {
-					var arr = (PArray) obj;
-					arr.Add (newObj);
-				} else if (obj is PDictionary) {
-					string name = "newNode";
-					var dict = (PDictionary) obj;
-					while (dict.ContainsKey (name))
-						name += "_";
-					dict.Add (name ,newObj);
-				} else {
-					return;
-				}
-			};
-			
+			addRenderer.Clicked += AddElement;
 			col.PackEnd (addRenderer, false);
 			col.SetCellDataFunc (addRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				addRenderer.Visible = treeview.Selection.IterIsSelected (iter) && AddKeyNode.Equals (treeStore.GetValue (iter, 0));
 			});
 			treeview.AppendColumn (col);
 			
-			treeview.RowExpanded += delegate(object o, RowExpandedArgs args) {
-				var obj = (PObject)treeStore.GetValue (args.Iter, 1);
-				expandedObjects.Add (obj);
+			treeview.RowActivated += delegate(object o, RowActivatedArgs args) {
+				TreeIter iter;
+				if (treeStore.GetIter (out iter, args.Path) && AddKeyNode.Equals (treeStore.GetValue (iter, 0)))
+					AddElement (o, EventArgs.Empty);
 			};
-			treeview.RowCollapsed += delegate(object o, RowCollapsedArgs args) {
-				var obj = (PObject)treeStore.GetValue (args.Iter, 1);
-				expandedObjects.Remove (obj);
-			};
+
 			var comboRenderer = new CellRendererCombo ();
 			
 			var typeModel = new ListStore (typeof (string));
-			typeModel.AppendValues ("Array");
-			typeModel.AppendValues ("Dictionary");
-			typeModel.AppendValues ("Boolean");
-			typeModel.AppendValues ("Data");
-			typeModel.AppendValues ("Date");
-			typeModel.AppendValues ("Number");
-			typeModel.AppendValues ("String");
+			typeModel.AppendValues (PArray.Type);
+			typeModel.AppendValues (PDictionary.Type);
+			typeModel.AppendValues (PBoolean.Type);
+			typeModel.AppendValues (PData.Type);
+			typeModel.AppendValues (PData.Type);
+			typeModel.AppendValues (PNumber.Type);
+			typeModel.AppendValues (PString.Type);
 			comboRenderer.Model = typeModel;
 			comboRenderer.Mode = CellRendererMode.Editable;
 			comboRenderer.HasEntry = false;
@@ -366,22 +281,17 @@ namespace MonoDevelop.MacDev.PlistEditor
 				
 				PObject oldObj = (PObject)treeStore.GetValue (selIter, 1);
 				if (oldObj != null && oldObj.TypeString != args.NewText)
-					oldObj.Replace (CreateNewObject (args.NewText));
+					oldObj.Replace (PObject.Create (args.NewText));
 			};
 			
 			treeview.AppendColumn (GettextCatalog.GetString ("Type"), comboRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
-				string id = (string)tree_model.GetValue (iter, 0) ?? "";
-				var key   = scheme.GetKey (id);
+				var value = (string) tree_model.GetValue (iter, 0);
 				var obj   = (PObject)tree_model.GetValue (iter, 1);
-				if (obj == null) {
-					renderer.Editable = false;
-					renderer.Text = "";
-					return; 
-				}
-				renderer.Editable = key == null;
+				var key   = (PListScheme.SchemaItem)tree_model.GetValue (iter, 2);
+				renderer.Editable = key == null && !AddKeyNode.Equals (value);
 				renderer.ForegroundGdk = Style.Text (renderer.Editable ? StateType.Normal : StateType.Insensitive);
-				renderer.Text = obj.TypeString;
+				renderer.Text = obj == null ? "" : obj.TypeString;
 			});
 			
 			var propRenderer = new CellRendererCombo ();
@@ -389,249 +299,311 @@ namespace MonoDevelop.MacDev.PlistEditor
 			propRenderer.Model = valueStore;
 			propRenderer.Mode = CellRendererMode.Editable;
 			propRenderer.TextColumn = 0;
-			propRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
-				valueStore.Clear ();
-				if (Scheme == null)
-					return;
-				TreeIter iter;
-				if (!treeStore.GetIterFromString (out iter, args.Path)) 
-					return;
-				var pObject = (PObject)treeStore.GetValue (iter, 1);
-				if (pObject == null)
-					return;
-				var key = Parent != null? Scheme.GetKey (pObject.Parent.Key) : null;
-				if (key != null) {
-					var descr = new List<string> (key.Values.Select (v => v.Description));
-					descr.Sort ();
-					foreach (var val in descr) {
-						valueStore.AppendValues (val);
-					}
-				}
-			};
-			
-			propRenderer.Edited += delegate(object o, EditedArgs args) {
-				TreeIter iter;
-				if (!treeStore.GetIterFromString (out iter, args.Path)) 
-					return;
-				var pObject = (PObject)treeStore.GetValue (iter, 1);
-				if (pObject == null)
-					return;
-				string newText = args.NewText;
-				var key = Parent != null? Scheme.GetKey (pObject.Parent.Key) : null;
-				if (key != null) {
-					foreach (var val in key.Values) {
-						if (newText == val.Description) {
-							newText = val.Identifier;
-							break;
-						}
-					}
-				}
-				pObject.SetValue (newText);
-			};
-			
-	/*		propRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
-				TreeIter iter;
-				if (!treeStore.GetIterFromString (out iter, args.Path)) 
-					return;
-				PObject obj = (PObject)treeStore.GetValue (iter, 1);
-				if (obj is PBoolean) {
-					((PBoolean)obj).Value = !((PBoolean)obj).Value;
-					propRenderer.StopEditing (false);
-				}
-			};*/
-			
-			
+			propRenderer.EditingStarted += PropRendererEditingStarted;
+			propRenderer.Edited += PropRendererEditingFinished;
+
 			treeview.AppendColumn (GettextCatalog.GetString ("Value"), propRenderer, delegate(TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) {
 				var renderer = (CellRendererCombo)cell;
 				var obj      = (PObject)tree_model.GetValue (iter, 1);
-				if (obj == null) {
-					renderer.Editable = false;
+
+				renderer.Sensitive = obj != null && !(obj is PDictionary || obj is PArray || obj is PData);
+				renderer.Editable = renderer.Sensitive;
+				if (!renderer.Sensitive) {
 					renderer.Text = "";
 					return;
 				}
-				renderer.Editable = !(obj is PArray || obj is PDictionary || obj is PData);
-				obj.RenderValue (this, renderer);
+				
+				if (ShowDescriptions) {
+					var identifier = (string) tree_model.GetValue (iter, 0);
+					var values = PListScheme.AvailableValues (obj, CurrentTree);
+					var item = values == null ? null : values.FirstOrDefault (v => v.Identifier == identifier);
+					if (item != null) {
+						renderer.Text = item.Description ?? item.Identifier;
+						return;
+					}
+				}
+
+				switch (obj.TypeString) {
+				case PDictionary.Type:
+					renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", ((PDictionary)obj).Count), ((PDictionary)obj).Count);
+					break;
+				case PArray.Type:
+					renderer.Text = string.Format (GettextCatalog.GetPluralString ("({0} item)", "({0} items)", ((PArray)obj).Count, ((PArray)obj).Count));
+					break;
+				case PBoolean.Type:
+					renderer.Text = ((PBoolean)obj).Value ? GettextCatalog.GetString ("Yes") : GettextCatalog.GetString ("No");
+					break;
+				case PData.Type:
+					renderer.Text = string.Format ("byte[{0}]", ((PData)obj).Value.Length);
+					break;
+				default:
+					if (obj is IPValueObject) {
+						renderer.Text = (((IPValueObject)obj).Value ?? "").ToString ();
+					} else {
+						renderer.Sensitive = false;
+						renderer.Text = GettextCatalog.GetString ("Could not render {0}.", obj.GetType ().Name);
+					}
+					break;
+				}
 			});
 			treeview.EnableGridLines = TreeViewGridLines.Horizontal;
 			treeview.Model = treeStore;
 		}
 
-		bool GetIsExpanded (Gtk.TreeIter iter, TreeStore treeStore)
+		void KeyRendererEditingStarted (object o, EditingStartedArgs args)
 		{
-			if (TreeIter.Zero.Equals (iter))
-				return  false;
-			var path = treeStore.GetPath (iter);
-			return path != null ? treeview.GetRowExpanded (path) : false;
-		}
-		
-		Dictionary<PObject, Gtk.TreeIter> iterTable = new Dictionary<PObject, Gtk.TreeIter> ();
-
-		void AddCreateNewEntry (Gtk.TreeIter iter)
-		{
-			if (iter.Equals (TreeIter.Zero)) {
-				treeStore.AppendValues (GettextCatalog.GetString (AddKeyNode), null);
-				return;
-			}
-			treeStore.AppendValues (iter, GettextCatalog.GetString (AddKeyNode), null);
-		}
-		
-		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PDictionary dict)
-		{
-			iterTable[dict] = iter;
-			foreach (var item in dict) {
-				var key = item.Key.ToString ();
-				var subIter = iter.Equals (TreeIter.Zero) ? treeStore.AppendValues (key, item.Value) : treeStore.AppendValues (iter, key, item.Value);
-				if (item.Value is PArray)
-					AddToTree (treeStore, subIter, (PArray)item.Value);
-				if (item.Value is PDictionary)
-					AddToTree (treeStore, subIter, (PDictionary)item.Value);
-				if (expandedObjects.Contains (item.Value))
-					treeview.ExpandRow (treeStore.GetPath (subIter), true);
-			}
-			AddCreateNewEntry (iter);
-			
-			if (!rebuildArrays.Contains (dict)) {
-				rebuildArrays.Add (dict);
-				dict.Changed += HandleDictRebuild;
+			try {
+				RefreshKeyStore ();
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
 			}
 		}
 
-		void HandleDictRebuild (object sender, EventArgs e)
+		void KeyRendererEditingFinished (object o, EditedArgs args)
 		{
-			var dict = (PDictionary)sender;
-			var iter = iterTable[dict];
-			bool isExpanded = GetIsExpanded (iter, treeStore);
-			RemoveChildren (iter);
-			AddToTree (treeStore, iter, dict);
-			if (isExpanded)
-				treeview.ExpandRow (treeStore.GetPath (iter), false);
-		}
-		
-		HashSet<PObject> rebuildArrays = new HashSet<PObject> ();
-		
-		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PArray arr)
-		{
-			iterTable[arr] = iter;
-			
-			for (int i = 0; i < arr.Count; i++) {
-				var item = arr[i];
-				
-				var txt = string.Format (GettextCatalog.GetString ("Item {0}"), i);
-				var subIter = iter.Equals (TreeIter.Zero) ? treeStore.AppendValues (txt, item) : treeStore.AppendValues (iter, txt, item);
-				
-				if (item is PArray)
-					AddToTree (treeStore, subIter, (PArray)item);
-				if (item is PDictionary)
-					AddToTree (treeStore, subIter, (PDictionary)item);
-				if (expandedObjects.Contains (item))
-					treeview.ExpandRow (treeStore.GetPath (subIter), true);
-			}
+			try {
+				TreeIter iter;
+				if (!treeStore.GetIterFromString (out iter, args.Path)) 
+					return;
 
-			AddCreateNewEntry  (iter);
-			
-			if (!rebuildArrays.Contains (arr)) {
-				rebuildArrays.Add (arr);
-				arr.Changed += HandleArrRebuild;
-			}
-		}
-
-		void HandleArrRebuild (object sender, EventArgs e)
-		{
-			var arr = (PArray)sender;
-			var iter = iterTable[arr];
-			bool isExpanded = GetIsExpanded (iter, treeStore);
-			RemoveChildren (iter);
-			AddToTree (treeStore, iter, arr);
-			if (isExpanded)
-				treeview.ExpandRow (treeStore.GetPath (iter), false);
-		}
-
-		void RemoveChildren (Gtk.TreeIter iter)
-		{
-			if (TreeIter.Zero.Equals (iter)) {
-				treeStore.Clear ();
-				return;
-			}
-			Gtk.TreeIter child;
-			while (treeStore.IterChildren (out child, iter))
-				treeStore.Remove (ref child);
-		}
-		
-		void RefreshTree ()
-		{
-			keyStore.Clear ();
-			if (scheme != null) {
-				var sortedKeys = new List<PListScheme.Key> (scheme.Keys);
-				sortedKeys.Sort ((x, y) => x.Description.CompareTo (y.Description));
-				foreach (var key in sortedKeys)
-					keyStore.AppendValues (key.Description, key);
-			}
-			
-			treeStore.Clear ();
-			if (nsDictionary is PDictionary) 
-				AddToTree (treeStore, Gtk.TreeIter.Zero, (PDictionary)nsDictionary);
-			if (nsDictionary is PArray) 
-				AddToTree (treeStore, Gtk.TreeIter.Zero, (PArray)nsDictionary);
-		}
-		
-		/*public class CellRendererProperty : CellRenderer
-		{
-			public PObject Object {
-				get;
-				set;
-			}
-			
-			public object RenderValue {
-				get;
-				set;
-			}
-			
-			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				using (var layout = new Pango.Layout (widget.PangoContext)) {
-					layout.SetMarkup (RenderValue.ToString ());
-					layout.Width = -1;
-					layout.GetPixelSize (out width, out height);
-					width += (int)Xpad * 2;
-					height += (int)Ypad * 2;
-					
-					x_offset = y_offset = 0;
-				}
-			}
-			
-			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
-			{
-				using (var layout = new Pango.Layout (widget.PangoContext)) {
-					layout.SetMarkup (RenderValue.ToString ());
-					layout.Width = -1;
-					int width, height;
-					layout.GetPixelSize (out width, out height);
-					
-					int x = (int) (cell_area.X + Xpad);
-					int y = cell_area.Y + (cell_area.Height - height) / 2;
-					
-					StateType state;
-					if (flags.HasFlag (CellRendererState.Selected)) {
-						state = StateType.Selected;
-					} else {
-						state = Sensitive ? StateType.Normal : StateType.Insensitive;
+				var obj = (PObject) treeStore.GetValue (iter, 1);
+				var dict = obj.Parent as PDictionary;
+				if (dict != null) {
+					var keys = Scheme.Keys.Cast<PListScheme.SchemaItem> ();
+					if (treeStore.IterParent (out iter, iter)) {
+						var subkey = (PListScheme.SchemaItem) treeStore.GetValue (iter, 2) ?? PListScheme.Key.Empty;
+						keys = subkey.Values;
 					}
 					
-					window.DrawLayout (widget.Style.TextGC (state), x, y, layout);
+					var key = keys.FirstOrDefault (k => k.Identifier == args.NewText || k.Description == args.NewText);
+					var newKey = key == null ? args.NewText : key.Identifier;
+					dict.ChangeKey (obj, newKey, key == null ? null : key.Create ());
+				}
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+			}
+		}
+
+		void PropRendererEditingStarted (object o, EditingStartedArgs args)
+		{
+			try {
+				valueStore.Clear ();
+	
+				TreeIter iter;
+				if (!treeStore.GetIterFromString (out iter, args.Path)) 
+					return;
+				
+				var obj = (PObject) treeStore.GetValue (iter, 1);
+				var values = PListScheme.AvailableValues (obj, CurrentTree);
+				if (values != null) {
+					var descr = new List<string> (values.Select (v => ShowDescriptions ? v.Description : v.Identifier));
+					descr.Sort ();
+					foreach (var val in descr) {
+						valueStore.AppendValues (val);
+					}
+				}
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+			}
+		}
+		
+		void PropRendererEditingFinished (object o, EditedArgs args)
+		{
+			try {
+				TreeIter iter;
+				string newText = args.NewText;
+				if (!treeStore.GetIterFromString (out iter, args.Path)) 
+					return;
+	
+				var obj = (PObject)treeStore.GetValue (iter, 1);
+				var values = PListScheme.AvailableValues (obj, CurrentTree);
+				if (values != null) {
+					var value = values.FirstOrDefault (v => v.Description == newText || v.Identifier == newText);
+					if (value != null)
+						newText = value.Identifier;
+				}
+				obj.SetValue (newText);
+			} catch (Exception ex) {
+				GLib.ExceptionManager.RaiseUnhandledException (ex, false);
+			}
+		}
+
+		public void AddElement (object o, EventArgs e)
+		{
+			// By default we assume we are adding something to the root dictionary/array
+			TreeIter iter;
+			var parent = RootPObject;
+			
+			// Grab the selected row and find out what the parent is. If there is a parent, then we
+			// will need it correlate against the schema to figure out what values are allowed to be
+			// entered here
+			if (treeview.Selection.GetSelected (out iter)) {
+				if (treeStore.IterParent (out iter, iter)) {
+					parent = (PObject) treeStore.GetValue (iter, 1);
+				}
+
+				if (parent is PArray)
+					AddNewArrayElement ((PArray) parent);
+				else if (parent is PDictionary)
+					AddNewDictionaryElement ((PDictionary) parent);
+			}
+		}
+		
+		public void RemoveElement (object o, EventArgs e)
+		{
+			TreeIter iter;
+			if (treeview.Selection.GetSelected (out iter)) {
+				var obj = (PObject)treeStore.GetValue (iter, 1);
+				obj.Remove ();
+			}
+		}
+		
+		void AddNewArrayElement (PArray array)
+		{
+			var values = PListScheme.AvailableKeys (array, CurrentTree);
+			if (values == null) {
+				array.Add (PObject.Create (DefaultNewObjectType));
+			} else if (values.Any ()) {
+				array.Add (values.First ().Create ());
+			}
+		}
+		
+		void AddNewDictionaryElement (PDictionary dict)
+		{
+			var values = PListScheme.AvailableKeys (dict, CurrentTree);
+			if (values == null) {
+				string name = "newProperty";
+				while (dict.ContainsKey (name))
+					name += "_";
+				dict.Add (name, PObject.Create (DefaultNewObjectType));
+			} else if (values.Any ()) {
+				var value = values.FirstOrDefault ();
+				dict.Add (value.Identifier, value.Create ());
+			}
+		}
+
+		void AddToTree (Gtk.TreeStore treeStore, Gtk.TreeIter iter, PObject current, Dictionary<PObject, PListScheme.SchemaItem> tree)
+		{
+			foreach (var item in PObject.ToEnumerable (current)) {
+				var subIter = FindOrAddPObject (iter, item.Key, item.Value, tree);
+				AddToTree (treeStore, subIter, item.Value, tree);
+			}
+		}
+		
+		TreeIter FindOrAddNewEntry (TreeIter iter)
+		{
+			TreeIter subIter;
+			if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
+				do {
+					if (AddKeyNode.Equals (treeStore.GetValue (subIter, 0)))
+						return subIter;
+				} while (treeStore.IterNext (ref subIter));
+			}
+			
+			if (iter.Equals (TreeIter.Zero))
+				return treeStore.AppendValues (AddKeyNode, null);
+			else
+				return treeStore.AppendValues (iter, AddKeyNode, null);
+		}
+		
+		TreeIter FindOrAddPObject (TreeIter iter, string id, PObject item, Dictionary<PObject, PListScheme.SchemaItem> tree)
+		{
+			TreeIter subIter;
+			if (CurrentTree.ContainsKey (item)) {
+				if (iter.Equals (TreeIter.Zero) ? treeStore.IterChildren (out subIter) : treeStore.IterChildren (out subIter, iter)) {
+					do {
+						if (treeStore.GetValue (subIter, 1) == item) {
+							// If we have modified the value of an existing PObject, such
+							// as changing the value of a PNumber from '1' to '2', we will
+							// need to refresh the value in the treestore.
+							treeStore.SetValue (subIter, 0, id);
+							break;
+						}
+					} while (treeStore.IterNext (ref subIter));
+				}
+			} else {
+				subIter = treeStore.InsertNodeBefore (FindOrAddNewEntry (iter));
+				treeStore.SetValues (subIter, id, item, tree [item]);
+				if (CurrentTree.Count > 0) {
+					treeview.ExpandToPath (treeStore.GetPath (subIter));
+					this.treeview.Selection.SelectIter (subIter);
+				}
+				
+				if (item is PArray || item is PDictionary) {
+					var newEntryIter = FindOrAddNewEntry (subIter);
+					if (CurrentTree.Count > 0)
+						treeview.ExpandToPath (treeStore.GetPath (newEntryIter));
 				}
 			}
 			
-			public override CellEditable StartEditing (Gdk.Event ev, Widget widget, string path, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, CellRendererState flags)
-			{
-				if (Object is PBoolean) {
-					((PBoolean)Object).Value = !((PBoolean)Object).Value;
-					return null;
+			return subIter;
+		}
+		
+		void RefreshKeyStore ()
+		{
+			TreeIter iter;
+			var keys = Scheme.Keys.Cast <PListScheme.SchemaItem> ();
+			if (treeview.Selection.GetSelected (out iter)) {
+				var currentObj = (PObject) treeStore.GetValue (iter, 1);
+				if (treeStore.IterParent (out iter, iter)) {
+					var obj = (PObject) treeStore.GetValue (iter, 1);
+					keys = PListScheme.AvailableKeys (obj, CurrentTree);
 				}
-				
-				Gtk.Entry entry = new Gtk.Entry ();
-				return entry;
 			}
-		}*/
+			
+			keyStore.Clear ();
+			if (keys != null) {
+				var sortedKeys = new List<PListScheme.SchemaItem> (keys);
+				if (ShowDescriptions)
+					sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Description, y.Description));
+				else
+					sortedKeys.Sort ((x, y) => StringComparer.CurrentCulture.Compare (x.Identifier, y.Identifier));
+				
+				foreach (var key in sortedKeys)
+					keyStore.AppendValues (ShowDescriptions ? key.Description : key.Identifier, key);
+			}
+		}
+
+		void RefreshTree ()
+		{
+			var dict = RootPObject as PDictionary;
+			if (dict != null) {
+				var tree = PListScheme.Match (dict, Scheme);
+				RemoveOldEntries (CurrentTree, tree);
+				AddToTree (treeStore, Gtk.TreeIter.Zero, dict, tree);
+				CurrentTree = tree;
+			} else if (RootPObject is PArray) {
+				AddToTree (treeStore, Gtk.TreeIter.Zero, (PArray)RootPObject, null);
+			}
+		}
+		
+		void RemoveOldEntries (Dictionary<PObject, PListScheme.SchemaItem> oldTree, Dictionary<PObject, PListScheme.SchemaItem> newTree)
+		{
+			var toRemove = oldTree.Keys.Where (k => !newTree.ContainsKey (k)).ToArray ();
+			
+			TreeIter iter;
+			if (treeStore.GetIterFirst (out iter))
+				RemovePObjects (iter, toRemove);
+		}
+		
+		void RemovePObjects (TreeIter iter, IList<PObject> toRemove)
+		{
+			do {
+				if (toRemove.Contains (treeStore.GetValue (iter, 1))) {
+					if (treeview.Selection.IterIsSelected (iter)) {
+						TreeIter parent;
+						if (treeStore.IterParent (out parent, iter))
+							treeview.Selection.SelectIter (parent);
+					}
+					if (treeStore.Remove (ref iter))
+						continue;
+				} else if (treeStore.IterHasChild (iter)) {
+					TreeIter subIter;
+					if (treeStore.IterChildren (out subIter, iter))
+						RemovePObjects (subIter, toRemove);
+				}
+			} while (!iter.Equals (TreeIter.Zero) && treeStore.IterNext (ref iter));
+		}
 	}
 }
 

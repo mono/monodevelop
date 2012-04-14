@@ -68,8 +68,8 @@ namespace MonoDevelop.SourceEditor
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
-		PinWindow pinWindow;
-		TreeIter currentPinIter;
+//		PinWindow pinWindow;
+//		TreeIter currentPinIter;
 		
 		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch)
 		{
@@ -122,10 +122,10 @@ namespace MonoDevelop.SourceEditor
 			};
 		}
 
-		void HandlePinWindowButtonPressEvent (object o, ButtonPressEventArgs args)
-		{
-			tree.CreatePinnedWatch (currentPinIter);
-		}
+//		void HandlePinWindowButtonPressEvent (object o, ButtonPressEventArgs args)
+//		{
+//			tree.CreatePinnedWatch (currentPinIter);
+//		}
 		
 //		[GLib.ConnectBefore]
 //		void HandleTreeMotionNotifyEvent (object o, MotionNotifyEventArgs args)

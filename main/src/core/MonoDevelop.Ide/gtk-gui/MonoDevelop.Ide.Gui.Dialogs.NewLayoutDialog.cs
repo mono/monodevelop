@@ -18,7 +18,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog
 			this.Name = "MonoDevelop.Ide.Gui.Dialogs.NewLayoutDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("New Layout");
+			this.Title = global::Mono.Unix.Catalog.GetString ("New Layout");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.BorderWidth = ((uint)(6));
 			this.Resizable = false;
@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.label72 = new global::Gtk.Label ();
 			this.label72.Name = "label72";
 			this.label72.Xalign = 0F;
-			this.label72.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Layout name:");
+			this.label72.LabelProp = global::Mono.Unix.Catalog.GetString ("Layout name:");
 			this.hbox45.Add (this.label72);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox45 [this.label72]));
 			w2.Position = 0;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			w11.Add (w12);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w14 = new global::Gtk.Label ();
-			w14.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Create _Layout");
+			w14.LabelProp = global::Mono.Unix.Catalog.GetString ("Create _Layout");
 			w14.UseUnderline = true;
 			w11.Add (w14);
 			w10.Add (w11);

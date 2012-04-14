@@ -26,16 +26,18 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class FixableResult : Result
 	{
-		public FixableResult (DomRegion region, string message, QuickTaskSeverity level,
-			ResultCertainty certainty, ResultImportance importance, params IAnalysisFix[] fixes)
-			: base (region, message, level, certainty, importance)
+		public FixableResult (DomRegion region, string message, Severity level,
+			IssueMarker mark, params IAnalysisFix[] fixes)
+			: base (region, message, level, mark)
 		{
 			this.Fixes = fixes;
 		}

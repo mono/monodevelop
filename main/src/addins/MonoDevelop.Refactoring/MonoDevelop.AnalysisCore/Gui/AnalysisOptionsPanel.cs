@@ -44,7 +44,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public override void ApplyChanges ()
 		{
-			AnalysisOptions.AnalysisEnabled = widget.AnalysisEnabled;
+			AnalysisOptions.AnalysisEnabled.Set (widget.AnalysisEnabled);
 		}
 	}
 	

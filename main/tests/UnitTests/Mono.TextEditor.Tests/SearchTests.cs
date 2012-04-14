@@ -156,16 +156,5 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (result.Length, data.SelectionRange.Length);
 			Assert.AreEqual (result.EndOffset, data.Caret.Offset);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
 	}
 }

@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.DocFood
 {

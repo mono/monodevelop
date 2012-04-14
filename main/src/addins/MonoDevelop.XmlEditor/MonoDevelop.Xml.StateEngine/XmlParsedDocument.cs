@@ -28,14 +28,12 @@
 
 using System;
 using System.Collections.Generic;
-
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Xml.StateEngine
 {
-	
-	
-	public class XmlParsedDocument : ParsedDocument
+	public class XmlParsedDocument : DefaultParsedDocument
 	{
 		public XmlParsedDocument (string fileName) : base (fileName)
 		{
@@ -43,48 +41,49 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public MonoDevelop.Xml.StateEngine.XDocument XDocument { get; set; }
 		
-		public override IEnumerable<FoldingRegion> GenerateFolds ()
-		{
-			if (XDocument == null)
-				yield break;
-			
-			foreach (XNode node in XDocument.AllDescendentNodes) {
-				if (node is XCData)
-				{
-					if (node.Region.End.Line - node.Region.Start.Line > 2)
-						yield return new FoldingRegion ("<![CDATA[ ]]>", node.Region);
-				}
-				else if (node is XComment)
-				{
-					if (node.Region.End.Line - node.Region.Start.Line > 2)
-						yield return new FoldingRegion ("<!-- -->", node.Region);
-				}
-				else if (node is XElement)
-				{
-					XElement el = (XElement) node;
-					if (el.IsClosed && el.ClosingTag.Region.End.Line - el.Region.Start.Line > 2) {
-						yield return new FoldingRegion
-							(string.Format ("<{0}...>", el.Name.FullName),
-							 new DomRegion (el.Region.Start, el.ClosingTag.Region.End));
+		public override IEnumerable<FoldingRegion> Foldings {
+			get {
+				if (XDocument == null)
+					yield break;
+				foreach (var region in Comments.ToFolds ()) 
+					yield return region;
+				foreach (XNode node in XDocument.AllDescendentNodes) {
+					if (node is XCData)
+					{
+						if (node.Region.EndLine - node.Region.BeginLine > 2)
+							yield return new FoldingRegion ("<![CDATA[ ]]>", node.Region);
 					}
-				}
-				else if (node is XDocType)
-				{
-					XDocType dt = (XDocType) node;
-					string id = !String.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
-						: !String.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;
-					
-					if (id != null && dt.Region.End.Line - dt.Region.Start.Line > 2) {
-						if (id.Length > 50)
-							id = id.Substring (0, 47) + "...";
+					else if (node is XComment)
+					{
+						if (node.Region.EndLine - node.Region.BeginLine > 2)
+							yield return new FoldingRegion ("<!-- -->", node.Region);
+					}
+					else if (node is XElement)
+					{
+						XElement el = (XElement) node;
+						if (el.IsClosed && el.ClosingTag.Region.EndLine - el.Region.BeginLine > 2) {
+							yield return new FoldingRegion
+								(string.Format ("<{0}...>", el.Name.FullName),
+								 new DomRegion (el.Region.Begin, el.ClosingTag.Region.End));
+						}
+					}
+					else if (node is XDocType)
+					{
+						XDocType dt = (XDocType) node;
+						string id = !String.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
+							: !String.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;
 						
-						FoldingRegion fr = new FoldingRegion (string.Format ("<!DOCTYPE {0}>", id), dt.Region);
-						fr.IsFoldedByDefault = true;
-						yield return fr;
+						if (id != null && dt.Region.EndLine - dt.Region.BeginLine > 2) {
+							if (id.Length > 50)
+								id = id.Substring (0, 47) + "...";
+							
+							FoldingRegion fr = new FoldingRegion (string.Format ("<!DOCTYPE {0}>", id), dt.Region);
+							fr.IsFoldedByDefault = true;
+							yield return fr;
+						}
 					}
 				}
 			}
 		}
-
 	}
 }

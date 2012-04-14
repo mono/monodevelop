@@ -35,14 +35,8 @@ using MonoDevelop.Core;
  
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
-
-using ICSharpCode.OldNRefactory;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
+using System.Linq;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -54,8 +48,8 @@ namespace MonoDevelop.CodeMetrics
 			foreach (var field in cls.Fields)
 				totalaccess += field.Value.InternalAccessCount;
 			
-			cls.LCOM = 1 - (double)(totalaccess/(cls.Class.MethodCount*cls.Class.FieldCount));
-			cls.LCOM_HS = (cls.Class.MethodCount - totalaccess/cls.Class.FieldCount)/(cls.Class.MethodCount-1);
+			cls.LCOM = 1 - (double)(totalaccess/(cls.Class.Methods.Count()*cls.Class.Fields.Count()));
+			cls.LCOM_HS = (cls.Class.Methods.Count() - totalaccess/cls.Class.Fields.Count())/(cls.Class.Methods.Count()-1);
 			
 		}
 		/*

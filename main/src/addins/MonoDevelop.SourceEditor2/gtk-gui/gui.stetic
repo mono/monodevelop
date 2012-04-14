@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>..\..\MonoDevelop.SourceEditor2</images-root-path>
+    <images-root-path>../../MonoDevelop.SourceEditor2</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
@@ -9,7 +9,7 @@
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.SourceEditor2.dll" internal="true" />
+    <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="454 359">
     <property name="MemberName" />
@@ -1220,7 +1220,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchAndReplaceWidget" design-size="412 67">
     <property name="MemberName" />
-    <property name="GeneratePublic">False</property>
+    <property name="GeneratePublic">True</property>
     <child>
       <widget class="Gtk.Table" id="table">
         <property name="MemberName" />
@@ -1481,7 +1481,7 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.GotoLineNumberWidget" design-size="221 33">
     <property name="MemberName" />
-    <property name="GeneratePublic">False</property>
+    <property name="GeneratePublic">True</property>
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />

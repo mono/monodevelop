@@ -30,9 +30,9 @@ using Gtk;
 using Gdk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
 
 
 namespace MonoDevelop.Refactoring
@@ -48,7 +48,7 @@ namespace MonoDevelop.Refactoring
 
 		List<Change> changes;
 
-		public RefactoringPreviewDialog (ProjectDom ctx, List<Change> changes)
+		public RefactoringPreviewDialog (List<Change> changes)
 		{
 			this.Build ();
 			this.changes = changes;
@@ -86,7 +86,7 @@ namespace MonoDevelop.Refactoring
 			
 			buttonOk.Clicked += delegate {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
-				RefactoringService.AcceptChanges (monitor, ctx, changes);
+				RefactoringService.AcceptChanges (monitor, changes);
 				
 				Destroy ();
 			};
@@ -107,8 +107,8 @@ namespace MonoDevelop.Refactoring
 				return;
 			}
 			
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
-			doc.Text = System.IO.File.ReadAllText (replaceChange.FileName);
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
+			doc.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (replaceChange.FileName);
 			DocumentLocation loc = doc.OffsetToLocation (replaceChange.Offset);
 			
 			string text = string.Format (GettextCatalog.GetString ("(Line:{0}, Column:{1})"), loc.Line, loc.Column);
@@ -133,11 +133,16 @@ namespace MonoDevelop.Refactoring
 				if (replaceChange == null) 
 					return;
 			
-				Mono.TextEditor.Document originalDocument = new Mono.TextEditor.Document ();
+				var openDocument = IdeApp.Workbench.GetDocument (replaceChange.FileName);
+				Mono.TextEditor.TextDocument originalDocument = new Mono.TextEditor.TextDocument ();
 				originalDocument.FileName = replaceChange.FileName;
-				originalDocument.Text = System.IO.File.ReadAllText (replaceChange.FileName);
+				if (openDocument == null) {
+					originalDocument.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (replaceChange.FileName);
+				} else {
+					originalDocument.Text = openDocument.Editor.Document.Text;
+				}
 				
-				Mono.TextEditor.Document changedDocument = new Mono.TextEditor.Document ();
+				Mono.TextEditor.TextDocument changedDocument = new Mono.TextEditor.TextDocument ();
 				changedDocument.FileName = replaceChange.FileName;
 				changedDocument.Text = originalDocument.Text;
 				

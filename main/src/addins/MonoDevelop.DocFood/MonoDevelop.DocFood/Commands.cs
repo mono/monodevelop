@@ -27,9 +27,10 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
 using System.Text;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
@@ -66,28 +67,33 @@ namespace MonoDevelop.DocFood
 		
 		protected override void Run ()
 		{
-			var unit = IdeApp.Workbench.ActiveDocument.CompilationUnit;
+			var document = IdeApp.Workbench.ActiveDocument;
+			if (document == null)
+				return;
+			var unit = document.ParsedDocument;
 			if (unit == null)
 				return;
 			TextEditorData data = IdeApp.Workbench.ActiveDocument.Editor;
-			Stack<IType> types = new Stack<IType> (unit.Types);
-			List<KeyValuePair<int, string>> docs = new List<KeyValuePair<int, string>> ();
+			var types = new Stack<IUnresolvedTypeDefinition> (unit.TopLevelTypeDefinitions);
+			var docs = new List<KeyValuePair<int, string>> ();
 			while (types.Count > 0) {
-				IType curType = types.Pop ();
+				var curType = types.Pop ();
 				foreach (var member in curType.Members) {
-					if (member is IType) {
-						types.Push ((IType)member);
+					if (member is IUnresolvedTypeDefinition) {
+						types.Push ((IUnresolvedTypeDefinition)member);
 						continue;
 					}
 					if (!member.IsPublic) {
-						if (member.DeclaringType != null && member.DeclaringType.ClassType != ClassType.Interface)
+						if (member.DeclaringTypeDefinition != null && member.DeclaringTypeDefinition.Kind != TypeKind.Interface)
 							continue;
 					}
 					if (!NeedsDocumentation (data, member))
 						continue;
 					int offset;
-					string indent = GetIndent (data, member, out offset);
-					string documentation = GenerateDocumentation (data, member, indent);
+					var ctx = (unit.ParsedFile as CSharpParsedFile).GetTypeResolveContext (document.Compilation, member.Region.Begin);
+					var resolvedMember = member.CreateResolved (ctx);
+					string indent = GetIndent (data, resolvedMember, out offset);
+					string documentation = GenerateDocumentation (data, resolvedMember, indent);
 					if (documentation.Trim ().Length == 0)
 						continue;
 					docs.Add (new KeyValuePair <int, string> (offset, documentation));
@@ -99,32 +105,32 @@ namespace MonoDevelop.DocFood
 			}
 		}
 		
-		static bool NeedsDocumentation (TextEditorData data, IMember member)
+		static bool NeedsDocumentation (TextEditorData data, IUnresolvedEntity member)
 		{
-			int lineNr = member.Location.Line;
-			LineSegment line;
+			int lineNr = member.Region.BeginLine;
+			DocumentLine line;
 			do {
 				line = data.Document.GetLine (lineNr--);
-			} while (lineNr > 0 && data.Document.GetLineIndent (line).Length == line.EditableLength);
+			} while (lineNr > 0 && data.Document.GetLineIndent (line).Length == line.Length);
 			int start = data.Document.GetLineIndent (line).Length;
-			if (start + 3 < line.EditableLength && data.Document.GetTextAt (start, 3) == "///")
+			if (start + 3 < line.Length && data.Document.GetTextAt (start, 3) == "///")
 				return false;
 			return true;
 		}
 		
-		static string GetIndent (TextEditorData data, IMember member, out int offset)
+		static string GetIndent (TextEditorData data, IEntity member, out int offset)
 		{
-			LineSegment line = data.Document.GetLine (member.Location.Line);
+			DocumentLine line = data.Document.GetLine (member.Region.BeginLine);
 			offset = line.Offset;
 			return data.Document.GetLineIndent (line);
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, IMember member, string indent)
+		internal static string GenerateDocumentation (TextEditorData data, IEntity member, string indent)
 		{
 			return GenerateDocumentation (data, member, indent, "/// ");
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, IMember member, string indent, string prefix)
+		internal static string GenerateDocumentation (TextEditorData data, IEntity member, string indent, string prefix)
 		{
 			StringBuilder result = new StringBuilder ();
 			
@@ -192,7 +198,7 @@ namespace MonoDevelop.DocFood
 			return result.ToString ();
 		}
 		
-		internal static string GenerateEmptyDocumentation (TextEditorData data, IMember member, string indent)
+		internal static string GenerateEmptyDocumentation (TextEditorData data, IEntity member, string indent)
 		{
 			StringBuilder result = new StringBuilder ();
 			
@@ -222,8 +228,8 @@ namespace MonoDevelop.DocFood
 				
 				result.Append (indent);
 				result.Append ("/// ");
-				bool inTag = false;
-				int column = indent.Length + "/// ".Length;
+//				bool inTag = false;
+//				int column = indent.Length + "/// ".Length;
 				
 				result.AppendLine ();
 				result.Append (indent);

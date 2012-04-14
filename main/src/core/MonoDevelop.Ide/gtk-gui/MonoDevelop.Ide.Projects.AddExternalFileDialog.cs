@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.AddExternalFileDialog
 			this.Name = "MonoDevelop.Ide.Projects.AddExternalFileDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Add File to Folder");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Add File to Folder");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Projects.AddExternalFileDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Projects
 			this.labelTitle.WidthRequest = 450;
 			this.labelTitle.Name = "labelTitle";
 			this.labelTitle.Xalign = 0F;
-			this.labelTitle.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("The file {0} is outside the target directory. What would you like to do?");
+			this.labelTitle.LabelProp = global::Mono.Unix.Catalog.GetString ("The file {0} is outside the target directory. What would you like to do?");
 			this.labelTitle.UseMarkup = true;
 			this.labelTitle.Wrap = true;
 			this.vbox2.Add (this.labelTitle);
@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Projects
 			this.labelKeep = new global::Gtk.Label ();
 			this.labelKeep.WidthRequest = 376;
 			this.labelKeep.Name = "labelKeep";
-			this.labelKeep.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Keep</b> the file in its the current subdirectory ({0})");
+			this.labelKeep.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Keep</b> the file in its the current subdirectory ({0})");
 			this.labelKeep.UseMarkup = true;
 			this.labelKeep.Wrap = true;
 			this.radioKeep.Add (this.labelKeep);
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child radioCopy.Gtk.Container+ContainerChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Copy</b> the file to the directory");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Copy</b> the file to the directory");
 			this.label4.UseMarkup = true;
 			this.radioCopy.Add (this.label4);
 			this.vbox4.Add (this.radioCopy);
@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child radioMove.Gtk.Container+ContainerChild
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
-			this.label5.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Move</b> the file to the directory");
+			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Move</b> the file to the directory");
 			this.label5.UseMarkup = true;
 			this.radioMove.Add (this.label5);
 			this.vbox4.Add (this.radioMove);
@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child radioLink.Gtk.Container+ContainerChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
-			this.label6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Add a link</b> to the file");
+			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Add a link</b> to the file");
 			this.label6.UseMarkup = true;
 			this.radioLink.Add (this.label6);
 			this.vbox4.Add (this.radioLink);
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Projects
 			this.checkApplyAll = new global::Gtk.CheckButton ();
 			this.checkApplyAll.CanFocus = true;
 			this.checkApplyAll.Name = "checkApplyAll";
-			this.checkApplyAll.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Use the same action for all selected files");
+			this.checkApplyAll.Label = global::Mono.Unix.Catalog.GetString ("Use the same action for all selected files");
 			this.checkApplyAll.DrawIndicator = true;
 			this.checkApplyAll.UseUnderline = true;
 			this.vbox2.Add (this.checkApplyAll);

@@ -55,14 +55,14 @@ namespace MonoDevelop.AspNet
 			}
 		}
 		
-		public override SpanParser CreateSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, LineSegment line, CloneableStack<Span> spanStack)
+		public override SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
 		{
-			return new ASPNetSpanParser (doc, mode, spanStack ?? line.StartSpan.Clone ());
+			return new ASPNetSpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 
 		protected class ASPNetSpanParser : SpanParser
 		{
-			public ASPNetSpanParser (Mono.TextEditor.Document doc, SyntaxMode mode, CloneableStack<Span> spanStack) : base (doc, mode, spanStack)
+			public ASPNetSpanParser (SyntaxMode mode, CloneableStack<Span> spanStack) : base (mode, spanStack)
 			{}
 			
 			class CodeExpressionSpan : Span
@@ -74,6 +74,7 @@ namespace MonoDevelop.AspNet
 					End = new Regex ("<%");
 					Color = "template";
 					TagColor = "template.tag";
+					StopAtEol = false;
 				}
 			}
 			
@@ -119,7 +120,7 @@ namespace MonoDevelop.AspNet
 			{
 				bool inString = false;
 				StringBuilder langBuilder = new StringBuilder ();
-				while (j < doc.Length) {
+				while (j < doc.TextLength) {
 					char ch = doc.GetCharAt (j);
 					if (ch == '"' || ch == '\'') {
 						if (inString)
@@ -138,33 +139,33 @@ namespace MonoDevelop.AspNet
 			
 			protected override void ScanSpan (ref int i)
 			{
-				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) &&  i + 3 < doc.Length && doc.GetTextAt (i, 2) == "<%" && doc.GetCharAt (i + 2) != '@') {
+				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) && i + 4 < doc.TextLength && doc.GetTextAt (i, 2) == "<%" && doc.GetTextAt (i, 4) != "<%--" && doc.GetCharAt (i + 2) != '@') {
 					var span = new CodeExpressionSpan (GetDefaultMime ());
-					FoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0? 3 : 2);
+					FoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0 ? 3 : 2);
 					return;
 				}
 				
-				if (i > 0 && doc.GetCharAt (i - 1) == '>') {
-					int k = i - 1;
+				if (i > 0 && doc.GetCharAt (i) == '>') {
+					int k = i;
 					while (k > 0 && doc.GetCharAt (k) != '<') {
 						k--;
 					}
-					if (k + 7 < doc.Length && doc.GetTextAt (k, 7) == "<script") {
-						int j = k + 7;
+					if (k + 7 < doc.TextLength && doc.GetTextAt (k, 7) == "<script") {
+						int j = k + "<script".Length;
 						string mime = "application/javascript";
-						while (j < doc.Length && doc.GetCharAt (j) != '>') {
-							if (j + 8 < doc.Length && doc.GetTextAt (j, 8) == "language") {
+						while (j < doc.TextLength && doc.GetCharAt (j) != '>') {
+							if (j + 8 < doc.TextLength && doc.GetTextAt (j, 8) == "language") {
 								j += 8;
 								mime = GetMimeForLanguage (GetAttributeValue (ref j));
 								break;
 							}
-							if (j + 5 < doc.Length && doc.GetTextAt (j, 5) == "runat") {
+							if (j + 5 < doc.TextLength && doc.GetTextAt (j, 5) == "runat") {
 								j += 5;
 								GetAttributeValue (ref j);
 								mime = GetDefaultMime ();
 								break;
 							}
-							if (j + 4 < doc.Length && doc.GetTextAt (j, 4) == "type") {
+							if (j + 4 < doc.TextLength && doc.GetTextAt (j, 4) == "type") {
 								j += 4;
 								mime = GetAttributeValue (ref j);
 								break;
@@ -186,17 +187,17 @@ namespace MonoDevelop.AspNet
 			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
 			{
-				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 9 <= doc.Length && doc.GetTextAt (i, 9) == "</script>") {
+				if (spanStack.Any (s => s is CodeDeclarationSpan) && i + 9 <= doc.TextLength && doc.GetTextAt (i, 9) == "</script>") {
 					while (!(spanStack.Peek () is CodeDeclarationSpan)) {
 						FoundSpanEnd (spanStack.Peek (), i, 0);
 					}
 					cur = spanStack.Peek ();
-					i += "</script>".Length;
 					FoundSpanEnd (cur, i, "</script>".Length);
+					i += "</script>".Length - 1;
 					return true;
 				}
 				
-				if (spanStack.Any (s => s is CodeExpressionSpan) && i + 2 < doc.Length && doc.GetTextAt (i, 2) == "%>") {
+				if (spanStack.Any (s => s is CodeExpressionSpan) && i + 2 < doc.TextLength && doc.GetTextAt (i, 2) == "%>") {
 					while (!(spanStack.Peek () is CodeExpressionSpan)) {
 						FoundSpanEnd (spanStack.Peek (), i, 0);
 					}

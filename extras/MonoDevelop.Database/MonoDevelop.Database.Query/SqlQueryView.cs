@@ -347,7 +347,7 @@ namespace MonoDevelop.Database.Query
 			buttonExecute.Sensitive = QueryText.Length > 0;
 		}
 		
-		private void SqlChanged (object sender, Mono.TextEditor.ReplaceEventArgs args)
+		private void SqlChanged (object sender, Mono.TextEditor.DocumentChangeEventArgs args)
 		{
 			buttonExecute.Sensitive = QueryText.Length > 0;
 		}

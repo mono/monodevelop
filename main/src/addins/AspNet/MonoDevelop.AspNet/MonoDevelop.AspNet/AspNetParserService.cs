@@ -30,9 +30,8 @@ using System;
 
 using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet
 {
@@ -42,7 +41,7 @@ namespace MonoDevelop.AspNet
 	{
 		public static AspNetParsedDocument GetCompileUnit (Project project, string filename, bool ensureUpToDate)
 		{
-			return ProjectDomService.Parse (project, filename) as AspNetParsedDocument;
+			return TypeSystemService.ParseFile (project, filename) as AspNetParsedDocument;
 		}
 		
 		public static AspNetParsedDocument GetCompileUnit (Project project, string filename)

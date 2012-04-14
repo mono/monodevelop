@@ -29,19 +29,17 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.AspNet.Parser.Dom;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	
-	
-	public class AspNetParsedDocument : ParsedDocument
+	public class AspNetParsedDocument : DefaultParsedDocument
 	{
 		
 		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)
 		{
-			Flags |= ParsedDocumentFlags.NonSerializable;
+//			Flags |= ParsedDocumentFlags.NonSerializable;
 			Info = info;
 			RootNode = rootNode;
 			Type = type;
@@ -51,15 +49,19 @@ namespace MonoDevelop.AspNet.Parser
 		public RootNode RootNode { get; private set; }
 		public WebSubtype Type { get; private set; }
 		
-		public override IEnumerable<FoldingRegion> GenerateFolds ()
-		{
-			if (RootNode != null) {
-				var regions = new List<FoldingRegion> ();
-				var cuVisitor = new CompilationUnitVisitor (regions);
-				RootNode.AcceptVisit (cuVisitor);
-				return regions;
+		public override IEnumerable<FoldingRegion> Foldings {
+			get {
+				if (RootNode != null) {
+					var regions = new List<FoldingRegion> ();
+					var cuVisitor = new CompilationUnitVisitor (regions);
+					RootNode.AcceptVisit (cuVisitor);
+
+					foreach (var region in Comments.ToFolds ()) 
+						regions.Add (region);
+					return regions;
+				}
+				return new FoldingRegion [0];
 			}
-			return new FoldingRegion [0];
 		}
 	}
 }

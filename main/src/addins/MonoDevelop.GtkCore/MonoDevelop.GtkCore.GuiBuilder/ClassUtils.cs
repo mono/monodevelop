@@ -30,13 +30,14 @@ using Gtk;
 using System;
 using System.Collections;
 using System.CodeDom;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	internal class ClassUtils
 	{
-		public static IField FindWidgetField (IType cls, string name)
+		public static IField FindWidgetField (ITypeDefinition cls, string name)
 		{
 			foreach (IField field in cls.Fields) {
 				if (name == GetWidgetFieldName (field))
@@ -48,11 +49,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public static string GetWidgetFieldName (IField field)
 		{
 			foreach (IAttribute att in field.Attributes)	{
-				if (att.Name == "Glade.Widget" || att.Name == "Widget" || att.Name == "Glade.WidgetAttribute" || att.Name == "WidgetAttribute") {
-					if (att.PositionalArguments != null && att.PositionalArguments.Count > 0) {
-						CodePrimitiveExpression exp = att.PositionalArguments [0] as CodePrimitiveExpression;
+				var type = att.AttributeType;
+				if (type.ReflectionName == "Glade.Widget" || type.ReflectionName == "Widget" || type.ReflectionName == "Glade.WidgetAttribute" || type.ReflectionName == "WidgetAttribute") {
+					var pArgs = att.PositionalArguments;
+					if (pArgs != null && pArgs.Count > 0) {
+						var exp = pArgs[0] as ConstantResolveResult;
 						if (exp != null)
-							return exp.Value.ToString ();
+							return exp.ConstantValue.ToString ();
 					} else {
 						return field.Name;
 					}

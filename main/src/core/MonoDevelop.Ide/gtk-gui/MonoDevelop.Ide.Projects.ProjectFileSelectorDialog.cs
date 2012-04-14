@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.ProjectFileSelectorDialog
 			this.Name = "MonoDevelop.Ide.Projects.ProjectFileSelectorDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Select Project File...");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Select Project File...");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child typeBox.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("File _type:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("File _type:");
 			this.label2.UseUnderline = true;
 			this.typeBox.Add (this.label2);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.typeBox [this.label2]));

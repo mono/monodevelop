@@ -33,13 +33,11 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.AspNet.Parser;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet
 {
@@ -57,7 +55,7 @@ namespace MonoDevelop.AspNet
 			AspNetAppProject aspProject = project as AspNetAppProject;
 			
 			//get the config object and validate
-			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration) aspProject.GetConfiguration (configuration);
+			AspNetAppProjectConfiguration config = (AspNetAppProjectConfiguration)aspProject.GetConfiguration (configuration);
 			if (config == null) {
 				monitor.Log.WriteLine (GettextCatalog.GetString
 					("Project configuration is invalid. Skipping CodeBehind member generation."));
@@ -74,7 +72,8 @@ namespace MonoDevelop.AspNet
 			if (!writer.SupportsPartialTypes) {
 				monitor.Log.WriteLine (GettextCatalog.GetString 
 					("The code generator for {0} does not support partial classes. Skipping CodeBehind member generation.", 
-					aspProject.LanguageBinding.Language));;
+					aspProject.LanguageBinding.Language));
+				;
 				return base.Build (monitor, project, configuration);
 			}
 			
@@ -89,11 +88,10 @@ namespace MonoDevelop.AspNet
 			bool updatedParseDb = false;
 			
 			//go over all the files generating members where necessary
-			foreach (ProjectFile file in aspProject.Files)
-			{
+			foreach (ProjectFile file in aspProject.Files) {
 				WebSubtype type = AspNetAppProject.DetermineWebSubtype (file.FilePath);
 				if (type != WebSubtype.WebForm && type != WebSubtype.WebControl && type != WebSubtype.MasterPage)
-						continue;
+					continue;
 				
 				//find the designer file
 				ProjectFile designerFile = aspProject.Files.GetFile (file.Name + ".designer" + langExt);
@@ -111,13 +109,13 @@ namespace MonoDevelop.AspNet
 				if (!updatedParseDb) {
 					updatedParseDb = true;
 					monitor.Log.Write (GettextCatalog.GetString ("Waiting for project type database to finish updating..."));
-					ProjectDom dom = ProjectDomService.GetProjectDom (aspProject);
-					dom.ForceUpdate (true);
+					//var dom = TypeSystemService.GetContext (aspProject);
+					//TypeSystemService.ForceUpdate (dom);
 					monitor.Log.WriteLine (GettextCatalog.GetString (" complete."));
 				}
 				
 				//parse the ASP.NET file
-				var parsedDocument = ProjectDomService.Parse (aspProject, file.FilePath) as AspNetParsedDocument;
+				var parsedDocument = TypeSystemService.ParseFile (aspProject, file.FilePath) as AspNetParsedDocument;
 				if (parsedDocument == null)
 					continue;
 				

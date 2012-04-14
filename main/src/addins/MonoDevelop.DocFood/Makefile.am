@@ -34,11 +34,11 @@ RES =  \
 	gtk-gui/gui.stetic  
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/MonoDevelop.AssemblyBrowser.dll \
+	$(top_builddir)/build/AddIns/DisplayBindings/AssemblyBrowser/MonoDevelop.AssemblyBrowser.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
-	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
+	$(top_builddir)/build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -48,6 +48,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
+	-r:../../../build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	-r:../../../build/bin/ICSharpCode.NRefactory.dll \
 	-r:../../../build/bin/Mono.TextEditor.dll \
 	-r:../../../build/bin/MonoDevelop.Core.dll \

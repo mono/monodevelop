@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>..\..\MonoDevelop.AssemblyBrowser</images-root-path>
+    <images-root-path>../../MonoDevelop.AssemblyBrowser</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
@@ -9,7 +9,8 @@
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.AssemblyBrowser.dll" internal="true" />
+    <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
+    <widget-library name="../../../../build/AddIns/DisplayBindings/AssemblyBrowser/MonoDevelop.AssemblyBrowser.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget" design-size="702 482">
     <action-group name="Default">
@@ -245,23 +246,7 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="Gtk.ScrolledWindow" id="scrolledwindowEditor">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="ShadowType">In</property>
-                            <child>
-                              <widget class="Gtk.Viewport" id="GtkViewport1">
-                                <property name="MemberName" />
-                                <property name="ShadowType">None</property>
-                                <child>
-                                  <placeholder />
-                                </child>
-                              </widget>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="Position">1</property>
-                          </packing>
+                          <placeholder />
                         </child>
                         <child>
                           <widget class="Gtk.Label" id="label5">

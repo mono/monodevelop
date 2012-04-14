@@ -209,6 +209,18 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			return true;
 		}
 		
+		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		{
+			if (context.Settings.ExpressionTrees && ExpressionTreeConverter.CouldBeExpressionTree(invocationExpression)) {
+				Expression converted = ExpressionTreeConverter.TryConvert(context, invocationExpression);
+				if (converted != null) {
+					invocationExpression.ReplaceWith(converted);
+					return converted.AcceptVisitor(this, data);
+				}
+			}
+			return base.VisitInvocationExpression(invocationExpression, data);
+		}
+		
 		#region Track current variables
 		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
 		{
@@ -281,7 +293,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		
 		static readonly ExpressionStatement displayClassAssignmentPattern =
 			new ExpressionStatement(new AssignmentExpression(
-				new NamedNode("variable", new IdentifierExpression()),
+				new NamedNode("variable", new IdentifierExpression(Pattern.AnyString)),
 				new ObjectCreateExpression { Type = new AnyNode("type") }
 			));
 		
@@ -336,7 +348,10 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 					// "variableName.MemberName = right;"
 					ExpressionStatement closureFieldAssignmentPattern = new ExpressionStatement(
 						new AssignmentExpression(
-							new NamedNode("left", new MemberReferenceExpression { Target = new IdentifierExpression(variable.Name) }),
+							new NamedNode("left", new MemberReferenceExpression { 
+							              	Target = new IdentifierExpression(variable.Name),
+							              	MemberName = Pattern.AnyString
+							              }),
 							new AnyNode("right")
 						)
 					);
@@ -386,7 +401,7 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				}
 				
 				// Now create variables for all fields of the display class (except for those that we already handled as parameters)
-				List<Tuple<AstType, string>> variablesToDeclare = new List<Tuple<AstType, string>>();
+				List<Tuple<AstType, ILVariable>> variablesToDeclare = new List<Tuple<AstType, ILVariable>>();
 				foreach (FieldDefinition field in type.Fields) {
 					if (field.IsStatic)
 						continue; // skip static fields
@@ -397,8 +412,14 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 						capturedVariableName = capturedVariableName.Substring(10);
 					EnsureVariableNameIsAvailable(blockStatement, capturedVariableName);
 					currentlyUsedVariableNames.Add(capturedVariableName);
-					variablesToDeclare.Add(Tuple.Create(AstBuilder.ConvertType(field.FieldType, field), capturedVariableName));
-					dict[field] = new IdentifierExpression(capturedVariableName);
+					ILVariable ilVar = new ILVariable
+					{
+						IsGenerated = true,
+						Name = capturedVariableName,
+						Type = field.FieldType,
+					};
+					variablesToDeclare.Add(Tuple.Create(AstBuilder.ConvertType(field.FieldType, field), ilVar));
+					dict[field] = new IdentifierExpression(capturedVariableName).WithAnnotation(ilVar);
 				}
 				
 				// Now figure out where the closure was accessed and use the simpler replacement expression there:
@@ -414,15 +435,16 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				// Now insert the variable declarations (we can do this after the replacements only so that the scope detection works):
 				Statement insertionPoint = blockStatement.Statements.FirstOrDefault();
 				foreach (var tuple in variablesToDeclare) {
-					var newVarDecl = new VariableDeclarationStatement(tuple.Item1, tuple.Item2);
+					var newVarDecl = new VariableDeclarationStatement(tuple.Item1, tuple.Item2.Name);
 					newVarDecl.Variables.Single().AddAnnotation(new CapturedVariableAnnotation());
+					newVarDecl.Variables.Single().AddAnnotation(tuple.Item2);
 					blockStatement.Statements.InsertBefore(insertionPoint, newVarDecl);
 				}
 			}
 			currentlyUsedVariableNames.RemoveRange(numberOfVariablesOutsideBlock, currentlyUsedVariableNames.Count - numberOfVariablesOutsideBlock);
 			return null;
 		}
-		
+
 		void EnsureVariableNameIsAvailable(AstNode currentNode, string name)
 		{
 			int pos = currentlyUsedVariableNames.IndexOf(name);

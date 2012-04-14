@@ -26,6 +26,8 @@
 
 using Mono.TextEditor;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -35,36 +37,38 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public ResultMarker (Result result) : base (
 				GetColor (result),
-				IsOneLine (result)? (result.Region.Start.Column) : 0,
-				IsOneLine (result)? (result.Region.End.Column) : 0)
+				IsOneLine (result)? (result.Region.BeginColumn) : 0,
+				IsOneLine (result)? (result.Region.EndColumn) : 0)
 		{
 			this.result = result;
 		}
 		
 		static bool IsOneLine (Result result)
 		{
-			return result.Region.Start.Line == result.Region.End.Line;
+			return result.Region.BeginLine == result.Region.EndLine;
 		}
 		
 		public Result Result { get { return result; } }
 		
 		//utility for debugging
-		public int Line { get { return result.Region.Start.Line; } }
-		public int ColStart { get { return IsOneLine (result)? (result.Region.Start.Column) : 0; } }
-		public int ColEnd   { get { return IsOneLine (result)? (result.Region.End.Column) : 0; } }
+		public int Line { get { return result.Region.BeginLine; } }
+		public int ColStart { get { return IsOneLine (result)? (result.Region.BeginColumn) : 0; } }
+		public int ColEnd   { get { return IsOneLine (result)? (result.Region.EndColumn) : 0; } }
 		public string Message { get { return result.Message; } }
 		
 		static string GetColor (Result result)
 		{
 			switch (result.Level) {
-			case QuickTaskSeverity.Error:
-				return Mono.TextEditor.Highlighting.ColorSheme.ErrorUnderlineString;
-			case QuickTaskSeverity.Warning:
-				return Mono.TextEditor.Highlighting.ColorSheme.WarningUnderlineString;
-			case QuickTaskSeverity.Suggestion:
-				return Mono.TextEditor.Highlighting.ColorSheme.SuggestionUnderlineString;
-			case QuickTaskSeverity.Hint:
-				return Mono.TextEditor.Highlighting.ColorSheme.HintUnderlineString;
+			case Severity.None:
+				return Mono.TextEditor.Highlighting.ColorScheme.DefaultString;
+			case Severity.Error:
+				return Mono.TextEditor.Highlighting.ColorScheme.ErrorUnderlineString;
+			case Severity.Warning:
+				return Mono.TextEditor.Highlighting.ColorScheme.WarningUnderlineString;
+			case Severity.Suggestion:
+				return Mono.TextEditor.Highlighting.ColorScheme.SuggestionUnderlineString;
+			case Severity.Hint:
+				return Mono.TextEditor.Highlighting.ColorScheme.HintUnderlineString;
 			default:
 				throw new System.ArgumentOutOfRangeException ();
 			}
@@ -73,11 +77,11 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			int markerStart = LineSegment.Offset + System.Math.Max (StartCol - 1, 0);
-			int markerEnd = LineSegment.Offset + (EndCol < 1 ? LineSegment.EditableLength : EndCol - 1);
+			int markerEnd = LineSegment.Offset + (EndCol < 1 ? LineSegment.Length : EndCol - 1);
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return;
 			
-			bool drawOverlay = result.Level == QuickTaskSeverity.Warning && result.Importance == ResultImportance.Low;
+			bool drawOverlay = result.InspectionMark == IssueMarker.GrayOut;
 			
 			if (drawOverlay && editor.IsSomethingSelected) {
 				var selectionRange = editor.SelectionRange;

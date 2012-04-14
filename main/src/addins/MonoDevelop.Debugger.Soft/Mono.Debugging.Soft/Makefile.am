@@ -5,11 +5,11 @@ SIGNING_KEY=$(top_srcdir)/src/core/Mono.Debugging/mono.debugging.snk
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft/Mono.Debugger.Soft.dll \
-	$(top_builddir)/build/bin/Mono.Cecil.dll \
-	$(top_builddir)/build/bin/Mono.Cecil.Mdb.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll
 
 REFS =  \
+	-r:../../../../build/bin/Mono.Cecil.dll \
+	-r:../../../../build/bin/Mono.Cecil.Mdb.dll \
 	-r:System \
 	-r:System.Core
 

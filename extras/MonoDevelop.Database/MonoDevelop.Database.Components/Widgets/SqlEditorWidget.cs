@@ -78,7 +78,7 @@ namespace MonoDevelop.Database.Components
 			}
 		}
 		
-		private void BufferChanged (object sender, ReplaceEventArgs args)
+		private void BufferChanged (object sender, DocumentChangeEventArgs args)
 		{
 			if (TextChanged != null)
 				TextChanged (this, EventArgs.Empty);

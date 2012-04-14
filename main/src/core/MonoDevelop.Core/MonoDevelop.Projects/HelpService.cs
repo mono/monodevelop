@@ -32,8 +32,12 @@ using MonoDevelop.Core;
 using Mono.Addins;
 using System.IO;
 using System.Collections.Generic;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Extensions;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Text;
+using System.Xml;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.Documentation;
 
 namespace MonoDevelop.Projects
 {
@@ -129,12 +133,12 @@ namespace MonoDevelop.Projects
 			if (result == null)
 				return null;
 			
-			if (result is AggregatedResolveResult) 
-				result = ((AggregatedResolveResult)result).PrimaryResult;
+//			if (result is AggregatedResolveResult) 
+//				result = ((AggregatedResolveResult)result).PrimaryResult;
 			
 			
 			if (result is NamespaceResolveResult) {
-				string namespc = ((NamespaceResolveResult)result).Namespace;
+				string namespc = ((NamespaceResolveResult)result).NamespaceName;
 				//verify that the namespace exists in the help tree
 				//FIXME: GetHelpXml doesn't seem to work for namespaces, so forced to do full render
 				Monodoc.Node dummy;
@@ -145,16 +149,16 @@ namespace MonoDevelop.Projects
 			}
 			
 			IMember member = null;
-			if (result is MethodResolveResult)
-				member = ((MethodResolveResult)result).MostLikelyMethod;
-			else if (result is MemberResolveResult)
-				member = ((MemberResolveResult)result).ResolvedMember;
-			try {
-				if (member != null && member.GetMonodocDocumentation () != null)
-					return member.HelpUrl;
-			} catch (Exception) {
-			}
-			IReturnType type = result.ResolvedType;
+//			if (result is MethodGroupResolveResult)
+//				member = ((MethodGroupResolveResult)result).Methods.FirstOrDefault ();
+//			else 
+			if (result is MemberResolveResult)
+				member = ((MemberResolveResult)result).Member;
+			
+			if (member != null && member.GetMonodocDocumentation () != null)
+				return member.GetIdString ();
+			
+			var type = result.Type;
 			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
 				string t = "T:" + type.FullName;
 				if (HelpTree != null && HelpTree.GetHelpXml (t) != null)
@@ -163,6 +167,128 @@ namespace MonoDevelop.Projects
 			
 			return null;
 		}
+	}
+	
+	public static class HelpExtension
+	{
+		static void AppendTypeReference (StringBuilder result, ITypeReference type)
+		{
+			if (type is ArrayTypeReference) {
+				var array = (ArrayTypeReference)type;
+				AppendTypeReference (result, array.ElementType);
+				result.Append ("[");
+				result.Append (new string (',', array.Dimensions));
+				result.Append ("]");
+				return;
+			}
+			
+			if (type is PointerTypeReference) {
+				var ptr = (PointerTypeReference)type;
+				AppendTypeReference (result, ptr.ElementType);
+				result.Append ("*");
+				return;
+			}
+			
+			if (type is IType)
+				result.Append (((IType)type).FullName);
+		}
+		
+		
+		static void AppendHelpParameterList (StringBuilder result, IList<IParameter> parameters)
+		{
+			result.Append ('(');
+			if (parameters != null) {
+				for (int i = 0; i < parameters.Count; i++) {
+					if (i > 0)
+						result.Append (',');
+					var p = parameters [i];
+					if (p == null)
+						continue;
+					if (p.IsRef || p.IsOut)
+						result.Append ("&");
+					AppendTypeReference (result, p.Type.ToTypeReference ());
+				}
+			}
+			result.Append (')');
+		}
+		
+		static void AppendHelpParameterList (StringBuilder result, IList<IUnresolvedParameter> parameters)
+		{
+			result.Append ('(');
+			if (parameters != null) {
+				for (int i = 0; i < parameters.Count; i++) {
+					if (i > 0)
+						result.Append (',');
+					var p = parameters [i];
+					if (p == null)
+						continue;
+					if (p.IsRef || p.IsOut)
+						result.Append ("&");
+					AppendTypeReference (result, p.Type);
+				}
+			}
+			result.Append (')');
+		}
+		
+		static XmlNode FindMatch (IMethod method, XmlNodeList nodes)
+		{
+			foreach (XmlNode node in nodes) {
+				XmlNodeList paramList = node.SelectNodes ("Parameters/*");
+				if (method.Parameters.Count == 0 && paramList.Count == 0) 
+					return node;
+				if (method.Parameters.Count != paramList.Count) 
+					continue;
+				
+/*				bool matched = true;
+				for (int i = 0; i < p.Count; i++) {
+					if (p [i].ReturnType.FullName != paramList [i].Attributes ["Type"].Value) {
+						matched = false;
+						break;
+					}
+				}
+				if (matched)*/
+					return node;
+			}
+			return null;
+		}
+		
+		public static XmlNode GetMonodocDocumentation (this IEntity member)
+		{
+			if (member.EntityType == EntityType.TypeDefinition) {
+				var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetIdString ()) : null;
+				if (helpXml == null)
+					return null;
+				return helpXml.SelectSingleNode ("/Type/Docs");
+			}
+			
+			var declaringXml = HelpService.HelpTree != null && member.DeclaringTypeDefinition != null ? HelpService.HelpTree.GetHelpXml (member.DeclaringTypeDefinition.GetIdString ()) : null;
+			if (declaringXml == null)
+				return null;
+			
+			switch (member.EntityType) {
+			case EntityType.Method: {
+					var nodes = declaringXml.SelectNodes ("/Type/Members/Member[@MemberName='" + member.Name + "']");
+					XmlNode node = nodes.Count == 1 ? nodes [0] : FindMatch ((IMethod)member, nodes);
+					if (node != null) {
+						System.Xml.XmlNode result = node.SelectSingleNode ("Docs");
+						return result;
+					}
+					return null;
+				}
+			case EntityType.Constructor: {
+					var nodes = declaringXml.SelectNodes ("/Type/Members/Member[@MemberName='.ctor']");
+					XmlNode node = nodes.Count == 1 ? nodes [0] : FindMatch ((IMethod)member, nodes);
+					if (node != null) {
+						System.Xml.XmlNode result = node.SelectSingleNode ("Docs");
+						return result;
+					}
+					return null;
+				}
+			default:
+				return declaringXml.SelectSingleNode ("/Type/Members/Member[@MemberName='" + member.Name + "']/Docs");
+			}
+		}
+		
 	}
 }
 

@@ -1,0 +1,158 @@
+<!--
+
+SolarizedStyle.xml
+
+ This is the solarized color sheme adapted for monodevelop. 
+ See http://ethanschoonover.com/solarized for details.
+ 
+Author:
+      Mike Krüger <mkrueger@xamarin.com>
+
+Copyright (c) 2012 Xamarin Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+ <EditorStyle name="Solarized_Dark" _description="Solarized color stlye (dark)">
+ 
+	<!-- solarized palette -->
+	
+	<Color name="base03" value="#002b36"/>
+	<Color name="base02" value="#073642"/>
+	<Color name="base01" value="#586e75"/>
+	<Color name="base00" value="#657b83"/>
+	<Color name="base0" value="#839496"/>
+	<Color name="base1" value="#93a1a1"/>
+	<Color name="base2" value="#eee8d5"/>
+	<Color name="base3" value="#fdf6e3"/>
+	<Color name="yellow" value="#b58900"/>
+	<Color name="orange" value="#cb4b16"/>
+	<Color name="red" value="#dc322f"/>
+	<Color name="magenta" value="#d33682"/>
+	<Color name="violet" value="#6c71c4"/>
+	<Color name="blue" value="#268bd2"/>
+	<Color name="cyan" value="#2aa198"/>
+	<Color name="green" value="#859900"/>
+	
+	<!-- color styles -->
+	<Style name="text" color="base00" bgColor="base03">
+		<Style name="background" color="base03">
+			<Style name="readonly" color="base02"/>
+			<Style name="searchresult-main" color="base03"/>
+			<Style name="searchresult" color="base03"/>
+		</Style>
+		<Style name="selection" color="base2" bgColor="base0"/>
+		<Style name="selection.inactive" color="base3" bgColor="base1"/>
+		<Style name="link" color="base00"/>
+		<Style name="punctuation" color="base00"/>
+		<Style name="preprocessor" color="red">
+			<Style name="keyword" color="red" weight="Bold"/>
+		</Style>
+		<Style name="markup" color="blue">
+			<Style name="tag"/>
+		</Style>
+	</Style>
+	
+	<Style name="template" color ="black" bgColor="#fdfaed">
+		<Style name="tag" color ="black" bgColor="#fdf0bd"/>
+	</Style>
+	
+	<Style name="diff">
+		<Style name="line-added" color="Blue"/>
+		<Style name="line-removed" color="Red"/>
+		<Style name="line-changed" color="Green"/>
+		
+		<Style name="header" color="Magenta"/>
+		<Style name="header-seperator" color="Magenta"/>
+		<Style name="header-oldfile" color="Red"/>
+		<Style name="header-newfile" color="Blue"/>
+		
+		<Style name="location" color="Magenta"/>
+	</Style>
+	
+	<Style name="marker">
+		<Style name="line" color="base02"/>
+		<Style name="line.changed" color="green"/>
+		<Style name="line.dirty" color="yellow"/>
+	
+		<Style name="ruler" color="base1"/>
+		<Style name="whitespace" color="base01"> 
+			<Style name="eol" color="base01"/> 
+		</Style>
+		<Style name="invalidline" color="orange"/>
+		<Style name="bracket" color="orange" bgColor="base02"/>
+		<Style name="usages" color="orange" bgColor="base02"/>
+		
+		<Style name="bookmark.color1" color="base3"/>
+		<Style name="bookmark.color2" color="blue"/>
+		<Style name="underline" color="red">
+			<Style name="error" color="red"/>
+			<Style name="warning" color="orange"/>
+			<Style name="warning" color="orange"/>
+		</Style>
+<!--		
+		<Style name="template">
+			<Style name="primary_template" color="aluminium2" bgColor="Zombie"/>
+			<Style name="primary_highlighted_template" color="Zombie" bgColor="Lawn"/>
+			
+			<Style name="secondary_template" color="aluminium2" bgColor="white"/>
+			<Style name="secondary_highlighted_template" color="aluminium3" bgColor="aluminium1"/>
+		</Style>-->
+	</Style>
+	
+	<Style name="bubble">
+		<Style name="warning" color="yellow" bgColor="base03"/>
+		<Style name="error" color="red" bgColor="base03"/>
+	</Style>
+
+	<Style name="linenumber" color="base00" bgColor="base02">
+		<Style name="highlight" color="base01"/>
+	</Style>
+	
+	<Style name="iconbar" color="base02"/>
+	<Style name="iconbar.separator" color="base02"/>
+
+	<Style name="fold" color="base01" bgColor="base02"/>
+	<Style name="fold.highlight" color="base2"/>
+	<Style name="fold.togglemarker" color="base2"/>
+	
+	<Style name="comment" color="base0">
+		<Style name="keyword" color="magenta"/>
+	</Style>
+	
+	<Style name="constant" color="cyan">
+		<Style name="language.void" color = "cyan"/>
+	</Style>
+	
+	<Style name="string" color="cyan" />
+	
+	<Style name="keyword" color="green">
+		<Style name="namespace" color="yellow"/>
+		<Style name="type" color="yellow"/>
+		<Style name="modifier" color="yellow"/>
+		
+		<Style name="declaration" color="yellow"/>
+		<Style name="access" color="yellow"/>
+		<Style name="semantic.type" color="blue"/>
+		<Style name="semantic.field" color="violet"/>
+		<Style name="semantic.property" color="violet"/>
+		<Style name="semantic.error" color="red"/>
+	</Style>
+</EditorStyle>
+

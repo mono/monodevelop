@@ -29,13 +29,18 @@ using System.Linq;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Gui;
 using System.Text;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
 using ICSharpCode.OldNRefactory;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.CSharp.Parser;
+using System.IO;
+using ICSharpCode.NRefactory.Completion;
+
+
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -46,13 +51,11 @@ namespace MonoDevelop.CSharp.Completion
 			return language == "C#";
 		}
 		
-		public static ParsedDocument Parse (ProjectDom dom, string fileName, string text)
+		public static ParsedDocument Parse (string fileName, string text)
 		{
-			var result = new MonoDevelop.CSharp.Parser.McsParser ().Parse (null, fileName, text);
-			foreach (DomType type in result.CompilationUnit.Types) {
-				type.SourceProjectDom = dom;
+			using (var content = new StringReader (text)) {
+				return new TypeSystemParser ().Parse (true, fileName, content);
 			}
-			return result;
 		}
 		
 		static void WriteUsings (IEnumerable<string> usings, StringBuilder builder)
@@ -109,7 +112,7 @@ namespace MonoDevelop.CSharp.Completion
 			result.LocalDocument = sb.ToString ();
 			result.CaretPosition = caretPosition;
 			result.OriginalCaretPosition = data.Caret.Offset;
-			result.ParsedLocalDocument = Parse (info.Dom, info.AspNetDocument.FileName, sb.ToString ());
+			result.ParsedLocalDocument = Parse (info.AspNetDocument.FileName, sb.ToString ());
 			return result;
 		}
 		
@@ -141,7 +144,6 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeCompletionContext codeCompletionContext;
 			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
-				
 				return completion.GetParameterCompletionCommandOffset (out cpos);
 			}
 		}
@@ -150,10 +152,10 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new AspCompletionWidget (realDocument, localInfo);
 		}
-
-		CSharpTextEditorCompletion CreateCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
+		
+		CSharpCompletionTextEditorExtension CreateCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
 		{
-			var doc = new Mono.TextEditor.Document () {
+			var doc = new Mono.TextEditor.TextDocument () {
 				Text = localInfo.LocalDocument,
 			};
 			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);
@@ -164,15 +166,9 @@ namespace MonoDevelop.CSharp.Completion
 				TriggerLineOffset = documentLocation.Column - 1
 			};
 			
-			var r = new System.IO.StringReader (localInfo.LocalDocument);
-			using (var parser = ICSharpCode.OldNRefactory.ParserFactory.CreateParser (SupportedLanguage.CSharp, r)) {
-				parser.Parse ();
-				return new CSharpTextEditorCompletion (localInfo.HiddenDocument) {
-					ParsedUnit = parser.CompilationUnit,
-					CompletionWidget = CreateCompletionWidget (realDocument, localInfo),
-					Dom = localInfo.HiddenDocument.Dom
-				};
-			}
+			return new CSharpCompletionTextEditorExtension (localInfo.HiddenDocument) {
+				CompletionWidget = CreateCompletionWidget (realDocument, localInfo)
+			};
 		}
 		
 		class AspCompletionWidget : ICompletionWidget
@@ -256,10 +252,16 @@ namespace MonoDevelop.CSharp.Completion
 				translatedCtx.TriggerWordLength = ctx.TriggerWordLength;
 				realDocument.GetContent <ICompletionWidget> ().SetCompletionText (translatedCtx, partial_word, complete_word, wordOffset);
 			}
-
+			
+			public int CaretOffset {
+				get {
+					return localInfo.HiddenDocument.Editor.Caret.Offset;
+				}
+			}
+			
 			public int TextLength {
 				get {
-					return localInfo.HiddenDocument.Editor.Document.Length;
+					return localInfo.HiddenDocument.Editor.Document.TextLength;
 				}
 			}
 
@@ -280,7 +282,7 @@ namespace MonoDevelop.CSharp.Completion
 		public ParsedDocument BuildDocument (DocumentInfo info, TextEditorData data)
 		{
 			var docStr = BuildDocumentString (info, data);
-			return Parse (info.Dom, info.AspNetDocument.FileName, docStr);
+			return Parse (info.AspNetDocument.FileName, docStr);
 		}
 		 
 		public string BuildDocumentString (DocumentInfo info, TextEditorData data, List<LocalDocumentInfo.OffsetInfo> offsetInfos = null, bool buildExpressions = false)

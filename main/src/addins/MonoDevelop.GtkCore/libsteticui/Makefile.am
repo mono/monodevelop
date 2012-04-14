@@ -1,7 +1,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/libsteticui.dll
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(build_dll_config)
+assembly_DATA = $(ASSEMBLY) $(build_dll_config)
 
 FILES =  \
 	ActionComponent.cs \
@@ -74,14 +74,13 @@ RES =  \
 	action.png \
 	missing.png
 
-DEPS =  \
-	../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
-	../../../../build/bin/Mono.Cecil.dll
+DEPS = ../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:../../../../build/bin/Mono.Cecil.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

@@ -41,9 +41,10 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core.Assemblies;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AspNet
 {
@@ -57,26 +58,26 @@ namespace MonoDevelop.AspNet
 				throw new ArgumentException ("project");
 			Project = project;
 			SystemWebDom = GetSystemWebDom (project);
-			ProjectDom = ProjectDomService.GetProjectDom (project);
-			if (ProjectDom == null)
+			Compilation = TypeSystemService.GetCompilation (project);
+			if (Compilation == null)
 				throw new InvalidOperationException ("Could not load parse database for project");
 		}
 		
 		public AspNetAppProject Project { get; private set; }
-		public ProjectDom SystemWebDom { get; private set; }
-		public ProjectDom ProjectDom { get; private set; }
+		public ICompilation SystemWebDom { get; private set; }
+		public ICompilation Compilation { get; private set; }
 		
 		public TargetFramework TargetFramework {
 			get { return Project.TargetFramework; }
 		}
 		
 		//FIXME: this shouldn't be public
-		public static ProjectDom GetSystemWebDom (AspNetAppProject project)
+		public static ICompilation GetSystemWebDom (AspNetAppProject project)
 		{
 			return GetSystemWebDom (project.TargetRuntime, project.TargetFramework);
 		}
 		
-		static ProjectDom GetSystemWebDom (TargetRuntime runtime, TargetFramework targetFramework)
+		static ICompilation GetSystemWebDom (TargetRuntime runtime, TargetFramework targetFramework)
 		{
 			string file = runtime.AssemblyContext.GetAssemblyNameForVersion (sysWebAssemblyName, targetFramework);
 			if (string.IsNullOrEmpty (file))
@@ -84,7 +85,7 @@ namespace MonoDevelop.AspNet
 			file = runtime.AssemblyContext.GetAssemblyLocation (file, targetFramework);
 			if (string.IsNullOrEmpty (file))
 				throw new Exception ("System.Web assembly file not found for framework " + targetFramework.Id);
-			ProjectDom dom = ProjectDomService.GetAssemblyDom (runtime, file);
+			var dom = new SimpleCompilation (TypeSystemService.LoadAssemblyContext (runtime, targetFramework, file));
 			if (dom == null)
 				throw new Exception ("System.Web parse database not found for framework " + targetFramework.Id + " file '" + file + "'");
 			return dom;
@@ -92,11 +93,11 @@ namespace MonoDevelop.AspNet
 		
 		#region Assembly resolution
 		
-		Dictionary<string,ProjectDom> cachedDoms = new Dictionary<string, ProjectDom> ();
+		Dictionary<string,ICompilation> cachedDoms = new Dictionary<string, ICompilation> ();
 				
-		public ProjectDom ResolveAssembly (string assemblyName)
+		public ICompilation ResolveAssembly (string assemblyName)
 		{
-			ProjectDom dom;
+			ICompilation dom;
 			if (!cachedDoms.TryGetValue (assemblyName, out dom)) {
 				cachedDoms [assemblyName] = dom = Project.ResolveAssemblyDom (assemblyName);
 				if (dom == null)
@@ -160,7 +161,7 @@ namespace MonoDevelop.AspNet
 					var dom = ResolveAssembly (info.Assembly);
 					if (dom == null)
 						continue;
-					foreach (IType t in ListControlClasses (baseType, dom, info.Namespace))
+					foreach (var t in ListControlClasses (baseType, dom, info.Namespace))
 						yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (info.TagPrefix + ":", t);
 				}
 				else if (info.IsUserControl) {
@@ -212,7 +213,7 @@ namespace MonoDevelop.AspNet
 				if (!string.IsNullOrEmpty (tpxInfo.Namespace) && !string.IsNullOrEmpty (tpxInfo.Assembly) && !string.IsNullOrEmpty (tpxInfo.TagPrefix)) {
 					var dom = ResolveAssembly (tpxInfo.Assembly);
 					if (dom != null)
-						foreach (IType type in ListControlClasses (baseType, dom, tpxInfo.Namespace))
+						foreach (var type in ListControlClasses (baseType, dom, tpxInfo.Namespace))
 							yield return new MonoDevelop.AspNet.Parser.AspTagCompletionData (tpxInfo.TagPrefix, type);
 				}
 			}
@@ -295,7 +296,7 @@ namespace MonoDevelop.AspNet
 		{
 			var str = HtmlControlLookup (tagName, typeAttribute);
 			if (str != null) {
-				return SystemWebDom.GetType (str, false, false);
+				return SystemWebDom.LookupType (str);
 			}
 			return null;
 		}
@@ -309,20 +310,18 @@ namespace MonoDevelop.AspNet
 			return ListControlClasses (baseType, GetSystemWebDom (project), "System.Web.UI.WebControls");
 		}
 		
-		public static IEnumerable<IType> ListControlClasses (IType baseType, ProjectDom database, string namespac)
+		public static IEnumerable<IType> ListControlClasses (IType baseType, ICompilation database, string namespac)
 		{
 			if (database == null)
 				yield break;
-			
+			var baseTypeDefinition = baseType.GetDefinition ();
 			//return classes if they derive from system.web.ui.control
-			foreach (IType type in database.GetSubclasses (baseType, false, new string [] {namespac}))
+			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions ().Where (t => t.Namespace == namespac))
 				if (!type.IsAbstract && type.IsPublic)
 					yield return type;
 			
-			if (!baseType.IsAbstract && baseType.IsPublic && baseType.Namespace == namespac) {
-				IType t = database.GetType (baseType.FullName);
-				if (t != null)
-					yield return baseType;
+			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.IsPublic && baseTypeDefinition.Namespace == namespac) {
+				yield return baseType;
 			}
 		}
 		
@@ -341,17 +340,17 @@ namespace MonoDevelop.AspNet
 			return AssemblyTypeLookup (SystemWebDom, "System.Web.UI.WebControls", tagName);
 		}
 		
-		public static string AssemblyTypeNameLookup (ProjectDom assemblyDatabase, string namespac, string tagName)
+		public static string AssemblyTypeNameLookup (ICompilation assemblyDatabase, string namespac, string tagName)
 		{
-			IType cls = AssemblyTypeLookup (assemblyDatabase, namespac, tagName);
+			var cls = AssemblyTypeLookup (assemblyDatabase, namespac, tagName);
 			return cls != null? cls.FullName : null;
 		}
 		
-		public static IType AssemblyTypeLookup (ProjectDom assemblyDatabase, string namespac, string tagName)
+		public static IType AssemblyTypeLookup (ICompilation assemblyDatabase, string namespac, string tagName)
 		{
 			return (assemblyDatabase == null)
 				? null
-				: assemblyDatabase.GetType (namespac + "." + tagName, false, false);
+				: assemblyDatabase.MainAssembly.GetTypeDefinition (namespac, tagName, 0);
 		}
 		
 		#endregion

@@ -34,21 +34,16 @@ using MonoDevelop.Core;
  
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
-
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeMetrics
 {
 	public class StructProperties : IProperties
 	{		
-		IType strct;
+		ITypeDefinition strct;
 		
-		public IType Struct {
+		public ITypeDefinition Struct {
 			get {
 				return strct;
 			}
@@ -88,12 +83,12 @@ namespace MonoDevelop.CodeMetrics
 			get; set;
 		}
 		
-		public StructProperties (IType i)
+		public StructProperties (ITypeDefinition i)
 		{
 			strct = i;
 			FullName = Struct.FullName;
-			StartLine = Struct.BodyRegion.Start.Line;
-			EndLine = Struct.BodyRegion.End.Line;
+			StartLine = Struct.BodyRegion.BeginLine;
+			EndLine = Struct.BodyRegion.EndLine;
 			FilePath="";
 		}
 	}

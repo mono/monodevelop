@@ -42,10 +42,5 @@ namespace ICSharpCode.NRefactory.PatternMatching
 			match.Add(this.groupName, other);
 			return other != null && !other.IsNull;
 		}
-		
-		public override S AcceptVisitor<T, S>(IPatternAstVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitAnyNode(this, data);
-		}
 	}
 }

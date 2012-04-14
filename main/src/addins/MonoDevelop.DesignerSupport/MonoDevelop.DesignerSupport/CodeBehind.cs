@@ -31,13 +31,11 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using System.Globalization;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.DesignerSupport
 {
-	
-	
 	public static class CodeBehind
 	{
 		public static IEnumerable<string> GuessDependencies (DotNetProject proj, ProjectFile file,
@@ -104,29 +102,29 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 		
-		public static IType GetDesignerClass (IType cls)
+		public static IUnresolvedTypeDefinition GetDesignerClass (IType cls)
 		{
-			if (!cls.HasParts)
+			if (cls.GetDefinition ().Parts.Count == 1)
 				return null;
 			
-			string designerEnding = ".designer" + Path.GetExtension (cls.CompilationUnit.FileName);
+			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
 			
-			foreach (IType c in cls.Parts)
-				if (c.CompilationUnit.FileName.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+			foreach (var c in cls.GetDefinition ().Parts)
+				if (c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;
 		}
 		
-		public static IType GetNonDesignerClass (IType cls)
+		public static IUnresolvedTypeDefinition GetNonDesignerClass (IType cls)
 		{
-			if (!cls.HasParts)
+			if (cls.GetDefinition ().Parts.Count == 1)
 				return null;
 			
-			string designerEnding = ".designer" + Path.GetExtension (cls.CompilationUnit.FileName);
+			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
 			
-			foreach (IType c in cls.Parts)
-				if (!c.CompilationUnit.FileName.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+			foreach (var c in cls.GetDefinition ().Parts)
+				if (!c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
 				    return c;
 			
 			return null;

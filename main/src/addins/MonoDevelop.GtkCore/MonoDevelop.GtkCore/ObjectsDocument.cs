@@ -33,9 +33,9 @@ using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.GtkCore
 {
@@ -113,38 +113,35 @@ namespace MonoDevelop.GtkCore
 				Save (writer);
 			}
 		}
-
-		void InsertToolboxItemAttributes (WidgetParser parser, CodeRefactorer cref)
+		void InsertToolboxItemAttributes (WidgetParser parser)
 		{
-			Dictionary<string, IType> tb_items = parser.GetToolboxItems ();
+			var tb_items = parser.GetToolboxItems ();
 			foreach (string clsname in ObjectNames) {
 				if (tb_items.ContainsKey (clsname))
 					continue;
 
-				IType cls = parser.GetClass (clsname);
+				var cls = parser.GetClass (clsname);
 				if (cls == null)
 					continue;
-
-				cref.AddAttribute (cls, "System.ComponentModel.ToolboxItem", true);
+				CodeGenerationService.AddAttribute (cls, "System.ComponentModel.ToolboxItem", true);
 				XmlElement elem = DocumentElement.SelectSingleNode ("object[@type='" + clsname + "']") as XmlElement;
-				if (elem != null && elem.HasAttribute ("palette-category"))
-					cref.AddAttribute (cls, "System.ComponentModel.Category", elem.GetAttribute ("palette-category"));
+				if (elem != null && elem.HasAttribute ("palette-category")) {
+					CodeGenerationService.AddAttribute (cls, "System.ComponentModel.Category", elem.GetAttribute ("palette-category"));
+				}
 			}
 		}
 
-		public void Update (WidgetParser parser, Stetic.Project stetic, CodeRefactorer refactorer)
+		public void Update (WidgetParser parser, Stetic.Project stetic)
 		{
 			if (AttrSyncState == SyncState.Unspecified) {
-				if (refactorer != null) {
-					InsertToolboxItemAttributes (parser, refactorer);
-					AttrSyncState = SyncState.On;
-				}
+				InsertToolboxItemAttributes (parser);
+				AttrSyncState = SyncState.On;
 				return;
 			} else if (AttrSyncState == SyncState.Off)
 				return;
 
 			StringCollection tb_names = new StringCollection ();
-			foreach (IType cls in parser.GetToolboxItems().Values) {
+			foreach (var cls in parser.GetToolboxItems().Values) {
 				UpdateClass (parser, stetic, cls, null);
 				tb_names.Add (cls.FullName);
 			}
@@ -163,7 +160,7 @@ namespace MonoDevelop.GtkCore
 			Save ();
 		}
 
-		void UpdateClass (WidgetParser parser, Stetic.Project stetic, IType widgetClass, IType wrapperClass)
+		void UpdateClass (WidgetParser parser, Stetic.Project stetic, ITypeDefinition widgetClass, ITypeDefinition wrapperClass)
 		{
 			string typeName = widgetClass.FullName;
 			string basetypeName = GetBaseType (parser, widgetClass, stetic);
@@ -197,7 +194,7 @@ namespace MonoDevelop.GtkCore
 			UpdateObject (parser, basetypeName, objectElem, widgetClass, wrapperClass);
 		}
 		
-		string GetBaseType (WidgetParser parser, IType widgetClass, Stetic.Project stetic)
+		string GetBaseType (WidgetParser parser, ITypeDefinition widgetClass, Stetic.Project stetic)
 		{
 			string[] types = stetic.GetWidgetTypes ();
 			Hashtable typesHash = new Hashtable ();
@@ -208,7 +205,7 @@ namespace MonoDevelop.GtkCore
 			return ret ?? "Gtk.Widget";
 		}
 		
-		void UpdateObject (WidgetParser parser, string topType, XmlElement objectElem, IType widgetClass, IType wrapperClass)
+		void UpdateObject (WidgetParser parser, string topType, XmlElement objectElem, ITypeDefinition widgetClass, ITypeDefinition wrapperClass)
 		{
 			if (widgetClass.IsPublic)
 				objectElem.RemoveAttribute ("internal");

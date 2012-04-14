@@ -59,6 +59,7 @@
   <Style name="text.background.searchresult" color="#FFE2B9" />
   <Style name="text.background.searchresult-main" color="#F3DD48" />
   <Style name="marker.bracket" color="#D3D7CE" bgColor="#EEEEEC" />
+  <Style name="marker.usages" color="#D3D7CE" bgColor="#EEEEEC"/>
   <Style name="marker.bookmark.color1" color="#FFFFFF" />
   <Style name="marker.bookmark.color2" color="#689BEB" />
   <Style name="marker.underline.error" color="#FF0000" />
@@ -110,6 +111,7 @@
   <Style name="string.other" color="#FF00FE" />
   <Style name="keyword.semantic.type" color="#008A8C" />
   <Style name="keyword.semantic.field" color="black" weight="Italic"/>
+  <Style name="keyword.semantic.error" color="red"/>
   <Style name="keyword" color="#000000" weight="Bold" />
   <Style name="keyword.access" color="#A52929" weight="Bold" />
   <Style name="keyword.operator" color="#A52929" weight="Bold" />

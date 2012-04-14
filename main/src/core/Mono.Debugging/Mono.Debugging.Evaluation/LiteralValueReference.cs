@@ -63,6 +63,17 @@ namespace Mono.Debugging.Evaluation
 			return val;
 		}
 		
+		public static LiteralValueReference CreateVoidReturnLiteral (EvaluationContext ctx, string name)
+		{
+			LiteralValueReference val = new LiteralValueReference (ctx);
+			val.name = name;
+			val.value = val.objValue = new EvaluationResult ("No return value.");
+			val.type = typeof (EvaluationResult);
+			val.objLiteral = true;
+			val.objCreated = true;
+			return val;
+		}
+		
 		public override object ObjectValue {
 			get {
 				if (objLiteral)
@@ -94,8 +105,11 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object Type {
 			get {
-				if (!objCreated && objLiteral)
-					type = Context.Adapter.GetValueType (Context, Value);
+#pragma warning disable 219
+				// This assures that value and type are set.
+				var v = Value;
+#pragma warning restore 219
+				
 				return type;
 			}
 		}

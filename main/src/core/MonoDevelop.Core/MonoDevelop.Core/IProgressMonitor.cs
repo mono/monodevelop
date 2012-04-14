@@ -56,4 +56,9 @@ namespace MonoDevelop.Core
 		
 		object SyncRoot { get; }
 	}
+	
+	public interface IProgressMonitorFactory
+	{
+		IProgressMonitor CreateProgressMonitor ();
+	}
 }

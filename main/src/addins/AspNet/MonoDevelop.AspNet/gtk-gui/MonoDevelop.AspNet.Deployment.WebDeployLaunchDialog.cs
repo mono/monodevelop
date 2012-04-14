@@ -17,7 +17,7 @@ namespace MonoDevelop.AspNet.Deployment
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog
 			this.Name = "MonoDevelop.AspNet.Deployment.WebDeployLaunchDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Deploy to Web");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Deploy to Web");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			this.BorderWidth = ((uint)(9));
@@ -30,7 +30,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.titleLabel = new global::Gtk.Label ();
 			this.titleLabel.Name = "titleLabel";
 			this.titleLabel.Xalign = 0F;
-			this.titleLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<big><b>Deploying Web Project...</b></big>");
+			this.titleLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<big><b>Deploying Web Project...</b></big>");
 			this.titleLabel.UseMarkup = true;
 			w1.Add (this.titleLabel);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(w1 [this.titleLabel]));
@@ -41,7 +41,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Targets to which the project should be deployed:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Targets to which the project should be deployed:");
 			w1.Add (this.label1);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(w1 [this.label1]));
 			w3.Position = 1;
@@ -83,7 +83,7 @@ namespace MonoDevelop.AspNet.Deployment
 			w8.Add (w9);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w11 = new global::Gtk.Label ();
-			w11.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Edit targets");
+			w11.LabelProp = global::Mono.Unix.Catalog.GetString ("_Edit targets");
 			w11.UseUnderline = true;
 			w8.Add (w11);
 			w7.Add (w8);
@@ -122,7 +122,7 @@ namespace MonoDevelop.AspNet.Deployment
 			w18.Add (w19);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w21 = new global::Gtk.Label ();
-			w21.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Deploy");
+			w21.LabelProp = global::Mono.Unix.Catalog.GetString ("_Deploy");
 			w21.UseUnderline = true;
 			w18.Add (w21);
 			w17.Add (w18);

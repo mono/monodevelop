@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.labelScheme = new global::Gtk.Label ();
 			this.labelScheme.Name = "labelScheme";
 			this.labelScheme.Xalign = 0F;
-			this.labelScheme.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Scheme:");
+			this.labelScheme.LabelProp = global::Mono.Unix.Catalog.GetString ("Scheme:");
 			this.hbox1.Add (this.labelScheme);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.labelScheme]));
 			w1.Position = 0;
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Search:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Search:");
 			this.label1.UseUnderline = true;
 			this.hbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label1]));
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("The current scheme has conflicting key bindings");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("The current scheme has conflicting key bindings");
 			this.warningBox.Add (this.label2);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.warningBox [this.label2]));
 			w11.Position = 1;
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child hbox.Gtk.Box+BoxChild
 			this.labelEditBinding = new global::Gtk.Label ();
 			this.labelEditBinding.Name = "labelEditBinding";
-			this.labelEditBinding.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Edit Binding");
+			this.labelEditBinding.LabelProp = global::Mono.Unix.Catalog.GetString ("Edit Binding");
 			this.hbox.Add (this.labelEditBinding);
 			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox [this.labelEditBinding]));
 			w20.Position = 0;
@@ -235,7 +235,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w23.Add (w24);
 			// Container child GtkHBox.Gtk.Container+ContainerChild
 			global::Gtk.Label w26 = new global::Gtk.Label ();
-			w26.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Apply");
+			w26.LabelProp = global::Mono.Unix.Catalog.GetString ("Apply");
 			w26.UseUnderline = true;
 			w23.Add (w26);
 			w22.Add (w23);

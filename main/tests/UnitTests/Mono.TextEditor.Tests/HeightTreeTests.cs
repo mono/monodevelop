@@ -30,7 +30,7 @@ using UnitTests;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class HeightTreeTests  : TestBase
+	public class HeightTreeTests
 	{
 		[Test()]
 		public void TestSimpleLineNumberToY ()

@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			string eolMarker = currentPolicy.GetEolMarker ();
 			var result = new StringBuilder ();
 			
-			for (int i = startOffset; i <= endOffset && i < input.Length; i++) {
+			for (int i = startOffset; i < endOffset && i < input.Length; i++) {
 				char ch = input[i];
 				switch (ch) {
 				case '\t':

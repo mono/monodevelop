@@ -37,16 +37,12 @@ using System.Threading;
 using Microsoft.CSharp;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
 
 using MonoDevelop.CSharp.Parser;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.CSharp.Project;
 
 namespace MonoDevelop.CSharp
@@ -70,7 +66,8 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		public bool IsSourceCodeFile (string fileName)
+		
+		public bool IsSourceCodeFile (FilePath fileName)
 		{
 			return StringComparer.OrdinalIgnoreCase.Equals (Path.GetExtension (fileName), ".cs");
 		}
@@ -113,23 +110,23 @@ namespace MonoDevelop.CSharp
 			return provider;
 		}
 		
-		public string GetFileName (string baseName)
+		public FilePath GetFileName (FilePath baseName)
 		{
 			return baseName + ".cs";
 		}
 		
-		public IParser Parser {
-			get { 
-				return null; 
-			}
-		}
-		
-		CSharpRefactorer refactorer = new CSharpRefactorer ();
-		public IRefactorer Refactorer {
-			get { 
-				return refactorer; 
-			}
-		}
+//		public IParser Parser {
+//			get { 
+//				return null; 
+//			}
+//		}
+//		
+//		CSharpRefactorer refactorer = new CSharpRefactorer ();
+//		public IRefactorer Refactorer {
+//			get { 
+//				return refactorer; 
+//			}
+//		}
 		
 		public ClrVersion[] GetSupportedClrVersions ()
 		{

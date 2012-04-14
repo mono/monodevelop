@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("This is a summary of all file types used in the project or solution:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("This is a summary of all file types used in the project or solution:");
 			this.vbox1.Add (this.label1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
 			w1.Position = 0;

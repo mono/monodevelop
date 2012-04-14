@@ -202,7 +202,7 @@ namespace MonoDevelop.Components.Commands
 						command = reader.GetAttribute (commandAttr);
 						binding = reader.GetAttribute (shortcutAttr);
 						
-						if (command != null && command != String.Empty)
+						if (!string.IsNullOrEmpty (command))
 							bindings.Add (command, binding);
 						
 						break;

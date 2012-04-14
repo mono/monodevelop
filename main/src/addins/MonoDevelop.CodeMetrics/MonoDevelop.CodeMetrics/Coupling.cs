@@ -31,17 +31,11 @@ using System.IO;
 using Gtk;
 
 using MonoDevelop.Core;
- 
+
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
-
-using ICSharpCode.OldNRefactory;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.AstBuilder;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CodeMetrics
 {
@@ -77,33 +71,33 @@ namespace MonoDevelop.CodeMetrics
 				MethodProperties methCallee = null;
 				lock(coupleLock)
 				{
-					if(expression.TargetObject is MemberReferenceExpression) {
+					if(expression.Target is MemberReferenceExpression) {
 					
-			   			calleeName.Append(ExtractCalleeFullName((MemberReferenceExpression)(expression.TargetObject), meth));
+			   			calleeName.Append(ExtractCalleeFullName((MemberReferenceExpression)(expression.Target), meth));
 						paramList = ExtractParamList(expression, meth);
 					
 						try {
-							methCallee = ComplexityMetrics.ProjProp.GetMethodReference(calleeName.ToString(), paramList);
+//							methCallee = ComplexityMetrics.ProjProp.GetMethodReference(calleeName.ToString(), paramList);
 							methCallee.AfferentCoupling++;
 						} catch (Exception e) {
 							Console.WriteLine(e.ToString());
 						}
 					
-					} else if (expression.TargetObject is IdentifierExpression) {
+					} else if (expression.Target is IdentifierExpression) {
 					
-						calleeName.Append(((IdentifierExpression)expression.TargetObject).Identifier);
+						calleeName.Append(((IdentifierExpression)expression.Target).Identifier);
 						paramList = ExtractParamList(expression, meth);
 					
 						try {
 							Console.WriteLine(calleeName.ToString());
-							methCallee = ComplexityMetrics.ProjProp.GetMethodReference(calleeName.ToString(), paramList);
+//							methCallee = ComplexityMetrics.ProjProp.GetMethodReference(calleeName.ToString(), paramList);
 							methCallee.AfferentCoupling++;
 						} catch (Exception e) {
 							Console.WriteLine(e.ToString());
 						}
 					} 
 				}
-				return methCallee.Method.ReturnType.FullName;
+				return methCallee.Method.ReturnType.ToString ();
 			}
 			
 			private static List<string> ExtractParamList(InvocationExpression expression, MethodProperties meth)
@@ -115,7 +109,7 @@ namespace MonoDevelop.CodeMetrics
 						retVal.Add(((PrimitiveExpression)param).Value.GetType().Name);
 						continue;
 					} else if(param is BinaryOperatorExpression) {
-						if(((BinaryOperatorExpression)param).Op == BinaryOperatorType.LogicalAnd || ((BinaryOperatorExpression)param).Op == BinaryOperatorType.LogicalOr)
+						if(((BinaryOperatorExpression)param).Operator == BinaryOperatorType.ConditionalAnd || ((BinaryOperatorExpression)param).Operator == BinaryOperatorType.ConditionalOr)
 							retVal.Add("System.Boolean");
 						continue;
 					} else if (param is InvocationExpression) {
@@ -130,13 +124,13 @@ namespace MonoDevelop.CodeMetrics
 			
 			private static string ExtractCalleeFullName(MemberReferenceExpression expression, MethodProperties meth)
 			{
-				if(expression.TargetObject is MemberReferenceExpression)
+				if(expression.Target is MemberReferenceExpression)
 				{
-					return ExtractCalleeFullName((MemberReferenceExpression)(expression.TargetObject), meth)+"."+expression.MemberName; 
+					return ExtractCalleeFullName((MemberReferenceExpression)(expression.Target), meth)+"."+expression.MemberName; 
 				}
-				if(expression.TargetObject is IdentifierExpression)
+				if(expression.Target is IdentifierExpression)
 				{
-					return ((IdentifierExpression)(expression.TargetObject)).Identifier+"."+expression.MemberName;
+					return ((IdentifierExpression)(expression.Target)).Identifier+"."+expression.MemberName;
 				}
 				return "";
 			}

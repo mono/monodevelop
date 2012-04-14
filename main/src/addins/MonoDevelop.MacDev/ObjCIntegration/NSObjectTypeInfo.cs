@@ -118,8 +118,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		
 		public void GenerateObjcType (string directory, string[] frameworks)
 		{
-			if (IsModel)
-				throw new ArgumentException ("Cannot generate definition for model");
+			if (IsModel) {
+				// We don't generate header files for protocols.
+				return;
+			}
 			
 			string hFilePath = Path.Combine (directory, ObjCName + ".h");
 			string mFilePath = Path.Combine (directory, ObjCName + ".m");
@@ -415,6 +417,11 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			AddAttribute (meth.CustomAttributes, exportAtt, action.GetObjcFullName ());
 			
 			return meth;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[NSObjectTypeInfo: ObjCName={0}, CliName={1}, IsModel={2}, BaseObjCType={3}, BaseCliType={4}, BaseIsModel={5}, IsUserType={6}, IsRegisteredInDesigner={7}, Outlets={8}, Actions={9}, DefinedIn={10}, UserTypeReferences={11}]", ObjCName, CliName, IsModel, BaseObjCType, BaseCliType, BaseIsModel, IsUserType, IsRegisteredInDesigner, Outlets, Actions, DefinedIn, UserTypeReferences);
 		}
 	}
 	

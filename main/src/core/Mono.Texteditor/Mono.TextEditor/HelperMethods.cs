@@ -30,11 +30,27 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
 	public static class HelperMethods
 	{
+		public static TextSegment AdjustSegment (this TextSegment segment, DocumentChangeEventArgs args)
+		{
+			if (args.Offset < segment.Offset)
+				return new TextSegment (segment.Offset + args.ChangeDelta, segment.Length);
+			if (args.Offset <= segment.EndOffset)
+				return new TextSegment (segment.Offset, segment.Length);
+			return segment;
+		}
+		public static IEnumerable<TextSegment> AdjustSegments (this IEnumerable<TextSegment> segments, DocumentChangeEventArgs args)
+		{
+			foreach (var segment in segments) {
+				yield return segment.AdjustSegment (args);
+			}
+		}
+
 		public static T Kill<T>(this T gc) where T : IDisposable
 		{
 			if (gc != null) 
@@ -125,5 +141,7 @@ namespace Mono.TextEditor
 			cr.MoveTo (x1, y1 + 0.5);
 			cr.LineTo (x2, y2 + 0.5);
 		}
+
+
 	}
 }

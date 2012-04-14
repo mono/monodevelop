@@ -28,56 +28,56 @@ using System;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom.Parser;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Projects.CodeGeneration;
 using Mono.TextEditor;
-using MonoDevelop.CSharp.Refactoring;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class NewOverrideCompletionData : CompletionData
 	{
-		TextEditorData editor;
+		CSharpCompletionTextEditorExtension ext;
 		IMember member;
 		static Ambience ambience = new CSharpAmbience ();
 		int    declarationBegin;
-		IType  type;
+		IUnresolvedTypeDefinition  type;
 		
 		public bool GenerateBody { get; set; }
 		
-		public NewOverrideCompletionData (ProjectDom dom, TextEditorData editor, int declarationBegin, IType type, IMember member) : base (null)
+		public NewOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, IUnresolvedTypeDefinition type, IMember member) : base (null)
 		{
-			this.editor = editor;
+			this.ext = ext;
 			this.type   = type;
 			this.member = member;
 			
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
-			this.Icon = member.StockIcon;
-			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter);
-			this.CompletionText = member.Name;
+			this.Icon = member.GetStockIcon ();
+			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter| OutputFlags.IncludeAccessor);
+			this.CompletionText = member.EntityType == EntityType.Indexer ? "this" : member.Name;
 		}
 		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
-			CodeGenerator generator = CodeGenerator.CreateGenerator (editor.Document.MimeType, editor.Options.TabsToSpaces, editor.Options.TabSize, editor.EolMarker);
+			var editor = ext.textEditorData;
+			var generator = CodeGenerator.CreateGenerator (ext.Document);
 			bool isExplicit = false;
-			if (member.DeclaringType.ClassType == MonoDevelop.Projects.Dom.ClassType.Interface) {
+			if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				foreach (var m in type.Members) {
-					if (m.Name == member.Name && m.ReturnType.ToInvariantString () != member.ReturnType.ToInvariantString ()) {
+					if (m.Name == member.Name && !m.ReturnType.Equals (member.ReturnType)) {
 						isExplicit = true;
 						break;
 					}
 				}
 			}
-			var result = generator.CreateMemberImplementation (type, member, isExplicit);
+			var resolvedType = type.Resolve (ext.ParsedDocument.GetTypeResolveContext (ext.Compilation, editor.Caret.Location)).GetDefinition ();
+			if (ext.Project != null)
+				generator.PolicyParent = ext.Project.Policies;
+			var result = generator.CreateMemberImplementation (resolvedType, type, member, isExplicit);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();

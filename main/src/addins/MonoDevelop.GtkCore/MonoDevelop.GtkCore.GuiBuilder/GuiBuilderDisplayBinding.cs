@@ -28,9 +28,9 @@
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
+
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -92,12 +92,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			if (file.StartsWith (info.GtkGuiFolder))
 				return null;
-
-			ParsedDocument doc = ProjectDomService.GetParsedDocument (null, file);
-			if (doc == null || doc.CompilationUnit == null)
+			
+			var doc = TypeSystemService.ParseFile (project, file);
+			if (doc == null)
 				return null;
 
-			foreach (IType t in doc.CompilationUnit.Types) {
+			foreach (var t in doc.TopLevelTypeDefinitions) {
 				GuiBuilderWindow win = info.GuiBuilderProject.GetWindowForClass (t.FullName);
 				if (win != null)
 					return win;

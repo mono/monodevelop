@@ -25,14 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -42,6 +41,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			get;
 			set;
 		}
+		
+		/*
+		Project project;
+		protected Project Project {
+			get {
+				if (project == null)
+					project = Content.GetProject ();
+				return project;
+			}
+		}*/
 		
 		static List<ReferenceFinderCodon> referenceFinderCodons = new List<ReferenceFinderCodon> ();
 		
@@ -60,106 +69,157 @@ namespace MonoDevelop.Ide.FindInFiles
 			});
 		}
 		
-		public static ReferenceFinder GetReferenceFinder (string mimeType)
+		static ReferenceFinder GetReferenceFinder (string mimeType)
 		{
 			var codon = referenceFinderCodons.FirstOrDefault (c => c.SupportedMimeTypes.Any (mt => mt == mimeType));
-			return codon != null ? codon.ReferenceFinder : null;
+			return codon != null ? codon.CreateFinder () : null;
 		}
 		
-		
-		public static IEnumerable<MemberReference> FindReferences (INode member, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (object member, IProgressMonitor monitor = null)
 		{
-			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, monitor);
+			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, RefactoryScope.Unknown, monitor);
+		}
+
+		public static IEnumerable<MemberReference> FindReferences (object member, RefactoryScope scope, IProgressMonitor monitor = null)
+		{
+			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, scope, monitor);
 		}
 		
-		static IEnumerable<Tuple<ProjectDom, FilePath>> GetFileNames (Solution solution, ProjectDom dom, ICompilationUnit unit, INode member, IProgressMonitor monitor)
+		static SearchCollector.FileList GetFileList (string fileName)
 		{
-			var scope = GetScope (member);
-			int counter = 0;
-			switch (scope) {
-			case RefactoryScope.File:
-			case RefactoryScope.DeclaringType:
-				if (dom != null && unit != null)
-					yield return Tuple.Create (dom, unit.FileName);
-				break;
-			case RefactoryScope.Project:
-				if (dom == null)
-					yield break;
-				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in project..."), dom.Project.Files.Count);
-				foreach (var file in dom.Project.Files) {
-					if (monitor != null && monitor.IsCancelRequested)
-						yield break;
-					yield return Tuple.Create (dom, file.FilePath);
-					if (monitor != null) {
-						if (counter % 10 == 0)
-							monitor.Step (10);
-						counter++;
-					}
+			var doc = IdeApp.Workbench.GetDocument (fileName);
+			if (doc != null)
+				return new SearchCollector.FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
+			return null;
+		}
+
+		static IEnumerable<SearchCollector.FileList> GetFileNames (Solution solution, object node, RefactoryScope scope, 
+		                                                           IProgressMonitor monitor, IEnumerable<object> searchNodes)
+		{
+			if (node is IVariable || scope == RefactoryScope.File) {
+				string fileName;
+				if (node is IEntity) {
+					fileName = ((IEntity)node).Region.FileName;
+				} else if (node is ITypeParameter) {
+					fileName = ((ITypeParameter)node).Region.FileName;
+				} else {
+					fileName = ((IVariable)node).Region.FileName;
 				}
-				if (monitor != null)
-					monitor.EndTask ();
-				break;
-			case RefactoryScope.Solution:
-				var allProjects = solution.GetAllProjects ();
-				if (monitor != null)
-					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."),
-						allProjects.Sum (p => p.Files.Count));
-				foreach (var project in allProjects) {
-					if (monitor != null && monitor.IsCancelRequested)
-						yield break;
-					var currentDom = ProjectDomService.GetProjectDom (project);
-					foreach (var file in project.Files) {
-						if (monitor != null && monitor.IsCancelRequested)
-							yield break;
-						yield return Tuple.Create (currentDom, file.FilePath);
-						if (monitor != null) {
-							if (counter % 10 == 0)
-								monitor.Step (10);
-							counter++;
-						}
-					}
-				}
-				if (monitor != null)
-					monitor.EndTask ();
-				break;
+				var fileList =  GetFileList (fileName);
+				if (fileList != null)
+					yield return fileList;
+				yield break;
 			}
-		}
-		
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, INode member, IProgressMonitor monitor = null)
-		{
-			ProjectDom dom = null;
-			ICompilationUnit unit = null;
-			IEnumerable<INode > searchNodes = new INode[] { member };
-			if (member is LocalVariable) {
-				dom = ((LocalVariable)member).DeclaringMember.DeclaringType.SourceProjectDom;
-				unit = ((LocalVariable)member).CompilationUnit;
-			} else if (member is IParameter) {
-				dom = ((IParameter)member).DeclaringMember.DeclaringType.SourceProjectDom;
-				unit = ((IParameter)member).DeclaringMember.DeclaringType.CompilationUnit;
-			} else if (member is IType) {
-				dom = ((IType)member).SourceProjectDom;
-				unit = ((IType)member).CompilationUnit;
-			} else if (member is IMember) {
-				dom = ((IMember)member).DeclaringType.SourceProjectDom;
-				unit = ((IMember)member).DeclaringType.CompilationUnit;
-				searchNodes = CollectMembers (dom, (IMember)member);
+			
+			if (node is ITypeParameter) {
+				var typeParameter = node as ITypeParameter;
+				if (typeParameter.Owner != null) {
+					yield return SearchCollector.CollectDeclaringFiles (typeParameter.Owner);
+					yield break;
+				}
+				var fileList =  GetFileList (typeParameter.Region.FileName);
+				if (fileList != null)
+					yield return fileList;
+				yield break;
 			}
 
-			string currentMime = null;
-			ReferenceFinder finder = null;
-			
-			foreach (var info in GetFileNames (solution, dom, unit, member, monitor)) {
-				if (monitor != null && monitor.IsCancelRequested)
-					yield break;
-				string mime = DesktopService.GetMimeTypeForUri (info.Item2);
-				if (mime != currentMime) {
-					currentMime = mime;
-					finder = GetReferenceFinder (currentMime);
+			var entity = (IEntity)node;
+			switch (scope) {
+			case RefactoryScope.DeclaringType:
+				if (entity.DeclaringTypeDefinition != null)
+					yield return SearchCollector.CollectDeclaringFiles (entity.DeclaringTypeDefinition);
+				else
+					yield return SearchCollector.CollectDeclaringFiles (entity);
+				break;
+			case RefactoryScope.Project:
+				var sourceProject = TypeSystemService.GetProject (entity.Compilation.MainAssembly.UnresolvedAssembly.Location);
+				foreach (var file in SearchCollector.CollectFiles (sourceProject, searchNodes.Cast<IEntity> ()))
+					yield return file;
+				break;
+			default:
+				var files = SearchCollector.CollectFiles (solution, searchNodes.Cast<IEntity> ()).ToList ();
+				if (monitor != null)
+					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), files.Count);
+				foreach (var file in files) {
+					if (monitor != null && monitor.IsCancelRequested)
+						yield break;
+					yield return file;
+					if (monitor != null)
+						monitor.Step (1);
 				}
-				if (finder == null)
-					continue;
-				foreach (var foundReference in finder.FindReferences (info.Item1, info.Item2, searchNodes)) {
+				if (monitor != null)
+					monitor.EndTask ();
+				break;
+			}
+		}
+		
+		public static List<Project> GetAllReferencingProjects (Solution solution, Project sourceProject)
+		{
+			var projects = new List<Project> ();
+			projects.Add (sourceProject);
+			foreach (var project in solution.GetAllProjects ()) {
+				if (project.GetReferencedItems (ConfigurationSelector.Default).Any (prj => prj == sourceProject))
+					projects.Add (project);
+			}
+			return projects;
+		}
+		
+		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
+		{
+			if (member == null)
+				yield break;
+			if (solution == null && member is IEntity) {
+				var project = TypeSystemService.GetProject ((member as IEntity).Compilation.MainAssembly.UnresolvedAssembly.Location);
+				if (project == null)
+					yield break;
+				solution = project.ParentSolution;
+			}
+			
+			IList<object> searchNodes = new [] { member };
+			if (member is ITypeParameter) {
+				// nothing
+			} else if (member is IType) {
+				searchNodes = CollectMembers ((IType)member).ToList<object> ();
+			} else if (member is IEntity) {
+				var e = (IEntity)member;
+				if (e.EntityType == EntityType.Destructor) {
+					foreach (var r in FindReferences (solution, e.DeclaringType, scope, monitor)) {
+						yield return r;
+					}
+					yield break;
+				}
+				if (member is IMember)
+					searchNodes = CollectMembers (solution, (IMember)member, scope).ToList<object> ();
+			}
+			
+			// prepare references finder
+			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
+			var curList = new List<FilePath> ();
+			foreach (var info in GetFileNames (solution, member, scope, monitor, searchNodes)) {
+				string oldMime = null;
+				foreach (var file in info.Files) {
+					if (monitor != null && monitor.IsCancelRequested)
+						yield break;
+					
+					string mime = DesktopService.GetMimeTypeForUri (file);
+					if (mime != oldMime) {
+						var finder = GetReferenceFinder (mime);
+						if (finder == null)
+							continue;
+						
+						oldMime = mime;
+						
+						curList = new List<FilePath> ();
+						preparedFinders.Add (Tuple.Create (finder, info.Project, info.Content, curList));
+					}
+					curList.Add (file);
+				}
+			}
+			
+			// execute search
+			foreach (var tuple in preparedFinders) {
+				var finder = tuple.Item1;
+				foreach (var foundReference in finder.FindReferences (tuple.Item2, tuple.Item3, tuple.Item4, searchNodes)) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					yield return foundReference;
@@ -167,64 +227,51 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public abstract IEnumerable<MemberReference> FindReferences (ProjectDom dom, FilePath fileName, IEnumerable<INode> searchedMembers);
-		
-		internal static IEnumerable<INode> CollectMembers (ProjectDom dom, IMember member)
+		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IEnumerable<object> searchedMembers);
+
+		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member, RefactoryScope scope)
 		{
-			if (member is IMethod && ((IMethod)member).IsConstructor) {
-				yield return member;
-			} else {
-				bool isOverrideable = member.DeclaringType.ClassType == ClassType.Interface || member.IsOverride || member.IsVirtual || member.IsAbstract;
-				bool isLastMember = false;
-				// for members we need to collect the whole 'class' of members (overloads & implementing types)
-				HashSet<string> alreadyVisitedTypes = new HashSet<string> ();
-				foreach (IType type in dom.GetInheritanceTree (member.DeclaringType)) {
-					if (type.ClassType == ClassType.Interface || isOverrideable || type.DecoratedFullName == member.DeclaringType.DecoratedFullName) {
-						// search in the class for the member
-						foreach (IMember interfaceMember in type.SearchMember (member.Name, true)) {
-							if (interfaceMember.MemberType == member.MemberType)
-								yield return interfaceMember;
-						}
-						
-						// now search in all subclasses of this class for the member
-						isLastMember = !member.IsOverride;
-						foreach (IType implementingType in dom.GetSubclasses (type)) {
-							string name = implementingType.DecoratedFullName;
-							if (alreadyVisitedTypes.Contains (name))
-								continue;
-							alreadyVisitedTypes.Add (name);
-							foreach (IMember typeMember in implementingType.SearchMember (member.Name, true)) {
-								if (typeMember.MemberType == member.MemberType) {
-									isLastMember = type.ClassType != ClassType.Interface && (typeMember.IsVirtual || typeMember.IsAbstract || !typeMember.IsOverride);
-									yield return typeMember;
-								}
-							}
-							if (!isOverrideable)
-								break;
-						}
-						if (isLastMember)
-							break;
-					}
-				}
+			return MemberCollector.CollectMembers (solution, member, scope);
+		}
+		
+		internal static IEnumerable<IEntity> CollectMembers (IType type)
+		{
+			yield return (IEntity)type;
+			foreach (var c in type.GetConstructors ()) {
+				if (!c.IsSynthetic)
+					yield return c;
+			}
+
+			foreach (var m in type.GetMethods (m  => m.IsDestructor)) {
+				yield return m;
 			}
 		}
-		
-		static RefactoryScope GetScope (INode node)
-		{
-			IMember member = node as IMember;
-			if (member == null)
-				return RefactoryScope.DeclaringType;
-			
-			if (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface)
-				return GetScope (member.DeclaringType);
-			
-			if (member.IsPublic)
-				return RefactoryScope.Solution;
-			
-			if (member.IsProtected || member.IsInternal || member.DeclaringType == null)
-				return RefactoryScope.Project;
-			return RefactoryScope.DeclaringType;
-		}
+
+
+		public enum RefactoryScope{ Unknown, File, DeclaringType, Solution, Project}
+//		static RefactoryScope GetScope (object o)
+//		{
+//			IEntity node = o as IEntity;
+//			if (node == null)
+//				return RefactoryScope.File;
+//			
+//			// TODO: RefactoringsScope.Hierarchy
+//			switch (node.Accessibility) {
+//			case Accessibility.Public:
+//			case Accessibility.Protected:
+//			case Accessibility.ProtectedOrInternal:
+//				if (node.DeclaringTypeDefinition != null) {
+//					var scope = GetScope (node.DeclaringTypeDefinition);
+//					if (scope != RefactoryScope.Solution)
+//						return RefactoryScope.Project;
+//				}
+//				return RefactoryScope.Solution;
+//			case Accessibility.Internal:
+//			case Accessibility.ProtectedAndInternal:
+//				return RefactoryScope.Project;
+//			}
+//			return RefactoryScope.DeclaringType;
+//		}
 	}
 	
 	[ExtensionNode (Description="A reference finder. The specified class needs to inherit from MonoDevelop.Projects.CodeGeneration.ReferenceFinder")]
@@ -242,15 +289,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public ReferenceFinder ReferenceFinder {
-			get {
-				return (ReferenceFinder)GetInstance ();
-			}
+		public ReferenceFinder CreateFinder ()
+		{
+			return (ReferenceFinder)CreateInstance ();
 		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[ReferenceFinderCodon: SupportedMimeTypes={0}, ReferenceFinder={1}]", SupportedMimeTypes.Count () + ":" + String.Join (";", SupportedMimeTypes), ReferenceFinder);
+			return string.Format ("[ReferenceFinderCodon: SupportedMimeTypes={0}]", SupportedMimeTypes);
 		}
 	}
 }

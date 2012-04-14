@@ -57,7 +57,6 @@ namespace MonoDevelop.DesignerSupport
 			frame.Add (grid);
 			
 			frame.ShowAll ();
-			DesignerSupport.Service.SetPad (this);
 		}
 		
 		public override void Initialize (IPadWindow container)
@@ -66,6 +65,7 @@ namespace MonoDevelop.DesignerSupport
 			toolbarProvider.Attach (container.GetToolbar (Gtk.PositionType.Top));
 			grid.SetToolbarProvider (toolbarProvider);
 			this.container = container;
+			DesignerSupport.Service.SetPad (this);
 		}
 		
 		internal IPadWindow PadWindow {

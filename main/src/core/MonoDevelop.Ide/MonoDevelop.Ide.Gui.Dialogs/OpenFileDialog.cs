@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using System.Collections.Generic;
 using Mono.Addins;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -71,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		/// <summary>
 		/// Selected encoding.
 		/// </summary>
-		public string Encoding {
+		public Encoding Encoding {
 			get { return data.Encoding; }
 			set { data.Encoding = value; }
 		}
@@ -93,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		protected override bool RunDefault ()
 		{	
 			var win = new FileSelectorDialog (Title, Action);
-			win.Encoding = Encoding;
+			win.SeletcedEncoding = Encoding != null ? Encoding.CodePage : 0;
 			win.ShowEncodingSelector = ShowEncodingSelector;
 			win.ShowViewerSelector = ShowViewerSelector;
 			
@@ -101,9 +102,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			try {
 				var result = MessageService.RunCustomDialog (win, TransientFor ?? MessageService.RootWindow);
-				if (result == (int) Gtk.ResponseType.Ok) {
+				if (result == (int)Gtk.ResponseType.Ok) {
 					GetDefaultProperties (win);
-					data.Encoding = win.Encoding;
+					data.Encoding = win.SeletcedEncoding > 0 ? Encoding.GetEncoding (win.SeletcedEncoding) : null;
 					data.CloseCurrentWorkspace = win.CloseCurrentWorkspace;
 					data.SelectedViewer = win.SelectedViewer;
 					return true;

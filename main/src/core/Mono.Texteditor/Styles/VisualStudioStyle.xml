@@ -53,6 +53,7 @@
 	<Style name="marker.whitespace" color="#2b91af"/>
 	<Style name="marker.invalidline" color="#cc0000"/>
 	<Style name="marker.bracket" color="aluminium2" bgColor="aluminium1"/>
+	<Style name="marker.usages" color="aluminium2" bgColor="aluminium1"/>
 	
 	<Style name="marker.bookmark.color1" color="black"/>
 	<Style name="marker.bookmark.color2" color="#bfd2f9"/>
@@ -82,6 +83,9 @@
 	<Style name="string.other" color="#a31515"/>
 	
 	<Style name="keyword.semantic.type" color="semantic-type"/>
+	<Style name="keyword.semantic.error" color="red"/>
+	<Style name="keyword.semantic.field" color="#5c3566"/>
+	<Style name="keyword.semantic.property" color="#5c3566"/>
 	<Style name="keyword" color="keyword-blue">
 		<Style name="access"/>
 	</Style>

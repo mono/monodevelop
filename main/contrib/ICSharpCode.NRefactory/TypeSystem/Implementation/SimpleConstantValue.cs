@@ -17,13 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// A simple constant value that is independent of the resolve context.
 	/// </summary>
-	public sealed class SimpleConstantValue : Immutable, IConstantValue, ISupportsInterning
+	[Serializable]
+	public sealed class SimpleConstantValue : IConstantValue, ISupportsInterning
 	{
 		ITypeReference type;
 		object value;
@@ -36,19 +38,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.value = value;
 		}
 		
-		public IType GetValueType(ITypeResolveContext context)
+		public ResolveResult Resolve(ITypeResolveContext context)
 		{
-			return type.Resolve(context);
+			return new ConstantResolveResult(type.Resolve(context), value);
 		}
 		
-		public object GetValue(ITypeResolveContext context)
-		{
-			if (value is ITypeReference)
-				return ((ITypeReference)value).Resolve(context);
-			else
-				return value;
-		}
-		
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase",
+		                                                 Justification = "The C# keyword is lower case")]
 		public override string ToString()
 		{
 			if (value == null)

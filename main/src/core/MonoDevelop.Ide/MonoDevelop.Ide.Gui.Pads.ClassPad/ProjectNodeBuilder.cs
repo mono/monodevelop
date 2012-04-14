@@ -33,10 +33,11 @@ using System.Collections.Generic;
 using System.Text;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -49,15 +50,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
 		}
 
-		EventHandler<TypeUpdateInformationEventArgs> compilationUnitUpdated;
+//		EventHandler<TypeUpdateInformationEventArgs> compilationUnitUpdated;
 		protected override void Initialize ()
 		{
-			compilationUnitUpdated = (EventHandler<TypeUpdateInformationEventArgs>) DispatchService.GuiDispatch (new EventHandler<TypeUpdateInformationEventArgs> (OnClassInformationChanged));
-			ProjectDomService.TypesUpdated += compilationUnitUpdated;
+//			compilationUnitUpdated = (EventHandler<TypeUpdateInformationEventArgs>) DispatchService.GuiDispatch (new EventHandler<TypeUpdateInformationEventArgs> (OnClassInformationChanged));
+//			TypeSystemService.TypesUpdated += compilationUnitUpdated;
 		}
+		
 		public override void Dispose ()
 		{
-			ProjectDomService.TypesUpdated -= compilationUnitUpdated;
+//			TypeSystemService.TypesUpdated -= compilationUnitUpdated;
 		}
 		
 		public override Type NodeDataType {
@@ -104,38 +106,39 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				builder.AddChild (((DotNetProject)project).References);
 			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			ProjectDom dom = ProjectDomService.GetProjectDom (project);
-			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			foreach (IMember ob in dom.GetNamespaceContents ("", false, false)) {
-				if (ob is Namespace) {
-					if (builder.Options ["NestedNamespaces"])
-						builder.AddChild (new ProjectNamespaceData (project, ((Namespace)ob).Name));
-					else {
-						FillNamespaces (builder, project, ((Namespace)ob).Name);
+			var dom = TypeSystemService.GetCompilation (project);
+			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
+			HashSet<string> addedNames = new HashSet<string> ();
+			foreach (var ns in dom.RootNamespace.ChildNamespaces) {
+				if (nestedNamespaces) {
+					if (!addedNames.Contains (ns.Name)) {
+						builder.AddChild (new ProjectNamespaceData (project, ns));
+						addedNames.Add (ns.Name);
 					}
+				} else {
+					FillNamespaces (builder, project, ns);
 				}
-				else if (!publicOnly || ((IType)ob).IsPublic)
-					builder.AddChild (new ClassData (project, ob as IType));
+			}
+			foreach (var type in dom.RootNamespace.Types) {
+				if (!publicOnly || type.IsPublic)
+					builder.AddChild (new ClassData (project, type));
 			}
 		}
 		
-		public static void FillNamespaces (ITreeBuilder builder, Project project, string ns)
+		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespace ns)
 		{
-			ProjectDom dom = ProjectDomService.GetProjectDom (project);
-			List<IMember> members = dom.GetNamespaceContents (ns, false, false);
+			var members = ns.Types;
 			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
-			if (members.Count > 0) {
+			if (members.Any ()) {
 				if (builder.Options ["ShowProjects"])
 					builder.AddChild (new ProjectNamespaceData (project, ns));
 				else {
-					if (!builder.HasChild (ns, typeof (NamespaceData)))
+					if (!builder.HasChild (ns.Name, typeof (NamespaceData)))
 						builder.AddChild (new ProjectNamespaceData (null, ns));
 				}
 			}
-			foreach (IMember ob in members) {
-				if (ob is Namespace) {
-					FillNamespaces (builder, project, ns + "." + ((Namespace)ob).Name);
-				}
+			foreach (var nSpace in ns.ChildNamespaces) {
+				FillNamespaces (builder, project, nSpace);
 			}
 		}
 		
@@ -150,68 +153,68 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (tb != null) tb.Update ();
 		}
 		
-		void OnClassInformationChanged (object sender, TypeUpdateInformationEventArgs e)
-		{
-//			DateTime t = DateTime.Now;
-			Dictionary<object,bool> oldStatus = new Dictionary<object,bool> ();
-			List<string> namespacesToClean = new List<string> ();
-			ITreeBuilder tb = Context.GetTreeBuilder ();
-						
-			foreach (IType cls in e.TypeUpdateInformation.Removed) {
-				if (tb.MoveToObject (new ClassData (e.Project, cls))) {
-					oldStatus [tb.DataItem] = tb.Expanded;
-					
-					ITreeNavigator np = tb.Clone ();
-					np.MoveToParent ();
-					oldStatus [np.DataItem] = np.Expanded;
-					
-					tb.Remove (true);
-				}
-				namespacesToClean.Add (cls.Namespace);
-			}
-			
-			foreach (IType cls in e.TypeUpdateInformation.Modified) {
-				ClassData ucd = new ClassData (e.Project, cls);
-				if (tb.MoveToObject (ucd)) {
-					ClassData cd = (ClassData) tb.DataItem;
-					cd.UpdateFrom (ucd);
-					tb.UpdateAll ();
-				}
-			}
-			
-			foreach (IType cls in e.TypeUpdateInformation.Added) {
-				AddClass (e.Project, cls);
-			}
-			
-			// Clean empty namespaces
-			
-			foreach (string ns in namespacesToClean) {
-				string subns = ns;
-				while (subns != null) {
-					bool found = tb.MoveToObject (new ProjectNamespaceData (e.Project, subns));
-					if (!found) found = tb.MoveToObject (new ProjectNamespaceData (null, subns));
-					if (found) {
-						while (tb.DataItem is NamespaceData && !tb.HasChildren())
-							tb.Remove (true);
-						break;
-					}
-					int i = subns.LastIndexOf ('.');
-					if (i != -1) subns = subns.Substring (0,i);
-					else subns = null;
-				}
-			}
-			
-			// Restore expand status
-			
-			foreach (KeyValuePair<object,bool> de in oldStatus) {
-				if (de.Value && tb.MoveToObject (de.Key)) {
-					tb.ExpandToNode ();
-					tb.Expanded = true;
-				}
-			}
-		}
+//		void OnClassInformationChanged (object sender, TypeUpdateInformationEventArgs e)
+//		{
+////			DateTime t = DateTime.Now;
+//			Dictionary<object,bool> oldStatus = new Dictionary<object,bool> ();
+//			List<string> namespacesToClean = new List<string> ();
+//			ITreeBuilder tb = Context.GetTreeBuilder ();
+//						
+//			foreach (IType cls in e.TypeUpdateInformation.Removed) {
+//				if (tb.MoveToObject (new ClassData (e.Project, cls))) {
+//					oldStatus [tb.DataItem] = tb.Expanded;
+//					
+//					ITreeNavigator np = tb.Clone ();
+//					np.MoveToParent ();
+//					oldStatus [np.DataItem] = np.Expanded;
+//					
+//					tb.Remove (true);
+//				}
+//				namespacesToClean.Add (cls.Namespace);
+//			}
+//			
+//			foreach (IType cls in e.TypeUpdateInformation.Modified) {
+//				ClassData ucd = new ClassData (e.Project, cls);
+//				if (tb.MoveToObject (ucd)) {
+//					ClassData cd = (ClassData) tb.DataItem;
+//					cd.UpdateFrom (ucd);
+//					tb.UpdateAll ();
+//				}
+//			}
+//			
+//			foreach (IType cls in e.TypeUpdateInformation.Added) {
+//				AddClass (e.Project, cls);
+//			}
+//			
+//			// Clean empty namespaces
+//			
+//			foreach (string ns in namespacesToClean) {
+//				string subns = ns;
+//				while (subns != null) {
+//					bool found = tb.MoveToObject (new ProjectNamespaceData (e.Project, subns));
+//					if (!found) found = tb.MoveToObject (new ProjectNamespaceData (null, subns));
+//					if (found) {
+//						while (tb.DataItem is NamespaceData && !tb.HasChildren())
+//							tb.Remove (true);
+//						break;
+//					}
+//					int i = subns.LastIndexOf ('.');
+//					if (i != -1) subns = subns.Substring (0,i);
+//					else subns = null;
+//				}
+//			}
+//			
+//			// Restore expand status
+//			
+//			foreach (KeyValuePair<object,bool> de in oldStatus) {
+//				if (de.Value && tb.MoveToObject (de.Key)) {
+//					tb.ExpandToNode ();
+//					tb.Expanded = true;
+//				}
+//			}
+//		}
 
-		void AddClass (Project project, IType cls)
+		void AddClass (Project project, ITypeDefinition cls)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder ();
 			if (!builder.MoveToObject (project)) {
@@ -221,7 +224,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (cls.Namespace == "") {
 				builder.AddChild (new ClassData (project, cls));
 			} else {
-				if (builder.Options ["NestedNamespaces"]) {
+// TODO: Type system conversion.
+/*				if (builder.Options ["NestedNamespaces"]) {
 					string[] nsparts = cls.Namespace.Split ('.');
 					string ns = "";
 					foreach (string nsp in nsparts) {
@@ -241,7 +245,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 						builder.AddChild (new ClassData (project, cls));
 					else
 						builder.AddChild (new ProjectNamespaceData (project, cls.Namespace));
-				}
+				}*/
 			}
 		}		
 	}

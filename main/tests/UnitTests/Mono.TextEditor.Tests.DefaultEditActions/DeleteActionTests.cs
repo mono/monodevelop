@@ -27,53 +27,47 @@
 using System;
 using NUnit.Framework;
 
-namespace Mono.TextEditor.Tests
+namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class DeleteActionTests
+	public class DeleteActionTests : TextEditorTestBase
 	{
 		[Test()]
 		public void TestBackspace ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234$567890");
-			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
+			var data = Create (@"1234$567890");
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (1, 4), data.Caret.Location);
-			Assert.AreEqual ("123567890", data.Document.Text);
+			Check (data, @"123$567890");
 		}
 		
 		[Test()]
 		public void TestBackspaceCase1 ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"$1234567890");
+			var data = Create (@"$1234567890");
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
-			Assert.AreEqual ("1234567890", data.Document.Text);
+			Check (data, @"$1234567890");
 		}
 		
 		[Test()]
 		public void TestDelete ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234$567890");
-			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
+			var data = Create (@"1234$567890");
 			DeleteActions.Delete (data);
-			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
-			Assert.AreEqual ("123467890", data.Document.Text);
+			Check (data, @"1234$67890");
 		}
 		
 		[Test()]
 		public void TestBackspaceDeleteCase1 ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234567890$");
+			var data = Create (@"1234567890$");
 			DeleteActions.Delete (data);
-			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
-			Assert.AreEqual ("1234567890", data.Document.Text);
+			Check (data, @"1234567890$");
 		}
 		
 		[Test()]
 		public void TestDeleteCaretLine ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234567890
+			var data = Create (@"1234567890
 1234$67890
 1234567890");
 			DeleteActions.CaretLine (data);
@@ -84,7 +78,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDeleteCaretLineToEnd ()
 		{
-			TextEditorData data = CaretMoveActionTests.Create (@"1234567890
+			var data = Create (@"1234567890
 1234$67890
 1234567890");
 			DeleteActions.CaretLineToEnd (data);
@@ -92,16 +86,53 @@ namespace Mono.TextEditor.Tests
 1234
 1234567890", data.Document.Text);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
+
+		[Test()]
+		public void TestDeletePreviousWord ()
 		{
-			Gtk.Application.Init ();
+			var data = Create (@"      word1 word2 word3$");
+			DeleteActions.PreviousWord (data);
+			Check (data, @"      word1 word2 $");
+			DeleteActions.PreviousWord (data);
+			Check (data, @"      word1 $");
+			DeleteActions.PreviousWord (data);
+			Check (data, @"      $");
 		}
 		
-		[TestFixtureTearDown] 
-		public void Dispose()
+		[Test()]
+		public void TestDeletePreviousSubword ()
 		{
-		}		
+			var data = Create (@"      SomeLongWord$");
+			DeleteActions.PreviousSubword (data);
+			Check (data, @"      SomeLong$");
+			DeleteActions.PreviousSubword (data);
+			Check (data, @"      Some$");
+			DeleteActions.PreviousSubword (data);
+			Check (data, @"      $");
+		}
+
+		[Test()]
+		public void TestDeleteNextWord ()
+		{
+			var data = Create (@"      $word1 word2 word3");
+			DeleteActions.NextWord (data);
+			Check (data, @"      $ word2 word3");
+			DeleteActions.NextWord (data);
+			Check (data, @"      $ word3");
+			DeleteActions.NextWord (data);
+			Check (data, @"      $");
+		}
+
+		[Test()]
+		public void TestDeleteNextSubword ()
+		{
+			var data = Create (@"      $SomeLongWord");
+			DeleteActions.NextSubword (data);
+			Check (data, @"      $LongWord");
+			DeleteActions.NextSubword (data);
+			Check (data, @"      $Word");
+			DeleteActions.NextSubword (data);
+			Check (data, @"      $");
+		}
 	}
 }

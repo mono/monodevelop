@@ -919,6 +919,8 @@
 			_label = "Expand selection to document start" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd"
 			_label = "Expand selection to document end" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelectionToLine"
+			_label = "Expand selection to line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchCaretMode"
 			_label = "Switch caret mode"
 			description = "Switch between insert and overwrite caret modes"/>

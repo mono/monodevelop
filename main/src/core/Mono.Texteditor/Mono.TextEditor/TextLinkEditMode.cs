@@ -32,19 +32,22 @@ namespace Mono.TextEditor
 {
 	public class TextLink : IListDataProvider<string>
 	{
-		public ISegment PrimaryLink {
+		public TextSegment PrimaryLink {
 			get {
 				if (links.Count == 0)
-					return null;
+					return TextSegment.Invalid;
 				return links [0];
 			}
 		}
 
-		List<Segment> links = new List<Segment> ();
+		List<TextSegment> links = new List<TextSegment> ();
 
-		public IList<Segment> Links {
+		public List<TextSegment> Links {
 			get {
 				return links;
+			}
+			set {
+				links = value;
 			}
 		}
 
@@ -101,7 +104,7 @@ namespace Mono.TextEditor
 								Values.Count);
 		}
 
-		public void AddLink (Segment segment)
+		public void AddLink (TextSegment segment)
 		{
 			links.Add (segment);
 		}
@@ -182,7 +185,7 @@ namespace Mono.TextEditor
 			this.baseOffset = baseOffset;
 			this.endOffset = editor.Caret.Offset;
 			tooltipProvider = new TextLinkTooltipProvider (this);
-			this.Editor.TooltipProviders.Insert (0, tooltipProvider);
+			this.Editor.tooltipProviders.Insert (0, tooltipProvider);
 			this.SetCaretPosition = true;
 			this.SelectPrimaryLink = true;
 		}
@@ -206,7 +209,7 @@ namespace Mono.TextEditor
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			int caretOffset = Editor.Caret.Offset - baseOffset;
-			TextLink link = links.Find (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
+			TextLink link = links.Find (l => !l.PrimaryLink.IsInvalid && l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
 			if (link != null && link.Count > 0 && link.IsEditable) {
 				if (window != null && window.DataProvider != link) {
 					DestroyWindow ();
@@ -233,11 +236,11 @@ namespace Mono.TextEditor
 		public void StartMode ()
 		{
 			foreach (TextLink link in links) {
-				if (link.PrimaryLink != null)
+				if (!link.PrimaryLink.IsInvalid)
 					link.CurrentText = Editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, link.PrimaryLink.Length);
-				foreach (ISegment segment in link.Links) {
+				foreach (TextSegment segment in link.Links) {
 					Editor.Document.EnsureOffsetIsUnfolded (baseOffset + segment.Offset);
-					LineSegment line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
+					DocumentLine line = Editor.Document.GetLineByOffset (baseOffset + segment.Offset);
 					if (line.GetMarker (typeof(TextLinkMarker)) != null)
 						continue;
 					TextLinkMarker marker = (TextLinkMarker)line.GetMarker (typeof(TextLinkMarker));
@@ -272,7 +275,7 @@ namespace Mono.TextEditor
 
 		void Setlink (TextLink link)
 		{
-			if (link.PrimaryLink == null)
+			if (link.PrimaryLink.IsInvalid)
 				return;
 			Editor.Caret.Offset = baseOffset + link.PrimaryLink.Offset;
 			Editor.ScrollToCaret ();
@@ -295,7 +298,7 @@ namespace Mono.TextEditor
 			
 			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged -= HandlePositionChanged;
-			this.Editor.TooltipProviders.Remove (tooltipProvider);
+			this.Editor.RemoveTooltipProvider (tooltipProvider);
 			if (undoDepth >= 0)
 				Editor.Document.StackUndoToDepth (undoDepth);
 			Editor.CurrentMode = OldMode;
@@ -310,11 +313,11 @@ namespace Mono.TextEditor
 		bool isExited = false;
 		bool wasReplaced = false;
 
-		void UpdateLinksOnTextReplace (object sender, ReplaceEventArgs e)
+		void UpdateLinksOnTextReplace (object sender, DocumentChangeEventArgs e)
 		{
 			wasReplaced = true;
 			int offset = e.Offset - baseOffset;
-			int delta = -e.Count + (!string.IsNullOrEmpty (e.Value) ? e.Value.Length : 0);
+			int delta = e.ChangeDelta;
 			if (!IsInUpdate && !links.Where (link => link.Links.Where (segment => segment.Contains (offset)
 					|| segment.EndOffset == offset).
 				Any ()).Any ()) {
@@ -329,15 +332,19 @@ namespace Mono.TextEditor
 		void AdjustLinkOffsets (int offset, int delta)
 		{
 			foreach (TextLink link in links) {
-				foreach (Segment s in link.Links) {
+				var newLinks = new List<TextSegment> ();
+				foreach (var s in link.Links) {
 					if (offset < s.Offset) {
-						s.Offset += delta;
+						newLinks.Add (new TextSegment (s.Offset + delta, s.Length));
 					} else if (offset < s.EndOffset) {
-						s.Length += delta;
+						newLinks.Add (new TextSegment (s.Offset, s.Length + delta));
 					} else if (offset == s.EndOffset && delta > 0) {
-						s.Length += delta;
+						newLinks.Add (new TextSegment (s.Offset, s.Length + delta));
+					} else {
+						newLinks.Add (s);
 					}
 				}
+				link.Links = newLinks;
 			}
 			if (baseOffset + offset < endOffset)
 				endOffset += delta;
@@ -376,12 +383,13 @@ namespace Mono.TextEditor
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
-			if (window != null) {
-				ListWindowKeyAction action = window.ProcessKey (key, modifier);
+			var wnd = window;
+			if (wnd != null) {
+				ListWindowKeyAction action = wnd.ProcessKey (key, modifier);
 				if ((action & ListWindowKeyAction.Complete) == ListWindowKeyAction.Complete)
 					CompleteWindow ();
 				if ((action & ListWindowKeyAction.CloseWindow) == ListWindowKeyAction.CloseWindow) {
-					closedLink = (TextLink)window.DataProvider;
+					closedLink = (TextLink)wnd.DataProvider;
 					DestroyWindow ();
 				}
 				if ((action & ListWindowKeyAction.Complete) == ListWindowKeyAction.Complete)
@@ -421,7 +429,7 @@ namespace Mono.TextEditor
 				if ((modifier & Gdk.ModifierType.ControlMask) != 0)
 				if (link != null && !link.IsIdentifier)
 					goto default;
-				if (window != null) {
+				if (wnd != null) {
 					CompleteWindow ();
 				} else {
 					ExitTextLinkMode ();
@@ -480,7 +488,7 @@ namespace Mono.TextEditor
 			if (!link.IsEditable && link.Values.Count > 0) {
 				link.CurrentText = (string)link.Values [link.Values.Count - 1];
 			} else {
-				if (link.PrimaryLink != null) {
+				if (!link.PrimaryLink.IsInvalid) {
 					int offset = link.PrimaryLink.Offset + baseOffset;
 					if (offset >= 0 && link.PrimaryLink.Length >= 0)
 						link.CurrentText = Editor.Document.GetTextAt (offset, link.PrimaryLink.Length);
@@ -493,9 +501,9 @@ namespace Mono.TextEditor
 		{
 			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
-				Segment s = link.Links [i];
+				var s = link.Links [i];
 				int offset = s.Offset + baseOffset;
-				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.Length)
+				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.TextLength)
 					continue;
 				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText) {
 					Editor.Replace (offset, s.Length, link.CurrentText);
@@ -523,7 +531,7 @@ namespace Mono.TextEditor
 			int o = offset - mode.BaseOffset;
 			for (int i = 0; i < mode.Links.Count; i++) {
 				TextLink l = mode.Links [i];
-				if (l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
+				if (!l.PrimaryLink.IsInvalid && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
 					return new TooltipItem (l, l.PrimaryLink.Offset, l.PrimaryLink.Length);
 			}
 			return null;
@@ -592,7 +600,7 @@ namespace Mono.TextEditor
 					continue;
 				bool isPrimaryHighlighted = link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset;
 				
-				foreach (ISegment segment in link.Links) {
+				foreach (TextSegment segment in link.Links) {
 					
 					if ((BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) ||
 						(startOffset <= BaseOffset + segment.Offset && BaseOffset + segment.Offset < endOffset)) {
@@ -637,7 +645,7 @@ namespace Mono.TextEditor
 			startXPos += Editor.GetWidth (Editor.Document.GetTextBetween (startOffset, endOffset));
 		}
 		*/
-	/*	bool Overlaps (ISegment segment, int start, int end)
+	/*	bool Overlaps (TextSegment segment, int start, int end)
 		{
 			return segment.Offset <= start && start < segment.EndOffset || 
 					segment.Offset <= end && end < segment.EndOffset ||
@@ -654,7 +662,7 @@ namespace Mono.TextEditor
 					continue; 
 				bool isPrimaryHighlighted = link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset;
 
-				foreach (ISegment segment in link.Links) {
+				foreach (TextSegment segment in link.Links) {
 
 					if ((BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) || (startOffset <= BaseOffset + segment.Offset && BaseOffset + segment.Offset < endOffset)) {
 						int strOffset = BaseOffset + segment.Offset - startOffset;

@@ -211,7 +211,7 @@ namespace MonoDevelop.Ide.Tasks
 				var doc = IdeApp.Workbench.OpenDocument (file, Math.Max (1, line), Math.Max (1, column));
 				var project = WorkspaceObject as Project;
 				if (doc != null && project != null)
-					doc.Project = project;
+					doc.SetProject (project);
 			} else if (parentObject != null) {
 				Pad pad = IdeApp.Workbench.GetPad<ProjectSolutionPad> ();
 				ProjectSolutionPad spad = pad.Content as ProjectSolutionPad;

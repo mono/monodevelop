@@ -15,7 +15,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.FeatureSelectorDialog
 			this.Name = "MonoDevelop.Ide.Projects.FeatureSelectorDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("New Project Features");
+			this.Title = global::Mono.Unix.Catalog.GetString ("New Project Features");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.Ide.Projects.FeatureSelectorDialog.VBox
@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0F;
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Project features</b>");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Project features</b>");
 			this.label3.UseMarkup = true;
 			this.vbox5.Add (this.label3);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label3]));

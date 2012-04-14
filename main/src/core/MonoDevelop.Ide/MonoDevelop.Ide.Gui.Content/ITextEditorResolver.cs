@@ -27,13 +27,13 @@
 //
 
 using System;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.TextEditor;
 using Mono.Addins;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -45,11 +45,19 @@ namespace MonoDevelop.Ide.Gui.Content
 	
 	public interface ITextEditorResolverProvider
 	{
-		ResolveResult GetLanguageItem (ProjectDom dom, TextEditorData data, int offset);
-		ResolveResult GetLanguageItem (ProjectDom dom, TextEditorData data, int offset, string expression);
-		
-		string CreateTooltip (ProjectDom dom, ICompilationUnit unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
+		ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, out DomRegion expressionRegion);
+		ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, string identifier);
+
+		string CreateTooltip (IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
+
 	}
+	
+	public interface ITextEditorMemberPositionProvider
+	{
+		IUnresolvedTypeDefinition GetTypeAt (int offset);
+		IUnresolvedMember GetMemberAt (int offset);
+	}
+	
 	
 	public static class TextEditorResolverService
 	{
@@ -75,6 +83,19 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (codon == null)
 				return null;
 			return codon.CreateResolver ();
+		}
+
+		public static ResolveResult GetLanguageItem (this MonoDevelop.Ide.Gui.Document document, int offset, out DomRegion expressionRegion)
+		{
+			if (document == null)
+				throw new System.ArgumentNullException ("document");
+
+			var textEditorResolver = TextEditorResolverService.GetProvider (document.Editor.Document.MimeType);
+			if (textEditorResolver != null) {
+				return textEditorResolver.GetLanguageItem (document, offset, out expressionRegion);
+			}
+			expressionRegion = DomRegion.Empty;
+			return null;
 		}
 	}
 	

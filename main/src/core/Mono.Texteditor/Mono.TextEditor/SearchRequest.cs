@@ -31,10 +31,7 @@ namespace Mono.TextEditor
 {
 	public class SearchRequest
 	{
-		public string searchPattern;
-		public bool caseSensitive;
-		public bool wholeWordOnly;
-		
+		bool wholeWordOnly;
 		public bool WholeWordOnly {
 			get {
 				return wholeWordOnly;
@@ -47,6 +44,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		string searchPattern;
 		public string SearchPattern {
 			get {
 				return searchPattern;
@@ -59,6 +57,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		bool caseSensitive;
 		public bool CaseSensitive {
 			get {
 				return caseSensitive;
@@ -71,12 +70,26 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		TextSegment searchRegion = TextSegment.Invalid;
+		public TextSegment SearchRegion {
+			get {
+				return searchRegion;
+			}
+			set {
+				if (searchRegion != value) {
+					searchRegion = value;
+					OnChanged ();
+				}
+			}
+		}
+
 		public SearchRequest Clone ()
 		{
 			return new SearchRequest () {
 				WholeWordOnly = this.WholeWordOnly,
 				SearchPattern = this.SearchPattern,
-				CaseSensitive = this.CaseSensitive
+				CaseSensitive = this.CaseSensitive,
+				SearchRegion = this.SearchRegion
 			};
 		}
 		

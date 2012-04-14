@@ -36,6 +36,7 @@ using Mono.Addins;
 using MonoDevelop.Projects.Text;
 using Gtk;
 using MonoDevelop.Ide.Gui;
+using System.Text;
 
 #pragma warning disable 612
 
@@ -107,20 +108,19 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				closeWorkspaceCheck.Visible = ShowViewerSelector = false;
 		}
 		
-		public string Encoding {
+		public int SeletcedEncoding {
 			get {
 				if (!ShowEncodingSelector)
-					return null;
+					return -1;
 				else if (encodingMenu.History < firstEncIndex || encodingMenu.History == selectOption)
-					return null;
-				else
-					return TextEncoding.ConversionEncodings [encodingMenu.History - firstEncIndex].Id;
+					return -1;
+				return SeletedEncodings.ConversionEncodings [encodingMenu.History - firstEncIndex];
 			}
 			set {
-				for (uint n=0; n<TextEncoding.ConversionEncodings.Length; n++) {
-					if (TextEncoding.ConversionEncodings [n].Id == value) {
+				for (uint n=0; n < SeletedEncodings.ConversionEncodings.Length; n++) {
+					if (SeletedEncodings.ConversionEncodings [n] == value) {
 						encodingMenu.SetHistory (n + (uint)firstEncIndex);
-						Menu menu = (Menu) encodingMenu.Menu;
+						Menu menu = (Menu)encodingMenu.Menu;
 						RadioMenuItem rm = (RadioMenuItem) menu.Children [n + firstEncIndex];
 						rm.Active = true;
 						return;
@@ -164,8 +164,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			} else
 				firstEncIndex = 0;
 			
-			foreach (TextEncoding e in TextEncoding.ConversionEncodings) {
-				RadioMenuItem mitem = new RadioMenuItem (e.Name + " (" + e.Id + ")");
+			foreach (var codePage in SeletedEncodings.ConversionEncodings) {
+				var enc = Encoding.GetEncoding (codePage);
+				RadioMenuItem mitem = new RadioMenuItem (enc.EncodingName + " (" + enc.WebName + ")");
 				menu.Append (mitem);
 				if (defaultActivated == null) {
 					defaultActivated = mitem;
@@ -189,7 +190,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			encodingMenu.SetHistory (0);
 					
-			selectOption = firstEncIndex + TextEncoding.ConversionEncodings.Length + 1;
+			selectOption = firstEncIndex + SeletedEncodings.ConversionEncodings.Length + 1;
 		}
 		
 		void EncodingChanged (object s, EventArgs args)

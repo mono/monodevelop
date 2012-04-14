@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.Projects
 			this.labelTitle = new global::Gtk.Label ();
 			this.labelTitle.Name = "labelTitle";
 			this.labelTitle.Xalign = 0F;
-			this.labelTitle.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Select a project or solution:");
+			this.labelTitle.LabelProp = global::Mono.Unix.Catalog.GetString ("Select a project or solution:");
 			this.vbox4.Add (this.labelTitle);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.labelTitle]));
 			w2.Position = 0;

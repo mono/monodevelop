@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Gui.Dialogs.ProgressDialog
 			this.Name = "MonoDevelop.Ide.Gui.Dialogs.ProgressDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("MonoDevelop");
+			this.Title = global::Mono.Unix.Catalog.GetString ("MonoDevelop");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.ProgressDialog.VBox
@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.expander.Add (this.GtkScrolledWindow);
 			this.expanderLabel = new global::Gtk.Label ();
 			this.expanderLabel.Name = "expanderLabel";
-			this.expanderLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Details");
+			this.expanderLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Details");
 			this.expanderLabel.UseUnderline = true;
 			this.expander.LabelWidget = this.expanderLabel;
 			this.vbox2.Add (this.expander);
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.button103.CanFocus = true;
 			this.button103.Name = "button103";
 			this.button103.UseUnderline = true;
-			this.button103.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("GtkButton");
+			this.button103.Label = global::Mono.Unix.Catalog.GetString ("GtkButton");
 			this.AddActionWidget (this.button103, 0);
 			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.button103]));
 			w12.Expand = false;

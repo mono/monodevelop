@@ -5,6 +5,7 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class ExportProjectPolicyDialog
 	{
 		private global::Gtk.VBox vbox2;
+		private global::Gtk.VBox vbox4;
 		private global::Gtk.RadioButton radioCustom;
 		private global::Gtk.Alignment boxCustom;
 		private global::Gtk.HBox hbox1;
@@ -15,9 +16,9 @@ namespace MonoDevelop.Ide.Projects
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Label label3;
 		private global::MonoDevelop.Components.FileEntry fileEntry;
-		private global::Gtk.HSeparator hseparator1;
+		private global::Gtk.VBox vbox5;
 		private global::Gtk.Label labelChangesTitle;
-		private global::Gtk.Label labelPolicies;
+		private global::Gtk.ScrolledWindow policiesScroll;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
 		
@@ -26,7 +27,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.ExportProjectPolicyDialog
 			this.Name = "MonoDevelop.Ide.Projects.ExportProjectPolicyDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Export Policies");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Export Policies");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -35,21 +36,25 @@ namespace MonoDevelop.Ide.Projects
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
-			this.vbox2.Spacing = 6;
+			this.vbox2.Spacing = 16;
 			this.vbox2.BorderWidth = ((uint)(12));
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radioCustom = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Save project policies as a new custom policy set"));
+			this.vbox4 = new global::Gtk.VBox ();
+			this.vbox4.Name = "vbox4";
+			this.vbox4.Spacing = 6;
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.radioCustom = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Save project policies as a new custom policy set"));
 			this.radioCustom.CanFocus = true;
 			this.radioCustom.Name = "radioCustom";
 			this.radioCustom.DrawIndicator = true;
 			this.radioCustom.UseUnderline = true;
 			this.radioCustom.Group = new global::GLib.SList (global::System.IntPtr.Zero);
-			this.vbox2.Add (this.radioCustom);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.radioCustom]));
+			this.vbox4.Add (this.radioCustom);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radioCustom]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
+			// Container child vbox4.Gtk.Box+BoxChild
 			this.boxCustom = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.boxCustom.Name = "boxCustom";
 			this.boxCustom.LeftPadding = ((uint)(42));
@@ -60,7 +65,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Name:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Name:");
 			this.hbox1.Add (this.label2);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
 			w3.Position = 0;
@@ -79,24 +84,24 @@ namespace MonoDevelop.Ide.Projects
 			w4.Expand = false;
 			w4.Fill = false;
 			this.boxCustom.Add (this.hbox1);
-			this.vbox2.Add (this.boxCustom);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.boxCustom]));
+			this.vbox4.Add (this.boxCustom);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.boxCustom]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.radioFile = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Export policies to a file"));
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.radioFile = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Export policies to a file"));
 			this.radioFile.CanFocus = true;
 			this.radioFile.Name = "radioFile";
 			this.radioFile.DrawIndicator = true;
 			this.radioFile.UseUnderline = true;
 			this.radioFile.Group = this.radioCustom.Group;
-			this.vbox2.Add (this.radioFile);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.radioFile]));
+			this.vbox4.Add (this.radioFile);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.radioFile]));
 			w7.Position = 2;
 			w7.Expand = false;
 			w7.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
+			// Container child vbox4.Gtk.Box+BoxChild
 			this.boxFile = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.boxFile.Name = "boxFile";
 			this.boxFile.LeftPadding = ((uint)(42));
@@ -107,7 +112,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("File:");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("File:");
 			this.hbox2.Add (this.label3);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label3]));
 			w8.Position = 0;
@@ -120,49 +125,50 @@ namespace MonoDevelop.Ide.Projects
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.fileEntry]));
 			w9.Position = 1;
 			this.boxFile.Add (this.hbox2);
-			this.vbox2.Add (this.boxFile);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.boxFile]));
+			this.vbox4.Add (this.boxFile);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.boxFile]));
 			w11.Position = 3;
 			w11.Expand = false;
 			w11.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.hseparator1 = new global::Gtk.HSeparator ();
-			this.hseparator1.Name = "hseparator1";
-			this.vbox2.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hseparator1]));
-			w12.Position = 4;
+			this.vbox2.Add (this.vbox4);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox4]));
+			w12.Position = 0;
 			w12.Expand = false;
 			w12.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
+			this.vbox5 = new global::Gtk.VBox ();
+			this.vbox5.Name = "vbox5";
+			this.vbox5.Spacing = 6;
+			// Container child vbox5.Gtk.Box+BoxChild
 			this.labelChangesTitle = new global::Gtk.Label ();
 			this.labelChangesTitle.Name = "labelChangesTitle";
 			this.labelChangesTitle.Xalign = 0F;
-			this.labelChangesTitle.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("The following policies will be exported:");
-			this.vbox2.Add (this.labelChangesTitle);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelChangesTitle]));
-			w13.Position = 5;
+			this.labelChangesTitle.LabelProp = global::Mono.Unix.Catalog.GetString ("Policies to export:");
+			this.vbox5.Add (this.labelChangesTitle);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.labelChangesTitle]));
+			w13.Position = 0;
 			w13.Expand = false;
 			w13.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.labelPolicies = new global::Gtk.Label ();
-			this.labelPolicies.Name = "labelPolicies";
-			this.labelPolicies.Xalign = 0F;
-			this.vbox2.Add (this.labelPolicies);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelPolicies]));
-			w14.Position = 6;
-			w14.Expand = false;
-			w14.Fill = false;
+			// Container child vbox5.Gtk.Box+BoxChild
+			this.policiesScroll = new global::Gtk.ScrolledWindow ();
+			this.policiesScroll.CanFocus = true;
+			this.policiesScroll.Name = "policiesScroll";
+			this.policiesScroll.ShadowType = ((global::Gtk.ShadowType)(1));
+			this.vbox5.Add (this.policiesScroll);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.policiesScroll]));
+			w14.Position = 1;
+			this.vbox2.Add (this.vbox5);
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox5]));
+			w15.Position = 1;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
-			w15.Position = 0;
-			w15.Expand = false;
-			w15.Fill = false;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
+			w16.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.ActionArea
-			global::Gtk.HButtonBox w16 = this.ActionArea;
-			w16.Name = "dialog1_ActionArea";
-			w16.Spacing = 10;
-			w16.BorderWidth = ((uint)(5));
-			w16.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w17 = this.ActionArea;
+			w17.Name = "dialog1_ActionArea";
+			w17.Spacing = 10;
+			w17.BorderWidth = ((uint)(5));
+			w17.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -172,26 +178,26 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonCancel]));
-			w17.Expand = false;
-			w17.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w17 [this.buttonCancel]));
+			w18.Expand = false;
+			w18.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
 			this.buttonOk.CanFocus = true;
 			this.buttonOk.Name = "buttonOk";
 			this.buttonOk.UseUnderline = true;
-			this.buttonOk.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Export");
-			w16.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w18 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonOk]));
-			w18.Position = 1;
-			w18.Expand = false;
-			w18.Fill = false;
+			this.buttonOk.Label = global::Mono.Unix.Catalog.GetString ("Export policies");
+			w17.Add (this.buttonOk);
+			global::Gtk.ButtonBox.ButtonBoxChild w19 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w17 [this.buttonOk]));
+			w19.Position = 1;
+			w19.Expand = false;
+			w19.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 528;
-			this.DefaultHeight = 254;
+			this.DefaultWidth = 476;
+			this.DefaultHeight = 321;
 			this.Hide ();
 			this.radioCustom.Toggled += new global::System.EventHandler (this.OnRadioCustomToggled);
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);

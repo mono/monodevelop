@@ -34,6 +34,7 @@ namespace MonoDevelop.Ide.Projects
 	partial class ExportProjectPolicyDialog : Gtk.Dialog
 	{
 		IPolicyProvider policyProvider;
+		PoliciesListSummaryTree tree;
 		
 		public ExportProjectPolicyDialog (IPolicyProvider policyProvider)
 		{
@@ -49,9 +50,24 @@ namespace MonoDevelop.Ide.Projects
 			fileEntry.FileFilters.AddFilter (GettextCatalog.GetString ("MonoDevelop policy files"), "*.mdpolicy");
 			fileEntry.FileFilters.AddAllFilesFilter ();
 			
-			UpdateWidgets ();
+			fileEntry.PathChanged += delegate {
+				UpdateWidgets ();
+			};
+			entryName.Changed += delegate {
+				UpdateWidgets ();
+			};
 			
-			labelPolicies.Text = ApplyPolicyDialog.GetPoliciesDescription (policyProvider.Policies);
+			tree = new PoliciesListSummaryTree ();
+			policiesScroll.Add (tree);
+			tree.Show ();
+			
+			tree.SetPolicies (policyProvider.Policies);
+			if (!tree.HasPolicies) {
+				tree.Message = GettextCatalog.GetString ("No policies");
+				buttonOk.Sensitive = false;
+			}
+			
+			UpdateWidgets ();
 		}
 		
 		public static FilePath DefaultFileDialogPolicyDir {
@@ -61,8 +77,18 @@ namespace MonoDevelop.Ide.Projects
 
 		void UpdateWidgets ()
 		{
-			boxCustom.Sensitive = radioCustom.Active;
-			boxFile.Sensitive = !radioCustom.Active;
+			bool custom = radioCustom.Active;
+			boxCustom.Sensitive = custom;
+			boxFile.Sensitive = !custom;
+			
+			bool valid;
+			if (custom) {
+				valid = !string.IsNullOrWhiteSpace (entryName.Text);
+			} else {
+				valid = !string.IsNullOrWhiteSpace (fileEntry.Path);
+			}
+			
+			buttonOk.Sensitive = tree.HasPolicies && valid;
 		}
 		
 		protected void OnRadioCustomToggled (object sender, System.EventArgs e)

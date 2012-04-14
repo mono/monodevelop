@@ -24,18 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Text;
-using System.Linq;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 using System.Collections.Generic;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {

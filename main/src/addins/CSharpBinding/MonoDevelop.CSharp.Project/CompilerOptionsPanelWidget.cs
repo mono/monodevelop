@@ -32,11 +32,11 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -203,13 +203,13 @@ namespace MonoDevelop.CSharp.Project
 		void FillClasses ()
 		{
 			try {
-				ProjectDom     ctx = ProjectDomService.GetProjectDom (project);
+				var ctx = TypeSystemService.GetCompilation (project);
 				if (ctx == null)
 					// Project not found in parser database
 					return;
-				foreach (IType c in ctx.Types) {
+				foreach (var c in ctx.GetAllTypeDefinitions ()) {
 					if (c.Methods != null) {
-						foreach (IMethod m in c.Methods) {
+						foreach (var m in c.Methods) {
 							if (m.IsStatic && m.Name == "Main")
 								classListStore.AppendValues (c.FullName);
 						}

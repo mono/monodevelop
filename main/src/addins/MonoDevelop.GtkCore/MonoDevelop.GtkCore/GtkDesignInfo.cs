@@ -33,11 +33,11 @@ using System.Collections.Specialized;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.CodeGeneration;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.NodeBuilders;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.GtkCore
 {
@@ -203,9 +203,8 @@ namespace MonoDevelop.GtkCore
 		{
 			if (project == null || project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
 				return false;
-			RefactorOperations ops = RefactorOperations.AddField | RefactorOperations.AddMethod | RefactorOperations.RenameField | RefactorOperations.AddAttribute;
-			CodeRefactorer cref = IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution);
-			return cref.LanguageSupportsOperation (project.LanguageBinding.Language, ops); 
+			var testFileName = project.LanguageBinding.GetFileName ("test");
+			return CodeGenerator.HasGenerator (DesktopService.GetMimeTypeForUri (testFileName));
 		}
 		
 		static bool IsGtkReference (ProjectReference pref)
@@ -319,7 +318,7 @@ namespace MonoDevelop.GtkCore
 				return;
 
 			ObjectsDocument doc = new ObjectsDocument (ObjectsFile);
-			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject, IdeApp.Workspace.GetCodeRefactorer (project.ParentSolution));
+			doc.Update (GuiBuilderProject.WidgetParser, GuiBuilderProject.SteticProject);
 		}
 
 		public static void DisableProject (Project project)

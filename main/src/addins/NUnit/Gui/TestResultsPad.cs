@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.IO;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
@@ -110,7 +111,7 @@ namespace MonoDevelop.NUnit
 			// Failures tree
 			failuresTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
 			failuresTreeView.HeadersVisible = false;
-			failuresStore = new TreeStore (typeof(Pixbuf), typeof (string), typeof(object), typeof(string));
+			failuresStore = new TreeStore (typeof(Pixbuf), typeof (string), typeof(object), typeof(string), typeof(int));
 			var pr = new CellRendererPixbuf ();
 			CellRendererText tr = new CellRendererText ();
 			TreeViewColumn col = new TreeViewColumn ();
@@ -330,7 +331,7 @@ namespace MonoDevelop.NUnit
 			if (rootTest != null) {
 				Gdk.Pixbuf infoIcon = failuresTreeView.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
 				string msg = string.Format (isRunning ? GettextCatalog.GetString ("Running tests for <b>{0}</b> configuration <b>{1}</b>") : GettextCatalog.GetString ("Test results for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
-				startMessageIter = failuresStore.AppendValues (infoIcon, msg, rootTest);
+				startMessageIter = failuresStore.AppendValues (infoIcon, msg, rootTest, null, 0);
 			} else {
 				startMessageIter = Gtk.TreeIter.Zero;
 			}
@@ -350,24 +351,42 @@ namespace MonoDevelop.NUnit
 				msg += ": " + errorMessage;
 
 			Gdk.Pixbuf stock = failuresTreeView.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
-			TreeIter testRow = failuresStore.AppendValues (stock, msg, null);
+			TreeIter testRow = failuresStore.AppendValues (stock, msg, null, null, 0);
 			failuresStore.AppendValues (testRow, null, Escape (error.GetType().Name + ": " + error.Message), null);
-			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null);
+			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null, 0);
 			AddStackTrace (row, error.StackTrace, null);
 		}
 		
+		readonly static Regex stackTraceLineRegex = new Regex (@".*\s(?<file>.*)\:\D*\s?(?<line>\d+)", RegexOptions.Compiled);
+		
+		public static bool TryParseLocationFromStackTrace (string stackTraceLine, out string fileName, out int lineNumber)
+		{
+			var match = stackTraceLineRegex.Match (stackTraceLine);
+
+			if (!match.Success) {
+				fileName = null;
+				lineNumber = -1;
+				return false;
+			}
+			try {
+				fileName = match.Groups ["file"].Value;
+				lineNumber = int.Parse (match.Groups ["line"].Value);
+			} catch (Exception) {
+				fileName = null;
+				lineNumber = -1;
+				return false;
+			}
+			return true;
+		}
+
 		void AddStackTrace (TreeIter row, string stackTrace, UnitTest test)
 		{
-			string[] stackLines = stackTrace.Replace ("\r","").Split ('\n');
+			string[] stackLines = stackTrace.Replace ("\r", "").Split ('\n');
 			foreach (string line in stackLines) {
-				Regex r = new Regex (@".*?\(.*?\)\s\[.*?\]\s.*?\s(?<file>.*)\:(?<line>\d*)");
-				Match m = r.Match (line);
-				string file;
-				if (m.Groups["file"] != null && m.Groups["line"] != null)
-					file = m.Groups["file"].Value + ":" + m.Groups["line"].Value;
-				else
-					file = null;
-				failuresStore.AppendValues (row, null, Escape (line), test, file);
+				string fileName;
+				int lineNumber;
+				TryParseLocationFromStackTrace (line, out fileName, out lineNumber);
+				failuresStore.AppendValues (row, null, Escape (line), test, fileName, lineNumber);
 			}
 		}
 		
@@ -412,16 +431,14 @@ namespace MonoDevelop.NUnit
 		{
 			Gtk.TreeIter iter;
 			if (failuresTreeView.Selection.GetSelected (out iter)) {
-				string file = (string) failuresStore.GetValue (iter, 3);
-				if (file != null) {
-					int i = file.LastIndexOf (':');
-					if (i != -1) {
-						int line;
-						if (int.TryParse (file.Substring (i+1), out line)) {
-							IdeApp.Workbench.OpenDocument (file.Substring (0, i), line, -1);
-							return;
-						}
+				string file = (string)failuresStore.GetValue (iter, 3);
+				int line = (int)failuresStore.GetValue (iter, 4);
+				try {
+					if (file != null && File.Exists (file)) {
+						IdeApp.Workbench.OpenDocument (file, line, -1);
+						return;
 					}
+				} catch (Exception) {
 				}
 			}
 			OnShowTest ();

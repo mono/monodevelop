@@ -32,39 +32,38 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public abstract class NamespaceData
 	{
-		protected string namesp;
+		protected INamespace namesp;
 		
 		public string Name {
 			get {
-				int i = namesp.LastIndexOf (".");
-				if (i != -1) return namesp.Substring (i+1);
-				else return namesp;
+				return namesp.Name;
 			}
 		}
 		
 		public string FullName {
-			get { return namesp; }
+			get { return namesp.FullName; }
 		}
 		
-		public NamespaceData (string fullNamespace)
+		public NamespaceData (INamespace namesp)
 		{
-			namesp = fullNamespace;
+			this.namesp = namesp;
 		}
 		
 		public abstract void AddProjectContent (ITreeBuilder builder);
 		
 		public override bool Equals (object ob)
 		{
-			NamespaceData other = ob as NamespaceData;
+			var other = ob as NamespaceData;
 			return (other != null && namesp == other.namesp);
 		}
 		
@@ -75,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override string ToString ()
 		{
-			return base.ToString () + " [" + namesp + "]";
+			return base.ToString () + " [" + namesp.FullName + "]";
 		}
 	}
 	
@@ -87,7 +86,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return project; }
 		}
 
-		public ProjectNamespaceData (Project project, string fullNamespace) : base (fullNamespace)
+		public ProjectNamespaceData (Project project, INamespace nspace) : base (nspace)
 		{
 			this.project = project;
 		}
@@ -95,34 +94,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void AddProjectContent (ITreeBuilder builder)
 		{
 			if (project != null) {
-				ProjectDom dom = ProjectDomService.GetProjectDom (Project);
-				AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
+				AddProjectContent (builder, project);
 			} else {
-				foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-					ProjectDom dom = ProjectDomService.GetProjectDom (p);
-					AddProjectContent (builder, dom.GetNamespaceContents (FullName, false, false));
+				foreach (var p in IdeApp.Workspace.GetAllProjects ()) {
+					AddProjectContent (builder, p);
 				}
 			}
 		}
 		
-		void AddProjectContent (ITreeBuilder builder, List<IMember> list)
+		void AddProjectContent (ITreeBuilder builder, Project p)
 		{
+			foreach (var ns in namesp.ChildNamespaces) {
+				if (!builder.HasChild (ns.Name, typeof(NamespaceData)))
+					builder.AddChild (new ProjectNamespaceData (project, ns));
+			}
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-
-			foreach (IMember ob in list) {
-				if (ob is Namespace && nestedNs) {
-					Namespace nsob = (Namespace)ob;
-					string ns = FullName + "." + nsob.Name;
-					if (!builder.HasChild (nsob.Name, typeof(NamespaceData)))
-						builder.AddChild (new ProjectNamespaceData (project, ns));
-				}
-				else if (ob is IType) {
-					if (!publicOnly || ((IType)ob).IsPublic)
-						builder.AddChild (new ClassData (project, ob as IType));
-				}
+			
+			foreach (var type in namesp.Types) {
+				if (!publicOnly || type.IsPublic)
+					builder.AddChild (new ClassData (project, type));
 			}
+			
 		}
+		
 		
 		public override bool Equals (object ob)
 		{
@@ -142,11 +137,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		}
 	}
 	
+	/*
 	public class CompilationUnitNamespaceData : NamespaceData
 	{
-		ICompilationUnit unit;
+		IParsedFile unit;
 		
-		public CompilationUnitNamespaceData (ICompilationUnit unit, string fullNamespace) : base (fullNamespace)
+		public CompilationUnitNamespaceData (IParsedFile unit, INamespace fullNamespace) : base (fullNamespace)
 		{
 			this.unit = unit;
 		}
@@ -156,7 +152,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			Dictionary<string, bool> namespaces = new Dictionary<string, bool> ();
-			foreach (IType type in unit.Types) {
+			foreach (var type in unit.TopLevelTypeDefinitions) {
 				if (publicOnly && !type.IsPublic)
 					continue;
 				if (type.Namespace == FullName) {
@@ -175,5 +171,5 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				}
 			}
 		}
-	}
+	} */
 }

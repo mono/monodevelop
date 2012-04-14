@@ -38,7 +38,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Projects.Dom.Output;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
@@ -150,8 +149,9 @@ namespace MonoDevelop.Projects
 				Name = projectCreateInfo.ProjectName;
 				binPath = projectCreateInfo.BinPath;
 				defaultNamespace = SanitisePotentialNamespace (projectCreateInfo.ProjectName);
-			} else
+			} else {
 				binPath = ".";
+			}
 
 			foreach (DotNetProjectConfiguration dotNetProjectConfig in Configurations) {
 				dotNetProjectConfig.OutputDirectory = Path.Combine (binPath, dotNetProjectConfig.Name);
@@ -166,15 +166,6 @@ namespace MonoDevelop.Projects
 
 		public override string ProjectType {
 			get { return "DotNet"; }
-		}
-
-		private Ambience ambience;
-		public override Ambience Ambience {
-			get {
-				if (ambience == null)
-					ambience = AmbienceService.GetAmbienceForLanguage (LanguageName);
-				return ambience;
-			}
 		}
 
 		private string languageName;
@@ -241,7 +232,10 @@ namespace MonoDevelop.Projects
 					languageParameters.ParentProject = this;
 			}
 		}
-
+		
+		/// <summary>
+		/// Default namespace setting. May be empty, use GetDefaultNamespace to get a usable value.
+		/// </summary>
 		public string DefaultNamespace {
 			get { return defaultNamespace; }
 			set {
@@ -896,7 +890,11 @@ namespace MonoDevelop.Projects
 				return false;
 			return LanguageBinding.IsSourceCodeFile (fileName);
 		}
-
+		
+		/// <summary>
+		/// Gets the default namespace for the file, according to the naming policy.
+		/// </summary>
+		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
 		public virtual string GetDefaultNamespace (string fileName)
 		{
 			DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
@@ -906,6 +904,10 @@ namespace MonoDevelop.Projects
 			string defaultNmspc = !string.IsNullOrEmpty (DefaultNamespace)
 				? DefaultNamespace
 				: SanitisePotentialNamespace (Name) ?? "Application";
+			
+			if (string.IsNullOrEmpty (fileName)) {
+				return defaultNmspc;
+			}
 
 			string dirname = Path.GetDirectoryName (fileName);
 			string relativeDirname = null;
@@ -1032,9 +1034,6 @@ namespace MonoDevelop.Projects
 			IResourceHandler handler = ItemHandler as IResourceHandler;
 			if (handler != null)
 				MigrateResourceIds (handler, ResourceHandler);
-			
-			if (String.IsNullOrEmpty (defaultNamespace))
-				defaultNamespace = SanitisePotentialNamespace (Name);
 
 			base.OnEndLoad ();
 		}

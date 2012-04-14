@@ -41,16 +41,19 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Tasks;
 using Mono.Addins;
 using MonoDevelop.Ide.Extensions;
 using System.Linq;
+using System.Threading;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using System.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class Document
+	public class Document : ICSharpCode.NRefactory.AbstractAnnotatable
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
@@ -130,17 +133,17 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
-			ProjectDomService.DomRegistered += UpdateRegisteredDom;
+//			TypeSystemService.DomRegistered += UpdateRegisteredDom;
 		}
 
-		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
+/*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
 		{
 			if (dom == null || dom.Project == null)
 				return;
-			var project = e.ProjectDom != null ? e.ProjectDom.Project : null;
+			var project = e.ITypeResolveContext != null ? e.ITypeResolveContext.Project : null;
 			if (project != null && project.FileName == dom.Project.FileName)
-				dom = e.ProjectDom;
-		}
+				dom = e.ITypeResolveContext;
+		}*/
 
 		public FilePath FileName {
 			get {
@@ -165,28 +168,33 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Project Project {
 			get { return Window.ViewContent.Project; }
-			set { 
+/*			set { 
 				Window.ViewContent.Project = value; 
-				dom = null;
+				if (value != null)
+					singleFileContext = null;
+				// File needs to be in sync with the project, otherwise the parsed document at start may be invalid.
+				// better solution: create the document with the project attached.
+				StartReparseThread ();
+			}*/
+		}
+		
+		IProjectContent singleFileContext;
+		public  virtual IProjectContent ProjectContent {
+			get {
+				return Project != null ? TypeSystemService.GetProjectContext (Project) : GetProjectContext ();
 			}
 		}
 		
-		ProjectDom dom;
-		bool isFileDom;
-		public ProjectDom Dom {
+		public  virtual ICompilation Compilation {
 			get {
-				if (dom == null) {
-					isFileDom = false;
-					dom = ProjectDomService.GetProjectDom (Project);
-					if (dom == null) {
-						dom = ProjectDomService.GetFileDom (FileName);
-						isFileDom = true;
-					}
-				}
-				return dom ?? ProjectDom.Empty;
+				return Project != null ? TypeSystemService.GetCompilation (Project) : GetProjectContext ().CreateCompilation ();
 			}
-			set {
-				dom = value;
+		}
+		
+		ParsedDocument parsedDocument;
+		public virtual ParsedDocument ParsedDocument {
+			get {
+				return parsedDocument;
 			}
 		}
 		
@@ -221,6 +229,8 @@ namespace MonoDevelop.Ide.Gui
 					Mono.TextEditor.ITextEditorDataProvider view = GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
 					if (view != null) {
 						data = view.GetTextEditorData ();
+						if (data.IsDisposed)
+							return null;
 						data.Document.Tag = this;
 					}
 				}
@@ -247,35 +257,48 @@ namespace MonoDevelop.Ide.Gui
 		
 		public virtual void Save ()
 		{
-			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
-				return;
-
-			if (!Window.ViewContent.IsFile) {
-				Window.ViewContent.Save ();
-				return;
-			}
-			
-			if (Window.ViewContent.ContentName == null) {
-				SaveAs ();
-			} else {
-				if (!FileService.RequestFileEdit (Window.ViewContent.ContentName))
-					MessageService.ShowMessage (GettextCatalog.GetString ("The file could not be saved. Write permission has not been granted."));
+			// suspend type service "check all file loop" since we have already a parsed document.
+			// Or at least one that updates "soon".
+			TypeSystemService.TrackFileChanges = false;
+			try {
+				if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
+					return;
+	
+				if (!Window.ViewContent.IsFile) {
+					Window.ViewContent.Save ();
+					return;
+				}
 				
-				FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
-
-				if (!File.Exists (Window.ViewContent.ContentName) || (File.GetAttributes(window.ViewContent.ContentName) & attr) != 0) {
+				if (Window.ViewContent.ContentName == null) {
 					SaveAs ();
 				} else {
-					string fileName = Window.ViewContent.ContentName;
-					// save backup first						
-					if((bool) PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
-						Window.ViewContent.Save (fileName + "~");
+					if (!FileService.RequestFileEdit (Window.ViewContent.ContentName))
+						MessageService.ShowMessage (GettextCatalog.GetString ("The file could not be saved. Write permission has not been granted."));
+					
+					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
+	
+					if (!File.Exists (Window.ViewContent.ContentName) || (File.GetAttributes (window.ViewContent.ContentName) & attr) != 0) {
+						SaveAs ();
+					} else {
+						string fileName = Window.ViewContent.ContentName;
+						// save backup first						
+						if ((bool)PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
+							Window.ViewContent.Save (fileName + "~");
+							FileService.NotifyFileChanged (fileName);
+						}
+						Window.ViewContent.Save (fileName);
 						FileService.NotifyFileChanged (fileName);
+						OnSaved (EventArgs.Empty);
 					}
-					Window.ViewContent.Save (fileName);
-					FileService.NotifyFileChanged (fileName);
-					OnSaved (EventArgs.Empty);
 				}
+			} finally {
+				// Set the file time of the current document after the file time of the written file, to prevent double file updates.
+				// Note that the parsed document may be overwritten by a background thread to a more recent one.
+				var doc = parsedDocument;
+				if (doc != null && doc.ParsedFile != null) {
+					doc.ParsedFile.LastWriteTime = DateTime.Now;
+				}
+				TypeSystemService.TrackFileChanges = true;
 			}
 		}
 		
@@ -289,13 +312,13 @@ namespace MonoDevelop.Ide.Gui
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsFile)
 				return;
 			
-			string encoding = null;
+			Encoding encoding = null;
 			
 			IEncodedTextContent tbuffer = GetContent <IEncodedTextContent> ();
 			if (tbuffer != null) {
 				encoding = tbuffer.SourceEncoding;
 				if (encoding == null)
-					encoding = TextEncoding.DefaultEncoding;
+					encoding = Encoding.Default;
 			}
 				
 			if (filename == null) {
@@ -324,13 +347,13 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 			// detect preexisting file
-			if(File.Exists(filename)){
+			if (File.Exists (filename)) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", filename), AlertButton.OverwriteFile))
 					return;
 			}
 			
 			// save backup first
-			if((bool) PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
+			if ((bool)PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
 				if (tbuffer != null && encoding != null)
 					tbuffer.Save (filename + "~", encoding);
 				else
@@ -347,6 +370,7 @@ namespace MonoDevelop.Ide.Gui
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
 			OnSaved (EventArgs.Empty);
+			UpdateParseDocument ();
 		}
 		
 		public virtual bool IsBuildTarget
@@ -419,7 +443,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnClosed (object s, EventArgs a)
 		{
 			isClosed = true;
-			ProjectDomService.DomRegistered -= UpdateRegisteredDom;
+//			TypeSystemService.DomRegistered -= UpdateRegisteredDom;
 			CancelParseTimeout ();
 			ClearTasks ();
 			
@@ -447,51 +471,27 @@ namespace MonoDevelop.Ide.Gui
 				}
 				editorExtension = editorExtension.Next as TextEditorExtension;
 			}
+			editorExtension = null;
 			
 			// Parse the file when the document is closed. In this way if the document
 			// is closed without saving the changes, the saved compilation unit
 			// information will be restored
-			if (currentParseFile != null) {
-				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
-					ProjectDomService.Parse (curentParseProject, currentParseFile);
+/*			if (currentParseFile != null) {
+				TypeSystemService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
+					TypeSystemService.Parse (curentParseProject, currentParseFile);
 				}, FileName);
 			}
 			if (isFileDom) {
-				ProjectDomService.RemoveFileDom (FileName);
+				TypeSystemService.RemoveFileDom (FileName);
 				dom = null;
-			}
+			}*/
 			
+			parsedDocument = null;
+			data = null;
 			Counters.OpenDocuments--;
 		}
 #region document tasks
 		object lockObj = new object ();
-		
-		ParsedDocument lastErrorFreeParsedDocument;
-		
-		ParsedDocument parsedDocument;
-		public ParsedDocument ParsedDocument {
-			get {
-				return parsedDocument;
-			}
-			set {
-				// for unit testing purposes
-				parsedDocument = value;
-			}
-		}
-		
-		public ICompilationUnit CompilationUnit {
-			get {
-				if (parsedDocument == null)
-					return null;
-				var unit = parsedDocument.CompilationUnit;
-				if (unit == null)
-					return null;
-				// HACK: The parser sometimes doesn't send back >any< info on the file on certain errors, this code detects if the last error free parsed document is the better best-fit.
-				if (parsedDocument.HasErrors && !unit.Types.Any () && lastErrorFreeParsedDocument != null && lastErrorFreeParsedDocument.CompilationUnit != null && lastErrorFreeParsedDocument.CompilationUnit.Types.Any ())
-					return lastErrorFreeParsedDocument.CompilationUnit;
-				return unit;
-			}
-		}
 		
 		void ClearTasks ()
 		{
@@ -535,14 +535,9 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		bool wasEdited;
-		internal void OnDocumentAttached ()
+		
+		void InitializeEditor (IExtensibleTextEditor editor)
 		{
-			window.Document = this;
-			
-			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
-			if (editor == null)
-				return;
-			
 			Editor.Document.TextReplaced += (o, a) => {
 				if (Editor.Document.IsInAtomicUndo) {
 					wasEdited = true;
@@ -567,12 +562,11 @@ namespace MonoDevelop.Ide.Gui
 			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			editorExtension = null;
 			TextEditorExtension last = null;
-			
 			foreach (TextEditorExtensionNode extNode in extensions) {
 				if (!extNode.Supports (FileName))
 					continue;
 				
-				TextEditorExtension ext = (TextEditorExtension) extNode.CreateInstance ();
+				TextEditorExtension ext = (TextEditorExtension)extNode.CreateInstance ();
 				if (ext.ExtendsEditor (this, editor)) {
 					if (editorExtension == null)
 						editorExtension = ext;
@@ -588,7 +582,17 @@ namespace MonoDevelop.Ide.Gui
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
 			
-			RunWhenLoaded (() => ReparseDocument ());
+		}
+		
+		internal void OnDocumentAttached ()
+		{
+			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
+			if (editor != null) {
+				InitializeEditor (editor);
+				RunWhenLoaded (() => ReparseDocument ());
+			}
+			
+			window.Document = this;
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
@@ -612,6 +616,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void SetProject (Project project)
 		{
+			if (Window.ViewContent.Project == project)
+				return;
 			while (editorExtension != null) {
 				try {
 					editorExtension.Dispose ();
@@ -643,14 +649,35 @@ namespace MonoDevelop.Ide.Gui
 				if (editor == null)
 					return null;
 				string currentParseText = editor.Text;
-				Project curentParseProject = Project;
-				this.parsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
-				if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
-					this.lastErrorFreeParsedDocument = parsedDocument;
+				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
+				if (Project == null && this.parsedDocument != null) {
+					singleFileContext = GetProjectContext ().UpdateProjectContent (singleFileContext.GetFile (currentParseFile), parsedDocument.ParsedFile);
+				}
 			} finally {
 				OnDocumentParsed (EventArgs.Empty);
 			}
 			return this.parsedDocument;
+		}
+
+		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly> ( () => new CecilLoader ().LoadAssemblyFile (typeof (object).Assembly.Location));
+		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>( () => new CecilLoader ().LoadAssemblyFile (typeof (System.Linq.Enumerable).Assembly.Location));
+
+		static IUnresolvedAssembly Mscorlib { get { return mscorlib.Value; } }
+		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
+		
+		public virtual IProjectContent GetProjectContext ()
+		{
+			if (Project == null) {
+				if (singleFileContext == null) {
+					singleFileContext = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
+					singleFileContext = singleFileContext.AddAssemblyReferences (new [] { Mscorlib, SystemCore });
+				}
+				if (parsedDocument != null)
+					return singleFileContext.UpdateProjectContent (null, parsedDocument.ParsedFile);
+				return singleFileContext;
+			}
+			
+			return TypeSystemService.GetProjectContext (Project);
 		}
 		
 		uint parseTimeout = 0;
@@ -661,22 +688,23 @@ namespace MonoDevelop.Ide.Gui
 			// be parsed at the same time.
 			string currentParseFile = FileName;
 			CancelParseTimeout ();
+			
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				string currentParseText = Editor.Text;
-				Project curentParseProject = Project;
-				// parser revice queue takes care of the locking
-				ProjectDomService.QueueParseJob (dom, delegate (string name, IProgressMonitor monitor) {
-					var currentParsedDocument = ProjectDomService.Parse (curentParseProject, currentParseFile, currentParseText);
+				string mimeType = Editor.Document.MimeType;
+				ThreadPool.QueueUserWorkItem (delegate {
+					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 						if (isClosed)
 							return;
 						this.parsedDocument = currentParsedDocument;
-						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
-							this.lastErrorFreeParsedDocument = parsedDocument;
+//						this.parsedDocument = currentParsedDocument;
+//						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
+//							this.lastErrorFreeParsedDocument = parsedDocument;
 						OnDocumentParsed (EventArgs.Empty);
 					});
-				}, FileName);
+				});
 				parseTimeout = 0;
 				return false;
 			});
@@ -700,12 +728,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public ParsedDocument LastErrorFreeParsedDocument {
-			get {
-				return lastErrorFreeParsedDocument;
-			}
-		}
-		
 		void OnEntryRemoved (object sender, SolutionItemEventArgs args)
 		{
 			if (args.SolutionItem == window.ViewContent.Project)
@@ -738,7 +760,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Mono.TextEditor.Highlighting.SyntaxMode mode = null;
 			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
-				mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (mt);
+				mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
 				if (mode != null)
 					break;
 			}
@@ -761,11 +783,11 @@ namespace MonoDevelop.Ide.Gui
 				return null;
 		}
 	
-		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()
-		{
-			return MonoDevelop.Projects.CodeGeneration.CodeGenerator.CreateGenerator (Editor.Document.MimeType, 
-				Editor.Options.TabsToSpaces, Editor.Options.TabSize, Editor.EolMarker);
-		}
+//		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()
+//		{
+//			return MonoDevelop.Projects.CodeGeneration.CodeGenerator.CreateGenerator (Editor.Document.MimeType, 
+//				Editor.Options.TabsToSpaces, Editor.Options.TabSize, Editor.EolMarker);
+//		}
 
 	}
 	

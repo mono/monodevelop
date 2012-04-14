@@ -27,17 +27,23 @@
 using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public class RenameHandler : AbstractRefactoringCommandHandler
 	{
+		protected override void Update (RefactoringOptions options, CommandInfo info)
+		{
+			var renameRefactoring = new RenameRefactoring ();
+			if (!renameRefactoring.IsValid (options))
+				info.Bypass = true;
+		}
+
 		protected override void Run (RefactoringOptions options)
 		{
-			RenameRefactoring renameRefactoring = new RenameRefactoring ();
+			var renameRefactoring = new RenameRefactoring ();
 			if (renameRefactoring.IsValid (options))
 				renameRefactoring.Run (options);
 		}

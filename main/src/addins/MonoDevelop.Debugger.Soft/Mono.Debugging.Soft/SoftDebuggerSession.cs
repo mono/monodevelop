@@ -1631,51 +1631,26 @@ namespace Mono.Debugging.Soft
 				if (ftypeName == typeName) {
 					string methodName = bp.FunctionName.Substring (dot + 1);
 					
-					if (vm.Version.AtLeast (2, 6)) {
-						foreach (var method in type.GetMethodsByNameFlags (methodName, BindingFlags.Default, false)) {
-							if (!CheckMethodParams (method, bp.ParamTypes))
-								continue;
+					foreach (var method in type.GetMethodsByNameFlags (methodName, BindingFlags.Default, false)) {
+						if (!CheckMethodParams (method, bp.ParamTypes))
+							continue;
+						
+						loc = GetLocFromMethod (method);
+						if (loc != null) {
+							string paramList = bp.ParamTypes != null ? "(" + string.Join (",", bp.ParamTypes) + ")" : "";
+							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
+							                                        bp.FunctionName, paramList, loc.SourceFile, loc.LineNumber, loc.ILOffset));
 							
-							loc = GetLocFromMethod (method);
-							if (loc != null) {
-								string paramList = bp.ParamTypes != null ? "(" + string.Join (",", bp.ParamTypes) + ")" : "";
-								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
-								                                        bp.FunctionName, paramList, loc.SourceFile, loc.LineNumber, loc.ILOffset));
-								
-								if (bp.ParamTypes == null)
-									bp.ParamTypes = GetParamTypes (method);
-								
-								bp.SetResolvedFileName (loc.SourceFile);
-								ResolvePendingBreakpoint (bi, loc);
-								
-								// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
-								if (!type.IsGenericType && !IsGenericMethod (method))
-									resolved.Add (bi);
-								break;
-							}
-						}
-					} else {
-						foreach (var method in type.GetMethods ()) {
-							if (method.Name != methodName || !CheckMethodParams (method, bp.ParamTypes))
-								continue;
+							if (bp.ParamTypes == null)
+								bp.ParamTypes = GetParamTypes (method);
 							
-							loc = GetLocFromMethod (method);
-							if (loc != null) {
-								string paramList = bp.ParamTypes != null ? "(" + string.Join (",", bp.ParamTypes) + ")" : "";
-								OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
-								                                        bp.FunctionName, paramList, loc.SourceFile, loc.LineNumber, loc.ILOffset));
-								
-								if (bp.ParamTypes == null)
-									bp.ParamTypes = GetParamTypes (method);
-								
-								bp.SetResolvedFileName (loc.SourceFile);
-								ResolvePendingBreakpoint (bi, loc);
-								
-								// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
-								if (!type.IsGenericType /* && !IsGenericMethod (method)*/)
-									resolved.Add (bi);
-								break;
-							}
+							bp.SetResolvedFileName (loc.SourceFile);
+							ResolvePendingBreakpoint (bi, loc);
+							
+							// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
+							if (!type.IsGenericType && !IsGenericMethod (method))
+								resolved.Add (bi);
+							break;
 						}
 					}
 				}

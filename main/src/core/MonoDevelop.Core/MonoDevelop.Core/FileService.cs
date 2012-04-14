@@ -43,8 +43,7 @@ namespace MonoDevelop.Core
 	public static class FileService
 	{
 		const string addinFileSystemExtensionPath = "/MonoDevelop/Core/FileSystemExtensions";
-		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.VolumeSeparatorChar, Path.AltDirectorySeparatorChar };
-		
+
 		static FileServiceErrorHandler errorHandler;
 		
 		static FileSystemExtension fileSystemChain;
@@ -284,6 +283,8 @@ namespace MonoDevelop.Core
 			return nx;
 		}
 		
+/*
+		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.VolumeSeparatorChar, Path.AltDirectorySeparatorChar };
 		public static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
 		{
 			if (!Path.IsPathRooted (absPath))
@@ -317,6 +318,79 @@ namespace MonoDevelop.Core
 			if (result.Length == 0)
 				return ".";
 			return result.ToString ();
+		}*/
+		
+		static bool IsSeparator (char ch)
+		{
+			return ch == Path.DirectorySeparatorChar || ch == Path.AltDirectorySeparatorChar || ch == Path.VolumeSeparatorChar;
+		}
+		
+		public unsafe static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
+		{
+			if (!Path.IsPathRooted (absPath) || string.IsNullOrEmpty (baseDirectoryPath))
+				return absPath;
+				
+			absPath = Path.GetFullPath (absPath);
+			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath.TrimEnd (Path.DirectorySeparatorChar));
+			
+			fixed (char* bPtr = baseDirectoryPath, aPtr = absPath) {
+				var bEnd = bPtr + baseDirectoryPath.Length;
+				var aEnd = aPtr + absPath.Length;
+				char* lastStartA = aEnd;
+				char* lastStartB = bEnd;
+				
+				int indx = 0;
+				// search common base path
+				var a = aPtr;
+				var b = bPtr;
+				while (a < aEnd) {
+					if (*a != *b)
+						break;
+					if (IsSeparator (*a)) {
+						indx++;
+						lastStartA = a + 1;
+						lastStartB = b; 
+					}
+					a++;
+					b++;
+					if (b >= bEnd) {
+						indx++;
+						lastStartA = a + 1;
+						lastStartB = b;
+						break;
+					}
+				}
+				
+				if (indx == 0) 
+					return absPath;
+				
+				if (lastStartA >= aEnd)
+					return ".";
+				
+				// look how many levels to go up into the base path
+				int goUpCount = 0;
+				while (lastStartB < bEnd) {
+					if (IsSeparator (*lastStartB))
+						goUpCount++;
+					lastStartB++;
+				}
+				
+				var size = goUpCount * 2 + goUpCount + aEnd - lastStartA;
+				var result = new char [size];
+				fixed (char* rPtr = result) {
+					// go paths up
+					var r = rPtr;
+					for (int i = 0; i < goUpCount; i++) {
+						*(r++) = '.';
+						*(r++) = '.';
+						*(r++) = Path.DirectorySeparatorChar;
+					}
+					// copy the remaining absulute path
+					while (lastStartA < aEnd)
+						*(r++) = *(lastStartA++);
+				}
+				return new string (result);
+			}
 		}
 		
 		public static string RelativeToAbsolutePath (string baseDirectoryPath, string relPath)

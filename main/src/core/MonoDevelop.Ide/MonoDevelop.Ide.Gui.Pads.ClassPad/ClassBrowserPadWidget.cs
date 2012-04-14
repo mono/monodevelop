@@ -33,13 +33,13 @@ using System.Collections.Generic;
 using Gdk;
 using Gtk;
 
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Docking;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 				CancelSearchClicked (this, System.EventArgs.Empty);
 		}
 		
-		List<IType> searchResults = new List<IType> ();
+		List<ITypeDefinition> searchResults = new List<ITypeDefinition> ();
 		Thread searchThread;
 		object matchLock   = new object ();
 		string matchString = string.Empty;
@@ -187,10 +187,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			if (!IdeApp.Workspace.IsOpen)
 				return;
 			foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
-				ProjectDom dom = ProjectDomService.GetProjectDom (project);
+				var dom = TypeSystemService.GetCompilation (project);
 				if (dom == null)
 					continue;
-				foreach (IType type in dom.Types) {
+				foreach (var type in dom.MainAssembly.TopLevelTypeDefinitions) {
 					if (ShouldAdd (type)) {
 						lock (searchResults) {
 							searchResults.Add (type);
@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			lock (searchResults) {
 				int max = Math.Min (50, searchResults.Count);
 				for (int i = 0; i < max; i++) {
-					list.AppendValues (ImageService.GetPixbuf (searchResults[i].StockIcon, Gtk.IconSize.Menu), searchResults[i].Name, searchResults[i]);
+					list.AppendValues (ImageService.GetPixbuf (searchResults[i].GetStockIcon (), Gtk.IconSize.Menu), searchResults[i].Name, searchResults[i]);
 				}
 				searchResults.RemoveRange (0, max);
 				return searchResults.Count > 0;

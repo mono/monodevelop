@@ -29,147 +29,122 @@
 using System;
 using NUnit.Framework;
 
-namespace Mono.TextEditor.Tests
+namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class RemoveTabTests
+	public class RemoveTabTests : TextEditorTestBase
 	{
-		[Test()]
-		public void TestRemoveTab ()
+		[TestCase(false)]
+		[TestCase(true)]
+		public void TestRemoveTab (bool reverse)
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = 
-@"\t123456789
-\t123[456789
-\t123d456789
-\t123]456789
-\t123456789
-\t123456789";
-			InsertTabTests.SetSelection (data, false);
-			
+			var data = InsertTabTests.Create (
+@"	123456789
+	123[456789
+	123d456789
+	123]456789
+	123456789
+	123456789", reverse);
+
 			MiscActions.RemoveTab (data);
-/*			ISegment currentSelection = InsertTabTests.GetSelection (data, false);
 			
-			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
-			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
-			Assert.AreEqual (currentSelection.EndOffset, data.Caret.Offset);
-			Assert.AreEqual (currentSelection.Offset, data.SelectionAnchor);*/
-			
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 1).Length);
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
-			
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 0).Length, data.Document.GetLine (DocumentLocation.MinLine + 4).Length);
-			
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
+			InsertTabTests.Check (data, 
+@"	123456789
+123[456789
+123d456789
+123]456789
+	123456789
+	123456789", reverse);
 		}
-		
-		[Test()]
-		public void TestRemoveTabReverse ()
+
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void TestRemoveTabCase2 (bool reverse)
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = 
-@"\t123456789
-\t123[456789
-\t123d456789
-\t123]456789
-\t123456789
-\t123456789";
-			InsertTabTests.SetSelection (data, true);
-			
+			var data = InsertTabTests.Create (
+@"	123456789
+[	123456789
+	123d456789
+	123]456789
+	123456789
+	123456789", reverse);
+
+
 			MiscActions.RemoveTab (data);
-/*			ISegment currentSelection = InsertTabTests.GetSelection (data, true);
-			
-			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
-			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
-			Assert.AreEqual (currentSelection.Offset, data.Caret.Offset);
-			Assert.AreEqual (currentSelection.EndOffset, data.SelectionAnchor);*/
-			
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 1).Length);
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
-			
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 0).Length, data.Document.GetLine (DocumentLocation.MinLine + 4).Length);
-			
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
+
+			InsertTabTests.Check (data, 
+@"	123456789
+[123456789
+123d456789
+123]456789
+	123456789
+	123456789", reverse);
 		}
-		
-		[Test()]
-		public void TestRemoveTabCase2 ()
+
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void TestRemoveTabCase3 (bool reverse)
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = 
-@"\t123456789
-[\t123456789
-\t123d456789
-\t123]456789
-\t123456789
-\t123456789";
-			InsertTabTests.SetSelection (data, false);
-			
+			var data = InsertTabTests.Create (
+@"	123456789
+	123[456789
+	123d456789
+]	123456789
+	123456789
+	123456789", reverse);
+
+
 			MiscActions.RemoveTab (data);
-/*			ISegment currentSelection = InsertTabTests.GetSelection (data, false);
-			
-			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
-			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
-			Assert.AreEqual (currentSelection.EndOffset, data.Caret.Offset);
-			Assert.AreEqual (currentSelection.Offset, data.SelectionAnchor);
-			Assert.AreEqual (currentSelection.Offset, data.Document.GetLine (DocumentLocation.MinLine + 1).Offset);*/
-			
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 1).Length);
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
-			
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 0).Length, data.Document.GetLine (DocumentLocation.MinLine + 4).Length);
-			
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
+
+			InsertTabTests.Check (data, 
+@"	123456789
+123[456789
+123d456789
+]	123456789
+	123456789
+	123456789", reverse);
 		}
 		
-		[Test()]
-		public void TestRemoveTabCase2Reverse ()
+		[TestCase(false)]
+		[TestCase(true)]
+		public void TestRemoveTabCase4 (bool reverse)
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = 
-@"\t123456789
-[\t123456789
-\t123d456789
-\t123]456789
-\t123456789
-\t123456789";
-			InsertTabTests.SetSelection (data, true);
-			
+			var data = InsertTabTests.Create (
+@"123456789
+123[456789
+123d456789
+123]456789
+123456789
+123456789", reverse);
+
+
 			MiscActions.RemoveTab (data);
-/*			ISegment currentSelection = InsertTabTests.GetSelection (data, true);
-			
-			Assert.AreEqual (currentSelection.Offset, data.SelectionRange.Offset);
-			Assert.AreEqual (currentSelection.EndOffset, data.SelectionRange.EndOffset);
-			Assert.AreEqual (currentSelection.Offset, data.Caret.Offset);
-			Assert.AreEqual (0, data.Caret.Column);
-			Assert.AreEqual (currentSelection.EndOffset, data.SelectionAnchor);*/
-			
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 1).Length);
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-			Assert.IsTrue (data.Document.GetLine (DocumentLocation.MinLine + 0).Length < data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
-			
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 0).Length, data.Document.GetLine (DocumentLocation.MinLine + 4).Length);
-			
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 2).Length);
-			Assert.AreEqual (data.Document.GetLine (DocumentLocation.MinLine + 1).Length, data.Document.GetLine (DocumentLocation.MinLine + 3).Length);
+
+			InsertTabTests.Check (data, 
+@"123456789
+123[456789
+123d456789
+123]456789
+123456789
+123456789", reverse);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
+
+		[Test]
+		public void TestRemoveTabWithoutSelection ()
 		{
-			Gtk.Application.Init ();
+			var data = Create (@"
+	1
+	$2
+	3");
+			MiscActions.RemoveTab (data);
+			Check (data, @"
+	1
+$2
+	3");
 		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
+
 	}
 }
 

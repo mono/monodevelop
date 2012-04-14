@@ -33,13 +33,14 @@ using System.Reflection;
 using System.Threading;
 using System.Xml;
 using System.Xml.Schema;
+using System.Linq;
 
 namespace Mono.TextEditor.Highlighting
 {
 	public static class SyntaxModeService
 	{
-		static Dictionary<string, SyntaxMode> syntaxModes = new Dictionary<string, SyntaxMode> ();
-		static Dictionary<string, ColorSheme>      styles      = new Dictionary<string, ColorSheme> ();
+		static Dictionary<string, ISyntaxModeProvider> syntaxModes = new Dictionary<string, ISyntaxModeProvider> ();
+		static Dictionary<string, ColorScheme> styles      = new Dictionary<string, ColorScheme> ();
 		static Dictionary<string, IXmlProvider> syntaxModeLookup = new Dictionary<string, IXmlProvider> ();
 		static Dictionary<string, IXmlProvider> styleLookup      = new Dictionary<string, IXmlProvider> ();
 		static Dictionary<string, string> isLoadedFromFile = new Dictionary<string, string> ();
@@ -59,7 +60,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static string GetFileNameForStyle (ColorSheme style)
+		public static string GetFileNameForStyle (ColorScheme style)
 		{
 			string result;
 			if (!isLoadedFromFile.TryGetValue (style.Name, out result))
@@ -67,14 +68,14 @@ namespace Mono.TextEditor.Highlighting
 			return result;
 		}
 		
-		public static void InstallSyntaxMode (string mimeType, SyntaxMode mode)
+		public static void InstallSyntaxMode (string mimeType, ISyntaxModeProvider modeProvider)
 		{
 			if (syntaxModeLookup.ContainsKey (mimeType))
 				syntaxModeLookup.Remove (mimeType);
-			syntaxModes[mimeType] = mode;
+			syntaxModes[mimeType] = modeProvider;
 		}
 		
-		public static ColorSheme GetColorStyle (Gtk.Style widgetStyle, string name)
+		public static ColorScheme GetColorStyle (Gtk.Style widgetStyle, string name)
 		{
 			if (styles.ContainsKey (name))
 				return styles [name];
@@ -94,7 +95,7 @@ namespace Mono.TextEditor.Highlighting
 			return null;
 		}
 		
-		public static IXmlProvider GetProvider (ColorSheme style)
+		public static IXmlProvider GetProvider (ColorScheme style)
 		{
 			if (styleLookup.ContainsKey (style.Name)) 
 				return styleLookup[style.Name];
@@ -107,7 +108,7 @@ namespace Mono.TextEditor.Highlighting
 				throw new System.ArgumentException ("Style " + name + " not found", "name");
 			XmlReader reader = styleLookup [name].Open ();
 			try {
-				styles [name] = ColorSheme.LoadFrom (reader);
+				styles [name] = ColorScheme.LoadFrom (reader);
 			} catch (Exception e) {
 				throw new IOException ("Error while loading style :" + name, e);
 			} finally {
@@ -121,9 +122,9 @@ namespace Mono.TextEditor.Highlighting
 				throw new System.ArgumentException ("Syntax mode for mime:" + mimeType + " not found", "mimeType");
 			XmlReader reader = syntaxModeLookup [mimeType].Open ();
 			try {
-				SyntaxMode mode = SyntaxMode.Read (reader);
+				var mode = SyntaxMode.Read (reader);
 				foreach (string mime in mode.MimeType.Split (';')) {
-					syntaxModes [mime] = mode;
+					syntaxModes [mime] = new ProtoTypeSyntaxModeProvider (mode);
 				}
 			} catch (Exception e) {
 				throw new IOException ("Error while syntax mode for mime:" + mimeType, e);
@@ -132,22 +133,34 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static SyntaxMode GetSyntaxMode (string mimeType)
+		public static SyntaxMode GetSyntaxMode (TextDocument doc)
 		{
-			if (syntaxModes.ContainsKey (mimeType))
-				return syntaxModes[mimeType];
-			if (syntaxModeLookup.ContainsKey (mimeType)) {
+			return GetSyntaxMode (doc, doc.MimeType);
+		}
+		
+		public static SyntaxMode GetSyntaxMode (TextDocument doc, string mimeType)
+		{
+			SyntaxMode result = null;
+			if (syntaxModes.ContainsKey (mimeType)) {
+				result = syntaxModes [mimeType].Create (doc);
+			} else if (syntaxModeLookup.ContainsKey (mimeType)) {
 				LoadSyntaxMode (mimeType);
 				syntaxModeLookup.Remove (mimeType);
-				return GetSyntaxMode (mimeType);
+				result = GetSyntaxMode (doc, mimeType);
 			}
-			return null;
+			if (result != null) {
+				foreach (var rule in semanticRules.Where (r => r.Item1 == mimeType)) {
+					result.AddSemanticRule (rule.Item2, rule.Item3);
+				}
+			}
+			return result;
 		}
 		
 		public static bool ValidateAllSyntaxModes ()
 		{
+			var doc = new TextDocument ();
 			foreach (string mime in new List<string> (syntaxModeLookup.Keys)) {
-				GetSyntaxMode (mime);
+				GetSyntaxMode (doc, mime);
 			}
 			syntaxModeLookup.Clear ();
 			foreach (string style in new List<string> (styleLookup.Keys)) {
@@ -155,13 +168,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 			styleLookup.Clear ();
 			bool result = true;
-			foreach (KeyValuePair<string, ColorSheme> style in styles) {
-				HashSet<SyntaxMode> checkedModes = new HashSet<SyntaxMode> ();
-				foreach (KeyValuePair<string, SyntaxMode> mode in syntaxModes) {
+			foreach (KeyValuePair<string, ColorScheme> style in styles) {
+				var checkedModes = new HashSet<ISyntaxModeProvider> ();
+				foreach (var mode in syntaxModes) {
 					if (checkedModes.Contains (mode.Value))
 						continue;
-					if (!mode.Value.Validate (style.Value)) {
-						System.Console.WriteLine(mode.Key + " failed to validate against:" + style.Key);
+					if (!mode.Value.Create (doc).Validate (style.Value)) {
+						System.Console.WriteLine (mode.Key + " failed to validate against:" + style.Key);
 						result = false;
 					}
 					checkedModes.Add (mode.Value);
@@ -170,7 +183,7 @@ namespace Mono.TextEditor.Highlighting
 			return result;
 		}
 		
-		public static void Remove (ColorSheme style)
+		public static void Remove (ColorScheme style)
 		{
 			if (styles.ContainsKey (style.Name))
 				styles.Remove (style.Name);
@@ -188,9 +201,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void ScanSpans (Document doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
+		public static void ScanSpans (TextDocument doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
 		{
-			SyntaxMode.SpanParser parser = mode.CreateSpanParser (doc, mode, null, spanStack);
+			SyntaxMode.SpanParser parser = mode.CreateSpanParser (null, spanStack);
 			parser.ParseSpans (start, end - start);
 		}
 		
@@ -198,7 +211,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		class UpdateWorker
 		{
-			Document doc;
+			TextDocument doc;
 			SyntaxMode mode;
 			int startOffset;
 			int endOffset;
@@ -208,7 +221,7 @@ namespace Mono.TextEditor.Highlighting
 				private set;
 			}
 			
-			public Document Doc {
+			public TextDocument Doc {
 				get { return this.doc; }
 			}
 			
@@ -216,7 +229,7 @@ namespace Mono.TextEditor.Highlighting
 				get;
 				set;
 			}
-			public UpdateWorker (Document doc, SyntaxMode mode, int startOffset, int endOffset)
+			public UpdateWorker (TextDocument doc, SyntaxMode mode, int startOffset, int endOffset)
 			{
 				this.doc = doc;
 				this.mode = mode;
@@ -227,7 +240,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 			
 			
-			bool EndsWithContinuation (Span span, LineSegment line)
+			bool EndsWithContinuation (Span span, DocumentLine line)
 			{
 				return !span.StopAtEol || span.StopAtEol && !string.IsNullOrEmpty (span.Continuation) &&
 					line != null && doc.GetTextAt (line).Trim ().EndsWith (span.Continuation);
@@ -247,7 +260,7 @@ namespace Mono.TextEditor.Highlighting
 					if (span == null)
 						return;
 					var spanStack = span.Clone ();
-					SyntaxMode.SpanParser parser = mode.CreateSpanParser(doc, mode, null, spanStack);
+					SyntaxMode.SpanParser parser = mode.CreateSpanParser(null, spanStack);
 					foreach (var line in doc.GetLinesStartingAt (startLine)) {
 						if (line == null)
 							return;
@@ -261,7 +274,7 @@ namespace Mono.TextEditor.Highlighting
 								break;
 						}
 						line.StartSpan = spanStack.Clone();
-						parser.ParseSpans(line.Offset, line.Length);
+						parser.ParseSpans(line.Offset, line.LengthIncludingDelimiter);
 						while (spanStack.Count > 0 && !EndsWithContinuation(spanStack.Peek(), line))
 							parser.PopSpan();
 					}
@@ -311,7 +324,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void StartUpdate (Document doc, SyntaxMode mode, int startOffset, int endOffset)
+		public static void StartUpdate (TextDocument doc, SyntaxMode mode, int startOffset, int endOffset)
 		{
 			lock (updateQueue) {
 				updateQueue.Enqueue (new UpdateWorker (doc, mode, startOffset, endOffset));
@@ -319,7 +332,7 @@ namespace Mono.TextEditor.Highlighting
 			queueSignal.Set ();
 		}
 		
-		public static void WaitUpdate (Document doc)
+		public static void WaitUpdate (TextDocument doc)
 		{
 			UpdateWorker[] arr;
 			lock (updateQueue) {
@@ -403,7 +416,7 @@ namespace Mono.TextEditor.Highlighting
 					}
 				} else if (file.EndsWith ("Style.xml")) {
 					using (XmlTextReader reader =  new XmlTextReader (file)) {
-						string styleName = Scan (reader, ColorSheme.NameAttribute);
+						string styleName = Scan (reader, ColorScheme.NameAttribute);
 						styleLookup [styleName] = new UrlXmlProvider (file);
 						isLoadedFromFile [styleName] = file;
 					}
@@ -427,7 +440,7 @@ namespace Mono.TextEditor.Highlighting
 				} else if (resource.EndsWith ("Style.xml")) {
 					using (Stream stream = assembly.GetManifestResourceStream (resource)) 
 					using (XmlTextReader reader = new XmlTextReader (stream)) {
-						string styleName = Scan (reader, ColorSheme.NameAttribute);
+						string styleName = Scan (reader, ColorScheme.NameAttribute);
 						styleLookup [styleName] = new ResourceXmlProvider (assembly, resource);
 					}
 				}
@@ -454,7 +467,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void AddStyle (string fileName, ColorSheme style)
+		public static void AddStyle (string fileName, ColorScheme style)
 		{
 			isLoadedFromFile [style.Name] = fileName;
 			styles [style.Name] = style;
@@ -462,27 +475,34 @@ namespace Mono.TextEditor.Highlighting
 		public static void AddStyle (IXmlProvider provider)
 		{
 			using (XmlReader reader = provider.Open ()) {
-				string styleName = Scan (reader, ColorSheme.NameAttribute);
+				string styleName = Scan (reader, ColorScheme.NameAttribute);
 				styleLookup [styleName] = provider;
 			}
 		}
 		public static void RemoveStyle (IXmlProvider provider)
 		{
 			using (XmlReader reader = provider.Open ()) {
-				string styleName = Scan (reader, ColorSheme.NameAttribute);
+				string styleName = Scan (reader, ColorScheme.NameAttribute);
 				styleLookup.Remove (styleName);
 			}
+		}
+		
+		static List<Tuple<string, string, SemanticRule>> semanticRules = new List<Tuple<string, string, SemanticRule>> ();
+		
+		public static void AddSemanticRule (string mime, string ruleName, SemanticRule rule)
+		{
+			semanticRules.Add (Tuple.Create (mime, ruleName, rule));
 		}
 		
 		static SyntaxModeService ()
 		{
 			StartUpdateThread ();
-			LoadStylesAndModes (typeof (SyntaxModeService).Assembly);
-			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
-			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
-			SyntaxModeService.GetSyntaxMode ("text/x-csharp").AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
+			LoadStylesAndModes (typeof(SyntaxModeService).Assembly);
+			SyntaxModeService.AddSemanticRule ("text/x-csharp", "Comment", new HighlightUrlSemanticRule ("comment"));
+			SyntaxModeService.AddSemanticRule ("text/x-csharp", "XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
+			SyntaxModeService.AddSemanticRule ("text/x-csharp", "String", new HighlightUrlSemanticRule ("string"));
 			
-			InstallSyntaxMode ("text/x-jay", new JaySyntaxMode ());
+			InstallSyntaxMode ("text/x-jay", new SyntaxModeProvider (doc => new JaySyntaxMode (doc)));
 		}
 	}
 }

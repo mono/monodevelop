@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Execution
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Working Directory:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Working Directory:");
 			this.table1.Add (this.label2);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
 			w3.TopAttach = ((uint)(1));
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Execution
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0F;
-			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Arguments:");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Arguments:");
 			this.table1.Add (this.label4);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Execution
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0F;
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Environment Variables:");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Environment Variables:");
 			this.vbox2.Add (this.label3);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label3]));
 			w6.Position = 1;

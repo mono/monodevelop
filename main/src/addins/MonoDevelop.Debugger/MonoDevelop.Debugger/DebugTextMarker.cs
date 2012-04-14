@@ -56,8 +56,15 @@ namespace MonoDevelop.Debugger
 		{
 			this.editor = editor;
 		}
+
+		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		{
+			if (LineSegment.Markers.Any (m => m is CurrentDebugLineTextMarker))
+				return;
+			base.Draw (editor, cr, layout, selected, startOffset, endOffset, y, startXPos, endXPos);
+		}
 		
-		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double x, double y, double width, double height)
+		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
 		{
 			double size;
 			if (width > height) {

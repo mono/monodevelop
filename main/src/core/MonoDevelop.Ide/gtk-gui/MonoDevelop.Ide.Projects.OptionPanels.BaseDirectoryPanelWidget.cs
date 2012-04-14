@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Location of Files</b>");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Location of Files</b>");
 			this.label1.UseMarkup = true;
 			this.vbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Root directory:");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Root directory:");
 			this.hbox1.Add (this.label3);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label3]));
 			w3.Position = 1;

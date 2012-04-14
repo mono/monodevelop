@@ -38,11 +38,13 @@ namespace Mono.TextEditor
 		void ZoomIn ();
 		void ZoomOut ();
 		void ZoomReset ();
+		
 		string IndentationString { get; }
+		
 		IWordFindStrategy WordFindStrategy { get; set; }
+		
 		bool AllowTabsAfterNonTabs { get; set; }
 		bool HighlightMatchingBracket { get; set; }
-		bool RemoveTrailingWhitespaces { get; set; }
 		bool TabsToSpaces { get; set; }
 		int IndentationSize { get; set; }
 		int TabSize { get; set; }
@@ -56,7 +58,7 @@ namespace Mono.TextEditor
 		bool ShowSpaces { get; set; }
 		int RulerColumn { get; set; }
 		bool ShowRuler { get; set; }
-		bool AutoIndent { get; set; }
+		IndentStyle IndentStyle { get; set; }
 		bool OverrideDocumentEolMarker { get; set; }
 		bool EnableSyntaxHighlighting { get; set; }
 		bool EnableAnimations { get; }
@@ -67,7 +69,7 @@ namespace Mono.TextEditor
 		string ColorScheme { get; set;  }
 		string DefaultEolMarker { get; set; }
 		
-		ColorSheme GetColorStyle (Gtk.Style widgetStyle);
+		ColorScheme GetColorStyle (Gtk.Style widgetStyle);
 		
 		event EventHandler Changed;
 	}
