@@ -54,6 +54,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteProjectBuilder projectBuilder;
 		string lastBuildToolsVersion;
 		string lastBuildRuntime;
+		string lastFileName;
 		ITimeTracker timer;
 		bool useXBuild;
 		MSBuildVerbosity verbosity;
@@ -132,7 +133,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				runtime = Runtime.SystemAssemblyService.CurrentRuntime;
 				toolsVersion = MSBuildProjectService.DefaultToolsVersion;
 			}
-			if (projectBuilder == null || lastBuildToolsVersion != toolsVersion || lastBuildRuntime != runtime.Id) {
+			if (projectBuilder == null || lastBuildToolsVersion != toolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName) {
 				if (projectBuilder != null) {
 					projectBuilder.Dispose ();
 					projectBuilder = null;
@@ -140,6 +141,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, toolsVersion, item.FileName);
 				lastBuildToolsVersion = toolsVersion;
 				lastBuildRuntime = runtime.Id;
+				lastFileName = item.FileName;
 			}
 			return projectBuilder;
 		}
