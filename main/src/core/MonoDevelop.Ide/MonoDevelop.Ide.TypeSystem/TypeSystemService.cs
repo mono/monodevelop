@@ -752,7 +752,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					wrapper.Content.Location = project.FileName;
 					referenceCounter [project] = 1;
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, context));
-					project.FileChangedInProject += OnFileChanged;
 					project.FileAddedToProject += OnFileAdded;
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
@@ -777,16 +776,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					return wrapper.Key;
 			return null;
 		}
-		
+
 		#region Project modification handlers
-		static void OnFileChanged (object sender, ProjectFileEventArgs args)
-		{
-			var project = (Project)sender;
-			foreach (ProjectFileEventInfo fargs in args) {
-				QueueParseJob (projectContents [project], new [] { fargs.ProjectFile });
-			}
-		}
-		
 		static void OnFileAdded (object sender, ProjectFileEventArgs args)
 		{
 			var project = (Project)sender;
@@ -858,7 +849,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			
 			if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
-				project.FileChangedInProject -= OnFileChanged;
 				project.FileAddedToProject -= OnFileAdded;
 				project.FileRemovedFromProject -= OnFileRemoved;
 				project.FileRenamedInProject -= OnFileRenamed;
@@ -1446,7 +1436,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				Context = context,
 				FileList = fileList
 			};
-			
 			lock (parseQueueLock) {
 				RemoveParseJob (context);
 				parseQueueIndex [context] = job;
