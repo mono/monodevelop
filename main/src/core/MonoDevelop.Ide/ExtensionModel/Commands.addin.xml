@@ -829,6 +829,7 @@
 			macShortcut="Alt|Shift|space"
 			shortcut = "Alt|Shift|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
+			_description="Inserts a template or when something is selected surrounds selection with a template"
 			_label = "I_nsert Template..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
 			_label = "Go to end of line" />
