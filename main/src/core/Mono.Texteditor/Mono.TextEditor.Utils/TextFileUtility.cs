@@ -173,8 +173,8 @@ namespace Mono.TextEditor.Utils
 				throw new ArgumentNullException ("text");
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
-
-			using (var stream = new FileStream (fileName, FileMode.Create, FileAccess.Write, FileShare.Write)) {
+			string tmpPath = Path.GetTempFileName ();
+			using (var stream = new FileStream (tmpPath, FileMode.Create, FileAccess.Write, FileShare.Write)) {
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
 					if (bom != null && bom.Length > 0)
@@ -182,6 +182,42 @@ namespace Mono.TextEditor.Utils
 				}
 				byte[] bytes = encoding.GetBytes (text);
 				stream.Write (bytes, 0, bytes.Length);
+			}
+			SystemRename (tmpPath, fileName);
+		}
+
+		// Code taken from FileService.cs
+		static void SystemRename (string sourceFile, string destFile)
+		{
+			//FIXME: use the atomic System.IO.File.Replace on NTFS
+			if (Platform.IsWindows) {
+				string wtmp = null;
+				if (File.Exists (destFile)) {
+					do {
+						wtmp = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
+					} while (File.Exists (wtmp));
+					File.Move (destFile, wtmp);
+				}
+				try {
+					File.Move (sourceFile, destFile);
+				} catch {
+					try {
+						if (wtmp != null)
+							File.Move (wtmp, destFile);
+					} catch {
+						wtmp = null;
+					}
+					throw;
+				} finally {
+					if (wtmp != null) {
+						try {
+							File.Delete (wtmp);
+						} catch {
+						}
+					}
+				}
+			} else {
+				Mono.Unix.Native.Syscall.rename (sourceFile, destFile);
 			}
 		}
 
