@@ -670,14 +670,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override void Visit(Mono.CSharp.Enum e)
+			public override void Visit (Mono.CSharp.Enum e)
 			{
-				var newType = new TypeDeclaration();
+				var newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Enum;
-				AddAttributeSection(newType, e);
-				var location = LocationsBag.GetMemberLocation(e);
+				AddAttributeSection (newType, e);
+				var location = LocationsBag.GetMemberLocation (e);
 				
-				AddModifiers(newType, location);
+				AddModifiers (newType, location);
 				int curLoc = 0;
 				if (location != null && location.Count > 0)
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.EnumKeyword);
@@ -693,12 +693,17 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.LBrace);
 				typeStack.Push (newType);
 				
-				foreach (EnumMember member in e.Members) {
+				foreach (var m in e.Members) {
+					EnumMember member = m as EnumMember;
+					if (member == null) {
+						Console.WriteLine ("WARNING - ENUM MEMBER: " + m);
+						continue;
+					}
 					Visit (member);
 					if (location != null && curLoc < location.Count - 1) //last one is closing brace
 						newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.Comma);
 				}
-				
+
 				if (location != null && location.Count > 2) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.RBrace);
