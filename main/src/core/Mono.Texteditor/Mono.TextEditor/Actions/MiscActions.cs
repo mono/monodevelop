@@ -117,7 +117,6 @@ namespace Mono.TextEditor
 			data.Document.CommitDocumentUpdate ();
 		}
 
-		
 		public static void RemoveTab (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
@@ -462,6 +461,13 @@ namespace Mono.TextEditor
 		{
 			data.RequestRecenter ();
 		}
-		
+
+		public static void DuplicateLine (TextEditorData data)
+		{
+			DocumentLine line = data.Document.GetLine (data.Caret.Line);
+			if (line == null)
+				return;
+			data.Insert (line.Offset, data.GetTextAt (line.SegmentIncludingDelimiter));
+		}
 	}
 }

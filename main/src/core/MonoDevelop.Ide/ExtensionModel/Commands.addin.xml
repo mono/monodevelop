@@ -960,6 +960,8 @@
 			macShortcut = "Control|L" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode"
 			_label = "Toggle block selection mode"/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
+			_label = "Duplicate line"/>
 	</Category>
 	
 </Extension>

@@ -208,6 +208,24 @@ eeeeeeeeee
 ffffffffff");
 		}
 
+		[Test()]
+		public void TestDuplicateLines ()
+		{
+			var data = Create (@"aaaaaaaaa
+bbbbbbbbbb
+cccccccccc
+dddddd$dddd
+eeeeeeeeee
+ffffffffff");
+			MiscActions.DuplicateLine (data);
+			Check (data, @"aaaaaaaaa
+bbbbbbbbbb
+cccccccccc
+dddddddddd
+dddddd$dddd
+eeeeeeeeee
+ffffffffff");
+		}
 	}
 }
 

@@ -994,7 +994,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			RunAction (MiscActions.TransposeCharacters);
 		}
-		
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine)]
+		internal void DuplicateLine ()
+		{
+			RunAction (MiscActions.DuplicateLine);
+		}
+
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.RecenterEditor)]
 		internal void RecenterEditor ()
 		{

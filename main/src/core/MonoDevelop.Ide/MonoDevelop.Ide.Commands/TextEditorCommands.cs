@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Commands
 		DeleteNextSubword,
 		TransposeCharacters,
 		RecenterEditor,
+		DuplicateLine,
 		
 		ToggleCompletionSuggestionMode,
 		ToggleBlockSelectionMode
