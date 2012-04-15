@@ -1227,21 +1227,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public SearchResult FindNext (bool focus)
 		{
-			SearchResult result = TextEditor.FindNext (true);
-			if (focus) {
-				TextEditor.GrabFocus ();
-			}
-			if (searchAndReplaceWidget != null)
-				TextEditor.CenterToCaret ();
-			if (result == null) {
-				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
-			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (new Image (Gtk.Stock.Find, IconSize.Menu),
-					GettextCatalog.GetString ("Reached bottom, continued from top"));
-			} else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
-			}
-			return result;
+			return SearchAndReplaceWidget.FindNext (TextEditor);
 		}
 		
 		public SearchResult FindPrevious ()
@@ -1251,22 +1237,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public SearchResult FindPrevious (bool focus)
 		{
-			SearchResult result = TextEditor.FindPrevious (true);
-			if (focus) {
-				TextEditor.GrabFocus ();
-			}
-			if (searchAndReplaceWidget != null)
-				TextEditor.CenterToCaret ();
-			if (result == null) {
-				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
-			} else if (result.SearchWrapped) {
-				IdeApp.Workbench.StatusBar.ShowMessage (
-					new Image (Gtk.Stock.Find, IconSize.Menu),
-					GettextCatalog.GetString ("Reached top, continued from bottom"));
-			} else {
-				IdeApp.Workbench.StatusBar.ShowReady ();
-			}
-			return result;
+			return SearchAndReplaceWidget.FindPrevious (TextEditor);
 		}
 
 		internal static string FormatPatternToSelectionOption (string pattern)

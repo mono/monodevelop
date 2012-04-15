@@ -1288,6 +1288,18 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			builder.Selected = builder.Expanded = selectReference;
 		}
+
+		[CommandHandler (SearchCommands.FindNext)]
+		public void FindNext ()
+		{
+			SearchAndReplaceWidget.FindNext (this.inspectEditor);
+		}
+
+		[CommandHandler (SearchCommands.FindPrevious)]
+		public void FindPrevious ()
+		{
+			SearchAndReplaceWidget.FindPrevious (this.inspectEditor);
+		}
 		
 		[CommandHandler (SearchCommands.Find)]
 		public void ShowSearchWidget ()
