@@ -728,14 +728,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 		
-		public static void LoadProject (Project project)
+		public static ProjectContentWrapper LoadProject (Project project)
 		{
-			if (IncLoadCount (project) != 1)
-				return;
+			if (IncLoadCount (project) != 1) 
+				return null;
 			LoadProjectCache (project);
 			lock (rwLock) {
 				if (projectContents.ContainsKey (project))
-					return;
+					return null;
 				try {
 					IProjectContent context = null;
 					if (projectCache.ContainsKey (project.FileName))
@@ -756,9 +756,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
+					return wrapper;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
 				}
+				return null;
 			}
 		}
 		
@@ -847,7 +849,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (DecLoadCount (project) != 0)
 				return;
-			
 			if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
 				project.FileAddedToProject -= OnFileAdded;
 				project.FileRemovedFromProject -= OnFileRemoved;
@@ -884,8 +885,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static void OnSolutionItemAdded (object sender, SolutionItemChangeEventArgs args)
 		{
-			if (args.SolutionItem is Project)
-				LoadProject ((Project)args.SolutionItem);
+			if (args.SolutionItem is Project) {
+				var wrapper = LoadProject ((Project)args.SolutionItem);
+				if (wrapper != null)
+					wrapper.ReloadAssemblyReferences (wrapper.Project);
+			}
 		}
 		
 		static void OnSolutionItemRemoved (object sender, SolutionItemChangeEventArgs args)
