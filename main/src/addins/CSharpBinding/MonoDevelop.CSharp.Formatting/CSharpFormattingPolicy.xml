@@ -16,10 +16,12 @@
 		<Value _displayName="Add braces">AddBraces</Value>
 	</Type>
 	
-	<Type name = "ArrayInitializerPlacement">
-		<Value _displayName="Always break line">AlwaysNewLine</Value>
-		<Value _displayName="Never break line">AlwaysSameLine</Value>
-	</Type>
+	<Type name = "Wrapping">
+		<Value _displayName="Do not change">DoNotChange</Value>
+		<Value _displayName="Do not wrap">DoNotWrap</Value>
+		<Value _displayName="Wrap always">WrapAlways</Value>
+		<Value _displayName="Wrap if too long">WrapIfTooLong</Value>
+		</Type>
 	
 	<Example name = "event"><![CDATA[
 	class ClassDeclaration { 
@@ -451,7 +453,6 @@ class ClassDeclaration {
 			<Option name="PlaceCatchOnNewLine" _displayName="'catch'" example="simpleCatch"/>
 			<Option name="PlaceFinallyOnNewLine" _displayName="'finally'" example="simpleCatch"/>
 			<Option name="PlaceWhileOnNewLine" _displayName="'while'" example="simpleDoWhile"/>
-			<Option name="PlaceArrayInitializersOnNewLine" _displayName="array initializers" example="simpleArrayInitializer"/>
 		</Category>
 	</Category>
 	

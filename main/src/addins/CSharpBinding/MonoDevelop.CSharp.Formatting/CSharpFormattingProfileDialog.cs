@@ -621,7 +621,7 @@ namespace TestSpace {
 			AddOption (newLineOptions, "PlaceCatchOnNewLine", GettextCatalog.GetString ("Place 'catch' on new line"), simpleCatch);
 			AddOption (newLineOptions, "PlaceFinallyOnNewLine", GettextCatalog.GetString ("Place 'finally' on new line"), simpleCatch);
 			AddOption (newLineOptions, "PlaceWhileOnNewLine", GettextCatalog.GetString ("Place 'while' on new line"), simpleDoWhile);
-			AddOption (newLineOptions, "PlaceArrayInitializersOnNewLine", GettextCatalog.GetString ("Place array initializers on new line"), simpleArrayInitializer);
+			//AddOption (newLineOptions, "PlaceArrayInitializersOnNewLine", GettextCatalog.GetString ("Place array initializers on new line"), simpleArrayInitializer);
 			treeviewNewLines.ExpandAll ();
 			#endregion
 			
