@@ -166,7 +166,7 @@ namespace MonoDevelop.Core
 		{
 			DataCollection data = new DataCollection ();
 
-			if (properties == null)
+			if (IsEmpty)
 				return data;
 
 			foreach (KeyValuePair<string,object> entry in properties) {
