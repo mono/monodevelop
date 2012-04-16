@@ -1168,8 +1168,8 @@ namespace MonoDevelop.Ide
 			
 			switch (action) {
 			case BeforeCompileAction.Nothing: break;
-			case BeforeCompileAction.PromptForSave: DispatchService.GuiDispatch (delegate { PromptForSave (result); }); break;
-			case BeforeCompileAction.SaveAllFiles: DispatchService.GuiDispatch (delegate { SaveAllFiles (result); }); break;
+			case BeforeCompileAction.PromptForSave: DispatchService.GuiSyncDispatch (delegate { PromptForSave (result); }); break;
+			case BeforeCompileAction.SaveAllFiles: DispatchService.GuiSyncDispatch (delegate { SaveAllFiles (result); }); break;
 			default: System.Diagnostics.Debug.Assert (false); break;
 			}
 			
