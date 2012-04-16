@@ -83,10 +83,16 @@ namespace MonoDevelop.SourceEditor
 				if (res == null || res.IsError || res.GetType () == typeof (ResolveResult))
 					return null;
 				
+				//Console.WriteLine ("res is a {0}", res.GetType ().Name);
+				
 				if (expressionRegion.IsEmpty)
 					return null;
 				
 				if (res is NamespaceResolveResult ||
+				    res is ConversionResolveResult ||
+				    res is ForEachResolveResult ||
+				    res is TypeIsResolveResult ||
+				    res is TypeOfResolveResult ||
 				    res is TypeResolveResult ||
 				    res is ErrorResolveResult)
 					return null;
@@ -142,6 +148,12 @@ namespace MonoDevelop.SourceEditor
 					}
 					
 					// If the TargetResult is not null, then treat it like any other ResolveResult.
+				} else if (res is ConstantResolveResult) {
+					// Fall through...
+				} else if (res is ThisResolveResult) {
+					// Fall through...
+				} else {
+					return null;
 				}
 				
 				if (expression == null)
