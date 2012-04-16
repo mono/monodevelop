@@ -603,6 +603,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected override void ResetState ()
 		{
+			StartOffset = 0;
 			previousWidth = previousHeight = -1;
 			base.ResetState ();
 		}
