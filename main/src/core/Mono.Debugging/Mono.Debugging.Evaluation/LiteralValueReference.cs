@@ -74,6 +74,15 @@ namespace Mono.Debugging.Evaluation
 			return val;
 		}
 		
+		void EnsureValueAndType ()
+		{
+			if (!objCreated && objLiteral) {
+				value = Context.Adapter.CreateValue (Context, objValue);
+				type = Context.Adapter.GetValueType (Context, value);
+				objCreated = true;
+			}
+		}
+		
 		public override object ObjectValue {
 			get {
 				if (objLiteral)
@@ -85,11 +94,7 @@ namespace Mono.Debugging.Evaluation
 
 		public override object Value {
 			get {
-				if (!objCreated && objLiteral) {
-					objCreated = true;
-					value = Context.Adapter.CreateValue (Context, objValue);
-					type = Context.Adapter.GetValueType (Context, value);
-				}
+				EnsureValueAndType ();
 				return value;
 			}
 			set {
@@ -105,11 +110,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object Type {
 			get {
-#pragma warning disable 219
-				// This assures that value and type are set.
-				var v = Value;
-#pragma warning restore 219
-				
+				EnsureValueAndType ();
 				return type;
 			}
 		}
