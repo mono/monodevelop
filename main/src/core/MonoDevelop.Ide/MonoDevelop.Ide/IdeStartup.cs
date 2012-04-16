@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Initializing Runtime");
-			monitor.BeginTask (GettextCatalog.GetString ("Starting " + BrandingService.ApplicationName), 3);
+			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 3);
 			monitor.Step (1);
 			Runtime.Initialize (true);
 			
