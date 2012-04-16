@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int endOffset = -1;
 		public string PartialWord {
 			get {
-				return CompletionWidget.GetText (StartOffset, endOffset > 0 ? endOffset : CompletionWidget.CaretOffset); 
+				return CompletionWidget.GetText (StartOffset, Math.Max (StartOffset, endOffset > 0 ? endOffset : CompletionWidget.CaretOffset)); 
 			}
 			
 		}
