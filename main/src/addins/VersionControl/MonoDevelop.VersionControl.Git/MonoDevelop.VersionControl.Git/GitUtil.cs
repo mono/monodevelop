@@ -41,6 +41,7 @@ using NGit.Storage.File;
 using NGit.Transport;
 using NGit.Diff;
 using Mono.TextEditor.Utils;
+using NGit.Internal;
 
 namespace MonoDevelop.VersionControl.Git
 {
