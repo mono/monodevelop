@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gdk;
 
 namespace Mono.TextEditor
 {
@@ -85,7 +86,13 @@ namespace Mono.TextEditor
 		protected virtual void CaretPositionChanged ()
 		{
 		}
-		
+
+		public virtual void SelectValidShortcut (KeyboardShortcut[] accels, out Gdk.Key key, out ModifierType mod)
+		{
+			key = accels [0].Key;
+			mod = accels [0].Modifier;
+		}
+
 		protected Caret Caret { get { return textEditorData.Caret; } }
 		protected TextDocument Document { get { return textEditorData.Document; } }
 		protected TextEditor Editor { get { return editor; } }

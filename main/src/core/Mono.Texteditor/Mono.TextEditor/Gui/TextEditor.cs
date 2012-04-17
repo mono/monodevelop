@@ -924,9 +924,7 @@ namespace Mono.TextEditor
 				return true;
 			}
 			uint keyVal = (uint)key;
-			int i = Platform.IsMac ? 0 : accels.Length - 1;
-			key = accels [i].Key;
-			mod = accels [i].Modifier;
+			CurrentMode.SelectValidShortcut (accels, out key, out mod);
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);

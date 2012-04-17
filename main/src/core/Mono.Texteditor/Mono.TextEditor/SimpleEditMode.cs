@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using Gdk;
 
 namespace Mono.TextEditor
 {
@@ -395,6 +396,21 @@ namespace Mono.TextEditor
 		{
 			keyBindings.Add (GetKeyCode (key), action);
 		}
+
+		public override void SelectValidShortcut (KeyboardShortcut[] accels, out Gdk.Key key, out ModifierType mod)
+		{
+			foreach (var accel in accels) {
+				int keyCode = GetKeyCode (accel.Key, accel.Modifier);
+				if (keyBindings.ContainsKey (keyCode)) {
+					key = accel.Key;
+					mod = accel.Modifier;
+					return;
+				}
+			}
+			key = accels [0].Key;
+			mod = accels [0].Modifier;
+		}
+
 		
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{

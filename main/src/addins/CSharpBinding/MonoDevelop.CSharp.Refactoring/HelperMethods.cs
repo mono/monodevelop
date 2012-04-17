@@ -56,7 +56,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				ContinuationIndent = doc.Options.IndentationSize,
 				LabelIndent = -doc.Options.IndentationSize,
 				EolMarker = doc.EolMarker,
-				IndentBlankLines = doc.Options.IndentStyle != IndentStyle.Virtual
+				IndentBlankLines = doc.Options.IndentStyle != IndentStyle.Virtual,
+				WrapLineLength = doc.Options.RulerColumn
 			};
 		}
 
