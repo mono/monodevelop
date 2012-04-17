@@ -459,9 +459,12 @@ namespace Mono.Debugging.Client
 					}
 				}
 			}
-			foreach (ObjectValue ob in children)
+			
+			foreach (ObjectValue ob in children) {
 				if (ob.Name == name)
 					return ob;
+			}
+			
 			return null;
 		}
 		
