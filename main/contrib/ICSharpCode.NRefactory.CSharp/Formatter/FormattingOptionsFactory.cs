@@ -81,10 +81,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				AllowEventRemoveBlockInline = true,
 				StatementBraceStyle = BraceStyle.EndOfLine,
 	
-				PlaceElseOnNewLine = false,
-				PlaceCatchOnNewLine = false,
-				PlaceFinallyOnNewLine = false,
-				PlaceWhileOnNewLine = false,
+				ElseNewLinePlacement = NewLinePlacement.SameLine,
+				CatchNewLinePlacement = NewLinePlacement.SameLine,
+				FinallyNewLinePlacement = NewLinePlacement.SameLine,
+				WhileNewLinePlacement = NewLinePlacement.SameLine,
 				ArrayInitializerWrapping = Wrapping.WrapIfTooLong,
 				ArrayInitializerBraceStyle = BraceStyle.EndOfLine,
 	
@@ -227,10 +227,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				AllowEventRemoveBlockInline = true,
 				StatementBraceStyle = BraceStyle.EndOfLine,
 	
-				PlaceElseOnNewLine = false,
-				PlaceCatchOnNewLine = false,
-				PlaceFinallyOnNewLine = false,
-				PlaceWhileOnNewLine = false,
+				ElseNewLinePlacement = NewLinePlacement.SameLine,
+				CatchNewLinePlacement = NewLinePlacement.SameLine,
+				FinallyNewLinePlacement = NewLinePlacement.SameLine,
+				WhileNewLinePlacement = NewLinePlacement.SameLine,
 				ArrayInitializerWrapping = Wrapping.WrapIfTooLong,
 				ArrayInitializerBraceStyle = BraceStyle.EndOfLine,
 	

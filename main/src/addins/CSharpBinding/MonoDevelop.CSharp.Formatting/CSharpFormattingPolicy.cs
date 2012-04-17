@@ -502,52 +502,52 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#region NewLines
 		[ItemProperty]
-		public bool PlaceElseOnNewLine {
+		public NewLinePlacement ElseNewLinePlacement {
 			get {
-				return options.PlaceElseOnNewLine;
+				return options.ElseNewLinePlacement;
 			}
 			set {
-				options.PlaceElseOnNewLine = value;
+				options.ElseNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool PlaceElseIfOnNewLine {
+		public NewLinePlacement ElseIfNewLinePlacement {
 			get {
-				return options.PlaceElseIfOnNewLine;
+				return options.ElseIfNewLinePlacement;
 			}
 			set {
-				options.PlaceElseIfOnNewLine = value;
+				options.ElseIfNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool PlaceCatchOnNewLine {
+		public NewLinePlacement CatchNewLinePlacement {
 			get {
-				return options.PlaceCatchOnNewLine;
+				return options.CatchNewLinePlacement;
 			}
 			set {
-				options.PlaceCatchOnNewLine = value;
+				options.CatchNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool PlaceFinallyOnNewLine {
+		public NewLinePlacement FinallyNewLinePlacement {
 			get {
-				return options.PlaceFinallyOnNewLine;
+				return options.FinallyNewLinePlacement;
 			}
 			set {
-				options.PlaceFinallyOnNewLine = value;
+				options.FinallyNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool PlaceWhileOnNewLine {
+		public NewLinePlacement WhileNewLinePlacement {
 			get {
-				return options.PlaceWhileOnNewLine;
+				return options.WhileNewLinePlacement;
 			}
 			set {
-				options.PlaceWhileOnNewLine = value;
+				options.WhileNewLinePlacement = value;
 			}
 		}
 		

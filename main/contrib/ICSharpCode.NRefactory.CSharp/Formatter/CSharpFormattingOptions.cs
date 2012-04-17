@@ -62,6 +62,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		WrapIfTooLong
 	}
 
+	public enum NewLinePlacement {
+		DoNotCare,
+		NewLine,
+		SameLine
+	}
+
 	public class CSharpFormattingOptions
 	{
 		public string Name {
@@ -299,27 +305,27 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region NewLines
-		public bool PlaceElseOnNewLine { // tested
+		public NewLinePlacement ElseNewLinePlacement { // tested
 			get;
 			set;
 		}
 
-		public bool PlaceElseIfOnNewLine { // tested
+		public NewLinePlacement ElseIfNewLinePlacement { // tested
 			get;
 			set;
 		}
 
-		public bool PlaceCatchOnNewLine { // tested
+		public NewLinePlacement CatchNewLinePlacement { // tested
 			get;
 			set;
 		}
 
-		public bool PlaceFinallyOnNewLine { // tested
+		public NewLinePlacement FinallyNewLinePlacement { // tested
 			get;
 			set;
 		}
 
-		public bool PlaceWhileOnNewLine { // tested
+		public NewLinePlacement WhileNewLinePlacement { // tested
 			get;
 			set;
 		}

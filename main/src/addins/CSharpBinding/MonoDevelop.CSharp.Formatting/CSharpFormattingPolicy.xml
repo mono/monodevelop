@@ -21,7 +21,13 @@
 		<Value _displayName="Do not wrap">DoNotWrap</Value>
 		<Value _displayName="Wrap always">WrapAlways</Value>
 		<Value _displayName="Wrap if too long">WrapIfTooLong</Value>
-		</Type>
+	</Type>
+	
+	<Type name = "NewLinePlacement">
+		<Value _displayName="Allow both">DoNotCare</Value>
+		<Value _displayName="Always new line">NewLine</Value>
+		<Value _displayName="Always same line">SameLine</Value>
+	</Type>
 	
 	<Example name = "event"><![CDATA[
 	class ClassDeclaration { 
