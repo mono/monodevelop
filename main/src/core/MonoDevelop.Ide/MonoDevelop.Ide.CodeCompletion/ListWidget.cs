@@ -350,7 +350,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Gdk.GC gc = new Gdk.GC (window);
 				gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
 				window.DrawRectangle (gc, true, 0, yPos, width, height - yPos);
-				layout.SetText (win.DataProvider.ItemCount == 0? NoSuggestionsMsg : NoMatchesMsg);
+				layout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
 				int lWidth, lHeight;
 				layout.GetPixelSize (out lWidth, out lHeight);
 				gc.RgbFgColor = new Gdk.Color (0, 0, 0);
@@ -576,15 +576,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
+
 			filteredItems.Sort (delegate (int left, int right) {
 				var lt = win.DataProvider.GetText (left);
 				var rt = win.DataProvider.GetText (right);
-				if (lt.Length != rt.Length) {
-					return lt.Length.CompareTo (rt.Length);
+				int r1;
+				int r2;
+				matcher.CalcMatchRank (lt, out r1);
+				matcher.CalcMatchRank (rt, out r2);
+				if (r1 == r2) {
+					if (lt.Length != rt.Length)
+						return lt.Length.CompareTo (rt.Length);
+					return lt.CompareTo (rt);
 				}
-				return lt.CompareTo (rt);
+				return r1.CompareTo (r2);
 			});
-
 			categories.Sort (delegate (Category left, Category right) {
 				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
 			});

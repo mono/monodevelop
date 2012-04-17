@@ -681,6 +681,13 @@ namespace MonoDevelop.Ide.Gui
 			string output = RunSimulation ("", "Are\t", true, true, false, "AreSame", "AreEqual", "AreDifferent");
 			Assert.AreEqual ("AreSame", output);
 		}
+
+		[Test]
+		public void TestPreferStart ()
+		{
+			string output = RunSimulation ("", "InC\t", true, true, false, "Equals", "InvariantCultureIfo", "GetInvariantCulture");
+			Assert.AreEqual ("InvariantCultureIfo", output);
+		}
 		
 		
 		[TestFixtureSetUp] 
