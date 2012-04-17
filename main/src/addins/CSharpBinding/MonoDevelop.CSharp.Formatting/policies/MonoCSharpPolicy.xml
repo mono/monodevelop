@@ -39,12 +39,16 @@ THE SOFTWARE.
 	<IndentSwitchBody>False</IndentSwitchBody>
 	<IndentCaseBody>True</IndentCaseBody>
 	<IndentBreakStatements>True</IndentBreakStatements>
+	<AlignEmbeddedUsingStatements>True</AlignEmbeddedUsingStatements>
+	<AlignEmbeddedIfStatements>True</AlignEmbeddedIfStatements>
+	<PropertyFormatting>AllowOneLine</PropertyFormatting>
 	<NamespaceBraceStyle>NextLine</NamespaceBraceStyle>
 	<ClassBraceStyle>NextLine</ClassBraceStyle>
 	<InterfaceBraceStyle>NextLine</InterfaceBraceStyle>
 	<StructBraceStyle>NextLine</StructBraceStyle>
 	<EnumBraceStyle>NextLine</EnumBraceStyle>
 	<MethodBraceStyle>NextLine</MethodBraceStyle>
+	<AnonymousMethodBraceStyle>EndOfLine</AnonymousMethodBraceStyle>
 	<ConstructorBraceStyle>NextLine</ConstructorBraceStyle>
 	<DestructorBraceStyle>NextLine</DestructorBraceStyle>
 	<PropertyBraceStyle>EndOfLine</PropertyBraceStyle>
@@ -58,12 +62,50 @@ THE SOFTWARE.
 	<AllowEventAddBlockInline>True</AllowEventAddBlockInline>
 	<AllowEventRemoveBlockInline>True</AllowEventRemoveBlockInline>
 	<StatementBraceStyle>EndOfLine</StatementBraceStyle>
-	<PlaceElseOnNewLine>False</PlaceElseOnNewLine>
-	<PlaceCatchOnNewLine>False</PlaceCatchOnNewLine>
-	<PlaceFinallyOnNewLine>False</PlaceFinallyOnNewLine>
-	<PlaceWhileOnNewLine>False</PlaceWhileOnNewLine>
-	<BeforeMethodCallParentheses>True</BeforeMethodCallParentheses>
+	<AllowIfBlockInline>False</AllowIfBlockInline>
+	<IfElseBraceForcement>DoNotChange</IfElseBraceForcement>
+	<ForBraceForcement>DoNotChange</ForBraceForcement>
+	<ForEachBraceForcement>DoNotChange</ForEachBraceForcement>
+	<WhileBraceForcement>DoNotChange</WhileBraceForcement>
+	<UsingBraceForcement>DoNotChange</UsingBraceForcement>
+	<FixedBraceForcement>DoNotChange</FixedBraceForcement>
+	<ElseNewLinePlacement>SameLine</ElseNewLinePlacement>
+	<ElseIfNewLinePlacement>DoNotCare</ElseIfNewLinePlacement>
+	<CatchNewLinePlacement>SameLine</CatchNewLinePlacement>
+	<FinallyNewLinePlacement>SameLine</FinallyNewLinePlacement>
+	<WhileNewLinePlacement>SameLine</WhileNewLinePlacement>
+	<ArrayInitializerWrapping>WrapIfTooLong</ArrayInitializerWrapping>
+	<ArrayInitializerBraceStyle>EndOfLine</ArrayInitializerBraceStyle>
+	<KeepCommentsAtFirstColumn>True</KeepCommentsAtFirstColumn>
 	<BeforeMethodDeclarationParentheses>True</BeforeMethodDeclarationParentheses>
+	<BetweenEmptyMethodDeclarationParentheses>False</BetweenEmptyMethodDeclarationParentheses>
+	<BeforeMethodDeclarationParameterComma>False</BeforeMethodDeclarationParameterComma>
+	<AfterMethodDeclarationParameterComma>True</AfterMethodDeclarationParameterComma>
+	<WithinMethodDeclarationParentheses>False</WithinMethodDeclarationParentheses>
+	<BeforeMethodCallParentheses>True</BeforeMethodCallParentheses>
+	<BetweenEmptyMethodCallParentheses>False</BetweenEmptyMethodCallParentheses>
+	<BeforeMethodCallParameterComma>False</BeforeMethodCallParameterComma>
+	<AfterMethodCallParameterComma>True</AfterMethodCallParameterComma>
+	<WithinMethodCallParentheses>False</WithinMethodCallParentheses>
+	<BeforeFieldDeclarationComma>False</BeforeFieldDeclarationComma>
+	<AfterFieldDeclarationComma>True</AfterFieldDeclarationComma>
+	<BeforeLocalVariableDeclarationComma>False</BeforeLocalVariableDeclarationComma>
+	<AfterLocalVariableDeclarationComma>True</AfterLocalVariableDeclarationComma>
+	<BeforeConstructorDeclarationParentheses>True</BeforeConstructorDeclarationParentheses>
+	<BetweenEmptyConstructorDeclarationParentheses>False</BetweenEmptyConstructorDeclarationParentheses>
+	<BeforeConstructorDeclarationParameterComma>False</BeforeConstructorDeclarationParameterComma>
+	<AfterConstructorDeclarationParameterComma>True</AfterConstructorDeclarationParameterComma>
+	<WithinConstructorDeclarationParentheses>False</WithinConstructorDeclarationParentheses>
+	<BeforeIndexerDeclarationBracket>True</BeforeIndexerDeclarationBracket>
+	<WithinIndexerDeclarationBracket>False</WithinIndexerDeclarationBracket>
+	<BeforeIndexerDeclarationParameterComma>False</BeforeIndexerDeclarationParameterComma>
+	<AfterIndexerDeclarationParameterComma>True</AfterIndexerDeclarationParameterComma>
+	<BeforeDelegateDeclarationParentheses>True</BeforeDelegateDeclarationParentheses>
+	<BetweenEmptyDelegateDeclarationParentheses>False</BetweenEmptyDelegateDeclarationParentheses>
+	<BeforeDelegateDeclarationParameterComma>False</BeforeDelegateDeclarationParameterComma>
+	<AfterDelegateDeclarationParameterComma>False</AfterDelegateDeclarationParameterComma>
+	<WithinDelegateDeclarationParentheses>False</WithinDelegateDeclarationParentheses>
+	<NewParentheses>True</NewParentheses>
 	<IfParentheses>True</IfParentheses>
 	<WhileParentheses>True</WhileParentheses>
 	<ForParentheses>True</ForParentheses>
@@ -80,9 +122,8 @@ THE SOFTWARE.
 	<AroundAdditiveOperatorParentheses>True</AroundAdditiveOperatorParentheses>
 	<AroundMultiplicativeOperatorParentheses>True</AroundMultiplicativeOperatorParentheses>
 	<AroundShiftOperatorParentheses>True</AroundShiftOperatorParentheses>
+	<AroundNullCoalescingOperator>True</AroundNullCoalescingOperator>
 	<WithinParentheses>False</WithinParentheses>
-	<WithinMethodCallParentheses>False</WithinMethodCallParentheses>
-	<WithinMethodDeclarationParentheses>False</WithinMethodDeclarationParentheses>
 	<WithinIfParentheses>False</WithinIfParentheses>
 	<WithinWhileParentheses>False</WithinWhileParentheses>
 	<WithinForParentheses>False</WithinForParentheses>
@@ -93,15 +134,31 @@ THE SOFTWARE.
 	<WithinUsingParentheses>False</WithinUsingParentheses>
 	<WithinCastParentheses>False</WithinCastParentheses>
 	<WithinSizeOfParentheses>False</WithinSizeOfParentheses>
+	<BeforeSizeOfParentheses>False</BeforeSizeOfParentheses>
 	<WithinTypeOfParentheses>False</WithinTypeOfParentheses>
+	<WithinNewParentheses>False</WithinNewParentheses>
+	<BetweenEmptyNewParentheses>False</BetweenEmptyNewParentheses>
+	<BeforeNewParameterComma>False</BeforeNewParameterComma>
+	<AfterNewParameterComma>True</AfterNewParameterComma>
+	<BeforeTypeOfParentheses>False</BeforeTypeOfParentheses>
 	<WithinCheckedExpressionParantheses>False</WithinCheckedExpressionParantheses>
 	<ConditionalOperatorBeforeConditionSpace>True</ConditionalOperatorBeforeConditionSpace>
 	<ConditionalOperatorAfterConditionSpace>True</ConditionalOperatorAfterConditionSpace>
 	<ConditionalOperatorBeforeSeparatorSpace>True</ConditionalOperatorBeforeSeparatorSpace>
 	<ConditionalOperatorAfterSeparatorSpace>True</ConditionalOperatorAfterSeparatorSpace>
 	<SpacesWithinBrackets>False</SpacesWithinBrackets>
-	<SpacesAfterComma>True</SpacesAfterComma>
-	<SpacesBeforeComma>False</SpacesBeforeComma>
-	<SpacesAfterSemicolon>True</SpacesAfterSemicolon>
+	<SpacesBeforeBrackets>True</SpacesBeforeBrackets>
+	<BeforeBracketComma>False</BeforeBracketComma>
+	<AfterBracketComma>True</AfterBracketComma>
+	<SpacesBeforeForSemicolon>False</SpacesBeforeForSemicolon>
+	<SpacesAfterForSemicolon>True</SpacesAfterForSemicolon>
 	<SpacesAfterTypecast>False</SpacesAfterTypecast>
+	<SpacesBeforeArrayDeclarationBrackets>False</SpacesBeforeArrayDeclarationBrackets>
+	<BlankLinesBeforeUsings>0</BlankLinesBeforeUsings>
+	<BlankLinesAfterUsings>1</BlankLinesAfterUsings>
+	<BlankLinesBeforeFirstDeclaration>0</BlankLinesBeforeFirstDeclaration>
+	<BlankLinesBetweenTypes>1</BlankLinesBetweenTypes>
+	<BlankLinesBetweenFields>0</BlankLinesBetweenFields>
+	<BlankLinesBetweenEventFields>0</BlankLinesBetweenEventFields>
+	<BlankLinesBetweenMembers>1</BlankLinesBetweenMembers>
 </CSharpFormattingPolicy>

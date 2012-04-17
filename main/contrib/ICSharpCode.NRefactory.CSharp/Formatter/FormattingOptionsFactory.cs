@@ -43,9 +43,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Creates mono indent style CSharpFormatting options.
 		/// </summary>
-		public static CSharpFormattingOptions CreateMono()
+		public static CSharpFormattingOptions CreateMono ()
 		{
-			return new CSharpFormattingOptions() {
+			return new CSharpFormattingOptions () {
 				IndentNamespaceBody = true,
 				IndentClassBody = true,
 				IndentInterfaceBody = true,
@@ -183,15 +183,22 @@ namespace ICSharpCode.NRefactory.CSharp
 				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferIndexerOpenBracket = false,
 				IndexerClosingBracketOnNewLine = false,
+
+				IfElseBraceForcement = BraceForcement.DoNotChange,
+				ForBraceForcement = BraceForcement.DoNotChange,
+				ForEachBraceForcement = BraceForcement.DoNotChange,
+				WhileBraceForcement = BraceForcement.DoNotChange,
+				UsingBraceForcement = BraceForcement.DoNotChange,
+				FixedBraceForcement = BraceForcement.DoNotChange
 			};
 		}
 
 		/// <summary>
 		/// Creates sharp develop indent style CSharpFormatting options.
 		/// </summary>
-		public static CSharpFormattingOptions CreateSharpDevelop()
+		public static CSharpFormattingOptions CreateSharpDevelop ()
 		{
-			var baseOptions = CreateKRStyle();
+			var baseOptions = CreateKRStyle ();
 			baseOptions.IfElseBraceForcement = BraceForcement.AddBraces;
 			baseOptions.ForBraceForcement = BraceForcement.AddBraces;
 			baseOptions.ForEachBraceForcement = BraceForcement.AddBraces;
@@ -205,9 +212,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// The K&R style, so named because it was used in Kernighan and Ritchie's book The C Programming Language,
 		/// is commonly used in C. It is less common for C++, C#, and others.
 		/// </summary>
-		public static CSharpFormattingOptions CreateKRStyle()
+		public static CSharpFormattingOptions CreateKRStyle ()
 		{
-			return new CSharpFormattingOptions() {
+			return new CSharpFormattingOptions () {
 				IndentNamespaceBody = true,
 				IndentClassBody = true,
 				IndentInterfaceBody = true,
@@ -345,34 +352,41 @@ namespace ICSharpCode.NRefactory.CSharp
 				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferIndexerOpenBracket = false,
 				IndexerClosingBracketOnNewLine = false,
+
+				IfElseBraceForcement = BraceForcement.DoNotChange,
+				ForBraceForcement = BraceForcement.DoNotChange,
+				ForEachBraceForcement = BraceForcement.DoNotChange,
+				WhileBraceForcement = BraceForcement.DoNotChange,
+				UsingBraceForcement = BraceForcement.DoNotChange,
+				FixedBraceForcement = BraceForcement.DoNotChange
 			};
 		}
 
 		/// <summary>
 		/// Creates allman indent style CSharpFormatting options used in Visual Studio.
 		/// </summary>
-		public static CSharpFormattingOptions CreateAllman()
+		public static CSharpFormattingOptions CreateAllman ()
 		{
-			var baseOptions = CreateSharpDevelop();
-			baseOptions.AnonymousMethodBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.PropertyBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.PropertyGetBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.PropertySetBraceStyle = BraceStyle.EndOfLine;
+			var baseOptions = CreateKRStyle ();
+			baseOptions.AnonymousMethodBraceStyle = BraceStyle.NextLine;
+			baseOptions.PropertyBraceStyle = BraceStyle.NextLine;
+			baseOptions.PropertyGetBraceStyle = BraceStyle.NextLine;
+			baseOptions.PropertySetBraceStyle = BraceStyle.NextLine;
 
-			baseOptions.EventBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.EventAddBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.EventRemoveBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.StatementBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.ArrayInitializerBraceStyle = BraceStyle.EndOfLine;
+			baseOptions.EventBraceStyle = BraceStyle.NextLine;
+			baseOptions.EventAddBraceStyle = BraceStyle.NextLine;
+			baseOptions.EventRemoveBraceStyle = BraceStyle.NextLine;
+			baseOptions.StatementBraceStyle = BraceStyle.NextLine;
+			baseOptions.ArrayInitializerBraceStyle = BraceStyle.NextLine;
 			return baseOptions;
 		}
 	
 		/// <summary>
 		/// The Whitesmiths style, also called Wishart style to a lesser extent, is less common today than the previous three. It was originally used in the documentation for the first commercial C compiler, the Whitesmiths Compiler.
 		/// </summary>
-		public static CSharpFormattingOptions CreateWhitesmiths()
+		public static CSharpFormattingOptions CreateWhitesmiths ()
 		{
-			var baseOptions = CreateSharpDevelop();
+			var baseOptions = CreateKRStyle();
 				
 			baseOptions.NamespaceBraceStyle = BraceStyle.NextLineShifted;
 			baseOptions.ClassBraceStyle = BraceStyle.NextLineShifted;
