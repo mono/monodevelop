@@ -68,10 +68,24 @@ namespace MonoDevelop.Core.Text
 			}
 			var lane = GetMatch (name);
 			if (lane != null) {
-				int caseMatches = 0;
-				for (int n=0; n<lane.Length; n++)
-					if (filterText[n] == name [lane[n]]) caseMatches++;
-				matchRank = caseMatches * 10 - (lane[0] + (name.Length - filterTextUpperCase.Length));
+				int capitalMatches = 0;
+				int matching = 0;
+				int fragments = 0;
+				int lastIndex = lane [0];
+				for (int n = 0; n < lane.Length; n++) {
+					var ch = filterText [n];
+					var i = lane [n];
+					if (i > lastIndex + 1)
+						fragments++;
+					lastIndex = i;
+					if (ch == name [i]) {
+						matching++;
+						if (char.IsUpper (ch))
+							capitalMatches++;
+					}
+				}
+				matchRank = (capitalMatches) * 10 + matching - fragments;
+//				Console.WriteLine (filterText + "/" + name + "/" + fragments +"=" + matchRank);
 				return true;
 			}
 			matchRank = int.MinValue;

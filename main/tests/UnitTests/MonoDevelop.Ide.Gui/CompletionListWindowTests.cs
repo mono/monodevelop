@@ -475,17 +475,33 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string output = RunSimulation ("", "Ac ", true, true, false, punctuationData);
 			Assert.AreEqual ("Accc", output);
-			
-			output = RunSimulation ("", "/ ", true, true, false, punctuationData);
+		}
+
+		[Test]
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation2 ()
+		{
+			var output = RunSimulation ("", "/ ", true, true, false, punctuationData);
 			Assert.AreEqual ("/AbAb", output);
-			
-			output = RunSimulation ("", ".", true, true, false, punctuationData);
+		}
+
+		[Test]
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation3 ()
+		{
+			var output = RunSimulation ("", ".", true, true, false, punctuationData);
 			Assert.AreEqual (null, output);
-			
-			output = RunSimulation ("", "A ", true, true, false, punctuationData);
+		}
+
+		[Test]
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation4 ()
+		{
+			var output = RunSimulation ("", "A ", true, true, false, punctuationData);
 			Assert.AreEqual ("AbAb", output);
-			
-			output = RunSimulation ("", ",A.b ", true, true, false, punctuationData);
+		}
+
+		[Test]
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation5 ()
+		{
+			var output = RunSimulation ("", ",A.b ", true, true, false, punctuationData);
 			Assert.AreEqual (",A.bAb", output);
 		}
 		
@@ -653,11 +669,19 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test]
-		public void TestDigitSelection()
+		public void TestDigitSelection ()
 		{
 			string output = RunSimulation ("", "v1\t", true, true, false, "var", "var1");
 			Assert.AreEqual ("var1", output);
 		}
+
+		[Test]
+		public void TestSelectFirst ()
+		{
+			string output = RunSimulation ("", "Are\t", true, true, false, "AreSame", "AreEqual", "AreDifferent");
+			Assert.AreEqual ("AreSame", output);
+		}
+		
 		
 		[TestFixtureSetUp] 
 		public void SetUp()

@@ -576,6 +576,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
+			filteredItems.Sort (delegate (int left, int right) {
+				var lt = win.DataProvider.GetText (left);
+				var rt = win.DataProvider.GetText (right);
+				if (lt.Length != rt.Length) {
+					return lt.Length.CompareTo (rt.Length);
+				}
+				return lt.CompareTo (rt);
+			});
+
 			categories.Sort (delegate (Category left, Category right) {
 				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
 			});
