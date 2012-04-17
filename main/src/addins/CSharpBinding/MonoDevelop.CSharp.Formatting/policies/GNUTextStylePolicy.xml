@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<TextStylePolicy scope="text/plain">
+<TextStylePolicy scope="text/x-csharp">
 	<FileWidth>120</FileWidth>
 	<TabWidth>4</TabWidth>
 	<IndentWidth>2</IndentWidth>
