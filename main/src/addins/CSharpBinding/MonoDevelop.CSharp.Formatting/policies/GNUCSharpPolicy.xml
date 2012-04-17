@@ -27,7 +27,7 @@ THE SOFTWARE.
 -->
 
 
-<CSharpFormattingPolicy scope="text/x-csharp" allowDiffSerialize="True">
+<CSharpFormattingPolicy scope="text/x-csharp" allowDiffSerialize="False">
 	<IndentNamespaceBody>True</IndentNamespaceBody>
 	<IndentClassBody>True</IndentClassBody>
 	<IndentInterfaceBody>True</IndentInterfaceBody>

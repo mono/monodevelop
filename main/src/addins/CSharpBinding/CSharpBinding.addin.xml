@@ -143,35 +143,35 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="KR" _name="K&amp;R style" allowDiffSerialize="true">
+		<PolicySet id="KR" _name="K&amp;R style" allowDiffSerialize="false">
 			<Policies resource="KRCSharpPolicy.xml" />
 			<Policies resource="InvariantTextStylePolicy.xml" />
 		</PolicySet>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="1TBS" _name="SharpDevelop style (1TBS)" allowDiffSerialize="true">
+		<PolicySet id="1TBS" _name="SharpDevelop style (1TBS)" allowDiffSerialize="false">
 			<Policies resource="SharpDevelopCSharpPolicy.xml" />
 			<Policies resource="InvariantTextStylePolicy.xml" />
 		</PolicySet>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="Allman" _name="Visual Studio style (Allman)" allowDiffSerialize="true">
+		<PolicySet id="Allman" _name="Visual Studio style (Allman)" allowDiffSerialize="false">
 			<Policies resource="AllmanCSharpPolicy.xml" />
 			<Policies resource="InvariantTextStylePolicy.xml" />
 		</PolicySet>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="Whitesmiths" _name="Whitesmiths style" allowDiffSerialize="true">
+		<PolicySet id="Whitesmiths" _name="Whitesmiths style" allowDiffSerialize="false">
 			<Policies resource="WhitesmithsCSharpPolicy.xml" />
 			<Policies resource="InvariantTextStylePolicy.xml" />
 		</PolicySet>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="GNU" _name="GNU style" allowDiffSerialize="true">
+		<PolicySet id="GNU" _name="GNU style" allowDiffSerialize="false">
 			<Policies resource="GNUCSharpPolicy.xml" />
 			<Policies resource="GNUTextStylePolicy.xml" />
 		</PolicySet>
