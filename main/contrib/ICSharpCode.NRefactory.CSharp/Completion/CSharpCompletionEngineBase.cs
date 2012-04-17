@@ -267,48 +267,49 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				Parse(0, text.Length, act);
 			}
 
-			public void Parse(int start, int length, Action<char> act = null)
+			public void Parse (int start, int length, Action<char> act = null)
 			{
 				for (int i = start; i < length; i++) {
 					char ch = text [i];
 					char nextCh = i + 1 < text.Length ? text [i + 1] : '\0';
 					switch (ch) {
-						case '#':
-							if (IsFistNonWs)
-								IsInPreprocessorDirective = true;
+					case '#':
+						if (IsFistNonWs)
+							IsInPreprocessorDirective = true;
+						break;
+					case '/':
+						if (IsInString || IsInChar || IsInVerbatimString)
 							break;
-						case '/':
-							if (IsInString || IsInChar || IsInVerbatimString)
-								break;
-							if (nextCh == '/') {
-								i++;
-								IsInSingleComment = true;
-							}
-							if (nextCh == '*')
-								IsInMultiLineComment = true;
+						if (nextCh == '/') {
+							i++;
+							IsInSingleComment = true;
+						}
+						if (nextCh == '*')
+							IsInMultiLineComment = true;
+						break;
+					case '*':
+						if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)
 							break;
-						case '*':
-							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)
-								break;
-							if (nextCh == '/') {
-								i++;
-								IsInMultiLineComment = false;
-							}
+						if (nextCh == '/') {
+							i++;
+							IsInMultiLineComment = false;
+						}
+						break;
+					case '@':
+						if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment || IsInMultiLineComment)
 							break;
-						case '@':
-							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment || IsInMultiLineComment)
-								break;
-							if (nextCh == '"') {
-								i++;
-								IsInVerbatimString = true;
-							}
-							break;
-						case '\n':
-						case '\r':
-							IsInSingleComment = false;
-							IsInString = false;
-							IsInChar = false;
-							IsFistNonWs = true;
+						if (nextCh == '"') {
+							i++;
+							IsInVerbatimString = true;
+						}
+						break;
+					case '\n':
+					case '\r':
+						IsInSingleComment = false;
+						IsInString = false;
+						IsInChar = false;
+						IsFistNonWs = true;
+						IsInPreprocessorDirective = false;
 							break;
 						case '\\':
 							if (IsInString || IsInChar)
@@ -340,11 +341,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 
-		protected bool IsInsideCommentStringOrDirective()
+		protected bool IsInsideCommentStringOrDirective ()
 		{
-			var text = GetMemberTextToCaret();
-			var lexer = new MiniLexer(text.Item1);
-			lexer.Parse();
+			var text = GetMemberTextToCaret ();
+			var lexer = new MiniLexer (text.Item1);
+			lexer.Parse ();
 			return
 				lexer.IsInSingleComment || 
 				lexer.IsInString ||
