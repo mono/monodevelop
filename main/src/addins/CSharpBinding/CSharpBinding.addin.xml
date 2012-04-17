@@ -156,11 +156,8 @@
 		</PolicySet>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="VisualStudio" _name="Visual Studio style (Allman)" allowDiffSerialize="false">
-			<Policies resource="AllmanCSharpPolicy.xml" />
-			<Policies resource="InvariantTextStylePolicy.xml" />
-		</PolicySet>
+	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/VisualStudio" >
+		<Policies resource="AllmanCSharpPolicy.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
