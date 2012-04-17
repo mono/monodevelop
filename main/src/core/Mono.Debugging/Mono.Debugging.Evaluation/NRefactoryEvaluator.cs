@@ -801,16 +801,18 @@ namespace Mono.Debugging.Evaluation
 				res = EvaluateOperation (oper, v1, v2);
 			}
 			
-			if (!(res is bool))
+			if (!(res is bool)) {
+				if (ctx.Adapter.IsEnum (ctx, targetVal1)) {
+					object tval = ctx.Adapter.Cast (ctx, ctx.Adapter.CreateValue (ctx, res), ctx.Adapter.GetValueType (ctx, targetVal1));
+					return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, tval);
+				}
+				
+				if (ctx.Adapter.IsEnum (ctx, targetVal2)) {
+					object tval = ctx.Adapter.Cast (ctx, ctx.Adapter.CreateValue (ctx, res), ctx.Adapter.GetValueType (ctx, targetVal2));
+					return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, tval);
+				}
+				
 				res = Convert.ChangeType (res, GetCommonType (val1, val2));
-			
-			if (ctx.Adapter.IsEnum (ctx, targetVal1)) {
-				object tval = ctx.Adapter.Cast (ctx, ctx.Adapter.CreateValue (ctx, res), ctx.Adapter.GetValueType (ctx, targetVal1));
-				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, tval);
-			}
-			if (ctx.Adapter.IsEnum (ctx, targetVal2)) {
-				object tval = ctx.Adapter.Cast (ctx, ctx.Adapter.CreateValue (ctx, res), ctx.Adapter.GetValueType (ctx, targetVal2));
-				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, tval);
 			}
 			
 			return LiteralValueReference.CreateObjectLiteral (ctx, name, res);
