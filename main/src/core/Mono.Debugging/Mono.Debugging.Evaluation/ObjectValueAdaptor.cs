@@ -132,7 +132,7 @@ namespace Mono.Debugging.Evaluation
 			
 			// Use the prettier name for nullable types
 			if (name == "System.Nullable" && genericArgs.Count == 1)
-				return genericArgs[0] + "?";
+				return genericArgs[0] + "?" + array;
 			
 			// Insert the generic arguments next to each type.
 			// for example: Foo`1+Bar`1[System.Int32,System.String]
@@ -169,7 +169,7 @@ namespace Mono.Debugging.Evaluation
 				i = next + 1;
 			}
 			
-			return sb.ToString ();
+			return sb.ToString () + array;
 		}
 		
 		List<string> GetGenericArguments (string typeName, ref int i, int endIndex)
