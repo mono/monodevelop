@@ -526,8 +526,8 @@ class ClassDeclaration {
 			Type t = typeof (ClassDeclaration);
 		}
 	}
-]]></Example>-->
-				</Option>
+]]></Example>
+				</Option>-->
 				<Option name="WithinCheckedExpressionParantheses" _displayName="'checked'/'fixed' expression"><Example><![CDATA[
 class ClassDeclaration { 
 		public void Test ()
