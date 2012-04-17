@@ -88,8 +88,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			var currentWord = GetCurrentWord (window);
-			if (CompletionText == currentWord) 
-				return;
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
 		}
 		

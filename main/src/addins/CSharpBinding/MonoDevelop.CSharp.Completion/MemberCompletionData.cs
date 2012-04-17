@@ -238,9 +238,6 @@ namespace MonoDevelop.CSharp.Completion
 				ka |= KeyActions.Ignore;
 			}
 			
-			if (text == partialWord) 
-				return;
-
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
 			int offset = Editor.Caret.Offset;
 			for (int i = 0; i < skipChars; i++) {
