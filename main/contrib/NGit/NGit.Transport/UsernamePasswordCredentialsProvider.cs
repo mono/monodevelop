@@ -113,18 +113,23 @@ namespace NGit.Transport
 				if (i is CredentialItem.Username)
 				{
 					((CredentialItem.Username)i).SetValue(username);
+					continue;
 				}
-				else
+				if (i is CredentialItem.Password)
 				{
-					if (i is CredentialItem.Password)
+					((CredentialItem.Password)i).SetValue(password);
+					continue;
+				}
+				if (i is CredentialItem.StringType)
+				{
+					if (i.GetPromptText().Equals("Password: "))
 					{
-						((CredentialItem.Password)i).SetValue(password);
-					}
-					else
-					{
-						throw new UnsupportedCredentialItem(uri, i.GetPromptText());
+						((CredentialItem.StringType)i).SetValue(new string(password));
+						continue;
 					}
 				}
+				throw new UnsupportedCredentialItem(uri, i.GetType().FullName + ":" + i.GetPromptText
+					());
 			}
 			return true;
 		}

@@ -46,6 +46,7 @@ using System.IO;
 using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
+using NGit.Internal;
 using NGit.Revwalk;
 using Sharpen;
 
@@ -62,7 +63,7 @@ namespace NGit.Api
 	/// </summary>
 	/// <seealso><a href="http://www.kernel.org/pub/software/scm/git/docs/git-tag.html"
 	/// *      >Git documentation about Tag</a></seealso>
-	public class TagCommand : GitCommand<RevTag>
+	public class TagCommand : GitCommand<Ref>
 	{
 		private RevObject id;
 
@@ -93,8 +94,8 @@ namespace NGit.Api
 		/// </summary>
 		/// <returns>
 		/// a
-		/// <see cref="NGit.Revwalk.RevTag">NGit.Revwalk.RevTag</see>
-		/// object representing the successful tag
+		/// <see cref="NGit.Ref">NGit.Ref</see>
+		/// a ref pointing to a tag
 		/// </returns>
 		/// <exception cref="NGit.Api.Errors.NoHeadException">when called on a git repo without a HEAD reference
 		/// 	</exception>
@@ -108,7 +109,7 @@ namespace NGit.Api
 		/// </exception>
 		/// <exception cref="NGit.Api.Errors.ConcurrentRefUpdateException"></exception>
 		/// <exception cref="NGit.Api.Errors.InvalidTagNameException"></exception>
-		public override RevTag Call()
+		public override Ref Call()
 		{
 			CheckCallable();
 			RepositoryState state = repo.GetRepositoryState();
@@ -144,7 +145,6 @@ namespace NGit.Api
 					RevWalk revWalk = new RevWalk(repo);
 					try
 					{
-						RevTag revTag = revWalk.ParseTag(tagId);
 						string refName = Constants.R_TAGS + newTag.GetTag();
 						RefUpdate tagRef = repo.UpdateRef(refName);
 						tagRef.SetNewObjectId(tagId);
@@ -156,7 +156,7 @@ namespace NGit.Api
 							case RefUpdate.Result.NEW:
 							case RefUpdate.Result.FORCED:
 							{
-								return revTag;
+								return repo.GetRef(refName);
 							}
 
 							case RefUpdate.Result.LOCK_FAILURE:

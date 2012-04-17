@@ -217,8 +217,8 @@ namespace NGit.Storage.File
 
 		private bool RenameLog(RefUpdate src, RefUpdate dst)
 		{
-			FilePath srcLog = refdb.LogFor(src.GetName());
-			FilePath dstLog = refdb.LogFor(dst.GetName());
+			FilePath srcLog = refdb.GetLogWriter().LogFor(src.GetName());
+			FilePath dstLog = refdb.GetLogWriter().LogFor(dst.GetName());
 			if (!srcLog.Exists())
 			{
 				return true;

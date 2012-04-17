@@ -45,6 +45,7 @@ using System.IO;
 using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
+using NGit.Internal;
 using NGit.Transport;
 using Sharpen;
 

@@ -45,6 +45,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NGit;
+using NGit.Internal;
 using NGit.Storage.File;
 using NGit.Util;
 using Sharpen;

@@ -46,6 +46,7 @@ using System.Collections.Generic;
 using System.Text;
 using NGit;
 using NGit.Diff;
+using NGit.Internal;
 using NGit.Treewalk;
 using Sharpen;
 

@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using Sharpen;
 
 namespace NGit.Errors

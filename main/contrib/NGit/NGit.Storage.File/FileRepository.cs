@@ -47,6 +47,7 @@ using System.IO;
 using NGit;
 using NGit.Errors;
 using NGit.Events;
+using NGit.Internal;
 using NGit.Storage.File;
 using NGit.Util;
 using Sharpen;
@@ -155,12 +156,12 @@ namespace NGit.Storage.File
 			//
 			if (objectDatabase.Exists())
 			{
-				string repositoryFormatVersion = ((FileBasedConfig)GetConfig()).GetString(ConfigConstants
-					.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_REPO_FORMAT_VERSION);
-				if (!string.IsNullOrEmpty (repositoryFormatVersion) && !"0".Equals(repositoryFormatVersion))
+				long repositoryFormatVersion = ((FileBasedConfig)GetConfig()).GetLong(ConfigConstants
+					.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_REPO_FORMAT_VERSION, 0);
+				if (repositoryFormatVersion > 0)
 				{
 					throw new IOException(MessageFormat.Format(JGitText.Get().unknownRepositoryFormat2
-						, repositoryFormatVersion));
+						, Sharpen.Extensions.ValueOf(repositoryFormatVersion)));
 				}
 			}
 			if (!IsBare)

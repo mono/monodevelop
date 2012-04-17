@@ -58,8 +58,8 @@ namespace Sharpen
 		public bool CanWrite ()
 		{
 			if (RunningOnLinux) {
-				var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
-				return info.CanAccess (Mono.Unix.Native.AccessModes.W_OK);
+				var info = GetUnixFileInfo (path);
+				return info != null && info.CanAccess (Mono.Unix.Native.AccessModes.W_OK);
 			}
 			
 			return ((File.GetAttributes (path) & FileAttributes.ReadOnly) == 0);
@@ -105,8 +105,8 @@ namespace Sharpen
 		{
 			try {
 				if (RunningOnLinux) {
-					var info = UnixFileSystemInfo.GetFileSystemEntry (path);
-					if (info.Exists) {
+					var info = GetUnixFileInfo (path);
+					if (info != null && info.Exists) {
 						try {
 							info.Delete ();
 							return true;
@@ -143,8 +143,10 @@ namespace Sharpen
 
 		public bool Exists ()
 		{
-			if (RunningOnLinux)
-				return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path).Exists;
+			if (RunningOnLinux) {
+				var info = GetUnixFileInfo (path);
+				return info != null && info.Exists;
+			}
 
 			return (File.Exists (path) || Directory.Exists (path));
 		}
@@ -195,8 +197,8 @@ namespace Sharpen
 		{
 			try {
 				if (RunningOnLinux) {
-					var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
-					return info.Exists && info.FileType == FileTypes.Directory;
+					var info = GetUnixFileInfo (path);
+					return info != null && info.Exists && info.FileType == FileTypes.Directory;
 				}
 			} catch (DirectoryNotFoundException) {
 				// If the file /foo/bar exists and we query to see if /foo/bar/baz exists, we get a
@@ -209,24 +211,19 @@ namespace Sharpen
 
 		public bool IsFile ()
 		{
-			try {
-				if (RunningOnLinux) {
-					var info = Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
-					return info.Exists && (info.FileType == FileTypes.RegularFile || info.FileType == FileTypes.SymbolicLink);
-				}
-			} catch (DirectoryNotFoundException) {
-				// If we have a file /foo/bar and probe the path /foo/bar/baz, we get a DirectoryNotFound exception
-				// because 'bar' is a file and therefore 'baz' cannot possibly exist. This is annoying.
-				return false;
+			if (RunningOnLinux) {
+				var info = GetUnixFileInfo (path);
+				return info != null && info.Exists && (info.FileType == FileTypes.RegularFile || info.FileType == FileTypes.SymbolicLink);
 			}
+
 			return File.Exists (path);
 		}
 
 		public long LastModified ()
 		{
             if (RunningOnLinux) {
-                var info = UnixFileInfo.GetFileSystemEntry(path);
-                return info.Exists ? info.LastWriteTimeUtc.ToMillisecondsSinceEpoch() : 0;
+				var info = GetUnixFileInfo (path);
+				return info != null && info.Exists ? info.LastWriteTimeUtc.ToMillisecondsSinceEpoch() : 0;
             }
 
             var info2 = new FileInfo(path);
@@ -236,8 +233,8 @@ namespace Sharpen
 		public long Length ()
 		{
 			if (RunningOnLinux) {
-				var info = UnixFileInfo.GetFileSystemEntry (path);
-				return info.Exists ? info.Length : 0;
+				var info = GetUnixFileInfo (path);
+				return info != null && info.Exists ? info.Length : 0;
 			}
 
 			// If you call .Length on a file that doesn't exist, an exception is thrown
@@ -296,8 +293,9 @@ namespace Sharpen
 		private void MakeFileWritable (string file)
 		{
 			if (RunningOnLinux) {
-				var info = UnixFileInfo.GetFileSystemEntry (file);
-				info.FileAccessPermissions |= (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
+				var info = GetUnixFileInfo (file);
+				if (info != null)
+					info.FileAccessPermissions |= (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
 				return;
 			}
 
@@ -341,7 +339,7 @@ namespace Sharpen
 		{
 			try {
 				if (RunningOnLinux) {
-					var symlink = UnixFileInfo.GetFileSystemEntry (path) as UnixSymbolicLinkInfo;
+					var symlink = GetUnixFileInfo (path) as UnixSymbolicLinkInfo;
 					if (symlink != null) {
 						var newFile = new UnixSymbolicLinkInfo (name);
 						newFile.CreateSymbolicLinkTo (symlink.ContentsPath);
@@ -365,8 +363,9 @@ namespace Sharpen
 		public void SetReadOnly ()
 		{
 			if (RunningOnLinux) {
-				var info = UnixFileInfo.GetFileSystemEntry (path);
-				info.FileAccessPermissions &= ~ (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
+				var info = GetUnixFileInfo (path);
+				if (info != null)
+					info.FileAccessPermissions &= ~ (FileAccessPermissions.GroupWrite | FileAccessPermissions.OtherWrite | FileAccessPermissions.UserWrite);
 				return;
 			}
 
@@ -434,6 +433,20 @@ namespace Sharpen
 			return path;
 		}
 
+		static UnixFileSystemInfo GetUnixFileInfo (string path)
+		{
+			try {
+				return Mono.Unix.UnixFileInfo.GetFileSystemEntry (path);
+			} catch (DirectoryNotFoundException ex) {
+				// If we have a file /foo/bar and probe the path /foo/bar/baz, we get a DirectoryNotFound exception
+				// because 'bar' is a file and therefore 'baz' cannot possibly exist. This is annoying.
+				var inner = ex.InnerException as UnixIOException;
+				if (inner != null && inner.ErrorCode == Mono.Unix.Native.Errno.ENOTDIR)
+					return null;
+				throw;
+			}
+		}
+		
 		static internal string pathSeparator {
 			get { return Path.PathSeparator.ToString (); }
 		}

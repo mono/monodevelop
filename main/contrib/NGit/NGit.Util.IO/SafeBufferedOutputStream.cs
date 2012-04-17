@@ -62,16 +62,16 @@ namespace NGit.Util.IO
 	{
 		/// <seealso cref="Sharpen.BufferedOutputStream.BufferedOutputStream(Sharpen.OutputStream)
 		/// 	">Sharpen.BufferedOutputStream.BufferedOutputStream(Sharpen.OutputStream)</seealso>
-		/// <param name="out"></param>
+		/// <param name="out">underlying output stream</param>
 		public SafeBufferedOutputStream(OutputStream @out) : base(@out)
 		{
 		}
 
 		/// <seealso cref="Sharpen.BufferedOutputStream.BufferedOutputStream(Sharpen.OutputStream, int)
 		/// 	">Sharpen.BufferedOutputStream.BufferedOutputStream(Sharpen.OutputStream, int)</seealso>
-		/// <param name="out"></param>
-		/// <param name="size"></param>
-		public SafeBufferedOutputStream(OutputStream @out, int size) : base(@out)
+		/// <param name="out">underlying output stream</param>
+		/// <param name="size">buffer size</param>
+		public SafeBufferedOutputStream(OutputStream @out, int size) : base(@out, size)
 		{
 		}
 

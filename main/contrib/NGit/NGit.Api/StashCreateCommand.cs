@@ -47,6 +47,7 @@ using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Dircache;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
@@ -276,11 +277,11 @@ namespace NGit.Api
 							entry.SetLength(wtIter.GetEntryLength());
 							entry.LastModified = wtIter.GetEntryLastModified();
 							entry.FileMode = wtIter.EntryFileMode;
+							long contentLength = wtIter.GetEntryContentLength();
 							InputStream @in = wtIter.OpenEntryStream();
 							try
 							{
-								entry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, wtIter.GetEntryLength(), @in
-									));
+								entry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, contentLength, @in));
 							}
 							finally
 							{

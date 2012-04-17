@@ -47,6 +47,7 @@ using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Revwalk.Filter;
 using NGit.Treewalk.Filter;

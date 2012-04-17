@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.IO;
 using NGit;
+using NGit.Internal;
 using NGit.Util;
 using Sharpen;
 
@@ -731,10 +732,37 @@ namespace NGit.Dircache
 		/// <param name="src">the entry to copy ObjectId and meta fields from.</param>
 		public virtual void CopyMetaData(NGit.Dircache.DirCacheEntry src)
 		{
-			int pLen = NB.DecodeUInt16(info, infoOffset + P_FLAGS) & NAME_MASK;
+			CopyMetaData(src, false);
+		}
+
+		/// <summary>Copy the ObjectId and other meta fields from an existing entry.</summary>
+		/// <remarks>
+		/// Copy the ObjectId and other meta fields from an existing entry.
+		/// <p>
+		/// This method copies everything except the path and possibly stage from one
+		/// entry to another, supporting renaming.
+		/// </remarks>
+		/// <param name="src">the entry to copy ObjectId and meta fields from.</param>
+		/// <param name="keepStage">if true, the stage attribute will not be copied</param>
+		internal virtual void CopyMetaData(NGit.Dircache.DirCacheEntry src, bool keepStage
+			)
+		{
+			int origflags = NB.DecodeUInt16(info, infoOffset + P_FLAGS);
+			int newflags = NB.DecodeUInt16(src.info, src.infoOffset + P_FLAGS);
 			System.Array.Copy(src.info, src.infoOffset, info, infoOffset, INFO_LEN);
-			NB.EncodeInt16(info, infoOffset + P_FLAGS, pLen | NB.DecodeUInt16(info, infoOffset
-				 + P_FLAGS) & ~NAME_MASK);
+			int pLen = origflags & NAME_MASK;
+			int SHIFTED_STAGE_MASK = unchecked((int)(0x3)) << 12;
+			int pStageShifted;
+			if (keepStage)
+			{
+				pStageShifted = origflags & SHIFTED_STAGE_MASK;
+			}
+			else
+			{
+				pStageShifted = newflags & SHIFTED_STAGE_MASK;
+			}
+			NB.EncodeInt16(info, infoOffset + P_FLAGS, pStageShifted | pLen | (newflags & ~NAME_MASK
+				 & ~SHIFTED_STAGE_MASK));
 		}
 
 		/// <returns>true if the entry contains extended flags.</returns>

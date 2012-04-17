@@ -46,6 +46,7 @@ using System.Collections.Generic;
 using System.Text;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Storage.Pack;
 using NGit.Transport;
 using Sharpen;

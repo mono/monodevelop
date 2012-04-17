@@ -49,6 +49,7 @@ using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Diff;
 using NGit.Dircache;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
@@ -1113,8 +1114,8 @@ namespace NGit.Api
 				{
 					return PICK;
 				}
-				throw new JGitInternalException(MessageFormat.Format("Unknown or unsupported command \"{0}\", only  \"pick\" is allowed"
-					, token));
+				throw new JGitInternalException(MessageFormat.Format(JGitText.Get().unsupportedCommand0
+					, token, PICK.ToToken()));
 			}
 		}
 

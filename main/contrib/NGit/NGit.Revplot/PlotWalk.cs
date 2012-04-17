@@ -45,6 +45,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NGit;
+using NGit.Internal;
 using NGit.Revplot;
 using NGit.Revwalk;
 using Sharpen;

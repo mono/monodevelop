@@ -43,6 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System.Collections.Generic;
 using NGit;
+using NGit.Internal;
 using NGit.Patch;
 using NGit.Util;
 using Sharpen;

@@ -48,6 +48,7 @@ using System.Text;
 using NGit;
 using NGit.Errors;
 using NGit.Events;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Storage.File;
 using NGit.Util;
@@ -101,9 +102,7 @@ namespace NGit.Storage.File
 
 		private readonly FilePath refsDir;
 
-		private readonly FilePath logsDir;
-
-		private readonly FilePath logsRefsDir;
+		private readonly ReflogWriter logWriter;
 
 		private readonly FilePath packedRefsFile;
 
@@ -153,9 +152,8 @@ namespace NGit.Storage.File
 			FS fs = db.FileSystem;
 			parent = db;
 			gitDir = db.Directory;
+			logWriter = new ReflogWriter(db);
 			refsDir = fs.Resolve(gitDir, Constants.R_REFS);
-			logsDir = fs.Resolve(gitDir, Constants.LOGS);
-			logsRefsDir = fs.Resolve(gitDir, Constants.LOGS + '/' + Constants.R_REFS);
 			packedRefsFile = fs.Resolve(gitDir, Constants.PACKED_REFS);
 			looseRefs.Set(RefList.EmptyList<RefDirectory.LooseRef>());
 			packedRefs.Set(RefDirectory.PackedRefList.NO_PACKED_REFS);
@@ -166,18 +164,20 @@ namespace NGit.Storage.File
 			return parent;
 		}
 
+		internal virtual ReflogWriter GetLogWriter()
+		{
+			return logWriter;
+		}
+
 		/// <exception cref="System.IO.IOException"></exception>
 		public override void Create()
 		{
 			FileUtils.Mkdir(refsDir);
-			FileUtils.Mkdir(logsDir);
-			FileUtils.Mkdir(logsRefsDir);
 			FileUtils.Mkdir(new FilePath(refsDir, Sharpen.Runtime.Substring(Constants.R_HEADS
 				, Constants.R_REFS.Length)));
 			FileUtils.Mkdir(new FilePath(refsDir, Sharpen.Runtime.Substring(Constants.R_TAGS, 
 				Constants.R_REFS.Length)));
-			FileUtils.Mkdir(new FilePath(logsRefsDir, Sharpen.Runtime.Substring(Constants.R_HEADS
-				, Constants.R_REFS.Length)));
+			logWriter.Create();
 		}
 
 		public override void Close()
@@ -686,7 +686,7 @@ namespace NGit.Storage.File
 			}
 			while (!looseRefs.CompareAndSet(curLoose, newLoose));
 			int levels = LevelsIn(name) - 2;
-			Delete(LogFor(name), levels);
+			Delete(logWriter.LogFor(name), levels);
 			if (dst.GetStorage().IsLoose())
 			{
 				update.Unlock();
@@ -699,120 +699,9 @@ namespace NGit.Storage.File
 		/// <exception cref="System.IO.IOException"></exception>
 		internal virtual void Log(RefUpdate update, string msg, bool deref)
 		{
-			ObjectId oldId = update.GetOldObjectId();
-			ObjectId newId = update.GetNewObjectId();
-			Ref @ref = update.GetRef();
-			PersonIdent ident = update.GetRefLogIdent();
-			if (ident == null)
-			{
-				ident = new PersonIdent(parent);
-			}
-			else
-			{
-				ident = new PersonIdent(ident);
-			}
-			StringBuilder r = new StringBuilder();
-			r.Append(ObjectId.ToString(oldId));
-			r.Append(' ');
-			r.Append(ObjectId.ToString(newId));
-			r.Append(' ');
-			r.Append(ident.ToExternalString());
-			r.Append('\t');
-			r.Append(msg);
-			r.Append('\n');
-			byte[] rec = Constants.Encode(r.ToString());
-			if (deref && @ref.IsSymbolic())
-			{
-				Log(@ref.GetName(), rec);
-				Log(@ref.GetLeaf().GetName(), rec);
-			}
-			else
-			{
-				Log(@ref.GetName(), rec);
-			}
+			logWriter.Log(update, msg, deref);
 		}
 
-		/// <exception cref="System.IO.IOException"></exception>
-		private void Log(string refName, byte[] rec)
-		{
-			FilePath log = LogFor(refName);
-			bool write;
-			if (IsLogAllRefUpdates() && ShouldAutoCreateLog(refName))
-			{
-				write = true;
-			}
-			else
-			{
-				if (log.IsFile())
-				{
-					write = true;
-				}
-				else
-				{
-					write = false;
-				}
-			}
-			if (write)
-			{
-				WriteConfig wc = GetRepository().GetConfig().Get(WriteConfig.KEY);
-				FileOutputStream @out;
-				try
-				{
-					@out = new FileOutputStream(log, true);
-				}
-				catch (FileNotFoundException err)
-				{
-					FilePath dir = log.GetParentFile();
-					if (dir.Exists())
-					{
-						throw;
-					}
-					if (!dir.Mkdirs() && !dir.IsDirectory())
-					{
-						throw new IOException(MessageFormat.Format(JGitText.Get().cannotCreateDirectory, 
-							dir));
-					}
-					@out = new FileOutputStream(log, true);
-				}
-				try
-				{
-					if (wc.GetFSyncRefFiles())
-					{
-						FileChannel fc = @out.GetChannel();
-						ByteBuffer buf = ByteBuffer.Wrap(rec);
-						while (0 < buf.Remaining())
-						{
-							fc.Write(buf);
-						}
-						fc.Force(true);
-					}
-					else
-					{
-						@out.Write(rec);
-					}
-				}
-				finally
-				{
-					@out.Close();
-				}
-			}
-		}
-
-		private bool IsLogAllRefUpdates()
-		{
-			return ((FileBasedConfig)parent.GetConfig()).Get(CoreConfig.KEY).IsLogAllRefUpdates
-				();
-		}
-
-		private bool ShouldAutoCreateLog(string refName)
-		{
-			return refName.Equals(Constants.HEAD) || refName.StartsWith(Constants.R_HEADS) ||
-				 refName.StartsWith(Constants.R_REMOTES) || refName.Equals(Constants.R_STASH);
-		}
-
-		//
-		//
-		//
 		/// <exception cref="System.IO.IOException"></exception>
 		private Ref Resolve(Ref @ref, int depth, string prefix, RefList<RefDirectory.LooseRef
 			> loose, RefList<Ref> packed)
@@ -973,12 +862,12 @@ namespace NGit.Storage.File
 		private void CommitPackedRefs(LockFile lck, RefList<Ref> refs, RefDirectory.PackedRefList
 			 oldPackedList)
 		{
-			new _RefWriter_795(this, lck, oldPackedList, refs, refs).WritePackedRefs();
+			new _RefWriter_707(this, lck, oldPackedList, refs, refs).WritePackedRefs();
 		}
 
-		private sealed class _RefWriter_795 : RefWriter
+		private sealed class _RefWriter_707 : RefWriter
 		{
-			public _RefWriter_795(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
+			public _RefWriter_707(RefDirectory _enclosing, LockFile lck, RefDirectory.PackedRefList
 				 oldPackedList, RefList<Ref> refs, RefList<Ref> baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;
@@ -1218,23 +1107,6 @@ namespace NGit.Storage.File
 				return new FilePath(refsDir, name);
 			}
 			return new FilePath(gitDir, name);
-		}
-
-		/// <summary>Locate the log file on disk for a single reference name.</summary>
-		/// <remarks>Locate the log file on disk for a single reference name.</remarks>
-		/// <param name="name">
-		/// name of the ref, relative to the Git repository top level
-		/// directory (so typically starts with refs/).
-		/// </param>
-		/// <returns>the log file location.</returns>
-		internal virtual FilePath LogFor(string name)
-		{
-			if (name.StartsWith(Constants.R_REFS))
-			{
-				name = Sharpen.Runtime.Substring(name, Constants.R_REFS.Length);
-				return new FilePath(logsRefsDir, name);
-			}
-			return new FilePath(logsDir, name);
 		}
 
 		internal static int LevelsIn(string name)

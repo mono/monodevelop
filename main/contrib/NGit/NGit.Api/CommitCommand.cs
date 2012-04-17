@@ -48,6 +48,7 @@ using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Dircache;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Treewalk;
 using NGit.Util;
@@ -392,11 +393,12 @@ namespace NGit.Api
 								{
 									inserter = repo.NewObjectInserter();
 								}
+								long contentLength = fTree.GetEntryContentLength();
 								InputStream inputStream = fTree.OpenEntryStream();
 								try
 								{
-									dcEntry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, entryLength, inputStream)
-										);
+									dcEntry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, contentLength, inputStream
+										));
 								}
 								finally
 								{

@@ -42,8 +42,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
-using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Util;
 using Sharpen;
 
@@ -126,7 +126,7 @@ namespace NGit.Storage.Pack
 			do
 			{
 				c = cmdbuf[cmdptr++] & unchecked((int)(0xff));
-				baseSize |= (c & unchecked((int)(0x7f))) << shift;
+				baseSize |= ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			while ((c & unchecked((int)(0x80))) != 0);
@@ -136,7 +136,7 @@ namespace NGit.Storage.Pack
 			do
 			{
 				c = cmdbuf[cmdptr++] & unchecked((int)(0xff));
-				resultSize |= (c & unchecked((int)(0x7f))) << shift;
+				resultSize |= ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			while ((c & unchecked((int)(0x80))) != 0);
@@ -355,7 +355,7 @@ namespace NGit.Storage.Pack
 				}
 				if ((cmd & unchecked((int)(0x08))) != 0)
 				{
-					copyOffset |= (cmdbuf[cmdptr++] & unchecked((int)(0xff))) << 24;
+					copyOffset |= ((long)(cmdbuf[cmdptr++] & unchecked((int)(0xff)))) << 24;
 				}
 				copySize = 0;
 				if ((cmd & unchecked((int)(0x10))) != 0)

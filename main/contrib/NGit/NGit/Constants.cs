@@ -45,6 +45,7 @@ using System;
 using System.Text;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Util;
 using Sharpen;
 

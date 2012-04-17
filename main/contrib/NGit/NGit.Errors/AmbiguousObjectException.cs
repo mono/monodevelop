@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System.Collections.Generic;
 using System.IO;
 using NGit;
+using NGit.Internal;
 using Sharpen;
 
 namespace NGit.Errors

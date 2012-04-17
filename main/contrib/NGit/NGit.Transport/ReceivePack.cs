@@ -47,6 +47,7 @@ using System.IO;
 using System.Text;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Storage.File;
 using NGit.Transport;
@@ -80,8 +81,12 @@ namespace NGit.Transport
 					{
 						caps.AddItem(c);
 					}
+					this.line = Sharpen.Runtime.Substring(line, 0, nul);
 				}
-				this.line = Sharpen.Runtime.Substring(line, 0, nul);
+				else
+				{
+					this.line = line;
+				}
 				this.capabilities = Sharpen.Collections.UnmodifiableSet(caps);
 			}
 
@@ -261,10 +266,10 @@ namespace NGit.Transport
 
 		private class ReceiveConfig
 		{
-			private sealed class _SectionParser_260 : Config.SectionParser<ReceivePack.ReceiveConfig
+			private sealed class _SectionParser_261 : Config.SectionParser<ReceivePack.ReceiveConfig
 				>
 			{
-				public _SectionParser_260()
+				public _SectionParser_261()
 				{
 				}
 
@@ -275,7 +280,7 @@ namespace NGit.Transport
 			}
 
 			internal static readonly Config.SectionParser<ReceivePack.ReceiveConfig> KEY = new 
-				_SectionParser_260();
+				_SectionParser_261();
 
 			internal readonly bool checkReceivedObjects;
 
@@ -1010,14 +1015,14 @@ namespace NGit.Transport
 				UnlockPack();
 				if (reportStatus)
 				{
-					SendStatusReport(true, new _Reporter_859(this));
+					SendStatusReport(true, new _Reporter_860(this));
 					pckOut.End();
 				}
 				else
 				{
 					if (msgOut != null)
 					{
-						SendStatusReport(false, new _Reporter_866(this));
+						SendStatusReport(false, new _Reporter_867(this));
 					}
 				}
 				postReceive.OnPostReceive(this, ReceiveCommand.Filter(commands, ReceiveCommand.Result
@@ -1029,9 +1034,9 @@ namespace NGit.Transport
 			}
 		}
 
-		private sealed class _Reporter_859 : ReceivePack.Reporter
+		private sealed class _Reporter_860 : ReceivePack.Reporter
 		{
-			public _Reporter_859(ReceivePack _enclosing)
+			public _Reporter_860(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}
@@ -1045,9 +1050,9 @@ namespace NGit.Transport
 			private readonly ReceivePack _enclosing;
 		}
 
-		private sealed class _Reporter_866 : ReceivePack.Reporter
+		private sealed class _Reporter_867 : ReceivePack.Reporter
 		{
-			public _Reporter_866(ReceivePack _enclosing)
+			public _Reporter_867(ReceivePack _enclosing)
 			{
 				this._enclosing = _enclosing;
 			}

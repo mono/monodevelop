@@ -42,9 +42,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System.Collections.Generic;
-using NGit;
 using NGit.Errors;
 using NGit.Fnmatch;
+using NGit.Internal;
 using Sharpen;
 
 namespace NGit.Fnmatch

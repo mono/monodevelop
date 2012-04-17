@@ -48,6 +48,7 @@ using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Diff;
+using NGit.Internal;
 using NGit.Patch;
 using NGit.Util;
 using Sharpen;

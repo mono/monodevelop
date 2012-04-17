@@ -46,6 +46,7 @@ using System.IO;
 using System.Text;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Storage.File;
 using NGit.Transport;
 using NGit.Util;

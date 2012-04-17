@@ -48,6 +48,7 @@ using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Dircache;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
@@ -137,17 +138,25 @@ namespace NGit.Api
 				RevCommit headCommit = headId == null ? null : revWalk.ParseCommit(headId);
 				RevCommit newCommit = revWalk.ParseCommit(branch);
 				RevTree headTree = headCommit == null ? null : headCommit.Tree;
-				DirCacheCheckout dco = new DirCacheCheckout(repo, headTree, repo.LockDirCache(), 
-					newCommit.Tree);
-				dco.SetFailOnConflict(true);
+				DirCacheCheckout dco;
+				DirCache dc = repo.LockDirCache();
 				try
 				{
-					dco.Checkout();
+					dco = new DirCacheCheckout(repo, headTree, dc, newCommit.Tree);
+					dco.SetFailOnConflict(true);
+					try
+					{
+						dco.Checkout();
+					}
+					catch (NGit.Errors.CheckoutConflictException e)
+					{
+						status = new CheckoutResult(CheckoutResult.Status.CONFLICTS, dco.GetConflicts());
+						throw new NGit.Api.Errors.CheckoutConflictException(dco.GetConflicts(), e);
+					}
 				}
-				catch (NGit.Errors.CheckoutConflictException e)
+				finally
 				{
-					status = new CheckoutResult(CheckoutResult.Status.CONFLICTS, dco.GetConflicts());
-					throw new NGit.Api.Errors.CheckoutConflictException(dco.GetConflicts(), e);
+					dc.Unlock();
 				}
 				Ref @ref = repo.GetRef(name);
 				if (@ref != null && !@ref.GetName().StartsWith(Constants.R_HEADS))
@@ -297,7 +306,7 @@ namespace NGit.Api
 					{
 						ObjectId blobId = startWalk.GetObjectId(0);
 						FileMode mode = startWalk.GetFileMode(0);
-						editor.Add(new _PathEdit_286(this, blobId, mode, workTree, r, startWalk.PathString
+						editor.Add(new _PathEdit_292(this, blobId, mode, workTree, r, startWalk.PathString
 							));
 					}
 					editor.Commit();
@@ -316,9 +325,9 @@ namespace NGit.Api
 			return this;
 		}
 
-		private sealed class _PathEdit_286 : DirCacheEditor.PathEdit
+		private sealed class _PathEdit_292 : DirCacheEditor.PathEdit
 		{
-			public _PathEdit_286(CheckoutCommand _enclosing, ObjectId blobId, FileMode mode, 
+			public _PathEdit_292(CheckoutCommand _enclosing, ObjectId blobId, FileMode mode, 
 				FilePath workTree, ObjectReader r, string baseArg1) : base(baseArg1)
 			{
 				this._enclosing = _enclosing;

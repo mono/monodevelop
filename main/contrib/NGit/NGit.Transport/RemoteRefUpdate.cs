@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.IO;
 using NGit;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Transport;
 using Sharpen;

@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using NGit;
 using NGit.Dircache;
+using NGit.Internal;
 using NGit.Treewalk;
 using Sharpen;
 

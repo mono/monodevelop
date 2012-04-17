@@ -47,6 +47,7 @@ using System.IO;
 using System.Reflection;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Storage.Pack;
 using NGit.Transport;
 using Sharpen;
@@ -141,10 +142,21 @@ namespace NGit.Transport
 				string line;
 				while ((line = br.ReadLine()) != null)
 				{
-					if (line.Length > 0 && !line.StartsWith("#"))
+					line = line.Trim();
+					if (line.Length == 0)
 					{
-						Load(ldr, line);
+						continue;
 					}
+					int comment = line.IndexOf('#');
+					if (comment == 0)
+					{
+						continue;
+					}
+					if (comment != -1)
+					{
+						line = Sharpen.Runtime.Substring(line, 0, comment).Trim();
+					}
+					Load(ldr, line);
 				}
 			}
 			catch (IOException)

@@ -47,6 +47,7 @@ using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Dircache;
+using NGit.Internal;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
 using Sharpen;
@@ -183,29 +184,23 @@ namespace NGit.Api
 										{
 											entry.SetLength(sz);
 											entry.LastModified = f.GetEntryLastModified();
+											long contentSize = f.GetEntryContentLength();
 											InputStream @in = f.OpenEntryStream();
 											try
 											{
-												entry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, sz, @in));
+												entry.SetObjectId(inserter.Insert(Constants.OBJ_BLOB, contentSize, @in));
 											}
 											finally
 											{
 												@in.Close();
 											}
-											builder.Add(entry);
-											lastAddedFile = path;
 										}
 										else
 										{
-											Repository subRepo = Git.Open(new FilePath(repo.WorkTree, path)).GetRepository();
-											ObjectId subRepoHead = subRepo.Resolve(Constants.HEAD);
-											if (subRepoHead != null)
-											{
-												entry.SetObjectId(subRepoHead);
-												builder.Add(entry);
-												lastAddedFile = path;
-											}
+											entry.SetObjectId(f.EntryObjectId);
 										}
+										builder.Add(entry);
+										lastAddedFile = path;
 									}
 									else
 									{

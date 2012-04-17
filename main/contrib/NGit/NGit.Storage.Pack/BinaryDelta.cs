@@ -43,7 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.Text;
-using NGit;
+using NGit.Internal;
 using NGit.Storage.Pack;
 using NGit.Util;
 using Sharpen;
@@ -74,7 +74,7 @@ namespace NGit.Storage.Pack
 			do
 			{
 				c = delta[p++] & unchecked((int)(0xff));
-				baseLen |= (c & unchecked((int)(0x7f))) << shift;
+				baseLen |= ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			while ((c & unchecked((int)(0x80))) != 0);
@@ -101,7 +101,7 @@ namespace NGit.Storage.Pack
 			do
 			{
 				c = delta[p++] & unchecked((int)(0xff));
-				resLen |= (c & unchecked((int)(0x7f))) << shift;
+				resLen |= ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			while ((c & unchecked((int)(0x80))) != 0);
@@ -160,7 +160,7 @@ namespace NGit.Storage.Pack
 			do
 			{
 				c = delta[deltaPtr++] & unchecked((int)(0xff));
-				baseLen |= (c & unchecked((int)(0x7f))) << shift;
+				baseLen |= ((int)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			while ((c & unchecked((int)(0x80))) != 0);
@@ -175,7 +175,7 @@ namespace NGit.Storage.Pack
 			do
 			{
 				c = delta[deltaPtr++] & unchecked((int)(0xff));
-				resLen |= (c & unchecked((int)(0x7f))) << shift;
+				resLen |= ((int)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			while ((c & unchecked((int)(0x80))) != 0);
@@ -287,7 +287,7 @@ namespace NGit.Storage.Pack
 			do
 			{
 				c = delta[deltaPtr++] & unchecked((int)(0xff));
-				baseLen |= (c & unchecked((int)(0x7f))) << shift;
+				baseLen |= ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			while ((c & unchecked((int)(0x80))) != 0);
@@ -296,7 +296,7 @@ namespace NGit.Storage.Pack
 			do
 			{
 				c = delta[deltaPtr++] & unchecked((int)(0xff));
-				resLen |= (c & unchecked((int)(0x7f))) << shift;
+				resLen |= ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			while ((c & unchecked((int)(0x80))) != 0);

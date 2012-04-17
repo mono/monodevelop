@@ -44,7 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NGit;
+using NGit.Internal;
 using Sharpen;
 
 namespace NGit.Util
@@ -136,6 +136,58 @@ namespace NGit.Util
 				}
 			}
 			return true;
+		}
+
+		/// <summary>Compare two strings, ignoring case.</summary>
+		/// <remarks>
+		/// Compare two strings, ignoring case.
+		/// <p>
+		/// This method does not honor the JVM locale, but instead always behaves as
+		/// though it is in the US-ASCII locale.
+		/// </remarks>
+		/// <param name="a">first string to compare.</param>
+		/// <param name="b">second string to compare.</param>
+		/// <returns>
+		/// negative, zero or positive if a sorts before, is equal to, or
+		/// sorts after b.
+		/// </returns>
+		public static int CompareIgnoreCase(string a, string b)
+		{
+			for (int i = 0; i < a.Length && i < b.Length; i++)
+			{
+				int d = ToLowerCase(a[i]) - ToLowerCase(b[i]);
+				if (d != 0)
+				{
+					return d;
+				}
+			}
+			return a.Length - b.Length;
+		}
+
+		/// <summary>Compare two strings, honoring case.</summary>
+		/// <remarks>
+		/// Compare two strings, honoring case.
+		/// <p>
+		/// This method does not honor the JVM locale, but instead always behaves as
+		/// though it is in the US-ASCII locale.
+		/// </remarks>
+		/// <param name="a">first string to compare.</param>
+		/// <param name="b">second string to compare.</param>
+		/// <returns>
+		/// negative, zero or positive if a sorts before, is equal to, or
+		/// sorts after b.
+		/// </returns>
+		public static int CompareWithCase(string a, string b)
+		{
+			for (int i = 0; i < a.Length && i < b.Length; i++)
+			{
+				int d = a[i] - b[i];
+				if (d != 0)
+				{
+					return d;
+				}
+			}
+			return a.Length - b.Length;
 		}
 
 		/// <summary>Parse a string as a standard Git boolean value.</summary>

@@ -48,6 +48,7 @@ using NGit;
 using NGit.Diff;
 using NGit.Dircache;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Merge;
 using NGit.Treewalk;
 using NGit.Util;

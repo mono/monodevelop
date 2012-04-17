@@ -47,6 +47,7 @@ using System.IO;
 using System.Text;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Revwalk.Filter;
 using NGit.Storage.File;
@@ -832,6 +833,7 @@ READ_RESULT_break2: ;
 		/// <exception cref="System.IO.IOException"></exception>
 		private void ReceivePack(ProgressMonitor monitor)
 		{
+			OnReceivePack();
 			InputStream input = @in;
 			if (sideband)
 			{
@@ -853,10 +855,26 @@ READ_RESULT_break2: ;
 			}
 		}
 
+		/// <summary>
+		/// Notification event delivered just before the pack is received from the
+		/// network.
+		/// </summary>
+		/// <remarks>
+		/// Notification event delivered just before the pack is received from the
+		/// network. This event can be used by RPC such as
+		/// <see cref="TransportHttp">TransportHttp</see>
+		/// to
+		/// disable its request magic and ensure the pack stream is read correctly.
+		/// </remarks>
+		protected internal virtual void OnReceivePack()
+		{
+		}
+
 		[System.Serializable]
 		private class CancelledException : Exception
 		{
 			private const long serialVersionUID = 1L;
+			// By default do nothing for TCP based protocols.
 		}
 	}
 }

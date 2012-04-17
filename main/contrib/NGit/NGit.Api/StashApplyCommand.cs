@@ -46,6 +46,7 @@ using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Dircache;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
@@ -58,9 +59,52 @@ namespace NGit.Api
 	/// <remarks>Command class to apply a stashed commit.</remarks>
 	/// <seealso><a href="http://www.kernel.org/pub/software/scm/git/docs/git-stash.html"
 	/// *      >Git documentation about Stash</a></seealso>
+	/// <since>2.0</since>
 	public class StashApplyCommand : GitCommand<ObjectId>
 	{
 		private static readonly string DEFAULT_REF = Constants.STASH + "@{0}";
+
+		/// <summary>
+		/// Stash diff filter that looks for differences in the first three trees
+		/// which must be the stash head tree, stash index tree, and stash working
+		/// directory tree in any order.
+		/// </summary>
+		/// <remarks>
+		/// Stash diff filter that looks for differences in the first three trees
+		/// which must be the stash head tree, stash index tree, and stash working
+		/// directory tree in any order.
+		/// </remarks>
+		private class StashDiffFilter : TreeFilter
+		{
+			public override bool Include(TreeWalk walker)
+			{
+				int m = walker.GetRawMode(0);
+				if (walker.GetRawMode(1) != m || !walker.IdEqual(1, 0))
+				{
+					return true;
+				}
+				if (walker.GetRawMode(2) != m || !walker.IdEqual(2, 0))
+				{
+					return true;
+				}
+				return false;
+			}
+
+			public override bool ShouldBeRecursive()
+			{
+				return false;
+			}
+
+			public override TreeFilter Clone()
+			{
+				return this;
+			}
+
+			public override string ToString()
+			{
+				return "STASH_DIFF";
+			}
+		}
 
 		private string stashRef;
 
@@ -81,10 +125,181 @@ namespace NGit.Api
 		/// 
 		/// <code>this</code>
 		/// </returns>
-		public virtual NGit.Api.StashApplyCommand SetStashRef(string stashRef)
+		public virtual StashApplyCommand SetStashRef(string stashRef)
 		{
 			this.stashRef = stashRef;
 			return this;
+		}
+
+		private bool IsEqualEntry(AbstractTreeIterator iter1, AbstractTreeIterator iter2)
+		{
+			if (!iter1.EntryFileMode.Equals(iter2.EntryFileMode))
+			{
+				return false;
+			}
+			ObjectId id1 = iter1.EntryObjectId;
+			ObjectId id2 = iter2.EntryObjectId;
+			return id1 != null ? id1.Equals(id2) : id2 == null;
+		}
+
+		/// <summary>Would unstashing overwrite local changes?</summary>
+		/// <param name="stashIndexIter"></param>
+		/// <param name="stashWorkingTreeIter"></param>
+		/// <param name="headIter"></param>
+		/// <param name="indexIter"></param>
+		/// <param name="workingTreeIter"></param>
+		/// <returns>true if unstash conflict, false otherwise</returns>
+		private bool IsConflict(AbstractTreeIterator stashIndexIter, AbstractTreeIterator
+			 stashWorkingTreeIter, AbstractTreeIterator headIter, AbstractTreeIterator indexIter
+			, AbstractTreeIterator workingTreeIter)
+		{
+			// Is the current index dirty?
+			bool indexDirty = indexIter != null && (headIter == null || !IsEqualEntry(indexIter
+				, headIter));
+			// Is the current working tree dirty?
+			bool workingTreeDirty = workingTreeIter != null && (headIter == null || !IsEqualEntry
+				(workingTreeIter, headIter));
+			// Would unstashing overwrite existing index changes?
+			if (indexDirty && stashIndexIter != null && indexIter != null && !IsEqualEntry(stashIndexIter
+				, indexIter))
+			{
+				return true;
+			}
+			// Would unstashing overwrite existing working tree changes?
+			if (workingTreeDirty && stashWorkingTreeIter != null && workingTreeIter != null &&
+				 !IsEqualEntry(stashWorkingTreeIter, workingTreeIter))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		/// <exception cref="NGit.Api.Errors.JGitInternalException"></exception>
+		/// <exception cref="NGit.Api.Errors.GitAPIException"></exception>
+		private ObjectId GetHeadTree()
+		{
+			ObjectId headTree;
+			try
+			{
+				headTree = repo.Resolve(Constants.HEAD + "^{tree}");
+			}
+			catch (IOException e)
+			{
+				throw new JGitInternalException(JGitText.Get().cannotReadTree, e);
+			}
+			if (headTree == null)
+			{
+				throw new NoHeadException(JGitText.Get().cannotReadTree);
+			}
+			return headTree;
+		}
+
+		/// <exception cref="NGit.Api.Errors.JGitInternalException"></exception>
+		/// <exception cref="NGit.Api.Errors.GitAPIException"></exception>
+		private ObjectId GetStashId()
+		{
+			string revision = stashRef != null ? stashRef : DEFAULT_REF;
+			ObjectId stashId;
+			try
+			{
+				stashId = repo.Resolve(revision);
+			}
+			catch (IOException e)
+			{
+				throw new InvalidRefNameException(MessageFormat.Format(JGitText.Get().stashResolveFailed
+					, revision), e);
+			}
+			if (stashId == null)
+			{
+				throw new InvalidRefNameException(MessageFormat.Format(JGitText.Get().stashResolveFailed
+					, revision));
+			}
+			return stashId;
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private void ScanForConflicts(TreeWalk treeWalk)
+		{
+			FilePath workingTree = repo.WorkTree;
+			while (treeWalk.Next())
+			{
+				// State of the stashed index and working directory
+				AbstractTreeIterator stashIndexIter = treeWalk.GetTree<AbstractTreeIterator>(1);
+				AbstractTreeIterator stashWorkingIter = treeWalk.GetTree<AbstractTreeIterator>(2);
+				// State of the current HEAD, index, and working directory
+				AbstractTreeIterator headIter = treeWalk.GetTree<AbstractTreeIterator>(3);
+				AbstractTreeIterator indexIter = treeWalk.GetTree<AbstractTreeIterator>(4);
+				AbstractTreeIterator workingIter = treeWalk.GetTree<AbstractTreeIterator>(5);
+				if (IsConflict(stashIndexIter, stashWorkingIter, headIter, indexIter, workingIter
+					))
+				{
+					string path = treeWalk.PathString;
+					FilePath file = new FilePath(workingTree, path);
+					throw new NGit.Errors.CheckoutConflictException(file.GetAbsolutePath());
+				}
+			}
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private void ApplyChanges(TreeWalk treeWalk, DirCache cache, DirCacheEditor editor
+			)
+		{
+			FilePath workingTree = repo.WorkTree;
+			while (treeWalk.Next())
+			{
+				string path = treeWalk.PathString;
+				FilePath file = new FilePath(workingTree, path);
+				// State of the stashed HEAD, index, and working directory
+				AbstractTreeIterator stashHeadIter = treeWalk.GetTree<AbstractTreeIterator>(0);
+				AbstractTreeIterator stashIndexIter = treeWalk.GetTree<AbstractTreeIterator>(1);
+				AbstractTreeIterator stashWorkingIter = treeWalk.GetTree<AbstractTreeIterator>(2);
+				if (stashWorkingIter != null && stashIndexIter != null)
+				{
+					// Checkout index change
+					DirCacheEntry entry = cache.GetEntry(path);
+					if (entry == null)
+					{
+						entry = new DirCacheEntry(treeWalk.RawPath);
+					}
+					entry.FileMode = stashIndexIter.EntryFileMode;
+					entry.SetObjectId(stashIndexIter.EntryObjectId);
+					DirCacheCheckout.CheckoutEntry(repo, file, entry, treeWalk.ObjectReader);
+					DirCacheEntry updatedEntry = entry;
+					editor.Add(new _PathEdit_271(updatedEntry, path));
+					// Checkout working directory change
+					if (!stashWorkingIter.IdEqual(stashIndexIter))
+					{
+						entry = new DirCacheEntry(treeWalk.RawPath);
+						entry.SetObjectId(stashWorkingIter.EntryObjectId);
+						DirCacheCheckout.CheckoutEntry(repo, file, entry, treeWalk.ObjectReader);
+					}
+				}
+				else
+				{
+					if (stashIndexIter == null || (stashHeadIter != null && !stashIndexIter.IdEqual(stashHeadIter
+						)))
+					{
+						editor.Add(new DirCacheEditor.DeletePath(path));
+					}
+					FileUtils.Delete(file, FileUtils.RETRY | FileUtils.SKIP_MISSING);
+				}
+			}
+		}
+
+		private sealed class _PathEdit_271 : DirCacheEditor.PathEdit
+		{
+			public _PathEdit_271(DirCacheEntry updatedEntry, string baseArg1) : base(baseArg1
+				)
+			{
+				this.updatedEntry = updatedEntry;
+			}
+
+			public override void Apply(DirCacheEntry ent)
+			{
+				ent.CopyMetaData(updatedEntry);
+			}
+
+			private readonly DirCacheEntry updatedEntry;
 		}
 
 		/// <summary>Apply the changes in a stashed commit to the working directory and index
@@ -100,78 +315,64 @@ namespace NGit.Api
 				throw new WrongRepositoryStateException(MessageFormat.Format(JGitText.Get().stashApplyOnUnsafeRepository
 					, repo.GetRepositoryState()));
 			}
-			string revision = stashRef != null ? stashRef : DEFAULT_REF;
-			ObjectId stashId;
-			try
-			{
-				stashId = repo.Resolve(revision);
-			}
-			catch (IOException e)
-			{
-				throw new JGitInternalException(JGitText.Get().stashApplyFailed, e);
-			}
-			if (stashId == null)
-			{
-				throw new InvalidRefNameException(MessageFormat.Format(JGitText.Get().stashResolveFailed
-					, revision));
-			}
+			ObjectId headTree = GetHeadTree();
+			ObjectId stashId = GetStashId();
 			ObjectReader reader = repo.NewObjectReader();
 			try
 			{
 				RevWalk revWalk = new RevWalk(reader);
-				RevCommit wtCommit = revWalk.ParseCommit(stashId);
-				if (wtCommit.ParentCount != 2)
+				RevCommit stashCommit = revWalk.ParseCommit(stashId);
+				if (stashCommit.ParentCount != 2)
 				{
 					throw new JGitInternalException(MessageFormat.Format(JGitText.Get().stashCommitMissingTwoParents
 						, stashId.Name));
 				}
-				// Apply index changes
-				RevTree indexTree = revWalk.ParseCommit(wtCommit.GetParent(1)).Tree;
-				DirCacheCheckout dco = new DirCacheCheckout(repo, repo.LockDirCache(), indexTree, 
-					new FileTreeIterator(repo));
-				dco.SetFailOnConflict(true);
-				dco.Checkout();
-				// Apply working directory changes
-				RevTree headTree = revWalk.ParseCommit(wtCommit.GetParent(0)).Tree;
+				RevTree stashWorkingTree = stashCommit.Tree;
+				RevTree stashIndexTree = revWalk.ParseCommit(stashCommit.GetParent(1)).Tree;
+				RevTree stashHeadTree = revWalk.ParseCommit(stashCommit.GetParent(0)).Tree;
+				CanonicalTreeParser stashWorkingIter = new CanonicalTreeParser();
+				stashWorkingIter.Reset(reader, stashWorkingTree);
+				CanonicalTreeParser stashIndexIter = new CanonicalTreeParser();
+				stashIndexIter.Reset(reader, stashIndexTree);
+				CanonicalTreeParser stashHeadIter = new CanonicalTreeParser();
+				stashHeadIter.Reset(reader, stashHeadTree);
+				CanonicalTreeParser headIter = new CanonicalTreeParser();
+				headIter.Reset(reader, headTree);
 				DirCache cache = repo.LockDirCache();
 				DirCacheEditor editor = cache.Editor();
 				try
 				{
+					DirCacheIterator indexIter = new DirCacheIterator(cache);
+					FileTreeIterator workingIter = new FileTreeIterator(repo);
 					TreeWalk treeWalk = new TreeWalk(reader);
 					treeWalk.Recursive = true;
-					treeWalk.AddTree(headTree);
-					treeWalk.AddTree(indexTree);
-					treeWalk.AddTree(wtCommit.Tree);
-					treeWalk.Filter = TreeFilter.ANY_DIFF;
-					FilePath workingTree = repo.WorkTree;
-					while (treeWalk.Next())
-					{
-						string path = treeWalk.PathString;
-						FilePath file = new FilePath(workingTree, path);
-						AbstractTreeIterator headIter = treeWalk.GetTree<AbstractTreeIterator>(0);
-						AbstractTreeIterator indexIter = treeWalk.GetTree<AbstractTreeIterator>(1);
-						AbstractTreeIterator wtIter = treeWalk.GetTree<AbstractTreeIterator>(2);
-						if (wtIter != null)
-						{
-							DirCacheEntry entry = new DirCacheEntry(treeWalk.RawPath);
-							entry.SetObjectId(wtIter.EntryObjectId);
-							DirCacheCheckout.CheckoutEntry(repo, file, entry);
-						}
-						else
-						{
-							if (indexIter != null && headIter != null && !indexIter.IdEqual(headIter))
-							{
-								editor.Add(new DirCacheEditor.DeletePath(path));
-							}
-							FileUtils.Delete(file, FileUtils.RETRY | FileUtils.SKIP_MISSING);
-						}
-					}
+					treeWalk.Filter = new StashApplyCommand.StashDiffFilter();
+					treeWalk.AddTree(stashHeadIter);
+					treeWalk.AddTree(stashIndexIter);
+					treeWalk.AddTree(stashWorkingIter);
+					treeWalk.AddTree(headIter);
+					treeWalk.AddTree(indexIter);
+					treeWalk.AddTree(workingIter);
+					ScanForConflicts(treeWalk);
+					// Reset trees and walk
+					treeWalk.Reset();
+					stashWorkingIter.Reset(reader, stashWorkingTree);
+					stashIndexIter.Reset(reader, stashIndexTree);
+					stashHeadIter.Reset(reader, stashHeadTree);
+					treeWalk.AddTree(stashHeadIter);
+					treeWalk.AddTree(stashIndexIter);
+					treeWalk.AddTree(stashWorkingIter);
+					ApplyChanges(treeWalk, cache, editor);
 				}
 				finally
 				{
 					editor.Commit();
 					cache.Unlock();
 				}
+			}
+			catch (JGitInternalException e)
+			{
+				throw;
 			}
 			catch (IOException e)
 			{

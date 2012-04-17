@@ -43,6 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using NGit;
+using NGit.Internal;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
 using Sharpen;

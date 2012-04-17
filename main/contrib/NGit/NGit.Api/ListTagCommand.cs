@@ -55,7 +55,7 @@ namespace NGit.Api
 	/// <remarks>Used to obtain a list of tags.</remarks>
 	/// <seealso><a href="http://www.kernel.org/pub/software/scm/git/docs/git-tag.html"
 	/// *      >Git documentation about Tag</a></seealso>
-	public class ListTagCommand : GitCommand<IList<RevTag>>
+	public class ListTagCommand : GitCommand<IList<Ref>>
 	{
 		/// <param name="repo"></param>
 		protected internal ListTagCommand(Repository repo) : base(repo)
@@ -64,19 +64,18 @@ namespace NGit.Api
 
 		/// <exception cref="NGit.Api.Errors.JGitInternalException">upon internal failure</exception>
 		/// <returns>the tags available</returns>
-		public override IList<RevTag> Call()
+		public override IList<Ref> Call()
 		{
 			CheckCallable();
 			IDictionary<string, Ref> refList;
-			IList<RevTag> tags = new AList<RevTag>();
+			IList<Ref> tags = new AList<Ref>();
 			RevWalk revWalk = new RevWalk(repo);
 			try
 			{
 				refList = repo.RefDatabase.GetRefs(Constants.R_TAGS);
 				foreach (Ref @ref in refList.Values)
 				{
-					RevTag tag = revWalk.ParseTag(@ref.GetObjectId());
-					tags.AddItem(tag);
+					tags.AddItem(@ref);
 				}
 			}
 			catch (IOException e)
@@ -87,20 +86,20 @@ namespace NGit.Api
 			{
 				revWalk.Release();
 			}
-			tags.Sort(new _IComparer_95());
+			tags.Sort(new _IComparer_93());
 			SetCallable(false);
 			return tags;
 		}
 
-		private sealed class _IComparer_95 : IComparer<RevTag>
+		private sealed class _IComparer_93 : IComparer<Ref>
 		{
-			public _IComparer_95()
+			public _IComparer_93()
 			{
 			}
 
-			public int Compare(RevTag o1, RevTag o2)
+			public int Compare(Ref o1, Ref o2)
 			{
-				return Sharpen.Runtime.CompareOrdinal(o1.GetTagName(), o2.GetTagName());
+				return Sharpen.Runtime.CompareOrdinal(o1.GetName(), o2.GetName());
 			}
 		}
 	}

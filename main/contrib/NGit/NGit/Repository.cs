@@ -48,6 +48,7 @@ using NGit;
 using NGit.Dircache;
 using NGit.Errors;
 using NGit.Events;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Storage.File;
 using NGit.Treewalk;

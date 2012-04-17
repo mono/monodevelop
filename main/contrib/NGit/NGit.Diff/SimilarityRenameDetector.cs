@@ -45,6 +45,7 @@ using System;
 using System.Collections.Generic;
 using NGit;
 using NGit.Diff;
+using NGit.Internal;
 using Sharpen;
 
 namespace NGit.Diff

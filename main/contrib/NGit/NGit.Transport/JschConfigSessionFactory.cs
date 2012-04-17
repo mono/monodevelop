@@ -44,8 +44,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Collections.Generic;
 using System.IO;
-using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Transport;
 using NGit.Util;
 using NSch;

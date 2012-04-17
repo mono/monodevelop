@@ -46,6 +46,7 @@ using System.Text;
 using NGit;
 using NGit.Api;
 using NGit.Diff;
+using NGit.Internal;
 using NGit.Merge;
 using Sharpen;
 
@@ -351,21 +352,17 @@ namespace NGit.Api
 
 	public abstract class MergeStatus
 	{
-		public static MergeStatus FAST_FORWARD = new MergeStatus.FAST_FORWARD_Class
-			();
+		public static MergeStatus FAST_FORWARD = new FAST_FORWARD_Class();
 
-		public static MergeStatus ALREADY_UP_TO_DATE = new MergeStatus.ALREADY_UP_TO_DATE_Class
-			();
+		public static MergeStatus ALREADY_UP_TO_DATE = new ALREADY_UP_TO_DATE_Class();
 
-		public static MergeStatus FAILED = new MergeStatus.FAILED_Class();
+		public static MergeStatus FAILED = new FAILED_Class();
 
-		public static MergeStatus MERGED = new MergeStatus.MERGED_Class();
+		public static MergeStatus MERGED = new MERGED_Class();
 
-		public static MergeStatus CONFLICTING = new MergeStatus.CONFLICTING_Class
-			();
+		public static MergeStatus CONFLICTING = new CONFLICTING_Class();
 
-		public static MergeStatus NOT_SUPPORTED = new MergeStatus.NOT_SUPPORTED_Class
-			();
+		public static MergeStatus NOT_SUPPORTED = new NOT_SUPPORTED_Class();
 
 		internal class FAST_FORWARD_Class : MergeStatus
 		{

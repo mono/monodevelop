@@ -56,9 +56,9 @@ namespace NGit.Transport.Resolver
 	/// <?></?>
 	public abstract class RepositoryResolver<C>
 	{
-		private sealed class _RepositoryResolver_57 : RepositoryResolver<C>
+		private sealed class _RepositoryResolver_58 : RepositoryResolver<C>
 		{
-			public _RepositoryResolver_57()
+			public _RepositoryResolver_58()
 			{
 			}
 
@@ -71,7 +71,7 @@ namespace NGit.Transport.Resolver
 
 		/// <summary>Resolver configured to open nothing.</summary>
 		/// <remarks>Resolver configured to open nothing.</remarks>
-		public static readonly RepositoryResolver<C> NONE = new _RepositoryResolver_57();
+		public static readonly RepositoryResolver<C> NONE = new _RepositoryResolver_58();
 
 		/// <summary>
 		/// Locate and open a reference to a
@@ -91,12 +91,18 @@ namespace NGit.Transport.Resolver
 		/// formatted as a repository name.
 		/// </exception>
 		/// <exception cref="ServiceNotAuthorizedException">
-		/// the repository exists, but HTTP access is not allowed for the
-		/// current user.
+		/// the repository may exist, but HTTP access is not allowed
+		/// without authentication, i.e. this corresponds to an HTTP 401
+		/// Unauthorized.
 		/// </exception>
 		/// <exception cref="ServiceNotEnabledException">
-		/// the repository exists, but HTTP access is not allowed on the
-		/// target repository, by any user.
+		/// the repository may exist, but HTTP access is not allowed on the
+		/// target repository, for the current user.
+		/// </exception>
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException">
+		/// the repository may exist, but HTTP access is not allowed for
+		/// the current request. The exception message contains a detailed
+		/// message that should be shown to the user.
 		/// </exception>
 		/// <exception cref="NGit.Transport.Resolver.ServiceNotAuthorizedException"></exception>
 		/// <exception cref="NGit.Transport.Resolver.ServiceNotEnabledException"></exception>

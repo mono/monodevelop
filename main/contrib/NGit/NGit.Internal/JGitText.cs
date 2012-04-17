@@ -41,11 +41,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-using NGit;
+using NGit.Internal;
 using NGit.Nls;
 using Sharpen;
 
-namespace NGit
+namespace NGit.Internal
 {
 	/// <summary>Translation bundle for JGit core</summary>
 	public class JGitText : TranslationBundle
@@ -918,6 +918,12 @@ namespace NGit
 
 		public string stashCommitMissingTwoParents;
 
+		public string stashDropDeleteRefFailed;
+
+		public string stashDropFailed;
+
+		public string stashDropMissingReflog;
+
 		public string stashFailed;
 
 		public string stashResolveFailed;
@@ -1005,6 +1011,8 @@ namespace NGit
 		public string unexpectedReportLine;
 
 		public string unexpectedReportLine2;
+
+		public string unknownOrUnsupportedCommand;
 
 		public string unknownDIRCVersion;
 

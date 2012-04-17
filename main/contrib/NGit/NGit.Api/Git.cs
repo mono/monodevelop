@@ -833,6 +833,16 @@ namespace NGit.Api
 			return new StashApplyCommand(repo);
 		}
 
+		/// <summary>Returns a command object used to drop a stashed commit</summary>
+		/// <returns>
+		/// a
+		/// <see cref="StashDropCommand">StashDropCommand</see>
+		/// </returns>
+		public virtual StashDropCommand StashDrop()
+		{
+			return new StashDropCommand(repo);
+		}
+
 		/// <summary>
 		/// Returns a command object to execute a
 		/// <code>apply</code>

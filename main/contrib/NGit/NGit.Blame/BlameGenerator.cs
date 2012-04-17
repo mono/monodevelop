@@ -46,6 +46,7 @@ using System.Collections.Generic;
 using NGit;
 using NGit.Blame;
 using NGit.Diff;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;

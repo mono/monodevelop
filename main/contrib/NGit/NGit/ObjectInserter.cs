@@ -110,54 +110,39 @@ namespace NGit
 			digest = Constants.NewMessageDigest();
 		}
 
+		/// <summary>Obtain a temporary buffer for use by the ObjectInserter or its subclass.
+		/// 	</summary>
+		/// <remarks>
+		/// Obtain a temporary buffer for use by the ObjectInserter or its subclass.
+		/// <p>
+		/// This buffer is supplied by the ObjectInserter base class to itself and
+		/// its subclasses for the purposes of pulling data from a supplied
+		/// InputStream, passing it through a Deflater, or formatting the canonical
+		/// format of a small object like a small tree or commit.
+		/// <p>
+		/// <strong>This buffer IS NOT for translation such as auto-CRLF or content
+		/// filtering and must not be used for such purposes.</strong>
+		/// <p>
+		/// The returned buffer is small, around a few KiBs, and the size may change
+		/// between versions of JGit. Callers using this buffer must always check the
+		/// length of the returned array to ascertain how much space was provided.
+		/// <p>
+		/// There is a single buffer for each ObjectInserter, repeated calls to this
+		/// method will (usually) always return the same buffer. If the caller needs
+		/// more than one buffer, or needs a buffer of a larger size, it must manage
+		/// that buffer on its own.
+		/// <p>
+		/// The buffer is usually on first demand for a buffer.
+		/// </remarks>
 		/// <returns>a temporary byte array for use by the caller.</returns>
 		protected internal virtual byte[] Buffer()
 		{
-			if (tempBuffer == null)
+			byte[] b = tempBuffer;
+			if (b == null)
 			{
-				tempBuffer = new byte[8192];
+				tempBuffer = b = new byte[8192];
 			}
-			return tempBuffer;
-		}
-
-		private static readonly int tempBufSize;
-
-		static ObjectInserter()
-		{
-			string s = Runtime.GetProperty("jgit.tempbufmaxsize");
-			if (s != null)
-			{
-				tempBufSize = System.Convert.ToInt32(s);
-			}
-			else
-			{
-				tempBufSize = 1000000;
-			}
-		}
-
-		/// <param name="hintSize"></param>
-		/// <returns>a temporary byte array for use by the caller</returns>
-		protected internal virtual byte[] Buffer(long hintSize)
-		{
-			if (hintSize >= tempBufSize)
-			{
-				tempBuffer = new byte[0];
-			}
-			else
-			{
-				if (tempBuffer == null)
-				{
-					tempBuffer = new byte[(int)hintSize];
-				}
-				else
-				{
-					if (tempBuffer.Length < hintSize)
-					{
-						tempBuffer = new byte[(int)hintSize];
-					}
-				}
-			}
-			return tempBuffer;
+			return b;
 		}
 
 		/// <returns>digest to help compute an ObjectId</returns>
@@ -224,7 +209,7 @@ namespace NGit
 			md.Update(unchecked((byte)' '));
 			md.Update(Constants.EncodeASCII(length));
 			md.Update(unchecked((byte)0));
-			byte[] buf = Buffer(length);
+			byte[] buf = Buffer();
 			while (length > 0)
 			{
 				int n = @in.Read(buf, 0, (int)Math.Min(length, buf.Length));

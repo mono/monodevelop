@@ -43,7 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System.IO;
 using System.Text;
-using NGit;
+using NGit.Internal;
 using Sharpen;
 
 namespace NGit.Errors

@@ -185,9 +185,10 @@ namespace NGit.Diff
 				/// <exception cref="System.IO.IOException"></exception>
 				public override ObjectStream OpenStream()
 				{
+					long contentLength = this._enclosing.ptr.GetEntryContentLength();
 					InputStream @in = this._enclosing.ptr.OpenEntryStream();
 					@in = new BufferedInputStream(@in);
-					return new ObjectStream.Filter(this.GetType(), this.GetSize(), @in);
+					return new ObjectStream.Filter(this.GetType(), contentLength, @in);
 				}
 
 				public override bool IsLarge()
@@ -250,12 +251,12 @@ namespace NGit.Diff
 				{
 					throw new FileNotFoundException(path);
 				}
-				return new _ObjectLoader_237(p);
+				return new _ObjectLoader_238(p);
 			}
 
-			private sealed class _ObjectLoader_237 : ObjectLoader
+			private sealed class _ObjectLoader_238 : ObjectLoader
 			{
-				public _ObjectLoader_237(FilePath p)
+				public _ObjectLoader_238(FilePath p)
 				{
 					this.p = p;
 				}

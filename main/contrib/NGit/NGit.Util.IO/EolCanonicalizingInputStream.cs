@@ -71,6 +71,7 @@ namespace NGit.Util.IO
 
 		/// <summary>Creates a new InputStream, wrapping the specified stream</summary>
 		/// <param name="in">raw input stream</param>
+		/// <param name="detectBinary">whether binaries should be detected</param>
 		public EolCanonicalizingInputStream(InputStream @in, bool detectBinary)
 		{
 			this.@in = @in;

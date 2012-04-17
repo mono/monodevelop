@@ -47,7 +47,9 @@ using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Dircache;
+using NGit.Internal;
 using NGit.Revwalk;
+using NGit.Submodule;
 using NGit.Transport;
 using Sharpen;
 
@@ -238,6 +240,7 @@ namespace NGit.Api
 			}
 		}
 
+		/// <exception cref="System.IO.IOException"></exception>
 		private void CloneSubmodules(Repository clonedRepo)
 		{
 			SubmoduleInitCommand init = new SubmoduleInitCommand(clonedRepo);
@@ -248,7 +251,18 @@ namespace NGit.Api
 			SubmoduleUpdateCommand update = new SubmoduleUpdateCommand(clonedRepo);
 			Configure(update);
 			update.SetProgressMonitor(monitor);
-			update.Call();
+			if (!update.Call().IsEmpty())
+			{
+				SubmoduleWalk walk = SubmoduleWalk.ForIndex(clonedRepo);
+				while (walk.Next())
+				{
+					Repository subRepo = walk.GetRepository();
+					if (subRepo != null)
+					{
+						CloneSubmodules(subRepo);
+					}
+				}
+			}
 		}
 
 		private Ref FindBranchToCheckout(FetchResult result)

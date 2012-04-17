@@ -48,6 +48,7 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Storage.File;
 using NGit.Storage.Pack;
 using NGit.Util;
@@ -386,7 +387,7 @@ namespace NGit.Storage.File
 			while ((c & unchecked((int)(0x80))) != 0)
 			{
 				c = buf[headerCnt++] & unchecked((int)(0xff));
-				inflatedLength += (c & unchecked((int)(0x7f))) << shift;
+				inflatedLength += ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			if (typeCode == Constants.OBJ_OFS_DELTA)
@@ -838,7 +839,7 @@ namespace NGit.Storage.File
 					while ((c & unchecked((int)(0x80))) != 0)
 					{
 						c = ib[p++] & unchecked((int)(0xff));
-						sz += (c & unchecked((int)(0x7f))) << shift;
+						sz += ((long)(c & unchecked((int)(0x7f)))) << shift;
 						shift += 7;
 					}
 					switch (typeCode)
@@ -1143,7 +1144,7 @@ SEARCH_break: ;
 			while ((c & unchecked((int)(0x80))) != 0)
 			{
 				c = ib[p++] & unchecked((int)(0xff));
-				sz += (c & unchecked((int)(0x7f))) << shift;
+				sz += ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			long deltaAt;

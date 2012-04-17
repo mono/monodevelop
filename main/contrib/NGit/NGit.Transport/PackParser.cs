@@ -48,6 +48,7 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Storage.File;
 using NGit.Storage.Pack;
 using NGit.Transport;
@@ -763,7 +764,7 @@ namespace NGit.Transport
 			{
 				c = ReadFrom(PackParser.Source.DATABASE);
 				hdrBuf[hdrPtr++] = unchecked((byte)c);
-				sz += (c & unchecked((int)(0x7f))) << shift;
+				sz += ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			info.size = sz;
@@ -1014,7 +1015,7 @@ namespace NGit.Transport
 			{
 				c = ReadFrom(PackParser.Source.INPUT);
 				hdrBuf[hdrPtr++] = unchecked((byte)c);
-				sz += (c & unchecked((int)(0x7f))) << shift;
+				sz += ((long)(c & unchecked((int)(0x7f)))) << shift;
 				shift += 7;
 			}
 			CheckIfTooLarge(typeCode, sz);

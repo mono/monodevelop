@@ -47,6 +47,7 @@ using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Storage.File;
 using NGit.Submodule;
 using NGit.Treewalk.Filter;

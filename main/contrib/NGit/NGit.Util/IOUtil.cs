@@ -41,8 +41,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+using System;
 using System.IO;
-using NGit;
+using NGit.Internal;
 using NGit.Util;
 using Sharpen;
 
@@ -132,13 +133,43 @@ namespace NGit.Util
 			FileInputStream @in = new FileInputStream(path);
 			try
 			{
-				long sz = @in.GetChannel().Size();
+				long sz = Math.Max(path.Length(), 1);
 				if (sz > max)
 				{
 					throw new IOException(MessageFormat.Format(JGitText.Get().fileIsTooLarge, path));
 				}
 				byte[] buf = new byte[(int)sz];
-				IOUtil.ReadFully(@in, buf, 0);
+				int valid = 0;
+				for (; ; )
+				{
+					if (buf.Length == valid)
+					{
+						if (buf.Length == max)
+						{
+							int next = @in.Read();
+							if (next < 0)
+							{
+								break;
+							}
+							throw new IOException(MessageFormat.Format(JGitText.Get().fileIsTooLarge, path));
+						}
+						byte[] nb = new byte[Math.Min(buf.Length * 2, max)];
+						System.Array.Copy(buf, 0, nb, 0, valid);
+						buf = nb;
+					}
+					int n = @in.Read(buf, valid, buf.Length - valid);
+					if (n < 0)
+					{
+						break;
+					}
+					valid += n;
+				}
+				if (valid < buf.Length)
+				{
+					byte[] nb = new byte[valid];
+					System.Array.Copy(buf, 0, nb, 0, valid);
+					buf = nb;
+				}
 				return buf;
 			}
 			finally

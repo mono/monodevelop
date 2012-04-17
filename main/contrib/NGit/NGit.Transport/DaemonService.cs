@@ -147,7 +147,19 @@ namespace NGit.Transport
 		internal virtual void Execute(DaemonClient client, string commandLine)
 		{
 			string name = Sharpen.Runtime.Substring(commandLine, command.Length + 1);
-			Repository db = client.GetDaemon().OpenRepository(client, name);
+			Repository db;
+			try
+			{
+				db = client.GetDaemon().OpenRepository(client, name);
+			}
+			catch (ServiceMayNotContinueException e)
+			{
+				// An error when opening the repo means the client is expecting a ref
+				// advertisement, so use that style of error.
+				PacketLineOut pktOut = new PacketLineOut(client.GetOutputStream());
+				pktOut.WriteString("ERR " + e.Message + "\n");
+				db = null;
+			}
 			if (db == null)
 			{
 				return;

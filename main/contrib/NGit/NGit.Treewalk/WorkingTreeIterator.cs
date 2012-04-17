@@ -49,6 +49,7 @@ using NGit.Diff;
 using NGit.Dircache;
 using NGit.Errors;
 using NGit.Ignore;
+using NGit.Internal;
 using NGit.Submodule;
 using NGit.Treewalk;
 using NGit.Util;
@@ -139,6 +140,13 @@ namespace NGit.Treewalk
 
 		/// <summary>Repository that is the root level being iterated over</summary>
 		protected internal Repository repository;
+
+		/// <summary>
+		/// Cached canonical length, initialized from
+		/// <see cref="IdBuffer()">IdBuffer()</see>
+		/// 
+		/// </summary>
+		private long canonLen = -1;
 
 		/// <summary>Cached value of isEntryIgnored().</summary>
 		/// <remarks>
@@ -388,38 +396,8 @@ namespace NGit.Treewalk
 				{
 					state.InitializeDigestAndReadBuffer();
 					long len = e.GetLength();
-					if (!MightNeedCleaning())
-					{
-						return ComputeHash(@is, len);
-					}
-					if (len <= MAXIMUM_FILE_SIZE_TO_READ_FULLY)
-					{
-						ByteBuffer rawbuf = IOUtil.ReadWholeStream(@is, (int)len);
-						byte[] raw = ((byte[])rawbuf.Array());
-						int n = rawbuf.Limit();
-						if (!IsBinary(raw, n))
-						{
-							rawbuf = FilterClean(raw, n);
-							raw = ((byte[])rawbuf.Array());
-							n = rawbuf.Limit();
-						}
-						return ComputeHash(new ByteArrayInputStream(raw, 0, n), n);
-					}
-					if (IsBinary(e))
-					{
-						return ComputeHash(@is, len);
-					}
-					long canonLen;
-					InputStream lenIs = FilterClean(e.OpenInputStream());
-					try
-					{
-						canonLen = ComputeLength(lenIs);
-					}
-					finally
-					{
-						SafeClose(lenIs);
-					}
-					return ComputeHash(FilterClean(@is), canonLen);
+					InputStream filteredIs = PossiblyFilteredInputStream(e, @is, len);
+					return ComputeHash(filteredIs, canonLen);
 				}
 				finally
 				{
@@ -431,6 +409,46 @@ namespace NGit.Treewalk
 				// Can't read the file? Don't report the failure either.
 				return zeroid;
 			}
+		}
+
+		/// <exception cref="System.IO.IOException"></exception>
+		private InputStream PossiblyFilteredInputStream(WorkingTreeIterator.Entry e, InputStream
+			 @is, long len)
+		{
+			if (!MightNeedCleaning())
+			{
+				canonLen = len;
+				return @is;
+			}
+			if (len <= MAXIMUM_FILE_SIZE_TO_READ_FULLY)
+			{
+				ByteBuffer rawbuf = IOUtil.ReadWholeStream(@is, (int)len);
+				byte[] raw = ((byte[])rawbuf.Array());
+				int n = rawbuf.Limit();
+				if (!IsBinary(raw, n))
+				{
+					rawbuf = FilterClean(raw, n);
+					raw = ((byte[])rawbuf.Array());
+					n = rawbuf.Limit();
+				}
+				canonLen = n;
+				return new ByteArrayInputStream(raw, 0, n);
+			}
+			if (IsBinary(e))
+			{
+				canonLen = len;
+				return @is;
+			}
+			InputStream lenIs = FilterClean(e.OpenInputStream());
+			try
+			{
+				canonLen = ComputeLength(lenIs);
+			}
+			finally
+			{
+				SafeClose(lenIs);
+			}
+			return FilterClean(@is);
 		}
 
 		private static void SafeClose(InputStream @in)
@@ -459,6 +477,7 @@ namespace NGit.Treewalk
 				}
 
 				case CoreConfig.AutoCRLF.TRUE:
+				case CoreConfig.AutoCRLF.INPUT:
 				{
 					return true;
 				}
@@ -554,6 +573,7 @@ namespace NGit.Treewalk
 			ptr += delta;
 			if (!Eof)
 			{
+				canonLen = -1;
 				ParseEntry();
 			}
 		}
@@ -576,12 +596,38 @@ namespace NGit.Treewalk
 			pathLen = pathOffset + nameLen;
 		}
 
-		/// <summary>Get the byte length of this entry.</summary>
-		/// <remarks>Get the byte length of this entry.</remarks>
+		/// <summary>Get the raw byte length of this entry.</summary>
+		/// <remarks>Get the raw byte length of this entry.</remarks>
 		/// <returns>size of this file, in bytes.</returns>
 		public virtual long GetEntryLength()
 		{
 			return Current().GetLength();
+		}
+
+		/// <summary>Get the filtered input length of this entry</summary>
+		/// <returns>size of the content, in bytes</returns>
+		/// <exception cref="System.IO.IOException">System.IO.IOException</exception>
+		public virtual long GetEntryContentLength()
+		{
+			if (canonLen == -1)
+			{
+				long rawLen = GetEntryLength();
+				if (rawLen == 0)
+				{
+					canonLen = 0;
+				}
+				InputStream @is = Current().OpenInputStream();
+				try
+				{
+					// canonLen gets updated here
+					PossiblyFilteredInputStream(Current(), @is, Current().GetLength());
+				}
+				finally
+				{
+					SafeClose(@is);
+				}
+			}
+			return canonLen;
 		}
 
 		/// <summary>Get the last modified time of this entry.</summary>
@@ -614,16 +660,14 @@ namespace NGit.Treewalk
 		public virtual InputStream OpenEntryStream()
 		{
 			InputStream rawis = Current().OpenInputStream();
-			InputStream @is;
-			if (GetOptions().GetAutoCRLF() != CoreConfig.AutoCRLF.FALSE)
+			if (MightNeedCleaning())
 			{
-				@is = new EolCanonicalizingInputStream(rawis, true);
+				return FilterClean(rawis);
 			}
 			else
 			{
-				@is = rawis;
+				return rawis;
 			}
-			return @is;
 		}
 
 		/// <summary>Determine if the current entry path is ignored by an ignore rule.</summary>
@@ -702,9 +746,9 @@ namespace NGit.Treewalk
 			return ignoreNode;
 		}
 
-		private sealed class _IComparer_573 : IComparer<WorkingTreeIterator.Entry>
+		private sealed class _IComparer_607 : IComparer<WorkingTreeIterator.Entry>
 		{
-			public _IComparer_573()
+			public _IComparer_607()
 			{
 			}
 
@@ -738,7 +782,7 @@ namespace NGit.Treewalk
 			}
 		}
 
-		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_573
+		private static readonly IComparer<WorkingTreeIterator.Entry> ENTRY_CMP = new _IComparer_607
 			();
 
 		internal static int LastPathChar(WorkingTreeIterator.Entry e)

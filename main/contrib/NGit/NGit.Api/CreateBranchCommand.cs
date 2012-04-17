@@ -46,6 +46,7 @@ using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Revwalk;
 using Sharpen;
 

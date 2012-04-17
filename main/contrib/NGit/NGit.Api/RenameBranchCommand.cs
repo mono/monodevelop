@@ -45,6 +45,7 @@ using System.IO;
 using NGit;
 using NGit.Api;
 using NGit.Api.Errors;
+using NGit.Internal;
 using Sharpen;
 
 namespace NGit.Api
@@ -135,37 +136,42 @@ namespace NGit.Api
 				RefRename rename = repo.RenameRef(fullOldName, fullNewName);
 				RefUpdate.Result renameResult = rename.Rename();
 				SetCallable(false);
-				bool ok = RefUpdate.Result.RENAMED == renameResult;
-				if (ok)
-				{
-					if (fullNewName.StartsWith(Constants.R_HEADS))
-					{
-						// move the upstream configuration over to the new branch
-						string shortOldName = Sharpen.Runtime.Substring(fullOldName, Constants.R_HEADS.Length
-							);
-						StoredConfig repoConfig = repo.GetConfig();
-						string oldRemote = repoConfig.GetString(ConfigConstants.CONFIG_BRANCH_SECTION, shortOldName
-							, ConfigConstants.CONFIG_KEY_REMOTE);
-						if (oldRemote != null)
-						{
-							repoConfig.SetString(ConfigConstants.CONFIG_BRANCH_SECTION, newName, ConfigConstants
-								.CONFIG_KEY_REMOTE, oldRemote);
-						}
-						string oldMerge = repoConfig.GetString(ConfigConstants.CONFIG_BRANCH_SECTION, shortOldName
-							, ConfigConstants.CONFIG_KEY_MERGE);
-						if (oldMerge != null)
-						{
-							repoConfig.SetString(ConfigConstants.CONFIG_BRANCH_SECTION, newName, ConfigConstants
-								.CONFIG_KEY_MERGE, oldMerge);
-						}
-						repoConfig.UnsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, shortOldName);
-						repoConfig.Save();
-					}
-				}
-				else
+				if (RefUpdate.Result.RENAMED != renameResult)
 				{
 					throw new JGitInternalException(MessageFormat.Format(JGitText.Get().renameBranchUnexpectedResult
 						, renameResult.ToString()));
+				}
+				if (fullNewName.StartsWith(Constants.R_HEADS))
+				{
+					string shortOldName = Sharpen.Runtime.Substring(fullOldName, Constants.R_HEADS.Length
+						);
+					StoredConfig repoConfig = repo.GetConfig();
+					// Copy all configuration values over to the new branch
+					foreach (string name in repoConfig.GetNames(ConfigConstants.CONFIG_BRANCH_SECTION
+						, shortOldName))
+					{
+						string[] values = repoConfig.GetStringList(ConfigConstants.CONFIG_BRANCH_SECTION, 
+							shortOldName, name);
+						if (values.Length == 0)
+						{
+							continue;
+						}
+						// Keep any existing values already configured for the
+						// new branch name
+						string[] existing = repoConfig.GetStringList(ConfigConstants.CONFIG_BRANCH_SECTION
+							, newName, name);
+						if (existing.Length > 0)
+						{
+							string[] newValues = new string[values.Length + existing.Length];
+							System.Array.Copy(existing, 0, newValues, 0, existing.Length);
+							System.Array.Copy(values, 0, newValues, existing.Length, values.Length);
+							values = newValues;
+						}
+						repoConfig.SetStringList(ConfigConstants.CONFIG_BRANCH_SECTION, newName, name, Arrays
+							.AsList(values));
+					}
+					repoConfig.UnsetSection(ConfigConstants.CONFIG_BRANCH_SECTION, shortOldName);
+					repoConfig.Save();
 				}
 				Ref resultRef = repo.GetRef(newName);
 				if (resultRef == null)

@@ -43,7 +43,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.Threading;
-using NGit;
+using NGit.Internal;
 using NGit.Util.IO;
 using Sharpen;
 

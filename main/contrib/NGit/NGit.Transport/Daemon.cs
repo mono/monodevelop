@@ -48,6 +48,7 @@ using System.Net.Sockets;
 using System.Threading;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Storage.Pack;
 using NGit.Transport;
 using NGit.Transport.Resolver;
@@ -492,6 +493,7 @@ namespace NGit.Transport
 			}
 		}
 
+		/// <exception cref="NGit.Transport.ServiceMayNotContinueException"></exception>
 		internal virtual Repository OpenRepository(DaemonClient client, string name)
 		{
 			// Assume any attempt to use \ was by a Windows client

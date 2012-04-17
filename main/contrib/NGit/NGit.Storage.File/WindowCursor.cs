@@ -47,6 +47,7 @@ using System.IO;
 using ICSharpCode.SharpZipLib;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Revwalk;
 using NGit.Storage.File;
 using NGit.Storage.Pack;

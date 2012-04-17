@@ -45,6 +45,7 @@ using System;
 using System.Collections.Generic;
 using NGit;
 using NGit.Dircache;
+using NGit.Internal;
 using Sharpen;
 
 namespace NGit.Dircache

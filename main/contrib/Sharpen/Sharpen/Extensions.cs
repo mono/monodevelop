@@ -141,13 +141,14 @@ namespace Sharpen
 			return ByteBuffer.Wrap (e.GetBytes (str));
 		}
 		
+		static UTF8Encoding UTF8Encoder = new UTF8Encoding (false, true);
 		public static Encoding GetEncoding (string name)
 		{
 //			Encoding e = Encoding.GetEncoding (name, EncoderFallback.ExceptionFallback, DecoderFallback.ExceptionFallback);
 			try {
 				Encoding e = Encoding.GetEncoding (name.Replace ('_','-'));
 				if (e is UTF8Encoding)
-					return new UTF8Encoding (false, true);
+					return UTF8Encoder;
 				return e;
 			} catch (ArgumentException) {
 				throw new UnsupportedCharsetException (name);

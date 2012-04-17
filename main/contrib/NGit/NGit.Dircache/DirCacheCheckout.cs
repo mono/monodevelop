@@ -46,6 +46,7 @@ using System.IO;
 using NGit;
 using NGit.Dircache;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Treewalk;
 using NGit.Treewalk.Filter;
 using NGit.Util;
@@ -919,7 +920,7 @@ namespace NGit.Dircache
 			if (e != null)
 			{
 				entry = new DirCacheEntry(e.PathString, DirCacheEntry.STAGE_1);
-				entry.CopyMetaData(e);
+				entry.CopyMetaData(e, true);
 				builder.Add(entry);
 			}
 			if (h != null && !FileMode.TREE.Equals(h.EntryFileMode))

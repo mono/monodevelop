@@ -44,6 +44,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using NGit;
 using NGit.Diff;
+using NGit.Internal;
 using NGit.Util;
 using Sharpen;
 

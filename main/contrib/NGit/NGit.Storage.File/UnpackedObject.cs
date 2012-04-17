@@ -46,6 +46,7 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip.Compression;
 using NGit;
 using NGit.Errors;
+using NGit.Internal;
 using NGit.Storage.File;
 using NGit.Util;
 using Sharpen;
@@ -144,7 +145,7 @@ namespace NGit.Storage.File
 					while ((c & unchecked((int)(0x80))) != 0)
 					{
 						c = hdr[p++] & unchecked((int)(0xff));
-						size += (c & unchecked((int)(0x7f))) << shift;
+						size += ((long)(c & unchecked((int)(0x7f)))) << shift;
 						shift += 7;
 					}
 					switch (type)
@@ -228,7 +229,7 @@ namespace NGit.Storage.File
 					while ((c & unchecked((int)(0x80))) != 0)
 					{
 						c = hdr[p++] & unchecked((int)(0xff));
-						size += (c & unchecked((int)(0x7f))) << shift;
+						size += ((long)(c & unchecked((int)(0x7f)))) << shift;
 						shift += 7;
 					}
 					return size;

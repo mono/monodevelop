@@ -46,6 +46,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using NGit;
+using NGit.Internal;
 using NGit.Errors;
 using NGit.Events;
 using NGit.Util;

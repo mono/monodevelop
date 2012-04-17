@@ -55,7 +55,6 @@
     <Compile Include="NGit\GitlinkTreeEntry.cs" />
     <Compile Include="NGit\IndexDiff.cs" />
     <Compile Include="NGit\InflaterCache.cs" />
-    <Compile Include="NGit\JGitText.cs" />
     <Compile Include="NGit\MutableObjectId.cs" />
     <Compile Include="NGit\NullProgressMonitor.cs" />
     <Compile Include="NGit\ObjectChecker.cs" />
@@ -571,11 +570,16 @@
     <Compile Include="NGit.Api.Errors\PatchApplyException.cs" />
     <Compile Include="NGit.Api.Errors\PatchFormatException.cs" />
     <Compile Include="NGit.Transport\RequestNotYetReadException.cs" />
+    <Compile Include="NGit.Internal\JGitText.cs" />
+    <Compile Include="NGit\ConfigSnapshot.cs" />
+    <Compile Include="NGit\ConfigLine.cs" />
+    <Compile Include="NGit.Api\StashDropCommand.cs" />
+    <Compile Include="NGit.Storage.File\ReflogWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <EmbeddedResource Include="resources\JGitText.properties">
-      <LogicalName>NGit.JGitText.properties</LogicalName>
+      <LogicalName>NGit.Internal.JGitText.properties</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

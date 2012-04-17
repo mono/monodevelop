@@ -47,6 +47,7 @@ using System.Text;
 using NGit;
 using NGit.Errors;
 using NGit.Events;
+using NGit.Internal;
 using NGit.Util;
 using Sharpen;
 
@@ -81,7 +82,7 @@ namespace NGit
 		/// This state is copy-on-write. It should always contain an immutable list
 		/// of the configuration keys/values.
 		/// </remarks>
-		private readonly AtomicReference<Config.State> state;
+		private readonly AtomicReference<ConfigSnapshot> state;
 
 		private readonly NGit.Config baseConfig;
 
@@ -110,7 +111,7 @@ namespace NGit
 		public Config(NGit.Config defaultConfig)
 		{
 			baseConfig = defaultConfig;
-			state = new AtomicReference<Config.State>(NewState());
+			state = new AtomicReference<ConfigSnapshot>(NewState());
 		}
 
 		/// <summary>Escape the value before saving</summary>
@@ -486,48 +487,55 @@ namespace NGit
 		public virtual string[] GetStringList(string section, string subsection, string name
 			)
 		{
-			string[] baseList;
+			string[] @base;
 			if (baseConfig != null)
 			{
-				baseList = baseConfig.GetStringList(section, subsection, name);
+				@base = baseConfig.GetStringList(section, subsection, name);
 			}
 			else
 			{
-				baseList = EMPTY_STRING_ARRAY;
+				@base = EMPTY_STRING_ARRAY;
 			}
-			IList<string> lst = GetRawStringList(section, subsection, name);
-			if (lst != null)
+			string[] self = GetRawStringList(section, subsection, name);
+			if (self == null)
 			{
-				string[] res = new string[baseList.Length + lst.Count];
-				int idx = baseList.Length;
-				System.Array.Copy(baseList, 0, res, 0, idx);
-				foreach (string val in lst)
-				{
-					res[idx++] = val;
-				}
-				return res;
+				return @base;
 			}
-			return baseList;
+			if (@base.Length == 0)
+			{
+				return self;
+			}
+			string[] res = new string[@base.Length + self.Length];
+			int n = @base.Length;
+			System.Array.Copy(@base, 0, res, 0, n);
+			System.Array.Copy(self, 0, res, n, self.Length);
+			return res;
 		}
 
 		/// <param name="section">section to search for.</param>
 		/// <returns>
 		/// set of all subsections of specified section within this
 		/// configuration and its base configuration; may be empty if no
-		/// subsection exists.
+		/// subsection exists. The set's iterator returns sections in the
+		/// order they are declared by the configuration starting from this
+		/// instance and progressing through the base.
 		/// </returns>
 		public virtual ICollection<string> GetSubsections(string section)
 		{
-			return Get(new Config.SubsectionNames(section));
+			return GetState().GetSubsections(section);
 		}
 
 		/// <returns>
 		/// the sections defined in this
 		/// <see cref="Config">Config</see>
+		/// . The set's iterator
+		/// returns sections in the order they are declared by the
+		/// configuration starting from this instance and progressing through
+		/// the base.
 		/// </returns>
 		public virtual ICollection<string> GetSections()
 		{
-			return Get(new Config.SectionNames());
+			return GetState().GetSections();
 		}
 
 		/// <param name="section">the section</param>
@@ -542,7 +550,7 @@ namespace NGit
 		/// <returns>the list of names defined for this subsection</returns>
 		public virtual ICollection<string> GetNames(string section, string subsection)
 		{
-			return Get(new Config.NamesInSection(section, subsection));
+			return GetState().GetNames(section, subsection);
 		}
 
 		/// <summary>Obtain a handle to a parsed set of configuration values.</summary>
@@ -557,7 +565,7 @@ namespace NGit
 		/// <returns>the parsed object instance, which is cached inside this config.</returns>
 		public virtual T Get<T>(Config.SectionParser<T> parser)
 		{
-			Config.State myState = GetState();
+			ConfigSnapshot myState = GetState();
 			T obj = (T)myState.cache.Get(parser);
 			if (obj == null)
 			{
@@ -626,7 +634,7 @@ namespace NGit
 
 		private string GetRawString(string section, string subsection, string name)
 		{
-			IList<string> lst = GetRawStringList(section, subsection, name);
+			string[] lst = GetRawStringList(section, subsection, name);
 			if (lst != null)
 			{
 				return lst[0];
@@ -644,56 +652,30 @@ namespace NGit
 			}
 		}
 
-		private IList<string> GetRawStringList(string section, string subsection, string 
-			name)
+		private string[] GetRawStringList(string section, string subsection, string name)
 		{
-			IList<string> r = null;
-			foreach (Config.Entry e in state.Get().entryList)
-			{
-				if (e.Match(section, subsection, name))
-				{
-					r = Add(r, e.value);
-				}
-			}
-			return r;
+			return state.Get().Get(section, subsection, name);
 		}
 
-		private static IList<string> Add(IList<string> curr, string value)
+		private ConfigSnapshot GetState()
 		{
-			if (curr == null)
-			{
-				return Sharpen.Collections.SingletonList(value);
-			}
-			if (curr.Count == 1)
-			{
-				IList<string> r = new AList<string>(2);
-				r.AddItem(curr[0]);
-				r.AddItem(value);
-				return r;
-			}
-			curr.AddItem(value);
-			return curr;
-		}
-
-		private Config.State GetState()
-		{
-			Config.State cur;
-			Config.State upd;
+			ConfigSnapshot cur;
+			ConfigSnapshot upd;
 			do
 			{
 				cur = state.Get();
-				Config.State @base = GetBaseState();
+				ConfigSnapshot @base = GetBaseState();
 				if (cur.baseState == @base)
 				{
 					return cur;
 				}
-				upd = new Config.State(cur.entryList, @base);
+				upd = new ConfigSnapshot(cur.entryList, @base);
 			}
 			while (!state.CompareAndSet(cur, upd));
 			return upd;
 		}
 
-		private Config.State GetBaseState()
+		private ConfigSnapshot GetBaseState()
 		{
 			return baseConfig != null ? baseConfig.GetState() : null;
 		}
@@ -835,8 +817,8 @@ namespace NGit
 		/// <param name="subsection">optional subsection value, e.g. a branch name</param>
 		public virtual void UnsetSection(string section, string subsection)
 		{
-			Config.State src;
-			Config.State res;
+			ConfigSnapshot src;
+			ConfigSnapshot res;
 			do
 			{
 				src = state.Get();
@@ -845,13 +827,13 @@ namespace NGit
 			while (!state.CompareAndSet(src, res));
 		}
 
-		private Config.State UnsetSection(Config.State srcState, string section, string subsection
-			)
+		private ConfigSnapshot UnsetSection(ConfigSnapshot srcState, string section, string
+			 subsection)
 		{
 			int max = srcState.entryList.Count;
-			AList<Config.Entry> r = new AList<Config.Entry>(max);
+			AList<ConfigLine> r = new AList<ConfigLine>(max);
 			bool lastWasMatch = false;
-			foreach (Config.Entry e in srcState.entryList)
+			foreach (ConfigLine e in srcState.entryList)
 			{
 				if (e.Match(section, subsection))
 				{
@@ -884,8 +866,8 @@ namespace NGit
 		public virtual void SetStringList(string section, string subsection, string name, 
 			IList<string> values)
 		{
-			Config.State src;
-			Config.State res;
+			ConfigSnapshot src;
+			ConfigSnapshot res;
 			do
 			{
 				src = state.Get();
@@ -898,10 +880,10 @@ namespace NGit
 			}
 		}
 
-		private Config.State ReplaceStringList(Config.State srcState, string section, string
-			 subsection, string name, IList<string> values)
+		private ConfigSnapshot ReplaceStringList(ConfigSnapshot srcState, string section, 
+			string subsection, string name, IList<string> values)
 		{
-			IList<Config.Entry> entries = Copy(srcState, values);
+			IList<ConfigLine> entries = Copy(srcState, values);
 			int entryIndex = 0;
 			int valueIndex = 0;
 			int insertPosition = -1;
@@ -909,7 +891,7 @@ namespace NGit
 			//
 			while (entryIndex < entries.Count && valueIndex < values.Count)
 			{
-				Config.Entry e = entries[entryIndex];
+				ConfigLine e = entries[entryIndex];
 				if (e.Match(section, subsection, name))
 				{
 					entries.Set(entryIndex, e.ForValue(values[valueIndex++]));
@@ -923,7 +905,7 @@ namespace NGit
 			{
 				while (entryIndex < entries.Count)
 				{
-					Config.Entry e = entries[entryIndex++];
+					ConfigLine e = entries[entryIndex++];
 					if (e.Match(section, subsection, name))
 					{
 						entries.Remove(--entryIndex);
@@ -947,7 +929,7 @@ namespace NGit
 					// We didn't find any matching section header for this key,
 					// so we must create a new section header at the end.
 					//
-					Config.Entry e = new Config.Entry();
+					ConfigLine e = new ConfigLine();
 					e.section = section;
 					e.subsection = subsection;
 					entries.AddItem(e);
@@ -955,7 +937,7 @@ namespace NGit
 				}
 				while (valueIndex < values.Count)
 				{
-					Config.Entry e = new Config.Entry();
+					ConfigLine e = new ConfigLine();
 					e.section = section;
 					e.subsection = subsection;
 					e.name = name;
@@ -966,23 +948,23 @@ namespace NGit
 			return NewState(entries);
 		}
 
-		private static IList<Config.Entry> Copy(Config.State src, IList<string> values)
+		private static IList<ConfigLine> Copy(ConfigSnapshot src, IList<string> values)
 		{
 			// At worst we need to insert 1 line for each value, plus 1 line
 			// for a new section header. Assume that and allocate the space.
 			//
 			int max = src.entryList.Count + values.Count + 1;
-			AList<Config.Entry> r = new AList<Config.Entry>(max);
+			AList<ConfigLine> r = new AList<ConfigLine>(max);
 			Sharpen.Collections.AddAll(r, src.entryList);
 			return r;
 		}
 
-		private static int FindSectionEnd(IList<Config.Entry> entries, string section, string
+		private static int FindSectionEnd(IList<ConfigLine> entries, string section, string
 			 subsection)
 		{
 			for (int i = 0; i < entries.Count; i++)
 			{
-				Config.Entry e = entries[i];
+				ConfigLine e = entries[i];
 				if (e.Match(section, subsection, null))
 				{
 					i++;
@@ -1008,7 +990,7 @@ namespace NGit
 		public virtual string ToText()
 		{
 			StringBuilder @out = new StringBuilder();
-			foreach (Config.Entry e in state.Get().entryList)
+			foreach (ConfigLine e in state.Get().entryList)
 			{
 				if (e.prefix != null)
 				{
@@ -1082,10 +1064,10 @@ namespace NGit
 		/// </exception>
 		public virtual void FromText(string text)
 		{
-			IList<Config.Entry> newEntries = new AList<Config.Entry>();
+			IList<ConfigLine> newEntries = new AList<ConfigLine>();
 			Config.StringReader @in = new Config.StringReader(text);
-			Config.Entry last = null;
-			Config.Entry e = new Config.Entry();
+			ConfigLine last = null;
+			ConfigLine e = new ConfigLine();
 			for (; ; )
 			{
 				int input = @in.Read();
@@ -1102,7 +1084,7 @@ namespace NGit
 					{
 						last = e;
 					}
-					e = new Config.Entry();
+					e = new ConfigLine();
 				}
 				else
 				{
@@ -1179,15 +1161,15 @@ namespace NGit
 			state.Set(NewState(newEntries));
 		}
 
-		private Config.State NewState()
+		private ConfigSnapshot NewState()
 		{
-			return new Config.State(Sharpen.Collections.EmptyList<Config.Entry>(), GetBaseState
+			return new ConfigSnapshot(Sharpen.Collections.EmptyList<ConfigLine>(), GetBaseState
 				());
 		}
 
-		private Config.State NewState(IList<Config.Entry> entries)
+		private ConfigSnapshot NewState(IList<ConfigLine> entries)
 		{
-			return new Config.State(Sharpen.Collections.UnmodifiableList(entries), GetBaseState
+			return new ConfigSnapshot(Sharpen.Collections.UnmodifiableList(entries), GetBaseState
 				());
 		}
 
@@ -1459,302 +1441,6 @@ namespace NGit
 			/// <param name="cfg">the configuration to read values from.</param>
 			/// <returns>the application model instance.</returns>
 			T Parse(Config cfg);
-		}
-
-		private class SubsectionNames : Config.SectionParser<ICollection<string>>
-		{
-			private readonly string section;
-
-			internal SubsectionNames(string sectionName)
-			{
-				section = sectionName;
-			}
-
-			public override int GetHashCode()
-			{
-				return section.GetHashCode();
-			}
-
-			public override bool Equals(object other)
-			{
-				if (other is Config.SubsectionNames)
-				{
-					return section.Equals(((Config.SubsectionNames)other).section);
-				}
-				return false;
-			}
-
-			public virtual ICollection<string> Parse(Config cfg)
-			{
-				ICollection<string> result = new LinkedHashSet<string>();
-				while (cfg != null)
-				{
-					foreach (Config.Entry e in cfg.state.Get().entryList)
-					{
-						if (e.subsection != null && e.name == null && StringUtils.EqualsIgnoreCase(section
-							, e.section))
-						{
-							result.AddItem(e.subsection);
-						}
-					}
-					cfg = cfg.baseConfig;
-				}
-				return Sharpen.Collections.UnmodifiableSet(result);
-			}
-		}
-
-		private class NamesInSection : Config.SectionParser<ICollection<string>>
-		{
-			private readonly string section;
-
-			private readonly string subsection;
-
-			internal NamesInSection(string sectionName, string subSectionName)
-			{
-				section = sectionName;
-				subsection = subSectionName;
-			}
-
-			public override int GetHashCode()
-			{
-				int prime = 31;
-				int result = 1;
-				result = prime * result + section.GetHashCode();
-				result = prime * result + ((subsection == null) ? 0 : subsection.GetHashCode());
-				return result;
-			}
-
-			public override bool Equals(object obj)
-			{
-				if (this == obj)
-				{
-					return true;
-				}
-				if (obj == null)
-				{
-					return false;
-				}
-				if (GetType() != obj.GetType())
-				{
-					return false;
-				}
-				Config.NamesInSection other = (Config.NamesInSection)obj;
-				if (!section.Equals(other.section))
-				{
-					return false;
-				}
-				if (subsection == null)
-				{
-					if (other.subsection != null)
-					{
-						return false;
-					}
-				}
-				else
-				{
-					if (!subsection.Equals(other.subsection))
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-
-			public virtual ICollection<string> Parse(Config cfg)
-			{
-				IDictionary<string, string> m = new LinkedHashMap<string, string>();
-				while (cfg != null)
-				{
-					foreach (Config.Entry e in cfg.state.Get().entryList)
-					{
-						if (e.name == null)
-						{
-							continue;
-						}
-						if (!StringUtils.EqualsIgnoreCase(section, e.section))
-						{
-							continue;
-						}
-						if ((subsection == null && e.subsection == null) || (subsection != null && subsection
-							.Equals(e.subsection)))
-						{
-							string lc = StringUtils.ToLowerCase(e.name);
-							if (!m.ContainsKey(lc))
-							{
-								m.Put(lc, e.name);
-							}
-						}
-					}
-					cfg = cfg.baseConfig;
-				}
-				return new Config.CaseFoldingSet(m);
-			}
-		}
-
-		private class SectionNames : Config.SectionParser<ICollection<string>>
-		{
-			public virtual ICollection<string> Parse(Config cfg)
-			{
-				IDictionary<string, string> m = new LinkedHashMap<string, string>();
-				while (cfg != null)
-				{
-					foreach (Config.Entry e in cfg.state.Get().entryList)
-					{
-						if (e.section != null)
-						{
-							string lc = StringUtils.ToLowerCase(e.section);
-							if (!m.ContainsKey(lc))
-							{
-								m.Put(lc, e.section);
-							}
-						}
-					}
-					cfg = cfg.baseConfig;
-				}
-				return new Config.CaseFoldingSet(m);
-			}
-		}
-
-		private class CaseFoldingSet : AbstractSet<string>
-		{
-			private readonly IDictionary<string, string> names;
-
-			internal CaseFoldingSet(IDictionary<string, string> names)
-			{
-				this.names = Sharpen.Collections.UnmodifiableMap(names);
-			}
-
-			public override bool Contains(object needle)
-			{
-				if (!(needle is string))
-				{
-					return false;
-				}
-				string n = (string)needle;
-				return names.ContainsKey(n) || names.ContainsKey(StringUtils.ToLowerCase(n));
-			}
-
-			public override Sharpen.Iterator<string> Iterator()
-			{
-				return names.Values.Iterator();
-			}
-
-			public override int Count
-			{
-				get
-				{
-					return names.Count;
-				}
-			}
-		}
-
-		private class State
-		{
-			internal readonly IList<Config.Entry> entryList;
-
-			internal readonly IDictionary<object, object> cache;
-
-			internal readonly Config.State baseState;
-
-			internal State(IList<Config.Entry> entries, Config.State @base)
-			{
-				entryList = entries;
-				cache = new ConcurrentHashMap<object, object>(16, 0.75f, 1);
-				baseState = @base;
-			}
-		}
-
-		/// <summary>The configuration file entry</summary>
-		private class Entry
-		{
-			/// <summary>The text content before entry</summary>
-			internal string prefix;
-
-			/// <summary>The section name for the entry</summary>
-			internal string section;
-
-			/// <summary>Subsection name</summary>
-			internal string subsection;
-
-			/// <summary>The key name</summary>
-			internal string name;
-
-			/// <summary>The value</summary>
-			internal string value;
-
-			/// <summary>The text content after entry</summary>
-			internal string suffix;
-
-			internal virtual Config.Entry ForValue(string newValue)
-			{
-				Config.Entry e = new Config.Entry();
-				e.prefix = prefix;
-				e.section = section;
-				e.subsection = subsection;
-				e.name = name;
-				e.value = newValue;
-				e.suffix = suffix;
-				return e;
-			}
-
-			internal virtual bool Match(string aSection, string aSubsection, string aKey)
-			{
-				return EqIgnoreCase(section, aSection) && EqSameCase(subsection, aSubsection) && 
-					EqIgnoreCase(name, aKey);
-			}
-
-			internal virtual bool Match(string aSection, string aSubsection)
-			{
-				return EqIgnoreCase(section, aSection) && EqSameCase(subsection, aSubsection);
-			}
-
-			private static bool EqIgnoreCase(string a, string b)
-			{
-				if (a == null && b == null)
-				{
-					return true;
-				}
-				if (a == null || b == null)
-				{
-					return false;
-				}
-				return StringUtils.EqualsIgnoreCase(a, b);
-			}
-
-			private static bool EqSameCase(string a, string b)
-			{
-				if (a == null && b == null)
-				{
-					return true;
-				}
-				if (a == null || b == null)
-				{
-					return false;
-				}
-				return a.Equals(b);
-			}
-
-			public override string ToString()
-			{
-				if (section == null)
-				{
-					return "<empty>";
-				}
-				StringBuilder b = new StringBuilder(section);
-				if (subsection != null)
-				{
-					b.Append(".").Append(subsection);
-				}
-				if (name != null)
-				{
-					b.Append(".").Append(name);
-				}
-				if (value != null)
-				{
-					b.Append("=").Append(value);
-				}
-				return b.ToString();
-			}
 		}
 
 		private class StringReader
