@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide
 			
 			// If a combine was specified, force --newwindow.
 			
-			if(!options.NewWindow && startupInfo.HasFiles) {
+			if (!options.NewWindow && startupInfo.HasFiles) {
 				Counters.Initialization.Trace ("Pre-Initializing Runtime to load files in existing window");
 				Runtime.Initialize (true);
 				foreach (var file in startupInfo.RequestedFileList) {
@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Initializing Runtime");
-			monitor.BeginTask (GettextCatalog.GetString ("Starting " + BrandingService.ApplicationName), 3);
+			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 3);
 			monitor.Step (1);
 			Runtime.Initialize (true);
 			
