@@ -15,13 +15,15 @@
 		<Addin id="Refactoring" version="2.9.5"/>
 	</Dependencies>
 	
+	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
+	
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
 				_label = "S_how Code Generation Window" 
 				shortcut = "Alt|Insert" />
 	</Extension>
-		
+	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProject 
 			language="C#" 
@@ -30,13 +32,15 @@
 			import="$(MSBuildBinPath)\Microsoft.CSharp.targets"
 			resourceHandler="MonoDevelop.CSharp.Project.CSharpResourceIdBuilder"
 			/>
-		<DotNetProjectSubtype
-			guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}"
-			type="MonoDevelop.Projects.PortableDotNetProject"
-			useXBuild="true">
-			<AddImport language="C#" projects="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-			<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-		</DotNetProjectSubtype>
+		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Microsoft\Portable\v4.0\Microsoft.Portable.CSharp.targets">
+			<DotNetProjectSubtype
+				guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}"
+				type="MonoDevelop.Projects.PortableDotNetProject"
+				useXBuild="true">
+				<AddImport language="C#" projects="$(MSBuildExtensionsPath)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+				<RemoveImport language="C#" projects="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+			</DotNetProjectSubtype>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">

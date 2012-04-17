@@ -324,6 +324,11 @@ namespace MonoDevelop.Core.Assemblies
 		/// Returns the MSBuild bin path for this runtime.
 		/// </summary>
 		public abstract string GetMSBuildBinPath (TargetFramework fx);
+		
+		/// <summary>
+		/// Returns the MSBuild extensions path.
+		/// </summary>
+		public abstract string GetMSBuildExtensionsPath ();
 
 		/// <summary>
 		/// Returns all GAC locations for this runtime.

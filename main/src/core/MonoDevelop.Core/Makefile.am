@@ -252,6 +252,7 @@ FILES =  \
 	MonoDevelop.Projects.Formats.MSBuild/RemoteProjectBuilder.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnData.cs \
 	MonoDevelop.Projects.Formats.MSBuild/SlnFileFormat.cs \
+	MonoDevelop.Projects.Formats.MSBuild/TargetsAvailableCondition.cs \
 	MonoDevelop.Projects.Policies/DotNetNamingPolicy.cs \
 	MonoDevelop.Projects.Policies/IPolicyProvider.cs \
 	MonoDevelop.Projects.Policies/PolicyBag.cs \
