@@ -1570,29 +1570,31 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var state = GetState();
 			Func<IType, IType> pred = null;
 			if (hintType != null) {
-				
 				if (hintType.Kind != TypeKind.Unknown) {
 					var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 					pred = t => {
 						// check if type is in inheritance tree.
-						if (hintType.GetDefinition() != null && !t.GetDefinition().IsDerivedFrom(hintType.GetDefinition())) {
-							return null;
-						}
+						// if (hintType.GetDefinition() != null && !t.GetDefinition().IsDerivedFrom(hintType.GetDefinition())) {
+						//	return null;
+						//}
 						if (t.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array) {
 							return null;
 						}
 						// check for valid constructors
 						if (t.GetConstructors().Count() > 0) {
-							bool isProtectedAllowed = currentType != null ? currentType.Resolve(ctx).GetDefinition().IsDerivedFrom(t.GetDefinition()) : false;
-							if (!t.GetConstructors().Any(m => lookup.IsAccessible(m, isProtectedAllowed)))
+							bool isProtectedAllowed = currentType != null ? 
+								currentType.Resolve(ctx).GetDefinition().IsDerivedFrom(t.GetDefinition()) : 
+								false;
+							if (!t.GetConstructors().Any(m => lookup.IsAccessible(m, isProtectedAllowed))) {
 								return null;
+							}
 						}
 
 						var typeInference = new TypeInference(Compilation);
 						typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
 						var inferedType = typeInference.FindTypeInBounds(new [] { t }, new [] { hintType });
 						wrapper.AddType(inferedType, amb.ConvertType(inferedType));
-						return null;
+						return t;
 					};
 					if (!(hintType.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array)) {
 						DefaultCompletionString = GetShortType(hintType, GetState());
