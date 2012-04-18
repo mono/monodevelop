@@ -498,10 +498,9 @@ namespace MonoDevelop.CSharp.Highlighting
 				var word = wordbuilder.ToString ();
 				string color;
 
-				
-
-				
 				while (node != null && !(node is Statement || node is EntityDeclaration)) {
+					if (node is CSharpTokenNode || node is ICSharpCode.NRefactory.CSharp.Comment || node is PreProcessorDirective)
+						break;
 					if (node is SimpleType) {
 						var st = (SimpleType)node;
 						
