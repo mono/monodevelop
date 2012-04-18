@@ -744,7 +744,7 @@ namespace ICSharpCode.Decompiler.Ast
 									for (int i = 0; i < args.Count; i++) {
 										atce.Initializers.Add(
 											new NamedExpression {
-												Identifier = ctor.Parameters[i].Name,
+												Name = ctor.Parameters[i].Name,
 												Expression = args[i]
 											});
 									}
@@ -794,7 +794,7 @@ namespace ICSharpCode.Decompiler.Ast
 								MemberReferenceExpression mre = m.Get<MemberReferenceExpression>("left").Single();
 								initializer.Elements.Add(
 									new NamedExpression {
-										Identifier = mre.MemberName,
+										Name = mre.MemberName,
 										Expression = m.Get<Expression>("right").Single().Detach()
 									}.CopyAnnotationsFrom(mre));
 							} else {
