@@ -603,11 +603,19 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string output = RunSimulation ("", "A\t", true, true, false, "AbCdEf");
 			Assert.AreEqual ("AbCdEf", output);
-			
-			output = RunSimulation ("", "Cd\t", true, true, false, "AbCdEf");
+		}
+
+		[Test]
+		public void TestBug595240Case2 ()
+		{
+			var output = RunSimulation ("", "Cd\t", true, true, false, "AbCdEf");
 			Assert.AreEqual ("AbCdEf", output);
-			
-			output = RunSimulation ("", "bC\t", true, true, false, "AbCdEf");
+		}
+
+		[Test]
+		public void TestBug595240Case3 ()
+		{
+			var output = RunSimulation ("", "bC\t", true, true, false, "AbCdEf");
 			Assert.AreNotEqual ("AbCdEf", output);
 		}
 		
