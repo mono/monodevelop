@@ -118,7 +118,7 @@ namespace MonoDevelop.CodeGeneration
 			StringBuilder result = new StringBuilder ();
 			foreach (var line in doc.Lines) {
 				result.Append (indent);
-				result.Append (doc.GetTextAt (line));
+				result.Append (doc.GetTextAt (line.SegmentIncludingDelimiter));
 			}
 			return result.ToString ();
 		}

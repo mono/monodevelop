@@ -369,7 +369,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			foreach (DocumentLine line in doc.Lines) {
 				if (result.Length > 0)
 					result.Append (indent);
-				result.Append (doc.GetTextAt (line));
+				result.Append (doc.GetTextAt (line.SegmentIncludingDelimiter));
 			}
 			return result.ToString ();
 		}
