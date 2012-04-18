@@ -234,7 +234,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		};
 		
 		static readonly HashSet<string> ContextualDehighlightKeywordList = new HashSet<string> (new string[] {
-			"get", "set", "add", "remove", "var", "global", "partial", "where"
+			"get", "set", "add", "remove", "var", "global", "partial", "from", "where", "select", "group", "into", "orderby", "ascending", "descending"
 		});
 		
 		public CSharpSyntaxMode ()
