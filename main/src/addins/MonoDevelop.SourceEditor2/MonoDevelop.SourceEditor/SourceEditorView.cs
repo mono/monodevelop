@@ -1248,9 +1248,11 @@ namespace MonoDevelop.SourceEditor
 
 		public string GetText (int startPosition, int endPosition)
 		{
-			if (startPosition < 0 ||  endPosition < 0 ||  startPosition > endPosition)
+			var doc = widget.TextEditor.Document;
+			if (startPosition < 0 ||  endPosition < 0 ||  startPosition > endPosition || startPosition >= doc.TextLength)
 				return "";
-			return this.widget.TextEditor.Document.GetTextAt (startPosition, endPosition - startPosition);
+			var length = Math.Min (endPosition - startPosition, doc.TextLength - startPosition);
+			return doc.GetTextAt (startPosition, length);
 		}
 		
 		public char GetCharAt (int position)
