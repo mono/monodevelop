@@ -97,6 +97,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (result == null) {
 				return null;
 			}
+
 			object valid = null;
 			if (result is MethodGroupResolveResult) {
 				valid = ((MethodGroupResolveResult)result).Methods.FirstOrDefault (
@@ -145,9 +146,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				node = ((DestructorDeclaration)node).NameToken;
 			if (node is NamedArgumentExpression)
 				node = ((NamedArgumentExpression)node).IdentifierToken;
+			if (node is NamedExpression)
+				node = ((NamedExpression)node).IdentifierToken;
 			if (node is VariableInitializer)
 				node = ((VariableInitializer)node).NameToken;
-
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 
 			var length = node is PrimitiveType ? keywordName.Length : node.EndLocation.Column - node.StartLocation.Column;
