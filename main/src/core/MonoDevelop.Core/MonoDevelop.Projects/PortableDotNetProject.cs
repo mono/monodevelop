@@ -45,6 +45,10 @@ namespace MonoDevelop.Projects
 		{
 		}
 		
+		public override string ProjectType {
+			get { return "PortableDotNet"; }
+		}
+		
 		public override bool SupportsFormat (FileFormat format)
 		{
 			int version;
@@ -66,9 +70,21 @@ namespace MonoDevelop.Projects
 				return base.SupportsFramework (framework);
 		}
 		
+		public override TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
+		{
+			// Note: This value is used only when serializing the TargetFramework to the .csproj file.
+			// Any component of the TargetFramework that is different from this base TargetFramework
+			// value will be serialized.
+			//
+			// Therefore, if we only specify the TargetFrameworkIdentifier, then both the
+			// TargetFrameworkVersion and TargetFrameworkProfile values will be serialized.
+			return new TargetFrameworkMoniker (".NETPortable");
+		}
+		
 		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
-			return TargetFrameworkMoniker.PORTABLE_4_0;
+			// Profile1 is the most-inclusive subset of the profiles, so we'll default to that one.
+			return new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile1");
 		}
 	}
 }

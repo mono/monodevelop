@@ -1029,7 +1029,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (!itemInfo.Added)
 					msproject.RemoveItem (itemInfo.Item);
 			}
-		
+			
 			if (dotNetProject != null) {
 				var moniker = dotNetProject.TargetFramework.Id;
 				bool supportsMultipleFrameworks = TargetFormat.FrameworkVersions.Length > 0;

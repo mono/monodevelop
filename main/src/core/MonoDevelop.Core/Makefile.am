@@ -319,6 +319,7 @@ FILES =  \
 	MonoDevelop.Projects/IWorkspaceObject.cs \
 	MonoDevelop.Projects/LanguageBindingService.cs \
 	MonoDevelop.Projects/PortableDotNetProject.cs \
+	MonoDevelop.Projects/PortableDotNetProjectBinding.cs \
 	MonoDevelop.Projects/Project.cs \
 	MonoDevelop.Projects/ProjectConfiguration.cs \
 	MonoDevelop.Projects/ProjectConvertTool.cs \
