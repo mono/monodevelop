@@ -1364,7 +1364,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					var isAsWrapper = new CompletionDataWrapper(this);
 					var def = isAsType != null ? isAsType.GetDefinition() : null;
-					AddTypesAndNamespaces(isAsWrapper, GetState(), null, t => t.GetDefinition() == null || def == null || t.GetDefinition().IsDerivedFrom(def) ? t : null, m => false);
+					AddTypesAndNamespaces(
+						isAsWrapper,
+						GetState(),
+						null,
+						t => t.GetDefinition() == null || def == null || t.GetDefinition().IsDerivedFrom(def) ? t : null,
+						m => false);
 					return isAsWrapper.Result;
 //					{
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();
@@ -1457,7 +1462,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					}
 					var state = GetState();
-				
+						
 					if (state.CurrentTypeDefinition != null && (state.CurrentTypeDefinition.Kind == TypeKind.Class || state.CurrentTypeDefinition.Kind == TypeKind.Struct)) {
 						string modifiers = document.GetText(firstMod, wordStart - firstMod);
 						return GetPartialCompletionData(state.CurrentTypeDefinition, modifiers);
@@ -1488,88 +1493,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 					IType hintType = null;
 					var expressionOrVariableDeclaration = GetNewExpressionAt(j);
-					AstNode newParentNode = null;
-					AstType hintTypeAst = null;
-					if (expressionOrVariableDeclaration != null) {
-						newParentNode = expressionOrVariableDeclaration.Node.Parent;
-						if (newParentNode is VariableInitializer) {
-							newParentNode = newParentNode.Parent;
-						}
-					}
-					if (newParentNode is InvocationExpression) {
-						var invoke = (InvocationExpression)newParentNode;
-						var resolved = ResolveExpression(invoke, expressionOrVariableDeclaration.Unit);
-						if (resolved != null) {
-							var mgr = resolved.Item1 as CSharpInvocationResolveResult;
-							if (mgr != null) {
-								int i1 = 0;
-								foreach (var a in invoke.Arguments) {
-									if (a == expressionOrVariableDeclaration.Node) {
-										if (mgr.Member.Parameters.Count > i1) {
-											hintType = mgr.Member.Parameters [i1].Type;
-										}
-										break;
-									}
-									i1++;
-								}
-							}
-						}
-					}
-				
-					if (newParentNode is ObjectCreateExpression) {
-						var invoke = (ObjectCreateExpression)newParentNode;
-						var resolved = ResolveExpression(invoke, expressionOrVariableDeclaration.Unit);
-						if (resolved != null) {
-							var mgr = resolved.Item1 as CSharpInvocationResolveResult;
-							if (mgr != null) {
-								int i1 = 0;
-								foreach (var a in invoke.Arguments) {
-									if (a == expressionOrVariableDeclaration.Node) {
-										if (mgr.Member.Parameters.Count > i1) {
-											hintType = mgr.Member.Parameters [i1].Type;
-										}
-										break;
-									}
-									i1++;
-								}
-							}
-						}
-					}
+			
+					var astResolver = new CSharpAstResolver(GetState(), expressionOrVariableDeclaration.Unit, CSharpParsedFile);
+					hintType = CreateFieldAction.GetValidTypes(astResolver, expressionOrVariableDeclaration.Node as Expression).FirstOrDefault ();
 
-					if (newParentNode is AssignmentExpression) {
-						var assign = (AssignmentExpression)newParentNode;
-						var resolved = ResolveExpression(assign.Left, expressionOrVariableDeclaration.Unit);
-						if (resolved != null) {
-							hintType = resolved.Item1.Type;
-						}
-					}
-
-					if (newParentNode is VariableDeclarationStatement) {
-						var varDecl = (VariableDeclarationStatement)newParentNode;
-						hintTypeAst = varDecl.Type;
-						var resolved = ResolveExpression(varDecl.Type, expressionOrVariableDeclaration.Unit);
-						if (resolved != null) {
-							hintType = resolved.Item1.Type;
-						}
-					}
-
-					if (newParentNode is FieldDeclaration) {
-						var varDecl = (FieldDeclaration)newParentNode;
-						hintTypeAst = varDecl.ReturnType;
-						var resolved = ResolveExpression(varDecl.ReturnType, expressionOrVariableDeclaration.Unit);
-						if (resolved != null) {
-							hintType = resolved.Item1.Type;
-						}
-					}
-
-					if (newParentNode is ReturnStatement) {
-						//var varDecl = (ReturnStatement)newParentNode;
-						if (ctx.CurrentMember != null) {
-							hintType = ctx.CurrentMember.ReturnType;
-						}
-					}
-
-					return CreateTypeCompletionData(hintType, hintTypeAst);
+					return CreateTypeCompletionData(hintType);
 				case "yield":
 					var yieldDataList = new CompletionDataWrapper(this);
 					DefaultCompletionString = "return";
@@ -1625,7 +1553,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 
-		IEnumerable<ICompletionData> CreateTypeCompletionData(IType hintType, AstType hintTypeAst)
+		IEnumerable<ICompletionData> CreateTypeCompletionData(IType hintType)
 		{
 			var wrapper = new CompletionDataWrapper(this);
 			var state = GetState();
@@ -1684,9 +1612,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						wrapper.AddType(array, amb.ConvertType(array));
 					}
 				} else {
-					DefaultCompletionString = hintTypeAst.ToString();
 					var hint = wrapper.AddType(hintType, DefaultCompletionString);
 					if (hint != null) {
+						DefaultCompletionString = hint.DisplayText;
 						hint.CompletionCategory = derivedTypesCategory;
 					}
 				}
@@ -1980,22 +1908,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return n is Attribute;
 		}
 
-		IType GuessHintType(AstNode resolvedNode)
-		{
-			ObjectCreateExpression oce = resolvedNode.Parent as ObjectCreateExpression ?? (ObjectCreateExpression)resolvedNode.Ancestors.FirstOrDefault(n => n is ObjectCreateExpression);
-			if (oce != null && oce.Parent is ReturnStatement) {
-				return ctx.CurrentMember != null ? ctx.CurrentMember.ReturnType : null;
-			}
-			return null;
-		}
-
 		IEnumerable<ICompletionData> CreateTypeAndNamespaceCompletionData(TextLocation location, ResolveResult resolveResult, AstNode resolvedNode, CSharpResolver state)
 		{
 			if (resolveResult == null || resolveResult.IsError) {
 				return null;
 			}
+			var exprParent = resolvedNode.GetParent<Expression>();
+			var unit = exprParent != null ? exprParent.GetParent<CompilationUnit>() : null;
 
-			var hintType = GuessHintType(resolvedNode);
+			var astResolver = unit != null ? new CSharpAstResolver(state, unit, CSharpParsedFile) : null;
+			IType hintType = exprParent != null && astResolver != null ? 
+				CreateFieldAction.GetValidTypes(astResolver, exprParent) .FirstOrDefault() :
+				null;
 			var result = new CompletionDataWrapper (this);
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;

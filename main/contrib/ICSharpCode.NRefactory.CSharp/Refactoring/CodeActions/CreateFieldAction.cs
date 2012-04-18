@@ -149,6 +149,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
+			if (expr.Parent is ArrayCreateExpression) {
+				var ace = (ArrayCreateExpression)expr.Parent;
+				if (!ace.Type.IsNull) {
+					return new [] { resolver.Resolve(ace.Type).Type };
+				}
+			}
+
 			if (expr.Parent is InvocationExpression) {
 				var parent = expr.Parent;
 				if (parent is InvocationExpression) {
@@ -159,6 +166,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			if (expr.Parent is VariableInitializer) {
 				var initializer = (VariableInitializer)expr.Parent;
+				var field = initializer.GetParent<FieldDeclaration>();
+				if (field != null)
+					return new [] { resolver.Resolve(field.ReturnType).Type };
 				return new [] { resolver.Resolve(initializer).Type };
 			}
 			
