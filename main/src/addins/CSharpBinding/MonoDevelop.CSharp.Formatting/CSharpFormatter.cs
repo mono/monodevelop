@@ -111,8 +111,13 @@ namespace MonoDevelop.CSharp.Formatting
 			var originalVersion = data.Document.Version;
 
 			var textEditorOptions = data.CreateNRefactoryTextEditorOptions ();
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), data.Document, textEditorOptions) {
-				HadErrors = hadErrors
+			var formattingVisitor = new AstFormattingVisitor (
+				policy.CreateOptions (),
+				data.Document,
+				textEditorOptions
+			) {
+				HadErrors = hadErrors,
+				FormattingMode = FormattingMode.Intrusive
 			};
 			compilationUnit.AcceptVisitor (formattingVisitor);
 			try {
