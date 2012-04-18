@@ -145,9 +145,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is DestructorDeclaration)
 				node = ((DestructorDeclaration)node).NameToken;
 			if (node is NamedArgumentExpression)
-				node = ((NamedArgumentExpression)node).IdentifierToken;
+				node = ((NamedArgumentExpression)node).NameToken;
 			if (node is NamedExpression)
-				node = ((NamedExpression)node).IdentifierToken;
+				node = ((NamedExpression)node).NameToken;
 			if (node is VariableInitializer)
 				node = ((VariableInitializer)node).NameToken;
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
