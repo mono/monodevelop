@@ -175,7 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
-				ChainedMethodCallWrapping = Wrapping.WrapAlways,
+				ChainedMethodCallWrapping = Wrapping.WrapIfTooLong,
 				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferMethodCallOpenParentheses = true,
 				MethodCallClosingParenthesesOnNewLine = true,
@@ -344,7 +344,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
-				ChainedMethodCallWrapping = Wrapping.WrapAlways,
+				ChainedMethodCallWrapping = Wrapping.WrapIfTooLong,
 				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferMethodCallOpenParentheses = true,
 				MethodCallClosingParenthesesOnNewLine = true,
