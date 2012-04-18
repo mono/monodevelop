@@ -133,7 +133,8 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged += OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
-//			TypeSystemService.DomRegistered += UpdateRegisteredDom;
+			if (window.ViewContent.Project != null)
+				window.ViewContent.Project.Modified += HandleProjectModified;
 		}
 
 /*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
@@ -632,9 +633,20 @@ namespace MonoDevelop.Ide.Gui
 				Window.ViewContent.Project = project;
 				pr.Update (project);
 			}
+			project.Modified += HandleProjectModified;
 			OnDocumentAttached ();
 		}
-		
+
+		void HandleProjectModified (object sender, SolutionItemModifiedEventArgs e)
+		{
+			if (!e.Any (
+					x => x is SolutionItemModifiedEventInfo &&
+				(((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework" ||
+				((SolutionItemModifiedEventInfo)x).Hint == "References")))
+				return;
+			StartReparseThread ();
+		}
+
 		/// <summary>
 		/// This method can take some time to finish. It's not threaded
 		/// </summary>
