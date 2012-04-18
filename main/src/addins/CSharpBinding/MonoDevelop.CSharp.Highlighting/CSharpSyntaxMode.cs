@@ -234,7 +234,20 @@ namespace MonoDevelop.CSharp.Highlighting
 		};
 		
 		static readonly HashSet<string> ContextualDehighlightKeywordList = new HashSet<string> (new string[] {
-			"get", "set", "add", "remove", "var", "global", "partial", "from", "where", "select", "group", "into", "orderby", "ascending", "descending"
+			"get", "set", "add", "remove", "var", "global", "partial", 
+			"where",
+			"select",
+			"group",
+			"by",
+			"into",
+			"from",
+			"ascending",
+			"descending",
+			"orderby",
+			"let",
+			"join",
+			"on",
+			"equals"
 		});
 		
 		public CSharpSyntaxMode ()
@@ -484,48 +497,9 @@ namespace MonoDevelop.CSharp.Highlighting
 				var node = unit.GetNodeAt (loc, n => n is Identifier || n is AstType || n is CSharpTokenNode);
 				var word = wordbuilder.ToString ();
 				string color;
-				if (csharpSyntaxMode.contextualHighlightKeywords.TryGetValue (word, out color)) {
-					if (node == null)
-						return null;
-					switch (word) {
-					case "value":
-						// highlight 'value' in property setters and event add/remove
-						var n = node.Parent;
-						while (n != null) {
-							if (n is Accessor && n.Role == PropertyDeclaration.SetterRole) {
-								endOffset = chunk.Offset + "value".Length;
-								return color;
-							}
-							n = n.Parent;
-						}
-						return null;
-					}
-					endOffset = chunk.Offset + word.Length;
-					if (node is CSharpTokenNode)
-						return color;
-					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
-				}
+
 				
-				if (ContextualDehighlightKeywordList.Contains (word)) {
-					if (node == null)
-						return null;
-					if (node is Identifier) {
-						switch (((Identifier)node).Name) {
-						case "var": 
-							if (node.Parent != null) {
-								var vds = node.Parent.Parent as VariableDeclarationStatement;
-								if (node.Parent.Parent is ForeachStatement && ((ForeachStatement)node.Parent.Parent).VariableType.StartLocation == node.StartLocation ||
-									vds != null && node.StartLocation == vds.Type.StartLocation)
-									return null;
-							}
-							endOffset = chunk.Offset + "var".Length;
-							return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
-						}
-					} else if (node is CSharpTokenNode)
-						return color;
-					endOffset = chunk.Offset + word.Length;
-					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
-				}
+
 				
 				while (node != null && !(node is Statement || node is EntityDeclaration)) {
 					if (node is SimpleType) {
@@ -638,6 +612,50 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 					node = node.Parent;
 				}
+
+				if (csharpSyntaxMode.contextualHighlightKeywords.TryGetValue (word, out color)) {
+					if (node == null)
+						return null;
+					switch (word) {
+					case "value":
+						// highlight 'value' in property setters and event add/remove
+						var n = node.Parent;
+						while (n != null) {
+							if (n is Accessor && n.Role == PropertyDeclaration.SetterRole) {
+								endOffset = chunk.Offset + "value".Length;
+								return color;
+							}
+							n = n.Parent;
+						}
+						return null;
+					}
+					endOffset = chunk.Offset + word.Length;
+					if (node is CSharpTokenNode)
+						return color;
+					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
+				}
+
+				if (ContextualDehighlightKeywordList.Contains (word)) {
+					if (node == null)
+						return null;
+					if (node is Identifier) {
+						switch (((Identifier)node).Name) {
+						case "var": 
+							if (node.Parent != null) {
+								var vds = node.Parent.Parent as VariableDeclarationStatement;
+								if (node.Parent.Parent is ForeachStatement && ((ForeachStatement)node.Parent.Parent).VariableType.StartLocation == node.StartLocation ||
+									vds != null && node.StartLocation == vds.Type.StartLocation)
+									return null;
+							}
+							endOffset = chunk.Offset + "var".Length;
+							return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
+						}
+					} else if (node is CSharpTokenNode)
+						return color;
+					endOffset = chunk.Offset + word.Length;
+					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
+				}
+
 				return null;
 			}
 			
