@@ -397,7 +397,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							}
 							methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
 							if (methodGroup != null) {
-								return CreateParameterCompletion(methodGroup, invocationResult.Item2, invoke.Node, invoke.Unit, currentParameter, controlSpace);
+								return CreateParameterCompletion(
+									methodGroup,
+									invocationResult.Item2,
+									invoke.Node,
+									invoke.Unit,
+									currentParameter,
+									controlSpace);
 							}
 							return null;
 						case "=":
@@ -415,7 +421,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							}
 							if (resolveResult.Item1.Type.Kind == TypeKind.Enum) {
 								var wrapper = new CompletionDataWrapper(this);
-								AddContextCompletion(wrapper, resolveResult.Item2, expressionOrVariableDeclaration.Node, expressionOrVariableDeclaration.Unit);
+								AddContextCompletion(
+									wrapper,
+									resolveResult.Item2,
+									expressionOrVariableDeclaration.Node,
+									expressionOrVariableDeclaration.Unit);
 								AddEnumMembers(wrapper, resolveResult.Item1.Type, resolveResult.Item2);
 								AutoCompleteEmptyMatch = false;
 								return wrapper.Result;
@@ -484,7 +494,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								if (token == "+=") {
 									string parameterDefinition = AddDelegateHandlers(wrapper, delegateType);
 									string varName = GetPreviousMemberReferenceExpression(tokenIndex);
-									wrapper.Result.Add(factory.CreateEventCreationCompletionData(varName, delegateType, evt, parameterDefinition, currentMember, currentType));
+									wrapper.Result.Add(
+										factory.CreateEventCreationCompletionData(
+										varName,
+										delegateType,
+										evt,
+										parameterDefinition,
+										currentMember,
+										currentType));
 								}
 					
 								return wrapper.Result;
@@ -498,7 +515,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 									return HandleEnumContext();
 								var wrapper = new CompletionDataWrapper(this);
 
-								AddTypesAndNamespaces(wrapper, GetState(), null, t => currentType != null && !currentType.ReflectionName.Equals(t.ReflectionName) ? t : null);
+								AddTypesAndNamespaces(
+									wrapper,
+									GetState(),
+									null,
+									t => currentType != null && !currentType.ReflectionName.Equals(t.ReflectionName) ? t : null);
 								return wrapper.Result;
 							}
 							return null;
@@ -549,7 +570,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 
 						if (identifierStart.Node is MemberReferenceExpression) {
-							return HandleMemberReferenceCompletion(new ExpressionResult(((MemberReferenceExpression)identifierStart.Node).Target, identifierStart.Unit));
+							return HandleMemberReferenceCompletion(
+								new ExpressionResult(((MemberReferenceExpression)identifierStart.Node).Target, identifierStart.Unit));
 						}
 
 						if (identifierStart.Node is Identifier) {
@@ -631,6 +653,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							}
 							return null;
 						}
+
+						var astResolver = new CSharpAstResolver(GetState(), identifierStart.Unit, CSharpParsedFile);
+
+						foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)n)) {
+							if (type.Kind == TypeKind.Delegate) {
+								AddDelegateHandlers(contextList, type, false, false);
+								AutoSelect = false;
+								AutoCompleteEmptyMatch = false;
+							}
+						}
 					}
 					
 					// Handle object/enumerable initialzer expressions: "new O () { P$"
@@ -669,12 +701,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 										AutoSelect = false;
 										AutoCompleteEmptyMatch = false;
 									}
-
 								}
 							}
 						}
 					}
-					
+
 					if (n != null && n.Parent is ObjectCreateExpression) {
 						var invokeResult = ResolveExpression(n.Parent, identifierStart.Unit);
 						var mgr = invokeResult != null ? invokeResult.Item1 as ResolveResult : null;
@@ -763,16 +794,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					if (n is MemberType) {
 						resolveResult = ResolveExpression(((MemberType)n).Target, identifierStart.Unit);
-						return CreateTypeAndNamespaceCompletionData(location, resolveResult.Item1, ((MemberType)n).Target, resolveResult.Item2);
+						return CreateTypeAndNamespaceCompletionData(
+							location,
+							resolveResult.Item1,
+							((MemberType)n).Target,
+							resolveResult.Item2
+						);
 					}
 					if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
-						csResolver = new CSharpResolver (ctx);
-						var nodes = new List<AstNode> ();
+						csResolver = new CSharpResolver(ctx);
+						var nodes = new List<AstNode>();
 						nodes.Add(n);
 						if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 							nodes.Add(n.Parent);
 						}
-						var astResolver = new CSharpAstResolver (csResolver, identifierStart.Unit, CSharpParsedFile);
+						var astResolver = new CSharpAstResolver(csResolver, identifierStart.Unit, CSharpParsedFile);
 						astResolver.ApplyNavigator(new NodeListResolveVisitorNavigator (nodes));
 						try {
 							csResolver = astResolver.GetResolverStateBefore(n);
@@ -2023,7 +2059,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						continue;
 					string parameterDefinition = AddDelegateHandlers(result, resolvedType);
 					string varName = "Handle" + method.Parameters [parameter].Type.Name + method.Parameters [parameter].Name;
-					result.Result.Add(factory.CreateEventCreationCompletionData(varName, resolvedType, null, parameterDefinition, currentMember, currentType));
+					result.Result.Add(
+						factory.CreateEventCreationCompletionData(
+						varName,
+						resolvedType,
+						null,
+						parameterDefinition,
+						currentMember,
+						currentType));
 				}
 			}
 			if (!controlSpace) {

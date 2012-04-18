@@ -635,7 +635,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (Expression expr in attribute.Arguments) {
 				NamedExpression ne = expr as NamedExpression;
 				if (ne != null)
-					attr.Arguments.Add(new CodeAttributeArgument(ne.Identifier, Convert(ne.Expression)));
+					attr.Arguments.Add(new CodeAttributeArgument(ne.Name, Convert(ne.Expression)));
 				else
 					attr.Arguments.Add(new CodeAttributeArgument(Convert(expr)));
 			}

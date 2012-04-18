@@ -917,7 +917,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression)
 		{
 			StartNode(namedArgumentExpression);
-			namedArgumentExpression.IdentifierToken.AcceptVisitor(this);
+			namedArgumentExpression.NameToken.AcceptVisitor(this);
 			WriteToken(Roles.Colon);
 			Space();
 			namedArgumentExpression.Expression.AcceptVisitor(this);
@@ -927,7 +927,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void VisitNamedExpression(NamedExpression namedExpression)
 		{
 			StartNode(namedExpression);
-			namedExpression.IdentifierToken.AcceptVisitor(this);
+			namedExpression.NameToken.AcceptVisitor(this);
 			Space();
 			WriteToken(Roles.Assign);
 			Space();

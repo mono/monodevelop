@@ -785,7 +785,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 
-		void FormatParameters (AstNode node)
+		void FormatParameters(AstNode node)
 		{
 			Wrapping methodCallArgumentWrapping;
 			bool newLineAferMethodCallOpenParentheses;
@@ -842,28 +842,32 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 
-			bool wrapMethodCall = DoWrap (methodCallArgumentWrapping, rParToken);
-			if (wrapMethodCall && parameters.Any ()) {
+			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken);
+			if (wrapMethodCall && parameters.Any()) {
 				if (newLineAferMethodCallOpenParentheses) {
-					curIndent.Push (IndentType.Continuation);
+					curIndent.Push(IndentType.Continuation);
 					foreach (var arg in parameters) {
-						FixStatementIndentation (arg.StartLocation);
+						FixStatementIndentation(arg.StartLocation);
 					}
-					curIndent.Pop ();
+					curIndent.Pop();
 				} else {
-					int extraSpaces = parameters.First ().StartLocation.Column - 1 - curIndent.IndentString.Length;
+					int extraSpaces = parameters.First().StartLocation.Column - 1 - curIndent.IndentString.Length;
 					curIndent.ExtraSpaces += extraSpaces;
 					foreach (var arg in parameters.Skip(1)) {
-						FixStatementIndentation (arg.StartLocation);
+						FixStatementIndentation(arg.StartLocation);
 					}
 					curIndent.ExtraSpaces -= extraSpaces;
 				}
-				if (methodClosingParenthesesOnNewLine)
-					FixStatementIndentation (rParToken.StartLocation);
+				if (methodClosingParenthesesOnNewLine) {
+					FixStatementIndentation(rParToken.StartLocation);
+				}
 			} else {
 				foreach (var arg in parameters) {
-					if (methodCallArgumentWrapping == Wrapping.DoNotWrap)
-						ForceSpacesBeforeRemoveNewLines (arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
+						ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					} else {
+						ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					}
 					arg.AcceptVisitor(this);
 				}
 				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
@@ -1693,7 +1697,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				options.WrapLineLength > 0 && wrapping == Wrapping.WrapIfTooLong && wrapNode.StartLocation.Column >= options.WrapLineLength;
 		}
 
-		void FormatArguments (AstNode node)
+		void FormatArguments(AstNode node)
 		{
 			Wrapping methodCallArgumentWrapping;
 			bool newLineAferMethodCallOpenParentheses;
@@ -1739,28 +1743,32 @@ namespace ICSharpCode.NRefactory.CSharp
 				arguments = invocationExpression.Arguments;
 			}
 
-			bool wrapMethodCall = DoWrap (methodCallArgumentWrapping, rParToken);
-			if (wrapMethodCall && arguments.Any ()) {
+			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken);
+			if (wrapMethodCall && arguments.Any()) {
 				if (newLineAferMethodCallOpenParentheses) {
-					curIndent.Push (IndentType.Continuation);
+					curIndent.Push(IndentType.Continuation);
 					foreach (var arg in arguments) {
-						FixStatementIndentation (arg.StartLocation);
+						FixStatementIndentation(arg.StartLocation);
 					}
-					curIndent.Pop ();
+					curIndent.Pop();
 				} else {
-					int extraSpaces = arguments.First ().StartLocation.Column - 1 - curIndent.IndentString.Length;
+					int extraSpaces = arguments.First().StartLocation.Column - 1 - curIndent.IndentString.Length;
 					curIndent.ExtraSpaces += extraSpaces;
 					foreach (var arg in arguments.Skip(1)) {
-						FixStatementIndentation (arg.StartLocation);
+						FixStatementIndentation(arg.StartLocation);
 					}
 					curIndent.ExtraSpaces -= extraSpaces;
 				}
-				if (methodClosingParenthesesOnNewLine)
-					FixStatementIndentation (rParToken.StartLocation);
+				if (methodClosingParenthesesOnNewLine) {
+					FixStatementIndentation(rParToken.StartLocation);
+				}
 			} else {
 				foreach (var arg in arguments) {
-					if (methodCallArgumentWrapping == Wrapping.DoNotWrap)
-						ForceSpacesBeforeRemoveNewLines (arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
+						ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					} else {
+						ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					}
 					arg.AcceptVisitor(this);
 				}
 				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);

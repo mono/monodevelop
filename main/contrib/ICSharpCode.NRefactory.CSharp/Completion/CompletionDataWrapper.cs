@@ -75,23 +75,23 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 		HashSet<string> usedTypes = new HashSet<string> ();
 
-		public ICompletionData AddType (IType type, string shortType)
+		public ICompletionData AddType(IType type, string shortType)
 		{
-			if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (shortType))
+			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
 				return null;
-			usedTypes.Add (shortType);
-			var iCompletionData = Factory.CreateTypeCompletionData (type, shortType);
-			result.Add (iCompletionData);
+			usedTypes.Add(shortType);
+			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
+			result.Add(iCompletionData);
 			return iCompletionData;
 		}
 		
-		public ICompletionData AddType (IUnresolvedTypeDefinition type, string shortType)
+		public ICompletionData AddType(IUnresolvedTypeDefinition type, string shortType)
 		{
-			if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (shortType))
+			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
 				return null;
-			usedTypes.Add (shortType);
-			var iCompletionData = Factory.CreateTypeCompletionData (type, shortType);
-			result.Add (iCompletionData);
+			usedTypes.Add(shortType);
+			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
+			result.Add(iCompletionData);
 			return iCompletionData;
 		}
 			
