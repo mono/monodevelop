@@ -168,14 +168,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public string CurrentCompletionText {
 			get {
-				if (list.SelectionIndex != -1 && list.AutoSelect)
-					return DataProvider.GetCompletionText (list.SelectionIndex);
+				if (list.SelectedItem != -1 && list.AutoSelect)
+					return DataProvider.GetCompletionText (list.SelectedItem);
 				return null;
 			}
 		}
 
-		public int SelectionIndex {
-			get { return list.SelectionIndex; }
+		public int SelectedItem {
+			get { return list.SelectedItem; }
 		}
 		
 		public bool AutoSelect {
@@ -316,12 +316,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			case Gdk.Key.Home:
 				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
 					return KeyActions.Process;
-				List.Selection = 0;
+				List.SelectionFilterIndex = 0;
 				return KeyActions.Ignore;
 			case Gdk.Key.End:
 				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
 					return KeyActions.Process;
-				List.Selection = List.filteredItems.Count - 1;
+				List.SelectionFilterIndex = List.filteredItems.Count - 1;
 				return KeyActions.Ignore;
 				
 			case Gdk.Key.Up:
@@ -583,7 +583,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void SelectEntry (int n)
 		{
 			if (n >= 0)
-				list.Selection = n;
+				list.SelectionFilterIndex = n;
 		}
 
 		public virtual void SelectEntry (string s)

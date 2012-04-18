@@ -128,23 +128,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 			AutoSelect = false;
 		}
 		
-		public int Selection {
+		public int SelectionFilterIndex {
 			get {
-				var idx = SelectionIndex;
+				var idx = SelectedItem;
 				if (idx < 0)
 					return -1;
 				return filteredItems.IndexOf (idx);
 			}
 			set {
 				if (value < 0) {
-					SelectionIndex = -1;
+					SelectedItem = -1;
 					return;
 				}
-				SelectionIndex = filteredItems [value];
+				SelectedItem = filteredItems [value];
 			}
 		}
 		
-		public int SelectionIndex {
+		public int SelectedItem {
 			get { 
 				if (selection < 0 || filteredItems.Count == 0)
 					return -1;
@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		int GetIndex (bool countCategories, int itemNumber)
+		int GetIndex (bool countCategories, int item)
 		{
 			int result = -1;
 			int yPos = 0;
@@ -169,8 +169,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Iterate (false, ref yPos, delegate (Category category, int ypos) {
 				if (countCategories)
 					curItem++;
-			}, delegate (Category curCategory, int item, int itemIndex, int ypos) {
-				if (item == itemNumber) {
+			}, delegate (Category curCategory, int item2, int itemIndex, int ypos) {
+				if (item == item2) {
 					result = curItem;
 					return false;
 				}
@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (next < 0 || next >= categories.Count)
 				return;
 			Category newCategory = categories[next];
-			Selection = newCategory.Items[0];
+			SelectionFilterIndex = newCategory.Items[0];
 			if (next == 0)
 				Page = 0;
 			UpdatePage ();
@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int CurrentCategory ()
 		{
 			for (int i = 0; i < categories.Count; i++) {
-				if (categories[i].Items.Contains (Selection)) 
+				if (categories[i].Items.Contains (SelectionFilterIndex)) 
 					return i;
 			}
 			return -1;
@@ -227,20 +227,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public void MoveCursor (int relative)
 		{
-			int newIndex = GetIndex (false, SelectionIndex) + relative;
-			int newSelection = GetItem (false, System.Math.Min (filteredItems.Count - 1, System.Math.Max (0, newIndex)));
+			int newIndex = GetIndex (false, SelectedItem) + relative;
+			int newSelection = GetItem (false, newIndex);
 			if (newSelection < 0) 
 				return;
-			if (SelectionIndex == newSelection && relative < 0) {
+
+			if (SelectedItem == newSelection && relative < 0) {
 				Page = 0;
 			} else {
-				SelectionIndex = newSelection;
+				SelectedItem = newSelection;
 			}
 		}
 		
 		public void UpdatePage ()
 		{
-			int index = GetIndex (true, Selection);
+			int index = GetIndex (true, SelectedItem);
 			if (index < page || index >= page + VisibleRows)
 				page = index - (VisibleRows / 2);
 			int itemCount = filteredItems.Count;
@@ -286,7 +287,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
-			Selection = GetRowByPosition ((int)e.Y);
+			SelectionFilterIndex = GetRowByPosition ((int)e.Y);
 			buttonPressed = true;
 			return base.OnButtonPressEvent (e);
 		}
@@ -309,7 +310,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return base.OnMotionNotifyEvent (e);
 			int winWidth, winHeight;
 			this.GdkWindow.GetSize (out winWidth, out winHeight);
-			Selection = GetRowByPosition ((int)e.Y);
+			SelectionFilterIndex = GetRowByPosition ((int)e.Y);
 			return true;
 		}
 		
@@ -402,7 +403,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (string.IsNullOrEmpty (description)) {
 					layout.SetMarkup (markup);
 				} else {
-					if (item == selection) {
+					if (item == SelectedItem) {
 						layout.SetMarkup (markup + " " + description );
 					} else {
 						layout.SetMarkup (markup + " <span foreground=\"darkgray\">" + description + "</span>");
@@ -418,7 +419,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 				string text = win.DataProvider.GetText (item);
 				
-				if ((!SelectionEnabled || item != selection) && !string.IsNullOrEmpty (text)) {
+				if ((!SelectionEnabled || item != SelectedItem) && !string.IsNullOrEmpty (text)) {
 					int[] matchIndices = matcher.GetMatch (text);
 					if (matchIndices != null) {
 						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
@@ -446,7 +447,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				layout.GetPixelSize (out wi, out he);
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-				if (item == selection) {
+				if (item == SelectedItem) {
 					if (SelectionEnabled) {
 						window.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
 						window.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);

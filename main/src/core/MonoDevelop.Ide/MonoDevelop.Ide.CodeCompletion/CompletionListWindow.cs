@@ -370,9 +370,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public bool CompleteWord (ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (SelectionIndex == -1 || completionDataList == null)
+			if (SelectedItem == -1 || completionDataList == null)
 				return false;
-			var item = completionDataList [SelectionIndex];
+			var item = completionDataList [SelectedItem];
 			if (item == null)
 				return false;
 			// first close the completion list, then insert the text.
@@ -429,23 +429,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void UpdateDeclarationView ()
 		{
-			if (completionDataList == null || List.Selection >= completionDataList.Count || List.Selection == -1)
+			if (completionDataList == null || List.SelectionFilterIndex >= completionDataList.Count || List.SelectionFilterIndex == -1)
 				return;
 			if (List.GdkWindow == null)
 				return;
 			RemoveDeclarationViewTimer ();
 			// no selection, try to find a selection
-			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
+			if (List.SelectedItem < 0 || List.SelectedItem >= completionDataList.Count) {
 				List.CompletionString = PartialWord;
 				bool hasMismatches;
-				List.Selection = FindMatchedEntry (List.CompletionString, out hasMismatches);
+				List.SelectionFilterIndex = FindMatchedEntry (List.CompletionString, out hasMismatches);
 			}
 			// no success, hide declaration view
-			if (List.SelectionIndex < 0 || List.SelectionIndex >= completionDataList.Count) {
+			if (List.SelectedItem < 0 || List.SelectedItem >= completionDataList.Count) {
 				HideDeclarationView ();
 				return;
 			}
-			var data = completionDataList [List.SelectionIndex];
+			var data = completionDataList [List.SelectedItem];
 			
 			IEnumerable<ICompletionData> filteredOverloads;
 			if (data.HasOverloads) {
@@ -541,7 +541,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		bool DelayedTooltipShow ()
 		{
-			Gdk.Rectangle rect = List.GetRowArea (List.Selection);
+			Gdk.Rectangle rect = List.GetRowArea (List.SelectionFilterIndex);
 			if (rect.IsEmpty)
 				return false;
 			int listpos_x = 0, listpos_y = 0, i = 0;
