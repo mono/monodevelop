@@ -83,4 +83,6 @@ endif
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(MONOMAC) $(MONOMAC).mdb
 EXTRA_DIST = $(FILES) $(RES)
 
+.PHONY: $(MONOMAC_SRC)
+
 include $(top_srcdir)/Makefile.include
