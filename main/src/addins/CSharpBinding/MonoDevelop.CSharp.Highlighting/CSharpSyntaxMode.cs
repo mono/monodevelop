@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode, IQuickTaskProvider
 	{
-		MonoDevelop.Ide.Gui.Document guiDocument;
+		Document guiDocument;
 		CompilationUnit unit;
 		CSharpParsedFile parsedFile;
 		ICompilation compilation;
@@ -332,7 +332,26 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}
 		}
-		
+
+		class DefineSpan : Span
+		{
+			string define;
+
+			public string Define { 
+				get { 
+					return define;
+				}
+			}
+
+			public DefineSpan (string define)
+			{
+				this.define = define;
+				StopAtEol = false;
+				Color = "text";
+				Rule = "<root>";
+			}
+		}
+
 		class IfBlockSpan : AbstractBlockSpan
 		{
 			public IfBlockSpan (bool isValid) : base (isValid)
@@ -629,7 +648,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
 					int endLoc = -1;
 					string semanticStyle = null;
-					if (spanParser.CurSpan == null) {
+					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan) {
 						try {
 							semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
 						} catch (Exception e) {
@@ -668,9 +687,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			class ConditinalExpressionEvaluator : DepthFirstAstVisitor<object, object>
 			{
-				HashSet<string> symbols = new HashSet<string> ();
-				
-			
+				HashSet<string> symbols;
+
 				MonoDevelop.Projects.Project GetProject (Mono.TextEditor.TextDocument doc)
 				{
 					// There is no reference between document & higher level infrastructure,
@@ -692,9 +710,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					
 					return project;
 				}
-				
-				public ConditinalExpressionEvaluator (Mono.TextEditor.TextDocument doc)
+
+				public ConditinalExpressionEvaluator (Mono.TextEditor.TextDocument doc, IEnumerable<string> symbols)
 				{
+					this.symbols = new HashSet<string> (symbols);
 					var project = GetProject (doc);
 					
 					if (project == null) {
@@ -715,12 +734,12 @@ namespace MonoDevelop.CSharp.Highlighting
 								foreach (string s in syms) {
 									string ss = s.Trim ();
 									if (ss.Length > 0 && !symbols.Contains (ss))
-										symbols.Add (ss);
+										this.symbols.Add (ss);
 								}
 							}
 							// Workaround for mcs defined symbol
 							if (configuration.TargetRuntime.RuntimeId == "Mono") 
-								symbols.Add ("__MonoCS__");
+								this.symbols.Add ("__MonoCS__");
 						} else {
 							Console.WriteLine ("NO CONFIGURATION");
 						}
@@ -812,7 +831,14 @@ namespace MonoDevelop.CSharp.Highlighting
 				Span preprocessorSpan = CreatePreprocessorSpan ();
 				FoundSpanBegin (preprocessorSpan, i, 0);
 			}
-
+			IEnumerable<string> Defines {
+				get {
+					foreach (var span in SpanStack) {
+						if (span is DefineSpan)
+							yield return ((DefineSpan)span).Define;
+					}
+				}
+			}
 			void ScanPreProcessorIf (int textOffset, ref int i)
 			{
 				int length = CurText.Length - textOffset;
@@ -823,7 +849,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 				bool result = false;
 				if (expr != null && !expr.IsNull) {
-					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null);
+					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null);
 					if (o is bool)
 						result = (bool)o;
 				}
@@ -862,7 +888,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					expr = new CSharpParser ().ParseExpression (reader);
 				}
 				
-				bool result = expr != null && !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc), null) : false;
+				bool result = expr != null && !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null) : false;
 					
 				IfBlockSpan containingIf = null;
 				if (result) {
@@ -902,6 +928,14 @@ namespace MonoDevelop.CSharp.Highlighting
 
 				if (textOffset < CurText.Length && CurText [textOffset] == '#' && IsFirstNonWsChar (textOffset)) {
 
+					if (CurText.IsAt (textOffset, "#define")) {
+						int length = CurText.Length - textOffset;
+						string parameter = CurText.Substring (textOffset + "#define".Length, length - "#define".Length).Trim ();
+
+						var defineSpan = new DefineSpan (parameter);
+						FoundSpanBegin (defineSpan, i, 0);
+					}
+	
 					if (CurText.IsAt (textOffset, "#else")) {
 						ScanPreProcessorElse (ref i);
 						return;
