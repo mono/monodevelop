@@ -46,6 +46,7 @@ namespace MonoDevelop.AspNet
 			case ClrVersion.Net_4_0:
 				return "xsp4";
 			default:
+				LoggingService.LogError ("ASP.NET is not supported for unknown runtime version '{0}'.", cmd.ClrVersion);
 				throw new UserException (GettextCatalog.GetString (
 					"ASP.NET is not supported for unknown runtime version '{0}'.", cmd.ClrVersion));
 			}
@@ -60,15 +61,25 @@ namespace MonoDevelop.AspNet
 			if (xspPath.IsNullOrEmpty && cmd.ClrVersion == ClrVersion.Net_1_1)
 				xspPath = cmd.TargetRuntime.GetToolPath (cmd.TargetFramework, "xsp");
 			
-			//if the current runtime doesn't provide XSP, use one bundled alongside the addin
-			if (xspPath.IsNullOrEmpty)
-				xspPath = Path.Combine (Path.GetDirectoryName (typeof (AspNetExecutionHandler).Assembly.CodeBase), xspName);
-			
-			if (xspPath.IsNullOrEmpty || !File.Exists (xspPath))
-				throw new UserException (GettextCatalog.GetString (
-					"The \"{0}\" web server cannot be started. Please ensure that it is installed.", xspName), null);
-			
-			return xspPath;
+			//if the current runtime doesn't provide XSP, look for an exe (not script) bundled alongside the addin
+			if (xspPath.IsNullOrEmpty) {
+				FilePath addinPath = typeof (AspNetExecutionHandler).Assembly.Location;
+				xspPath = addinPath.ParentDirectory.Combine (xspName + ".exe");
+			}
+
+			if (File.Exists (xspPath))
+				return xspPath;
+
+			//if xsp wasn't found there, check beside the entrypoint exe too
+			FilePath rootExe = System.Reflection.Assembly.GetEntryAssembly ().Location;
+			xspPath = rootExe.ParentDirectory.Combine (xspName + ".exe");
+
+			if (File.Exists (xspPath))
+				return xspPath;
+
+			LoggingService.LogError ("Did not find web server {0}", xspName);
+			throw new UserException (GettextCatalog.GetString (
+				"The {0} web server cannot be found. Please ensure that it is installed.", xspName), null);
 		}
 		
 		public bool CanExecute (ExecutionCommand command)
