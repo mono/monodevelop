@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 		protected TextEditor editor;
 	//	string status;
 		
-		internal void InternalHandleKeypress (TextEditor editor, TextEditorData data, Gdk.Key key, 
+		public void InternalHandleKeypress (TextEditor editor, TextEditorData data, Gdk.Key key, 
 		                                      uint unicodeChar, Gdk.ModifierType modifier)
 		{
 			this.editor = editor; 
@@ -112,7 +112,8 @@ namespace Mono.TextEditor
 			HideMouseCursor ();
 
 			using (var undo = Document.OpenUndoGroup ()) {
-				textEditorData.DeleteSelectedText (textEditorData.IsSomethingSelected ? textEditorData.MainSelection.SelectionMode != SelectionMode.Block : true);
+				textEditorData.DeleteSelectedText (
+					textEditorData.IsSomethingSelected ? textEditorData.MainSelection.SelectionMode != SelectionMode.Block : true);
 				// Needs to be called after delete text, delete text handles virtual caret postitions itself,
 				// but afterwards the virtual position may need to be restored.
 				textEditorData.EnsureCaretIsNotVirtual ();
@@ -123,9 +124,10 @@ namespace Mono.TextEditor
 					if (Caret.IsInInsertMode || Caret.Column >= line.Length + 1) {
 						string text = ch.ToString ();
 						if (textEditorData.IsSomethingSelected && textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
-							int length = 0;
-							var visualInsertLocation = editor.LogicalToVisualLocation (Caret.Location);
-							for (int lineNumber = textEditorData.MainSelection.MinLine; lineNumber <= textEditorData.MainSelection.MaxLine; lineNumber++) {
+							var visualInsertLocation = textEditorData.LogicalToVisualLocation (Caret.Location);
+							var selection = textEditorData.MainSelection;
+							Caret.PreserveSelection = true;
+							for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
 								DocumentLine lineSegment = textEditorData.GetLine (lineNumber);
 								int insertOffset = lineSegment.GetLogicalColumn (textEditorData, visualInsertLocation.Column) - 1;
 								string textToInsert;
@@ -133,20 +135,22 @@ namespace Mono.TextEditor
 									int visualLastColumn = lineSegment.GetVisualColumn (textEditorData, lineSegment.Length + 1);
 									int charsToInsert = visualInsertLocation.Column - visualLastColumn;
 									int spaceCount = charsToInsert % editor.Options.TabSize;
-									textToInsert = new string ('\t', (charsToInsert - spaceCount) / editor.Options.TabSize) + new string (' ', spaceCount) + text;
+									textToInsert = new string ('\t', (charsToInsert - spaceCount) / editor.Options.TabSize) + 
+										new string (' ', spaceCount) + text;
 									insertOffset = lineSegment.Length;
 								} else {
 									textToInsert = text;
 								}
-								length = textEditorData.Insert (lineSegment.Offset + insertOffset, textToInsert);
+								textEditorData.Insert (lineSegment.Offset + insertOffset, textToInsert);
 							}
-							Caret.PreserveSelection = true;
 
-							textEditorData.MainSelection.Lead = new DocumentLocation (textEditorData.MainSelection.Lead.Line, Caret.Column + 1);
-							textEditorData.MainSelection.Anchor = new DocumentLocation (textEditorData.MainSelection.Anchor.Line, Caret.Column + 1);
+							textEditorData.MainSelection = new Selection (
+								new DocumentLocation (selection.Anchor.Line, Caret.Column),
+								new DocumentLocation (selection.Lead.Line, Caret.Column),
+								Mono.TextEditor.SelectionMode.Block);
 							Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
 						} else {
-							int length = textEditorData.Insert (Caret.Offset, text);
+							textEditorData.Insert (Caret.Offset, text);
 						}
 					} else {
 						textEditorData.Replace (Caret.Offset, 1, ch.ToString ());

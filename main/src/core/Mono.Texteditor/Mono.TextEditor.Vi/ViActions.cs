@@ -102,7 +102,7 @@ namespace Mono.TextEditor.Vi
 		
 		public static void Join (TextEditorData data)
 		{
-			int startLine, endLine, startOffset, length, lastSpaceOffset;
+			int startLine, endLine, startOffset, length;
 			
 			if (data.IsSomethingSelected) {
 				startLine = data.Document.OffsetToLineNumber (data.SelectionRange.Offset);
@@ -121,11 +121,11 @@ namespace Mono.TextEditor.Vi
 			DocumentLine seg = data.Document.GetLine (startLine);
 			startOffset = seg.Offset;
 			StringBuilder sb = new StringBuilder (data.Document.GetTextAt (seg).TrimEnd ());
-			lastSpaceOffset = startOffset + sb.Length;
+			//lastSpaceOffset = startOffset + sb.Length;
 			
 			for (int i = startLine + 1; i <= endLine; i++) {
 				seg = data.Document.GetLine (i);
-				lastSpaceOffset = startOffset + sb.Length;
+				//lastSpaceOffset = startOffset + sb.Length;
 				sb.Append (" ");
 				sb.Append (data.Document.GetTextAt (seg).Trim ());
 			}

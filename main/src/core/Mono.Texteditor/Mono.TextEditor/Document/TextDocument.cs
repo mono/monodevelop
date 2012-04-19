@@ -210,7 +210,7 @@ namespace Mono.TextEditor
 
 			InterruptFoldWorker ();
 			
-			int oldLineCount = LineCount;
+			//int oldLineCount = LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
 			OnTextReplacing (args);
 			value = args.InsertedText;

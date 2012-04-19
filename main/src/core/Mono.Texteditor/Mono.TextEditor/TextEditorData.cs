@@ -387,7 +387,9 @@ namespace Mono.TextEditor
 			using (var undo = OpenUndoGroup ()) {
 				if (IsSomethingSelected && MainSelection.SelectionMode == SelectionMode.Block) {
 					var visualInsertLocation = LogicalToVisualLocation (MainSelection.Anchor);
-					for (int lineNumber = MainSelection.MinLine; lineNumber <= MainSelection.MaxLine; lineNumber++) {
+					var selection = MainSelection;
+					Caret.PreserveSelection = true;
+					for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
 						var lineSegment = GetLine (lineNumber);
 						int insertOffset = lineSegment.GetLogicalColumn (this, visualInsertLocation.Column) - 1;
 						string textToInsert;
@@ -402,10 +404,12 @@ namespace Mono.TextEditor
 						}
 						Insert (lineSegment.Offset + insertOffset, textToInsert);
 					}
-					Caret.PreserveSelection = true;
-					MainSelection.Lead = new DocumentLocation (MainSelection.Lead.Line, Caret.Column);
-					MainSelection.Anchor = new DocumentLocation (MainSelection.Anchor.Line, Caret.Column);
-					Document.CommitMultipleLineUpdate (MainSelection.MinLine, MainSelection.MaxLine);
+					MainSelection = new Selection (
+								new DocumentLocation (selection.Anchor.Line, Caret.Column),
+								new DocumentLocation (selection.Lead.Line, Caret.Column),
+								Mono.TextEditor.SelectionMode.Block);
+					Caret.PreserveSelection = false;
+					Document.CommitMultipleLineUpdate (selection.MinLine, selection.MaxLine);
 				} else {
 					EnsureCaretIsNotVirtual ();
 					Insert (Caret.Offset, text);

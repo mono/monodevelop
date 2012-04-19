@@ -372,12 +372,13 @@ namespace Mono.TextEditor
 						bool pasteBlock = (selBytes [0] & 1) == 1;
 						bool pasteLine = (selBytes [0] & 2) == 2;
 						
+						var clearSelection = data.IsSomethingSelected ? data.MainSelection.SelectionMode != SelectionMode.Block : true;
 						using (var undo = data.OpenUndoGroup ()) {
-							if (preserveSelection && data.IsSomethingSelected)
-								data.DeleteSelectedText ();
-							
-							data.Caret.PreserveSelection = true;
 							if (pasteBlock) {
+								data.Caret.PreserveSelection = true;
+								if (preserveSelection && data.IsSomethingSelected)
+									data.DeleteSelectedText (clearSelection);
+							
 								string[] lines = text.Split ('\r');
 								int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
 								int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
@@ -403,21 +404,22 @@ namespace Mono.TextEditor
 									if (!preserveState)
 										data.Caret.Offset = curLine.Offset + lineCol + lines [i].Length;
 								}
+								if (!preserveState)
+									data.ClearSelection ();
+								data.Caret.PreserveSelection = false;
 							} else if (pasteLine) {
+								data.Caret.PreserveSelection = true;
+								if (preserveSelection && data.IsSomethingSelected)
+									data.DeleteSelectedText (clearSelection);
 								result = text.Length;
 								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
 								data.Insert (curLine.Offset, text + data.EolMarker);
+								if (!preserveState)
+									data.ClearSelection ();
+								data.Caret.PreserveSelection = false;
 							} else {
-								int offset = data.Caret.Offset;
-								data.InsertAtCaret (text);
-								data.PasteText (offset, text, data.Caret.Offset - offset);
+								PastePlainText (data, text);
 							}
-							/*				data.MainSelection = new Selection (data.Document.OffsetToLocation (insertionOffset),
-							                                    data.Caret.Location,
-							                                    lines.Length > 1 ? SelectionMode.Block : SelectionMode.Normal);*/
-							if (!preserveState)
-								data.ClearSelection ();
-							data.Caret.PreserveSelection = false;
 						}
 					}
 				});
@@ -430,66 +432,20 @@ namespace Mono.TextEditor
 					if (string.IsNullOrEmpty (text))
 						return;
 					using (var undo = data.OpenUndoGroup ()) {
-						int caretPos = data.Caret.Offset;
-						if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
-							data.Caret.PreserveSelection = true;
-							data.DeleteSelectedText (false);
-							int textLength = 0;
-							int minLine = data.MainSelection.MinLine;
-							int maxLine = data.MainSelection.MaxLine;
-							var visualInsertLocation = data.LogicalToVisualLocation (data.Caret.Location);
-							for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
-								DocumentLine lineSegment = data.GetLine (lineNumber);
-								int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
-								if (lineSegment.Length < insertOffset) {
-									int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.Length + 1);
-									int charsToInsert = visualInsertLocation.Column - visualLastColumn;
-									int spaceCount = charsToInsert % data.Options.TabSize;
-									string textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
-									insertOffset = lineSegment.Length;
-									int insertedChars = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
-									data.PasteText (lineSegment.Offset + insertOffset, textToInsert, insertedChars);
-								} else {
-									textLength = data.Insert (lineSegment.Offset + insertOffset, text);
-									data.PasteText (lineSegment.Offset + insertOffset, text, textLength);
-								}
-							}
-							
-							data.MainSelection.Anchor = new DocumentLocation (System.Math.Max (DocumentLocation.MinLine, data.Caret.Line == minLine ? maxLine : minLine), System.Math.Max (DocumentLocation.MinColumn, data.Caret.Column - textLength));
-							data.MainSelection.Lead = new DocumentLocation (data.Caret.Line, data.Caret.Column);
-							data.Caret.PreserveSelection = false;
-							data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
-						} else {
-							TextSegment selection = data.SelectionRange;
-							if (preserveSelection && data.IsSomethingSelected)
-								data.DeleteSelectedText ();
-							data.Caret.PreserveSelection = true;
-							//int oldLine = data.Caret.Line;
-							int textLength = data.Insert (insertionOffset, text);
-							result = textLength;
-		
-							if (data.IsSomethingSelected && data.SelectionRange.Offset >= insertionOffset)
-								data.SelectionRange = new TextSegment (data.SelectionRange.Offset + textLength, data.SelectionRange.Length);
-							if (data.IsSomethingSelected && data.MainSelection.GetAnchorOffset (data) >= insertionOffset)
-								data.MainSelection.Anchor = data.Document.OffsetToLocation (data.MainSelection.GetAnchorOffset (data) + textLength);
-							
-							data.Caret.PreserveSelection = false;
-							if (!preserveState) {
-							} else {
-								if (!selection.IsInvalid) {
-									int offset = selection.Offset;
-									if (offset >= insertionOffset)
-										offset += textLength;
-									data.SelectionRange = new TextSegment (offset, selection.Length);
-								}
-							}
-							data.PasteText (insertionOffset, text, textLength);
-						}
+						PastePlainText (data, text);
 					}
 				});
 			}
 			
 			return result;
+		}
+
+		static void PastePlainText (TextEditorData data, string text)
+		{
+			data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+			int offset = data.Caret.Offset;
+			data.InsertAtCaret (text);
+			data.PasteText (offset, text, data.Caret.Offset - offset);
 		}
 		
 		public static int PasteFromPrimary (TextEditorData data, int insertionOffset)
