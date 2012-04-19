@@ -283,7 +283,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nav.Selected = true;
 			nav.Expanded = true;
 		}
-
+		
+		[CommandHandler (FileCommands.CloseWorkspaceItem)]
+		[AllowMultiSelection]
+		public void OnCloseItem ()
+		{
+			foreach (ITreeNavigator node in CurrentNodes) {
+				Workspace ws = (Workspace) node.DataItem;
+				IdeApp.Workspace.CloseWorkspaceItem (ws);
+			}
+		}
+		
 		[CommandUpdateHandler (FileCommands.CloseWorkspaceItem)]
 		public void OnUpdateCloseItem (CommandInfo info)
 		{
