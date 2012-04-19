@@ -116,6 +116,15 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			return namespaces;
 		}
 		
+		static string GetSuggestedRegisterName (string fullName)
+		{
+			int dot = fullName.LastIndexOf ('.');
+			if (dot == -1)
+				return fullName;
+			
+			return fullName.Substring (dot + 1);
+		}
+		
 		public void GenerateObjcType (string directory, string[] frameworks)
 		{
 			if (IsModel) {
@@ -142,9 +151,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				
 				if (BaseObjCType == null && BaseCliType != null && !BaseIsModel) {
 					throw new ObjectiveCGenerationException (string.Format (
-						"Could not generate class '{0}' as its base type '{1}'" +
-						"could not be resolved to Obj-C",
-						CliName, BaseCliType), this);
+						"Could not generate class '{0}' as its base type '{1}' could not be resolved to Objective-C.\n\n" +
+						"Hint: Try adding [Register (\"{2}\")] to the class definition for {1}.",
+						CliName, BaseCliType, GetSuggestedRegisterName (BaseCliType)), this);
 				}
 				
 				var baseType = BaseIsModel ? "NSObject" : BaseObjCType;
@@ -159,9 +168,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					var type = AsId (outlet.ObjCType);
 					if (string.IsNullOrEmpty (type)) {
 						throw new ObjectiveCGenerationException (string.Format (
-							"Could not generate outlet '{0}' in class '{1}' as its type '{2}' " +
-							"could not be resolved to Obj-C",
-							outlet.CliName, this.CliName, outlet.CliType), this);
+							"Could not generate outlet '{0}' in class '{1}' as its type '{2}' could not be resolved to Objective-C.\n\n" +
+							"Hint: Try adding [Register (\"{3}\")] to the class definition for {2}.",
+							outlet.CliName, this.CliName, outlet.CliType, GetSuggestedRegisterName (outlet.CliType)), this);
 					}
 					sw.WriteLine ("@property (nonatomic, retain) IBOutlet {0} *{1};", type, outlet.ObjCName);
 					sw.WriteLine ();
