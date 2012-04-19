@@ -994,7 +994,7 @@ namespace Mono.Debugging.Soft
 		public override object RuntimeInvoke (EvaluationContext gctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
-			TypeMirror type = (TypeMirror) targetType;
+			TypeMirror type = ToTypeMirror (ctx, targetType);
 			
 			ctx.AssertTargetInvokeAllowed ();
 			
@@ -1034,18 +1034,18 @@ namespace Mono.Debugging.Soft
 						methods = currentType.GetMethodsByNameFlags (methodName, BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static, !ctx.CaseSensitive);
 					else
 						methods = currentType.GetMethods ();
-				}
-				
-				if (ctx.CaseSensitive) {
-					lock (cache) {
-						cache [Tuple.Create (currentType, methodName)] = methods;
+					
+					if (ctx.CaseSensitive) {
+						lock (cache) {
+							cache [Tuple.Create (currentType, methodName)] = methods;
+						}
 					}
 				}
 				
 				foreach (MethodMirror met in methods) {
 					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						ParameterInfoMirror[] pars = met.GetParameters ();
-						if (pars.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
+						if (pars.Length == argtypes.Length && ((met.IsStatic && allowStatic) || (!met.IsStatic && allowInstance)))
 							candidates.Add (met);
 					}
 				}
@@ -1069,7 +1069,6 @@ namespace Mono.Debugging.Soft
 			matchCount = 0;
 
 			for (int i = 0; i < types.Length; i++) {
-				
 				TypeMirror param_type = mparams[i].ParameterType;
 
 				if (param_type.FullName == types [i].FullName) {
@@ -1229,8 +1228,10 @@ namespace Mono.Debugging.Soft
 					handle = ((TypeMirror)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
 				else if (obj is StructMirror)
 					handle = ((StructMirror)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
+				else if (obj is PrimitiveValue)
+					handle = ((PrimitiveValue)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
 				else
-					throw new ArgumentException (obj.GetType ().ToString ());
+					throw new ArgumentException ("Soft debugger method calls cannot be invoked on objects of type " + obj.GetType ().Name);
 			} catch (InvocationException ex) {
 				ctx.Session.StackVersion++;
 				exception = ex;
@@ -1265,8 +1266,10 @@ namespace Mono.Debugging.Soft
 					result = ((ObjectMirror)obj).EndInvokeMethod (handle);
 				else if (obj is TypeMirror)
 					result = ((TypeMirror)obj).EndInvokeMethod (handle);
-				else
+				else if (obj is StructMirror)
 					result = ((StructMirror)obj).EndInvokeMethod (handle);
+				else
+					result = ((PrimitiveValue)obj).EndInvokeMethod (handle);
 			} catch (InvocationException ex) {
 				if (!Aborting && ex.Exception != null) {
 					string ename = ctx.Adapter.GetValueTypeName (ctx, ex.Exception);

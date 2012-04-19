@@ -123,11 +123,12 @@ namespace Mono.Debugging.Soft
 							values [n] = Thread.Domain.CreateBoxedValue (values [n]);
 						} catch (NotSupportedException) {
 							// This runtime doesn't support creating boxed values
-							break;
+							throw new EvaluatorException ("This runtime does not support creating boxed values.");
 						}
 					}
 				}
-			}			
+			}
+			
 			MethodCall mc = new MethodCall (this, method, target, values);
 			Adapter.AsyncExecute (mc, Options.EvaluationTimeout);
 			return mc.ReturnValue;
