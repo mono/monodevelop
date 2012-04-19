@@ -702,8 +702,11 @@ namespace MonoDevelop.Ide.Gui
 			CancelParseTimeout ();
 			
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
-				string currentParseText = Editor.Text;
-				string mimeType = Editor.Document.MimeType;
+				var editor = Editor;
+				if (editor == null)
+					return false;
+				string currentParseText = editor.Text;
+				string mimeType = editor.Document.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
 					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {
