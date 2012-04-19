@@ -366,7 +366,7 @@ namespace MonoDevelop.Gettext
 				saved = true;
 			}
 			catch (Exception ex){
-				LoggingService.LogError ("Unhandled error replacing old Gettext Catalog '{0}': {1}", poFile, ex);
+				LoggingService.LogError ("Unhandled error saving Gettext Catalog to '{0}': {1}", poFile, ex);
 				saved = false;
 			}	
 			finally {
