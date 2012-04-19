@@ -55,6 +55,9 @@ namespace Mono.TextEditor
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
 		static extern bool objc_msgSend_int_int (IntPtr klass, IntPtr selector, int arg);
 		
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
+		static extern int objc_msgSend_int (IntPtr klass, IntPtr selector);
+		
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_RectangleF (out RectangleF rect, IntPtr klass, IntPtr selector);
 		
@@ -62,6 +65,8 @@ namespace Mono.TextEditor
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
 			sel_requestUserAttention;
 		static IntPtr sharedApp;
+		static IntPtr cls_NSEvent;
+		static IntPtr sel_modifierFlags;
 		
 		const int NSCriticalRequest = 0;
 		const int NSInformationalRequest = 10;
@@ -113,12 +118,14 @@ namespace Mono.TextEditor
 		static void InitMac ()
 		{
 			cls_NSScreen = objc_getClass ("NSScreen");
+			cls_NSEvent = objc_getClass ("NSEvent");
 			sel_screens = sel_registerName ("screens");
 			sel_objectEnumerator = sel_registerName ("objectEnumerator");
 			sel_nextObject = sel_registerName ("nextObject");
 			sel_visibleFrame = sel_registerName ("visibleFrame");
 			sel_frame = sel_registerName ("frame");
 			sel_requestUserAttention = sel_registerName ("requestUserAttention:");
+			sel_modifierFlags = sel_registerName ("modifierFlags");
 			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
 		}
 		
@@ -236,6 +243,28 @@ namespace Mono.TextEditor
 			}
 			
 			return false;
+		}
+
+		public static Gdk.ModifierType GetCurrentKeyModifiers ()
+		{
+			if (Platform.IsMac) {
+				Gdk.ModifierType mtype = Gdk.ModifierType.None;
+				int mod = objc_msgSend_int (cls_NSEvent, sel_modifierFlags);
+				if ((mod & (1 << 17)) != 0)
+					mtype |= Gdk.ModifierType.ShiftMask;
+				if ((mod & (1 << 18)) != 0)
+					mtype |= Gdk.ModifierType.ControlMask;
+				if ((mod & (1 << 19)) != 0)
+					mtype |= Gdk.ModifierType.Mod1Mask; // Alt key
+				if ((mod & (1 << 20)) != 0)
+					mtype |= Gdk.ModifierType.Mod2Mask; // Command key
+				return mtype;
+			}
+			else {
+				Gdk.ModifierType mtype;
+				Gtk.Global.GetCurrentEventState (out mtype);
+				return mtype;
+			}
 		}
 		
 		public static void GetPageScrollPixelDeltas (this Gdk.EventScroll evt, double pageSizeX, double pageSizeY,

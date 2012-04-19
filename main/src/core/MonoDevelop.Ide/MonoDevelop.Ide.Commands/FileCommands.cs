@@ -338,8 +338,8 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run (object dataItem)
 		{
 			string filename = (string)dataItem;
-			Gdk.ModifierType mtype;
-			bool inWorkspace = Gtk.Global.GetCurrentEventState (out mtype) && (mtype & Gdk.ModifierType.ControlMask) != 0;
+			Gdk.ModifierType mtype = Mono.TextEditor.GtkWorkarounds.GetCurrentKeyModifiers ();
+			bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
 			IdeApp.Workspace.OpenWorkspaceItem (filename, !inWorkspace);
 		}
 	}
