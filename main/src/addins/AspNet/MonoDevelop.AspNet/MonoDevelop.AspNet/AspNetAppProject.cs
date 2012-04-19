@@ -226,8 +226,22 @@ namespace MonoDevelop.AspNet
 			
 			IConsole console = null;
 			var operationMonitor = new AggregatedOperationMonitor (monitor);
+
+			bool isXsp = true; //FIXME: fix this when it might not be true - should delegate to the ExecutionHandler
 			
 			try {
+				//HACK: check XSP exists first, because error UX is cleaner w/o displaying a blank console pad.
+				if (isXsp) {
+					try {
+						AspNetExecutionHandler.GetXspPath ((AspNetExecutionCommand)cmd);
+					} catch (UserException ex) {
+						MessageService.ShowError (
+							GettextCatalog.GetString ("Could not launch ASP.NET web server"),
+						    ex.Message);
+						throw;
+					}
+				}
+
 				if (configuration.ExternalConsole)
 					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
 				else
@@ -235,7 +249,6 @@ namespace MonoDevelop.AspNet
 				
 				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
 				
-				bool isXsp = true; //FIXME: fix this when it might not be true
 				
 				if (isXsp) {
 					console = new XspBrowserLauncherConsole (console, delegate {
@@ -256,6 +269,9 @@ namespace MonoDevelop.AspNet
 				monitor.Log.WriteLine ("The web server exited with code: {0}", op.ExitCode);
 				
 			} catch (Exception ex) {
+				if (!(ex is UserException)) {
+					LoggingService.LogError ("Could not launch ASP.NET web server.", ex);
+				}
 				monitor.ReportError ("Could not launch web server.", ex);
 			} finally {
 				operationMonitor.Dispose ();
