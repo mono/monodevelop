@@ -154,6 +154,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			string objcName = null;
 			bool isModel = false;
 			bool registeredInDesigner = true;
+			
 			foreach (var att in type.Attributes) {
 				var attType = att.AttributeType;
 				if (attType.Equals (dom.Compilation.LookupType (typeNamespace, registerAttType)))  {
@@ -170,17 +171,21 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
 						objcName = type.Name;
 				}
-				if (attType.Equals (dom.Compilation.LookupType (typeNamespace, modelAttType))) {
+				
+				if (attType.Equals (dom.Compilation.LookupType (typeNamespace, modelAttType)))
 					isModel = true;
-				}
 			}
+			
 			if (string.IsNullOrEmpty (objcName))
 				return null;
+			
 			string baseType = type.DirectBaseTypes.First ().FullName;
 			if (baseType == "System.Object")
 				baseType = null;
-			var info = new NSObjectTypeInfo (objcName, type.FullName, null, baseType, isModel,
-					type.GetSourceProject () != null, registeredInDesigner);
+			
+			bool isUserType = !type.ParentAssembly.Equals (dom.Compilation.LookupType (typeNamespace, nsobjectType).ParentAssembly);
+			
+			var info = new NSObjectTypeInfo (objcName, type.FullName, null, baseType, isModel, isUserType, registeredInDesigner);
 			
 			if (info.IsUserType) {
 				UpdateTypeMembers (dom, info, type);
