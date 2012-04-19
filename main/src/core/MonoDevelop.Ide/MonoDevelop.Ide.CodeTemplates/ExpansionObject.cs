@@ -188,7 +188,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
 			if (ext != null) {
 				if (list == null)
-					list = ext.CodeCompletionCommand (CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
+					list = ext.CodeCompletionCommand (
+						CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
 				
 				foreach (object o in list) {
 					var data = o as IEntityCompletionData;
@@ -197,8 +198,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 					
 					if (data.Entity is IMember) {
 						var m = data.Entity as IMember;
-						if (GetElementType (m.ReturnType).Kind != TypeKind.Unknown)
+						if (GetElementType (m.ReturnType).Kind != TypeKind.Unknown) {
+							if (m is IMethod) {
+								if (((IMethod)m).Parameters.Count == 0)
+									result.Add (new CodeTemplateVariableValue (m.Name + " ()", ((CompletionData)data).Icon));
+								continue;
+							}
+
 							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
+						}
 					}
 				}
 				
