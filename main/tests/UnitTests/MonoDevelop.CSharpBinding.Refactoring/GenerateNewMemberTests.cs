@@ -192,8 +192,6 @@ class Test {
 }");
 		}
 		
-		
-		[Ignore("Broken")]
 		[Test()]
 		public void TestComplexInsertionPoint ()
 		{
@@ -219,7 +217,6 @@ class Test {
 ");
 		}
 		
-		[Ignore("Broken")]
 		[Test()]
 		public void TestComplexInsertionPointCase2 ()
 		{
@@ -257,7 +254,18 @@ public class EmptyClass : Base
 {@s}");
 
 		}
+
+		[Ignore()]
+		[Test()]
+		public void TestBrokenInsertionPoint ()
+		{
+			TestInsertionPoints (@"
+public class EmptyClass
+}");
+
+		}
 		
+
 
 	}
 }
