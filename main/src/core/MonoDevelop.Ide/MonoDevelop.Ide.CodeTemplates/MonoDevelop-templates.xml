@@ -787,11 +787,6 @@ $selected$$end$
 			<TemplateType>SurroundsWith,Expansion</TemplateType>
 		</Header>
 		<Variables>
-			<Variable name="type" isIdentifier="true" isEditable="false">
-				<Default>var</Default>
-				<_ToolTip>The type of objects to iterate through</_ToolTip>
-				<Function>GetComponentTypeOf("collection")</Function>
-			</Variable>
 			<Variable name="id" isIdentifier="true">
 				<Default>item</Default>
 				<_ToolTip>Identifier for the current element</_ToolTip>
@@ -802,7 +797,7 @@ $selected$$end$
 				<Function>GetCollections()</Function>
 			</Variable>
 		</Variables>
-		<Code><![CDATA[foreach ($type$ $id$ in $collection$) {
+		<Code><![CDATA[foreach (var $id$ in $collection$) {
 	$selected$$end$
 }]]></Code>
 	</CodeTemplate>

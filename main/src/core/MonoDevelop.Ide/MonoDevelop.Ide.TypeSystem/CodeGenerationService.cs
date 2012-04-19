@@ -199,15 +199,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			// update type from parsed document, since this is always newer.
 			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
-			
-			List<InsertionPoint > result = new List<InsertionPoint> ();
+			List<InsertionPoint> result = new List<InsertionPoint> ();
 			int offset = data.LocationToOffset (type.Region.Begin);
-			if (offset < 0)
+			if (offset < 0 || type.BodyRegion.IsEmpty)
 				return result;
 			while (offset < data.Length && data.GetCharAt (offset) != '{') {
 				offset++;
 			}
-			
 			var realStartLocation = data.OffsetToLocation (offset);
 			result.Add (GetInsertionPosition (data.Document, realStartLocation.Line, realStartLocation.Column));
 			result [0].LineBefore = NewLineInsertion.None;
@@ -222,6 +220,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
 			}
+
+			foreach (var nestedType in type.NestedTypes) {
+				TextLocation domLocation = nestedType.BodyRegion.End;
+				if (domLocation.Line <= 0) {
+					DocumentLine lineSegment = data.GetLine (nestedType.Region.BeginLine);
+					if (lineSegment == null)
+						continue;
+					domLocation = new TextLocation (nestedType.Region.BeginLine, lineSegment.Length + 1);
+				}
+				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+			}
+
 			result [result.Count - 1].LineAfter = NewLineInsertion.None;
 			CheckStartPoint (data.Document, result [0], result.Count == 1);
 			if (result.Count > 1) {

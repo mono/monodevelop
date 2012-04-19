@@ -37,6 +37,7 @@ using MonoDevelop.Refactoring.Rename;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -62,7 +63,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			var editor = document.Editor;
 			DocumentLocation loc = document.Editor.Caret.Location;
-			var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (document, document.ParsedDocument.GetInnermostTypeDefinition (loc)));
+			var declaringType = document.ParsedDocument.GetInnermostTypeDefinition (loc);
+			var mode = new InsertionCursorEditMode (
+				editor.Parent,
+				CodeGenerationService.GetInsertionPoints (document, declaringType));
+			if (mode.InsertionPoints.Count == 0) {
+				MessageService.ShowError (
+					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+				);
+				return;
+			}
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = operation;
@@ -94,7 +104,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 				if (iCArgs.Success) {
-					var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (document.ParsedDocument.GetInnermostTypeDefinition (loc)), node);
+					var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
 					output.RegisterTrackedSegments (this, document.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
 					iCArgs.InsertionPoint.Insert (editor, output.Text);
 				}
@@ -113,7 +123,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var editor = loadedDocument.Editor;
 				var loc = part.Region.Begin;
 				var parsedDocument = loadedDocument.UpdateParseDocument ();
-				var mode = new InsertionCursorEditMode (editor.Parent, CodeGenerationService.GetInsertionPoints (loadedDocument, parsedDocument.GetInnermostTypeDefinition (loc)));
+				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
+				var mode = new InsertionCursorEditMode (
+					editor.Parent,
+					CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType));
+				if (mode.InsertionPoints.Count == 0) {
+					MessageService.ShowError (
+						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+					);
+					return;
+				}
 				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = operation;
@@ -124,7 +143,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				mode.StartMode ();
 				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 					if (iCArgs.Success) {
-						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (loc)), node);
+						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
 						output.RegisterTrackedSegments (this, loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
 						iCArgs.InsertionPoint.Insert (editor, output.Text);
 					}
