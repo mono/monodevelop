@@ -88,7 +88,16 @@ namespace MonoDevelop.Refactoring.ImplementInterface
 			
 			var editor = options.GetTextEditorData ().Parent;
 			
-			var mode = new InsertionCursorEditMode (editor, CodeGenerationService.GetInsertionPoints (options.Document, declaringType));
+			var mode = new InsertionCursorEditMode (
+				editor,
+				CodeGenerationService.GetInsertionPoints (options.Document, declaringType));
+			if (mode.InsertionPoints.Count == 0) {
+				MessageService.ShowError (
+					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+				);
+				return;
+			}
+
 			var helpWindow = new InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("Implement Interface");

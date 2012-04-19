@@ -199,14 +199,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			// update type from parsed document, since this is always newer.
 			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
-			List<InsertionPoint > result = new List<InsertionPoint> ();
+			List<InsertionPoint> result = new List<InsertionPoint> ();
 			int offset = data.LocationToOffset (type.Region.Begin);
-			if (offset < 0)
+			if (offset < 0 || type.BodyRegion.IsEmpty)
 				return result;
 			while (offset < data.Length && data.GetCharAt (offset) != '{') {
 				offset++;
 			}
-
 			var realStartLocation = data.OffsetToLocation (offset);
 			result.Add (GetInsertionPosition (data.Document, realStartLocation.Line, realStartLocation.Column));
 			result [0].LineBefore = NewLineInsertion.None;
