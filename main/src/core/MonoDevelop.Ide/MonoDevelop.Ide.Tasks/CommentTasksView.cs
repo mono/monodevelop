@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.Tasks
 
 		Gdk.Color highPrioColor, normalPrioColor, lowPrioColor;
 
-		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
 		Clipboard clipboard;
 		
@@ -345,9 +344,6 @@ namespace MonoDevelop.Ide.Tasks
 
 		Menu CreateMenu ()
 		{
-			if (menu != null)
-				return menu;
-			
 			var group = new ActionGroup ("Popup");
 			
 			var copy = new Gtk.Action ("copy", GettextCatalog.GetString ("_Copy"),
@@ -409,7 +405,7 @@ namespace MonoDevelop.Ide.Tasks
 				+ "</popup></ui>";
 
 			uiManager.AddUiFromString (uiStr);
-			menu = (Menu)uiManager.GetWidget ("/popup");
+			var menu = (Menu)uiManager.GetWidget ("/popup");
 			menu.ShowAll ();
 
 			menu.Shown += delegate (object o, EventArgs args)
