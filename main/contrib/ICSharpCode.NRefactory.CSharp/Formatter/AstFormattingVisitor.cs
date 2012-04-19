@@ -858,8 +858,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					curIndent.ExtraSpaces -= extraSpaces;
 				}
-				if (methodClosingParenthesesOnNewLine) {
-					FixStatementIndentation(rParToken.StartLocation);
+				if (!rParToken.IsNull) {
+					if (methodClosingParenthesesOnNewLine) {
+						FixStatementIndentation(rParToken.StartLocation);
+					} else {
+						ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
+					}
 				}
 			} else {
 				foreach (var arg in parameters) {
@@ -872,7 +876,18 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					arg.AcceptVisitor(this);
 				}
-				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
+				if (!rParToken.IsNull) {
+					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
+						ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
+					} else {
+						bool sameLine = rParToken.GetPrevNode().StartLocation.Line == rParToken.StartLocation.Line;
+						if (sameLine) {
+							ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
+						} else {
+							FixStatementIndentation(rParToken.StartLocation);
+						}
+					}
+				}
 			}
 			if (!rParToken.IsNull) {
 				foreach (CSharpTokenNode comma in rParToken.Parent.Children.Where(n => n.Role == Roles.Comma)) {
