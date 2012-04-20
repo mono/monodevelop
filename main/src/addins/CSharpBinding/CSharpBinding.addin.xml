@@ -99,8 +99,21 @@
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
-		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
+		<!-- on the fly formatter must be before the completion text editor engine, 
+		otherwise stuff like 
+		
+		int Foo {
+		         get;private set';'
+		
+		will end up as 
+		
+		int Foo {
+		         get;
+		         privaet;
+		
+		-->
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.OnTheFlyFormatterTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
 	</Extension>

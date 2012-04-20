@@ -470,12 +470,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			switch (policy.PropertyFormatting) {
 				case PropertyFormatting.AllowOneLine:
 					bool isSimple = IsSimpleAccessor(propertyDeclaration.Getter) && IsSimpleAccessor(propertyDeclaration.Setter);
-					if (!isSimple || propertyDeclaration.LBraceToken.StartLocation.Line != propertyDeclaration.RBraceToken.StartLocation.Line) {
+					int accessorLine = propertyDeclaration.RBraceToken.StartLocation.Line;
+					if (!propertyDeclaration.Getter.IsNull && propertyDeclaration.Setter.IsNull) {
+						accessorLine = propertyDeclaration.Getter.StartLocation.Line;
+					} else if (propertyDeclaration.Getter.IsNull && !propertyDeclaration.Setter.IsNull) {
+						accessorLine = propertyDeclaration.Setter.StartLocation.Line;
+					} else {
+						var acc = propertyDeclaration.Getter.StartLocation < propertyDeclaration.Setter.StartLocation ?
+							propertyDeclaration.Getter : propertyDeclaration.Setter;
+						accessorLine = acc.StartLocation.Line;
+					}
+					if (!isSimple || propertyDeclaration.LBraceToken.StartLocation.Line != accessorLine) {
 						EnforceBraceStyle(policy.PropertyBraceStyle, propertyDeclaration.LBraceToken, propertyDeclaration.RBraceToken);
 					} else {
 						ForceSpacesBefore(propertyDeclaration.Getter, true);
 						ForceSpacesBefore(propertyDeclaration.Setter, true);
-						ForceSpacesBefore(propertyDeclaration.RBraceToken, true);
+						ForceSpacesBeforeRemoveNewLines(propertyDeclaration.RBraceToken, true);
 						oneLine = true;
 					}
 					break;
