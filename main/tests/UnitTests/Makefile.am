@@ -12,6 +12,9 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
+	-r:../../../external/ngit/bin/NGit.dll \
+	-r:../../../external/ngit/bin/NSch.dll \
+	-r:../../../external/ngit/bin/Sharpen.dll \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
@@ -27,8 +30,6 @@ REFS =  \
 	-r:../../build/bin/MonoDevelop.Core.dll \
 	-r:../../build/bin/MonoDevelop.Ide.dll \
 	-r:../../build/bin/OldNRefactory.dll \
-	-r:../../contrib/bin/NGit.dll \
-	-r:../../contrib/bin/Sharpen.dll \
 	-r:../../src/addins/NUnit/lib/nunit.core.dll \
 	-r:../../src/addins/NUnit/lib/nunit.core.interfaces.dll \
 	-r:../../src/addins/NUnit/lib/nunit.framework.dll \
