@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-04-17 09:55:50+0200\n"
-"PO-Revision-Date: 2012-04-17 09:55:54+0200\n"
+"POT-Creation-Date: 2012-04-20 10:17:35+0200\n"
+"PO-Revision-Date: 2012-04-20 10:17:39+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@xamarin.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1076,10 +1076,6 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:9
 msgid "Template for 'foreach' loop"
-msgstr ""
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:9
-msgid "The type of objects to iterate through"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:9
@@ -3252,7 +3248,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:15
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Commands/LinkCommandEntry.cs:2
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:252
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:251
 msgid "Open {0}"
 msgstr ""
 
@@ -3797,7 +3793,7 @@ msgid "ApplicationIconId"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:25
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:9
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:12
 msgid "Documents"
 msgstr ""
 
@@ -3826,7 +3822,7 @@ msgid "File {0} already exists. Overwrite?"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Pad.cs:5
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:9
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:12
 msgid "Pads"
 msgstr ""
 
@@ -5780,16 +5776,16 @@ msgstr ""
 msgid "{0} of {1}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:2
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:3
 #: ../src/addins/MonoDevelop.RegexToolkit/MonoDevelop.RegexToolkit/RegexToolkitWidget.cs:2
 msgid "No matches"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:2
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:3
 msgid "No suggestions"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:3
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:4
 msgid "Select template"
 msgstr ""
 
@@ -7437,15 +7433,15 @@ msgstr ""
 msgid "WelcomePage"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:218
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:217
 msgid "Could not open the url '{0}'"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:247
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:246
 msgid "Open solution {0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:249
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageLinkButton.cs:248
 msgid "Hold Control key to open in current workspace."
 msgstr ""
 
@@ -7557,7 +7553,7 @@ msgstr ""
 msgid "New format:"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:42
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/TypeSystemService.cs:43
 msgid "Generating database"
 msgstr ""
 
@@ -11285,10 +11281,6 @@ msgstr ""
 msgid "SharpDevelop style (1TBS)"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:6
-msgid "Allman style"
-msgstr ""
-
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:7
 msgid "Whitesmiths style"
 msgstr ""
@@ -11717,8 +11709,8 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/templates/PortableLibrary.xpt.xml:0
 msgid ""
-"Creates a C# library that can be used in Windows, Silverlight, Windows Phone "
-"and Xbox 360."
+"Creates a C# library that can be used in Windows, Silverlight, Windows Phone, "
+"Xbox 360, MonoTouch and Mono4Android."
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Project/CompilerOptionsPanelWidget.cs:18
@@ -12254,18 +12246,18 @@ msgstr ""
 msgid "No region"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/MemberCompletionData.cs:5
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/MemberCompletionData.cs:4
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/MethodParameterDataProvider.cs:5
 msgid "(Extension) "
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/MemberCompletionData.cs:6
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/MemberCompletionData.cs:5
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/DelegateDataProvider.cs:4
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/MethodParameterDataProvider.cs:5
 msgid "[Obsolete]"
 msgstr ""
 
-#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/MemberCompletionData.cs:6
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/MemberCompletionData.cs:5
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/DelegateDataProvider.cs:6
 msgid "Delegate information"
 msgstr ""
@@ -12342,6 +12334,13 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring.CodeActions/Actions/MoveTypeToFile.cs:1
 msgid "_Move type to file '{0}'"
+msgstr ""
+
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringScript.cs:4
+#: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring.CodeActions/MDRefactoringScript.cs:7
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:2
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ImplementInterface/ImplementAbstractMembers.cs:3
+msgid "No valid insertion point can be found in type '{0}'."
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring.CodeIssues/NamingInspection/NameConventionEditRuleDialog.cs:2
@@ -17456,7 +17455,7 @@ msgstr ""
 msgid "I_mplement explicit"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:2
+#: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.ImplementInterface/ImplementExplicit.cs:3
 msgid "Implement Interface"
 msgstr ""
 
@@ -19156,11 +19155,11 @@ msgid "Add another accessor"
 msgstr ""
 
 #: ../contrib/ICSharpCode.NRefactory.CSharp/Refactoring/CodeActions/AddAnotherAccessorAction.cs:2
-msgid "Add getter"
+msgid "Add setter"
 msgstr ""
 
 #: ../contrib/ICSharpCode.NRefactory.CSharp/Refactoring/CodeActions/AddAnotherAccessorAction.cs:2
-msgid "Add setter"
+msgid "Add getter"
 msgstr ""
 
 #: ../contrib/ICSharpCode.NRefactory.CSharp/Refactoring/CodeActions/CheckIfParameterIsNullAction.cs:2
