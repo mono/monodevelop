@@ -487,15 +487,22 @@ namespace MonoDevelop.Projects
 		}
 		
 		[ThreadStatic]
-		static int supportReferDistance = -1;
+		static int supportReferDistance;
+		[ThreadStatic]
+		static HashSet<DotNetProject> processedProjects;
 
 		internal protected override void PopulateSupportFileList (FileCopySet list, ConfigurationSelector configuration)
 		{
 			try {
+				if (supportReferDistance == 0)
+					processedProjects = new HashSet<DotNetProject> ();
 				supportReferDistance++;
+
 				PopulateSupportFileListInternal (list, configuration);
 			} finally {
 				supportReferDistance--;
+				if (supportReferDistance == 0)
+					processedProjects = null;
 			}
 		}
 
@@ -537,8 +544,9 @@ namespace MonoDevelop.Projects
 
 					//VS COMPAT: recursively copy references's "local copy" files
 					//but only copy the "copy to output" files from the immediate references
-					foreach (var f in p.GetSupportFileList (configuration))
-						list.Add (f.Src, f.CopyOnlyIfNewer, f.Target);
+					if (processedProjects.Add (p))
+						foreach (var f in p.GetSupportFileList (configuration))
+							list.Add (f.Src, f.CopyOnlyIfNewer, f.Target);
 
 					DotNetProjectConfiguration refConfig = p.GetConfiguration (configuration) as DotNetProjectConfiguration;
 
