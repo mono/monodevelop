@@ -842,7 +842,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 
-			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken);
+			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, parameters.Count);
 			if (wrapMethodCall && parameters.Any()) {
 				if (newLineAferMethodCallOpenParentheses) {
 					curIndent.Push(IndentType.Continuation);
@@ -1710,10 +1710,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		bool DoWrap (Wrapping wrapping, AstNode wrapNode)
+		bool DoWrap (Wrapping wrapping, AstNode wrapNode, int argumentCount)
 		{
 			return wrapping == Wrapping.WrapAlways || 
-				options.WrapLineLength > 0 && wrapping == Wrapping.WrapIfTooLong && wrapNode.StartLocation.Column >= options.WrapLineLength;
+				options.WrapLineLength > 0 && argumentCount > 1 && wrapping == Wrapping.WrapIfTooLong && wrapNode.StartLocation.Column >= options.WrapLineLength;
 		}
 
 		void FormatArguments(AstNode node)
@@ -1762,7 +1762,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				arguments = invocationExpression.Arguments;
 			}
 
-			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken);
+			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, arguments.Count);
 			if (wrapMethodCall && arguments.Any()) {
 				if (newLineAferMethodCallOpenParentheses) {
 					curIndent.Push(IndentType.Continuation);
@@ -1832,7 +1832,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (invocationExpression.Target is MemberReferenceExpression) {
 				var mt = (MemberReferenceExpression)invocationExpression.Target;
 				if (mt.Target is InvocationExpression) {
-					if (DoWrap(policy.ChainedMethodCallWrapping, mt.DotToken)) {
+					if (DoWrap(policy.ChainedMethodCallWrapping, mt.DotToken, 2)) {
 						curIndent.Push(IndentType.Continuation);
 						FixStatementIndentation(mt.DotToken.StartLocation);
 						curIndent.Pop();
@@ -1923,7 +1923,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression)
 		{
-			if (DoWrap(policy.ArrayInitializerWrapping, arrayInitializerExpression.RBraceToken)) {
+			if (DoWrap(policy.ArrayInitializerWrapping, arrayInitializerExpression.RBraceToken, arrayInitializerExpression.Elements.Count)) {
 				EnforceBraceStyle(policy.ArrayInitializerBraceStyle, arrayInitializerExpression.LBraceToken, arrayInitializerExpression.RBraceToken);
 				curIndent.Push(IndentType.Block);
 				foreach (var init in arrayInitializerExpression.Elements) {
