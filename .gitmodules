@@ -4,3 +4,6 @@
 [submodule "external/monomac"]
 	path = external/monomac
 	url = git://github.com/mono/monomac.git
+[submodule "external/ngit"]
+	path = external/ngit
+	url = git://github.com/mono/ngit.git
