@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects
 			//
 			// Therefore, if we only specify the TargetFrameworkIdentifier, then both the
 			// TargetFrameworkVersion and TargetFrameworkProfile values will be serialized.
-			return new TargetFrameworkMoniker (".NETPortable");
+			return new TargetFrameworkMoniker (".NETPortable", "1.0");
 		}
 		
 		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
