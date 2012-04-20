@@ -161,7 +161,7 @@ namespace MonoDevelop.MacDev
 		{
 			var toolPath = project.TargetRuntime.GetToolPath (project.TargetFramework, tool);
 			if (String.IsNullOrEmpty (toolPath)) {
-				var err = GettextCatalog.GetString ("Error: Unable to find '" + tool + "' tool.");
+				var err = GettextCatalog.GetString ("Error: Unable to find '{0}' tool.", tool);
 				monitor.ReportError (err, null);
 				error = new BuildResult ();
 				error.AddError (null, 0, 0, null, err);
