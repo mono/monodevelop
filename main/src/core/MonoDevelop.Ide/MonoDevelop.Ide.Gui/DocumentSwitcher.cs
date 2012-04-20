@@ -127,6 +127,9 @@ namespace MonoDevelop.Ide
 		
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			if (evnt.Type == EventType.TwoButtonPress) {
+				OnRequestClose (new RequestActionEventArgs (true));
+			}
 			if (evnt.Button == 1 && hoverItem != null)
 				ActiveItem = hoverItem;
 			return base.OnButtonPressEvent (evnt);
