@@ -355,30 +355,33 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
-			
-			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + fileName)) {
+			// Ensure that paths like /a/./a.cs are equalized 
+			var uniqueName = Path.GetFullPath (fileName);
+			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + uniqueName)) {
 				NavigationHistoryService.LogActiveDocument ();
-				
 				if (options.HasFlag (OpenDocumentOptions.TryToReuseViewer)) {
 					Counters.OpenDocumentTimer.Trace ("Look for open document");
-					
 					foreach (Document doc in Documents) {
 						IBaseViewContent vcFound = null;
 						int vcIndex = 0;
-						
+
 						//search all ViewContents to see if they can "re-use" this filename
-						if (doc.Window.ViewContent.CanReuseView (fileName))
+						if (doc.Window.ViewContent.CanReuseView (uniqueName))
 							vcFound = doc.Window.ViewContent;
 						
 						//old method as fallback
-						if ((vcFound == null) && (doc.FileName == fileName))
+						if ((vcFound == null) && (doc.FileName == uniqueName))
 							vcFound = doc.Window.ViewContent;
-						
 						//if found, select window and jump to line
 						if (vcFound != null) {
 							IEditableTextBuffer ipos = vcFound.GetContent<IEditableTextBuffer> ();
 							if (line >= 1 && ipos != null) {
-								ipos.SetCaretTo (line, column >= 1 ? column : 1, options.HasFlag (OpenDocumentOptions.HighlightCaretLine), options.HasFlag (OpenDocumentOptions.CenterCaretLine));
+								ipos.SetCaretTo (
+									line,
+									column >= 1 ? column : 1,
+									options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
+									options.HasFlag (OpenDocumentOptions.CenterCaretLine)
+								);
 							}
 							
 							if (options.HasFlag (OpenDocumentOptions.BringToFront)) {
@@ -392,11 +395,14 @@ namespace MonoDevelop.Ide.Gui
 						}
 					}
 				}
-				
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
-				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Opening {0}", fileName), Stock.OpenFileIcon, true);
+				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
+					GettextCatalog.GetString ("Opening {0}", uniqueName),
+					Stock.OpenFileIcon,
+					true
+				);
 				var openFileInfo = new FileOpenInformation () {
-					FileName = fileName,
+					FileName = uniqueName,
 					Options = options,
 					Line = line,
 					Column = column,
@@ -418,9 +424,8 @@ namespace MonoDevelop.Ide.Gui
 						});
 					}
 					return doc;
-				} else {
-					return null;
 				}
+				return null;
 			}
 		}
 		
