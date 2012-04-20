@@ -95,20 +95,28 @@ namespace MonoDevelop.Ide.TypeSystem
 			return def.Resolve (ctx);
 		}
 		
-		public static ITypeDefinition LookupType (this ICompilation compilation, string ns, string name, int typeParameterCount = 0)
+		[Obsolete("Do not use this method. Use type references to resolve types. Type references from full reflection names can be got from ReflectionHelper.ParseReflectionName.")]
+		public static ITypeDefinition LookupType (this ICompilation compilation, string ns, string name, int typeParameterCount = -1)
 		{
-			var result = compilation.MainAssembly.GetTypeDefinition (ns, name, typeParameterCount);
-			if (result != null)
-				return result;
-			foreach (var refAsm in compilation.ReferencedAssemblies) {
-				result = refAsm.GetTypeDefinition (ns, name, typeParameterCount);
+			var tc = Math.Max (typeParameterCount, 0);
+			ITypeDefinition result = null;
+			foreach (var refAsm in compilation.Assemblies) {
+				result = refAsm.GetTypeDefinition (ns, name, tc);
 				if (result != null)
 					return result;
 			}
+			if (typeParameterCount < 0) {
+				for (int i = 1; i < 50; i++) {
+					result = LookupType (compilation, ns, name, i);
+					if (result != null)
+						return result;
+				}
+			}
 			return null;
 		}
-		
-		public static ITypeDefinition LookupType (this ICompilation compilation, string fullName, int typeParameterCount = 0)
+
+		[Obsolete("Do not use this method. Use type references to resolve types. Type references from full reflection names can be got from ReflectionHelper.ParseReflectionName.")]
+		public static ITypeDefinition LookupType (this ICompilation compilation, string fullName, int typeParameterCount = -1)
 		{
 			int idx = fullName.LastIndexOf ('.');
 			string ns, name;
