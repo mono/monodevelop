@@ -3,10 +3,10 @@ NGIT=ngit/ngit.sln
 TARBALL_PATH=../tarballs
 
 all:
-	xbuild $(NGIT)
+	xbuild $(NGIT) /t:NGit
 
 clean:
-	xbuild $(NGIT) /t:Clean
+	xbuild $(NGIT) /t:NGit /t:Clean
 
 install:
 
