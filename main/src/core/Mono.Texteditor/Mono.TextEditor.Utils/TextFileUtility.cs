@@ -460,7 +460,7 @@ namespace Mono.TextEditor.Utils
 				for (int i = 0xE1; i <= 0xEC; i++)
 					table [UTF1] [i] = UTFTail2;
 				table [UTF1] [0xED] = UTF8_3_TailPre2;
-				for (int i = 0xEE; i <= 0xEE; i++)
+				for (int i = 0xEE; i <= 0xEF; i++)
 					table [UTF1] [i] = UTFTail2;
 
 				// UTF8-4      = %xF0 %x90-BF 2( UTF8-tail ) / %xF1-F3 3( UTF8-tail ) /

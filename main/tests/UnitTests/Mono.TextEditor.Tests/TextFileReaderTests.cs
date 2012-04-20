@@ -122,7 +122,18 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestIsBinaryBinaryInput ()
 		{
-			Assert.IsTrue (TextFileUtility.IsBinary (typeof (TextFileReaderTests).Assembly.Location));
+			Assert.IsTrue (TextFileUtility.IsBinary (typeof(TextFileReaderTests).Assembly.Location));
+		}
+
+		
+		/// <summary>
+		/// Bug 4564 -Code point U+FEFF (Zero width nobreak space) is displayed as "ï»¿" the editor.
+		/// </summary>
+		[Test()]
+		public void TestBug4564 ()
+		{
+			byte[] input = new byte[] { (byte)'a',(byte)'a', 0xEF, 0xBB, 0xBF };
+			Assert.AreEqual ("aa\uFEFF", TextFileUtility.GetText (input));
 		}
 	}
 }
