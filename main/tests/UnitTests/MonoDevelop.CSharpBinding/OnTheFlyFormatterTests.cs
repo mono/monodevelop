@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharpBinding
 		Console.WriteLine ()      ;$
 	}
 }", out content);
-			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+			ext.KeyPress (Gdk.Key.semicolon, ';', Gdk.ModifierType.None);
 			
 			var newText = content.Text;
 			Console.WriteLine (newText);
