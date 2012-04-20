@@ -287,6 +287,11 @@ namespace MonoDevelop.Ide
 				else
 					PrevItem (true);
 				break;
+			case Gdk.Key.Return:
+			case Gdk.Key.KP_Enter:
+			case Gdk.Key.ISO_Enter:
+				OnRequestClose (new RequestActionEventArgs (true));
+				break;
 			case Gdk.Key.Escape:
 				OnRequestClose (new RequestActionEventArgs (false));
 				break;
