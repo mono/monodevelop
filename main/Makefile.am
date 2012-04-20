@@ -1,4 +1,4 @@
-SUBDIRS = contrib src po man theme-icons build tests
+SUBDIRS = ../external contrib src po man theme-icons build tests
 
 #capture aclocal flags for autoreconf
 ACLOCAL_AMFLAGS=$(ACLOCAL_FLAGS)

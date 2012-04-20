@@ -111,18 +111,6 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\contrib\NSch\NSch.csproj">
-      <Project>{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}</Project>
-      <Name>NSch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\contrib\NGit\NGit.csproj">
-      <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
-      <Name>NGit</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\contrib\Sharpen\Sharpen.csproj">
-      <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
-      <Name>Sharpen</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
@@ -132,6 +120,18 @@
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\external\ngit\NGit\NGit.csproj">
+      <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
+      <Name>NGit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\external\ngit\NSch\NSch.csproj">
+      <Project>{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}</Project>
+      <Name>NSch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\external\ngit\Sharpen\Sharpen.csproj">
+      <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
+      <Name>Sharpen</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

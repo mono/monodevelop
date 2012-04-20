@@ -162,11 +162,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contrib", "contrib", "{F129
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactory", "contrib\NRefactory\Project\NRefactory.csproj", "{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sharpen", "contrib\Sharpen\Sharpen.csproj", "{72944A6C-45FF-4EF8-B349-8C9CABF519D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sharpen", "..\external\ngit\Sharpen\Sharpen.csproj", "{72944A6C-45FF-4EF8-B349-8C9CABF519D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSch", "contrib\NSch\NSch.csproj", "{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSch", "..\external\ngit\NSch\NSch.csproj", "{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NGit", "contrib\NGit\NGit.csproj", "{E3BFF8B4-189C-496A-A817-7E8B31E22B91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NGit", "..\external\ngit\NGit\NGit.csproj", "{E3BFF8B4-189C-496A-A817-7E8B31E22B91}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugger.Soft", "contrib\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj", "{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}"
 EndProject
