@@ -267,30 +267,36 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
-		bool CanUseBinding (KeyboardShortcut[] chords, KeyboardShortcut[] accels, out KeyBinding binding)
+		bool CanUseBinding (KeyboardShortcut[] chords, KeyboardShortcut[] accels, out KeyBinding binding, out bool isChord)
 		{
 			if (chords != null) {
 				foreach (var chord in chords) {
 					foreach (var accel in accels) {
 						binding = new KeyBinding (chord, accel);
-						if (bindings.BindingExists (binding))
+						if (bindings.BindingExists (binding)) {
+							isChord = false;
 							return true;
+						}
 					}
 				}
 			} else {
 				foreach (var accel in accels) {
 					if (bindings.ChordExists (accel)) {
 						// Chords take precedence over bindings with the same shortcut.
-						binding = new KeyBinding (accel);
-						continue;
+						binding = null;
+						isChord = true;
+						return false;
 					}
 					
 					binding = new KeyBinding (accel);
-					if (bindings.BindingExists (binding))
+					if (bindings.BindingExists (binding)) {
+						isChord = false;
 						return true;
+					}
 				}
 			}
 			
+			isChord = false;
 			binding = null;
 			
 			return false;
@@ -317,13 +323,14 @@ namespace MonoDevelop.Components.Commands
 			
 			List<Command> commands = null;
 			KeyBinding binding;
+			bool isChord;
 			
-			if (CanUseBinding (chords, accels, out binding)) {
+			if (CanUseBinding (chords, accels, out binding, out isChord)) {
 				commands = bindings.Commands (binding);
 				e.RetVal = true;
 				chords = null;
 				chord = null;
-			} else if (bindings.AnyChordExists (accels)) {
+			} else if (isChord) {
 				chord = KeyBindingManager.AccelLabelFromKey (e.Event);
 				e.RetVal = true;
 				chords = accels;
