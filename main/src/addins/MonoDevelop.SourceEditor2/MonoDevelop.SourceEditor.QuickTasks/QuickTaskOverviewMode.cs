@@ -30,8 +30,6 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using Gdk;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 
@@ -75,6 +73,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			TextEditor.HighlightSearchPatternChanged += RedrawOnUpdate;
 			TextEditor.TextViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
 			TextEditor.TextViewMargin.MainSearchResultChanged += RedrawOnUpdate;
+			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom += HandleLineUpdateFrom;
+		}
+
+		void HandleLineUpdateFrom (object sender, HeightTree.HeightChangedEventArgs e)
+		{
+			yPositionCache.Clear ();
 		}
 		
 		void CaretPositionChanged (object sender, EventArgs e)
@@ -92,7 +96,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
 			TextEditor.Caret.PositionChanged -= CaretPositionChanged;
-			
+			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom -= HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged -= RedrawOnUpdate;
 			TextEditor.TextViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
 			TextEditor.TextViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
@@ -147,7 +151,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				} else {
 //					TextEditorData editorData = TextEditor.GetTextEditorData ();
 					foreach (var task in AllTasks) {
-						double y = LineToY (task.Location.Line);
+						double y = GetYPosition (task);
 						if (Math.Abs (y - evnt.Y) < 3) {
 							hoverTask = task;
 						}
@@ -401,7 +405,17 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.Color = TextEditor.ColorStyle.Default.CairoColor;
 			cr.Fill ();
 		}
-		
+
+		Dictionary<object, double> yPositionCache = new Dictionary<object, double> ();
+
+		double GetYPosition (QuickTask task)
+		{
+			double y;
+			if (!yPositionCache.TryGetValue (task, out y))
+				yPositionCache [task] = y = LineToY (task.Location.Line);
+			return y;
+		}
+
 		protected Severity DrawQuickTasks (Cairo.Context cr)
 		{
 			Severity severity = Severity.None;
@@ -419,7 +433,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 
 			foreach (var task in AllTasks) {
-				double y = LineToY (task.Location.Line);
+				double y = GetYPosition (task);
 
 				cr.Color = GetBarColor (task.Severity);
 				cr.Rectangle (3 + 0.5, y - 1 + 0.5, Allocation.Width - 5, 2);
