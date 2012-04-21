@@ -89,13 +89,16 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		class HighlightingSegmentTree : SegmentTree<StyledTreeSegment>
 		{
-			public string GetStyle (Chunk chunk, ref int endOffset)
+			public bool GetStyle (Chunk chunk, ref int endOffset, out string style)
 			{
 				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault (s => s.Offset == chunk.Offset);
-				if (segment == null)
-					return null;
+				if (segment == null) {
+					style = null;
+					return false;
+				}
 				endOffset = segment.EndOffset;
-				return segment.Style;
+				style = segment.Style;
+				return true;
 			}
 			
 			public void AddStyle (int startOffset, int endOffset, string style)
@@ -478,11 +481,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			#endregion
 			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
 			{
-				string style = csharpSyntaxMode.highlightedSegmentCache.GetStyle (chunk, ref endOffset);
-				if (style == null && !csharpSyntaxMode.highlightedSegmentCache.IsDirty) {
+				string style;
+				bool found = csharpSyntaxMode.highlightedSegmentCache.GetStyle (chunk, ref endOffset, out style);
+				if (!found && !csharpSyntaxMode.highlightedSegmentCache.IsDirty) {
 					style = GetSemanticStyleFromAst (parsedDocument, chunk, ref endOffset);
-					if (style != null)
-						csharpSyntaxMode.highlightedSegmentCache.AddStyle (chunk.Offset, endOffset, style);
+					csharpSyntaxMode.highlightedSegmentCache.AddStyle (chunk.Offset, style == null ? chunk.EndOffset : endOffset, style);
 				}
 				return style;
 			}
