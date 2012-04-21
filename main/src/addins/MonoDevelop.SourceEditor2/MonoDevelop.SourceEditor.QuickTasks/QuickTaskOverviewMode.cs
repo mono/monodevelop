@@ -74,6 +74,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			TextEditor.TextViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
 			TextEditor.TextViewMargin.MainSearchResultChanged += RedrawOnUpdate;
 			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom += HandleLineUpdateFrom;
+			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
+		}
+
+		void HandleHighlightSearchPatternChanged (object sender, EventArgs e)
+		{
+			yPositionCache.Clear ();
 		}
 
 		void HandleLineUpdateFrom (object sender, HeightTree.HeightChangedEventArgs e)
@@ -96,6 +102,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
 			TextEditor.Caret.PositionChanged -= CaretPositionChanged;
+			TextEditor.HighlightSearchPatternChanged -= HandleHighlightSearchPatternChanged;
 			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom -= HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged -= RedrawOnUpdate;
 			TextEditor.TextViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
@@ -151,7 +158,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				} else {
 //					TextEditorData editorData = TextEditor.GetTextEditorData ();
 					foreach (var task in AllTasks) {
-						double y = GetYPosition (task);
+						double y = GetYPosition (task.Location.Line);
 						if (Math.Abs (y - evnt.Y) < 3) {
 							hoverTask = task;
 						}
@@ -397,7 +404,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (TextEditor.ColorStyle == null || caretLine < 0)
 				return;
-			double y = LineToY (caretLine);
+			double y = GetYPosition (caretLine);
 			cr.MoveTo (0, y - 4);
 			cr.LineTo (7, y);
 			cr.LineTo (0, y + 4);
@@ -406,13 +413,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.Fill ();
 		}
 
-		Dictionary<object, double> yPositionCache = new Dictionary<object, double> ();
+		Dictionary<int, double> yPositionCache = new Dictionary<int, double> ();
 
-		double GetYPosition (QuickTask task)
+		double GetYPosition (int logicalLine)
 		{
 			double y;
-			if (!yPositionCache.TryGetValue (task, out y))
-				yPositionCache [task] = y = LineToY (task.Location.Line);
+			if (!yPositionCache.TryGetValue (logicalLine, out y))
+				yPositionCache [logicalLine] = y = LineToY (logicalLine);
 			return y;
 		}
 
@@ -421,7 +428,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			Severity severity = Severity.None;
 
 			foreach (var usage in AllUsages) {
-				double y = LineToY (usage.Line);
+				double y = GetYPosition (usage.Line);
 				var usageColor = TextEditor.ColorStyle.Default.CairoColor;
 				usageColor.A = 0.4;
 				cr.Color = usageColor;
@@ -433,7 +440,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 
 			foreach (var task in AllTasks) {
-				double y = GetYPosition (task);
+				double y = GetYPosition (task.Location.Line);
 
 				cr.Color = GetBarColor (task.Severity);
 				cr.Rectangle (3 + 0.5, y - 1 + 0.5, Allocation.Width - 5, 2);
@@ -497,7 +504,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			foreach (var region in TextEditor.TextViewMargin.SearchResults) {
 				int line = TextEditor.OffsetToLineNumber (region.Offset);
-				double y = LineToY (line);
+				double y = GetYPosition (line);
 				bool isMainSelection = false;
 				if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid)
 					isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
