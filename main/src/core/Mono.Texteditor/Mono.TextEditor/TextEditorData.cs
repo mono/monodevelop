@@ -1353,7 +1353,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal readonly HeightTree HeightTree;
+		public readonly HeightTree HeightTree;
 		
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
 		{
