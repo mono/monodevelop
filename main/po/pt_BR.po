@@ -3,9 +3,9 @@
 # Copyright (C) 2004, Maurício de Lemos Rodrigues Collares Neto <mauricioc@gmail.com>
 # Copyright (C) 2006,2008, Rafael "Monoman" Teixeira <rafaelteixeirabr@hotmail.com>
 # Copyright (C) 2007, Renato Felipe Atilio <renatoat@gmail.com>
+# Copyright (C) 2012, Edison Henrique Andreassy <ehasis@hotmail.com>
 #
 # This file is distributed under the same license as the MonoDevelop package.
-# Edison Henrique Andreassy <ehasis@hotmail.com>, 2012.
 #
 msgid ""
 msgstr ""
@@ -6806,7 +6806,8 @@ msgstr ""
 "Atualizar todos os identificadores de recursos para corresponder à nova "
 "política. Isso vai exigir mudanças no código fonte que referencia os "
 "recursos que usa a política velha. Identificadores definidos explicitamente "
-"usando o arquivo no painel de propriedades não será mudado."
+"usando o arquivo no painel de propriedades não será mudado.\n"
+"\n"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:147
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Resolver/TextEditorResolverProvider.cs:234
@@ -13619,7 +13620,7 @@ msgstr "Comentários Loc"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:214
 msgid "Finished calculating metrics\n"
-msgstr "Finalizado cálculo de métricas"
+msgstr "Finalizado cálculo de métricas\n"
 
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:360
 #: ../src/addins/MonoDevelop.CodeMetrics/MonoDevelop.CodeMetrics/CodeMetricsWidget.cs:361
