@@ -207,6 +207,7 @@ namespace MonoDevelop.AspNet
 				TargetRuntime = TargetRuntime,
 				TargetFramework = TargetFramework,
 				UserAssemblyPaths = this.GetUserAssemblyPaths (config),
+				EnvironmentVariables = configuration.EnvironmentVariables,
 			};
 		}
 		
