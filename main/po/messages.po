@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2012-04-20 10:17:35+0200\n"
-"PO-Revision-Date: 2012-04-20 10:17:39+0200\n"
+"POT-Creation-Date: 2012-04-23 08:26:43+0200\n"
+"PO-Revision-Date: 2012-04-23 08:26:46+0200\n"
 "Last-Translator: Mike Krüger <mkrueger@xamarin.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgid "The application was terminated by a signal: {0}"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:15
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:113
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:114
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:8
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:61
 msgid "The application exited with code: {0}"
@@ -153,7 +153,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:32
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:27
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:3
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:5
 msgid "{0} error"
 msgid_plural "{0} errors"
 msgstr[0] ""
@@ -161,7 +161,7 @@ msgstr[1] ""
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:32
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:27
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:3
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:5
 msgid "{0} warning"
 msgid_plural "{0} warnings"
 msgstr[0] ""
@@ -274,20 +274,20 @@ msgstr ""
 msgid "Copy if newer"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:108
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:109
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:3
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:15
 msgid "Running {0} ..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:111
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:112
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:6
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for "
 ".NET projects."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:113
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:114
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:8
 msgid "Cannot execute \"{0}\""
 msgstr ""
@@ -3830,52 +3830,52 @@ msgstr ""
 msgid "Initializing Main Window"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:19
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:20
 msgid "Opening {0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:24
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:25
 msgid "Save the changes to document '{0}' before closing?"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:24
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:25
 msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:25
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:26
 msgid "The document could not be saved."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:25
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:26
 msgid "Invalid file name"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:25
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:26
 msgid "{0} is a directory"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:25
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:26
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:23
 msgid "File not found: {0}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:25
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:26
 msgid "File '{0}' could not be opened"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:25
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:26
 msgid "Loading workspace documents"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:30
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:31
 msgid "The file '{0}' could not be opened."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:30
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:31
 msgid "The file '{0}' could not opened. {1}"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:30
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:31
 msgid "The file '{0}' could not opened. File too large."
 msgstr ""
 
@@ -14329,7 +14329,7 @@ msgid "Reached top, continued from bottom"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:14
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:3
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:5
 msgid "{0} match"
 msgid_plural "{0} matches"
 msgstr[0] ""
@@ -14965,11 +14965,11 @@ msgstr ""
 msgid "_Based on:"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:3
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:5
 msgid "No errors or warnings"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:3
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:5
 msgid "{0} errors and {1} warnings"
 msgstr ""
 
@@ -18877,7 +18877,7 @@ msgid "Could not write file '{0}'"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.MacDev/MacBuildUtilities.cs:2
-msgid "Error: Unable to find '\" + tool + \"' tool."
+msgid "Error: Unable to find '{0}' tool."
 msgstr ""
 
 #: ../src/addins/MonoDevelop.MacDev/SigningIdentityCombo.cs:2
@@ -19141,12 +19141,12 @@ msgstr ""
 msgid "Add Native Reference"
 msgstr ""
 
-#: ../contrib/NGit/NGit/UserConfig.cs:29
-#: ../contrib/NGit/NGit/UserConfig.cs:31
+#: ../../external/ngit/NGit/NGit/UserConfig.cs:29
+#: ../../external/ngit/NGit/NGit/UserConfig.cs:31
 msgid "user"
 msgstr ""
 
-#: ../contrib/NGit/NGit.Diff/DiffConfig.cs:16
+#: ../../external/ngit/NGit/NGit.Diff/DiffConfig.cs:16
 msgid "diff"
 msgstr ""
 
