@@ -50,12 +50,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		static readonly char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
 		static readonly char[] splitActionParamsChars = { ' ', '\t', '\n', '\r', '*', '(', ')' };
 		
-		readonly string typeNamespace;
-		readonly string nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType,
+		readonly ITypeReference nsobjectType, registerAttType, connectAttType, exportAttType, modelAttType,
 			iboutletAttType, ibactionAttType;
 		
 		static Dictionary<TypeSystemService.ProjectContentWrapper,NSObjectProjectInfo> infos = new Dictionary<TypeSystemService.ProjectContentWrapper, NSObjectProjectInfo> ();
+
+		ITypeDefinition Resolve (TypeSystemService.ProjectContentWrapper dom, ITypeReference reference)
+		{
+			return reference.Resolve (dom.Compilation).GetDefinition ();
+		}
 		
+
 		static NSObjectInfoService ()
 		{
 			TypeSystemService.ProjectUnloaded += HandleDomUnloaded;
@@ -64,14 +69,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		public NSObjectInfoService (string wrapperRoot)
 		{
 			this.WrapperRoot = wrapperRoot;
-			typeNamespace = wrapperRoot + ".Foundation";
-			connectAttType = "ConnectAttribute";
-			exportAttType = "ExportAttribute";
-			iboutletAttType = "OutletAttribute";
-			ibactionAttType = "ActionAttribute";
-			registerAttType = "RegisterAttribute";
-			modelAttType = "ModelAttribute";
-			nsobjectType = "NSObject";
+			var typeNamespace = wrapperRoot + ".Foundation";
+			connectAttType = new GetClassTypeReference (typeNamespace, "ConnectAttribute");
+			exportAttType = new GetClassTypeReference (typeNamespace, "ExportAttribute");
+			iboutletAttType = new GetClassTypeReference (typeNamespace, "OutletAttribute");
+			ibactionAttType = new GetClassTypeReference (typeNamespace, "ActionAttribute");
+			registerAttType = new GetClassTypeReference (typeNamespace, "RegisterAttribute");
+			modelAttType = new GetClassTypeReference (typeNamespace, "ModelAttribute");
+			nsobjectType = new GetClassTypeReference (typeNamespace, "NSObject");
 		}
 		
 		public string WrapperRoot { get; private set; }
@@ -92,7 +97,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				if (infos.TryGetValue (dom, out info))
 					return info;
 				
-				var nso = dom.Compilation.LookupType (typeNamespace, nsobjectType);
+				var nso = Resolve (dom, nsobjectType);
 				//only include DOMs that can resolve NSObject
 				if (nso == null || nso.Kind == TypeKind.Unknown)
 					return null;
@@ -129,10 +134,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				infos.Remove (dom);
 			}
 		}
-		
+
 		internal IEnumerable<NSObjectTypeInfo> GetRegisteredObjects (TypeSystemService.ProjectContentWrapper dom, IAssembly assembly)
 		{
-			var nso = dom.Compilation.LookupType (typeNamespace, nsobjectType);
+			var nso = Resolve (dom, nsobjectType);
 			if (nso == null || nso.Kind == TypeKind.Unknown)
 				throw new Exception ("Could not get NSObject from type database");
 			
@@ -157,7 +162,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			
 			foreach (var att in type.Attributes) {
 				var attType = att.AttributeType;
-				if (attType.Equals (dom.Compilation.LookupType (typeNamespace, registerAttType)))  {
+				if (attType.Equals (Resolve (dom, registerAttType))) {
 					if (type.GetProjectContent () != null) {
 						registeredInDesigner &=
 							MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (att.Region.FileName);
@@ -166,13 +171,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					//type registered with an explicit type name are up to the user to provide a valid name
 					var posArgs = att.PositionalArguments;
 					if (posArgs.Count == 1 || posArgs.Count == 2)
-						objcName = posArgs[0].ConstantValue as string;
+						objcName = posArgs [0].ConstantValue as string;
 					//non-nested types in the root namespace have names accessible from obj-c
 					else if (string.IsNullOrEmpty (type.Namespace) && type.Name.IndexOf ('.') < 0)
 						objcName = type.Name;
 				}
 				
-				if (attType.Equals (dom.Compilation.LookupType (typeNamespace, modelAttType)))
+				if (attType.Equals (Resolve (dom, modelAttType)))
 					isModel = true;
 			}
 			
@@ -183,7 +188,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (baseType == "System.Object")
 				baseType = null;
 			
-			bool isUserType = !type.ParentAssembly.Equals (dom.Compilation.LookupType (typeNamespace, nsobjectType).ParentAssembly);
+			bool isUserType = !type.ParentAssembly.Equals (Resolve (dom, nsobjectType).ParentAssembly);
 			
 			var info = new NSObjectTypeInfo (objcName, type.FullName, null, baseType, isModel, isUserType, registeredInDesigner);
 			
@@ -202,15 +207,15 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			foreach (var prop in type.Properties) {
 				foreach (var att in prop.Attributes) {
 					var attType = att.AttributeType;
-					bool isIBOutlet = attType.Equals (dom.Compilation.LookupType (typeNamespace, iboutletAttType));
+					bool isIBOutlet = attType.Equals (Resolve (dom, iboutletAttType));
 					if (!isIBOutlet) {
-						if (!attType.Equals (dom.Compilation.LookupType (typeNamespace, connectAttType)))
+						if (!attType.Equals (Resolve (dom, connectAttType)))
 							continue;
 					}
 					string name = null;
 					var posArgs = att.PositionalArguments;
 					if (posArgs.Count == 1)
-						name = posArgs[0].ConstantValue as string;
+						name = posArgs [0].ConstantValue as string;
 					if (string.IsNullOrEmpty (name))
 						name = prop.Name;
 					
@@ -232,9 +237,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			foreach (var meth in type.Methods) {
 				foreach (var att in meth.Attributes) {
 					var attType = att.AttributeType;
-					bool isIBAction = attType.Equals (dom.Compilation.LookupType (typeNamespace, ibactionAttType));
+					bool isIBAction = attType.Equals (Resolve (dom, ibactionAttType));
 					if (!isIBAction) {
-						if (!attType.Equals (dom.Compilation.LookupType (typeNamespace, exportAttType)))
+						if (!attType.Equals (Resolve (dom, exportAttType)))
 							continue;
 					}
 					bool isDesigner =  MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (
