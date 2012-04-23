@@ -87,7 +87,6 @@
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.SourceEditor2, Version=2.1.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Debugger, Version=2.1.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Refactoring, Version=2.2.0.0, Culture=neutral" />
-    <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
     <ProjectReference type="Gac" localcopy="True" refto="Mono.Debugger.Soft, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />

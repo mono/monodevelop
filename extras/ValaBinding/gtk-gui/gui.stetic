@@ -23,7 +23,6 @@
     <widget-library name="MonoDevelop.SourceEditor2, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Debugger, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Refactoring, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="../build/MonoDevelop.ValaBinding.dll" internal="true" />
   </import>
