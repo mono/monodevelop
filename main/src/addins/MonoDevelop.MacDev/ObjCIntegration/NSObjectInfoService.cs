@@ -184,14 +184,14 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (string.IsNullOrEmpty (objcName))
 				return null;
 			
-			string baseType = type.DirectBaseTypes.First ().FullName;
+			string baseType = type.DirectBaseTypes.First ().ReflectionName;
 			if (baseType == "System.Object")
 				baseType = null;
 			
 			bool isUserType = !type.ParentAssembly.Equals (Resolve (dom, nsobjectType).ParentAssembly);
 			
-			var info = new NSObjectTypeInfo (objcName, type.FullName, null, baseType, isModel, isUserType, registeredInDesigner);
-			
+			var info = new NSObjectTypeInfo (objcName, type.ReflectionName, null, baseType, isModel, isUserType, registeredInDesigner);
+
 			if (info.IsUserType) {
 				UpdateTypeMembers (dom, info, type);
 				info.DefinedIn = type.Parts.Select (p => (string) p.Region.FileName).ToArray ();
@@ -222,11 +222,12 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					// HACK: Work around bug #1586 in the least obtrusive way possible. Strip out any outlet
 					// with the name 'view' on subclasses of MonoTouch.UIKit.UIViewController to avoid 
 					// conflicts with the view property mapped there
-					if (name == "view")
-						if (type.GetAllBaseTypeDefinitions ().Any (p => p.FullName == "MonoTouch.UIKit.UIViewController"))
+					if (name == "view") {
+						if (type.GetAllBaseTypeDefinitions ().Any (p => p.ReflectionName == "MonoTouch.UIKit.UIViewController"))
 							continue;
+					}
 					
-					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.FullName);
+					var ol = new IBOutlet (name, prop.Name, null, prop.ReturnType.ReflectionName);
 					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (prop.Region.FileName))
 						ol.IsDesigner = true;
 					info.Outlets.Add (ol);
@@ -242,7 +243,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						if (!attType.Equals (Resolve (dom, exportAttType)))
 							continue;
 					}
-					bool isDesigner =  MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (
+					bool isDesigner = MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (
 						meth.DeclaringTypeDefinition.Region.FileName);
 					//only support Export from old designer files, user code must be IBAction
 					if (!isDesigner && !isIBAction)
@@ -251,17 +252,17 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					string[] name = null;
 					var posArgs = att.PositionalArguments;
 					if (posArgs.Count == 1 || posArgs.Count == 2) {
-						var n = posArgs[0].ConstantValue as string;
+						var n = posArgs [0].ConstantValue as string;
 						if (!string.IsNullOrEmpty (n))
 							name = n.Split (colonChar);
 					}
-					var action = new IBAction (name != null? name [0] : meth.Name, meth.Name);
+					var action = new IBAction (name != null ? name [0] : meth.Name, meth.Name);
 					int i = 1;
 					foreach (var param in meth.Parameters) {
-						string label = name != null && i < name.Length? name[i] : null;
+						string label = name != null && i < name.Length ? name [i] : null;
 						if (label != null && label.Length == 0)
 							label = null;
-						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.Type.FullName));
+						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.Type.ReflectionName));
 					}
 					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.Region.FileName))
 						action.IsDesigner = true;

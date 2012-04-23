@@ -197,12 +197,13 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					//managed classes many have implicitly registered base classes with a name not
 					//expressible in obj-c. In this case, the best we can do is walk down the 
 					//hierarchy until we find a valid base class
-					var baseCliType = dom.Compilation.LookupType (type.BaseCliType);
+					var reference = ReflectionHelper.ParseReflectionName (type.BaseCliType);
+					var baseCliType = reference.Resolve (dom.Compilation);
 					foreach (var bt in baseCliType.GetAllBaseTypeDefinitions ()) {
 						if (bt.Kind != TypeKind.Class) 
 							continue;
 						
-						if (TryResolveCliToObjc (bt.FullName, out resolved)) {
+						if (TryResolveCliToObjc (bt.ReflectionName, out resolved)) {
 							if (resolved.IsModel)
 								type.BaseIsModel = true;
 							type.BaseObjCType = resolved.ObjCName;
@@ -263,8 +264,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			if (type.BaseCliType == null) {
 				if (TryResolveObjcToCli (type.BaseObjCType, out resolved)) {
 					type.BaseCliType = resolved.CliName;
-				} else  {
-					type.BaseCliType = dom.Compilation.LookupType (defaultNamespace, provider.CreateValidIdentifier (type.BaseObjCType)).FullName;
+				} else {
+					var reference = new GetClassTypeReference (defaultNamespace, provider.CreateValidIdentifier (type.BaseObjCType));
+					type.BaseCliType = reference.Resolve (dom.Compilation).ReflectionName;
 
 					var message = string.Format ("Failed to resolve Objective-C type '{0}' to a type in the current solution.", type.BaseObjCType);
 					message += string.Format (" Adding a [Register (\"{0}\")] attribute to the class which corresponds to this will allow it to be synced to Objective-C.", type.BaseObjCType);
