@@ -124,7 +124,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 
 		static void HandleDomUnloaded (object sender, ProjectUnloadEventArgs e)
 		{
-			var project = (DotNetProject)e.Project;
+			var project = e.Project as DotNetProject;
+			if (project == null)
+				return;
 			var dom = e.Wrapper;
 			if (dom == null)
 				return;
