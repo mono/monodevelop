@@ -752,9 +752,14 @@ namespace Mono.Debugging.Soft
 		public override string GetTypeName (EvaluationContext ctx, object val)
 		{
 			TypeMirror tm = val as TypeMirror;
-			if (tm != null)
+			if (tm != null) {
+				if (IsGeneratedType (tm)) {
+					// Return the name of the container-type.
+					return tm.FullName.Substring (0, tm.FullName.LastIndexOf ('+'));
+				}
+				
 				return tm.FullName;
-			else
+			} else
 				return ((Type)val).FullName;
 		}
 		

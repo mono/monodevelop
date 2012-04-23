@@ -576,7 +576,7 @@ namespace Mono.Debugging.Evaluation
 					if (TypeValueReference.GetTypeName (ctx.Adapter.GetTypeName (ctx, ntype)) == name)
 						return new TypeValueReference (ctx, ntype);
 				}
-	
+				
 				string[] namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
 				if (namespaces.Length > 0) {
 					// Look in namespaces
@@ -592,6 +592,13 @@ namespace Mono.Debugging.Evaluation
 					}
 				}
 			}
+			
+			if (thisobj == null) {
+				string message = string.Format ("An object reference is required for the non-static field, method, or property '{0}.{1}'",
+				                                ctx.Adapter.GetDisplayTypeName (ctx, thistype), name);
+				throw CreateParseError (message);
+			}
+			
 			throw CreateParseError ("Unknown identifier: {0}", name);
 		}
 		
