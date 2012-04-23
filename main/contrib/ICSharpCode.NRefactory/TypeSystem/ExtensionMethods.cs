@@ -406,5 +406,28 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		#endregion
+
+		#region ITypeReference.Resolve(ICompilation)
+
+		/// <summary>
+		/// Resolves a type reference.
+		/// </summary>
+		/// <returns>
+		/// Returns the resolved type.
+		/// In case of an error, returns <see cref="SpecialType.UnknownType"/>.
+		/// Never returns null.
+		/// </returns>
+		/// <param name='compilation'>
+		/// The compilation in which the type should be resolved.
+		/// </param>
+		public static IType Resolve (this ITypeReference reference, ICompilation compilation)
+		{
+			if (reference == null)
+				throw new ArgumentNullException ("reference");
+			if (compilation == null)
+				throw new ArgumentNullException ("compilation");
+			return reference.Resolve (compilation.TypeResolveContext);
+		}
+		#endregion
 	}
 }
