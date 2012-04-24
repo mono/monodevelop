@@ -8,7 +8,7 @@
        category    = "MonoDevelop Core"
        isroot      = "true"
        version     = "2.9.5"
-       compatVersion = "2.7">
+       compatVersion = "2.9.0">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.Ide.dll"/>
