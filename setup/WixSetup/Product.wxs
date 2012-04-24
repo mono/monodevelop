@@ -763,5 +763,13 @@
     <!-- This is for the icon that is shown in the Add/Remove Programs dialog and menu shortcut -->
     <Icon Id="MonoDevelop.exe" SourceFile="Bitmaps\MonoDevelop.ico" />
     <Property Id="ARPPRODUCTICON" Value="MonoDevelop.exe" />
+
+    <!--
+        Install Start Menu shortcuts for all users, 
+        according to http://stackoverflow.com/questions/2211218/how-to-create-desktop-shortcut-for-all-users-in-wix
+        
+        MSDN: http://msdn.microsoft.com/en-us/library/aa367559.aspx
+    -->
+    <Property Id="ALLUSERS">1</Property>
   </Product>
 </Wix>
