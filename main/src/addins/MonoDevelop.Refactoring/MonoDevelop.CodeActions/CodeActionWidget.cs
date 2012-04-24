@@ -161,9 +161,7 @@ namespace MonoDevelop.CodeActions
 		{
 			var menu = new Gtk.Menu ();
 
-			var caretOffset = document.Editor.Caret.Offset;
 			Gtk.Menu fixMenu = menu;
-			DomRegion region;
 			ResolveResult resolveResult;
 			ICSharpCode.NRefactory.CSharp.AstNode node;
 			if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
@@ -184,7 +182,7 @@ namespace MonoDevelop.CodeActions
 				bool resolveDirect = !(resolveResult is UnknownMemberResolveResult);
 				if (resolveDirect) {
 					foreach (string ns in possibleNamespaces) {
-						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Use {0}", ns + "." + document.Editor.GetTextBetween (region.Begin, region.End)));
+						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Use {0}", ns + "." + document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
 						menuItem.Activated += delegate {
 							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, false).Run ();
 						};
