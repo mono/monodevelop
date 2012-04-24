@@ -62,13 +62,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.dialog.ConfigurationData.ConfigurationsChanged += OnConfigurationsChanged;
 		}
 		
-		
-		
 		public ItemConfiguration CurrentConfiguration {
 			get {
 				if (allowMixedConfigurations)
 					throw new System.InvalidOperationException ("The options panel is working in multiple configuration selection mode (AllowMixedConfigurations=true). Use the property CurrentConfigurations to get the list of all selected configurations.");
-				return currentConfigs [0];
+				return currentConfigs.Count > 0 ? currentConfigs [0] : null;
 			}
 		}
 
@@ -220,7 +218,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			lastConfigSelection = configCombo.Active;
 			lastPlatformSelection = platformCombo.Active;
 			
-			if (widgetCreated)
+			if (widgetCreated && currentConfigs.Count > 0)
 				ApplyChanges ();
 			
 			currentConfigs.Clear ();
@@ -316,7 +314,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		void IOptionsPanel.ApplyChanges ()
 		{
-			ApplyChanges ();
+			if (currentConfigs.Count > 0)
+				ApplyChanges ();
 		}
 		
 		public abstract void LoadConfigData ();
