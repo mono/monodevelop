@@ -7,7 +7,8 @@ src/mdtool.cs
 all: $(ASSEMBLY) $(ASSEMBLY).config
 
 REFS = $(MONO_ADDINS_LIBS) \
-	$(MONO_ADDINS_SETUP_LIBS)
+	$(MONO_ADDINS_SETUP_LIBS) \
+	$(GTK_SHARP_LIBS)
 
 DEPS = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 	
