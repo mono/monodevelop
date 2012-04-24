@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.CodeActions;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CodeActions
 {
@@ -163,9 +164,10 @@ namespace MonoDevelop.CodeActions
 			var caretOffset = document.Editor.Caret.Offset;
 			Gtk.Menu fixMenu = menu;
 			DomRegion region;
-			var resolveResult = document.GetLanguageItem (caretOffset, out region);
-			if (resolveResult != null) {
-				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (document, resolveResult);
+			ResolveResult resolveResult;
+			ICSharpCode.NRefactory.CSharp.AstNode node;
+			if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
+				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (document, node, resolveResult);
 	
 				bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 				if (addUsing) {

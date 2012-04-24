@@ -47,22 +47,44 @@ namespace MonoDevelop.Refactoring
 {
 	public class ResolveCommandHandler : CommandHandler
 	{
+
+		public static bool ResolveAt (Document doc, out ResolveResult resolveResult, out AstNode node)
+		{
+			var parsedDocument = doc.ParsedDocument;
+			resolveResult = null;
+			node = null;
+			if (parsedDocument == null)
+				return false;
+			var unit = parsedDocument.GetAst<CompilationUnit> ();
+			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+			if (unit == null || parsedFile == null)
+				return false;
+			try {
+				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, doc.Editor.Caret.Location, out node);
+				if (resolveResult == null || node is Statement)
+					return false;
+			} catch (Exception e) {
+				Console.WriteLine ("Got resolver exception:" + e);
+				return false;
+			}
+			return true;
+		}
+
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
 				return;
-			var caretOffset = doc.Editor.Caret.Offset;
-			
-			DomRegion region;
-			var resolveResult = doc.GetLanguageItem (caretOffset, out region);
-			if (resolveResult == null)
+
+			ResolveResult resolveResult;
+			AstNode node;
+			if (!ResolveAt (doc, out resolveResult, out node))
 				return;
 
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
 			
-			var possibleNamespaces = GetPossibleNamespaces (doc, resolveResult);
+			var possibleNamespaces = GetPossibleNamespaces (doc, node, resolveResult);
 
 			bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 			if (addUsing) {
@@ -78,7 +100,7 @@ namespace MonoDevelop.Refactoring
 					resolveMenu.CommandInfos.AddSeparator ();
 				
 				foreach (string ns in possibleNamespaces) {
-					resolveMenu.CommandInfos.Add (GettextCatalog.GetString ("Use {0}", ns + "." + doc.Editor.GetTextBetween (region.Begin, region.End)), new System.Action (new AddImport (doc, resolveResult, ns, false).Run));
+					resolveMenu.CommandInfos.Add (GettextCatalog.GetString ("Use {0}", ns + "." + doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc, resolveResult, ns, false).Run));
 				}
 			}
 			
@@ -96,7 +118,7 @@ namespace MonoDevelop.Refactoring
 			return stub.ToString ();
 		}
 
-		static ResolveResult GetHeuristicResult (Document doc, DocumentLocation location)
+		static ResolveResult GetHeuristicResult (Document doc, DocumentLocation location, ref AstNode node)
 		{
 			int offset = doc.Editor.Caret.Offset;
 			bool wasLetter = false, wasWhitespaceAfterLetter = false;
@@ -129,22 +151,22 @@ namespace MonoDevelop.Refactoring
 			}
 
 			var unit = CompilationUnit.Parse (CreateStub (doc, offset), doc.FileName);
-			
+
 			return ResolveAtLocation.Resolve (
 				doc.Compilation, 
 				doc.ParsedDocument.ParsedFile as CSharpParsedFile,
 				unit,
-				location);
+				location, 
+				out node);
 		}
 
-		public static HashSet<string> GetPossibleNamespaces (Document doc, ResolveResult resolveResult)
+		public static HashSet<string> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult)
 		{
 			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
 
 			if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
-				resolveResult = GetHeuristicResult (doc, location) ?? resolveResult;
-
-			var foundNamespaces = GetPossibleNamespaces (doc, resolveResult, location);
+				resolveResult = GetHeuristicResult (doc, location, ref node) ?? resolveResult;
+			var foundNamespaces = GetPossibleNamespaces (doc, node, resolveResult, location);
 			
 			if (!(resolveResult is AmbiguousTypeResolveResult)) {
 				var usedNamespaces = RefactoringOptions.GetUsedNamespaces (doc, location);
@@ -154,12 +176,24 @@ namespace MonoDevelop.Refactoring
 			return new HashSet<string> (foundNamespaces);
 		}
 
-		static IEnumerable<string> GetPossibleNamespaces (Document doc, ResolveResult resolveResult, DocumentLocation location)
+		static int GetTypeParameterCount (AstNode node)
+		{
+			if (node is ObjectCreateExpression)
+				node = ((ObjectCreateExpression)node).Type;
+			if (node is SimpleType)
+				return ((SimpleType)node).TypeArguments.Count;
+			if (node is MemberType)
+				return ((MemberType)node).TypeArguments.Count;
+			return 0;
+		}
+
+		static IEnumerable<string> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
 			if (unit == null)
 				yield break;
-			
+
+			int tc = GetTypeParameterCount (node);
 			var attribute = unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (location);
 			bool isInsideAttributeType = attribute != null && attribute.Type.Contains (location);
 
@@ -170,24 +204,23 @@ namespace MonoDevelop.Refactoring
 				while (scope != null) {
 					foreach (var u in scope.Usings) {
 						foreach (var typeDefinition  in u.Types) {
-							if (typeDefinition.Name == aResult.Type.Name) {
+							if (typeDefinition.Name == aResult.Type.Name && typeDefinition.TypeParameterCount == tc) {
 								yield return typeDefinition.Namespace;
 							}
 						}
 					}
 					scope = scope.Parent;
 				}
-
 				yield break;
 			}
-
 
 			if (resolveResult is UnknownIdentifierResolveResult) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
 				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
-					if (typeDefinition.Name == uiResult.Identifier || typeDefinition.Name == possibleAttributeName)
+					if ((typeDefinition.Name == uiResult.Identifier || typeDefinition.Name == possibleAttributeName) && typeDefinition.TypeParameterCount == tc) {
 						yield return typeDefinition.Namespace;
+					}
 				}
 				yield break;
 			}
@@ -199,7 +232,12 @@ namespace MonoDevelop.Refactoring
 				foreach (var typeDefinition in compilation.GetAllTypeDefinitions ().Where (t => t.HasExtensionMethods)) {
 					foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == umResult.MemberName || m.Name == possibleAttributeName))) {
 						IType[] inferredTypes;
-						if (CSharpResolver.IsEligibleExtensionMethod (compilation.Import (umResult.TargetType), method, true, out inferredTypes)) {
+						if (CSharpResolver.IsEligibleExtensionMethod (
+							compilation.Import (umResult.TargetType),
+							method,
+							true,
+							out inferredTypes
+						)) {
 							yield return typeDefinition.Namespace;
 							goto skipType;
 						}
@@ -217,7 +255,7 @@ namespace MonoDevelop.Refactoring
 					if (uiResult != null) {
 						string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
 						foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
-							if (identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName)
+							if ((identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName) && typeDefinition.TypeParameterCount == tc)
 								yield return typeDefinition.Namespace;
 						}
 					}

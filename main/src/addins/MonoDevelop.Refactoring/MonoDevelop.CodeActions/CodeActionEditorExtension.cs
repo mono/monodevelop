@@ -75,10 +75,10 @@ namespace MonoDevelop.CodeActions
 				return;
 
 			if (!fixes.Any ()) {
-				ICSharpCode.NRefactory.TypeSystem.DomRegion region;
-				var resolveResult = document.GetLanguageItem (editor.Caret.Offset, out region);
-				if (resolveResult != null) {
-					var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, resolveResult);
+				ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
+				ICSharpCode.NRefactory.CSharp.AstNode node;
+				if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
+					var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, resolveResult);
 					if (!possibleNamespaces.Any ())
 						return;
 				} else

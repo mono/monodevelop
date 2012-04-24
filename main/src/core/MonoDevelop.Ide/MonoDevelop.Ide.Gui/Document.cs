@@ -674,16 +674,18 @@ namespace MonoDevelop.Ide.Gui
 
 		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly> ( () => new CecilLoader ().LoadAssemblyFile (typeof (object).Assembly.Location));
 		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>( () => new CecilLoader ().LoadAssemblyFile (typeof (System.Linq.Enumerable).Assembly.Location));
+		static readonly Lazy<IUnresolvedAssembly> system = new Lazy<IUnresolvedAssembly>( () => new CecilLoader ().LoadAssemblyFile (typeof (System.Uri).Assembly.Location));
 
 		static IUnresolvedAssembly Mscorlib { get { return mscorlib.Value; } }
 		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
-		
+		static IUnresolvedAssembly System { get { return system.Value; } }
+
 		public virtual IProjectContent GetProjectContext ()
 		{
 			if (Project == null) {
 				if (singleFileContext == null) {
 					singleFileContext = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
-					singleFileContext = singleFileContext.AddAssemblyReferences (new [] { Mscorlib, SystemCore });
+					singleFileContext = singleFileContext.AddAssemblyReferences (new [] { Mscorlib, System, SystemCore });
 				}
 				if (parsedDocument != null)
 					return singleFileContext.UpdateProjectContent (null, parsedDocument.ParsedFile);
