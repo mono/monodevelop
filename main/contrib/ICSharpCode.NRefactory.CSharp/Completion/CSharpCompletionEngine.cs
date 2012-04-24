@@ -501,7 +501,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 										evt,
 										parameterDefinition,
 										currentMember,
-										currentType));
+										currentType)
+									);
 								}
 					
 								return wrapper.Result;
@@ -809,7 +810,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							nodes.Add(n.Parent);
 						}
 						var astResolver = new CSharpAstResolver(csResolver, identifierStart.Unit, CSharpParsedFile);
-						astResolver.ApplyNavigator(new NodeListResolveVisitorNavigator (nodes));
+						astResolver.ApplyNavigator(new NodeListResolveVisitorNavigator(nodes));
 						try {
 							csResolver = astResolver.GetResolverStateBefore(n);
 						} catch (Exception) {
@@ -1100,7 +1101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));
 			
 			if (!(node is AstType)) {
-				if (currentMember != null) {
+				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
 					AddKeywords(wrapper, expressionLevelKeywords);
 				} else if (currentType != null) {
@@ -1124,7 +1125,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords(wrapper, parameterTypePredecessorKeywords);
 				}
 			}
-			
+
 			AddKeywords(wrapper, primitiveTypesKeywords);
 			if (currentMember != null) {
 				wrapper.AddCustom("var");
@@ -1261,29 +1262,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		
-		IEnumerable<ICompletionData> HandleKeywordCompletion (int wordStart, string word)
+		IEnumerable<ICompletionData> HandleKeywordCompletion(int wordStart, string word)
 		{
-			if (IsInsideCommentStringOrDirective ()) {
-				if (IsInPreprocessorDirective ()) {
+			if (IsInsideCommentStringOrDirective()) {
+				if (IsInPreprocessorDirective()) {
 					if (word == "if" || word == "elif") {
-						if (wordStart > 0 && document.GetCharAt (wordStart - 1) == '#') {
-							return factory.CreatePreProcessorDefinesCompletionData ();
+						if (wordStart > 0 && document.GetCharAt(wordStart - 1) == '#') {
+							return factory.CreatePreProcessorDefinesCompletionData();
 						}
 					}
 				}
 				return null;
 			}
 			switch (word) {
-			case "using":
-			case "namespace":
-				if (currentType != null) {
-					return null;
-				}
-				var wrapper = new CompletionDataWrapper (this);
-				AddTypesAndNamespaces (wrapper, GetState (), null, t => null);
-				return wrapper.Result;
-			case "case":
-				return CreateCaseCompletionData (location);
+				case "using":
+				case "namespace":
+					if (currentType != null) {
+						return null;
+					}
+					var wrapper = new CompletionDataWrapper(this);
+					AddTypesAndNamespaces(wrapper, GetState(), null, t => null);
+					return wrapper.Result;
+				case "case":
+					return CreateCaseCompletionData(location);
 //				case ",":
 //				case ":":
 //					if (result.ExpressionContext == ExpressionContext.InheritableType) {
@@ -1343,34 +1344,34 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //						return completionList;
 //					}
 //					break;
-			case "is":
-			case "as":
-				if (currentType == null) {
-					return null;
-				}
-				IType isAsType = null;
-				var isAsExpression = GetExpressionAt (wordStart);
-				if (isAsExpression != null) {
-					var parent = isAsExpression.Node.Parent;
-					if (parent is VariableInitializer) {
-						parent = parent.Parent;
+				case "is":
+				case "as":
+					if (currentType == null) {
+						return null;
 					}
-					if (parent is VariableDeclarationStatement) {
-						var resolved = ResolveExpression (parent, isAsExpression.Unit);
-						if (resolved != null) {
-							isAsType = resolved.Item1.Type;
+					IType isAsType = null;
+					var isAsExpression = GetExpressionAt(wordStart);
+					if (isAsExpression != null) {
+						var parent = isAsExpression.Node.Parent;
+						if (parent is VariableInitializer) {
+							parent = parent.Parent;
+						}
+						if (parent is VariableDeclarationStatement) {
+							var resolved = ResolveExpression(parent, isAsExpression.Unit);
+							if (resolved != null) {
+								isAsType = resolved.Item1.Type;
+							}
 						}
 					}
-				}
-				var isAsWrapper = new CompletionDataWrapper (this);
-				var def = isAsType != null ? isAsType.GetDefinition () : null;
-				AddTypesAndNamespaces (
+					var isAsWrapper = new CompletionDataWrapper(this);
+					var def = isAsType != null ? isAsType.GetDefinition() : null;
+					AddTypesAndNamespaces(
 						isAsWrapper,
-						GetState (),
+						GetState(),
 						null,
-						t => t.GetDefinition () == null || def == null || t.GetDefinition ().IsDerivedFrom (def) ? t : null,
+						t => t.GetDefinition() == null || def == null || t.GetDefinition().IsDerivedFrom(def) ? t : null,
 						m => false);
-				return isAsWrapper.Result;
+					return isAsWrapper.Result;
 //					{
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();
 //						ExpressionResult expressionResult = FindExpression (dom, completionContext, wordStart - document.Caret.Offset);
@@ -1420,82 +1421,81 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //						result.ExpressionContext = ExpressionContext.TypeName;
 //						return CreateCtrlSpaceCompletionData (completionContext, result);
 //					}
-			case "override":
+				case "override":
 				// Look for modifiers, in order to find the beginning of the declaration
-				int firstMod = wordStart;
-				int i = wordStart;
-				for (int n = 0; n < 3; n++) {
-					string mod = GetPreviousToken (ref i, true);
-					if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
-						firstMod = i;
-					} else if (mod == "static") {
-						// static methods are not overridable
-						return null;
-					} else {
-						break;
+					int firstMod = wordStart;
+					int i = wordStart;
+					for (int n = 0; n < 3; n++) {
+						string mod = GetPreviousToken(ref i, true);
+						if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
+							firstMod = i;
+						} else if (mod == "static") {
+							// static methods are not overridable
+							return null;
+						} else {
+							break;
+						}
 					}
-				}
-				if (!IsLineEmptyUpToEol ()) {
+					if (!IsLineEmptyUpToEol()) {
+						return null;
+					}
+					if (currentType != null && (currentType.Kind == TypeKind.Class || currentType.Kind == TypeKind.Struct)) {
+						string modifiers = document.GetText(firstMod, wordStart - firstMod);
+						return GetOverrideCompletionData(currentType, modifiers);
+					}
 					return null;
-				}
-				if (currentType != null && (currentType.Kind == TypeKind.Class || currentType.Kind == TypeKind.Struct)) {
-					string modifiers = document.GetText (firstMod, wordStart - firstMod);
-					return GetOverrideCompletionData (currentType, modifiers);
-				}
-				return null;
-			case "partial":
+				case "partial":
 				// Look for modifiers, in order to find the beginning of the declaration
-				firstMod = wordStart;
-				i = wordStart;
-				for (int n = 0; n < 3; n++) {
-					string mod = GetPreviousToken (ref i, true);
-					if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
-						firstMod = i;
-					} else if (mod == "static") {
-						// static methods are not overridable
-						return null;
-					} else {
-						break;
+					firstMod = wordStart;
+					i = wordStart;
+					for (int n = 0; n < 3; n++) {
+						string mod = GetPreviousToken(ref i, true);
+						if (mod == "public" || mod == "protected" || mod == "private" || mod == "internal" || mod == "sealed") {
+							firstMod = i;
+						} else if (mod == "static") {
+							// static methods are not overridable
+							return null;
+						} else {
+							break;
+						}
 					}
-				}
-				if (!IsLineEmptyUpToEol ()) {
-					return null;
-				}
-				var state = GetState ();
+					if (!IsLineEmptyUpToEol()) {
+						return null;
+					}
+					var state = GetState();
 						
-				if (state.CurrentTypeDefinition != null && (state.CurrentTypeDefinition.Kind == TypeKind.Class || state.CurrentTypeDefinition.Kind == TypeKind.Struct)) {
-					string modifiers = document.GetText (firstMod, wordStart - firstMod);
-					return GetPartialCompletionData (state.CurrentTypeDefinition, modifiers);
-				}
-				return null;
+					if (state.CurrentTypeDefinition != null && (state.CurrentTypeDefinition.Kind == TypeKind.Class || state.CurrentTypeDefinition.Kind == TypeKind.Struct)) {
+						string modifiers = document.GetText(firstMod, wordStart - firstMod);
+						return GetPartialCompletionData(state.CurrentTypeDefinition, modifiers);
+					}
+					return null;
 				
-			case "public":
-			case "protected":
-			case "private":
-			case "internal":
-			case "sealed":
-			case "static":
-				var accessorContext = HandleAccessorContext ();
-				if (accessorContext != null) {
-					return accessorContext;
-				}
-				wrapper = new CompletionDataWrapper (this);
-				state = GetState ();
-				if (currentType != null) {
-					AddTypesAndNamespaces (wrapper, state, null, null, m => false);
-					AddKeywords (wrapper, primitiveTypesKeywords);
-				}
-				AddKeywords (wrapper, typeLevelKeywords);
-				return wrapper.Result;
-			case "new":
-				int j = offset - 4;
+				case "public":
+				case "protected":
+				case "private":
+				case "internal":
+				case "sealed":
+				case "static":
+					var accessorContext = HandleAccessorContext();
+					if (accessorContext != null) {
+						return accessorContext;
+					}
+					wrapper = new CompletionDataWrapper(this);
+					state = GetState();
+					if (currentType != null) {
+						AddTypesAndNamespaces(wrapper, state, null, null, m => false);
+						AddKeywords(wrapper, primitiveTypesKeywords);
+					}
+					AddKeywords(wrapper, typeLevelKeywords);
+					return wrapper.Result;
+				case "new":
+					int j = offset - 4;
 //				string token = GetPreviousToken (ref j, true);
 				
-				IType hintType = null;
-				var expressionOrVariableDeclaration = GetNewExpressionAt (j);
-				if (expressionOrVariableDeclaration == null)
-					return null;
-			
+					IType hintType = null;
+					var expressionOrVariableDeclaration = GetNewExpressionAt(j);
+					if (expressionOrVariableDeclaration == null)
+						return null;
 					var astResolver = new CSharpAstResolver(GetState(), expressionOrVariableDeclaration.Unit, CSharpParsedFile);
 					hintType = CreateFieldAction.GetValidTypes(astResolver, expressionOrVariableDeclaration.Node as Expression).FirstOrDefault ();
 
