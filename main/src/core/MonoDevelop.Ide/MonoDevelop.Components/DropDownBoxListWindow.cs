@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide;
 using Gtk;
 using Mono.TextEditor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Components
 {
@@ -445,9 +446,16 @@ namespace MonoDevelop.Components
 					layout.GetPixelSize (out wi, out he);
 					if (wi > Allocation.Width) {
 						int idx, trail;
-						if (layout.XyToIndex ((int)((Allocation.Width - xpos - iconWidth - 2) * Pango.Scale.PangoScale), 0, out idx, out trail) && idx > 3) {
+						if (layout.XyToIndex (
+							(int)((Allocation.Width - xpos - iconWidth - 2) * Pango.Scale.PangoScale),
+							0,
+							out idx,
+							out trail
+						) && idx > 3) {
+							text = AmbienceService.UnescapeText (text);
 							text = text.Substring (0, idx - 3) + "...";
-							layout.SetText (text);
+							text = AmbienceService.EscapeText (text);
+							layout.SetMarkup (text);
 							layout.GetPixelSize (out wi, out he);
 						}
 					}
