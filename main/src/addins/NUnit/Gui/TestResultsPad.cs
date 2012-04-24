@@ -393,7 +393,7 @@ namespace MonoDevelop.NUnit
 		public void FinishTestRun ()
 		{
 			if (!Gtk.TreeIter.Zero.Equals (startMessageIter)) {
-				string msg = string.Format (GettextCatalog.GetString ("Test results for <b>{0}</b> configuration <b>{1}</b>"), rootTest.Name, configuration);
+				string msg = string.Format (GettextCatalog.GetString ("Test results for <b>{0}</b> configuration <b>{1}</b>"), rootTest != null ? rootTest.Name : "null", configuration);
 				failuresStore.SetValue (startMessageIter, 1, msg);
 				startMessageIter = Gtk.TreeIter.Zero;
 			}
