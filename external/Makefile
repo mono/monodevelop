@@ -10,6 +10,8 @@ clean:
 
 install:
 
+distdir: dist
+
 dist:
 	mkdir -p $(TARBALL_PATH)
 	@for dir in $(SUBDIRS); do \
