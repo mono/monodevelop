@@ -633,7 +633,8 @@ namespace MonoDevelop.Ide.Gui
 				Window.ViewContent.Project = project;
 				pr.Update (project);
 			}
-			project.Modified += HandleProjectModified;
+			if (project != null)
+				project.Modified += HandleProjectModified;
 			OnDocumentAttached ();
 		}
 
