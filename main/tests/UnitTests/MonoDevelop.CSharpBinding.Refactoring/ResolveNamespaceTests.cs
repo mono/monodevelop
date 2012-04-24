@@ -245,7 +245,6 @@ namespace My
 			Assert.IsTrue (result.Contains ("System.Text"));
 		}
 
-		[Ignore("mcs bug ?")]
 		[Test ()]
 		public void TestBug3453Case3WithGeneris ()
 		{

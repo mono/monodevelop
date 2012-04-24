@@ -184,6 +184,8 @@ namespace MonoDevelop.Refactoring
 				return ((SimpleType)node).TypeArguments.Count;
 			if (node is MemberType)
 				return ((MemberType)node).TypeArguments.Count;
+			if (node is IdentifierExpression)
+				return ((IdentifierExpression)node).TypeArguments.Count;
 			return 0;
 		}
 
