@@ -169,7 +169,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 			// Do the actual formatting
 //			var originalVersion = data.Editor.Document.Version;
-			int caretOffset = data.Editor.Caret.Offset;
 
 			int realTextDelta = seg.Offset - formatStartOffset;
 			int startDelta = 1;

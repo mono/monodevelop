@@ -35,7 +35,7 @@ namespace MonoDevelop.CSharp
 	// Copied from StockIcons.cs and extended for the c# ast (c# AST shouldn't be in Ide)
 	public static class AstStockIcons
 	{
-		static readonly IconId Error = "gtk-dialog-error";
+//		static readonly IconId Error = "gtk-dialog-error";
 		static readonly IconId Class = "md-class";
 		static readonly IconId Enum = "md-enum";
 		static readonly IconId Event = "md-event";
