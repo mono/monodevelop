@@ -36,7 +36,16 @@ namespace MonoDevelop.Ide
 	public static class DesktopService
 	{
 		static PlatformService platformService;
-		
+
+		static PlatformService PlatformService {
+			get {
+				if (platformService == null) {
+					Initialize ();
+				}
+				return platformService;
+			}
+		}
+
 		public static void Initialize ()
 		{
 			if (platformService != null)
@@ -48,7 +57,7 @@ namespace MonoDevelop.Ide
 				platformService = new DefaultPlatformService ();
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
-			Runtime.ProcessService.SetExternalConsoleHandler (platformService.StartConsoleProcess);
+			Runtime.ProcessService.SetExternalConsoleHandler (PlatformService.StartConsoleProcess);
 			
 			FileService.FileRemoved += DispatchService.GuiDispatch (
 				new EventHandler<FileEventArgs> (NotifyFileRemoved));
@@ -58,15 +67,15 @@ namespace MonoDevelop.Ide
 		
 		public static IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
-			return platformService.GetApplications (filename);
+			return PlatformService.GetApplications (filename);
 		}
 		
 		public static string DefaultMonospaceFont {
-			get { return platformService.DefaultMonospaceFont; }
+			get { return PlatformService.DefaultMonospaceFont; }
 		}
 		
 		public static string PlatformName {
-			get { return platformService.Name; }
+			get { return PlatformService.Name; }
 		}
 
 		/// <summary>
@@ -75,96 +84,96 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static string DefaultControlLeftRightBehavior {
 			get {
-				return platformService.DefaultControlLeftRightBehavior;
+				return PlatformService.DefaultControlLeftRightBehavior;
 			}
 		}
 		
 		public static void ShowUrl (string url)
 		{
-			platformService.ShowUrl (url);
+			PlatformService.ShowUrl (url);
 		}
 		
 		public static void OpenFile (string filename)
 		{
-			platformService.OpenFile (filename);
+			PlatformService.OpenFile (filename);
 		}
 
 		public static void OpenFolder (FilePath folderPath)
 		{
-			platformService.OpenFolder (folderPath);
+			PlatformService.OpenFolder (folderPath);
 		}
 
 		public static string GetMimeTypeForUri (string uri)
 		{
-			return platformService.GetMimeTypeForUri (uri);
+			return PlatformService.GetMimeTypeForUri (uri);
 		}
 		
 		public static string GetMimeTypeDescription (string mimeType)
 		{
-			return platformService.GetMimeTypeDescription (mimeType);
+			return PlatformService.GetMimeTypeDescription (mimeType);
 		}
 		
 		public static bool GetMimeTypeIsText (string mimeType)
 		{
-			return platformService.GetMimeTypeIsText (mimeType);
+			return PlatformService.GetMimeTypeIsText (mimeType);
 		}
 		
 		public static bool GetMimeTypeIsSubtype (string subMimeType, string baseMimeType)
 		{
-			return platformService.GetMimeTypeIsSubtype (subMimeType, baseMimeType);
+			return PlatformService.GetMimeTypeIsSubtype (subMimeType, baseMimeType);
 		}
 		
 		public static IEnumerable<string> GetMimeTypeInheritanceChain (string mimeType)
 		{
-			return platformService.GetMimeTypeInheritanceChain (mimeType);
+			return PlatformService.GetMimeTypeInheritanceChain (mimeType);
 		}
 		
 		public static Gdk.Pixbuf GetPixbufForFile (string filename, Gtk.IconSize size)
 		{
-			return platformService.GetPixbufForFile (filename, size);
+			return PlatformService.GetPixbufForFile (filename, size);
 		}
 		
 		public static Gdk.Pixbuf GetPixbufForType (string mimeType, Gtk.IconSize size)
 		{
-			return platformService.GetPixbufForType (mimeType, size);
+			return PlatformService.GetPixbufForType (mimeType, size);
 		}
 
 		public static bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager, string commandMenuAddinPath)
 		{
-			return platformService.SetGlobalMenu (commandManager, commandMenuAddinPath);
+			return PlatformService.SetGlobalMenu (commandManager, commandMenuAddinPath);
 		}
 		
 		// Used for preserve the file attributes when monodevelop opens & writes a file.
 		// This should work on unix & mac platform.
 		public static object GetFileAttributes (string fileName)
 		{
-			return platformService.GetFileAttributes (fileName);
+			return PlatformService.GetFileAttributes (fileName);
 		}
 		
 		public static void SetFileAttributes (string fileName, object attributes)
 		{
-			platformService.SetFileAttributes (fileName, attributes);
+			PlatformService.SetFileAttributes (fileName, attributes);
 		}
 		
 		public static Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
 		{
-			return platformService.GetUsableMonitorGeometry (screen, monitor);
+			return PlatformService.GetUsableMonitorGeometry (screen, monitor);
 		}
 		
 		public static bool CanOpenTerminal {
 			get {
-				return platformService.CanOpenTerminal;
+				return PlatformService.CanOpenTerminal;
 			}
 		}
 		
 		public static void OpenInTerminal (FilePath directory)
 		{
-			platformService.OpenInTerminal (directory);
+			PlatformService.OpenInTerminal (directory);
 		}
 		
 		public static RecentFiles RecentFiles {
 			get {
-				return platformService.RecentFiles;
+				return PlatformService.RecentFiles;
 			}
 		}
 		
@@ -172,7 +181,7 @@ namespace MonoDevelop.Ide
 		{
 			foreach (FileEventInfo e in args) {
 				if (!e.IsDirectory) {
-					platformService.RecentFiles.NotifyFileRemoved (e.FileName);
+					PlatformService.RecentFiles.NotifyFileRemoved (e.FileName);
 				}
 			}
 		}
@@ -181,24 +190,24 @@ namespace MonoDevelop.Ide
 		{
 			foreach (FileCopyEventInfo e in args) {
 				if (!e.IsDirectory) {
-					platformService.RecentFiles.NotifyFileRenamed (e.SourceFile, e.TargetFile);
+					PlatformService.RecentFiles.NotifyFileRenamed (e.SourceFile, e.TargetFile);
 				}
 			}
 		}
 		
 		internal static string GetUpdaterUrl ()
 		{
-			return platformService.GetUpdaterUrl ();
+			return PlatformService.GetUpdaterUrl ();
 		}
 		
 		internal static IEnumerable<string> GetUpdaterEnvironmentFlags ()
 		{
-			return platformService.GetUpdaterEnviromentFlags ();
+			return PlatformService.GetUpdaterEnviromentFlags ();
 		}
 		
 		internal static void StartUpdatesInstaller (FilePath installerDataFile, FilePath updatedInstallerPath)
 		{
-			platformService.StartUpdatesInstaller (installerDataFile, updatedInstallerPath);
+			PlatformService.StartUpdatesInstaller (installerDataFile, updatedInstallerPath);
 		}
 		
 		/// <summary>
@@ -206,7 +215,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		internal static void GrabDesktopFocus (Gtk.Window window)
 		{
-			platformService.GrabDesktopFocus (window);
+			PlatformService.GrabDesktopFocus (window);
 		}
 	}
 }

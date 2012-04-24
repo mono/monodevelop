@@ -40,6 +40,7 @@ public class MonoDevelopProcessHost
 	public static int Main (string[] args)
 	{
 		try {
+			Gtk.Application.Init ();
 			Runtime.Initialize (false);
 			Runtime.SetProcessName ("mdtool");
 			
@@ -78,7 +79,7 @@ public class MonoDevelopProcessHost
 			string[] newArgs = new string [args.Length - 1 - pi];
 			Array.Copy (args, pi + 1, newArgs, 0, args.Length - 1 - pi);
 			if (args [pi] != "setup")
-				return Runtime.ApplicationService.StartApplication (args[pi], newArgs);
+				return Runtime.ApplicationService.StartApplication (args [pi], newArgs);
 			else
 				return RunSetup (newArgs);
 		} catch (UserException ex) {
@@ -88,6 +89,7 @@ public class MonoDevelopProcessHost
 			Console.WriteLine (ex);
 			return -1;
 		} finally {
+			Gtk.Application.Quit ();
 			try {
 				Runtime.Shutdown ();
 			} catch {
