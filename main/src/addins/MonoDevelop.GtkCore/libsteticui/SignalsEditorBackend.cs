@@ -210,10 +210,12 @@ namespace Stetic
 		{
 			Wrapper.Widget selWidget = selection as Wrapper.Widget;
 			if (selWidget != null) {
-				if (selWidget.IsTopLevel)
-					return "On" + signalName;
-				else
-					return "On" + GetIdentifier (selWidget.Wrapped.Name) + signalName;
+//				if (selWidget.IsTopLevel)
+//					return "On" + signalName;
+//				else
+//					return "On" + GetIdentifier (selWidget.Wrapped.Name) + signalName;
+				return string.Format ("{0}_{1}", 
+				                      	GetIdentifier (selWidget.Wrapped.Name), signalName);
 			}
 			
 			Wrapper.Action action = selection as Wrapper.Action;

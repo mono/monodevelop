@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 
@@ -14,17 +13,14 @@ namespace Stetic
 		Component rootWidget;
 		
 		Project project;
-		Project editedProject;
 		int reloadCount;
 		
 		string componentName;
-		bool autoCommitChanges;
 		bool disposed;
 		
 		bool canCut, canCopy, canPaste, canDelete;
 		
 		public event EventHandler BindField;
-		public event EventHandler ModifiedChanged;
 		public event EventHandler Changed;
 		public event EventHandler SelectionChanged;
 		public event EventHandler RootComponentChanged;
@@ -34,26 +30,18 @@ namespace Stetic
 		public event ComponentNameEventHandler ComponentNameChanged;
 		public event EventHandler ComponentTypesChanged;
 		
-		internal WidgetDesigner (Project project, string componentName, bool autoCommitChanges): base (project.App)
+		internal WidgetDesigner (Project project, string componentName): base (project.App)
 		{
 			this.componentName = componentName;
-			this.autoCommitChanges = autoCommitChanges;
 			this.project = project;
 			frontend = new WidgetDesignerFrontend (this);
 			
-			if (autoCommitChanges)
-				editedProject = project;
-			else
-				editedProject = new Project (project.App);
-			
-			editedProject.SignalAdded += OnSignalAdded;
-			editedProject.SignalRemoved += OnSignalRemoved;
-			editedProject.SignalChanged += OnSignalChanged;
-			editedProject.ComponentNameChanged += OnComponentNameChanged;
-			editedProject.ComponentTypesChanged += OnComponentTypesChanged;
-			
+			project.SignalAdded += OnSignalAdded;
+			project.SignalRemoved += OnSignalRemoved;
+			project.SignalChanged += OnSignalChanged;
+			project.ComponentNameChanged += OnComponentNameChanged;
+			project.ComponentTypesChanged += OnComponentTypesChanged;
 			project.BackendChanged += OnProjectBackendChanged;
-			editedProject.BackendChanged += OnProjectBackendChanged;
 			
 			CreateSession ();
 		}
@@ -70,8 +58,8 @@ namespace Stetic
 		{
 			if (!disposed) {
 				ArrayList types = new ArrayList ();
-				types.AddRange (editedProject.GetComponentTypes ());
-				
+				types.AddRange (project.GetComponentTypes ());
+		
 				// Add actions from the local action groups
 				
 				WidgetComponent c = rootWidget as WidgetComponent;
@@ -90,12 +78,14 @@ namespace Stetic
 		public void BeginComponentDrag (ComponentType type, Gtk.Widget source, Gdk.DragContext ctx)
 		{
 			Stetic.ObjectWrapper wrapper = type.Action != null ? (Stetic.ObjectWrapper) type.Action.Backend : null;
-			app.Backend.BeginComponentDrag (editedProject.ProjectBackend, type.Description, type.ClassName, wrapper, source, ctx, null);
+			app.Backend.BeginComponentDrag (project.ProjectBackend, type.Description, type.ClassName, wrapper, source, ctx, null);
+			
 		}
 		
 		public void BeginComponentDrag (string title, string className, Gtk.Widget source, Gdk.DragContext ctx, ComponentDropCallback callback)
 		{
-			app.Backend.BeginComponentDrag (editedProject.ProjectBackend, title, className, null, source, ctx, callback);
+			app.Backend.BeginComponentDrag (project.ProjectBackend, title, className, null, source, ctx, callback);
+			
 		}
 		
 		// Creates an action group designer for the widget being edited by this widget designer
@@ -103,7 +93,8 @@ namespace Stetic
 		{
 			if (disposed)
 				throw new ObjectDisposedException ("WidgetDesigner");
-			return new ActionGroupDesigner (editedProject, componentName, null, this, true);
+			return new ActionGroupDesigner (project, componentName, null, this, true);
+			
 		}
 		
 		public bool Modified {
@@ -113,7 +104,7 @@ namespace Stetic
 		internal override void SetActive ()
 		{
 			if (!disposed)
-				project.App.SetActiveDesignSession (editedProject, session);
+				project.App.SetActiveDesignSession (project, session);
 		}
 		
 		public bool AllowWidgetBinding {
@@ -125,8 +116,8 @@ namespace Stetic
 		}
 		
 		public ImportFileDelegate ImportFileCallback {
-			get { return editedProject.ImportFileCallback; }
-			set { editedProject.ImportFileCallback = value; }
+			get { return project.ImportFileCallback; }
+			set { project.ImportFileCallback = value; }
 		}
 		
 		public object SaveStatus ()
@@ -142,7 +133,7 @@ namespace Stetic
 		void CreateSession ()
 		{
 			try {
-				session = project.ProjectBackend.CreateWidgetDesignerSession (frontend, componentName, editedProject.ProjectBackend, autoCommitChanges);
+				session = project.ProjectBackend.CreateWidgetDesignerSession (frontend, componentName);
 				ResetCustomWidget ();
 				rootWidget = app.GetComponent (session.RootWidget, null, null);
 			} catch (Exception ex) {
@@ -232,27 +223,23 @@ namespace Stetic
 				if (disposed)
 					return;
 				
-				if (project.App.ActiveProject == editedProject)
+				if (project.App.ActiveProject == project)
 					project.App.ActiveProject = null;
 				
 				disposed = true;
 				frontend.disposed = true;
-				editedProject.SignalAdded -= OnSignalAdded;
-				editedProject.SignalRemoved -= OnSignalRemoved;
-				editedProject.SignalChanged -= OnSignalChanged;
-				editedProject.ComponentNameChanged -= OnComponentNameChanged;
-				editedProject.BackendChanged -= OnProjectBackendChanged;
-				editedProject.ComponentTypesChanged -= OnComponentTypesChanged;
+				project.SignalAdded -= OnSignalAdded;
+				project.SignalRemoved -= OnSignalRemoved;
+				project.SignalChanged -= OnSignalChanged;
+				project.ComponentNameChanged -= OnComponentNameChanged;
+				project.ComponentTypesChanged -= OnComponentTypesChanged;
 				project.BackendChanged -= OnProjectBackendChanged;
 				
 				if (session != null) {
 					session.Dispose ();
 					session = null;
 				}
-					
-				if (!autoCommitChanges)
-					editedProject.Dispose ();
-					
+						
 				System.Runtime.Remoting.RemotingServices.Disconnect (frontend);
 				frontend = null;
 				rootWidget = null;
@@ -309,10 +296,10 @@ namespace Stetic
 			if (++reloadCount == 2) {
 				object sessionData = null;
 				
-				if (oldBackend != null && !autoCommitChanges) {
-					sessionData = session.SaveState ();
-					session.DestroyWrapperWidgetPlug ();
-				}
+//				if (oldBackend != null && !autoCommitChanges) {
+//					sessionData = session.SaveState ();
+//					session.DestroyWrapperWidgetPlug ();
+//				}
 
 				// Don't dispose the session here, since it will dispose
 				// the underlying project, and we can't do it because
@@ -359,12 +346,6 @@ namespace Stetic
 				BindField (this, EventArgs.Empty);
 		}
 		
-		internal void NotifyModifiedChanged ()
-		{
-			if (ModifiedChanged != null)
-				ModifiedChanged (this, EventArgs.Empty);
-		}
-		
 		internal void NotifyChanged ()
 		{
 			if (Changed != null)
@@ -402,13 +383,6 @@ namespace Stetic
 		{
 			GuiDispatch.InvokeSync (
 				delegate { if (!disposed) designer.NotifyBindField (); }
-			);
-		}
-		
-		public void NotifyModifiedChanged ()
-		{
-			GuiDispatch.InvokeSync (
-				delegate { if (!disposed) designer.NotifyModifiedChanged (); }
 			);
 		}
 		

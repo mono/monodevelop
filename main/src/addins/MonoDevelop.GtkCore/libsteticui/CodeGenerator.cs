@@ -10,39 +10,39 @@ namespace Stetic
 {
 	internal static class CodeGenerator
 	{
-		public static void GenerateProjectCode (string file, CodeDomProvider provider, GenerationOptions options, ProjectBackend[] projects)
-		{
-			CodeGenerationResult res = GenerateProjectCode (options, projects);
-			
-			string basePath = Path.GetDirectoryName (file);
-			
-			foreach (SteticCompilationUnit unit in res.Units) {
-				string fname;
-				if (unit.Name.Length == 0)
-					fname = file;
-				else
-					fname = Path.Combine (basePath, unit.Name);
-				StreamWriter fileStream = new StreamWriter (fname);
-				try {
-					provider.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
-				} finally {
-					fileStream.Close ();
-				}
-			}
-		}
+//		public static void GenerateProjectCode (string file, CodeDomProvider provider, GenerationOptions options, ProjectBackend[] projects)
+//		{
+//			CodeGenerationResult res = GenerateProjectCode (options, projects);
+//			
+//			string basePath = Path.GetDirectoryName (file);
+//			
+//			foreach (SteticCompilationUnit unit in res.Units) {
+//				string fname;
+//				if (unit.Name.Length == 0)
+//					fname = file;
+//				else
+//					fname = Path.Combine (basePath, unit.Name);
+//				StreamWriter fileStream = new StreamWriter (fname);
+//				try {
+//					provider.GenerateCodeFromCompileUnit (unit, fileStream, new CodeGeneratorOptions ());
+//				} finally {
+//					fileStream.Close ();
+//				}
+//			}
+//		}
 		
 		public static CodeGenerationResult GenerateProjectCode (GenerationOptions options, ProjectBackend[] projects)
 		{
 			ArrayList warningList = new ArrayList ();
 			
 			List<SteticCompilationUnit> units = new List<SteticCompilationUnit> ();
-			SteticCompilationUnit globalUnit = new SteticCompilationUnit ("");
-			units.Add (globalUnit);
+//			SteticCompilationUnit globalUnit = new SteticCompilationUnit ("");
+//			units.Add (globalUnit);
 			
 			if (options == null)
 				options = new GenerationOptions ();
 			CodeNamespace globalNs = new CodeNamespace (options.GlobalNamespace);
-			globalUnit.Namespaces.Add (globalNs);
+//			globalUnit.Namespaces.Add (globalNs);
 			
 			// Global class
 			
@@ -73,11 +73,7 @@ namespace Stetic
 			warningList.AddRange (initContext.Warnings);
 					
 			// Generate the code
-			
-			if (options.UsePartialClasses)
-				CodeGeneratorPartialClass.GenerateProjectGuiCode (globalUnit, globalNs, globalType, options, units, projects, warningList);
-			else
-				CodeGeneratorInternalClass.GenerateProjectGuiCode (globalUnit, globalNs, globalType, options, units, projects, warningList);
+			CodeGeneratorPartialClass.GenerateProjectGuiCode (globalNs, globalType, options, units, projects, warningList);
 
 			GenerateProjectActionsCode (globalNs, options, projects);
 			
@@ -108,6 +104,19 @@ namespace Stetic
 			initMethod.Statements.Clear ();
 			initMethod.Statements.Add (initCondition);
 			
+			//create separate compilation unit for each type in the global namespace
+			//and insert them at the begining of the units list.
+			int index = 0;
+			foreach (CodeTypeDeclaration type in globalNs.Types)
+			{
+				SteticCompilationUnit unit = new SteticCompilationUnit (type.Name);
+				CodeNamespace ns = new CodeNamespace (globalNs.Name);
+				
+				ns.Types.Add (type);
+				unit.Namespaces.Add (ns);
+				units.Insert (index++, unit);
+			}
+			
 			return new CodeGenerationResult (units.ToArray (), (string[]) warningList.ToArray (typeof(string)));
 		}
 		
@@ -116,25 +125,10 @@ namespace Stetic
 			foreach (Signal signal in wrapper.Signals) {
 				SignalDescriptor descriptor = signal.SignalDescriptor;
 				
-				CodeExpression createDelegate;
-				
-				if (options.UsePartialClasses) {
-					createDelegate =
-						new CodeDelegateCreateExpression (
-							new CodeTypeReference (descriptor.HandlerTypeName, CodeTypeReferenceOptions.GlobalReference),
-							new CodeThisReferenceExpression (),
-							signal.Handler);
-				} else {
-					createDelegate =
-						new CodeMethodInvokeExpression (
-							new CodeTypeReferenceExpression (new CodeTypeReference (typeof(Delegate), CodeTypeReferenceOptions.GlobalReference)),
-							"CreateDelegate",
-							new CodeTypeOfExpression (descriptor.HandlerTypeName),
-							targetObjectVar,
-							new CodePrimitiveExpression (signal.Handler));
-					
-					createDelegate = new CodeCastExpression (descriptor.HandlerTypeName.ToGlobalTypeRef (), createDelegate);
-				}
+				CodeExpression createDelegate = new CodeDelegateCreateExpression (
+						new CodeTypeReference (descriptor.HandlerTypeName, CodeTypeReferenceOptions.GlobalReference),
+						new CodeThisReferenceExpression (),
+						signal.Handler);
 				
 				CodeAttachEventStatement cevent = new CodeAttachEventStatement (
 					new CodeEventReferenceExpression (
@@ -374,7 +368,7 @@ namespace Stetic
 			if (memberName == null)
 				return base.GenerateInstanceExpression (wrapper, newObject);
 			
-			if (Options.UsePartialClasses) {
+//			if (Options.UsePartialClasses) {
 				// Don't generate fields for top level widgets and for widgets accessible
 				// through other widget's properties
 				Wrapper.Widget ww = wrapper as Wrapper.Widget;
@@ -399,19 +393,19 @@ namespace Stetic
 					return var;
 				} else 
 					return base.GenerateInstanceExpression (wrapper, newObject);
-			} else {
-				CodeExpression var = base.GenerateInstanceExpression (wrapper, newObject);
-				Statements.Add (
-					new CodeAssignStatement (
-						new CodeIndexerExpression (
-							new CodeVariableReferenceExpression ("bindings"),
-							new CodePrimitiveExpression (memberName)
-						),
-						var
-					)
-				);
-				return var;
-			}
+//			} else {
+//				CodeExpression var = base.GenerateInstanceExpression (wrapper, newObject);
+//				Statements.Add (
+//					new CodeAssignStatement (
+//						new CodeIndexerExpression (
+//							new CodeVariableReferenceExpression ("bindings"),
+//							new CodePrimitiveExpression (memberName)
+//						),
+//						var
+//					)
+//				);
+//				return var;
+//			}
 		}
 	}
 	
@@ -428,6 +422,11 @@ namespace Stetic
 		public string Name {
 			get { return name; }
 			internal set { name = value; }
+		}
+		
+		public CodeNamespace Namespace 
+		{
+			get { return (Namespaces.Count > 0) ? Namespaces [0] : null; }
 		}
 	}
 }

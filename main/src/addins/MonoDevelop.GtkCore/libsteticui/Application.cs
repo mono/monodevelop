@@ -308,18 +308,18 @@ namespace Stetic
 				UpdateWidgetLibraries (false, false);
 		}
 		
-		public Project LoadProject (string path)
-		{
-			Project p = new Project (this);
-			p.Load (path);
-			projects.Add (p);
-			p.Disposed += ProjectDisposed;
-			return p;
-		}
+//		public Project LoadProject (string path, IProjectDesignInfo info)
+//		{
+//			Project p = new Project (this, info);
+//			p.Load (path);
+//			projects.Add (p);
+//			p.Disposed += ProjectDisposed;
+//			return p;
+//		}
 		
-		public Project CreateProject ()
+		public Project CreateProject (IProjectDesignInfo info)
 		{
-			Project p = new Project (this);
+			Project p = new Project (this, info);
 			projects.Add (p);
 			p.Disposed += ProjectDisposed;
 			return p;
@@ -531,6 +531,9 @@ namespace Stetic
 		{
 			try {
 				lock (components) {
+					if (cbackend == null)
+						return null;
+					
 					Component c = (Component) components [cbackend];
 					if (c != null)
 						return c;

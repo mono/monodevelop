@@ -34,6 +34,7 @@ namespace Stetic
 			appFrontend = app;
 			coreLibrary = Path.GetFullPath (typeof(Registry).Assembly.Location);
 			Registry.Initialize (new AssemblyWidgetLibrary (coreLibrary, typeof(Registry).Assembly));
+			                                                                     
 			WidgetDesignerBackend.DefaultObjectViewer = this;
 		}
 		
@@ -149,9 +150,9 @@ namespace Stetic
 				Registry.BeginChangeSet ();
 				
 				libraries.Add (Registry.CoreWidgetLibrary.Name);
+//				libraries.Add (Registry.CoreWidgetLibrary2.Name);
 				
 				// Notify libraries that need to be unloaded and loaded again
-				
 				foreach (WidgetLibrary lib in Registry.RegisteredWidgetLibraries) {
 					if (lib.NeedsReload)
 						appFrontend.NotifyLibraryUnloaded (lib.Name);
@@ -280,13 +281,13 @@ namespace Stetic
 				
 			visited [lib.Name] = lib;
 			
-			foreach (string dep in lib.GetLibraryDependencies ()) {
-				WidgetLibrary depLib = Registry.GetWidgetLibrary (dep);
-				if (depLib == null)
-					AddLibrary (resolver, visited, dep);
-				else
-					CheckDependencies (resolver, visited, depLib);
-			}
+//			foreach (string dep in lib.GetLibraryDependencies ()) {
+//				WidgetLibrary depLib = Registry.GetWidgetLibrary (dep);
+//				if (depLib == null)
+//					AddLibrary (resolver, visited, dep);
+//				else
+//					CheckDependencies (resolver, visited, depLib);
+//			}
 		}
 		
 		public ProjectBackend ActiveProject {

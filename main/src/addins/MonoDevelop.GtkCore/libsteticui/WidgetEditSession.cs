@@ -39,14 +39,12 @@ namespace Stetic {
 	internal class WidgetEditSession: MarshalByRefObject, IDisposable
 	{
 		string sourceWidget;
-		Stetic.ProjectBackend sourceProject;
+		Stetic.ProjectBackend project;
 		
-		Stetic.ProjectBackend gproject;
 		Stetic.Wrapper.Container rootWidget;
 		Stetic.WidgetDesignerBackend widget;
 		Gtk.VBox designer;
 		Gtk.Plug plug;
-		bool autoCommitChanges;
 		WidgetActionBar toolbar;
 		WidgetDesignerFrontend frontend;
 		bool allowBinding;
@@ -55,61 +53,27 @@ namespace Stetic {
 		ContainerUndoRedoManager undoManager;
 		UndoQueue undoQueue;
 		
-		public event EventHandler ModifiedChanged;
 		public event EventHandler RootWidgetChanged;
 		public event Stetic.Wrapper.WidgetEventHandler SelectionChanged;
 		
-		public WidgetEditSession (ProjectBackend sourceProject, WidgetDesignerFrontend frontend, string windowName, Stetic.ProjectBackend editingBackend, bool autoCommitChanges)
+		public WidgetEditSession (ProjectBackend sourceProject, WidgetDesignerFrontend frontend, string windowName)
 		{
 			this.frontend = frontend;
-			this.autoCommitChanges = autoCommitChanges;
 			undoManager = new ContainerUndoRedoManager ();
 			undoQueue = new UndoQueue ();
 			undoManager.UndoQueue = undoQueue;
 			
 			sourceWidget = windowName;
-			this.sourceProject = sourceProject;
-			
-			if (!autoCommitChanges) {
-				// Reuse the action groups and icon factory of the main project
-				gproject = editingBackend;
-				
-				// Attach will prevent the destruction of the action group list by gproject
-				gproject.AttachActionGroups (sourceProject.ActionGroups);
-				
-				gproject.IconFactory = sourceProject.IconFactory;
-				gproject.FileName = sourceProject.FileName;
-				gproject.ImagesRootPath = sourceProject.ImagesRootPath;
-				gproject.ResourceProvider = sourceProject.ResourceProvider;
-				gproject.WidgetLibraries = (ArrayList) sourceProject.WidgetLibraries.Clone ();
-				gproject.InternalWidgetLibraries = (ArrayList) sourceProject.InternalWidgetLibraries.Clone ();
-				gproject.TargetGtkVersion = sourceProject.TargetGtkVersion;
-				sourceProject.ComponentTypesChanged += OnSourceProjectLibsChanged;
-				sourceProject.ProjectReloaded += OnSourceProjectReloaded;
-				
-				rootWidget = editingBackend.GetTopLevelWrapper (sourceWidget, false);
-				if (rootWidget == null) {
-					// Copy the widget to edit from the source project
-					// When saving the file, this project will be merged with the main project.
-					sourceProject.CopyWidgetToProject (windowName, gproject, windowName);
-					rootWidget = gproject.GetTopLevelWrapper (windowName, true);
-				}
-				
-				gproject.Modified = false;
-			}
-			else {
-				rootWidget = sourceProject.GetTopLevelWrapper (windowName, true);
-				gproject = sourceProject;
-			}
-			
+			this.project = sourceProject;
+						
+			rootWidget = sourceProject.GetTopLevelWrapper (windowName, true);
 			rootWidget.Select ();
 			undoManager.RootObject = rootWidget;
 			
-			gproject.ModifiedChanged += new EventHandler (OnModifiedChanged);
-			gproject.Changed += new EventHandler (OnChanged);
-			gproject.ProjectReloaded += new EventHandler (OnProjectReloaded);
-			gproject.ProjectReloading += new EventHandler (OnProjectReloading);
-//			gproject.WidgetMemberNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
+			this.project.Changed += new ProjectChangedEventHandler (OnChanged);
+			this.project.ProjectReloaded += new EventHandler (OnProjectReloaded);
+			this.project.ProjectReloading += new EventHandler (OnProjectReloading);
+//			this.project.WidgetMemberNameChanged += new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 		}
 		
 		public bool AllowWidgetBinding {
@@ -144,7 +108,8 @@ namespace Stetic {
 					designer.BorderWidth = 3;
 					designer.PackStart (toolbar, false, false, 0);
 					designer.PackStart (widget, true, true, 3);
-					widget.DesignArea.SetSelection (gproject.Selection, gproject.Selection, false);
+					widget.DesignArea.SetSelection (project.Selection, project.Selection, false);
+					
 					widget.SelectionChanged += OnSelectionChanged;
 				
 				}
@@ -173,42 +138,24 @@ namespace Stetic {
 		}
 		
 		public void Save ()
-		{
-			if (!autoCommitChanges) {
-				gproject.CopyWidgetToProject (rootWidget.Wrapped.Name, sourceProject, sourceWidget);
-				sourceWidget = rootWidget.Wrapped.Name;
-				gproject.Modified = false;
-			}
+		{		
 		}
 		
 		public ProjectBackend EditingBackend {
-			get { return gproject; }
+			get { return project; }
 		}
 		
 		public void Dispose ()
 		{
-			sourceProject.ComponentTypesChanged -= OnSourceProjectLibsChanged;
-			sourceProject.ProjectReloaded -= OnSourceProjectReloaded;
-			
-			gproject.ModifiedChanged -= new EventHandler (OnModifiedChanged);
-			gproject.Changed -= new EventHandler (OnChanged);
-			gproject.ProjectReloaded -= OnProjectReloaded;
-			gproject.ProjectReloading -= OnProjectReloading;
-//			gproject.WidgetMemberNameChanged -= new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
-			
-			if (!autoCommitChanges) {
-				// Don't dispose the project here! it will be disposed by the frontend
-				if (widget != null) {
-					widget.SelectionChanged -= OnSelectionChanged;
-					// Don't dispose the widget. It will be disposed when destroyed together
-					// with the container
-					widget = null;
-				}
-			}
+			project.ComponentTypesChanged -= OnSourceProjectLibsChanged;
+			project.ProjectReloaded -= OnSourceProjectReloaded;
+			project.Changed -= new ProjectChangedEventHandler (OnChanged);
+			project.ProjectReloaded -= OnProjectReloaded;
+			project.ProjectReloading -= OnProjectReloading;
+//			project.WidgetMemberNameChanged -= new Stetic.Wrapper.WidgetNameChangedHandler (OnWidgetNameChanged);
 			
 			if (plug != null)
 				plug.Destroy ();
-			gproject = null;
 			rootWidget = null;
 			frontend = null;
 			System.Runtime.Remoting.RemotingServices.Disconnect (this);
@@ -231,7 +178,12 @@ namespace Stetic {
 		}
 		
 		public bool Modified {
-			get { return gproject.Modified; }
+			get { 
+				if (project == null || RootWidget == null)
+					return false;
+				
+				return project.WasModified (RootWidget.Name); 
+			}
 		}
 		
 		public UndoQueue UndoQueue {
@@ -243,32 +195,22 @@ namespace Stetic {
 			}
 		}
 		
-		void OnModifiedChanged (object s, EventArgs a)
+		void OnChanged (object s, ProjectChangedEventArgs a)
 		{
-			if (frontend != null)
-				frontend.NotifyModifiedChanged ();
-		}
-		
-		void OnChanged (object s, EventArgs a)
-		{
+			if (a.ChangedTopLevelName != RootWidget.Name)
+				return;
+			
 			if (frontend != null)
 				frontend.NotifyChanged ();
 		}
 		
 		void OnSourceProjectReloaded (object s, EventArgs a)
 		{
-			// Propagate gtk version change
-			if (sourceProject.TargetGtkVersion != gproject.TargetGtkVersion)
-				gproject.TargetGtkVersion = sourceProject.TargetGtkVersion;
+			
 		}
 		
 		void OnSourceProjectLibsChanged (object s, EventArgs a)
 		{
-			// If component types have changed in the source project, they must also change
-			// in this project.
-			gproject.WidgetLibraries = (ArrayList) sourceProject.WidgetLibraries.Clone ();
-			gproject.InternalWidgetLibraries = (ArrayList) sourceProject.InternalWidgetLibraries.Clone ();
-			gproject.NotifyComponentTypesChanged ();
 		}
 		
 		void OnProjectReloading (object s, EventArgs a)
@@ -279,16 +221,10 @@ namespace Stetic {
 		
 		void OnProjectReloaded (object s, EventArgs a)
 		{
-			// Update the actions group list
-			if (!autoCommitChanges) {
-				gproject.AttachActionGroups (sourceProject.ActionGroups);
-				gproject.WidgetLibraries = (ArrayList) sourceProject.WidgetLibraries.Clone ();
-				gproject.InternalWidgetLibraries = (ArrayList) sourceProject.InternalWidgetLibraries.Clone ();
-			}
+			Gtk.Widget topWidget = project.GetWidget (sourceWidget);
 			
-			Gtk.Widget[] tops = gproject.Toplevels;
-			if (tops.Length > 0) {
-				rootWidget = Stetic.Wrapper.Container.Lookup (tops[0]);
+			if (topWidget != null) {
+				rootWidget = Stetic.Wrapper.Container.Lookup (topWidget);
 				undoManager.RootObject = rootWidget;
 				if (rootWidget != null) {
 					Gtk.Widget oldWidget = designer;
@@ -305,8 +241,8 @@ namespace Stetic {
 							return false;
 						});
 					}
-						
-					gproject.NotifyComponentTypesChanged ();
+									
+					project.NotifyComponentTypesChanged ();
 					return;
 				}
 			}
@@ -375,7 +311,7 @@ namespace Stetic {
 		public object SaveState ()
 		{
 			return new object[] {
-				gproject.SaveStatus (),
+				project.SaveStatus (),
 				undoQueue
 			};
 		}
@@ -383,7 +319,7 @@ namespace Stetic {
 		public void RestoreState (object sessionData)
 		{
 			object[] status = (object[]) sessionData;
-			gproject.LoadStatus (status [0]);
+			project.LoadStatus (status [0]);
 			undoQueue = (UndoQueue) status [1];
 			foreach (UndoRedoChange ch in undoQueue.Changes) {
 				ObjectWrapperUndoRedoChange och = ch as ObjectWrapperUndoRedoChange;

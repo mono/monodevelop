@@ -12,14 +12,14 @@ namespace Stetic
 	{
 		Application app;
 		ProjectBackend backend;
-		string fileName;
+		//string fileName;
+		string folderName;
 		IResourceProvider resourceProvider;
 		Component selection;
 		string tmpProjectFile;
 		bool reloadRequested;
 		List<WidgetInfo> widgets = new List<WidgetInfo> ();
 		List<ActionGroupInfo> groups = new List<ActionGroupInfo> ();
-		bool modified;
 		ImportFileDelegate importFileDelegate;
 		
 		public event WidgetInfoEventHandler WidgetAdded;
@@ -42,11 +42,11 @@ namespace Stetic
 		public event EventHandler ProjectReloading;
 		public event EventHandler ProjectReloaded;
 
-		internal Project (Application app): this (app, null)
+		internal Project (Application app, IProjectDesignInfo info): this (app, null, info)
 		{
 		}
 		
-		internal Project (Application app, ProjectBackend backend)
+		internal Project (Application app, ProjectBackend backend, IProjectDesignInfo info)
 		{
 			this.app = app;
 			if (backend != null) {
@@ -59,7 +59,11 @@ namespace Stetic
 				iapp.BackendChanging += OnBackendChanging;
 				iapp.BackendChanged += OnBackendChanged;
 			}
+			
+			DesignInfo = info;
 		}
+		
+		internal IProjectDesignInfo DesignInfo { get; private set; }
 		
 		internal ProjectBackend ProjectBackend {
 			get {
@@ -68,8 +72,8 @@ namespace Stetic
 					backend.SetFrontend (this);
 					if (resourceProvider != null)
 						backend.ResourceProvider = resourceProvider;
-					if (fileName != null)
-						backend.Load (fileName);
+					if (folderName != null)
+						backend.Load (folderName);
 				}
 				return backend; 
 			}
@@ -110,9 +114,9 @@ namespace Stetic
 			return null;
 		}
 
-		public string FileName {
-			get { return fileName; }
-		}
+//		public string FileName {
+//			get { return fileName; }
+//		}
 		
 		public IResourceProvider ResourceProvider { 
 			get { return resourceProvider; }
@@ -157,37 +161,55 @@ namespace Stetic
 				backend.Close ();
 		}
 		
-		public void Load (string fileName)
+		public void Load (string folderName)
 		{
-			this.fileName = fileName;
+			this.folderName = folderName;
 			if (backend != null)
-				backend.Load (fileName);
+				backend.Load (folderName);
 			
-			using (StreamReader sr = new StreamReader (fileName)) {
-				XmlTextReader reader = new XmlTextReader (sr); 
+			foreach (string basePath in DesignInfo.GetComponentFolders ()) {
+				if (!Directory.Exists (basePath))
+					continue;
 				
-				reader.MoveToContent ();
-				if (reader.IsEmptyElement)
-					return;
+				DirectoryInfo dir = new DirectoryInfo (basePath);
 				
-				reader.ReadStartElement ("stetic-interface");
-				if (reader.IsEmptyElement)
-					return;
-				while (reader.NodeType != XmlNodeType.EndElement) {
-					if (reader.NodeType == XmlNodeType.Element) {
-						if (reader.LocalName == "widget")
-							ReadWidget (reader);
-						else if (reader.LocalName == "action-group")
-							ReadActionGroup (reader);
-						else
-							reader.Skip ();
+				foreach (FileInfo file in dir.GetFiles ()) {
+					if (file.Extension == ".gtkx") {
+						
+						using (StreamReader sr = new StreamReader (file.FullName)) {
+							XmlTextReader reader = new XmlTextReader (sr); 
+							
+							reader.MoveToContent ();
+							if (reader.IsEmptyElement)
+								return;
+							
+							reader.ReadStartElement ("stetic-interface");
+							if (reader.IsEmptyElement)
+								return;
+							while (reader.NodeType != XmlNodeType.EndElement) {
+								if (reader.NodeType == XmlNodeType.Element) {
+									if (reader.LocalName == "widget")
+										ReadWidget (reader);
+									else if (reader.LocalName == "action-group")
+										ReadActionGroup (reader);
+									else
+										reader.Skip ();
+								}
+								else {
+									reader.Skip ();
+								}
+								reader.MoveToContent ();
+							}
+						}
 					}
-					else {
-						reader.Skip ();
-					}
-					reader.MoveToContent ();
 				}
 			}
+		}
+		
+		public void ReloadComponent (string componentName)
+		{
+			if (backend != null)
+				backend.ReloadComponent (componentName);
 		}
 		
 		void ReadWidget (XmlTextReader reader)
@@ -216,11 +238,21 @@ namespace Stetic
 			reader.Skip ();
 		}
 		
-		public void Save (string fileName)
+		public void ConvertProject (string oldSteticFileName, string newGuiFolderName)
 		{
-			this.fileName = fileName;
+			//ProjectBackend property when created invokes Load method which is not valid
+			//for old file layout
+			
+			ProjectBackend backend = app.Backend.CreateProject ();
+			backend.SetFrontend (this);
+			backend.ConvertProject (oldSteticFileName, newGuiFolderName);
+		}
+		
+		public void Save (string folderName)
+		{
+			this.folderName = folderName;
 			if (backend != null)
-				backend.Save (fileName);
+				backend.Save (folderName);
 		}
 		
 		public void ImportGlade (string fileName)
@@ -231,31 +263,6 @@ namespace Stetic
 		public void ExportGlade (string fileName)
 		{
 			ProjectBackend.ExportGlade (fileName);
-		}
-		
-		public object SaveStatus ()
-		{
-			return ProjectBackend.SaveStatus ();
-		}
-		
-		public void LoadStatus (object status)
-		{
-			ProjectBackend.LoadStatus (status);
-		}
-		
-		public bool Modified {
-			get {
-				if (backend != null)
-					return backend.Modified; 
-				else
-					return modified;
-			}
-			set {
-				if (backend != null)
-					backend.Modified = value;	
-				else
-					modified = true;
-			}
 		}
 		
 		public IEnumerable<WidgetInfo> Widgets {
@@ -282,9 +289,14 @@ namespace Stetic
 			return null;
 		}
 				
-		public WidgetDesigner CreateWidgetDesigner (WidgetInfo widgetInfo, bool autoCommitChanges)
+//		public WidgetDesigner CreateWidgetDesigner (WidgetInfo widgetInfo, bool autoCommitChanges)
+//		{
+//			return new WidgetDesigner (this, widgetInfo.Name, autoCommitChanges);
+//		}
+		
+		public WidgetDesigner CreateWidgetDesigner (WidgetInfo widgetInfo)
 		{
-			return new WidgetDesigner (this, widgetInfo.Name, autoCommitChanges);
+			return new WidgetDesigner (this, widgetInfo.Name);
 		}
 		
 		public ActionGroupDesigner CreateActionGroupDesigner (ActionGroupInfo actionGroup, bool autoCommitChanges)
@@ -300,7 +312,7 @@ namespace Stetic
 			if (wi == null) {
 				wi = new WidgetInfo (this, wc);
 				widgets.Add (wi);
-			}
+			} 
 			return wi;
 		}
 		
@@ -314,6 +326,36 @@ namespace Stetic
 				widgets.Add (wi);
 			}
 			return wi;
+		}
+		
+		public object AddNewComponent (string fileName)
+		{
+			object ob = ProjectBackend.AddNewComponent (fileName);
+			object component = App.GetComponent (ob, null, null);
+			
+			if (component is WidgetComponent) {
+				var wc = (WidgetComponent) component;
+				WidgetInfo wi = GetWidget (wc.Name);
+				if (wi == null) {
+					wi = new WidgetInfo (this, wc);
+					widgets.Add (wi);
+				}
+				return wi;
+			}
+				
+			if (component is ActionGroupComponent) {
+				var ac = (ActionGroupComponent) component;
+				// Don't wait for the group added event to come to update the groups list since
+				// it may be too late.
+				ActionGroupInfo gi = GetActionGroup (ac.Name);
+				if (gi == null) {
+					gi = new ActionGroupInfo (this, ac.Name);
+					groups.Add (gi);
+				}
+				return gi;
+			}
+			
+			return null;
 		}
 		
 		public ComponentType[] GetComponentTypes ()
@@ -533,7 +575,7 @@ namespace Stetic
 			);
 		}
 		
-		internal void NotifyChanged ()
+		internal void NotifyChanged (string rootWidgetName)
 		{
 			GuiDispatch.InvokeSync (
 				delegate {
@@ -541,10 +583,14 @@ namespace Stetic
 						Changed (this, EventArgs.Empty);
 				
 					// TODO: Optimize
-					foreach (ProjectItemInfo it in widgets)
-						it.NotifyChanged ();
-					foreach (ProjectItemInfo it in groups)
-						it.NotifyChanged ();
+					foreach (ProjectItemInfo it in widgets) {
+						if (it.Name == rootWidgetName)
+							it.NotifyChanged ();
+					}
+					foreach (ProjectItemInfo it in groups) {
+						if (it.Name == rootWidgetName)
+							it.NotifyChanged ();
+					}
 				}
 			);
 		}
@@ -691,11 +737,12 @@ namespace Stetic
 			backend.SetFrontend (this);
 
 			if (tmpProjectFile != null && File.Exists (tmpProjectFile)) {
-				backend.Load (tmpProjectFile, fileName);
+//				backend.Load (tmpProjectFile, fileName);
+				throw new NotImplementedException ("OnBackendChanged");
 				File.Delete (tmpProjectFile);
 				tmpProjectFile = null;
-			} else if (fileName != null) {
-				backend.Load (fileName);
+			} else if (folderName != null) {
+				backend.Load (folderName);
 			}
 
 			if (resourceProvider != null)

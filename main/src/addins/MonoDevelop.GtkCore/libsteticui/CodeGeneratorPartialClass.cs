@@ -11,32 +11,47 @@ namespace Stetic
 {
 	internal static class CodeGeneratorPartialClass
 	{
-		public static void GenerateProjectGuiCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, CodeTypeDeclaration globalType, GenerationOptions options, List<SteticCompilationUnit> units, ProjectBackend[] projects, ArrayList warnings)
+		public static void GenerateProjectGuiCode (CodeNamespace globalNs, CodeTypeDeclaration globalType, GenerationOptions options, List<SteticCompilationUnit> units, ProjectBackend[] projects, ArrayList warnings)
 		{
 			// Generate code for each project
 			foreach (ProjectBackend gp in projects) {
 			
 				// Generate top levels
-				foreach (Gtk.Widget w in gp.Toplevels)
-					GenerateWidgetCode (globalUnit, globalNs, options, units, w, warnings);
+				foreach (Gtk.Widget w in gp.Toplevels) {
+					Stetic.Wrapper.Widget wwidget = Stetic.Wrapper.Widget.Lookup (w);
+					string topLevelName = wwidget.Name;
+					if (gp.ComponentNeedsCodeGeneration (topLevelName)) {
+						//designer file for widget could be changed beyond stetic process 
+						//and we nead update wrapper before code generation
+						//during reloading wrappered widget w could be changed;
+						Gtk.Widget currentw = w;
+						if (gp.ReloadTopLevel (topLevelName)) {
+							currentw = gp.GetWidget (topLevelName);
+						}
+						GenerateWidgetCode (globalNs, options, units, currentw, warnings);
+					}
+				}
 					
 				// Generate global action groups
-				foreach (Wrapper.ActionGroup agroup in gp.ActionGroups)
-					GenerateGlobalActionGroupCode (globalUnit, globalNs, options, units, agroup, warnings);
+				foreach (Wrapper.ActionGroup agroup in gp.ActionGroups) {
+					string groupName = agroup.Name;
+					if (gp.ComponentNeedsCodeGeneration (groupName)) {
+						//designer file for action group could be changed beyond stetic process 
+						//and we nead update wrapper
+						gp.ReloadActionGroup (groupName);
+						GenerateGlobalActionGroupCode (globalNs, options, units, agroup, warnings);
+					}
+				}
 			}
 		}
 		
-		static CodeTypeDeclaration CreatePartialClass (SteticCompilationUnit globalUnit, List<SteticCompilationUnit> units, GenerationOptions options, string name)
+		static CodeTypeDeclaration CreatePartialClass (List<SteticCompilationUnit> units, GenerationOptions options, string name)
 		{
 			SteticCompilationUnit unit;
-			
-			if (options.GenerateSingleFile)
-				unit = globalUnit;
-			else {
-				unit = new SteticCompilationUnit (name);
-				units.Add (unit);
-			}
-			
+	
+			unit = new SteticCompilationUnit (name);
+			units.Add (unit);
+					
 			string ns = "";
 			int i = name.LastIndexOf ('.');
 			if (i != -1) {
@@ -56,11 +71,11 @@ namespace Stetic
 		}
 		
 		
-		static void GenerateWidgetCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, GenerationOptions options, List<SteticCompilationUnit> units, Gtk.Widget w, ArrayList warnings)
+		static void GenerateWidgetCode (CodeNamespace globalNs, GenerationOptions options, List<SteticCompilationUnit> units, Gtk.Widget w, ArrayList warnings)
 		{
 			// Generate the build method
 			
-			CodeTypeDeclaration type = CreatePartialClass (globalUnit, units, options, w.Name);
+			CodeTypeDeclaration type = CreatePartialClass (units, options, w.Name);
 			CodeMemberMethod met = new CodeMemberMethod ();
 			met.Name = "Build";
 			type.Members.Add (met);
@@ -107,9 +122,9 @@ namespace Stetic
 		}
 
 		
-		static void GenerateGlobalActionGroupCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, GenerationOptions options, List<SteticCompilationUnit> units, Wrapper.ActionGroup agroup, ArrayList warnings)
+		static void GenerateGlobalActionGroupCode (CodeNamespace globalNs, GenerationOptions options, List<SteticCompilationUnit> units, Wrapper.ActionGroup agroup, ArrayList warnings)
 		{
-			CodeTypeDeclaration type = CreatePartialClass (globalUnit, units, options, agroup.Name);
+			CodeTypeDeclaration type = CreatePartialClass (units, options, agroup.Name);
 			
 			// Generate the build method
 			

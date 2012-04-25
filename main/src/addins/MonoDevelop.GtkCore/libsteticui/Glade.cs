@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Mono.Unix;
 
 using Gtk;
+using System.Text;
 
 namespace Stetic {
 
@@ -17,7 +18,7 @@ namespace Stetic {
 			doc.PreserveWhitespace = true;
 			doc.XmlResolver = null;
 			doc.Load (filename);
-			project.SetFileName (filename);
+//			project.SetFileName (filename);
 			project.Id = System.IO.Path.GetFileName (filename);
 			doc = GladeUtils.XslImportTransform (doc);
 
@@ -27,7 +28,7 @@ namespace Stetic {
 
 			ObjectReader reader = new ObjectReader (project, FileFormat.Glade);
 			foreach (XmlElement toplevel in node.SelectNodes ("widget")) {
-				Wrapper.Container wrapper = Stetic.ObjectWrapper.ReadObject (reader, toplevel) as Wrapper.Container;
+				Wrapper.Container wrapper = Stetic.ObjectWrapper.ReadObject (reader, toplevel, null) as Wrapper.Container;
 				if (wrapper != null)
 					project.AddWidget ((Gtk.Widget)wrapper.Wrapped);
 			}
@@ -54,7 +55,7 @@ namespace Stetic {
 	
 			doc = GladeUtils.XslExportTransform (doc);
 
-			XmlTextWriter writer = new XmlTextWriter (filename, EncodingUtility.UTF8NoBom);
+			XmlTextWriter writer = new XmlTextWriter (filename, Encoding.UTF8);
 			writer.Formatting = Formatting.Indented;
 			doc.Save (writer);
 			writer.Close ();

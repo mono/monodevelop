@@ -197,6 +197,9 @@ namespace Stetic
 			get { return modified; }
 			set { modified = value; frontend.NotifyModified (); }
 		}
+//		public bool Modified {
+//			get { return project.WasModified (); }
+//		}
 		
 		public string ActiveGroup {
 			get {

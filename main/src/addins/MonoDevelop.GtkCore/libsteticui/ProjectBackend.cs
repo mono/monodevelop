@@ -16,7 +16,7 @@ namespace Stetic {
 		bool modified;
 		Gtk.Widget selection;
 		string id;
-		string fileName;
+		string folderName;
 		XmlDocument tempDoc;
 		bool loading;
 		IResourceProvider resourceProvider;
@@ -33,6 +33,9 @@ namespace Stetic {
 		AssemblyResolver resolver;
 		string imagesRootPath;
 		string targetGtkVersion;
+		List<string> modifiedTopLevels;
+		//During project conversion flag is set
+		bool converting;
 		
 		// The action collection of the last selected widget
 		Stetic.Wrapper.ActionGroupCollection oldTopActionCollection;
@@ -48,8 +51,7 @@ namespace Stetic {
 		public event SignalChangedEventHandler SignalChanged;
 		
 		public event Wrapper.WidgetEventHandler SelectionChanged;
-		public event EventHandler ModifiedChanged;
-		public event EventHandler Changed;
+		public event ProjectChangedEventHandler Changed;
 		
 		// Fired when the project has been reloaded, due for example to
 		// a change in the registry
@@ -69,6 +71,7 @@ namespace Stetic {
 			iconFactory = new ProjectIconFactory ();
 			widgetLibraries = new ArrayList ();
 			internalLibs = new ArrayList ();
+			modifiedTopLevels = new List<string> ();
 		}
 		
 		public void Dispose ()
@@ -94,12 +97,18 @@ namespace Stetic {
 			return null;
 		}
 		
+		
 		public string FileName {
-			get { return fileName; }
+			get { throw new Exception("FileName is obsolete"); }
+			set { throw new Exception("FileName is obsolete"); }
+		}
+			
+		public string FolderName {
+			get { return folderName; }
 			set {
-				this.fileName = value;
-				if (fileName != null)
-					Id = System.IO.Path.GetFileName (fileName);
+				this.folderName = value;
+				if (folderName != null )
+					Id = System.IO.Path.GetFullPath (folderName);
 				else
 					Id = null;
 			}
@@ -133,31 +142,31 @@ namespace Stetic {
 		}
 		
 		public string TargetGtkVersion {
-			get { return targetGtkVersion != null ? targetGtkVersion : "2.4"; }
+			get { return targetGtkVersion ?? string.Empty; }
 			set {
 				if (TargetGtkVersion == value)
 					return;
 				targetGtkVersion = value;
 				
-				// Update the project
+//				 Update the project
 				OnRegistryChanging (null, null);
 				OnRegistryChanged (null, null);
 			}
 		}
-		
+
 		public string ImagesRootPath {
 			get {
 				if (string.IsNullOrEmpty (imagesRootPath)) {
-					if (string.IsNullOrEmpty (fileName))
+					if (string.IsNullOrEmpty (folderName))
 						return ".";
 					else
-						return Path.GetDirectoryName (fileName);
+						return Path.GetFullPath (folderName);
 				}
 				else {
 					if (Path.IsPathRooted (imagesRootPath))
 						return imagesRootPath;
-					else if (!string.IsNullOrEmpty (fileName))
-						return Path.GetFullPath (Path.Combine (Path.GetDirectoryName (fileName), imagesRootPath));
+					else if (!string.IsNullOrEmpty (folderName))
+						return Path.GetFullPath (Path.Combine (folderName, imagesRootPath));
 					else
 						return imagesRootPath;
 				}
@@ -189,7 +198,7 @@ namespace Stetic {
 			widgetLibraries.Remove (lib);
 			internalLibs.Remove (lib);
 		}
-		
+			
 		public ArrayList GetComponentTypes ()
 		{
 			ArrayList list = new ArrayList ();
@@ -256,20 +265,13 @@ namespace Stetic {
 			set { iconFactory = value; }
 		}
 		
-		internal void SetFileName (string fileName)
-		{
-			this.fileName = fileName;
-		}
-		
 		internal void SetFrontend (Project project)
 		{
 			frontend = project;
 		}
 		
 		public void Close ()
-		{
-			fileName = null;
-			
+		{	
 			if (actionGroups != null && ownedGlobalActionGroups) {
 				foreach (Stetic.Wrapper.ActionGroup ag in actionGroups)
 					ag.Dispose ();
@@ -286,100 +288,149 @@ namespace Stetic {
 
 			selection = null;
 			topLevels.Clear ();
-			widgetLibraries.Clear ();
+			//widgetLibraries.Clear ();
+			
 
 			iconFactory = new ProjectIconFactory ();
 		}
 		
-		public void Load (string fileName)
+		public void Load (string folderName)
 		{
-			Load (fileName, fileName);
-		}
-		
-		public void Load (string xmlFile, string fileName)
-		{
-			this.fileName = fileName;
+			this.folderName = folderName;
 			XmlDocument doc = new XmlDocument ();
 			doc.PreserveWhitespace = true;
-			doc.Load (xmlFile);
+			XmlElement toplevel = doc.CreateElement ("stetic-interface");
+			doc.AppendChild (toplevel);
+			modifiedTopLevels.Clear ();
+			
+			ReadIconFactory (doc);
+			ReadActionGroups (doc);
+			ReadTopLevels (doc);
+			Read (doc);
+			
+			Id = System.IO.Path.GetFullPath (folderName);
+		}
+		
+		public void LoadOldVersion (string fileName)
+		{
+			if (!File.Exists (fileName))
+				return;
+			
+			XmlDocument doc = new XmlDocument ();
+			doc.PreserveWhitespace = true;
+			doc.Load (fileName);
+			
 			Read (doc);
 			
 			Id = System.IO.Path.GetFileName (fileName);
 		}
 		
+		void ReadIconFactory (XmlDocument doc)
+		{
+			XmlNode node = doc.SelectSingleNode ("/stetic-interface");
+			if (node == null)
+				return;
+			
+			string basePath = folderName;
+			string xmlfile = Path.Combine(basePath, "IconFactory.gtkx");
+			
+			if (File.Exists (xmlfile)) {
+			
+				XmlDocument doc2 = new XmlDocument ();
+				doc2.PreserveWhitespace = true;
+				doc2.Load (xmlfile);
+		
+				XmlNode ifnode2 = doc2.SelectSingleNode ("/stetic-interface/icon-factory");
+				
+				if (ifnode2 != null) {
+					XmlNode ifnode = doc.ImportNode (ifnode2, true);
+					node.AppendChild (ifnode);
+				}
+			}
+		}
+		
+		void ReadActionGroups (XmlDocument doc)
+		{
+			ReadSplitFiles (doc, "action-group", "name");
+		}
+		
+		void ReadTopLevels (XmlDocument doc)
+		{
+			ReadSplitFiles (doc, "widget", "id");
+		}
+		
+		void ReadSplitFiles (XmlDocument doc, string splitElement, string idAttribute)
+		{
+			XmlNode node = doc.SelectSingleNode ("/stetic-interface");
+			if (node == null)
+				return;
+			
+			foreach (string basePath in frontend.DesignInfo.GetComponentFolders ()) {
+				DirectoryInfo dir = new DirectoryInfo (basePath);
+				
+				foreach (FileInfo file in dir.GetFiles ()) {
+					if (file.Extension == ".gtkx") {
+						
+						XmlDocument wdoc = new XmlDocument ();
+						wdoc.PreserveWhitespace = true;
+						wdoc.Load (file.FullName);
+				
+						XmlNode wnode = wdoc.SelectSingleNode ("/stetic-interface");
+						
+						foreach (XmlElement toplevel in wnode.SelectNodes (splitElement)) {
+							string id = toplevel.GetAttribute (idAttribute);
+							
+							if (frontend.DesignInfo.HasComponentFile (id)) {
+								XmlNode imported = doc.ImportNode (toplevel, true);
+								node.AppendChild (imported);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		void AddActionGroup (XmlElement groupElem)
+		{
+			ObjectReader reader = new ObjectReader (this, FileFormat.Native);
+			
+			Wrapper.ActionGroup actionGroup = new Wrapper.ActionGroup ();
+			actionGroup.Read (reader, groupElem);
+			actionGroups.Add (actionGroup);
+		}
+		
+		void AddWidget (XmlElement toplevel)
+		{
+			topLevels.Add (new WidgetData (toplevel.GetAttribute ("id"), toplevel, null));
+		}
+		
 		void Read (XmlDocument doc)
 		{
 			loading = true;
-			string basePath = fileName != null ? Path.GetDirectoryName (fileName) : null;
-			
+
 			try {
-				string fn = fileName;
 				Close ();
-				fileName = fn;
 				
 				XmlNode node = doc.SelectSingleNode ("/stetic-interface");
 				if (node == null)
 					throw new ApplicationException (Catalog.GetString ("Not a Stetic file according to node name."));
 				
-				// Load configuration options
-				foreach (XmlNode configNode in node.SelectNodes ("configuration/*")) {
-					XmlElement config = configNode as XmlElement;
-					if (config == null) continue;
-					
-					if (config.LocalName == "images-root-path")
-						imagesRootPath = config.InnerText;
-					else if (config.LocalName == "target-gtk-version")
-						targetGtkVersion = config.InnerText;
-				}
-				
 				// Load the assembly directories
 				resolver = new AssemblyResolver (app);
-				foreach (XmlElement libElem in node.SelectNodes ("import/assembly-directory")) {
-					string dir = libElem.GetAttribute ("path");
-					if (dir.Length > 0) {
-						if (basePath != null && !Path.IsPathRooted (dir)) {
-							dir = FromOSAgnosticRelPath (Path.Combine (basePath, dir));
-							if (Directory.Exists (dir))
-								dir = Path.GetFullPath (dir);
-						}
-						resolver.Directories.Add (dir);
-					}
-				}
-				
-				// Import the referenced libraries
-				foreach (XmlElement libElem in node.SelectNodes ("import/widget-library")) {
-					string libname = libElem.GetAttribute ("name");
-					if (libname.EndsWith (".dll") || libname.EndsWith (".exe")) {
-						if (basePath != null && !Path.IsPathRooted (libname)) {
-							libname = FromOSAgnosticRelPath (Path.Combine (basePath, libname));
-							if (File.Exists (libname))
-								libname = Path.GetFullPath (libname);
-						}
-					}
-					widgetLibraries.Add (libname);
-					if (libElem.GetAttribute ("internal") == "true")
-						internalLibs.Add (libname);
-				}
-				
 				app.LoadLibraries (resolver, widgetLibraries);
 				
-				ObjectReader reader = new ObjectReader (this, FileFormat.Native);
-				
 				if (ownedGlobalActionGroups) {
-					foreach (XmlElement groupElem in node.SelectNodes ("action-group")) {
-						Wrapper.ActionGroup actionGroup = new Wrapper.ActionGroup ();
-						actionGroup.Read (reader, groupElem);
-						actionGroups.Add (actionGroup);
-					}
+					foreach (XmlElement groupElem in node.SelectNodes ("action-group")) 
+						AddActionGroup (groupElem);
 				}
 				
 				XmlElement iconsElem = node.SelectSingleNode ("icon-factory") as XmlElement;
 				if (iconsElem != null)
 					iconFactory.Read (this, iconsElem);
 				
-				foreach (XmlElement toplevel in node.SelectNodes ("widget")) {
-					topLevels.Add (new WidgetData (toplevel.GetAttribute ("id"), toplevel, null));
-				}
+				foreach (XmlElement toplevel in node.SelectNodes ("widget"))
+					AddWidget (toplevel);
+				
 			} finally {
 				loading = false;
 			}
@@ -391,8 +442,9 @@ namespace Stetic {
 				try {
 					loading = true;
 					ObjectReader reader = new ObjectReader (this, FileFormat.Native);
-					Wrapper.Container wrapper = Stetic.ObjectWrapper.ReadObject (reader, data.XmlData) as Wrapper.Container;
+					Wrapper.Container wrapper = Stetic.ObjectWrapper.ReadObject (reader, data.XmlData, null) as Wrapper.Container;
 					data.Widget = wrapper.Wrapped;
+					data.Widget.Destroyed += (s,e) => data.Widget = null;
 				} finally {
 					loading = false;
 				}
@@ -401,50 +453,172 @@ namespace Stetic {
 			return data.Widget;
 		}
 		
-		public void Save (string fileName)
+		public bool ReloadTopLevel (string topLevelName)
 		{
-			this.fileName = fileName;
+			XmlElement topLevelElem = ReadDesignerFile (topLevelName, "widget");
+			if (topLevelName != null) {
+				WidgetData data = GetWidgetData (topLevelName);
+			
+				if (data != null) {
+					//Stetic.Wrapper.Widget ww = Stetic.Wrapper.Widget.Lookup (data.Widget);
+					data.SetXmlData (topLevelName, topLevelElem);
+					GetWidget (data);
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public void ReloadComponent (string componentName)
+		{
+			ReloadTopLevel (componentName);
+			//TODO: Make reloading works for action groups
+		}
+			               
+		
+		public void ReloadActionGroup (string groupName)
+		{
+			//TODO : Implement method ReloadActionGroup
+		}
+		
+		XmlElement ReadDesignerFile (string componentName, string elementName)
+		{
+			string gtkxFile = GetDesignerFileName (componentName);
+			if (gtkxFile != null) {
+				XmlDocument wdoc = new XmlDocument ();
+				wdoc.PreserveWhitespace = true;
+				wdoc.Load (gtkxFile);
+		
+				XmlNode wnode = wdoc.SelectSingleNode ("/stetic-interface");
+				foreach (XmlElement toplevel in wnode.SelectNodes (elementName)) {
+					return toplevel;
+				}
+				
+				string msg = string.Format (@"Cannot find /stetic-interface/{0} element in {1} file.", 
+				                             elementName, gtkxFile);
+				throw new InvalidOperationException (msg);
+			}
+			
+			return null;
+		}
+		
+		public void ConvertProject (string oldSteticFileName, string newGuiFolderName)
+		{
+			converting = true;
+			try {
+				LoadOldVersion (oldSteticFileName);
+				Save (newGuiFolderName);
+			} finally {
+				converting = false;
+			}
+		}
+		
+		public void Save (string folderName)
+		{
+			this.folderName = folderName;
 			XmlDocument doc = Write (false);
 			
-			XmlWriter writer = null;
+			XmlTextWriter writer = null;
 			try {
-				//Always normalize line endings to \n so that they remain consistent.
-				//Else, because of the way subdocument are persisted unmodified, we could
-				//end up with mixed line endings.
-				//Also, string arrays are stored in plain text data with \n separators,
-				//and break badly if we have \r\n.
-				var settings = new XmlWriterSettings () {
-					NewLineHandling = NewLineHandling.Replace,
-					Encoding = System.Text.Encoding.UTF8,
-					NewLineChars = "\n",
-					Indent = true,
-				};
+				WriteIconFactory (doc);
+				WriteActionGroups (doc);
+				WriteTopLevels (doc);
 
-				// Write to a temporary file first, just in case something fails
-				writer = XmlTextWriter.Create (fileName + "~", settings);
-				doc.Save (writer);
-				writer.Close ();
-				
-				File.Copy (fileName + "~", fileName, true);
-				File.Delete (fileName + "~");
 			} finally {
 				if (writer != null)
 					writer.Close ();
 			}
 		}
 		
-		//in the cases where a path is relative, we store it using / as a path separator
-		//so the .stetic file doesn't unnecessarily differ between Windows & Linux/Mac
-		string ToOSAgnosticRelPath (string s)
+		private void WriteIconFactory (XmlDocument doc)
 		{
-			return s.Replace ('\\', '/');
-		}
+			XmlNode node = doc.SelectSingleNode ("/stetic-interface");
+			if (node == null)
+				return;
+			
+			XmlNode ifnode = node.SelectSingleNode ("icon-factory");
+			if (ifnode == null)
+				return;
+			
+			XmlDocument doc2 = new XmlDocument ();
+			doc2.PreserveWhitespace = true;
 
-		string FromOSAgnosticRelPath (string s)
+			XmlElement node2 = doc2.CreateElement ("stetic-interface");
+			doc2.AppendChild (node2);
+		
+			XmlNode ifnode2 = doc2.ImportNode (ifnode, true);
+			node2.AppendChild (ifnode2);
+			
+			string basePath = this.folderName;
+			string xmlFile = Path.Combine (basePath, "IconFactory.gtkx");
+			WriteXmlFile (xmlFile, doc2);
+			
+			node.RemoveChild (ifnode);
+		}
+			
+		void WriteActionGroups (XmlDocument doc)
 		{
-			return s.Replace ('/', Path.DirectorySeparatorChar);
+			WriteSplitFiles (doc, "action-group", "name");
 		}
-
+		
+		void WriteTopLevels (XmlDocument doc)
+		{
+			WriteSplitFiles (doc, "widget", "id");
+		}
+		
+		void WriteSplitFiles (XmlDocument doc, string splitElement, string idAttribute)
+		{
+			XmlNode node = doc.SelectSingleNode ("/stetic-interface");
+			if (node == null)
+				return;
+			
+			foreach (XmlElement toplevel in node.SelectNodes (splitElement)) {
+					
+					string id = toplevel.GetAttribute (idAttribute);
+					if (modifiedTopLevels.Contains (id) || converting) {
+						string xmlFile = GetDesignerFileName (id);
+						if (xmlFile != null) {
+							XmlDocument doc2 = new XmlDocument ();
+							doc2.PreserveWhitespace = true;
+							                     
+							XmlElement node2 = doc2.CreateElement ("stetic-interface");
+							doc2.AppendChild (node2);
+						
+							XmlNode wnode2 = doc2.ImportNode (toplevel, true);
+							node2.AppendChild (wnode2);
+						
+							WriteXmlFile (xmlFile, doc2);
+							if (modifiedTopLevels.Contains (id))
+								modifiedTopLevels.Remove (id);
+						}
+					}
+			}	
+		}
+		
+		private string GetDesignerFileName (string componentName)
+		{
+			string componentFile = frontend.DesignInfo.GetComponentFile (componentName);			
+			return frontend.DesignInfo.GetDesignerFileFromComponent (componentFile);
+		}
+		
+		void WriteXmlFile (string xmlFile, XmlDocument doc)
+		{
+			XmlTextWriter writer = null;
+			try {
+				writer = new XmlTextWriter (xmlFile + "~", System.Text.Encoding.UTF8);
+				writer.Formatting = Formatting.Indented;
+				
+				doc.Save (writer);
+				writer.Close ();
+				
+				File.Copy (xmlFile + "~", xmlFile, true);
+				File.Delete (xmlFile + "~");
+			} finally {
+				if (writer != null)
+					writer.Close ();
+			}
+		}
+		
 		XmlDocument Write (bool includeUndoInfo)
 		{
 			XmlDocument doc = new XmlDocument ();
@@ -452,52 +626,6 @@ namespace Stetic {
 
 			XmlElement toplevel = doc.CreateElement ("stetic-interface");
 			doc.AppendChild (toplevel);
-
-			XmlElement config = doc.CreateElement ("configuration");
-			if (!string.IsNullOrEmpty (imagesRootPath)) {
-				XmlElement iroot = doc.CreateElement ("images-root-path");
-				iroot.InnerText = imagesRootPath;
-				config.AppendChild (iroot);
-			}
-			if (!string.IsNullOrEmpty (targetGtkVersion)) {
-				XmlElement iroot = doc.CreateElement ("target-gtk-version");
-				iroot.InnerText = targetGtkVersion;
-				config.AppendChild (iroot);
-			}
-			
-			if (config.ChildNodes.Count > 0)
-				toplevel.AppendChild (config);
-			
-			if (widgetLibraries.Count > 0 || (resolver != null && resolver.Directories.Count > 0)) {
-				XmlElement importElem = doc.CreateElement ("import");
-				toplevel.AppendChild (importElem);
-				string basePath = Path.GetDirectoryName (fileName);
-				
-				if (resolver != null && resolver.Directories.Count > 0) {
-					foreach (string dir in resolver.Directories) {
-						XmlElement dirElem = doc.CreateElement ("assembly-directory");
-						if (basePath != null)
-							dirElem.SetAttribute ("path", ToOSAgnosticRelPath (AbsoluteToRelativePath (basePath, dir)));
-						else
-							dirElem.SetAttribute ("path", dir);
-						toplevel.AppendChild (dirElem);
-					}
-				}
-				
-				foreach (string wlib in widgetLibraries) {
-					string libName = wlib;
-					XmlElement libElem = doc.CreateElement ("widget-library");
-					if (wlib.EndsWith (".dll") || wlib.EndsWith (".exe")) {
-						if (basePath != null)
-							libName = ToOSAgnosticRelPath (AbsoluteToRelativePath (basePath, wlib));
-					}
-
-					libElem.SetAttribute ("name", libName);
-					if (IsInternalLibrary (wlib))
-						libElem.SetAttribute ("internal", "true");
-					importElem.AppendChild (libElem);
-				}
-			}
 
 			ObjectWriter writer = new ObjectWriter (doc, FileFormat.Native);
 			writer.CreateUndoInfo = includeUndoInfo;
@@ -549,9 +677,14 @@ namespace Stetic {
 			}
 		}
 		
-		internal WidgetEditSession CreateWidgetDesignerSession (WidgetDesignerFrontend frontend, string windowName, Stetic.ProjectBackend editingBackend, bool autoCommitChanges)
+//		internal WidgetEditSession CreateWidgetDesignerSession (WidgetDesignerFrontend frontend, string windowName, Stetic.ProjectBackend editingBackend, bool autoCommitChanges)
+//		{
+//			return new WidgetEditSession (this, frontend, windowName, editingBackend, autoCommitChanges);
+//		}
+		
+		internal WidgetEditSession CreateWidgetDesignerSession (WidgetDesignerFrontend frontend, string windowName)
 		{
-			return new WidgetEditSession (this, frontend, windowName, editingBackend, autoCommitChanges);
+			return new WidgetEditSession (this, frontend, windowName);
 		}
 		
 		internal ActionGroupEditSession CreateGlobalActionGroupDesignerSession (ActionGroupDesignerFrontend frontend, string groupName, bool autoCommitChanges)
@@ -566,7 +699,7 @@ namespace Stetic {
 		
 		public Wrapper.Container GetTopLevelWrapper (string name, bool throwIfNotFound)
 		{
-			Gtk.Widget w = GetTopLevel (name);
+			Gtk.Widget w = GetWidget (name);
 			if (w != null) {
 				Wrapper.Container ww = Wrapper.Container.Lookup (w);
 				if (ww != null)
@@ -574,6 +707,23 @@ namespace Stetic {
 			}
 			if (throwIfNotFound)
 				throw new InvalidOperationException ("Component not found: " + name);
+			return null;
+		}
+		
+		public object AddNewComponent (string fileName)
+		{
+			XmlDocument doc = new XmlDocument();
+			doc.PreserveWhitespace = true;
+			doc.Load (fileName);
+			
+			XmlElement toplevel = (XmlElement)doc.SelectSingleNode ("/stetic-interface/widget");
+			if (toplevel != null)
+				return AddNewWidgetFromTemplate (toplevel.OuterXml);
+			
+			XmlElement groupElem = (XmlElement)doc.SelectSingleNode ("/stetic-interface/action-group");
+			if (groupElem != null)
+				return AddNewActionGroupFromTemplate (groupElem.OuterXml);
+			
 			return null;
 		}
 		
@@ -592,6 +742,8 @@ namespace Stetic {
 			doc.LoadXml (template);
 			Gtk.Widget widget = Stetic.WidgetUtils.ImportWidget (this, doc.DocumentElement);
 			AddWidget (widget);
+			
+			string name = widget.Name;
 			return Component.GetSafeReference (ObjectWrapper.Lookup (widget));
 		}
 		
@@ -603,22 +755,9 @@ namespace Stetic {
 			
 			if (frontend != null)
 				frontend.NotifyWidgetRemoved (data.Name);
-		
-			XmlElement elem;
-			if (data.Widget != null)
-				elem = Stetic.WidgetUtils.ExportWidget (data.Widget);
-			else
-				elem = (XmlElement) data.XmlData.Clone ();
-			XmlDocument doc = new XmlDocument ();
-			XmlNode node = doc.ImportNode (elem, true);
-			doc.AppendChild (node);
-			string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
-			if (!Directory.Exists (dir))
-				Directory.CreateDirectory (dir);
-			doc.Save (Path.Combine (dir, name + ".xml"));
-			topLevels.Remove (data);
-			if (data.Widget != null)
-				data.Widget.Destroy ();
+			
+			if (modifiedTopLevels.Contains (name))
+				modifiedTopLevels.Remove (name);
 		}
 		
 		public Stetic.Wrapper.ActionGroup AddNewActionGroup (string name)
@@ -626,6 +765,7 @@ namespace Stetic {
 			Stetic.Wrapper.ActionGroup group = new Stetic.Wrapper.ActionGroup ();
 			group.Name = name;
 			ActionGroups.Add (group);
+			this.modifiedTopLevels.Add (name);
 			return group;
 		}
 		
@@ -637,51 +777,22 @@ namespace Stetic {
 			Stetic.Wrapper.ActionGroup group = new Stetic.Wrapper.ActionGroup ();
 			group.Read (or, doc.DocumentElement);
 			ActionGroups.Add (group);
+			this.modifiedTopLevels.Add (group.Name);
 			return group;
 		}
 		
 		public void RemoveActionGroup (Stetic.Wrapper.ActionGroup group)
 		{
 			ActionGroups.Remove (group);
+			string name = group.Name;
+			if (modifiedTopLevels.Contains (name))
+				modifiedTopLevels.Remove (name);
 		}
 		
 		public Wrapper.ActionGroup[] GetActionGroups ()
 		{
 			// Needed since ActionGroupCollection can't be made serializable
 			return ActionGroups.ToArray ();
-		}
-				
-		public void CopyWidgetToProject (string name, ProjectBackend other, string replacedName)
-		{
-			WidgetData wdata = GetWidgetData (name);
-			if (name == null)
-				throw new InvalidOperationException ("Component not found: " + name);
-			
-			XmlElement data;
-			if (wdata.Widget != null)
-				data = Stetic.WidgetUtils.ExportWidget (wdata.Widget);
-			else
-				data = (XmlElement) wdata.XmlData.Clone ();
-			
-			// If widget already exist, replace it
-			wdata = other.GetWidgetData (replacedName);
-			if (wdata == null) {
-				wdata = new WidgetData (name, data, null);
-				other.topLevels.Add (wdata);
-			} else {
-				if (wdata.Widget != null) {
-					// If a widget instance already exist, load the new data on it
-					Wrapper.Widget sw = Wrapper.Widget.Lookup (wdata.Widget);
-					sw.Read (new ObjectReader (other, FileFormat.Native), data);
-					sw.NotifyChanged ();
-					if (name != replacedName)
-						other.OnWidgetNameChanged (new Wrapper.WidgetNameChangedArgs (sw, replacedName, name), true);
-				} else {
-					wdata.SetXmlData (name, data);
-					if (name != replacedName)
-						other.OnWidgetNameChanged (new Wrapper.WidgetNameChangedArgs (null, replacedName, name), true);
-				}
-			}
 		}
 			
 		void CleanUndoData (XmlElement elem)
@@ -740,10 +851,19 @@ namespace Stetic {
 			NotifyComponentTypesChanged ();
 		}
 		
+		bool preserveWidgetLibraries;
+		
 		public void Reload ()
 		{
-			OnRegistryChanging (null, null);
-			OnRegistryChanged (null, null);
+			try {
+				preserveWidgetLibraries = true;
+				OnRegistryChanging (null, null);
+				OnRegistryChanged (null, null);
+			}
+			finally
+			{
+				preserveWidgetLibraries = false;
+			}
 		}
 
 		public string Id {
@@ -751,16 +871,14 @@ namespace Stetic {
 			set { id = value; }
 		}
 		
-		public bool Modified {
-			get { return modified; }
-			set {
-				if (modified != value) {
-					modified = value;
-					if (frontend != null)
-						frontend.NotifyModifiedChanged ();
-					OnModifiedChanged (EventArgs.Empty);
-				}
-			}
+		public bool WasModified (string topLevel)
+		{
+			return modifiedTopLevels.Contains (topLevel);
+		}
+		
+		public bool ComponentNeedsCodeGeneration (string topLevel)
+		{
+			return frontend.DesignInfo.ComponentNeedsCodeGeneration (topLevel);
 		}
 		
 		public AssemblyResolver Resolver {
@@ -792,6 +910,7 @@ namespace Stetic {
 			
 			if (!loading) {
 				Stetic.Wrapper.Widget ww = Stetic.Wrapper.Widget.Lookup (widget);
+				
 				if (ww == null)
 					throw new InvalidOperationException ("Widget not wrapped");
 				if (frontend != null)
@@ -804,7 +923,7 @@ namespace Stetic {
 		{
 			if (loading)
 				return;
-			NotifyChanged ();
+			NotifyChanged (args.Wrapper.RootWrapperName);
 			if (ObjectChanged != null)
 				ObjectChanged (this, args);
 		}
@@ -813,7 +932,7 @@ namespace Stetic {
 		{
 			if (loading)
 				return;
-			NotifyChanged ();
+			NotifyChanged (args.WidgetWrapper.RootWrapperName);
 			OnWidgetNameChanged (args, args.WidgetWrapper.IsTopLevel);
 		}
 		
@@ -856,6 +975,12 @@ namespace Stetic {
 				frontend.NotifyWidgetNameChanged (Component.GetSafeReference (args.WidgetWrapper), args.OldName, args.NewName, isTopLevel);
 			if (args.WidgetWrapper != null && WidgetNameChanged != null)
 				WidgetNameChanged (this, args);
+			
+			if (modifiedTopLevels.Contains (args.OldName))
+				modifiedTopLevels.Remove (args.OldName);
+			
+			if (!modifiedTopLevels.Contains (args.NewName))
+				modifiedTopLevels.Add (args.NewName);
 		}
 		
 		void OnSignalAdded (object sender, SignalEventArgs args)
@@ -906,7 +1031,7 @@ namespace Stetic {
 			}
 		}
 		
-		public Gtk.Widget GetTopLevel (string name)
+		public Gtk.Widget GetWidget (string name)
 		{
 			WidgetData w = GetWidgetData (name);
 			if (w != null)
@@ -984,7 +1109,7 @@ namespace Stetic {
 			m.Popup ();
 		}
 		
-		static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
+		internal static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
 		{
 			if (!Path.IsPathRooted (absPath))
 				return absPath;
@@ -1053,24 +1178,19 @@ namespace Stetic {
 			OnComponentTypesChanged (null, null);
 		}
 		
-		void NotifyChanged ()
+		void NotifyChanged (string rootWidgetName)
 		{
-			Modified = true;
+			if (!modifiedTopLevels.Contains (rootWidgetName))
+				modifiedTopLevels.Add (rootWidgetName);
 			if (frontend != null)
-				frontend.NotifyChanged ();
+				frontend.NotifyChanged (rootWidgetName);
 			if (Changed != null)
-				Changed (this, EventArgs.Empty);
-		}
-		
-		protected virtual void OnModifiedChanged (EventArgs args)
-		{
-			if (ModifiedChanged != null)
-				ModifiedChanged (this, args);
+				Changed (this, new ProjectChangedEventArgs (rootWidgetName));
 		}
 		
 		protected virtual void OnWidgetAdded (Stetic.Wrapper.WidgetEventArgs args)
 		{
-			NotifyChanged ();
+			NotifyChanged (args.WidgetWrapper.RootWrapperName);
 			if (WidgetAdded != null)
 				WidgetAdded (this, args);
 		}
@@ -1105,17 +1225,16 @@ namespace Stetic {
 			}
 		}
 	}
-
-	public static class EncodingUtility
+	
+	public class ProjectChangedEventArgs : EventArgs
 	{
-		static System.Text.UTF8Encoding utf8NoBom;
-
-		/// This is so we can write XML files on .NET in a compatible way with Mono,
-		/// since .NET's XmlWriter writes the BOM but Mono's does not.
-		public static System.Text.UTF8Encoding UTF8NoBom {
-			get {
-				return utf8NoBom ?? (utf8NoBom = new System.Text.UTF8Encoding (false));
-			}
+		public string ChangedTopLevelName { get; private set; }
+		
+		public ProjectChangedEventArgs (string changedTopLevel)
+		{
+			ChangedTopLevelName = changedTopLevel;
 		}
 	}
+	
+	public delegate void ProjectChangedEventHandler (object sender, ProjectChangedEventArgs args);
 }
