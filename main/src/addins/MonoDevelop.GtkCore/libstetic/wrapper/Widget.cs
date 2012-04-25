@@ -241,7 +241,7 @@ namespace Stetic.Wrapper {
 			Wrapped.Name = name;
 		}
 		
-		public string Name {
+		public override string Name {
 			get { return Wrapped.Name; }
 			set { Wrapped.Name = value; EmitNotify ("Name"); }
 		}
@@ -810,7 +810,7 @@ namespace Stetic.Wrapper {
 					Gtk.ScrolledWindow scw = new Gtk.ScrolledWindow ();
 					scw.HscrollbarPolicy = scw.VscrollbarPolicy = Gtk.PolicyType.Automatic;
 					scw.ShadowType = Gtk.ShadowType.In;
-					ScrolledWindow wrapper = (ScrolledWindow) ObjectWrapper.Create (Project, scw);
+					ScrolledWindow wrapper = (ScrolledWindow) ObjectWrapper.Create (Project, scw, ParentWrapper);
 					ParentWrapper.ReplaceChild (Wrapped, scw, false);
 					if (Wrapped.SetScrollAdjustments (null, null))
 						scw.Add (Wrapped);

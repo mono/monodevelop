@@ -149,10 +149,13 @@ namespace Stetic {
 			get { return disposed; }
 		}
 
-		public static ObjectWrapper Create (IProject proj, object wrapped)
+		public static ObjectWrapper Create (IProject proj, object wrapped, ObjectWrapper root)
 		{
 			ClassDescriptor klass = Registry.LookupClassByName (wrapped.GetType ().FullName);
 			ObjectWrapper wrapper = klass.CreateWrapper ();
+			if (root != null) {
+				wrapper.RootWrapperName = (root.RootWrapperName != null) ? root.RootWrapperName : root.Name;
+			}
 			wrapper.Loading = true;
 			wrapper.proj = proj;
 			wrapper.classDescriptor = klass;
@@ -180,7 +183,7 @@ namespace Stetic {
 			throw new System.NotImplementedException ();
 		}
 
-		public static ObjectWrapper ReadObject (ObjectReader reader, XmlElement elem)
+		public static ObjectWrapper ReadObject (ObjectReader reader, XmlElement elem, ObjectWrapper root)
 		{
 			string className = elem.GetAttribute ("class");
 			ClassDescriptor klass;
@@ -191,24 +194,29 @@ namespace Stetic {
 			
 			if (klass == null) {
 				ErrorWidget we = new ErrorWidget (className, elem.GetAttribute ("id"));
-				ErrorWidgetWrapper wrap = (ErrorWidgetWrapper) Create (reader.Project, we);
+				ErrorWidgetWrapper wrap = (ErrorWidgetWrapper) Create (reader.Project, we, null);
 				wrap.Read (reader, elem);
 				return wrap;
 			}
 			if (!klass.SupportsGtkVersion (reader.Project.TargetGtkVersion)) {
 				ErrorWidget we = new ErrorWidget (className, klass.TargetGtkVersion, reader.Project.TargetGtkVersion, elem.GetAttribute ("id"));
-				ErrorWidgetWrapper wrap = (ErrorWidgetWrapper) Create (reader.Project, we);
+				ErrorWidgetWrapper wrap = (ErrorWidgetWrapper) Create (reader.Project, we, null);
 				wrap.Read (reader, elem);
 				return wrap;
 			}
 
 			ObjectWrapper wrapper = klass.CreateWrapper ();
+			if (root != null) {
+				if (root.RootWrapperName != null) {
+					wrapper.RootWrapperName = root.RootWrapperName; 
+				} 
+			}
 			wrapper.classDescriptor = klass;
 			wrapper.proj = reader.Project;
-			return ReadObject (reader, elem, wrapper);
+			return ReadExistingObject (reader, elem, wrapper);
 		}
 
-		public static ObjectWrapper ReadObject (ObjectReader reader, XmlElement elem, ObjectWrapper wrapper)
+		public static ObjectWrapper ReadExistingObject (ObjectReader reader, XmlElement elem, ObjectWrapper wrapper)
 		{
 			try {
 				wrapper.OnBeginRead (reader.Format);
@@ -218,7 +226,7 @@ namespace Stetic {
 			catch (Exception ex) {
 				Console.WriteLine (ex);
 				ErrorWidget we = new ErrorWidget (ex, elem.GetAttribute ("id"));
-				ErrorWidgetWrapper wrap = (ErrorWidgetWrapper) Create (reader.Project, we);
+				ErrorWidgetWrapper wrap = (ErrorWidgetWrapper) Create (reader.Project, we, null);
 				wrap.Read (reader, elem);
 				return wrap;
 			}
@@ -328,6 +336,10 @@ namespace Stetic {
 		{
 			OnObjectChanged (new ObjectWrapperEventArgs (this));
 		}
+		
+		public abstract string Name { get; set; }
+		
+		public string RootWrapperName { get; protected set; }
 		
 		static object GetIndentityObject (object ob)
 		{

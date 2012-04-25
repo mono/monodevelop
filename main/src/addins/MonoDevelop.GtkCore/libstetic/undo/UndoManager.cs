@@ -227,17 +227,17 @@ namespace Stetic
 			this.undoManager = undoManager;
 		}
 		
-		public override ObjectWrapper ReadObject (XmlElement elem)
+		public override ObjectWrapper ReadObject (XmlElement elem, ObjectWrapper root)
 		{
-			ObjectWrapper ww = base.ReadObject (elem);
+			ObjectWrapper ww = base.ReadObject (elem, root);
 			if (ww is Widget)
 				undoManager.RegisterObject ((Widget)ww, elem);
 			return ww;
 		}
 		
-		public override void ReadObject (ObjectWrapper wrapper, XmlElement elem)
+		public override void ReadExistingObject (ObjectWrapper wrapper, XmlElement elem)
 		{
-			base.ReadObject (wrapper, elem);
+			base.ReadExistingObject (wrapper, elem);
 			if (wrapper is Widget)
 				undoManager.RegisterObject ((Widget)wrapper, elem);
 		}

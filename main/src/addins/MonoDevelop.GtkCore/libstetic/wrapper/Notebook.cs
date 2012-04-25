@@ -31,7 +31,7 @@ namespace Stetic.Wrapper {
 		protected override ObjectWrapper ReadChild (ObjectReader reader, XmlElement child_elem)
 		{
 			if ((string)GladeUtils.GetChildProperty (child_elem, "type", "") == "tab") {
-				ObjectWrapper wrapper = reader.ReadObject (child_elem["widget"]);
+				ObjectWrapper wrapper = reader.ReadObject (child_elem["widget"], this);
 				Gtk.Widget widget = (Gtk.Widget)wrapper.Wrapped;
 				notebook.SetTabLabel (notebook.GetNthPage (notebook.NPages - 1), widget);
 				tabs.Add (widget);

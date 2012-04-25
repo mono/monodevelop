@@ -320,6 +320,16 @@ namespace Stetic.Wrapper
 			
 			met.Statements.Add (cond);
 		}
+		
+		public override void Wrap (object obj, bool initialized)
+		{
+			CustomWidget custom = obj as CustomWidget;
+			if (custom != null) {
+				RootWrapperName = custom.Name;
+			}
+			//during Wrap RootWrapperName will be set in the children widgets
+			base.Wrap (obj, initialized);
+		}
 	}
 	
 /*

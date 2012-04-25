@@ -37,7 +37,7 @@ namespace Stetic
 		public static Gtk.Widget ImportWidget (IProject project, XmlElement element)
 		{
 			ObjectReader reader = new ObjectReader (project, FileFormat.Native);
-			ObjectWrapper wrapper = Stetic.ObjectWrapper.ReadObject (reader, element);
+			ObjectWrapper wrapper = Stetic.ObjectWrapper.ReadObject (reader, element, null);
 			return wrapper.Wrapped as Gtk.Widget;
 		}
 		
@@ -126,10 +126,13 @@ namespace Stetic
 			Gtk.Widget widget = (Gtk.Widget) wrapper.Wrapped;
 			if (widget == null) {
 				widget = (Gtk.Widget) klass.CreateInstance (wrapper.Project);
+				//set name before binding to ensure 
+				//that ObjectWrapper.RootWrapperName will be valid
+				widget.Name = elem.GetAttribute ("id");
 				ObjectWrapper.Bind (wrapper.Project, klass, wrapper, widget, true);
+			} else {
+				widget.Name = elem.GetAttribute ("id");
 			}
-			
-			widget.Name = elem.GetAttribute ("id");
 			
 			ReadMembers (klass, wrapper, widget, elem);
 			

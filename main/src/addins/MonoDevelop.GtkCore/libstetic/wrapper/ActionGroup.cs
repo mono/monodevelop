@@ -39,7 +39,7 @@ namespace Stetic.Wrapper
 			get { return actions; }
 		}
 		
-		public string Name {
+		public override string Name {
 			get { return name; }
 			set { 
 				name = value;

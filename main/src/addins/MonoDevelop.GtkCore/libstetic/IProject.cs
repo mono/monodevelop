@@ -4,15 +4,16 @@ namespace Stetic
 {
 	public interface IProject 
 	{
-		string FileName { get; }
+		//string FileName { get; }
+		string FolderName { get; }
 		Gtk.Widget[] Toplevels { get; }
-		Gtk.Widget GetTopLevel (string name);
+		Gtk.Widget GetWidget (string name);
 		Gtk.Widget Selection { get; set; }
 		Wrapper.ActionGroupCollection ActionGroups { get; }
 		ProjectIconFactory IconFactory { get; }
 		string ImagesRootPath { get; }
 		string TargetGtkVersion { get; }
-		bool Modified { get; set; }
+//		bool Modified { get; set; }
 		IResourceProvider ResourceProvider { get; set; }
 
 		void PopupContextMenu (Stetic.Wrapper.Widget wrapper);

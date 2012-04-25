@@ -50,7 +50,7 @@ namespace Stetic.Wrapper {
 		protected override ObjectWrapper ReadChild (ObjectReader reader, XmlElement child_elem)
 		{
 			Widget wrapper = Stetic.Wrapper.Widget.Lookup (optionmenu.Menu);
-			reader.ReadObject (wrapper, child_elem["widget"]);
+			reader.ReadExistingObject (wrapper, child_elem["widget"]);
 			return wrapper;
 		}
 

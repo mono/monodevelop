@@ -18,7 +18,7 @@ namespace Stetic.Wrapper {
 
 		protected override ObjectWrapper ReadChild (ObjectReader reader, XmlElement child_elem)
 		{
-			ObjectWrapper wrapper = reader.ReadObject (child_elem["widget"]);
+			ObjectWrapper wrapper = reader.ReadObject (child_elem["widget"], this);
 			menuitem.Submenu = (Gtk.Menu)wrapper.Wrapped;
 			return wrapper;
 		}

@@ -10,7 +10,9 @@ namespace Stetic.Wrapper {
 		public override void Wrap (object obj, bool initialized)
 		{
 			TopLevelWindow window = (TopLevelWindow) obj;
+			RootWrapperName = window.Name;
 
+			//during Wrap RootWrapperName will be set in the children widgets
 			base.Wrap (obj, initialized);
 
 			if (!initialized) {

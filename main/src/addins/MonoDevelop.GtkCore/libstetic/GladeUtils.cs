@@ -104,31 +104,31 @@ namespace Stetic {
 			return doc;
 		}
 
-		public static Stetic.Wrapper.Widget Import (IProject project, XmlDocument doc)
-		{
-			try {
-				doc = XslImportTransform (doc);
-			} catch {
-				return null;
-			}
-
-			ObjectReader reader = new ObjectReader (project, FileFormat.Glade);
-			
-			XmlElement elem = (XmlElement)doc.SelectSingleNode ("glade-interface/widget");
-			if (elem.GetAttribute ("class") != "GtkWindow" ||
-			    elem.GetAttribute ("id") != "glade-dummy-container") {
-				// Creating a new toplevel
-				Stetic.Wrapper.Widget toplevel = (Stetic.Wrapper.Widget)
-					Stetic.ObjectWrapper.ReadObject (reader, elem);
-				if (toplevel != null) {
-					project.AddWindow ((Gtk.Window)toplevel.Wrapped);
-				}
-				return toplevel;
-			}
-
-			return (Stetic.Wrapper.Widget)
-				Stetic.ObjectWrapper.ReadObject (reader, (XmlElement)elem.SelectSingleNode ("child/widget"));
-		}
+//		public static Stetic.Wrapper.Widget Import (IProject project, XmlDocument doc)
+//		{
+//			try {
+//				doc = XslImportTransform (doc);
+//			} catch {
+//				return null;
+//			}
+//
+//			ObjectReader reader = new ObjectReader (project, FileFormat.Glade);
+//			
+//			XmlElement elem = (XmlElement)doc.SelectSingleNode ("glade-interface/widget");
+//			if (elem.GetAttribute ("class") != "GtkWindow" ||
+//			    elem.GetAttribute ("id") != "glade-dummy-container") {
+//				// Creating a new toplevel
+//				Stetic.Wrapper.Widget toplevel = (Stetic.Wrapper.Widget)
+//					Stetic.ObjectWrapper.ReadObject (reader, elem);
+//				if (toplevel != null) {
+//					project.AddWindow ((Gtk.Window)toplevel.Wrapped);
+//				}
+//				return toplevel;
+//			}
+//
+//			return (Stetic.Wrapper.Widget)
+//				Stetic.ObjectWrapper.ReadObject (reader, (XmlElement)elem.SelectSingleNode ("child/widget"));
+//		}
 		
 		public static void Copy (Gtk.Widget widget, Gtk.SelectionData seldata, bool copyAsText)
 		{
@@ -142,22 +142,22 @@ namespace Stetic {
 				seldata.Set (ApplicationXGladeAtom, 8, System.Text.Encoding.UTF8.GetBytes (doc.OuterXml));
 		}
 
-		public static Stetic.Wrapper.Widget Paste (IProject project, Gtk.SelectionData seldata)
-		{
-			if (seldata.Type != ApplicationXGladeAtom)
-				return null;
-			string data = System.Text.Encoding.UTF8.GetString (seldata.Data);
-
-			XmlDocument doc = new XmlDocument ();
-			doc.PreserveWhitespace = true;
-			try {
-				doc.LoadXml (data);
-			} catch {
-				return null;
-			}
-			
-			return Import (project, doc);
-		}
+//		public static Stetic.Wrapper.Widget Paste (IProject project, Gtk.SelectionData seldata)
+//		{
+//			if (seldata.Type != ApplicationXGladeAtom)
+//				return null;
+//			string data = System.Text.Encoding.UTF8.GetString (seldata.Data);
+//
+//			XmlDocument doc = new XmlDocument ();
+//			doc.PreserveWhitespace = true;
+//			try {
+//				doc.LoadXml (data);
+//			} catch {
+//				return null;
+//			}
+//			
+//			return Import (project, doc);
+//		}
 
 		static object GetProperty (XmlElement elem, string selector, object defaultValue, bool extract)
 		{

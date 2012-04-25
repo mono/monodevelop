@@ -53,7 +53,7 @@ namespace Stetic.Editor
 					iconFactory.Icons.Add (icon);
 					customIconList.Refresh ();
 					customIconList.Selection = icon.Name;
-					project.Modified = true;
+//					project.Modified = true;
 				}
 			}
 		}
@@ -69,7 +69,7 @@ namespace Stetic.Editor
 				if (md.Run () == (int) Gtk.ResponseType.Yes) {
 					iconFactory.Icons.Remove (icon);
 					customIconList.Refresh ();
-					project.Modified = true;
+//					project.Modified = true;
 				}
 				md.Destroy ();
 			}
@@ -86,7 +86,7 @@ namespace Stetic.Editor
 					if (dlg.Run () == (int) Gtk.ResponseType.Ok) {
 						customIconList.Refresh ();
 						customIconList.Selection = icon.Name;
-						project.Modified = true;
+//						project.Modified = true;
 					}
 				}
 			}

@@ -80,7 +80,7 @@ namespace Stetic.Editor
 			FillResources ();
 			resourceList.Selection.Changed += OnResourceSelectionChanged;
 			
-			if (project.FileName != null)
+			if (project.FolderName != null)
 				fileChooser.SetCurrentFolder (project.ImagesRootPath);
 
 			fileChooser.SelectionChanged += delegate (object s, EventArgs a) {

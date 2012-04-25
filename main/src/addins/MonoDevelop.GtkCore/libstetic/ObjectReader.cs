@@ -25,14 +25,14 @@ namespace Stetic
 			get { return proj; }
 		}
 		
-		public virtual ObjectWrapper ReadObject (XmlElement elem)
+		public virtual ObjectWrapper ReadObject (XmlElement elem, ObjectWrapper root)
 		{
-			return Stetic.ObjectWrapper.ReadObject (this, elem);
+			return Stetic.ObjectWrapper.ReadObject (this, elem, root);
 		}
 		
-		public virtual void ReadObject (ObjectWrapper wrapper, XmlElement elem)
+		public virtual void ReadExistingObject (ObjectWrapper wrapper, XmlElement elem)
 		{
-			Stetic.ObjectWrapper.ReadObject (this, elem, wrapper);
+			Stetic.ObjectWrapper.ReadExistingObject (this, elem, wrapper);
 		}
 	}
 }

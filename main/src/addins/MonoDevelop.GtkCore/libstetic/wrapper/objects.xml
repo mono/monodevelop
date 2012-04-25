@@ -104,17 +104,17 @@
 	    <!-- "events" property has extra spaces around "|"s -->
 	    <import>
 		<xsl:template match="widget/property[@name='events']/text()">
-		    <xsl:call-template name="GtkWidget_fixevents">
+		    <xsl:call-template name="GtkWidget_fixevents2">
 			<xsl:with-param name="string" select="." />
 		    </xsl:call-template>
 		</xsl:template>
-		<xsl:template name="GtkWidget_fixevents">
+		<xsl:template name="GtkWidget_fixevents2">
 		    <xsl:param name="string"/>
 		    <xsl:choose>
 			<xsl:when test="contains($string, ' | ')">
 			    <xsl:value-of select="substring-before($string, ' | ')"/>
 			    <xsl:text>|</xsl:text>
-			    <xsl:call-template name="GtkWidget_fixevents">
+			    <xsl:call-template name="GtkWidget_fixevents2">
 				<xsl:with-param name="string" select="substring-after($string, ' | ')"/>
 			    </xsl:call-template>
 			</xsl:when>
@@ -126,17 +126,17 @@
 	    </import>
 	    <export>
 		<xsl:template match="widget/property[@name='events']/text()">
-		    <xsl:call-template name="GtkWidget_breakevents">
+		    <xsl:call-template name="GtkWidget_breakevents2">
 			<xsl:with-param name="string" select="." />
 		    </xsl:call-template>
 		</xsl:template>
-		<xsl:template name="GtkWidget_breakevents">
+		<xsl:template name="GtkWidget_breakevents2">
 		    <xsl:param name="string"/>
 		    <xsl:choose>
 			<xsl:when test="contains($string, '|')">
 			    <xsl:value-of select="substring-before($string, '|')"/>
 			    <xsl:text> | </xsl:text>
-			    <xsl:call-template name="GtkWidget_breakevents">
+			    <xsl:call-template name="GtkWidget_breakevents2">
 				<xsl:with-param name="string" select="substring-after($string, '|')"/>
 			    </xsl:call-template>
 			</xsl:when>
@@ -1316,19 +1316,19 @@
 	    <!-- Child packing options are non-standard ("expand" instead of "GTK_EXPAND") -->
 	    <import>
 		<xsl:template match="widget[@class='GtkTable']/child/packing/property[@name='x_options' or @name='y_options']/text()">
-		    <xsl:call-template name="GtkTable_fixoptions">
+		    <xsl:call-template name="GtkTable_fixoptions2">
 			<xsl:with-param name="string" select="." />
 		    </xsl:call-template>
 		</xsl:template>
-		<xsl:template name="GtkTable_fixoptions">
+		<xsl:template name="GtkTable_fixoptions2">
 		    <xsl:param name="string"/>
 		    <xsl:choose>
 			<xsl:when test="contains($string, '|')">
-			    <xsl:call-template name="GtkTable_fixoptions">
+			    <xsl:call-template name="GtkTable_fixoptions2">
 				<xsl:with-param name="string" select="substring-before($string, '|')"/>
 			    </xsl:call-template>
 			    <xsl:text>|</xsl:text>
-			    <xsl:call-template name="GtkTable_fixoptions">
+			    <xsl:call-template name="GtkTable_fixoptions2">
 				<xsl:with-param name="string" select="substring-after($string, '|')"/>
 			    </xsl:call-template>
 			</xsl:when>
@@ -1341,19 +1341,19 @@
 	    </import>
 	    <export>
 		<xsl:template match="widget[@class='GtkTable']/child/packing/property[@name='x_options' or @name='y_options']/text()">
-		    <xsl:call-template name="GtkTable_breakoptions">
+		    <xsl:call-template name="GtkTable_breakoptions2">
 			<xsl:with-param name="options" select="." />
 		    </xsl:call-template>
 		</xsl:template>
-		<xsl:template name="GtkTable_breakoptions">
+		<xsl:template name="GtkTable_breakoptions2">
 		    <xsl:param name="string"/>
 		    <xsl:choose>
 			<xsl:when test="contains($string, '|')">
-			    <xsl:call-template name="GtkTable_breakoptions">
+			    <xsl:call-template name="GtkTable_breakoptions2">
 				<xsl:with-param name="string" select="substring-before($string, '|')"/>
 			    </xsl:call-template>
 			    <xsl:text>|</xsl:text>
-			    <xsl:call-template name="GtkTable_breakoptions">
+			    <xsl:call-template name="GtkTable_breakoptions2">
 				<xsl:with-param name="string" select="substring-after($string, '|')"/>
 			    </xsl:call-template>
 			</xsl:when>
@@ -1483,10 +1483,9 @@
 		<property name="Orientation" />
 		<property name="ShowArrow" />
 		<property name="Tooltips" />
-		<property name="ButtonStyle" label="Toolbar style" default="Default"/>
+		<property name="ButtonStyle" label="Toolbar style"/>
 		<property name="ToolbarStyle" ignore-default="true" internal="true"/>
-		<property name="ButtonIconSize" label="Icon size" default="Default" />
-		<property name="IconSize" ignore-default="true" internal="true" />
+		<property name="IconSize" />
 	    </itemgroup>
 	</itemgroups>
 	<signals>
@@ -2037,23 +2036,6 @@
 	       description="The size of an icon in a drag-and-drop operation" />
 	<value name="Dialog" label="Dialog"
 	       description="The size of an icon in a dialog box" />
-    </enum>
-
-    <enum type="Stetic.Wrapper.ActionToolbarWrapper+ToolbarIconSize">
-	<value name="Menu" label="Menu"
-	       description="The size of an icon an a menu item" />
-	<value name="SmallToolbar" label="Small Toolbar"
-	       description="The size of an icon in a small toolbar" />
-	<value name="LargeToolbar" label="Large Toolbar"
-	       description="The size of an icon in a large toolbar" />
-	<value name="Button" label="Button"
-	       description="The size of an icon in a button" />
-	<value name="Dnd" label="Drag and Drop"
-	       description="The size of an icon in a drag-and-drop operation" />
-	<value name="Dialog" label="Dialog"
-	       description="The size of an icon in a dialog box" />
-	<value name="Default" label="System Default"
-	       description="Use the system default size" />
     </enum>
 
     <enum type="Gtk.Justification,gtk-sharp">

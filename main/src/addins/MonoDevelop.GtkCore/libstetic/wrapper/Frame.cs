@@ -17,21 +17,21 @@ namespace Stetic.Wrapper {
 				if (AllowPlaceholders) {
 					Gtk.Alignment align = new Gtk.Alignment (0, 0, 1, 1);
 					align.LeftPadding = 12;
-					Container align_wrapper = (Container)ObjectWrapper.Create (proj, align);
+					Container align_wrapper = (Container)ObjectWrapper.Create (proj, align, this);
 					align_wrapper.AddPlaceholder ();
 					ReplaceChild (frame.Child, (Gtk.Widget)align_wrapper.Wrapped, true);
 				}
 			}
 
 			if (frame.LabelWidget != null)
-				ObjectWrapper.Create (proj, frame.LabelWidget);
+				ObjectWrapper.Create (proj, frame.LabelWidget, this);
 			NotifyWorkaround.AddNotification (frame, "label-widget", LabelWidgetChanged);
 		}
 
 		void LabelWidgetChanged (object obj, GLib.NotifyArgs args)
 		{
 			if (!IsDisposed && frame.LabelWidget != null && !(frame.LabelWidget is Stetic.Placeholder))
-				ObjectWrapper.Create (proj, frame.LabelWidget);
+				ObjectWrapper.Create (proj, frame.LabelWidget, this);
 		}
 
 		Gtk.Frame frame {
@@ -43,7 +43,7 @@ namespace Stetic.Wrapper {
 		protected override ObjectWrapper ReadChild (ObjectReader reader, XmlElement child_elem)
 		{
 			if ((string)GladeUtils.GetChildProperty (child_elem, "type", "") == "label_item") {
-				ObjectWrapper wrapper = reader.ReadObject (child_elem["widget"]);
+				ObjectWrapper wrapper = reader.ReadObject (child_elem["widget"], this);
 				frame.LabelWidget = (Gtk.Widget)wrapper.Wrapped;
 				return wrapper;
 			} else

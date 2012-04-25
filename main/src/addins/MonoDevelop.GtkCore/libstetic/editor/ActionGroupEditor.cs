@@ -275,7 +275,9 @@ namespace Stetic.Editor
 		
 		void OnAddClicked (object s, Gtk.ButtonPressEventArgs args)
 		{
-			Wrapper.Action ac = (Wrapper.Action) ObjectWrapper.Create (project, new Gtk.Action ("", "", null, null));
+			Wrapper.Action ac = (Wrapper.Action) ObjectWrapper.Create (project,  
+			                                                           new Gtk.Action ("", "", null, null), 
+			                                                           ActionGroup);
 			ActionMenuItem item = InsertAction (ac, actionGroup.Actions.Count);
 			item.EditingDone += OnEditDone;
 			item.Select ();

@@ -522,11 +522,6 @@ namespace Stetic
 			set { gettextClass = value; }
 		}
 		
-		public bool UsePartialClasses {
-			get { return partialClasses; }
-			set { partialClasses = value; }
-		}
-		
 		public string Path {
 			get { return path; }
 			set { path = value; }
@@ -535,11 +530,6 @@ namespace Stetic
 		public bool GenerateEmptyBuildMethod {
 			get { return generateEmptyBuildMethod; }
 			set { generateEmptyBuildMethod = value; }
-		}
-		
-		public bool GenerateSingleFile {
-			get { return generateSingleFile; }
-			set { generateSingleFile = value; }
 		}
 		
 		public string GlobalNamespace {

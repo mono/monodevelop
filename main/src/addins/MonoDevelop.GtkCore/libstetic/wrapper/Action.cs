@@ -43,7 +43,7 @@ namespace Stetic.Wrapper
 			get { return (Gtk.Action) Wrapped; }
 		}
 		
-		public string Name {
+		public override string Name {
 			get {
 				if (name == null || name.Length == 0) {
 					name = nameRoot = oldDefaultName = GetDefaultName ();
@@ -250,7 +250,7 @@ namespace Stetic.Wrapper
 		
 		public Action Clone ()
 		{
-			Action a = (Action) ObjectWrapper.Create (Project, new Gtk.Action ("", ""));
+			Action a = (Action) ObjectWrapper.Create (Project, new Gtk.Action ("", ""), this);
 			a.CopyFrom (this);
 			return a;
 		}

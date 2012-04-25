@@ -182,7 +182,7 @@ namespace Stetic {
 				
 				if (targetWrapper.IsDisposed) {
 					// The project has been reloaded. Find the wrapper again.
-					Gtk.Widget twidget = project.GetTopLevel (tname);
+					Gtk.Widget twidget = project.GetWidget (tname);
 					ObjectWrapper ow = ObjectWrapper.Lookup (twidget);
 					if (ow != null)
 						targetWrapper = ow.FindObjectByUndoId (uid);
