@@ -12,9 +12,9 @@ DEPS =  \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/../external/ngit/bin/NGit.dll \
-	$(top_builddir)/../external/ngit/bin/NSch.dll \
-	$(top_builddir)/../external/ngit/bin/Sharpen.dll
+	/Users/fejj/src/monodevelop/external/ngit/bin/NGit.dll \
+	/Users/fejj/src/monodevelop/external/ngit/bin/NSch.dll \
+	/Users/fejj/src/monodevelop/external/ngit/bin/Sharpen.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
