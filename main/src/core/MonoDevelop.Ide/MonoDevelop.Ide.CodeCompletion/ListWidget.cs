@@ -140,7 +140,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					SelectedItem = -1;
 					return;
 				}
-				SelectedItem = filteredItems [value];
+				if (value < filteredItems.Count)
+					SelectedItem = filteredItems [value];
 			}
 		}
 		
