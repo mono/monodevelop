@@ -83,7 +83,7 @@ namespace Mono.Debugging.Evaluation
 			Expression expObj = parser.ParseExpression ();
 			if (expObj == null)
 				throw new EvaluatorException ("Could not parse expression '{0}'", exp);
-			
+
 			try {
 				EvaluatorVisitor ev = new EvaluatorVisitor (ctx, exp, expectedType, userVariables, tryTypeOf);
 				return (ValueReference) expObj.AcceptVisitor (ev, null);
