@@ -252,7 +252,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public static string GetBuildCodeFileName (Project project, string componentName)
 		{
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-			return Path.Combine (info.GtkGuiFolder, componentName + Path.GetExtension (info.SteticGeneratedFile));
+			return Path.Combine (info.SteticFolder, componentName + Path.GetExtension (info.SteticGeneratedFile));
 		}
 		
 		public static string GenerateSteticCodeStructure (DotNetProject project, Stetic.ProjectItemInfo item, bool saveToFile, bool overwrite)
@@ -352,11 +352,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (generating || !GtkDesignInfo.HasDesignedObjects (project))
 				return null;
-			
+
 			using (var timer = Counters.SteticFileGeneratedTimer.BeginTiming ()) {
-				
+
+
 				timer.Trace ("Checking references");
 				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+				info.CheckGtkFolder ();
 	
 				DateTime last_gen_time = File.Exists (info.SteticGeneratedFile) ? File.GetLastWriteTime (info.SteticGeneratedFile) : DateTime.MinValue;
 				
@@ -379,7 +381,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return null;
 				
 				if (info.GuiBuilderProject.HasError) {
-					monitor.ReportError (GettextCatalog.GetString ("GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.", project.Name, info.SteticFile), null);
+					monitor.ReportError (
+						GettextCatalog.GetString (
+						"GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.",
+						project.Name,
+						info.SteticFile
+					),
+						null
+					);
 					monitor.AsyncOperation.Cancel ();
 					return null;
 				}
@@ -400,8 +409,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				info.GuiBuilderProject.UpdateLibraries ();
 				
 				ArrayList projects = new ArrayList ();
-				projects.Add (info.GuiBuilderProject.File);
-				
+				projects.Add (info.SteticFolder.FullPath);
+
 				generating = true;
 				Stetic.CodeGenerationResult generationResult = null;
 				Exception generatedException = null;
@@ -415,9 +424,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 						try {
 							// Generate the code in another process if stetic is not isolated
-							CodeGeneratorProcess cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (typeof(CodeGeneratorProcess), false);
+							CodeGeneratorProcess cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (
+								typeof(CodeGeneratorProcess),
+								false
+							);
 							using (cob) {
-								generationResult = cob.GenerateCode (projects, info.GenerateGettext, info.GettextClass, project.UsePartialTypes);
+								generationResult = cob.GenerateCode (
+									projects,
+									info.GenerateGettext,
+									info.GettextClass,
+									project.UsePartialTypes,
+									info
+								);
 							}
 						} catch (Exception ex) {
 							generatedException = ex;
@@ -438,8 +456,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 						options.UseGettext = info.GenerateGettext;
 						options.GettextClass = info.GettextClass;
-						options.UsePartialClasses = project.UsePartialTypes;
-						options.GenerateSingleFile = false;
 						generationResult = SteticApp.GenerateProjectCode (options, info.GuiBuilderProject.SteticProject);
 					} catch (Exception ex) {
 						generatedException = ex;
@@ -603,25 +619,22 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 	public class CodeGeneratorProcess: RemoteProcessObject
 	{
-		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFiles, bool useGettext, string gettextClass, bool usePartialClasses)
+		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFolders, bool useGettext, string gettextClass, bool usePartialClasses, GtkDesignInfo info)
 		{
 			Gtk.Application.Init ();
 			
 			Stetic.Application app = Stetic.ApplicationFactory.CreateApplication (Stetic.IsolationMode.None);
 			
-			Stetic.Project[] projects = new Stetic.Project [projectFiles.Count];
-			for (int n=0; n < projectFiles.Count; n++) {
-				projects [n] = app.CreateProject ();
-				projects [n].Load ((string) projectFiles [n]);
+			Stetic.Project[] projects = new Stetic.Project [projectFolders.Count];
+			for (int n=0; n < projectFolders.Count; n++) {
+				projects [n] = app.CreateProject (info);
+				projects [n].Load ((string) projectFolders [n]);
 			}
 			
 			Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 			options.UseGettext = useGettext;
 			options.GettextClass = gettextClass;
-			options.UsePartialClasses = usePartialClasses;
-			options.GenerateSingleFile = false;
 			
 			return app.GenerateProjectCode (options, projects);
 		}
-	}
-}
+	}}

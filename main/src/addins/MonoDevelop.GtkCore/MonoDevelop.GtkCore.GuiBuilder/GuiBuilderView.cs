@@ -79,7 +79,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			gproject = window.Project;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (gproject.Project);
-			gproject.SteticProject.ImagesRootPath = FileService.AbsoluteToRelativePath (info.GtkGuiFolder, gproject.Project.BaseDirectory);
+			gproject.SteticProject.ImagesRootPath = FileService.AbsoluteToRelativePath (info.SteticFolder, gproject.Project.BaseDirectory);
 			gproject.UpdateLibraries ();
 			LoadDesigner ();
 		}
@@ -94,21 +94,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (gproject != null && gproject.Project == project)
 				return;
-			
-			if (designer != null)
-				designerStatus = designer.SaveStatus ();
-			
-			CloseDesigner ();
-			CloseProject ();
-			if (project != null) {
-				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (this.ContentName);
-				if (w != null) {
-					AttachWindow (w);
-					if (designerStatus != null)
-						designer.LoadStatus (designerStatus);
-					designerStatus = null;
-				}
-			}
+
+			ReloadDesigner (project);
 		}
 		
 		void LoadDesigner ()
@@ -121,7 +108,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			gproject.Unloaded += OnDisposeProject;
 			
-			designer = gproject.SteticProject.CreateWidgetDesigner (window.RootWidget, false);
+			designer = gproject.SteticProject.CreateWidgetDesigner (window.RootWidget);
 			
 			// Designer page
 			designerPage.ClearChild ();
@@ -138,7 +125,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder = new CodeBinder (gproject.Project, new OpenDocumentFileProvider (), designer.RootComponent);
 			
 			designer.BindField += OnBindWidgetField;
-			designer.ModifiedChanged += OnWindowModifiedChanged;
+//			designer.ModifiedChanged += OnWindowModifiedChanged;
 			designer.SignalAdded += OnSignalAdded;
 			designer.SignalRemoved += OnSignalRemoved;
 			designer.SignalChanged += OnSignalChanged;
@@ -167,7 +154,25 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.ShowAll ();
 			GuiBuilderService.SteticApp.ActiveDesigner = designer;
 		}
-		
+
+		public void ReloadDesigner (Project project)
+		{
+			if (designer != null)
+				designerStatus = designer.SaveStatus ();
+			
+			CloseDesigner ();
+			CloseProject ();
+			if (project != null) {
+				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (this.ContentName);
+				if (w != null) {
+					AttachWindow (w);
+					if (designerStatus != null)
+						designer.LoadStatus (designerStatus);
+					designerStatus = null;
+				}
+			}
+		}
+				
 		public override Stetic.Designer Designer {
 			get { return designer; }
 		}
@@ -194,7 +199,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			gproject.Unloaded -= OnDisposeProject;
 			designer.BindField -= OnBindWidgetField;
-			designer.ModifiedChanged -= OnWindowModifiedChanged;
+//			designer.ModifiedChanged -= OnWindowModifiedChanged;
 			designer.SignalAdded -= OnSignalAdded;
 			designer.SignalRemoved -= OnSignalRemoved;
 			designer.SignalChanged -= OnSignalChanged;
@@ -327,14 +332,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Save (string fileName)
 		{
+			Console.WriteLine ("save : "+  designer);
 			base.Save (fileName);
 			
 			if (designer == null)
 				return;
 			
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
-			
 			codeBinder.UpdateBindings (fileName);
+			
 			if (!ErrorMode) {
 				if (designer != null)
 					designer.Save ();
@@ -344,13 +350,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
 			
-			if (oldBuildFile != newBuildFile) {
+			if (oldBuildFile != newBuildFile && oldBuildFile != null && newBuildFile != null) {
 				if (System.IO.File.Exists (newBuildFile))
 					FileService.DeleteFile (newBuildFile);
-				FileService.MoveFile (oldBuildFile, newBuildFile);
+				if (System.IO.File.Exists (oldBuildFile))
+					FileService.MoveFile (oldBuildFile, newBuildFile);
 			}
 			
 			gproject.Save (true);
+			OnDirtyChanged (EventArgs.Empty);
 		}
 		
 		public override bool IsDirty {

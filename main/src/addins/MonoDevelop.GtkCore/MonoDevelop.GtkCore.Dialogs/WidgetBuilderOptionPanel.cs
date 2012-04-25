@@ -43,6 +43,8 @@ namespace MonoDevelop.GtkCore.Dialogs
 			Gtk.CheckButton checkGettext;
 			Gtk.Entry entryGettext;
 			Gtk.ComboBox comboVersions;
+			Gtk.Entry entryFolderName;
+			Gtk.CheckButton checkHideFiles;
 			
 			DotNetProject project;
 			
@@ -84,11 +86,23 @@ namespace MonoDevelop.GtkCore.Dialogs
 				box.ShowAll ();
 				PackStart (box, false, false, 0);
 				
-				checkGettext.Clicked += delegate {
-					box.Sensitive = checkGettext.Active;
-					if (checkGettext.Active)
-						entryGettext.Text = "Mono.Unix.Catalog";
-				};
+				sep= new HSeparator ();
+				sep.Show ();
+				PackStart (sep, false, false, 0);
+				
+				box = new Gtk.HBox (false, 3);
+				box.PackStart (new Label (GettextCatalog.GetString ("Stetic folder name :")), false, false, 0);
+				entryFolderName = new Gtk.Entry ();
+				entryFolderName.Text = designInfo.SteticFolderName;
+				entryFolderName.Sensitive = false;
+				box.PackStart (entryFolderName, false, false, 0);
+				box.ShowAll ();
+				PackStart (box, false, false, 0);
+				
+				checkHideFiles = new CheckButton (GettextCatalog.GetString ("Hide designer files"));
+				checkHideFiles.Active = designInfo.HideGtkxFiles;
+				checkHideFiles.Show ();
+				PackStart (checkHideFiles, false, false, 0);
 			}
 			
 			public void Store ()
@@ -101,6 +115,8 @@ namespace MonoDevelop.GtkCore.Dialogs
 					info.GenerateGettext = checkGettext.Active;
 					info.GettextClass = entryGettext.Text;
 					info.GuiBuilderProject.SteticProject.TargetGtkVersion = comboVersions.ActiveText;
+					info.SteticFolderName = entryFolderName.Text;
+					info.HideGtkxFiles = checkHideFiles.Active;
 					info.GuiBuilderProject.Save (false);
 				}
 				refmgr.Dispose ();

@@ -29,11 +29,13 @@ FILES =  \
 	AssemblyInfo.cs \
 	gtk-gui/generated.cs \
 	gtk-gui/MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs \
-	MonoDevelop.GtkCore.Commands/GladeCommands.cs \
+	gtk-gui/MonoDevelop.GtkCore.Dialogs.ProjectConversionDialog.cs \
+	MonoDevelop.GtkCore.Commands/GtkCommands.cs \
 	MonoDevelop.GtkCore.Dialogs/BindDesignDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/ConfirmWindowDeleteDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/GtkDesignerOptionsPanelWidget.cs \
 	MonoDevelop.GtkCore.Dialogs/GtkFeatureWidget.cs \
+	MonoDevelop.GtkCore.Dialogs/ProjectConversionDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/SelectRenamedClassDialog.cs \
 	MonoDevelop.GtkCore.Dialogs/WidgetBuilderOptionPanel.cs \
 	MonoDevelop.GtkCore.GuiBuilder/ActionGroupDisplayBinding.cs \
@@ -52,6 +54,10 @@ FILES =  \
 	MonoDevelop.GtkCore.GuiBuilder/ToolboxLoader.cs \
 	MonoDevelop.GtkCore.GuiBuilder/ToolboxProvider.cs \
 	MonoDevelop.GtkCore.NodeBuilders/ActionGroupNodeBuilder.cs \
+	MonoDevelop.GtkCore.NodeBuilders/GuiProjectFolder.cs \
+	MonoDevelop.GtkCore.NodeBuilders/GuiProjectFolderNodeBuilder.cs \
+	MonoDevelop.GtkCore.NodeBuilders/ProjectFileExtension.cs \
+	MonoDevelop.GtkCore.NodeBuilders/ProjectFileNodeBuilderExtension.cs \
 	MonoDevelop.GtkCore.NodeBuilders/ProjectFolderNodeBuilderExtension.cs \
 	MonoDevelop.GtkCore.NodeBuilders/ProjectNodeBuilder.cs \
 	MonoDevelop.GtkCore.NodeBuilders/StockIconsNodeBuilder.cs \
@@ -71,6 +77,9 @@ RES =  \
 	gtk-gui/gui.stetic \
 	gui.glade \
 	icons/actiongroup.png \
+	icons/gtk-logo.png \
+	icons/gtk-logo-orig.png \
+	icons/gtkx.png \
 	icons/image-x-generic.png \
 	icons/widget.png \
 	MonoDevelop.GtkCore.addin.xml \

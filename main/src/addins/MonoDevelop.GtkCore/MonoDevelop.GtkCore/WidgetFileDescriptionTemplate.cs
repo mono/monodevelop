@@ -38,7 +38,6 @@ using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 
-
 namespace MonoDevelop.GtkCore
 {
 	public class WidgetFileDescriptionTemplate: FileDescriptionTemplate
@@ -114,6 +113,7 @@ namespace MonoDevelop.GtkCore
 				
 				gproject.AddNewComponent (doc.DocumentElement);
 				gproject.Save (false);
+				gproject.GenerateCode (fileName);
 				IdeApp.ProjectOperations.Save (project);
 				return true;
 			}
@@ -126,8 +126,10 @@ namespace MonoDevelop.GtkCore
 				XmlDocument doc = new XmlDocument ();
 				doc.LoadXml (content);
 				
-				gproject.SteticProject.AddNewActionGroup (doc.DocumentElement);
+				Stetic.Project sproject = gproject.SteticProject;
+				sproject.AddNewActionGroup (doc.DocumentElement);
 				gproject.Save (false);
+				gproject.GenerateCode (fileName);
 				IdeApp.ProjectOperations.Save (project);
 				return true;
 			}

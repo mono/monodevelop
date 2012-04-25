@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using System.Text;
 
 
 namespace MonoDevelop.GtkCore
@@ -104,7 +105,7 @@ namespace MonoDevelop.GtkCore
 			//Always write line endings as \n to be consistent with other stetic files
 			//and explicitly write with no BOM or XML declaration in order to be consistent with existing format.
 			var settings = new XmlWriterSettings () {
-				Encoding = Stetic.EncodingUtility.UTF8NoBom,
+				Encoding = Encoding.UTF8,
 				NewLineChars = "\n",
 				Indent = true,
 				OmitXmlDeclaration = true,

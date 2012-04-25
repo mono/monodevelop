@@ -2,9 +2,10 @@
 // ProjectNodeBuilder.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Lluis Sanchez Gual, Krzysztof Marecki
 //
 // Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2010 Krzysztof Marecki
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,17 +26,21 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
 using System;
 using System.Collections;
+using System.IO;
+
+using Gtk;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
-
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.GtkCore.GuiBuilder;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {
@@ -46,6 +51,12 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override bool CanBuildNode (Type dataType)
 		{
 			return typeof(DotNetProject).IsAssignableFrom (dataType);
+		}
+		
+		public override Type CommandHandlerType {
+			get {
+				return typeof (UserInterfaceCommandHandler);
+			}
 		}
 		
 		protected override void Initialize ()
@@ -60,10 +71,62 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				instance = null;
 		}
 		
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		{
+			Project project = dataObject as Project;
+			Console.WriteLine ("build project:" + project);
+			if (project is DotNetProject) {
+				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+				Console.WriteLine ("needs conversion: " + info.NeedsConversion);
+				if (info.NeedsConversion) {
+					ProjectConversionDialog dialog = new ProjectConversionDialog (project, info.SteticFolderName);
+					
+					try
+					{
+						if (dialog.Run () == (int)ResponseType.Yes) {
+							info.GuiBuilderProject.Convert (dialog.GuiFolderName, dialog.MakeBackup);
+							IdeApp.ProjectOperations.Save (project);
+						}
+					} finally {
+						dialog.Destroy ();
+					}
+				}
+				
+				project.FileAddedToProject += HandleProjectFileAddedToProject;
+			}
+		}
+		
+		void HandleProjectFileAddedToProject (object sender, ProjectFileEventArgs e)
+		{
+			foreach (ProjectFileEventInfo args in e) {
+				Project project = args.Project;
+				ProjectFile pf = args.ProjectFile;
+				string fileName = pf.FilePath.FullPath.ToString ();
+				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+				
+				string buildFile = info.GetBuildFileFromComponent (fileName);
+				if (!project.IsFileInProject(buildFile) && File.Exists (buildFile)) {
+					ProjectFile pf2 = project.AddFile (buildFile, BuildAction.Compile);
+					pf2.DependsOn = pf.FilePath.FileName;
+				}
+				
+				string gtkxFile = info.GetDesignerFileFromComponent (fileName);
+				if (!project.IsFileInProject(gtkxFile) && File.Exists (gtkxFile)) {
+					ProjectFile pf3 = project.AddFile (gtkxFile, BuildAction.EmbeddedResource);
+					pf3.DependsOn = pf.FilePath.FileName;
+				}
+			}
+		}
+		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			if (GtkDesignInfo.HasDesignedObjects ((Project)dataObject))
-				builder.AddChild (new WindowsFolder ((Project)dataObject));
+			Project project = (Project)dataObject;
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+			
+			if (GtkDesignInfo.HasDesignedObjects (project)) {
+				GuiProjectFolder folder = new GuiProjectFolder(info.SteticFolder.FullPath, project, null);
+				builder.AddChild (folder);
+			}
 		}
 		
 		public static void OnSupportChanged (Project p)

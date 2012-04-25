@@ -20,14 +20,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)
 		{
-			DotNetProject project = (DotNetProject) entry;
+			DotNetProject project = (DotNetProject)entry;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 
 			// The code generator must run in the GUI thread since it needs to
 			// access to Gtk classes
 			Generator gen = new Generator ();
 			lock (gen) {
-				Gtk.Application.Invoke (delegate { gen.Run (monitor, project, configuration); });
+				Gtk.Application.Invoke (delegate {
+					gen.Run (monitor, project, configuration);
+				});
 				Monitor.Wait (gen);
 			}
 					
@@ -35,8 +37,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			if (gen.Messages != null) {
 				foreach (string s in gen.Messages)
-					res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
-						
+//					res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
+// TODO:	Add gtkx file name in the Generator 
+					res.AddWarning ("", 0, 0, null, s);
+
 				if (gen.Messages.Length > 0)
 					info.ForceCodeGenerationOnBuild ();
 			}

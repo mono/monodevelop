@@ -38,26 +38,36 @@
     <Reference Include="Mono.Addins, Version=0.4.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glade-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\..\build\bin\Mono.Cecil.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -103,11 +113,6 @@
     <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\Mono.Cecil\src\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -162,9 +167,17 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\gtkx.png">
+      <LogicalName>gtkx.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gtk-logo-orig.png">
+      <LogicalName>gtk-logo-orig.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gtk-logo.png">
+      <LogicalName>gtk-logo.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MonoDevelop.GtkCore.Commands\GladeCommands.cs" />
     <Compile Include="MonoDevelop.GtkCore.GuiBuilder\ClassUtils.cs" />
     <Compile Include="MonoDevelop.GtkCore.GuiBuilder\GuiBuilderDisplayBinding.cs" />
     <Compile Include="MonoDevelop.GtkCore.GuiBuilder\GuiBuilderProject.cs" />
@@ -204,6 +217,13 @@
     <Compile Include="MonoDevelop.GtkCore.Dialogs\GtkDesignerOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.GtkCore\Counters.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.GtkCore.Dialogs.ProjectConversionDialog.cs" />
+    <Compile Include="MonoDevelop.GtkCore.Dialogs\ProjectConversionDialog.cs" />
+    <Compile Include="MonoDevelop.GtkCore.NodeBuilders\GuiProjectFolder.cs" />
+    <Compile Include="MonoDevelop.GtkCore.NodeBuilders\GuiProjectFolderNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.GtkCore.NodeBuilders\ProjectFileExtension.cs" />
+    <Compile Include="MonoDevelop.GtkCore.NodeBuilders\ProjectFileNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.GtkCore.Commands\GtkCommands.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

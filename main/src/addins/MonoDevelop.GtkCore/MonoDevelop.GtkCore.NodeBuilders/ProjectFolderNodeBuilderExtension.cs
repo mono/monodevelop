@@ -2,9 +2,10 @@
 // ProjectFolderNodeBuilderExtension.cs
 //
 // Author:
-//   Lluis Sanchez Gual
+//   Lluis Sanchez Gual, Krzysztof Marecki
 //
 // Copyright (C) 2006 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2010 Krzysztof Marecki
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,15 +26,15 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-
-
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.GtkCore.GuiBuilder;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.GtkCore.NodeBuilders
 {
@@ -41,8 +42,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof(ProjectFolder).IsAssignableFrom (dataType) ||
-			       typeof(DotNetProject).IsAssignableFrom (dataType);
+			return typeof(ProjectFolder).IsAssignableFrom (dataType) && !(dataType is GuiProjectFolder);
 		}
 		
 		public override Type CommandHandlerType {
@@ -51,13 +51,13 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
 		{
-			if (treeNavigator.Options ["ShowAllFiles"])
+			if (dataObject is GuiProjectFolder)
 				return;
-
+			
 			ProjectFolder folder = dataObject as ProjectFolder;
 			if (folder != null && folder.Project is DotNetProject) {
 				GtkDesignInfo info = GtkDesignInfo.FromProject (folder.Project);
-				if (info.GtkGuiFolder == folder.Path)
+				if (info.SteticFolder == folder.Path)
 					attributes |= NodeAttributes.Hidden;
 			}
 		}
@@ -74,7 +74,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewDialog)]
 		public void UpdateAddNewDialogToProject (CommandInfo cinfo)
 		{
-			cinfo.Visible = CanAddWindow ();
+			cinfo.Visible = CanAddWindow () && !(CurrentNode.DataItem is GuiProjectFolder);
 		}
 		
 		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWindow)]
@@ -86,7 +86,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWindow)]
 		public void UpdateAddNewWindowToProject (CommandInfo cinfo)
 		{
-			cinfo.Visible = CanAddWindow ();
+			cinfo.Visible = CanAddWindow () && !(CurrentNode.DataItem is GuiProjectFolder);
 		}
 		
 		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWidget)]
@@ -98,8 +98,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewWidget)]
 		public void UpdateAddNewWidgetToProject (CommandInfo cinfo)
 		{
-			cinfo.Visible = CanAddWindow ();
-		}
+			cinfo.Visible = CanAddWindow () && !(CurrentNode.DataItem is GuiProjectFolder);
+		} 
 		
 		[CommandHandler (MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup)]
 		public void AddNewActionGroupToProject()
@@ -110,51 +110,18 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		[CommandUpdateHandler (MonoDevelop.GtkCore.GtkCommands.AddNewActionGroup)]
 		public void UpdateAddNewActionGroupToProject(CommandInfo cinfo)
 		{
-			cinfo.Visible = CanAddWindow ();
+			cinfo.Visible = CanAddWindow () && !(CurrentNode.DataItem is GuiProjectFolder);
 		}
 		
-		[CommandHandler (GtkCommands.ImportGladeFile)]
-		protected void OnImportGladeFile ()
+		public override bool CanDropMultipleNodes (object[] dataObjects, DragOperation operation, DropPosition position)
 		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			GuiBuilderService.ImportGladeFile (project);
+			foreach (object dataObject in dataObjects) 
+				if (dataObjects is GuiProjectFolder)
+					return false;
+			
+			return base.CanDropMultipleNodes (dataObjects, operation, position);
 		}
-		
-		[CommandUpdateHandler (GtkCommands.ImportGladeFile)]
-		protected void UpdateImportGladeFile (CommandInfo cinfo)
-		{
-			cinfo.Visible = CanAddWindow ();
-		}
-		
-		[CommandHandler (GtkCommands.EditIcons)]
-		protected void OnEditIcons ()
-		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			GuiBuilderProject gp = GtkDesignInfo.FromProject (project).GuiBuilderProject;
-			Stetic.Project sp = gp.SteticProject;
-			sp.EditIcons ();
-			gp.Save (true);
-		}
-		
-		[CommandUpdateHandler (GtkCommands.EditIcons)]
-		protected void UpdateEditIcons (CommandInfo cinfo)
-		{
-			cinfo.Visible = CanAddWindow ();
-		}
-		
-		[CommandHandler (GtkCommands.GtkSettings)]
-		protected void OnGtkSettings ()
-		{
-			Project project = CurrentNode.GetParentDataItem (typeof(Project), true) as Project;
-			IdeApp.ProjectOperations.ShowOptions (project, "SteticOptionsPanel");
-		}
-		
-		[CommandUpdateHandler (GtkCommands.EditIcons)]
-		protected void UpdateGtkSettings (CommandInfo cinfo)
-		{
-			cinfo.Visible = CanAddWindow ();
-		}
-		
+			
 		bool CanAddWindow ()
 		{
 			DotNetProject project = CurrentNode.GetParentDataItem (typeof(Project), true) as DotNetProject;
@@ -170,9 +137,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			object dataItem = CurrentNode.DataItem;
 			
 			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
-			
-			if (project.UsePartialTypes)
-				id = "Partial" + id;
+			id = "Partial" + id;
 			
 			string path;
 			if (folder != null)
@@ -181,7 +146,6 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				path = project.BaseDirectory;
 
 			IdeApp.ProjectOperations.CreateProjectFile (project, path, id);
-			
 			IdeApp.ProjectOperations.Save (project);
 			
 			ITreeNavigator nav = Tree.GetNodeAtObject (dataItem);

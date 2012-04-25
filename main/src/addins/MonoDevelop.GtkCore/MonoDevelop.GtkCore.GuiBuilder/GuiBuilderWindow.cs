@@ -3,6 +3,7 @@
 //
 // Author:
 //   Lluis Sanchez Gual
+//   Krzysztof Marecki
 //
 // Copyright (C) 2006 Novell, Inc (http://www.novell.com)
 //
@@ -136,7 +137,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void CreateClass (string name, string namspace, string folder)
 		{
 			// TODO: Type system conversion.
-			
 //			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 //			
 //			var gen = new CodeRefactorer (fproject.Project.ParentSolution);
@@ -202,8 +202,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 //			Project.Project.AddFile (cls.CompilationUnit.FileName, BuildAction.Compile);
 //			IdeApp.ProjectOperations.Save (Project.Project);
 //			
+//#if TRUNK
 //			// Make sure the database is up-to-date
 //			ProjectDomService.Parse (Project.Project, cls.CompilationUnit.FileName);
+//#else 
+//			ProjectDomService.Parse (Project.Project, cls.CompilationUnit.FileName, null);
+//#endif
 		}
 		
 		void AddSignalsRec (CodeTypeDeclaration type, Stetic.Component comp)

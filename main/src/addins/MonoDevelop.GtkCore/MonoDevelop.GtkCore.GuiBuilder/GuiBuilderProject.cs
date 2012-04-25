@@ -3,6 +3,7 @@
 //
 // Author:
 //   Lluis Sanchez Gual
+//   Krzysztof Marecki
 //
 // Copyright (C) 2006 Novell, Inc (http://www.novell.com)
 //
@@ -45,12 +46,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GuiBuilderProject
 	{
+		//to save temporarily GuiBuilderWindow while files are being moved between projects
+		static List<GuiBuilderWindow> formInfosRemoved;
+		
 		internal object MemoryProbe = Counters.GuiProjectsInMemory.CreateMemoryProbe ();
 		
 		List<GuiBuilderWindow> formInfos;
 		Stetic.Project gproject;
 		DotNetProject project;
-		string fileName;
+		string folderName;
 		bool hasError;
 		bool needsUpdate = true;
 		
@@ -65,37 +69,87 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public event EventHandler Reloaded;
 		public event EventHandler Unloaded;
 		public event EventHandler Changed;
-
-		public GuiBuilderProject (DotNetProject project, string fileName)
+		
+		static GuiBuilderProject ()
 		{
-			this.fileName = fileName;
+			formInfosRemoved = new List<GuiBuilderWindow> ();
+		}
+
+		public GuiBuilderProject (DotNetProject project, string folderName)
+		{
+			this.folderName = folderName;
 			this.project = project;
 			Counters.GuiProjectsLoaded++;
 		}
 		
+		public void Convert (string guiFolderName, bool makeBackup)
+		{
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project); 
+			Stetic.Project gproject = GuiBuilderService.SteticApp.CreateProject (info);
+			//Stetic.Project does not implement IDisposable
+			try {
+				string newGuiFolderName = project.BaseDirectory.Combine (guiFolderName);
+				gproject.ConvertProject (info.SteticFile, newGuiFolderName);
+				info.ConvertGtkFolder (guiFolderName, makeBackup);
+				info.UpdateGtkFolder ();
+				folderName = newGuiFolderName;
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+				try {
+					ConfigurationSelector configuration = IdeApp.Workspace.ActiveConfiguration;
+					Generator generator = new Generator ();
+					generator.Run (monitor, project, configuration);
+					monitor.ReportSuccess ("Converting was succesfull");
+				} finally {
+					monitor.Dispose ();
+				}
+			} finally {
+				gproject.Dispose ();
+			}
+		}
+		
+		public void GenerateCode (string componentFile)
+		{
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+			string gtkxFile = info.GetDesignerFileFromComponent (componentFile);
+			if (gtkxFile != null && File.Exists (gtkxFile)) {
+				
+				Save (false);
+				FileInfo fi = new FileInfo (gtkxFile);
+				fi.LastWriteTime = DateTime.Now;
+				
+				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+				try {
+					ConfigurationSelector configuration = IdeApp.Workspace.ActiveConfiguration;
+					Generator generator = new Generator ();
+					generator.Run (monitor, project, configuration);
+				} finally {
+					monitor.Dispose ();
+				}
+			}
+		}
+		
 		void Load ()
 		{
-			if (gproject != null || disposed || fileName == null)
+			if (gproject != null || disposed || folderName == null)
 				return;
 			
-			gproject = GuiBuilderService.SteticApp.CreateProject ();
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project); 
+			gproject = GuiBuilderService.SteticApp.CreateProject (info);
 			formInfos = new List<GuiBuilderWindow> ();
 			
-			if (!System.IO.File.Exists (fileName)) {
-				// Regenerate the gtk-gui folder if the stetic project
-				// doesn't exist.
-				GtkDesignInfo.FromProject (project).UpdateGtkFolder ();
-			}
+//			TODO : when expanding project, UpdateGtkFolder causes in throwing exception by gtk
+//			info.UpdateGtkFolder ();
 
 			try {
-				gproject.Load (fileName);
+				gproject.Load (folderName);
 			} catch (Exception ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("The GUI designer project file '{0}' could not be loaded.", fileName));
+				MessageService.ShowException (ex, GettextCatalog.GetString ("The GUI designer project folder '{0}' could not be loaded.", folderName));
 				hasError = true;
 			}
 
 			Counters.SteticProjectsLoaded++;
 			gproject.ResourceProvider = GtkDesignInfo.FromProject (project).ResourceProvider;
+//			gproject.DesignInfo = info;
 			gproject.WidgetAdded += OnAddWidget;
 			gproject.WidgetRemoved += OnRemoveWidget;
 			gproject.ActionGroupsChanged += OnGroupsChanged;
@@ -106,16 +160,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			foreach (Stetic.WidgetInfo ob in gproject.Widgets)
 				RegisterWindow (ob, false);
-				
-			// Monitor changes in the file
-			lastSaveTime = System.IO.File.GetLastWriteTime (fileName);
-			watcher = new FileSystemWatcher ();
-			if (System.IO.File.Exists (fileName)) {
-				watcher.Path = Path.GetDirectoryName (fileName);
-				watcher.Filter = Path.GetFileName (fileName);
-				watcher.Changed += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnSteticFileChanged));
-				watcher.EnableRaisingEvents = true;
-			}
 		}	
 	
 		void Unload ()
@@ -158,7 +202,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnSteticFileChanged (object s, FileSystemEventArgs args)
 		{
 			lock (fileSaveLock) {
-				if (lastSaveTime == System.IO.File.GetLastWriteTime (fileName))
+				if (lastSaveTime == System.IO.File.GetLastWriteTime (folderName))
 					return;
 			}
 			
@@ -180,6 +224,17 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			NotifyChanged ();
 		}
 		
+		public void ReloadFile (string fileName)
+		{
+			GuiBuilderWindow window = GetWindowForFile (fileName);
+			if (window != null) {
+				var root = window.RootWidget;
+				UnregisterWindow (window);
+				gproject.ReloadComponent (window.Name);
+				RegisterWindow (root, false);
+			}
+		}
+		
 		public bool HasError {
 			get { return hasError; }
 		}
@@ -198,8 +253,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			if (gproject != null && !hasError) {
 				lock (fileSaveLock) {
-					gproject.Save (fileName);
-					lastSaveTime = System.IO.File.GetLastWriteTime (fileName);
+					gproject.Save (folderName);
+					lastSaveTime = System.IO.File.GetLastWriteTime (folderName);
 				}
 			}
 				
@@ -207,14 +262,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				IdeApp.ProjectOperations.Save (project);
 		}
 		
-		public string File {
-			get { return fileName; }
-		}
-		
 		public Stetic.Project SteticProject {
 			get {
 				Load ();
 				return gproject;
+			
 			}
 		}
 		
@@ -256,8 +308,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			RegisterWindow (c, true);
 			return c;
 		}
+		
+		public void AddNewComponent (string fileName)
+		{
+			object ob = SteticProject.AddNewComponent (fileName);
+			
+			if (ob is Stetic.WidgetInfo) {
+				var c = (Stetic.WidgetInfo) ob;
+				RegisterWindow (c, true);
+			}
+		}
 	
-		void RegisterWindow (Stetic.WidgetInfo widget, bool notify)
+		public void RegisterWindow (Stetic.WidgetInfo widget, bool notify)
 		{
 			if (formInfos != null) {
 				foreach (GuiBuilderWindow w in formInfos)
@@ -266,6 +328,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 				GuiBuilderWindow win = new GuiBuilderWindow (this, gproject, widget);
 				formInfos.Add (win);
+				
+				GuiBuilderWindow winToRemove = null;
+				foreach (GuiBuilderWindow form in formInfosRemoved)
+					if (form.RootWidget == widget) {
+						winToRemove = form;
+						break;
+					}
+				
+				if (winToRemove != null)
+					formInfosRemoved.Remove (winToRemove);
 			
 				if (notify) {
 					if (WindowAdded != null)
@@ -275,12 +347,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 	
-		void UnregisterWindow (GuiBuilderWindow win)
+		public void UnregisterWindow (GuiBuilderWindow win)
 		{
 			if (!formInfos.Contains (win))
 				return;
 
 			formInfos.Remove (win);
+			formInfosRemoved.Add (win);
 
 			if (WindowRemoved != null)
 				WindowRemoved (this, new WindowEventArgs (win));
@@ -399,7 +472,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					path = p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 			} else if (pref.ReferenceType == ReferenceType.Assembly) {
 				path = pref.Reference;
-			} else if (pref.ReferenceType == ReferenceType.Package) {
+			} else if (pref.ReferenceType == ReferenceType.Gac) {
 				path = pref.Reference;
 			}
 			if (path != null && GuiBuilderService.SteticApp.IsWidgetLibrary (path))
@@ -423,6 +496,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (Windows != null) {
 				foreach (GuiBuilderWindow form in Windows) {
+					if (CodeBinder.GetObjectName (form.RootWidget) == className)
+						return form;
+				}
+			}
+			
+			if (formInfosRemoved != null) {
+				foreach (GuiBuilderWindow form in formInfosRemoved) {
 					if (CodeBinder.GetObjectName (form.RootWidget) == className)
 						return form;
 				}
@@ -463,7 +543,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public Stetic.ActionGroupInfo GetActionGroup (string name)
 		{
-			return SteticProject.GetActionGroup (name);
+			return (SteticProject != null) ? SteticProject.GetActionGroup (name) : null;
 		}
 
 		public FilePath GetSourceCodeFile (Stetic.ProjectItemInfo obj)
@@ -492,7 +572,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public IUnresolvedTypeDefinition FindClass (string className, bool getUserClass)
 		{
-			FilePath gui_folder = GtkDesignInfo.FromProject (project).GtkGuiFolder;
+			FilePath gui_folder = GtkDesignInfo.FromProject (project).SteticFolder;
 			var ctx = GetParserContext ();
 			if (ctx == null)
 				return null;
@@ -518,7 +598,36 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			return null;
 		}
+
 		
+		public ITypeDefinition FindTypeDefinition (string className)
+		{
+			return FindTypeDefinition (className, true);
+		}
+		
+		public ITypeDefinition FindTypeDefinition (string className, bool getUserClass)
+		{
+			FilePath gui_folder = GtkDesignInfo.FromProject (project).SteticFolder;
+			var ctx = GetParserContext ();
+			if (ctx == null)
+				return null;
+			var classes = ctx.MainAssembly.GetAllTypeDefinitions ();
+			if (classes == null)
+				return null;
+			foreach (var cls in classes) {
+				if (cls.FullName == className) {
+					if (getUserClass) {
+						return cls;
+					}
+					if (getUserClass && !string.IsNullOrEmpty (cls.Region.FileName) && ((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder))
+						continue;
+					return cls;
+				}
+			}
+			return null;
+		}
+		
+
 		public ICompilation GetParserContext ()
 		{
 			var dom = TypeSystemService.GetCompilation (Project);
@@ -560,8 +669,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// Make sure the target gtk version is properly set
 			if (gproject.TargetGtkVersion != target_version) {
+				if (gproject.TargetGtkVersion != string.Empty) {
+					needsSave = true;
+				}
 				gproject.TargetGtkVersion = target_version;
-				needsSave = true;
 			}
 
 			string outLib = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
@@ -574,8 +685,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			// See if something has changed
 			if (LibrariesChanged (oldLibs, internalLibs, newLibs)) {
+			// If oldLibs is empty, gproject was uninitialized, so there are no changes to save
+				if (oldLibs.Length > 0) {
+					needsSave = true;
+				}
 				gproject.SetWidgetLibraries (newLibs, internalLibs);
-				needsSave = true;
 			} else {
 				GuiBuilderService.SteticApp.UpdateWidgetLibraries (false);
 			}
@@ -614,23 +728,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return files;
 
 			IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
-			string path = Path.Combine (guiFolder, binding.GetFileName ("generated"));
-			if (!System.IO.File.Exists (path)) {
-				// Generate an empty build class
-				CodeDomProvider provider = binding.GetCodeDomProvider ();
-				if (provider == null)
-					throw new UserException ("Code generation not supported for language: " + project.LanguageName);
-				GuiBuilderService.SteticApp.GenerateProjectCode (path, "Stetic", provider, null);
+			CodeDomProvider provider = binding.GetCodeDomProvider ();
+				
+			if (provider == null)
+				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
+//			string path = Path.Combine (guiFolder, binding.GetFileName ("generated"));
+//			if (!System.IO.File.Exists (path)) {
+//				GuiBuilderService.SteticApp.GenerateProjectCode (path, "Stetic", provider, null);
+//			}
+//			files.Add (path);
+//
+//			if (Windows != null) {
+//				foreach (GuiBuilderWindow win in Windows)
+//					files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false));
+//			}
+//					
+//			foreach (Stetic.ActionGroupInfo ag in SteticProject.ActionGroups)
+//				files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false));
+			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
+			string extension = string.Format("{0}.{1}",info.BuildFileExtension, provider.FileExtension);
+			foreach (string file in Directory.GetFiles (guiFolder)) {
+				if (file.Contains (extension))
+					files.Add (file);		
 			}
-			files.Add (path);
-
-			if (Windows != null) {
-				foreach (GuiBuilderWindow win in Windows)
-					files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, win.RootWidget, true, false));
-			}
-					
-			foreach (Stetic.ActionGroupInfo ag in SteticProject.ActionGroups)
-				files.Add (GuiBuilderService.GenerateSteticCodeStructure (project, ag, true, false));
 
 			return files;
 		}

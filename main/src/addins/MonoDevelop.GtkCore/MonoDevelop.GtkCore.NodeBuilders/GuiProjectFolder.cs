@@ -1,11 +1,11 @@
-//
-// GtkCommands.cs
-//
-// Author:
-//   Lluis Sanchez Gual
-//
-// Copyright (C) 2006 Novell, Inc (http://www.novell.com)
-//
+//  
+//  GuiProjectFolder.cs
+//  
+//  Author:
+//       Krzysztof Marecki <marecki.krzysztof@gmail.com>
+// 
+//  Copyright (c) 2010 KrzysztofMarecki
+// 
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -24,18 +24,18 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.GtkCore
+namespace MonoDevelop.GtkCore.NodeBuilders
 {
-	public enum GtkCommands
+	public class GuiProjectFolder : ProjectFolder
 	{
-		AddNewDialog,
-		AddNewWindow,
-		AddNewWidget,
-		AddNewActionGroup,
-		ImportGladeFile,
-		EditIcons,
-		GtkSettings
+		public GuiProjectFolder (FilePath absolutePath, IWorkspaceObject parentWorkspaceObject, object parent)
+			: base (absolutePath, parentWorkspaceObject, parent)
+		{
+		}
 	}
 }
+

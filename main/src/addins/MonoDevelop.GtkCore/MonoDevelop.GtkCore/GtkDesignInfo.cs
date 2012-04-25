@@ -4,8 +4,10 @@
 // Authors:
 //   Lluis Sanchez Gual
 //   Mike Kestner
+//   Krzysztof Marecki
 //
 // Copyright (C) 2006-2008 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2010 Krzysztof Marecki
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -38,22 +40,31 @@ using MonoDevelop.GtkCore.GuiBuilder;
 using MonoDevelop.GtkCore.NodeBuilders;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.GtkCore
 {
-	public class GtkDesignInfo: IDisposable
+	public class GtkDesignInfo: IDisposable, Stetic.IProjectDesignInfo
 	{
 		DotNetProject project;
 		GuiBuilderProject builderProject;
 		IDotNetLanguageBinding binding;
 		ProjectResourceProvider resourceProvider;
 		ReferenceManager referenceManager;
+		string langExtension;
 		
-		[ItemProperty (DefaultValue=true)]
+		[ItemProperty (DefaultValue = true)]
 		bool generateGettext = true;
 		
-		[ItemProperty (DefaultValue="Mono.Unix.Catalog")]
+		[ItemProperty (DefaultValue = "Mono.Unix.Catalog")]
 		string gettextClass = "Mono.Unix.Catalog";
+		
+		[ItemProperty (DefaultValue = "Designer")]
+		string steticFolderName = "Designer";
+		
+		[ItemProperty (DefaultValue = true)]
+		bool hideGtkxFiles = true;
 		
 		GtkDesignInfo ()
 		{
@@ -82,8 +93,15 @@ namespace MonoDevelop.GtkCore
 					referenceManager = null;
 				}
 				project = value;
+				
 				if (project != null) {
 					binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+					
+					var provider = binding.GetCodeDomProvider ();
+					if (provider == null)
+						throw new UserException ("Code generation not supported for language: " + project.LanguageName);
+					langExtension = "." + provider.FileExtension;
+					
 					project.FileAddedToProject += OnFileEvent;
 					project.FileChangedInProject += OnFileEvent;
 					project.FileRemovedFromProject += OnFileEvent;
@@ -117,11 +135,7 @@ namespace MonoDevelop.GtkCore
 			get {
 				if (builderProject == null) {
 					if (SupportsDesigner (project)) {
-						if (!File.Exists (SteticFile)) {
-							UpdateGtkFolder ();
-							ProjectNodeBuilder.OnSupportChanged (project);
-						}
-						builderProject = new GuiBuilderProject (project, SteticFile);
+						builderProject = new GuiBuilderProject (project, SteticFolder.FullPath.FullPath);
 					} else
 						builderProject = new GuiBuilderProject (project, null);
 				}
@@ -153,20 +167,40 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
+		public bool NeedsConversion {
+			get { return project.IsFileInProject (SteticFile); }
+		}
+		
 		FilePath ObjectsFile {
-			get { return GtkGuiFolder.Combine ("objects.xml"); }
+			get { return SteticFolder.Combine ("objects.xml"); }
 		}
 		
+		[Obsolete]
 		public FilePath SteticGeneratedFile {
-			get { return GtkGuiFolder.Combine (binding.GetFileName ("generated")); }
+			get { return SteticFolder.Combine (binding.GetFileName ("generated")); }
 		}
 		
+		[Obsolete]
 		public FilePath SteticFile {
-			get { return GtkGuiFolder.Combine ("gui.stetic"); }
+			get { return SteticFolder.Combine ("gui.stetic"); }
 		}
 		
-		public FilePath GtkGuiFolder {
-			get { return project.BaseDirectory.Combine ("gtk-gui"); }
+		public string BuildFileExtension {
+			get { return ".designer"; }
+		}
+		
+		public string DesignerFileExtension {
+			get { return ".gtkx"; }
+		}
+		
+		public FilePath SteticFolder {
+			get { 
+				FilePath oldfolder = project.BaseDirectory.Combine ("gtk-gui");
+				if (Directory.Exists (oldfolder))
+					return oldfolder;
+				
+				return project.BaseDirectory.Combine (steticFolderName); 
+			}
 		}
 		
 		public bool GenerateGettext {
@@ -184,13 +218,22 @@ namespace MonoDevelop.GtkCore
 			set { gettextClass = value; }
 		}
 		
+		public string SteticFolderName {
+			get { return steticFolderName; }
+			set { steticFolderName = value; }
+		}
+		
+		public bool HideGtkxFiles { 
+			get { return hideGtkxFiles; }
+			set { hideGtkxFiles = value; }
+		}
+		
 		public static bool HasDesignedObjects (Project project)
 		{
 			if (project == null)
 				return false;
 
-			string stetic_file = Path.Combine (Path.Combine (project.BaseDirectory, "gtk-gui"), "gui.stetic");
-			return SupportsDesigner (project) && File.Exists (stetic_file);
+			return SupportsDesigner (project);
 		}
 
 		public static bool SupportsDesigner (Project project)
@@ -206,7 +249,7 @@ namespace MonoDevelop.GtkCore
 			var testFileName = project.LanguageBinding.GetFileName ("test");
 			return CodeGenerator.HasGenerator (DesktopService.GetMimeTypeForUri (testFileName));
 		}
-		
+
 		static bool IsGtkReference (ProjectReference pref)
 		{
 			if (pref.ReferenceType != ReferenceType.Package)
@@ -241,12 +284,28 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
+		public void CheckGtkFolder ()
+		{
+			foreach (string designerFile in GetDesignerFiles ()) {
+				string componentFile = GetComponentFileFromDesigner (designerFile);
+				if (componentFile != null) {
+					string buildFile = GetBuildFileFromComponent (componentFile);
+					if (buildFile != null) {
+						// if build file is missing, force to generate it again
+						if ((project.GetProjectFile (buildFile) == null) || !File.Exists (buildFile)) {
+							FileInfo fi = new FileInfo (designerFile);
+							fi.LastWriteTime = DateTime.Now;
+						}
+					}
+				}
+			}
+		}
+		
 		bool CleanGtkFolder (StringCollection remaining_files)
 		{
 			bool projectModified = false;
-
 			// Remove all project files which are not in the generated list
-			foreach (ProjectFile pf in project.Files.GetFilesInPath (GtkGuiFolder)) {
+			foreach (ProjectFile pf in project.Files.GetFilesInPath (SteticFolder)) {
 				if (remaining_files.Contains (pf.FilePath))
 					continue;
 
@@ -256,60 +315,265 @@ namespace MonoDevelop.GtkCore
 			}
 
 			if (remaining_files.Count == 0)
-				FileService.DeleteDirectory (GtkGuiFolder);
+				FileService.DeleteDirectory (SteticFolder);
 
 			return projectModified;
+		}
+
+		public void ConvertGtkFolder (string guiFolderName, bool makeBackup)
+		{	
+			foreach (ProjectFile pf in project.Files.GetFilesInPath (SteticFolder)) {
+				FilePath path = pf.FilePath;
+				
+				if (path != SteticGeneratedFile) {
+					project.Files.Remove (path);
+					
+					if (path != SteticFile)
+						FileService.DeleteFile (path.FullPath);
+				}
+			}
+			
+			string oldGuiFolder = SteticFolder.FullPath;
+			string oldSteticFile = SteticFile;
+			string oldGeneratedFile = SteticGeneratedFile;
+			SteticFolderName = guiFolderName;
+	
+			if (!Directory.Exists (SteticFolder))
+				FileService.CreateDirectory (SteticFolder);
+			
+			if (makeBackup && File.Exists (oldSteticFile)) {
+				string backupFile = SteticFolder.Combine ("old.stetic");
+				FileService.MoveFile (oldSteticFile, backupFile);
+			}
+			
+			if (File.Exists (oldGeneratedFile))
+				FileService.DeleteFile (oldGeneratedFile);
+				
+			if (Directory.Exists (oldGuiFolder))
+				FileService.DeleteDirectory (oldGuiFolder);
 		}
 
 		public bool UpdateGtkFolder ()
 		{
 			if (!SupportsDesigner (project))
 				return false;
-
+			
 			// This method synchronizes the current gtk project configuration info
 			// with the needed support files in the gtk-gui folder.
 
-			FileService.CreateDirectory (GtkGuiFolder);
+			FileService.CreateDirectory (SteticFolder);
 			bool projectModified = false;
-			bool initialGeneration = false;
 			
-			if (!File.Exists (SteticFile)) {
-				initialGeneration = true;
-				StreamWriter sw = new StreamWriter (SteticFile);
-				sw.WriteLine ("<stetic-interface />");
-				sw.Close ();
-				FileService.NotifyFileChanged (SteticFile);
-			}
+			foreach (string filename in GetDesignerFiles ()) {
+				ProjectFile pf = project.AddFile (filename, BuildAction.EmbeddedResource);
+				pf.ResourceId = Path.GetFileName (filename);
+	
+				string componentFile = GetComponentFileFromDesigner (filename);
 				
-			if (!project.IsFileInProject (SteticFile)) {
-				ProjectFile pf = project.AddFile (SteticFile, BuildAction.EmbeddedResource);
-				pf.ResourceId = "gui.stetic";
+				if (componentFile != null && File.Exists (componentFile)) { 
+					pf.DependsOn = componentFile;	
+				
+					string buildFile = GetBuildFileFromComponent (componentFile);
+					if (buildFile != null && File.Exists (buildFile)) {
+						ProjectFile pf2 = project.AddFile (buildFile, BuildAction.Compile);
+						pf2.ResourceId = Path.GetFileName (buildFile);
+						pf2.DependsOn = componentFile;
+					}
+				}
+				
 				projectModified = true;
 			}
-
-			StringCollection files = GuiBuilderProject.GenerateFiles (GtkGuiFolder);
-			DateTime generatedTime = File.GetLastWriteTime (SteticFile).Subtract (TimeSpan.FromSeconds (2));
-
+			
+			StringCollection files = GuiBuilderProject.GenerateFiles (SteticFolder);
 			foreach (string filename in files) {
-				if (initialGeneration) {
-					// Ensure that the generation date of this file is < the date of the .stetic file
-					// In this way the code will be properly regenerated when building the project.
-					File.SetLastWriteTime (filename, generatedTime);
-				}
 				if (!project.IsFileInProject (filename)) {
 					project.AddFile (filename, BuildAction.Compile);
 					projectModified = true;
 				}
+				
+			}
+			
+			UpdateObjectsFile ();
+			
+			return ReferenceManager.Update () || projectModified;
+		}
+		
+		public void RenameComponentFile (ProjectFile pfComponent) 
+		{
+			foreach (ProjectFile pf in pfComponent.DependentChildren) {
+				if (pf.FilePath.FileName.Contains (BuildFileExtension)) {
+					FileService.RenameFile (pf.FilePath, 
+					                        GetBuildFileNameFromComponent (pfComponent.FilePath));
+				}
+				if (pf.FilePath.FileName.Contains (DesignerFileExtension)) {
+					FileService.RenameFile (pf.FilePath, 
+					                        GetDesignerFileNameFromComponent (pfComponent.FilePath));
+				}
+			}
+		}
+			         
+		public string GetComponentFile (string componentName)
+		{
+			var type = GuiBuilderProject.FindTypeDefinition (componentName);
+			if (type != null) {
+				foreach (var part in type.Parts) {
+					string componentFile = part.Region.FileName;
+					if (componentFile.Contains (BuildFileExtension))
+						componentFile = componentFile.Replace (BuildFileExtension, string.Empty);
+					
+					return componentFile;
+				}
 			}
 
-			UpdateObjectsFile ();
-			files.Add (ObjectsFile);
-			files.Add (SteticFile);
+			//If ProjectDom does not exist, assume that project is being created
+			//and return component file path that is located in the project root folder
+//			var ctx = ProjectDomService.GetProjectDom (project);
+//			if (ctx == null) {
+				string guessedComponentFile = Path.Combine (project.BaseDirectory, componentName + langExtension);
+				if (File.Exists (guessedComponentFile))
+					return guessedComponentFile;
+//			}*/
+			
+			return null;
+		}
+		
+		public string GetBuildFileInSteticFolder (string componentName)
+		{
+			string name = string.Format ("{0}{1}{2}", componentName, BuildFileExtension, langExtension);
+			string buildFile = Path.Combine (SteticFolder, name);
+			
+			return buildFile;
+		}
 
-			if (CleanGtkFolder (files))
-				projectModified = true;
+		public string GetBuildFileFromComponent (string componentFile)
+		{
+			if (componentFile != null) {
+				ProjectFile pf = project.Files.GetFile (componentFile);
+				if (pf != null) {
+					foreach (var child in pf.DependentChildren) {
+						if (child.Name.Contains (BuildFileExtension))
+							return child.FilePath;
+					}
+				}
+				return GetBuildFileNameFromComponent (componentFile);
+			}
+			return null;
+		}
+		
+		public string GetBuildFileNameFromComponent (string componentFile)
+		{
+			string buildFile = componentFile.Replace 
+					(langExtension, BuildFileExtension + langExtension);
+			return buildFile;
+		}
+		
+		public string GetDesignerFileFromComponent (string componentFile)
+		{
+			if (componentFile != null) {
+				ProjectFile pf = project.Files.GetFile (componentFile);
+				if (pf != null) {
+					foreach (var child in pf.DependentChildren) {
+						if (child.Name.Contains (DesignerFileExtension))
+							return child.FilePath;
+					}
+				}
+				return GetDesignerFileNameFromComponent (componentFile);
+			}
+			return null;
+		}
+		
+		public string GetDesignerFileNameFromComponent (string componentFile)
+		{
+			string gtkxFile = componentFile.Replace (langExtension, DesignerFileExtension);
+			return gtkxFile;
+		}
+		
+		public string GetComponentFileFromDesigner (string gtkxFile)
+		{
+			if (gtkxFile != null) { 
+				ProjectFile pf = project.Files.GetFile (gtkxFile);
+				if (pf != null) {
+					if (pf.DependsOn != null)
+						return pf.DependsOn;
+				}
+				string componentFile = gtkxFile.Replace (DesignerFileExtension, langExtension);
+				return componentFile;
+			}
+			
+			return null;
+		}
+		
+//		public string GetBuildFileFromDesigner (string gtkxFile)
+//		{
+//			string buildFile = gtkxFile.Replace (DesignerFileExtension, BuildFileExtension + langExtension);
+//			return buildFile;
+//		}
+		
+		
+		public string GetComponentFolder (string componentName)
+		{
+			var type = GuiBuilderProject.FindClass (componentName);
+			
+			if (type != null) {
+				FilePath folder = ((FilePath)type.Region.FileName).ParentDirectory;
+				return folder.FullPath.ToString ();
+			}
+			
+			return null;
+		}
+		
+		public string[] GetComponentFolders ()
+		{
+			List<string> folders = new List<string> ();
+			var ctx = GuiBuilderProject.GetParserContext ();
+			
+			if (ctx != null) {
+				foreach (var type in ctx.MainAssembly.TopLevelTypeDefinitions)
+					foreach (var part in type.Parts) {
+						FilePath folder = ((FilePath)part.Region.FileName).ParentDirectory;
+						string folderName = folder.FullPath.ToString ();
+					
+						if (!folders.Contains (folderName) && Directory.Exists (folder))
+							folders.Add (folder);
+				}
+			}
+			
+			return folders.ToArray ();
+		}
+		
+		public string[] GetDesignerFiles ()
+		{
+			List<string> files = new List<string> ();
+			
+			foreach (string folder in GetComponentFolders ()) {
+				DirectoryInfo dir = new DirectoryInfo (folder);
+				foreach (FileInfo file in dir.GetFiles ()) 
+					if (file.Extension == DesignerFileExtension) 
+						files.Add (file.ToString ());
+			}
+			
+			return files.ToArray ();
+		}
 
-			return ReferenceManager.Update () || projectModified;
+		public bool HasComponentFile (string componentName)
+		{
+			return (GetComponentFile (componentName) != null);
+		}
+		
+		public bool ComponentNeedsCodeGeneration (string componentName)
+		{
+			string componentFile = GetComponentFile (componentName);
+			string gtkxFile = GetDesignerFileFromComponent (componentFile);
+			string buildFile = GetBuildFileFromComponent (componentFile);
+			FileInfo gtkxFileInfo = File.Exists (gtkxFile) ? new FileInfo (gtkxFile) : null;
+			FileInfo buildFileInfo = File.Exists (buildFile) ? new FileInfo (buildFile) : null;
+			if (gtkxFileInfo == null)
+				return false;
+			//file does not exist
+			if (buildFileInfo == null)
+				return true;
+			
+			return gtkxFileInfo.LastWriteTime > buildFileInfo.LastWriteTime;
 		}
 
 		void UpdateObjectsFile ()
