@@ -54,7 +54,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			if (fileName.IsNullOrEmpty == null)
 				return false;
-			
+			if (CodeBehind.IsDesignerFile (fileName))
+				return false;
 			if (GetWindow (fileName) == null)
 				return false;
 			
@@ -76,7 +77,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal static GuiBuilderWindow GetWindow (string file)
 		{
-			if (!IdeApp.Workspace.IsOpen || CodeBehind.IsDesignerFile (file))
+			if (!IdeApp.Workspace.IsOpen)
 				return null;
 
 			Project project = null;
