@@ -142,9 +142,45 @@ namespace MonoDevelop.Core.Assemblies
 			
 			return TargetFrameworkToolsVersion.V4_0;
 		}
+
+		bool HackyCheckForPLPCompatibility (TargetFrameworkMoniker fxId)
+		{
+			int profile, this_profile;
+
+			if (fxId.Profile == null || fxId.Profile.Length < 8 || !int.TryParse (fxId.Profile.Substring (7), out profile))
+				return false;
+
+			switch (this.id.Identifier) {
+			case TargetFrameworkMoniker.ID_NET_FRAMEWORK:
+				if (new Version (fxId.Version).CompareTo (new Version (this.id.Version)) > 0)
+					return false;
+
+				return profile >= 1 && profile <= 3; // Profile4 does not support .NETFramework
+			case TargetFrameworkMoniker.ID_MONOTOUCH:
+			case TargetFrameworkMoniker.ID_MONODROID:
+				return profile >= 1 && profile <= 3;
+			case TargetFrameworkMoniker.ID_PORTABLE:
+				if (this.id.Profile == null || this.id.Profile.Length < 8 || !int.TryParse (this.id.Profile.Substring (7), out this_profile))
+					return false;
+
+				switch (this_profile) {
+				case 1: return true;
+				case 2: return profile == 2;
+				case 3: return profile == 3;
+				case 4: return profile == 4;
+				default: return false;
+				}
+			default:
+				return false;
+			}
+		}
 		
 		public bool IsCompatibleWithFramework (TargetFrameworkMoniker fxId)
 		{
+			// FIXME: this is a hack which should really be done using the xml definitions for each .NETPortable profile
+			if (fxId.Identifier == ".NETPortable" && fxId.Version == "4.0")
+				return HackyCheckForPLPCompatibility (fxId);
+
 			return fxId.Identifier == this.id.Identifier
 				&& new Version (fxId.Version).CompareTo (new Version (this.id.Version)) <= 0;
 		}
