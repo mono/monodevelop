@@ -88,6 +88,7 @@
 			icon = "md-select-all" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment"
 			shortcut = "Control|Alt|C"
+			macShortcut = "Meta|/"
 			_description = "Comment/Uncomment selected lines of code" 
 			_label = "_Toggle Line Comment(s)"
 			icon = "md-comment" />
@@ -158,11 +159,13 @@
 			_description = "Toggles all the foldings in the document."/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
 			_label = "Show _Definitions Only" 
+			macShortcut = "Alt|Shift|Meta|Right"
 			_description = "Folds all method and property bodies."/>
 			
 	<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
 			defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
-			_label = "_Format Document" />
+			_label = "_Format Document"
+			macShortcut = "Control|I" />
 	<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection"
 			defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatSelectionHandler"
 			_label = "_Format Selection" />
@@ -713,7 +716,8 @@
 			_label = "_Replace..." 
 			icon = "gtk-find-and-replace" 
 			_description = "Search for and replace text" 
-			shortcut = "Control|H" />
+			shortcut = "Control|H"
+			macShortcut = "Alt|Meta|F" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext"
 			_label = "Find _Next" 
@@ -757,12 +761,13 @@
 			_label = "R_eplace in Files..." 
 			icon = "md-replace-in-files" 
 			shortcut = "Control|Shift|H"
+			macShortcut = "Alt|Meta|Shift|F"
 			_description = "Search for and replace text in all files of a directory" />
 	
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
 	         defaultHandler = "MonoDevelop.Ide.NavigateToDialog.GotoTypeHandler"
 	         _label = "Go to Type..."
-			_description = "Jump to the declaration of type in the current workspace"
+	         _description = "Jump to the declaration of type in the current workspace"
 	         shortcut = "Control|Shift|T"
 	         macShortcut = "Meta|Shift|T" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
