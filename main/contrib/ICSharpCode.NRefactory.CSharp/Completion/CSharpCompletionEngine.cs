@@ -221,19 +221,41 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			while (p != null && !(p is ObjectCreateExpression)) {
 				p = p.Parent;
 			}
+			var parent = (ArrayInitializerExpression)n.Parent;
+			if (parent.IsSingleElement)
+				parent = (ArrayInitializerExpression)parent.Parent;
 			if (p != null) {
 				var contextList = new CompletionDataWrapper(this);
 				var initializerResult = ResolveExpression(p, unit);
 				if (initializerResult != null && initializerResult.Item1.Type.Kind != TypeKind.Unknown) {
+					// check 3 cases:
+					// New initalizer { xpr
+					// Object initializer { prop = val1, field = val2, xpr
+					// Array initializer { new Foo (), a, xpr
+					// in case 1 all object/array initializer options should be given - in the others not.
+
+					AstNode prev = null;
+					if (parent.Elements.Count > 1) {
+						prev = parent.Elements.First();
+						if (prev is ArrayInitializerExpression && ((ArrayInitializerExpression)prev).IsSingleElement) 
+							prev = ((ArrayInitializerExpression)prev).Elements.FirstOrDefault();
+					}
+
+					if (prev != null && !(prev is NamedExpression)) {
+						AddContextCompletion(contextList, GetState(), n, unit);
+						return contextList.Result;
+					}
 
 					foreach (var m in initializerResult.Item1.Type.GetMembers (m => m.IsPublic && (m.EntityType == EntityType.Property || m.EntityType == EntityType.Field))) {
 						contextList.AddMember(m);
 					}
-					var enumerableType = typeof(IEnumerable<>).ToTypeReference().Resolve(ctx);
-					// check if we may be in a collection initializer, or enumerable initializer
-					if (enumerableType.Kind == TypeKind.Unknown || !initializerResult.Item1.Type.GetDefinition().IsDerivedFrom(enumerableType.GetDefinition())) {
+
+					if (prev != null && (prev is NamedExpression))
 						return contextList.Result;
-					}
+
+					AddContextCompletion(contextList, GetState(), n, unit);
+					return contextList.Result;
+
 				}
 			}
 			return null;
@@ -745,6 +767,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						return null;
 					}
+
 					if (n is ArrayInitializerExpression) {
 						// check for new [] {...} expression -> no need to resolve the type there
 						var parent = n.Parent as ArrayCreateExpression;
@@ -759,7 +782,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (concreteNode != null && concreteNode.Parent != null && concreteNode.Parent.Parent != null && concreteNode.Identifier != "a" && concreteNode.Parent.Parent is NamedExpression) {
 							return DefaultControlSpaceItems();
 						}
-					
 						if (initalizerResult != null && initalizerResult.Item1.Type.Kind != TypeKind.Unknown) { 
 
 							foreach (var property in initalizerResult.Item1.Type.GetProperties ()) {

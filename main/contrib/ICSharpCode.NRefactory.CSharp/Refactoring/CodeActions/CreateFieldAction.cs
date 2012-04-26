@@ -131,6 +131,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
+		static IType GetElementType(CSharpAstResolver resolver, IType type)
+		{
+			// TODO: A better get element type method.
+			if (type.Kind == TypeKind.Array || type.Kind == TypeKind.Dynamic) {
+				if (type.Kind == TypeKind.Array)
+					return ((ArrayType)type).ElementType;
+				return resolver.Compilation.FindType(KnownTypeCode.Object);
+			}
+
+			foreach (var method in type.GetMethods (m => m.Name == "GetEnumerator")) {
+				var pr = method.ReturnType.GetProperties(p => p.Name == "Current").FirstOrDefault();
+				if (pr != null)
+					return pr.ReturnType;
+			}
+
+			return resolver.Compilation.FindType(KnownTypeCode.Object);
+		}
+
 		internal static IEnumerable<IType> GetValidTypes(CSharpAstResolver resolver, Expression expr)
 		{
 			if (expr.Parent is DirectionExpression) {
@@ -141,12 +159,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
+			if (expr.Parent is ArrayInitializerExpression) {
+				var aex = expr.Parent as ArrayInitializerExpression;
+				if (aex.IsSingleElement)
+					aex = aex.Parent as ArrayInitializerExpression;
+				var type = GetElementType(resolver, resolver.Resolve(aex.Parent).Type);
+				if (type.Kind != TypeKind.Unknown)
+					return new [] { type };
+			}
+
 			if (expr.Parent is ObjectCreateExpression) {
-				var parent = expr.Parent;
-				if (parent is ObjectCreateExpression) {
-					var invoke = (ObjectCreateExpression)parent;
-					return GetAllValidTypesFromObjectCreation(resolver, invoke, expr);
-				}
+				var invoke = (ObjectCreateExpression)expr.Parent;
+				return GetAllValidTypesFromObjectCreation(resolver, invoke, expr);
 			}
 
 			if (expr.Parent is ArrayCreateExpression) {
