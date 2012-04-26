@@ -38,7 +38,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.StashManagerDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs \
-	MonoDevelop.VersionControl.Git/Change.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
 	MonoDevelop.VersionControl.Git/ConflictResolutionDialog.cs \
 	MonoDevelop.VersionControl.Git/CredentialsDialog.cs \

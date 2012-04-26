@@ -183,27 +183,15 @@ namespace MonoDevelop.VersionControl.Git
 			GitRevision rev = (GitRevision) revision;
 			if (rev.Commit == null)
 				return new RevisionPath [0];
-			
+
 			List<RevisionPath> paths = new List<RevisionPath> ();
-			
-			foreach (Change change in GitUtil.GetCommitChanges (repo, rev.Commit)) {
-				FilePath cpath = FromGitPath (change.Path);
-				if (!rev.FileForChanges.IsNull && cpath != rev.FileForChanges && !cpath.IsChildPathOf (rev.FileForChanges))
-					continue;
-				RevisionAction ra;
-				switch (change.ChangeType) {
-				case ChangeType.Added:
-					ra = RevisionAction.Add;
-					break;
-				case ChangeType.Deleted:
-					ra = RevisionAction.Delete;
-					break;
-				default:
-					ra = RevisionAction.Modify;
-					break;
-				}
-				RevisionPath p = new RevisionPath (cpath, ra, null);
-				paths.Add (p);
+			foreach (var entry in GitUtil.GetCommitChanges (repo, rev.Commit)) {
+				if (entry.GetChangeType () == DiffEntry.ChangeType.ADD)
+					paths.Add (new RevisionPath (FromGitPath (entry.GetNewPath ()), RevisionAction.Add, null));
+				if (entry.GetChangeType () == DiffEntry.ChangeType.DELETE)
+					paths.Add (new RevisionPath (FromGitPath (entry.GetOldPath ()), RevisionAction.Delete, null));
+				if (entry.GetChangeType () == DiffEntry.ChangeType.MODIFY)
+					paths.Add (new RevisionPath (FromGitPath (entry.GetNewPath ()), RevisionAction.Modify, null));
 			}
 			return paths.ToArray ();
 		}
@@ -359,7 +347,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			IEnumerable<Change> statusList = null;
+			IEnumerable<DiffEntry> statusList = null;
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
 			
@@ -475,7 +463,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public void Merge (string branch, bool saveLocalChanges, IProgressMonitor monitor)
 		{
-			IEnumerable<Change> statusList = null;
+			IEnumerable<DiffEntry> statusList = null;
 			Stash stash = null;
 			StashCollection stashes = new StashCollection (repo);
 			monitor.BeginTask (null, 4);
@@ -1087,7 +1075,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), GitService.StashUnstashWhenSwitchingBranches ? 4 : 2);
 			
 			// Get a list of files that are different in the target branch
-			IEnumerable<Change> statusList = GitUtil.GetChangedFiles (repo, branch);
+			IEnumerable<DiffEntry> statusList = GitUtil.GetChangedFiles (repo, branch);
 			
 			StashCollection stashes = null;
 			Stash stash = null;
@@ -1157,13 +1145,13 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		void NotifyFileChanges (IProgressMonitor monitor, IEnumerable<Change> statusList)
+		void NotifyFileChanges (IProgressMonitor monitor, IEnumerable<DiffEntry> statusList)
 		{
-			List<Change> changes = new List<Change> (statusList);
+			List<DiffEntry> changes = new List<DiffEntry> (statusList);
 			
 			// Files added to source branch not present to target branch.
-			var removed = changes.Where (c => c.ChangeType == ChangeType.Added).Select (c => FromGitPath (c.Path)).ToList ();
-			var modified = changes.Where (c => c.ChangeType != ChangeType.Added).Select (c => FromGitPath (c.Path)).ToList ();
+			var removed = changes.Where (c => c.GetChangeType () == DiffEntry.ChangeType.ADD).Select (c => FromGitPath (c.GetNewPath ())).ToList ();
+			var modified = changes.Where (c => c.GetChangeType () != DiffEntry.ChangeType.ADD).Select (c => FromGitPath (c.GetNewPath ())).ToList ();
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Updating solution"), removed.Count + modified.Count);
 			
@@ -1208,20 +1196,20 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c1 = rw.ParseCommit (cid1);
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
-			foreach (Change change in GitUtil.CompareCommits (repo, c2, c1)) {
+			foreach (var change in GitUtil.CompareCommits (repo, c2, c1)) {
 				VersionStatus status;
-				switch (change.ChangeType) {
-				case ChangeType.Added:
+				switch (change.GetChangeType ()) {
+				case DiffEntry.ChangeType.ADD:
 					status = VersionStatus.ScheduledAdd;
 					break;
-				case ChangeType.Deleted:
+				case DiffEntry.ChangeType.DELETE:
 					status = VersionStatus.ScheduledDelete;
 					break;
 				default:
 					status = VersionStatus.Modified;
 					break;
 				}
-				VersionInfo vi = new VersionInfo (FromGitPath (change.Path), "", false, status | VersionStatus.Versioned, null, VersionStatus.Versioned, null);
+				VersionInfo vi = new VersionInfo (FromGitPath (change.GetNewPath ()), "", false, status | VersionStatus.Versioned, null, VersionStatus.Versioned, null);
 				cset.AddFile (vi);
 			}
 			return cset;
@@ -1242,20 +1230,20 @@ namespace MonoDevelop.VersionControl.Git
 			RevCommit c2 = rw.ParseCommit (cid2);
 			
 			List<DiffInfo> diffs = new List<DiffInfo> ();
-			foreach (Change change in GitUtil.CompareCommits (repo, c1, c2)) {
+			foreach (var change in GitUtil.CompareCommits (repo, c1, c2)) {
 				string diff;
-				switch (change.ChangeType) {
-				case ChangeType.Deleted:
-					diff = GenerateDiff (EmptyContent, GetCommitContent (c2, change.Path));
+				switch (change.GetChangeType ()) {
+				case DiffEntry.ChangeType.DELETE:
+					diff = GenerateDiff (EmptyContent, GetCommitContent (c2, change.GetOldPath ()));
 					break;
-				case ChangeType.Added:
-					diff = GenerateDiff (GetCommitContent (c1, change.Path), EmptyContent);
+				case DiffEntry.ChangeType.ADD:
+					diff = GenerateDiff (GetCommitContent (c1, change.GetNewPath ()), EmptyContent);
 					break;
 				default:
-					diff = GenerateDiff (GetCommitContent (c1, change.Path), GetCommitContent (c2, change.Path));
+					diff = GenerateDiff (GetCommitContent (c1, change.GetNewPath ()), GetCommitContent (c2, change.GetNewPath ()));
 					break;
 				}
-				DiffInfo di = new DiffInfo (path, FromGitPath (change.Path), diff);
+				DiffInfo di = new DiffInfo (path, FromGitPath (change.GetNewPath ()), diff);
 				diffs.Add (di);
 			}
 			return diffs.ToArray ();

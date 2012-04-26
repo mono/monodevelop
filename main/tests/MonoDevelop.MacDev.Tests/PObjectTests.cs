@@ -60,7 +60,6 @@ namespace MonoDevelop.MacDev.Tests
 			AssertChangeEmitted (addKey (new PDictionary ()), d => d ["key"] = new PNumber (77), "#6");
 		}
 
-
 		[Test]
 		public void ChangeEvent_PNumber ()
 		{
