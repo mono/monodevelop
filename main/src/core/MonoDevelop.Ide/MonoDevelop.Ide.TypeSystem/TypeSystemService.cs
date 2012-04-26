@@ -1192,6 +1192,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				IUnresolvedAssembly assembly;
 				try {
 					var loader = new CecilLoader ();
+					loader.IncludeInternalMembers = true;
 					loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
 					assembly = loader.LoadAssembly (asm);
 					assembly.Location = fileName;

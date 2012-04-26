@@ -292,9 +292,51 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				get { return compilation; }
 			}
 			
-			public bool InternalsVisibleTo(IAssembly assembly)
+			volatile string[] internalsVisibleTo;
+		
+			string[] GetInternalsVisibleTo()
 			{
-				return assembly == this;
+				var result = this.internalsVisibleTo;
+				if (result != null) {
+					return result;
+				} else {
+					using (var busyLock = BusyManager.Enter(this)) {
+						Debug.Assert(busyLock.Success);
+						if (!busyLock.Success) {
+							return new string[0];
+						}
+						internalsVisibleTo = (
+							from attr in this.AssemblyAttributes
+							where attr.AttributeType.Name == "InternalsVisibleToAttribute"
+							&& attr.AttributeType.Namespace == "System.Runtime.CompilerServices"
+							&& attr.PositionalArguments.Count == 1
+							select GetShortName(attr.PositionalArguments.Single().ConstantValue as string)
+						).ToArray();
+					}
+					return internalsVisibleTo;
+				}
+			}
+
+			static string GetShortName(string fullAssemblyName)
+			{
+				if (fullAssemblyName == null)
+					return null;
+				int pos = fullAssemblyName.IndexOf(',');
+				if (pos < 0)
+					return fullAssemblyName;
+				else
+					return fullAssemblyName.Substring(0, pos);
+			}
+		
+			public bool InternalsVisibleTo (IAssembly assembly)
+			{
+				if (this == assembly)
+					return true;
+				foreach (string shortName in GetInternalsVisibleTo()) {
+					if (assembly.AssemblyName == shortName)
+						return true;
+				}
+				return false;
 			}
 			
 			public ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount)

@@ -110,7 +110,7 @@ namespace MonoDevelop.CSharp.Resolver
 			var resolver = new CSharpAstResolver (doc.Compilation, unit, parsedFile);
 			resolver.ApplyNavigator (new NodeListResolveVisitorNavigator (node), CancellationToken.None);
 			var state = resolver.GetResolverStateBefore (node, CancellationToken.None);
-			return state.LookupSimpleNameOrTypeName (expression, new List<IType> (), SimpleNameLookupMode.Expression);
+			return state.LookupSimpleNameOrTypeName (expression, new List<IType> (), NameLookupMode.Expression);
 		}
 		
 		

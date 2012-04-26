@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			document.Editor.SelectionRange = new TextSegment (GetSegment (node));
 		}
 
-		public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+		public override void InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
 			var editor = document.Editor;
 			DocumentLocation loc = document.Editor.Caret.Location;
@@ -104,14 +104,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 				if (iCArgs.Success) {
-					var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
-					output.RegisterTrackedSegments (this, document.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
-					iCArgs.InsertionPoint.Insert (editor, output.Text);
+					foreach (var node in nodes) {
+						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
+						output.RegisterTrackedSegments (this, document.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
+						iCArgs.InsertionPoint.Insert (editor, output.Text);
+					}
 				}
 			};
 		}
 
-		public override void InsertWithCursor (string operation, AstNode node, ITypeDefinition parentType)
+		public override void InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 		{
 			var part = parentType.Parts.FirstOrDefault ();
 			if (part == null)
@@ -143,9 +145,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				mode.StartMode ();
 				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 					if (iCArgs.Success) {
-						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
-						output.RegisterTrackedSegments (this, loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
-						iCArgs.InsertionPoint.Insert (editor, output.Text);
+						foreach (var node in nodes) {
+							var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
+							output.RegisterTrackedSegments (this, loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
+							iCArgs.InsertionPoint.Insert (editor, output.Text);
+						}
 					}
 				};
 			});
