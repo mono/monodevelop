@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.DesignerSupport;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -75,7 +76,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal static GuiBuilderWindow GetWindow (string file)
 		{
-			if (!IdeApp.Workspace.IsOpen)
+			if (!IdeApp.Workspace.IsOpen || CodeBehind.IsDesignerFile (file))
 				return null;
 
 			Project project = null;
@@ -85,7 +86,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					break;
 				}
 			}
-			
+
 			if (!GtkDesignInfo.HasDesignedObjects (project))
 				return null;
 
