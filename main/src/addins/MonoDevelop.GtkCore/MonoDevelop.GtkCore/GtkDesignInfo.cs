@@ -332,7 +332,7 @@ namespace MonoDevelop.GtkCore
 						FileService.DeleteFile (path.FullPath);
 				}
 			}
-			
+
 			string oldGuiFolder = SteticFolder.FullPath;
 			string oldSteticFile = SteticFile;
 			string oldGeneratedFile = SteticGeneratedFile;
@@ -346,8 +346,10 @@ namespace MonoDevelop.GtkCore
 				FileService.MoveFile (oldSteticFile, backupFile);
 			}
 			
-			if (File.Exists (oldGeneratedFile))
+			if (File.Exists (oldGeneratedFile)) {
 				FileService.DeleteFile (oldGeneratedFile);
+				project.Files.Remove (oldGeneratedFile);
+			}
 				
 			if (Directory.Exists (oldGuiFolder))
 				FileService.DeleteDirectory (oldGuiFolder);
