@@ -483,25 +483,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			newNode.SetRole(this.Role);
 			newNode.prevSibling = prevSibling;
 			newNode.nextSibling = nextSibling;
-			if (parent != null) {
-				if (prevSibling != null) {
-					Debug.Assert (prevSibling.nextSibling == this);
-					prevSibling.nextSibling = newNode;
-				} else {
-					Debug.Assert (parent.firstChild == this);
-					parent.firstChild = newNode;
-				}
-				if (nextSibling != null) {
-					Debug.Assert (nextSibling.prevSibling == this);
-					nextSibling.prevSibling = newNode;
-				} else {
-					Debug.Assert (parent.lastChild == this);
-					parent.lastChild = newNode;
-				}
-				parent = null;
-				prevSibling = null;
-				nextSibling = null;
+
+			if (prevSibling != null) {
+				Debug.Assert (prevSibling.nextSibling == this);
+				prevSibling.nextSibling = newNode;
+			} else {
+				Debug.Assert (parent.firstChild == this);
+				parent.firstChild = newNode;
 			}
+			if (nextSibling != null) {
+				Debug.Assert (nextSibling.prevSibling == this);
+				nextSibling.prevSibling = newNode;
+			} else {
+				Debug.Assert (parent.lastChild == this);
+				parent.lastChild = newNode;
+			}
+			parent = null;
+			prevSibling = null;
+			nextSibling = null;
 		}
 		
 		public AstNode ReplaceWith (Func<AstNode, AstNode> replaceFunction)

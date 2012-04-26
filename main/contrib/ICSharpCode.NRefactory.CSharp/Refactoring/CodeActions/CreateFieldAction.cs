@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				};
 				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
-				script.InsertWithCursor(context.TranslateString("Create field"), decl, Script.InsertPosition.Before);
+				script.InsertWithCursor(context.TranslateString("Create field"), Script.InsertPosition.Before, decl);
 			});
 
 		}
@@ -195,8 +195,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			if (expr.Parent is ReturnStatement) {
-				var state = resolver.GetResolverStateBefore(expr);
-				if (state != null)
+				var state = resolver.GetResolverStateBefore(expr.Parent);
+				if (state != null  && state.CurrentMember != null)
 					return new [] { state.CurrentMember.ReturnType };
 			}
 

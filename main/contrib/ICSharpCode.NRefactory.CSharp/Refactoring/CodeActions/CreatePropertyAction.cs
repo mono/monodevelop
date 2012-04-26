@@ -97,11 +97,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					} else {
 						decl.Modifiers |= Modifiers.Public;
 					}
-					script.InsertWithCursor(context.TranslateString("Create property"), decl, targetResolveResult.Type.GetDefinition());
+					script.InsertWithCursor(
+						context.TranslateString("Create property"),
+						targetResolveResult.Type.GetDefinition(),
+						decl);
+
 					return;
 				}
 
-				script.InsertWithCursor(context.TranslateString("Create property"), decl, Script.InsertPosition.Before);
+				script.InsertWithCursor(context.TranslateString("Create property"), Script.InsertPosition.Before, decl);
+
 			});
 		}
 

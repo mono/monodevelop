@@ -3207,8 +3207,8 @@ object_or_collection_initializer
 	: OPEN_BRACE opt_member_initializer_list close_brace_or_complete_completion
 	  {
 	  	if ($2 == null) {
-	  		$$ = CollectionOrObjectInitializers.Empty;
-	  		// TODO: lbag
+	  		$$ = new CollectionOrObjectInitializers (new List<Expression> (), GetLocation ($1));
+	  		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
 	  	} else {
 	  		$$ = new CollectionOrObjectInitializers ((List<Expression>) $2, GetLocation ($1));
 	  		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3));
@@ -3279,7 +3279,8 @@ member_initializer
 	| OPEN_BRACE CLOSE_BRACE
 	  {
 	  	report.Error (1920, GetLocation ($1), "An element initializer cannot be empty");
-		$$ = null;
+		$$ = new CollectionElementInitializer (new List<Expression> (), GetLocation ($1));
+		lbag.AddLocation ($$, GetLocation ($2));
 	  }	  
 	;
 
@@ -3327,6 +3328,7 @@ argument_list
 	  }
 	| argument_list COMMA error
 	  {
+	  	lexer.putback (')'); // TODO: Wrong but what can I do
 		Error_SyntaxError (yyToken);
 		$$ = $1;
 	  }
@@ -5414,6 +5416,7 @@ for_statement_condition
 	  {
 		$$ = $4;
 	  }
+
 	| boolean_expression CLOSE_PARENS {
 		report.Error (1525, GetLocation ($2), "Unexpected symbol ')', expected ';'");
 		For f =  (For) $0;

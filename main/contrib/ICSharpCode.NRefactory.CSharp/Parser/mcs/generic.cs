@@ -1488,7 +1488,9 @@ namespace Mono.CSharp {
 			if (targs == null)
 				throw new ArgumentNullException ("targs");
 
-//			this.state = openType.state;
+			this.state &= ~SharedStateFlags;
+			this.state |= (openType.state & SharedStateFlags);
+
 			this.context = context;
 			this.open_type = openType;
 			this.targs = targs;
@@ -2289,7 +2291,7 @@ namespace Mono.CSharp {
 
 		//
 		// Checks all type arguments againts type parameters constraints
-		// NOTE: It can run in probing mode when `mc' is null
+		// NOTE: It can run in probing mode when `this.mc' is null
 		//
 		public bool CheckAll (MemberSpec context, TypeSpec[] targs, TypeParameterSpec[] tparams, Location loc)
 		{
@@ -2342,15 +2344,6 @@ namespace Mono.CSharp {
 			// Check the class constraint
 			//
 			if (tparam.HasTypeConstraint) {
-				var dep = tparam.BaseType.GetMissingDependencies ();
-				if (dep != null) {
-					if (mc == null)
-						return false;
-
-					ImportedTypeDefinition.Error_MissingDependency (mc, dep, loc);
-					ok = false;
-				}
-
 				if (!CheckConversion (mc, context, atype, tparam, tparam.BaseType, loc)) {
 					if (mc == null)
 						return false;
@@ -2364,19 +2357,6 @@ namespace Mono.CSharp {
 			//
 			if (tparam.Interfaces != null) {
 				foreach (TypeSpec iface in tparam.Interfaces) {
-					var dep = iface.GetMissingDependencies ();
-					if (dep != null) {
-						if (mc == null)
-							return false;
-
-						ImportedTypeDefinition.Error_MissingDependency (mc, dep, loc);
-						ok = false;
-
-						// return immediately to avoid duplicate errors because we are scanning
-						// expanded interface list
-						return false;
-					}
-
 					if (!CheckConversion (mc, context, atype, tparam, iface, loc)) {
 						if (mc == null)
 							return false;

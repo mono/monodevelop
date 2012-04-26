@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public override IUnresolvedEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 		{
-			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(SimpleNameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
+			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(NameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
 			if (u != null) {
 				if (interningProvider != null)
 					u = interningProvider.Intern(u);
@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public override IUnresolvedEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
-			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(SimpleNameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
+			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(NameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
 			if (u != null) {
 				if (interningProvider != null)
 					u = interningProvider.Intern(u);
@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeParameters, typeDeclaration.Constraints, EntityType.TypeDefinition);
 			
 			foreach (AstType baseType in typeDeclaration.BaseTypes) {
-				td.BaseTypes.Add(baseType.ToTypeReference(SimpleNameLookupMode.BaseTypeReference));
+				td.BaseTypes.Add(baseType.ToTypeReference(NameLookupMode.BaseTypeReference));
 			}
 			
 			foreach (EntityDeclaration member in typeDeclaration.Members) {
@@ -354,6 +354,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				
 				if ((modifiers & Modifiers.Const) != 0) {
 					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
+					field.IsStatic = true;
 				}
 				
 				currentTypeDefinition.Members.Add(field);
@@ -917,7 +918,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		#region Types
 		[Obsolete("Use AstType.ToTypeReference() instead.")]
-		public static ITypeReference ConvertType(AstType type, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
+		public static ITypeReference ConvertType(AstType type, NameLookupMode lookupMode = NameLookupMode.Type)
 		{
 			return type.ToTypeReference(lookupMode);
 		}

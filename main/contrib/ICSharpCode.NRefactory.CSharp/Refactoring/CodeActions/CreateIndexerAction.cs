@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					},
 				};
-				decl.Parameters.AddRange(CreateMethodDeclarationAction.GenerateParameters (context, indexer.Arguments));
+				decl.Parameters.AddRange(CreateMethodDeclarationAction.GenerateParameters(context, indexer.Arguments));
 				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
 				
@@ -90,11 +90,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						decl.Modifiers |= Modifiers.Public;
 					}
 
-					script.InsertWithCursor(context.TranslateString("Create indexer"), decl, targetResolveResult.Type.GetDefinition());
+					script.InsertWithCursor(context.TranslateString("Create indexer"), targetResolveResult.Type.GetDefinition(), decl);
 					return;
 				}
 
-				script.InsertWithCursor(context.TranslateString("Create indexer"), decl, Script.InsertPosition.Before);
+				script.InsertWithCursor(context.TranslateString("Create indexer"), Script.InsertPosition.Before, decl);
 			});
 		}
 

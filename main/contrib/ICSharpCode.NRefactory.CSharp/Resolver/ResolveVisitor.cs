@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -1403,7 +1403,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return resolver.ResolveMemberAccess(deferencedTarget, pointerReferenceExpression.MemberName,
 				                                    typeArguments,
-				                                    IsTargetOfInvocation(pointerReferenceExpression));
+				                                    GetNameLookupMode(pointerReferenceExpression));
 			} else {
 				ScanChildren(pointerReferenceExpression);
 				return null;
@@ -1545,12 +1545,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return arguments;
 		}
 		
-		static bool IsTargetOfInvocation(AstNode node)
+		static NameLookupMode GetNameLookupMode(Expression expr)
 		{
-			InvocationExpression ie = node.Parent as InvocationExpression;
-			return ie != null && ie.Target == node;
+			InvocationExpression ie = expr.Parent as InvocationExpression;
+			if (ie != null && ie.Target == expr)
+				return NameLookupMode.InvocationTarget;
+			else
+				return NameLookupMode.Expression;
 		}
-		
 
 		/// <summary>
 		/// Gets whether 'rr' is considered a static access on the target identifier.
@@ -1571,8 +1573,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// simple names and type names might occur.
 			if (resolverEnabled) {
 				var typeArguments = ResolveTypeArguments(identifierExpression.TypeArguments);
-				return resolver.ResolveSimpleName(identifierExpression.Identifier, typeArguments,
-				                                  IsTargetOfInvocation(identifierExpression));
+				var lookupMode = GetNameLookupMode(identifierExpression);
+				return resolver.LookupSimpleNameOrTypeName(
+					identifierExpression.Identifier, typeArguments, lookupMode);
 			} else {
 				ScanChildren(identifierExpression);
 				return null;
@@ -1621,7 +1624,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var typeArguments = ResolveTypeArguments(memberReferenceExpression.TypeArguments);
 			return resolver.ResolveMemberAccess(
 				target, memberReferenceExpression.MemberName, typeArguments,
-				IsTargetOfInvocation(memberReferenceExpression));
+				GetNameLookupMode(memberReferenceExpression));
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitInvocationExpression(InvocationExpression invocationExpression)
@@ -2489,7 +2492,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					elementType = isImplicitlyTypedVariable ? SpecialType.Dynamic : compilation.FindType(KnownTypeCode.Object);
 				}
 				getEnumeratorInvocation = resolver.ResolveCast(collectionType, expression);
-				getEnumeratorInvocation = resolver.ResolveMemberAccess(getEnumeratorInvocation, "GetEnumerator", EmptyList<IType>.Instance, true);
+				getEnumeratorInvocation = resolver.ResolveMemberAccess(getEnumeratorInvocation, "GetEnumerator", EmptyList<IType>.Instance, NameLookupMode.InvocationTarget);
 				getEnumeratorInvocation = resolver.ResolveInvocation(getEnumeratorInvocation, new ResolveResult[0]);
 			} else {
 				var getEnumeratorMethodGroup = memberLookup.Lookup(expression, "GetEnumerator", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
@@ -2569,7 +2572,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				enumeratorType = SpecialType.UnknownType;
 			}
 			getEnumeratorInvocation = resolver.ResolveCast(collectionType, expression);
-			getEnumeratorInvocation = resolver.ResolveMemberAccess(getEnumeratorInvocation, "GetEnumerator", EmptyList<IType>.Instance, true);
+			getEnumeratorInvocation = resolver.ResolveMemberAccess(getEnumeratorInvocation, "GetEnumerator", EmptyList<IType>.Instance, NameLookupMode.InvocationTarget);
 			getEnumeratorInvocation = resolver.ResolveInvocation(getEnumeratorInvocation, new ResolveResult[0]);
 		}
 		#endregion
@@ -3010,15 +3013,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			// Figure out the correct lookup mode:
-			AstType outermostType = simpleType;
-			while (outermostType.Parent is AstType)
-				outermostType = (AstType)outermostType.Parent;
-			SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type;
-			if (outermostType.Parent is UsingDeclaration || outermostType.Parent is UsingAliasDeclaration) {
-				lookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
-			} else if (outermostType.Parent is TypeDeclaration && outermostType.Role == Roles.BaseType) {
-				lookupMode = SimpleNameLookupMode.BaseTypeReference;
-			}
+			NameLookupMode lookupMode = GetNameLookupMode(simpleType);
 			
 			var typeArguments = ResolveTypeArguments(simpleType.TypeArguments);
 			Identifier identifier = simpleType.IdentifierToken;
@@ -3031,6 +3026,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return withSuffix;
 			}
 			return rr;
+		}
+		
+		NameLookupMode GetNameLookupMode(AstType type)
+		{
+			AstType outermostType = type;
+			while (outermostType.Parent is AstType)
+				outermostType = (AstType)outermostType.Parent;
+			NameLookupMode lookupMode = NameLookupMode.Type;
+			if (outermostType.Parent is UsingDeclaration || outermostType.Parent is UsingAliasDeclaration) {
+				lookupMode = NameLookupMode.TypeInUsingDeclaration;
+			} else if (outermostType.Parent is TypeDeclaration && outermostType.Role == Roles.BaseType) {
+				lookupMode = NameLookupMode.BaseTypeReference;
+			}
+			return lookupMode;
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitMemberType(MemberType memberType)
@@ -3049,11 +3058,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				target = Resolve(memberType.Target);
 			}
 			
+			NameLookupMode lookupMode = GetNameLookupMode(memberType);
 			var typeArguments = ResolveTypeArguments(memberType.TypeArguments);
 			Identifier identifier = memberType.MemberNameToken;
-			ResolveResult rr = resolver.ResolveMemberType(target, identifier.Name, typeArguments);
+			ResolveResult rr = resolver.ResolveMemberAccess(target, identifier.Name, typeArguments, lookupMode);
 			if (memberType.Parent is Attribute && !identifier.IsVerbatim) {
-				var withSuffix = resolver.ResolveMemberType(target, identifier.Name + "Attribute", typeArguments);
+				var withSuffix = resolver.ResolveMemberAccess(target, identifier.Name + "Attribute", typeArguments, lookupMode);
 				if (AttributeTypeReference.PreferAttributeTypeWithSuffix(rr.Type, withSuffix.Type, resolver.Compilation))
 					return withSuffix;
 			}
@@ -3225,7 +3235,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				v = MakeVariable(ResolveType(queryFromClause.Type), queryFromClause.IdentifierToken);
 				
 				// resolve the .Cast<>() call
-				ResolveResult methodGroup = resolver.ResolveMemberAccess(expr, "Cast", new[] { v.Type }, true);
+				ResolveResult methodGroup = resolver.ResolveMemberAccess(expr, "Cast", new[] { v.Type }, NameLookupMode.InvocationTarget);
 				result = resolver.ResolveInvocation(methodGroup, new ResolveResult[0]);
 			}
 			
@@ -3244,7 +3254,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// from .. from ... ... - introduce a transparent identifier
 					selectResult = MakeTransparentIdentifierResolveResult();
 				}
-				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "SelectMany", EmptyList<IType>.Instance, true);
+				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "SelectMany", EmptyList<IType>.Instance, NameLookupMode.InvocationTarget);
 				ResolveResult[] arguments = {
 					new QueryExpressionLambda(1, result),
 					new QueryExpressionLambda(2, selectResult)
@@ -3287,7 +3297,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			StoreResult(queryLetClause.IdentifierToken, new LocalResolveResult(v));
 			if (currentQueryResult != null) {
 				// resolve the .Select() call
-				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance, true);
+				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance, NameLookupMode.InvocationTarget);
 				ResolveResult[] arguments = { new QueryExpressionLambda(1, MakeTransparentIdentifierResolveResult()) };
 				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {
@@ -3308,7 +3318,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				variableType = ResolveType(queryJoinClause.Type);
 				
 				// resolve the .Cast<>() call
-				ResolveResult methodGroup = resolver.ResolveMemberAccess(expr, "Cast", new[] { variableType }, true);
+				ResolveResult methodGroup = resolver.ResolveMemberAccess(expr, "Cast", new[] { variableType }, NameLookupMode.InvocationTarget);
 				inResult = resolver.ResolveInvocation(methodGroup, new ResolveResult[0]);
 			}
 			
