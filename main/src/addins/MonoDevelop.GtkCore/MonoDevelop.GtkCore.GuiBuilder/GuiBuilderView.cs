@@ -133,7 +133,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			designer.RootComponentChanged += OnRootComponentChanged;
 			designer.ComponentTypesChanged += OnComponentTypesChanged;
 			designer.ImportFileCallback = ImportFile;
-			
+			designer.Changed += (sender, e) => IsDirty = true;
 			// Actions designer
 			actionsBox = designer.CreateActionGroupDesigner ();
 			actionsBox.AllowActionBinding = !gproject.Project.UsePartialTypes;
@@ -332,12 +332,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Save (string fileName)
 		{
-			Console.WriteLine ("save : "+  designer);
 			base.Save (fileName);
+			IsDirty = false;
 			
 			if (designer == null)
 				return;
-			
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
 			codeBinder.UpdateBindings (fileName);
 			
@@ -347,7 +346,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (actionsBox != null)
 					actionsBox.Save ();
 			}
-			
+
+			// TODO: SINGLE FILE SAVE - this generates the whole project
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+			try {
+				ConfigurationSelector configuration = IdeApp.Workspace.ActiveConfiguration;
+				Generator generator = new Generator ();
+				generator.Run (monitor, gproject.Project, configuration);
+				monitor.ReportSuccess ("Converting was succesfull");
+			} finally {
+				monitor.Dispose ();
+			}
+
 			string newBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
 			
 			if (oldBuildFile != newBuildFile && oldBuildFile != null && newBuildFile != null) {
@@ -358,19 +368,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			gproject.Save (true);
-			OnDirtyChanged (EventArgs.Empty);
 		}
 		
-		public override bool IsDirty {
-			get {
-				// There is no need to check if the action group designer is modified
-				// since changes in the action group are as well changes in the designed widget
-				return base.IsDirty || (designer != null && designer.Modified);
-			}
-			set {
-				base.IsDirty = value;
-			}
-		}
+//		public override bool IsDirty {
+//			get {
+//				// There is no need to check if the action group designer is modified
+//				// since changes in the action group are as well changes in the designed widget
+//				return base.IsDirty || (designer != null && designer.Modified);
+//			}
+//			set {
+//				base.IsDirty = value;
+//			}
+//		}
 		
 		public override void JumpToSignalHandler (Stetic.Signal signal)
 		{
