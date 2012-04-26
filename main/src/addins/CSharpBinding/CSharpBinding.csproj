@@ -95,6 +95,11 @@
       <Name>ICSharpCode.Decompiler</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -127,10 +132,6 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\build\bin\Mono.Cecil.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">

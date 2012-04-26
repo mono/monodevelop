@@ -172,9 +172,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Decompiler", "c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.CSharp", "contrib\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj", "{53DCA265-3C3C-42F9-B647-F72BA678122B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil", "contrib\Mono.Cecil\src\Mono.Cecil.csproj", "{D68133BD-1E63-496E-9EDE-4FBDBF77B486}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil", "..\external\cecil\Mono.Cecil.csproj", "{D68133BD-1E63-496E-9EDE-4FBDBF77B486}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil.Mdb", "contrib\Mono.Cecil\src\symbols\mdb\Mono.Cecil.Mdb.csproj", "{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil.Mdb", "..\external\cecil\symbols\mdb\Mono.Cecil.Mdb.csproj", "{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}"
 EndProject
 Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "po", "po\po.mdproj", "{AC7D119C-980B-4712-8811-5368C14412D7}"
 EndProject

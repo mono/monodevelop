@@ -43,33 +43,24 @@
     <Reference Include="System.Xml" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <Private>False</Private>
-      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\build\bin\Mono.Cecil.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -115,6 +106,11 @@
     <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
       <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

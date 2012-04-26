@@ -71,9 +71,6 @@
     <Reference Include="Mono.Addins.Setup, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\build\bin\Mono.Cecil.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -99,6 +96,14 @@
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\cecil\symbols\mdb\Mono.Cecil.Mdb.csproj">
+      <Project>{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}</Project>
+      <Name>Mono.Cecil.Mdb</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
