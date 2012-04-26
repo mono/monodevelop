@@ -105,7 +105,7 @@
 				_label = "Step Out"
 				_description = "Step Out"
 				shortcut = "Shift|F11" 
-				macShortcut = "Shift|Meta|T"
+				macShortcut = "Shift|Meta|U"
 				icon="md-step-out-debug"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint"
 				defaultHandler = "MonoDevelop.Debugger.NewBreakpointHandler"
