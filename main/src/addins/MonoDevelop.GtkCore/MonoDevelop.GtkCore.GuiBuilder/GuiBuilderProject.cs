@@ -92,6 +92,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				gproject.ConvertProject (info.SteticFile, newGuiFolderName);
 				info.ConvertGtkFolder (guiFolderName, makeBackup);
 				info.UpdateGtkFolder ();
+				gproject.Dispose ();
+				info.Dispose ();
+
+				// reload project
+				info = GtkDesignInfo.FromProject (project); 
+				gproject = GuiBuilderService.SteticApp.CreateProject (info);
+
 				folderName = newGuiFolderName;
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 				try {
@@ -143,7 +150,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			try {
 				gproject.Load (folderName);
 			} catch (Exception ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("The GUI designer project folder '{0}' could not be loaded.", folderName));
+				MessageService.ShowException (
+					ex,
+					GettextCatalog.GetString ("The GUI designer project folder '{0}' could not be loaded.", folderName)
+				);
 				hasError = true;
 			}
 

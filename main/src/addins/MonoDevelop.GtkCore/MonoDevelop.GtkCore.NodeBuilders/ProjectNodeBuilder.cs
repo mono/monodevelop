@@ -74,10 +74,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Project project = dataObject as Project;
-			Console.WriteLine ("build project:" + project);
 			if (project is DotNetProject) {
 				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-				Console.WriteLine ("needs conversion: " + info.NeedsConversion);
 				if (info.NeedsConversion) {
 					ProjectConversionDialog dialog = new ProjectConversionDialog (project, info.SteticFolderName);
 					
