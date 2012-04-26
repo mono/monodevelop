@@ -544,7 +544,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string mt = DesktopService.GetMimeTypeForUri (file);
 			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
 			if (formatter != null)
-				content = formatter.FormatText (PolicyService.InvariantPolicies, content);
+				content = formatter.FormatText (project.Policies, content);
 			
 			// The project policies should be taken for generated files (windows git eol problem)
 			var pol = project.Policies.Get<TextStylePolicy> (DesktopService.GetMimeTypeForUri (file));
@@ -572,27 +572,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				}
 			}
 			
-			// The Mono provider inserts additional blank lines, so strip them out
-			// But blank lines might actually be significant in other languages.
-			// We reformat the C# generated output to the user's coding style anyway, but the reformatter preserves blank lines
-			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
-				bool previousWasBlank = false;
-				for (int i = 0; i < doc.LineCount; i++) {
-					var line = doc.GetLine (i);
-					bool isBlank, isBracket;
-					CheckLine (doc, line, out isBlank, out isBracket);
-					if (isBlank && previousWasBlank && line.Length > 0) {
-						doc.Remove (line.Offset, line.Length);
-						i--;
-					}
-					previousWasBlank = isBlank || isBracket;
-				}
-			}
-			
 			var realLine = doc.GetLine (realStartLine);
 			if (realLine == null)
 				return text;
 			int offset = realLine.Offset;
+
+			// The Mono provider inserts additional blank lines, so strip them out
+			// But blank lines might actually be significant in other languages.
+			// We reformat the C# generated output to the user's coding style anyway, but the reformatter preserves blank lines
+			if (provider.GetType ().FullName == "MonoDevelop.CSharp.CSharpEnhancedCodeProvider") {
+				return doc.GetTextAt (offset, doc.TextLength - offset).TrimStart ();
+			}
+
 			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
