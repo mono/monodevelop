@@ -89,7 +89,10 @@ namespace MonoDevelop.Refactoring
 			bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 			if (addUsing) {
 				foreach (string ns in possibleNamespaces) {
-					var info = resolveMenu.CommandInfos.Add (GettextCatalog.GetString ("Import Namespace {0}", ns), new System.Action (new AddImport (doc, resolveResult, ns, true).Run));
+					var info = resolveMenu.CommandInfos.Add (
+						string.Format ("using {0};", ns),
+						new System.Action (new AddImport (doc, resolveResult, ns, true).Run)
+					);
 					info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
 				}
 			}
@@ -100,7 +103,7 @@ namespace MonoDevelop.Refactoring
 					resolveMenu.CommandInfos.AddSeparator ();
 				
 				foreach (string ns in possibleNamespaces) {
-					resolveMenu.CommandInfos.Add (GettextCatalog.GetString ("Use {0}", ns + "." + doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc, resolveResult, ns, false).Run));
+					resolveMenu.CommandInfos.Add (string.Format ("{0}", ns + "." + doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc, resolveResult, ns, false).Run));
 				}
 			}
 			

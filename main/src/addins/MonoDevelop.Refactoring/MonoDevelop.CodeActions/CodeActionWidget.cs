@@ -165,13 +165,17 @@ namespace MonoDevelop.CodeActions
 			ResolveResult resolveResult;
 			ICSharpCode.NRefactory.CSharp.AstNode node;
 			if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
-				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (document, node, resolveResult);
+				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
+					document,
+					node,
+					resolveResult
+				);
 	
 				bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 				if (addUsing) {
 					foreach (string ns_ in possibleNamespaces) {
 						string ns = ns_;
-						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Import Namespace {0}", ns));
+						var menuItem = new Gtk.MenuItem (string.Format ("using {0};", ns));
 						menuItem.Activated += delegate {
 							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, true).Run ();
 						};
@@ -182,7 +186,7 @@ namespace MonoDevelop.CodeActions
 				bool resolveDirect = !(resolveResult is UnknownMemberResolveResult);
 				if (resolveDirect) {
 					foreach (string ns in possibleNamespaces) {
-						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Use {0}", ns + "." + document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
+						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("{0}", ns + "." + document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
 						menuItem.Activated += delegate {
 							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, false).Run ();
 						};
