@@ -63,7 +63,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				return comments;
 			}
 		}
-		
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is invalid and needs to be reparsed.
+		/// </summary>
+		public bool IsInvalid {
+			get;
+			set;
+		}
+
 		List<Tag> tagComments = new List<Tag> ();
 		public IList<Tag> TagComments {
 			get {

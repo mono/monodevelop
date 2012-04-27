@@ -178,6 +178,7 @@ namespace MonoDevelop.CodeActions
 						var menuItem = new Gtk.MenuItem (string.Format ("using {0};", ns));
 						menuItem.Activated += delegate {
 							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, true).Run ();
+							menu.Destroy ();
 						};
 						menu.Add (menuItem);
 					}
@@ -189,6 +190,7 @@ namespace MonoDevelop.CodeActions
 						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("{0}", ns + "." + document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
 						menuItem.Activated += delegate {
 							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, false).Run ();
+							menu.Destroy ();
 						};
 						menu.Add (menuItem);
 					}
@@ -208,6 +210,7 @@ namespace MonoDevelop.CodeActions
 			menuPushed = true;
 			menu.Destroyed += delegate {
 				menuPushed = false;
+				Hide ();
 			};
 			var container = (TextEditorContainer)document.Editor.Parent.Parent;
 			var child = (TextEditorContainer.EditorContainerChild)container [this];

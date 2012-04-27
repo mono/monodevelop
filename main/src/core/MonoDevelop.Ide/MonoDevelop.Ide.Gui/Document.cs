@@ -540,6 +540,9 @@ namespace MonoDevelop.Ide.Gui
 		void InitializeEditor (IExtensibleTextEditor editor)
 		{
 			Editor.Document.TextReplaced += (o, a) => {
+				if (parsedDocument != null)
+					parsedDocument.IsInvalid = true;
+
 				if (Editor.Document.IsInAtomicUndo) {
 					wasEdited = true;
 				} else {
