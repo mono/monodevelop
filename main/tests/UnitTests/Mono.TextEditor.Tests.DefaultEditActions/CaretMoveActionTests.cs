@@ -405,5 +405,61 @@ $2
 5
 6");
 		}
+
+		/// <summary>
+		/// Bug 4683 - Text editor navigation issue 
+		/// </summary>
+		[Test()]
+		public void TestBug4683 ()
+		{
+			var data = Create (@"
+IEnumerable<string> GetFileExtensions (string filename)
+{
+	int lastSeparator = filename.Length;
+		do {$
+			filename.LastIndexOf ('.', 0, lastSeparator);
+
+	}
+"
+			);
+			CaretMoveActions.Down (data);
+			CaretMoveActions.Up (data);
+			Check (data, @"
+IEnumerable<string> GetFileExtensions (string filename)
+{
+	int lastSeparator = filename.Length;
+		do {$
+			filename.LastIndexOf ('.', 0, lastSeparator);
+
+	}
+");
+		}
+
+		[Test()]
+		public void TestDesiredColumnBeyondEOL ()
+		{
+			var data = Create (@"
+IEnumerable<string> GetFileExtensions (string filename)
+{
+	int lastSeparator = filename.Length;
+		do {
+			fi$lename.LastIndexOf ('.', 0, lastSeparator);
+
+	}
+"
+			);
+			CaretMoveActions.Up (data);
+			Check (data, @"
+IEnumerable<string> GetFileExtensions (string filename)
+{
+	int lastSeparator = filename.Length;
+		do {$
+			filename.LastIndexOf ('.', 0, lastSeparator);
+
+	}
+");
+		}
+
+
 	}
 }
