@@ -193,7 +193,6 @@ namespace Mono.TextEditor
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
-			
 			VAdjustmentValueChanged ();
 		}
 		
@@ -1538,8 +1537,14 @@ namespace Mono.TextEditor
 				if (maxX > Allocation.Width)
 					maxX += 2 * this.textViewMargin.CharWidth;
 				double width = Allocation.Width - this.TextViewMargin.XOffset;
-				this.textEditorData.HAdjustment.SetBounds (0, maxX, this.textViewMargin.CharWidth, width, width);
-				if (maxX < width)
+				var realMaxX = System.Math.Max (maxX, this.textEditorData.HAdjustment.Value + width);
+				this.textEditorData.HAdjustment.SetBounds (
+					0,
+					realMaxX,
+					this.textViewMargin.CharWidth,
+					width,
+					width);
+				if (realMaxX < width)
 					this.textEditorData.HAdjustment.Value = 0;
 			}
 			textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged;
@@ -1561,12 +1566,13 @@ namespace Mono.TextEditor
 				if (maxY > allocation.Height)
 					maxY += EditorLineThreshold * this.LineHeight;
 				
+				var realMaxY = System.Math.Max (maxY, VAdjustment.Value + allocation.Height);
 				this.textEditorData.VAdjustment.SetBounds (0, 
-				                                           maxY, 
+				                                           realMaxY, 
 				                                           LineHeight,
 				                                           allocation.Height,
 				                                           allocation.Height);
-				if (maxY < allocation.Height)
+				if (realMaxY < allocation.Height)
 					this.textEditorData.VAdjustment.Value = 0;
 			}
 		}
