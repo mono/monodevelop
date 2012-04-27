@@ -64,7 +64,11 @@ namespace MonoDevelop.Ide
 			} else if (Platform.IsWindows) {
 				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location).ParentDirectory.Combine ("windoc", "WinDoc.exe").FullPath;
 				if (File.Exists (mdapp)) {
-					System.Diagnostics.Process.Start (mdapp, "--url \"" + topic + '"' + DirArgs);
+					System.Diagnostics.Process.Start (new System.Diagnostics.ProcessStartInfo {
+						FileName = mdapp,
+						Arguments = "--url \"" + topic + '"' + DirArgs,
+						WorkingDirectory = Path.GetDirectoryName (mdapp),
+					});
 					return;
 				}
 			}
