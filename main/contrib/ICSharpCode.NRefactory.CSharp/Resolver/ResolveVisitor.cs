@@ -2823,6 +2823,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitUnsafeStatement(UnsafeStatement unsafeStatement)
 		{
+			resolver = resolver.PushBlock();
+			ScanChildren(unsafeStatement);
+			resolver = resolver.PopBlock();
 			return voidResult;
 		}
 		#endregion
