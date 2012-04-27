@@ -260,7 +260,7 @@ namespace Mono.TextEditor
 				if (!TextEditorData.Document.GetFoldingsFromOffset (possibleOffset).Any (f => f.IsFolded))
 					column = logicalDesiredColumn;
 			} else {
-				column = desiredLine.Length + 1;
+				column = System.Math.Max (newColumn, desiredLine.Length + 1);
 			}
 
 			UpdateCaretOffset ();
