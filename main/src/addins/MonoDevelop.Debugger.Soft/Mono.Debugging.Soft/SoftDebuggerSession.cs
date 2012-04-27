@@ -1812,29 +1812,23 @@ namespace Mono.Debugging.Soft
 						
 						if (line >= rangeFirstLine && line <= rangeLastLine)
 							insideTypeRange = true;
-						
-						// If we are inserting a breakpoint in line L, but L+1 has the same IL offset as L,
-						// pick the L+1 location, since that's where the debugger is going to stop.
+
 						if (location.LineNumber >= line && line >= rangeFirstLine) {
 							if (target_loc != null) {
 								if (location.LineNumber > line) {
 									if (target_loc.LineNumber - line > location.LineNumber - line) {
 										// Grab the location closest to the requested line
-										//Console.WriteLine ("\t\tLocation is closest match");
-										target_loc = location;
-									} else if (location.ILOffset == target_loc.ILOffset) {
-										// Grab the last location with the same ILOffset
-										//Console.WriteLine ("\t\tLocation has same ILOffset");
+										//Console.WriteLine ("\t\tLocation is closest match. (ILOffset = 0x{0:x5})", location.ILOffset);
 										target_loc = location;
 									}
-								} else {
-									// Line number matches exactly
-									//Console.WriteLine ("\t\tLocation matches exactly.");
+								} else if (location.ILOffset < target_loc.ILOffset) {
+									// Line number matches exactly, but has an earlier ILOffset
+									//Console.WriteLine ("\t\tLocation has an earlier ILOffset. (ILOffset = 0x{0:x5})", location.ILOffset);
 									target_loc = location;
 									fuzzy = false;
 								}
 							} else {
-								//Console.WriteLine ("\t\tLocation is first possible match");
+								//Console.WriteLine ("\t\tLocation is first possible match. (ILOffset = 0x{0:x5})", location.ILOffset);
 								fuzzy = location.LineNumber != line;
 								target_loc = location;
 							}
