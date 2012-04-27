@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 		}
 		
-		static ITypeSystemParser GetParser (string mimeType)
+		public static ITypeSystemParser GetParser (string mimeType)
 		{
 			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType));
 			return provider != null ? provider.Parser : null;
