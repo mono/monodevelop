@@ -75,7 +75,7 @@ namespace MonoDevelop.XmlEditor
 			XmlEditorOptions.XmlFileAssociationChanged += HandleXmlFileAssociationChanged;
 			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
-			SetDefaultSchema (FileExtension);
+			SetDefaultSchema ();
 			
 			var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (view != null && string.IsNullOrEmpty (view.Document.MimeType)) {
@@ -90,8 +90,9 @@ namespace MonoDevelop.XmlEditor
 
 		void HandleXmlFileAssociationChanged (object sender, XmlFileAssociationChangedEventArgs e)
 		{
-			if (e.Extension == FileExtension)
-				SetDefaultSchema (FileExtension);
+			var filename = document.FileName;
+			if (filename != null && filename.ToString ().EndsWith (e.Extension))
+				SetDefaultSchema ();
 		}
 		
 		bool disposed;
@@ -385,36 +386,30 @@ namespace MonoDevelop.XmlEditor
 		
 		#region Settings handling
 		
-		string FileExtension {
-			get {
-				var docName = Document.Name;
-				return string.IsNullOrEmpty (docName)? null : System.IO.Path.GetExtension (docName).ToLowerInvariant ();
-			}
-		}
-		
-		void SetDefaultSchema (string extension)
+		void SetDefaultSchema ()
 		{
-			if (extension == null)
+			var filename = document.FileName;
+			if (filename == null)
 				return;
 			
-			defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData (extension);
+			defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionDataForFileName (filename);
 			if (defaultSchemaCompletionData != null)
 				inferredCompletionData = null;
 			else
 				QueueInference ();
-			defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix (extension);
+			defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefixForFileName (filename);
 		}
 		
 		/// Updates the default schema association since the schema may have been added.
 		void UserSchemaAdded (object source, EventArgs e)
 		{	
-			SetDefaultSchema (FileExtension);
+			SetDefaultSchema ();
 		}
 		
 		// Updates the default schema association since the schema may have been removed.
 		void UserSchemaRemoved (object source, EventArgs e)
 		{
-			SetDefaultSchema (FileExtension);
+			SetDefaultSchema ();
 		}
 		
 		#endregion
@@ -457,7 +452,7 @@ namespace MonoDevelop.XmlEditor
 					return true;
 			}
 			
-			return XmlFileAssociationManager.IsXmlFileExtension (System.IO.Path.GetExtension (fileName));
+			return XmlFileAssociationManager.IsXmlFileName (fileName);
 		}
 		
 		public static bool IsMimeTypeHandled (string mimeType)

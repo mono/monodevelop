@@ -68,26 +68,41 @@ namespace MonoDevelop.XmlEditor
 					yield return item.Value;
 		}
 		
-		public static XmlFileAssociation GetAssociation (string extension)
+		public static XmlFileAssociation GetAssociationForFileName (string filename)
 		{
-			var assoc = XmlEditorOptions.GetFileAssociation (extension);
-			if (assoc != null)
-				return assoc;
-			if (map.TryGetValue (extension, out assoc))
-				return assoc;
+			foreach (var extension in GetFileExtensions (filename)) {
+				var assoc = XmlEditorOptions.GetFileAssociation (extension);
+				if (assoc != null)
+					return assoc;
+				if (map.TryGetValue (extension, out assoc))
+					return assoc;
+			}
 			return null;
 		}
 		
-		public static bool IsXmlFileExtension (string extension)
+		public static bool IsXmlFileName (string filename)
 		{
-			if (string.IsNullOrEmpty (extension))
-				return false;
-			
-			if (map.ContainsKey (extension))
-				return true;
-			
-			return XmlEditorOptions.GetFileAssociation (extension) != null;
+			foreach (var extension in GetFileExtensions (filename)) {
+				if (string.IsNullOrEmpty (extension))
+					return false;
+				
+				if (map.ContainsKey (extension))
+					return true;
+				
+				if (XmlEditorOptions.GetFileAssociation (extension) != null)
+					return true;
+			}
+
+			return false;
+		}
+
+		static IEnumerable<string> GetFileExtensions (string filename)
+		{
+			int idx = 0;
+			while ((idx = filename.IndexOf ('.', idx)) > -1 && (filename.Length - idx) > 1) {
+				yield return filename.Substring (idx);
+				idx++;
+			}
 		}
 	}
-
 }
