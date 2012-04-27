@@ -43,6 +43,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="PListSchemeTest.cs" />
+    <Compile Include="PObjectTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\MonoDevelop.MacDev\MonoDevelop.MacDev.csproj">
