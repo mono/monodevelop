@@ -495,9 +495,20 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (string.IsNullOrEmpty (text)) 
 				return;
+			ParsedDocument parsedDocument = null;
+
 			var foldingParser = TypeSystemService.GetFoldingParser (Document.MimeType);
-			if (foldingParser != null) 
-				widget.UpdateParsedDocument (foldingParser.Parse (Document.FileName, text));
+			if (foldingParser != null) {
+				parsedDocument = foldingParser.Parse (Document.FileName, text);
+			} else {
+				var normalParser = TypeSystemService.GetParser (Document.MimeType);
+				if (normalParser != null) {
+					using (var sr = new StringReader (text))
+						parsedDocument = normalParser.Parse (true, Document.FileName, sr, null);
+				}
+			}
+			if (parsedDocument != null) 
+				widget.UpdateParsedDocument (parsedDocument);
 		}
 		
 		public void Load (string fileName, Encoding loadEncoding)
