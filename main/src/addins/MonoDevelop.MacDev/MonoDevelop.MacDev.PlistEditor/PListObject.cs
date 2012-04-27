@@ -720,6 +720,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 				}
 			} finally {
 				SuppressChangeEvents = false;
+				OnChanged (EventArgs.Empty);
 			}
 		}
 		

@@ -53,8 +53,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (field == null) {
 				yield break;
 			}
-			yield return new CodeAction (context.TranslateString("Create property"), script => {
-				script.InsertWithCursor(context.TranslateString("Create property"), GeneratePropertyDeclaration(context, field, initializer), Script.InsertPosition.After);
+			yield return new CodeAction(context.TranslateString("Create property"), script => {
+				script.InsertWithCursor(
+					context.TranslateString("Create property"),
+					Script.InsertPosition.After, GeneratePropertyDeclaration(context, field, initializer));
 			});
 		}
 		

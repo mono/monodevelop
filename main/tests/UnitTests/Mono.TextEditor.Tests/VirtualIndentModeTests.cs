@@ -113,6 +113,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (DocumentLocation.MinColumn, data.Caret.DesiredColumn);
 			CaretMoveActions.Right (data);
 			CaretMoveActions.Up (data);
+			CaretMoveActions.Down (data);
 
 
 			int indentColumn = data.IndentationTracker.GetVirtualIndentationColumn (2, 1);
@@ -135,6 +136,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (DocumentLocation.MinColumn, data.Caret.DesiredColumn);
 			CaretMoveActions.Right (data);
 			CaretMoveActions.Down (data);
+			CaretMoveActions.Up (data);
 
 			int indentColumn = data.IndentationTracker.GetVirtualIndentationColumn (2, 1);
 			Assert.AreEqual (indentColumn, data.Caret.Column);

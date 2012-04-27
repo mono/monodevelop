@@ -285,7 +285,6 @@
     <Compile Include="Parser\mcs\module.cs" />
     <Compile Include="Parser\mcs\settings.cs" />
     <Compile Include="Analysis\ReachabilityAnalysis.cs" />
-    <Compile Include="SimpleNameLookupMode.cs" />
     <Compile Include="Ast\DocumentationReference.cs" />
     <Compile Include="TypeSystem\CSharpDocumentationComment.cs" />
     <Compile Include="Parser\mcs\SourceMethodBuilder.cs" />
@@ -366,6 +365,7 @@
     <Compile Include="Ast\GeneralScope\TextNode.cs" />
     <Compile Include="Ast\GeneralScope\WhitespaceNode.cs" />
     <Compile Include="Formatter\FormattingOptionsFactory.cs" />
+    <Compile Include="NameLookupMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

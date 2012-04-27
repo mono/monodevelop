@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				};
 				if (!StaticVisitor.UsesNotStaticMember(context, expression))
 					method.Modifiers |= Modifiers.Static;
-				script.InsertWithCursor(context.TranslateString("Extract method"), method, Script.InsertPosition.Before);
+				script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, method);
 				var target = new IdentifierExpression(methodName);
 				script.Replace(expression, new InvocationExpression(target));
 //				script.Link(target, method.NameToken);
@@ -110,13 +110,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 
 				var usedVariables = VariableLookupVisitor.Analyze(context, statements);
 
-				var extractedCodeAnalysis = new DefiniteAssignmentAnalysis((Statement)statements [0].Parent, context.Resolver, context.CancellationToken);
+				var extractedCodeAnalysis = new DefiniteAssignmentAnalysis(
+					(Statement)statements [0].Parent,
+					context.Resolver,
+					context.CancellationToken);
 				var lastStatement = statements [statements.Count - 1];
 				extractedCodeAnalysis.SetAnalyzedRange(statements [0], lastStatement);
 				var statusAfterMethod = new List<Tuple<IVariable, DefiniteAssignmentStatus>>();
 				
 				foreach (var variable in usedVariables) {
-					extractedCodeAnalysis.Analyze(variable.Name, DefiniteAssignmentStatus.PotentiallyAssigned, context.CancellationToken);
+					extractedCodeAnalysis.Analyze(
+						variable.Name,
+						DefiniteAssignmentStatus.PotentiallyAssigned,
+						context.CancellationToken);
 					statusAfterMethod.Add(Tuple.Create(variable, extractedCodeAnalysis.GetStatusAfter(lastStatement)));
 				}
 				var stmt = statements [0].GetParent<BlockStatement>();
@@ -170,7 +176,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 							mod = ParameterModifier.None;
 							break;
 					}
-					method.Parameters.Add(new ParameterDeclaration(context.CreateShortType(status.Item1.Type), status.Item1.Name, mod));
+					method.Parameters.Add(
+						new ParameterDeclaration(context.CreateShortType(status.Item1.Type), status.Item1.Name, mod));
 					invocation.Arguments.Add(argumentExpression);
 				}
 
@@ -178,7 +185,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					script.Remove(node);
 				}
 				script.Replace(statements [0], new ExpressionStatement(invocation));
-				script.InsertWithCursor(context.TranslateString("Extract method"), method, Script.InsertPosition.Before);
+				script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, method);
 				//script.Link(target, method.NameToken);
 			});
 		}

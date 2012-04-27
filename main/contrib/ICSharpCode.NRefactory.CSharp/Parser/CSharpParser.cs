@@ -2710,73 +2710,90 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				return result;
 			}
-			
-			ArrayInitializerExpression ConvertCollectionOrObjectInitializers (CollectionOrObjectInitializers minit)
+
+            ArrayInitializerExpression ConvertCollectionOrObjectInitializers(CollectionOrObjectInitializers minit)
+            {
+                if (minit == null)
+                    return null;
+                var init = new ArrayInitializerExpression();
+                AddConvertCollectionOrObjectInitializers(init, minit);
+                return init;
+            }
+
+            void AddConvertCollectionOrObjectInitializers(Expression init, CollectionOrObjectInitializers minit)
 			{
-				if (minit == null)
-					return null;
-				var init = new ArrayInitializerExpression ();
-				AddConvertCollectionOrObjectInitializers (init, minit);
-				return init;
-			}
-			
-			void AddConvertCollectionOrObjectInitializers (Expression init, CollectionOrObjectInitializers minit)
-			{
-				var initLoc = LocationsBag.GetLocations (minit);
-				var commaLoc = LocationsBag.GetLocations (minit.Initializers);
+				var initLoc = LocationsBag.GetLocations(minit);
+				var commaLoc = LocationsBag.GetLocations(minit.Initializers);
 				int curComma = 0;
 				if (initLoc != null)
-					init.AddChild (new CSharpTokenNode (Convert (initLoc [0])), Roles.LBrace);
+					init.AddChild(new CSharpTokenNode(Convert(initLoc [0])), Roles.LBrace);
 				foreach (var expr in minit.Initializers) {
 					var collectionInit = expr as CollectionElementInitializer;
 					if (collectionInit != null) {
-						var parent = new ArrayInitializerExpression ();
-						
-						parent.AddChild (new CSharpTokenNode (Convert (expr.Location)), Roles.LBrace);
-
+						AstNode parent;
+						// For ease of use purposes in the resolver the ast representation 
+						// of { a, b, c }  is { {a}, {b}, {c} } - but the generated ArrayInitializerExpression
+						// can be identified by expr.IsSingleElement.
+						if (!collectionInit.IsSingle) {
+							parent = new ArrayInitializerExpression();
+							parent.AddChild(new CSharpTokenNode(Convert(collectionInit.Location)), Roles.LBrace); 
+						} else {
+							parent = ArrayInitializerExpression.CreateSingleElementInitializer ();
+						}
 						for (int i = 0; i < collectionInit.Arguments.Count; i++) {
 							var arg = collectionInit.Arguments [i] as CollectionElementInitializer.ElementInitializerArgument;
 							if (arg == null)
 								continue;
-							parent.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), Roles.Expression);
+							parent.AddChild(
+								(ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept(this),
+								Roles.Expression
+							);
 						}
-						
-						var braceLocs = LocationsBag.GetLocations (expr);
-						if (braceLocs != null)
-							parent.AddChild (new CSharpTokenNode (Convert (braceLocs [0])), Roles.RBrace);
-							
-						init.AddChild (parent, Roles.Expression);
+
+						if (!collectionInit.IsSingle) {
+							var braceLocs = LocationsBag.GetLocations(expr);
+							if (braceLocs != null)
+								parent.AddChild(new CSharpTokenNode(Convert(braceLocs [0])), Roles.RBrace);
+						}
+						init.AddChild((ArrayInitializerExpression)parent, Roles.Expression);
 					} else {
 						var eleInit = expr as ElementInitializer;
 						if (eleInit != null) {
-							var nexpr = new NamedExpression ();
-							nexpr.AddChild (Identifier.Create (eleInit.Name, Convert (eleInit.Location)), Roles.Identifier);
-							var assignLoc = LocationsBag.GetLocations (eleInit);
+							var nexpr = new NamedExpression();
+							nexpr.AddChild(
+								Identifier.Create(eleInit.Name, Convert(eleInit.Location)),
+								Roles.Identifier
+							);
+							var assignLoc = LocationsBag.GetLocations(eleInit);
 							if (assignLoc != null)
-								nexpr.AddChild (new CSharpTokenNode (Convert (assignLoc [0])), Roles.Assign);
+								nexpr.AddChild(new CSharpTokenNode(Convert(assignLoc [0])), Roles.Assign);
 							if (eleInit.Source != null) {
 								if (eleInit.Source is CollectionOrObjectInitializers) {
-									var arrInit = new ArrayInitializerExpression ();
-									AddConvertCollectionOrObjectInitializers (arrInit, eleInit.Source as CollectionOrObjectInitializers);
-									nexpr.AddChild (arrInit, Roles.Expression);
+									var arrInit = new ArrayInitializerExpression();
+									AddConvertCollectionOrObjectInitializers(
+										arrInit,
+										eleInit.Source as CollectionOrObjectInitializers
+									);
+									nexpr.AddChild(arrInit, Roles.Expression);
 								} else {
-									nexpr.AddChild ((Expression)eleInit.Source.Accept (this), Roles.Expression);
+									nexpr.AddChild((Expression)eleInit.Source.Accept(this), Roles.Expression);
 								}
 							}
-							
-							init.AddChild (nexpr, Roles.Expression);
+
+							init.AddChild(nexpr, Roles.Expression);
 						}
 					}
 					if (commaLoc != null && curComma < commaLoc.Count)
-						init.AddChild (new CSharpTokenNode (Convert (commaLoc [curComma++])), Roles.Comma);
-					
+						init.AddChild(new CSharpTokenNode(Convert(commaLoc [curComma++])), Roles.Comma);
+
 				}
 				if (initLoc != null) {
 					if (initLoc.Count == 3) // optional comma
-						init.AddChild (new CSharpTokenNode (Convert (initLoc [1])), Roles.Comma);
-					init.AddChild (new CSharpTokenNode (Convert (initLoc [initLoc.Count - 1])), Roles.RBrace);
+						init.AddChild(new CSharpTokenNode(Convert(initLoc [1])), Roles.Comma);
+					init.AddChild(new CSharpTokenNode(Convert(initLoc [initLoc.Count - 1])), Roles.RBrace);
 				}
 			}
+
 			
 			public override object Visit (NewInitialize newInitializeExpression)
 			{
@@ -2838,7 +2855,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					next = next.Next;
 				}
 				
-				if (arrayCreationExpression.Initializers != null && arrayCreationExpression.Initializers.Count != 0) {
+				if (arrayCreationExpression.Initializers != null) {
 					var initLocation = LocationsBag.GetLocations (arrayCreationExpression.Initializers);
 					ArrayInitializerExpression initializer = new ArrayInitializerExpression ();
 					

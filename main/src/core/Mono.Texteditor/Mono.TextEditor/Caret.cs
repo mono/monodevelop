@@ -253,13 +253,14 @@ namespace Mono.TextEditor
 			
 			line = desiredLineNumber;
 			column = newColumn;
-
 			var logicalDesiredColumn = desiredLine.GetLogicalColumn (TextEditorData, DesiredColumn);
 
-			if (logicalDesiredColumn <= desiredLine.Length) {
+			if (logicalDesiredColumn <= desiredLine.Length + 1) {
 				int possibleOffset = TextEditorData.LocationToOffset (desiredLineNumber, logicalDesiredColumn);
 				if (!TextEditorData.Document.GetFoldingsFromOffset (possibleOffset).Any (f => f.IsFolded))
 					column = logicalDesiredColumn;
+			} else {
+				column = System.Math.Max (newColumn, desiredLine.Length + 1);
 			}
 
 			UpdateCaretOffset ();

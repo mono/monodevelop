@@ -207,7 +207,7 @@ namespace MonoDevelop.Refactoring
 				return;
 			
 			var parsedDocument = doc.ParsedDocument;
-			if (parsedDocument == null)
+			if (parsedDocument == null || parsedDocument.IsInvalid)
 				return;
 			
 			ResolveResult resolveResult;

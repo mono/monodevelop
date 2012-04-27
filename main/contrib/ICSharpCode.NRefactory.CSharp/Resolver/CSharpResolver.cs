@@ -371,7 +371,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					case UnaryOperatorType.AddressOf:
 						return UnaryOperatorResolveResult(new PointerType(expression.Type), op, expression);
 					case UnaryOperatorType.Await:
-						ResolveResult getAwaiterMethodGroup = ResolveMemberAccess(expression, "GetAwaiter", EmptyList<IType>.Instance, true);
+						ResolveResult getAwaiterMethodGroup = ResolveMemberAccess(expression, "GetAwaiter", EmptyList<IType>.Instance, NameLookupMode.InvocationTarget);
 						ResolveResult getAwaiterInvocation = ResolveInvocation(getAwaiterMethodGroup, new ResolveResult[0]);
 						var getResultMethodGroup = CreateMemberLookup().Lookup(getAwaiterInvocation, "GetResult", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 						if (getResultMethodGroup != null) {
@@ -1315,10 +1315,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			return LookupSimpleNameOrTypeName(
 				identifier, typeArguments,
-				isInvocationTarget ? SimpleNameLookupMode.InvocationTarget : SimpleNameLookupMode.Expression);
+				isInvocationTarget ? NameLookupMode.InvocationTarget : NameLookupMode.Expression);
 		}
 		
-		public ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode)
+		public ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, NameLookupMode lookupMode)
 		{
 			// C# 4.0 spec: §3.8 Namespace and type names; §7.6.2 Simple Names
 			
@@ -1330,7 +1330,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			int k = typeArguments.Count;
 			
 			if (k == 0) {
-				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
+				if (lookupMode == NameLookupMode.Expression || lookupMode == NameLookupMode.InvocationTarget) {
 					// Look in local variables
 					foreach (IVariable v in this.LocalVariables) {
 						if (v.Name == identifier) {
@@ -1366,13 +1366,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				bool foundInCache = false;
 				if (k == 0) {
 					switch (lookupMode) {
-						case SimpleNameLookupMode.Expression:
+						case NameLookupMode.Expression:
 							cache = currentTypeDefinitionCache.SimpleNameLookupCacheExpression;
 							break;
-						case SimpleNameLookupMode.InvocationTarget:
+						case NameLookupMode.InvocationTarget:
 							cache = currentTypeDefinitionCache.SimpleNameLookupCacheInvocationTarget;
 							break;
-						case SimpleNameLookupMode.Type:
+						case NameLookupMode.Type:
 							cache = currentTypeDefinitionCache.SimpleTypeLookupCache;
 							break;
 					}
@@ -1397,13 +1397,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// If no using scope was specified, we still need to look in the global namespace:
 				r = LookInUsingScopeNamespace(null, compilation.RootNamespace, identifier, typeArguments, parameterizeResultType);
 			} else {
-				if (k == 0 && lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration) {
+				if (k == 0 && lookupMode != NameLookupMode.TypeInUsingDeclaration) {
 					if (!context.CurrentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
 						r = LookInCurrentUsingScope(identifier, typeArguments, false, false);
 						r = context.CurrentUsingScope.ResolveCache.GetOrAdd(identifier, r);
 					}
 				} else {
-					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == SimpleNameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
+					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == NameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
 				}
 			}
 			if (r != null)
@@ -1422,23 +1422,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				trr = null;
 				return false;
 			}
-			trr = LookupSimpleNameOrTypeName (identifier, EmptyList<IType>.Instance, SimpleNameLookupMode.Type) as TypeResolveResult;
+			trr = LookupSimpleNameOrTypeName (identifier, EmptyList<IType>.Instance, NameLookupMode.Type) as TypeResolveResult;
 			return trr != null && trr.Type.Equals (rr.Type);
 		}
 		
-		ResolveResult LookInCurrentType(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode, bool parameterizeResultType)
+		ResolveResult LookInCurrentType(string identifier, IList<IType> typeArguments, NameLookupMode lookupMode, bool parameterizeResultType)
 		{
 			int k = typeArguments.Count;
-			MemberLookup lookup;
-			if (lookupMode == SimpleNameLookupMode.BaseTypeReference && this.CurrentTypeDefinition != null) {
-				// When looking up a base type reference, treat us as being outside the current type definition
-				// for accessibility purposes.
-				// This avoids a stack overflow when referencing a protected class nested inside the base class
-				// of a parent class. (NameLookupTests.InnerClassInheritingFromProtectedBaseInnerClassShouldNotCauseStackOverflow)
-				lookup = new MemberLookup(this.CurrentTypeDefinition.DeclaringTypeDefinition, this.Compilation.MainAssembly, false);
-			} else {
-				lookup = CreateMemberLookup();
-			}
+			MemberLookup lookup = CreateMemberLookup(lookupMode);
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1452,15 +1443,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				if (lookupMode == SimpleNameLookupMode.BaseTypeReference && t == this.CurrentTypeDefinition) {
+				if (lookupMode == NameLookupMode.BaseTypeReference && t == this.CurrentTypeDefinition) {
 					// don't look in current type when resolving a base type reference
 					continue;
 				}
 				
 				ResolveResult r;
-				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
+				if (lookupMode == NameLookupMode.Expression || lookupMode == NameLookupMode.InvocationTarget) {
 					var targetResolveResult = (t == this.CurrentTypeDefinition ? ResolveThisReference() : new TypeResolveResult(t));
-					r = lookup.Lookup(targetResolveResult, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
+					r = lookup.Lookup(targetResolveResult, identifier, typeArguments, lookupMode == NameLookupMode.InvocationTarget);
 				} else {
 					r = lookup.LookupType(t, identifier, typeArguments, parameterizeResultType);
 				}
@@ -1587,20 +1578,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveMemberAccess
-		public ResolveResult ResolveMemberAccess(ResolveResult target, string identifier, IList<IType> typeArguments, bool isInvocationTarget = false)
+		public ResolveResult ResolveMemberAccess(ResolveResult target, string identifier, IList<IType> typeArguments, NameLookupMode lookupMode = NameLookupMode.Expression)
 		{
 			// C# 4.0 spec: §7.6.4
 			
+			bool parameterizeResultType = !(typeArguments.Count != 0 && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument));
 			NamespaceResolveResult nrr = target as NamespaceResolveResult;
 			if (nrr != null) {
-				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments, typeArguments.Count > 0);
+				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments, parameterizeResultType);
 			}
 			
 			if (target.Type.Kind == TypeKind.Dynamic)
 				return DynamicResult;
 			
-			MemberLookup lookup = CreateMemberLookup();
-			ResolveResult result = lookup.Lookup(target, identifier, typeArguments, isInvocationTarget);
+			MemberLookup lookup = CreateMemberLookup(lookupMode);
+			ResolveResult result;
+			switch (lookupMode) {
+				case NameLookupMode.Expression:
+					result = lookup.Lookup(target, identifier, typeArguments, isInvocation: false);
+					break;
+				case NameLookupMode.InvocationTarget:
+					result = lookup.Lookup(target, identifier, typeArguments, isInvocation: true);
+					break;
+				case NameLookupMode.Type:
+				case NameLookupMode.TypeInUsingDeclaration:
+				case NameLookupMode.BaseTypeReference:
+					result = lookup.LookupType(target.Type, identifier, typeArguments, parameterizeResultType);
+					break;
+				default:
+					throw new NotSupportedException("Invalid value for NameLookupMode");
+			}
 			if (result is UnknownMemberResolveResult) {
 				var extensionMethods = GetExtensionMethods(identifier, typeArguments);
 				if (extensionMethods.Count > 0) {
@@ -1619,17 +1626,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
+		[Obsolete("Use ResolveMemberAccess() with NameLookupMode.Type instead")]
 		public ResolveResult ResolveMemberType(ResolveResult target, string identifier, IList<IType> typeArguments)
 		{
-			bool parameterizeResultType = !(typeArguments.Count != 0 && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument));
-			
-			NamespaceResolveResult nrr = target as NamespaceResolveResult;
-			if (nrr != null) {
-				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments, parameterizeResultType);
-			}
-			
-			MemberLookup lookup = CreateMemberLookup();
-			return lookup.LookupType(target.Type, identifier, typeArguments, parameterizeResultType);
+			return ResolveMemberAccess(target, identifier, typeArguments, NameLookupMode.Type);
 		}
 		
 		ResolveResult ResolveMemberAccessOnNamespace(NamespaceResolveResult nrr, string identifier, IList<IType> typeArguments, bool parameterizeResultType)
@@ -1658,6 +1658,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isInEnumMemberInitializer = this.CurrentMember != null && this.CurrentMember.EntityType == EntityType.Field
 				&& currentTypeDefinition != null && currentTypeDefinition.Kind == TypeKind.Enum;
 			return new MemberLookup(currentTypeDefinition, this.Compilation.MainAssembly, isInEnumMemberInitializer);
+		}
+		
+		/// <summary>
+		/// Creates a MemberLookup instance using this resolver's settings.
+		/// </summary>
+		public MemberLookup CreateMemberLookup(NameLookupMode lookupMode)
+		{
+			if (lookupMode == NameLookupMode.BaseTypeReference && this.CurrentTypeDefinition != null) {
+				// When looking up a base type reference, treat us as being outside the current type definition
+				// for accessibility purposes.
+				// This avoids a stack overflow when referencing a protected class nested inside the base class
+				// of a parent class. (NameLookupTests.InnerClassInheritingFromProtectedBaseInnerClassShouldNotCauseStackOverflow)
+				return new MemberLookup(this.CurrentTypeDefinition.DeclaringTypeDefinition, this.Compilation.MainAssembly, false);
+			} else {
+				return CreateMemberLookup();
+			}
 		}
 		#endregion
 		

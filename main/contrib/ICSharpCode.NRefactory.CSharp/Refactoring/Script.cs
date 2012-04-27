@@ -190,15 +190,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			After,
 			End
 		}
-		
-		public virtual void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+
+		public virtual void InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> node)
 		{
 			throw new NotImplementedException();
 		}
-		
-		public virtual void InsertWithCursor(string operation, AstNode node, ITypeDefinition parentType)
+
+		public virtual void InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> node)
 		{
 			throw new NotImplementedException();
+		}
+
+		public void InsertWithCursor(string operation, InsertPosition defaultPosition, params AstNode[] nodes)
+		{
+			InsertWithCursor(operation, defaultPosition, (IEnumerable<AstNode>)nodes);
+		}
+
+		public void InsertWithCursor(string operation, ITypeDefinition parentType, params AstNode[] nodes)
+		{
+			InsertWithCursor(operation, parentType, (IEnumerable<AstNode>)nodes);
 		}
 
 		protected virtual int GetIndentLevelAt (int offset)

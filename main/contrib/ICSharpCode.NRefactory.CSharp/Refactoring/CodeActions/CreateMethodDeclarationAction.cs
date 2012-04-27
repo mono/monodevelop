@@ -209,11 +209,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						decl.Modifiers |= Modifiers.Public;
 					}
 
-					script.InsertWithCursor(context.TranslateString("Create method"), decl, targetResolveResult.Type.GetDefinition());
+					script.InsertWithCursor(context.TranslateString("Create method"), targetResolveResult.Type.GetDefinition(), decl);
 					return;
 				}
 
-				script.InsertWithCursor(context.TranslateString("Create method"), decl, Script.InsertPosition.Before);
+				script.InsertWithCursor(context.TranslateString("Create method"), Script.InsertPosition.Before, decl);
 			});
 		}
 

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RedundantThisInspector.cs
 //  
 // Author:
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				}
 
-				var result = state.LookupSimpleNameOrTypeName(memberReference.MemberName, EmptyList<IType>.Instance, SimpleNameLookupMode.Expression);
+				var result = state.LookupSimpleNameOrTypeName(memberReference.MemberName, EmptyList<IType>.Instance, NameLookupMode.Expression);
 			
 				bool isRedundant;
 				if (result is MemberResolveResult) {

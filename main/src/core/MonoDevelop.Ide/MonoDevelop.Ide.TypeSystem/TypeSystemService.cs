@@ -145,6 +145,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	
 	public static class TypeSystemService
 	{
+		const string CurrentVersion = "1.0";
 		static List<TypeSystemParserNode> parsers;
 		
 		static IEnumerable<TypeSystemParserNode> Parsers {
@@ -185,7 +186,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 		}
 		
-		static ITypeSystemParser GetParser (string mimeType)
+		public static ITypeSystemParser GetParser (string mimeType)
 		{
 			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType));
 			return provider != null ? provider.Parser : null;
@@ -349,7 +350,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return null;
 		}
-		
+
 		static bool CheckCacheDirectoryIsCorrect (FilePath filename, FilePath candidate, out string result)
 		{
 			result = null;
@@ -361,6 +362,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				using (var reader = XmlReader.Create (dataPath)) {
 					while (reader.Read ()) {
 						if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File") {
+							if (reader.GetAttribute ("version") != CurrentVersion) {
+								return false;
+							}
 							if (reader.GetAttribute ("name") == filename) {
 								result = candidate;
 								return true;
@@ -397,7 +401,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				
 				Directory.CreateDirectory (cacheDir);
 
-				System.IO.File.WriteAllText (Path.Combine (cacheDir, "data.xml"), string.Format ("<DerivedData><File name=\"{0}\"/></DerivedData>", fileName));
+				System.IO.File.WriteAllText (
+					Path.Combine (cacheDir, "data.xml"),
+					string.Format ("<DerivedData><File name=\"{0}\" version =\"{1}\"/></DerivedData>", fileName,CurrentVersion)
+				);
+
 				return cacheDir;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error creating cache for " + fileName, e);
@@ -1192,6 +1200,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				IUnresolvedAssembly assembly;
 				try {
 					var loader = new CecilLoader ();
+					loader.IncludeInternalMembers = true;
 					loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
 					assembly = loader.LoadAssembly (asm);
 					assembly.Location = fileName;

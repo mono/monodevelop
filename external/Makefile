@@ -1,12 +1,23 @@
 SUBDIRS=`ls .`
-NGIT=ngit/ngit.sln
 TARBALL_PATH=../tarballs
+NGIT=ngit/ngit.sln /t:NGit
+CECIL=/property:Configuration=net_4_0_Debug cecil/Mono.Cecil.sln
+OUTPUT=../main/build/bin
+CECIL_OUTPUT=cecil/bin/net_4_0_Debug
 
 all:
-	xbuild $(NGIT) /t:NGit
+	mkdir -p $(OUTPUT)
+	xbuild $(NGIT)
+	cp ngit/bin/* $(OUTPUT)
+	xbuild $(CECIL)
+	cp $(CECIL_OUTPUT)/Mono.Cecil.dll $(OUTPUT)
+	cp $(CECIL_OUTPUT)/Mono.Cecil.dll.mdb $(OUTPUT)
+	cp $(CECIL_OUTPUT)/Mono.Cecil.Mdb.dll $(OUTPUT)
+	cp $(CECIL_OUTPUT)/Mono.Cecil.Mdb.dll.mdb $(OUTPUT)
 
 clean:
-	xbuild $(NGIT) /t:NGit /t:Clean
+	xbuild $(NGIT) /t:Clean
+	xbuild $(CECIL) /t:Clean
 
 install:
 
@@ -17,7 +28,7 @@ dist:
 	@for dir in $(SUBDIRS); do \
 		if test -d $$dir; then \
 			echo Creating tarball for $$dir; \
-			cd $$dir && git archive --prefix=$$dir/ HEAD | bzip2 > ../$(TARBALL_PATH)/$$dir.tar.bz2 && cd ..; \
+			cd $$dir && git archive --prefix=external/$$dir/ HEAD | bzip2 > ../$(TARBALL_PATH)/$$dir.tar.bz2 && cd ..; \
 		fi \
 	done	
 

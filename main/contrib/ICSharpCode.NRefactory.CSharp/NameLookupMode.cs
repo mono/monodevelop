@@ -20,7 +20,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public enum SimpleNameLookupMode
+	public enum NameLookupMode
 	{
 		/// <summary>
 		/// Normal name lookup in expressions

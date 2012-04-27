@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					window.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
 						if (args.Allocation.Width == lastW && args.Allocation.Height == lastH && wasVisi == CompletionWindowManager.IsVisible)
 							return;
-						PositionParamaterInfoWindow (args.Allocation);
+						PositionParameterInfoWindow (args.Allocation);
 					};
 					window.Hidden += delegate {
 						lastW = -1;
@@ -228,7 +228,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, geometry2.Width);
 				window.ChangeOverload ();
-				PositionParamaterInfoWindow (window.Allocation);
+				PositionParameterInfoWindow (window.Allocation);
 				window.Show ();
 			}
 			
@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 	
-		static void PositionParamaterInfoWindow (Rectangle allocation)
+		static void PositionParameterInfoWindow (Rectangle allocation)
 		{
 			lastW = allocation.Width;
 			lastH = allocation.Height;
@@ -253,8 +253,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var ctx = window.Widget.CurrentCodeCompletionContext;
 			var md = methods [methods.Count - 1];
 			int cparam = window.Ext != null ? window.Ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset) : 0;
-			var geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
-			window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
+
 			X = md.CompletionContext.TriggerXCoord;
 			if (CompletionWindowManager.IsVisible) {
 				// place above
@@ -263,6 +262,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				// place below
 				Y = ctx.TriggerYCoord;
 			}
+
+			var geometry = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
+
+			window.ShowParameterInfo (md.MethodProvider, md.CurrentOverload, cparam - 1, geometry.Width);
+
 			if (X + allocation.Width > geometry.Right)
 				X = geometry.Right - allocation.Width;
 			if (Y < geometry.Top)
@@ -271,6 +275,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Y = Y - ctx.TriggerTextHeight - allocation.Height - 4;
 				wasAbove = true;
 			}
+
 			if (CompletionWindowManager.IsVisible) {
 				var completionWindow = new Rectangle (CompletionWindowManager.X, CompletionWindowManager.Y, CompletionWindowManager.Wnd.Allocation.Width, CompletionWindowManager.Wnd.Allocation.Height);
 				if (completionWindow.IntersectsWith (new Rectangle (X, Y, allocation.Width, allocation.Height))) {
@@ -280,6 +285,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						Y = completionWindow.Bottom + 6;
 				}
 			}
+
 			window.Move (X, Y);
 		}		
 	}

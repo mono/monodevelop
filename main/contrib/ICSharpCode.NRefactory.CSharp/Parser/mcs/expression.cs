@@ -6987,7 +6987,7 @@ namespace Mono.CSharp
 			if (variable_info == null)
 				return;
 
-			if (rc.HasSet (ResolveContext.Options.OmitStructFlowAnalysis))
+			if (rc.OmitStructFlowAnalysis)
 				return;
 
 			if (!variable_info.IsAssigned (rc)) {
@@ -9843,6 +9843,9 @@ namespace Mono.CSharp
 	//
 	class CollectionElementInitializer : Invocation
 	{
+		public readonly bool IsSingle;
+
+
 		public class ElementInitializerArgument : Argument
 		{
 			public ElementInitializerArgument (Expression e)
@@ -9867,16 +9870,18 @@ namespace Mono.CSharp
 			}
 		}
 
-		public CollectionElementInitializer (Expression argument)
+		public CollectionElementInitializer(Expression argument)
 			: base (null, new Arguments (1))
 		{
+			IsSingle = true;
 			base.arguments.Add (new ElementInitializerArgument (argument));
 			this.loc = argument.Location;
 		}
 
-		public CollectionElementInitializer (List<Expression> arguments, Location loc)
+		public CollectionElementInitializer(List<Expression> arguments, Location loc)
 			: base (null, new Arguments (arguments.Count))
 		{
+			IsSingle = false;
 			foreach (Expression e in arguments)
 				base.arguments.Add (new ElementInitializerArgument (e));
 

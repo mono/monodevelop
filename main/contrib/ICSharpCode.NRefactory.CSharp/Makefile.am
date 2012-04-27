@@ -145,6 +145,7 @@ FILES =  \
 	Formatter/GeneratedCodeSettings.cs \
 	Formatter/Indent.cs \
 	Formatter/TextEditorOptions.cs \
+	NameLookupMode.cs \
 	OutputVisitor/CodeDomConvertVisitor.cs \
 	OutputVisitor/CSharpAmbience.cs \
 	OutputVisitor/CSharpOutputVisitor.cs \
@@ -302,7 +303,6 @@ FILES =  \
 	Resolver/ResolveAtLocation.cs \
 	Resolver/ResolveVisitor.cs \
 	Resolver/TypeInference.cs \
-	SimpleNameLookupMode.cs \
 	TypeSystem/AliasNamespaceReference.cs \
 	TypeSystem/AttributeTypeReference.cs \
 	TypeSystem/ConstantValues.cs \

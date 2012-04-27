@@ -111,7 +111,7 @@ namespace MonoDevelop.NUnit
 			// Failures tree
 			failuresTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
 			failuresTreeView.HeadersVisible = false;
-			failuresStore = new TreeStore (typeof(Pixbuf), typeof (string), typeof(object), typeof(string), typeof(int));
+			failuresStore = new TreeStore (typeof(Pixbuf), typeof(string), typeof(object), typeof(string), typeof(int));
 			var pr = new CellRendererPixbuf ();
 			CellRendererText tr = new CellRendererText ();
 			TreeViewColumn col = new TreeViewColumn ();
@@ -352,8 +352,8 @@ namespace MonoDevelop.NUnit
 
 			Gdk.Pixbuf stock = failuresTreeView.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
 			TreeIter testRow = failuresStore.AppendValues (stock, msg, null, null, 0);
-			failuresStore.AppendValues (testRow, null, Escape (error.GetType().Name + ": " + error.Message), null);
-			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null, 0);
+			failuresStore.AppendValues (testRow, null, Escape (error.GetType ().Name + ": " + error.Message), null);
+			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null, null, 0);
 			AddStackTrace (row, error.StackTrace, null);
 		}
 		

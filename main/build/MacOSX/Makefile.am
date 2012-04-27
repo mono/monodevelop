@@ -103,7 +103,7 @@ app:
 	@echo "Copying supported extras into app bundle"
 	@echo ""
 
-	@for ADDIN in MonoDevelop.Database MonoDevelop.MonoMac; do \
+	@for ADDIN in MonoDevelop.Database; do \
 		(ls $(EXTRAS)/$${ADDIN}/build/* > /dev/null 2>&1 && \
 			echo "Copying $${ADDIN}" && \
 			mkdir -p $(MAC_APP_LIB_DIR)/AddIns/$${ADDIN} && \
