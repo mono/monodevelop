@@ -341,6 +341,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 
+		
+		protected bool IsInsideCommentStringOrDirective(int offset)
+		{
+			var lexer = new MiniLexer(document.Text);
+			lexer.Parse(0, offset);
+			return
+				lexer.IsInSingleComment || 
+				lexer.IsInString ||
+				lexer.IsInVerbatimString ||
+				lexer.IsInChar ||
+				lexer.IsInMultiLineComment || 
+				lexer.IsInPreprocessorDirective;
+		}
+
+
 		protected bool IsInsideCommentStringOrDirective()
 		{
 			var text = GetMemberTextToCaret();
