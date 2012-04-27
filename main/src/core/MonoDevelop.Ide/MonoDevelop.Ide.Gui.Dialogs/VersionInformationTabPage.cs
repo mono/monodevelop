@@ -39,14 +39,6 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	[ObsoleteAttribute ("Use ISystemInformationProvider")]
-	public interface IAboutInformation
-	{
-		string Description {
-			get;
-		}
-	}
-	
 	internal class VersionInformationTabPage: VBox
 	{
 		bool destroyed;
