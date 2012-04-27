@@ -70,6 +70,21 @@ namespace MonoDevelop.Ide
 				return "unknown";
 			return v1 +"." + v2 + "."+ v3;
 		}
+
+		static string GetMonoUpdateInfo ()
+		{
+			try {
+				FilePath mscorlib = typeof (object).Assembly.Location;
+				var updateinfo = mscorlib.ParentDirectory.Combine ("../../../updateinfo").FullPath;
+				if (!System.IO.File.Exists (updateinfo))
+					return null;
+				var s = System.IO.File.ReadAllText (updateinfo).Split (new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+				return s[s.Length - 1].Trim ();
+			} catch {
+			}
+			return null;
+
+		}
 		
 		string ISystemInformationProvider.Description {
 			get {
@@ -95,6 +110,16 @@ namespace MonoDevelop.Ide
 				sb.Append ("\tGTK# (");
 				sb.Append (typeof(Gtk.VBox).Assembly.GetName ().Version);
 				sb.Append (")");
+
+				if (Platform.IsMac && IsMono ()) {
+					var pkgVer = GetMonoUpdateInfo ();
+					if (!string.IsNullOrEmpty (pkgVer)) {
+						sb.AppendLine ();
+						sb.Append ("\tPackage version: ");
+						sb.Append (pkgVer);
+					}
+				}
+
 				return sb.ToString (); 
 			}
 		}
