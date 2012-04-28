@@ -87,9 +87,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			var buf = new TextBuffer (null);
 			buf.Text = text;
 			
-			var sw = new ScrolledWindow () {
-				BorderWidth = 6,
-				ShadowType = ShadowType.EtchedIn,
+			var sw = new MonoDevelop.Components.CompactScrolledWindow () {
+				ShowBorderLine = true,
+				BorderWidth = 2,
 				Child = new TextView (buf) {
 					Editable = false,
 					LeftMargin = 4,
