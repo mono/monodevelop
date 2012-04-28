@@ -201,6 +201,7 @@ namespace MonoDevelop.Refactoring
 			int tc = GetTypeParameterCount (node);
 			var attribute = unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (location);
 			bool isInsideAttributeType = attribute != null && attribute.Type.Contains (location);
+			var lookup = new MemberLookup (null, doc.Compilation.MainAssembly);
 
 			if (resolveResult is AmbiguousTypeResolveResult) {
 				var aResult = resolveResult as AmbiguousTypeResolveResult;
@@ -208,8 +209,10 @@ namespace MonoDevelop.Refactoring
 				var scope = file.GetUsingScope (location).Resolve (doc.Compilation);
 				while (scope != null) {
 					foreach (var u in scope.Usings) {
-						foreach (var typeDefinition  in u.Types) {
-							if (typeDefinition.Name == aResult.Type.Name && typeDefinition.TypeParameterCount == tc) {
+						foreach (var typeDefinition in u.Types) {
+							if (typeDefinition.Name == aResult.Type.Name && 
+								typeDefinition.TypeParameterCount == tc &&
+								lookup.IsAccessible (typeDefinition, false)) {
 								yield return typeDefinition.Namespace;
 							}
 						}
@@ -223,7 +226,8 @@ namespace MonoDevelop.Refactoring
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
 				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
-					if ((typeDefinition.Name == uiResult.Identifier || typeDefinition.Name == possibleAttributeName) && typeDefinition.TypeParameterCount == tc) {
+					if ((typeDefinition.Name == uiResult.Identifier || typeDefinition.Name == possibleAttributeName) && typeDefinition.TypeParameterCount == tc && 
+						lookup.IsAccessible (typeDefinition, false)) {
 						yield return typeDefinition.Namespace;
 					}
 				}
@@ -260,7 +264,9 @@ namespace MonoDevelop.Refactoring
 					if (uiResult != null) {
 						string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
 						foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
-							if ((identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName) && typeDefinition.TypeParameterCount == tc)
+							if ((identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName) && 
+							    typeDefinition.TypeParameterCount == tc && 
+							    lookup.IsAccessible (typeDefinition, false))
 								yield return typeDefinition.Namespace;
 						}
 					}
