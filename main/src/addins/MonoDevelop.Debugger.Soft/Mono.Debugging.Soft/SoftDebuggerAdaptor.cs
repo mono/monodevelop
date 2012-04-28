@@ -59,6 +59,8 @@ namespace Mono.Debugging.Soft
 			}
 			else if (obj is PrimitiveValue)
 				return ((PrimitiveValue)obj).Value.ToString ();
+			else if (obj is PointerValue)
+				return string.Format ("0x{0:x}", ((PointerValue)obj).Address);
 			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
 				// Boxed primitive
 				StructMirror sm = (StructMirror) obj;
@@ -841,12 +843,17 @@ namespace Mono.Debugging.Soft
 
 		public override bool IsNull (EvaluationContext ctx, object val)
 		{
-			return val == null || ((val is PrimitiveValue) && ((PrimitiveValue)val).Value == null);
+			return val == null || ((val is PrimitiveValue) && ((PrimitiveValue)val).Value == null) || ((val is PointerValue) && ((PointerValue)val).Address == 0);
 		}
 
 		public override bool IsPrimitive (EvaluationContext ctx, object val)
 		{
-			return val is PrimitiveValue || val is StringMirror || ((val is StructMirror) && ((StructMirror)val).Type.IsPrimitive);
+			return val is PrimitiveValue || val is StringMirror || ((val is StructMirror) && ((StructMirror)val).Type.IsPrimitive) || val is PointerValue;
+		}
+
+		public override bool IsPointer (EvaluationContext ctx, object val)
+		{
+			return val is PointerValue;
 		}
 
 		public override bool IsEnum (EvaluationContext ctx, object val)
@@ -1184,9 +1191,11 @@ namespace Mono.Debugging.Soft
 				}
 				
 				return str;
-			} else if (obj is PrimitiveValue)
+			} else if (obj is PrimitiveValue) {
 				return ((PrimitiveValue)obj).Value;
-			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
+			} else if (obj is PointerValue) {
+				return new IntPtr (((PointerValue)obj).Address);
+			} else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
 				// Boxed primitive
 				StructMirror sm = (StructMirror) obj;
 				if (sm.Type.FullName == "System.IntPtr")

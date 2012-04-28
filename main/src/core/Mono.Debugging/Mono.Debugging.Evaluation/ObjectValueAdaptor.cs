@@ -60,10 +60,10 @@ namespace Mono.Debugging.Evaluation
 			asyncOperationManager.Dispose ();
 		}
 
-		public ObjectValue CreateObjectValue (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
+		public ObjectValue CreateObjectValue (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object type, object obj, ObjectValueFlags flags)
 		{
 			try {
-				return CreateObjectValueImpl (ctx, source, path, obj, flags);
+				return CreateObjectValueImpl (ctx, source, path, type, obj, flags);
 			} catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);
 				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
@@ -210,13 +210,23 @@ namespace Mono.Debugging.Evaluation
 			return i;
 		}
 		
-		public virtual string GetShortTypeName (string tname)
+		public virtual string GetShortTypeName (string typeName)
 		{
-			string res;
-			if (netToCSharpTypes.TryGetValue (tname, out res))
-				return res;
-			else
-				return tname;
+			int star = typeName.IndexOf ('*');
+			string name, ptr, csharp;
+
+			if (star != -1) {
+				name = typeName.Substring (0, star);
+				ptr = typeName.Substring (star);
+			} else {
+				ptr = string.Empty;
+				name = typeName;
+			}
+
+			if (netToCSharpTypes.TryGetValue (name, out csharp))
+				return csharp + ptr;
+
+			return typeName;
 		}
 		
 		public virtual void OnBusyStateChanged (BusyStateEventArgs e)
@@ -231,6 +241,7 @@ namespace Mono.Debugging.Evaluation
 
 		public abstract bool IsNull (EvaluationContext ctx, object val);
 		public abstract bool IsPrimitive (EvaluationContext ctx, object val);
+		public abstract bool IsPointer (EvaluationContext ctx, object val);
 		public abstract bool IsString (EvaluationContext ctx, object val);
 		public abstract bool IsArray (EvaluationContext ctx, object val);
 		public abstract bool IsEnum (EvaluationContext ctx, object val);
@@ -324,10 +335,20 @@ namespace Mono.Debugging.Evaluation
 			childTypes = childNamespaces = new string[0];
 		}
 
-		protected virtual ObjectValue CreateObjectValueImpl (EvaluationContext ctx, Mono.Debugging.Backend.IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
+		protected virtual ObjectValue CreateObjectValueImpl (EvaluationContext ctx, Mono.Debugging.Backend.IObjectValueSource source, ObjectPath path, object type, object obj, ObjectValueFlags flags)
 		{
-			string typeName = obj != null ? GetValueTypeName (ctx, obj) : "";
-			
+			string typeName;
+
+			if (obj != null && type != null) {
+				typeName = IsPointer (ctx, obj) ? GetTypeName (ctx, type) : GetValueTypeName (ctx, obj);
+			} else if (obj != null) {
+				typeName = GetValueTypeName (ctx, obj);
+			} else if (type != null) {
+				typeName = GetTypeName (ctx, type);
+			} else {
+				typeName = "";
+			}
+
 			if (obj == null || IsNull (ctx, obj)) {
 				return ObjectValue.CreateNullObject (source, path, GetDisplayTypeName (typeName), flags);
 			}

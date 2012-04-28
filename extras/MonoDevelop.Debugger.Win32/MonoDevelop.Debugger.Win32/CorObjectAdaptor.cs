@@ -53,6 +53,12 @@ namespace MonoDevelop.Debugger.Win32
 			return (v is CorGenericValue) || (v is CorStringValue);
 		}
 
+		public override bool IsPointer (EvaluationContext ctx, object val)
+		{
+			// FIXME: implement this correctly.
+			return false;
+		}
+
 		public override bool IsEnum (EvaluationContext ctx, object val)
 		{
 			CorType type = (CorType) GetValueType (ctx, val);

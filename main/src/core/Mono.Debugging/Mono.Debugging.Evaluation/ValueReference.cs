@@ -128,21 +128,23 @@ namespace Mono.Debugging.Evaluation
 			
 			EvaluationContext newCtx = GetContext (options);
 			EvaluationContext oldCtx = Context;
+			object type = null;
 			object val = null;
 			
 			try {
 				// Note: The Value property implementation may make use of the EvaluationOptions,
 				// so we need to override our context temporarily to do the evaluation.
 				ctx = newCtx;
+				type = Type;
 				val = Value;
 			} finally {
 				ctx = oldCtx;
 			}
 			
 			if (val != null)
-				return newCtx.Adapter.CreateObjectValue (newCtx, this, new ObjectPath (name), val, Flags);
+				return newCtx.Adapter.CreateObjectValue (newCtx, this, new ObjectPath (name), type, val, Flags);
 			else
-				return Mono.Debugging.Client.ObjectValue.CreateNullObject (this, name, newCtx.Adapter.GetTypeName (newCtx, Type), Flags);
+				return Mono.Debugging.Client.ObjectValue.CreateNullObject (this, name, newCtx.Adapter.GetTypeName (newCtx, type), Flags);
 		}
 
 		ObjectValue IObjectValueSource.GetValue (ObjectPath path, EvaluationOptions options)

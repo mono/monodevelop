@@ -58,6 +58,7 @@ FILES =  \
 	Mono.Debugger.Soft/ObjectCollectedException.cs \
 	Mono.Debugger.Soft/ObjectMirror.cs \
 	Mono.Debugger.Soft/ParameterInfoMirror.cs \
+	Mono.Debugger.Soft/PointerValue.cs \
 	Mono.Debugger.Soft/PrimitiveValue.cs \
 	Mono.Debugger.Soft/PropertyInfoMirror.cs \
 	Mono.Debugger.Soft/StackFrame.cs \
