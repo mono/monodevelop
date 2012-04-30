@@ -165,7 +165,7 @@ namespace Mono.Debugging.Evaluation
 					else {
 						curIndex [curIndex.Length - 1] = index;
 						object elem = array.GetElement (curIndex);
-						val = cctx.Adapter.CreateObjectValue (cctx, this, newPath.Append (sidx), null, elem, ObjectValueFlags.ArrayElement);
+						val = cctx.Adapter.CreateObjectValue (cctx, this, newPath.Append (sidx), elem, ObjectValueFlags.ArrayElement);
 						if (elem != null && !cctx.Adapter.IsNull (cctx, elem)) {
 							TypeDisplayData tdata = cctx.Adapter.GetTypeDisplayData (cctx, cctx.Adapter.GetValueType (cctx, elem));
 							if (!string.IsNullOrEmpty (tdata.NameDisplayString))
@@ -296,7 +296,7 @@ namespace Mono.Debugging.Evaluation
 			int[] idx = StringToIndices (path [1]);
 			object elem = array.GetElement (idx);
 			EvaluationContext cctx = ctx.WithOptions (options);
-			ObjectValue val = cctx.Adapter.CreateObjectValue (cctx, this, path, null, elem, ObjectValueFlags.ArrayElement);
+			ObjectValue val = cctx.Adapter.CreateObjectValue (cctx, this, path, elem, ObjectValueFlags.ArrayElement);
 			if (elem != null && !cctx.Adapter.IsNull (cctx, elem)) {
 				TypeDisplayData tdata = cctx.Adapter.GetTypeDisplayData (cctx, cctx.Adapter.GetValueType (cctx, elem));
 				if (!string.IsNullOrEmpty (tdata.NameDisplayString))

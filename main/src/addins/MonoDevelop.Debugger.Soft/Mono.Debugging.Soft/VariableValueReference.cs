@@ -69,7 +69,7 @@ namespace Mono.Debugging.Soft
 
 					if (variable.Type.IsPointer) {
 						long addr = (long) ((PrimitiveValue) value).Value;
-						value = new PointerValue (value.VirtualMachine, addr);
+						value = new PointerValue (value.VirtualMachine, variable.Type, addr);
 					}
 
 					return value;

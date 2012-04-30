@@ -775,6 +775,8 @@ namespace Mono.Debugging.Soft
 				return ((EnumMirror)val).Type;
 			if (val is StructMirror)
 				return ((StructMirror)val).Type;
+			if (val is PointerValue)
+				return ((PointerValue) val).Type;
 			if (val is PrimitiveValue) {
 				PrimitiveValue pv = (PrimitiveValue) val;
 				if (pv.Value == null)
@@ -782,7 +784,7 @@ namespace Mono.Debugging.Soft
 				else
 					return pv.Value.GetType ();
 			}
-			
+
 			throw new NotSupportedException ();
 		}
 		

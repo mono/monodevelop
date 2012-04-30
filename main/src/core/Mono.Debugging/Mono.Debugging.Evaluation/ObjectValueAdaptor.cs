@@ -60,10 +60,10 @@ namespace Mono.Debugging.Evaluation
 			asyncOperationManager.Dispose ();
 		}
 
-		public ObjectValue CreateObjectValue (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object type, object obj, ObjectValueFlags flags)
+		public ObjectValue CreateObjectValue (EvaluationContext ctx, IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
 		{
 			try {
-				return CreateObjectValueImpl (ctx, source, path, type, obj, flags);
+				return CreateObjectValueImpl (ctx, source, path, obj, flags);
 			} catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);
 				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
@@ -335,19 +335,9 @@ namespace Mono.Debugging.Evaluation
 			childTypes = childNamespaces = new string[0];
 		}
 
-		protected virtual ObjectValue CreateObjectValueImpl (EvaluationContext ctx, Mono.Debugging.Backend.IObjectValueSource source, ObjectPath path, object type, object obj, ObjectValueFlags flags)
+		protected virtual ObjectValue CreateObjectValueImpl (EvaluationContext ctx, Mono.Debugging.Backend.IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
 		{
-			string typeName;
-
-			if (obj != null && type != null) {
-				typeName = IsPointer (ctx, obj) ? GetTypeName (ctx, type) : GetValueTypeName (ctx, obj);
-			} else if (obj != null) {
-				typeName = GetValueTypeName (ctx, obj);
-			} else if (type != null) {
-				typeName = GetTypeName (ctx, type);
-			} else {
-				typeName = "";
-			}
+			string typeName = obj != null ? GetValueTypeName (ctx, obj) : "";
 
 			if (obj == null || IsNull (ctx, obj)) {
 				return ObjectValue.CreateNullObject (source, path, GetDisplayTypeName (typeName), flags);
