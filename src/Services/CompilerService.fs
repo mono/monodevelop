@@ -12,6 +12,7 @@ open System.CodeDom.Compiler
 open System.Text.RegularExpressions
 
 open MonoDevelop.Core
+open MonoDevelop.Core.Assemblies
 open MonoDevelop.Projects
 
 open Microsoft.FSharp.Compiler.CodeDom
@@ -56,53 +57,74 @@ module CompilerService =
     else 
       true, ("unknown-file", 0, 0, "0", msg)
 
+  /// Get full path to compiler
+  let private GetCompilerName (runtime:TargetRuntime) (framework:TargetFramework) : string = 
+    let fsc = runtime.GetToolPath (framework, "fsc")
+    if fsc <> null then
+      fsc
+    else 
+      let message = GettextCatalog.GetString ("F# compiler not found for {0}.", framework.Name)
+      LoggingService.LogError (message)
+      raise (new Exception (message))
 
   /// Run the F# compiler with the specified arguments (passed as a list)
   /// and print the arguments to progress monitor (Output in MonoDevelop)
-  let private compile (monitor:IProgressMonitor) argsList = 
+  let private compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:IProgressMonitor) argsList = 
     let args = String.concat "\n" argsList
-    monitor.Log.WriteLine("{0} {1}", Common.fscPath, args)
     
     // Concatenate arguments & run
-    let args = String.concat " " argsList
-    let startInfo = 
-      new ProcessStartInfo
-        (FileName = Common.fscPath, UseShellExecute = false, Arguments = args, 
-         RedirectStandardError = true, CreateNoWindow = true) 
-    Debug.tracef "Compiler" "Compile using: %s Arguments: %s" Common.fscPath args
-    let p = Runtime.SystemAssemblyService.CurrentRuntime.ExecuteAssembly (startInfo, null) 
-    
-    // Read all output and fold multi-line 
-    let lines = 
-      [ let line = ref ""
-        while (line := p.StandardError.ReadLine(); !line <> null) do
-          yield !line 
-        yield "" ]    
-    let messages = 
-      lines 
-        |> Seq.fold (fun (current, all) line -> 
-          if line = "" then [], (List.rev current)::all 
-          else line::current, all) ([], []) 
-        |> snd |> List.rev
-        |> List.map (String.concat " ")
-        |> List.filter (fun s -> s.Trim().Length > 0)
-        
-    // Parse messages and build results        
-    let br = new BuildResult()
-    for msg in messages do
-      match processMsg msg with
-      | true, (f, l, c, n, m) -> br.AddError(f, l, c, n, m)
-      | false, (f, l, c, n, m) -> br.AddWarning(f, l, c, n, m)
-    
-    p.WaitForExit()
-    br.CompilerOutput <- String.concat "\n" messages
-    br
+    let fscPath:string = 
+      try 
+        GetCompilerName runtime framework
+      with
+        | e ->
+          monitor.ReportError("Could not find F# compiler.",e) 
+          null:string 
+    if fscPath = null then 
+      null:BuildResult
+    else 
+      monitor.Log.WriteLine("{0} {1}", fscPath, args)
+      let args = String.concat " " argsList
+      let startInfo = 
+        new ProcessStartInfo
+          (FileName = fscPath, UseShellExecute = false, Arguments = args, 
+           RedirectStandardError = true, CreateNoWindow = true) 
+      Debug.tracef "Compiler" "Compile using: %s Arguments: %s" fscPath args
+      let p = Process.Start(startInfo) 
+      
+      // Read all output and fold multi-line 
+      let lines = 
+        [ let line = ref ""
+          while (line := p.StandardError.ReadLine(); !line <> null) do
+            yield !line 
+          yield "" ]    
+      let messages = 
+        lines 
+          |> Seq.fold (fun (current, all) line -> 
+            if line = "" then [], (List.rev current)::all 
+            else line::current, all) ([], []) 
+          |> snd |> List.rev
+          |> List.map (String.concat " ")
+          |> List.filter (fun s -> s.Trim().Length > 0)
+          
+      // Parse messages and build results        
+      let br = new BuildResult()
+      for msg in messages do
+        match processMsg msg with
+        | true, (f, l, c, n, m) -> br.AddError(f, l, c, n, m)
+        | false, (f, l, c, n, m) -> br.AddWarning(f, l, c, n, m)
+      
+      p.WaitForExit()
+      br.CompilerOutput <- String.concat "\n" messages
+      br
   
   // ------------------------------------------------------------------------------------
   
   /// Compiles the specified F# project using the current configuration
   /// and prints command line command to the MonoDevelop output
   let Compile(items, config:DotNetProjectConfiguration, configSel, monitor) : BuildResult =
+    let runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime
+    let framework = config.TargetFramework
     [ yield! [ "--noframework --nologo" ]
       yield! generateCmdArgs config items configSel  
       yield! Common.generateReferences items configSel true
@@ -113,6 +135,6 @@ module CompilerService =
       let files = Common.getSourceFiles items
       let root = System.IO.Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
       yield! Common.getItemsInOrder root files fsconfig.BuildOrder false ]
-    |> compile monitor
+    |> compile runtime framework monitor
     
     // CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters)configuration.CompilationParameters ?? new CSharpCompilerParameters ();

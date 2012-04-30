@@ -5,19 +5,20 @@
 
 # Here are a few paths that need to be configured first:
 MDROOT  = INSERT_MD_ROOT
-MAROOT  = INSERT_MA_ROOT
 MONOBIN = INSERT_MONO_BIN
 FSBIN = INSERT_FSHARP_BIN
+MADIR = INSERT_MA_DIR
 ATKDIR = INSERT_ATK_DIR
 PANGODIR = INSERT_PANGO_DIR
 GTKDIR = INSERT_GTK_DIR
 GDKDIR = INSERT_GDK_DIR
 GLIBDIR = INSERT_GLIB_DIR
-MONO = INSERT_MONO
-MDRUN = $(MONO) $(MDROOT)/bin/mdtool.exe
 
+MONO = INSERT_MONO
+MDTOOL = $(MONO) $(MDROOT)/bin/mdtool.exe 
 FSC = INSERT_FSHARP_COMPILER
 CSC = INSERT_CSHARP_COMPILER
+
 MDBIN = $(MDROOT)/bin
 
 # Resources and files to be compiled/included as part of the project
@@ -26,7 +27,7 @@ RESOURCES = \
 	--resource:src/Resources/EmptyFSharpSource.xft.xml \
 	--resource:src/Resources/EmptyFSharpScript.xft.xml \
 	--resource:src/Resources/FSharpConsoleProject.xpt.xml \
-        --resource:src/Resources/FSharpLibraryProject.xpt.xml \
+    --resource:src/Resources/FSharpLibraryProject.xpt.xml \
 	--resource:src/Resources/fsharp-icon-32.png \
 	--resource:src/Resources/fsharp-script-32.png \
 	--resource:src/Resources/fsharp-file-icon.png \
@@ -58,13 +59,15 @@ FILES = \
 	src/FSharpProjectServiceExtension.fs \
 	src/FSharpParser.fs \
 	src/FSharpTextEditorCompletion.fs \
-	src/FSharpResolverProvider.fs
+	src/FSharpResolverProvider.fs \
 
 REFERENCES = \
 	-r:$(MONOBIN)/mscorlib.dll \
+	-r:System.dll \
+	-r:System.Xml.dll \
 	-r:$(MONOBIN)/Mono.Posix.dll \
-	-r:System.dll -r:System.Xml.dll \
-	-r:$(MAROOT)/Mono.Addins.dll -r:Mono.Cairo.dll /codepage:65001 \
+	-r:$(MONOBIN)/Mono.Cairo.dll \
+	-r:$(MADIR)/Mono.Addins.dll \
 	-r:$(MDBIN)/MonoDevelop.Core.dll \
 	-r:$(MDBIN)/MonoDevelop.Ide.dll \
 	-r:$(MDBIN)/Mono.TextEditor.dll \
@@ -113,5 +116,7 @@ package:
 	mkdir -p repository
 	cp bin/FSharpBinding.* bin/repository
 	cp src/Resources/FSharpBinding.addin.xml bin/repository
-	$(MDRUN) setup pack bin/repository/FSharpBinding.addin.xml -d:repository
+	$(MDTOOL) setup pack bin/repository/FSharpBinding.addin.xml -d:repository
 
+clean:
+	rm -r bin

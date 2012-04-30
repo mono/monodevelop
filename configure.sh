@@ -15,7 +15,7 @@ echo "            Default value: mono"
 echo ""
 echo "  -f <fsc>  Path/name of the F# compiler executable or script"
 echo "            ('mono' is NOT automatically added to the front) "
-echo "            Default value: fsharpc"
+echo "            Default value: fsc"
 echo ""
 echo "  -c <gmcs> Path/name of the C# compiler executable or script"
 echo "            ('mono' is NOT automatically added to the front) "
@@ -30,7 +30,7 @@ read a
 
 GMCS=gmcs
 MONO=mono
-FSC=fsharpc
+FSC=fsc
 
 
 if [[ `which $FSC` == "" ]]; then FSC=fsc; fi
@@ -83,18 +83,12 @@ searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
 MDDIR=$RESULT
 echo "Successfully found MonoDevelop root directory." $MDDIR
 
-PATHS=( /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 )
+PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /opt/mono/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0)
 searchpaths "F#" FSharp.Core.dll PATHS[@]
 FSDIR=$RESULT
 echo "Successfully found F# root directory." $FSDIR
 
-
-PATHS=( /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/mono-addins )
-searchpaths "Mono.Addins" Mono.Addins.dll PATHS[@]
-MADIR=$RESULT
-echo "Successfully found Mono.Addins root directory." $MADIR
-
-PATHS=( /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 )
+PATHS=( /usr/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /opt/mono/lib/mono/4.0 )
 searchpaths "Mono" mscorlib.dll PATHS[@]
 MONODIR=$RESULT
 echo "Successfully found Mono root directory." $MONODIR
@@ -124,6 +118,10 @@ searchpaths "Pango#" pango-sharp.dll PATHS[@]
 PANGODIR=$RESULT
 echo "Successfully found Pango root directory." $PANGODIR
 
+PATHS=( /usr/lib/mono/mono-addins /usr/lib/cli/mono-addins /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/mono-addins /opt/mono/lib/mono/mono-addins )
+searchpaths "Mono.Addins" Mono.Addins.dll PATHS[@]
+MADIR=$RESULT
+echo "Successfully found Mono.Addins directory." $MADIR
 # ------------------------------------------------------------------------------
 # Write Makefile
 
@@ -139,6 +137,6 @@ sed "s,INSERT_PANGO_DIR,$PANGODIR,g" Makefile.2 > Makefile.1
 sed "s,INSERT_MONO,$MONO,g" Makefile.1 > Makefile.2
 sed "s,INSERT_FSHARP_COMPILER,$FSC,g" Makefile.2 > Makefile.1
 sed "s,INSERT_CSHARP_COMPILER,$GMCS,g" Makefile.1 > Makefile.2
-sed "s,INSERT_MA_ROOT,$MADIR,g" Makefile.2 > Makefile.1
+sed "s,INSERT_MA_DIR,$MADIR,g" Makefile.2 > Makefile.1
 rm Makefile.2
 mv Makefile.1 Makefile
