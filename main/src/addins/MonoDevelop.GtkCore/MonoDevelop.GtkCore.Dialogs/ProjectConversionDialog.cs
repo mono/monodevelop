@@ -15,17 +15,26 @@ namespace MonoDevelop.GtkCore.Dialogs
 		public string GuiFolderName { get; private set; }
 		
 		public bool MakeBackup { get; private set; }
-		
+
+		public bool ConvertAll { get; private set; }
+
 		
 		public ProjectConversionDialog (Project project, string guiFolderName)
 		{
 			this.Build ();
-			
+
 			entryFolder.Text = guiFolderName;
 			Title = project.Name;
 			entryFolder.Position = -1;
-			
+			buttonConvertAll.Visible = project.ParentSolution.GetAllProjects ().Count > 1;
+			buttonConvertAll.Clicked += HandleButtonConvertAllClicked;
 			buttonConvert.Clicked += HandleButtonConvertClicked;
+		}
+
+		void HandleButtonConvertAllClicked (object sender, EventArgs e)
+		{
+			ConvertAll = true;
+			HandleButtonConvertClicked (sender, e);
 		}
 
 		void HandleButtonConvertClicked (object sender, EventArgs e)

@@ -70,23 +70,35 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			lock (typeof (ProjectNodeBuilder))
 				instance = null;
 		}
-		
+
+		public bool convertAll = false;
+		string convertAllDialogGuiFolder;
+		bool convertAllMakebackup;
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			Project project = dataObject as Project;
 			if (project is DotNetProject) {
 				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 				if (info.NeedsConversion) {
-					ProjectConversionDialog dialog = new ProjectConversionDialog (project, info.SteticFolderName);
-					
-					try
-					{
-						if (dialog.Run () == (int)ResponseType.Yes) {
-							info.GuiBuilderProject.Convert (dialog.GuiFolderName, dialog.MakeBackup);
-							IdeApp.ProjectOperations.Save (project);
+					if (convertAll) {
+						info.GuiBuilderProject.Convert (convertAllDialogGuiFolder, convertAllMakebackup);
+						IdeApp.ProjectOperations.Save (project);
+					} else {
+						ProjectConversionDialog dialog = new ProjectConversionDialog (project, info.SteticFolderName);
+						try {
+							if (dialog.Run () == (int)ResponseType.Yes) {
+								convertAll = dialog.ConvertAll;
+								if (convertAll) {
+									convertAllDialogGuiFolder = dialog.GuiFolderName;
+									convertAllMakebackup = dialog.MakeBackup;
+								}
+								info.GuiBuilderProject.Convert (dialog.GuiFolderName, dialog.MakeBackup);
+								IdeApp.ProjectOperations.Save (project);
+							}
+						} finally {
+							dialog.Destroy ();
 						}
-					} finally {
-						dialog.Destroy ();
 					}
 				}
 				
