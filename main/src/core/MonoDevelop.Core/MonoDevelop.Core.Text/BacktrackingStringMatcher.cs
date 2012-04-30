@@ -72,23 +72,27 @@ namespace MonoDevelop.Core.Text
 				int nonCapitalMatches = 0;
 				int matching = 0;
 				int fragments = 0;
-				int lastIndex = 0;
+				int lastIndex = -1;
 				for (int n = 0; n < lane.Length; n++) {
 					var ch = filterText [n];
 					var i = lane [n];
-					if (i > lastIndex + 1)
+					Console.WriteLine ("i:" + i);
+					bool newFragment = i > lastIndex + 1;
+					if (newFragment)
 						fragments++;
 					lastIndex = i;
-					if (ch == name [i]) {
-						matching += 1000;
+					if (ch == name [i] || newFragment || i == 0) {
+						matching += 1000 / (1 + fragments);
 						if (char.IsUpper (ch))
 							capitalMatches += Math.Max (1, 10000 - 1000 * fragments);
 					} else {
-						var x = 100 * (i + 1) / name.Length;
+						Console.WriteLine (">" + fragments);
+						var x = 100 * (i + 1) / (1 + fragments);
 						nonCapitalMatches += x;
 					}
 				}
 				matchRank = capitalMatches + matching - fragments + nonCapitalMatches;
+				Console.WriteLine (name + ": " + capitalMatches + "/" + nonCapitalMatches + "/"+ matching  + ":" + matchRank);
 				return true;
 			}
 			matchRank = int.MinValue;

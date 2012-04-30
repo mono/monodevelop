@@ -722,6 +722,14 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("A", output);
 		}
 
+
+		[Test]
+		public void TestFavorFirstSubword ()
+		{
+			string output = RunSimulation ("", "button\t", true, true, false, "AnotherTestButton", "Button");
+			Assert.AreEqual ("Button", output);
+		}
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
