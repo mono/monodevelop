@@ -1,20 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>..</images-root-path>
+    <images-root-path>../../MonoDevelop.GtkCore</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore2/libsteticui2.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore2/libstetic2.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore/libsteticui.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
-    <widget-library name="MonoDevelop.Ide, Version=2.4.0.0, Culture=neutral" />
-    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore2/MonoDevelop.GtkCore2.dll" internal="true" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.GtkCore/MonoDevelop.GtkCore.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget" design-size="503 22">
     <property name="MemberName" />
@@ -42,13 +41,18 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.GtkCore.Dialogs.ProjectConversionDialog" design-size="532 308">
+  <widget class="Gtk.Dialog" id="MonoDevelop.GtkCore.Dialogs.ProjectConversionDialog" design-size="615 355">
     <property name="MemberName" />
     <property name="Title" translatable="yes">Project Name</property>
+    <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
+    <property name="BorderWidth">6</property>
+    <property name="Resizable">False</property>
+    <property name="AllowGrow">False</property>
+    <property name="SkipPagerHint">True</property>
     <property name="SkipTaskbarHint">True</property>
-    <property name="Buttons">1</property>
+    <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
@@ -63,7 +67,7 @@
                 <property name="MemberName" />
                 <property name="Yscale">0</property>
                 <property name="Xalign">1</property>
-                <property name="Yalign">0.15</property>
+                <property name="Yalign">0</property>
                 <child>
                   <widget class="Gtk.Image" id="imageLogo">
                     <property name="MemberName" />
@@ -102,14 +106,14 @@
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">This project has been created in the previous
-version of GTK# addin and must be converted. 
+                    <property name="LabelProp" translatable="yes">This project has been created with a previous
+version of the GTK# addin and needs to be converted. 
 
 &lt;b&gt;Following changes will be made :&lt;/b&gt;
-	- split gui.stetic into separate .gtkx files
-	- split generated.cs into separate helper classes
-	- remove gtk-gui folder.
-	- create a designer folder for stock icons
+	- Split gui.stetic into separate .gtkx files
+	- Split generated.cs into separate helper classes
+	- Remove gtk-gui folder.
+	- Create a designer folder for stock icons
 	  and generated helper classes.</property>
                     <property name="UseMarkup">True</property>
                     <property name="Wrap">True</property>
@@ -139,6 +143,7 @@ version of GTK# addin and must be converted.
                     <child>
                       <widget class="Gtk.Label" id="labelFolder">
                         <property name="MemberName" />
+                        <property name="Xalign">1</property>
                         <property name="LabelProp" translatable="yes">Designer folder name:</property>
                       </widget>
                       <packing>
@@ -208,8 +213,22 @@ version of GTK# addin and must be converted.
         <property name="MemberName" />
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
-        <property name="Size">1</property>
+        <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
+        <child>
+          <widget class="Gtk.Button" id="buttonConvertAll">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">C_onvert All Projects</property>
+            <property name="UseUnderline">True</property>
+            <property name="ResponseId">0</property>
+          </widget>
+          <packing>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
         <child>
           <widget class="Gtk.Button" id="buttonConvert">
             <property name="MemberName" />
@@ -221,6 +240,7 @@ version of GTK# addin and must be converted.
             <property name="ResponseId">-5</property>
           </widget>
           <packing>
+            <property name="Position">1</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
