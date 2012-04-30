@@ -1,10 +1,9 @@
 // 
-// UnixSystemInformation.cs
+// PointerValue.cs
 //  
-// Author:
-//       Alan McGovern <alan@xamarin.com>
+// Author: Jeffrey Stedfast <jeff@xamarin.com>
 // 
-// Copyright (c) 2011, Xamarin Inc
+// Copyright (c) 2012 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,36 +22,42 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Core
+namespace Mono.Debugger.Soft
 {
-	public class UnixSystemInformation : SystemInformation
-	{
-		protected override void AppendOperatingSystem (System.Text.StringBuilder sb)
-		{
-			var psi = new System.Diagnostics.ProcessStartInfo ("uname", "-a") {
-				RedirectStandardOutput = true,
-				UseShellExecute = false,
-			};
-			
-			var process = System.Diagnostics.Process.Start (psi);
-			process.WaitForExit (500);
-			if (process.HasExited && process.ExitCode == 0) {
-				sb.Append ("\t");
-				string val = process.StandardOutput.ReadLine ();
+	/*
+	 * Represents a value of a pointer type in the debuggee
+	 */
+	public class PointerValue : Value {
+		long addr;
 
-				//wrap the mac value across multiple lines
-				if (Platform.IsMac && val != null) {
-					var split = val.Split (new string[] { ";", ": " }, StringSplitOptions.RemoveEmptyEntries);
-					for (int i = 0; i < split.Length; i++) {
-						split[i] = split[i].Trim ();
-					}
-					val = String.Join ("\n\t    ", split);
-				}
+		public PointerValue (VirtualMachine vm, long addr) : base (vm, 0) {
+			this.addr = addr;
+		}
 
-				sb.AppendLine (val);
-			}
+		public long Address {
+			get { return addr; }
+		}
+
+		public object Value {
+			get { return addr; }
+		}
+
+		public override bool Equals (object obj) {
+			if (obj != null && obj is PointerValue)
+				return addr == (obj as PointerValue).addr;
+			return base.Equals (obj);
+		}
+
+		public override int GetHashCode () {
+			return base.GetHashCode ();
+		}
+
+		public override string ToString () {
+			return string.Format ("PointerValue<0x{0:x}>", addr);
 		}
 	}
 }

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using NUnit.Framework;
 using NGit.Storage.File;
 using NGit.Revwalk;
@@ -221,6 +222,46 @@ namespace MonoDevelop.VersionControl.Git
 			blames.Add(new BlameFragment(1015, 10, "85dfe8a5"));
 			blames.Add(new BlameFragment(1025, 43, "3352c438"));
 			CompareBlames(blameCommits, blames);
+		}
+		
+		[Test]
+		public void GetCommitChanges_AddedRemoved ()
+		{
+			var commit = "9ed729ee";
+			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
+
+			var add = changes.Where (c => c.GetNewPath ().EndsWith ("DocumentLine.cs")).First ();
+			var remove = changes.Where (c => c.GetOldPath ().EndsWith ("LineSegment.cs")).First ();
+
+			Assert.AreEqual (NGit.Diff.DiffEntry.ChangeType.ADD, add.GetChangeType (), "#1");
+			Assert.AreEqual ("/dev/null", add.GetOldPath (), "#2");
+			Assert.AreEqual (NGit.Diff.DiffEntry.ChangeType.DELETE, remove.GetChangeType (), "#3");
+			Assert.AreEqual ("/dev/null", remove.GetNewPath (), "#4");
+		}
+		
+		[Test]
+		public void GetCommitChanges_Modifications ()
+		{
+			var commit = "c6798c34577";
+			var changedFiles = new [] {
+				"EditActions.cs",
+				"SourceEditorView.cs",
+				"SourceEditorWidget.cs",
+				"DeleteActions.cs",
+				"DocumentUpdateRequest.cs",
+				"FoldMarkerMargin.cs",
+				"HeightTree.cs",
+				"LineSplitter.cs",
+				"TextDocument.cs",
+				"TextEditor.cs",
+				"TextViewMargin.cs",
+			};
+			
+			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
+			Assert.AreEqual (11, changes.Length, "#1");
+			
+			foreach (var file in changedFiles)
+				Assert.IsTrue (changes.Any (f => f.GetNewPath ().EndsWith (".cs")), "#2." + file);
 		}
 		
 		private RevCommit[] GetBlameForFixedFile (string revision)

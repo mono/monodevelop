@@ -90,6 +90,18 @@ namespace MonoDevelop.Core
 			sb.AppendLine ("Operating System:");
 			AppendOperatingSystem (sb);
 			
+			return sb.ToString ();
+		}
+
+		public static string ToText ()
+		{
+			return Instance.ToString ();
+		}
+
+		public static string GetLoadedAssemblies ()
+		{
+			var sb = new StringBuilder ();
+
 			int nameLength = 0;
 			int versionLength = 0;
 			sb.AppendLine ("Loaded assemblies:");
@@ -115,14 +127,8 @@ namespace MonoDevelop.Core
 				} catch {
 				}
 			}
-			
+
 			return sb.ToString ();
-		}
-	
-		public static string ToText ()
-		{
-			return Instance.ToString ();
 		}
 	}
 }
-

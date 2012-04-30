@@ -174,9 +174,6 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\objects.xml">
-      <LogicalName>objects.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Xml.Formatting\MonoXmlPolicy.xml">
       <LogicalName>MonoXmlPolicy.xml</LogicalName>
     </EmbeddedResource>

@@ -59,7 +59,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			var notebook = new Notebook ();
 			notebook.BorderWidth = 0;
 			notebook.AppendPage (new AboutMonoDevelopTabPage (), new Label (Title));
-			notebook.AppendPage (new VersionInformationTabPage (), new Label (GettextCatalog.GetString ("Version Info")));
+			notebook.AppendPage (new VersionInformationTabPage (), new Label (GettextCatalog.GetString ("Version Information")));
+			notebook.AppendPage (new LoadedAssembliesTabPage (), new Label (GettextCatalog.GetString ("Loaded Assemblies")));
 			VBox.PackStart (notebook, true, true, 0);
 			
 			AddButton (Gtk.Stock.Close, (int)ResponseType.Close);
@@ -99,6 +100,31 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			MessageService.ShowCustomDialog (new CommonAboutDialog ());
+		}
+
+		internal class LoadedAssembliesTabPage: VBox
+		{
+			public LoadedAssembliesTabPage ()
+			{
+				var buf = new TextBuffer (null);
+				buf.Text = SystemInformation.GetLoadedAssemblies ();
+
+				var sw = new MonoDevelop.Components.CompactScrolledWindow () {
+					ShowBorderLine = true,
+					BorderWidth = 2,
+					Child = new TextView (buf) {
+						Editable = false,
+						LeftMargin = 4,
+						RightMargin = 4,
+						PixelsAboveLines = 4,
+						PixelsBelowLines = 4
+					}
+				};
+				
+				sw.Child.ModifyFont (Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont));
+				PackStart (sw, true, true, 0);
+				ShowAll ();
+			}
 		}
 	}
 }
