@@ -698,7 +698,14 @@ namespace MonoDevelop.Ide.Gui
 			string output = RunSimulation ("", "InC\t", true, true, false, "Equals", "InvariantCultureIfo", "GetInvariantCulture");
 			Assert.AreEqual ("InvariantCultureIfo", output);
 		}
-		
+
+		[Test]
+		public void TestPreProcessorDirective ()
+		{
+			string output = RunSimulation ("", "if\t", true, true, false, "#if", "if");
+			Assert.AreEqual ("if", output);
+		}
+
 		
 		[TestFixtureSetUp] 
 		public void SetUp()

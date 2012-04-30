@@ -126,12 +126,8 @@ namespace MonoDevelop.Core.Text
 				// word start is either a upper case letter (FooBar) or a char that follows a non letter
 				// like foo:bar 
 				if ((char.IsUpper (text [j]) || filterCharIsDigit) && filterChar == text [j] || 
-					(filterChar == char.ToUpper (text [j]) && j > 0)) {
-					var chBefore = text [j - 1];
-					if (chBefore != '#' && !char.IsLetterOrDigit (chBefore))
-						return j;
-				}
-					
+					(filterChar == char.ToUpper (text [j]) && j > 0 && text [j - 1] != '#' && !char.IsLetterOrDigit (text [j - 1])))
+					return j;
 			}
 			return -1;
 		}
