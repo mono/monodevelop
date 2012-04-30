@@ -96,7 +96,6 @@ DATA_FILES =  \
 
 RES =  \
 	gtk-gui/gui.stetic \
-	gtk-gui/objects.xml \
 	MonoDevelop.Xml.Formatting/MonoXmlPolicy.xml \
 	MonoDevelop.XmlEditor.addin.xml
 
