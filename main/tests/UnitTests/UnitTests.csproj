@@ -234,6 +234,7 @@
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\FoldActionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\MiscActionsTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\BlockSelectionModeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\RtfWriterTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

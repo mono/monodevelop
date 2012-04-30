@@ -206,6 +206,7 @@
     <Compile Include="Mono.TextEditor\Standalone\IDocumentLine.cs" />
     <Compile Include="Mono.TextEditor\Standalone\ITextAnchor.cs" />
     <Compile Include="Mono.TextEditor\Standalone\TextLocation.cs" />
+    <Compile Include="Mono.TextEditor.Utils\RtfWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

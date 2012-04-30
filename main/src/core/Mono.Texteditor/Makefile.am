@@ -56,6 +56,7 @@ FILES =  \
 	Mono.TextEditor.Theatrics/Stage.cs \
 	Mono.TextEditor.Utils/Diff.cs \
 	Mono.TextEditor.Utils/RedBlackTree.cs \
+	Mono.TextEditor.Utils/RtfWriter.cs \
 	Mono.TextEditor.Utils/TextBreaker.cs \
 	Mono.TextEditor.Utils/TextFileUtility.cs \
 	Mono.TextEditor.Vi/ViActionMaps.cs \

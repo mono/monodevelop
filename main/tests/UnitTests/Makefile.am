@@ -57,6 +57,7 @@ FILES =  \
 	Mono.TextEditor.Tests/InsertionModeTests.cs \
 	Mono.TextEditor.Tests/LineSplitterTests.cs \
 	Mono.TextEditor.Tests/RedBlackTreeTests.cs \
+	Mono.TextEditor.Tests/RtfWriterTests.cs \
 	Mono.TextEditor.Tests/SearchTests.cs \
 	Mono.TextEditor.Tests/SegmentTreeTests.cs \
 	Mono.TextEditor.Tests/SelectionTests.cs \
