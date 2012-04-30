@@ -77,8 +77,8 @@ RES =  \
 
 DEPS =  \
 	../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
-	../../../../contrib/Mono.Cecil/src/bin/net_4_0_Debug/Mono.Cecil.dll
-
+	../../../../build/bin/Mono.Cecil.dll
+	
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
