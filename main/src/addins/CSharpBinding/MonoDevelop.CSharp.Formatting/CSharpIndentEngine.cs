@@ -651,7 +651,6 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
-			
 			// push a new block onto the stack
 			if (inside == Inside.FoldedStatement) {
 				string pKeyword;
@@ -691,8 +690,9 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			} else {
 				stack.Push (Inside.Block, keyword, curLineNr, 0);
-				if (inside == Inside.ParenList)
-					TrimIndent ();
+// Destroys one lined expression block 'var s = "".Split (new char[] {' '});'
+//				if (inside == Inside.ParenList)
+//					TrimIndent ();
 			}
 			
 			keyword = String.Empty;
@@ -704,7 +704,6 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
-
 			if (inside != Inside.Block && inside != Inside.Case) {
 				if (stack.PeekInside (0) == Inside.FoldedStatement) {
 					while (stack.PeekInside (0) == Inside.FoldedStatement) {
@@ -739,8 +738,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 			stack.Pop ();
 
-			while (stack.PeekInside (0) == Inside.FoldedStatement)
+			while (stack.PeekInside (0) == Inside.FoldedStatement) {
 				stack.Pop ();
+			}
 
 			if (firstNonLwsp == -1) {
 				needsReindent = true;
