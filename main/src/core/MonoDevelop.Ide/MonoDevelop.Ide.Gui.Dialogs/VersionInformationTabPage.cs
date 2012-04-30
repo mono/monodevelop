@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			//get current cursor state
 			TextIter s, e;
-			TextIter cursorIter;
+			TextIter cursorIter = TextIter.Zero;
 			var hadSel = buf.GetSelectionBounds (out s, out e);
 			if (!hadSel) {
 				cursorIter = buf.GetIterAtOffset (buf.CursorPosition);
