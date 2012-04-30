@@ -40,9 +40,19 @@ namespace MonoDevelop.Core
 			process.WaitForExit (500);
 			if (process.HasExited && process.ExitCode == 0) {
 				sb.Append ("\t");
-				sb.AppendLine (process.StandardOutput.ReadLine ());
+				string val = process.StandardOutput.ReadLine ();
+
+				//wrap the mac value across multiple lines
+				if (Platform.IsMac && val != null) {
+					var split = val.Split (new string[] { ";", ": " }, StringSplitOptions.RemoveEmptyEntries);
+					for (int i = 0; i < split.Length; i++) {
+						split[i] = split[i].Trim ();
+					}
+					val = String.Join ("\n\t    ", split);
+				}
+
+				sb.AppendLine (val);
 			}
 		}
 	}
 }
-
