@@ -243,7 +243,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			label.Show ();
 			return label;
 		}
-		
+
 		protected override void OnPageShown (int npage)
 		{
 			if (npage == 0 && designer != null && window != null && !ErrorMode) {
@@ -251,8 +251,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// for the generated fields. The call to GenerateSteticCodeStructure will generate
 				// the code for the window (only the fields in fact) and update the parser database, it
 				// will not save the code to disk.
-				if (gproject.Project.UsePartialTypes)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, null, false, false);
+				GuiBuilderService.GenerateStubClass ((DotNetProject)gproject.Project, designer.RootComponent, null);
 			}
 			base.OnPageShown (npage);
 		}
@@ -275,8 +274,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// way the component that has been renamed will be generated with the
 				// old name, and UpdateField will be able to find it (to rename the
 				// references to the field, it needs to have the old name).
-				if (gproject.Project.UsePartialTypes)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, args, false, false);
+				GuiBuilderService.GenerateStubClass ((DotNetProject)gproject.Project, designer.RootComponent, args);
 				
 				codeBinder.UpdateField (args.Component, args.OldName);
 			}

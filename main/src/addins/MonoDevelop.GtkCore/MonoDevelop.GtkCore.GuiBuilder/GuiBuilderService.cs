@@ -43,6 +43,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
 using Mono.TextEditor;
+using System.Collections.Generic;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -271,18 +272,24 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			return null;
 		}
-		
-		public static void GenerateSteticCodeStructure (DotNetProject project, Stetic.ProjectItemInfo item, bool saveToFile, bool overwrite)
+
+		/// <summary>
+		/// Generates an in memory stub class used to update the code completion members.
+		/// </summary>
+		public static void GenerateStubClass (DotNetProject project, Stetic.ProjectItemInfo item)
 		{
-			GenerateSteticCodeStructure (project, item, null, null, saveToFile, overwrite);
+			GenerateStubClass (project, item, null, null);
 		}
 		
-		public static void GenerateSteticCodeStructure (DotNetProject project, Stetic.Component component, Stetic.ComponentNameEventArgs args, bool saveToFile, bool overwrite)
+		/// <summary>
+		/// Generates an in memory stub class used to update the code completion members.
+		/// </summary>
+		public static void GenerateStubClass (DotNetProject project, Stetic.Component component, Stetic.ComponentNameEventArgs args)
 		{
-			GenerateSteticCodeStructure (project, null, component, args, saveToFile, overwrite);
+			GenerateStubClass (project, null, component, args);
 		}
 		
-		static void GenerateSteticCodeStructure (DotNetProject project, Stetic.ProjectItemInfo item, Stetic.Component component, Stetic.ComponentNameEventArgs args, bool saveToFile, bool overwrite)
+		static void GenerateStubClass (DotNetProject project, Stetic.ProjectItemInfo item, Stetic.Component component, Stetic.ComponentNameEventArgs args)
 		{
 			// Generate a class which contains fields for all bound widgets of the component
 			
@@ -295,73 +302,55 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			int i = name.LastIndexOf ('.');
 			if (i != -1) {
 				ns = name.Substring (0, i);
-				name = name.Substring (i+1);
+				name = name.Substring (i + 1);
 			}
-			
-			if (saveToFile && !overwrite && File.Exists (fileName))
-				return;
 			
 			if (item != null)
 				component = item.Component;
 			
 			CodeCompileUnit cu = new CodeCompileUnit ();
 			
-			if (project.UsePartialTypes) {
-				CodeNamespace cns = new CodeNamespace (ns);
-				cu.Namespaces.Add (cns);
-				
-				CodeTypeDeclaration type = new CodeTypeDeclaration (name);
-				type.IsPartial = true;
-				type.Attributes = MemberAttributes.Public;
-				type.TypeAttributes = System.Reflection.TypeAttributes.Public;
-				cns.Types.Add (type);
-				
-				foreach (Stetic.ObjectBindInfo binfo in component.GetObjectBindInfo ()) {
-					// When a component is being renamed, we have to generate the 
-					// corresponding field using the old name, since it will be renamed
-					// later using refactory
-					string nname = args != null && args.NewName == binfo.Name ? args.OldName : binfo.Name;
-					type.Members.Add (
-						new CodeMemberField (
-							binfo.TypeName,
-							nname
-						)
-					);
-				}
-			}
-			else {
-				if (!saveToFile)
-					return;
-				CodeNamespace cns = new CodeNamespace ();
-				cns.Comments.Add (new CodeCommentStatement ("Generated code for component " + component.Name));
-				cu.Namespaces.Add (cns);
-			}
+			CodeNamespace cns = new CodeNamespace (ns);
+			cu.Namespaces.Add (cns);
 			
+			CodeTypeDeclaration type = new CodeTypeDeclaration (name);
+			type.IsPartial = true;
+			type.Attributes = MemberAttributes.Public;
+			type.TypeAttributes = System.Reflection.TypeAttributes.Public;
+			cns.Types.Add (type);
+
+			var stubBuildMethod = new CodeMemberMethod ();
+			stubBuildMethod.Name = "Build";
+			stubBuildMethod.Attributes = MemberAttributes.Family;
+			type.Members.Add (stubBuildMethod);
+
+			foreach (Stetic.ObjectBindInfo binfo in component.GetObjectBindInfo ()) {
+				// When a component is being renamed, we have to generate the 
+				// corresponding field using the old name, since it will be renamed
+				// later using refactory
+				string nname = args != null && args.NewName == binfo.Name ? args.OldName : binfo.Name;
+				type.Members.Add (
+					new CodeMemberField (
+						binfo.TypeName,
+						nname
+				)
+				);
+			}
+
 			CodeDomProvider provider = project.LanguageBinding.GetCodeDomProvider ();
 			if (provider == null)
 				throw new UserException ("Code generation not supported for language: " + project.LanguageName);
-			
-			TextWriter fileStream;
-			if (saveToFile)
-				fileStream = new StreamWriter (fileName);
-			else
-				fileStream = new StringWriter ();
-			
-			try {
-				provider.GenerateCodeFromCompileUnit (cu, fileStream, new CodeGeneratorOptions ());
-			} finally {
-				fileStream.Close ();
-			}
 
-//			if (ProjectDomService.HasDom (project)) {
-//				// Only update the parser database if the project is actually loaded in the IDE.
-//				if (saveToFile) {
-//					ProjectDomService.Parse (project, fileName, "");
-//					FileService.NotifyFileChanged (fileName);
-//				}
-//				else
-//					ProjectDomService.Parse (project, fileName, ((StringWriter)fileStream).ToString ());
-//			}
+			var sw = new StringWriter ();
+			provider.GenerateCodeFromCompileUnit (cu, sw, new CodeGeneratorOptions ());
+			Console.WriteLine ("-------------------------");
+			Console.WriteLine (sw.ToString ());
+			TypeSystemService.ParseFile (
+				project,
+				fileName,
+				IdeApp.Workbench.ActiveDocument.Editor.MimeType,
+				sw.ToString ()
+			);
 		}
 		
 		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)

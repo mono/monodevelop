@@ -129,7 +129,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// the code for the window (only the fields in fact) and update the parser database, it
 				// will not save the code to disk.
 				if (project.Project.UsePartialTypes)
-					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)project.Project, designer.RootComponent, null, false, false);
+					GuiBuilderService.GenerateStubClass ((DotNetProject)project.Project, designer.RootComponent, null);
 			}
 			base.OnPageShown (npage);
 		}
