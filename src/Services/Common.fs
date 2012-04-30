@@ -171,7 +171,7 @@ module ScriptOptions =
 
   // ------------------------------------------------------------------------------------
   // A simple parser that loads script file and looks for preprocessor directives
-  // (we need this, because assembly resolution in language service doesnt work or Mono)
+  // (we need this, because assembly resolution in language service doesnt work on Mono)
   // ------------------------------------------------------------------------------------
 
   /// Extracts text specified by token location from a line   
