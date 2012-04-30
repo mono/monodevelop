@@ -33,6 +33,7 @@ using Mono.Debugging.Client;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using System.Reflection.Emit;
 using ST = System.Threading;
 using Mono.Debugging.Backend;
 
@@ -40,6 +41,25 @@ namespace Mono.Debugging.Soft
 {
 	public class SoftDebuggerAdaptor : ObjectValueAdaptor
 	{
+		static Dictionary<string, TypeCastDelegate> typecasts = new Dictionary<string, TypeCastDelegate> ();
+		static Dictionary<Type, OpCode> convertOps = new Dictionary<Type, OpCode> ();
+		delegate object TypeCastDelegate (object value);
+
+		static SoftDebuggerAdaptor ()
+		{
+			convertOps.Add (typeof (double), OpCodes.Conv_R8);
+			convertOps.Add (typeof (float), OpCodes.Conv_R4);
+			convertOps.Add (typeof (ulong), OpCodes.Conv_U8);
+			convertOps.Add (typeof (uint), OpCodes.Conv_U4);
+			convertOps.Add (typeof (ushort), OpCodes.Conv_U2);
+			convertOps.Add (typeof (char), OpCodes.Conv_U2);
+			convertOps.Add (typeof (byte), OpCodes.Conv_U1);
+			convertOps.Add (typeof (long), OpCodes.Conv_I8);
+			convertOps.Add (typeof (int), OpCodes.Conv_I4);
+			convertOps.Add (typeof (short), OpCodes.Conv_I2);
+			convertOps.Add (typeof (sbyte), OpCodes.Conv_I1);
+		}
+
 		public SoftDebuggerAdaptor ()
 		{
 		}
@@ -113,6 +133,41 @@ namespace Mono.Debugging.Soft
 			return null;
 		}
 
+		static TypeCastDelegate GenerateTypeCastDelegate (string methodName, Type fromType, Type toType)
+		{
+			OpCode conv;
+
+			if (!convertOps.TryGetValue (toType, out conv))
+				throw new InvalidCastException ();
+
+			var argTypes = new Type[] {
+				typeof (object)
+			};
+			var method = new DynamicMethod (methodName, typeof (object), argTypes, true);
+			ILGenerator il = method.GetILGenerator ();
+
+			il.Emit (OpCodes.Ldarg_0);
+			il.Emit (OpCodes.Unbox_Any, fromType);
+			il.Emit (conv);
+			il.Emit (OpCodes.Box, toType);
+			il.Emit (OpCodes.Ret);
+
+			return (TypeCastDelegate) method.CreateDelegate (typeof (TypeCastDelegate));
+		}
+
+		static object DynamicCast (object value, Type target)
+		{
+			string methodName = string.Format ("CastFrom{0}To{1}", value.GetType ().Name, target.Name);
+			TypeCastDelegate method;
+
+			if (!typecasts.TryGetValue (methodName, out method)) {
+				method = GenerateTypeCastDelegate (methodName, value.GetType (), target);
+				typecasts.Add (methodName, method);
+			}
+
+			return method.Invoke (value);
+		}
+
 		public override object TryCast (EvaluationContext ctx, object obj, object targetType)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
@@ -151,7 +206,15 @@ namespace Mono.Debugging.Soft
 						try {
 							if (obj == null)
 								return null;
-							object res = System.Convert.ChangeType (obj, tt);
+
+							object res;
+
+							try {
+								res = System.Convert.ChangeType (obj, tt);
+							} catch (OverflowException) {
+								res = DynamicCast (obj, tt);
+							}
+
 							return CreateValue (ctx, res);
 						} catch {
 						}
