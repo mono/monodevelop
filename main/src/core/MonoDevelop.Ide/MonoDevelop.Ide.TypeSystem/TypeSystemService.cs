@@ -354,42 +354,48 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		struct CacheDirectoryInfo
 		{
+			public static readonly CacheDirectoryInfo Empty = new CacheDirectoryInfo ();
+
 			public string FileName { get; set; }
 			public string Version { get; set; }
 		}
 		static Dictionary<FilePath, CacheDirectoryInfo> cacheDirectoryCache = new Dictionary<FilePath, CacheDirectoryInfo> ();
+
 		static bool CheckCacheDirectoryIsCorrect (FilePath filename, FilePath candidate, out string result)
 		{
-			result = null;
-
-			CacheDirectoryInfo info;
-			if (!cacheDirectoryCache.TryGetValue (candidate, out info)) {
-				var dataPath = candidate.Combine ("data.xml");
-			
-				try {
-					if (!File.Exists (dataPath))
-						return false;
-					using (var reader = XmlReader.Create (dataPath)) {
-						while (reader.Read ()) {
-							if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File") {
-								info.Version = reader.GetAttribute ("version");
-								info.FileName = reader.GetAttribute ("name");
+			lock (cacheDirectoryCache) {
+				CacheDirectoryInfo info;
+				if (!cacheDirectoryCache.TryGetValue (candidate, out info)) {
+					var dataPath = candidate.Combine ("data.xml");
+				
+					try {
+						if (!File.Exists (dataPath)) {
+								cacheDirectoryCache [candidate] = CacheDirectoryInfo.Empty;
+							result = null;
+							return false;
+						}
+						using (var reader = XmlReader.Create (dataPath)) {
+							while (reader.Read ()) {
+								if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File") {
+									info.Version = reader.GetAttribute ("version");
+									info.FileName = reader.GetAttribute ("name");
+								}
 							}
 						}
+						cacheDirectoryCache [candidate] = info;
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while reading derived data file " + dataPath, e);
 					}
-					cacheDirectoryCache [candidate] = info;
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while reading derived data file " + dataPath, e);
 				}
+	
+				if (info.Version == CurrentVersion && info.FileName == filename) {
+					result = candidate;
+					return true;
+				}
+	
+				result = null;
+				return false;
 			}
-
-			if (info.Version == CurrentVersion && info.FileName == filename) {
-				result = candidate;
-				return true;
-			}
-
-			result = null;
-			return false;
 		}
 		
 		static string GetName (string baseName, int i)
