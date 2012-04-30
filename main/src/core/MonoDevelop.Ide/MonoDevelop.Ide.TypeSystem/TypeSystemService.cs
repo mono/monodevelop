@@ -335,15 +335,16 @@ namespace MonoDevelop.Ide.TypeSystem
 					return result;
 				
 				if (Directory.Exists (derivedDataPath)) {
-					var subDirs = Directory.GetDirectories (derivedDataPath);
 					// next check any directory which contains the filename
-					foreach (var subDir in subDirs.Where (s=> s.Contains (nameNoExtension)))
-						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result))
+					foreach (var subDir in Directory.EnumerateDirectories (derivedDataPath).Where (s=> s.Contains (nameNoExtension))) {
+						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result)) {
 							return result;
-					// Finally check every remaining directory
+						}
+					}
+/*					// Finally check every remaining directory
 					foreach (var subDir in subDirs.Where (s=> !s.Contains (nameNoExtension)))
 						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result))
-							return result;
+							return result;*/
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting derived data directories.", e);
@@ -351,31 +352,42 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		struct CacheDirectoryInfo
+		{
+			public string FileName { get; set; }
+			public string Version { get; set; }
+		}
+		static Dictionary<FilePath, CacheDirectoryInfo> cacheDirectoryCache = new Dictionary<FilePath, CacheDirectoryInfo> ();
 		static bool CheckCacheDirectoryIsCorrect (FilePath filename, FilePath candidate, out string result)
 		{
 			result = null;
-			var dataPath = candidate.Combine ("data.xml");
+
+			CacheDirectoryInfo info;
+			if (!cacheDirectoryCache.TryGetValue (candidate, out info)) {
+				var dataPath = candidate.Combine ("data.xml");
 			
-			try {
-				if (!File.Exists (dataPath))
-					return false;
-				using (var reader = XmlReader.Create (dataPath)) {
-					while (reader.Read ()) {
-						if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File") {
-							if (reader.GetAttribute ("version") != CurrentVersion) {
-								return false;
-							}
-							if (reader.GetAttribute ("name") == filename) {
-								result = candidate;
-								return true;
+				try {
+					if (!File.Exists (dataPath))
+						return false;
+					using (var reader = XmlReader.Create (dataPath)) {
+						while (reader.Read ()) {
+							if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "File") {
+								info.Version = reader.GetAttribute ("version");
+								info.FileName = reader.GetAttribute ("name");
 							}
 						}
 					}
+					cacheDirectoryCache [candidate] = info;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while reading derived data file " + dataPath, e);
 				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while reading derived data file " + dataPath, e);
 			}
-			
+
+			if (info.Version == CurrentVersion && info.FileName == filename) {
+				result = candidate;
+				return true;
+			}
+
 			result = null;
 			return false;
 		}
