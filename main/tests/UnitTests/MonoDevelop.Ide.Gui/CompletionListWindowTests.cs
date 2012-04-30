@@ -712,7 +712,16 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("if", output);
 		}
 
-		
+		/// <summary>
+		/// Bug 4732 - [Regression] Broken intellisense again 
+		/// </summary>
+		[Test]
+		public void TestBug4732 ()
+		{
+			string output = RunSimulation ("", "a\t", true, true, false, "_AppDomain", "A");
+			Assert.AreEqual ("A", output);
+		}
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

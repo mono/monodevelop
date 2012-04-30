@@ -69,6 +69,7 @@ namespace MonoDevelop.Core.Text
 			var lane = GetMatch (name);
 			if (lane != null) {
 				int capitalMatches = 0;
+				int nonCapitalMatches = 0;
 				int matching = 0;
 				int fragments = 0;
 				int lastIndex = 0;
@@ -79,12 +80,15 @@ namespace MonoDevelop.Core.Text
 						fragments++;
 					lastIndex = i;
 					if (ch == name [i]) {
-						matching++;
+						matching += 1000;
 						if (char.IsUpper (ch))
-							capitalMatches += Math.Max (1, 100 - 10 * fragments);
+							capitalMatches += Math.Max (1, 10000 - 1000 * fragments);
+					} else {
+						var x = 100 * (i + 1) / name.Length;
+						nonCapitalMatches += x;
 					}
 				}
-				matchRank = capitalMatches + matching - fragments;
+				matchRank = capitalMatches + matching - fragments + nonCapitalMatches;
 				return true;
 			}
 			matchRank = int.MinValue;
