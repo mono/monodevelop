@@ -457,17 +457,24 @@ namespace MonoDevelop.Ide.Gui
 			"Addd",
 		};
 
-		[Ignore]
 		[Test]
 		public void TestMatchPunctuation ()
 		{
 			string output = RunSimulation ("", "/\n", true, false, false, punctuationData);
 			Assert.AreEqual ("/AbAb", output);
-			
-			output = RunSimulation ("", "A\n", true, false, false, punctuationData);
+		}
+
+		[Test]
+		public void TestMatchPunctuationCase2 ()
+		{
+			string output = RunSimulation ("", "A\n", true, false, false, punctuationData);
 			Assert.AreEqual ("AbAb", output);
-			
-			output = RunSimulation ("", ",A..\n", true, false, false, punctuationData);
+		}
+
+		[Test]
+		public void TestMatchPunctuationCase3 ()
+		{
+			string output = RunSimulation ("", ",A..\n", true, false, false, punctuationData);
 			Assert.AreEqual (",A..bAb", output);
 		}
 		
@@ -492,7 +499,6 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual (null, output);
 		}
 
-		[Ignore]
 		[Test]
 		public void TestMatchPunctuationCommitOnSpaceAndPunctuation4 ()
 		{

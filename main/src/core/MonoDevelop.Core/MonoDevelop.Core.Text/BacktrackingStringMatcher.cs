@@ -126,12 +126,23 @@ namespace MonoDevelop.Core.Text
 				// word start is either a upper case letter (FooBar) or a char that follows a non letter
 				// like foo:bar 
 				if ((char.IsUpper (text [j]) || filterCharIsDigit) && filterChar == text [j] || 
-					(filterChar == char.ToUpper (text [j]) && j > 0 && text [j - 1] != '#' && !char.IsLetterOrDigit (text [j - 1])))
-					return j;
+					(filterChar == char.ToUpper (text [j]) && j > 0 && !char.IsLetterOrDigit (text [j - 1]))) {
+					if (HasLetter (text, j))
+						return j;
+				}
 			}
 			return -1;
 		}
-		
+
+		static bool HasLetter (string text, int i)
+		{
+			for (int j = 0; j < i; j++) {
+				var ch = text [j];
+				if (ch == '_' || char.IsLetterOrDigit (ch)) 
+					return true;
+			}
+			return false;
+		}		
 		/// <summary>
 		/// Gets the match indices.
 		/// </summary>
