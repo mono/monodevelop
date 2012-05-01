@@ -234,7 +234,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			if (methods.Count == 0) {
 				if (window != null) {
-					window.HideParameterInfo ();
+//					window.HideParameterInfo ();
+					DestroyWindow ();
 					wasAbove = false;
 					wasVisi = false;
 					lastW = -1;
