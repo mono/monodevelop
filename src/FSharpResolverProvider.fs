@@ -56,7 +56,7 @@ type FSharpResolverProvider() =
     member x.GetLanguageItem(dom:ProjectDom, data, offset, expression) : ResolveResult =
       null
 
-    /// Retursn string with tool-tip from 'FSharpResolveResult'
+    /// Returns string with tool-tip from 'FSharpResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
     member x.CreateTooltip(dom:ProjectDom, unit, result, errorInformation, ambience, modifierState) : string = 
       match result with
