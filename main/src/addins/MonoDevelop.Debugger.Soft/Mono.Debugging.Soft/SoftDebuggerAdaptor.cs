@@ -621,6 +621,31 @@ namespace Mono.Debugging.Soft
 			}
 		}
 
+		public override bool HasMember (EvaluationContext ctx, object type, string memberName, BindingFlags bindingFlags)
+		{
+			TypeMirror tm = (TypeMirror) type;
+
+			while (tm != null) {
+				FieldInfoMirror field = FindByName (tm.GetFields (), f => f.Name, memberName, ctx.CaseSensitive);
+				if (field != null)
+					return true;
+
+				PropertyInfoMirror prop = FindByName (tm.GetProperties (), p => p.Name, memberName, ctx.CaseSensitive);
+				if (prop != null) {
+					MethodMirror getter = prop.GetGetMethod (bindingFlags.HasFlag (BindingFlags.NonPublic));
+					if (getter != null)
+						return true;
+				}
+
+				if (bindingFlags.HasFlag (BindingFlags.DeclaredOnly))
+					break;
+
+				tm = tm.BaseType;
+			}
+
+			return false;
+		}
+
 		protected override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
 		{
 			TypeMirror type = (TypeMirror) t;

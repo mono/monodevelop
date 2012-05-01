@@ -593,7 +593,7 @@ namespace Mono.Debugging.Evaluation
 				}
 			}
 			
-			if (thisobj == null) {
+			if (thisobj == null && ctx.Adapter.HasMember (ctx, thistype, name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				string message = string.Format ("An object reference is required for the non-static field, method, or property '{0}.{1}'",
 				                                ctx.Adapter.GetDisplayTypeName (ctx, thistype), name);
 				throw CreateParseError (message);
