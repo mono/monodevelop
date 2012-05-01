@@ -840,7 +840,7 @@ namespace MonoDevelop.Debugger.Win32
 			CorType ct = (CorType) tt;
 
 			while (ct != null) {
-				Type type = t.GetTypeInfo (cctx.Session);
+				Type type = ct.GetTypeInfo (cctx.Session);
 
 				FieldInfo field = type.GetField (memberName, bindingFlags);
 				if (field != null)
