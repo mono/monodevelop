@@ -41,7 +41,6 @@ namespace Mono.Debugging.Soft
 {
 	public class SoftDebuggerAdaptor : ObjectValueAdaptor
 	{
-		static Dictionary<string, TypeCastDelegate> typecasts = new Dictionary<string, TypeCastDelegate> ();
 		static Dictionary<Type, OpCode> convertOps = new Dictionary<Type, OpCode> ();
 		delegate object TypeCastDelegate (object value);
 
@@ -135,20 +134,49 @@ namespace Mono.Debugging.Soft
 
 		static TypeCastDelegate GenerateTypeCastDelegate (string methodName, Type fromType, Type toType)
 		{
-			OpCode conv;
-
-			if (!convertOps.TryGetValue (toType, out conv))
-				throw new InvalidCastException ();
-
 			var argTypes = new Type[] {
 				typeof (object)
 			};
 			var method = new DynamicMethod (methodName, typeof (object), argTypes, true);
 			ILGenerator il = method.GetILGenerator ();
+			ConstructorInfo ctorInfo;
+			MethodInfo methodInfo;
+			OpCode conv;
 
 			il.Emit (OpCodes.Ldarg_0);
 			il.Emit (OpCodes.Unbox_Any, fromType);
-			il.Emit (conv);
+
+			if (fromType.IsSubclassOf (typeof (System.Nullable))) {
+				PropertyInfo propInfo = fromType.GetProperty ("Value");
+				methodInfo = propInfo.GetGetMethod ();
+
+				il.Emit (OpCodes.Stloc_0);
+				il.Emit (OpCodes.Ldloca_S);
+				il.Emit (OpCodes.Call, methodInfo);
+
+				fromType = methodInfo.ReturnType;
+			}
+
+			if (!convertOps.TryGetValue (toType, out conv)) {
+				argTypes = new Type[] {
+					fromType
+				};
+
+				if (toType == typeof (string)) {
+					methodInfo = fromType.GetMethod ("ToString", new Type[0]);
+					il.Emit (OpCodes.Call, methodInfo);
+				} else if ((methodInfo = toType.GetMethod ("op_Explicit", argTypes)) != null) {
+					il.Emit (OpCodes.Call, methodInfo);
+				} else if ((ctorInfo = toType.GetConstructor (argTypes)) != null) {
+					il.Emit (OpCodes.Call, ctorInfo);
+				} else {
+					// No idea what else to try...
+					throw new InvalidCastException ();
+				}
+			} else {
+				il.Emit (conv);
+			}
+
 			il.Emit (OpCodes.Box, toType);
 			il.Emit (OpCodes.Ret);
 
@@ -158,12 +186,7 @@ namespace Mono.Debugging.Soft
 		static object DynamicCast (object value, Type target)
 		{
 			string methodName = string.Format ("CastFrom{0}To{1}", value.GetType ().Name, target.Name);
-			TypeCastDelegate method;
-
-			if (!typecasts.TryGetValue (methodName, out method)) {
-				method = GenerateTypeCastDelegate (methodName, value.GetType (), target);
-				typecasts.Add (methodName, method);
-			}
+			TypeCastDelegate method = GenerateTypeCastDelegate (methodName, value.GetType (), target);
 
 			return method.Invoke (value);
 		}
@@ -184,6 +207,31 @@ namespace Mono.Debugging.Soft
 				EnumMirror em = obj as EnumMirror;
 				if (em != null)
 					return TryCast (ctx, CreateValue (ctx, em.Value), targetType);
+
+				if (!(targetType is TypeMirror))
+					return null;
+
+				TypeMirror fromType = (TypeMirror) valueType;
+				TypeMirror toType = (TypeMirror) targetType;
+				MethodMirror method;
+
+				if (toType.CSharpName == "string") {
+					method = OverloadResolve (cx, "ToString", fromType, new TypeMirror[0], true, false, false);
+					if (method != null)
+						return cx.RuntimeInvoke (method, obj, new Value[0]);
+				}
+
+				if (fromType.IsGenericType && fromType.FullName.StartsWith ("System.Nullable`")) {
+					method = OverloadResolve (cx, "get_Value", fromType, new TypeMirror[0], true, false, false);
+					if (method != null) {
+						obj = cx.RuntimeInvoke (method, obj, new Value[0]);
+						return TryCast (ctx, obj, targetType);
+					}
+				}
+
+				method = OverloadResolve (cx, "op_Explicit", toType, new TypeMirror[] { fromType }, false, true, false);
+				if (method != null)
+					return cx.RuntimeInvoke (method, null, new Value[] { (Value) obj });
 			} else if (valueType is Type) {
 				if (targetType is TypeMirror) {
 					TypeMirror tm = (TypeMirror) targetType;
@@ -198,29 +246,30 @@ namespace Mono.Debugging.Soft
 				
 				Type tt = targetType as Type;
 				if (tt != null) {
-					if (tt.IsAssignableFrom ((Type)valueType))
+					if (tt.IsAssignableFrom ((Type) valueType))
 						return obj;
+
 					if (obj is PrimitiveValue)
-						obj = ((PrimitiveValue)obj).Value;
-					if (tt != typeof(string) && !(obj is string)) {
+						obj = ((PrimitiveValue) obj).Value;
+
+					try {
+						if (obj == null || !(tt.IsPrimitive || tt == typeof (string)))
+							return null;
+
+						object res;
+
 						try {
-							if (obj == null)
-								return null;
-
-							object res;
-
-							try {
-								res = System.Convert.ChangeType (obj, tt);
-							} catch (OverflowException) {
-								res = DynamicCast (obj, tt);
-							}
-
-							return CreateValue (ctx, res);
+							res = System.Convert.ChangeType (obj, tt);
 						} catch {
+							res = DynamicCast (obj, tt);
 						}
+
+						return CreateValue (ctx, res);
+					} catch {
 					}
 				}
 			}
+
 			return null;
 		}
 		
