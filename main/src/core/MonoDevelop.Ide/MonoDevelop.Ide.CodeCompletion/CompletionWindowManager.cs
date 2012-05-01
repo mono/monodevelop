@@ -147,8 +147,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!IsVisible)
 				return;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
-			wnd.HideWindow ();
-			OnWindowClosed (EventArgs.Empty);
+//			wnd.HideWindow ();
+//			OnWindowClosed (EventArgs.Empty);
+			DestroyWindow ();
 		}
 		
 		
