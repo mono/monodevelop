@@ -718,6 +718,13 @@ namespace Mono.Debugging.Evaluation
 		{
 			return GetMembers (ctx, t, co, bindingFlags).Any ();
 		}
+
+		public bool HasMember (EvaluationContext ctx, object type, string memberName)
+		{
+			return HasMember (ctx, type, memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+		}
+
+		public abstract bool HasMember (EvaluationContext ctx, object type, string memberName, BindingFlags bindingFlags);
 		
 		/// <summary>
 		/// Returns all members of a type. The following binding flags have to be honored:
