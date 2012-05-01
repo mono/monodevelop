@@ -77,9 +77,14 @@ type FSharpInteractivePad() =
           prompting <- false
       | Some(_) -> ()
       | _ -> session := Some(setupSession())
-        
+
+  member x.Shutdown()  = 
+    !session |> Option.iter (fun ses -> ses.Kill())
+
   interface MonoDevelop.Ide.Gui.IPadContent with
-    member x.Dispose() = ()
+    member x.Dispose() =
+      x.Shutdown()
+
     member x.Control : Gtk.Widget = view :> Gtk.Widget
   
     member x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) = 
