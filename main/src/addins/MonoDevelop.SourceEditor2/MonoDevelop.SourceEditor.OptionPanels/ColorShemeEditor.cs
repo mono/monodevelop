@@ -261,7 +261,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				renderer.BackgroundGdk = style.GotBackgroundColorAssigned ? style.BackgroundColor : Style.Base (StateType.Normal);
 			} else {
 				var b = Math.Abs (HslColor.Brightness (style.Color) - HslColor.Brightness (Style.Text (StateType.Normal)));
-				Console.WriteLine (data.Description  + ":" + b);
 				renderer.ForegroundGdk = b < 0.4 ? Style.Background (StateType.Normal) : Style.Text (StateType.Normal);
 				renderer.BackgroundGdk = style.Color;
 			}
