@@ -342,12 +342,12 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitTypeReferenceExpression (ICSharpCode.OldNRefactory.Ast.TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			if (typeReferenceExpression.TypeReference.IsGlobal) {
+			if (typeReferenceExpression.TypeReference.IsGlobal || typeReferenceExpression.TypeReference.IsKeyword) {
 				string name = typeReferenceExpression.TypeReference.Type;
 				object type = ctx.Options.AllowImplicitTypeLoading ? ctx.Adapter.ForceLoadType (ctx, name) : ctx.Adapter.GetType (ctx, name);
 				if (type != null)
 					return new TypeValueReference (ctx, type);
-	
+
 				if (!ctx.Options.AllowImplicitTypeLoading) {
 					string[] namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
 					if (namespaces.Length > 0) {
