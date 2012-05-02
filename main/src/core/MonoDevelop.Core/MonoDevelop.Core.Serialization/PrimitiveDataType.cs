@@ -29,6 +29,7 @@
 using System;
 using System.Xml;
 using System.IO;
+using System.Globalization;
 
 namespace MonoDevelop.Core.Serialization
 {
