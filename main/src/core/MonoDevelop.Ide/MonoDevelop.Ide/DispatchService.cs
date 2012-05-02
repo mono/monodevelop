@@ -125,7 +125,12 @@ namespace MonoDevelop.Ide
 			// The loop is limited to 1000 iterations as a workaround for an issue that some users
 			// have experienced. Sometimes EventsPending starts return 'true' for all iterations,
 			// causing the loop to never end.
-			
+			//
+			// The loop is also limited to running at most twice a second as some of the classes
+			// inheriting from BaseProgressMonitor call RunPendingEvents for every method invocation.
+			// This means we pump the main loop dozens of times a second resulting in many screen
+			// redraws and significantly slow down the running task.
+
 			int n = 1000;
 			Gdk.Threads.Enter();
 
