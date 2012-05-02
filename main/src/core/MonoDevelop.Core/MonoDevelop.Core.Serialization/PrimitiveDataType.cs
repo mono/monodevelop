@@ -44,12 +44,14 @@ namespace MonoDevelop.Core.Serialization
 		
 		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
+			if (value is IConvertible)
+				return new DataValue(Name, ((IConvertible)value).ToString(CultureInfo.InvariantCulture));
 			return new DataValue (Name, value.ToString ());
 		}
 		
 		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
-			return Convert.ChangeType (((DataValue)data).Value, ValueType);
+			return Convert.ChangeType (((DataValue)data).Value, ValueType, CultureInfo.InvariantCulture);
 		}
 	}
 	
