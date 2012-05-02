@@ -165,6 +165,10 @@ namespace MonoDevelop.Core
 		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
 		{
 			DataCollection data = new DataCollection ();
+
+			if (IsEmpty)
+				return data;
+
 			foreach (KeyValuePair<string,object> entry in properties) {
 				DataNode val;
 				if (entry.Value == null)
