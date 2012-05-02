@@ -1319,9 +1319,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				this.fileName = fileName;
 				this.cache = cache;
-				Task.Factory.StartNew (delegate {
-					EnsureAssemblyLoaded ();
-				});
 			}
 			
 			IUnresolvedAssembly LoadAssembly ()
