@@ -146,7 +146,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			InitTracker ();
-			Document.Editor.Paste += HandleTextPaste;
+//			Document.Editor.Paste += HandleTextPaste;
 		}
 
 		/*		void TextCut (object sender, ReplaceEventArgs e)
