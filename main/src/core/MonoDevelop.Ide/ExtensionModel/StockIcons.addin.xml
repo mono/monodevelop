@@ -86,6 +86,7 @@
 	<StockIcon stockid = "md-private-class" icon = "res:element-class-16.png|res:visibility-private-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-delegate" icon = "res:element-delegate-16.png|res:visibility-private-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-enum" icon = "res:element-enumeration-16.png|res:visibility-private-16.png" size="Menu" />
+	<StockIcon stockid = "md-private-event" icon = "res:element-event-16.png|res:visibility-private-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-static-event" icon = "res:element-event-16.png|res:static-16.png|res:visibility-private-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-extensionmethod" icon = "res:element-extensionmethod-16.png|res:visibility-private-16.png" size="Menu" />
 	<StockIcon stockid = "md-private-field" icon = "res:element-field-16.png|res:visibility-private-16.png" size="Menu" />
