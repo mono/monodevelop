@@ -14,7 +14,8 @@ open System.Text.RegularExpressions
 module internal FSharpEnvironment =
 
   let FSharpCoreLibRunningVersion =
-    try match (typeof<Microsoft.FSharp.Collections.List<int>>).Assembly.GetName().Version.ToString() with
+    try 
+      match (typeof<Microsoft.FSharp.Collections.List<int>>).Assembly.GetName().Version.ToString() with
       | null -> None
       | "" -> None
       | s  -> Some(s)
