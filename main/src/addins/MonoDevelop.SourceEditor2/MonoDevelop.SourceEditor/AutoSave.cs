@@ -137,6 +137,9 @@ namespace MonoDevelop.SourceEditor
 				resetEvent.WaitOne ();
 				while (queue.Count > 0) {
 					var content = queue.Dequeue ();
+					// Don't create an auto save for unsaved files.
+					if (string.IsNullOrEmpty (content.FileName))
+						continue;
 					Application.Invoke (delegate {
 						string text;
 						try {
