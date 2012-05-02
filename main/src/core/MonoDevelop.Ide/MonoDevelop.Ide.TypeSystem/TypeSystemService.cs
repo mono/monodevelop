@@ -464,8 +464,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		static ConcurrentDictionary<string, IProjectContent> projectCache = new ConcurrentDictionary<string, IProjectContent> ();
-		
+
 		/// <summary>
 		/// Removes all cache directories which are older than 30 days.
 		/// </summary>
@@ -512,22 +511,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		static void LoadProjectCache (Project project)
-		{
-			string cacheDir = GetCacheDirectory (project.FileName);
-			if (cacheDir == null) {
-				return;
-			}
-			
-			TouchCache (cacheDir);
-			var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
-			if (projectCache == null) {
-				RemoveCache (cacheDir);
-			} else {
-				projectCache[project.FileName] = cache;
-			}
-		}
-		
 		static void StoreProjectCache (Project project, ProjectContentWrapper wrapper)
 		{
 			if (!wrapper.WasChanged)
@@ -555,7 +538,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static void Load (WorkspaceItem item)
 		{
 			InternalLoad (item);
-			ReloadAllReferences ();
 			CleanupCache ();
 		}
 		
@@ -686,14 +668,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				private set;
 			}
 			
-			public ProjectContentWrapper (Project project, IProjectContent content)
+			public ProjectContentWrapper (Project project)
 			{
 				if (project == null)
 					throw new ArgumentNullException ("project");
-				if (content == null)
-					throw new ArgumentNullException ("content");
 				this.Project = project;
-				this.content = content.SetAssemblyName (project.Name);
+				this.content = new LazyProjectLoader (this);
 			}
 			
 			public IEnumerable<Project> ReferencedProjects {
@@ -704,6 +684,153 @@ namespace MonoDevelop.Ide.TypeSystem
 							yield return referencedProject;
 					}
 				}
+			}
+
+			class LazyProjectLoader : IProjectContent
+			{
+				readonly ProjectContentWrapper wrapper;
+				static ConcurrentDictionary<string, IProjectContent> projectCache = new ConcurrentDictionary<string, IProjectContent> ();
+				Task<IProjectContent> contextTask;
+
+				IProjectContent Content {
+					get {
+						return contextTask.Result;
+					}
+				}
+
+				public LazyProjectLoader (ProjectContentWrapper wrapper)
+				{
+					this.wrapper = wrapper;
+					contextTask = Task.Factory.StartNew (delegate {
+	
+						if (projectCache.ContainsKey (this.wrapper.Project.FileName))
+							return projectCache [this.wrapper.Project.FileName];
+	
+						var context = LoadProjectCache (this.wrapper.Project);
+						if (context != null) {
+							return context.SetAssemblyName (this.wrapper.Project.Name);
+						}
+
+						context = new CSharpProjectContent ();
+						context.Location = wrapper.Project.FileName;
+						context = context.SetAssemblyName (this.wrapper.Project.Name);
+						QueueParseJob (this.wrapper);
+						return context;
+					});
+				}
+
+				static IProjectContent LoadProjectCache (Project project)
+				{
+					string cacheDir = GetCacheDirectory (project.FileName);
+					if (cacheDir == null) {
+						return null;
+					}
+					
+					TouchCache (cacheDir);
+					var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
+					if (projectCache == null) {
+						RemoveCache (cacheDir);
+					} else {
+						projectCache [project.FileName] = cache;
+					}
+					return cache;
+				}
+
+				#region IAssemblyReference implementation
+				IAssembly IAssemblyReference.Resolve (ITypeResolveContext context)
+				{
+					return Content.Resolve (context);
+				}
+				#endregion
+
+				#region IUnresolvedAssembly implementation
+				string IUnresolvedAssembly.AssemblyName {
+					get {
+						return Content.AssemblyName;
+					}
+				}
+
+				string IUnresolvedAssembly.Location {
+					get {
+						return Content.Location;
+					}
+					set {
+						Content.Location = value;
+					}
+				}
+
+				IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.AssemblyAttributes {
+					get {
+						return Content.AssemblyAttributes;
+					}
+				}
+
+				IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.ModuleAttributes {
+					get {
+						return Content.ModuleAttributes;
+					}
+				}
+
+				IEnumerable<IUnresolvedTypeDefinition> IUnresolvedAssembly.TopLevelTypeDefinitions {
+					get {
+						return Content.TopLevelTypeDefinitions;
+					}
+				}
+				#endregion
+
+				#region IProjectContent implementation
+				IParsedFile IProjectContent.GetFile (string fileName)
+				{
+					return Content.GetFile (fileName);
+				}
+
+				ICompilation IProjectContent.CreateCompilation ()
+				{
+					return Content.CreateCompilation ();
+				}
+
+				public ICompilation CreateCompilation (ISolutionSnapshot solutionSnapshot)
+				{
+					return Content.CreateCompilation (solutionSnapshot);
+				}
+
+				IProjectContent IProjectContent.SetAssemblyName (string newAssemblyName)
+				{
+					return Content.SetAssemblyName (newAssemblyName);
+				}
+
+				IProjectContent IProjectContent.AddAssemblyReferences (IEnumerable<IAssemblyReference> references)
+				{
+					return Content.AddAssemblyReferences (references);
+				}
+
+				IProjectContent IProjectContent.RemoveAssemblyReferences (IEnumerable<IAssemblyReference> references)
+				{
+					return Content.RemoveAssemblyReferences (references);
+				}
+
+				IProjectContent IProjectContent.UpdateProjectContent (IParsedFile oldFile, IParsedFile newFile)
+				{
+					return Content.UpdateProjectContent (oldFile, newFile);
+				}
+
+				public IProjectContent UpdateProjectContent (IEnumerable<IParsedFile> oldFiles, IEnumerable<IParsedFile> newFiles)
+				{
+					return Content.UpdateProjectContent (oldFiles, newFiles);
+				}
+
+				IEnumerable<IParsedFile> IProjectContent.Files {
+					get {
+						return Content.Files;
+					}
+				}
+
+				IEnumerable<IAssemblyReference> IProjectContent.AssemblyReferences {
+					get {
+						return Content.AssemblyReferences;
+					}
+				}
+				#endregion
 			}
 
 			public void ReloadAssemblyReferences (Project project)
@@ -763,31 +890,19 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
-		
+
 		public static ProjectContentWrapper LoadProject (Project project)
 		{
 			if (IncLoadCount (project) != 1) 
 				return null;
-			LoadProjectCache (project);
 			lock (rwLock) {
 				if (projectContents.ContainsKey (project))
 					return null;
 				try {
-					IProjectContent context = null;
-					if (projectCache.ContainsKey (project.FileName))
-						context = projectCache [project.FileName];
-					
 					ProjectContentWrapper wrapper;
-					if (context == null) {
-						context = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
-						projectContents [project] = wrapper = new ProjectContentWrapper (project, context);
-						QueueParseJob (projectContents [project]);
-					} else {
-						projectContents [project] = wrapper = new ProjectContentWrapper (project, context);
-					}
-					wrapper.Content.Location = project.FileName;
+					projectContents [project] = wrapper = new ProjectContentWrapper (project);
 					referenceCounter [project] = 1;
-					OnProjectContentLoaded (new ProjectContentEventArgs (project, context));
+					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
 					project.FileAddedToProject += OnFileAdded;
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
@@ -1359,7 +1474,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					content.Content.Location = project.FileName;
 				return content;
 			}
-			return new ProjectContentWrapper (project, new CSharpProjectContent () { Location = project.FileName });
+			return new ProjectContentWrapper (project);
 		}
 		
 		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
