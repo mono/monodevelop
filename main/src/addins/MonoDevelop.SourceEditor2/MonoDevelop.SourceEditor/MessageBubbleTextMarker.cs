@@ -102,8 +102,9 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		Task task;
-		LineSegment lineSegment;
-		int editorAllocHeight = -1, lastLineLength = -1;
+		DocumentLine lineSegment;
+//		int editorAllocHeight = -1;
+//		int lastLineLength = -1;
 		internal double lastHeight = 0;
 
 		public double GetLineHeight (TextEditor editor)
@@ -172,7 +173,7 @@ namespace MonoDevelop.SourceEditor
 //		}
 
 		string initialText;
-		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, LineSegment lineSegment, bool isError, string errorMessage)
+		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, DocumentLine lineSegment, bool isError, string errorMessage)
 		{
 			this.cache = cache;
 			this.task = task;
@@ -340,7 +341,7 @@ namespace MonoDevelop.SourceEditor
 //			int eh = GetErrorCountBounds ().Item2;
 			double x2 = System.Math.Max (right - LayoutWidth - border - (ShowIconsInBubble ? cache.errorPixbuf.Width : 0) - errorCounterWidth, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 			
-			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset + lineSegment.EditableLength) : false;
+			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset + lineSegment.Length) : false;
 			
 			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;
@@ -631,7 +632,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		#region IIconBarMarker implementation
 
-		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double x, double y, double width, double height)
+		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
 		{
 			if (DebuggingService.IsDebugging)
 				return;
@@ -816,7 +817,7 @@ namespace MonoDevelop.SourceEditor
 				x2 = editor.TextViewMargin.XOffset;
 //			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != SelectionMode.Block ? editor.SelectionRange.Contains (lineSegment.Offset  + lineSegment.EditableLength) : false;
 			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
-			bool isCaretInLine = lineSegment.Offset <= editor.Caret.Offset && editor.Caret.Offset <= lineSegment.EndOffset;
+			bool isCaretInLine = lineSegment.Offset <= editor.Caret.Offset && editor.Caret.Offset <= lineSegment.EndOffsetIncludingDelimiter;
 			int highlighted = active == 0 && isCaretInLine ? 1 : 0;
 			int selected = 0;
 			var layout = layouts [errorNumber];

@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Projects
 			this.labelTemplateTitle.WidthRequest = 30;
 			this.labelTemplateTitle.Name = "labelTemplateTitle";
 			this.labelTemplateTitle.Xalign = 0F;
-			this.labelTemplateTitle.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Console Project</b>");
+			this.labelTemplateTitle.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Console Project</b>");
 			this.labelTemplateTitle.UseMarkup = true;
 			this.labelTemplateTitle.Wrap = true;
 			this.boxInfo.Add (this.labelTemplateTitle);
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Projects
 			this.lbl_template_descr.Name = "lbl_template_descr";
 			this.lbl_template_descr.Xalign = 0F;
 			this.lbl_template_descr.Yalign = 0F;
-			this.lbl_template_descr.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Creates a new C# Project");
+			this.lbl_template_descr.LabelProp = global::Mono.Unix.Catalog.GetString ("Creates a new C# Project");
 			this.lbl_template_descr.Wrap = true;
 			this.boxInfo.Add (this.lbl_template_descr);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.boxInfo [this.lbl_template_descr]));
@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.chk_combine_directory = new global::Gtk.CheckButton ();
 			this.chk_combine_directory.Name = "chk_combine_directory";
-			this.chk_combine_directory.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Create directory for solution");
+			this.chk_combine_directory.Label = global::Mono.Unix.Catalog.GetString ("_Create directory for solution");
 			this.chk_combine_directory.Active = true;
 			this.chk_combine_directory.DrawIndicator = true;
 			this.chk_combine_directory.UseUnderline = true;
@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Projects
 			this.lbl_location.Name = "lbl_location";
 			this.lbl_location.Xalign = 0F;
 			this.lbl_location.Yalign = 0F;
-			this.lbl_location.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Location:");
+			this.lbl_location.LabelProp = global::Mono.Unix.Catalog.GetString ("_Location:");
 			this.lbl_location.UseUnderline = true;
 			this.table1.Add (this.lbl_location);
 			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table1 [this.lbl_location]));
@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Projects
 			this.lbl_name.Name = "lbl_name";
 			this.lbl_name.Xalign = 0F;
 			this.lbl_name.Yalign = 0F;
-			this.lbl_name.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("N_ame:");
+			this.lbl_name.LabelProp = global::Mono.Unix.Catalog.GetString ("N_ame:");
 			this.lbl_name.UseUnderline = true;
 			this.table1.Add (this.lbl_name);
 			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table1 [this.lbl_name]));
@@ -242,7 +242,7 @@ namespace MonoDevelop.Ide.Projects
 			this.lbl_subdirectory = new global::Gtk.Label ();
 			this.lbl_subdirectory.Name = "lbl_subdirectory";
 			this.lbl_subdirectory.Xalign = 0F;
-			this.lbl_subdirectory.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("_Solution name:");
+			this.lbl_subdirectory.LabelProp = global::Mono.Unix.Catalog.GetString ("_Solution name:");
 			this.lbl_subdirectory.UseUnderline = true;
 			this.table1.Add (this.lbl_subdirectory);
 			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.table1 [this.lbl_subdirectory]));
@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0F;
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Project Features</b>");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Project Features</b>");
 			this.label3.UseMarkup = true;
 			this.vbox5.Add (this.label3);
 			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label3]));
@@ -310,7 +310,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label4.WidthRequest = 632;
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0F;
-			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<small>This list shows a set of features you can enable in the new project. After creating the project those features can be enabled or disabled in the Project Options dialog, or by adding new projects to the solution.</small>");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("<small>This list shows a set of features you can enable in the new project. After creating the project those features can be enabled or disabled in the Project Options dialog, or by adding new projects to the solution.</small>");
 			this.label4.UseMarkup = true;
 			this.label4.Wrap = true;
 			this.vbox5.Add (this.label4);

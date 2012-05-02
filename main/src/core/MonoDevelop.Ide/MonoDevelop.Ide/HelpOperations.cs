@@ -33,9 +33,8 @@ using Monodoc;
 using MonoDevelop.Core.Execution;
 using System.IO;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Ide
 {
@@ -62,6 +61,16 @@ namespace MonoDevelop.Ide
 				else
 					System.Diagnostics.Process.Start ("open", url);
 				return;
+			} else if (Platform.IsWindows) {
+				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location).ParentDirectory.Combine ("windoc", "WinDoc.exe").FullPath;
+				if (File.Exists (mdapp)) {
+					System.Diagnostics.Process.Start (new System.Diagnostics.ProcessStartInfo {
+						FileName = mdapp,
+						Arguments = "--url \"" + topic + '"' + DirArgs,
+						WorkingDirectory = Path.GetDirectoryName (mdapp),
+					});
+					return;
+				}
 			}
 	
 			if (firstCall)

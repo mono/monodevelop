@@ -27,8 +27,7 @@
 //
 
 using System;
-
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -63,31 +62,31 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public event EventHandler Changing {
 			add {
 				if (changing == null)
-					ProjectDomService.ParseOperationStarted += HandleParseOperationStarted;
+					TypeSystemService.ParseOperationStarted += HandleParseOperationStarted;
 				changing += value;
 			}
 			remove {
 				changing -= value;
 				if (changing == null)
-					ProjectDomService.ParseOperationStarted -= HandleParseOperationStarted;
+					TypeSystemService.ParseOperationStarted -= HandleParseOperationStarted;
 			}
 		}
 		
 		public event EventHandler Changed {
 			add {
 				if (changed == null)
-					ProjectDomService.ParseOperationFinished += HandleParseOperationFinished;
+					TypeSystemService.ParseOperationFinished += HandleParseOperationFinished;
 				changed += value;
 			}
 			remove {
 				changed -= value;
 				if (changed == null)
-					ProjectDomService.ParseOperationFinished -= HandleParseOperationFinished;
+					TypeSystemService.ParseOperationFinished -= HandleParseOperationFinished;
 			}
 		}
 		
 		public bool IsChanging {
-			get { return ProjectDomService.IsParsing; }
+			get { return TypeSystemService.IsParsing; }
 		}
 		
 		protected virtual void OnChanging ()
@@ -119,9 +118,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!disposed) {
 				disposed = true;
 				if (changing != null)
-					ProjectDomService.ParseOperationStarted -= HandleParseOperationStarted;
+					TypeSystemService.ParseOperationStarted -= HandleParseOperationStarted;
 				if (changed != null)
-					ProjectDomService.ParseOperationFinished -= HandleParseOperationFinished;
+					TypeSystemService.ParseOperationFinished -= HandleParseOperationFinished;
 			}
 		}
 		

@@ -31,68 +31,265 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.MacDev.PlistEditor
 {
-	public class PListScheme
+	public partial class PListScheme
 	{
-		List<Key> keys = new List<Key> ();
+		public abstract class SchemaItem
+		{
+			public string ArrayType { get; set; }
+			public string Description { get; set; }
+			public string Identifier { get; set; }
+			public string Type { get; set; }
+			public List<Value> Values { get; set; }
+			
+			public SchemaItem ()
+			{
+				Values = new List<Value> ();
+			}
+			
+			public PObject Create ()
+			{
+				if (Type == PDictionary.Type) {
+					var dictionary = new PDictionary ();
+					foreach (var v in Values) {
+						if (v.Required)
+							dictionary.Add (v.Identifier, v.Create ());
+					}
+					
+					// If nothing was required, create an initial one anyway
+					if (dictionary.Count == 0) {
+						var first = Values.FirstOrDefault ();
+						if (first == null) {
+							dictionary.Add ("newNode", PObject.Create (PString.Type));
+						} else {
+							dictionary.Add (first.Identifier ?? "newNode", first.Create ());
+						}
+					}
+					return dictionary;
+				} else if (Type == PArray.Type) {
+					var array = new PArray ();
+					foreach (var v in Values) {
+						if (v.Required)
+							array.Add (v.Create ());
+					}
+					
+					// If nothing was required, create an initial one anyway
+					if (array.Count == 0) {
+						var first = Values.FirstOrDefault ();
+						if (first == null) {
+							array.Add (PObject.Create (ArrayType));
+						} else {
+							array.Add (first.Create ());
+						}
+					}
+					return array;
+				} else if (Values.Any ()){
+					return Values.First ().Create ();
+				} else {
+					var obj = PObject.Create (Type);
+					if (!string.IsNullOrEmpty (Identifier) && !(this is Key))
+						obj.SetValue (Identifier);
+					return obj;
+				}
+			}
+		}
 		
+		public class Value : SchemaItem {
+
+			public bool Required { get; set; }
+			
+			public Value ()
+			{
+				
+			}
+		}
+
+		public class Key : SchemaItem {
+			public static readonly Key Empty = new Key { };
+		}
+	}
+	
+	public partial class PListScheme
+	{
+		public static readonly PListScheme Empty = new PListScheme () { keys = new Key [0] };
+		static readonly Value BooleanYes = new Value { Identifier = "Yes", Description = "Yes", Type = "Boolean" };
+		static readonly Value BooleanNo = new Value { Identifier = "No", Description = "No", Type = "Boolean" };
 		
-		public IEnumerable<Key> Keys {
+		IList<Key> keys = new List<Key> ();
+
+		public IList<Key> Keys {
 			get {
 				return keys;
 			}
 		}
-		
-		public class Value {
-			public string Identifier { get; set; }
-			public string Description { get; set; }
-		}
-		
-		public class Key {
-			public string Identifier { get; set; }
-			public string Description { get; set; }
-			public string Type { get; set; }
-			public string ArrayType { get; set; }
-			
-			public readonly List<Value> Values = new List<Value> ();
-		}
-		
+
 		public Key GetKey (string id)
 		{
 			return keys.FirstOrDefault (k => k.Identifier == id);
+		}
+
+		public static List<SchemaItem> AvailableKeys (PObject obj, Dictionary<PObject, SchemaItem> tree)
+		{
+			SchemaItem key;
+			if (!tree.TryGetValue (obj, out key) || key == null)
+				return null;
+
+			var values = key.Values.Cast<SchemaItem> ().ToList ();
+
+			if (obj is PArray || obj is PDictionary) {
+				if (values.Count == 0) {
+					// If the key has no Values specified, then we can add anything. In
+					// the case of PArray, we implicitly know the type which can be added.
+					values.Add (new Value {
+						Identifier = GettextCatalog.GetString ("New element"),
+						Description = GettextCatalog.GetString ("New element"),
+						Type = obj is PArray ? key.ArrayType : PString.Type
+					});
+				} else if (values.Count == 1 && values [0].Identifier == null) {
+					// In this case every element in the array/dictionary is produced from this single Value
+				} else {
+					// Remove all elements which have already been instantiated
+					foreach (var child in PObject.ToEnumerable (obj))
+						values.Remove (tree [child.Value]);
+				}
+			}
+
+			return values;
+		}
+
+		public static List<SchemaItem> AvailableValues (PObject obj, Dictionary<PObject, SchemaItem> tree)
+		{
+			SchemaItem key;
+
+			if (obj == null)
+				return null;
+			
+			if (!(obj is PNumber || obj is PBoolean || obj is PString))
+				return null;
+
+			if (obj is PBoolean)
+				return new List<SchemaItem> { BooleanYes, BooleanNo };
+
+			if (!tree.TryGetValue (obj, out key) || key == null)
+				return null;
+			
+			List<PListScheme.SchemaItem> values = null;
+			if (key.Values.Count > 0) {
+				values = key.Values.Cast<PListScheme.SchemaItem> ().ToList ();
+			} else if (obj.Parent != null) {
+				var parent = obj.Parent;
+				if (tree.TryGetValue (parent, out key)) {
+					values = key.Values.Cast<PListScheme.SchemaItem>().ToList ();
+
+					// Strip out values which are already used. We can do this trivially as
+					// we have already matched every PObject to the SchemaItem which created it
+					foreach (var child in PObject.ToEnumerable  (parent))
+						if (child.Value != obj)
+							values.Remove (tree [child.Value]);
+				}
+			}
+
+			return values;
 		}
 		
 		public static PListScheme Load (XmlReader reader)
 		{
 			var result = new PListScheme ();
+			var doc = new XmlDocument ();
+			doc.Load (reader);
 			
-			XmlReadHelper.ReadList (reader, "PListScheme", delegate () {
-				switch (reader.LocalName) {
-				case "Key":
-					var key = new Key () {
-						Identifier = reader.GetAttribute ("name"),
-						Description = reader.GetAttribute ("_description"),
-						Type = reader.GetAttribute ("type"),
-						ArrayType = reader.GetAttribute ("name")
-					};
-					XmlReadHelper.ReadList (reader, "Key", delegate () {
-						if (reader.LocalName == "Value") {
-							key.Values.Add (new Value () {
-								Identifier = reader.GetAttribute ("name"),
-								Description = reader.GetAttribute ("_description")
-							});
-							return true;
-						}
-						return false;
-					});
-					result.keys.Add (key);
-					return true;
-				}
-				return false;
-			});
+			foreach (XmlNode keyNode in doc.SelectNodes ("/PListScheme/*")) {
+				var key = new Key {
+					Identifier = AttributeToString (keyNode.Attributes ["name"]),
+					Description = AttributeToString (keyNode.Attributes ["_description"]),
+					Type = AttributeToString (keyNode.Attributes ["type"]),
+					ArrayType = AttributeToString (keyNode.Attributes ["arrayType"])
+				};
+				
+				CreateChildValues (key, keyNode);
+				result.Keys.Add (key);
+			}
+			
 			return result;
 		}
 		
-		public static readonly PListScheme Empty = new PListScheme ();
+		static void CreateChildValues (SchemaItem key, XmlNode node)
+		{
+			if (node.HasChildNodes)
+				key.Values.AddRange (ParseValues (key.ArrayType ?? key.Type, node.ChildNodes));
+//			else if (key.Type == "Dictionary")
+//				key.Values.Add (new Value { Type = "String", Description = "New value" });
+//			else if (key.Type == "Array")
+//				key.Values.Add (new Value { Type = key.ArrayType, Description = "New value" });
+		}
+		
+		public static Dictionary<PObject, SchemaItem> Match (PDictionary dictionary, PListScheme scheme)
+		{
+			Dictionary<PObject, SchemaItem> results = new Dictionary<PObject, SchemaItem> ();
+			foreach (var kp in dictionary) {
+				var key = scheme.GetKey (kp.Key);
+				if (key == null) {
+					Match (kp.Value, key, results);
+					continue;
+				}
+				
+				// Every array element is produced by instantiating a copy of this value
+				if (key.Type == PArray.Type && key.Values.Count == 1 && key.Values [0].Identifier == null) {
+					results.Add (kp.Value, key);
+					foreach (var v in ((PArray) kp.Value)) {
+						Match (v, key.Values [0], results);
+					}
+				} else if (key.Type == PArray.Type) {
+					Match (kp.Value, key, results);
+				} else if (key.Type == PDictionary.Type) {
+					Match (kp.Value, key, results);
+				} else {
+					results.Add (kp.Value, key);
+				}
+			}
+			return results;
+		}
+		
+		static void Match (PObject o, SchemaItem value, Dictionary<PObject, SchemaItem> results)
+		{
+			results.Add (o, value);
+			
+			foreach (var kp in PObject.ToEnumerable (o)) {
+				var subValue = value != null ? value.Values.Where (k => k.Identifier == kp.Key).FirstOrDefault () : null;
+				if (subValue == null && value != null && value.Values.Count == 1 && value.Values [0].Identifier == null)
+					subValue = value.Values [0];
+				Match (kp.Value, subValue, results);
+			}
+		}
+
+		static IEnumerable<Value> ParseValues (string type, XmlNodeList nodeList)
+		{
+			List<Value> values = new List<Value> ();
+			foreach (XmlNode node in nodeList) {
+				if (node.Name != "Value")
+					throw new NotSupportedException (string.Format ("Node of type {0} not supported as a Value", node.Name));
+				
+				Value v = new Value {
+					ArrayType = AttributeToString (node.Attributes ["arrayType"]),
+					Description = AttributeToString (node.Attributes ["_description"]),
+					Identifier = AttributeToString (node.Attributes ["name"]),
+					Type = AttributeToString (node.Attributes ["type"]) ?? type
+				};
+				
+				if (node.Attributes ["required"] != null)
+					v.Required = bool.Parse (node.Attributes ["required"].Value);
+				
+				CreateChildValues (v, node);
+				values.Add (v);
+			}
+			return values;
+		}
+		
+		static string AttributeToString (XmlAttribute attr)
+		{
+			if (attr == null || string.IsNullOrEmpty (attr.Value))
+				return null;
+			return attr.Value;
+		}
 	}
 }
 

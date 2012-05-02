@@ -44,7 +44,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
     <Reference Include="MonoMac">
-      <HintPath>..\..\..\..\extras\MonoDevelop.MonoMac\MonoDevelop.MonoMac\MonoMac.dll</HintPath>
+      <HintPath>..\..\..\..\external\monomac\src\MonoMac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

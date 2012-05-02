@@ -57,7 +57,7 @@ namespace MonoDevelop.MacIntegration
 		
 		static bool setupFail, initedApp, initedGlobal;
 		
-		static Dictionary<string, string> mimemap;
+		static Lazy<Dictionary<string, string>> mimemap;
 		
 		//this is a BCD value of the form "xxyz", where x = major, y = minor, z = bugfix
 		//eg. 0x1071 = 10.7.1
@@ -69,7 +69,7 @@ namespace MonoDevelop.MacIntegration
 			
 			systemVersion = Carbon.Gestalt ("sysv");
 			
-			LoadMimeMapAsync ();
+			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 			
 			CheckGtkVersion (2, 24, 0);
 			
@@ -111,8 +111,9 @@ namespace MonoDevelop.MacIntegration
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
 			var ext = System.IO.Path.GetExtension (uri);
-			if (mimemap != null && mimemap.ContainsKey (ext))
-				return mimemap [ext];
+			string mime = null;
+			if (ext != null && mimemap.Value.TryGetValue (ext, out mime))
+				return mime;
 			return null;
 		}
 
@@ -139,35 +140,33 @@ namespace MonoDevelop.MacIntegration
 			get { return "OSX"; }
 		}
 		
-		private static void LoadMimeMapAsync ()
+		private static Dictionary<string, string> LoadMimeMapAsync ()
 		{
+			var map = new Dictionary<string, string> ();
 			// All recent Macs should have this file; if not we'll just die silently
 			if (!File.Exists ("/etc/apache2/mime.types")) {
 				MonoDevelop.Core.LoggingService.LogError ("Apache mime database is missing");
-				return;
+				return map;
 			}
 			
-			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-				mimeTimer.BeginTiming ();
-				try {
-					var map = new Dictionary<string, string> ();
-					using (var file = File.OpenRead ("/etc/apache2/mime.types")) {
-						using (var reader = new StreamReader (file)) {
-							var mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
-							string line;
-							while ((line = reader.ReadLine ()) != null) {
-								Match m = mime.Match (line);
-								if (m.Success)
-									map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value; 
-							}
+			mimeTimer.BeginTiming ();
+			try {
+				using (var file = File.OpenRead ("/etc/apache2/mime.types")) {
+					using (var reader = new StreamReader (file)) {
+						var mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
+						string line;
+						while ((line = reader.ReadLine ()) != null) {
+							Match m = mime.Match (line);
+							if (m.Success)
+								map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value; 
 						}
 					}
-					mimemap = map;
-				} catch (Exception ex){
-					MonoDevelop.Core.LoggingService.LogError ("Could not load Apache mime database", ex);
 				}
-				mimeTimer.EndTiming ();
-			});
+			} catch (Exception ex){
+				MonoDevelop.Core.LoggingService.LogError ("Could not load Apache mime database", ex);
+			}
+			mimeTimer.EndTiming ();
+			return map;
 		}
 		
 		HashSet<object> ignoreCommands = new HashSet<object> () {

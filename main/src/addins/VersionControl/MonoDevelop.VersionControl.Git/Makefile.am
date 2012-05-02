@@ -1,15 +1,20 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Git.dll
+NGIT=$(top_builddir)/../external/ngit/bin/NGit.dll
+NSCH=$(top_builddir)/../external/ngit/bin/NSch.dll
+SHARPEN=$(top_builddir)/../external/ngit/bin/Sharpen.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/contrib/bin/NGit.dll \
-	$(top_builddir)/contrib/bin/NSch.dll \
-	$(top_builddir)/contrib/bin/Sharpen.dll
+	$(top_builddir)/../external/ngit/bin/NGit.dll \
+	$(top_builddir)/../external/ngit/bin/NSch.dll \
+	$(top_builddir)/../external/ngit/bin/Sharpen.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
@@ -33,7 +38,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.StashManagerDialog.cs \
 	gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs \
-	MonoDevelop.VersionControl.Git/Change.cs \
 	MonoDevelop.VersionControl.Git/Commands.cs \
 	MonoDevelop.VersionControl.Git/ConflictResolutionDialog.cs \
 	MonoDevelop.VersionControl.Git/CredentialsDialog.cs \
@@ -69,12 +73,12 @@ RES =  \
 
 $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
-	cp $(top_builddir)/contrib/bin/NGit.dll $(ADDIN_BUILD)
-	cp $(top_builddir)/contrib/bin/NGit.dll.mdb $(ADDIN_BUILD) || true 
-	cp $(top_builddir)/contrib/bin/NSch.dll $(ADDIN_BUILD)
-	cp $(top_builddir)/contrib/bin/NSch.dll.mdb $(ADDIN_BUILD) || true
-	cp $(top_builddir)/contrib/bin/Sharpen.dll $(ADDIN_BUILD)
-	cp $(top_builddir)/contrib/bin/Sharpen.dll.mdb $(ADDIN_BUILD) || true
+	cp $(NGIT) $(ADDIN_BUILD)
+	cp $(NGIT).mdb $(ADDIN_BUILD) || true 
+	cp $(NSCH) $(ADDIN_BUILD)
+	cp $(NSCH).mdb $(ADDIN_BUILD) || true
+	cp $(SHARPEN) $(ADDIN_BUILD)
+	cp $(SHARPEN).mdb $(ADDIN_BUILD) || true
 	$(CSC) $(CSC_FLAGS) $(build_sources) $(REFS) $(build_deps) $(build_resources:%=/resource:%) -out:$@ -target:library
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)

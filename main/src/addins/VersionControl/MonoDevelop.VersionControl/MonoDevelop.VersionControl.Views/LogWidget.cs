@@ -338,7 +338,7 @@ namespace MonoDevelop.VersionControl.Views
 						return;
 					}
 					string[] lines;
-					var changedDocument = new Mono.TextEditor.Document (text);
+					var changedDocument = new Mono.TextEditor.TextDocument (text);
 					if (prevRev == null) {
 						lines = new string[changedDocument.LineCount];
 						for (int i = 0; i < changedDocument.LineCount; i++) {
@@ -353,7 +353,7 @@ namespace MonoDevelop.VersionControl.Views
 							// The file did not exist at this point in time, so just treat it as empty
 						}
 						
-						var originalDocument = new Mono.TextEditor.Document (prevRevisionText);
+						var originalDocument = new Mono.TextEditor.TextDocument (prevRevisionText);
 						originalDocument.FileName = "Revision " + prevRev.ToString ();
 						changedDocument.FileName = "Revision " + rev.ToString ();
 						lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');

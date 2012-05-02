@@ -32,9 +32,8 @@ using System.Xml.Serialization;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -46,7 +45,7 @@ namespace MonoDevelop.DesignerSupport
 	class ClassOutlineNodeComparer : IComparer<TreeIter>
 	{
 		const string DEFAULT_REGION_NAME = "region";
-
+		
 		Ambience ambience;
 		TreeModel model;
 		ClassOutlineSettings settings;
@@ -61,6 +60,7 @@ namespace MonoDevelop.DesignerSupport
 		/// <param name="model">
 		/// The model containing the nodes to compare.
 		/// </param>
+
 		public ClassOutlineNodeComparer (Ambience ambience, ClassOutlineSettings settings, TreeModel model)
 		{
 			this.ambience = ambience;
@@ -187,7 +187,7 @@ namespace MonoDevelop.DesignerSupport
 		bool IsFinalizer (object node)
 		{
 			if (node is IMethod) {
-				return ((IMethod) node).IsFinalizer;
+				return ((IMethod) node).IsDestructor;
 			}
 
 			return false;
@@ -236,7 +236,7 @@ namespace MonoDevelop.DesignerSupport
 		{
 			if (node is FoldingRegion)
 				return groupTable[GROUP_INDEX_REGIONS];
-			if (node is Namespace)
+			if (node is string)
 				return groupTable[GROUP_INDEX_NAMESPACES];
 			if (node is IType)
 				return groupTable[GROUP_INDEX_TYPES];
@@ -263,9 +263,9 @@ namespace MonoDevelop.DesignerSupport
 		/// </returns>
 		string GetSortName (object node)
 		{
-			if (node is IMember) {
+			if (node is IEntity) {
 				// Return the name without type or parameters
-				return ambience.GetString ((IMember)node, 0);
+				return ambience.GetString ((IEntity)node, 0);
 			}
 		
 			if (node is FoldingRegion) {
@@ -285,15 +285,18 @@ namespace MonoDevelop.DesignerSupport
 		
 		internal static DomRegion GetRegion (object o)
 		{
-			var m = o as IMember;
+			var m = o as IEntity;
 			if (m != null)
-				return m.BodyRegion.IsEmpty ? new DomRegion (m.Location, m.Location) : m.BodyRegion;
+				return m.BodyRegion.IsEmpty ? m.Region : m.BodyRegion;
+			var m2 = o as IUnresolvedEntity;
+			if (m2 != null)
+				return m2.BodyRegion.IsEmpty ? m2.Region : m2.BodyRegion;
 			return ((FoldingRegion)o).Region;
 		}
 		
 		internal static int CompareRegion (object o1, object o2)
 		{
-			return GetRegion (o1).CompareTo (GetRegion (o2));
+			return GetRegion (o1).Begin.CompareTo (GetRegion (o2).Begin);
 		}
 	}
 }

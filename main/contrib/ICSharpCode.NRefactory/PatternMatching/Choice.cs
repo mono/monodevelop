@@ -64,10 +64,5 @@ namespace ICSharpCode.NRefactory.PatternMatching
 		{
 			return alternatives.GetEnumerator();
 		}
-		
-		public override S AcceptVisitor<T, S>(IPatternAstVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitChoice(this, data);
-		}
 	}
 }

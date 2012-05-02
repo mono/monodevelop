@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				template.CodeTemplateType |= CodeTemplateType.SurroundsWith;
 		}
 
-		void DocumentTextReplaced (object sender, Mono.TextEditor.ReplaceEventArgs e)
+		void DocumentTextReplaced (object sender, Mono.TextEditor.DocumentChangeEventArgs e)
 		{
 			List<string> vars = template.ParseVariables (textEditor.Document.Text);
 			foreach (string var in vars) {
@@ -182,7 +182,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			comboboxVariables.Active = -1;
 			int offset = textEditor.Caret.Offset;
 			int start = offset;
-			while (start >= 0 && start < textEditor.Document.Length) { // caret offset may be behind the text
+			while (start >= 0 && start < textEditor.Document.TextLength) { // caret offset may be behind the text
 				char ch = textEditor.Document.GetCharAt (start);
 				if (ch == '$')
 					break;
@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			
 			int end = offset;
-			while (end < textEditor.Document.Length) {
+			while (end < textEditor.Document.TextLength) {
 				char ch = textEditor.Document.GetCharAt (end);
 				if (ch == '$')
 					break;
@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					return;
 				end++;
 			}
-			if (start >= 0 && end < textEditor.Document.Length) {
+			if (start >= 0 && end < textEditor.Document.TextLength) {
 				string varName = textEditor.Document.GetTextBetween (start, end).Trim ('$');
 				TreeIter iter;
 				if (variablesListStore.GetIterFirst (out iter)) {

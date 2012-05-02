@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Execution
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Execution.CustomExecutionModeDialog
 			this.Name = "MonoDevelop.Ide.Execution.CustomExecutionModeDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Execution Arguments");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Execution Arguments");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			// Internal child MonoDevelop.Ide.Execution.CustomExecutionModeDialog.VBox
@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Execution
 			// Container child hbox5.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Execution Mode:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Execution Mode:");
 			this.hbox5.Add (this.label2);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.label2]));
 			w2.Position = 0;
@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Execution
 			this.checkSave = new global::Gtk.CheckButton ();
 			this.checkSave.CanFocus = true;
 			this.checkSave.Name = "checkSave";
-			this.checkSave.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Save this configuration as a custom execution mode");
+			this.checkSave.Label = global::Mono.Unix.Catalog.GetString ("Save this configuration as a custom execution mode");
 			this.checkSave.DrawIndicator = true;
 			this.checkSave.UseUnderline = true;
 			this.boxSave.Add (this.checkSave);
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Execution
 			// Container child boxName.Gtk.Box+BoxChild
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
-			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Custom Mode Name:");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Custom Mode Name:");
 			this.boxName.Add (this.label4);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.boxName [this.label4]));
 			w10.Position = 0;
@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Execution
 			// Container child boxName.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Available for:");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Available for:");
 			this.boxName.Add (this.label3);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.boxName [this.label3]));
 			w12.Position = 2;
@@ -147,9 +147,9 @@ namespace MonoDevelop.Ide.Execution
 			w12.Fill = false;
 			// Container child boxName.Gtk.Box+BoxChild
 			this.comboStore = global::Gtk.ComboBox.NewText ();
-			this.comboStore.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Only this project"));
-			this.comboStore.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("Only this solution"));
-			this.comboStore.AppendText (global::MonoDevelop.Core.GettextCatalog.GetString ("All solutions"));
+			this.comboStore.AppendText (global::Mono.Unix.Catalog.GetString ("Only this project"));
+			this.comboStore.AppendText (global::Mono.Unix.Catalog.GetString ("Only this solution"));
+			this.comboStore.AppendText (global::Mono.Unix.Catalog.GetString ("All solutions"));
 			this.comboStore.Name = "comboStore";
 			this.comboStore.Active = 0;
 			this.boxName.Add (this.comboStore);
@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.Execution
 			this.checkPrompt = new global::Gtk.CheckButton ();
 			this.checkPrompt.CanFocus = true;
 			this.checkPrompt.Name = "checkPrompt";
-			this.checkPrompt.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Always show the parameters window before running this custom mode");
+			this.checkPrompt.Label = global::Mono.Unix.Catalog.GetString ("Always show the parameters window before running this custom mode");
 			this.checkPrompt.DrawIndicator = true;
 			this.checkPrompt.UseUnderline = true;
 			this.boxSave.Add (this.checkPrompt);

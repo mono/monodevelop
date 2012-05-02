@@ -145,7 +145,7 @@ using Npgsql;
 								}
 								r.Close ();
 							}
-					} catch (NpgsqlException ex) {
+					} catch (NpgsqlException) {
 						// Don't raise error, if the table doesn't exists return an empty collection
 					} catch (Exception e) {
 						QueryService.RaiseException (e);
@@ -610,7 +610,7 @@ using Npgsql;
 							}
 							r.Close ();
 						}
-					} catch (Exception e) {
+					} catch (Exception) {
 						// Don't raise error, if the table doesn't exists return an empty collection
 					} finally {
 						conn.Release ();
@@ -1136,7 +1136,7 @@ using Npgsql;
 				case "bigserial":
 					dts.LengthRange = new Range (length);
 					dts.DataTypeCategory = DataTypeCategory.Integer;
-				break;
+					break;
 				case "numeric":
 				case "decimal":
 				case "real":
@@ -1146,7 +1146,6 @@ using Npgsql;
 					dts.ScaleRange = new Range (scale);
 					dts.DataTypeCategory = DataTypeCategory.Float;
 					break;
-				break;
 				case "character varying":
 				case "varying":
 				case "varchar":

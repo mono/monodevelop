@@ -31,54 +31,46 @@ using System.Text.RegularExpressions;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace CBinding.Parser
 {
 	/// <summary>
 	/// Ctags-based document parser helper
 	/// </summary>
-	public class CDocumentParser: AbstractParser
+	public class CDocumentParser:  AbstractTypeSystemParser
 	{
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string content)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader reader, Project project = null)
 		{
-			ParsedDocument doc = new ParsedDocument (fileName);
+			var doc = new DefaultParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
-			Project p = (null == dom || null == dom.Project)? 
-				IdeApp.Workspace.GetProjectContainingFile (fileName):
-				dom.Project;
-			ProjectInformation pi = ProjectInformationManager.Instance.Get (p);
-			CompilationUnit cu;
-			doc.CompilationUnit = cu = new CompilationUnit (fileName);
-			IType tmp;
-			IMember member;
-			string[] contentLines = content.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
-			DomType globals = new DomType (cu, ClassType.Unknown, GettextCatalog.GetString ("(Global Scope)"), new DomLocation (1, 1), string.Empty, new DomRegion (1, int.MaxValue), new List<IMember> ());
+			ProjectInformation pi = ProjectInformationManager.Instance.Get (project);
 			
+			string content = reader.ReadToEnd ();
+			string[] contentLines = content.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
+			
+			var globals = new DefaultUnresolvedTypeDefinition ("", GettextCatalog.GetString ("(Global Scope)"));
 			lock (pi) {
 				// Add containers to type list
 				foreach (LanguageItem li in pi.Containers ()) {
 					if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
-						tmp = LanguageItemToIMember (pi, li, contentLines) as IType;
-						if (null != tmp){ cu.Add (tmp); }
+						var tmp = AddLanguageItem (pi, globals, li, contentLines) as IUnresolvedTypeDefinition;
+						if (null != tmp){ doc.TopLevelTypeDefinitions.Add (tmp); }
 					}
 				}
 				
 				// Add global category for unscoped symbols
 				foreach (LanguageItem li in pi.InstanceMembers ()) {
 					if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
-						member = LanguageItemToIMember (pi, li, contentLines);
-						if (null != member) { 
-							globals.Add (member); 
-						}
+						AddLanguageItem (pi, globals, li, contentLines);
 					}
 				}
 			}
 			
-			cu.Add (globals);
-			
+			doc.TopLevelTypeDefinitions.Add (globals);
 			return doc;
 		}
 		
@@ -150,6 +142,26 @@ namespace CBinding.Parser
 		
 		static readonly Regex paramExpression = new Regex (@"(?<type>[^\s]+)\s+(?<subtype>[*&]*)(?<name>[^\s[]+)(?<array>\[.*)?", RegexOptions.Compiled);
 		
+		static object AddLanguageItem (ProjectInformation pi, DefaultUnresolvedTypeDefinition klass, LanguageItem li, string[] contentLines)
+		{
+			
+			if (li is Class || li is Structure || li is Enumeration) {
+				var type = LanguageItemToIType (pi, li, contentLines);
+				klass.NestedTypes.Add (type);
+				return type;
+			}
+			
+			if (li is Function) {
+				var method = FunctionToIMethod (pi, klass, (Function)li, contentLines);
+				klass.Members.Add (method);
+				return method;
+			}
+			
+			var field = LanguageItemToIField (klass, li, contentLines);
+			klass.Members.Add (field);
+			return field;
+		}
+		
 		/// <summary>
 		/// Create an IMember from a LanguageItem,
 		/// using the source document to locate declaration bounds.
@@ -163,46 +175,54 @@ namespace CBinding.Parser
 		/// <param name="contentLines">
 		/// A <see cref="System.String[]"/>: The document in which item is defined.
 		/// </param>
-		static IMember LanguageItemToIMember (ProjectInformation pi, LanguageItem item, string[] contentLines)
+		static DefaultUnresolvedTypeDefinition LanguageItemToIType (ProjectInformation pi, LanguageItem item, string[] contentLines)
 		{
+			var klass = new DefaultUnresolvedTypeDefinition ("", item.File);
 			if (item is Class || item is Structure) {
-				DomType klass = new DomType (new CompilationUnit (item.File), ClassType.Class, item.Name, new DomLocation ((int)item.Line, 1), string.Empty, new DomRegion ((int)item.Line+1, FindFunctionEnd (contentLines, (int)item.Line-1)+2), new List<IMember> ());
-				
+				klass.Region = new DomRegion ((int)item.Line, 1, FindFunctionEnd (contentLines, (int)item.Line-1) + 2, 1);
+				klass.Kind = item is Class ? TypeKind.Class : TypeKind.Struct;
 				foreach (LanguageItem li in pi.AllItems ()) {
-					if (klass.Equals (li.Parent) && FilePath.Equals (li.File, item.File)) {
-						klass.Add (LanguageItemToIMember (pi, li, contentLines));
-					}
+					if (klass.Equals (li.Parent) && FilePath.Equals (li.File, item.File))
+						AddLanguageItem (pi, klass, li, contentLines);
 				}
 				return klass;
 			}
-			if (item is Enumeration) {
-				return new DomType (new CompilationUnit (item.File), ClassType.Enum, item.Name, new DomLocation ((int)item.Line, 1), string.Empty, new DomRegion ((int)item.Line+1, (int)item.Line+1), new List<IMember> ());
-			}
-			if (item is Function) {
-				DomMethod method = new DomMethod (item.Name, Modifiers.None, MethodModifier.None, new DomLocation ((int)item.Line, 1), new DomRegion ((int)item.Line+1, FindFunctionEnd (contentLines, (int)item.Line-1)+2), new DomReturnType ());
-				Function function = (Function)item;
-				Match match;
-				bool abort = false;
-				List<IParameter> parameters = new List<IParameter> ();
-				
-				foreach (string parameter in function.Parameters) {
-					match = paramExpression.Match (parameter);
-					if (null == match) {
-						abort = true;
-						break;
-					}
-					DomParameter p =  (new DomParameter (method, match.Groups["name"].Value,
-					  new DomReturnType (string.Format ("{0}{1}{2}", match.Groups["type"].Value, match.Groups["subtype"].Value, match.Groups["array"].Value))));
-					parameters.Add (p);
-				}
-				if (!abort)
-					method.Add (parameters);
-				return method;
-			}
-			if (item is Member) {
-				return new DomField (item.Name, Modifiers.None, new DomLocation ((int)item.Line, 1), new DomReturnType ());
-			}
-			return null;
+			
+			klass.Region = new DomRegion ((int)item.Line, 1, (int)item.Line + 1, 1);
+			klass.Kind = TypeKind.Enum;
+			return klass;
 		}
+		
+		static IUnresolvedField LanguageItemToIField (IUnresolvedTypeDefinition type, LanguageItem item, string[] contentLines)
+		{
+			var result = new DefaultUnresolvedField (type, item.Name);
+			result.Region = new DomRegion ((int)item.Line, 1, (int)item.Line + 1, 1);
+			return result;
+		}
+		
+		static IUnresolvedMethod FunctionToIMethod (ProjectInformation pi, IUnresolvedTypeDefinition type, Function function, string[] contentLines)
+		{
+			var method = new DefaultUnresolvedMethod (type, function.Name);
+			method.Region = new DomRegion ((int)function.Line, 1, FindFunctionEnd (contentLines, (int)function.Line-1)+2, 1);
+			
+			Match match;
+			bool abort = false;
+			var parameters = new List<IUnresolvedParameter> ();
+			foreach (string parameter in function.Parameters) {
+				match = paramExpression.Match (parameter);
+				if (null == match) {
+					abort = true;
+					break;
+				}
+				var typeRef = new DefaultUnresolvedTypeDefinition (string.Format ("{0}{1}{2}", match.Groups["type"].Value, match.Groups["subtype"].Value, match.Groups["array"].Value));
+				var p =  new DefaultUnresolvedParameter (typeRef, match.Groups["name"].Value);
+				parameters.Add (p);
+			}
+			if (!abort)
+				parameters.ForEach (p => method.Parameters.Add (p));
+			return method;
+		}
+		
+		
 	}
 }

@@ -31,30 +31,34 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Debugger;
 
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
+
 namespace MonoDevelop.SourceEditor
 {
-	public class DebugValueTooltipProvider: ITooltipProvider
+	public class DebugValueTooltipProvider: ITooltipProvider, IDisposable
 	{
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
 		
 		public DebugValueTooltipProvider()
 		{
-			DebuggingService.CurrentFrameChanged += delegate {
-				// Clear the cached values every time the current frame changes
-				cachedValues.Clear ();
-			};
+			DebuggingService.CurrentFrameChanged += HandleCurrentFrameChanged;
+		}
+
+		void HandleCurrentFrameChanged (object sender, EventArgs e)
+		{
+			// Clear the cached values every time the current frame changes
+			cachedValues.Clear ();
 		}
 
 		#region ITooltipProvider implementation 
 		
 		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
-			if (offset >= editor.Document.Length)
+			if (offset >= editor.Document.TextLength)
 				return null;
 			
 			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)
@@ -64,7 +68,7 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null)
 				return null;
 			
-			ExtensibleTextEditor ed = (ExtensibleTextEditor) editor;
+			var ed = (ExtensibleTextEditor)editor;
 			
 			string expression = null;
 			int startOffset = 0, length = 0;
@@ -73,24 +77,87 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				length = ed.SelectionRange.Length;
 			} else {
-				ResolveResult res = ed.GetLanguageItem (offset);
-/*				if (res is MemberResolveResult) {
-					MemberResolveResult mr = (MemberResolveResult) res;
-					if (mr.ResolvedMember == null && mr.ResolvedType != null)
-						expression = mr.ResolvedType.FullName;
-				}
-				if (expression == null)*/
-				if (res != null && res.ResolvedExpression != null) {
-					MemberResolveResult mr = res as MemberResolveResult;
-					if (mr != null && mr.ResolvedMember == null && mr.ResolvedType != null)
-						expression = mr.ResolvedType.FullName;
-					else {
-						expression = res.ResolvedExpression.Expression;
-						startOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.Start.Line, res.ResolvedExpression.Region.Start.Column);
-						int endOffset = editor.Document.LocationToOffset (res.ResolvedExpression.Region.End.Line, res.ResolvedExpression.Region.End.Column);
-						length = endOffset - startOffset;
+				ICSharpCode.NRefactory.TypeSystem.DomRegion expressionRegion;
+				ResolveResult res = ed.GetLanguageItem (offset, out expressionRegion);
+				
+				if (res == null || res.IsError || res.GetType () == typeof (ResolveResult))
+					return null;
+				
+				//Console.WriteLine ("res is a {0}", res.GetType ().Name);
+				
+				if (expressionRegion.IsEmpty)
+					return null;
+				
+				if (res is NamespaceResolveResult ||
+				    res is ConversionResolveResult ||
+				    res is ForEachResolveResult ||
+				    res is TypeIsResolveResult ||
+				    res is TypeOfResolveResult ||
+				    res is TypeResolveResult ||
+				    res is ErrorResolveResult)
+					return null;
+				
+				var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
+				var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
+				
+				startOffset = editor.Document.LocationToOffset (start);
+				int endOffset = editor.Document.LocationToOffset (end);
+				length = endOffset - startOffset;
+				
+				if (res is LocalResolveResult) {
+					var lr = (LocalResolveResult) res;
+					
+					// Capture only the local variable portion of the expression...
+					expression = lr.Variable.Name;
+					length = expression.Length;
+					
+					// Calculate start offset based on the end offset because we don't want to include the type information.
+					startOffset = endOffset - length;
+				} else if (res is InvocationResolveResult) {
+					var ir = (InvocationResolveResult) res;
+					
+					if (ir.Member.Name != ".ctor")
+						return null;
+					
+					expression = ir.Member.DeclaringType.FullName;
+				} else if (res is MemberResolveResult) {
+					var mr = (MemberResolveResult) res;
+					
+					if (mr.TargetResult == null) {
+						// User is hovering over a member definition...
+						
+						if (mr.Member is IProperty) {
+							// Visual Studio will evaluate Properties if you hover over their definitions...
+							var prop = (IProperty) mr.Member;
+							
+							if (prop.CanGet) {
+								if (prop.IsStatic)
+									expression = prop.FullName;
+								else
+									expression = prop.Name;
+							} else {
+								return null;
+							}
+						} else if (mr.Member is IField) {
+							var field = (IField) mr.Member;
+							
+							expression = field.Name;
+						} else {
+							return null;
+						}
 					}
+					
+					// If the TargetResult is not null, then treat it like any other ResolveResult.
+				} else if (res is ConstantResolveResult) {
+					// Fall through...
+				} else if (res is ThisResolveResult) {
+					// Fall through...
+				} else {
+					return null;
 				}
+				
+				if (expression == null)
+					expression = ed.GetTextBetween (start, end);
 			}
 			
 			if (string.IsNullOrEmpty (expression))
@@ -101,8 +168,12 @@ namespace MonoDevelop.SourceEditor
 				val = frame.GetExpressionValue (expression, false);
 				cachedValues [expression] = val;
 			}
+			
 			if (val == null || val.IsUnknown || val.IsNotSupported)
 				return null;
+			
+			val.Name = expression;
+			
 			return new TooltipItem (val, startOffset, length);
 		}
 		
@@ -143,5 +214,11 @@ namespace MonoDevelop.SourceEditor
 		
 		#endregion 
 		
+		#region IDisposable implementation
+		public void Dispose ()
+		{
+			DebuggingService.CurrentFrameChanged -= HandleCurrentFrameChanged;
+		}
+		#endregion
 	}
 }

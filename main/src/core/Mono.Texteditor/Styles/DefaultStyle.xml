@@ -103,6 +103,7 @@
 		</Style>
 		<Style name="invalidline" color="scarletred2"/>
 		<Style name="bracket" color="aluminium2" bgColor="aluminium1"/>
+		<Style name="usages" color="aluminium2" bgColor="aluminium1"/>
 		
 		<Style name="bookmark.color1" color="white"/>
 		<Style name="bookmark.color2" color="skyblue1"/>
@@ -149,7 +150,9 @@
 	
 	<Style name="keyword" color="Blue">
 		<Style name="semantic.type" color="#3399BB"/>
-		<Style name="semantic.field" color="black" weight="Italic"/>
+		<Style name="semantic.field" color="plum3"/>
+		<Style name="semantic.property" color="plum3"/>
+		<Style name="semantic.error" color="red"/>
 	</Style>
 </EditorStyle>
 

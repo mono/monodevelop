@@ -2,10 +2,11 @@ ASSEMBLY_DIR=$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft
 ASSEMBLY=$(ASSEMBLY_DIR)/Mono.Debugger.Soft.dll
 
 REFS =  \
+	-r:../../build/bin/Mono.Cecil.dll \
 	-r:System \
 	-r:System.Core
 
-DEPS = ../../build/bin/Mono.Cecil.dll
+DEPS =
 
 SIGNING_KEY=$(srcdir)/mono.snk
 
@@ -57,6 +58,7 @@ FILES =  \
 	Mono.Debugger.Soft/ObjectCollectedException.cs \
 	Mono.Debugger.Soft/ObjectMirror.cs \
 	Mono.Debugger.Soft/ParameterInfoMirror.cs \
+	Mono.Debugger.Soft/PointerValue.cs \
 	Mono.Debugger.Soft/PrimitiveValue.cs \
 	Mono.Debugger.Soft/PropertyInfoMirror.cs \
 	Mono.Debugger.Soft/StackFrame.cs \

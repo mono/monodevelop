@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 namespace Mono.TextEditor.PopupWindow
 {
-	public class ModeHelpWindow : Gtk.Window
+	public abstract class ModeHelpWindow : Gtk.Window
 	{
 		public string TitleText {
 			get;
@@ -39,9 +39,8 @@ namespace Mono.TextEditor.PopupWindow
 			set;
 		}
 		
-		Pango.Layout layout;
-		
-		public ModeHelpWindow () :  base (Gtk.WindowType.Popup)
+
+		public ModeHelpWindow () : base (Gtk.WindowType.Popup)
 		{
 			this.SkipPagerHint = this.SkipTaskbarHint = true;
 			this.Decorated = false;
@@ -50,14 +49,23 @@ namespace Mono.TextEditor.PopupWindow
 			this.AllowShrink = this.AllowGrow = false;
 			this.DestroyWithParent = true;
 			
-			layout = new Pango.Layout (PangoContext);
 			Items = new List<KeyValuePair<string, string>> ();
 			
 			var rgbaColormap = Screen.RgbaColormap;
 			if (rgbaColormap != null)
 				Colormap = rgbaColormap;
 		}
+	}
+
+	public class TableLayoutModeHelpWindow : ModeHelpWindow
+	{
+		Pango.Layout layout;
 		
+		public TableLayoutModeHelpWindow ()
+		{
+			layout = new Pango.Layout (PangoContext);
+		}
+
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
@@ -186,4 +194,127 @@ namespace Mono.TextEditor.PopupWindow
 			return false;
 		}
 	}
+
+	public class InsertionCursorLayoutModeHelpWindow : ModeHelpWindow
+	{
+		Pango.Layout titleLayout;
+		Pango.Layout descriptionLayout;
+
+		public InsertionCursorLayoutModeHelpWindow ()
+		{
+			titleLayout = new Pango.Layout (PangoContext);
+			descriptionLayout = new Pango.Layout (PangoContext);
+			descriptionLayout.SetMarkup ("<small>Use Up/Down to move to another location.\nPress Enter to select the location\nPress Esc to cancel this operation</small>");
+		}
+
+		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			int descriptionWidth = 1;
+			int totalHeight = yTitleBorder * 2 + yDescriptionBorder * 2 + 1;
+			
+			int width, height;
+			titleLayout.SetText (TitleText);
+			titleLayout.GetPixelSize (out width, out height);
+			totalHeight += height;
+			xSpacer = 0;
+
+			int h2;
+			int w2;
+			descriptionLayout.GetPixelSize (out w2, out h2);
+			totalHeight += h2;
+			xSpacer = System.Math.Max (width, w2);
+
+			xSpacer += xDescriptionBorder * 2 + 1;
+			
+			requisition.Width = triangleWidth + descriptionWidth + xSpacer;
+			requisition.Height = totalHeight;
+		}
+		
+		int xSpacer = 0;
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			
+			if (titleLayout != null) {
+				titleLayout.Dispose ();
+				titleLayout = null;
+			}
+
+			if (descriptionLayout != null) {
+				descriptionLayout.Dispose ();
+				descriptionLayout = null;
+			}
+		}
+		
+		const int triangleHeight = 16;
+		const int triangleWidth = 8;
+
+		const int xDescriptionBorder = 6;
+		const int yDescriptionBorder = 6;
+		const int yTitleBorder = 2;
+		static readonly Cairo.Color bgColor = HslColor.Parse ("#ffe97f");
+		static readonly Cairo.Color titleBgColor = HslColor.Parse ("#cfb94f");
+		static readonly Cairo.Color titleTextColor = HslColor.Parse ("#000000");
+		static readonly Cairo.Color borderColor = HslColor.Parse ("#7f6a00");
+		static readonly Cairo.Color textColor = HslColor.Parse ("#555753");
+
+		protected override bool OnExposeEvent (Gdk.EventExpose args)
+		{
+			using (var g = Gdk.CairoHelper.Create (args.Window)) {
+				g.SetSourceRGBA (1, 1, 1, 0);
+				g.Operator = Cairo.Operator.Source;
+				g.Paint ();
+			}
+
+			using (var g = Gdk.CairoHelper.Create (args.Window)) {
+				g.LineWidth = 1.5;
+				titleLayout.SetMarkup (TitleText);
+				int width, height;
+				titleLayout.GetPixelSize (out width, out height);
+				
+				width += xDescriptionBorder * 2;
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, false, triangleWidth + 0.5, 0.5, height + yTitleBorder * 2 + 1.5, Allocation.Width - 1 - triangleWidth, height + yTitleBorder * 2);
+				g.Color = titleBgColor;
+				g.FillPreserve ();
+				g.Color = borderColor;
+				g.Stroke ();
+				
+
+				g.MoveTo (triangleWidth + xDescriptionBorder, yTitleBorder);
+				g.Color = titleTextColor;
+				g.ShowLayout (titleLayout);
+
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, triangleWidth + 0.5, height + yTitleBorder * 2 + 0.5, height, Allocation.Width - 1 - triangleWidth, Allocation.Height - height - yTitleBorder * 2 - 1);
+				g.Color = bgColor;
+				g.FillPreserve ();
+				g.Color = borderColor;
+				g.Stroke ();
+
+
+				g.MoveTo (triangleWidth, Allocation.Height / 2 - triangleHeight / 2);
+				g.LineTo (0, Allocation.Height / 2);
+				g.LineTo (triangleWidth, Allocation.Height / 2 + triangleHeight / 2);
+				g.LineTo (triangleWidth + 5, Allocation.Height / 2 + triangleHeight / 2);
+				g.LineTo (triangleWidth + 5, Allocation.Height / 2 - triangleHeight / 2);
+				g.ClosePath ();
+				g.Color = bgColor;
+				g.Fill ();
+				
+				g.MoveTo (triangleWidth, Allocation.Height / 2 - triangleHeight / 2);
+				g.LineTo (0, Allocation.Height / 2);
+				g.LineTo (triangleWidth, Allocation.Height / 2 + triangleHeight / 2);
+				g.Color = borderColor;
+				g.Stroke ();
+
+				int y = height + yTitleBorder * 2 + yDescriptionBorder;
+				g.MoveTo (triangleWidth + xDescriptionBorder, y);
+				g.Color = textColor;
+				g.ShowLayout (descriptionLayout);
+			}
+			return false;
+		}
+	}
+
 }

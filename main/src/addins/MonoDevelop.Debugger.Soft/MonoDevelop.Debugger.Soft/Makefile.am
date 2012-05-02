@@ -5,7 +5,6 @@ DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft/Mono.Debugger.Soft.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
-	$(top_builddir)/build/bin/Mono.Cecil.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -14,6 +13,7 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	-r:../../../../build/bin/Mono.Cecil.dll \
 	-r:System \
 	-r:System.Core
 

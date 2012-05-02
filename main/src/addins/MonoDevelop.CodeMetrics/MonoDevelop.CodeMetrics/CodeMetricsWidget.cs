@@ -38,9 +38,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom.Output;
 using Mono.TextEditor;
 using System.ComponentModel;
 
@@ -189,7 +186,7 @@ namespace MonoDevelop.CodeMetrics
 					
 					foreach(ProjectProperties projectprop in widget.projects) {
 						ObjectOrientedMetrics.EvaluateOOMetrics(widget.ctx, projectprop);
-						ComplexityMetrics.EvaluateComplexityMetrics(widget.ctx, projectprop);
+//						ComplexityMetrics.EvaluateComplexityMetrics(widget.ctx, projectprop);
 						CodeMetricsService.ProcessInnerTypes(projectprop);
 					
 						Gtk.Application.Invoke ( delegate {

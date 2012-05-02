@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide;
 using Gtk;
 using Mono.TextEditor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Components
 {
@@ -53,8 +54,11 @@ namespace MonoDevelop.Components
 			hBox = new HBox ();
 			list = new ListWidget (this);
 			list.SelectItem += delegate {
-				DataProvider.ActivateItem (list.Selection);
-				Destroy ();
+				var sel = list.Selection;
+				if (sel >= 0 && sel < DataProvider.IconCount) {
+					DataProvider.ActivateItem (sel);
+					Destroy ();
+				}
 			};
 			
 			list.ScrollEvent += HandleListScrollEvent;
@@ -307,13 +311,10 @@ namespace MonoDevelop.Components
 				}
 				
 				set {
-					if (value < 0)
-						value = 0;
-					if (value >= win.DataProvider.IconCount)
-						value = win.DataProvider.IconCount - 1;
+					var newValue = Math.Max (0, Math.Min (value, win.DataProvider.IconCount - 1));
 					
-					if (value != selection) {
-						selection = value;
+					if (newValue != selection) {
+						selection = newValue;
 						UpdatePage ();
 						
 						if (SelectionChanged != null)
@@ -445,9 +446,16 @@ namespace MonoDevelop.Components
 					layout.GetPixelSize (out wi, out he);
 					if (wi > Allocation.Width) {
 						int idx, trail;
-						if (layout.XyToIndex ((int)((Allocation.Width - xpos - iconWidth - 2) * Pango.Scale.PangoScale), 0, out idx, out trail) && idx > 3) {
+						if (layout.XyToIndex (
+							(int)((Allocation.Width - xpos - iconWidth - 2) * Pango.Scale.PangoScale),
+							0,
+							out idx,
+							out trail
+						) && idx > 3) {
+							text = AmbienceService.UnescapeText (text);
 							text = text.Substring (0, idx - 3) + "...";
-							layout.SetText (text);
+							text = AmbienceService.EscapeText (text);
+							layout.SetMarkup (text);
 							layout.GetPixelSize (out wi, out he);
 						}
 					}

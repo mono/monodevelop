@@ -5,33 +5,59 @@ namespace MonoDevelop.AssemblyBrowser
 	internal partial class AssemblyBrowserWidget
 	{
 		private global::Gtk.UIManager UIManager;
+		
 		private global::Gtk.Action NavigateBackwardAction;
+		
 		private global::Gtk.Action NavigateForwardAction;
+		
 		private global::Gtk.Action goBackAction;
+		
 		private global::Gtk.Action goForwardAction;
+		
 		private global::Gtk.Action goBackAction1;
+		
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.Button buttonBack;
+		
 		private global::Gtk.Button buttonForeward;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.ComboBox languageCombobox;
+		
 		private global::Gtk.Label label1;
+		
 		private global::MonoDevelop.Components.SearchEntry searchentry1;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.ComboBox comboboxVisibilty;
+		
 		private global::Gtk.HPaned hpaned1;
+		
 		private global::Gtk.Alignment treeViewPlaceholder;
+		
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.Notebook notebook1;
+		
 		private global::Gtk.Notebook notebookInspection;
+		
 		private global::Gtk.ScrolledWindow documentationScrolledWindow;
+		
 		private global::Gtk.Label documentationLabel;
+		
 		private global::Gtk.Label label4;
-		private global::Gtk.ScrolledWindow scrolledwindowEditor;
+		
 		private global::Gtk.Label label5;
+		
 		private global::Gtk.VBox searchWidget;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
 		private global::Gtk.TreeView searchTreeview;
 		
 		protected virtual void Build ()
@@ -204,19 +230,14 @@ namespace MonoDevelop.AssemblyBrowser
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("summary");
 			this.notebookInspection.SetTabLabel (this.documentationScrolledWindow, this.label4);
 			this.label4.ShowAll ();
-			// Container child notebookInspection.Gtk.Notebook+NotebookChild
-			this.scrolledwindowEditor = new global::Gtk.ScrolledWindow ();
-			this.scrolledwindowEditor.CanFocus = true;
-			this.scrolledwindowEditor.Name = "scrolledwindowEditor";
-			this.scrolledwindowEditor.ShadowType = ((global::Gtk.ShadowType)(1));
-			this.notebookInspection.Add (this.scrolledwindowEditor);
-			global::Gtk.Notebook.NotebookChild w17 = ((global::Gtk.Notebook.NotebookChild)(this.notebookInspection [this.scrolledwindowEditor]));
-			w17.Position = 1;
 			// Notebook tab
+			global::Gtk.Label w17 = new global::Gtk.Label ();
+			w17.Visible = true;
+			this.notebookInspection.Add (w17);
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("decompiler");
-			this.notebookInspection.SetTabLabel (this.scrolledwindowEditor, this.label5);
+			this.notebookInspection.SetTabLabel (w17, this.label5);
 			this.label5.ShowAll ();
 			this.notebook1.Add (this.notebookInspection);
 			// Container child notebook1.Gtk.Notebook+NotebookChild

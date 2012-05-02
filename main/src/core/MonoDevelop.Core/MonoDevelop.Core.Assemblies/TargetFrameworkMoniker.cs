@@ -219,6 +219,10 @@ namespace MonoDevelop.Core.Assemblies
 			get { return new TargetFrameworkMoniker ("4.0"); }
 		}
 		
+		public static TargetFrameworkMoniker PORTABLE_4_0 {
+			get { return new TargetFrameworkMoniker (ID_PORTABLE, "4.0", "Profile1"); }
+		}
+		
 		public static TargetFrameworkMoniker SL_2_0 {
 			get { return new TargetFrameworkMoniker (ID_SILVERLIGHT, "2.0"); }
 		}
@@ -239,10 +243,11 @@ namespace MonoDevelop.Core.Assemblies
 			get { return new TargetFrameworkMoniker ("Unknown", "0.0"); }
 		}
 		
-		public static string ID_NET_FRAMEWORK = ".NETFramework";
-		public static string ID_SILVERLIGHT = "Silverlight";
-		public static string ID_MONOTOUCH = "MonoTouch";
-		public static string ID_MONODROID = "MonoDroid";
+		public const string ID_NET_FRAMEWORK = ".NETFramework";
+		public const string ID_SILVERLIGHT = "Silverlight";
+		public const string ID_PORTABLE = ".NETPortable";
+		public const string ID_MONOTOUCH = "MonoTouch";
+		public const string ID_MONODROID = "MonoDroid";
 	}
 	
 	class TargetFrameworkMonikerDataType: DataType

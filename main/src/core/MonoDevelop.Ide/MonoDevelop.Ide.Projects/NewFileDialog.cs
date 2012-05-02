@@ -44,6 +44,7 @@ using MonoDevelop.Components;
 using IconView = MonoDevelop.Components.IconView;
 using Gdk;
 using MonoDevelop.Ide.Gui.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -338,9 +339,15 @@ namespace MonoDevelop.Ide.Projects
 		void FillCategoryTemplates (TreeIter iter)
 		{
 			iconView.Clear ();
-			foreach (TemplateItem item in (List<TemplateItem>)(catStore.GetValue (iter, 2))) {
+			var list = (List<TemplateItem>)(catStore.GetValue (iter, 2));
+			foreach (TemplateItem item in list) {
 				iconView.Add (item);
 			}
+
+			// select first template
+			var templateItem = list.FirstOrDefault ();
+			if (templateItem != null)
+				iconView.CurrentlySelected = templateItem;
 		}
 		
 		void SelectedTemplateChanged (object sender, EventArgs e)

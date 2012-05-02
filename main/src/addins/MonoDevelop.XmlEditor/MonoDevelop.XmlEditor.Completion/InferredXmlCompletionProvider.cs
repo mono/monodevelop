@@ -38,7 +38,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		Dictionary<string,HashSet<string>> elementCompletions = new Dictionary<string,HashSet<string>> ();
 		Dictionary<string,HashSet<string>> attributeCompletions = new Dictionary<string,HashSet<string>> ();
 		
-		public DateTime TimeStamp { get; set; }
+		public DateTime TimeStampUtc { get; set; }
 		public int ErrorCount { get; set; }
 		
 		public InferredXmlCompletionProvider ()

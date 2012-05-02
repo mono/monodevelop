@@ -20,73 +20,39 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.Disassembler;
 using ICSharpCode.Decompiler.ILAst;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.Cecil;
 
 namespace ICSharpCode.Decompiler
 {
-	public enum DecompiledLanguages
-	{
-		IL,
-		CSharp
-	}
-	
-	/// <summary>
-	/// Base class for decompliler classes : AstBuilder & ReflectionDisassembler.
-	/// </summary>
-	public abstract class BaseCodeMappings
-	{
-		/// <summary>
-		/// Gets the code mappings.
-		/// <remarks>Key is the metadata token.</remarks>
-		/// </summary>
-		public Dictionary<int, List<MemberMapping>> CodeMappings { get; protected set; }
-		
-		/// <summary>
-		/// Gets the MembeReference that is decompiled (a MethodDefinition, PropertyDefinition etc.)
-		/// <remarks>Key is the metadata token.</remarks>
-		/// </summary>
-		public Dictionary<int, MemberReference> DecompiledMemberReferences { get; protected set; }
-		
-		/// <summary>
-		/// Create data in the CodeMappings and DecompiledMemberReferences.
-		/// </summary>
-		/// <param name="token">Token of the current method.</param>
-		/// <param name="member">Current member (MethodDefinition, PropertyDefinition, EventDefinition).</param>
-		/// <remarks>The token is used in CodeMappings; member (and its token) is used in DecompiledMemberReferences.</remarks>
-		protected virtual void CreateCodeMappings(int token, MemberReference member)
-		{
-			this.CodeMappings.Add(token, new List<MemberMapping>());
-			
-			int t = member.MetadataToken.ToInt32();
-			if (!this.DecompiledMemberReferences.ContainsKey(t))
-				this.DecompiledMemberReferences.Add(t, member);
-		}
-	}
-	
 	/// <summary>
 	/// Maps the source code to IL.
 	/// </summary>
 	public sealed class SourceCodeMapping
 	{
 		/// <summary>
-		/// Gets or sets the source code line number in the output.
+		/// Gets or sets the start location of the instruction.
 		/// </summary>
-		public int SourceCodeLine { get; internal set; }
+		public TextLocation StartLocation { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the end location of the instruction.
+		/// </summary>
+		public TextLocation EndLocation { get; set; }
 		
 		/// <summary>
 		/// Gets or sets IL Range offset for the source code line. E.g.: 13-19 &lt;-&gt; 135.
 		/// </summary>
-		public ILRange ILInstructionOffset { get; internal set; }
+		public ILRange ILInstructionOffset { get; set; }
 		
 		/// <summary>
 		/// Gets or sets the member mapping this source code mapping belongs to.
 		/// </summary>
-		public MemberMapping MemberMapping { get; internal set; }
+		public MemberMapping MemberMapping { get; set; }
 		
 		/// <summary>
 		/// Retrieves the array that contains the IL range and the missing gaps between ranges.
@@ -98,7 +64,7 @@ namespace ICSharpCode.Decompiler
 			
 			// add list for the current source code line
 			currentList.AddRange(ILRange.OrderAndJoint(MemberMapping.MemberCodeMappings
-			                                           .FindAll(m => m.SourceCodeLine == this.SourceCodeLine)
+			                                           .FindAll(m => m.StartLocation.Line == this.StartLocation.Line)
 			                                           .ConvertAll<ILRange>(m => m.ILInstructionOffset)));
 			
 			if (!isMatch) {
@@ -123,11 +89,23 @@ namespace ICSharpCode.Decompiler
 	}
 	
 	/// <summary>
-	/// Stores the method information and its source code mappings.
+	/// Stores the member information and its source code mappings.
 	/// </summary>
 	public sealed class MemberMapping
 	{
 		IEnumerable<ILRange> invertedList;
+		
+		internal MemberMapping()
+		{
+		}
+		
+		public MemberMapping(MethodDefinition method)
+		{
+			this.MetadataToken = method.MetadataToken.ToInt32();
+			this.MemberCodeMappings = new List<SourceCodeMapping>();
+			this.MemberReference = method;
+			this.CodeSize = method.Body.CodeSize;
+		}
 		
 		/// <summary>
 		/// Gets or sets the type of the mapping.
@@ -148,6 +126,11 @@ namespace ICSharpCode.Decompiler
 		/// Gets or sets the source code mappings.
 		/// </summary>
 		public List<SourceCodeMapping> MemberCodeMappings { get; internal set; }
+		
+		/// <summary>
+		/// Gets or sets the local variables.
+		/// </summary>
+		public IEnumerable<ILVariable> LocalVariables { get; internal set; }
 		
 		/// <summary>
 		/// Gets the inverted IL Ranges.<br/>
@@ -173,40 +156,6 @@ namespace ICSharpCode.Decompiler
 	public static class CodeMappings
 	{
 		/// <summary>
-		/// Create code mapping for a method.
-		/// </summary>
-		/// <param name="method">Method to create the mapping for.</param>
-		/// <param name="codeMappings">Source code mapping storage.</param>
-		/// <param name="actualMemberReference">The actual member reference.</param>
-		internal static MemberMapping CreateCodeMapping(
-			this MethodDefinition member,
-			List<MemberMapping> codeMappings,
-			MemberReference actualMemberReference = null)
-		{
-			if (member == null || !member.HasBody)
-				return null;
-			
-			if (codeMappings == null)
-				return null;
-			
-			// create IL/CSharp code mappings - used in debugger
-			MemberMapping currentMemberMapping = null;
-
-			if (codeMappings.Find(map => map.MetadataToken == member.MetadataToken.ToInt32()) == null) {
-				currentMemberMapping = new MemberMapping() {
-					MetadataToken = member.MetadataToken.ToInt32(),
-					MemberCodeMappings = new List<SourceCodeMapping>(),
-					MemberReference = actualMemberReference ?? member,
-					CodeSize = member.Body.CodeSize
-				};
-				
-				codeMappings.Add(currentMemberMapping);
-			}
-			
-			return currentMemberMapping;
-		}
-		
-		/// <summary>
 		/// Gets source code mapping and metadata token based on type name and line number.
 		/// </summary>
 		/// <param name="codeMappings">Code mappings storage.</param>
@@ -215,19 +164,17 @@ namespace ICSharpCode.Decompiler
 		/// <param name="metadataToken">Metadata token.</param>
 		/// <returns></returns>
 		public static SourceCodeMapping GetInstructionByLineNumber(
-			this List<MemberMapping> codeMappings,
+			this MemberMapping codeMapping,
 			int lineNumber,
 			out int metadataToken)
 		{
-			if (codeMappings == null)
+			if (codeMapping == null)
 				throw new ArgumentException("CodeMappings storage must be valid!");
 			
-			foreach (var maping in codeMappings) {
-				var map = maping.MemberCodeMappings.Find(m => m.SourceCodeLine == lineNumber);
-				if (map != null) {
-					metadataToken = maping.MetadataToken;
-					return map;
-				}
+			var map = codeMapping.MemberCodeMappings.Find(m => m.StartLocation.Line == lineNumber);
+			if (map != null) {
+				metadataToken = codeMapping.MetadataToken;
+				return map;
 			}
 			
 			metadataToken = 0;
@@ -243,30 +190,24 @@ namespace ICSharpCode.Decompiler
 		/// <param name="isMatch">True, if perfect match.</param>
 		/// <returns>A code mapping.</returns>
 		public static SourceCodeMapping GetInstructionByTokenAndOffset(
-			this List<MemberMapping> codeMappings,
-			int token,
-			int ilOffset, 
+			this MemberMapping codeMapping,
+			int ilOffset,
 			out bool isMatch)
 		{
 			isMatch = false;
 			
-			if (codeMappings == null)
+			if (codeMapping == null)
 				throw new ArgumentNullException("CodeMappings storage must be valid!");
 			
-			var maping = codeMappings.Find(m => m.MetadataToken == token);
-			
-			if (maping == null)
-				return null;
-			
 			// try find an exact match
-			var map = maping.MemberCodeMappings.Find(m => m.ILInstructionOffset.From <= ilOffset && ilOffset < m.ILInstructionOffset.To);
+			var map = codeMapping.MemberCodeMappings.Find(m => m.ILInstructionOffset.From <= ilOffset && ilOffset < m.ILInstructionOffset.To);
 			
 			if (map == null) {
 				// get the immediate next one
-				map = maping.MemberCodeMappings.Find(m => m.ILInstructionOffset.From > ilOffset);
+				map = codeMapping.MemberCodeMappings.Find(m => m.ILInstructionOffset.From > ilOffset);
 				isMatch = false;
 				if (map == null)
-					map = maping.MemberCodeMappings.LastOrDefault(); // get the last
+					map = codeMapping.MemberCodeMappings.LastOrDefault(); // get the last
 				
 				return map;
 			}
@@ -278,15 +219,14 @@ namespace ICSharpCode.Decompiler
 		/// <summary>
 		/// Gets the source code and type name from metadata token and offset.
 		/// </summary>
-		/// <param name="codeMappings">Code mappings storage.</param>
+		/// <param name="codeMappings">Code mapping storage.</param>
 		/// <param name="token">Metadata token.</param>
 		/// <param name="ilOffset">IL offset.</param>
 		/// <param name="typeName">Type definition.</param>
 		/// <param name="line">Line number.</param>
 		/// <remarks>It is possible to exist to different types from different assemblies with the same metadata token.</remarks>
 		public static bool GetInstructionByTokenAndOffset(
-			this List<MemberMapping> codeMappings,
-			int token,
+			this MemberMapping mapping,
 			int ilOffset,
 			out MemberReference member,
 			out int line)
@@ -294,13 +234,9 @@ namespace ICSharpCode.Decompiler
 			member = null;
 			line = 0;
 			
-			if (codeMappings == null)
-				throw new ArgumentException("CodeMappings storage must be valid!");
-			
-			var mapping = codeMappings.Find(m => m.MetadataToken == token);
 			if (mapping == null)
-				return false;
-			
+				throw new ArgumentException("CodeMappings storage must be valid!");
+
 			var codeMapping = mapping.MemberCodeMappings.Find(
 				cm => cm.ILInstructionOffset.From <= ilOffset && ilOffset <= cm.ILInstructionOffset.To - 1);
 			if (codeMapping == null) {
@@ -313,34 +249,8 @@ namespace ICSharpCode.Decompiler
 			}
 			
 			member = mapping.MemberReference;
-			line = codeMapping.SourceCodeLine;
+			line = codeMapping.StartLocation.Line;
 			return true;
 		}
-	}
-	
-	/// <summary>
-	/// Decompilation data. Can be used by other applications to store the decompilation data.
-	/// </summary>
-	public class DecompileInformation
-	{
-		/// <summary>
-		/// Gets ot sets the code mappings
-		/// </summary>
-		public Dictionary<int, List<MemberMapping>> CodeMappings { get; set; }
-		
-		/// <summary>
-		/// Gets or sets the local variables.
-		/// </summary>
-		public ConcurrentDictionary<int, IEnumerable<ILVariable>> LocalVariables { get; set; }
-		
-		/// <summary>
-		/// Gets the list of MembeReferences that are decompiled (TypeDefinitions, MethodDefinitions, etc)
-		/// </summary>
-		public Dictionary<int, MemberReference> DecompiledMemberReferences { get; set; }
-		
-		/// <summary>
-		/// Gets (or internal sets) the AST nodes.
-		/// </summary>
-		public IEnumerable<AstNode> AstNodes { get; set; }
 	}
 }

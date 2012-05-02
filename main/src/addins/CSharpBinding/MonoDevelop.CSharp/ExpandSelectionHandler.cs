@@ -46,18 +46,18 @@ namespace MonoDevelop.CSharp
 			var unit = parser.Parse (doc.Editor);
 			if (unit == null)
 				return;
-			var node = unit.GetNodeAt (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+			var node = unit.GetNodeAt (doc.Editor.Caret.Location);
 			if (node == null)
 				return;
 			
 			if (doc.Editor.IsSomethingSelected) {
-				while (node != null && doc.Editor.MainSelection.IsSelected (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column)) {
+				while (node != null && doc.Editor.MainSelection.IsSelected (node.StartLocation, node.EndLocation)) {
 					node = node.Parent;
 				}
 			}
 			
 			if (node != null)
-				doc.Editor.SetSelection (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column);
+				doc.Editor.SetSelection (node.StartLocation, node.EndLocation);
 		}
 	}
 	
@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp
 			Stack<AstNode > nodeStack = new Stack<AstNode> ();
 			nodeStack.Push (node);
 			if (doc.Editor.IsSomethingSelected) {
-				while (node != null && doc.Editor.MainSelection.IsSelected (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column)) {
+				while (node != null && doc.Editor.MainSelection.IsSelected (node.StartLocation, node.EndLocation)) {
 					node = node.Parent;
 					if (node != null) {
 						if (nodeStack.Count > 0 && nodeStack.Peek ().StartLocation == node.StartLocation && nodeStack.Peek ().EndLocation == node.EndLocation)
@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp
 				nodeStack.Pop (); // parent
 				nodeStack.Pop (); // current node
 				node = nodeStack.Pop (); // next children in which the caret is
-				doc.Editor.SetSelection (node.StartLocation.Line, node.StartLocation.Column, node.EndLocation.Line, node.EndLocation.Column);
+				doc.Editor.SetSelection (node.StartLocation, node.EndLocation);
 			} else {
 				doc.Editor.ClearSelection ();
 			}

@@ -71,16 +71,16 @@ namespace MonoDevelop.Debugger.Tests
 			
 			// The C class does not have a Prop property
 			
-			ObjectValue prop = val.GetChild ("Prop");
+			ObjectValue prop = val.GetChild ("Prop", ops);
 			Assert.IsNull (prop);
 			
-			prop = val.GetChild ("PropNoVirt1");
+			prop = val.GetChild ("PropNoVirt1", ops);
 			Assert.IsNull (prop);
 			
-			prop = val.GetChild ("PropNoVirt2");
+			prop = val.GetChild ("PropNoVirt2", ops);
 			Assert.IsNull (prop);
 			
-			val = val.GetChild ("base");
+			val = val.GetChild ("base", ops);
 			Assert.IsNotNull (val);
 			val.WaitHandle.WaitOne ();
 			Assert.IsFalse (val.IsError);
@@ -88,19 +88,19 @@ namespace MonoDevelop.Debugger.Tests
 			
 			// The B class has a Prop property, value is 2
 			
-			prop = val.GetChild ("Prop");
+			prop = val.GetChild ("Prop", ops);
 			Assert.IsNotNull (prop);
 			Assert.AreEqual ("2", prop.Value);
 			
-			prop = val.GetChild ("PropNoVirt1");
+			prop = val.GetChild ("PropNoVirt1", ops);
 			Assert.IsNotNull (prop);
 			Assert.AreEqual ("2", prop.Value);
 			
-			prop = val.GetChild ("PropNoVirt2");
+			prop = val.GetChild ("PropNoVirt2", ops);
 			Assert.IsNotNull (prop);
 			Assert.AreEqual ("2", prop.Value);
 			
-			val = val.GetChild ("base");
+			val = val.GetChild ("base", ops);
 			Assert.IsNotNull (val);
 			val.WaitHandle.WaitOne ();
 			Assert.IsFalse (val.IsError);
@@ -108,15 +108,15 @@ namespace MonoDevelop.Debugger.Tests
 			
 			// The A class has a Prop property, value is 1, but must return 2 becasue it is overriden
 			
-			prop = val.GetChild ("Prop");
+			prop = val.GetChild ("Prop", ops);
 			Assert.IsNotNull (prop);
 			Assert.AreEqual ("2", prop.Value);
 			
-			prop = val.GetChild ("PropNoVirt1");
+			prop = val.GetChild ("PropNoVirt1", ops);
 			Assert.IsNotNull (prop);
 			Assert.AreEqual ("1", prop.Value);
 			
-			prop = val.GetChild ("PropNoVirt2");
+			prop = val.GetChild ("PropNoVirt2", ops);
 			Assert.IsNotNull (prop);
 			Assert.AreEqual ("1", prop.Value);
 		}

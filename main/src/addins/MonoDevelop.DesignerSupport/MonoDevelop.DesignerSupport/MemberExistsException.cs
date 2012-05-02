@@ -31,8 +31,7 @@
 //
 
 using System;
-
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.DesignerSupport
 {	

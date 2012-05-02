@@ -223,33 +223,17 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		}
 	}
 	
-	enum XcodeSyncFileStatus {
-		Added,
-		Modified,
-		Removed
-	}
-	
 	class XcodeSyncFileBackJob
 	{
 		public FilePath Original;
 		public FilePath SyncedRelative;
-		public XcodeSyncFileStatus Status;
+		public bool IsFreshlyAdded;
 		
-		public bool IsNewOrModified {
-			get {
-				switch (Status) {
-				case XcodeSyncFileStatus.Modified: return true;
-				case XcodeSyncFileStatus.Added: return true;
-				default: return false;
-				}
-			}
-		}
-		
-		public XcodeSyncFileBackJob (FilePath original, FilePath syncedRelative, XcodeSyncFileStatus status)
+		public XcodeSyncFileBackJob (FilePath original, FilePath syncedRelative, bool isFreshlyAdded)
 		{
+			IsFreshlyAdded = isFreshlyAdded;
 			SyncedRelative = syncedRelative;
 			Original = original;
-			Status = status;
 		}
 	}
 }

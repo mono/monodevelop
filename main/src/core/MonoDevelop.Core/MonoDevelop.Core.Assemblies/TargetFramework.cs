@@ -26,12 +26,14 @@
 //
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Core.Serialization;
+using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
+
 using Mono.Addins;
-using MonoDevelop.Core.AddIns;
 using Mono.PkgConfig;
+using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -52,6 +54,7 @@ namespace MonoDevelop.Core.Assemblies
 		ClrVersion clrVersion;
 
 		List<TargetFrameworkMoniker> includedFrameworks = new List<TargetFrameworkMoniker> ();
+		List<Framework> supportedFrameworks = new List<Framework> ();
 
 		internal bool RelationsBuilt;
 		
@@ -139,9 +142,45 @@ namespace MonoDevelop.Core.Assemblies
 			
 			return TargetFrameworkToolsVersion.V4_0;
 		}
+
+		bool HackyCheckForPLPCompatibility (TargetFrameworkMoniker fxId)
+		{
+			int profile, this_profile;
+
+			if (fxId.Profile == null || fxId.Profile.Length < 8 || !int.TryParse (fxId.Profile.Substring (7), out profile))
+				return false;
+
+			switch (this.id.Identifier) {
+			case TargetFrameworkMoniker.ID_NET_FRAMEWORK:
+				if (new Version (fxId.Version).CompareTo (new Version (this.id.Version)) > 0)
+					return false;
+
+				return profile >= 1 && profile <= 3; // Profile4 does not support .NETFramework
+			case TargetFrameworkMoniker.ID_MONOTOUCH:
+			case TargetFrameworkMoniker.ID_MONODROID:
+				return profile >= 1 && profile <= 3;
+			case TargetFrameworkMoniker.ID_PORTABLE:
+				if (this.id.Profile == null || this.id.Profile.Length < 8 || !int.TryParse (this.id.Profile.Substring (7), out this_profile))
+					return false;
+
+				switch (this_profile) {
+				case 1: return true;
+				case 2: return profile == 2;
+				case 3: return profile == 3;
+				case 4: return profile == 4;
+				default: return false;
+				}
+			default:
+				return false;
+			}
+		}
 		
 		public bool IsCompatibleWithFramework (TargetFrameworkMoniker fxId)
 		{
+			// FIXME: this is a hack which should really be done using the xml definitions for each .NETPortable profile
+			if (fxId.Identifier == ".NETPortable" && fxId.Version == "4.0")
+				return HackyCheckForPLPCompatibility (fxId);
+
 			return fxId.Identifier == this.id.Identifier
 				&& new Version (fxId.Version).CompareTo (new Version (this.id.Version)) <= 0;
 		}
@@ -202,6 +241,10 @@ namespace MonoDevelop.Core.Assemblies
 			return new TargetFrameworkMoniker (id.Identifier, version);	
 		}
 		
+		public List<Framework> SupportedFrameworks {
+			get { return supportedFrameworks; }
+		}
+		
 		[ItemProperty]
 		[ItemProperty ("Assembly", Scope="*")]
 		internal AssemblyInfo[] Assemblies {
@@ -223,7 +266,7 @@ namespace MonoDevelop.Core.Assemblies
 		public static TargetFramework FromFrameworkDirectory (TargetFrameworkMoniker moniker, FilePath dir)
 		{
 			var fxList = dir.Combine ("RedistList", "FrameworkList.xml");
-			if (!System.IO.File.Exists (fxList))
+			if (!File.Exists (fxList))
 				return null;
 			
 			var fx = new TargetFramework (moniker);
@@ -321,7 +364,14 @@ namespace MonoDevelop.Core.Assemblies
 						}
 					}
 				}
+				
 				fx.Assemblies = assemblies.ToArray ();
+			}
+			
+			var supportedFrameworksDir = dir.Combine ("SupportedFrameworks");
+			if (Directory.Exists (supportedFrameworksDir)) {
+				foreach (var sfx in Directory.EnumerateFiles (supportedFrameworksDir))
+					fx.SupportedFrameworks.Add (Framework.Load (fx, sfx));
 			}
 			
 			return fx;

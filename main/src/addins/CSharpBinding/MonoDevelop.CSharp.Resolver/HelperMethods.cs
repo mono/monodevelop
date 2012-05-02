@@ -34,33 +34,31 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.Text;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Refactoring;
-using ICSharpCode.OldNRefactory.Visitors;
-using ICSharpCode.OldNRefactory.Parser;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory;
 using MonoDevelop.CSharp.Parser;
-using MonoDevelop.CSharp.Completion;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.CSharp
 {
-	static class HelperMethods
+	public static class HelperMethods
 	{
 		public static void SetText (this CompletionData data, string text)
 		{
 			if (data is CompletionData) {
 				((CompletionData)data).CompletionText = text;
-			} else if (data is MonoDevelop.Ide.CodeCompletion.MemberCompletionData) {
-				((MonoDevelop.Ide.CodeCompletion.MemberCompletionData)data).CompletionText = text;
+			} else if (data is IEntityCompletionData) {
+				((IEntityCompletionData)data).CompletionText = text;
 			} else {
 				System.Console.WriteLine("Unknown completion data:" + data);
 			}
@@ -69,7 +67,7 @@ namespace MonoDevelop.CSharp
 		public static ICSharpCode.NRefactory.CSharp.CompilationUnit Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
 		{
 			using (var stream = data.OpenStream ()) {
-				return parser.Parse (stream);
+				return parser.Parse (stream, data.Document.FileName);
 			}
 		}
 		
@@ -88,8 +86,55 @@ namespace MonoDevelop.CSharp
 			}
 			parser.ErrorPrinter.Reset ();
 			using (var stream = data.OpenStream ()) {
-				return parser.Parse (stream);
+				return parser.Parse (stream, data.Document.FileName);
 			}
+		}
+		
+		public static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this MonoDevelop.Ide.Gui.Document doc)
+		{
+			var policyParent = doc.Project != null ? doc.Project.Policies : null;
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			return codePolicy;
+		}
+
+		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
+		{
+			return GetFormattingPolicy (doc).CreateOptions ();
+		}
+		
+		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Projects.Project project)
+		{
+			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+			var codePolicy = project != null ? project.Policies.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) :
+				MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			return codePolicy.CreateOptions ();
+		}
+		
+		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			result = null;
+			node = null;
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return false;
+
+			var unit = parsedDocument.GetAst<CompilationUnit> ();
+			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+			
+			if (unit == null || parsedFile == null)
+				return false;
+			try {
+				result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
+				if (result == null || node is Statement)
+					return false;
+			} catch (Exception e) {
+				Console.WriteLine ("Got resolver exception:" + e);
+				return false;
+			}
+			return true;
 		}
 	}
 }

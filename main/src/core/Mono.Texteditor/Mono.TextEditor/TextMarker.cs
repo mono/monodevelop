@@ -59,9 +59,9 @@ namespace Mono.TextEditor
 	
 	public class TextMarker
 	{
-		LineSegment lineSegment;
+		DocumentLine lineSegment;
 		
-		public LineSegment LineSegment {
+		public DocumentLine LineSegment {
 			get {
 				return lineSegment;
 			}
@@ -108,9 +108,9 @@ namespace Mono.TextEditor
 		string style;
 		int startColumn;
 		int endColumn;
-		LineSegment line;
+		DocumentLine line;
 		UrlType urlType;
-		Document doc;
+		TextDocument doc;
 		
 		public string Url {
 			get {
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public UrlMarker (Document doc, LineSegment line, string url, UrlType urlType, string style, int startColumn, int endColumn)
+		public UrlMarker (TextDocument doc, DocumentLine line, string url, UrlType urlType, string style, int startColumn, int endColumn)
 		{
 			this.doc = doc;
 			this.line = line;
@@ -198,7 +198,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public interface IIconBarMarker
 	{
-		void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment line, int lineNumber, double xPos, double yPos, double width, double height);
+		void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double xPos, double yPos, double width, double height);
 		void MousePress (MarginMouseEventArgs args);
 		void MouseRelease (MarginMouseEventArgs args);
 		void MouseHover (MarginMouseEventArgs args);
@@ -268,7 +268,7 @@ namespace Mono.TextEditor
 		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			int markerStart = LineSegment.Offset + System.Math.Max (StartCol - 1, 0);
-			int markerEnd = LineSegment.Offset + (EndCol < 1 ? LineSegment.EditableLength : EndCol - 1);
+			int markerEnd = LineSegment.Offset + (EndCol < 1 ? LineSegment.Length : EndCol - 1);
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 
 	

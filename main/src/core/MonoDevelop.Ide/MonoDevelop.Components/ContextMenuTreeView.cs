@@ -50,16 +50,18 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
+			if (!evnt.TriggersContextMenu ()) {
+				return base.OnButtonPressEvent (evnt);
+			}
+
+			//pass click to base it it can update the selection
+			//unless the node is already selected, in which case we don't want to change the selection
 			bool res = false;
-			bool withModifier = (evnt.State & selectionModifiers) != 0;
-			if (IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y) && MultipleNodesSelected () && !withModifier) {
-				res = true;
+			if (!IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y)) {
+				res = base.OnButtonPressEvent (evnt);
 			}
 			
-			if (!res)
-				res = base.OnButtonPressEvent (evnt);
-			
-			if (DoPopupMenu != null && evnt.TriggersContextMenu ()) {
+			if (DoPopupMenu != null) {
 				if (!workaroundBug2157)
 					DoPopupMenu (evnt);
 				return true;

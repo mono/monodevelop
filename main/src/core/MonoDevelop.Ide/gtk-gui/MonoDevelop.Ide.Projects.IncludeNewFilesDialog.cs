@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Choose files to include in the project");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Choose files to include in the project");
 			this.vbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonExcludeAll.CanFocus = true;
 			this.buttonExcludeAll.Name = "buttonExcludeAll";
 			this.buttonExcludeAll.UseUnderline = true;
-			this.buttonExcludeAll.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Exclude All");
+			this.buttonExcludeAll.Label = global::Mono.Unix.Catalog.GetString ("_Exclude All");
 			this.hbox1.Add (this.buttonExcludeAll);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonExcludeAll]));
 			w5.PackType = ((global::Gtk.PackType)(1));
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonIncludeAll.CanFocus = true;
 			this.buttonIncludeAll.Name = "buttonIncludeAll";
 			this.buttonIncludeAll.UseUnderline = true;
-			this.buttonIncludeAll.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Include All");
+			this.buttonIncludeAll.Label = global::Mono.Unix.Catalog.GetString ("_Include All");
 			this.hbox1.Add (this.buttonIncludeAll);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonIncludeAll]));
 			w6.PackType = ((global::Gtk.PackType)(1));

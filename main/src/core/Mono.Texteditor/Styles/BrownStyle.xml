@@ -72,7 +72,7 @@
 	<Style name="text.background.searchresult" color="yellow"/>
 	
 	<Style name="text.link" color="blue"/>
-		
+	
 	<Style name="marker.line" color="accent_yellow_highlight"/>
 	<Style name="marker.line.changed" color="yellow"/>	
 	<Style name="marker.line.dirty" color="accent_yellow_highlight"/>	
@@ -81,6 +81,7 @@
 	<Style name="marker.whitespace" color="human"/>
 	<Style name="marker.invalidline" color="accent_red_base"/>
 	<Style name="marker.bracket" color="environmental_blue_medium" bgColor="environmental_blue_highlight"/>
+	<Style name="marker.usages" color="environmental_blue_medium" bgColor="environmental_blue_highlight"/>
 	
 	<Style name="marker.bookmark.color1" color="human_highlight"/>
 	<Style name="marker.bookmark.color2" color="human_base"/>
@@ -168,5 +169,7 @@
 	<Style name="keyword.misc" color="orange_base"/>
 	
 	<Style name="keyword.semantic.type" color="accent_green_highlight" weight="normal"/>
-	<Style name="keyword.semantic.field" color="black" weight="Italic"/>
+	<Style name="keyword.semantic.field" color="accent_dark_violet"/>
+	<Style name="keyword.semantic.property" color="accent_dark_violet"/>
+	<Style name="keyword.semantic.error" color="accent_red" weight="normal"/>
 </EditorStyle>

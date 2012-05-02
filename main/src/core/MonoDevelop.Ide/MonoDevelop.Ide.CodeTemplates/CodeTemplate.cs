@@ -33,8 +33,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using Mono.TextEditor;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Ide.CodeFormatting;
@@ -162,7 +160,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public List<string> ParseVariables (string code)
 		{
-			List<string> result = new List<string> ();
+			var result = new List<string> ();
 			foreach (Match match in variableRegEx.Matches (code)) {
 				string name = match.Groups[1].Value;
 				if (name == "end" || name == "selected" || string.IsNullOrEmpty (name) || name.Trim ().Length == 0)
@@ -175,7 +173,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public void AddVariable (CodeTemplateVariable var)
 		{
-			this.variableDecarations.Add (var.Name, var);
+			variableDecarations.Add (var.Name, var);
 		}
 		
 		public class TemplateResult
@@ -209,9 +207,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public TemplateResult FillVariables (TemplateContext context)
 		{
-			ExpansionObject expansion = CodeTemplateService.GetExpansionObject (this);
-			TemplateResult result = new TemplateResult ();
-			StringBuilder sb = new StringBuilder ();
+			var expansion = CodeTemplateService.GetExpansionObject (this);
+			var result = new TemplateResult ();
+			var sb = new StringBuilder ();
 			int lastOffset = 0;
 			string code = context.Document.Editor.FormatString (context.InsertPosition, context.TemplateCode);
 			result.TextLinks = new List<TextLink> ();
@@ -255,7 +253,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 								s = variableDecarations [name].Default;
 						}
 						if (s != null) {
-							link.AddLink (new Segment (sb.Length, s.Length));
+							link.AddLink (new TextSegment (sb.Length, s.Length));
 							if (isNew) {
 								link.GetStringFunc = delegate (Func<string, string> callback) {
 									return expansion.RunFunction (context, callback, variableDecarations [name].Function);
@@ -273,16 +271,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 			sb.Append (code.Substring (lastOffset, code.Length - lastOffset));
 			
 			// format & indent template code
-			TextEditorData data = new TextEditorData ();
+			var data = new TextEditorData ();
 			data.Text = sb.ToString ();
-			data.Document.TextReplaced += delegate(object sender, ReplaceEventArgs e) {
-				int delta = -e.Count + (e.Value != null ? e.Value.Length : 0);
+			data.Document.TextReplaced += delegate(object sender, DocumentChangeEventArgs e) {
+				int delta = e.ChangeDelta;
+
 				foreach (var link in result.TextLinks) {
-					foreach (var segment in link.Links) {
-						if (segment.Offset > e.Offset) {
-							segment.Offset += delta;
-						}
-					}
+					link.Links = new List<TextSegment> (link.Links.AdjustSegments (e));
 				}
 				if (result.CaretEndOffset > e.Offset)
 					result.CaretEndOffset += delta;
@@ -290,7 +285,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			var formatter = CodeFormatterService.GetFormatter (context.Document.Editor.Document.MimeType);
 			if (formatter != null && context.Document.HasProject) {
-				formatter.OnTheFlyFormat (context.Document.Project.Policies, data, 0, data.Length);
+				formatter.OnTheFlyFormat (context.Document, 0, data.Length);
 			}
 			
 			IndentCode (data, context.LineIndent);
@@ -301,16 +296,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 		void AddDefaultValue (StringBuilder sb, TextLink link, string name)
 		{
-			if (string.IsNullOrEmpty (variableDecarations[name].Default))
+			if (string.IsNullOrEmpty (variableDecarations [name].Default))
 				return;
-			link.AddLink (new Segment (sb.Length, variableDecarations[name].Default.Length));
+			link.AddLink (new TextSegment (sb.Length, variableDecarations[name].Default.Length));
 			sb.Append (variableDecarations[name].Default);
 		}
 
 		
 		public string IndentCode (string code, string eol, string indent)
 		{
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 			for (int i = 0; i < code.Length; i++) {
 				switch (code[i]) {
 				case '\r':
@@ -333,7 +328,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			for (int i = 1; i < data.LineCount; i++) {
 				var line = data.GetLine (i + 1);
-				if (line.EditableLength > 0)
+				if (line.Length > 0)
 					data.Insert (line.Offset, lineIndent);
 			}
 		}
@@ -345,7 +340,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			while (i >= 0 && !Char.IsWhiteSpace (str[i])) {
 				i--;
 			}
-			StringBuilder indent = new StringBuilder ();
+			var indent = new StringBuilder ();
 			while (i >= 0 && (str[i] == ' ' || str[i] == '\t')) {
 				indent.Append (str[i]);
 				i--;
@@ -355,26 +350,26 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		string RemoveIndent (string text, string indent)
 		{
-			Document doc = new Document ();
+			var doc = new TextDocument ();
 			doc.Text = text;
-			StringBuilder result = new StringBuilder ();
-			foreach (LineSegment line in doc.Lines) {
+			var result = new StringBuilder ();
+			foreach (DocumentLine line in doc.Lines) {
 				string curLineIndent = line.GetIndentation (doc);
 				int offset = Math.Min (curLineIndent.Length, indent.Length);
-				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffset));
+				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffsetIncludingDelimiter));
 			}
 			return result.ToString ();
 		}
 		
 		string Reindent (string text, string indent)
 		{
-			Document doc = new Document ();
+			var doc = new TextDocument ();
 			doc.Text = text;
-			StringBuilder result = new StringBuilder ();
-			foreach (LineSegment line in doc.Lines) {
+			var result = new StringBuilder ();
+			foreach (DocumentLine line in doc.Lines) {
 				if (result.Length > 0)
 					result.Append (indent);
-				result.Append (doc.GetTextAt (line));
+				result.Append (doc.GetTextAt (line.SegmentIncludingDelimiter));
 			}
 			return result.ToString ();
 		}
@@ -394,18 +389,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 		/// </summary>
 		public TemplateResult InsertTemplateContents (MonoDevelop.Ide.Gui.Document document)
 		{
-			ProjectDom dom = document.Dom;
-			ParsedDocument doc = document.ParsedDocument ?? MonoDevelop.Projects.Dom.Parser.ProjectDomService.GetParsedDocument (dom, document.FileName);
 			Mono.TextEditor.TextEditorData data = document.Editor;
-
+			
 			int offset = data.Caret.Offset;
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
 			
-			TemplateContext context = new TemplateContext {
+			var context = new TemplateContext {
 				Template = this,
 				Document = document,
-				ProjectDom = dom,
-				ParsedDocument = doc,
+				ParsedDocument = document.ParsedDocument.ParsedFile,
 				InsertPosition = data.Caret.Location,
 				LineIndent = data.Document.GetLineIndent (data.Caret.Line),
 				TemplateCode = Code
@@ -434,11 +426,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 			template.InsertPosition = offset;
 			document.Editor.Insert (offset, template.Code);
 			
+			int newoffset;
 			if (template.CaretEndOffset >= 0) {
-				document.Editor.Caret.Offset = offset + template.CaretEndOffset; 
+				newoffset = offset + template.CaretEndOffset; 
 			} else {
-				document.Editor.Caret.Offset = offset + template.Code.Length; 
+				newoffset = offset + template.Code.Length; 
 			}
+
+			document.Editor.Caret.Location = document.Editor.OffsetToLocation (newoffset) ;
 			
 /*			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
 				string mt = DesktopService.GetMimeTypeForUri (document.FileName);
@@ -469,15 +464,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		const string CodeNode            = "Code";
 			
-		const string versionAttribute    = "version";
-		const string version             = "2.0";
+		const string VersionAttribute    = "version";
+		const string CurrentVersion      = "2.0";
 		
-		const string descriptionAttribute = "description";
+		const string DescriptionAttribute = "description";
 		
 		public void Write (XmlWriter writer)
 		{
 			writer.WriteStartElement (Node);
-			writer.WriteAttributeString (versionAttribute, version);
+			writer.WriteAttributeString (VersionAttribute, CurrentVersion);
 			
 			writer.WriteStartElement (HeaderNode);
 			
@@ -531,7 +526,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			Debug.Assert (reader.LocalName == Node);
 			
-			CodeTemplate result = new CodeTemplate ();
+			var result = new CodeTemplate ();
 			
 			XmlReadHelper.ReadList (reader, Node, delegate () {
 				//Console.WriteLine (reader.LocalName);
@@ -569,7 +564,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						//Console.WriteLine ("var:" + reader.LocalName);
 						switch (reader.LocalName) {
 						case CodeTemplateVariable.Node:
-							CodeTemplateVariable var = CodeTemplateVariable.Read (reader);
+							var var = CodeTemplateVariable.Read (reader);
 							result.variableDecarations [var.Name] = var;
 							return true;
 						}

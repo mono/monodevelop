@@ -1,5 +1,5 @@
 DLLNAME = MonoDevelop.HexEditor.dll
-ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
+ASSEMBLY = $(top_builddir)/build/AddIns/DisplayBindings/HexEditor/$(DLLNAME)
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -43,12 +43,12 @@ RES =  \
 	MonoDevelop.HexEditor.addin.xml  
 
 DEPS =  \
-	$(top_builddir)/build/AddIns/MonoDevelop.AssemblyBrowser.dll \
+	$(top_builddir)/build/AddIns/DisplayBindings/AssemblyBrowser/MonoDevelop.AssemblyBrowser.dll \
+	$(top_builddir)/build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
-	$(top_builddir)/build/AddIns/MonoDevelop.SourceEditor2.dll \
-	$(top_builddir)/build/bin/Mono.Debugging.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll
@@ -57,17 +57,18 @@ REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
+	$(MONO_ADDINS_LIBS) \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core
 
-ADDIN_BUILD = $(top_builddir)/build/AddIns
+ADDIN_BUILD = $(top_builddir)/build/AddIns/DisplayBindings/HexEditor
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
-	mkdir -p $(top_builddir)/build/bin
+	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) $(build_deps)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)

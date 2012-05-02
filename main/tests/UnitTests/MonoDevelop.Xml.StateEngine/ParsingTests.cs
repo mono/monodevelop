@@ -32,7 +32,6 @@ using MonoDevelop.Ide.Gui.Content;
 using System.Linq;
 
 using NUnit.Framework;
-using MonoDevelop.Projects.Dom;
 
 
 namespace MonoDevelop.Xml.StateEngine

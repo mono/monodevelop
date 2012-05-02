@@ -1,0 +1,15 @@
+[submodule "external/maccore"]
+	path = external/maccore
+	url = git://github.com/mono/maccore.git
+[submodule "external/monomac"]
+	path = external/monomac
+	url = git://github.com/mono/monomac.git
+[submodule "external/ngit"]
+	path = external/ngit
+	url = git://github.com/mono/ngit.git
+[submodule "external/mono-tools"]
+	path = external/mono-tools
+	url = git://github.com/mono/mono-tools.git
+[submodule "external/cecil"]
+	path = external/cecil
+	url = git://github.com/mono/cecil.git

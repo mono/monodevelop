@@ -210,7 +210,7 @@ namespace Mono.Debugging.Evaluation
 			try {
 				object val = Value;
 				if (ctx.Adapter.IsClassInstance (Context, val))
-					return ctx.Adapter.GetMembersSorted (GetChildrenContext (options), this, ctx.Adapter.GetValueType (Context, val), val);
+					return ctx.Adapter.GetMembersSorted (GetChildrenContext (options), this, Type, val);
 			} catch {
 				// Ignore
 			}
@@ -247,7 +247,7 @@ namespace Mono.Debugging.Evaluation
 			if (obj == null)
 				return null;
 
-			if (ctx.Adapter.IsArray (Context, obj)) {
+			if (name[0] == '[' && ctx.Adapter.IsArray (Context, obj)) {
 				// Parse the array indices
 				string[] sinds = name.Substring (1, name.Length - 2).Split (',');
 				int[] indices = new int [sinds.Length];

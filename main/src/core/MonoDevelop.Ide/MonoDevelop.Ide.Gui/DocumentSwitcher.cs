@@ -127,6 +127,9 @@ namespace MonoDevelop.Ide
 		
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			if (evnt.Type == EventType.TwoButtonPress) {
+				OnRequestClose (new RequestActionEventArgs (true));
+			}
 			if (evnt.Button == 1 && hoverItem != null)
 				ActiveItem = hoverItem;
 			return base.OnButtonPressEvent (evnt);
@@ -265,7 +268,7 @@ namespace MonoDevelop.Ide
 			Mono.TextEditor.KeyboardShortcut[] accels;
 			Mono.TextEditor.GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
 			
-			switch (accels[0].Key) {
+			switch (accels [0].Key) {
 			case Gdk.Key.Left:
 				LeftItem ();
 				break;
@@ -279,10 +282,18 @@ namespace MonoDevelop.Ide
 				NextItem (false);
 				break;
 			case Gdk.Key.Tab:
-				if ((accels[0].Modifier & ModifierType.ShiftMask) == 0)
+				if ((accels [0].Modifier & ModifierType.ShiftMask) == 0)
 					NextItem (true);
 				else
 					PrevItem (true);
+				break;
+			case Gdk.Key.Return:
+			case Gdk.Key.KP_Enter:
+			case Gdk.Key.ISO_Enter:
+				OnRequestClose (new RequestActionEventArgs (true));
+				break;
+			case Gdk.Key.Escape:
+				OnRequestClose (new RequestActionEventArgs (false));
 				break;
 			}
 			return base.OnKeyPressEvent (evnt);
@@ -291,19 +302,35 @@ namespace MonoDevelop.Ide
 		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
 		{
 			if (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R) {
-				OnRequestClose (EventArgs.Empty);
+				OnRequestClose (new RequestActionEventArgs (true));
 			}
 			return base.OnKeyReleaseEvent (evnt);
 		}
 		
-		protected virtual void OnRequestClose (EventArgs e)
+		protected virtual void OnRequestClose (RequestActionEventArgs e)
 		{
-			EventHandler handler = this.RequestClose;
+			var handler = this.RequestClose;
 			if (handler != null)
 				handler (this, e);
 		}
 
-		public event EventHandler RequestClose;
+		public sealed class RequestActionEventArgs : EventArgs
+		{
+			bool selectItem;
+
+			public bool SelectItem {
+				get {
+					return selectItem;
+				}
+			}
+
+			public RequestActionEventArgs (bool selectItem)
+			{
+				this.selectItem = selectItem;
+			}
+		}
+
+		public event EventHandler<RequestActionEventArgs> RequestClose;
 		
 		void LeftItem ()
 		{
@@ -534,7 +561,8 @@ namespace MonoDevelop.Ide
 		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
 			IdeApp.CommandService.IsEnabled = false;
-			this.documents = new List<MonoDevelop.Ide.Gui.Document> (IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));
+			this.documents = new List<MonoDevelop.Ide.Gui.Document> (
+				IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));
 			this.TransientFor = parent;
 			
 			this.Decorated = false;
@@ -618,14 +646,14 @@ namespace MonoDevelop.Ide
 				imageTitle.Pixbuf = documentList.ActiveItem.Icon;
 				labelFileName.Text = documentList.ActiveItem.Path;
 				labelType.Markup = "<span size=\"small\">" + documentList.ActiveItem.Description + "</span>";
-				labelTitle.Markup =  "<span size=\"xx-large\" weight=\"bold\">" + documentList.ActiveItem.Title + "</span>";
+				labelTitle.Markup = "<span size=\"xx-large\" weight=\"bold\">" + documentList.ActiveItem.Title + "</span>";
 			};
 			
 			if (activeItem == null) {
 				if (documentCategory.Items.Count > 0) {
-					activeItem = documentCategory.Items[0];
+					activeItem = documentCategory.Items [0];
 				} else if (padCategory.Items.Count > 0) {
-					activeItem = padCategory.Items[0];
+					activeItem = padCategory.Items [0];
 				} else {
 					Destroy ();
 					return;
@@ -634,11 +662,13 @@ namespace MonoDevelop.Ide
 			
 			documentList.ActiveItem = activeItem;
 			documentList.NextItem (true);
-			documentList.RequestClose += delegate {
-				if (documentList.ActiveItem.Tag is Pad) {
-					((Pad)documentList.ActiveItem.Tag).BringToFront (true);
-				} else {
-					((MonoDevelop.Ide.Gui.Document)documentList.ActiveItem.Tag).Select ();
+			documentList.RequestClose += delegate(object sender, DocumentList.RequestActionEventArgs e) {
+				if (e.SelectItem) {
+					if (documentList.ActiveItem.Tag is Pad) {
+						((Pad)documentList.ActiveItem.Tag).BringToFront (true);
+					} else {
+						((MonoDevelop.Ide.Gui.Document)documentList.ActiveItem.Tag).Select ();
+					}
 				}
 				Destroy ();
 			};

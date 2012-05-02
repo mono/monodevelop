@@ -6,11 +6,11 @@
        description = "Support for Debugging projects"
        copyright = "MIT X11"
        flags = "Hidden"
-       version = "2.8.8.1">
+       version = "2.9.6">
 
 	<Dependencies>
-		<Addin id="Core" version="2.8.8.1"/>
-		<Addin id="Ide" version="2.8.8.1"/>
+		<Addin id="Core" version="2.9.6"/>
+		<Addin id="Ide" version="2.9.6"/>
 	</Dependencies>
 	
 	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerEngines">
@@ -105,7 +105,7 @@
 				_label = "Step Out"
 				_description = "Step Out"
 				shortcut = "Shift|F11" 
-				macShortcut = "Shift|Meta|T"
+				macShortcut = "Shift|Meta|U"
 				icon="md-step-out-debug"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint"
 				defaultHandler = "MonoDevelop.Debugger.NewBreakpointHandler"

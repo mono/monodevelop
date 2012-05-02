@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Formatting
 	[PolicyType ("C# formatting")]
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
-		CSharpFormattingOptions options = new CSharpFormattingOptions ();
+		CSharpFormattingOptions options = FormattingOptionsFactory.CreateMono ();
 		
 		public string Name {
 			get;
@@ -502,64 +502,85 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		#region NewLines
 		[ItemProperty]
-		public bool PlaceElseOnNewLine {
+		public NewLinePlacement ElseNewLinePlacement {
 			get {
-				return options.PlaceElseOnNewLine;
+				return options.ElseNewLinePlacement;
 			}
 			set {
-				options.PlaceElseOnNewLine = value;
+				options.ElseNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool PlaceElseIfOnNewLine {
+		public NewLinePlacement ElseIfNewLinePlacement {
 			get {
-				return options.PlaceElseIfOnNewLine;
+				return options.ElseIfNewLinePlacement;
 			}
 			set {
-				options.PlaceElseIfOnNewLine = value;
+				options.ElseIfNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool PlaceCatchOnNewLine {
+		public NewLinePlacement CatchNewLinePlacement {
 			get {
-				return options.PlaceCatchOnNewLine;
+				return options.CatchNewLinePlacement;
 			}
 			set {
-				options.PlaceCatchOnNewLine = value;
+				options.CatchNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool PlaceFinallyOnNewLine {
+		public NewLinePlacement FinallyNewLinePlacement {
 			get {
-				return options.PlaceFinallyOnNewLine;
+				return options.FinallyNewLinePlacement;
 			}
 			set {
-				options.PlaceFinallyOnNewLine = value;
+				options.FinallyNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public bool PlaceWhileOnNewLine {
+		public NewLinePlacement WhileNewLinePlacement {
 			get {
-				return options.PlaceWhileOnNewLine;
+				return options.WhileNewLinePlacement;
 			}
 			set {
-				options.PlaceWhileOnNewLine = value;
+				options.WhileNewLinePlacement = value;
 			}
 		}
 		
 		[ItemProperty]
-		public ArrayInitializerPlacement PlaceArrayInitializersOnNewLine {
+		public Wrapping ArrayInitializerWrapping {
 			get {
-				return options.PlaceArrayInitializersOnNewLine;
+				return options.ArrayInitializerWrapping;
 			}
 			set {
-				options.PlaceArrayInitializersOnNewLine = value;
+				options.ArrayInitializerWrapping = value;
 			}
 		}
+
+		[ItemProperty]
+		public BraceStyle ArrayInitializerBraceStyle {
+			get {
+				return options.ArrayInitializerBraceStyle;
+			}
+			set {
+				options.ArrayInitializerBraceStyle = value;
+			}
+		}
+
+		[ItemProperty]
+		public bool KeepCommentsAtFirstColumn {
+			get {
+				return options.KeepCommentsAtFirstColumn;
+			}
+			set {
+				options.KeepCommentsAtFirstColumn = value;
+			}
+		}
+
 		#endregion
 		
 		#region Spaces
@@ -1420,118 +1441,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpFormattingPolicy ()
 		{
-			this.options = new CSharpFormattingOptions ();
-			
-			IndentNamespaceBody = true;
-			IndentClassBody = IndentInterfaceBody = IndentStructBody = IndentEnumBody = true;
-			IndentMethodBody = IndentPropertyBody = IndentEventBody = true;
-			IndentBlocks = true;
-			IndentSwitchBody = false;
-			IndentCaseBody = true;
-			IndentBreakStatements = true;
-			NamespaceBraceStyle = BraceStyle.NextLine;
-			ClassBraceStyle = InterfaceBraceStyle = StructBraceStyle = EnumBraceStyle = BraceStyle.NextLine;
-			MethodBraceStyle = ConstructorBraceStyle = DestructorBraceStyle = BraceStyle.NextLine;
-			AnonymousMethodBraceStyle = BraceStyle.EndOfLine;
-
-			PropertyBraceStyle = PropertyGetBraceStyle = PropertySetBraceStyle = BraceStyle.EndOfLine;
-			AllowPropertyGetBlockInline = AllowPropertySetBlockInline = true;
-
-			EventBraceStyle = EventAddBraceStyle = EventRemoveBraceStyle = BraceStyle.EndOfLine;
-			AllowEventAddBlockInline = AllowEventRemoveBlockInline = true;
-			StatementBraceStyle = BraceStyle.EndOfLine;
-
-			PlaceElseOnNewLine = false;
-			PlaceCatchOnNewLine = false;
-			PlaceFinallyOnNewLine = false;
-			PlaceWhileOnNewLine = false;
-			PlaceArrayInitializersOnNewLine = ArrayInitializerPlacement.AlwaysSameLine;
-
-			BeforeMethodCallParentheses = true;
-			BeforeMethodDeclarationParentheses = true;
-			BeforeConstructorDeclarationParentheses = true;
-			BeforeDelegateDeclarationParentheses = true;
-			AfterMethodCallParameterComma = true;
-			AfterConstructorDeclarationParameterComma = true;
-			
-			NewParentheses = true;
-			WithinNewParentheses = false;
-			BetweenEmptyNewParentheses = false;
-			BeforeNewParameterComma = false;
-			AfterNewParameterComma = true;
-			
-			IfParentheses = true;
-			WhileParentheses = true;
-			ForParentheses = true;
-			ForeachParentheses = true;
-			CatchParentheses = true;
-			SwitchParentheses = true;
-			LockParentheses = true;
-			UsingParentheses = true;
-			AroundAssignmentParentheses = true;
-			AroundLogicalOperatorParentheses = true;
-			AroundEqualityOperatorParentheses = true;
-			AroundRelationalOperatorParentheses = true;
-			AroundBitwiseOperatorParentheses = true;
-			AroundAdditiveOperatorParentheses = true;
-			AroundMultiplicativeOperatorParentheses = true;
-			AroundShiftOperatorParentheses = true;
-			AroundNullCoalescingOperator = true;
-			WithinParentheses = false;
-			WithinMethodCallParentheses = false;
-			WithinMethodDeclarationParentheses = false;
-			WithinIfParentheses = false;
-			WithinWhileParentheses = false;
-			WithinForParentheses = false;
-			WithinForEachParentheses = false;
-			WithinCatchParentheses = false;
-			WithinSwitchParentheses = false;
-			WithinLockParentheses = false;
-			WithinUsingParentheses = false;
-			WithinCastParentheses = false;
-			WithinSizeOfParentheses = false;
-			WithinTypeOfParentheses = false;
-			WithinCheckedExpressionParantheses = false;
-			ConditionalOperatorBeforeConditionSpace = true;
-			ConditionalOperatorAfterConditionSpace = true;
-			ConditionalOperatorBeforeSeparatorSpace = true;
-			ConditionalOperatorAfterSeparatorSpace = true;
-
-			SpacesWithinBrackets = false;
-			SpacesBeforeBrackets = true;
-			BeforeBracketComma = false;
-			AfterBracketComma = true;
-					
-			SpacesBeforeForSemicolon = false;
-			SpacesAfterForSemicolon = true;
-			SpacesAfterTypecast = false;
-			
-			AlignEmbeddedIfStatements = true;
-			AlignEmbeddedUsingStatements = true;
-			PropertyFormatting = PropertyFormatting.AllowOneLine;
-			BeforeMethodDeclarationParameterComma = false;
-			AfterMethodDeclarationParameterComma = true;
-			BeforeFieldDeclarationComma = false;
-			AfterFieldDeclarationComma = true;
-			BeforeLocalVariableDeclarationComma = false;
-			AfterLocalVariableDeclarationComma = true;
-			
-			BeforeIndexerDeclarationBracket = true;
-			WithinIndexerDeclarationBracket = false;
-			BeforeIndexerDeclarationParameterComma = false;
-		
-		
-			AfterIndexerDeclarationParameterComma = true;
-			
-			BlankLinesBeforeUsings = 0;
-			BlankLinesAfterUsings = 1;
-			
-			
-			BlankLinesBeforeFirstDeclaration = 0;
-			BlankLinesBetweenTypes = 1;
-			BlankLinesBetweenFields = 0;
-			BlankLinesBetweenEventFields = 0;
-			BlankLinesBetweenMembers = 1;
+			this.options = FormattingOptionsFactory.CreateMono ();
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)

@@ -39,7 +39,9 @@ namespace MonoDevelop.VersionControl
 		
 		static bool CanShow (VersionControlItem item)
 		{
-			return !item.IsDirectory && AddinManager.GetExtensionObjects<IBlameViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item));
+			return !item.IsDirectory
+				&& item.VersionInfo.IsVersioned
+				&& AddinManager.GetExtensionObjects<IBlameViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, null));
 		}
 		
 		public static bool Show (VersionControlItemList items, bool test)

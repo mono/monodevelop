@@ -28,6 +28,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+//#define ANIMATE_DOCKING
+
 using System;
 using Gtk;
 using Gdk;
@@ -100,23 +102,23 @@ namespace MonoDevelop.Components.Docking
 			ShowAll ();
 			Hide ();
 			
-			if (ANIMATE) {
-				scrollable = new ScrollableContainer ();
-				scrollable.ScrollMode = false;
-				scrollable.Show ();
-			}
+#if ANIMATE_DOCKING
+			scrollable = new ScrollableContainer ();
+			scrollable.ScrollMode = false;
+			scrollable.Show ();
+#endif
 
 			if (item.Widget.Parent != null) {
 				((Gtk.Container)item.Widget.Parent).Remove (item.Widget);
 			}
 
 			item.Widget.Show ();
-			if (ANIMATE) {
-				scrollable.Add (item.Widget);
-				fr.PackStart (scrollable, true, true, 0);
-			} else {
-				fr.PackStart (item.Widget, true, true, 0);
-			}
+#if ANIMATE_DOCKING
+			scrollable.Add (item.Widget);
+			fr.PackStart (scrollable, true, true, 0);
+#else
+			fr.PackStart (item.Widget, true, true, 0);
+#endif
 			
 			sepBox.ButtonPressEvent += OnSizeButtonPress;
 			sepBox.ButtonReleaseEvent += OnSizeButtonRelease;
@@ -133,10 +135,7 @@ namespace MonoDevelop.Components.Docking
 		
 		public void AnimateShow ()
 		{
-			if (!ANIMATE) {
-				Show ();
-				return;
-			}
+#if ANIMATE_DOCKING
 			animating = true;
 			scrollable.ScrollMode = true;
 			scrollable.SetSize (position, targetSize);
@@ -159,18 +158,21 @@ namespace MonoDevelop.Components.Docking
 			}
 			Show ();
 			GLib.Timeout.Add (10, RunAnimateShow);
+#else
+			Show ();
+#endif
 		}
 		
 		public void AnimateHide ()
 		{
-			if (!ANIMATE) {
-				Hide ();
-				return;
-			}
+#if ANIMATE_DOCKING
 			animating = true;
 			scrollable.ScrollMode = true;
 			scrollable.SetSize (position, targetSize);
 			GLib.Timeout.Add (10, RunAnimateHide);
+#else
+			Hide ();
+#endif
 		}
 		
 		bool RunAnimateShow ()
@@ -330,7 +332,6 @@ namespace MonoDevelop.Components.Docking
 		void OnGripExpose (object sender, Gtk.ExposeEventArgs args)
 		{
 			var w = (EventBox) sender;
-			Gdk.Rectangle handleRect = w.Allocation;
 			StateType s = insideGrip ? StateType.Prelight : StateType.Normal;
 			
 			using (var ctx = CairoHelper.Create (args.Event.Window)) {

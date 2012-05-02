@@ -14,10 +14,12 @@ obj/
 /main/tests/config
 /main/tests/UnitTests/test-results
 /main/contrib/bin/
+/main/contrib/*/*/bin/
 /local-libs
 
 # globs
 Makefile.in
+*.DS_Store
 *.sln.cache
 *.suo
 *.pidb
@@ -31,6 +33,8 @@ install-sh
 autom4te.cache/
 *.user
 *.tar.gz
+tarballs/
+test-results/
 
 #Mac bundle stuff
 *.dmg
@@ -61,6 +65,7 @@ autom4te.cache/
 /main/contrib/Makefile
 /main/contrib/Mono.Cecil/Makefile
 /main/contrib/NRefactory/Makefile
+/main/contrib/ICSharpCode.NRefactory.CSharp/Makefile
 /main/contrib/GitSharp/Makefile
 /main/contrib/Mono.Debugger.Soft/Makefile
 /main/po/Makefile

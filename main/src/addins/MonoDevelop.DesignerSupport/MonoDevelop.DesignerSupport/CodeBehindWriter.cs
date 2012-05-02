@@ -173,9 +173,9 @@ namespace MonoDevelop.DesignerSupport
 								//change the contents
 								//FIXME: Workaround for "Bug 484574 - Setting SourceEditorView.Text doesn't mark the document as dirty"
 								// The bug means that the docuemnt doesn't get saved or reparsed.
-								textFile.DeleteText (0, textFile.Length);
-								textFile.InsertText (0, item.Value);
-								
+								doc.Editor.Text = item.Value;
+								doc.IsDirty = true;
+
 								doc.Save ();
 								updated = true;
 								break;

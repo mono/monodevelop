@@ -23,122 +23,174 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using Mono.CSharp;
 using Mono.TextEditor;
-using MonoDevelop.CSharp.Parser;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Refactoring;
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Policies;
 using ICSharpCode.NRefactory.CSharp;
 using System.Text;
-using System.Linq;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using MonoDevelop.CSharp.ContextAction;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.CSharp.Completion;
+using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.CSharp.Parser;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	public class OnTheFlyFormatter
 	{
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ProjectDom dom)
+		public static void Format (MonoDevelop.Ide.Gui.Document data)
 		{
-			Format (data, dom, DomLocation.Empty, false);
+			Format (data, 0, data.Editor.Length);
 		}
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ProjectDom dom, DomLocation location, bool runAferCR = false)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location)
 		{
-			Format (data, dom, location, false, runAferCR);
-		}
+			Format (data, location, location);
+		} 
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, ProjectDom dom, DomLocation location, bool correctBlankLines, bool runAferCR = false)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation startLocation, TextLocation endLocation)
 		{
-			PolicyContainer policyParent = dom != null && dom.Project != null ? dom.Project.Policies  : PolicyService.DefaultPolicies;
+			Format (data, data.Editor.LocationToOffset (startLocation), data.Editor.LocationToOffset (endLocation));
+		}
+		
+		public static void Format (MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset)
+		{
+			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, data, dom, location, correctBlankLines, runAferCR);
+			Format (policyParent, mimeTypeChain, data, startOffset, endOffset);
 		}
-
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, ProjectDom dom, DomLocation location, bool correctBlankLines, bool runAferCR/* = false*/)
+		
+		
+		/// <summary>
+		/// Builds a compileable stub file out of an entity.
+		/// </summary>
+		/// <returns>
+		/// A string representing the stub
+		/// </returns>
+		/// <param name='memberStartOffset'>
+		/// The offset where the member starts in the returned text.
+		/// </param>
+		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int endOffset, out int memberStartOffset)
 		{
-			if (data.ParsedDocument == null || data.ParsedDocument.CompilationUnit == null)
-				return;
-			var member = data.ParsedDocument.CompilationUnit.GetMemberAt (location.Line + (runAferCR ? -1 : 0), location.Column);
-			if (member == null || member.Location.IsEmpty || member.BodyRegion.End.IsEmpty)
-				return;
+			var pf = data.ParsedDocument.ParsedFile as CSharpParsedFile;
+			if (pf == null) {
+				memberStartOffset = 0;
+				return null;
+			}
 			
-			StringBuilder sb = new StringBuilder ();
+			var sb = new StringBuilder ();
+			
 			int closingBrackets = 0;
-			DomRegion validRegion = DomRegion.Empty;
-			foreach (var u in data.ParsedDocument.CompilationUnit.Usings.Where (us => us.IsFromNamespace)) {
-				// the dom parser breaks A.B.C into 3 namespaces with the same region, this is filtered here
-				if (u.ValidRegion == validRegion || !u.ValidRegion.Contains (location))
-					continue;
-				// indicates a parser error on namespace level.
-				if (u.Namespaces.FirstOrDefault () == "<invalid>")
-					continue;
-				validRegion = u.ValidRegion;
+			
+			// use the member start location to determine the using scope, because this information is in sync, the position in
+			// the file may have changed since last parse run (we have up 2 date locations from the type segment tree).
+			var scope = pf.GetUsingScope (seg.Entity.Region.Begin);
+
+			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
 				sb.Append ("namespace Stub {");
 				sb.Append (data.Editor.EolMarker);
 				closingBrackets++;
+				while (scope.Parent != null && scope.Parent.Region == scope.Region)
+					scope = scope.Parent;
+				scope = scope.Parent;
 			}
-			
-			var parent = member.DeclaringType;
+
+			var parent = seg.Entity.DeclaringTypeDefinition;
 			while (parent != null) {
-				sb.Append ("class Stub {");
+				sb.Append ("class " + parent.Name + " {");
 				sb.Append (data.Editor.EolMarker);
 				closingBrackets++;
-				parent = parent.DeclaringType;
+				parent = parent.DeclaringTypeDefinition;
 			}
-			int memberStart = data.Editor.LocationToOffset (member.Location.Line, 1);
-			int memberEnd = data.Editor.LocationToOffset (member.BodyRegion.End.Line + (runAferCR ? 1 : 0), member.BodyRegion.End.Column);
-			if (memberEnd < 0)
-				memberEnd = data.Editor.Length;
+
+			memberStartOffset = sb.Length;
+			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
 			
-			int startOffset = sb.Length;
-			sb.Append (data.Editor.GetTextBetween (memberStart, memberEnd));
-			
-			int endOffset = sb.Length;
+			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
+			// could interfere with the current indentation.
+			var endLocation = data.Editor.OffsetToLocation (endOffset);
+			for (int i = 0; i <= endLocation.Column; i++) {
+				sb.Append (data.Editor.EolMarker);
+			}
 			sb.Append (data.Editor.EolMarker);
 			sb.Append (new string ('}', closingBrackets));
 			
-			TextEditorData stubData = new TextEditorData () { Text = sb.ToString () };
-			stubData.Document.FileName = data.FileName;
-			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
-			var compilationUnit = parser.Parse (stubData);
-			bool hadErrors = parser.HasErrors;
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var adapter = new TextEditorDataAdapter (stubData);
-			
-			var domSpacingVisitor = new AstFormattingVisitor (policy.CreateOptions (), adapter, new FormattingActionFactory (data.Editor)) {
-				HadErrors = hadErrors
-			};
-			compilationUnit.AcceptVisitor (domSpacingVisitor, null);
-			
-			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-			changes.AddRange (domSpacingVisitor.Changes.Cast<TextReplaceAction> ().Where (c => startOffset < c.Offset && c.Offset < endOffset));
-			
-			int delta = memberStart - startOffset;
-			HashSet<int> lines = new HashSet<int> ();
-			foreach (TextReplaceAction change in changes) {
-				change.Offset += delta;
-				lines.Add (data.Editor.OffsetToLineNumber (change.Offset));
-			}
-			// be sensible in documents with parser errors - only correct up to the caret position.
-			if (hadErrors || data.ParsedDocument.Errors.Any (e => e.ErrorType == ErrorType.Error)) {
-				var lastOffset = data.Editor.Caret.Offset;
-				changes.RemoveAll (c => ((TextReplaceAction)c).Offset > lastOffset);
-			}
-			
-			using (var undo = data.Editor.OpenUndoGroup ()) {
-				MDRefactoringContext.MdScript.RunActions (changes, null);
+			return sb.ToString ();
+		}
+		
+		static AstFormattingVisitor GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document document, string input)
+		{
+			using (var stubData = TextEditorData.CreateImmutable (input)) {
+				stubData.Document.FileName = document.FileName;
+				var parser = document.HasProject ? new ICSharpCode.NRefactory.CSharp.CSharpParser (TypeSystemParser.GetCompilerArguments (document.Project)) : new ICSharpCode.NRefactory.CSharp.CSharpParser ();
+				var compilationUnit = parser.Parse (stubData);
+				bool hadErrors = parser.HasErrors;
+				// try it out, if the behavior is better when working only with correct code.
+				if (hadErrors) {
+					return null;
+				}
 				
-				foreach (int line in lines)
-					data.Editor.Document.CommitLineUpdate (line);
+				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+				
+				var formattingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, document.Editor.CreateNRefactoryTextEditorOptions ()) {
+					HadErrors = hadErrors
+				};
+				compilationUnit.AcceptVisitor (formattingVisitor);
+				return formattingVisitor;
 			}
-			stubData.Dispose ();
+		}
+		
+		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset)
+		{
+			if (data.ParsedDocument == null)
+				return;
+			var ext = data.GetContent<CSharpCompletionTextEditorExtension> ();
+			if (ext == null)
+				return;
+			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset);
+			if (seg == null)
+				return;
+			var member = seg.Entity;
+			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
+				return;
+			
+			// Build stub
+			int formatStartOffset;
+			var text = BuildStub (data, seg, endOffset, out formatStartOffset);
+			int formatLength = endOffset - seg.Offset;
+			// Get changes from formatting visitor
+			var changes = GetFormattingChanges (policyParent, mimeTypeChain, data, text);
+			if (changes == null)
+				return;
+
+			// Do the actual formatting
+//			var originalVersion = data.Editor.Document.Version;
+
+			int realTextDelta = seg.Offset - formatStartOffset;
+			int startDelta = 1;
+			using (var undo = data.Editor.OpenUndoGroup ()) {
+				try {
+					changes.ApplyChanges (formatStartOffset + startDelta, Math.Max (0, formatLength - startDelta - 1), delegate (int replaceOffset, int replaceLength, string insertText) {
+						int translatedOffset = realTextDelta + replaceOffset;
+						data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
+						data.Editor.Replace (translatedOffset, replaceLength, insertText);
+					}, (replaceOffset, replaceLength, insertText) => {
+						int translatedOffset = realTextDelta + replaceOffset;
+						if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length)
+							return true;
+						return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
+					});
+				} catch (Exception e) {
+					LoggingService.LogError ("Error in on the fly formatter", e);
+				}
+
+//				var currentVersion = data.Editor.Document.Version;
+//				data.Editor.Caret.Offset = originalVersion.MoveOffsetTo (currentVersion, caretOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default);
+			}
 		}
 	}
 }

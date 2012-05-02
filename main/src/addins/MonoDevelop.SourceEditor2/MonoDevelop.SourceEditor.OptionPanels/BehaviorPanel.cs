@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -37,6 +38,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			indentationCombobox.InsertText (0, GettextCatalog.GetString ("None"));
 			indentationCombobox.InsertText (1, GettextCatalog.GetString ("Automatic"));
 			indentationCombobox.InsertText (2, GettextCatalog.GetString ("Smart"));
+//			indentationCombobox.InsertText (3, GettextCatalog.GetString ("Virtual"));
 
 			controlLeftRightCombobox.InsertText (0, GettextCatalog.GetString ("MonoDevelop"));
 			controlLeftRightCombobox.InsertText (1, GettextCatalog.GetString ("Emacs"));
@@ -73,7 +75,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			//DefaultSourceEditorOptions.Options.AutoInsertTemplates = this.autoInsertTemplateCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = this.autoInsertBraceCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement = this.smartSemicolonPlaceCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.IndentStyle = (MonoDevelop.Ide.Gui.Content.IndentStyle)this.indentationCombobox.Active;
+			DefaultSourceEditorOptions.Instance.IndentStyle = (IndentStyle)this.indentationCombobox.Active;
 			DefaultSourceEditorOptions.Instance.TabIsReindent = this.tabAsReindentCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ControlLeftRightMode = (ControlLeftRightMode)this.controlLeftRightCombobox.Active;
 			DefaultSourceEditorOptions.Instance.UseViModes = this.useViModesCheck.Active;

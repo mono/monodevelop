@@ -18,51 +18,21 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Represents an unresolved constant value.
+	/// </summary>
+	public interface IConstantValue
 	{
 		/// <summary>
-		/// Gets the type of the constant value.
+		/// Resolves the value of this constant.
 		/// </summary>
-		IType GetValueType(ITypeResolveContext context);
-		
-		/// <summary>
-		/// Gets the .NET value of the constant value.
-		/// Possible return values are:
-		/// - null
-		/// - primitive integers
-		/// - float/double
-		/// - bool
-		/// - string
-		/// - IType (for typeof-expressions)
-		/// and arrays of these values. Enum values are returned using the underlying primitive integer.
-		/// 
-		/// TODO: how do we represent errors (value not available?)
-		/// </summary>
-		object GetValue(ITypeResolveContext context);
+		/// <param name="context">Context where the constant value will be used.</param>
+		/// <returns>Resolve result representing the constant value.
+		/// This method never returns null; in case of errors, an ErrorResolveResult will be returned.</returns>
+		ResolveResult Resolve(ITypeResolveContext context);
 	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		IType IConstantValue.GetValueType(ITypeResolveContext context)
-		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<IType>() != null);
-			return null;
-		}
-		
-		object IConstantValue.GetValue(ITypeResolveContext context)
-		{
-			Contract.Requires(context != null);
-			return null;
-		}
-	}
-	#endif
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<Template originator   = "Jeffrey Stedfast"
+          created      = "04/03/2012"
+          lastModified = "04/03/2012">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Portable Library</_Name>
+		<_Category>C#</_Category>
+		<Icon>md-project-library|res:csharp-icon-32.png</Icon>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates a C# library that can be used in Windows, Silverlight, Windows Phone, Xbox 360, MonoTouch and Mono for Android.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MyClass.cs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "PortableDotNet">
+			<Options Target = "Library" TargetFrameworkVersion = ".NETPortable,Version=v4.0,Profile=Profile1"/>
+			<References>
+				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+			</References>
+			<Files>
+				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			</Files>
+		</Project>
+	</Combine>
+</Template>

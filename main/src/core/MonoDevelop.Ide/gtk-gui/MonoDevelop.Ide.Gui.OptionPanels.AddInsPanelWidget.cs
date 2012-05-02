@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Automatically check for updates:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Automatically check for updates:");
 			this.vbox72.Add (this.label2);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox72 [this.label2]));
 			w1.Position = 0;
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.vbox5.Name = "vbox5";
 			this.vbox5.Spacing = 6;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.radioHour = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Every hour"));
+			this.radioHour = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Every hour"));
 			this.radioHour.CanFocus = true;
 			this.radioHour.Name = "radioHour";
 			this.radioHour.Active = true;
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.radioDay = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Every day"));
+			this.radioDay = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Every day"));
 			this.radioDay.CanFocus = true;
 			this.radioDay.Name = "radioDay";
 			this.radioDay.DrawIndicator = true;
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.radioMonth = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Every month"));
+			this.radioMonth = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Every month"));
 			this.radioMonth.CanFocus = true;
 			this.radioMonth.Name = "radioMonth";
 			this.radioMonth.DrawIndicator = true;
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.radioNever = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Never"));
+			this.radioNever = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Never"));
 			this.radioNever.CanFocus = true;
 			this.radioNever.Name = "radioNever";
 			this.radioNever.DrawIndicator = true;
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.checkUnstable = new global::Gtk.CheckButton ();
 			this.checkUnstable.CanFocus = true;
 			this.checkUnstable.Name = "checkUnstable";
-			this.checkUnstable.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Install unstable developer updates");
+			this.checkUnstable.Label = global::Mono.Unix.Catalog.GetString ("Install unstable developer updates");
 			this.checkUnstable.Active = true;
 			this.checkUnstable.DrawIndicator = true;
 			this.checkUnstable.UseUnderline = true;
@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.vbox6.Name = "vbox6";
 			this.vbox6.Spacing = 6;
 			// Container child vbox6.Gtk.Box+BoxChild
-			this.radioBeta = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Beta updates (weekly)"));
+			this.radioBeta = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Beta updates (weekly)"));
 			this.radioBeta.CanFocus = true;
 			this.radioBeta.Name = "radioBeta";
 			this.radioBeta.Active = true;
@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child vbox6.Gtk.Box+BoxChild
-			this.radioAlpha = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Alpha updates (very often, very unstable)"));
+			this.radioAlpha = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Alpha updates (very often, very unstable)"));
 			this.radioAlpha.CanFocus = true;
 			this.radioAlpha.Name = "radioAlpha";
 			this.radioAlpha.DrawIndicator = true;
@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child vbox6.Gtk.Box+BoxChild
-			this.radioTest = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("Test"));
+			this.radioTest = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Test"));
 			this.radioTest.CanFocus = true;
 			this.radioTest.Name = "radioTest";
 			this.radioTest.DrawIndicator = true;
@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buttonUpdateNow.CanFocus = true;
 			this.buttonUpdateNow.Name = "buttonUpdateNow";
 			this.buttonUpdateNow.UseUnderline = true;
-			this.buttonUpdateNow.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Check for Updates Now");
+			this.buttonUpdateNow.Label = global::Mono.Unix.Catalog.GetString ("Check for Updates Now");
 			this.hbox3.Add (this.buttonUpdateNow);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.buttonUpdateNow]));
 			w15.Position = 0;

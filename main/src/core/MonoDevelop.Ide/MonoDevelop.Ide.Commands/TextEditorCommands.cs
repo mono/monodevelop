@@ -68,6 +68,7 @@ namespace MonoDevelop.Ide.Commands
 		SelectionMoveEnd,
 		SelectionMoveToDocumentStart,
 		SelectionMoveToDocumentEnd,
+		ExpandSelectionToLine,
 		SwitchCaretMode,
 		InsertTab,
 		RemoveTab,
@@ -87,6 +88,7 @@ namespace MonoDevelop.Ide.Commands
 		DeleteNextSubword,
 		TransposeCharacters,
 		RecenterEditor,
+		DuplicateLine,
 		
 		ToggleCompletionSuggestionMode,
 		ToggleBlockSelectionMode

@@ -64,13 +64,32 @@ namespace MonoDevelop.Ide
 			get { return mainContext; }
 		}
 		
-		internal MonoDevelopStatusBar()
+		/// <summary>
+		/// For small size changes the caret label is grow only. That ensures that normal caret movement doesn't
+		/// update the whole status bar all the time. But for big jumps in size a resize is done.
+		/// </summary>
+		class CaretStatusLabel : Gtk.Label
+		{
+			public CaretStatusLabel (string label): base (label)
+			{
+			}
+
+			protected override void OnSizeRequested (ref Requisition requisition)
+			{
+				base.OnSizeRequested (ref requisition);
+				const int upperBound = 20;
+				if (Allocation.Width > 0 && Math.Abs (Allocation.Width - requisition.Width) < upperBound)
+					requisition.Width = Math.Max (Allocation.Width, requisition.Width);
+			}
+		}
+
+		internal MonoDevelopStatusBar ()
 		{
 			mainContext = new MainStatusBarContextImpl (this);
 			activeContext = mainContext;
 			contexts.Add (mainContext);
 			
-			Frame originalFrame = (Frame)Children[0];
+			Frame originalFrame = (Frame)Children [0];
 //			originalFrame.WidthRequest = 8;
 //			originalFrame.Shadow = ShadowType.In;
 //			originalFrame.BorderWidth = 0;
@@ -95,7 +114,8 @@ namespace MonoDevelop.Ide
 				fr.Add (feedbackButton);
 				PackStart (fr, false, false, 0);
 				feedbackButton.Clicked += HandleFeedbackButtonClicked;
-				feedbackButton.ButtonPressEvent += HandleFeedbackButtonButtonPressEvent;;
+				feedbackButton.ButtonPressEvent += HandleFeedbackButtonButtonPressEvent;
+				;
 				feedbackButton.ClickOnRelease = true;
 				FeedbackService.FeedbackPositionGetter = delegate {
 					int x, y;
@@ -108,7 +128,7 @@ namespace MonoDevelop.Ide
 			
 			// Dock area
 			
-			DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
+			DefaultWorkbench wb = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
 			wb.DockFrame.ShadedContainer.Add (this);
 			Gtk.Widget dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
 			dockBar.NoShowAll = true;
@@ -143,15 +163,20 @@ namespace MonoDevelop.Ide
 			textStatusBarPanel.BorderWidth = 0;
 			textStatusBarPanel.ShadowType = ShadowType.None;
 			textStatusBarPanel.Add (statusBox);
-			Label fillerLabel = new Label ();
-			fillerLabel.WidthRequest = 8;
-			statusBox.PackEnd (fillerLabel, false, false, 0);
 			
+			var eventCaretBox = new EventBox ();
+			var caretStatusBox = new HBox ();
 			modeLabel = new Label (" ");
-			statusBox.PackEnd (modeLabel, false, false, 8);
+			caretStatusBox.PackEnd (modeLabel, false, false, 8);
 			
-			cursorLabel = new Label (" ");
-			statusBox.PackEnd (cursorLabel, false, false, 0);
+			cursorLabel = new CaretStatusLabel (" ");
+			caretStatusBox.PackEnd (cursorLabel, false, false, 0);
+			
+			caretStatusBox.GetSizeRequest (out w, out h);
+			caretStatusBox.WidthRequest = w;
+			caretStatusBox.HeightRequest = h;
+			eventCaretBox.Add (caretStatusBox);
+			statusBox.PackEnd (eventCaretBox, false, false, 0);
 			
 			statusIconBox = new HBox ();
 			statusIconBox.BorderWidth = 0;
@@ -268,7 +293,6 @@ namespace MonoDevelop.Ide
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
 		{
 			DispatchService.AssertGuiThread ();
-			
 			string cursorText = selectedChars > 0 ? String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars) : String.Format ("{0,3} : {1,-3}", line, column);
 			if (cursorLabel.Text != cursorText)
 				cursorLabel.Text = cursorText;

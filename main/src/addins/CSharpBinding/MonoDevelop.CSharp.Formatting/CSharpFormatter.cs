@@ -25,66 +25,20 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
 
-using ICSharpCode.OldNRefactory;
-using ICSharpCode.OldNRefactory.Ast;
-using ICSharpCode.OldNRefactory.PrettyPrinter;
 
 using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
-using MonoDevelop.Ide;
-using MonoDevelop.Refactoring;
 using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using MonoDevelop.CSharp.ContextAction;
 using MonoDevelop.Core;
+using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class FormattingActionFactory : AbstractActionFactory
-	{
-		Mono.TextEditor.TextEditorData data;
-		
-		class ConcreteTextReplaceAction : TextReplaceAction
-		{
-			Mono.TextEditor.TextEditorData data;
-			
-			public ConcreteTextReplaceAction (Mono.TextEditor.TextEditorData data, int offset, int removedChars, string insertedText) : base (offset, removedChars, insertedText)
-			{
-				this.data = data;
-			}
-			
-			public override void Perform (Script script)
-			{
-				data.Replace (Offset, RemovedChars, InsertedText);
-			}
-		}
-		
-		public FormattingActionFactory (Mono.TextEditor.TextEditorData data)
-		{
-			if (data == null)
-				throw new ArgumentNullException ("data");
-			this.data = data;
-		}
-		
-		public override TextReplaceAction CreateTextReplaceAction (int offset, int removedChars, string insertedText)
-		{
-			return new ConcreteTextReplaceAction (data, offset, removedChars, insertedText);
-		}
-	}
-	
 	public class CSharpFormatter : AbstractAdvancedFormatter
 	{
 		static internal readonly string MimeType = "text/x-csharp";
@@ -96,21 +50,22 @@ namespace MonoDevelop.CSharp.Formatting
 		public override void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
 			TextEditorData data, int line)
 		{
-			LineSegment lineSegment = data.Document.GetLine (line);
+			DocumentLine lineSegment = data.Document.GetLine (line);
 			if (lineSegment == null)
 				return;
 
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy), data);
+			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+			var tracker = new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textPolicy), data);
 			tracker.UpdateEngine (lineSegment.Offset);
-			for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.EditableLength; i++) {
+			for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
 				tracker.Engine.Push (data.Document.GetCharAt (i));
 			}
 
 			string curIndent = lineSegment.GetIndentation (data.Document);
 
 			int nlwsp = curIndent.Length;
-			if (!tracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.Length && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
+			if (!tracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
 				string newIndent = tracker.Engine.ThisLineIndent;
 				if (newIndent != curIndent) 
@@ -119,55 +74,11 @@ namespace MonoDevelop.CSharp.Formatting
 			tracker.Dispose ();
 		}
 
-		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditorData data, IType type, IMember member, ProjectDom dom, ICompilationUnit unit, DomLocation caretLocation)
+		public override void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
-			//		OnTheFlyFormatter.Format (policyParent, mimeTypeChain, data, dom, caretLocation, true);
+			OnTheFlyFormatter.Format (doc, startOffset, endOffset);
 		}
 
-		public override void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditorData data, int startOffset, int endOffset)
-		{
-			var parser = new CSharpParser ();
-			var compilationUnit = parser.ParseSnippet (data);
-			if (compilationUnit == null) {
-				Console.WriteLine ("couldn't parse : " + data.Text);
-				return;
-			}
-			if (parser.HasErrors)
-				return;
-			
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var adapter = new TextEditorDataAdapter (data);
-			var factory = new FormattingActionFactory (data);
-			
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, factory) {
-				HadErrors =  parser.HasErrors
-			};
-			
-			compilationUnit.AcceptVisitor (formattingVisitor, null);
-			
-			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-			changes.AddRange (formattingVisitor.Changes.
-				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-			
-			var startPositionChange = factory.CreateTextReplaceAction (startOffset, 0, null);
-			changes.Add (startPositionChange);
-			
-			var endPositionChange = factory.CreateTextReplaceAction (endOffset, 0, null);
-			changes.Add (endPositionChange);
-			
-			using (var undo = data.OpenUndoGroup ()) {
-				MDRefactoringContext.MdScript.RunActions (changes, null);
-			}
-			
-			if (data.IsSomethingSelected) {
-				var range = data.SelectionRange;
-				if (range.Offset == startOffset && range.EndOffset == endOffset) {
-					data.SetSelection (startPositionChange.Offset, endPositionChange.Offset);
-				}
-			}
-		}
 
 		public string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
@@ -178,37 +89,44 @@ namespace MonoDevelop.CSharp.Formatting
 			if (textPolicy != null) {
 				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
 				data.Options.TabSize = textPolicy.TabWidth;
+				data.Options.IndentationSize = textPolicy.IndentWidth;
+				data.Options.IndentStyle = textPolicy.RemoveTrailingWhitespace ? IndentStyle.Virtual : IndentStyle.Smart;
 			}
 			data.Text = input;
 
 			// System.Console.WriteLine ("-----");
 			// System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
 			// System.Console.WriteLine ("-----");
-			
+
 			var parser = new CSharpParser ();
 			var compilationUnit = parser.Parse (data);
 			bool hadErrors = parser.HasErrors;
 			
 			if (hadErrors) {
-//				foreach (var e in parser.ErrorReportPrinter.Errors)
-//					Console.WriteLine (e.Message);
+				//				foreach (var e in parser.ErrorReportPrinter.Errors)
+				//					Console.WriteLine (e.Message);
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
-			var adapter = new TextEditorDataAdapter (data);
-			var factory = new FormattingActionFactory (data);
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.AstFormattingVisitor (policy.CreateOptions (), adapter, factory) {
-				HadErrors = hadErrors
+
+			var originalVersion = data.Document.Version;
+
+			var textEditorOptions = data.CreateNRefactoryTextEditorOptions ();
+			var formattingVisitor = new AstFormattingVisitor (
+				policy.CreateOptions (),
+				data.Document,
+				textEditorOptions
+			) {
+				HadErrors = hadErrors,
+				FormattingMode = FormattingMode.Intrusive
 			};
-			
-			compilationUnit.AcceptVisitor (formattingVisitor, null);
-			
-			var changes = new List<ICSharpCode.NRefactory.CSharp.Refactoring.Action> ();
-			changes.AddRange (formattingVisitor.Changes.
-				Where (c => (startOffset <= c.Offset && c.Offset < endOffset)));
-			var endPositionChange = factory.CreateTextReplaceAction (endOffset, 0, null);
-			changes.Add (endPositionChange);
-			MDRefactoringContext.MdScript.RunActions (changes, null);
-			
+			compilationUnit.AcceptVisitor (formattingVisitor);
+			try {
+				formattingVisitor.ApplyChanges (startOffset, endOffset - startOffset);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error in code formatter", e);
+				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
+			}
+
 			// check if the formatter has produced errors
 			parser = new CSharpParser ();
 			parser.Parse (data);
@@ -216,11 +134,10 @@ namespace MonoDevelop.CSharp.Formatting
 				LoggingService.LogError ("C# formatter produced source code errors. See console for output.");
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
-			
-/*			System.Console.WriteLine ("-----");
-			System.Console.WriteLine (data.Text.Replace (" ", "^").Replace ("\t", "->"));
-			System.Console.WriteLine ("-----");*/
-			string result = data.GetTextBetween (startOffset, Math.Min (data.Length, endPositionChange.Offset));
+
+			var currentVersion = data.Document.Version;
+
+			string result = data.GetTextBetween (startOffset, originalVersion.MoveOffsetTo (currentVersion, endOffset, ICSharpCode.NRefactory.Editor.AnchorMovementType.Default));
 			data.Dispose ();
 			return result;
 		}

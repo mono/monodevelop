@@ -33,6 +33,7 @@ using System.Xml;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Mono.Addins;
+using MonoDevelop.Core.AddIns;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
@@ -445,7 +446,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					builder.ReferenceCount++;
 					return new RemoteProjectBuilder (file, binDir, builder);
 				}
-				
 
 				//always start the remote process explicitly, even if it's using the current runtime and fx
 				//else it won't pick up the assembly redirects from the builder exe

@@ -1,7 +1,10 @@
 
 EXTRA_DIST = configure
 
-all: all-recursive
+all: update_submodules all-recursive
+
+update_submodules:
+	git submodule update --init --recursive
 
 top_srcdir=.
 include $(top_srcdir)/config.make
@@ -73,9 +76,6 @@ check-addins:
 
 app-dir:
 	cd main && make app-dir
-
-package-monomac:
-	(cd main; make package-monomac)
 
 reset-versions: reset-all
 check-versions: check-all

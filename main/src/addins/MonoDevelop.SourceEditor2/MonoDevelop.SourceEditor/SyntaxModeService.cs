@@ -41,7 +41,11 @@ namespace MonoDevelop.SourceEditor
 				switch (args.Change) {
 				case ExtensionChange.Add:
 //					Console.WriteLine ("INstall:" + syntaxModeCodon.MimeTypes);
-					Mono.TextEditor.Highlighting.SyntaxModeService.InstallSyntaxMode (syntaxModeCodon.MimeTypes, syntaxModeCodon.SyntaxMode);
+					Mono.TextEditor.Highlighting.SyntaxModeService.InstallSyntaxMode (syntaxModeCodon.MimeTypes, new SyntaxModeProvider (d => {
+						var result = syntaxModeCodon.SyntaxMode;
+						result.Document = d;
+						return result;
+					}));
 					break;
 				}
 			});

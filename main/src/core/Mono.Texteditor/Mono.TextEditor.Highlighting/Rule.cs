@@ -35,10 +35,10 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class Rule
 	{
-		protected List<Keywords> keywords = new List<Keywords> ();
-		protected Span[] spans = new Span[0];
-		protected Match[] matches = new Match[0];
-		protected Marker[] prevMarker = new Marker[0];
+		internal protected List<Keywords> keywords = new List<Keywords> ();
+		internal protected Span[] spans = new Span[0];
+		internal protected Match[] matches = new Match[0];
+		internal protected Marker[] prevMarker = new Marker[0];
 		
 		public List<SemanticRule> SemanticRules = new List<SemanticRule> ();
 		
@@ -50,7 +50,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public virtual bool GetIsValid (ColorSheme style)
+		public virtual bool GetIsValid (ColorScheme style)
 		{
 			foreach (Keywords keyword in keywords) {
 				if (!keyword.GetIsValid (style)) {
@@ -81,7 +81,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string Name {
 			get;
-			protected set;
+			internal protected set;
 		}
 		
 		public IEnumerable<Keywords> Keywords {
@@ -110,12 +110,12 @@ namespace Mono.TextEditor.Highlighting
 		
 		public bool IgnoreCase {
 			get;
-			protected set;
+			internal protected set;
 		}
 		
 		public string DefaultColor {
 			get;
-			protected set;
+			internal protected set;
 		}
 		
 		string delimiter;
@@ -123,7 +123,7 @@ namespace Mono.TextEditor.Highlighting
 			get { 
 				return string.IsNullOrEmpty (delimiter) ? mode.Delimiter : delimiter; 
 			}
-			protected set { delimiter = value; }
+			internal protected set { delimiter = value; }
 		}
 
 		public Marker[] PrevMarker {
@@ -139,9 +139,9 @@ namespace Mono.TextEditor.Highlighting
 			this.mode = mode;
 		}
 		
-		public virtual Rule GetRule (string name)
+		public virtual Rule GetRule (TextDocument doc, string name)
 		{
-			return mode.GetRule (name);
+			return mode.GetRule (doc, name);
 		}
 		
 		public override string ToString ()

@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Projects
 			// Widget MonoDevelop.Ide.Projects.ExportSolutionDialog
 			this.Events = ((global::Gdk.EventMask)(256));
 			this.Name = "MonoDevelop.Ide.Projects.ExportSolutionDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Export Solution");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Export Solution");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			this.Resizable = false;
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Target folder:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Target folder:");
 			this.table.Add (this.label2);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table [this.label2]));
 			w4.TopAttach = ((uint)(2));
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.Xalign = 0F;
-			this.label4.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Current format:");
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("Current format:");
 			this.table.Add (this.label4);
 			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table [this.label4]));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Projects
 			this.newFormatLabel = new global::Gtk.Label ();
 			this.newFormatLabel.Name = "newFormatLabel";
 			this.newFormatLabel.Xalign = 0F;
-			this.newFormatLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("New format:");
+			this.newFormatLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("New format:");
 			this.table.Add (this.newFormatLabel);
 			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table [this.newFormatLabel]));
 			w7.TopAttach = ((uint)(1));

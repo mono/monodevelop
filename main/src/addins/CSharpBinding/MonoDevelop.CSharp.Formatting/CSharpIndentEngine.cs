@@ -74,12 +74,17 @@ namespace MonoDevelop.CSharp.Formatting
 		int curLineNr;
 		int cursor;
 		CSharpFormattingPolicy policy;
+		TextStylePolicy textPolicy;
 		// Constructors
-		public CSharpIndentEngine (CSharpFormattingPolicy policy)
+
+		public CSharpIndentEngine (CSharpFormattingPolicy policy, TextStylePolicy textPolicy)
 		{
 			if (policy == null)
 				throw new ArgumentNullException ("policy");
+			if (textPolicy == null)
+				throw new ArgumentNullException ("textPolicy");
 			this.policy = policy;
+			this.textPolicy = textPolicy;
 			stack = new IndentStack (this);
 			linebuf = new StringBuilder ();
 			Reset ();
@@ -147,26 +152,24 @@ namespace MonoDevelop.CSharp.Formatting
 		string TabsToSpaces (string indent)
 		{
 			StringBuilder builder;
-			int width;
-			
+
 			if (indent == String.Empty)
 				return String.Empty;
 			
 			builder = new StringBuilder ();
-			width = TextEditorProperties.TabIndent;
 			for (int i = 0; i < indent.Length; i++) {
 				if (indent[i] == '\t')
-					builder.Append (' ', width);
+					builder.Append (' ', textPolicy.TabWidth);
 				else
 					builder.Append (indent[i]);
 			}
 			
 			return builder.ToString ();
 		}
-		
+
 		public string ThisLineIndent {
 			get {
-				if (TextEditorProperties.ConvertTabsToSpaces)
+				if (textPolicy.TabsToSpaces)
 					return TabsToSpaces (curIndent);
 				
 				return curIndent;
@@ -175,7 +178,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public string NewLineIndent {
 			get {
-				if (TextEditorProperties.ConvertTabsToSpaces)
+				if (textPolicy.TabsToSpaces)
 					return TabsToSpaces (stack.PeekIndent (0));
 				
 				return stack.PeekIndent (0);
@@ -215,7 +218,7 @@ namespace MonoDevelop.CSharp.Formatting
 		// to test things w/o changing the real indent engine state
 		public object Clone ()
 		{
-			CSharpIndentEngine engine = new CSharpIndentEngine (policy);
+			CSharpIndentEngine engine = new CSharpIndentEngine (policy, textPolicy);
 			
 			engine.stack = (IndentStack) stack.Clone ();
 			engine.linebuf = new StringBuilder (linebuf.ToString (), linebuf.Capacity);
@@ -648,7 +651,6 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
-			
 			// push a new block onto the stack
 			if (inside == Inside.FoldedStatement) {
 				string pKeyword;
@@ -688,8 +690,9 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			} else {
 				stack.Push (Inside.Block, keyword, curLineNr, 0);
-				if (inside == Inside.ParenList)
-					TrimIndent ();
+// Destroys one lined expression block 'var s = "".Split (new char[] {' '});'
+//				if (inside == Inside.ParenList)
+//					TrimIndent ();
 			}
 			
 			keyword = String.Empty;
@@ -701,7 +704,6 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if ((inside & (Inside.PreProcessor | Inside.StringOrChar | Inside.Comment)) != 0)
 				return;
-
 			if (inside != Inside.Block && inside != Inside.Case) {
 				if (stack.PeekInside (0) == Inside.FoldedStatement) {
 					while (stack.PeekInside (0) == Inside.FoldedStatement) {
@@ -736,8 +738,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 			stack.Pop ();
 
-			while (stack.PeekInside (0) == Inside.FoldedStatement)
+			while (stack.PeekInside (0) == Inside.FoldedStatement) {
 				stack.Pop ();
+			}
 
 			if (firstNonLwsp == -1) {
 				needsReindent = true;
@@ -887,7 +890,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var after = stack.PeekInside (0);
 			if ((after & Inside.ParenList) == Inside.ParenList && pc == '(') {
-				var indent = stack.PeekIndent (0);
+//				var indent = stack.PeekIndent (0);
 				var kw = stack.PeekKeyword (0);
 				var line = stack.PeekLineNr (0);
 				stack.Pop ();

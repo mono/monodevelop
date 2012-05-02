@@ -167,6 +167,11 @@ namespace MonoDevelop.Core.Assemblies
 			return Path.Combine (monoDir, "2.0");
 		}
 		
+		public override string GetMSBuildExtensionsPath ()
+		{
+			return Path.Combine (monoDir, "xbuild");
+		}
+		
 		public IEnumerable<string> PkgConfigDirs {
 			get { return PkgConfigPath.Split (Path.PathSeparator); }
 		}

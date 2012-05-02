@@ -78,7 +78,6 @@ namespace Mono.Debugging.Evaluation
 				return type;
 			}
 		}
-
 		
 		public override object ObjectValue {
 			get {

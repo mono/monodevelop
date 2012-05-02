@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDocumentCreation ()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			
 			string text = 
 			"1234567890\n" +
@@ -59,7 +59,7 @@ namespace Mono.TextEditor.Tests
 		[Test]
 		public void TestDocumentInsert ()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			
 			string top  = "1234567890\n";
 			string text =
@@ -74,14 +74,14 @@ namespace Mono.TextEditor.Tests
 			"\n";
 			
 			document.Text = top;
-			((IBuffer)document).Insert (top.Length, text);
+			document.Insert (top.Length, text);
 			Assert.AreEqual (top + text, document.Text);
 		}
 		
 		[Test]
 		public void TestDocumentRemove ()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			
 			string top      = "1234567890\n";
 			string testText =
@@ -95,86 +95,74 @@ namespace Mono.TextEditor.Tests
 			"1\n" +
 			"\n";
 			document.Text = top + testText;
-			((IBuffer)document).Remove (0, top.Length);
+			document.Remove (0, top.Length);
 			Assert.AreEqual (document.Text, testText);
 			
-			((IBuffer)document).Remove (0, document.Length);
-			LineSegment line = document.GetLine (1);
+			document.Remove (0, document.TextLength);
+			DocumentLine line = document.GetLine (1);
 			Assert.AreEqual (0, line.Offset);
-			Assert.AreEqual (0, line.Length);
-			Assert.AreEqual (0, document.Length);
+			Assert.AreEqual (0, line.LengthIncludingDelimiter);
+			Assert.AreEqual (0, document.TextLength);
 			Assert.AreEqual (1, document.LineCount);
 		}
 		
 		[Test]
 		public void TestDocumentBug1Test()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 						
 			string top    = "1234567890";
 			document.Text = top;
 			
-			Assert.AreEqual (document.GetLine (1).Length, document.Length);
+			Assert.AreEqual (document.GetLine (1).LengthIncludingDelimiter, document.TextLength);
 			
-			((IBuffer)document).Remove(0, document.Length);
+			document.Remove(0, document.TextLength);
 			
-			LineSegment line = document.GetLine (1);
+			DocumentLine line = document.GetLine (1);
 			Assert.AreEqual(0, line.Offset);
-			Assert.AreEqual(0, line.Length);
-			Assert.AreEqual(0, document.Length);
+			Assert.AreEqual(0, line.LengthIncludingDelimiter);
+			Assert.AreEqual(0, document.TextLength);
 			Assert.AreEqual(1, document.LineCount);
 		}
 		
 		[Test]
 		public void TestDocumentBug2Test()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			
 			string top      = "123\n456\n789\n0";
 			string testText = "Hello World!";
 			
 			document.Text = top;
 			
-			((IBuffer)document).Insert (top.Length, testText);
+			document.Insert (top.Length, testText);
 			
-			LineSegment line = document.GetLine (document.LineCount);
+			DocumentLine line = document.GetLine (document.LineCount);
 			
 			Assert.AreEqual (top.Length - 1, line.Offset);
-			Assert.AreEqual (testText.Length + 1, line.Length);
+			Assert.AreEqual (testText.Length + 1, line.LengthIncludingDelimiter);
 		}
 		
 		[Test]
 		public void SplitterTest ()
 		{
-			Document document = new Mono.TextEditor.Document ();
+			var document = new Mono.TextEditor.TextDocument ();
 			for (int i = 0; i < 100; i++) {
-				((IBuffer)document).Insert (0, new string ('c', i) + Environment.NewLine);
+				document.Insert (0, new string ('c', i) + Environment.NewLine);
 			}
 			Assert.AreEqual (101, document.LineCount);
 			for (int i = 0; i < 100; i++) {
-				LineSegment line = document.GetLine (i + 1 );
-				Assert.AreEqual (99 - i, line.EditableLength);
+				DocumentLine line = document.GetLine (i + 1 );
+				Assert.AreEqual (99 - i, line.Length);
 				Assert.AreEqual (Environment.NewLine.Length, line.DelimiterLength);
 			}
 			
 			for (int i = 0; i < 100; i++) {
-				LineSegment line = document.GetLine (1);
-				((IBuffer)document).Remove (line.EditableLength, line.DelimiterLength);
+				DocumentLine line = document.GetLine (1);
+				document.Remove (line.Length, line.DelimiterLength);
 			}
 			Assert.AreEqual (1, document.LineCount);
 		}
-				
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
-		}
-		
 		
 	}
 }

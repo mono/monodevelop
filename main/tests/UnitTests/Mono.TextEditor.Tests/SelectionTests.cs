@@ -35,16 +35,16 @@ namespace Mono.TextEditor.Tests
 	public class SelectionTests
 	{
 		
-		static ISegment GetSelection (TextEditorData data, bool reverse)
+		static TextSegment GetSelection (TextEditorData data, bool reverse)
 		{
 			int offset1 = data.Document.Text.IndexOf ('[');
 			int offset2 = data.Document.Text.IndexOf (']');
-			return new Segment (offset1, offset2 - offset1);
+			return new TextSegment (offset1, offset2 - offset1);
 		}
 
 		static void SetSelection (TextEditorData data, bool reverse)
 		{
-			ISegment selection = GetSelection (data, reverse);
+			var selection = GetSelection (data, reverse);
 			
 			if (reverse) {
 				data.Caret.Offset = selection.Offset;
@@ -70,7 +70,7 @@ data.Document.Text =
 123456789";
 			
 			data.SelectionAnchor = 3;
-			LineSegment line = data.Document.GetLine (3);
+			DocumentLine line = data.Document.GetLine (3);
 			
 			Assert.IsFalse (data.IsSomethingSelected);
 			data.ExtendSelectionTo (line.Offset + 3);
@@ -184,19 +184,7 @@ data.Document.Text =
 			data.SetSelectLines (1, 4);
 			Assert.AreEqual (0, data.SelectionAnchor);
 			Assert.AreEqual (0, data.SelectionRange.Offset);
-			Assert.AreEqual (data.Document.Length, data.SelectionRange.EndOffset);
-		}
-		
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
-		[TestFixtureTearDown] 
-		public void Dispose()
-		{
+			Assert.AreEqual (data.Document.TextLength, data.SelectionRange.EndOffset);
 		}
 	}
 }

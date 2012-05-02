@@ -39,14 +39,6 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	[ObsoleteAttribute ("Use ISystemInformationProvider")]
-	public interface IAboutInformation
-	{
-		string Description {
-			get;
-		}
-	}
-	
 	internal class VersionInformationTabPage: VBox
 	{
 		bool destroyed;
@@ -88,16 +80,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			PackStart (label, true, true, 0);
 			ShowAll ();
 		}
-		
+
 		void SetText (string text)
 		{
 			Clear ();
 			var buf = new TextBuffer (null);
 			buf.Text = text;
 			
-			var sw = new ScrolledWindow () {
-				BorderWidth = 6,
-				ShadowType = ShadowType.EtchedIn,
+			var sw = new MonoDevelop.Components.CompactScrolledWindow () {
+				ShowBorderLine = true,
+				BorderWidth = 2,
 				Child = new TextView (buf) {
 					Editable = false,
 					LeftMargin = 4,
@@ -109,7 +101,37 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			sw.Child.ModifyFont (Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont));
 			PackStart (sw, true, true, 0);
+			var hb = new HBox (false, 0) {
+				BorderWidth = 2,
+			};
+			var copyButton = new Button () { Label = GettextCatalog.GetString ("Copy Version Information") };
+			copyButton.Clicked += (sender, e) => CopyBufferToClipboard (buf);
+			hb.PackStart (copyButton, true, true, 0);
+			PackEnd (hb, false, false, 0);
 			ShowAll ();
+		}
+
+		static void CopyBufferToClipboard (TextBuffer buf)
+		{
+			//get current cursor state
+			TextIter s, e;
+			TextIter cursorIter = TextIter.Zero;
+			var hadSel = buf.GetSelectionBounds (out s, out e);
+			if (!hadSel) {
+				cursorIter = buf.GetIterAtOffset (buf.CursorPosition);
+			}
+
+			//copy text to clipboard, let the buffer handle the details
+			buf.SelectRange (buf.StartIter, buf.EndIter);
+			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+			buf.CopyClipboard (clipboard);
+
+			//restore cursor state
+			if (hadSel) {
+				buf.SelectRange (s, e);
+			} else {
+				buf.PlaceCursor (cursorIter);
+			}
 		}
 		
 		public override void Destroy ()

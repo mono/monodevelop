@@ -75,9 +75,9 @@ namespace MonoDevelop.XmlEditor
 			}
 		}
 		
-		public static XmlSchemaCompletionData GetSchemaCompletionData (string fileExtension)
+		public static XmlSchemaCompletionData GetSchemaCompletionDataForFileName (string filename)
 		{
-			var association = XmlFileAssociationManager.GetAssociation (fileExtension);
+			var association = XmlFileAssociationManager.GetAssociationForFileName (filename);
 			if (association == null || association.NamespaceUri.Length == 0)
 				return null;
 			var u = new Uri (association.NamespaceUri);
@@ -92,9 +92,9 @@ namespace MonoDevelop.XmlEditor
 		/// Gets the namespace prefix that is associated with the
 		/// specified file extension.
 		/// </summary>
-		public static string GetNamespacePrefix (string extension)
+		public static string GetNamespacePrefixForFileName (string filename)
 		{
-			var association = XmlFileAssociationManager.GetAssociation (extension);
+			var association = XmlFileAssociationManager.GetAssociationForFileName (filename);
 			if (association != null) {
 				return association.NamespacePrefix;
 			}

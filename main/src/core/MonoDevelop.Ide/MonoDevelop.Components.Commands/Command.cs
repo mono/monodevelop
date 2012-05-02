@@ -42,6 +42,7 @@ namespace MonoDevelop.Components.Commands
 		string description;
 		IconId icon;
 		string accelKey;
+		KeyBinding binding;
 		string category;
 		bool disabledVisible;
 		internal string AccelPath;
@@ -75,12 +76,28 @@ namespace MonoDevelop.Components.Commands
 		public string AccelKey {
 			get { return accelKey; }
 			set {
-				string binding = accelKey;
-				accelKey = value == String.Empty ? null : value;
+				if (string.IsNullOrEmpty (value))
+					value = null;
 				
-				if (KeyBindingChanged != null && accelKey != binding)
-					KeyBindingChanged (this, new KeyBindingChangedEventArgs (this, binding));
+				if (value == accelKey)
+					return;
+				
+				var oldKeyBinding = binding;
+				
+				if (value != null)
+					KeyBinding.TryParse (value, out binding);
+				else
+					binding = null;
+				
+				accelKey = value;
+				
+				if (KeyBindingChanged != null)
+					KeyBindingChanged (this, new KeyBindingChangedEventArgs (this, oldKeyBinding));
 			}
+		}
+		
+		public KeyBinding KeyBinding {
+			get { return binding; }
 		}
 		
 		public bool DisabledVisible {
@@ -102,25 +119,22 @@ namespace MonoDevelop.Components.Commands
 	}
 	
 	public class KeyBindingChangedEventArgs {
-		Command command;
-		string binding;
-		
-		public KeyBindingChangedEventArgs (Command command, string oldBinding)
+		public KeyBindingChangedEventArgs (Command command, KeyBinding oldKeyBinding)
 		{
-			this.command = command;
-			this.binding = oldBinding;
+			OldKeyBinding = oldKeyBinding;
+			Command = command;
 		}
 		
 		public Command Command {
-			get { return command; }
+			get; private set;
 		}
 		
-		public string OldKeyBinding {
-			get { return binding; }
+		public KeyBinding OldKeyBinding {
+			get; private set;
 		}
 		
-		public string NewKeyBinding {
-			get { return command.AccelKey; }
+		public KeyBinding NewKeyBinding {
+			get { return Command.KeyBinding; }
 		}
 	}
 }

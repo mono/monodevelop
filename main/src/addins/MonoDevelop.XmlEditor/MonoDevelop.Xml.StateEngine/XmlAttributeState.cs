@@ -29,7 +29,6 @@
 using System;
 using System.Text;
 using System.Diagnostics;
-using MonoDevelop.Projects.Dom;
 
 namespace MonoDevelop.Xml.StateEngine
 {

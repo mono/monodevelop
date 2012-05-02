@@ -87,7 +87,7 @@ namespace MonoDevelop.Components
 			this.buttonUpdate.CanFocus = true;
 			this.buttonUpdate.Name = "buttonUpdate";
 			this.buttonUpdate.UseUnderline = true;
-			this.buttonUpdate.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Update");
+			this.buttonUpdate.Label = global::Mono.Unix.Catalog.GetString ("Update");
 			this.vbox2.Add (this.buttonUpdate);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.buttonUpdate]));
 			w7.Position = 2;

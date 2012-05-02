@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label100 = new global::Gtk.Label ();
 			this.label100.Name = "label100";
 			this.label100.Xalign = 0F;
-			this.label100.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Paramet_ers:");
+			this.label100.LabelProp = global::Mono.Unix.Catalog.GetString ("Paramet_ers:");
 			this.label100.UseUnderline = true;
 			this.table10.Add (this.label100);
 			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table10 [this.label100]));
@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child vbox69.Gtk.Box+BoxChild
 			this.externalConsoleCheckButton = new global::Gtk.CheckButton ();
 			this.externalConsoleCheckButton.Name = "externalConsoleCheckButton";
-			this.externalConsoleCheckButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Run on e_xternal console");
+			this.externalConsoleCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Run on e_xternal console");
 			this.externalConsoleCheckButton.DrawIndicator = true;
 			this.externalConsoleCheckButton.UseUnderline = true;
 			this.vbox69.Add (this.externalConsoleCheckButton);
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child vbox69.Gtk.Box+BoxChild
 			this.pauseConsoleOutputCheckButton = new global::Gtk.CheckButton ();
 			this.pauseConsoleOutputCheckButton.Name = "pauseConsoleOutputCheckButton";
-			this.pauseConsoleOutputCheckButton.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Pause _console output");
+			this.pauseConsoleOutputCheckButton.Label = global::Mono.Unix.Catalog.GetString ("Pause _console output");
 			this.pauseConsoleOutputCheckButton.DrawIndicator = true;
 			this.pauseConsoleOutputCheckButton.UseUnderline = true;
 			this.vbox69.Add (this.pauseConsoleOutputCheckButton);
@@ -92,7 +92,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Environment Variables:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Environment Variables:");
 			this.vbox69.Add (this.label1);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox69 [this.label1]));
 			w7.Position = 4;

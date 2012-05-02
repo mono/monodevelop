@@ -132,7 +132,7 @@ namespace Mono.Debugging.Evaluation
 			
 			// Use the prettier name for nullable types
 			if (name == "System.Nullable" && genericArgs.Count == 1)
-				return genericArgs[0] + "?";
+				return genericArgs[0] + "?" + array;
 			
 			// Insert the generic arguments next to each type.
 			// for example: Foo`1+Bar`1[System.Int32,System.String]
@@ -169,7 +169,7 @@ namespace Mono.Debugging.Evaluation
 				i = next + 1;
 			}
 			
-			return sb.ToString ();
+			return sb.ToString () + array;
 		}
 		
 		List<string> GetGenericArguments (string typeName, ref int i, int endIndex)
@@ -210,13 +210,23 @@ namespace Mono.Debugging.Evaluation
 			return i;
 		}
 		
-		public virtual string GetShortTypeName (string tname)
+		public virtual string GetShortTypeName (string typeName)
 		{
-			string res;
-			if (netToCSharpTypes.TryGetValue (tname, out res))
-				return res;
-			else
-				return tname;
+			int star = typeName.IndexOf ('*');
+			string name, ptr, csharp;
+
+			if (star != -1) {
+				name = typeName.Substring (0, star);
+				ptr = typeName.Substring (star);
+			} else {
+				ptr = string.Empty;
+				name = typeName;
+			}
+
+			if (netToCSharpTypes.TryGetValue (name, out csharp))
+				return csharp + ptr;
+
+			return typeName;
 		}
 		
 		public virtual void OnBusyStateChanged (BusyStateEventArgs e)
@@ -231,6 +241,7 @@ namespace Mono.Debugging.Evaluation
 
 		public abstract bool IsNull (EvaluationContext ctx, object val);
 		public abstract bool IsPrimitive (EvaluationContext ctx, object val);
+		public abstract bool IsPointer (EvaluationContext ctx, object val);
 		public abstract bool IsString (EvaluationContext ctx, object val);
 		public abstract bool IsArray (EvaluationContext ctx, object val);
 		public abstract bool IsEnum (EvaluationContext ctx, object val);
@@ -327,7 +338,7 @@ namespace Mono.Debugging.Evaluation
 		protected virtual ObjectValue CreateObjectValueImpl (EvaluationContext ctx, Mono.Debugging.Backend.IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
 		{
 			string typeName = obj != null ? GetValueTypeName (ctx, obj) : "";
-			
+
 			if (obj == null || IsNull (ctx, obj)) {
 				return ObjectValue.CreateNullObject (source, path, GetDisplayTypeName (typeName), flags);
 			}
@@ -366,6 +377,9 @@ namespace Mono.Debugging.Evaluation
 
 		public virtual ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, IObjectSource objectSource, object type, object obj, int firstItemIndex, int count, bool dereferenceProxy)
 		{
+			if (obj is EvaluationResult)
+				return new ObjectValue[0];
+			
 			if (IsArray (ctx, obj)) {
 				ArrayElementGroup agroup = new ArrayElementGroup (ctx, CreateArrayAdaptor (ctx, obj));
 				return agroup.GetChildren (ctx.Options);
@@ -704,6 +718,13 @@ namespace Mono.Debugging.Evaluation
 		{
 			return GetMembers (ctx, t, co, bindingFlags).Any ();
 		}
+
+		public bool HasMember (EvaluationContext ctx, object type, string memberName)
+		{
+			return HasMember (ctx, type, memberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+		}
+
+		public abstract bool HasMember (EvaluationContext ctx, object type, string memberName, BindingFlags bindingFlags);
 		
 		/// <summary>
 		/// Returns all members of a type. The following binding flags have to be honored:

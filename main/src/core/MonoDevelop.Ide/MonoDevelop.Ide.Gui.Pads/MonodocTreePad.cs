@@ -34,7 +34,7 @@ using Monodoc;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Dom.Parser;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -62,8 +62,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			scroller.ShadowType = Gtk.ShadowType.None;
 			scroller.Add (tree_view);
 			
-			if (ProjectDomService.HelpTree != null) {
-				root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), ProjectDomService.HelpTree);
+			if (HelpService.HelpTree != null) {
+				root_iter = store.AppendValues (GettextCatalog.GetString ("Mono Documentation"), HelpService.HelpTree);
 				PopulateNode (root_iter);
 	
 				tree_view.ExpandRow (new TreePath ("0"), false);

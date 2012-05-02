@@ -31,22 +31,20 @@ using System.IO;
 using System.Collections.Generic;
 
 using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.AspNet.StateEngine;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Html
 {
-	
-	
-	public class HtmlParser : AbstractParser
+	public class HtmlParser : AbstractTypeSystemParser
 	{
-		public override ParsedDocument Parse (ProjectDom dom, string fileName, string fileContent)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
-			XmlParsedDocument doc = new XmlParsedDocument (fileName);
-			doc.Flags = ParsedDocumentFlags.NonSerializable;
+			var doc = new XmlParsedDocument (fileName);
+//			doc.Flags = ParsedDocumentFlags.NonSerializable;
 			
-			TextReader tr = new StringReader (fileContent);
 			try {
 				Parser xmlParser = new Parser (
 					new XmlFreeState (new HtmlTagState (true), new HtmlClosingTagState (true)),
@@ -61,11 +59,6 @@ namespace MonoDevelop.Html
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing HTML document", ex);
 			}
-			finally {
-				if (tr != null)
-					tr.Dispose ();
-			}
-			
 			return doc;
 		}
 		
@@ -73,7 +66,7 @@ namespace MonoDevelop.Html
 		{
 			foreach (XNode node in doc.Nodes) {
 				if (node is XElement && !Object.ReferenceEquals (node, doc.RootElement)) {
-					yield return new Error (ErrorType.Warning, node.Region, "More than one root element");
+					yield return new Error (ErrorType.Warning, "More than one root element", node.Region);
 				}
 			}
 		}

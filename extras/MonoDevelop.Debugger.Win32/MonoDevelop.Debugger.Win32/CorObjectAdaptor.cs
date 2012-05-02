@@ -53,6 +53,12 @@ namespace MonoDevelop.Debugger.Win32
 			return (v is CorGenericValue) || (v is CorStringValue);
 		}
 
+		public override bool IsPointer (EvaluationContext ctx, object val)
+		{
+			// FIXME: implement this correctly.
+			return false;
+		}
+
 		public override bool IsEnum (EvaluationContext ctx, object val)
 		{
 			CorType type = (CorType) GetValueType (ctx, val);
@@ -826,6 +832,34 @@ namespace MonoDevelop.Debugger.Win32
 			MethodInfo idx = OverloadResolve (cctx, GetTypeName (ctx, targetType), null, types, candidates, true);
 			int i = candidates.IndexOf (idx);
 			return new PropertyReference (ctx, props[i], (CorValRef)target, propTypes[i], values);
+		}
+
+		public override bool HasMember (EvaluationContext ctx, object tt, string memberName, BindingFlags bindingFlags)
+		{
+			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
+			CorType ct = (CorType) tt;
+
+			while (ct != null) {
+				Type type = ct.GetTypeInfo (cctx.Session);
+
+				FieldInfo field = type.GetField (memberName, bindingFlags);
+				if (field != null)
+					return true;
+
+				PropertyInfo prop = type.GetProperty (memberName, bindingFlags);
+				if (prop != null) {
+					MethodInfo getter = prop.CanRead ? prop.GetGetMethod (bindingFlags.HasFlag (BindingFlags.NonPublic)) : null;
+					if (getter != null)
+						return true;
+				}
+
+				if (bindingFlags.HasFlag (BindingFlags.DeclaredOnly))
+					break;
+
+				ct = ct.Base;
+			}
+
+			return false;
 		}
 
 		protected override IEnumerable<ValueReference> GetMembers (EvaluationContext ctx, object tt, object gval, BindingFlags bindingFlags)

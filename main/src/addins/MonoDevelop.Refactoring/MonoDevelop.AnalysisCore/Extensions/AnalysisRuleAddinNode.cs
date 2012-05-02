@@ -29,6 +29,7 @@ using System.Linq;
 using Mono.Addins;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 
 namespace MonoDevelop.AnalysisCore.Extensions
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.AnalysisCore.Extensions
 		[NodeAttribute (Required=true, Description="The ID of the input type")]
 		string input = null;
 	
-		[NodeAttribute ("func", Required=true, Description="The static Func<T,T> that processes the rule.")]
+		[NodeAttribute ("func", Required=true, Description="The static Func<T,CancellationToken,T> that processes the rule.")]
 		string funcName = null;
 		
 		public string[] FileExtensions { get { return fileExtensions; } }
@@ -70,9 +71,9 @@ namespace MonoDevelop.AnalysisCore.Extensions
 		public string FuncName { get { return funcName; } }
 	
 		//Lazy so we avoid loading assemblies until needed
-		Func<object,object> cachedInstance;
+		Func<object, CancellationToken, object> cachedInstance;
 		
-		public Func<object,object> Analyze {
+		public Func<object, CancellationToken, object> Analyze {
 			get {
 				if (cachedInstance == null)
 					CreateFunc ();
@@ -83,7 +84,7 @@ namespace MonoDevelop.AnalysisCore.Extensions
 		//TODO: allow generics
 		void CreateFunc ()
 		{
-			Func<object,object> rule = null;
+			Func<object, CancellationToken, object> rule = null;
 			try {
 				if (string.IsNullOrEmpty (funcName))
 					throw new InvalidOperationException ("Rule extension does not specify a func " + GetErrSource ());
@@ -101,7 +102,7 @@ namespace MonoDevelop.AnalysisCore.Extensions
 				string methodName = funcName.Substring (dotIdx + 1);
 				var methodInfo = type.GetMethod (methodName,
 					BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic,
-					Type.DefaultBinder, new Type[] { inputType}, 
+					Type.DefaultBinder, new Type[] { inputType, typeof(CancellationToken)}, 
 					new ParameterModifier [] { new ParameterModifier () });
 				
 				if (methodInfo == null)
@@ -111,15 +112,16 @@ namespace MonoDevelop.AnalysisCore.Extensions
 					throw new InvalidOperationException ("Rule func ' " + funcName + "' has wrong output type " + GetErrSource ());
 				
 				var wrapper = new DynamicMethod (methodName + "_obj" + (dynamicMethodKey++),
-					typeof (object), new Type[] { typeof (object) }, true);
+					typeof(object), new Type[] { typeof(object), typeof(CancellationToken) }, true);
 				
 				var il = wrapper.GetILGenerator ();
 				il.Emit (OpCodes.Ldarg_0);
 				il.Emit (OpCodes.Castclass, inputType);
-				il.Emit ((methodInfo.IsFinal || !methodInfo.IsVirtual)? OpCodes.Call : OpCodes.Callvirt, methodInfo);
+				il.Emit (OpCodes.Ldarg_1);
+				il.Emit ((methodInfo.IsFinal || !methodInfo.IsVirtual) ? OpCodes.Call : OpCodes.Callvirt, methodInfo);
 				il.Emit (OpCodes.Ret);
 				
-				rule = (Func<object,object>) wrapper.CreateDelegate (typeof(Func<object,object>));
+				rule = (Func<object, CancellationToken, object>)wrapper.CreateDelegate (typeof(Func<object, CancellationToken, object>));
 			} finally {
 				cachedInstance = rule ?? NullRule;
 			}
@@ -132,7 +134,7 @@ namespace MonoDevelop.AnalysisCore.Extensions
 			return string.Format ("({0}:{1})", Addin.Id, Path);
 		}
 		
-		static object NullRule (object o)
+		static object NullRule (object o, CancellationToken cancellationToken)
 		{
 			return null;
 		}

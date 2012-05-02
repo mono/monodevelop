@@ -28,21 +28,21 @@
 
 using System;
 using System.Collections.Generic;
-
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
+using Mono.Cecil;
 
 namespace MonoDevelop.AssemblyBrowser
 {
 	public class Namespace : IDisposable
 	{
-		List<IType> types = new List<IType> ();
+		List<IUnresolvedTypeDefinition> types = new List<IUnresolvedTypeDefinition> ();
 		
 		public string Name {
 			get;
 			private set;
 		}
 
-		public List<IType> Types {
+		public List<IUnresolvedTypeDefinition> Types {
 			get {
 				return types;
 			}

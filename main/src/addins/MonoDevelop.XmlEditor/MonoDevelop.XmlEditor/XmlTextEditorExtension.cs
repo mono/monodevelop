@@ -42,6 +42,7 @@ using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
+using Mono.TextEditor;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -74,11 +75,11 @@ namespace MonoDevelop.XmlEditor
 			XmlEditorOptions.XmlFileAssociationChanged += HandleXmlFileAssociationChanged;
 			XmlSchemaManager.UserSchemaAdded += UserSchemaAdded;
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
-			SetDefaultSchema (FileExtension);
+			SetDefaultSchema ();
 			
 			var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (view != null && string.IsNullOrEmpty (view.Document.SyntaxMode.MimeType)) {
-				var mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (ApplicationXmlMimeType);
+			if (view != null && string.IsNullOrEmpty (view.Document.MimeType)) {
+				var mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (view.Document, ApplicationXmlMimeType);
 				if (mode != null)
 					view.Document.SyntaxMode = mode;
 				else
@@ -89,8 +90,9 @@ namespace MonoDevelop.XmlEditor
 
 		void HandleXmlFileAssociationChanged (object sender, XmlFileAssociationChangedEventArgs e)
 		{
-			if (e.Extension == FileExtension)
-				SetDefaultSchema (FileExtension);
+			var filename = document.FileName;
+			if (filename != null && filename.ToString ().EndsWith (e.Extension))
+				SetDefaultSchema ();
 		}
 		
 		bool disposed;
@@ -384,36 +386,30 @@ namespace MonoDevelop.XmlEditor
 		
 		#region Settings handling
 		
-		string FileExtension {
-			get {
-				var docName = Document.Name;
-				return string.IsNullOrEmpty (docName)? null : System.IO.Path.GetExtension (docName).ToLowerInvariant ();
-			}
-		}
-		
-		void SetDefaultSchema (string extension)
+		void SetDefaultSchema ()
 		{
-			if (extension == null)
+			var filename = document.FileName;
+			if (filename == null)
 				return;
 			
-			defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionData (extension);
+			defaultSchemaCompletionData = XmlSchemaManager.GetSchemaCompletionDataForFileName (filename);
 			if (defaultSchemaCompletionData != null)
 				inferredCompletionData = null;
 			else
 				QueueInference ();
-			defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefix (extension);
+			defaultNamespacePrefix = XmlSchemaManager.GetNamespacePrefixForFileName (filename);
 		}
 		
 		/// Updates the default schema association since the schema may have been added.
 		void UserSchemaAdded (object source, EventArgs e)
 		{	
-			SetDefaultSchema (FileExtension);
+			SetDefaultSchema ();
 		}
 		
 		// Updates the default schema association since the schema may have been removed.
 		void UserSchemaRemoved (object source, EventArgs e)
 		{
-			SetDefaultSchema (FileExtension);
+			SetDefaultSchema ();
 		}
 		
 		#endregion
@@ -456,7 +452,7 @@ namespace MonoDevelop.XmlEditor
 					return true;
 			}
 			
-			return XmlFileAssociationManager.IsXmlFileExtension (System.IO.Path.GetExtension (fileName));
+			return XmlFileAssociationManager.IsXmlFileName (fileName);
 		}
 		
 		public static bool IsMimeTypeHandled (string mimeType)
@@ -475,7 +471,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			bool result;
 			
-			if (TextEditorProperties.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
+			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
 				result = base.KeyPress (key, keyChar, modifier);
 				SmartIndentLine (Editor.Caret.Line);
 				return result;
@@ -550,7 +546,7 @@ namespace MonoDevelop.XmlEditor
 						return;
 					monitor.BeginTask (GettextCatalog.GetString ("Creating schema..."), 0);
 					try {
-						string schema = XmlEditorService.CreateSchema (xml);
+						string schema = XmlEditorService.CreateSchema (Document, xml);
 						string fileName = XmlEditorService.GenerateFileName (FileName, "{0}.xsd");
 						IdeApp.Workbench.NewDocument (fileName, "application/xml", schema);
 						monitor.ReportSuccess (GettextCatalog.GetString ("Schema created."));
@@ -658,7 +654,7 @@ namespace MonoDevelop.XmlEditor
 					string newFileName = XmlEditorService.GenerateFileName (FileName, "-transformed{0}.xml");
 					
 					monitor.BeginTask (GettextCatalog.GetString ("Executing transform..."), 1);
-					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter()) {
+					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter(Document)) {
 						xslt.Transform (doc, null, output);
 						IdeApp.Workbench.NewDocument (
 						    newFileName, "application/xml", output.ToString ());
@@ -728,14 +724,14 @@ namespace MonoDevelop.XmlEditor
 			if (defaultSchemaCompletionData != null || doc == null || doc.XDocument == null || inferenceQueued)
 				return;
 			if (inferredCompletionData == null
-			    || (doc.ParseTime - inferredCompletionData.TimeStamp).TotalSeconds >= 5
+			    || (doc.LastWriteTimeUtc - inferredCompletionData.TimeStampUtc).TotalSeconds >= 5
 			        && doc.Errors.Count <= inferredCompletionData.ErrorCount)
 			{
 				inferenceQueued = true;
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					InferredXmlCompletionProvider newData = new InferredXmlCompletionProvider ();
 					newData.Populate (doc.XDocument);
-					newData.TimeStamp = DateTime.Now;
+					newData.TimeStampUtc = DateTime.UtcNow;
 					newData.ErrorCount = doc.Errors.Count;
 					this.inferenceQueued = false;
 					this.inferredCompletionData = newData;

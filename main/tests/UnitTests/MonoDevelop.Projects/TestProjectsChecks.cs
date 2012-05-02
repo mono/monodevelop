@@ -174,7 +174,23 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, scDebug.Configurations.Count);
 			Assert.AreEqual (1, scRelease.Configurations.Count);
 			Assert.AreEqual (2, project.Configurations.Count);
-			
+			foreach (var v in project.Files) {
+				if (v.FilePath.FileName == "Main.cs") {
+				File.WriteAllText (v.FilePath,
+				                   @"
+using System;
+
+namespace Foo {
+	public class MainClass {
+		public static void Main (string [] args)
+		{
+		}
+	}
+}");
+				} else {
+					File.WriteAllText (v.FilePath, v.Name);
+				}
+			}
 			return sol;
 		}
 		

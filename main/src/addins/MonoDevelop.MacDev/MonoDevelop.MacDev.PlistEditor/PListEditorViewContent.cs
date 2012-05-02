@@ -62,6 +62,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override void Load (string fileName)
 		{
 			ContentName = fileName;
+
 			if (pobject == null) {
 				var dict = new PDictionary ();
 				if (dict.Reload (fileName)) {
@@ -87,10 +88,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public override void Save (string fileName)
 		{
-			this.IsDirty = false;
 			ContentName = fileName;
+
 			try {
 				pobject.Save (fileName);
+				this.IsDirty = false;
 			} catch (Exception e) {
 				MessageService.ShowException (e, GettextCatalog.GetString ("Error while writing plist"));
 			}

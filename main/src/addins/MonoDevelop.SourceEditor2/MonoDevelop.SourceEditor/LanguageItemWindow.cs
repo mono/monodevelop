@@ -32,10 +32,11 @@ using Gtk;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Ide.Fonts;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -43,32 +44,37 @@ namespace MonoDevelop.SourceEditor
 	{
 		public bool IsEmpty { get; set; }
 		
-		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, ICompilationUnit unit)
+		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, IParsedFile unit)
 		{
-			ProjectDom dom = ed.ProjectDom;
 			Ambience ambience = AmbienceService.GetAmbience (ed.Document.MimeType);
-			
 			string tooltip = null;
-			if (result != null && ed.TextEditorResolverProvider != null) {
-				tooltip = ed.TextEditorResolverProvider.CreateTooltip (dom, unit, result, errorInformations, ambience, modifierState);
-				if (result.ResolveErrors.Count > 0) {
-					StringBuilder sb = new StringBuilder ();
-					sb.Append (tooltip);
-					sb.AppendLine ();
-					sb.AppendLine ();
-					sb.AppendLine (GettextCatalog.GetPluralString ("Error:", "Errors:", result.ResolveErrors.Count));
-					for (int i = 0; i < result.ResolveErrors.Count; i++) {
-						sb.Append ('\t');
-						sb.Append (result.ResolveErrors[i]);
-						if (i + 1 < result.ResolveErrors.Count) 
-							sb.AppendLine ();
-					}
-					tooltip = sb.ToString ();
-				}
+			if (result is UnknownIdentifierResolveResult) {
+				tooltip = string.Format ("error CS0103: The name `{0}' does not exist in the current context", ((UnknownIdentifierResolveResult)result).Identifier);
+			} else if (result is UnknownMemberResolveResult) {
+				var ur = (UnknownMemberResolveResult)result;
+				if (ur.TargetType.Kind != TypeKind.Unknown)
+					tooltip = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ur.TargetType.FullName, ur.MemberName);
+			} else if (result != null && ed.TextEditorResolverProvider != null) {
+				tooltip = ed.TextEditorResolverProvider.CreateTooltip (unit, result, errorInformations, ambience, modifierState);
+				// TODO: Type sysetm conversion. (btw. this isn't required because the analyzer should provide semantic error messages.)	
+				//				if (result.ResolveErrors.Count > 0) {
+				//					StringBuilder sb = new StringBuilder ();
+				//					sb.Append (tooltip);
+				//					sb.AppendLine ();
+				//					sb.AppendLine ();
+				//					sb.AppendLine (GettextCatalog.GetPluralString ("Error:", "Errors:", result.ResolveErrors.Count));
+				//					for (int i = 0; i < result.ResolveErrors.Count; i++) {
+				//						sb.Append ('\t');
+				//						sb.Append (result.ResolveErrors[i]);
+				//						if (i + 1 < result.ResolveErrors.Count) 
+				//							sb.AppendLine ();
+				//					}
+				//					tooltip = sb.ToString ();
+				//				}
 			} else {
 				tooltip = errorInformations;
 			}
-			if (string.IsNullOrEmpty (tooltip)) {
+			if (string.IsNullOrEmpty (tooltip)|| tooltip == "?") {
 				IsEmpty = true;
 				return;
 			}

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -98,9 +99,9 @@ namespace MonoDevelop.SourceEditor
 		class FileContent
 		{
 			public string FileName;
-			public Mono.TextEditor.Document Content;
+			public Mono.TextEditor.TextDocument Content;
 
-			public FileContent (string fileName, Mono.TextEditor.Document content)
+			public FileContent (string fileName, Mono.TextEditor.TextDocument content)
 			{
 				this.FileName = fileName;
 				this.Content = content;
@@ -136,16 +137,21 @@ namespace MonoDevelop.SourceEditor
 				resetEvent.WaitOne ();
 				while (queue.Count > 0) {
 					var content = queue.Dequeue ();
-					lock (contentLock) {
+					// Don't create an auto save for unsaved files.
+					if (string.IsNullOrEmpty (content.FileName))
+						continue;
+					Application.Invoke (delegate {
 						string text;
 						try {
 							text = content.Content.Text;
 						} catch (Exception e) {
 							LoggingService.LogError ("Exception in auto save thread.", e);
-							continue;
+							return;
 						}
 						CreateAutoSave (content.FileName, text);
 					}
+					);
+					
 				}
 			}
 		}
@@ -153,7 +159,7 @@ namespace MonoDevelop.SourceEditor
 		public static string LoadAutoSave (string fileName)
 		{
 			string autoSaveFileName = GetAutoSaveFileName (fileName);
-			return File.ReadAllText (autoSaveFileName);
+			return Mono.TextEditor.Utils.TextFileUtility.ReadAllText (autoSaveFileName);
 		}
 
 		public static void RemoveAutoSaveFile (string fileName)
@@ -173,7 +179,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public static void InformAutoSaveThread (Mono.TextEditor.Document content)
+		public static void InformAutoSaveThread (Mono.TextEditor.TextDocument content)
 		{
 			if (content == null || !autoSaveEnabled)
 				return;

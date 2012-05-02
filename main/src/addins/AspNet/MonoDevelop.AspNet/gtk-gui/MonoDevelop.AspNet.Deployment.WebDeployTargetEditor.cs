@@ -24,7 +24,7 @@ namespace MonoDevelop.AspNet.Deployment
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.AspNet.Deployment.WebDeployTargetEditor
 			this.Name = "MonoDevelop.AspNet.Deployment.WebDeployTargetEditor";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Edit Web Deployment Target");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Edit Web Deployment Target");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
@@ -38,7 +38,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>General Options</b>");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>General Options</b>");
 			this.label1.UseMarkup = true;
 			w1.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(w1 [this.label1]));
@@ -70,7 +70,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
 			this.label8.Xalign = 0F;
-			this.label8.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Name:");
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Name:");
 			this.table2.Add (this.label8);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table2 [this.label8]));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -101,7 +101,7 @@ namespace MonoDevelop.AspNet.Deployment
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>File Copying</b>");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>File Copying</b>");
 			this.label2.UseMarkup = true;
 			w1.Add (this.label2);
 			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.label2]));

@@ -38,7 +38,7 @@ namespace MonoDevelop.Components
 	{
 		Image img;
 		MessageType messageType;
-
+		HBox messageHBox = new HBox ();
 		public InfoBar () : this (MessageType.Other)
 		{
 		}
@@ -54,7 +54,12 @@ namespace MonoDevelop.Components
 			MessageArea = new Alignment (0f, 0f, 1f, 1f);
 			
 			this.PackEnd (ActionArea, false, false, 0);
-			this.PackEnd (MessageArea, true, true, 0);
+
+			var messageVBox = new VBox ();
+
+			messageHBox.PackEnd (MessageArea, true, true, 0);
+			messageVBox.PackStart (messageHBox, false, false, 0);
+			this.PackEnd (messageVBox, true, true, 0);
 			this.MessageType = messageType;
 		}
 		
@@ -79,7 +84,7 @@ namespace MonoDevelop.Components
 			
 			if (img == null) {
 				img = new Gtk.Image (iconName, IconSize.Dialog);
-				PackEnd (img, false, false, 12);
+				messageHBox.PackEnd (img, false, false, 12);
 				img.SetAlignment (0.5f, 0.5f);
 			} else {
 				img.IconName = iconName;

@@ -33,6 +33,7 @@ using Mono.Debugging.Client;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using System.Reflection.Emit;
 using ST = System.Threading;
 using Mono.Debugging.Backend;
 
@@ -40,6 +41,24 @@ namespace Mono.Debugging.Soft
 {
 	public class SoftDebuggerAdaptor : ObjectValueAdaptor
 	{
+		static Dictionary<Type, OpCode> convertOps = new Dictionary<Type, OpCode> ();
+		delegate object TypeCastDelegate (object value);
+
+		static SoftDebuggerAdaptor ()
+		{
+			convertOps.Add (typeof (double), OpCodes.Conv_R8);
+			convertOps.Add (typeof (float), OpCodes.Conv_R4);
+			convertOps.Add (typeof (ulong), OpCodes.Conv_U8);
+			convertOps.Add (typeof (uint), OpCodes.Conv_U4);
+			convertOps.Add (typeof (ushort), OpCodes.Conv_U2);
+			convertOps.Add (typeof (char), OpCodes.Conv_U2);
+			convertOps.Add (typeof (byte), OpCodes.Conv_U1);
+			convertOps.Add (typeof (long), OpCodes.Conv_I8);
+			convertOps.Add (typeof (int), OpCodes.Conv_I4);
+			convertOps.Add (typeof (short), OpCodes.Conv_I2);
+			convertOps.Add (typeof (sbyte), OpCodes.Conv_I1);
+		}
+
 		public SoftDebuggerAdaptor ()
 		{
 		}
@@ -59,6 +78,8 @@ namespace Mono.Debugging.Soft
 			}
 			else if (obj is PrimitiveValue)
 				return ((PrimitiveValue)obj).Value.ToString ();
+			else if (obj is PointerValue)
+				return string.Format ("0x{0:x}", ((PointerValue)obj).Address);
 			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
 				// Boxed primitive
 				StructMirror sm = (StructMirror) obj;
@@ -111,51 +132,171 @@ namespace Mono.Debugging.Soft
 			return null;
 		}
 
+		static TypeCastDelegate GenerateTypeCastDelegate (string methodName, Type fromType, Type toType)
+		{
+			var argTypes = new Type[] {
+				typeof (object)
+			};
+			var method = new DynamicMethod (methodName, typeof (object), argTypes, true);
+			ILGenerator il = method.GetILGenerator ();
+			ConstructorInfo ctorInfo;
+			MethodInfo methodInfo;
+			OpCode conv;
+
+			il.Emit (OpCodes.Ldarg_0);
+			il.Emit (OpCodes.Unbox_Any, fromType);
+
+			if (fromType.IsSubclassOf (typeof (System.Nullable))) {
+				PropertyInfo propInfo = fromType.GetProperty ("Value");
+				methodInfo = propInfo.GetGetMethod ();
+
+				il.Emit (OpCodes.Stloc_0);
+				il.Emit (OpCodes.Ldloca_S);
+				il.Emit (OpCodes.Call, methodInfo);
+
+				fromType = methodInfo.ReturnType;
+			}
+
+			if (!convertOps.TryGetValue (toType, out conv)) {
+				argTypes = new Type[] {
+					fromType
+				};
+
+				if (toType == typeof (string)) {
+					methodInfo = fromType.GetMethod ("ToString", new Type[0]);
+					il.Emit (OpCodes.Call, methodInfo);
+				} else if ((methodInfo = toType.GetMethod ("op_Explicit", argTypes)) != null) {
+					il.Emit (OpCodes.Call, methodInfo);
+				} else if ((methodInfo = toType.GetMethod ("op_Implicit", argTypes)) != null) {
+					il.Emit (OpCodes.Call, methodInfo);
+				} else if ((ctorInfo = toType.GetConstructor (argTypes)) != null) {
+					il.Emit (OpCodes.Call, ctorInfo);
+				} else {
+					// No idea what else to try...
+					throw new InvalidCastException ();
+				}
+			} else {
+				il.Emit (conv);
+			}
+
+			il.Emit (OpCodes.Box, toType);
+			il.Emit (OpCodes.Ret);
+
+			return (TypeCastDelegate) method.CreateDelegate (typeof (TypeCastDelegate));
+		}
+
+		static object DynamicCast (object value, Type target)
+		{
+			string methodName = string.Format ("CastFrom{0}To{1}", value.GetType ().Name, target.Name);
+			TypeCastDelegate method = GenerateTypeCastDelegate (methodName, value.GetType (), target);
+
+			return method.Invoke (value);
+		}
+
+		object TryForceCast (EvaluationContext ctx, Value value, TypeMirror fromType, TypeMirror toType)
+		{
+			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			MethodMirror method;
+
+			method = OverloadResolve (cx, "op_Explicit", toType, new TypeMirror[] { fromType }, false, true, false);
+			if (method != null)
+				return cx.RuntimeInvoke (method, toType, new Value[] { value });
+
+			method = OverloadResolve (cx, "op_Implicit", toType, new TypeMirror[] { fromType }, false, true, false);
+			if (method != null)
+				return cx.RuntimeInvoke (method, toType, new Value[] { value });
+
+			// Finally, try a ctor...
+			return CreateValue (ctx, toType, value);
+		}
+
 		public override object TryCast (EvaluationContext ctx, object obj, object targetType)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
+			TypeMirror toType = targetType as TypeMirror;
+			TypeMirror fromType;
 			
 			if (obj == null)
 				return null;
 			
 			object valueType = GetValueType (ctx, obj);
 			if (valueType is TypeMirror) {
-				if ((targetType is TypeMirror) && ((TypeMirror)targetType).IsAssignableFrom ((TypeMirror)valueType))
+				fromType = (TypeMirror) valueType;
+
+				if (toType != null && toType.IsAssignableFrom (fromType))
 					return obj;
 				
 				// Try casting the primitive type of the enum
 				EnumMirror em = obj as EnumMirror;
 				if (em != null)
 					return TryCast (ctx, CreateValue (ctx, em.Value), targetType);
+
+				if (toType == null)
+					return null;
+
+				MethodMirror method;
+
+				if (toType.CSharpName == "string") {
+					method = OverloadResolve (cx, "ToString", fromType, new TypeMirror[0], true, false, false);
+					if (method != null)
+						return cx.RuntimeInvoke (method, obj, new Value[0]);
+				}
+
+				if (fromType.IsGenericType && fromType.FullName.StartsWith ("System.Nullable`")) {
+					method = OverloadResolve (cx, "get_Value", fromType, new TypeMirror[0], true, false, false);
+					if (method != null) {
+						obj = cx.RuntimeInvoke (method, obj, new Value[0]);
+						return TryCast (ctx, obj, targetType);
+					}
+				}
+
+				return TryForceCast (ctx, (Value) obj, fromType, toType);
 			} else if (valueType is Type) {
-				if (targetType is TypeMirror) {
-					TypeMirror tm = (TypeMirror) targetType;
-					if (tm.IsEnum) {
-						PrimitiveValue casted = TryCast (ctx, obj, tm.EnumUnderlyingType) as PrimitiveValue;
+				if (toType != null) {
+					if (toType.IsEnum) {
+						PrimitiveValue casted = TryCast (ctx, obj, toType.EnumUnderlyingType) as PrimitiveValue;
 						if (casted == null)
 							return null;
-						return cx.Session.VirtualMachine.CreateEnumMirror (tm, casted);
+						return cx.Session.VirtualMachine.CreateEnumMirror (toType, casted);
 					}
-					targetType = Type.GetType (((TypeMirror)targetType).FullName, false);
+
+					targetType = Type.GetType (toType.FullName, false);
 				}
 				
 				Type tt = targetType as Type;
 				if (tt != null) {
-					if (tt.IsAssignableFrom ((Type)valueType))
+					if (tt.IsAssignableFrom ((Type) valueType))
 						return obj;
-					if (obj is PrimitiveValue)
-						obj = ((PrimitiveValue)obj).Value;
-					if (tt != typeof(string) && !(obj is string)) {
-						try {
+
+					try {
+						if (tt.IsPrimitive || tt == typeof (string)) {
+							if (obj is PrimitiveValue)
+								obj = ((PrimitiveValue) obj).Value;
+
 							if (obj == null)
 								return null;
-							object res = System.Convert.ChangeType (obj, tt);
+
+							object res;
+
+							try {
+								res = System.Convert.ChangeType (obj, tt);
+							} catch {
+								res = DynamicCast (obj, tt);
+							}
+
 							return CreateValue (ctx, res);
-						} catch {
+						} else {
+							fromType = (TypeMirror) ForceLoadType (ctx, ((Type) valueType).FullName);
+							if (toType == null)
+								toType = (TypeMirror) ForceLoadType (ctx, tt.FullName);
+
+							return TryForceCast (ctx, (Value) obj, fromType, toType);
 						}
+					} catch {
 					}
 				}
 			}
+
 			return null;
 		}
 		
@@ -196,6 +337,9 @@ namespace Mono.Debugging.Soft
 				values[n] = (Value) args [n];
 			
 			MethodMirror ctor = OverloadResolve (cx, ".ctor", t, types, true, true, true);
+			if (ctor == null)
+				return null;
+
 			return t.NewInstance (cx.Thread, ctor, values);
 		}
 
@@ -477,6 +621,31 @@ namespace Mono.Debugging.Soft
 			}
 		}
 
+		public override bool HasMember (EvaluationContext ctx, object type, string memberName, BindingFlags bindingFlags)
+		{
+			TypeMirror tm = (TypeMirror) type;
+
+			while (tm != null) {
+				FieldInfoMirror field = FindByName (tm.GetFields (), f => f.Name, memberName, ctx.CaseSensitive);
+				if (field != null)
+					return true;
+
+				PropertyInfoMirror prop = FindByName (tm.GetProperties (), p => p.Name, memberName, ctx.CaseSensitive);
+				if (prop != null) {
+					MethodMirror getter = prop.GetGetMethod (bindingFlags.HasFlag (BindingFlags.NonPublic));
+					if (getter != null)
+						return true;
+				}
+
+				if (bindingFlags.HasFlag (BindingFlags.DeclaredOnly))
+					break;
+
+				tm = tm.BaseType;
+			}
+
+			return false;
+		}
+
 		protected override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
 		{
 			TypeMirror type = (TypeMirror) t;
@@ -752,9 +921,14 @@ namespace Mono.Debugging.Soft
 		public override string GetTypeName (EvaluationContext ctx, object val)
 		{
 			TypeMirror tm = val as TypeMirror;
-			if (tm != null)
+			if (tm != null) {
+				if (IsGeneratedType (tm)) {
+					// Return the name of the container-type.
+					return tm.FullName.Substring (0, tm.FullName.LastIndexOf ('+'));
+				}
+				
 				return tm.FullName;
-			else
+			} else
 				return ((Type)val).FullName;
 		}
 		
@@ -768,6 +942,8 @@ namespace Mono.Debugging.Soft
 				return ((EnumMirror)val).Type;
 			if (val is StructMirror)
 				return ((StructMirror)val).Type;
+			if (val is PointerValue)
+				return ((PointerValue) val).Type;
 			if (val is PrimitiveValue) {
 				PrimitiveValue pv = (PrimitiveValue) val;
 				if (pv.Value == null)
@@ -775,7 +951,7 @@ namespace Mono.Debugging.Soft
 				else
 					return pv.Value.GetType ();
 			}
-			
+
 			throw new NotSupportedException ();
 		}
 		
@@ -836,12 +1012,17 @@ namespace Mono.Debugging.Soft
 
 		public override bool IsNull (EvaluationContext ctx, object val)
 		{
-			return val == null || ((val is PrimitiveValue) && ((PrimitiveValue)val).Value == null);
+			return val == null || ((val is PrimitiveValue) && ((PrimitiveValue)val).Value == null) || ((val is PointerValue) && ((PointerValue)val).Address == 0);
 		}
 
 		public override bool IsPrimitive (EvaluationContext ctx, object val)
 		{
-			return val is PrimitiveValue || val is StringMirror || ((val is StructMirror) && ((StructMirror)val).Type.IsPrimitive);
+			return val is PrimitiveValue || val is StringMirror || ((val is StructMirror) && ((StructMirror)val).Type.IsPrimitive) || val is PointerValue;
+		}
+
+		public override bool IsPointer (EvaluationContext ctx, object val)
+		{
+			return val is PointerValue;
 		}
 
 		public override bool IsEnum (EvaluationContext ctx, object val)
@@ -994,15 +1175,9 @@ namespace Mono.Debugging.Soft
 		public override object RuntimeInvoke (EvaluationContext gctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
-			ctx.AssertTargetInvokeAllowed ();
+			TypeMirror type = ToTypeMirror (ctx, targetType);
 			
-			TypeMirror type;
-			if (target is ObjectMirror)
-				type = ((ObjectMirror) target).Type;
-			else if (target is StructMirror)
-				type = ((StructMirror) target).Type;
-			else
-				type = (TypeMirror) targetType;
+			ctx.AssertTargetInvokeAllowed ();
 			
 			TypeMirror[] types = new TypeMirror [argTypes.Length];
 			for (int n=0; n<argTypes.Length; n++)
@@ -1020,6 +1195,7 @@ namespace Mono.Debugging.Soft
 		{
 			List<MethodMirror> candidates = new List<MethodMirror> ();
 			TypeMirror currentType = type;
+			
 			while (currentType != null) {
 				//
 				// Use a simple cached stored in SoftDebuggerSession, since
@@ -1027,35 +1203,43 @@ namespace Mono.Debugging.Soft
 				//
 				var cache = ctx.Session.OverloadResolveCache;
 				MethodMirror[] methods = null;
+				
 				if (ctx.CaseSensitive) {
 					lock (cache) {
 						cache.TryGetValue (Tuple.Create (currentType, methodName), out methods);
 					}
 				}
+				
 				if (methods == null) {
 					if (currentType.VirtualMachine.Version.AtLeast (2, 7))
 						methods = currentType.GetMethodsByNameFlags (methodName, BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static, !ctx.CaseSensitive);
 					else
 						methods = currentType.GetMethods ();
-				}
-				if (ctx.CaseSensitive) {
-					lock (cache) {
-						cache [Tuple.Create (currentType, methodName)] = methods;
+					
+					if (ctx.CaseSensitive) {
+						lock (cache) {
+							cache [Tuple.Create (currentType, methodName)] = methods;
+						}
 					}
 				}
 				
 				foreach (MethodMirror met in methods) {
 					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						ParameterInfoMirror[] pars = met.GetParameters ();
-						if (pars.Length == argtypes.Length && (met.IsStatic && allowStatic || !met.IsStatic && allowInstance))
+						if (pars.Length == argtypes.Length && ((met.IsStatic && allowStatic) || (!met.IsStatic && allowInstance)))
 							candidates.Add (met);
 					}
 				}
+				
 				if (methodName == ".ctor")
 					break; // Can't create objects using constructor from base classes
-				currentType = currentType.BaseType;
+				
+				// Make sure that we always pull in at least System.Object methods (this is mostly needed for cases where 'type' was an interface)
+				if (currentType.BaseType == null && currentType.FullName != "System.Object")
+					currentType = ctx.Session.GetType ("System.Object");
+				else
+					currentType = currentType.BaseType;
 			}
-			
 
 			return OverloadResolve (ctx, type.Name, methodName, argtypes, candidates, throwIfNotFound);
 		}
@@ -1066,7 +1250,6 @@ namespace Mono.Debugging.Soft
 			matchCount = 0;
 
 			for (int i = 0; i < types.Length; i++) {
-				
 				TypeMirror param_type = mparams[i].ParameterType;
 
 				if (param_type.FullName == types [i].FullName) {
@@ -1177,9 +1360,11 @@ namespace Mono.Debugging.Soft
 				}
 				
 				return str;
-			} else if (obj is PrimitiveValue)
+			} else if (obj is PrimitiveValue) {
 				return ((PrimitiveValue)obj).Value;
-			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
+			} else if (obj is PointerValue) {
+				return new IntPtr (((PointerValue)obj).Address);
+			} else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
 				// Boxed primitive
 				StructMirror sm = (StructMirror) obj;
 				if (sm.Type.FullName == "System.IntPtr")
@@ -1226,8 +1411,10 @@ namespace Mono.Debugging.Soft
 					handle = ((TypeMirror)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
 				else if (obj is StructMirror)
 					handle = ((StructMirror)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
+				else if (obj is PrimitiveValue)
+					handle = ((PrimitiveValue)obj).BeginInvokeMethod (ctx.Thread, function, args, options, null, null);
 				else
-					throw new ArgumentException (obj.GetType ().ToString ());
+					throw new ArgumentException ("Soft debugger method calls cannot be invoked on objects of type " + obj.GetType ().Name);
 			} catch (InvocationException ex) {
 				ctx.Session.StackVersion++;
 				exception = ex;
@@ -1262,8 +1449,10 @@ namespace Mono.Debugging.Soft
 					result = ((ObjectMirror)obj).EndInvokeMethod (handle);
 				else if (obj is TypeMirror)
 					result = ((TypeMirror)obj).EndInvokeMethod (handle);
-				else
+				else if (obj is StructMirror)
 					result = ((StructMirror)obj).EndInvokeMethod (handle);
+				else
+					result = ((PrimitiveValue)obj).EndInvokeMethod (handle);
 			} catch (InvocationException ex) {
 				if (!Aborting && ex.Exception != null) {
 					string ename = ctx.Adapter.GetValueTypeName (ctx, ex.Exception);

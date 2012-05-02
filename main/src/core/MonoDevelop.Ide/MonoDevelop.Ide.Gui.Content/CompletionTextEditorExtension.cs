@@ -29,13 +29,11 @@
 using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeTemplates;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -44,14 +42,27 @@ namespace MonoDevelop.Ide.Gui.Content
 		CodeCompletionContext currentCompletionContext;
 
 		bool autoHideCompletionWindow = true;
-		bool enableCodeCompletion = false;
-		bool enableParameterInsight = false;
-		
+
+		#region Completion related IDE
+		public readonly static PropertyWrapper<bool> EnableCodeCompletion = PropertyService.Wrap ("EnableCodeCompletion", true);
+		public readonly static PropertyWrapper<bool> EnableParameterInsight = PropertyService.Wrap ("EnableParameterInsight", true);
+		public readonly static PropertyWrapper<bool> EnableAutoCodeCompletion = PropertyService.Wrap ("EnableAutoCodeCompletion", true);
+		public readonly static PropertyWrapper<bool> CompleteWithSpaceOrPunctuation = PropertyService.Wrap ("CompleteWithSpaceOrPunctuation", true);
+//		public readonly static PropertyWrapper<bool> HideObsoleteItems = PropertyService.Wrap ("HideObsoleteItems", false);
+		#endregion
+
 		public ICompletionWidget CompletionWidget {
 			get;
 			set;
 		}
 		
+		public CompletionTextEditorExtension ()
+		{
+			CompletionWindowManager.WindowClosed += delegate {
+				currentCompletionContext = null;
+			};
+		}
+
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);
@@ -63,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			currentCompletionContext.TriggerOffset = cpos;
 			currentCompletionContext.TriggerWordLength = wlen;
 			
-			CompletionWindowManager.ShowWindow ('\0', completionList, CompletionWidget, currentCompletionContext, OnCompletionWindowClosed);
+			CompletionWindowManager.ShowWindow (this, '\0', completionList, CompletionWidget, currentCompletionContext);
 		}
 
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
@@ -71,11 +82,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			bool res;
-			
-			KeyActions ka = KeyActions.None;
 			if (currentCompletionContext != null) {
-				if (CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier, out ka)) {
-					CompletionWindowManager.PostProcessKeyEvent (ka, key, keyChar, modifier);
+				if (CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier)) {
+					CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
 					autoHideCompletionWindow = true;
 					return false;
 				}
@@ -83,73 +92,59 @@ namespace MonoDevelop.Ide.Gui.Content
 			}
 			
 			if (ParameterInformationWindowManager.IsWindowVisible) {
-				if (ParameterInformationWindowManager.ProcessKeyEvent (CompletionWidget, key, modifier))
+				if (ParameterInformationWindowManager.ProcessKeyEvent (this, CompletionWidget, key, modifier))
 					return false;
 				autoHideCompletionWindow = false;
 			}
 			
-//			int oldPos = Editor.CursorPosition;
-//			int oldLen = Editor.TextLength;
+			//			int oldPos = Editor.CursorPosition;
+			//			int oldLen = Editor.TextLength;
 			
 			res = base.KeyPress (key, keyChar, modifier);
 			
-			CompletionWindowManager.PostProcessKeyEvent (ka, key, keyChar, modifier);
+			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
 			
 			var ignoreMods = Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
-				| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask;
-			
+					| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask;
 			// Handle parameter completion
 			if (ParameterInformationWindowManager.IsWindowVisible) {
-				ParameterInformationWindowManager.PostProcessKeyEvent (CompletionWidget, key, modifier);
+				ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, key, modifier);
 			}
 			
 			if ((modifier & ignoreMods) != 0)
 				return res;
-			/*
-			if (Document.TextEditorData == null || Document.TextEditorData.IsSomethingSelected && Document.TextEditorData.SelectionMode != Mono.TextEditor.SelectionMode.Block) {
-				int posChange = Editor.CursorPosition - oldPos;
-				if (currentCompletionContext != null && (Math.Abs (posChange) > 1 || (Editor.TextLength - oldLen) != posChange)) {
-					currentCompletionContext = null;
-					CompletionWindowManager.HideWindow ();
-					ParameterInformationWindowManager.HideWindow ();
-					return res;
-				}
-			}*/
 			
 			// don't complete on block selection
-			if (!enableCodeCompletion || Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+			if (!EnableCodeCompletion || Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
 				return res;
 			
 			// Handle code completion
 
 			if (keyChar != '\0' && CompletionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
-				
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
 				ICompletionDataList completionList = HandleCodeCompletion (currentCompletionContext, keyChar,
 				                                                           ref triggerWordLength);
 				
 				if (triggerWordLength > 0 && (triggerWordLength < Editor.Caret.Offset
-				                              || (triggerWordLength == 1 && Editor.Caret.Offset == 1))) {
+					|| (triggerWordLength == 1 && Editor.Caret.Offset == 1))) {
 					currentCompletionContext
 						= CompletionWidget.CreateCodeCompletionContext (Editor.Caret.Offset - triggerWordLength);
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
-				
 				if (completionList != null) {
-					if (!CompletionWindowManager.ShowWindow (keyChar, completionList, CompletionWidget, 
-					                                         currentCompletionContext, OnCompletionWindowClosed))
+					if (!CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, currentCompletionContext))
 						currentCompletionContext = null;
 				} else {
 					currentCompletionContext = null;
 				}
 			}
 			
-			if (enableParameterInsight && CompletionWidget != null) {
+			if (EnableParameterInsight && CompletionWidget != null) {
 				CodeCompletionContext ctx = CompletionWidget.CurrentCodeCompletionContext;
 				IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, keyChar);
 				if (paramProvider != null)
-					ParameterInformationWindowManager.ShowWindow (CompletionWidget, ctx, paramProvider);
+					ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, paramProvider);
 			}
 			
 			autoHideCompletionWindow = true;
@@ -169,24 +164,24 @@ namespace MonoDevelop.Ide.Gui.Content
 					currentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				if (completionList != null)
-					CompletionWindowManager.ShowWindow (keyChar, completionList, CompletionWidget, 
-					                                    currentCompletionContext, OnCompletionWindowClosed);
+					CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, currentCompletionContext);
 				else
 					currentCompletionContext = null;
 			}
 			autoHideCompletionWindow = true;
 		}
 		
-		void OnCompletionWindowClosed ()
+		public virtual int GetCurrentParameterIndex (int startOffset)
 		{
-			currentCompletionContext = null;
+			return -1;
 		}
 		
+
 		protected void OnCompletionContextChanged (object o, EventArgs a)
 		{
 			if (autoHideCompletionWindow) {
 				CompletionWindowManager.HideWindow ();
-				ParameterInformationWindowManager.HideWindow (CompletionWidget);
+				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 			}
 		}
 
@@ -212,7 +207,6 @@ namespace MonoDevelop.Ide.Gui.Content
 				CompletionWindowManager.Wnd.ToggleCategoryMode ();
 				return;
 			}
-			
 			ICompletionDataList completionList = null;
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -222,10 +216,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			currentCompletionContext.TriggerWordLength = wlen;
 			completionList = CodeCompletionCommand (currentCompletionContext);
-				
 			if (completionList != null)
-				CompletionWindowManager.ShowWindow ((char)0, completionList, CompletionWidget, 
-				                                    currentCompletionContext, OnCompletionWindowClosed);
+				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext);
 			else
 				currentCompletionContext = null;
 		}
@@ -245,7 +237,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
 			
 			if (completionList != null)
-				CompletionWindowManager.ShowWindow ((char)0, completionList, CompletionWidget, currentCompletionContext, OnCompletionWindowClosed);
+				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext);
 			else
 				currentCompletionContext = null;
 		}
@@ -270,8 +262,8 @@ namespace MonoDevelop.Ide.Gui.Content
 			CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
 			cp = ParameterCompletionCommand (ctx);
 			if (cp != null) {
-				ParameterInformationWindowManager.ShowWindow (CompletionWidget, ctx, cp);
-				ParameterInformationWindowManager.PostProcessKeyEvent (CompletionWidget, Gdk.Key.F, Gdk.ModifierType.None);
+				ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, cp);
+				ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, Gdk.Key.F, Gdk.ModifierType.None);
 			}
 		}
 		
@@ -288,12 +280,6 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		public virtual ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                         char completionChar, ref int triggerWordLength)
-		{
-			return HandleCodeCompletion (completionContext, completionChar);
-		}
-		
-		public virtual ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
-		                                                         char completionChar)
 		{
 			return null;
 		}
@@ -373,22 +359,12 @@ namespace MonoDevelop.Ide.Gui.Content
 			// the char at the cursor position. If it returns a provider, just return it.
 			
 			int pos = completionContext.TriggerOffset;
-			string txt = Editor.GetTextBetween (pos - 1, pos);
-			if (txt.Length > 0) {
-				ICompletionDataList completionList = HandleCodeCompletion (completionContext, txt[0]);
+			if (pos > 0) {
+				char ch = Editor.GetCharAt (pos - 1);
+				int triggerWordLength = completionContext.TriggerWordLength;
+				ICompletionDataList completionList = HandleCodeCompletion (completionContext, ch, ref triggerWordLength);
 				if (completionList != null)
 					return completionList;
-			}
-			
-			// If there is a parser context, try resolving by calling CtrlSpace.
-			ProjectDom ctx = GetParserContext();
-			if (ctx != null) {
-// TODO:
-				//CodeCompletionDataProvider completionProvider = new CodeCompletionDataProvider (ctx, GetAmbience ());
-				//completionProvider.AddResolveResults (ctx.CtrlSpace (completionContext.TriggerLine + 1, 
-//						completionContext.TriggerLineOffset + 1, FileName), true, SimpleTypeNameResolver.Instance);
-//				if (!completionProvider.IsEmpty)
-//					return completionProvider;
 			}
 			return null;
 		}
@@ -411,10 +387,6 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			base.Initialize ();
 
-			enableCodeCompletion = (bool)PropertyService.Get ("EnableCodeCompletion", true);
-			enableParameterInsight = (bool)PropertyService.Get ("EnableParameterInsight", true);
-			
-			PropertyService.PropertyChanged += OnPropertyUpdated;
 			CompletionWidget = Document.GetContent <ICompletionWidget> ();
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
@@ -425,20 +397,11 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			if (!disposed) {
 				disposed = true;
-				PropertyService.PropertyChanged -= OnPropertyUpdated;
 				if (CompletionWidget != null)
 					CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 			}
 			base.Dispose ();
 		}
-
-		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
-		{
-			if (e.Key == "EnableCodeCompletion" && e.NewValue != e.OldValue)
-				enableCodeCompletion = (bool)e.NewValue;
-			if (e.Key == "EnableParameterInsight" && e.NewValue != e.OldValue)
-				enableParameterInsight = (bool)e.NewValue;
-		}	
 	}
 	public interface ITypeNameResolver
 	{

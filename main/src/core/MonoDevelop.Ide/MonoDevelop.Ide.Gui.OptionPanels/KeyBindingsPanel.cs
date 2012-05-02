@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		bool accelIncomplete = false;
 		bool accelComplete = false;
 		TreeStore keyStore;
-		string mode;
+		string chord;
 		KeyBindingSet currentBindings;
 		bool internalUpdate;
 		List<KeyBindingScheme> schemes;
@@ -348,7 +348,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				CurrentBinding = String.Empty;
 				accelIncomplete = false;
 				accelComplete = false;
-				mode = null;
+				chord = null;
 				
 				if (key.Equals (Gdk.Key.BackSpace))
 					return;
@@ -356,16 +356,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			accelComplete = false;
 			bool combinationComplete;
-			accel = KeyBindingManager.AccelFromKey (e.Event, out combinationComplete);
+			accel = KeyBindingManager.AccelLabelFromKey (e.Event, out combinationComplete);
 			if (combinationComplete) {
-				CurrentBinding = KeyBindingManager.Binding (mode, accel);
+				CurrentBinding = KeyBindingManager.Binding (chord, accel);
 				accelIncomplete = false;
-				if (mode != null)
+				if (chord != null)
 					accelComplete = true;
 				else
-					mode = accel;
+					chord = accel;
 			} else {
-				accel = (mode != null ? mode + "|" : String.Empty) + accel;
+				accel = (chord != null ? chord + "|" : string.Empty) + accel;
 				accelIncomplete = true;
 				CurrentBinding = accel;
 			}
@@ -385,7 +385,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void OnAccelEntryKeyRelease (object sender, KeyReleaseEventArgs e)
 		{
 			if (accelIncomplete)
-				CurrentBinding = mode != null ? mode : String.Empty;
+				CurrentBinding = chord != null ? chord : string.Empty;
 		}
 		
 		void OnUpdateButtonClick (object sender, EventArgs e)

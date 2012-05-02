@@ -318,6 +318,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			TargetFrameworkMoniker.NET_3_0,
 			TargetFrameworkMoniker.NET_3_5,
 			TargetFrameworkMoniker.NET_4_0,
+			TargetFrameworkMoniker.SL_2_0,
+			TargetFrameworkMoniker.SL_3_0,
+			TargetFrameworkMoniker.SL_4_0,
+			TargetFrameworkMoniker.MONOTOUCH_1_0,
+			TargetFrameworkMoniker.PORTABLE_4_0
 		};
 		const bool supportsMonikers = true;
 		

@@ -125,5 +125,7 @@
 	
 	<Style name="keyword.semantic.type" color="#97A0EF" weight="bold"/>
 	<Style name="keyword.semantic.field" color="#97A0EF" weight="Italic"/>
+	<Style name="keyword.semantic.property" color="#97A0EF" weight="Italic"/>
+	<Style name="keyword.semantic.error" color="red" />
 	
 </EditorStyle>

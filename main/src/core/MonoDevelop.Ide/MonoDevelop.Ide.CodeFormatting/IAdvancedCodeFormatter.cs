@@ -27,10 +27,10 @@
 using System;
 using System.Collections.Generic;
 using Mono.TextEditor;
-
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Parser;
 using MonoDevelop.Projects.Policies;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -39,30 +39,10 @@ namespace MonoDevelop.Ide.CodeFormatting
 		bool SupportsOnTheFlyFormatting { get; }
 		bool SupportsCorrectingIndent { get; }
 		
-		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData textEditorData, int line);
+		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditorData textEditorData, int line);
 		
-		/// <summary>
-		/// Formats a text document directly with insert/remove operations.
-		/// </summary>
-		/// <param name="textEditorData">
-		/// A <see cref="System.Object"/> that must be from type Mono.TextEditorData.
-		/// </param>
-		/// <param name="dom">
-		/// A <see cref="ProjectDom"/>
-		/// </param>
-		/// <param name="unit">
-		/// A <see cref="ICompilationUnit"/>
-		/// </param>
-		/// <param name="caretLocation">
-		/// A <see cref="DomLocation"/> that should be the end location to which the parsing should occur.
-		/// </param>
-		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData textEditorData, IType callingType, IMember callingMember, ProjectDom dom,
-			ICompilationUnit unit, DomLocation endLocation);
+		void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset);
 		
-		void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData textEditorData, int startOffset, int endOffset);
 	}
 	
 	public abstract class AbstractAdvancedFormatter : AbstractCodeFormatter, IAdvancedCodeFormatter
@@ -70,15 +50,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		public virtual bool SupportsOnTheFlyFormatting { get { return false; } }
 		public virtual bool SupportsCorrectingIndent { get { return false; } }
 		
-		public virtual void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData data, IType callingType, IMember callingMember, ProjectDom dom,
-			ICompilationUnit unit, DomLocation endLocation)
-		{
-			throw new NotSupportedException ();
-		}
-		
-		public virtual void OnTheFlyFormat (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			TextEditorData data, int startOffset, int endOffset)
+		public virtual void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
 			throw new NotSupportedException ();
 		}

@@ -34,7 +34,6 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.CodeGeneration;
 
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
@@ -71,14 +70,14 @@ namespace MonoDevelop.Ide.Templates
 			if (provider == null)
 				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
 
-			XmlCodeDomReader xcd = new XmlCodeDomReader ();
-			CodeCompileUnit cu = xcd.ReadCompileUnit (domContent);
+			var xcd = new XmlCodeDomReader ();
+			var cu = xcd.ReadCompileUnit (domContent);
 			
 			foreach (CodeNamespace cns in cu.Namespaces)
 				cns.Name = StripImplicitNamespace (project, tags, cns.Name);
 			
 			CodeGeneratorOptions options = new CodeGeneratorOptions ();
-			options.IndentString = TextEditorProperties.IndentString;
+			options.IndentString = "\t";
 			options.BracingStyle = "C";
 			
 			StringWriter sw = new StringWriter ();
@@ -90,7 +89,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			Mono.TextEditor.Document doc = new Mono.TextEditor.Document ();
+			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
 			doc.Text = text;
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {
@@ -107,9 +106,9 @@ namespace MonoDevelop.Ide.Templates
 			// We reformat the C# generated output to the user's coding style anyway, but the reformatter preserves blank lines
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				for (int i = 1; i <= doc.LineCount; i++) {
-					Mono.TextEditor.LineSegment line = doc.GetLine (i);
-					if (IsBlankLine (doc, line) && line.Length > 0) {
-						((Mono.TextEditor.IBuffer)doc).Remove (line.Offset, line.Length);
+					Mono.TextEditor.DocumentLine line = doc.GetLine (i);
+					if (IsBlankLine (doc, line) && line.LengthIncludingDelimiter > 0) {
+						doc.Remove (line.Offset, line.LengthIncludingDelimiter);
 						i--;
 						continue;
 					}
@@ -117,12 +116,12 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			int offset = doc.GetLine (realStartLine).Offset;
-			return doc.GetTextAt (offset, doc.Length - offset);
+			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
-		static bool IsBlankLine (Mono.TextEditor.Document doc, Mono.TextEditor.LineSegment line)
+		static bool IsBlankLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.DocumentLine line)
 		{
-			for (int i = 0; i < line.EditableLength; i++) {
+			for (int i = 0; i < line.Length; i++) {
 				if (!Char.IsWhiteSpace (doc.GetCharAt (line.Offset + i)))
 					return false;
 			}

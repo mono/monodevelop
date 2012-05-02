@@ -42,6 +42,18 @@ namespace Mono.TextEditor
 				return System.Math.Max (Anchor.Line, Lead.Line);
 			}
 		}
+
+		public DocumentLocation Start {
+			get {
+				return anchor < lead ? anchor : lead;
+			}
+		}
+		
+		public DocumentLocation End {
+			get {
+				return anchor < lead ? lead : anchor;
+			}
+		}
 		
 		public SelectionMode SelectionMode {
 			get;
@@ -80,41 +92,37 @@ namespace Mono.TextEditor
 			this.SelectionMode = selectionMode;
 		}
 		
-		public ISegment GetSelectionRange (TextEditorData data)
+		public TextSegment GetSelectionRange (TextEditorData data)
 		{
 			int anchorOffset = GetAnchorOffset (data);
-			int leadOffset   = GetLeadOffset (data);
-			return new Segment (System.Math.Min (anchorOffset, leadOffset), System.Math.Abs (anchorOffset - leadOffset));
+			int leadOffset = GetLeadOffset (data);
+			return new TextSegment (System.Math.Min (anchorOffset, leadOffset), System.Math.Abs (anchorOffset - leadOffset));
 		}
 		
 		// for markup syntax mode the syntax highlighting information need to be taken into account
 		// when calculating the selection offsets.
 		int PosToOffset (TextEditorData data, DocumentLocation loc) 
 		{
-			LineSegment line = data.GetLine (loc.Line);
+			DocumentLine line = data.GetLine (loc.Line);
 			if (line == null)
 				return 0;
-			Chunk startChunk = data.Document.SyntaxMode.GetChunks (data.Document, data.Parent.ColorStyle, line, line.Offset, line.Length);
+			var startChunk = data.GetChunks (line, line.Offset, line.LengthIncludingDelimiter);
 			int col = 1;
-			for (Chunk chunk = startChunk; chunk != null; chunk = chunk != null ? chunk.Next : null) {
+			foreach (Chunk chunk in startChunk) {
 				if (col <= loc.Column && loc.Column < col + chunk.Length)
 					return chunk.Offset - col + loc.Column;
 				col += chunk.Length;
 			}
-			return line.Offset + line.EditableLength;
+			return line.Offset + line.Length;
 		}
 		
 		public int GetAnchorOffset (TextEditorData data)
 		{
-			if (data.Document.SyntaxMode is MarkupSyntaxMode)
-				return PosToOffset (data, Anchor);
 			return data.Document.LocationToOffset (Anchor);
 		}
 		
 		public int GetLeadOffset (TextEditorData data)
 		{
-			if (data.Document.SyntaxMode is MarkupSyntaxMode)
-				return PosToOffset (data, Lead);
 			return data.Document.LocationToOffset (Lead);
 		}
 		

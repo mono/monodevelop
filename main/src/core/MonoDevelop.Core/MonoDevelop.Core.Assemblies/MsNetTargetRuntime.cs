@@ -36,6 +36,7 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		FilePath rootDir;
 		FilePath newFxDir;
+		FilePath msbuildDir;
 		bool running;
 		MsNetExecutionHandler execHandler;
 		string winDir;
@@ -50,6 +51,9 @@ namespace MonoDevelop.Core.Assemblies
 				IntPtr.Size == 8? Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
 			
 			newFxDir = programFilesX86 + "\\Reference Assemblies\\Microsoft\\Framework";
+			
+			msbuildDir = programFilesX86 + "\\MSBuild";
+			
 			this.running = running;
 			execHandler = new MsNetExecutionHandler ();
 		}
@@ -151,6 +155,11 @@ namespace MonoDevelop.Core.Assemblies
 					return path;
 			}
 			return rootDir.Combine ("v2.0.50727");
+		}
+		
+		public override string GetMSBuildExtensionsPath ()
+		{
+			return msbuildDir;
 		}
 		
 		void AddPackage (string name, string version, string folder, TargetFramework fx)

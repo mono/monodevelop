@@ -27,9 +27,10 @@
 //
 
 using System;
-using MonoDevelop.Projects.Dom;
 using System.Collections.Generic;
 using System.Text;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -126,13 +127,13 @@ namespace MonoDevelop.Xml.StateEngine
 					return null;
 				}
 			}
-			else if (doc.InternalDeclarationRegion.End.Line <= 0) {
+			else if (doc.InternalDeclarationRegion.EndLine <= 0) {
 				if (XmlChar.IsWhitespace (c))
 						return null;
 				switch (context.StateTag) {
 				case 0:
 					if (c == '[') {
-						doc.InternalDeclarationRegion = new DomRegion (context.Location, DomLocation.Empty);
+						doc.InternalDeclarationRegion = new DomRegion (context.Location, TextLocation.Empty);
 						context.StateTag = 1;
 						return null;
 					}
@@ -143,7 +144,7 @@ namespace MonoDevelop.Xml.StateEngine
 						return null;
 					} else if (c == ']') {
 						context.StateTag = 0;
-						doc.InternalDeclarationRegion = new DomRegion (doc.InternalDeclarationRegion.Start, context.Location);
+						doc.InternalDeclarationRegion = new DomRegion (doc.InternalDeclarationRegion.Begin, context.Location);
 						return null;
 					}
 					break;

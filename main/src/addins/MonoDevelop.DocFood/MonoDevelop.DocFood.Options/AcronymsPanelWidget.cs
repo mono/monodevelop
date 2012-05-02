@@ -31,12 +31,12 @@ namespace MonoDevelop.DocFood.Options
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class AcronymsPanelWidget : Gtk.Bin
 	{
-		DocConfig config;
+//		DocConfig config;
 		
 		public AcronymsPanelWidget (DocConfig config)
 		{
 			this.Build ();
-			this.config = config;
+//			this.config = config;
 		}
 	}
 	

@@ -88,6 +88,7 @@
 			icon = "md-select-all" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment"
 			shortcut = "Control|Alt|C"
+			macShortcut = "Meta|/"
 			_description = "Comment/Uncomment selected lines of code" 
 			_label = "_Toggle Line Comment(s)"
 			icon = "md-comment" />
@@ -158,11 +159,13 @@
 			_description = "Toggles all the foldings in the document."/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
 			_label = "Show _Definitions Only" 
+			macShortcut = "Alt|Shift|Meta|Right"
 			_description = "Folds all method and property bodies."/>
 			
 	<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
 			defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
-			_label = "_Format Document" />
+			_label = "_Format Document"
+			macShortcut = "Control|I" />
 	<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatSelection"
 			defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatSelectionHandler"
 			_label = "_Format Selection" />
@@ -538,13 +541,13 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.ShowNextHandler"
 			_label = "Show Next" 
 			_description = "Move cursor to next error or search match"
-			macShortcut = "Meta|="
+			macShortcut = "Meta|+"
 			shortcut = "F4" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious"
 			defaultHandler = "MonoDevelop.Ide.Commands.ShowPreviousHandler"
 			_label = "Show Previous" 
 			_description = "Move cursor to previous error or search match"
-			macShortcut = "Meta|+"
+			macShortcut = "Meta|-"
 			shortcut = "Shift|F4" />
 	
 	<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
@@ -713,7 +716,8 @@
 			_label = "_Replace..." 
 			icon = "gtk-find-and-replace" 
 			_description = "Search for and replace text" 
-			shortcut = "Control|H" />
+			shortcut = "Control|H"
+			macShortcut = "Alt|Meta|F" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext"
 			_label = "Find _Next" 
@@ -757,12 +761,13 @@
 			_label = "R_eplace in Files..." 
 			icon = "md-replace-in-files" 
 			shortcut = "Control|Shift|H"
+			macShortcut = "Alt|Meta|Shift|F"
 			_description = "Search for and replace text in all files of a directory" />
 	
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
 	         defaultHandler = "MonoDevelop.Ide.NavigateToDialog.GotoTypeHandler"
 	         _label = "Go to Type..."
-			_description = "Jump to the declaration of type in the current workspace"
+	         _description = "Jump to the declaration of type in the current workspace"
 	         shortcut = "Control|Shift|T"
 	         macShortcut = "Meta|Shift|T" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
@@ -829,6 +834,7 @@
 			macShortcut="Alt|Shift|space"
 			shortcut = "Alt|Shift|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
+			_description="Inserts a template or when something is selected surrounds selection with a template"
 			_label = "I_nsert Template..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
 			_label = "Go to end of line" />
@@ -919,6 +925,8 @@
 			_label = "Expand selection to document start" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd"
 			_label = "Expand selection to document end" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelectionToLine"
+			_label = "Expand selection to line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchCaretMode"
 			_label = "Switch caret mode"
 			description = "Switch between insert and overwrite caret modes"/>
@@ -958,6 +966,8 @@
 			macShortcut = "Control|L" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode"
 			_label = "Toggle block selection mode"/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
+			_label = "Duplicate line"/>
 	</Category>
 	
 </Extension>

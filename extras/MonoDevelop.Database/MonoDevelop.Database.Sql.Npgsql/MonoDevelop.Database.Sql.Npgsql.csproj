@@ -121,7 +121,6 @@
       <Package>monodevelop-core-addins</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral" />
     <Reference Include="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral" />
     <Reference Include="MonoDevelop.Core, Version=2.2.0.0, Culture=neutral">
       <Package>monodevelop</Package>
@@ -136,10 +135,6 @@
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.6.9.0, Culture=neutral">
       <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.Moonlight, Version=2.2.0.0, Culture=neutral">
-      <Package>monodevelop-core-addins</Package>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral">

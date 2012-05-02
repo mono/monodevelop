@@ -6,6 +6,7 @@ DEPS =  \
 	../../../build/AddIns/MacPlatform.dll \
 	../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
 	../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
+	../../../build/bin/ICSharpCode.NRefactory.dll \
 	../../../build/bin/Mono.TextEditor.dll \
 	../../../build/bin/MonoDevelop.Core.dll \
 	../../../build/bin/MonoDevelop.Ide.dll
@@ -14,7 +15,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:../../../../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll \
+	-r:../../../../external/monomac/src/MonoMac.dll \
 	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
@@ -102,7 +103,9 @@ FILES =  \
 	XcodeSyncing/XcodeSyncedItem.cs \
 	XcodeSyncing/XcodeSyncedType.cs 
 
-RES = MonoDevelop.MacDev.addin.xml
+RES =  \
+	icons/error.png \
+	MonoDevelop.MacDev.addin.xml
 
 ICON_FILES =  \
 	icons/application-x-mono-develop-xib-48.png \

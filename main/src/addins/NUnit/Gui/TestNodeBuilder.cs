@@ -166,7 +166,7 @@ namespace MonoDevelop.NUnit
 		{
 			UnitTest test = CurrentNode.DataItem as UnitTest;
 			SourceCodeLocation loc = null;
-			UnitTestResult res = test.GetLastResult ();
+//			UnitTestResult res = test.GetLastResult ();
 			loc = test.SourceCodeLocation;
 			if (loc != null)
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);

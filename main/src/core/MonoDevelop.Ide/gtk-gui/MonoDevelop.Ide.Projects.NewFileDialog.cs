@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.NewFileDialog
 			this.Name = "MonoDevelop.Ide.Projects.NewFileDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("New File");
+			this.Title = global::Mono.Unix.Catalog.GetString ("New File");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.BorderWidth = ((uint)(6));
 			// Internal child MonoDevelop.Ide.Projects.NewFileDialog.VBox
@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Projects
 			this.labelTemplateTitle.WidthRequest = 145;
 			this.labelTemplateTitle.Name = "labelTemplateTitle";
 			this.labelTemplateTitle.Xalign = 0F;
-			this.labelTemplateTitle.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Console Project</b>");
+			this.labelTemplateTitle.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Console Project</b>");
 			this.labelTemplateTitle.UseMarkup = true;
 			this.labelTemplateTitle.Wrap = true;
 			this.boxInfo.Add (this.labelTemplateTitle);
@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Projects
 			this.infoLabel.Name = "infoLabel";
 			this.infoLabel.Xalign = 0F;
 			this.infoLabel.Yalign = 0F;
-			this.infoLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Creates a new C# Project");
+			this.infoLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Creates a new C# Project");
 			this.infoLabel.Wrap = true;
 			this.boxInfo.Add (this.infoLabel);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.boxInfo [this.infoLabel]));
@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Name:");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Name:");
 			this.hbox2.Add (this.label2);
 			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label2]));
 			w14.Position = 0;
@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Projects
 			this.projectAddCheckbox = new global::Gtk.CheckButton ();
 			this.projectAddCheckbox.CanFocus = true;
 			this.projectAddCheckbox.Name = "projectAddCheckbox";
-			this.projectAddCheckbox.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Add to project:");
+			this.projectAddCheckbox.Label = global::Mono.Unix.Catalog.GetString ("_Add to project:");
 			this.projectAddCheckbox.DrawIndicator = true;
 			this.projectAddCheckbox.UseUnderline = true;
 			this.hbox3.Add (this.projectAddCheckbox);
@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Projects
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.projectPathLabel = new global::Gtk.Label ();
 			this.projectPathLabel.Name = "projectPathLabel";
-			this.projectPathLabel.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Path:");
+			this.projectPathLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Path:");
 			this.hbox4.Add (this.projectPathLabel);
 			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.projectPathLabel]));
 			w20.Position = 0;

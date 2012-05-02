@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Xml.StateEngine
 {
@@ -107,7 +108,7 @@ namespace MonoDevelop.Xml.StateEngine
 			if (c == '<') {
 				if (context.StateTag != FREE)
 					context.LogError ("Incomplete tag opening; encountered unexpected '<'.",
-						new MonoDevelop.Projects.Dom.DomRegion (
+						new DomRegion (
 							context.LocationMinus (LengthFromOpenBracket (context) + 1),
 							context.LocationMinus (1)));
 				context.StateTag = BRACKET;
@@ -180,7 +181,7 @@ namespace MonoDevelop.Xml.StateEngine
 			}
 			
 			context.LogError ("Incomplete tag opening; encountered unexpected character '" + c + "'.",
-				new MonoDevelop.Projects.Dom.DomRegion (
+				new DomRegion (
 					context.LocationMinus (LengthFromOpenBracket (context)),
 					context.Location));
 			

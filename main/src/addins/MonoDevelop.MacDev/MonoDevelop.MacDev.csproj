@@ -46,8 +46,8 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="MonoMac">
-      <HintPath>..\..\..\..\extras\MonoDevelop.MonoMac\MonoDevelop.MonoMac\MonoMac.dll</HintPath>
       <Private>False</Private>
+      <HintPath>..\..\..\..\external\monomac\src\MonoMac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +149,9 @@
     <EmbeddedResource Include="MonoDevelop.MacDev.addin.xml">
       <LogicalName>MonoDevelop.MacDev.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\error.png">
+      <LogicalName>error.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="icons\application-x-mono-develop-xib.svg" />
@@ -212,6 +215,11 @@
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">

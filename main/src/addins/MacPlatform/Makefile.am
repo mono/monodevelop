@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 ASSEMBLY = $(ADDIN_BUILD)/MacPlatform.dll
 
-MONOMAC_SRC = $(top_srcdir)/../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll
+MONOMAC_SRC = $(top_srcdir)/../external/monomac/src/MonoMac.dll
 MONOMAC = $(ADDIN_BUILD)/MonoMac.dll
 
 DEPS =  \
@@ -12,7 +12,7 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../../extras/MonoDevelop.MonoMac/MonoDevelop.MonoMac/MonoMac.dll \
+	-r:../../../../external/monomac/src/MonoMac.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -58,11 +58,14 @@ else
 all:
 endif
 
-$(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
+$(MONOMAC_SRC):
+	make -C $(top_srcdir)/../external/monomac/src
+
+$(ASSEMBLY): $(MONOMAC_SRC) $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -unsafe $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
-$(ASSEMBLY).mdb: $(ASSEMBLY)
+$(ASSEMBLY).mdb: $(ASSEMBLY) $(MONOMAC).mdb
 
 $(MONOMAC).mdb: $(MONOMAC_SRC).mdb
 	mkdir -p $(ADDIN_BUILD)
@@ -79,5 +82,7 @@ endif
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(MONOMAC) $(MONOMAC).mdb
 EXTRA_DIST = $(FILES) $(RES)
+
+.PHONY: $(MONOMAC_SRC)
 
 include $(top_srcdir)/Makefile.include

@@ -59,7 +59,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 
-		public virtual bool GetIsValid (ColorSheme style)
+		public virtual bool GetIsValid (ColorScheme style)
 		{
 			return (string.IsNullOrEmpty (Color) || style.GetChunkStyle (Color) != null) &&
 			        (string.IsNullOrEmpty (TagColor) || style.GetChunkStyle (TagColor) != null) &&
@@ -138,8 +138,30 @@ namespace Mono.TextEditor.Highlighting
 		{
 			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", Color, Rule, Begin, End, String.IsNullOrEmpty (Escape) ? "not set" : "'" + Escape +"'", StopAtEol);
 		}
-
-		static void AddFlags (HashSet<string> hashSet, string flags)
+		
+		public Span Clone ()
+		{
+			var newSpan = new Span ();
+			if (Begin != null)
+				newSpan.Begin = Begin.Clone ();
+			newSpan.BeginFlags = BeginFlags;
+			newSpan.Color = Color;
+			newSpan.Continuation = Continuation;
+			if (End != null)
+				newSpan.End = End.Clone ();
+			newSpan.EndFlags = EndFlags;
+			newSpan.Escape = Escape;
+			if (Exit != null)
+				newSpan.Exit = Exit.Clone ();
+			newSpan.ExitFlags = ExitFlags;
+			newSpan.NextColor = NextColor;
+			newSpan.Rule = Rule;
+			newSpan.StopAtEol = StopAtEol;
+			newSpan.TagColor = TagColor;
+			return newSpan;
+		}
+		
+ 		static void AddFlags (HashSet<string> hashSet, string flags)
 		{
 			if (String.IsNullOrEmpty (flags))
 				return;

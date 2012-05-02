@@ -18,7 +18,7 @@ namespace MonoDevelop.Ide.Projects
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Projects.AddMimeTypeDialog
 			this.Name = "MonoDevelop.Ide.Projects.AddMimeTypeDialog";
-			this.Title = global::MonoDevelop.Core.GettextCatalog.GetString ("Add File Type");
+			this.Title = global::Mono.Unix.Catalog.GetString ("Add File Type");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child MonoDevelop.Ide.Projects.AddMimeTypeDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Enter a file extension or a mime type name:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Enter a file extension or a mime type name:");
 			this.vbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
 			w2.Position = 0;

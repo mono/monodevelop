@@ -31,14 +31,8 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class InsertionModeTests
+	public class InsertionModeTests : TextEditorTestBase
 	{
-		[TestFixtureSetUp] 
-		public void SetUp()
-		{
-			Gtk.Application.Init ();
-		}
-		
 		string CreateInsertionPoint (string input, string text, NewLineInsertion before, NewLineInsertion after)
 		{
 			int idx = input.IndexOf ('$');
@@ -48,7 +42,6 @@ namespace Mono.TextEditor.Tests
 			InsertionPoint point = new InsertionPoint (editor.Document.OffsetToLocation (idx), before, after);
 			point.Insert (editor.GetTextEditorData (), text);
 			return editor.Document.Text;
-			
 		}
 		
 		[Test()]

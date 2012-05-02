@@ -25,15 +25,15 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public class MemberCompletionData : CompletionData
+/*	public class MemberCompletionData : CompletionData
 	{
-		public INode Member {
+		public object Member {
 			get;
 			set;
 		}
-	}
+	}*/
 }

@@ -22,7 +22,6 @@
     <widget-library name="MonoDevelop.VBNetBinding, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.CBinding, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.CSharpBinding, Version=2.6.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Moonlight, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="MonoDevelop.Debugger.Soft, Version=2.6.0.0, Culture=neutral" />
     <widget-library name="../../build/PyBinding.dll" internal="true" />
   </import>

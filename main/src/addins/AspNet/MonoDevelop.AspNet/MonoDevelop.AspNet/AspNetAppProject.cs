@@ -37,7 +37,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Dom;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Deployment;
 using MonoDevelop.Core.Assemblies;
@@ -46,7 +45,9 @@ using MonoDevelop.AspNet.Parser;
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Deployment;
 using MonoDevelop.AspNet.Gui;
-using MonoDevelop.Projects.Dom.Parser;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet
 {
@@ -206,6 +207,7 @@ namespace MonoDevelop.AspNet
 				TargetRuntime = TargetRuntime,
 				TargetFramework = TargetFramework,
 				UserAssemblyPaths = this.GetUserAssemblyPaths (config),
+				EnvironmentVariables = configuration.EnvironmentVariables,
 			};
 		}
 		
@@ -225,8 +227,22 @@ namespace MonoDevelop.AspNet
 			
 			IConsole console = null;
 			var operationMonitor = new AggregatedOperationMonitor (monitor);
+
+			bool isXsp = true; //FIXME: fix this when it might not be true - should delegate to the ExecutionHandler
 			
 			try {
+				//HACK: check XSP exists first, because error UX is cleaner w/o displaying a blank console pad.
+				if (isXsp) {
+					try {
+						AspNetExecutionHandler.GetXspPath ((AspNetExecutionCommand)cmd);
+					} catch (UserException ex) {
+						MessageService.ShowError (
+							GettextCatalog.GetString ("Could not launch ASP.NET web server"),
+						    ex.Message);
+						throw;
+					}
+				}
+
 				if (configuration.ExternalConsole)
 					console = context.ExternalConsoleFactory.CreateConsole (!configuration.PauseConsoleOutput);
 				else
@@ -234,7 +250,6 @@ namespace MonoDevelop.AspNet
 				
 				string url = String.Format ("http://{0}:{1}", this.XspParameters.Address, this.XspParameters.Port);
 				
-				bool isXsp = true; //FIXME: fix this when it might not be true
 				
 				if (isXsp) {
 					console = new XspBrowserLauncherConsole (console, delegate {
@@ -255,6 +270,9 @@ namespace MonoDevelop.AspNet
 				monitor.Log.WriteLine ("The web server exited with code: {0}", op.ExitCode);
 				
 			} catch (Exception ex) {
+				if (!(ex is UserException)) {
+					LoggingService.LogError ("Could not launch ASP.NET web server.", ex);
+				}
 				monitor.ReportError ("Could not launch web server.", ex);
 			} finally {
 				operationMonitor.Dispose ();
@@ -330,7 +348,7 @@ namespace MonoDevelop.AspNet
 		
 		#endregion
 		
-		public ProjectDom ResolveAssemblyDom (string assemblyName)
+		public ICompilation ResolveAssemblyDom (string assemblyName)
 		{
 			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
@@ -342,20 +360,20 @@ namespace MonoDevelop.AspNet
 				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
 					foreach (string refPath in reference.GetReferencedFileNames (null))
 						if (Path.GetFileName (refPath) == dllName)
-							return ProjectDomService.GetAssemblyDom (TargetRuntime, refPath);
+							return new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, refPath));
 				} else if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
 					var p = ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
 					if (p == null) {
 						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' could not be found", reference.Reference, this.Name);
 						continue;
 					}
-					return ProjectDomService.GetProjectDom (p);
+					return TypeSystemService.GetCompilation (p);
 				}
 			}
 			
 			string path = GetAssemblyPath (assemblyName);
 			if (path != null)
-				return ProjectDomService.GetAssemblyDom (TargetRuntime, path);
+				return new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, path));
 			return null;
 		}
 		
@@ -688,9 +706,9 @@ namespace MonoDevelop.AspNet
 		{
 			string typeName = GetCodebehindTypeName (fileName);
 			if (typeName != null) {
-				var dom = ProjectDomService.GetProjectDom (this);
+				var dom = TypeSystemService.GetCompilation (this);
 				if (dom != null)
-					return dom.GetType (typeName, true);
+					return dom.LookupType (typeName);
 			}
 			return null;
 		}
@@ -710,7 +728,7 @@ namespace MonoDevelop.AspNet
 			protected override string GenerateInfo (string filename)
 			{
 				try {
-					var doc = ProjectDomService.Parse (Project, filename) as AspNetParsedDocument;
+					var doc = TypeSystemService.ParseFile (filename, DesktopService.GetMimeTypeForUri (filename), File.ReadAllText (filename)) as AspNetParsedDocument;
 					if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
 						return doc.Info.InheritedClass;
 				} catch (Exception ex) {

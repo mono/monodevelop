@@ -51,8 +51,8 @@ namespace Mono.TextEditor
 		bool showLineNumberMargin = true;
 		bool showFoldMargin = true;
 		bool showInvalidLines = true;
-		bool autoIndent = true;
-
+		IndentStyle indentStyle = IndentStyle.Virtual;
+		
 		int  rulerColumn = 80;
 		bool showRuler = false;
 		
@@ -369,13 +369,13 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public virtual bool AutoIndent {
+		public virtual IndentStyle IndentStyle {
 			get {
-				return autoIndent;
+				return indentStyle;
 			}
 			set {
-				if (autoIndent != value) {
-					autoIndent = value;
+				if (indentStyle != value) {
+					indentStyle = value;
 					OnChanged (EventArgs.Empty);
 				}
 			}
@@ -469,7 +469,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual ColorSheme GetColorStyle (Gtk.Style widgetStyle)
+		public virtual ColorScheme GetColorStyle (Gtk.Style widgetStyle)
 		{
 			return SyntaxModeService.GetColorStyle (widgetStyle, ColorScheme);
 		}
@@ -491,7 +491,7 @@ namespace Mono.TextEditor
 			showSpaces = other.showSpaces;
 			rulerColumn = other.rulerColumn;
 			showRuler = other.showRuler;
-			autoIndent = other.autoIndent;
+			indentStyle = other.indentStyle;
 			fontName = other.fontName;
 			enableSyntaxHighlighting = other.enableSyntaxHighlighting;
 			colorStyle = other.colorStyle;

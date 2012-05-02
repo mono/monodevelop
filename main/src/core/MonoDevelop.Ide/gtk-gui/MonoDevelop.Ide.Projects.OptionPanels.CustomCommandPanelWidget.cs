@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label3.WidthRequest = 470;
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0F;
-			this.label3.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("MonoDevelop can execute user specified commands or scripts before, after or as a replacement of common project operations. It is also possible to enter custom commands which will be available in the project or solution menu.");
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("MonoDevelop can execute user specified commands or scripts before, after or as a replacement of common project operations. It is also possible to enter custom commands which will be available in the project or solution menu.");
 			this.label3.Wrap = true;
 			this.vbox.Add (this.label3);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox [this.label3]));

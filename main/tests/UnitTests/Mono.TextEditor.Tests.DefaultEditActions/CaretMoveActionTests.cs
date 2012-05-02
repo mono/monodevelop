@@ -27,25 +27,11 @@
 using System;
 using NUnit.Framework;
 
-namespace Mono.TextEditor.Tests
+namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class CaretMoveActionTests
+	public class CaretMoveActionTests : TextEditorTestBase
 	{
-		internal static TextEditorData Create (string text)
-		{
-			TextEditorData result = new TextEditorData ();
-			if (text.IndexOf ('$') >= 0) {
-				int caretOffset = text.IndexOf ('$');
-				result.Document.Text = text.Remove (caretOffset, 1);
-				result.Caret.Offset = caretOffset;
-			} else {
-				result.Document.Text = text;
-			}
-			return result;
-			
-		}
-		
 		[Test()]
 		public void TestCaretLeft ()
 		{
@@ -81,6 +67,20 @@ $1234567890
 			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 			CaretMoveActions.Left (data);
 			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
+		}
+
+		[Test()]
+		public void TestCaretLeftAfterFolding ()
+		{
+			var data = Create (
+@"
+	+[Fold]$
+");
+			CaretMoveActions.Left (data);
+			Check (data, 
+@"
+	$+[Fold]
+");
 		}
 		
 		[Test()]
@@ -118,6 +118,20 @@ $1234567890
 			Assert.AreEqual (new DocumentLocation (5, 11), data.Caret.Location);
 			CaretMoveActions.Right (data);
 			Assert.AreEqual (new DocumentLocation (5, 11), data.Caret.Location);
+		}
+
+		[Test()]
+		public void TestCaretRightBeforeFolding ()
+		{
+			var data = Create (
+@"
+	$+[Fold]
+");
+			CaretMoveActions.Right (data);
+			Check (data, 
+@"
+	+[Fold]$
+");
 		}
 		
 		[Test()]
@@ -184,7 +198,48 @@ $1234567890
 			CaretMoveActions.LineHome (data);
 			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
 		}
+
+		[Test()]
+		public void TestCaretLineHomeWithFolding ()
+		{
+			var data = Create (@"
+	Hello
+	+[Hello
+	Hello
+	Hello]$
+	Hello
+");
+			CaretMoveActions.LineHome (data);
+			Check (data, @"
+	Hello
+$	+[Hello
+	Hello
+	Hello]
+	Hello
+");
+		}
+
+		[Test()]
+		public void TestCaretLineEndWithFolding ()
+		{
+			var data = Create (@"
+	Hello
+$	+[Hello
+	Hello
+	Hello]
+	Hello
+");
+			CaretMoveActions.LineEnd (data);
+			Check (data, @"
+	Hello
+	+[Hello
+	Hello
+	Hello]$
+	Hello
+");
+		}
 		
+
 		[Test()]
 		public void TestCaretLineEnd ()
 		{
@@ -211,16 +266,200 @@ $1234567890
 			CaretMoveActions.ToDocumentEnd (data);
 			Assert.AreEqual (new DocumentLocation (1, 11), data.Caret.Location);
 		}
-		
-		[TestFixtureSetUp] 
-		public void SetUp()
+
+		[Test()]
+		public void TestPreviousWord ()
 		{
-			Gtk.Application.Init ();
+			var data = Create (@"word1 word2 word3$");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"word1 word2 $word3");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"word1 $word2 word3");
+			CaretMoveActions.PreviousWord (data);
+			Check (data, @"$word1 word2 word3");
+		}
+
+		[Test()]
+		public void TestNextWord ()
+		{
+			var data = Create (@"$word1 word2 word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1$ word2 word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1 word2$ word3");
+			CaretMoveActions.NextWord (data);
+			Check (data, @"word1 word2 word3$");
+		}
+
+		
+		[Test()]
+		public void TestPreviousSubword ()
+		{
+			var data = Create (@"someLongWord$");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"someLong$Word");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"some$LongWord");
+			CaretMoveActions.PreviousSubword (data);
+			Check (data, @"$someLongWord");
+		}
+
+		[Test()]
+		public void TestNextSubword ()
+		{
+			var data = Create (@"$someLongWord");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"some$LongWord");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"someLong$Word");
+			CaretMoveActions.NextSubword (data);
+			Check (data, @"someLongWord$");
+		}
+
+		[Test()]
+		public void TestLineStart ()
+		{
+			var data = Create (@"      someLongWord$");
+			CaretMoveActions.LineStart (data);
+			Check (data, @"$      someLongWord");
+			CaretMoveActions.LineStart (data);
+			Check (data, @"$      someLongWord");
+		}
+
+		[Test()]
+		public void TestLineFirstNonWhitespace ()
+		{
+			var data = Create (@"      someLongWord$");
+			CaretMoveActions.LineFirstNonWhitespace (data);
+			Check (data, @"      $someLongWord");
+			CaretMoveActions.LineFirstNonWhitespace (data);
+			Check (data, @"      $someLongWord");
+		}
+
+		[Test()]
+		public void TestUpLineStart ()
+		{
+			var data = Create (@"line1
+someLongWord$");
+			CaretMoveActions.UpLineStart (data);
+			Check (data, @"$line1
+someLongWord");
 		}
 		
-		[TestFixtureTearDown] 
-		public void Dispose()
+		[Test()]
+		public void TestDownLineEnd ()
 		{
+			var data = Create (@"$line1
+someLongWord");
+			CaretMoveActions.DownLineEnd (data);
+			Check (data, @"line1
+someLongWord$");
 		}
+
+		[Test()]
+		public void TestPageDown ()
+		{
+			var data = Create (@"$1
+2
+3
+4
+5
+6");
+			data.VAdjustment = new Gtk.Adjustment (
+				0, 
+				0, 
+				data.LineCount * data.LineHeight,
+				data.LineHeight,
+				2 * data.LineHeight,
+				2 * data.LineHeight);
+			CaretMoveActions.PageDown (data);
+			Check (data, @"1
+2
+$3
+4
+5
+6");
+		}
+
+		[Test()]
+		public void TestPageUp ()
+		{
+			var data = Create (@"1
+2
+3
+$4
+5
+6");
+			data.VAdjustment = new Gtk.Adjustment (
+				0, 
+				0, 
+				data.LineCount * data.LineHeight,
+				data.LineHeight,
+				2 * data.LineHeight,
+				2 * data.LineHeight);
+			CaretMoveActions.PageUp (data);
+			Check (data, @"1
+$2
+3
+4
+5
+6");
+		}
+
+		/// <summary>
+		/// Bug 4683 - Text editor navigation issue 
+		/// </summary>
+		[Test()]
+		public void TestBug4683 ()
+		{
+			var data = Create (@"
+IEnumerable<string> GetFileExtensions (string filename)
+{
+	int lastSeparator = filename.Length;
+		do {$
+			filename.LastIndexOf ('.', 0, lastSeparator);
+
+	}
+"
+			);
+			CaretMoveActions.Down (data);
+			CaretMoveActions.Up (data);
+			Check (data, @"
+IEnumerable<string> GetFileExtensions (string filename)
+{
+	int lastSeparator = filename.Length;
+		do {$
+			filename.LastIndexOf ('.', 0, lastSeparator);
+
+	}
+");
+		}
+
+		[Test()]
+		public void TestDesiredColumnBeyondEOL ()
+		{
+			var data = Create (@"
+IEnumerable<string> GetFileExtensions (string filename)
+{
+	int lastSeparator = filename.Length;
+		do {
+			fi$lename.LastIndexOf ('.', 0, lastSeparator);
+
+	}
+"
+			);
+			CaretMoveActions.Up (data);
+			Check (data, @"
+IEnumerable<string> GetFileExtensions (string filename)
+{
+	int lastSeparator = filename.Length;
+		do {$
+			filename.LastIndexOf ('.', 0, lastSeparator);
+
+	}
+");
+		}
+
+
 	}
 }

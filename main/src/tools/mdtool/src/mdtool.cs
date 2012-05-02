@@ -78,7 +78,7 @@ public class MonoDevelopProcessHost
 			string[] newArgs = new string [args.Length - 1 - pi];
 			Array.Copy (args, pi + 1, newArgs, 0, args.Length - 1 - pi);
 			if (args [pi] != "setup")
-				return Runtime.ApplicationService.StartApplication (args[pi], newArgs);
+				return Runtime.ApplicationService.StartApplication (args [pi], newArgs);
 			else
 				return RunSetup (newArgs);
 		} catch (UserException ex) {

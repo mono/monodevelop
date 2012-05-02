@@ -1,5 +1,5 @@
 DLLNAME = MonoDevelop.SourceEditor2.dll
-ASSEMBLY = $(top_builddir)/build/AddIns/$(DLLNAME)
+ASSEMBLY = $(top_builddir)/build/AddIns/DisplayBindings/SourceEditor/$(DLLNAME)
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -21,6 +21,14 @@ FILES =  \
 	MonoDevelop.SourceEditor.OptionPanels/HighlightingPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/MarkerPanel.cs \
 	MonoDevelop.SourceEditor.OptionPanels/NewColorShemeDialog.cs \
+	MonoDevelop.SourceEditor.QuickTasks/IQuickTaskProvider.cs \
+	MonoDevelop.SourceEditor.QuickTasks/IUsageProvider.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTask.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTaskMiniMapMode.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs \
+	MonoDevelop.SourceEditor.QuickTasks/QuickTaskStrip.cs \
+	MonoDevelop.SourceEditor.QuickTasks/ScrollbarCommand.cs \
+	MonoDevelop.SourceEditor.QuickTasks/ScrollBarMode.cs \
 	MonoDevelop.SourceEditor/AutoSave.cs \
 	MonoDevelop.SourceEditor/CompileErrorTooltipProvider.cs \
 	MonoDevelop.SourceEditor/Counters.cs \
@@ -29,6 +37,7 @@ FILES =  \
 	MonoDevelop.SourceEditor/DynamicAbbrevHandler.cs \
 	MonoDevelop.SourceEditor/EditActions.cs \
 	MonoDevelop.SourceEditor/ExtensibleTextEditor.cs \
+	MonoDevelop.SourceEditor/FileRegistry.cs \
 	MonoDevelop.SourceEditor/GotoLineNumberWidget.cs \
 	MonoDevelop.SourceEditor/IdeViMode.cs \
 	MonoDevelop.SourceEditor/ISourceEditorOptions.cs \
@@ -41,7 +50,6 @@ FILES =  \
 	MonoDevelop.SourceEditor/MessageBubbleTextMarker.cs \
 	MonoDevelop.SourceEditor/PinnedWatchWidget.cs \
 	MonoDevelop.SourceEditor/PrintSettingsWidget.cs \
-	MonoDevelop.SourceEditor/QuickTaskStrip.cs \
 	MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs \
 	MonoDevelop.SourceEditor/SourceEditorCommands.cs \
 	MonoDevelop.SourceEditor/SourceEditorDisplayBinding.cs \
@@ -62,6 +70,8 @@ RES =  \
 DEPS =  \
 	$(top_builddir)/build/AddIns/MonoDevelop.Debugger/MonoDevelop.Debugger.dll \
 	$(top_builddir)/build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.CSharp.dll \
+	$(top_builddir)/build/bin/ICSharpCode.NRefactory.dll \
 	$(top_builddir)/build/bin/Mono.Debugging.dll \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
@@ -77,12 +87,12 @@ REFS =  \
 	-r:System.Core \
 	-r:System.Xml
 
-ADDIN_BUILD = $(top_builddir)/build/AddIns
+ADDIN_BUILD = $(top_builddir)/build/AddIns/DisplayBindings/SourceEditor
 
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
 
 $(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
-	mkdir -p $(top_builddir)/build/bin
+	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -t:library $(REFS) $(build_deps)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)

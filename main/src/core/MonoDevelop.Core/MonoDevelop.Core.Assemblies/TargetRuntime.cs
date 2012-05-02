@@ -259,35 +259,6 @@ namespace MonoDevelop.Core.Assemblies
 					throw new InvalidOperationException (string.Format ("No compatible framework found for assembly '{0}' (required framework: {1})", pinfo.FileName, fxId));
 			}
 			
-			// Make a copy of the ProcessStartInfo because we are going to modify it
-			
-			ProcessStartInfo cp = new ProcessStartInfo ();
-			cp.Arguments = pinfo.Arguments;
-			cp.CreateNoWindow = pinfo.CreateNoWindow;
-			cp.Domain = pinfo.Domain;
-			cp.ErrorDialog = pinfo.ErrorDialog;
-			cp.ErrorDialogParentHandle = pinfo.ErrorDialogParentHandle;
-			cp.FileName = pinfo.FileName;
-			cp.LoadUserProfile = pinfo.LoadUserProfile;
-			cp.Password = pinfo.Password;
-			cp.UseShellExecute = pinfo.UseShellExecute;
-			cp.RedirectStandardError = pinfo.RedirectStandardError;
-			cp.RedirectStandardInput = pinfo.RedirectStandardInput;
-			cp.RedirectStandardOutput = pinfo.RedirectStandardOutput;
-			cp.StandardErrorEncoding = pinfo.StandardErrorEncoding;
-			cp.StandardOutputEncoding = pinfo.StandardOutputEncoding;
-			cp.UserName = pinfo.UserName;
-			cp.Verb = pinfo.Verb;
-			cp.WindowStyle = pinfo.WindowStyle;
-			cp.WorkingDirectory = pinfo.WorkingDirectory;
-			
-			foreach (string key in pinfo.EnvironmentVariables.Keys)
-				cp.EnvironmentVariables [key] = pinfo.EnvironmentVariables [key];
-			
-			// Set the runtime env vars
-			
-			GetToolsExecutionEnvironment (fx).MergeTo (cp);
-			
 			ConvertAssemblyProcessStartInfo (pinfo);
 			return Process.Start (pinfo);
 		}
@@ -353,6 +324,11 @@ namespace MonoDevelop.Core.Assemblies
 		/// Returns the MSBuild bin path for this runtime.
 		/// </summary>
 		public abstract string GetMSBuildBinPath (TargetFramework fx);
+		
+		/// <summary>
+		/// Returns the MSBuild extensions path.
+		/// </summary>
+		public abstract string GetMSBuildExtensionsPath ();
 
 		/// <summary>
 		/// Returns all GAC locations for this runtime.

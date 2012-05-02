@@ -1,0 +1,9 @@
+<TextStylePolicy scope="text/x-csharp">
+	<FileWidth>120</FileWidth>
+	<TabWidth>4</TabWidth>
+	<IndentWidth>4</IndentWidth>
+	<TabsToSpaces>False</TabsToSpaces>
+	<NoTabsAfterNonTabs>False</NoTabsAfterNonTabs>
+	<RemoveTrailingWhitespace>True</RemoveTrailingWhitespace>
+	<EolMarker>Unix</EolMarker>
+</TextStylePolicy>

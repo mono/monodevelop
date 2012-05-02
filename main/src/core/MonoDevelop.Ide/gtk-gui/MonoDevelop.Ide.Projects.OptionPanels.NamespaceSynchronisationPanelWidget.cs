@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.checkAssociateNamespacesDirectories = new global::Gtk.CheckButton ();
 			this.checkAssociateNamespacesDirectories.CanFocus = true;
 			this.checkAssociateNamespacesDirectories.Name = "checkAssociateNamespacesDirectories";
-			this.checkAssociateNamespacesDirectories.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("_Associate namespaces with directory names");
+			this.checkAssociateNamespacesDirectories.Label = global::Mono.Unix.Catalog.GetString ("_Associate namespaces with directory names");
 			this.checkAssociateNamespacesDirectories.DrawIndicator = true;
 			this.checkAssociateNamespacesDirectories.UseUnderline = true;
 			this.vbox2.Add (this.checkAssociateNamespacesDirectories);
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.checkDefaultAsRoot = new global::Gtk.CheckButton ();
 			this.checkDefaultAsRoot.CanFocus = true;
 			this.checkDefaultAsRoot.Name = "checkDefaultAsRoot";
-			this.checkDefaultAsRoot.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("Use _default namespace as root");
+			this.checkDefaultAsRoot.Label = global::Mono.Unix.Catalog.GetString ("Use _default namespace as root");
 			this.checkDefaultAsRoot.DrawIndicator = true;
 			this.checkDefaultAsRoot.UseUnderline = true;
 			this.namespaceAssociationBox.Add (this.checkDefaultAsRoot);
@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
 			this.label1.Yalign = 0F;
-			this.label1.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Directory structure:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Directory structure:");
 			this.hbox1.Add (this.label1);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w3.Position = 0;
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.vbox4.Name = "vbox4";
 			this.vbox4.Spacing = 6;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.radioFlat = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("_Flat"));
+			this.radioFlat = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Flat"));
 			this.radioFlat.CanFocus = true;
 			this.radioFlat.Name = "radioFlat";
 			this.radioFlat.DrawIndicator = true;
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
-			this.radioHierarch = new global::Gtk.RadioButton (global::MonoDevelop.Core.GettextCatalog.GetString ("_Hierarchical"));
+			this.radioHierarch = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Hierarchical"));
 			this.radioHierarch.CanFocus = true;
 			this.radioHierarch.Name = "radioHierarch";
 			this.radioHierarch.DrawIndicator = true;
@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.previewFrame.ShadowType = ((global::Gtk.ShadowType)(4));
 			this.GtkLabel6 = new global::Gtk.Label ();
 			this.GtkLabel6.Name = "GtkLabel6";
-			this.GtkLabel6.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Preview");
+			this.GtkLabel6.LabelProp = global::Mono.Unix.Catalog.GetString ("Preview");
 			this.previewFrame.LabelWidget = this.GtkLabel6;
 			this.hbox2.Add (this.previewFrame);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.previewFrame]));
@@ -142,14 +142,14 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.checkVSStyleResourceNames = new global::Gtk.CheckButton ();
 			this.checkVSStyleResourceNames.CanFocus = true;
 			this.checkVSStyleResourceNames.Name = "checkVSStyleResourceNames";
-			this.checkVSStyleResourceNames.Label = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Use _Visual Studio-style resource names</b>\nVisual Studio generates a default ID for embedded resources,\ninstead of simply using the resource's filename.");
+			this.checkVSStyleResourceNames.Label = global::Mono.Unix.Catalog.GetString ("<b>Use _Visual Studio-style resource names</b>\nVisual Studio generates a default ID for embedded resources,\ninstead of simply using the resource's filename.");
 			this.checkVSStyleResourceNames.DrawIndicator = true;
 			this.checkVSStyleResourceNames.UseUnderline = true;
 			this.checkVSStyleResourceNames.Remove (this.checkVSStyleResourceNames.Child);
 			// Container child checkVSStyleResourceNames.Gtk.Container+ContainerChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("<b>Use _Visual Studio-style resource names</b>\nVisual Studio generates a default ID for embedded resources, instead of simply using the resource's filename.");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Use _Visual Studio-style resource names</b>\nVisual Studio generates a default ID for embedded resources, instead of simply using the resource's filename.");
 			this.label2.UseMarkup = true;
 			this.label2.UseUnderline = true;
 			this.label2.Wrap = true;

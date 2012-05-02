@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			get { return currentEngine; }
 		}
 		
-		void textChanged (object sender, ReplaceEventArgs args)
+		void textChanged (object sender, DocumentChangeEventArgs args)
 		{
 			if (args.Offset< currentEngine.Position)
 				ResetEngineToPosition (args.Offset);

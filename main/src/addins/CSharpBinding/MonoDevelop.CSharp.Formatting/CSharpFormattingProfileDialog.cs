@@ -39,55 +39,67 @@ namespace MonoDevelop.CSharp.Formatting
 		CSharpFormattingPolicy profile;
 		Gtk.TreeStore indentOptions, bacePositionOptions, newLineOptions, whiteSpaceOptions;
 		
-		static Dictionary<ArrayInitializerPlacement, string> arrayInitializerTranslationDictionary = new Dictionary<ArrayInitializerPlacement, string> ();
+		static Dictionary<Wrapping, string> arrayInitializerTranslationDictionary = new Dictionary<Wrapping, string> ();
 		static Dictionary<BraceStyle, string> braceStyleTranslationDictionary = new Dictionary<BraceStyle, string> ();
 		static Dictionary<BraceForcement, string> braceForcementTranslationDictionary = new Dictionary<BraceForcement, string> ();
 		static Dictionary<PropertyFormatting, string> propertyFormattingTranslationDictionary = new Dictionary<PropertyFormatting, string> ();
+		static Dictionary<NewLinePlacement, string>  newLinePlacementTranslationDictionary = new Dictionary<NewLinePlacement, string> ();
 		
 		static CSharpFormattingProfileDialog ()
 		{
-			braceStyleTranslationDictionary[BraceStyle.DoNotChange] = GettextCatalog.GetString ("Do not change");
-			braceStyleTranslationDictionary[BraceStyle.EndOfLine] = GettextCatalog.GetString ("End of line");
-			braceStyleTranslationDictionary[BraceStyle.EndOfLineWithoutSpace] = GettextCatalog.GetString ("End of line without space");
-			braceStyleTranslationDictionary[BraceStyle.NextLine] =  GettextCatalog.GetString ("Next line");
-			braceStyleTranslationDictionary[BraceStyle.NextLineShifted] = GettextCatalog.GetString ("Next line shifted");
-			braceStyleTranslationDictionary[BraceStyle.NextLineShifted2] = GettextCatalog.GetString ("Next line shifted2");
+			braceStyleTranslationDictionary [BraceStyle.DoNotChange] = GettextCatalog.GetString ("Do not change");
+			braceStyleTranslationDictionary [BraceStyle.EndOfLine] = GettextCatalog.GetString ("End of line");
+			braceStyleTranslationDictionary [BraceStyle.EndOfLineWithoutSpace] = GettextCatalog.GetString ("End of line without space");
+			braceStyleTranslationDictionary [BraceStyle.NextLine] = GettextCatalog.GetString ("Next line");
+			braceStyleTranslationDictionary [BraceStyle.NextLineShifted] = GettextCatalog.GetString ("Next line shifted");
+			braceStyleTranslationDictionary [BraceStyle.NextLineShifted2] = GettextCatalog.GetString ("Next line shifted2");
+			braceStyleTranslationDictionary [BraceStyle.BannerStyle] = GettextCatalog.GetString ("Banner style");
 			
-			braceForcementTranslationDictionary[BraceForcement.DoNotChange] = GettextCatalog.GetString ("Do not change");
-			braceForcementTranslationDictionary[BraceForcement.AddBraces] = GettextCatalog.GetString ("Add braces");
-			braceForcementTranslationDictionary[BraceForcement.RemoveBraces] = GettextCatalog.GetString ("Remove braces");
+			braceForcementTranslationDictionary [BraceForcement.DoNotChange] = GettextCatalog.GetString ("Do not change");
+			braceForcementTranslationDictionary [BraceForcement.AddBraces] = GettextCatalog.GetString ("Add braces");
+			braceForcementTranslationDictionary [BraceForcement.RemoveBraces] = GettextCatalog.GetString ("Remove braces");
 			
-			propertyFormattingTranslationDictionary[PropertyFormatting.AllowOneLine] = GettextCatalog.GetString ("Allow one line");
-			propertyFormattingTranslationDictionary[PropertyFormatting.ForceOneLine] = GettextCatalog.GetString ("Force one line");
-			propertyFormattingTranslationDictionary[PropertyFormatting.ForceNewLine] = GettextCatalog.GetString ("Force new line");
+			propertyFormattingTranslationDictionary [PropertyFormatting.AllowOneLine] = GettextCatalog.GetString ("Allow one line");
+			propertyFormattingTranslationDictionary [PropertyFormatting.ForceOneLine] = GettextCatalog.GetString ("Force one line");
+			propertyFormattingTranslationDictionary [PropertyFormatting.ForceNewLine] = GettextCatalog.GetString ("Force new line");
 			
-			arrayInitializerTranslationDictionary[ArrayInitializerPlacement.AlwaysNewLine] = GettextCatalog.GetString ("Always new line");
-			arrayInitializerTranslationDictionary[ArrayInitializerPlacement.AlwaysSameLine] = GettextCatalog.GetString ("Always same line");
+			arrayInitializerTranslationDictionary [Wrapping.DoNotChange] = GettextCatalog.GetString ("Do not change");
+			arrayInitializerTranslationDictionary [Wrapping.DoNotWrap] = GettextCatalog.GetString ("Do not Wrap");
+			arrayInitializerTranslationDictionary [Wrapping.WrapAlways] = GettextCatalog.GetString ("Wrap always");
+			arrayInitializerTranslationDictionary [Wrapping.WrapIfTooLong] = GettextCatalog.GetString ("Wrap if too long");
+
+			newLinePlacementTranslationDictionary [NewLinePlacement.DoNotCare] = GettextCatalog.GetString ("Allow both");
+			newLinePlacementTranslationDictionary [NewLinePlacement.NewLine] = GettextCatalog.GetString ("Always new line");
+			newLinePlacementTranslationDictionary [NewLinePlacement.SameLine] = GettextCatalog.GetString ("Always same line");
 		}
 		
 		public static string TranslateValue (object value)
 		{
 			if (value is BraceStyle)
-				return braceStyleTranslationDictionary[(BraceStyle)value];
+				return braceStyleTranslationDictionary [(BraceStyle)value];
 			if (value is BraceForcement) 
-				return braceForcementTranslationDictionary[(BraceForcement)value];
+				return braceForcementTranslationDictionary [(BraceForcement)value];
 			if (value is PropertyFormatting)
-				return propertyFormattingTranslationDictionary[(PropertyFormatting)value];
-			if (value is ArrayInitializerPlacement)
-				return arrayInitializerTranslationDictionary[(ArrayInitializerPlacement)value];
+				return propertyFormattingTranslationDictionary [(PropertyFormatting)value];
+			if (value is Wrapping)
+				return arrayInitializerTranslationDictionary [(Wrapping)value];
+			if (value is NewLinePlacement)
+				return newLinePlacementTranslationDictionary [(NewLinePlacement)value];
 			throw new Exception ("unknown property type: " + value);
 		}
 		
 		public static object ConvertProperty (Type propertyType, string newText)
 		{
-			if (propertyType == typeof (BraceStyle))
+			if (propertyType == typeof(BraceStyle))
 				return braceStyleTranslationDictionary.First (p => p.Value == newText).Key;
-			if (propertyType == typeof (BraceForcement)) 
+			if (propertyType == typeof(BraceForcement)) 
 				return braceForcementTranslationDictionary.First (p => p.Value == newText).Key;
-			if (propertyType == typeof (PropertyFormatting)) 
+			if (propertyType == typeof(PropertyFormatting)) 
 				return propertyFormattingTranslationDictionary.First (p => p.Value == newText).Key;
-			if (propertyType == typeof (ArrayInitializerPlacement))
+			if (propertyType == typeof(Wrapping))
 				return arrayInitializerTranslationDictionary.First (p => p.Value == newText).Key;
+			if (propertyType == typeof(NewLinePlacement))
+				return newLinePlacementTranslationDictionary.First (p => p.Value == newText).Key;
 			throw new Exception ("unknown property type: " + propertyType);
 		}
 		
@@ -399,7 +411,7 @@ namespace TestSpace {
 			ShowAll ();
 			
 			#region Indent options
-			indentOptions = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool));
+			indentOptions = new Gtk.TreeStore (typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool));
 			
 			TreeViewColumn column = new TreeViewColumn ();
 			// pixbuf column
@@ -427,7 +439,7 @@ namespace TestSpace {
 			cellRendererCombo.HasEntry = false;
 			cellRendererCombo.Editable = !profile.IsBuiltIn;
 
-			cellRendererCombo.Edited +=  new ComboboxEditedHandler (this, indentOptions).ComboboxEdited;
+			cellRendererCombo.Edited += new ComboboxEditedHandler (this, indentOptions).ComboboxEdited;
 			
 			column.PackStart (cellRendererCombo, false);
 			column.SetAttributes (cellRendererCombo, "visible", comboVisibleColumn);
@@ -466,7 +478,7 @@ namespace TestSpace {
 			#endregion
 			
 			#region Brace options
-			bacePositionOptions = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool));
+			bacePositionOptions = new Gtk.TreeStore (typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool));
 			
 			column = new TreeViewColumn ();
 			// pixbuf column
@@ -573,7 +585,7 @@ namespace TestSpace {
 			#endregion
 			
 			#region New line options
-			newLineOptions = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool));
+			newLineOptions = new Gtk.TreeStore (typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool));
 			
 			column = new TreeViewColumn ();
 			// pixbuf column
@@ -614,12 +626,12 @@ namespace TestSpace {
 			
 			treeviewNewLines.AppendColumn (column);
 			
-			AddOption (newLineOptions, "PlaceElseOnNewLine", GettextCatalog.GetString ("Place 'else' on new line"), simpleIf);
-			AddOption (newLineOptions, "PlaceElseIfOnNewLine", GettextCatalog.GetString ("Place 'else if' on new line"), simpleIf);
-			AddOption (newLineOptions, "PlaceCatchOnNewLine", GettextCatalog.GetString ("Place 'catch' on new line"), simpleCatch);
-			AddOption (newLineOptions, "PlaceFinallyOnNewLine", GettextCatalog.GetString ("Place 'finally' on new line"), simpleCatch);
-			AddOption (newLineOptions, "PlaceWhileOnNewLine", GettextCatalog.GetString ("Place 'while' on new line"), simpleDoWhile);
-			AddOption (newLineOptions, "PlaceArrayInitializersOnNewLine", GettextCatalog.GetString ("Place array initializers on new line"), simpleArrayInitializer);
+			AddOption (newLineOptions, "ElseNewLinePlacement", GettextCatalog.GetString ("Place 'else' on new line"), simpleIf);
+			AddOption (newLineOptions, "ElseIfNewLinePlacement", GettextCatalog.GetString ("Place 'else if' on new line"), simpleIf);
+			AddOption (newLineOptions, "CatchNewLinePlacement", GettextCatalog.GetString ("Place 'catch' on new line"), simpleCatch);
+			AddOption (newLineOptions, "FinallyNewLinePlacement", GettextCatalog.GetString ("Place 'finally' on new line"), simpleCatch);
+			AddOption (newLineOptions, "WhileNewLinePlacement", GettextCatalog.GetString ("Place 'while' on new line"), simpleDoWhile);
+			AddOption (newLineOptions, "ArrayInitializerWrapping", GettextCatalog.GetString ("Place array initializers on new line"), simpleArrayInitializer);
 			treeviewNewLines.ExpandAll ();
 			#endregion
 			

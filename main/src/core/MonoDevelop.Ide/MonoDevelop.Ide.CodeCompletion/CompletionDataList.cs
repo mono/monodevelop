@@ -30,20 +30,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public interface ICompletionDataList : IList<CompletionData>
+	public interface ICompletionDataList : IList<ICompletionData>
 	{
 		bool IsSorted { get; }
 		bool AutoCompleteUniqueMatch { get; }
 		bool AutoCompleteEmptyMatch { get; }
-		
+		bool CloseOnSquareBrackets { get; }
 		bool AutoSelect { get; }
 		string DefaultCompletionString { get; }
 		CompletionSelectionMode CompletionSelectionMode { get; }
-		void Sort (Comparison<CompletionData> comparison);
-		void Sort (IComparer<CompletionData> comparison);
+		void Sort (Comparison<ICompletionData> comparison);
+		void Sort (IComparer<ICompletionData> comparison);
 		
 		IEnumerable<ICompletionKeyHandler> KeyHandler { get; }
 		
@@ -54,7 +55,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	
 	public interface ICompletionKeyHandler
 	{
-		bool ProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
+		bool PreProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
+		bool PostProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
 	}
 	
 	public enum CompletionSelectionMode {
@@ -62,7 +64,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		OwnTextField
 	}
 	
-	public class CompletionDataList : List<CompletionData>, ICompletionDataList
+	public class CompletionDataList : List<ICompletionData>, ICompletionDataList
 	{
 		public bool IsSorted { get; set; }
 		
@@ -71,6 +73,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool AutoSelect { get; set; }
 		public bool AutoCompleteEmptyMatch { get; set; }
 		public CompletionSelectionMode CompletionSelectionMode { get; set; }
+		public bool CloseOnSquareBrackets { get; set; }
 		
 		List<ICompletionKeyHandler> keyHandler = new List<ICompletionKeyHandler> ();
 		public IEnumerable<ICompletionKeyHandler> KeyHandler {
@@ -81,7 +84,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AutoSelect = true;
 		}
 		
-		public CompletionDataList (IEnumerable<CompletionData> data) : base(data)
+		public CompletionDataList (IEnumerable<ICompletionData> data) : base(data)
 		{
 			this.AutoSelect = true;
 		}
@@ -138,7 +141,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		public void RemoveWhere (Func<CompletionData,bool> shouldRemove)
+		public void RemoveWhere (Func<ICompletionData,bool> shouldRemove)
 		{
 			for (int i = 0; i < this.Count;) {
 				if (shouldRemove (this[i]))

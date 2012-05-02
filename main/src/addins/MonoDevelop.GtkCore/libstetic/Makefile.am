@@ -1,7 +1,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns/MonoDevelop.GtkCore
 ASSEMBLY = $(ADDIN_BUILD)/libstetic.dll
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.GtkCore
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(build_dll_config)
+assembly_DATA = $(ASSEMBLY) $(build_dll_config)
 
 FILES =  \
 	ClassDescriptor.cs \

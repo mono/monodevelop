@@ -28,15 +28,39 @@
 
 namespace Mono.TextEditor
 {
-	public class SearchResult : Segment
+	public class SearchResult
 	{
+		public TextSegment Segment { get; set; }
 		public bool SearchWrapped { get; set; }
 		
-		public SearchResult (int offset, int length, bool searchWrapped) : base (offset, length)
+		public int Offset {
+			get {
+				return Segment.Offset;
+			}
+		}
+
+		public int Length {
+			get {
+				return Segment.Length;
+			}
+		}
+
+		public int EndOffset {
+			get {
+				return Segment.EndOffset;
+			}
+		}
+
+		public SearchResult (TextSegment segment, bool searchWrapped)
 		{
+			this.Segment = segment;
 			this.SearchWrapped = searchWrapped;
 		}
-		
+
+		public SearchResult (int offset, int length, bool searchWrapped) : this (new TextSegment (offset, length), searchWrapped)
+		{
+		}
+
 		public override string ToString ()
 		{
 			return string.Format ("[SearchResult: Offset={0}, Length={1}, SearchWrapped={2}]", this.Offset, this.Length, this.SearchWrapped);

@@ -30,17 +30,18 @@ using Gtk;
 
 namespace Mono.TextEditor.Tests
 {
-	
 	[TestFixture()]
-	public class VirtualSpacesTests : UnitTests.TestBase
+	public class VirtualSpacesTests : TextEditorTestBase
 	{
+
 		/// <summary>
 		/// Bug 615196 - Pasting a chunk of text into the virtual whitespace fracks everything up
 		/// </summary>
 		[Test()]
 		public void TestBug615196 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\nHello World\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
@@ -59,7 +60,8 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug613770 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
@@ -69,16 +71,15 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 		}
 		
-		
 		[Test()]
 		public void TestReturnKeyBehavior ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n\n\n";
 			data.Caret.Offset = 1; // 2nd.Line
 			data.Caret.AllowCaretBehindLineEnd = true;
 			data.Caret.Column = DocumentLocation.MinColumn + 4;
-			data.Options.RemoveTrailingWhitespaces = false;
 			MiscActions.InsertNewLine (data);
 			
 			Assert.AreEqual ("\n    \n    \n\n", data.Document.Text);
@@ -90,14 +91,46 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug615624 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
 			data.Document.Text = "\n \n\n";
 			data.Caret.AllowCaretBehindLineEnd = true;
 			data.Caret.Offset = 2; // 2nd.Line
 			Assert.AreEqual (DocumentLocation.MinColumn + 1, data.Caret.Column);
-			Document.RemoveTrailingWhitespaces (data, data.Document.GetLine (2));
+			TextDocument.RemoveTrailingWhitespaces (data, data.Document.GetLine (2));
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
 			Assert.AreEqual (DocumentLocation.MinColumn + 1, data.Caret.Column);
+		}
+
+		[Test()]
+		public void TestCaretRightBehavior ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
+			data.Document.Text = "\n\n\n";
+			data.Caret.AllowCaretBehindLineEnd = true;
+
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (2, data.Caret.Column);
+			CaretMoveActions.Right (data);
+			Assert.AreEqual (3, data.Caret.Column);
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
+		}
+
+		[Test()]
+		public void TestCaretLeftBehavior ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options.IndentStyle = IndentStyle.Auto;
+			data.Document.Text = "\n\n\n";
+			data.Caret.AllowCaretBehindLineEnd = true;
+			data.Caret.Column = 4;
+
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (3, data.Caret.Column);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (2, data.Caret.Column);
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
 		}
 		
 	}

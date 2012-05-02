@@ -17,21 +17,27 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.Utils;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// Type Reference used when the fully qualified type name is known.
 	/// </summary>
+	[Serializable]
 	public sealed class GetClassTypeReference : ITypeReference, ISupportsInterning
 	{
+		IAssemblyReference assembly;
 		string nameSpace, name;
 		int typeParameterCount;
-		//volatile CachedResult v_cachedResult;
 		
-		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount)
+		/// <summary>
+		/// Creates a new GetClassTypeReference that searches a top-level type.
+		/// </summary>
+		/// <param name="nameSpace">The namespace name containing the type, e.g. "System.Collections.Generic".</param>
+		/// <param name="name">The name of the type, e.g. "List".</param>
+		/// <param name="typeParameterCount">The number of type parameters, (e.g. 1 for List&lt;T&gt;).</param>
+		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount = 0)
 		{
 			if (nameSpace == null)
 				throw new ArgumentNullException("nameSpace");
@@ -42,92 +48,91 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.typeParameterCount = typeParameterCount;
 		}
 		
-		public GetClassTypeReference(string fullTypeName, int typeParameterCount)
+		/// <summary>
+		/// Creates a new GetClassTypeReference that searches a top-level type in the specified assembly.
+		/// </summary>
+		/// <param name="assembly">A reference to the assembly containing this type.
+		/// If this parameter is null, the GetClassTypeReference will search in all assemblies belonging to the ICompilation.</param>
+		/// <param name="nameSpace">The namespace name containing the type, e.g. "System.Collections.Generic".</param>
+		/// <param name="name">The name of the type, e.g. "List".</param>
+		/// <param name="typeParameterCount">The number of type parameters, (e.g. 1 for List&lt;T&gt;).</param>
+		public GetClassTypeReference(IAssemblyReference assembly, string nameSpace, string name, int typeParameterCount = 0)
 		{
-			if (fullTypeName == null)
-				throw new ArgumentNullException("fullTypeName");
-			int pos = fullTypeName.LastIndexOf('.');
-			if (pos < 0) {
-				nameSpace = string.Empty;
-				name = fullTypeName;
-			} else {
-				nameSpace = fullTypeName.Substring(0, pos);
-				name = fullTypeName.Substring(pos + 1);
-			}
+			if (nameSpace == null)
+				throw new ArgumentNullException("nameSpace");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			this.assembly = assembly;
+			this.nameSpace = nameSpace;
+			this.name = name;
 			this.typeParameterCount = typeParameterCount;
 		}
 		
+		public IAssemblyReference Assembly { get { return assembly; } }
 		public string Namespace { get { return nameSpace; } }
 		public string Name { get { return name; } }
 		public int TypeParameterCount { get { return typeParameterCount; } }
-		
-		/*
-		sealed class CachedResult
-		{
-			public readonly CacheManager CacheManager;
-			public readonly IType Result;
-			
-			public CachedResult(CacheManager cacheManager, IType result)
-			{
-				this.CacheManager = cacheManager;
-				this.Result = result;
-			}
-		}
-		 */
 		
 		public IType Resolve(ITypeResolveContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			
-			/*  TODO PERF: caching disabled until we measure how much of an advantage it is
-			 * (and whether other approaches like caching only the last N resolve calls in a thread-static cache would work better)
-			 * Maybe even make a distinction between the really common type references (e.g. primitiveTypeReferences) and
-			 * normal GetClassTypeReferences?
-			CacheManager cacheManager = context.CacheManager;
-			if (cacheManager != null) {
-				CachedResult result = this.v_cachedResult;
-				if (result != null && result.CacheManager == cacheManager)
-					return result.Result;
-				IType newResult = DoResolve(context);
-				this.v_cachedResult = new CachedResult(cacheManager, newResult);
-				cacheManager.Disposed += delegate { v_cachedResult = null; }; // maybe optimize this to use interface call instead of delegate?
-				return newResult;
+			IType type = null;
+			if (assembly == null) {
+				var compilation = context.Compilation;
+				foreach (var asm in new[] { context.CurrentAssembly }.Concat(compilation.Assemblies)) {
+					if (asm != null) {
+						type = asm.GetTypeDefinition(nameSpace, name, typeParameterCount);
+						if (type != null)
+							return type;
+					}
+				}
 			} else {
-				return DoResolve(context);
+				IAssembly asm = assembly.Resolve(context);
+				if (asm != null) {
+					type = asm.GetTypeDefinition(nameSpace, name, typeParameterCount);
+				}
 			}
-			
-		}
-		
-		IType DoResolve(ITypeResolveContext context)
-		{
-			 */
-			return context.GetTypeDefinition(nameSpace, name, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
+			return type ?? new UnknownType(nameSpace, name, typeParameterCount);
 		}
 		
 		public override string ToString()
 		{
+			string asmSuffix = (assembly != null ? ", " + assembly.ToString() : null);
 			if (typeParameterCount == 0)
-				return NamespaceDeclaration.BuildQualifiedName(nameSpace, name);
+				return BuildQualifiedName(nameSpace, name) + asmSuffix;
 			else
-				return NamespaceDeclaration.BuildQualifiedName(nameSpace, name) + "`" + typeParameterCount;
+				return BuildQualifiedName(nameSpace, name) + "`" + typeParameterCount + asmSuffix;
+		}
+		
+		static string BuildQualifiedName (string name1, string name2)
+		{
+			if (string.IsNullOrEmpty (name1))
+				return name2;
+			if (string.IsNullOrEmpty (name2))
+				return name1;
+			return name1 + "." + name2;
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
+			assembly = provider.Intern(assembly);
 			nameSpace = provider.Intern(nameSpace);
 			name = provider.Intern(name);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return nameSpace.GetHashCode() ^ name.GetHashCode() ^ typeParameterCount;
+			unchecked {
+				return 33 * assembly.GetHashCode() + 27 * nameSpace.GetHashCode() + name.GetHashCode() + typeParameterCount;
+			}
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			GetClassTypeReference o = other as GetClassTypeReference;
-			return o != null && name == o.name && nameSpace == o.nameSpace && typeParameterCount == o.typeParameterCount;
+			return o != null && assembly == o.assembly && name == o.name && nameSpace == o.nameSpace && typeParameterCount == o.typeParameterCount;
 		}
 	}
 }

@@ -205,9 +205,8 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (uri.StartsWith ("project://")) {
 					string projectUri = uri.Substring ("project://".Length);			
 					Uri fileuri = new Uri (projectUri);
-					Gdk.ModifierType mtype;
-					bool inWorkspace = Gtk.Global.GetCurrentEventState (out mtype) 
-						&& (mtype & Gdk.ModifierType.ControlMask) != 0;
+					Gdk.ModifierType mtype = Mono.TextEditor.GtkWorkarounds.GetCurrentKeyModifiers ();
+					bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
 					IdeApp.Workspace.OpenWorkspaceItem (fileuri.LocalPath, !inWorkspace);
 				} else if (uri.StartsWith ("monodevelop://")) {
 					var cmdId = uri.Substring ("monodevelop://".Length);

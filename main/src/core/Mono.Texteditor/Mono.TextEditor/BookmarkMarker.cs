@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 		{
 		}
 
-		public void DrawIcon (TextEditor editor, Cairo.Context cr, LineSegment lineSegment, int lineNumber, double x, double y, double width, double height)
+		public void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, int lineNumber, double x, double y, double width, double height)
 		{
 			if (lineSegment.IsBookmarked) {
 				Cairo.Color color1 = editor.ColorStyle.BookmarkColor1;

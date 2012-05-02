@@ -37,8 +37,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.Dom;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -61,7 +62,6 @@ namespace MonoDevelop.Ide.Tasks
 
 		Gdk.Color highPrioColor, normalPrioColor, lowPrioColor;
 
-		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
 		Clipboard clipboard;
 		
@@ -80,8 +80,8 @@ namespace MonoDevelop.Ide.Tasks
 			
 			ReloadPriorities ();
 			
-			ProjectDomService.CommentTasksChanged += OnCommentTasksChanged;
-			ProjectDomService.SpecialCommentTagsChanged += OnCommentTagsChanged;
+			TaskService.CommentTasksChanged += OnCommentTasksChanged;
+			CommentTag.SpecialCommentTagsChanged += OnCommentTagsChanged;
 			IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			
@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Tasks
 			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
 			view.RulesHint = true;
 			view.SearchColumn = (int)Columns.Description;
-			view.DoPopupMenu = (evt) => IdeApp.CommandService.ShowContextMenu (view, evt, menu);
+			view.DoPopupMenu = (evt) => IdeApp.CommandService.ShowContextMenu (view, evt, CreateMenu ());
 			view.RowActivated += new RowActivatedHandler (OnRowActivated);
 
 			TreeViewColumn col;
@@ -195,15 +195,22 @@ namespace MonoDevelop.Ide.Tasks
 			
 			// Load all tags that are stored in pidb files
 			foreach (Project p in sln.GetAllProjects ()) {
-				ProjectDom pContext = ProjectDomService.GetProjectDom (p);
+				var pContext = TypeSystemService.GetProjectContext (p);
 				if (pContext == null)
 					continue;
 				foreach (ProjectFile file in p.Files) {
-					IList<Tag> tags = pContext.GetSpecialComments (file.Name);
-					if (tags != null && tags.Count > 0)
-						UpdateCommentTags (sln, file.Name, tags);
+					UpdateCommentTags (sln, file.Name, GetSpecialComments (pContext, file.Name));
 				}
 			}
+		}
+		
+		
+		static IEnumerable<Tag> GetSpecialComments (IProjectContent ctx, string name)
+		{
+			var doc = ctx.GetFile (name) as ParsedDocument;
+			if (doc == null)
+				return Enumerable.Empty<Tag> ();
+			return (IEnumerable<Tag>)doc.TagComments;
 		}
 		
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
@@ -251,7 +258,7 @@ namespace MonoDevelop.Ide.Tasks
 							desc = tag.Key + ": " + desc;
 					}
 					
-					Task t = new Task (fileName, desc, tag.Region.Start.Column, tag.Region.Start.Line,
+					Task t = new Task (fileName, desc, tag.Region.BeginColumn, tag.Region.BeginLine,
 					                   TaskSeverity.Information, priorities[tag.Key], wob);
 					newTasks.Add (t);
 				}
@@ -287,7 +294,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ReloadPriorities ()
 		{
 			priorities.Clear ();
-			foreach (CommentTag tag in ProjectDomService.SpecialCommentTags)
+			foreach (var tag in CommentTag.SpecialCommentTags)
 				priorities.Add (tag.Tag, (TaskPriority) tag.Priority);
 		}		
 		
@@ -337,9 +344,6 @@ namespace MonoDevelop.Ide.Tasks
 
 		Menu CreateMenu ()
 		{
-			if (menu != null)
-				return menu;
-			
 			var group = new ActionGroup ("Popup");
 			
 			var copy = new Gtk.Action ("copy", GettextCatalog.GetString ("_Copy"),
@@ -401,7 +405,7 @@ namespace MonoDevelop.Ide.Tasks
 				+ "</popup></ui>";
 
 			uiManager.AddUiFromString (uiStr);
-			menu = (Menu)uiManager.GetWidget ("/popup");
+			var menu = (Menu)uiManager.GetWidget ("/popup");
 			menu.ShowAll ();
 
 			menu.Shown += delegate (object o, EventArgs args)
@@ -471,7 +475,7 @@ namespace MonoDevelop.Ide.Tasks
 							doc.Editor.SetCaretTo (task.Line, task.Column);
 							line = line.Substring (0, index);
 							var ls = doc.Editor.Document.GetLine (task.Line);
-							doc.Editor.Replace (ls.Offset, ls.EditableLength, line);
+							doc.Editor.Replace (ls.Offset, ls.Length, line);
 							comments.Remove (task);
 						}
 					}

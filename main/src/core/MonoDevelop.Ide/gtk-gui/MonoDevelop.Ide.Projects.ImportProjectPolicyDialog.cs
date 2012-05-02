@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
 			this.label7.Xalign = 0F;
-			this.label7.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Policy Name:");
+			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Policy Name:");
 			this.vbox5.Add (this.label7);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label7]));
 			w2.Position = 0;
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
 			this.label8.Xalign = 0F;
-			this.label8.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Select the project or solution from which to import the policies:");
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Select the project or solution from which to import the policies:");
 			this.vbox5.Add (this.label8);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label8]));
 			w4.Position = 2;

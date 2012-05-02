@@ -31,6 +31,9 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.CSharp.Project;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Projects
 {
@@ -62,7 +65,30 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (solXml, File.ReadAllText (solFile));
 			Assert.AreEqual (projectXml, Util.GetXmlFileInfoset (projectFile));
 		}
-		
+
+		[Test]
+		public void BuildConsoleProject ()
+		{
+			var current = PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false);
+			try {
+				PropertyService.Set ("MonoDevelop.Ide.BuildWithMSBuild", true);
+	
+				Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+				sol.Save (Util.GetMonitor ());
+
+				// Ensure the project is buildable
+				var result = sol.Build (Util.GetMonitor (), "Debug");
+				Assert.AreEqual (0, result.ErrorCount, "#1");
+
+				// Ensure the project is still buildable with xbuild after a rename
+				ProjectOptionsDialog.RenameItem (sol.GetAllProjects () [0], "Test");
+				result = sol.Build (Util.GetMonitor (), "Release");
+				Assert.AreEqual (0, result.ErrorCount, "#2");
+			} finally {
+				PropertyService.Set ("MonoDevelop.Ide.BuildWithMSBuild", current);
+			}
+		}
+
 		[Test]
 		public void CreateConsoleProject ()
 		{

@@ -27,7 +27,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			// Container child hbox60.Gtk.Box+BoxChild
 			this.label104 = new global::Gtk.Label ();
 			this.label104.Name = "label104";
-			this.label104.LabelProp = global::MonoDevelop.Core.GettextCatalog.GetString ("Select a target configuration for each solution item:");
+			this.label104.LabelProp = global::Mono.Unix.Catalog.GetString ("Select a target configuration for each solution item:");
 			this.hbox60.Add (this.label104);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox60 [this.label104]));
 			w1.Position = 0;

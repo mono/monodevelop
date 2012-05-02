@@ -23,6 +23,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Type reference used to reference nested types.
 	/// </summary>
+	[Serializable]
 	public sealed class NestedTypeReference : ITypeReference, ISupportsInterning
 	{
 		ITypeReference declaringTypeRef;
@@ -72,7 +73,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						return type;
 				}
 			}
-			return SharedTypes.UnknownType;
+			return new UnknownType(null, name, additionalTypeParameterCount);
 		}
 		
 		public override string ToString()
