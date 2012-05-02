@@ -526,7 +526,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			string newIndent = string.Empty;
 			DocumentLine line = textEditorData.Document.GetLineByOffset (cursor);
-			stateTracker.UpdateEngine (line.Offset);
+//			stateTracker.UpdateEngine (line.Offset);
 			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
 			for (int max = cursor; max < line.EndOffset; max++) {
