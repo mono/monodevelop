@@ -8,6 +8,9 @@ open System
 open System.IO
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Gui
+open MonoDevelop.Ide
+open MonoDevelop.Core.Assemblies
+open MonoDevelop.Core
 open Mono.Addins
 
 module Environment = 
@@ -408,3 +411,127 @@ module Common =
     | _ -> if Environment.runningOnMono then "fsi" else "fsi.exe"
 
   // do Debug.tracef "Resolution" "Paths:\n - fsc = %s\n - fsi = %s" fscPath fsiPath
+
+
+  let getToolPath (search_paths:seq<string>) (extensions:seq<string>) (tool_name:string) =
+    let search_files = Seq.map (fun x -> tool_name + x) extensions
+
+    let path_and_file (search_files:seq<string>) (path:string) =
+      try
+        let candidate_files = IO.Directory.GetFiles(path)
+
+        let file_if_exists candidate_file =
+          Seq.tryFind (fun x -> IO.Path.Combine(path,x) = candidate_file) search_files
+        match Seq.tryPick file_if_exists candidate_files with
+          | Some x -> Some(path,x)
+          | None -> None
+
+      with
+        | e -> None
+
+    Seq.tryPick (path_and_file search_files) search_paths
+
+
+  let getShellToolPath (extensions:seq<string>) (tool_name:string)  =
+    let path_variable = Environment.GetEnvironmentVariable("PATH")
+    let search_paths = path_variable.Split [| ':' |]
+    getToolPath search_paths extensions tool_name
+
+  /// Get full path to tool
+  let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (tool_name:string) =
+    let search_paths = runtime.GetToolsPaths(framework)
+    getToolPath search_paths extensions tool_name
+
+  let getDefaultTargetFramework (runtime:TargetRuntime) =
+    let newest_net_framework_folder (best:TargetFramework,best_version:int[]) (candidate_framework:TargetFramework) =
+      if runtime.IsInstalled(candidate_framework) && candidate_framework.Id.Identifier = TargetFrameworkMoniker.ID_NET_FRAMEWORK then
+        let version = candidate_framework.Id.Version
+        let parsed_version_s = (if version.[0] = 'v' then version.[1..] else version).Split('.')
+        let parsed_version =
+          try
+            Array.map (fun x -> int x) parsed_version_s
+          with
+            | _ -> [| 0 |]
+        let mutable level = 0
+        let mutable cont = true
+        let min_level = min parsed_version.Length best_version.Length
+        let mutable new_best = false
+        while cont && level < min_level do
+          if parsed_version.[level] > best_version.[level] then
+            new_best <- true
+            cont <- false
+          elif best_version.[level] > parsed_version.[level] then
+            cont <- false
+          else
+            cont <- true
+          level <- level + 1
+        if new_best then
+          (candidate_framework, parsed_version)
+        else
+          (best,best_version)
+      else
+        (best,best_version)
+    let candidate_frameworks = MonoDevelop.Core.Runtime.SystemAssemblyService.GetTargetFrameworks()
+    let first = Seq.head candidate_frameworks
+    let best_info = Seq.fold newest_net_framework_folder (first,[| 0 |]) candidate_frameworks
+    fst best_info
+
+  let getDefaultInteractive =
+
+    let runtime = IdeApp.Preferences.DefaultTargetRuntime
+    let framework = getDefaultTargetFramework runtime
+
+    let tool_info =
+      match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsharpi" with
+      | Some(result) -> Some(result)
+      | None ->
+        match getShellToolPath [| ""; ".exe"; ".bat" |] "fsharpi" with
+        | Some(result) -> Some(result)
+        | None ->
+          match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsi" with
+          | Some(result) -> Some(result)
+          | None ->
+            match getShellToolPath [| ""; ".exe"; ".bat" |] "fsi" with
+            | Some(result) -> Some(result)
+            | None -> None
+
+    match tool_info with
+    | Some(dir,file) -> Some(IO.Path.Combine(dir,file))
+    | _ -> None
+
+  let getCompilerFromEnvironment (runtime:TargetRuntime) (framework:TargetFramework) =
+    let tool_info =
+      match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsharpc" with
+      | Some(result) -> Some(result)
+      | None ->
+        match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsc" with
+          | Some(result) -> Some(result)
+          | None -> None
+    match tool_info with
+    | Some(dir,file) -> Some(IO.Path.Combine(dir,file))
+    | _ -> None
+    
+  let getCompilerFromShell =
+    let tool_info =
+      match getShellToolPath [| ""; ".exe"; ".bat" |] "fsharpc" with
+      | Some(result) -> Some(result)
+      | None ->
+        match getShellToolPath [| ""; ".exe"; ".bat" |] "fsc" with
+        | Some(result) -> Some(result)
+        | None -> None
+    match tool_info with
+    | Some(dir,file) -> Some(IO.Path.Combine(dir,file))
+    | _ -> None
+
+  let getDefaultDefaultCompiler =
+    let runtime = IdeApp.Preferences.DefaultTargetRuntime
+    let framework = getDefaultTargetFramework runtime
+    match getCompilerFromEnvironment runtime framework with
+    | Some(result) -> Some(result)
+    | None ->
+      match getCompilerFromShell with
+      | Some(result) -> Some(result)
+      | None -> None
+
+
+

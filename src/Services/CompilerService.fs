@@ -14,6 +14,7 @@ open System.Text.RegularExpressions
 open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Projects
+open MonoDevelop.Ide
 
 open Microsoft.FSharp.Compiler.CodeDom
 
@@ -57,39 +58,54 @@ module CompilerService =
     else 
       true, ("unknown-file", 0, 0, "0", msg)
 
-  /// Get full path to compiler
-  let private GetCompilerName (runtime:TargetRuntime) (framework:TargetFramework) : string = 
-    let fsc = runtime.GetToolPath (framework, "fsc")
-    if fsc <> null then
-      fsc
-    else 
-      let message = GettextCatalog.GetString ("F# compiler not found for {0}.", framework.Name)
-      LoggingService.LogError (message)
-      raise (new Exception (message))
-
   /// Run the F# compiler with the specified arguments (passed as a list)
   /// and print the arguments to progress monitor (Output in MonoDevelop)
   let private compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:IProgressMonitor) argsList = 
     let args = String.concat "\n" argsList
-    
+  
+//    let nw x = if x = None then "None" else x.Value 
+//    monitor.Log.WriteLine("Env compiler: " + nw (Common.getCompilerFromEnvironment runtime framework))
+//    monitor.Log.WriteLine("Override compiler: " + PropertyService.Get<string>("FSharpBinding.FscPath"))
+//    monitor.Log.WriteLine("DefaultDefault compiler: " + (nw Common.getDefaultDefaultCompiler))
+//    monitor.Log.WriteLine("Runtime: " + runtime.Id)
+//    monitor.Log.WriteLine("Framework: " + framework.Id.ToString())
+//    monitor.Log.WriteLine("Default Runtime:" + IdeApp.Preferences.DefaultTargetRuntime.Id);
+//    monitor.Log.WriteLine("Default Framework:" + (Common.getDefaultTargetFramework IdeApp.Preferences.DefaultTargetRuntime).Id.ToString())
+
+    let br = BuildResult()
+
     // Concatenate arguments & run
-    let fscPath:string = 
-      try 
-        GetCompilerName runtime framework
-      with
-        | e ->
-          monitor.ReportError("Could not find F# compiler.",e) 
-          null:string 
-    if fscPath = null then 
-      null:BuildResult
+    let fscPath =
+      match Common.getCompilerFromEnvironment runtime framework with
+      | Some(result) -> Some(result)
+      | None -> 
+        match PropertyService.Get<string>("FSharpBinding.FscPath","") with
+        | result when result <> "" -> 
+          if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Id then
+            br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
+          Some(result)
+        | _ ->
+          match Common.getDefaultDefaultCompiler with
+          | Some(result) ->
+            if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Id then
+              br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
+            Some(result)
+          | None ->
+            br.AddError("No compiler found; add a default compiler in the F# settings.")
+            None
+    //monitor.Log.WriteLine("fscPath: " + nw fscPath)
+
+    if fscPath = None then
+      br.FailedBuildCount <- 1
+      br
     else 
-      monitor.Log.WriteLine("{0} {1}", fscPath, args)
+      monitor.Log.WriteLine("{0} {1}", fscPath.Value, args)
       let args = String.concat " " argsList
       let startInfo = 
         new ProcessStartInfo
-          (FileName = fscPath, UseShellExecute = false, Arguments = args, 
+          (FileName = fscPath.Value, UseShellExecute = false, Arguments = args,
            RedirectStandardError = true, CreateNoWindow = true) 
-      Debug.tracef "Compiler" "Compile using: %s Arguments: %s" fscPath args
+      Debug.tracef "Compiler" "Compile using: %s Arguments: %s" fscPath.Value args
       let p = Process.Start(startInfo) 
       
       // Read all output and fold multi-line 
@@ -108,7 +124,6 @@ module CompilerService =
           |> List.filter (fun s -> s.Trim().Length > 0)
           
       // Parse messages and build results        
-      let br = new BuildResult()
       for msg in messages do
         match processMsg msg with
         | true, (f, l, c, n, m) -> br.AddError(f, l, c, n, m)

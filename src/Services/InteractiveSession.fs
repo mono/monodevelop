@@ -12,11 +12,17 @@ type InteractiveSession() =
   
   // Get F# Interactive path and command line args from settings
   let args = args + PropertyService.Get<string>("FSharpBinding.FsiArguments", "")
-  let path = PropertyService.Get<string>("FSharpBinding.FsiPath", "")
-  let path = if String.IsNullOrEmpty(path) then Common.fsiPath else path
-  
+  let path = 
+    match PropertyService.Get<string>("FSharpBinding.FsiPath", "") with
+    | s when s <> "" -> s
+    | _ -> 
+      match Common.getDefaultInteractive with
+      | Some(s) -> s
+      | None -> ""
+
   let mutable waitingForResponse = false
-  
+ 
+  let check = if path = "" then raise (Exception("No path to F# Interactive console set, and default could not be located."))
   let fsiProcess = 
     let startInfo = 
       new ProcessStartInfo
@@ -24,8 +30,8 @@ type InteractiveSession() =
          RedirectStandardError = true, CreateNoWindow = true, RedirectStandardOutput = true,
          RedirectStandardInput = true) 
     try
-      Debug.tracef "Interactive" "Starting file=%s, Args=%A" Common.fsiPath args
-      Runtime.SystemAssemblyService.CurrentRuntime.ExecuteAssembly(startInfo, null)
+      Debug.tracef "Interactive" "Starting file=%s, Args=%A" path args
+      Process.Start(startInfo)
     with e ->
       Debug.tracee "Interactive" e
       reraise()
