@@ -111,6 +111,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			dnp.NameChanged += ProjectNameChanged;
 			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn += AppRegainedFocus;
 		}
+
+		void DisableSyncing ()
+		{
+			DisableSyncing (true);
+		}
 		
 		void DisableSyncing (bool closeProject)
 		{
