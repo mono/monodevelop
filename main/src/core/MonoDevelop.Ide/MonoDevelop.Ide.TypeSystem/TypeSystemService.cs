@@ -713,7 +713,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				try {
 					var contexts = new List<IAssemblyReference> ();
-			
 					foreach (var referencedProject in ReferencedProjects) {
 						ProjectContentWrapper wrapper;
 						if (projectContents.TryGetValue (referencedProject, out wrapper))
@@ -723,7 +722,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					AssemblyContext ctx;
 					// Add mscorlib reference
 					if (netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
-						var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (typeof(object).Assembly.FullName, null, netProject.TargetFramework);
+						var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (
+							typeof(object).Assembly.FullName,
+							null,
+							netProject.TargetFramework
+						);
 						if (corLibRef != null) {
 							ctx = LoadAssemblyContext (corLibRef.Location);
 							if (ctx != null)
@@ -740,7 +743,6 @@ namespace MonoDevelop.Ide.TypeSystem
 							fileName = Path.GetFullPath (file);
 						}
 						ctx = LoadAssemblyContext (fileName);
-						
 						if (ctx != null)
 							contexts.Add (ctx);
 					}
@@ -1179,13 +1181,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			string cache;
 			
 			IUnresolvedAssembly assembly;
-			
+
+			void EnsureAssemblyLoaded ()
+			{
+				lock (this) {
+					if (assembly != null)
+						return;
+					assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
+				}
+			}
+
 			public IUnresolvedAssembly Assembly {
 				get {
 					lock (this) {
-						if (assembly != null)
-							return assembly;
-						return assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
+						EnsureAssemblyLoaded ();
+						return assembly;
 					}
 				}
 			}
@@ -1194,6 +1204,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				this.fileName = fileName;
 				this.cache = cache;
+				Task.Factory.StartNew (delegate {
+					EnsureAssemblyLoaded ();
+				});
 			}
 			
 			IUnresolvedAssembly LoadAssembly ()
