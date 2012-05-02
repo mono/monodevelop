@@ -88,7 +88,6 @@ public class MonoDevelopProcessHost
 			Console.WriteLine (ex);
 			return -1;
 		} finally {
-			Gtk.Application.Quit ();
 			try {
 				Runtime.Shutdown ();
 			} catch {
