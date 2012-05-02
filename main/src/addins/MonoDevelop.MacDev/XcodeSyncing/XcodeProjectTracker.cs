@@ -111,8 +111,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			dnp.NameChanged += ProjectNameChanged;
 			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn += AppRegainedFocus;
 		}
-		
+
 		void DisableSyncing ()
+		{
+			DisableSyncing (true);
+		}
+		
+		void DisableSyncing (bool closeProject)
 		{
 			if (!SyncingEnabled)
 				return;
@@ -121,7 +126,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			
 			XC4Debug.Indent ();
 			try {
-				xcode.CloseProject ();
+				if (closeProject)
+					xcode.CloseProject ();
 				xcode.DeleteProjectDirectory ();
 			} finally {
 				XC4Debug.Unindent ();
@@ -171,7 +177,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				} finally {
 					if (!projectOpen) {
 						XC4Debug.Log ("Xcode project for '{0}' is not open, disabling syncing.", dnp.Name);
-						DisableSyncing ();
+						DisableSyncing (false);
 					}
 				}
 			}
@@ -202,7 +208,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				monitor.ReportError (GettextCatalog.GetString ("Could not open file in Xcode project."), ex);
 			} finally {
 				if (!succeeded)
-					DisableSyncing ();
+					DisableSyncing (true);
 			}
 			
 			return succeeded;
@@ -267,7 +273,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				if (e.Any (finf => finf.Project == dnp && IsInterfaceDefinition (finf.ProjectFile))) {
 					if (!dnp.Files.Any (IsInterfaceDefinition)) {
 						XC4Debug.Log ("Last Interface Definition file removed from '{0}', disabling Xcode sync.", dnp.Name);
-						DisableSyncing ();
+						DisableSyncing (true);
 						return;
 					}
 				}
@@ -782,7 +788,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				return;
 			
 			disposed = true;
-			DisableSyncing ();
+			DisableSyncing (true);
 			AppleSdkSettings.Changed -= DisableSyncing;
 		}
 	}
