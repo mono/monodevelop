@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui
 			set {}
 		}
 		
-		public bool CloseWindow (bool force, bool fromMenu, int pageNum)
+		public bool CloseWindow (bool force)
 		{
 			return true;
 		}

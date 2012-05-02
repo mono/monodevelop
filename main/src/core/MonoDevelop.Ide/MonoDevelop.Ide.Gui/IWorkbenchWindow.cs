@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui
 		void SwitchView (IAttachableViewContent subViewContent);
 		int FindView <T>();
 		
-		bool CloseWindow (bool force, bool fromMenu, int pageNum);
+		bool CloseWindow (bool force);
 		void SelectWindow ();
 		
 		event EventHandler DocumentChanged;

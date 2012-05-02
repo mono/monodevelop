@@ -448,7 +448,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool Close ()
 		{
-			return Window.CloseWindow (false, true, 0);
+			return Window.CloseWindow (false);
 		}
 		
 		protected virtual void OnSaved (EventArgs args)

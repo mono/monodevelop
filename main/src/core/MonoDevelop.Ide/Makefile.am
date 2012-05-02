@@ -544,9 +544,9 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DefaultWorkbench.cs \
 	MonoDevelop.Ide.Gui/DisplayBindingService.cs \
 	MonoDevelop.Ide.Gui/DockItemToolbarLoader.cs \
+	MonoDevelop.Ide.Gui/DockNotebook.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
 	MonoDevelop.Ide.Gui/DocumentSwitcher.cs \
-	MonoDevelop.Ide.Gui/DragNotebook.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/FreeDispatchAttribute.cs \
 	MonoDevelop.Ide.Gui/GtkSynchronizationContext.cs \
@@ -573,6 +573,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/StartupInfo.cs \
 	MonoDevelop.Ide.Gui/StatusProgressMonitor.cs \
 	MonoDevelop.Ide.Gui/StockIcons.cs \
+	MonoDevelop.Ide.Gui/Styles.cs \
 	MonoDevelop.Ide.Gui/SyncContext.cs \
 	MonoDevelop.Ide.Gui/SyncContextAttribute.cs \
 	MonoDevelop.Ide.Gui/SyncObject.cs \

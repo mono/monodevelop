@@ -121,10 +121,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				if (tabControl == null || tabControl.CurrentPage < 0 || tabControl.CurrentPage >= tabControl.NPages)  {
+				if (tabControl == null || tabControl.CurrentTabIndex < 0 || tabControl.CurrentTabIndex >= tabControl.TabCount)  {
 					return null;
 				}
-				return (IWorkbenchWindow) tabControl.CurrentPageWidget;
+				return (IWorkbenchWindow) tabControl.CurrentTab.Content;
 			}
 		}
 		
@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.Gui
 				foreach (IViewContent content in fullList) {
 					IWorkbenchWindow window = content.WorkbenchWindow;
 					if (window != null)
-						window.CloseWindow(true, true, 0);
+						window.CloseWindow(true);
 				}
 			} finally {
 				closeAll = false;
@@ -386,29 +386,28 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			Gtk.Image mimeimage = null;
+			Gdk.Pixbuf mimeimage = null;
 			
 			if (content.StockIconId != null ) {
-				mimeimage = new Gtk.Image ((IconId) content.StockIconId, IconSize.Menu );
+				mimeimage = ImageService.GetPixbuf (content.StockIconId, IconSize.Menu);
 			}
 			else if (content.IsUntitled && content.UntitledName == null) {
-				mimeimage = new Gtk.Image (DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu));
+				mimeimage = DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 			} else {
-				mimeimage = new Gtk.Image (DesktopService.GetPixbufForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu));
+				mimeimage = DesktopService.GetPixbufForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
 			}			
 
-			TabLabel tabLabel = new TabLabel (new Label (), mimeimage != null ? mimeimage : new Gtk.Image (""));
-			tabLabel.CloseClicked += new EventHandler (closeClicked);			
-			tabLabel.ClearFlag (WidgetFlags.CanFocus);
-			tabLabel.Show ();
-			
-			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, tabControl, tabLabel);
+			var tab = tabControl.InsertTab (-1);
+
+			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, tabControl, tab);
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
 			sdiWorkspaceWindow.Closed += CloseWindowEvent;
 			sdiWorkspaceWindow.Show ();
-			
-			tabControl.InsertPage (sdiWorkspaceWindow, tabLabel, -1);
-			
+
+			tab.Content = sdiWorkspaceWindow;
+			if (mimeimage != null)
+				tab.Icon = mimeimage;
+
 			if (content.Project != null)
 				content.Project.NameChanged += HandleProjectNameChanged;
 			
@@ -622,14 +621,14 @@ namespace MonoDevelop.Ide.Gui
 					viewContentCollection.CopyTo (views, 0);
 					foreach (IViewContent content in views) {
 						if (content.ContentName.StartsWith(e.FileName)) {
-							content.WorkbenchWindow.CloseWindow(true, true, 0);
+							content.WorkbenchWindow.CloseWindow(true);
 						}
 					}
 				} else {
 					foreach (IViewContent content in viewContentCollection) {
 						if (content.ContentName != null &&
 						    content.ContentName == e.FileName) {
-							content.WorkbenchWindow.CloseWindow(true, true, 0);
+							content.WorkbenchWindow.CloseWindow(true);
 							return;
 						}
 					}
@@ -829,16 +828,16 @@ namespace MonoDevelop.Ide.Gui
 			
 			// Create the notebook for the various documents.
 			tabControl = new SdiDragNotebook (dock.ShadedContainer);
-			tabControl.Scrollable = true;
 			tabControl.SwitchPage += OnActiveWindowChanged;
 			tabControl.PageAdded += OnActiveWindowChanged;
 			tabControl.PageRemoved += OnActiveWindowChanged;
+			tabControl.TabClosed += CloseClicked;
 		
 			tabControl.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs e) {
 				int tab = tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot);
 				if (tab < 0)
 					return;
-				tabControl.CurrentPage = tab;
+				tabControl.CurrentTabIndex = tab;
 				if (e.Event.Type == Gdk.EventType.TwoButtonPress)
 					ToggleFullViewMode ();
 			};
@@ -968,7 +967,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		void ShowPopup (int tabIndex, Gdk.EventButton evt)
 		{
-			this.tabControl.Page = tabIndex;
+			this.tabControl.CurrentTabIndex = tabIndex;
 			IdeApp.CommandService.ShowContextMenu (this.tabControl, evt, "/MonoDevelop/Ide/ContextMenu/DocumentTab");
 		}
 		
@@ -1125,10 +1124,7 @@ namespace MonoDevelop.Ide.Gui
 		void CloseWindowEvent (object sender, WorkbenchWindowEventArgs e)
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
-			
-			// Unsubscribe events to avoid memory leaks
-			f.TabLabel.CloseClicked -= new EventHandler (closeClicked);
-			
+
 			if (f.ViewContent != null) {
 				CloseContent (f.ViewContent);
 				if (e.WasActive && !SelectLastActiveWindow (f))
@@ -1137,16 +1133,9 @@ namespace MonoDevelop.Ide.Gui
 			lastActiveWindows.Remove (f);
 		}
 		
-		void closeClicked (object o, EventArgs e)
+		void CloseClicked (object o, TabEventArgs e)
 		{
-			Widget tabLabel = ((Widget)o);
-			foreach (Widget child in tabControl.Children) {
-				if (tabControl.GetTabLabel (child) == tabLabel) {
-					int pageNum = tabControl.PageNum (child);
-					((SdiWorkspaceWindow)child).CloseWindow (false, false, pageNum);
-					break;
-				}
-			}
+			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false);
 		}
 
 		internal void RemoveTab (int pageNum) {
@@ -1155,7 +1144,7 @@ namespace MonoDevelop.Ide.Gui
 				// This flag avoids unneeded events.
 				ignorePageSwitch = true;
 				IWorkbenchWindow w = ActiveWorkbenchWindow;
-				tabControl.RemovePage (pageNum);
+				tabControl.RemoveTab (pageNum);
 				ignorePageSwitch = false;
 				if (w != ActiveWorkbenchWindow)
 					OnActiveWindowChanged (null, null);
@@ -1396,7 +1385,7 @@ namespace MonoDevelop.Ide.Gui
 	// The SdiDragNotebook class allows redirecting the command route to the ViewCommandHandler
 	// object of the selected document, which implement some default commands.
 	
-	class SdiDragNotebook: DragNotebook, ICommandDelegatorRouter, IShadedWidget
+	class SdiDragNotebook: DockNotebook, ICommandDelegatorRouter, IShadedWidget
 	{
 		ShadedContainer shadedContainer;
 		
@@ -1422,7 +1411,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public object GetDelegatedCommandTarget ()
 		{
-			SdiWorkspaceWindow win = (SdiWorkspaceWindow) CurrentPageWidget;
+			SdiWorkspaceWindow win = (SdiWorkspaceWindow) CurrentTab.Content;
 			return win != null ? win.CommandHandler : null;
 		}
 		
@@ -1437,8 +1426,8 @@ namespace MonoDevelop.Ide.Gui
 		public IEnumerable<Gdk.Rectangle> GetShadedAreas ()
 		{
 			Gdk.Rectangle rect = Allocation;
-			if (CurrentPageWidget != null && CurrentPageWidget.Visible)
-				rect.Height -= CurrentPageWidget.Allocation.Height;
+			if (CurrentTab != null && CurrentTab.Content.Visible)
+				rect.Height -= CurrentTab.Content.Allocation.Height;
 			yield return rect;
 		}
 		
@@ -1459,7 +1448,7 @@ namespace MonoDevelop.Ide.Gui
 		protected override bool OnPopupMenu ()
 		{
 			if (DoPopupMenu != null) {
-				DoPopupMenu (this.Page, null);
+				DoPopupMenu (this.CurrentTabIndex, null);
 				return true;
 			}
 			return base.OnPopupMenu ();

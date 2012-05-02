@@ -53,9 +53,9 @@ namespace MonoDevelop.Ide.Gui
 		HBox toolbarBox = null;
 		
 		VBox box;
-		TabLabel tabLabel;
-		Widget    tabPage;
-		Notebook  tabControl;
+		IDockNotebookTab tab;
+		Widget tabPage;
+		DockNotebook tabControl;
 		
 		string myUntitledTitle     = null;
 		string _titleHolder = "";
@@ -67,12 +67,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		ViewCommandHandlers commandHandler;
 		
-		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, Notebook tabControl, TabLabel tabLabel) : base ()
+		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, IDockNotebookTab tabLabel) : base ()
 		{
 			this.workbench = workbench;
 			this.tabControl = tabControl;
 			this.content = content;
-			this.tabLabel = tabLabel;
+			this.tab = tabLabel;
 			this.tabPage = content.Control;
 			
 			ShadowType = ShadowType.None;
@@ -112,8 +112,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal TabLabel TabLabel {
-			get { return tabLabel; }
+		internal IDockNotebookTab TabLabel {
+			get { return tab; }
 		}
 		
 		Document document;
@@ -223,8 +223,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (this.Parent == null)
 				return;
-			int toSelect = tabControl.PageNum (this);
-			tabControl.CurrentPage = toSelect;
+			tabControl.CurrentTabIndex = tab.Index;
 			if (tabControl.FocusChild != null) {
 				tabControl.FocusChild.GrabFocus ();
 			} else {
@@ -342,7 +341,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public bool CloseWindow (bool force, bool fromMenu, int pageNum)
+		public bool CloseWindow (bool force)
 		{
 			bool wasActive = workbench.ActiveWorkbenchWindow == this;
 			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force, wasActive);
@@ -351,11 +350,8 @@ namespace MonoDevelop.Ide.Gui
 			if (args.Cancel)
 				return false;
 			
-			if (fromMenu == true) {
-				workbench.RemoveTab (tabControl.PageNum(this));
-			} else {
-				workbench.RemoveTab (pageNum);
-			}
+			workbench.RemoveTab (tab.Index);
+
 			OnClosed (args);
 			
 			if (subViewContents != null) {
@@ -613,27 +609,25 @@ namespace MonoDevelop.Ide.Gui
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
 			
 			if (show_notification) {
-				tabLabel.Label.Markup = "<span foreground=\"blue\">" + Title + "</span>";
-				tabLabel.Label.UseMarkup = true;
+				tab.Markup = "<span foreground=\"blue\">" + Title + "</span>";
 			} else {
-				tabLabel.Label.Text = Title;
-				tabLabel.Label.UseMarkup = false;
+				tab.Text = Title;
 			}
 			
 			if (content.ContentName != null && content.ContentName != "") {
-				tabLabel.SetTooltip (content.ContentName, content.ContentName);
+				tab.Tooltip = content.ContentName;
 			}
 
 			try {
 				if (content.StockIconId != null ) {
-					tabLabel.Icon = new Gtk.Image ((IconId) content.StockIconId, IconSize.Menu );
+					tab.Icon = ImageService.GetPixbuf (content.StockIconId, IconSize.Menu);
 				}
 				else if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
-					tabLabel.Icon.Pixbuf = DesktopService.GetPixbufForFile (content.ContentName, Gtk.IconSize.Menu);
+					tab.Icon = DesktopService.GetPixbufForFile (content.ContentName, Gtk.IconSize.Menu);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
-				tabLabel.Icon.Pixbuf = DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu);
+				tab.Icon = DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 			}
 
 			if (TitleChanged != null) {
