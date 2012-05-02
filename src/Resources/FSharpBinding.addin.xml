@@ -21,7 +21,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
-    	<Section id="FSharpSettings" _label="F# Interactive" class = "FSharp.MonoDevelop.FSharpSettingsPanel" />
+    	<Section id="FSharpSettings" _label="F# Settings" class = "FSharp.MonoDevelop.FSharpSettingsPanel" />
   	</Extension>
   
   	<Extension path="/MonoDevelop/ProjectModel/DomParser">
@@ -69,7 +69,7 @@
 
   	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
     	<Condition id="ActiveLanguage" value="F#">
-      		<Panel id = "FSharpBuildOrderPanel" _label = "General" class = "FSharp.MonoDevelop.BuildOrderPanel"/>
+      		<Panel id = "FSharpBuildOrderPanel" _label = "Build Order" class = "FSharp.MonoDevelop.BuildOrderPanel"/>
 		</Condition>
   	</Extension>
   
