@@ -220,6 +220,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					doc.ReparseDocument ();
 				}
 			};
+			IdeApp.Workbench.ActiveDocumentChanged += delegate {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc == null || doc.Editor == null || !(doc.Editor.Document.SyntaxMode is CSharpSyntaxMode))
+					return;
+				var mode = (CSharpSyntaxMode)doc.Editor.Document.SyntaxMode;
+				mode.HandleDocumentParsed (null, EventArgs.Empty);
+			};
 		}
 		
 		static void OnDisableConditionalCompilation (object s, MonoDevelop.Ide.Gui.DocumentEventArgs e)
@@ -290,6 +297,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				guiDocument = null;
 			}
 			if (guiDocument != null) {
+
 				guiDocument.Closed += delegate {
 					if (src != null)
 						src.Cancel ();
