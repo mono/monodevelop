@@ -16,6 +16,7 @@ REFS =  \
 	-r:../../../external/ngit/bin/NSch.dll \
 	-r:../../../external/ngit/bin/Sharpen.dll \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
+	-r:../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
 	-r:../../build/AddIns/MonoDevelop.Autotools/MonoDevelop.Autotools.dll \
 	-r:../../build/AddIns/MonoDevelop.Deployment/MonoDevelop.Deployment.dll \
@@ -95,6 +96,7 @@ FILES =  \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/TextFormatterTests.cs \
 	MonoDevelop.Projects/WorkspaceTests.cs \
+	MonoDevelop.SourceEditor/SourceEditorTests.cs \
 	MonoDevelop.VersionControl.Git/GitUtilsTests.cs \
 	MonoDevelop.VersionControl.Views/EditorCompareWidgetBaseTest.cs \
 	TestBase.cs \

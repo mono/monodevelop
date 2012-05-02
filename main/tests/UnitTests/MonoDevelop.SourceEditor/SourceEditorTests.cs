@@ -1,5 +1,5 @@
 // 
-// OnTheFlyFormatterTextEditorExtension.cs
+// SourceEditorTests.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,48 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Core;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory;
+using NUnit.Framework;
+using MonoDevelop.Ide.CodeCompletion;
 
-namespace MonoDevelop.CSharp.Formatting
+namespace MonoDevelop.SourceEditor
 {
-	public class OnTheFlyFormatterTextEditorExtension : TextEditorExtension
+	[TestFixture()]
+	public class SourceEditorTests : Mono.TextEditor.Tests.TextEditorTestBase
 	{
-		TextEditorData textEditorData {
-			get {
-				return Document.Editor;
-			}
-		}
-		
-		public static bool OnTheFlyFormatting {
-			get {
-				return PropertyService.Get ("OnTheFlyFormatting", true);
-			}
-			set {
-				PropertyService.Set ("OnTheFlyFormatting", value);
-			}
-		}
-		
-		void RunFormatter ()
+		/// <summary>
+		/// Bug 4764 - Event handler completion puts caret in wrong place
+		/// </summary>
+		[Test]
+		public void TestBug4764 ()
 		{
-			if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
-				OnTheFlyFormatter.Format (Document, textEditorData.Caret.Location);
-			}
-		}
-
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
-		{
-			bool runBefore = keyChar == '}';
-			if (runBefore)
-				RunFormatter ();
-			var result = base.KeyPress (key, keyChar, modifier);
-
-			bool runAfter = keyChar == ';';
-			if (runAfter)
-				RunFormatter ();
-			return result;
+			var data = Create ("foo = $");
+			var ctx = new CodeCompletionContext ();
+			ctx.TriggerOffset = data.Caret.Offset; 
+			SourceEditorView.SetCompletionText (data, ctx, "", "(o,s) |;", 0);
+			Check (data, "foo = (o,s) $;");
 		}
 	}
 }
