@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide
 		
 		public bool CanShowHelp (string topic)
 		{
-			return topic != null && !Platform.IsWindows;
+			return topic != null;
 		}
 		
 		void CheckExternalMonodoc ()
