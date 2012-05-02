@@ -296,8 +296,12 @@ namespace MonoDevelop.CSharp.Parser
 		public static CompilerSettings GetCompilerArguments (MonoDevelop.Projects.Project project)
 		{
 			var compilerArguments = new CompilerSettings ();
-			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null)
+			compilerArguments.TabSize = 1;
+
+			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null) {
+				compilerArguments.Unsafe = true;
 				return compilerArguments;
+			}
 
 			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 			var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
@@ -313,16 +317,19 @@ namespace MonoDevelop.CSharp.Parser
 			compilerArguments.Unsafe = par.UnsafeCode;
 			compilerArguments.Version = ConvertLanguageVersion (par.LangVersion);
 			compilerArguments.Checked = par.GenerateOverflowChecks;
-			compilerArguments.TabSize = 1;
-			
-			// TODO: Warning options need to be set in the report object.
-			
-/*			compilerArguments.EnhancedWarnings = par.TreatWarningsAsErrors;
-			if (!string.IsNullOrEmpty (par.NoWarnings))
-				compilerArguments.Add ("-nowarn:" + string.Join (",", par.NoWarnings.Split (';', ',', ' ', '\t')));
-			
-			compilerArguments.Add ("-warn:" + par.WarningLevel);
-*/
+			compilerArguments.WarningLevel = par.WarningLevel;
+			compilerArguments.EnhancedWarnings = par.TreatWarningsAsErrors;
+			if (!string.IsNullOrEmpty (par.NoWarnings)) {
+				foreach (var warning in par.NoWarnings.Split (';', ',', ' ', '\t')) {
+					int w;
+					try {
+						w = int.Parse (warning);
+					} catch (Exception) {
+						continue;
+					}
+					compilerArguments.SetIgnoreWarning (w);
+				}
+			}
 			
 			return compilerArguments;
 		}
