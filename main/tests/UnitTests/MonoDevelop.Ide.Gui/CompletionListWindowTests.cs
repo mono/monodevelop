@@ -730,6 +730,13 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("Button", output);
 		}
 
+		[Test]
+		public void TestFavorExactMatch ()
+		{
+			string output = RunSimulation ("", "View\t", true, true, false, "view", "View");
+			Assert.AreEqual ("View", output);
+		}
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

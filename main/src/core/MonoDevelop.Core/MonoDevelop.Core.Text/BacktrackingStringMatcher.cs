@@ -80,10 +80,14 @@ namespace MonoDevelop.Core.Text
 					if (newFragment)
 						fragments++;
 					lastIndex = i;
-					if (ch == name [i] || newFragment || i == 0) {
+					if (ch == name [i]) {
 						matching += 1000 / (1 + fragments);
 						if (char.IsUpper (ch))
 							capitalMatches += Math.Max (1, 10000 - 1000 * fragments);
+					} else if (newFragment || i == 0) {
+						matching += 900 / (1 + fragments);
+						if (char.IsUpper (ch))
+							capitalMatches += Math.Max (1, 1000 - 100 * fragments);
 					} else {
 						var x = 100 * (i + 1) / (1 + fragments);
 						nonCapitalMatches += x;
