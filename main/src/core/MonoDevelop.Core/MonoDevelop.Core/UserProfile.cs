@@ -36,6 +36,7 @@ namespace MonoDevelop.Core
 		//The last is the current profile version.
 		//Should be increased only for major MD versions. Cannot contain '+' or '-'.
 		internal static string[] ProfileVersions = new[] {
+			"2.4",
 			"2.6",
 			"2.7",
 			"2.8",
