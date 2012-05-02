@@ -104,6 +104,8 @@ namespace MonoDevelop.Core.Assemblies
 					return base.DisplayName;
 			}
 		}
+
+		public bool HasMultitargetingMcs { get; private set; }
 		
 		public override IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
 		{
@@ -212,6 +214,11 @@ namespace MonoDevelop.Core.Assemblies
 					LoggingService.LogError ("Could not parse file '" + pcfile + "'", ex);
 				}
 			}
+
+			// Mono 2.11 is the first release with either 4.5 framework and multitargeting mcs
+			// so by detecting the 4.5 profile, we know we have multitargeting mcs
+			HasMultitargetingMcs = File.Exists (Path.Combine (monoDir, "4.5", "mscorlib.dll"));
+
 			PcFileCache.Save ();
 		}
 
