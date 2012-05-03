@@ -563,9 +563,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 								AddTypesAndNamespaces(
 									wrapper,
-									GetState (),
+									GetState(),
 									null,
-									t => currentType != null && !currentType.ReflectionName.Equals (t.ReflectionName) ? t : null
+									t => currentType != null && !currentType.ReflectionName.Equals(t.ReflectionName) ? t : null
 								);
 								return wrapper.Result;
 							}
@@ -621,7 +621,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								new ExpressionResult(
 								((MemberReferenceExpression)identifierStart.Node).Target,
 								identifierStart.Unit
-							));
+							)
+							);
 						}
 
 						if (identifierStart.Node is Identifier) {
@@ -748,7 +749,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 									AutoCompleteEmptyMatch = false;
 								}
 								foreach (var p in method.Parameters) {
-									contextList.AddVariable(p);
+									var data = contextList.AddVariable(p);
+									if (data != null) {
+										data.CompletionText += ":";
+										data.DisplayText += ":";
+									}
 								}
 							}
 							idx++;
