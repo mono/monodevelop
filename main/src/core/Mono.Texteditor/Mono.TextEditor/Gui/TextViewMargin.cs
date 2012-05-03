@@ -184,7 +184,7 @@ namespace Mono.TextEditor
 			int startLine = (int)(textEditor.GetTextEditorData ().VAdjustment.Value / LineHeight);
 			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / LineHeight) + 1;
 			foreach (DocumentLine line in layoutDict.Keys) {
-				int curLine = Document.OffsetToLineNumber (line.Offset);
+				int curLine = line.LineNumber;
 				if (startLine - 5 >= curLine || endLine + 5 <= curLine) {
 					linesToRemove.Add (line);
 				}
@@ -730,7 +730,7 @@ namespace Mono.TextEditor
 					DocumentLocation visStart = textEditor.LogicalToVisualLocation (start);
 					DocumentLocation visEnd = textEditor.LogicalToVisualLocation (end);
 					int lineOffset = line.Offset;
-					int lineNumber = Document.OffsetToLineNumber (lineOffset);
+					int lineNumber = line.LineNumber;
 					if (textEditor.MainSelection.MinLine <= lineNumber && lineNumber <= textEditor.MainSelection.MaxLine) {
 						selectionStart = lineOffset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Min (visStart.Column, visEnd.Column)) - 1;
 						selectionEnd = lineOffset + line.GetLogicalColumn (this.textEditor.GetTextEditorData (), System.Math.Max (visStart.Column, visEnd.Column)) - 1;
@@ -2228,7 +2228,7 @@ namespace Mono.TextEditor
 
 					if (folding.EndLine != line) {
 						line = folding.EndLine;
-						lineNr = Document.OffsetToLineNumber (line.Offset);
+						lineNr = line.LineNumber;
 						foldings = Document.GetStartFoldings (line);
 						isEolFolded = line.Length <= folding.EndColumn;
 						goto restart;
@@ -2645,7 +2645,7 @@ namespace Mono.TextEditor
 					continue;
 				return extendingTextMarker.GetLineHeight (textEditor);
 			}
-			int lineNumber = textEditor.OffsetToLineNumber (line.Offset); 
+			int lineNumber = line.LineNumber; 
 			var node = textEditor.GetTextEditorData ().HeightTree.GetNodeByLine (lineNumber);
 			if (node == null)
 				return LineHeight;

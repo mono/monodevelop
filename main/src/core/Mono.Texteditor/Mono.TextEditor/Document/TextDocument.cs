@@ -1159,7 +1159,7 @@ namespace Mono.TextEditor
 		
 		public int GetLineCount (FoldSegment segment)
 		{
-			return OffsetToLineNumber(segment.EndLine.Offset) - OffsetToLineNumber(segment.StartLine.Offset);
+			return segment.EndLine.LineNumber - segment.StartLine.LineNumber;
 		}
 		
 		public void EnsureOffsetIsUnfolded (int offset)
@@ -1391,7 +1391,7 @@ namespace Mono.TextEditor
 		
 		public void CommitLineUpdate (DocumentLine line)
 		{
-			CommitLineUpdate (this.OffsetToLineNumber (line.Offset));
+			CommitLineUpdate (line.LineNumber);
 		}
 
 		public void CommitUpdateAll ()

@@ -1381,8 +1381,8 @@ namespace Mono.TextEditor
 
 		void HandleTextEditorDataDocumentFolded (object sender, FoldSegmentEventArgs e)
 		{
-			int start = OffsetToLineNumber (e.FoldSegment.StartLine.Offset);
-			int end = OffsetToLineNumber (e.FoldSegment.EndLine.Offset);
+			int start = e.FoldSegment.StartLine.LineNumber;
+			int end = e.FoldSegment.EndLine.LineNumber;
 			
 			if (e.FoldSegment.IsFolded) {
 				if (e.FoldSegment.Marker != null)

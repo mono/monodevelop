@@ -168,7 +168,7 @@ namespace Mono.TextEditor
 		void HandleTextEditorDataDocumentMarkerChange (object sender, TextMarkerEvent e)
 		{
 			if (e.TextMarker is IExtendingTextMarker) {
-				int lineNumber = OffsetToLineNumber (e.Line.Offset);
+				int lineNumber = e.Line.LineNumber;
 				textEditorData.HeightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
 			}
 		}
@@ -2881,7 +2881,7 @@ namespace Mono.TextEditor
 		{
 			if (!e.Line.Markers.Any (m => m is IExtendingTextMarker))
 				return;
-			var line = textEditorData.Document.OffsetToLineNumber (e.Line.Offset);
+			var line = e.Line.LineNumber;
 			textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));
 		}
 

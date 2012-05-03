@@ -65,12 +65,12 @@ namespace Mono.TextEditor
 
 		void HandleLineInserted (object sender, LineEventArgs e)
 		{
-			InsertLine (editor.OffsetToLineNumber (e.Line.Offset));
+			InsertLine (e.Line.LineNumber);
 		}
 
 		void HandleLineRemoved (object sender, LineEventArgs e)
 		{
-			RemoveLine (editor.OffsetToLineNumber (e.Line.Offset));
+			RemoveLine (e.Line.LineNumber);
 		}
 
 		public void Dispose ()
@@ -126,20 +126,26 @@ namespace Mono.TextEditor
 
 		void InsertLine (int line)
 		{
+			var newLine = new HeightNode () {
+				count = 1,
+				height = editor.LineHeight
+			};
+
 			try {
+				if (line == tree.Root.totalCount + 1) {
+					tree.InsertAfter (tree.Root.GetOuterRight (), newLine);
+					return;
+				}
 				var node = GetNodeByLine (line);
 				if (node == null)
 					return;
 				if (node.count == 1) {
-					var newLine = new HeightNode () {
-						count = 1,
-						height = editor.LineHeight
-					};
 					tree.InsertBefore (node, newLine);
 					return;
 				}
 				node.count++;
 			} finally {
+				newLine.UpdateAugmentedData ();
 				OnLineUpdateFrom (new HeightChangedEventArgs (line));
 			}
 		}
@@ -161,7 +167,7 @@ namespace Mono.TextEditor
 				};
 				
 				foreach (var extendedTextMarkerLine in editor.Document.LinesWithExtendingTextMarkers) {
-					int lineNumber = editor.OffsetToLineNumber (extendedTextMarkerLine.Offset);
+					int lineNumber = extendedTextMarkerLine.LineNumber;
 					double height = editor.GetLineHeight (extendedTextMarkerLine);
 					SetLineHeight (lineNumber, height);
 				}
