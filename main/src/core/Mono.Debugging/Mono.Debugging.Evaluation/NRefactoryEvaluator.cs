@@ -786,7 +786,7 @@ namespace Mono.Debugging.Evaluation
 			if ((oper == BinaryOperatorType.ExclusiveOr) && (val1 is bool) && (val2 is bool))
 				return LiteralValueReference.CreateObjectLiteral (ctx, name, (bool)val1 ^ (bool)val2);
 
-			if ((val1 == null || !val1.GetType ().IsPrimitive) && (val2 == null || !val2.GetType ().IsPrimitive)) {
+			if ((val1 == null || !ctx.Adapter.IsPrimitive (ctx, targetVal1)) && (val2 == null || !ctx.Adapter.IsPrimitive (ctx, targetVal2))) {
 				switch (oper) {
 					case BinaryOperatorType.Equality:
 						if (val1 == null || val2 == null)
