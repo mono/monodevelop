@@ -210,6 +210,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				removedChars += document.GetLineByNumber(loc.Line + foundBlankLines - blankLines).EndOffset
 					- document.GetLineByNumber(loc.Line).EndOffset;
 			}
+			if (removedChars == 0 && sb.Length == 0)
+				return;
 			AddChange(start, removedChars, sb.ToString());
 		}
 
@@ -228,11 +230,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			for (int i = 0; i < blankLines; i++) {
 				sb.Append(this.options.EolMarker);
 			}
+			if (end - start == 0 && sb.Length == 0)
+				return;
 			AddChange(start, end - start, sb.ToString());
 		}
 
 		public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 		{
+			FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
 			}
@@ -243,6 +248,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
+			FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
 			}
