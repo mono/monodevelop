@@ -292,18 +292,20 @@ namespace MonoDevelop.Projects
 			get { return dependsOn; }
 
 			set {
-				dependsOn = value;
-
-				if (dependsOnFile != null) {
-					dependsOnFile.dependentChildren.Remove (this);
-					dependsOnFile = null;
+				if (dependsOn != value) {
+					var oldPath = !string.IsNullOrEmpty (dependsOn) ? FilePath.ParentDirectory.Combine (Path.GetFileName (dependsOn)) : FilePath.Empty;
+					dependsOn = value;
+	
+					if (dependsOnFile != null) {
+						dependsOnFile.dependentChildren.Remove (this);
+						dependsOnFile = null;
+					}
+	
+					if (project != null && value != null)
+						project.UpdateDependency (this, oldPath);
+	
+					OnChanged ();
 				}
-
-				if (project != null && value != null) {
-					project.ResolveDependencies (this);
-				}
-
-				OnChanged ();
 			}
 		}
 
@@ -322,12 +324,30 @@ namespace MonoDevelop.Projects
 			get { return ((IList<ProjectFile>)dependentChildren) ?? new ProjectFile[0]; }
 		}
 
+		internal FilePath DependencyPath {
+			get {
+				return FilePath.ParentDirectory.Combine (Path.GetFileName (DependsOn));
+			}
+		}
+
+		internal bool ResolveParent (ProjectFile potentialParentFile)
+		{
+			if (potentialParentFile.FilePath == DependencyPath) {
+				dependsOnFile = potentialParentFile;
+				if (dependsOnFile.dependentChildren == null)
+					dependsOnFile.dependentChildren = new List<ProjectFile> ();
+				dependsOnFile.dependentChildren.Add (this);
+				return true;
+			}
+			return false;
+		}
+
 		internal bool ResolveParent ()
 		{
 			if (dependsOnFile == null && (!string.IsNullOrEmpty (dependsOn) && project != null)) {
 				//NOTE also that the dependent files are always assumed to be in the same directory
 				//This matches VS behaviour
-				string parentPath = Path.Combine (Path.GetDirectoryName (FilePath), Path.GetFileName (DependsOn));
+				var parentPath = DependencyPath;
 
 				//don't allow cyclic references
 				if (parentPath == FilePath) {
