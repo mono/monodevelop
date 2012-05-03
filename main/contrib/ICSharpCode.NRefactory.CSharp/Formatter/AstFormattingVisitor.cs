@@ -850,7 +850,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				rParToken = methodDeclaration.RParToken;
 				parameters = methodDeclaration.Parameters;
 			}
-			
+			if (FormattingMode == ICSharpCode.NRefactory.CSharp.FormattingMode.OnTheFly)
+				methodCallArgumentWrapping = Wrapping.DoNotChange;
 
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, parameters.Count);
 			if (wrapMethodCall && parameters.Any()) {
@@ -1771,6 +1772,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				rParToken = invocationExpression.RParToken;
 				arguments = invocationExpression.Arguments;
 			}
+
+			if (FormattingMode == ICSharpCode.NRefactory.CSharp.FormattingMode.OnTheFly)
+				methodCallArgumentWrapping = Wrapping.DoNotChange;
 
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken, arguments.Count);
 			if (wrapMethodCall && arguments.Any()) {
