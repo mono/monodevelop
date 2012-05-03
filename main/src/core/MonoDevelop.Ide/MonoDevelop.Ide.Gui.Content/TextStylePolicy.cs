@@ -66,11 +66,12 @@ namespace MonoDevelop.Ide.Gui.Content
 		[ItemProperty]
 		public bool TabsToSpaces { get; private set; }
 		
-		int indentWidth = 4;
+		int indentWidth = -1;
+
 		[ItemProperty]
 		public int IndentWidth {
 			get {
-				return indentWidth;
+				return indentWidth < 0 ? TabWidth : indentWidth;
 			}
 			private set {
 				indentWidth = value;
