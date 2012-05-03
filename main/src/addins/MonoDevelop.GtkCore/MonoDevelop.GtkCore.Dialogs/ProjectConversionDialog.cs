@@ -35,6 +35,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		{
 			ConvertAll = true;
 			HandleButtonConvertClicked (sender, e);
+			Respond (ResponseType.Yes);
 		}
 
 		void HandleButtonConvertClicked (object sender, EventArgs e)
