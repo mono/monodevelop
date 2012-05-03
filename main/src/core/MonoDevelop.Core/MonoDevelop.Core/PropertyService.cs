@@ -183,7 +183,7 @@ namespace MonoDevelop.Core
 			//try versioned profiles from most recent to oldest
 			//skip the last in the array, it's the current profile
 			int userProfileMostRecent = UserProfile.ProfileVersions.Length - 2;
-			for (int i = userProfileMostRecent; i >= 0; i--) {
+			for (int i = userProfileMostRecent; i >= 1; i--) {
 				string v = UserProfile.ProfileVersions[i];
 				var p = UserProfile.GetProfile (v);
 				if (File.Exists (p.ConfigDir.Combine (FileName))) {

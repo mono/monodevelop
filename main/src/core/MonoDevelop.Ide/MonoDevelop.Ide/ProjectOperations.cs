@@ -1392,11 +1392,13 @@ namespace MonoDevelop.Ide
 			//and add the ProjectFiles directly. With large project and many files, this should really help perf.
 			//Also, this is a better check because we handle vpaths and links.
 			//FIXME: it would be really nice if project.Files maintained these hashmaps
-			var vpathsInProject = new HashSet<FilePath> (project.Files.Select (pf => pf.ProjectVirtualPath));
+			var vpathsInProject = new Dictionary<FilePath, ProjectFile> ();
 			var filesInProject = new Dictionary<FilePath,ProjectFile> ();
-			foreach (var pf in project.Files)
+			foreach (var pf in project.Files) {
 				filesInProject [pf.FilePath] = pf;
-			
+				vpathsInProject [pf.ProjectVirtualPath] = pf;
+			}
+
 			using (monitor)
 			{
 				for (int i = 0; i < files.Length; i++) {
@@ -1415,10 +1417,11 @@ namespace MonoDevelop.Ide
 					
 					FilePath targetPath = targetPaths[i].CanonicalPath;
 					Debug.Assert (targetPath.IsChildPathOf (project.BaseDirectory));
-					
+
+					ProjectFile vfile;
 					var vpath = targetPath.ToRelative (project.BaseDirectory);
-					if (vpathsInProject.Contains (vpath)) {
-						if (project.Files.GetFileWithVirtualPath (vpath).FilePath != file)
+					if (vpathsInProject.TryGetValue (vpath, out vfile)) {
+						if (vfile.FilePath != file)
 							MessageService.ShowWarning (GettextCatalog.GetString (
 								"There is a already a file or link in the project with the name '{0}'", vpath));
 						continue;
@@ -1473,7 +1476,7 @@ namespace MonoDevelop.Ide
 							ProjectFile pf = new ProjectFile (file, fileBuildAction) {
 								Link = vpath
 							};
-							vpathsInProject.Add (pf.ProjectVirtualPath);
+							vpathsInProject [pf.ProjectVirtualPath] = pf;
 							filesInProject [pf.FilePath] = pf;
 							newFileList.Add (pf);
 							continue;
@@ -1485,7 +1488,7 @@ namespace MonoDevelop.Ide
 							
 							if (MoveCopyFile (file, targetPath, action == AddAction.Move)) {
 								var pf = new ProjectFile (targetPath, fileBuildAction);
-								vpathsInProject.Add (pf.ProjectVirtualPath);
+								vpathsInProject [pf.ProjectVirtualPath] = pf;
 								filesInProject [pf.FilePath] = pf;
 								newFileList.Add (pf);
 							}
@@ -1508,7 +1511,7 @@ namespace MonoDevelop.Ide
 			return newFileList;
 		}
 		
-		void AddFileToFolder (List<ProjectFile> newFileList, HashSet<FilePath> vpathsInProject, Dictionary<FilePath, ProjectFile> filesInProject, FilePath file, string fileBuildAction)
+		void AddFileToFolder (List<ProjectFile> newFileList, Dictionary<FilePath, ProjectFile> vpathsInProject, Dictionary<FilePath, ProjectFile> filesInProject, FilePath file, string fileBuildAction)
 		{
 			//FIXME: MD project system doesn't cope with duplicate includes - project save/load will remove the file
 			ProjectFile pf;
@@ -1519,7 +1522,7 @@ namespace MonoDevelop.Ide
 				return;
 			}
 			pf = new ProjectFile (file, fileBuildAction);
-			vpathsInProject.Add (pf.ProjectVirtualPath);
+			vpathsInProject [pf.ProjectVirtualPath] = pf;
 			filesInProject [pf.FilePath] = pf;
 			newFileList.Add (pf);
 		}

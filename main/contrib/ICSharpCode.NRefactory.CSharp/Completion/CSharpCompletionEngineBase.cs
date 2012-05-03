@@ -240,7 +240,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				i++;
 			} while (i <= cursor && parentheses >= 0);
-			Console.WriteLine (indexStack.Count >= 0 || parentheses != 1 || bracket > 0 ? -1 : index);
 			return indexStack.Count >= 0 || parentheses != 1 || bracket > 0 ? -1 : index;
 		}
 

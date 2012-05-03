@@ -80,6 +80,46 @@ namespace MonoDevelop.CSharp.Formatting
 			};
 		}
 
+
+		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
+		{
+			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
+			if (OnTheFlyFormatterTextEditorExtension.OnTheFlyFormatting) {
+				int i = insertionOffset + insertedChars;
+				bool foundNonWsFollowUp = false;
+
+				var line = Document.Editor.GetLineByOffset (i);
+				if (line != null) {
+					for (int j = 0; j < line.Offset + line.Length; j++) {
+						var ch = Document.Editor.GetCharAt (j);
+						if (ch != ' ' && ch != '\t') {
+							foundNonWsFollowUp = true;
+							break;
+						}
+					}
+				}
+
+				if (!foundNonWsFollowUp) {
+					while (i > insertionOffset) {
+						char ch = Document.Editor.GetCharAt (i - 1);
+						if (ch != ' ' && ch != '\t') 
+							break;
+						i--;
+					}
+					int delta = insertionOffset + insertedChars - i;
+					if (delta > 0) {
+						Editor.Caret.Offset -= delta;
+						Editor.Remove (insertionOffset + insertedChars - delta, delta);
+					}
+				}
+			}
+			var documentLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
+			while (documentLine != null && insertionOffset < documentLine.EndOffset) {
+				DoReSmartIndent (documentLine.Offset);
+				documentLine = documentLine.PreviousLine;
+			}
+		} 
+
 		public CSharpTextEditorIndentation ()
 		{
 			IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
@@ -99,11 +139,14 @@ namespace MonoDevelop.CSharp.Formatting
 
 			textEditorData = Document.Editor;
 			if (textEditorData != null) {
-				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textStylePolicy), textEditorData));
+				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
+					textEditorData,
+					new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textStylePolicy), textEditorData)
+				);
 			}
 
 			InitTracker ();
-
+//			Document.Editor.Paste += HandleTextPaste;
 		}
 
 		/*		void TextCut (object sender, ReplaceEventArgs e)
@@ -476,12 +519,17 @@ namespace MonoDevelop.CSharp.Formatting
 		//does re-indenting and cursor positioning
 		void DoReSmartIndent ()
 		{
+			DoReSmartIndent (textEditorData.Caret.Offset);
+		}
+
+		void DoReSmartIndent (int cursor)
+		{
 			string newIndent = string.Empty;
-			int cursor = textEditorData.Caret.Offset;
-			DocumentLine line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
+			DocumentLine line = textEditorData.Document.GetLineByOffset (cursor);
+//			stateTracker.UpdateEngine (line.Offset);
 			// Get context to the end of the line w/o changing the main engine's state
 			CSharpIndentEngine ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
-			for (int max = cursor; max < line.Offset + line.Length; max++) {
+			for (int max = cursor; max < line.EndOffset; max++) {
 				ctx.Push (textEditorData.Document.GetCharAt (max));
 			}
 			
@@ -510,7 +558,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 			pos += offset;
 
-			textEditorData.Caret.Offset = pos;
 			textEditorData.FixVirtualIndentation ();
 		}
 

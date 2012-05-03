@@ -69,22 +69,31 @@ namespace MonoDevelop.Core.Text
 			var lane = GetMatch (name);
 			if (lane != null) {
 				int capitalMatches = 0;
+				int nonCapitalMatches = 0;
 				int matching = 0;
 				int fragments = 0;
-				int lastIndex = 0;
+				int lastIndex = -1;
 				for (int n = 0; n < lane.Length; n++) {
 					var ch = filterText [n];
 					var i = lane [n];
-					if (i > lastIndex + 1)
+					bool newFragment = i > lastIndex + 1;
+					if (newFragment)
 						fragments++;
 					lastIndex = i;
 					if (ch == name [i]) {
-						matching++;
+						matching += 1000 / (1 + fragments);
 						if (char.IsUpper (ch))
-							capitalMatches += Math.Max (1, 100 - 10 * fragments);
+							capitalMatches += Math.Max (1, 10000 - 1000 * fragments);
+					} else if (newFragment || i == 0) {
+						matching += 900 / (1 + fragments);
+						if (char.IsUpper (ch))
+							capitalMatches += Math.Max (1, 1000 - 100 * fragments);
+					} else {
+						var x = 100 * (i + 1) / (1 + fragments);
+						nonCapitalMatches += x;
 					}
 				}
-				matchRank = capitalMatches + matching - fragments;
+				matchRank = capitalMatches + matching - fragments + nonCapitalMatches;
 				return true;
 			}
 			matchRank = int.MinValue;
@@ -126,12 +135,23 @@ namespace MonoDevelop.Core.Text
 				// word start is either a upper case letter (FooBar) or a char that follows a non letter
 				// like foo:bar 
 				if ((char.IsUpper (text [j]) || filterCharIsDigit) && filterChar == text [j] || 
-					(filterChar == char.ToUpper (text [j]) && j > 0 && !char.IsLetterOrDigit (text [j - 1])))
-					return j;
+					(filterChar == char.ToUpper (text [j]) && j > 0 && !char.IsLetterOrDigit (text [j - 1]))) {
+					if (HasLetter (text, j))
+						return j;
+				}
 			}
 			return -1;
 		}
-		
+
+		static bool HasLetter (string text, int i)
+		{
+			for (int j = 0; j < i; j++) {
+				var ch = text [j];
+				if (ch == '_' || char.IsLetterOrDigit (ch)) 
+					return true;
+			}
+			return false;
+		}		
 		/// <summary>
 		/// Gets the match indices.
 		/// </summary>

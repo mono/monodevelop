@@ -457,17 +457,24 @@ namespace MonoDevelop.Ide.Gui
 			"Addd",
 		};
 
-		[Ignore]
 		[Test]
 		public void TestMatchPunctuation ()
 		{
 			string output = RunSimulation ("", "/\n", true, false, false, punctuationData);
 			Assert.AreEqual ("/AbAb", output);
-			
-			output = RunSimulation ("", "A\n", true, false, false, punctuationData);
+		}
+
+		[Test]
+		public void TestMatchPunctuationCase2 ()
+		{
+			string output = RunSimulation ("", "A\n", true, false, false, punctuationData);
 			Assert.AreEqual ("AbAb", output);
-			
-			output = RunSimulation ("", ",A..\n", true, false, false, punctuationData);
+		}
+
+		[Test]
+		public void TestMatchPunctuationCase3 ()
+		{
+			string output = RunSimulation ("", ",A..\n", true, false, false, punctuationData);
 			Assert.AreEqual (",A..bAb", output);
 		}
 		
@@ -492,7 +499,6 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual (null, output);
 		}
 
-		[Ignore]
 		[Test]
 		public void TestMatchPunctuationCommitOnSpaceAndPunctuation4 ()
 		{
@@ -698,8 +704,39 @@ namespace MonoDevelop.Ide.Gui
 			string output = RunSimulation ("", "InC\t", true, true, false, "Equals", "InvariantCultureIfo", "GetInvariantCulture");
 			Assert.AreEqual ("InvariantCultureIfo", output);
 		}
-		
-		
+
+		[Test]
+		public void TestPreProcessorDirective ()
+		{
+			string output = RunSimulation ("", "if\t", true, true, false, "#if", "if");
+			Assert.AreEqual ("if", output);
+		}
+
+		/// <summary>
+		/// Bug 4732 - [Regression] Broken intellisense again 
+		/// </summary>
+		[Test]
+		public void TestBug4732 ()
+		{
+			string output = RunSimulation ("", "a\t", true, true, false, "_AppDomain", "A");
+			Assert.AreEqual ("A", output);
+		}
+
+
+		[Test]
+		public void TestFavorFirstSubword ()
+		{
+			string output = RunSimulation ("", "button\t", true, true, false, "AnotherTestButton", "Button");
+			Assert.AreEqual ("Button", output);
+		}
+
+		[Test]
+		public void TestFavorExactMatch ()
+		{
+			string output = RunSimulation ("", "View\t", true, true, false, "view", "View");
+			Assert.AreEqual ("View", output);
+		}
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

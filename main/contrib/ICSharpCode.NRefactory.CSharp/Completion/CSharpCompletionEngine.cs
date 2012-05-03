@@ -2257,7 +2257,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			//var typeDef = resolveResult.Type.GetDefinition();
 			var result = new CompletionDataWrapper(this);
 			bool includeStaticMembers = false;
+
+			var lookup = new MemberLookup(
+				ctx.CurrentTypeDefinition,
+				Compilation.MainAssembly
+			);
 			
+
 			if (resolveResult is LocalResolveResult) {
 				if (resolvedNode is IdentifierExpression) {
 					var mrr = (LocalResolveResult)resolveResult;
@@ -2266,6 +2272,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			if (resolveResult is TypeResolveResult && type.Kind == TypeKind.Enum) {
 				foreach (var field in type.GetFields ()) {
+					if (!lookup.IsAccessible(field, false))
+						continue;
 					result.AddMember(field);
 				}
 				foreach (var m in type.GetMethods ()) {
@@ -2276,10 +2284,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return result.Result;
 			}
 			
-			var lookup = new MemberLookup(
-				ctx.CurrentTypeDefinition,
-				Compilation.MainAssembly
-			);
 			bool isProtectedAllowed = resolveResult is ThisResolveResult ? true : lookup.IsProtectedAccessAllowed(type);
 			bool skipNonStaticMembers = (resolveResult is TypeResolveResult);
 			

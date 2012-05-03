@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -136,16 +137,21 @@ namespace MonoDevelop.SourceEditor
 				resetEvent.WaitOne ();
 				while (queue.Count > 0) {
 					var content = queue.Dequeue ();
-					lock (contentLock) {
+					// Don't create an auto save for unsaved files.
+					if (string.IsNullOrEmpty (content.FileName))
+						continue;
+					Application.Invoke (delegate {
 						string text;
 						try {
 							text = content.Content.Text;
 						} catch (Exception e) {
 							LoggingService.LogError ("Exception in auto save thread.", e);
-							continue;
+							return;
 						}
 						CreateAutoSave (content.FileName, text);
 					}
+					);
+					
 				}
 			}
 		}

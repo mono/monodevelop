@@ -1,9 +1,14 @@
 SUBDIRS=`ls .`
 TARBALL_PATH=../tarballs
-NGIT=ngit/ngit.sln /t:NGit
-CECIL=/property:Configuration=net_4_0_Debug cecil/Mono.Cecil.sln
-OUTPUT=../main/build/bin
+
+NGIT_SLN=ngit/ngit.sln
+NGIT=$(NGIT_SLN) /t:NGit
+
+CECIL_SLN=cecil/Mono.Cecil.sln
+CECIL=/property:Configuration=net_4_0_Debug $(CECIL_SLN)
 CECIL_OUTPUT=cecil/bin/net_4_0_Debug
+
+OUTPUT=../main/build/bin
 
 all:
 	mkdir -p $(OUTPUT)
@@ -16,8 +21,8 @@ all:
 	cp $(CECIL_OUTPUT)/Mono.Cecil.Mdb.dll.mdb $(OUTPUT)
 
 clean:
-	xbuild $(NGIT) /t:Clean
-	xbuild $(CECIL) /t:Clean
+	@if test -f $(NGIT_SLN); then xbuild $(NGIT) /t:Clean; fi
+	@if test -f $(CECIL_SLN); then xbuild $(CECIL) /t:Clean; fi
 
 install:
 

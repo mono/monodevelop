@@ -201,12 +201,12 @@ namespace MonoDevelop.Refactoring
 			int tc = GetTypeParameterCount (node);
 			var attribute = unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (location);
 			bool isInsideAttributeType = attribute != null && attribute.Type.Contains (location);
-			var lookup = new MemberLookup (null, doc.Compilation.MainAssembly);
-
+			var compilation = doc.Compilation;
+			var lookup = new MemberLookup (null, compilation.MainAssembly);
 			if (resolveResult is AmbiguousTypeResolveResult) {
 				var aResult = resolveResult as AmbiguousTypeResolveResult;
 				var file = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
-				var scope = file.GetUsingScope (location).Resolve (doc.Compilation);
+				var scope = file.GetUsingScope (location).Resolve (compilation);
 				while (scope != null) {
 					foreach (var u in scope.Usings) {
 						foreach (var typeDefinition in u.Types) {
@@ -225,7 +225,7 @@ namespace MonoDevelop.Refactoring
 			if (resolveResult is UnknownIdentifierResolveResult) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
-				foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
+				foreach (var typeDefinition in compilation.GetAllTypeDefinitions ()) {
 					if ((typeDefinition.Name == uiResult.Identifier || typeDefinition.Name == possibleAttributeName) && typeDefinition.TypeParameterCount == tc && 
 						lookup.IsAccessible (typeDefinition, false)) {
 						yield return typeDefinition.Namespace;
@@ -237,7 +237,6 @@ namespace MonoDevelop.Refactoring
 			if (resolveResult is UnknownMemberResolveResult) {
 				var umResult = (UnknownMemberResolveResult)resolveResult;
 				string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : null;
-				var compilation = doc.Compilation;
 				foreach (var typeDefinition in compilation.GetAllTypeDefinitions ().Where (t => t.HasExtensionMethods)) {
 					foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == umResult.MemberName || m.Name == possibleAttributeName))) {
 						IType[] inferredTypes;
@@ -263,7 +262,7 @@ namespace MonoDevelop.Refactoring
 					var uiResult = resolveResult as UnknownIdentifierResolveResult;
 					if (uiResult != null) {
 						string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
-						foreach (var typeDefinition in doc.Compilation.GetAllTypeDefinitions ()) {
+						foreach (var typeDefinition in compilation.GetAllTypeDefinitions ()) {
 							if ((identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName) && 
 							    typeDefinition.TypeParameterCount == tc && 
 							    lookup.IsAccessible (typeDefinition, false))

@@ -103,11 +103,6 @@ namespace MonoDevelop.NUnit.External
 			} else if (test.TestType == "ParameterizedTest") {
 				ti.FixtureTypeName = test.Parent.FixtureType.Name;
 				ti.FixtureTypeNamespace = test.Parent.FixtureType.Namespace;
-				Console.WriteLine ("---------------------------------");
-				Console.WriteLine (test.GetType ());
-				Console.WriteLine (tname);
-				Console.WriteLine (test.TestName);
-				Console.WriteLine (test.Description);
 			}
 			ti.Name = tname;
 			ti.TestId = test.TestName.FullName;

@@ -40,7 +40,6 @@ public class MonoDevelopProcessHost
 	public static int Main (string[] args)
 	{
 		try {
-			Gtk.Application.Init ();
 			Runtime.Initialize (false);
 			Runtime.SetProcessName ("mdtool");
 			
@@ -89,7 +88,6 @@ public class MonoDevelopProcessHost
 			Console.WriteLine (ex);
 			return -1;
 		} finally {
-			Gtk.Application.Quit ();
 			try {
 				Runtime.Shutdown ();
 			} catch {

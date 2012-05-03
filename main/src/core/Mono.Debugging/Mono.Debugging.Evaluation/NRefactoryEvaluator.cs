@@ -342,12 +342,12 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitTypeReferenceExpression (ICSharpCode.OldNRefactory.Ast.TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			if (typeReferenceExpression.TypeReference.IsGlobal) {
+			if (typeReferenceExpression.TypeReference.IsGlobal || typeReferenceExpression.TypeReference.IsKeyword) {
 				string name = typeReferenceExpression.TypeReference.Type;
 				object type = ctx.Options.AllowImplicitTypeLoading ? ctx.Adapter.ForceLoadType (ctx, name) : ctx.Adapter.GetType (ctx, name);
 				if (type != null)
 					return new TypeValueReference (ctx, type);
-	
+
 				if (!ctx.Options.AllowImplicitTypeLoading) {
 					string[] namespaces = ctx.Adapter.GetImportedNamespaces (ctx);
 					if (namespaces.Length > 0) {
@@ -593,7 +593,7 @@ namespace Mono.Debugging.Evaluation
 				}
 			}
 			
-			if (thisobj == null) {
+			if (thisobj == null && ctx.Adapter.HasMember (ctx, thistype, name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				string message = string.Format ("An object reference is required for the non-static field, method, or property '{0}.{1}'",
 				                                ctx.Adapter.GetDisplayTypeName (ctx, thistype), name);
 				throw CreateParseError (message);

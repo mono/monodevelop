@@ -1,5 +1,5 @@
 // 
-// OnTheFlyFormatterTextEditorExtension.cs
+// RtfWriterTests.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,48 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Core;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory;
+using Mono.TextEditor.Utils;
+using NUnit.Framework;
+using Mono.TextEditor.Highlighting;
 
-namespace MonoDevelop.CSharp.Formatting
+namespace Mono.TextEditor.Tests
 {
-	public class OnTheFlyFormatterTextEditorExtension : TextEditorExtension
+	[TestFixture()]
+	public class RtfWriterTests : TextEditorTestBase
 	{
-		TextEditorData textEditorData {
-			get {
-				return Document.Editor;
-			}
-		}
-		
-		public static bool OnTheFlyFormatting {
-			get {
-				return PropertyService.Get ("OnTheFlyFormatting", true);
-			}
-			set {
-				PropertyService.Set ("OnTheFlyFormatting", value);
-			}
-		}
-		
-		void RunFormatter ()
+		[Test()]
+		public void TestSimpleCSharpRtf ()
 		{
-			if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
-				OnTheFlyFormatter.Format (Document, textEditorData.Caret.Location);
-			}
-		}
-
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
-		{
-			bool runBefore = keyChar == '}';
-			if (runBefore)
-				RunFormatter ();
-			var result = base.KeyPress (key, keyChar, modifier);
-
-			bool runAfter = keyChar == ';';
-			if (runAfter)
-				RunFormatter ();
-			return result;
+			var data = Create ("class Foo {}");
+			var style = SyntaxModeService.GetColorStyle (null, "TangoLight");
+			ISyntaxMode mode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
+			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
+			Assert.AreEqual (
+			@"{\rtf1\ansi\deff0\adeflang1025{\fonttbl{\f0\fnil\fprq1\fcharset128 Mono;}}{\colortbl ;\red92\green53\blue102;\red0\green0\blue0;}\viewkind4\uc1\pard\f0\fs20\cf1\b\cf1 class\b0\cf2  Foo \{\}\par
+}", generatedRtf);
 		}
 	}
 }

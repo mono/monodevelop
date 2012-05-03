@@ -160,14 +160,16 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" IsAutotoolsProject="true" RelativeConfigureInPath="../../../../../main">
           <BuildFilesVar Sync="true" Name="FILES" />
           <DeployFilesVar />
           <ResourcesVar Sync="true" Name="RES" />
           <OthersVar />
-          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <ProjectRefVar Sync="true" Name="DEPS" />
+          <GacRefVar Name="REFS" Prefix="-r:" />
+          <AsmRefVar Name="REFS" Prefix="-r:" />
+          <GacRefVar />
+          <AsmRefVar />
+          <ProjectRefVar Name="DEPS" />
         </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>

@@ -289,7 +289,6 @@ namespace MonoDevelop.SourceEditor
 			SetSearchPattern (searchPattern);
 			textEditor.HighlightSearchPattern = true;
 			textEditor.TextViewMargin.RefreshSearchMarker ();
-			Console.WriteLine ("readonly" + textEditor.Document.ReadOnly);
 			if (textEditor.Document.ReadOnly) {
 				buttonSearchMode.Visible = false;
 				IsReplaceMode = false;

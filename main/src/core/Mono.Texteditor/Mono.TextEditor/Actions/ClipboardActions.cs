@@ -34,6 +34,7 @@ using System.Text;
 
 using Gtk;
 using Mono.TextEditor.Highlighting;
+using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor
 {
@@ -93,7 +94,7 @@ namespace Mono.TextEditor
 					}
 					break;
 				case RichTextType:
-					selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (GenerateRtf (copiedDocument, mode, docStyle, options)));
+					selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (RtfWriter.GenerateRtf (copiedDocument, mode, docStyle, options)));
 					break;
 				case MonoTextType:
 					byte[] rawText = System.Text.Encoding.UTF8.GetBytes (monoDocument.Text);
@@ -126,122 +127,7 @@ namespace Mono.TextEditor
 			public Mono.TextEditor.Highlighting.ColorScheme docStyle;
 			ITextEditorOptions options;
 			Mono.TextEditor.Highlighting.ISyntaxMode mode;
-			
-			static string GenerateRtf (TextDocument doc, Mono.TextEditor.Highlighting.ISyntaxMode mode, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
-			{
-				StringBuilder rtfText = new StringBuilder ();
-				List<Gdk.Color> colorList = new List<Gdk.Color> ();
-	
-				var selection = new TextSegment (0, doc.TextLength);
-				int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
-				int endLineNumber = doc.OffsetToLineNumber (selection.EndOffset);
-				
-				bool isItalic = false;
-				bool isBold = false;
-				int curColor = -1;
 
-				foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
-					bool appendSpace = false;
-					foreach (Chunk chunk in mode.GetChunks (style, line, line.Offset, line.Length)) {
-						int start = System.Math.Max (selection.Offset, chunk.Offset);
-						int end = System.Math.Min (chunk.EndOffset, selection.EndOffset);
-						ChunkStyle chunkStyle = style.GetChunkStyle (chunk);
-						if (start < end) {
-							if (isBold != chunkStyle.Bold) {
-								rtfText.Append (chunkStyle.Bold ? @"\b" : @"\b0");
-								isBold = chunkStyle.Bold;
-								appendSpace = true;
-							}
-							if (isItalic != chunkStyle.Italic) {
-								rtfText.Append (chunkStyle.Italic ? @"\i" : @"\i0");
-								isItalic = chunkStyle.Italic;
-								appendSpace = true;
-							}
-							if (!colorList.Contains (chunkStyle.Color)) 
-								colorList.Add (chunkStyle.Color);
-							int color = colorList.IndexOf (chunkStyle.Color);
-							if (curColor != color) {
-								curColor = color;
-								rtfText.Append (@"\cf" + (curColor + 1));
-								appendSpace = true;
-							}
-							for (int i = start; i < end; i++) {
-								char ch = doc.GetCharAt (i);
-								
-								switch (ch) {
-								case '\\':
-									rtfText.Append (@"\\");
-									break;
-								case '{':
-									rtfText.Append (@"\{");
-									break;
-								case '}':
-									rtfText.Append (@"\}");
-									break;
-								case '\t':
-									rtfText.Append (@"\tab");
-									appendSpace = true;
-									break;
-								default:
-									if (appendSpace) {
-										rtfText.Append (' ');
-										appendSpace = false;
-									}
-									rtfText.Append (ch);
-									break;
-								}
-							}
-						}
-					}
-					rtfText.Append (@"\par");
-					rtfText.AppendLine ();
-				}
-				
-				// color table
-
-				StringBuilder colorTable = new StringBuilder ();
-				colorTable.Append (@"{\colortbl ;");
-				for (int i = 0; i < colorList.Count; i++) {
-					Gdk.Color color = colorList[i];
-					colorTable.Append (@"\red");
-					colorTable.Append (color.Red / 256);
-					colorTable.Append (@"\green");
-					colorTable.Append (color.Green / 256); 
-					colorTable.Append (@"\blue");
-					colorTable.Append (color.Blue / 256);
-					colorTable.Append (";");
-				}
-				colorTable.Append ("}");
-				
-				StringBuilder rtf = new StringBuilder();
-
-				rtf.Append (@"{\rtf1\ansi\deff0\adeflang1025");
-				
-				// font table
-				rtf.Append (@"{\fonttbl");
-
-				rtf.Append (@"{\f0\fnil\fprq1\fcharset128 " + options.Font.Family + ";}");
-
-				rtf.Append ("}");
-				
-				rtf.Append (colorTable.ToString ());
-				
-				rtf.Append (@"\viewkind4\uc1\pard");
-
-				rtf.Append (@"\f0");
-				try {
-					string fontName = options.Font.ToString ();
-					double fontSize = Double.Parse (fontName.Substring (fontName.LastIndexOf (' ')  + 1), System.Globalization.CultureInfo.InvariantCulture) * 2;
-					rtf.Append (@"\fs");
-					rtf.Append (fontSize);
-				} catch (Exception) {};
-				rtf.Append (@"\cf1");
-				rtf.Append (rtfText.ToString ());
-				rtf.Append("}");
-//				System.Console.WriteLine(rtf);
-				return rtf.ToString ();
-			}
-			
 			public static Gtk.TargetList targetList;
 			
 			static CopyOperation ()
@@ -274,7 +160,7 @@ namespace Mono.TextEditor
 					monoDocument = new TextDocument ();
 					this.docStyle = data.ColorStyle;
 					this.options = data.Options;
-					this.mode = data.Document.SyntaxMode != null && data.Options.EnableSyntaxHighlighting ? data.Document.SyntaxMode : new SyntaxMode (data.Document);
+					this.mode = SyntaxModeService.GetSyntaxMode (monoDocument, data.MimeType);
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
 						isBlockMode = false;

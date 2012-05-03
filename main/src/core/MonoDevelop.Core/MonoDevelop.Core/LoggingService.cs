@@ -73,6 +73,8 @@ namespace MonoDevelop.Core
 					LogError (e.ToString ());
 				}
 			}
+
+			timestamp = DateTime.Now;
 		}
 
 		static string GenericLogFile {
@@ -85,8 +87,6 @@ namespace MonoDevelop.Core
 
 		static string UniqueLogFile {
 			get {
-				timestamp = DateTime.Now;
-				
 				return string.Format ("MonoDevelop.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
 			}
 		}

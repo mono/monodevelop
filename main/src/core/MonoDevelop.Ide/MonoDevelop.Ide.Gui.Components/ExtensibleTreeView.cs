@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.DragDataReceived += OnDragDataReceived;
 			tree.DragDrop += OnDragDrop;
 			tree.DragEnd += OnDragEnd;
-			tree.CheckCanDrop = (ctx, x, y, time) => dragObjects != null && CheckAndDrop (x, y, false, ctx, dragObjects);
+			tree.CheckCanDrop = (ctx, x, y, time) => dragObjects == null || CheckAndDrop (x, y, false, ctx, dragObjects);
 			
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;

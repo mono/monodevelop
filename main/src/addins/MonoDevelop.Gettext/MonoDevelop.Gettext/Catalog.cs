@@ -115,27 +115,27 @@ namespace MonoDevelop.Gettext
 		}
 		
 		//escapes string and lays it out to 80 cols
-		static void FormatMessageForFile (StringBuilder sb, string prefix, string message, string newlineChar)
+		static void FormatMessageForFile (StreamWriter sw, string prefix, string message)
 		{
 			string escaped = StringEscaping.ToGettextFormat (message);
 			
 			//format to 80 cols
 			//first the simple case: does it fit one one line, with the prefix, and contain no newlines?
 			if (prefix.Length + escaped.Length < 77  && !escaped.Contains ("\\n")) {
-				sb.Append (prefix);
-				sb.Append (" \"");
-				sb.Append (escaped);
-				sb.Append ("\"");
-				sb.Append (newlineChar);
+				sw.Write (prefix);
+				sw.Write (" \"");
+				sw.Write (escaped);
+				sw.Write ("\"");
+				sw.WriteLine ();
 				return;
 			}
 						
 			//not the simple case.
 			
 			// first line is typically: prefix ""
-			sb.Append (prefix);
-			sb.Append (" \"\"");
-			sb.Append (newlineChar);
+			sw.Write (prefix);
+			sw.Write (" \"\"");
+			sw.WriteLine ();
 			
 			//followed by 80-col width break on spaces
 			int possibleBreak = -1;
@@ -165,10 +165,10 @@ namespace MonoDevelop.Gettext
 					possibleBreak = pos + 1;
 				
 				if (forceBreak || (currLineLen >= 77 && possibleBreak != -1)) {
-					sb.Append ("\"");
-					sb.Append (escaped.Substring (lastBreakAt, possibleBreak - lastBreakAt));
-					sb.Append ("\"");
-					sb.Append (newlineChar);
+					sw.Write ("\"");
+					sw.Write (escaped.Substring (lastBreakAt, possibleBreak - lastBreakAt));
+					sw.Write ("\"");
+					sw.WriteLine ();
 					
 					//reset state for new line
 					currLineLen = 0;
@@ -181,10 +181,10 @@ namespace MonoDevelop.Gettext
 			}
 			string remainder = escaped.Substring (lastBreakAt);
 			if (remainder.Length > 0) {
-				sb.Append ("\"");
-				sb.Append (remainder);
-				sb.Append ("\"");
-				sb.Append (newlineChar);
+				sw.Write ("\"");
+				sw.Write (remainder);
+				sw.Write ("\"");
+				sw.WriteLine ();
 			}
 			return;
 		}
@@ -209,7 +209,6 @@ namespace MonoDevelop.Gettext
 
 			// Load the .po file:
 			try {
-				//FIXME: this is really wasteful, it reads and splits the whole file just to get a line at the beginning
 				CharsetInfoFinder charsetFinder = new CharsetInfoFinder (parentProj, poFile);
 				charsetFinder.Parse ();
 				Charset = charsetFinder.Charset;
@@ -254,10 +253,10 @@ namespace MonoDevelop.Gettext
 		
 		// Saves catalog to file.
 		//FIXME: escape all the values that the parser unescapes
-		//FIXME: use a StreamWriter instead of a StringBuilder
 		public bool Save (string poFile)
 		{
-			StringBuilder sb = new StringBuilder ();
+			
+			StreamWriter sw;
 			
 			// Update information about last modification time:
 			RevisionDate = Catalog.GetDateTimeRfc822Format ();
@@ -270,98 +269,124 @@ namespace MonoDevelop.Gettext
 				Charset = "utf-8";
 			}
 			
-			Encoding encoding = Catalog.GetEncoding (Charset);
+			Encoding encoding = Catalog.GetNoBOMEncoding (Charset);
 			
-			if (!String.IsNullOrEmpty (Comment))
-				Catalog.SaveMultiLines (sb, Comment, originalNewLine);
+			int fileCounter = 0;
+			string tempFileName = "";
 			
-			sb.AppendFormat ("msgid \"\"{0}", originalNewLine);
-			sb.AppendFormat ("msgstr \"\"{0}", originalNewLine);
+			// get a temp file in same directory as original
+			try {
+				do  {
+					fileCounter++;
+					tempFileName = poFile + fileCounter.ToString();
+				} while (File.Exists(tempFileName));
+				
+				sw = new StreamWriter(tempFileName,false,encoding);
+				
+			}
+			catch (Exception ex) {
 			
-			string pohdr = GetHeaderString (originalNewLine);
-			pohdr = pohdr.Substring (0, pohdr.Length - 1);
-			Catalog.SaveMultiLines (sb, pohdr, originalNewLine);
-			sb.Append (originalNewLine);
+				LoggingService.LogError ("Unhandled error creating temp file while saving Gettext catalog '{0}': {1}", tempFileName, ex);
+				return false;
+			}
 			
-			foreach (CatalogEntry data in entriesList) {
-				if (data.Comment != String.Empty)
-					SaveMultiLines (sb, data.Comment, originalNewLine);
-				foreach (string autoComment in data.AutoComments) {
-					if (String.IsNullOrEmpty (autoComment))
-						sb.AppendFormat ("#.{0}", originalNewLine);
-					else
-						sb.AppendFormat ("#. {0}{1}", autoComment, originalNewLine);
-				}
-				foreach (string reference in data.References) {
-					//store paths as Unix-type paths, but internally use native style
-					string r = reference;
-					if (Platform.IsWindows)
-						r = r.Replace ('\\', '/');
-					sb.AppendFormat ("#: {0}{1}", r, originalNewLine);
-				}
-				if (! String.IsNullOrEmpty (data.Flags)) {
-					sb.Append (data.Flags);
-					sb.Append (originalNewLine);
-				}
-				FormatMessageForFile (sb, "msgid", data.String, originalNewLine);
-				if (data.HasPlural) {
-					FormatMessageForFile (sb, "msgid_plural", data.PluralString, originalNewLine);
-					for (int n = 0; n < data.NumberOfTranslations; n++) {
-						string hdr = String.Format ("msgstr[{0}]", n);
-						
-						FormatMessageForFile (sb, hdr, EnsureCorrectEndings (data.String, data.GetTranslation (n)), originalNewLine);
+			using (sw) // careful not to use sw outside using block
+			{
+				sw.NewLine = originalNewLine;
+
+				if (!String.IsNullOrEmpty (Comment))
+					Catalog.SaveMultiLines (sw, Comment);
+			
+				sw.WriteLine ("msgid \"\"");
+				sw.WriteLine ("msgstr \"\"");
+			
+				string pohdr = GetHeaderString (originalNewLine);
+				pohdr = pohdr.Substring (0, pohdr.Length - 1);
+				Catalog.SaveMultiLines (sw, pohdr);
+				sw.WriteLine ();
+			
+				foreach (CatalogEntry data in entriesList) {
+					if (data.Comment != String.Empty)
+						SaveMultiLines (sw, data.Comment);
+					foreach (string autoComment in data.AutoComments) {
+						if (String.IsNullOrEmpty (autoComment))
+							sw.WriteLine ("#.");
+						else
+							sw.WriteLine ("#. {0}", autoComment);
 					}
-				} else {
-					FormatMessageForFile (sb, "msgstr", EnsureCorrectEndings (data.String, data.GetTranslation (0)), originalNewLine);
+					foreach (string reference in data.References) {
+						//store paths as Unix-type paths, but internally use native style
+						string r = reference;
+						if (Platform.IsWindows)
+							r = r.Replace ('\\', '/');
+						sw.WriteLine ("#: {0}", r);
+					}
+					if (! String.IsNullOrEmpty (data.Flags)) {
+						sw.WriteLine (data.Flags);
+					}
+					FormatMessageForFile (sw, "msgid", data.String);
+					if (data.HasPlural) {
+						FormatMessageForFile (sw, "msgid_plural", data.PluralString);
+						for (int n = 0; n < data.NumberOfTranslations; n++) {
+							string hdr = String.Format ("msgstr[{0}]", n);
+							
+							FormatMessageForFile (sw, hdr, EnsureCorrectEndings (data.String, data.GetTranslation (n)));
+						}
+					} else {
+						FormatMessageForFile (sw, "msgstr", EnsureCorrectEndings (data.String, data.GetTranslation (0)));
+					}
+					sw.WriteLine ();
 				}
-				sb.Append (originalNewLine);
+			
+				// Write back deleted items in the file so that they're not lost
+				foreach (CatalogDeletedEntry deletedItem in deletedEntriesList) {
+					if (deletedItem.Comment != String.Empty)
+						SaveMultiLines (sw, deletedItem.Comment);
+					foreach (string autoComment in deletedItem.AutoComments) {
+						sw.WriteLine ("#. {0}", autoComment);
+					}
+					foreach (string reference in deletedItem.References) { // note references arnt read in during parse
+						sw.WriteLine ("#: {0}", reference);
+					}
+					string flags = deletedItem.Flags;
+					if (! String.IsNullOrEmpty (flags)) {
+						sw.WriteLine (flags);
+					}
+					foreach (string deletedLine in deletedItem.DeletedLines){
+						sw.WriteLine ("{0}", deletedLine);
+					}
+					sw.WriteLine ();
+				}
 			}
 			
-			// Write back deleted items in the file so that they're not lost
-			foreach (CatalogDeletedEntry deletedItem in deletedEntriesList) {
-				if (deletedItem.Comment != String.Empty)
-					SaveMultiLines (sb, deletedItem.Comment, originalNewLine);
-				foreach (string autoComment in deletedItem.AutoComments) {
-					sb.AppendFormat ("#. {0}{1}", autoComment, originalNewLine);
-				}
-				foreach (string reference in deletedItem.References) {
-					sb.AppendFormat ("#: {0}{1}", reference, originalNewLine);
-				}
-				string flags = deletedItem.Flags;
-				if (! String.IsNullOrEmpty (flags)) {
-					sb.Append (flags);
-					sb.Append (originalNewLine);
-				}
-				foreach (string deletedLine in deletedItem.DeletedLines){
-					sb.AppendFormat ("{0}{1}", deletedLine, originalNewLine);
-				}
-				sb.Append (originalNewLine);
-			}
-			
+			//try to replace original file
 			bool saved = false;
 			try {
-				//FIXME: use a safe write, i.e. write to another file and move over the original one
-				// Write it as bytes, text writer includes BOF for utf-8,
-				// gettext utils are refusing to work with this
-				byte[] content = encoding.GetBytes (sb.ToString ());
-				File.WriteAllBytes (poFile, content);
+				File.Copy(tempFileName, poFile, true);
 				saved = true;
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unhandled error saving Gettext Catalog '{0}': {1}", fileName, ex);
 			}
+			catch (Exception ex){
+				LoggingService.LogError ("Unhandled error saving Gettext Catalog to '{0}': {1}", poFile, ex);
+				saved = false;
+			}	
+			finally {
+				File.Delete(tempFileName);
+			}
+			
 			if (!saved)
 				return false;
-			
+						
 			fileName = poFile;
 			IsDirty = false;
 			return true;
+						
 		}
 		
-		static void SaveMultiLines (StringBuilder sb, string text, string newLine)
+		static void SaveMultiLines (StreamWriter sw, string text)
 		{
 			if (text != null) {
 				foreach (string line in text.Split (CatalogParser.LineSplitStrings, StringSplitOptions.None)) {
-					sb.AppendFormat ("{0}{1}", line, newLine);
+					sw.WriteLine (line);
 				}
 			}
 		}
@@ -377,6 +402,33 @@ namespace MonoDevelop.Gettext
 				}
 			}
 			return false;
+		}
+		
+		static Encoding GetNoBOMEncoding(string charset)
+		{
+			// unicode Encoding types provide BOMs by default
+			// so manually check for these and specify otherwise in constructors
+			switch (charset.ToLower ())
+			{
+			case "utf-32":
+				return new UTF32Encoding(false, false);
+				break;
+			case "utf-32be":
+				return new UTF32Encoding(true, false);
+				break;
+			case "utf-8":
+				return new UTF8Encoding(false);
+				break;
+			case "utf-16":
+				return new UnicodeEncoding(false, false);
+				break;
+			case "unicodefffe":
+				return new UnicodeEncoding(true, false);
+				break;
+			default:
+				return GetEncoding(charset);				
+				break;
+			}
 		}
 		
 		static Encoding GetEncoding (string charset)
