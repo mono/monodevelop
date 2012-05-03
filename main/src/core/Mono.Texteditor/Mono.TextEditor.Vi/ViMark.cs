@@ -65,7 +65,7 @@ namespace Mono.TextEditor.Vi
 		}
 		
 		public void LoadMark (TextEditorData data) {
-			int x = data.Document.OffsetToLineNumber (base.LineSegment.Offset);
+			int x = base.LineSegment.LineNumber;
 			data.Caret.Line = x;
 			int len = base.LineSegment.LengthIncludingDelimiter;
 			if (ColumnNumber >= len) {
