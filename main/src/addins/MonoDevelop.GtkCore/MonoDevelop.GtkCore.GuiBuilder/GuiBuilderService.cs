@@ -343,12 +343,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			var sw = new StringWriter ();
 			provider.GenerateCodeFromCompileUnit (cu, sw, new CodeGeneratorOptions ());
-			Console.WriteLine ("-------------------------");
-			Console.WriteLine (sw.ToString ());
 			TypeSystemService.ParseFile (
 				project,
 				fileName,
-				IdeApp.Workbench.ActiveDocument.Editor.MimeType,
+				DesktopService.GetMimeTypeForUri (fileName),
 				sw.ToString ()
 			);
 		}
