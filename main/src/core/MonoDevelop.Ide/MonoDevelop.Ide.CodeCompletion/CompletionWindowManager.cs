@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static bool IsVisible {
 			get {
-				return wnd != null && wnd.Visible;
+				return wnd != null /*&& wnd.Visible*/;
 			}
 		}
 		
