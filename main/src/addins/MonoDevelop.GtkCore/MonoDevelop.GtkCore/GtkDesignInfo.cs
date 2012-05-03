@@ -367,19 +367,22 @@ namespace MonoDevelop.GtkCore
 			bool projectModified = false;
 			
 			foreach (string filename in GetDesignerFiles ()) {
-				ProjectFile pf = project.AddFile (filename, BuildAction.EmbeddedResource);
-				pf.ResourceId = Path.GetFileName (filename);
-	
+				ProjectFile gtkXFile = project.AddFile (filename, BuildAction.EmbeddedResource);
+				gtkXFile.ResourceId = Path.GetFileName (filename);
 				string componentFile = GetComponentFileFromDesigner (filename);
 				
 				if (componentFile != null && File.Exists (componentFile)) { 
-					pf.DependsOn = componentFile;	
+					var componentFilePf = project.GetProjectFile (componentFile);
+					if (componentFilePf != null)
+						componentFilePf.DependsOn = gtkXFile.FilePath.FileName;
+//					gtkXFile.DependsOn = componentFile;	
 				
-					string buildFile = GetBuildFileFromComponent (componentFile);
-					if (buildFile != null && File.Exists (buildFile)) {
-						ProjectFile pf2 = project.AddFile (buildFile, BuildAction.Compile);
-						pf2.ResourceId = Path.GetFileName (buildFile);
-						pf2.DependsOn = componentFile;
+					string buildFileName = GetBuildFileFromComponent (componentFile);
+					ProjectFile buildFile = null;
+					if (buildFileName != null && File.Exists (buildFileName)) {
+						buildFile = project.AddFile (buildFileName, BuildAction.Compile);
+						buildFile.ResourceId = Path.GetFileName (buildFileName);
+						buildFile.DependsOn = gtkXFile.FilePath.FileName;
 					}
 				}
 				
@@ -493,11 +496,11 @@ namespace MonoDevelop.GtkCore
 		public string GetComponentFileFromDesigner (string gtkxFile)
 		{
 			if (gtkxFile != null) { 
-				ProjectFile pf = project.Files.GetFile (gtkxFile);
-				if (pf != null) {
-					if (pf.DependsOn != null)
-						return pf.DependsOn;
-				}
+//				ProjectFile pf = project.Files.GetFile (gtkxFile);
+//				if (pf != null) {
+//					if (pf.DependsOn != null)
+//						return pf.DependsOn;
+//				}
 				string componentFile = gtkxFile.Replace (DesignerFileExtension, langExtension);
 				return componentFile;
 			}

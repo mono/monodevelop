@@ -113,17 +113,24 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				ProjectFile pf = args.ProjectFile;
 				string fileName = pf.FilePath.FullPath.ToString ();
 				GtkDesignInfo info = GtkDesignInfo.FromProject (project);
-				
 				string buildFile = info.GetBuildFileFromComponent (fileName);
-				if (!project.IsFileInProject(buildFile) && File.Exists (buildFile)) {
-					ProjectFile pf2 = project.AddFile (buildFile, BuildAction.Compile);
-					pf2.DependsOn = pf.FilePath.FileName;
+				string gtkxFile = info.GetDesignerFileFromComponent (fileName);
+				ProjectFile buildFilePf = null;
+				ProjectFile gtkxFilePf = null;
+
+				if (!project.IsFileInProject (buildFile) && File.Exists (buildFile)) {
+					buildFilePf = project.AddFile (buildFile, BuildAction.Compile);
+//					buildFilePf.DependsOn = pf.FilePath.FileName;
 				}
 				
-				string gtkxFile = info.GetDesignerFileFromComponent (fileName);
-				if (!project.IsFileInProject(gtkxFile) && File.Exists (gtkxFile)) {
-					ProjectFile pf3 = project.AddFile (gtkxFile, BuildAction.EmbeddedResource);
-					pf3.DependsOn = pf.FilePath.FileName;
+				if (!project.IsFileInProject (gtkxFile) && File.Exists (gtkxFile)) {
+					gtkxFilePf = project.AddFile (gtkxFile, BuildAction.EmbeddedResource);
+//					projectFilePf.DependsOn = pf.FilePath.FileName;
+				}
+
+				if (buildFilePf != null && gtkxFilePf != null) {
+					pf.DependsOn = gtkxFilePf.FilePath.FileName;
+					buildFilePf.DependsOn = gtkxFilePf.FilePath.FileName;
 				}
 			}
 		}
