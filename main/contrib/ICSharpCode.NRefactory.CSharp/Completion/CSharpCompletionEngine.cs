@@ -1314,6 +1314,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (this.currentMember != null && !(node is AstType)) {
 					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition(currentType);
 					if (def != null) {
+						var lookup = new MemberLookup(
+							ctx.CurrentTypeDefinition,
+							Compilation.MainAssembly
+						);
+						bool isProtectedAllowed = true;
 						foreach (var member in def.GetMembers ()) {
 							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize") {
 								continue;
@@ -1324,6 +1329,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (member.IsExplicitInterfaceImplementation) {
 								continue;
 							}
+							if (!lookup.IsAccessible(member, isProtectedAllowed)) {
+								continue;
+							}
+
 							if (memberPred == null || memberPred(member)) {
 								wrapper.AddMember(member);
 							}
@@ -2390,7 +2399,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (member.IsShadowing) {
 						filteredList.RemoveAll(m => m.Name == member.Name);
 					}
-					
 					filteredList.Add(member);
 				}
 				
