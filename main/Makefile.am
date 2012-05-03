@@ -1,4 +1,6 @@
-SUBDIRS = external contrib src po man theme-icons build tests
+include $(top_srcdir)/xbuild.include
+
+SUBDIRS = external . contrib src po man theme-icons build tests
 
 #capture aclocal flags for autoreconf
 ACLOCAL_AMFLAGS=$(ACLOCAL_FLAGS)
@@ -8,6 +10,12 @@ bin_SCRIPTS = monodevelop mdtool
 buildinfo = $(top_builddir)/build/bin/buildinfo
 
 all: vcrevision
+
+all-local: sln_build
+
+clean: clean-local
+
+clean-local: sln_clean
 
 vcrevision:
 	@if test -d ../.git; then \
@@ -149,7 +157,9 @@ app-dir: all
 
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
-	monodevelop.xml $(pkgconfig_in_files) vcrevision external/Makefile.in
+	monodevelop.xml $(pkgconfig_in_files) vcrevision external/Makefile.in \
+	Main.sln \
+	md.targets
 
 DISTCLEANFILES = monodevelop intltool-extract intltool-merge intltool-update \
 	$(pkgconfig_DATA) 
