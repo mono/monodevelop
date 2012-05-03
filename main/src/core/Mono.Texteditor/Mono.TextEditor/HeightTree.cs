@@ -126,20 +126,26 @@ namespace Mono.TextEditor
 
 		void InsertLine (int line)
 		{
+			var newLine = new HeightNode () {
+				count = 1,
+				height = editor.LineHeight
+			};
+
 			try {
+				if (line == tree.Root.totalCount + 1) {
+					tree.InsertAfter (tree.Root.GetOuterRight (), newLine);
+					return;
+				}
 				var node = GetNodeByLine (line);
 				if (node == null)
 					return;
 				if (node.count == 1) {
-					var newLine = new HeightNode () {
-						count = 1,
-						height = editor.LineHeight
-					};
 					tree.InsertBefore (node, newLine);
 					return;
 				}
 				node.count++;
 			} finally {
+				newLine.UpdateAugmentedData ();
 				OnLineUpdateFrom (new HeightChangedEventArgs (line));
 			}
 		}

@@ -30,7 +30,7 @@ using UnitTests;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class HeightTreeTests
+	public class HeightTreeTests 
 	{
 		[Test()]
 		public void TestSimpleLineNumberToY ()
@@ -240,8 +240,35 @@ namespace Mono.TextEditor.Tests
 				Assert.AreEqual (i, heightTree.YToLineNumber ((i - 1) * editor.LineHeight));
 			}
 		}
-		
-		
+
+		/// <summary>
+		/// Bug 4839 - Hitting enter on last line of document makes editor scroll to top
+		/// </summary>
+		[Test()]
+		public void TestBug4839 ()
+		{
+			var editor = new TextEditorData ();
+			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			editor.Caret.Offset = editor.Text.Length;
+			var heightTree = new HeightTree (editor);
+			heightTree.Rebuild ();
+			MiscActions.InsertNewLine (editor);
+			Assert.AreEqual ((editor.LineCount - 1) * editor.LineHeight, heightTree.LineNumberToY (editor.LineCount));
+		}
+
+		[Test()]
+		public void TestBug4839MultipleNewLines ()
+		{
+			var editor = new TextEditorData ();
+			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			editor.Caret.Offset = editor.Text.Length;
+			var heightTree = new HeightTree (editor);
+			heightTree.Rebuild ();
+			MiscActions.InsertNewLine (editor);
+			MiscActions.InsertNewLine (editor);
+			Assert.AreEqual ((editor.LineCount - 1) * editor.LineHeight, heightTree.LineNumberToY (editor.LineCount));
+		}
+
 	}
 }
 
