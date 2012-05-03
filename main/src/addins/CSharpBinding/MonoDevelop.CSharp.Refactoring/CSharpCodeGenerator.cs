@@ -560,15 +560,24 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		static string GetModifiers (IUnresolvedTypeDefinition implementingType, IMember member)
+		static string GetModifiers (ITypeDefinition implementingType, IUnresolvedTypeDefinition implementingPart, IMember member)
 		{
 			StringBuilder result = new StringBuilder ();
+
 			if (member.IsPublic || (member.DeclaringType != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface)) {
 				result.Append ("public ");
-			} else if (member.IsProtectedAndInternal) {
-				result.Append ("protected internal ");
 			} else if (member.IsProtectedOrInternal) {
-				result.Append ("internal protected ");
+				if (IdeApp.Workbench.ActiveDocument != null && member.DeclaringTypeDefinition.ParentAssembly != implementingType.ParentAssembly) {
+					result.Append ("protected ");
+				} else {
+					result.Append ("internal protected ");
+				}
+			} else if (member.IsProtectedAndInternal) {
+				if (IdeApp.Workbench.ActiveDocument != null && member.DeclaringTypeDefinition.ParentAssembly != implementingType.ParentAssembly) {
+					result.Append ("protected ");
+				} else {
+					result.Append ("protected internal ");
+				}
 			} else if (member.IsProtected) {
 				result.Append ("protected ");
 			} else if (member.IsInternal) {
@@ -586,7 +595,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			AppendIndent (result);
 			if (options.ExplicitDeclaration || options.ImplementingType.Kind == TypeKind.Interface)
 				return;
-			result.Append (GetModifiers (options.Part, member));
+			result.Append (GetModifiers (options.ImplementingType, options.Part, member));
 			
 			bool isFromInterface = false;
 			if (member.DeclaringType != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
