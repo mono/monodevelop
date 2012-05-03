@@ -39,6 +39,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (@"blub", FileService.AbsoluteToRelativePath (@"/a", @"/a/blub"));
 			Assert.AreEqual (@"../a/blub", FileService.AbsoluteToRelativePath (@"/hello/", @"/a/blub"));
 			Assert.AreEqual (@"../a/blub", FileService.AbsoluteToRelativePath (@"/hello", @"/a/blub"));
+			Assert.AreEqual (@".", FileService.AbsoluteToRelativePath (@"/aa/bb/cc", @"/aa/bb/cc"));
+			Assert.AreEqual (@"..", FileService.AbsoluteToRelativePath (@"/aa/bb/cc", @"/aa/bb"));
 		}
 	}
 }
