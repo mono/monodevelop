@@ -114,6 +114,10 @@ type CodeGenerationPanel() =
   inherit MultiConfigItemOptionsPanel()
   let mutable widget : FSharpCompilerOptionsWidget = null
   
+  override x.Dispose() =
+    if widget <> null then
+      widget.Dispose()
+
   override x.CreatePanelWidget() =
     widget <- new FSharpCompilerOptionsWidget()
     widget.Show()
@@ -162,6 +166,10 @@ type BuildOrderPanel() =
     let cell = new Gtk.CellRendererText();
     col.PackStart(cell, true);
     col.AddAttribute(cell, "text", 0);    
+  
+  override x.Dispose() =
+    if widget <> null then
+      widget.Dispose()
       
   override x.LoadConfigData() =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
