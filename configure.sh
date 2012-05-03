@@ -83,7 +83,7 @@ searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
 MDDIR=$RESULT
 echo "Successfully found MonoDevelop root directory." $MDDIR
 
-PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /opt/mono/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0)
+PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /opt/mono/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /usr/lib/mono/4.0)
 searchpaths "F#" FSharp.Core.dll PATHS[@]
 FSDIR=$RESULT
 echo "Successfully found F# root directory." $FSDIR
@@ -118,7 +118,7 @@ searchpaths "Pango#" pango-sharp.dll PATHS[@]
 PANGODIR=$RESULT
 echo "Successfully found Pango root directory." $PANGODIR
 
-PATHS=( /usr/lib/mono/mono-addins /usr/lib/cli/mono-addins /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/mono-addins /opt/mono/lib/mono/mono-addins )
+PATHS=( /usr/lib/mono/mono-addins /usr/lib/cli/mono-addins /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/mono-addins /opt/mono/lib/mono/mono-addins /usr/lib/cli/Mono.Addins-0.2)
 searchpaths "Mono.Addins" Mono.Addins.dll PATHS[@]
 MADIR=$RESULT
 echo "Successfully found Mono.Addins directory." $MADIR
