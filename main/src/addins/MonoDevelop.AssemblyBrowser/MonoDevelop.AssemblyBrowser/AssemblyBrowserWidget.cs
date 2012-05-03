@@ -382,6 +382,8 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		static void AppendHelpParameterList (StringBuilder result, IList<IUnresolvedParameter> parameters)
 		{
+			if (parameters == null || parameters.Count == 0)
+				return;
 			result.Append ('(');
 			if (parameters != null) {
 				for (int i = 0; i < parameters.Count; i++) {
@@ -418,6 +420,7 @@ namespace MonoDevelop.AssemblyBrowser
 					sb.Append (method.TypeParameters.Count);
 				}
 				AppendHelpParameterList (sb, method.Parameters);
+				Console.WriteLine ("method:" + sb.ToString ());
 				return sb.ToString ();
 			case EntityType.Constructor:
 				var constructor = (IUnresolvedMethod)member;
