@@ -721,6 +721,22 @@ namespace Mono.Debugging.Evaluation
 				throw CreateParseError ("Invalid operands in binary operator");
 			}
 		}
+
+		bool CheckEquality (object v1, object v2)
+		{
+			object targetType = ctx.Adapter.GetValueType (ctx, v1);
+			object[] argTypes = new object[] {
+				ctx.Adapter.GetType (ctx, "System.Object")
+			};
+			object[] args = new object[] {
+				v2
+			};
+
+			object result = ctx.Adapter.RuntimeInvoke (ctx, targetType, v1, "Equals", argTypes, args);
+			var literal = LiteralValueReference.CreateTargetObjectLiteral (ctx, "result", result);
+
+			return (bool) literal.ObjectValue;
+		}
 		
 		object EvaluateBinaryOperatorExpression (ValueReference left, ICSharpCode.OldNRefactory.Ast.Expression rightExp, BinaryOperatorType oper, object data)
 		{
@@ -775,11 +791,11 @@ namespace Mono.Debugging.Evaluation
 					case BinaryOperatorType.Equality:
 						if (val1 == null || val2 == null)
 							return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
-						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1.Equals (val2));
+						return LiteralValueReference.CreateObjectLiteral (ctx, name, CheckEquality (targetVal1, targetVal2));
 					case BinaryOperatorType.InEquality:
 						if (val1 == null || val2 == null)
 							return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 != val2);
-						return LiteralValueReference.CreateObjectLiteral (ctx, name, !val1.Equals (val2));
+						return LiteralValueReference.CreateObjectLiteral (ctx, name, !CheckEquality (targetVal1, targetVal2));
 					case BinaryOperatorType.ReferenceEquality:
 						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
 					case BinaryOperatorType.ReferenceInequality:

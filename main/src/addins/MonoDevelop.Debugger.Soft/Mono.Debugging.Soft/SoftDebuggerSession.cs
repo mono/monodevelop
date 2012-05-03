@@ -129,7 +129,6 @@ namespace Mono.Debugging.Soft
 			if (!String.IsNullOrEmpty (dsi.LogMessage))
 				LogWriter (false, dsi.LogMessage + "\n");
 			
-			
 			AsyncCallback callback = null;
 			int attemptNumber = 0;
 			int maxAttempts = startArgs.MaxConnectionAttempts;
