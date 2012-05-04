@@ -61,7 +61,18 @@ namespace MonoDevelop.Ide.Gui
 		TextEditorExtension editorExtension;
 		
 		const int ParseDelay = 600;
-
+		
+		bool ShouldParse {
+			get {
+				var project = Project;
+				if (project == null)
+					return true;
+				var pf = project.GetProjectFile (FileName);
+				if (pf == null || pf.BuildAction != BuildAction.Compile)
+					return false;
+				return false;
+			}
+		}
 		public IWorkbenchWindow Window {
 			get { return window; }
 		}
@@ -178,7 +189,7 @@ namespace MonoDevelop.Ide.Gui
 				StartReparseThread ();
 			}*/
 		}
-		
+
 		IProjectContent singleFileContext;
 		public  virtual IProjectContent ProjectContent {
 			get {
@@ -662,7 +673,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				string currentParseFile = FileName;
 				var editor = Editor;
-				if (editor == null)
+				if (editor == null || !ShouldParse)
 					return null;
 				string currentParseText = editor.Text;
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
@@ -709,7 +720,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				var editor = Editor;
-				if (editor == null)
+				if (editor == null || !ShouldParse)
 					return false;
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;
