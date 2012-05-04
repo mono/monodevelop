@@ -966,11 +966,9 @@ namespace Mono.Debugging.Soft
 		public override bool HasMethod (EvaluationContext gctx, object targetType, string methodName, object[] argTypes, BindingFlags flags)
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
-			
-			TypeMirror[] types;
-			if (argTypes == null)
-				types = new TypeMirror [0];
-			else {
+			TypeMirror[] types = null;
+
+			if (argTypes != null) {
 				types = new TypeMirror [argTypes.Length];
 				for (int n=0; n<argTypes.Length; n++) {
 					if (argTypes [n] is TypeMirror)
@@ -1194,14 +1192,10 @@ namespace Mono.Debugging.Soft
 		public static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string methodName, TypeMirror type, TypeMirror[] argtypes, bool allowInstance, bool allowStatic, bool throwIfNotFound)
 		{
 			List<MethodMirror> candidates = new List<MethodMirror> ();
+			var cache = ctx.Session.OverloadResolveCache;
 			TypeMirror currentType = type;
 			
 			while (currentType != null) {
-				//
-				// Use a simple cached stored in SoftDebuggerSession, since
-				// GetMethodsByNameFlags might not do any caching.
-				//
-				var cache = ctx.Session.OverloadResolveCache;
 				MethodMirror[] methods = null;
 				
 				if (ctx.CaseSensitive) {
@@ -1226,10 +1220,13 @@ namespace Mono.Debugging.Soft
 				foreach (MethodMirror met in methods) {
 					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						ParameterInfoMirror[] pars = met.GetParameters ();
-						if (pars.Length == argtypes.Length && ((met.IsStatic && allowStatic) || (!met.IsStatic && allowInstance)))
+						if (argtypes == null || pars.Length == argtypes.Length && ((met.IsStatic && allowStatic) || (!met.IsStatic && allowInstance)))
 							candidates.Add (met);
 					}
 				}
+
+				if (argtypes == null && candidates.Count > 0)
+					break; // when argtypes is null, we are just looking for *any* match (not a specific match)
 				
 				if (methodName == ".ctor")
 					break; // Can't create objects using constructor from base classes
@@ -1272,21 +1269,27 @@ namespace Mono.Debugging.Soft
 
 		static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string typeName, string methodName, TypeMirror[] argtypes, List<MethodMirror> candidates, bool throwIfNotFound)
 		{
+			if (candidates.Count == 0) {
+				if (throwIfNotFound)
+					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, typeName);
+				else
+					return null;
+			}
+
+			if (argtypes == null) {
+				// This is just a probe to see if the type contains *any* methods of the given name
+				return candidates[0];
+			}
+
 			if (candidates.Count == 1) {
 				string error;
 				int matchCount;
+
 				if (IsApplicable (ctx, candidates[0], argtypes, out error, out matchCount))
 					return candidates [0];
 
 				if (throwIfNotFound)
 					throw new EvaluatorException ("Invalid arguments for method `{0}': {1}", methodName, error);
-				else
-					return null;
-			}
-
-			if (candidates.Count == 0) {
-				if (throwIfNotFound)
-					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, typeName);
 				else
 					return null;
 			}
