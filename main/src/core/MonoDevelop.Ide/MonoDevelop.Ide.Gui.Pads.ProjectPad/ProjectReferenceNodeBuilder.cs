@@ -49,6 +49,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override Type CommandHandlerType {
 			get { return typeof(ProjectReferenceNodeCommandHandler); }
 		}
+
+		public override bool UseReferenceEquality {
+			get {
+				// ProjectReference is not immutable, so we can't rely on
+				// object equality for comparing instances in the tree.
+				// We have to use reference equality
+				return true;
+			}
+		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
