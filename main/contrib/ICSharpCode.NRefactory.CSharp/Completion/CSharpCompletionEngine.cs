@@ -749,11 +749,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 									AutoCompleteEmptyMatch = false;
 								}
 								foreach (var p in method.Parameters) {
-									var data = contextList.AddVariable(p);
-									if (data != null) {
-										data.CompletionText += ":";
-										data.DisplayText += ":";
-									}
+									contextList.AddNamedParameterVariable(p);
 								}
 							}
 							idx++;

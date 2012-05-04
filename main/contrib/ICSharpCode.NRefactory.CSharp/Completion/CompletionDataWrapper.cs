@@ -106,7 +106,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			result.Add(cd);
 			return cd;
 		}
-			
+
+		public ICompletionData AddNamedParameterVariable(IVariable variable)
+		{
+			var name = variable.Name + ":";
+			if (data.ContainsKey(name))
+				return null;
+			data [name] = new List<ICompletionData>();
+
+			var cd = Factory.CreateVariableCompletionData(variable);
+			cd.CompletionText += ":";
+			cd.DisplayText += ":";
+			result.Add(cd);
+			return cd;
+		}
+		
 		public void AddTypeParameter (IUnresolvedTypeParameter variable)
 		{
 			if (data.ContainsKey (variable.Name))
