@@ -221,23 +221,34 @@ namespace MonoDevelop.Ide
 			};
 		}
 		
+		[System.Runtime.InteropServices.DllImport ("libc")]
+		static extern void abort ();
 		
-		bool ignoreFeedbackButtonClick;
-		
+		static readonly bool FeedbackButtonThrowsException = Environment.GetEnvironmentVariable ("MONODEVELOP_TEST_CRASH_REPORTING") != null;
 		void HandleFeedbackButtonButtonPressEvent (object o, ButtonPressEventArgs args)
 		{
 			if (FeedbackService.IsFeedbackWindowVisible)
 				ignoreFeedbackButtonClick = true;
+
+			if (FeedbackButtonThrowsException) {
+				// Control == hard crash
+				if ((args.Event.State & Gdk.ModifierType.ControlMask) != 0) {
+					abort ();
+				}
+				//Alt = terminating exception
+				var ex = new Exception ("Feedback Button is throwing an exception", new Exception (Environment.StackTrace));
+				if ((args.Event.State & Gdk.ModifierType.Mod1Mask) != 0) {
+					throw ex;
+				}
+				// None: Nonterminating exception
+				GLib.ExceptionManager.RaiseUnhandledException (new Exception ("Feedback Button is throwing an exception", new Exception (Environment.StackTrace)), false);
+				ignoreFeedbackButtonClick = true;
+			}
 		}
 
-		static readonly bool FeedbackButtonThrowsException = Environment.GetEnvironmentVariable ("MONODEVELOP_TEST_CRASH_REPORTING") != null;
+		bool ignoreFeedbackButtonClick;
 		void HandleFeedbackButtonClicked (object sender, EventArgs e)
 		{
-			if (FeedbackButtonThrowsException) {
-				GLib.ExceptionManager.RaiseUnhandledException (new Exception ("Feedback Button is throwing an exception", new Exception (Environment.StackTrace)), false);
-				return;
-			}
-
 			if (!ignoreFeedbackButtonClick)
 				FeedbackService.ShowFeedbackWindow ();
 			ignoreFeedbackButtonClick = false;
