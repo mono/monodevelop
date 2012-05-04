@@ -260,6 +260,18 @@ namespace MonoDevelop.Projects
 			file2.DependsOn = "foo.xml";
 			Assert.AreEqual (foo, file2.DependsOnFile);
 			Assert.AreEqual (0, file3.DependentChildren.Count);
+
+			// Remove a file
+
+			p.Files.Remove (file5);
+			Assert.IsNull (file4.DependsOnFile);
+
+			// Add a file
+
+			file5 = p.AddFile (dir.Combine ("file5.xml"));
+			Assert.AreEqual (file5, file4.DependsOnFile);
+			Assert.AreEqual (1, file5.DependentChildren.Count);
+			Assert.IsTrue (file5.DependentChildren.Contains (file4));
 		}
 
 		public static string NormalizePath (string path)
