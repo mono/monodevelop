@@ -1074,23 +1074,26 @@ namespace MonoDevelop.Projects
 
 		public void Remove (ProjectFile file)
 		{
-			Remove (file, file.DependencyPath);
+			Remove (file, null);
 		}
 
 		public void Remove (ProjectFile file, FilePath dependencyPath)
 		{
-			if (string.IsNullOrEmpty (file.DependsOn))
-				return;
+			if (dependencyPath.IsNullOrEmpty) {
+				if (string.IsNullOrEmpty (file.DependsOn))
+					return;
+				dependencyPath = file.DependencyPath;
+			}
 
 			object depFile;
-			if (unresolvedDeps.TryGetValue (file.DependencyPath, out depFile)) {
+			if (unresolvedDeps.TryGetValue (dependencyPath, out depFile)) {
 				if ((depFile is ProjectFile) && ((ProjectFile)depFile == file))
-					unresolvedDeps.Remove (file.DependencyPath);
+					unresolvedDeps.Remove (dependencyPath);
 				else if (depFile is List<ProjectFile>) {
 					var list = (List<ProjectFile>) depFile;
 					list.Remove (file);
 					if (list.Count == 1)
-						unresolvedDeps [list[0].DependencyPath] = list[0];
+						unresolvedDeps [dependencyPath] = list[0];
 				}
 			}
 		}
