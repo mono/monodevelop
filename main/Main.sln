@@ -911,6 +911,7 @@ Global
 		$0.TextStylePolicy = $2
 		$2.FileWidth = 120
 		$2.TabWidth = 4
+		$2.IndentWidth = 4
 		$2.inheritsSet = Mono
 		$2.inheritsScope = text/plain
 		$0.DotNetNamingPolicy = $3
@@ -925,6 +926,7 @@ Global
 		$0.TextStylePolicy = $6
 		$6.FileWidth = 120
 		$6.TabWidth = 4
+		$6.IndentWidth = 4
 		$6.inheritsSet = Mono
 		$6.inheritsScope = text/plain
 		$6.scope = text/x-csharp
