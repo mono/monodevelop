@@ -68,9 +68,7 @@ namespace MonoDevelop.Ide.Gui
 				if (project == null)
 					return true;
 				var pf = project.GetProjectFile (FileName);
-				if (pf == null || pf.BuildAction != BuildAction.Compile)
-					return false;
-				return false;
+				return pf != null && pf.BuildAction == BuildAction.Compile;
 			}
 		}
 		public IWorkbenchWindow Window {
