@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			FileWidth = 120;
 			TabWidth = 4;
+			IndentWidth = 4;
 		}
 		
 		[ItemProperty]
@@ -66,17 +67,8 @@ namespace MonoDevelop.Ide.Gui.Content
 		[ItemProperty]
 		public bool TabsToSpaces { get; private set; }
 		
-		int indentWidth = -1;
-
 		[ItemProperty]
-		public int IndentWidth {
-			get {
-				return indentWidth < 0 ? TabWidth : indentWidth;
-			}
-			private set {
-				indentWidth = value;
-			}
-		}
+		public int IndentWidth { get; private set; }
 		
 		[ItemProperty]
 		public bool RemoveTrailingWhitespace { get; private set; }
