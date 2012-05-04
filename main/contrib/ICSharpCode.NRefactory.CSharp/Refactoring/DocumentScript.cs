@@ -39,14 +39,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		readonly IDisposable undoGroup;
 
-		readonly TextEditorOptions options;
-		
-		public DocumentScript(IDocument document, CSharpFormattingOptions formattingOptions, TextEditorOptions options) : base(formattingOptions)
+
+		public DocumentScript(IDocument document, CSharpFormattingOptions formattingOptions, TextEditorOptions options) : base(formattingOptions, options)
 		{
 			this.originalDocument = document.CreateDocumentSnapshot();
 			this.currentDocument = document;
-			this.options = options;
-			this.eolMarker = options.EolMarker;
 			Debug.Assert(currentDocument.Version.CompareAge(originalDocument.Version) == 0);
 			this.undoGroup = document.OpenUndoGroup();
 		}
@@ -102,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var segment = GetSegment(node);
 			var cu = CompilationUnit.Parse(currentDocument, "dummy.cs");
-			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, options);
+			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
 			cu.AcceptVisitor(formatter);
 			formatter.ApplyChanges(segment.Offset, segment.Length);
 		}
