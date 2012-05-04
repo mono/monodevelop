@@ -62,9 +62,9 @@ namespace MonoDevelop.CSharp.Formatting
 				RunFormatter ();
 			var result = base.KeyPress (key, keyChar, modifier);
 
-			bool runAfter = keyChar == ';';
+/*			bool runAfter = keyChar == ';';
 			if (runAfter)
-				RunFormatter ();
+				RunFormatter ();*/
 			return result;
 		}
 	}
