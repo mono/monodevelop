@@ -48,6 +48,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int rowHeight;
 		bool buttonPressed;
 		public event EventHandler SelectionChanged;
+
+		protected virtual void OnSelectionChanged (EventArgs e)
+		{
+			var handler = this.SelectionChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		string completionString;
 		
 		class Category {
@@ -155,8 +163,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (value != selection) {
 					selection = value;
 					UpdatePage ();
-					if (SelectionChanged != null)
-						SelectionChanged (this, EventArgs.Empty);
+					OnSelectionChanged (EventArgs.Empty);
 					this.QueueDraw ();
 				}
 			}
@@ -281,14 +288,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					page = value;
 					this.QueueDraw ();
 				}
-				if (SelectionChanged != null)
-					SelectionChanged (this, EventArgs.Empty);
+				OnSelectionChanged (EventArgs.Empty);
 			}
 		}
 		
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
-			SelectionFilterIndex = GetRowByPosition ((int)e.Y);
+			SelectedItem = GetRowByPosition ((int)e.Y);
 			buttonPressed = true;
 			return base.OnButtonPressEvent (e);
 		}
@@ -311,7 +317,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return base.OnMotionNotifyEvent (e);
 			int winWidth, winHeight;
 			this.GdkWindow.GetSize (out winWidth, out winHeight);
-			SelectionFilterIndex = GetRowByPosition ((int)e.Y);
+			SelectedItem = GetRowByPosition ((int)e.Y);
 			return true;
 		}
 		
