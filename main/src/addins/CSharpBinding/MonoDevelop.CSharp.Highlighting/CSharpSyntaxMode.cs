@@ -138,10 +138,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					unit = parsedDocument.GetAst<CompilationUnit> ();
 					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
 					if (guiDocument.Project != null) {
+						compilation = guiDocument.Compilation;
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
-							compilation = guiDocument.Compilation;
 							var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							unit.AcceptVisitor (visitor);
