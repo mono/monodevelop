@@ -107,6 +107,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				throw new ArgumentNullException ("provider");
 			int numParams = System.Math.Max (0, provider.GetParameterCount (overload));
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
+			if (numParams > 0 && currentParam < 0)
+				currentParam = 0;
 			if (lastParam == currentParam) {
 				return;
 			}
