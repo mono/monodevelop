@@ -57,12 +57,19 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			bool runBefore = keyChar == '}';
+			var indentEngine = Document.GetContent <CSharpTextEditorIndentation> ();
+			bool skip = false;
+			if (indentEngine != null) {
+				skip = indentEngine.StateTracker.Engine.IsInsideOrdinaryCommentOrString ||
+					indentEngine.StateTracker.Engine.IsInsidePreprocessorDirective;
+			}
+
+			bool runBefore = !skip && keyChar == '}';
 			if (runBefore)
 				RunFormatter ();
 			var result = base.KeyPress (key, keyChar, modifier);
 
-/*			bool runAfter = keyChar == ';';
+/*			bool runAfter = !skip && keyChar == ';';
 			if (runAfter)
 				RunFormatter ();*/
 			return result;
