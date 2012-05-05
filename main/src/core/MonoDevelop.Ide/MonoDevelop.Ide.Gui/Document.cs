@@ -61,16 +61,7 @@ namespace MonoDevelop.Ide.Gui
 		TextEditorExtension editorExtension;
 		
 		const int ParseDelay = 600;
-		
-		bool ShouldParse {
-			get {
-				var project = Project;
-				if (project == null)
-					return true;
-				var pf = project.GetProjectFile (FileName);
-				return pf != null && pf.BuildAction == BuildAction.Compile;
-			}
-		}
+
 		public IWorkbenchWindow Window {
 			get { return window; }
 		}
@@ -186,6 +177,16 @@ namespace MonoDevelop.Ide.Gui
 				// better solution: create the document with the project attached.
 				StartReparseThread ();
 			}*/
+		}
+
+		public bool IsCompileableInProject {
+			get {
+				var project = Project;
+				if (project == null)
+					return false;
+				var pf = project.GetProjectFile (FileName);
+				return pf != null && pf.BuildAction == BuildAction.Compile;
+			}
 		}
 
 		IProjectContent singleFileContext;
@@ -594,7 +595,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
-			
 		}
 		
 		internal void OnDocumentAttached ()
@@ -671,7 +671,7 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				string currentParseFile = FileName;
 				var editor = Editor;
-				if (editor == null || !ShouldParse)
+				if (editor == null)
 					return null;
 				string currentParseText = editor.Text;
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
@@ -718,7 +718,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				var editor = Editor;
-				if (editor == null || !ShouldParse)
+				if (editor == null)
 					return false;
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;

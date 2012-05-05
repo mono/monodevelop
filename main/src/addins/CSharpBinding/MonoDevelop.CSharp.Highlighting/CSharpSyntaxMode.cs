@@ -137,7 +137,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (parsedDocument != null) {
 					unit = parsedDocument.GetAst<CompilationUnit> ();
 					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
-					if (guiDocument.Project != null) {
+					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						compilation = guiDocument.Compilation;
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
