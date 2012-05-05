@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.IO;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -63,6 +64,8 @@ namespace MonoDevelop.AssemblyBrowser
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var method = (IUnresolvedMethod)dataObject;
+			if (method.EntityType == EntityType.Constructor || method.EntityType == EntityType.Destructor)
+				return method.DeclaringTypeDefinition.Name;
 			return method.Name;
 		}
 		
@@ -73,8 +76,11 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			var method = (IUnresolvedMethod)dataObject;
-			var resolved = Resolve (treeBuilder, method);
+			var dt = new DefaultResolvedTypeDefinition (GetContext (treeBuilder), method.DeclaringTypeDefinition);
+			var resolved = (DefaultResolvedMethod)Resolve (treeBuilder, method, dt);
+			Console.WriteLine ("resol:" + resolved.DeclaringTypeDefinition);
 			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
