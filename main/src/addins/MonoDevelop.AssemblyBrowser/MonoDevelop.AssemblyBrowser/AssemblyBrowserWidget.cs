@@ -126,13 +126,14 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
 			TreeView.ShadowType = ShadowType.In;
-			treeViewPlaceholder.Add (TreeView);
-			treeViewPlaceholder.ShowAll ();
+
+			treeScrolledWindow.Add (TreeView);
+			treeScrolledWindow.ShowAll ();
 			
 //			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
-			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));
-			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
-			this.documentationLabel.Wrap = true;
+//			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));
+//			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
+//			this.documentationLabel.Wrap = true;
 			
 			var options = new MonoDevelop.Ide.Gui.CommonTextEditorOptions () {
 				ShowFoldMargin = false,
@@ -1078,7 +1079,7 @@ namespace MonoDevelop.AssemblyBrowser
 					} catch (Exception) {
 					}
 				}
-				this.documentationLabel.Markup = documentation;
+//				this.documentationLabel.Markup = documentation;
 /*				IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 				if (builder != null) {
 					this.descriptionLabel.Markup  = builder.GetDescription (nav);
