@@ -70,12 +70,17 @@ namespace MonoDevelop.SourceEditor
 			openFiles.Remove (sourceEditorView);
 		}
 
+		static bool SkipView (SourceEditorView view)
+		{
+			return !view.IsFile || view.IsUntitled;
+		}
+
 		static void HandleFileServiceChange (object sender, FileEventArgs e)
 		{
 			bool foundOneChange = false;
 			foreach (var file in e) {
 				foreach (var view in openFiles) {
-					if (!view.IsFile || !string.Equals (view.ContentName, file.FileName, fileNameComparer))
+					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, fileNameComparer))
 						continue;
 					if (!view.IsDirty && IdeApp.Workbench.AutoReloadDocuments)
 						view.SourceEditorWidget.Reload ();
@@ -92,7 +97,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			var changedViews = new List<SourceEditorView> ();
 			foreach (var view in openFiles) {
-				if (!view.IsFile)
+				if (SkipView (view))
 					continue;
 				if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (view.ContentName))
 					continue;
@@ -118,7 +123,7 @@ namespace MonoDevelop.SourceEditor
 
 			var changedViews = new List<SourceEditorView> ();
 			foreach (var view in openFiles) {
-				if (!view.IsFile)
+				if (SkipView (view))
 					continue;
 				if (string.Equals (view.ContentName, fileName, fileNameComparer)) {
 					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (fileName))
@@ -171,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 			get {
 				int count = 0;
 				foreach (var view in openFiles) {
-					if (!view.IsFile || !view.SourceEditorWidget.HasIncorrectEolMarker)
+					if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 						continue;
 					count++;
 					if (count > 1)
@@ -184,7 +189,7 @@ namespace MonoDevelop.SourceEditor
 		public static void ConvertLineEndingsInAllFiles ()
 		{
 			foreach (var view in openFiles) {
-				if (!view.IsFile || !view.SourceEditorWidget.HasIncorrectEolMarker)
+				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
 				
 				view.SourceEditorWidget.ConvertLineEndings ();
@@ -197,7 +202,7 @@ namespace MonoDevelop.SourceEditor
 		public static void IgnoreLineEndingsInAllFiles ()
 		{
 			foreach (var view in openFiles) {
-				if (!view.IsFile || !view.SourceEditorWidget.HasIncorrectEolMarker)
+				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
 
 				view.SourceEditorWidget.UseIncorrectMarkers = true;
