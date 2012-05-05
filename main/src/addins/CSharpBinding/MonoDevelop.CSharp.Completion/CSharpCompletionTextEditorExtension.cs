@@ -403,44 +403,21 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return result;
 		}
-		/*
+
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
-			// Start calculating the parameter offset from the beginning of the
-			// current member, instead of the beginning of the file. 
-			cpos = textEditorData.Caret.Offset - 1;
-			var parsedDocument = Document.ParsedDocument;
-			if (parsedDocument == null)
-				return false;
-			IMember mem = currentMember;
-			if (mem == null || (mem is IType))
-				return false;
-			int startPos = textEditorData.LocationToOffset (mem.Region.BeginLine, mem.Region.BeginColumn);
-			int parenDepth = 0;
-			int chevronDepth = 0;
-			while (cpos > startPos) {
-				char c = textEditorData.GetCharAt (cpos);
-				if (c == ')')
-					parenDepth++;
-				if (c == '>')
-					chevronDepth++;
-				if (parenDepth == 0 && c == '(' || chevronDepth == 0 && c == '<') {
-					int p = MethodParameterDataProvider.GetCurrentParameterIndex (CompletionWidget, cpos + 1, startPos);
-					if (p != -1) {
-						cpos++;
-						return true;
-					} else {
-						return false;
-					}
-				}
-				if (c == '(')
-					parenDepth--;
-				if (c == '<')
-					chevronDepth--;
-				cpos--;
-			}
-			return false;
-		}*/
+			var engine = new CSharpParameterCompletionEngine (
+				textEditorData.Document,
+				this,
+				Document.GetProjectContext (),
+				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext,
+				Unit,
+				CSharpParsedFile
+			);
+			engine.MemberProvider = typeSystemSegmentTree;
+			engine.SetOffset (document.Editor.Caret.Offset);
+			return engine.GetParameterCompletionCommandOffset (out cpos);
+		}
 
 		public override int GetCurrentParameterIndex (int startOffset)
 		{

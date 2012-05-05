@@ -428,7 +428,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (!GetParameterCompletionCommandOffset(out cpos)) { 
 								break;
 							}
-							int currentParameter = GetCurrentParameterIndex(cpos, 0) - 1;
+							int currentParameter = GetCurrentParameterIndex(cpos - 1, this.offset) - 1;
 							if (currentParameter < 0) {
 								return null;
 							}
