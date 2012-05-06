@@ -456,12 +456,10 @@ Global
 		{75B9F2DF-4DEA-4007-965D-339563735EBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75B9F2DF-4DEA-4007-965D-339563735EBE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76495467-E8BF-43B0-A03C-18C6341966B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{76495467-E8BF-43B0-A03C-18C6341966B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76495467-E8BF-43B0-A03C-18C6341966B9}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{76495467-E8BF-43B0-A03C-18C6341966B9}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{76495467-E8BF-43B0-A03C-18C6341966B9}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
 		{76495467-E8BF-43B0-A03C-18C6341966B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{76495467-E8BF-43B0-A03C-18C6341966B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7926DB5B-96A7-47A7-9870-DB42FA5C3548}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -910,9 +908,8 @@ Global
 		$1.IncludeInNewFiles = True
 		$0.TextStylePolicy = $2
 		$2.FileWidth = 120
-		$2.TabWidth = 4
-		$2.IndentWidth = 4
-		$2.inheritsSet = Mono
+		$2.TabsToSpaces = False
+		$2.inheritsSet = VisualStudio
 		$2.inheritsScope = text/plain
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
@@ -925,9 +922,8 @@ Global
 		$5.inheritsSet = Mono
 		$0.TextStylePolicy = $6
 		$6.FileWidth = 120
-		$6.TabWidth = 4
-		$6.IndentWidth = 4
-		$6.inheritsSet = Mono
+		$6.TabsToSpaces = False
+		$6.inheritsSet = VisualStudio
 		$6.inheritsScope = text/plain
 		$6.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $7
