@@ -104,7 +104,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				try {
 					ConfigurationSelector configuration = IdeApp.Workspace.ActiveConfiguration;
 					Generator generator = new Generator ();
-					generator.Run (monitor, project, configuration);
+					generator.Run (monitor, project, null, configuration);
 					monitor.ReportSuccess ("Converting was succesfull");
 				} finally {
 					monitor.Dispose ();
@@ -128,7 +128,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				try {
 					ConfigurationSelector configuration = IdeApp.Workspace.ActiveConfiguration;
 					Generator generator = new Generator ();
-					generator.Run (monitor, project, configuration);
+					generator.Run (monitor, project, null, configuration);
 				} finally {
 					monitor.Dispose ();
 				}

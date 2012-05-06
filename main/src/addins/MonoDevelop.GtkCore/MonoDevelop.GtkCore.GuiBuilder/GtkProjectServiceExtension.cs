@@ -28,7 +28,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			Generator gen = new Generator ();
 			lock (gen) {
 				Gtk.Application.Invoke (delegate {
-					gen.Run (monitor, project, configuration);
+					gen.Run (monitor, project, null, configuration);
 				});
 				Monitor.Wait (gen);
 			}
@@ -63,11 +63,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class Generator
 	{
-		public void Run (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
+		public void Run (IProgressMonitor monitor, DotNetProject project, string rootWidget, ConfigurationSelector configuration)
 		{
 			lock (this) {
 				try {
-					Stetic.CodeGenerationResult res = GuiBuilderService.GenerateSteticCode (monitor, project, configuration);
+					Stetic.CodeGenerationResult res = GuiBuilderService.GenerateSteticCode (monitor, project, rootWidget, configuration);
 					if (res != null)
 						Messages = res.Warnings;
 				} catch (Exception ex) {

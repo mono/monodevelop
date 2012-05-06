@@ -11,7 +11,7 @@ namespace Stetic
 {
 	internal static class CodeGeneratorPartialClass
 	{
-		public static void GenerateProjectGuiCode (CodeNamespace globalNs, CodeTypeDeclaration globalType, GenerationOptions options, List<SteticCompilationUnit> units, ProjectBackend[] projects, ArrayList warnings)
+		public static void GenerateProjectGuiCode (CodeNamespace globalNs, CodeTypeDeclaration globalType, GenerationOptions options, List<SteticCompilationUnit> units, ProjectBackend[] projects, ArrayList warnings, string rootWidget)
 		{
 			// Generate code for each project
 			foreach (ProjectBackend gp in projects) {
@@ -20,6 +20,8 @@ namespace Stetic
 				foreach (Gtk.Widget w in gp.Toplevels) {
 					Stetic.Wrapper.Widget wwidget = Stetic.Wrapper.Widget.Lookup (w);
 					string topLevelName = wwidget.Name;
+					if (rootWidget != null && topLevelName != rootWidget)
+						continue;
 					if (gp.ComponentNeedsCodeGeneration (topLevelName)) {
 						//designer file for widget could be changed beyond stetic process 
 						//and we nead update wrapper before code generation

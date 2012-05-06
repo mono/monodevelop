@@ -378,10 +378,10 @@ namespace Stetic
 			return CecilWidgetLibrary.IsWidgetLibrary (path);
 		}
 		
-		public CodeGenerationResult GenerateProjectCode (string file, string namespaceName, CodeDomProvider provider, GenerationOptions options, params Project[] projects)
+		public CodeGenerationResult GenerateProjectCode (string file, string namespaceName, CodeDomProvider provider, GenerationOptions options, string rootWidget, params Project[] projects)
 		{
 			ArrayList files = new ArrayList ();
-			CodeGenerationResult res = GenerateProjectCode (options, projects);
+			CodeGenerationResult res = GenerateProjectCode (options, rootWidget, projects);
 			
 			string basePath = Path.GetDirectoryName (file);
 			string ext = Path.GetExtension (file);
@@ -404,13 +404,13 @@ namespace Stetic
 			return res;
 		}
 		
-		public CodeGenerationResult GenerateProjectCode (GenerationOptions options, params Project[] projects)
+		public CodeGenerationResult GenerateProjectCode (GenerationOptions options, string rootWidget, params Project[] projects)
 		{
 			ProjectBackend[] pbs = new ProjectBackend [projects.Length];
 			for (int n=0; n<projects.Length; n++)
 				pbs [n] = projects [n].ProjectBackend;
 				
-			return Backend.GenerateProjectCode (options, pbs);
+			return Backend.GenerateProjectCode (options, rootWidget, pbs);
 		}
 		
 		public Designer ActiveDesigner {

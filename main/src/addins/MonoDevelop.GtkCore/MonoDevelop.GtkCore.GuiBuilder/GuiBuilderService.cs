@@ -351,7 +351,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			);
 		}
 		
-		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, ConfigurationSelector configuration)
+		public static Stetic.CodeGenerationResult GenerateSteticCode (IProgressMonitor monitor, DotNetProject project, string rootWidget, ConfigurationSelector configuration)
 		{
 			if (generating || !GtkDesignInfo.HasDesignedObjects (project))
 				return null;
@@ -413,19 +413,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			if (!canGenerateInProcess) {
 				// Run the generation in another thread to avoid freezing the GUI
-				System.Threading.ThreadPool.QueueUserWorkItem ( delegate {
+				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						// Generate the code in another process if stetic is not isolated
-						CodeGeneratorProcess cob = (CodeGeneratorProcess) Runtime.ProcessService.CreateExternalProcessObject (typeof (CodeGeneratorProcess), false);
+						CodeGeneratorProcess cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (typeof(CodeGeneratorProcess), false);
 						using (cob) {
-							generationResult = cob.GenerateCode (projectFolders, info.GenerateGettext, info.GettextClass, project.UsePartialTypes, info);
+							generationResult = cob.GenerateCode (projectFolders, info.GenerateGettext, info.GettextClass, project.UsePartialTypes, info, rootWidget);
 						}
 					} catch (Exception ex) {
 						generatedException = ex;
 					} finally {
 						generating = false;
 					}
-				});
+				}
+				);
 			
 				while (generating) {
 					DispatchService.RunPendingEvents ();
@@ -438,7 +439,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					Stetic.GenerationOptions options = new Stetic.GenerationOptions ();
 					options.UseGettext = info.GenerateGettext;
 					options.GettextClass = info.GettextClass;
-					generationResult = SteticApp.GenerateProjectCode (options, info.GuiBuilderProject.SteticProject);
+					generationResult = SteticApp.GenerateProjectCode (options, rootWidget, info.GuiBuilderProject.SteticProject);
 				} catch (Exception ex) {
 					generatedException = ex;
 				}
@@ -449,13 +450,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				string msg = string.Empty;
 				
 				if (generatedException.InnerException != null) {
-					msg = string.Format("{0}\n{1}\nInner Exception {2}\n{3}",
+					msg = string.Format ("{0}\n{1}\nInner Exception {2}\n{3}",
 				                        generatedException.Message,
 				                        generatedException.StackTrace,
 					                    generatedException.InnerException.Message,
 					                    generatedException.InnerException.StackTrace);
 				} else {
-					msg = string.Format("{0}\n{1}",
+					msg = string.Format ("{0}\n{1}",
 				                        generatedException.Message,
 				                        generatedException.StackTrace);
 				}
@@ -601,7 +602,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	 
 	public class CodeGeneratorProcess: RemoteProcessObject
 	{
-		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFolders, bool useGettext, string gettextClass, bool usePartialClasses, GtkDesignInfo info)
+		public Stetic.CodeGenerationResult GenerateCode (ArrayList projectFolders, bool useGettext, string gettextClass, bool usePartialClasses, GtkDesignInfo info, string rootWidget)
 		{
 			Gtk.Application.Init ();
 			
@@ -617,7 +618,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			options.UseGettext = useGettext;
 			options.GettextClass = gettextClass;
 			
-			return app.GenerateProjectCode (options, projects);
+			return app.GenerateProjectCode (options, rootWidget, projects);
 		}
 	}
 }

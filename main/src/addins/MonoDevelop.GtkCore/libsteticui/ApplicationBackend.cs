@@ -129,9 +129,9 @@ namespace Stetic
 			return p;
 		}
 		
-		public CodeGenerationResult GenerateProjectCode (GenerationOptions options, ProjectBackend[] projects)
+		public CodeGenerationResult GenerateProjectCode (GenerationOptions options, string rootWidget, ProjectBackend[] projects)
 		{
-			return CodeGenerator.GenerateProjectCode (options, projects);
+			return CodeGenerator.GenerateProjectCode (options, rootWidget, projects);
 		}
 		
 		public ArrayList GlobalWidgetLibraries {

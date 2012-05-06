@@ -31,7 +31,7 @@ namespace Stetic
 //			}
 //		}
 		
-		public static CodeGenerationResult GenerateProjectCode (GenerationOptions options, ProjectBackend[] projects)
+		public static CodeGenerationResult GenerateProjectCode (GenerationOptions options, string rootWidget, ProjectBackend[] projects)
 		{
 			ArrayList warningList = new ArrayList ();
 			
@@ -73,7 +73,7 @@ namespace Stetic
 			warningList.AddRange (initContext.Warnings);
 					
 			// Generate the code
-			CodeGeneratorPartialClass.GenerateProjectGuiCode (globalNs, globalType, options, units, projects, warningList);
+			CodeGeneratorPartialClass.GenerateProjectGuiCode (globalNs, globalType, options, units, projects, warningList, rootWidget);
 
 			GenerateProjectActionsCode (globalNs, options, projects);
 			

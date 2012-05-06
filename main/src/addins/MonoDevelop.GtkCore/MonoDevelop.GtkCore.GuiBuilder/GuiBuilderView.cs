@@ -345,12 +345,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					actionsBox.Save ();
 			}
 
-			// TODO: SINGLE FILE SAVE - this generates the whole project
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
+			gproject.Save (false);
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 			try {
-				ConfigurationSelector configuration = IdeApp.Workspace.ActiveConfiguration;
-				Generator generator = new Generator ();
-				generator.Run (monitor, gproject.Project, configuration);
+				var generator = new Generator ();
+				generator.Run (monitor, gproject.Project, window.RootWidget.Name, IdeApp.Workspace.ActiveConfiguration);
 				monitor.ReportSuccess ("Converting was succesfull");
 			} finally {
 				monitor.Dispose ();
