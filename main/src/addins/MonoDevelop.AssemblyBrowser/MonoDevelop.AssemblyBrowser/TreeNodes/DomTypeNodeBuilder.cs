@@ -125,9 +125,9 @@ namespace MonoDevelop.AssemblyBrowser
 			var list = new System.Collections.ArrayList ();
 			list.Add (new BaseTypeFolder (type));
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			foreach (var t in type.NestedTypes.Where (m => !m.IsSynthetic && !(publicOnly && m.IsPublic)))
+			foreach (var t in type.NestedTypes.Where (m => !m.IsSynthetic && !(publicOnly && (m.IsPublic || m.IsProtected) )))
 				list.Add (t);
-			foreach (var m in type.Members.Where (m => !m.IsSynthetic && !(publicOnly && !(m.IsPublic || m.IsInternal))))
+			foreach (var m in type.Members.Where (m => !m.IsSynthetic && !(publicOnly && !(m.IsProtected || m.IsPublic || m.IsInternal))))
 				list.Add (m);
 			builder.AddChildren (list);
 		}

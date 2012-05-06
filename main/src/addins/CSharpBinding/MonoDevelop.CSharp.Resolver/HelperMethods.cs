@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				result = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, loc, out node);
+				result = ResolveAtLocation.Resolve (() => doc.Compilation, parsedFile, unit, loc, out node);
 				if (result == null || node is Statement)
 					return false;
 			} catch (Exception e) {

@@ -67,15 +67,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		protected string eolMarker = Environment.NewLine;
 		readonly CSharpFormattingOptions formattingOptions;
+		readonly TextEditorOptions options;
 		Dictionary<AstNode, ISegment> segmentsForInsertedNodes = new Dictionary<AstNode, ISegment>();
 		
-		protected Script(CSharpFormattingOptions formattingOptions)
+		protected Script(CSharpFormattingOptions formattingOptions, TextEditorOptions options)
 		{
 			if (formattingOptions == null)
 				throw new ArgumentNullException("formattingOptions");
+			if (options == null)
+				throw new ArgumentNullException("options");
 			this.formattingOptions = formattingOptions;
+			this.options = options;
 		}
 		
 		/// <summary>
@@ -134,14 +137,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public CSharpFormattingOptions FormattingOptions {
 			get { return formattingOptions; }
 		}
-		
+
+		public TextEditorOptions Options {
+			get { return options; }
+		}
+
 		public void InsertBefore(AstNode node, AstNode insertNode)
 		{
 			var startOffset = GetCurrentOffset(new TextLocation(node.StartLocation.Line, 1));
 			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
 			string text = output.Text;
 			if (!(insertNode is Expression || insertNode is AstType))
-				text += eolMarker;
+				text += Options.EolMarker;
 			InsertText(startOffset, text);
 			output.RegisterTrackedSegments(this, startOffset);
 		}
@@ -248,7 +255,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var stringWriter = new StringWriter ();
 			var formatter = new SegmentTrackingOutputFormatter (stringWriter);
 			formatter.Indentation = indentLevel;
-			stringWriter.NewLine = eolMarker;
+			formatter.IndentationString = Options.TabsToSpaces ? new string (' ', Options.IndentSize) : "\t";
+			stringWriter.NewLine = Options.EolMarker;
 			if (startWithNewLine)
 				formatter.NewLine ();
 			var visitor = new CSharpOutputVisitor (formatter, formattingOptions);
@@ -256,7 +264,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			string text = stringWriter.ToString().TrimEnd();
 			
 			if (node is FieldDeclaration)
-				text += eolMarker;
+				text += Options.EolMarker;
 			return new NodeOutput(text, formatter.NewSegments);
 		}
 		

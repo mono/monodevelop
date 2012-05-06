@@ -428,7 +428,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (!GetParameterCompletionCommandOffset(out cpos)) { 
 								break;
 							}
-							int currentParameter = GetCurrentParameterIndex(cpos, 0) - 1;
+							int currentParameter = GetCurrentParameterIndex(cpos - 1, this.offset) - 1;
 							if (currentParameter < 0) {
 								return null;
 							}
@@ -563,9 +563,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 								AddTypesAndNamespaces(
 									wrapper,
-									GetState (),
+									GetState(),
 									null,
-									t => currentType != null && !currentType.ReflectionName.Equals (t.ReflectionName) ? t : null
+									t => currentType != null && !currentType.ReflectionName.Equals(t.ReflectionName) ? t : null
 								);
 								return wrapper.Result;
 							}
@@ -621,7 +621,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								new ExpressionResult(
 								((MemberReferenceExpression)identifierStart.Node).Target,
 								identifierStart.Unit
-							));
+							)
+							);
 						}
 
 						if (identifierStart.Node is Identifier) {
@@ -748,7 +749,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 									AutoCompleteEmptyMatch = false;
 								}
 								foreach (var p in method.Parameters) {
-									contextList.AddVariable(p);
+									contextList.AddNamedParameterVariable(p);
 								}
 							}
 							idx++;
@@ -1221,6 +1222,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
 					AddKeywords(wrapper, expressionLevelKeywords);
+					if (node is TypeDeclaration)
+						AddKeywords(wrapper, typeLevelKeywords);
 				} else if (currentType != null) {
 					AddKeywords(wrapper, typeLevelKeywords);
 				} else {
@@ -1312,6 +1315,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (this.currentMember != null && !(node is AstType)) {
 					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition(currentType);
 					if (def != null) {
+						var lookup = new MemberLookup(
+							ctx.CurrentTypeDefinition,
+							Compilation.MainAssembly
+						);
+						bool isProtectedAllowed = true;
 						foreach (var member in def.GetMembers ()) {
 							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize") {
 								continue;
@@ -1322,6 +1330,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (member.IsExplicitInterfaceImplementation) {
 								continue;
 							}
+							if (!lookup.IsAccessible(member, isProtectedAllowed)) {
+								continue;
+							}
+
 							if (memberPred == null || memberPred(member)) {
 								wrapper.AddMember(member);
 							}
@@ -2388,7 +2400,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (member.IsShadowing) {
 						filteredList.RemoveAll(m => m.Name == member.Name);
 					}
-					
 					filteredList.Add(member);
 				}
 				

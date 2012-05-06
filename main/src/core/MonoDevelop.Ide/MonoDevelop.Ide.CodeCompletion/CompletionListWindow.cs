@@ -259,7 +259,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return true;
 				}
 
-				initialWordLength = text.Length /*+ completionWidget.SelectedLength*/;
+				initialWordLength = completionWidget.SelectedLength > 0 ? 0 : text.Length;
 				StartOffset = completionWidget.CaretOffset - initialWordLength;
 				HideWhenWordDeleted = initialWordLength != 0;
 				ResetSizes ();

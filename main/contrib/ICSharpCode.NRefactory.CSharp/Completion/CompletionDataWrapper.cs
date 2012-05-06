@@ -97,14 +97,30 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 		Dictionary<string, List<ICompletionData>> data = new Dictionary<string, List<ICompletionData>> ();
 			
-		public void AddVariable (IVariable variable)
+		public ICompletionData AddVariable(IVariable variable)
 		{
-			if (data.ContainsKey (variable.Name))
-				return;
-			data [variable.Name] = new List<ICompletionData> ();
-			result.Add (Factory.CreateVariableCompletionData (variable));
+			if (data.ContainsKey(variable.Name))
+				return null;
+			data [variable.Name] = new List<ICompletionData>();
+			var cd = Factory.CreateVariableCompletionData(variable);
+			result.Add(cd);
+			return cd;
 		}
-			
+
+		public ICompletionData AddNamedParameterVariable(IVariable variable)
+		{
+			var name = variable.Name + ":";
+			if (data.ContainsKey(name))
+				return null;
+			data [name] = new List<ICompletionData>();
+
+			var cd = Factory.CreateVariableCompletionData(variable);
+			cd.CompletionText += ":";
+			cd.DisplayText += ":";
+			result.Add(cd);
+			return cd;
+		}
+		
 		public void AddTypeParameter (IUnresolvedTypeParameter variable)
 		{
 			if (data.ContainsKey (variable.Name))

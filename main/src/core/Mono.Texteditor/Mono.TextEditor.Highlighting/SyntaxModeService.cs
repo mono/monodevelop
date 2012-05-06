@@ -140,6 +140,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static SyntaxMode GetSyntaxMode (TextDocument doc, string mimeType)
 		{
+			if (string.IsNullOrEmpty (mimeType))
+				return null;
 			SyntaxMode result = null;
 			if (syntaxModes.ContainsKey (mimeType)) {
 				result = syntaxModes [mimeType].Create (doc);
@@ -203,6 +205,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static void ScanSpans (TextDocument doc, SyntaxMode mode, Rule rule, CloneableStack<Span> spanStack, int start, int end)
 		{
+			if (mode == null)
+				return;
 			SyntaxMode.SpanParser parser = mode.CreateSpanParser (null, spanStack);
 			parser.ParseSpans (start, end - start);
 		}

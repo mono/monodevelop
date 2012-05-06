@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -35,6 +36,17 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="file1.xml">
+      <DependentUpon>file3.xml</DependentUpon>
+    </None>
+    <None Include="file2.xml">
+      <DependentUpon>file3.xml</DependentUpon>
+    </None>
+    <None Include="file3.xml" />
+    <None Include="file4.xml">
+      <DependentUpon>file5.xml</DependentUpon>
+    </None>
+    <None Include="file5.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

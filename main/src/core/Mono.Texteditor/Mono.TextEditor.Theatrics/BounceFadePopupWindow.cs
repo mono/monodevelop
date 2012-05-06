@@ -96,8 +96,8 @@ namespace Mono.TextEditor.Theatrics
 			y = y + bounds.Y - (int)(ExpandHeight / 2);
 			Move (x, y);
 			
-			width = bounds.Width + (int)ExpandWidth;
-			height = bounds.Height + (int)ExpandHeight;
+			width = System.Math.Max (1, bounds.Width + (int)ExpandWidth);
+			height = System.Math.Max (1, bounds.Height + (int)ExpandHeight);
 			Resize (width, height);
 			
 			

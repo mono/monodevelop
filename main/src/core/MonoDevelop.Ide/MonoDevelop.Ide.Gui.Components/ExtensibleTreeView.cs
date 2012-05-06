@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		NodeBuilder[] builders;
 		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
-		Hashtable nodeHash = new Hashtable ();
+		NodeHashtable nodeHash = new NodeHashtable ();
 		
 		ContextMenuTreeView tree = new ContextMenuTreeView ();
 		Gtk.TreeStore store;
@@ -329,6 +329,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			foreach (NodeBuilder nb in builders) {
 				TypeNodeBuilder tnb = nb as TypeNodeBuilder;
 				if (tnb != null) {
+					if (tnb.UseReferenceEquality)
+						nodeHash.RegisterByRefType (tnb.NodeDataType);
 					TypeNodeBuilder other = (TypeNodeBuilder) bc [tnb.NodeDataType];
 					if (other != null)
 						throw new ApplicationException (string.Format ("The type node builder {0} can't be used in this context because the type {1} is already handled by {2}", nb.GetType(), tnb.NodeDataType, other.GetType()));
@@ -475,7 +477,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		public Hashtable NodeHash {
+		NodeHashtable NodeHash {
 			get {
 				return nodeHash;
 			}
@@ -551,7 +553,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			foreach (object dataObject in obs)
 				NotifyNodeRemoved (dataObject, null);
 			
-			nodeHash = new Hashtable ();
+			nodeHash = new NodeHashtable ();
 			nodeOptions.Clear ();
 			store.Clear ();
 		}
@@ -672,8 +674,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public ITreeNavigator GetNodeAtObject (object dataObject, bool createTreeBranch)
 		{
-			object it = nodeHash [dataObject];
-			if (it == null) {
+			object it;
+			if (!nodeHash.TryGetValue (dataObject, out it)) {
 				if (createTreeBranch) {
 					TypeNodeBuilder tnb = GetTypeNodeBuilder (dataObject.GetType());
 					if (tnb == null) return null;
@@ -687,8 +689,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					pnav.MoveToFirstChild ();
 					
 					// The child should be now in the this. Try again.
-					it = nodeHash [dataObject];
-					if (it == null)
+					if (!nodeHash.TryGetValue (dataObject, out it))
 						return null;
 				} else
 					return null;
@@ -1388,8 +1389,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		internal bool GetFirstNode (object dataObject, out Gtk.TreeIter iter)
 		{
-			object it = nodeHash [dataObject];
-			if (it == null) {
+			object it;
+			if (!nodeHash.TryGetValue (dataObject, out it)) {
 				iter = Gtk.TreeIter.Zero;
 				return false;
 			}
@@ -1402,10 +1403,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		internal bool GetNextNode (object dataObject, ref Gtk.TreeIter iter)
 		{
-			object it = nodeHash [dataObject];
-			if (it == null) {
+			object it;
+			if (!nodeHash.TryGetValue (dataObject, out it))
 				return false;
-			}
 			else if (it is Gtk.TreeIter)
 				return false; // There is only one node, GetFirstNode returned it
 			else {
@@ -1425,8 +1425,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		internal void RegisterNode (Gtk.TreeIter it, object dataObject, NodeBuilder[] chain, bool fireAddedEvent)
 		{
-			object currentIt = nodeHash [dataObject];
-			if (currentIt == null) {
+			object currentIt;
+			if (!nodeHash.TryGetValue (dataObject, out currentIt)) {
 				nodeHash [dataObject] = it;
 				if (chain == null) chain = GetBuilderChain (dataObject.GetType());
 				if (fireAddedEvent) {
@@ -1483,7 +1483,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			if (store.IterIsValid (iter))
 				nodeOptions.Remove (iter);
-			object currentIt = nodeHash [dataObject];
+			object currentIt;
+			nodeHash.TryGetValue (dataObject, out currentIt);
 			if (currentIt is Gtk.TreeIter[]) {
 				Gtk.TreeIter[] arr = (Gtk.TreeIter[]) currentIt;
 				Gtk.TreePath path = null;
@@ -1547,7 +1548,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		internal bool IsRegistered (object dataObject)
 		{
-			return nodeHash.Contains (dataObject);
+			return nodeHash.ContainsKey (dataObject);
 		}
 		
 		public void NotifyInserted (Gtk.TreeIter it, object dataObject)
@@ -2201,6 +2202,71 @@ namespace MonoDevelop.Ide.Gui.Components
 			resized = value.ScaleSimple (w, h, Gdk.InterpType.Hyper);
 			resizedCache [value] = resized;
 			return resized;
+		}
+	}
+
+	class NodeHashtable: Dictionary<object,object>
+	{
+		// This dictionary can be configured to use object reference equality
+		// instead of regular object equality for a specific set of types
+
+		NodeComparer nodeComparer;
+
+		public NodeHashtable (): base (new NodeComparer ())
+		{
+			nodeComparer = (NodeComparer)Comparer;
+		}
+
+		/// <summary>
+		/// Sets that the objects of the specified type have to be compared
+		/// using object reference equality
+		/// </summary>
+		public void RegisterByRefType (Type type)
+		{
+			nodeComparer.byRefTypes.Add (type);
+		}
+
+		class NodeComparer: IEqualityComparer<object>
+		{
+			public HashSet<Type> byRefTypes = new HashSet<Type> ();
+			public Dictionary<Type,bool> typeData = new Dictionary<Type, bool> ();
+
+			bool IEqualityComparer<object>.Equals (object x, object y)
+			{
+				if (CompareByRef (x.GetType ()))
+				    return x == y;
+				else
+					return x.Equals (y);
+			}
+	
+			int IEqualityComparer<object>.GetHashCode (object obj)
+			{
+				if (CompareByRef (obj.GetType ()))
+					return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode (obj);
+				else
+					return obj.GetHashCode ();
+			}
+
+			bool CompareByRef (Type type)
+			{
+				if (byRefTypes.Count == 0)
+					return false;
+	
+				bool compareRef;
+				if (!typeData.TryGetValue (type, out compareRef)) {
+					compareRef = false;
+					var t = type;
+					while (t != null) {
+						if (byRefTypes.Contains (t)) {
+							compareRef = true;
+							break;
+						}
+						t = t.BaseType;
+					}
+					typeData [type] = compareRef;
+				}
+				return compareRef;
+			}
 		}
 	}
 }

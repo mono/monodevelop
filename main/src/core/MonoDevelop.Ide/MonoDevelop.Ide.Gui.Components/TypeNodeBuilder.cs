@@ -46,5 +46,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		public virtual string ContextMenuAddinPath {
 			get { return null; }
 		}
+
+		/// <summary>
+		/// Gets a value indicating whether reference equality should be used to compare objects of this type
+		/// </summary>
+		public virtual bool UseReferenceEquality {
+			get { return false; }
+		}
 	}
 }

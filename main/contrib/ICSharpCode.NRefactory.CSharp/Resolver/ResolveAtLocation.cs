@@ -30,14 +30,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
+		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
+		                                    CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Resolve (() => compilation, parsedFile, cu, location, cancellationToken);
+		}
+		public static ResolveResult Resolve(Func<ICompilation> compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			AstNode node;
 			return Resolve(compilation, parsedFile, cu, location, out node, cancellationToken);
 		}
 		
-		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
+		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
+		                                    CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Resolve (() => compilation, parsedFile, cu, location, out node, cancellationToken);
+		}
+		public static ResolveResult Resolve(Func<ICompilation> compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			node = cu.GetNodeAt(location);
@@ -84,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				parentInvocation = node.Parent as InvocationExpression;
 			}
 			
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation, cu, parsedFile);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation(), cu, parsedFile);
 			resolver.ApplyNavigator(new NodeListResolveVisitorNavigator(node), cancellationToken);
 			ResolveResult rr = resolver.Resolve(node, cancellationToken);
 			if (rr is MethodGroupResolveResult && parentInvocation != null)

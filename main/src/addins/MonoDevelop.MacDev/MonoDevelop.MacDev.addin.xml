@@ -105,7 +105,7 @@
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="DotNetProject">
 			<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
-			<CommandItem id = "MonoDevelop.MacDev.NativeReferences.NativeReferenceCommands.Add"/>
+			<CommandItem id = "MonoDevelop.MacDev.NativeReferences.NativeReferenceCommands.Add" disabledVisible="false"/>
 		</Condition>
 	</Extension>
 	

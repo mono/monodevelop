@@ -255,9 +255,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			public bool FindChild (object dataObject, bool recursive)
 			{
 				AssertIsValid ();
-				object it = pad.NodeHash [dataObject];
+				object it;
 				
-				if (it == null)
+				if (!pad.NodeHash.TryGetValue (dataObject, out it))
 					return false;
 				else if (it is Gtk.TreeIter) {
 					if (IsChildIter (currentIter, (Gtk.TreeIter)it, recursive)) {

@@ -644,6 +644,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
 			{
 				lock (this) {
+					if (content is LazyProjectLoader) {
+						((LazyProjectLoader)content).ContextTask.Wait ();
+					}
 					content = updateFunc (content);
 					compilation = null;
 					WasChanged = true;
@@ -692,6 +695,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				static ConcurrentDictionary<string, IProjectContent> projectCache = new ConcurrentDictionary<string, IProjectContent> ();
 				Task<IProjectContent> contextTask;
 
+				public Task<IProjectContent> ContextTask {
+					get {
+						return contextTask;
+					}
+				}
 				IProjectContent Content {
 					get {
 						return contextTask.Result;

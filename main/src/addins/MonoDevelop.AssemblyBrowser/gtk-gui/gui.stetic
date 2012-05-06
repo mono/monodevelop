@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
-    <images-root-path>../../MonoDevelop.AssemblyBrowser</images-root-path>
+    <images-root-path>..</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
@@ -189,7 +189,12 @@
               <widget class="Gtk.Alignment" id="treeViewPlaceholder">
                 <property name="MemberName" />
                 <child>
-                  <placeholder />
+                  <widget class="MonoDevelop.Components.CompactScrolledWindow" id="treeScrolledWindow">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShadowType">In</property>
+                    <property name="ShowBorderLine">False</property>
+                  </widget>
                 </child>
               </widget>
               <packing>
@@ -211,29 +216,12 @@
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="CurrentPage">1</property>
+                        <property name="ShowBorder">False</property>
                         <child>
-                          <widget class="Gtk.ScrolledWindow" id="documentationScrolledWindow">
+                          <widget class="MonoDevelop.Components.CompactScrolledWindow" id="documentationScrolledWindow">
                             <property name="MemberName" />
-                            <property name="ShadowType">In</property>
-                            <child>
-                              <widget class="Gtk.Viewport" id="GtkViewport">
-                                <property name="MemberName" />
-                                <property name="ShadowType">None</property>
-                                <child>
-                                  <widget class="Gtk.Label" id="documentationLabel">
-                                    <property name="MemberName" />
-                                    <property name="ShowScrollbars">True</property>
-                                    <property name="Xpad">6</property>
-                                    <property name="Ypad">6</property>
-                                    <property name="Xalign">0</property>
-                                    <property name="Yalign">0</property>
-                                    <property name="UseMarkup">True</property>
-                                    <property name="MnemonicWidget">titleTextBox</property>
-                                    <property name="Selectable">True</property>
-                                  </widget>
-                                </child>
-                              </widget>
-                            </child>
+                            <property name="CanFocus">True</property>
+                            <property name="ShowBorderLine">False</property>
                           </widget>
                         </child>
                         <child>

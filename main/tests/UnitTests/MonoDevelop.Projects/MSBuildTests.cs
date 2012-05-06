@@ -93,6 +93,7 @@ namespace MonoDevelop.Projects
 		public void CreateConsoleProject ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
 			sol.Save (Util.GetMonitor ());
 			
 			// msbuild format
@@ -240,7 +241,7 @@ namespace MonoDevelop.Projects
 			
 			p.Save (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 		}
 		
 		[Test]
@@ -266,7 +267,7 @@ namespace MonoDevelop.Projects
 			
 			p.Save (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 		}
 		
 		[Test]
@@ -287,7 +288,7 @@ namespace MonoDevelop.Projects
 			
 			p.Save (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 		}
 		
 		[Test]
@@ -309,7 +310,7 @@ namespace MonoDevelop.Projects
 			
 			p.Save (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 		}
 		
 		[Test]
@@ -331,7 +332,7 @@ namespace MonoDevelop.Projects
 			
 			p.Save (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName), Util.GetXmlFileInfoset (p.FileName + ".saved"));
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 		}
 		
 		[Test]

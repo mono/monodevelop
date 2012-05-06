@@ -39,7 +39,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)
 		{
-//			Flags |= ParsedDocumentFlags.NonSerializable;
+			Flags |= ParsedDocumentFlags.NonSerializable;
 			Info = info;
 			RootNode = rootNode;
 			Type = type;

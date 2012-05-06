@@ -843,7 +843,9 @@ namespace MonoDevelop.Projects
 			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file));
 		}
 
-		List<ProjectFile> unresolvedDeps;
+		// A collection of files that depend on other files for which the dependencies
+		// have not yet been resolved.
+		UnresolvedFileCollection unresolvedDeps;
 
 		void NotifyFileRemovedFromProject (IEnumerable<ProjectFile> objs)
 		{
@@ -856,8 +858,7 @@ namespace MonoDevelop.Projects
 				file.SetProject (null);
 				args.Add (new ProjectFileEventInfo (this, file));
 				if (DependencyResolutionEnabled) {
-					if (unresolvedDeps.Contains (file))
-						unresolvedDeps.Remove (file);
+					unresolvedDeps.Remove (file);
 					foreach (ProjectFile f in file.DependentChildren) {
 						f.DependsOnFile = null;
 						if (!string.IsNullOrEmpty (f.DependsOn))
@@ -891,6 +892,12 @@ namespace MonoDevelop.Projects
 			OnFileAddedToProject (args);
 		}
 
+		internal void UpdateDependency (ProjectFile file, FilePath oldPath)
+		{
+			unresolvedDeps.Remove (file, oldPath);
+			ResolveDependencies (file);
+		}
+
 		internal void ResolveDependencies (ProjectFile file)
 		{
 			if (!DependencyResolutionEnabled)
@@ -900,11 +907,13 @@ namespace MonoDevelop.Projects
 				unresolvedDeps.Add (file);
 
 			List<ProjectFile> resolved = null;
-			foreach (ProjectFile unres in unresolvedDeps) {
+			foreach (ProjectFile unres in unresolvedDeps.GetUnresolvedFilesForPath (file.FilePath)) {
 				if (string.IsNullOrEmpty (unres.DependsOn)) {
+					if (resolved == null)
+						resolved = new List<ProjectFile> ();
 					resolved.Add (unres);
 				}
-				if (unres.ResolveParent ()) {
+				if (unres.ResolveParent (file)) {
 					if (resolved == null)
 						resolved = new List<ProjectFile> ();
 					resolved.Add (unres);
@@ -922,7 +931,7 @@ namespace MonoDevelop.Projects
 				if (value) {
 					if (unresolvedDeps != null)
 						return;
-					unresolvedDeps = new List<ProjectFile> ();
+					unresolvedDeps = new UnresolvedFileCollection ();
 					foreach (ProjectFile file in files)
 						ResolveDependencies (file);
 				} else {
@@ -1052,6 +1061,75 @@ namespace MonoDevelop.Projects
 		private Project project;
 		public Project Project {
 			get { return project; }
+		}
+	}
+
+	class UnresolvedFileCollection
+	{
+		// Holds a dictionary of files that depend on other files, and for which the dependency
+		// has not yet been resolved. The key of the dictionary is the path to a parent
+		// file to be resolved, and the value can be a ProjectFile object or a List<ProjectFile>
+		// (This may happen if several files depend on the same parent file)
+		Dictionary<FilePath,object> unresolvedDeps = new Dictionary<FilePath, object> ();
+
+		public void Remove (ProjectFile file)
+		{
+			Remove (file, null);
+		}
+
+		public void Remove (ProjectFile file, FilePath dependencyPath)
+		{
+			if (dependencyPath.IsNullOrEmpty) {
+				if (string.IsNullOrEmpty (file.DependsOn))
+					return;
+				dependencyPath = file.DependencyPath;
+			}
+
+			object depFile;
+			if (unresolvedDeps.TryGetValue (dependencyPath, out depFile)) {
+				if ((depFile is ProjectFile) && ((ProjectFile)depFile == file))
+					unresolvedDeps.Remove (dependencyPath);
+				else if (depFile is List<ProjectFile>) {
+					var list = (List<ProjectFile>) depFile;
+					list.Remove (file);
+					if (list.Count == 1)
+						unresolvedDeps [dependencyPath] = list[0];
+				}
+			}
+		}
+
+		public void Add (ProjectFile file)
+		{
+			object depFile;
+			if (unresolvedDeps.TryGetValue (file.DependencyPath, out depFile)) {
+				if (depFile is ProjectFile) {
+					if ((ProjectFile)depFile != file) {
+						var list = new List<ProjectFile> ();
+						list.Add ((ProjectFile)depFile);
+						list.Add (file);
+						unresolvedDeps [file.DependencyPath] = list;
+					}
+				}
+				else if (depFile is List<ProjectFile>) {
+					var list = (List<ProjectFile>) depFile;
+					if (!list.Contains (file))
+						list.Add (file);
+				}
+			} else
+				unresolvedDeps [file.DependencyPath] = file;
+		}
+
+		public IEnumerable<ProjectFile> GetUnresolvedFilesForPath (FilePath filePath)
+		{
+			object depFile;
+			if (unresolvedDeps.TryGetValue (filePath, out depFile)) {
+				if (depFile is ProjectFile)
+					yield return (ProjectFile) depFile;
+				else {
+					foreach (var f in (List<ProjectFile>) depFile)
+						yield return f;
+				}
+			}
 		}
 	}
 }

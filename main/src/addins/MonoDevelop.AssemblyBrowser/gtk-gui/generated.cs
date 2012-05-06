@@ -17,7 +17,6 @@ namespace Stetic
 	internal class BinContainer
 	{
 		private Gtk.Widget child;
-		
 		private Gtk.UIManager uimanager;
 		
 		public static BinContainer Attach (Gtk.Bin bin)

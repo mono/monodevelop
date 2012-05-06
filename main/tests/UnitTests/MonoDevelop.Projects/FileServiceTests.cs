@@ -37,8 +37,34 @@ namespace MonoDevelop.Projects
 		public void TestGetRelativePath ()
 		{
 			Assert.AreEqual (@"blub", FileService.AbsoluteToRelativePath (@"/a", @"/a/blub"));
+		}
+		[Test]
+		public void TestGetRelativePathCase2 ()
+		{
 			Assert.AreEqual (@"../a/blub", FileService.AbsoluteToRelativePath (@"/hello/", @"/a/blub"));
+		}
+		[Test]
+		public void TestGetRelativePathCase3 ()
+		{
 			Assert.AreEqual (@"../a/blub", FileService.AbsoluteToRelativePath (@"/hello", @"/a/blub"));
+		}
+
+		[Test]
+		public void TestGetRelativePathCase4 ()
+		{
+			Assert.AreEqual (@".", FileService.AbsoluteToRelativePath (@"/aa/bb/cc", @"/aa/bb/cc"));
+		}
+
+		[Test]
+		public void TestGetRelativeGoUpCaseAtEnd ()
+		{
+			Assert.AreEqual (@"..", FileService.AbsoluteToRelativePath (@"/aa/bb/cc", @"/aa/bb"));
+		}
+
+		[Test]
+		public void TestGetRelativeGoSeveralUpCaseAtEnd ()
+		{
+			Assert.AreEqual (@"../..", FileService.AbsoluteToRelativePath (@"/aa/bb/cc/dd", @"/aa/bb"));
 		}
 	}
 }

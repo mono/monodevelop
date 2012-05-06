@@ -96,17 +96,23 @@ namespace MonoDevelop.AssemblyBrowser
 				return loader.UnresolvedAssembly;
 			return null;
 		}
-		
-		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member)
+
+		protected ITypeResolveContext GetContext (ITreeNavigator treeBuilder)
 		{
 			var mainAssembly = GetMainAssembly (treeBuilder);
 			if (mainAssembly != null) {
 				var simpleCompilation = new SimpleCompilation (mainAssembly);
-				return member.CreateResolved (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
+				return new SimpleTypeResolveContext (simpleCompilation.MainAssembly);
 			}
 			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
 			var ctx = TypeSystemService.GetCompilation (project);
-			return member.CreateResolved (ctx.TypeResolveContext);
+			return ctx.TypeResolveContext;
+		}
+		
+		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member, ITypeDefinition currentType = null)
+		{
+			var ctx = GetContext (treeBuilder);
+			return member.CreateResolved (currentType != null ? ctx.WithCurrentTypeDefinition (currentType) : ctx);
 		}
 		
 		protected IType Resolve (ITreeNavigator treeBuilder, IUnresolvedTypeDefinition type)

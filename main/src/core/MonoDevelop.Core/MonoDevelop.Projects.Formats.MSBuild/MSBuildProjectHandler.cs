@@ -850,7 +850,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			if (eitem.Configurations.Count > 0) {
-				ItemConfiguration conf = eitem.Configurations ["Debug"];
+				ItemConfiguration conf = eitem.Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == "Debug");
 				if (conf == null) conf = eitem.Configurations [0];
 				MSBuildProperty bprop = SetGroupProperty (globalGroup, "Configuration", conf.Name, false);
 				bprop.Condition = " '$(Configuration)' == '' ";

@@ -195,6 +195,7 @@ namespace MonoDevelop.Projects
 			int nameChanges = 0;
 			
 			DotNetAssemblyProject prj = new DotNetAssemblyProject ("C#");
+			prj.FileFormat = Util.FileFormatMSBuild05;
 			prj.NameChanged += delegate {
 				nameChanges++;
 			};
@@ -490,8 +491,8 @@ namespace MonoDevelop.Projects
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("reloading");
 			Project p = (Project) sol.Items [0];
 			
-			Assert.AreEqual ("MSBuild05", sol.FileFormat.Id);
-			Assert.AreEqual ("MSBuild05", p.FileFormat.Id);
+			Assert.AreEqual (Ide.IdeApp.Services.ProjectService.DefaultFileFormatId, sol.FileFormat.Id);
+			Assert.AreEqual (Ide.IdeApp.Services.ProjectService.DefaultFileFormatId, p.FileFormat.Id);
 			
 			// Change solution format of unsaved solution
 			

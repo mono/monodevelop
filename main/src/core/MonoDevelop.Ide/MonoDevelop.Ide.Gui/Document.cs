@@ -178,7 +178,17 @@ namespace MonoDevelop.Ide.Gui
 				StartReparseThread ();
 			}*/
 		}
-		
+
+		public bool IsCompileableInProject {
+			get {
+				var project = Project;
+				if (project == null)
+					return false;
+				var pf = project.GetProjectFile (FileName);
+				return pf != null && pf.BuildAction == BuildAction.Compile;
+			}
+		}
+
 		IProjectContent singleFileContext;
 		public  virtual IProjectContent ProjectContent {
 			get {
@@ -585,7 +595,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (editorExtension != null)
 				last.Next = editor.AttachExtension (editorExtension);
-			
 		}
 		
 		internal void OnDocumentAttached ()

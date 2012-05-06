@@ -101,7 +101,8 @@ namespace MonoDevelop.Refactoring
 			if (resolveDirect) {
 				if (resolveMenu.CommandInfos.Count > 0)
 					resolveMenu.CommandInfos.AddSeparator ();
-				
+				if (node is ObjectCreateExpression)
+					node = ((ObjectCreateExpression)node).Type;
 				foreach (string ns in possibleNamespaces) {
 					resolveMenu.CommandInfos.Add (string.Format ("{0}", ns + "." + doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc, resolveResult, ns, false).Run));
 				}
@@ -257,7 +258,7 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (resolveResult is ErrorResolveResult) {
-				var identifier = unit != null ? unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Identifier> (location) : null;
+				var identifier = unit != null ? unit.GetNodeAt<Identifier> (location) : null;
 				if (identifier != null) {
 					var uiResult = resolveResult as UnknownIdentifierResolveResult;
 					if (uiResult != null) {
