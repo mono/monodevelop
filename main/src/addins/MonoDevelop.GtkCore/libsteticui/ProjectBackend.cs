@@ -12,6 +12,9 @@ namespace Stetic {
 
 	internal class ProjectBackend : MarshalByRefObject, IProject, IDisposable 
 	{
+		const string SteticVersion = "1.0";
+
+
 		List<WidgetData> topLevels;
 		bool modified;
 		Gtk.Widget selection;
@@ -300,6 +303,7 @@ namespace Stetic {
 			XmlDocument doc = new XmlDocument ();
 			doc.PreserveWhitespace = true;
 			XmlElement toplevel = doc.CreateElement ("stetic-interface");
+			toplevel.SetAttribute ("version", SteticVersion);
 			doc.AppendChild (toplevel);
 			modifiedTopLevels.Clear ();
 			
@@ -544,6 +548,7 @@ namespace Stetic {
 			doc2.PreserveWhitespace = true;
 
 			XmlElement node2 = doc2.CreateElement ("stetic-interface");
+			node2.SetAttribute ("version", SteticVersion);
 			doc2.AppendChild (node2);
 		
 			XmlNode ifnode2 = doc2.ImportNode (ifnode, true);
@@ -582,6 +587,7 @@ namespace Stetic {
 							doc2.PreserveWhitespace = true;
 							                     
 							XmlElement node2 = doc2.CreateElement ("stetic-interface");
+							node2.SetAttribute ("version", SteticVersion);
 							doc2.AppendChild (node2);
 						
 							XmlNode wnode2 = doc2.ImportNode (toplevel, true);
@@ -625,6 +631,7 @@ namespace Stetic {
 			doc.PreserveWhitespace = true;
 
 			XmlElement toplevel = doc.CreateElement ("stetic-interface");
+			toplevel.SetAttribute ("version", SteticVersion);
 			doc.AppendChild (toplevel);
 
 			ObjectWriter writer = new ObjectWriter (doc, FileFormat.Native);
