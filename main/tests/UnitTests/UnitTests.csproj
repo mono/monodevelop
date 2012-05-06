@@ -158,18 +158,22 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\ngit\NGit\NGit.csproj">
       <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
+      <Private>False</Private>
       <Name>NGit</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\ngit\Sharpen\Sharpen.csproj">
       <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
+      <Private>False</Private>
       <Name>Sharpen</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\ngit\NSch\NSch.csproj">
       <Project>{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}</Project>
+      <Private>False</Private>
       <Name>NSch</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Private>False</Private>
       <Name>MonoDevelop.SourceEditor</Name>
     </ProjectReference>
   </ItemGroup>
