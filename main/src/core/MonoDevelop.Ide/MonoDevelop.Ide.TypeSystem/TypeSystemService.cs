@@ -839,6 +839,18 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				#endregion
+
+			}
+
+			bool HasCyclicRefs (ProjectContentWrapper wrapper)
+			{
+				foreach (var referencedProject in wrapper.ReferencedProjects) {
+					ProjectContentWrapper w;
+					if (referencedProject == Project || projectContents.TryGetValue (referencedProject, out w) && HasCyclicRefs (w)) {
+						return true;
+					}
+				}
+				return false;
 			}
 
 			public void ReloadAssemblyReferences (Project project)
@@ -850,8 +862,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					var contexts = new List<IAssemblyReference> ();
 					foreach (var referencedProject in ReferencedProjects) {
 						ProjectContentWrapper wrapper;
-						if (projectContents.TryGetValue (referencedProject, out wrapper))
+						if (projectContents.TryGetValue (referencedProject, out wrapper)) {
+							if (HasCyclicRefs (wrapper))
+								continue;
 							contexts.Add (new UnresolvedAssemblyDecorator (wrapper));
+						}
 					}
 					
 					AssemblyContext ctx;
