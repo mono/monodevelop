@@ -488,6 +488,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			this.CreateDocumentParsedHandler ();
 			RunFirstTimeFoldUpdate (text);
+			Document.InformLoadComplete ();
 		}
 		
 		public override void Load (string fileName)

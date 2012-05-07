@@ -370,7 +370,7 @@ namespace MonoDevelop.Ide.Gui
 							vcFound = doc.Window.ViewContent;
 						
 						//old method as fallback
-						if ((vcFound == null) && (doc.FileName == uniqueName))
+						if ((vcFound == null) && (doc.FileName == uniqueName || doc.FileName == fileName))
 							vcFound = doc.Window.ViewContent;
 						//if found, select window and jump to line
 						if (vcFound != null) {
