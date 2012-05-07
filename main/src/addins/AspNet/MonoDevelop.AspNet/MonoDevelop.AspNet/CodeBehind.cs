@@ -183,8 +183,8 @@ namespace MonoDevelop.AspNet
 					break;
 				foreach (var member in cls.GetMembers ()) {
 					if (member.Accessibility == Accessibility.Private || member.Accessibility == Accessibility.Internal)
-					    continue;
-					if (member.DeclaringType.GetDefinition ().Region.FileName == designerFile)
+						continue;
+					if (member.Region.FileName == designerFile)
 						continue;
 					existingMembers.Add (member.Name);
 				}
