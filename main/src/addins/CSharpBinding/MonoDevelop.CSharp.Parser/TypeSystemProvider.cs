@@ -44,7 +44,13 @@ namespace MonoDevelop.CSharp.Parser
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser (GetCompilerArguments (project));
 			parser.GenerateTypeSystemMode = !storeAst;
 			var result = new ParsedDocumentDecorator ();
-			
+
+			if (project != null) {
+				var projectFile = project.Files.GetFile (fileName);
+				if (projectFile != null && projectFile.BuildAction != BuildAction.Compile)
+					result.Flags |= ParsedDocumentFlags.NonSerializable;
+			}
+
 			var tagComments = CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
 			
 			parser.CompilationUnitCallback = delegate (CompilerCompilationUnit top) {
