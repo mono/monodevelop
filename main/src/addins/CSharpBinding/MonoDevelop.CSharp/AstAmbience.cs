@@ -119,6 +119,11 @@ namespace MonoDevelop.CSharp
 				} else if (e.Role == CustomEventDeclaration.RemoveAccessorRole) {
 					sb.Append ("remove");
 				}
+			} else if (e is OperatorDeclaration) {
+				var op = e as OperatorDeclaration;
+				sb.Append ("operator");
+				sb.Append (op.OperatorTypeToken.GetText ());
+				AppendParameter (sb, op.Parameters);
 			} else if (e is MethodDeclaration) {
 				var method = e as MethodDeclaration;
 				sb.Append (method.Name);

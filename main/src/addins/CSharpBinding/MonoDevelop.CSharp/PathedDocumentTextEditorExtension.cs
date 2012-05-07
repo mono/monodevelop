@@ -192,7 +192,10 @@ namespace MonoDevelop.CSharp
 				var extEditor = ext.Document.GetContent<IExtensibleTextEditor> ();
 				if (extEditor != null) {
 					int line, col;
-					if (node is EntityDeclaration && !(node is Accessor)) {
+					if (node is OperatorDeclaration) { 
+						line = Math.Max (1, ((OperatorDeclaration)node).OperatorToken.StartLocation.Line);
+						col = Math.Max (1, ((OperatorDeclaration)node).OperatorToken.StartLocation.Column);
+					} else if (node is EntityDeclaration && !(node is Accessor)) {
 						line = Math.Max (1, ((EntityDeclaration)node).NameToken.StartLocation.Line);
 						col = Math.Max (1, ((EntityDeclaration)node).NameToken.StartLocation.Column);
 					} else {
