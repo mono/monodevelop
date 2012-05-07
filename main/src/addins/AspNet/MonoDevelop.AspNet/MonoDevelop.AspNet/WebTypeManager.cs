@@ -58,14 +58,13 @@ namespace MonoDevelop.AspNet
 				throw new ArgumentException ("project");
 			Project = project;
 			SystemWebDom = GetSystemWebDom (project);
-			Compilation = TypeSystemService.GetCompilation (project);
 			if (Compilation == null)
 				throw new InvalidOperationException ("Could not load parse database for project");
 		}
 		
 		public AspNetAppProject Project { get; private set; }
 		public ICompilation SystemWebDom { get; private set; }
-		public ICompilation Compilation { get; private set; }
+		public ICompilation Compilation { get { return TypeSystemService.GetCompilation (Project);} }
 		
 		public TargetFramework TargetFramework {
 			get { return Project.TargetFramework; }
