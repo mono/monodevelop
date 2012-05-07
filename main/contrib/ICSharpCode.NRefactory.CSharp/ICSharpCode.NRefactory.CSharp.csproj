@@ -366,6 +366,10 @@
     <Compile Include="Ast\GeneralScope\WhitespaceNode.cs" />
     <Compile Include="Formatter\FormattingOptionsFactory.cs" />
     <Compile Include="NameLookupMode.cs" />
+    <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
+    <Compile Include="Refactoring\CodeActions\ImplementAbstractMembersAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ImplementInterfaceAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ImplementInterfaceExplicitAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
