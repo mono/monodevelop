@@ -676,7 +676,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (project == null)
 					throw new ArgumentNullException ("project");
 				this.Project = project;
-				this.content = new LazyProjectLoader (this);
+				this.content = new LazyProjectLoader (this).Content;
 			}
 			
 			public IEnumerable<Project> ReferencedProjects {
@@ -700,7 +700,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						return contextTask;
 					}
 				}
-				IProjectContent Content {
+
+				public IProjectContent Content {
 					get {
 						return contextTask.Result;
 					}
