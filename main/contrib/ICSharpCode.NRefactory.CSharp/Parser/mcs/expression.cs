@@ -9870,7 +9870,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		public CollectionElementInitializer(Expression argument)
+		public CollectionElementInitializer (Expression argument)
 			: base (null, new Arguments (1))
 		{
 			IsSingle = true;
@@ -9878,7 +9878,7 @@ namespace Mono.CSharp
 			this.loc = argument.Location;
 		}
 
-		public CollectionElementInitializer(List<Expression> arguments, Location loc)
+		public CollectionElementInitializer (List<Expression> arguments, Location loc)
 			: base (null, new Arguments (arguments.Count))
 		{
 			IsSingle = false;

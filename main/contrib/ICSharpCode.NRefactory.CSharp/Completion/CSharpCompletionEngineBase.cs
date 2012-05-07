@@ -291,7 +291,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return -1;
 			}
 
-			return parameter.Pop () + 1;
+			return parameter.Pop() + 1;
 		}
 
 		#region Context helper methods

@@ -950,10 +950,9 @@ namespace Mono.CSharp {
 						async_return.EmitAssign (ec);
 
 						ec.EmitEpilogue ();
-
-						ec.Emit (unwind_protect ? OpCodes.Leave : OpCodes.Br, async_body.BodyEnd);
 					}
 
+					ec.Emit (unwind_protect ? OpCodes.Leave : OpCodes.Br, async_body.BodyEnd);
 					return;
 				}
 
@@ -2461,15 +2460,6 @@ namespace Mono.CSharp {
 			//
 			if (ec.CurrentAnonymousMethod is StateMachineInitializer && ParametersBlock.Original == ec.CurrentAnonymousMethod.Block.Original)
 				return ec.CurrentAnonymousMethod.Storey;
-
-			//
-			// When referencing a variable inside iterator where all
-			// variables will be captured anyway we don't need to create
-			// another storey context
-			//
-			if (ParametersBlock.StateMachine is IteratorStorey) {
-				return ParametersBlock.StateMachine;
-			}
 
 			if (am_storey == null) {
 				MemberBase mc = ec.MemberContext as MemberBase;
@@ -4539,6 +4529,12 @@ namespace Mono.CSharp {
 			ec.MarkLabel (start_finally);
 
 			if (finally_host != null) {
+				finally_host.Define ();
+				finally_host.Emit ();
+
+				// Now it's safe to add, to close it properly and emit sequence points
+				finally_host.Parent.AddMember (finally_host);
+
 				var ce = new CallEmitter ();
 				ce.InstanceExpression = new CompilerGeneratedThis (ec.CurrentType, loc);
 				ce.EmitPredefined (ec, finally_host.Spec, new Arguments (0));

@@ -237,6 +237,9 @@ FILES =  \
 	Refactoring/CodeActions/GenerateGetterAction.cs \
 	Refactoring/CodeActions/GeneratePropertyAction.cs \
 	Refactoring/CodeActions/GenerateSwitchLabelsAction.cs \
+	Refactoring/CodeActions/ImplementAbstractMembersAction.cs \
+	Refactoring/CodeActions/ImplementInterfaceAction.cs \
+	Refactoring/CodeActions/ImplementInterfaceExplicitAction.cs \
 	Refactoring/CodeActions/InlineLocalVariableAction.cs \
 	Refactoring/CodeActions/InsertAnonymousMethodSignatureAction.cs \
 	Refactoring/CodeActions/IntroduceConstantAction.cs \
@@ -253,6 +256,7 @@ FILES =  \
 	Refactoring/CodeActions/UseVarKeywordAction.cs \
 	Refactoring/CodeIssue.cs \
 	Refactoring/CodeIssues/ConditionalToNullCoalescingIssue.cs \
+	Refactoring/CodeIssues/ExplicitConversionInForEachIssue.cs \
 	Refactoring/CodeIssues/GatherVisitorBase.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/AffectedEntity.cs \
 	Refactoring/CodeIssues/InconsistentNamingIssue/DefaultRules.cs \
