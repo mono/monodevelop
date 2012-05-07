@@ -490,7 +490,9 @@ namespace MonoDevelop.Ide.Gui
 			workbench.ShowView (newContent, true);
 			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow);
 			
-			return WrapDocument (newContent.WorkbenchWindow);
+			var document = WrapDocument (newContent.WorkbenchWindow);
+			document.StartReparseThread ();
+			return document;
 		}
 		
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow)

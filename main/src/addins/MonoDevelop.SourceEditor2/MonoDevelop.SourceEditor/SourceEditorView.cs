@@ -481,9 +481,13 @@ namespace MonoDevelop.SourceEditor
 		public override void LoadNew (Stream content, string mimeType)
 		{
 			Document.MimeType = mimeType;
+			string text = null;
 			if (content != null) {
-				Document.Text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out hadBom, out encoding);
+				text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out hadBom, out encoding);
+				Document.Text = text;
 			}
+			this.CreateDocumentParsedHandler ();
+			RunFirstTimeFoldUpdate (text);
 		}
 		
 		public override void Load (string fileName)
@@ -510,7 +514,27 @@ namespace MonoDevelop.SourceEditor
 			if (parsedDocument != null) 
 				widget.UpdateParsedDocument (parsedDocument);
 		}
-		
+
+		void CreateDocumentParsedHandler ()
+		{
+			this.WorkbenchWindowChanged += delegate {
+				if (WorkbenchWindow == null)
+					return;
+				WorkbenchWindow.DocumentChanged += delegate {
+					if (WorkbenchWindow.Document == null)
+						return;
+					foreach (var provider in WorkbenchWindow.Document.GetContents<IQuickTaskProvider> ()) {
+						widget.AddQuickTaskProvider (provider);
+					}
+					foreach (var provider in WorkbenchWindow.Document.GetContents<IUsageProvider> ()) {
+						widget.AddUsageTaskProvider (provider);
+					}
+					WorkbenchWindow.Document.DocumentParsed += delegate (object sender, EventArgs e) {
+						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedDocument);
+					};
+				};
+			};
+		}		
 		public void Load (string fileName, Encoding loadEncoding)
 		{
 			// Handle the "reload" case.
@@ -545,30 +569,12 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			// TODO: Would be much easier if the view would be created after the containers.
-			this.WorkbenchWindowChanged += delegate {
-				if (WorkbenchWindow == null)
-					return;
-				WorkbenchWindow.DocumentChanged += delegate {
-					if (WorkbenchWindow.Document == null)
-						return;
-					foreach (var provider in WorkbenchWindow.Document.GetContents<IQuickTaskProvider> ()) {
-						widget.AddQuickTaskProvider (provider);
-					}
+			CreateDocumentParsedHandler ();
 
-					foreach (var provider in WorkbenchWindow.Document.GetContents<IUsageProvider> ()) {
-						widget.AddUsageTaskProvider (provider);
-					}
-					
-					WorkbenchWindow.Document.DocumentParsed += delegate(object sender, EventArgs e) {
-						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedDocument);
-					};
-				};
-			};
-			
 			ContentName = fileName;
 			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);			
 			RunFirstTimeFoldUpdate (text);
-			
+
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
@@ -658,6 +664,7 @@ namespace MonoDevelop.SourceEditor
 			this.encoding = encoding;
 			ContentName = fileName;
 			RunFirstTimeFoldUpdate (content);
+			CreateDocumentParsedHandler ();
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 			UpdatePinnedWatches ();

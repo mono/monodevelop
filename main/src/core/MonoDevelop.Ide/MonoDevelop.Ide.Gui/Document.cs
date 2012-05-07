@@ -708,7 +708,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		uint parseTimeout = 0;
-		void StartReparseThread ()
+		internal void StartReparseThread ()
 		{
 			// Don't directly parse the document because doing it at every key press is
 			// very inefficient. Do it after a small delay instead, so several changes can
