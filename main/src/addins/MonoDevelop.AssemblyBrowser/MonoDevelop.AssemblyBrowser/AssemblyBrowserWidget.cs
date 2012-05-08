@@ -290,22 +290,13 @@ namespace MonoDevelop.AssemblyBrowser
 
 		void SearchTreeviewhandleRowActivated (object o, RowActivatedArgs args)
 		{
-			Gtk.TreeIter selectedIter;
+			TreeIter selectedIter;
 			if (searchTreeview.Selection.GetSelected (out selectedIter)) {
-//				var member = (IUnresolvedEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
+				var member = (IUnresolvedEntity)(searchMode != SearchMode.Type ? memberListStore.GetValue (selectedIter, 4) : typeListStore.GetValue (selectedIter, 4));
 				
-//				var nav = SearchMember (member);
-				if (searchMode == SearchMode.Disassembler) {
-					this.notebook1.Page = 0;
-//						int idx = DomMethodNodeBuilder.Disassemble ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
-//						this.inspectLabel.Selectable = true;
-//						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
-				}
-				if (searchMode == SearchMode.Decompiler) {
-					this.notebook1.Page = 0;
-//						int idx = DomMethodNodeBuilder.Decompile ((DomCecilMethod)member, false).ToUpper ().IndexOf (searchEntry.Text.ToUpper ());
-//						this.inspectLabel.Selectable = true;
-//						this.inspectLabel.SelectRegion (idx, idx + searchEntry.Text.Length);
+				var nav = SearchMember (member);
+				if (nav != null) {
+					notebook1.Page = 0;
 				}
 			}
 		}
@@ -656,10 +647,11 @@ namespace MonoDevelop.AssemblyBrowser
 				foreach (var unit in this.definitions) {
 					types += unit.UnresolvedAssembly.TopLevelTypeDefinitions.Count ();
 				}
-				var members = new List<IUnresolvedMember> ();
+				var memberDict = new Dictionary<AssemblyLoader, List<IUnresolvedMember>> ();
 				switch (searchMode) {
 				case SearchMode.Member:
 					foreach (var unit in this.definitions) {
+						var members = new List<IUnresolvedMember> ();
 						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
@@ -672,24 +664,29 @@ namespace MonoDevelop.AssemblyBrowser
 								}
 							}
 						}
+						memberDict [unit] = members;
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (var member in members) {
-							if (worker.CancellationPending)
-								return;
-							memberListStore.AppendValues (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu),
-							                              member.Name,
-							                              member.DeclaringTypeDefinition.FullName,
-							                              "", //((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
-							                              member);
+						foreach (var kv in memberDict) {
+							foreach (var member in kv.Value) {
+								if (worker.CancellationPending)
+									return;
+								memberListStore.AppendValues (ImageService.GetPixbuf (member.GetStockIcon (), Gtk.IconSize.Menu),
+								                              member.Name,
+								                              member.DeclaringTypeDefinition.FullName,
+								                              kv.Key.Assembly.FullName,
+								                              member);
+							}
 						}
-					});
+					}
+					);
 					break;
 				case SearchMode.Disassembler:
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
-					});
+					}
+					);
 					foreach (var unit in this.definitions) {
 						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
@@ -706,16 +703,19 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (var member in members) {
-							if (worker.CancellationPending)
-								return;
-							memberListStore.AppendValues ("", //iImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
-							                              member.Name,
-							                              member.DeclaringTypeDefinition.FullName,
-							                              "", //((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
-							                              member);
+						foreach (var kv in memberDict) {
+							foreach (var member in kv.Value) {
+								if (worker.CancellationPending)
+									return;
+								memberListStore.AppendValues ("", //iImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+								                              member.Name,
+								                              member.DeclaringTypeDefinition.FullName,
+								                              kv.Key.Assembly.FullName,
+								                              member);
+							}
 						}
-					});
+					}
+					);
 					break;
 				case SearchMode.Decompiler:
 					foreach (var unit in this.definitions) {
@@ -733,36 +733,44 @@ namespace MonoDevelop.AssemblyBrowser
 					}
 					Gtk.Application.Invoke (delegate {
 						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
-						foreach (var member in members) {
-							if (worker.CancellationPending)
-								return;
-							memberListStore.AppendValues ("", //ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
-							                              member.Name,
-							                              member.DeclaringTypeDefinition.FullName,
-							                              "", //((DomCecilCompilationUnit)member.DeclaringType.CompilationUnit).AssemblyDefinition.Name.FullName,
-							                              member);
+						foreach (var kv in memberDict) {
+							foreach (var member in kv.Value) {
+								if (worker.CancellationPending)
+									return;
+								memberListStore.AppendValues ("", //ImageService.GetPixbuf (member.StockIcon, Gtk.IconSize.Menu),
+								                              member.Name,
+								                              member.DeclaringTypeDefinition.FullName,
+								                              kv.Key.Assembly.FullName,
+								                              member);
+							}
 						}
-					});
+					}
+					);
 					break;
 				case SearchMode.Type:
-					var typeList = new List<IUnresolvedTypeDefinition> ();
+					var typeDict = new Dictionary<AssemblyLoader, List<IUnresolvedTypeDefinition>> ();
 					foreach (var unit in this.definitions) {
+						var typeList = new List<IUnresolvedTypeDefinition> ();
 						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
 							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
 								typeList.Add (type);
 						}
+						typeDict [unit] = typeList;
+						Console.WriteLine (unit.UnresolvedAssembly.AssemblyName);
 					}
 					Gtk.Application.Invoke (delegate {
-						foreach (var type in typeList) {
-							if (worker.CancellationPending)
-								return;
-							typeListStore.AppendValues (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu),
-							                            type.Name,
-							                            type.FullName.Substring (0, type.FullName.Length - type.Name.Length),
-							                           "", // ((DomCecilCompilationUnit)type.CompilationUnit).AssemblyDefinition.Name.FullName,
-							                            type);
+						foreach (var kv in typeDict) {
+							foreach (var type in kv.Value) {
+								if (worker.CancellationPending)
+									return;
+								typeListStore.AppendValues (ImageService.GetPixbuf (type.GetStockIcon (), Gtk.IconSize.Menu),
+								                            type.Name,
+								                            type.Namespace,
+								                            kv.Key.Assembly.FullName,
+								                            type);
+							}
 						}
 					});
 					
@@ -1376,6 +1384,7 @@ namespace MonoDevelop.AssemblyBrowser
 				ActiveMember = currentItem.DataItem as IEntity;
 				navigationForwardHistory.Clear ();
 			}
+			notebook1.Page = 0;
 			UpdateNavigationActions ();
 			CreateOutput ();
 		}
