@@ -15,8 +15,8 @@ namespace MonoDevelop.RegexToolkit
 		private global::Gtk.CheckButton checkbuttonReplace;
 		private global::Gtk.Entry entryReplace;
 		private global::Gtk.HBox hbox7;
-		private global::Gtk.CheckButton expandMatches;
 		private global::Gtk.Button buttonStart;
+		private global::Gtk.CheckButton expandMatches;
 		private global::Gtk.VBox vbox4;
 		private global::Gtk.Label label10;
 		private global::Gtk.ScrolledWindow scrolledwindow5;
@@ -119,8 +119,35 @@ namespace MonoDevelop.RegexToolkit
 			this.hbox7.Name = "hbox7";
 			this.hbox7.Spacing = 6;
 			// Container child hbox7.Gtk.Box+BoxChild
+			this.buttonStart = new global::Gtk.Button ();
+			this.buttonStart.CanDefault = true;
+			this.buttonStart.CanFocus = true;
+			this.buttonStart.Name = "buttonStart";
+			this.buttonStart.UseUnderline = true;
+			// Container child buttonStart.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w5 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w6 = new global::Gtk.HBox ();
+			w6.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w7 = new global::Gtk.Image ();
+			w7.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-media-play", global::Gtk.IconSize.Menu);
+			w6.Add (w7);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w9 = new global::Gtk.Label ();
+			w9.LabelProp = global::Mono.Unix.Catalog.GetString ("Start Regular E_xpression");
+			w9.UseUnderline = true;
+			w6.Add (w9);
+			w5.Add (w6);
+			this.buttonStart.Add (w5);
+			this.hbox7.Add (this.buttonStart);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.buttonStart]));
+			w13.PackType = ((global::Gtk.PackType)(1));
+			w13.Position = 0;
+			w13.Expand = false;
+			w13.Fill = false;
+			// Container child hbox7.Gtk.Box+BoxChild
 			this.expandMatches = new global::Gtk.CheckButton ();
-			this.expandMatches.TooltipMarkup = "Expands the tree representation of the matchign groups in the matches treeview further down.";
 			this.expandMatches.CanFocus = true;
 			this.expandMatches.Name = "expandMatches";
 			this.expandMatches.Label = global::Mono.Unix.Catalog.GetString ("Expand matches");
@@ -129,37 +156,9 @@ namespace MonoDevelop.RegexToolkit
 			this.expandMatches.UseUnderline = true;
 			this.expandMatches.BorderWidth = ((uint)(3));
 			this.hbox7.Add (this.expandMatches);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.expandMatches]));
-			w5.Position = 0;
-			w5.Expand = false;
-			// Container child hbox7.Gtk.Box+BoxChild
-			this.buttonStart = new global::Gtk.Button ();
-			this.buttonStart.CanDefault = true;
-			this.buttonStart.CanFocus = true;
-			this.buttonStart.Name = "buttonStart";
-			this.buttonStart.UseUnderline = true;
-			// Container child buttonStart.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w6 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w7 = new global::Gtk.HBox ();
-			w7.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w8 = new global::Gtk.Image ();
-			w8.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-media-play", global::Gtk.IconSize.Menu);
-			w7.Add (w8);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w10 = new global::Gtk.Label ();
-			w10.LabelProp = global::Mono.Unix.Catalog.GetString ("Start Regular E_xpression");
-			w10.UseUnderline = true;
-			w7.Add (w10);
-			w6.Add (w7);
-			this.buttonStart.Add (w6);
-			this.hbox7.Add (this.buttonStart);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.buttonStart]));
-			w14.PackType = ((global::Gtk.PackType)(1));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.expandMatches]));
 			w14.Position = 1;
 			w14.Expand = false;
-			w14.Fill = false;
 			this.vbox3.Add (this.hbox7);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox7]));
 			w15.PackType = ((global::Gtk.PackType)(1));
