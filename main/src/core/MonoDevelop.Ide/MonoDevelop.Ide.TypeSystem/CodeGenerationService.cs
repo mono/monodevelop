@@ -357,38 +357,34 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static InsertionPoint GetNewFieldPosition (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls)
 		{
-			throw new NotImplementedException ();
-//			if (cls.GetDefinition ().Fields.Count  == 0) 
-//				return points.FirstOrDefault ();
-//			var lastField = cls.Fields.Last ();
-//			return points.FirstOrDefault (p => p.Location.Convert () > lastField.Location);
+			if (!cls.Fields.Any ()) 
+				return points.FirstOrDefault ();
+			var lastField = cls.Fields.Last ();
+			return points.FirstOrDefault (p => p.Location.Convert () > lastField.Region.Begin);
 		}
 		
 		static InsertionPoint GetNewMethodPosition (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls)
 		{
-			throw new NotImplementedException ();
-//			if (cls.MethodCount + cls.ConstructorCount == 0) 
-//				return GetNewPropertyPosition (points, cls);
-//			var lastMember = cls.Members.Last ();
-//			return points.FirstOrDefault (p => p.Location.Convert () > lastMember.Location);
+			if (!cls.Methods.Any ()) 
+				return GetNewPropertyPosition (points, cls);
+			var lastMember = cls.Members.Last ();
+			return points.FirstOrDefault (p => p.Location.Convert () > lastMember.Region.Begin);
 		}
 		
 		static InsertionPoint GetNewPropertyPosition (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls)
 		{
-			throw new NotImplementedException ();
-//			if (cls.PropertyCount == 0)
-//			IProperty lastProperty = cls.Properties.Last ();
-//				return GetNewFieldPosition (points, cls);
-//			return points.FirstOrDefault (p => p.Location.Convert () > lastProperty.Location);
+			if (!cls.Properties.Any ())
+				return GetNewFieldPosition (points, cls);
+			var lastProperty = cls.Properties.Last ();
+			return points.FirstOrDefault (p => p.Location.Convert () > lastProperty.Region.Begin);
 		}
 		
 		static InsertionPoint GetNewEventPosition (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls)
 		{
-			throw new NotImplementedException ();
-//			if (cls.EventCount == 0)
-//				return GetNewMethodPosition (points, cls);
-//			IEvent lastEvent = cls.Events.Last ();
-//			return points.FirstOrDefault (p => p.Location.Convert () > lastEvent.Location);
+			if (!cls.Events.Any ())
+				return GetNewMethodPosition (points, cls);
+			var lastEvent = cls.Events.Last ();
+			return points.FirstOrDefault (p => p.Location.Convert () > lastEvent.Region.Begin);
 		}
 		#endregion
 		

@@ -174,10 +174,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			var met = new DefaultUnresolvedMethod (cls, signal.Handler) {
 				Accessibility = Accessibility.Protected,
-				ReturnType = new DefaultUnresolvedTypeDefinition (signal.SignalDescriptor.HandlerReturnTypeName)
+				ReturnType = ReflectionHelper.ParseReflectionName (signal.SignalDescriptor.HandlerReturnTypeName)
 			};
 			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-				met.Parameters.Add (new DefaultUnresolvedParameter (new DefaultUnresolvedTypeDefinition (pinfo.TypeName), pinfo.Name));
+				met.Parameters.Add (new DefaultUnresolvedParameter (ReflectionHelper.ParseReflectionName (pinfo.TypeName), pinfo.Name));
 			var resolvedCls = cls.Resolve (cls.ParsedFile.GetTypeResolveContext (TypeSystemService.GetCompilation (project), cls.Region.Begin)).GetDefinition ();
 			CodeGenerationService.AddNewMember (resolvedCls, cls, met);
 		}
@@ -223,7 +223,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		IUnresolvedField GetFieldCode (IUnresolvedTypeDefinition cls, Stetic.Component obj, string name)
 		{
 			return new DefaultUnresolvedField (cls, name) {
-				ReturnType = new DefaultUnresolvedTypeDefinition (obj.Type.ClassName),
+				ReturnType = ReflectionHelper.ParseReflectionName (obj.Type.ClassName),
 				Accessibility = Accessibility.Protected
 		};
 	}
