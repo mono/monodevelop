@@ -127,6 +127,23 @@ namespace MonoDevelop.VersionControl
 			return items.All (i => i.VersionInfo.CanRevert);
 		}
 		
+		/// <summary>
+		/// Determines whether a patch can be created 
+		/// from a VersionControlItemList.
+		/// </summary>
+		public static bool CanCreatePatch (VersionControlItemList items) 
+		{
+			if (null == items || 0 == items.Count){ return false; }
+			
+			foreach (var item in items) {
+				if (!item.Repository.CanRevert (item.Path)) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
 		// Finds the most specific ancestor path of a set of version control items.
 		// suggested is a suggested parent to try, or FilePath.Null.
 		// Returns FilePath.Empty if no parent is found.
