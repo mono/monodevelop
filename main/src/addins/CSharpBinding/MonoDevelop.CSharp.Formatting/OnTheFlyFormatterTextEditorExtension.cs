@@ -48,10 +48,11 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		
-		void RunFormatter ()
+		void RunFormatter (DocumentLocation location)
 		{
 			if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
-				OnTheFlyFormatter.Format (Document, textEditorData.Caret.Location);
+
+				OnTheFlyFormatter.Format (Document, location);
 			}
 		}
 
@@ -63,15 +64,11 @@ namespace MonoDevelop.CSharp.Formatting
 				skip = indentEngine.StateTracker.Engine.IsInsideOrdinaryCommentOrString ||
 					indentEngine.StateTracker.Engine.IsInsidePreprocessorDirective;
 			}
-
-			bool runBefore = !skip && keyChar == '}';
-			if (runBefore)
-				RunFormatter ();
 			var result = base.KeyPress (key, keyChar, modifier);
 
-/*			bool runAfter = !skip && keyChar == ';';
+			bool runAfter = !skip && keyChar == '}';
 			if (runAfter)
-				RunFormatter ();*/
+				RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column - 1));
 			return result;
 		}
 	}

@@ -190,7 +190,10 @@ namespace MonoDevelop.CSharp.Formatting
 				return false;
 			}
 			lastInsertedSemicolon = -1;
-			if (keyChar == ';' && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get ("SmartSemicolonPlacement", false)) {
+			if (keyChar == ';' && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get (
+				"SmartSemicolonPlacement",
+				false
+			)) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				DocumentLine curLine = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 				string text = textEditorData.Document.GetTextAt (curLine);
@@ -248,18 +251,21 @@ namespace MonoDevelop.CSharp.Formatting
 			//do the smart indent
 			if (textEditorData.Options.IndentStyle == IndentStyle.Smart || textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
 				bool retval;
+				//capture some of the current state
+				int oldBufLen = textEditorData.Length;
+				int oldLine = textEditorData.Caret.Line + 1;
+				bool hadSelection = textEditorData.IsSomethingSelected;
+				bool reIndent = false;
+
+				//pass through to the base class, which actually inserts the character
+				//and calls HandleCodeCompletion etc to handles completion
 				using (var undo = textEditorData.OpenUndoGroup ()) {
-					//capture some of the current state
-					int oldBufLen = textEditorData.Length;
-					int oldLine = textEditorData.Caret.Line + 1;
-					bool hadSelection = textEditorData.IsSomethingSelected;
-					bool reIndent = false;
-
-					//pass through to the base class, which actually inserts the character
-					//and calls HandleCodeCompletion etc to handles completion
 					DoPreInsertionSmartIndent (key);
-					retval = base.KeyPress (key, keyChar, modifier);
+				}
 
+				retval = base.KeyPress (key, keyChar, modifier);
+
+				using (var undo = textEditorData.OpenUndoGroup ()) {
 					//handle inserted characters
 					if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
 						return retval;
@@ -546,6 +552,7 @@ namespace MonoDevelop.CSharp.Formatting
 						if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
 							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 					}
+
 					newIndentLength = textEditorData.Replace (pos, nlwsp, newIndent);
 					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 					// Engine state is now invalid

@@ -108,7 +108,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			memberStartOffset = sb.Length;
-			sb.Append (data.Editor.GetTextBetween (seg.Offset, seg.EndOffset));
+			sb.Append (data.Editor.GetTextBetween (seg.Offset, endOffset));
 			
 			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
 			// could interfere with the current indentation.
@@ -117,7 +117,7 @@ namespace MonoDevelop.CSharp.Formatting
 				sb.Append (data.Editor.EolMarker);
 			}
 			sb.Append (data.Editor.EolMarker);
-			sb.Append (new string ('}', closingBrackets));
+			sb.Append (new string ('}', closingBrackets + 1));
 			
 			return sb.ToString ();
 		}
