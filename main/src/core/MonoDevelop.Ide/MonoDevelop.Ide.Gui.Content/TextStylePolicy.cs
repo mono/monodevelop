@@ -56,6 +56,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			FileWidth = 120;
 			TabWidth = 4;
 			IndentWidth = 4;
+			RemoveTrailingWhitespace = true;
 		}
 		
 		[ItemProperty]
