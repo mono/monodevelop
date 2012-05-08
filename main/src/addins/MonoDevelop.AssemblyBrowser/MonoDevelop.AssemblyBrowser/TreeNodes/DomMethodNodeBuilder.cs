@@ -78,7 +78,6 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)dataObject;
 			var dt = new DefaultResolvedTypeDefinition (GetContext (treeBuilder), method.DeclaringTypeDefinition);
 			var resolved = (DefaultResolvedMethod)Resolve (treeBuilder, method, dt);
-			Console.WriteLine ("resol:" + resolved.DeclaringTypeDefinition);
 			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
 
 			if (method.IsPrivate || method.IsInternal)
