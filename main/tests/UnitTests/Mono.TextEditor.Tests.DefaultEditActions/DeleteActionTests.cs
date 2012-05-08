@@ -74,7 +74,34 @@ namespace Mono.TextEditor.Tests.Actions
 			Assert.AreEqual (@"1234567890
 1234567890", data.Document.Text);
 		}
+
+		[Test()]
+		public void TestDeleteCaretLineWithFoldings ()
+		{
+			var data = Create (@"1234567890
+1234$678+[90
+1234567890
+123456789]0
+1234567890");
+			DeleteActions.CaretLine (data);
+			Assert.AreEqual (@"1234567890
+1234567890", data.Document.Text);
+		}
 		
+		[Test()]
+		public void TestDeleteCaretLineWithFoldingsCase2 ()
+		{
+			var data = Create (@"1234567890
+12+[3467890
+12]34$567+[890
+123456789]0
+1234567890");
+			DeleteActions.CaretLine (data);
+			Assert.AreEqual (@"1234567890
+1234567890", data.Document.Text);
+		}
+		
+
 		[Test()]
 		public void TestDeleteCaretLineToEnd ()
 		{
@@ -86,6 +113,22 @@ namespace Mono.TextEditor.Tests.Actions
 1234
 1234567890", data.Document.Text);
 		}
+
+		[Test()]
+		public void TestDeleteCaretLineToEndWithFoldings ()
+		{
+			var data = Create (@"1234567890
+1234$678+[90
+1234567890
+123456789]0
+1234567890");
+			DeleteActions.CaretLineToEnd (data);
+			Assert.AreEqual (@"1234567890
+1234
+1234567890", data.Document.Text);
+		}
+
+
 
 		[Test()]
 		public void TestDeletePreviousWord ()

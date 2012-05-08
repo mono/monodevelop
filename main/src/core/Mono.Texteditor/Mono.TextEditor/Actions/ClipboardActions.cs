@@ -212,8 +212,9 @@ namespace Mono.TextEditor
 				if (data.IsSomethingSelected) {
 					selection = data.MainSelection;
 				} else {
-					selection = new Selection (new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn),
-					                           new DocumentLocation (data.Caret.Line, data.Document.GetLine (data.Caret.Line).LengthIncludingDelimiter));
+					var start = DeleteActions.GetStartOfLineOffset (data, data.Caret.Location);
+					var end = DeleteActions.GetEndOfLineOffset (data, data.Caret.Location);
+					selection = new Selection (data.OffsetToLocation (start), data.OffsetToLocation (end));
 				}
 				CopyData (data, selection);
 				

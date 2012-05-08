@@ -84,13 +84,56 @@ namespace Mono.TextEditor
 		{
 			NextWord (data, true);
 		}
-		
+
+
+		internal static int GetEndOfLineOffset (TextEditorData data, DocumentLocation loc, bool includeDelimiter = true)
+		{
+			var line = data.Document.GetLine (loc.Line);
+			loc = new DocumentLocation (loc.Line, line.Length + 1);
+
+			// handle folding
+			var foldings = data.Document.GetStartFoldings (loc.Line);
+			FoldSegment segment = null;
+			foreach (FoldSegment folding in foldings) {
+				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (loc))) {
+					segment = folding;
+					break;
+				}
+			}
+			if (segment != null) 
+				loc = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
+			line = data.GetLine (loc.Line);
+			return includeDelimiter ? line.EndOffsetIncludingDelimiter : line.EndOffset;
+		}
+
+		internal static int GetStartOfLineOffset (TextEditorData data, DocumentLocation loc)
+		{
+			var line = data.Document.GetLine (loc.Line);
+			loc = new DocumentLocation (loc.Line, line.Length + 1);
+
+			// handle folding
+			var foldings = data.Document.GetFoldingsFromOffset (line.Offset);
+			FoldSegment segment = null;
+			foreach (FoldSegment folding in foldings) {
+				if (folding.IsFolded) {
+					if (segment != null && segment.Offset < folding.Offset)
+						continue;
+					segment = folding;
+				}
+			}
+			if (segment != null) 
+				loc = data.Document.OffsetToLocation (segment.StartLine.Offset); 
+			line = data.GetLine (loc.Line);
+			return line.Offset;
+		}
+
 		public static void CaretLine (TextEditorData data)
 		{
 			if (data.Document.LineCount <= 1 || !data.CanEdit (data.Caret.Line))
 				return;
-			DocumentLine line = data.Document.GetLine (data.Caret.Line);
-			data.Remove (line.Offset, line.LengthIncludingDelimiter);
+			var start = GetStartOfLineOffset (data, data.Caret.Location);
+			var end = GetEndOfLineOffset (data, data.Caret.Location);
+			data.Remove (start, end - start);
 			data.Caret.Column = DocumentLocation.MinColumn;
 		}
 		
@@ -108,7 +151,8 @@ namespace Mono.TextEditor
 					data.Remove (line.Offset + physColumn, line.LengthIncludingDelimiter - physColumn);
 				} else {
 					// Delete from cursor position to the end of the line
-					data.Remove (line.Offset + physColumn, line.Length - physColumn);
+					var end = GetEndOfLineOffset (data, data.Caret.Location, false);
+					data.Remove (line.Offset + physColumn, end - (line.Offset + physColumn));
 				}
 			}
 			data.Document.CommitLineUpdate (data.Caret.Line);
