@@ -26,7 +26,6 @@ SUBDIRS = \
 	MonoDevelop.RegexToolkit \
 	CBinding \
 	MonoDevelop.AssemblyBrowser \
-	MonoDevelop.CodeMetrics \
 	MonoDevelop.Debugger.Soft \
 	WindowsPlatform \
 	MonoDevelop.HexEditor \
