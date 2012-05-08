@@ -113,18 +113,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		IEnumerable<IMethod> CollectMethods(AstNode resolvedNode, MethodGroupResolveResult resolveResult)
 		{
-			//			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			bool onlyStatic = false;
-			if (resolvedNode is IdentifierExpression && currentMember != null && currentMember.IsStatic) {
+			if (resolvedNode is IdentifierExpression && currentMember != null && currentMember.IsStatic || resolveResult.TargetResult is TypeResolveResult) {
 				onlyStatic = true;
 			}
-			
 			foreach (var method in resolveResult.Methods) {
 				if (method.IsConstructor) {
 					continue;
 				}
-				//				if (!lookup.IsAccessible (member, true))
-				//					continue;
+				if (!lookup.IsAccessible (method, true))
+					continue;
 				if (onlyStatic && !method.IsStatic) {
 					continue;
 				}
