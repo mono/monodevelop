@@ -279,14 +279,17 @@ namespace Mono.TextEditor.Highlighting
 				this.CurSpan = span;
 			}
 
-			public void PopSpan ()
+			public Span PopSpan ()
 			{
-				if (spanStack.Count > 0)
-					spanStack.Pop ();
+				Span result = null;
+				if (spanStack.Count > 0) {
+					result = spanStack.Pop ();
+				}
 				if (ruleStack.Count > 1)
 					ruleStack.Pop ();
 				this.CurRule = ruleStack.Peek ();
 				this.CurSpan = spanStack.Count > 0 ? spanStack.Peek () : null;
+				return result;
 			}
 
 			public Rule GetRule (Span span)
@@ -321,7 +324,6 @@ namespace Mono.TextEditor.Highlighting
 			protected virtual void ScanSpan (ref int i)
 			{
 				int textOffset = i - StartOffset;
-				
 				for (int j = 0; j < CurRule.Spans.Length; j++) {
 					Span span = CurRule.Spans [j];
 
@@ -409,7 +411,7 @@ namespace Mono.TextEditor.Highlighting
 						if (cur.Escape != null) {
 							bool mismatch = false;
 							for (int j = 0; j < cur.Escape.Length; j++) {
-								if (textIndex + j >= CurText.Length || CurText[textIndex + j] != cur.Escape[j]) {
+								if (textIndex + j >= CurText.Length || CurText [textIndex + j] != cur.Escape [j]) {
 									mismatch = true;
 									break;
 								}
@@ -426,7 +428,7 @@ namespace Mono.TextEditor.Highlighting
 					}
 					ScanSpan (ref i);
 					if (i < doc.TextLength)
-						ParseChar (ref i, CurText[textIndex]);
+						ParseChar (ref i, CurText [textIndex]);
 				}
 			}
 		}

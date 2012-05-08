@@ -1000,9 +1000,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			void PopCurrentIfBlock ()
 			{
 				while (spanStack.Count > 0 && (spanStack.Peek () is IfBlockSpan || spanStack.Peek () is ElseIfBlockSpan || spanStack.Peek () is ElseBlockSpan)) {
-					var poppedSpan = spanStack.Pop ();
-					if (ruleStack.Count > 1) // rulStack[1] is always syntax mode
-						ruleStack.Pop ();
+					var poppedSpan = PopSpan ();
 					if (poppedSpan is IfBlockSpan)
 						break;
 				}
