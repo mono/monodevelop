@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			bool isStatic = targetResolveResult is TypeResolveResult;
 			if (createInOtherType) {
-				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface || targetResolveResult.Type.Kind == TypeKind.Enum)
 					yield break;
 			} else {
 				if (state.CurrentMember == null)

@@ -54,14 +54,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		IEnumerable<CodeAction> GetActionsFromMemberReferenceExpression(RefactoringContext context, MemberReferenceExpression invocation)
 		{
 			if (!(context.Resolve(invocation).IsError)) 
-				yield break;
+					yield break;
 
 			var methodName = invocation.MemberName;
 			var guessedType = CreateFieldAction.GuessType(context, invocation);
 			if (guessedType.Kind != TypeKind.Delegate)
-				yield break;
+					yield break;
 			var invocationMethod = guessedType.GetDelegateInvokeMethod();
-
 			var state = context.GetResolverStateBefore(invocation);
 			if (state.CurrentTypeDefinition == null)
 				yield break;
@@ -73,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
 					yield break;
 				isStatic = targetResolveResult is TypeResolveResult;
-				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface || targetResolveResult.Type.Kind == TypeKind.Enum)
 					yield break;
 			} else {
 				if (state.CurrentMember == null)
@@ -153,7 +152,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
 					yield break;
 				isStatic = targetResolveResult is TypeResolveResult;
-				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface || targetResolveResult.Type.Kind == TypeKind.Enum)
 					yield break;
 			} else {
 				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;

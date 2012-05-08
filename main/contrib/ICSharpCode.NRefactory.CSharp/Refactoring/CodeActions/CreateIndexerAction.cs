@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
 					yield break;
 				isStatic = targetResolveResult is TypeResolveResult;
-				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface || targetResolveResult.Type.Kind == TypeKind.Enum)
 					yield break;
 			} else {
 				isStatic = indexer.Target is IdentifierExpression && state.CurrentMember.IsStatic;
