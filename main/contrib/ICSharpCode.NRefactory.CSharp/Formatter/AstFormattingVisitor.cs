@@ -210,8 +210,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				removedChars += document.GetLineByNumber(loc.Line + foundBlankLines - blankLines).EndOffset
 					- document.GetLineByNumber(loc.Line).EndOffset;
 			}
-			if (removedChars == 0 && sb.Length == 0)
-				return;
 			AddChange(start, removedChars, sb.ToString());
 		}
 
@@ -237,23 +235,23 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 		{
-			FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
-			}
-			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) {
+			} else if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesAfter(usingDeclaration, policy.BlankLinesAfterUsings);
+			} else {
+				FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			}
 		}
 
 		public override void VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
-			FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
-			}
-			if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) {
+			} else if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesAfter(usingDeclaration, policy.BlankLinesAfterUsings);
+			} else {
+				FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			}
 		}
 
@@ -1298,6 +1296,8 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		TextReplaceAction AddChange(int offset, int removedChars, string insertedText)
 		{
+			if (removedChars == 0 && string.IsNullOrEmpty (insertedText))
+				return null;
 			var action = new TextReplaceAction (offset, removedChars, insertedText);
 			changes.Add(action);
 			return action;
