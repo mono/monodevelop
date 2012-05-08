@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=2.9.6
+VERSION=
 PACKAGE=aspnetedit
 prefix=/usr/local
 config=DEBUG
