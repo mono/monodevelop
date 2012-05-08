@@ -440,8 +440,9 @@ namespace MonoDevelop.AssemblyBrowser
 				AppendHelpParameterList (sb, indexer.Parameters);
 				return sb.ToString ();
 			case EntityType.Field:
-			case EntityType.Event:
 				return "F:" + member.FullName;
+			case EntityType.Event:
+				return "E:" + member.FullName;
 			case EntityType.Operator: // todo
 				return "todo";
 			}
