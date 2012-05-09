@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Formatting
 		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
 			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
-			if (OnTheFlyFormatterTextEditorExtension.OnTheFlyFormatting) {
+			if (OnTheFlyFormatting) {
 				int i = insertionOffset + insertedChars;
 				bool foundNonWsFollowUp = false;
 
@@ -119,6 +119,23 @@ namespace MonoDevelop.CSharp.Formatting
 				documentLine = documentLine.PreviousLine;
 			}
 		} 
+
+		public static bool OnTheFlyFormatting {
+			get {
+				return PropertyService.Get ("OnTheFlyFormatting", true);
+			}
+			set {
+				PropertyService.Set ("OnTheFlyFormatting", value);
+			}
+		}
+		
+		void RunFormatter (DocumentLocation location)
+		{
+			if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
+
+				OnTheFlyFormatter.Format (Document, location);
+			}
+		}
 
 		public CSharpTextEditorIndentation ()
 		{
@@ -182,6 +199,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
+			bool skipFormatting = StateTracker.Engine.IsInsideOrdinaryCommentOrString ||
+					StateTracker.Engine.IsInsidePreprocessorDirective;
+
 			cursorPositionBeforeKeyPress = textEditorData.Caret.Offset;
 			bool isSomethingSelected = textEditorData.IsSomethingSelected;
 			if (key == Gdk.Key.BackSpace && textEditorData.Caret.Offset == lastInsertedSemicolon) {
@@ -290,6 +310,8 @@ namespace MonoDevelop.CSharp.Formatting
 					bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
 					if (reIndent || automaticReindent)
 						DoReSmartIndent ();
+					if (!skipFormatting && keyChar == '}')
+						RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column - 1));
 				}
 
 				stateTracker.UpdateEngine ();
@@ -305,7 +327,11 @@ namespace MonoDevelop.CSharp.Formatting
 
 			//pass through to the base class, which actually inserts the character
 			//and calls HandleCodeCompletion etc to handles completion
-			return base.KeyPress (key, keyChar, modifier);
+			var result = base.KeyPress (key, keyChar, modifier);
+
+			if (!skipFormatting && keyChar == '}')
+				RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column - 1));
+			return result;
 		}
 
 		static int GuessSemicolonInsertionOffset (TextEditorData data, DocumentLine curLine)

@@ -98,8 +98,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
-		<!-- on the fly formatter must be before the completion text editor engine, 
+		<!-- indent engine must be before the completion text editor engine, 
 		otherwise stuff like 
 		
 		int Foo {
@@ -112,7 +111,7 @@
 		         privaet;
 		
 		-->
-		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.OnTheFlyFormatterTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
