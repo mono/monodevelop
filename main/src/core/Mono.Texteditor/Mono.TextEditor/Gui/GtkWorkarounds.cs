@@ -780,6 +780,54 @@ namespace Mono.TextEditor
 		
 		[DllImport("gtksharpglue-2", CallingConvention=CallingConvention.Cdecl)]
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
+
+		public static string MarkupLinks (string text)
+		{
+			if (Mono.TextEditor.GtkWorkarounds.GtkMinorVersion < 18)
+				return text;
+			return HighlightUrlSemanticRule.UrlRegex.Replace (text, MatchToUrl);
+		}
+
+		static string MatchToUrl (System.Text.RegularExpressions.Match m)
+		{
+			var s = m.ToString ();
+			return String.Format ("<a href='{0}'>{1}</a>", s, s.Replace ("_", "__"));
+		}
+
+		public static void SetLinkHandler (this Gtk.Label label, Action<string> urlHandler)
+		{
+			if (Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 18)
+				new UrlHandlerClosure (urlHandler).ConnectTo (label);
+		}
+
+		//create closure manually so we can apply ConnectBefore
+		class UrlHandlerClosure
+		{
+			Action<string> urlHandler;
+
+			public UrlHandlerClosure (Action<string> urlHandler)
+			{
+				this.urlHandler = urlHandler;
+			}
+
+			[GLib.ConnectBefore]
+			void HandleLink (object sender, ActivateLinkEventArgs args)
+			{
+				urlHandler (args.Url);
+				args.RetVal = true;
+			}
+
+			public void ConnectTo (Gtk.Label label)
+			{
+				var signal = GLib.Signal.Lookup (label, "activate-link", typeof(ActivateLinkEventArgs));
+				signal.AddDelegate (new EventHandler<ActivateLinkEventArgs> (HandleLink));
+			}
+
+			class ActivateLinkEventArgs : GLib.SignalArgs
+			{
+				public string Url { get { return (string)base.Args [0]; } }
+			}
+		}
 	}
 	
 	public struct KeyboardShortcut : IEquatable<KeyboardShortcut>
