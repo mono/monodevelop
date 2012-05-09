@@ -1,6 +1,8 @@
 
 ASSEMBLY = $(top_builddir)/build/bin/MonoDevelop.Core.dll
 CONFIG = MonoDevelop.Core.dll.config
+CECIL = ../../../build/bin/Mono.Cecil.dll
+CECIL_MDB = ../../../build/bin/Mono.Cecil.Mdb.dll
 
 FILES =  \
 	AssemblyInfo.cs \
@@ -398,7 +400,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
 assemblydir = $(MD_ASSEMBLY_DIR)
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(CONFIG)
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(CECIL) $(CECIL).mdb $(CECIL_MDB) $(CECIL_MDB).mdb $(CONFIG)
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
 
