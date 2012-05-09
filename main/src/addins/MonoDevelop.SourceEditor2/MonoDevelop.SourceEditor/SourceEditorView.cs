@@ -1552,12 +1552,19 @@ namespace MonoDevelop.SourceEditor
 			data.Document.CommitLineUpdate (data.Caret.Line);
 			if (idx >= 0)
 				data.Caret.Offset = triggerOffset + idx;
-			data.PasteText (triggerOffset, complete_word, complete_word.Length);
+
 		}
 
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int wordOffset)
 		{
-			SetCompletionText (GetTextEditorData (), ctx, partial_word, complete_word, wordOffset);
+			var data = GetTextEditorData ();
+			using (var undo = data.OpenUndoGroup ()) {
+				SetCompletionText (data, ctx, partial_word, complete_word, wordOffset);
+				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
+				if (formatter.SupportsOnTheFlyFormatting) {
+					formatter.OnTheFlyFormat (WorkbenchWindow.Document, ctx.TriggerOffset, ctx.TriggerOffset + complete_word.Length);
+				}
+			}
 		}
 		
 		internal void FireCompletionContextChanged ()
