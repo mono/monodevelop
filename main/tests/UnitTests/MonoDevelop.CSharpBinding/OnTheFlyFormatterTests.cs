@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharpBinding
 	[TestFixture]
 	public class OnTheFlyFormatterTests : UnitTests.TestBase
 	{
-		static OnTheFlyFormatterTextEditorExtension Setup (string input, out TestViewContent content)
+		static CSharpTextEditorIndentation Setup (string input, out TestViewContent content)
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
@@ -70,8 +70,8 @@ namespace MonoDevelop.CSharpBinding
 			compExt.Initialize (doc);
 			content.Contents.Add (compExt);
 			
-			var ext = new OnTheFlyFormatterTextEditorExtension ();
-			OnTheFlyFormatterTextEditorExtension.OnTheFlyFormatting = true;
+			var ext = new CSharpTextEditorIndentation ();
+			CSharpTextEditorIndentation.OnTheFlyFormatting = true;
 			ext.Initialize (doc);
 			content.Contents.Add (ext);
 			
@@ -79,6 +79,7 @@ namespace MonoDevelop.CSharpBinding
 			return ext;
 		}
 
+		[Ignore("Semicolon formatting partially deactivated.")]
 		[Test]
 		public void TestSemicolon ()
 		{
