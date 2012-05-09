@@ -196,13 +196,9 @@ namespace Mono.TextEditor
 					int tabWidth = TextViewMargin.GetNextTabstop (data, visualLocation.Column) - visualLocation.Column;
 					indentationString = new string (' ', tabWidth);
 				}
-				if (data.IsMultiLineSelection && data.MainSelection.SelectionMode == SelectionMode.Block) {
-					data.InsertAtCaret (indentationString);
-				} else {
-					if (data.IsSomethingSelected)
-						data.DeleteSelectedText ();
-					data.Insert (data.Caret.Offset, indentationString);
-				}
+				if (!(data.IsMultiLineSelection && data.MainSelection.SelectionMode == SelectionMode.Block) && data.IsSomethingSelected)
+					data.DeleteSelectedText ();
+				data.InsertAtCaret (indentationString);
 			}
 		}
 		

@@ -68,7 +68,7 @@ namespace Mono.TextEditor.Tests
 			data.Caret.Column = DocumentLocation.MinColumn + 4;
 			DeleteActions.Backspace (data);
 			
-			Assert.AreEqual ("\n\n\n", data.Document.Text);
+			Assert.AreEqual ("\n   \n\n", data.Document.Text);
 		}
 		
 		[Test()]
