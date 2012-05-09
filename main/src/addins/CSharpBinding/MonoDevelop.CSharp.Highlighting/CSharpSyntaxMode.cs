@@ -138,10 +138,11 @@ namespace MonoDevelop.CSharp.Highlighting
 					unit = parsedDocument.GetAst<CompilationUnit> ();
 					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
-						compilation = guiDocument.Compilation;
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
+							Thread.Sleep (100);
+							compilation = guiDocument.Compilation;
 							var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							unit.AcceptVisitor (visitor);
@@ -460,6 +461,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				foreach (var tag in CommentTag.SpecialCommentTags) {
 					tags.Add (tag.Tag);
 				}
+
 			}
 
 			#region IResolveVisitorNavigator implementation
@@ -508,7 +510,6 @@ namespace MonoDevelop.CSharp.Highlighting
 				var node = unit.GetNodeAt (loc, n => n is Identifier || n is AstType || n is CSharpTokenNode);
 				var word = wordbuilder.ToString ();
 				string color;
-
 				while (node != null && !(node is Statement || node is EntityDeclaration)) {
 					if (node is CSharpTokenNode || node is ICSharpCode.NRefactory.CSharp.Comment || node is PreProcessorDirective)
 						break;

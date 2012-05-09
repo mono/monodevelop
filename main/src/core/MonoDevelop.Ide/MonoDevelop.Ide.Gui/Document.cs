@@ -373,7 +373,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 			lock (TypeSystemService.FilesSkippedInParseThread) {
 				TypeSystemService.FilesSkippedInParseThread.Remove (FileName);
-				TypeSystemService.FilesSkippedInParseThread.Add (FileName);
 			}
 			// do actual save
 			if (tbuffer != null && encoding != null)
@@ -613,9 +612,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
-			lock (TypeSystemService.FilesSkippedInParseThread) {
-				TypeSystemService.FilesSkippedInParseThread.Add (FileName);
-			}
 		}
 		
 		/// <summary>
@@ -680,6 +676,9 @@ namespace MonoDevelop.Ide.Gui
 				var editor = Editor;
 				if (editor == null)
 					return null;
+				lock (TypeSystemService.FilesSkippedInParseThread) {
+					TypeSystemService.FilesSkippedInParseThread.Add (currentParseFile);
+				}
 				string currentParseText = editor.Text;
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
 				if (Project == null && this.parsedDocument != null) {
@@ -730,15 +729,15 @@ namespace MonoDevelop.Ide.Gui
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
+					lock (TypeSystemService.FilesSkippedInParseThread) {
+						TypeSystemService.FilesSkippedInParseThread.Add (currentParseFile);
+					}
 					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 						if (isClosed)
 							return;
 						this.parsedDocument = currentParsedDocument;
-//						this.parsedDocument = currentParsedDocument;
-//						if (this.parsedDocument != null && !this.parsedDocument.HasErrors)
-//							this.lastErrorFreeParsedDocument = parsedDocument;
 						OnDocumentParsed (EventArgs.Empty);
 					});
 				});
