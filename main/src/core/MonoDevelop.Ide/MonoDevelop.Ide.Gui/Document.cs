@@ -322,7 +322,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsFile)
 				return;
-			
+
+
 			Encoding encoding = null;
 			
 			IEncodedTextContent tbuffer = GetContent <IEncodedTextContent> ();
@@ -370,7 +371,10 @@ namespace MonoDevelop.Ide.Gui
 				else
 					Window.ViewContent.Save (filename + "~");
 			}
-			
+			lock (TypeSystemService.FilesSkippedInParseThread) {
+				TypeSystemService.FilesSkippedInParseThread.Remove (FileName);
+				TypeSystemService.FilesSkippedInParseThread.Add (FileName);
+			}
 			// do actual save
 			if (tbuffer != null && encoding != null)
 				tbuffer.Save (filename, encoding);
@@ -457,10 +461,10 @@ namespace MonoDevelop.Ide.Gui
 //			TypeSystemService.DomRegistered -= UpdateRegisteredDom;
 			CancelParseTimeout ();
 			ClearTasks ();
-			
-			string currentParseFile = FileName;
-			Project curentParseProject = Project;
-			
+
+			lock (TypeSystemService.FilesSkippedInParseThread) {
+				TypeSystemService.FilesSkippedInParseThread.Remove (FileName);
+			}
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
@@ -609,6 +613,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
+			lock (TypeSystemService.FilesSkippedInParseThread) {
+				TypeSystemService.FilesSkippedInParseThread.Add (FileName);
+			}
 		}
 		
 		/// <summary>

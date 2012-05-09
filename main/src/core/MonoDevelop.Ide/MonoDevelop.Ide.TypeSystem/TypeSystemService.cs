@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		const string CurrentVersion = "1.0";
 		static List<TypeSystemParserNode> parsers;
-		
+		public static readonly HashSet<string> FilesSkippedInParseThread = new HashSet<string> ();
 		static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				return parsers;
@@ -1564,24 +1564,28 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var file in (FileList ?? Context.Project.Files)) {
 					if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 						continue;
-					
 					var fileName = file.FilePath;
+					lock (FilesSkippedInParseThread) {
+						if (FilesSkippedInParseThread.Contains (fileName))
+							continue;
+					}
 					if (node == null || !node.CanParse (fileName)) {
 						node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName));
 						parser = node != null ? node.Parser : null;
 					}
 					if (parser == null)
 						continue;
-					
+
 					using (var stream = new System.IO.StreamReader (fileName)) {
 						var parsedDocument = parser.Parse (false, fileName, stream, Context.Project);
 						Context.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), parsedDocument.ParsedFile));
 					}
-//					if (ParseCallback != null)
-//						ParseCallback (file.FilePath, monitor);
 				}
 			}
 		}
+
+		public static event EventHandler<ProjectFileEventArgs> FileParsed;
+
 		static object parseQueueLock = new object ();
 		static AutoResetEvent parseEvent = new AutoResetEvent (false);
 		static ManualResetEvent queueEmptied = new ManualResetEvent (true);
