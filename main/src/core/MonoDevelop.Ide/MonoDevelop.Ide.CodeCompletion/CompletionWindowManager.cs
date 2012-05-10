@@ -83,6 +83,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
 			try {
+				if (ext != null) {
+					ext.document.Editor.EnsureCaretIsNotVirtual ();
+					completionContext.TriggerOffset = ext.document.Editor.Caret.Offset;
+				}
 				if (wnd == null) {
 					wnd = new CompletionListWindow ();
 					wnd.WordCompleted += HandleWndWordCompleted;
@@ -147,6 +151,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!IsVisible)
 				return;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
+			if (wnd.Extension != null)
+				wnd.Extension.document.Editor.FixVirtualIndentation ();
 //			wnd.HideWindow ();
 //			OnWindowClosed (EventArgs.Empty);
 			DestroyWindow ();
