@@ -213,7 +213,7 @@ namespace Mono.TextEditor
 					selection = data.MainSelection;
 				} else {
 					var start = DeleteActions.GetStartOfLineOffset (data, data.Caret.Location);
-					var end = DeleteActions.GetEndOfLineOffset (data, data.Caret.Location);
+					var end = DeleteActions.GetEndOfLineOffset (data, data.Caret.Location, false);
 					selection = new Selection (data.OffsetToLocation (start), data.OffsetToLocation (end));
 				}
 				CopyData (data, selection);
