@@ -22,7 +22,6 @@ namespace MonoDevelop.AssemblyBrowser
 		private global::Gtk.ComboBox comboboxVisibilty;
 		private global::Gtk.HPaned hpaned1;
 		private global::Gtk.Alignment treeViewPlaceholder;
-		private global::MonoDevelop.Components.CompactScrolledWindow treeScrolledWindow;
 		private global::Gtk.VBox vbox3;
 		private global::Gtk.Notebook notebook1;
 		private global::Gtk.Notebook notebookInspection;
@@ -185,16 +184,9 @@ namespace MonoDevelop.AssemblyBrowser
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.treeViewPlaceholder = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
 			this.treeViewPlaceholder.Name = "treeViewPlaceholder";
-			// Container child treeViewPlaceholder.Gtk.Container+ContainerChild
-			this.treeScrolledWindow = new global::MonoDevelop.Components.CompactScrolledWindow ();
-			this.treeScrolledWindow.CanFocus = true;
-			this.treeScrolledWindow.Name = "treeScrolledWindow";
-			this.treeScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
-			this.treeScrolledWindow.ShowBorderLine = false;
-			this.treeViewPlaceholder.Add (this.treeScrolledWindow);
 			this.hpaned1.Add (this.treeViewPlaceholder);
-			global::Gtk.Paned.PanedChild w13 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.treeViewPlaceholder]));
-			w13.Resize = false;
+			global::Gtk.Paned.PanedChild w12 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.treeViewPlaceholder]));
+			w12.Resize = false;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
@@ -227,13 +219,13 @@ namespace MonoDevelop.AssemblyBrowser
 			);
 			this.label4.ShowAll ();
 			// Notebook tab
-			global::Gtk.Label w15 = new global::Gtk.Label ();
-			w15.Visible = true;
-			this.notebookInspection.Add (w15);
+			global::Gtk.Label w14 = new global::Gtk.Label ();
+			w14.Visible = true;
+			this.notebookInspection.Add (w14);
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("decompiler");
-			this.notebookInspection.SetTabLabel (w15, this.label5);
+			this.notebookInspection.SetTabLabel (w14, this.label5);
 			this.label5.ShowAll ();
 			this.notebook1.Add (this.notebookInspection);
 			// Container child notebook1.Gtk.Notebook+NotebookChild
@@ -251,18 +243,18 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchTreeview.Name = "searchTreeview";
 			this.scrolledwindow1.Add (this.searchTreeview);
 			this.searchWidget.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.searchWidget [this.scrolledwindow1]));
-			w18.Position = 0;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.searchWidget [this.scrolledwindow1]));
+			w17.Position = 0;
 			this.notebook1.Add (this.searchWidget);
-			global::Gtk.Notebook.NotebookChild w19 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.searchWidget]));
-			w19.Position = 1;
+			global::Gtk.Notebook.NotebookChild w18 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.searchWidget]));
+			w18.Position = 1;
 			this.vbox3.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.notebook1]));
-			w20.Position = 0;
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.notebook1]));
+			w19.Position = 0;
 			this.hpaned1.Add (this.vbox3);
 			this.vbox1.Add (this.hpaned1);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
-			w22.Position = 1;
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
+			w21.Position = 1;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

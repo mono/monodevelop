@@ -189,12 +189,7 @@
               <widget class="Gtk.Alignment" id="treeViewPlaceholder">
                 <property name="MemberName" />
                 <child>
-                  <widget class="MonoDevelop.Components.CompactScrolledWindow" id="treeScrolledWindow">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShadowType">In</property>
-                    <property name="ShowBorderLine">False</property>
-                  </widget>
+                  <placeholder />
                 </child>
               </widget>
               <packing>

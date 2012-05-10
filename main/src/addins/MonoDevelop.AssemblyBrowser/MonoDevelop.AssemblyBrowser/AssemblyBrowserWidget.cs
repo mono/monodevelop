@@ -125,10 +125,12 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
-			TreeView.ShadowType = ShadowType.In;
+			TreeView.ShadowType = ShadowType.None;
+			TreeView.BorderWidth = 1;
+			TreeView.ShowBorderLine = true;
 
-			treeScrolledWindow.Add (TreeView);
-			treeScrolledWindow.ShowAll ();
+			treeViewPlaceholder.Add (TreeView);
+			treeViewPlaceholder.ShowAll ();
 			
 //			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
 //			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));
