@@ -47,7 +47,7 @@ namespace Mono.Debugging.Evaluation
 				methodCall.Invoke ();
 			}
 
-			if (timeout != -1) {
+			if (timeout > 0) {
 				if (!methodCall.WaitForCompleted (timeout)) {
 					bool wasAborted = methodCall.Aborted;
 					methodCall.InternalAbort ();

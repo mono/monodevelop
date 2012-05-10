@@ -285,6 +285,8 @@ namespace MonoDevelop.Debugger
 		public static void ShowExceptionCaughtDialog ()
 		{
 			EvaluationOptions ops = session.EvaluationOptions.Clone ();
+			ops.MemberEvaluationTimeout = 0;
+			ops.EvaluationTimeout = 0;
 			ops.EllipsizeStrings = false;
 			
 			ExceptionInfo val = CurrentFrame.GetException (ops);
