@@ -123,7 +123,17 @@ namespace MonoDevelop.Ide.Gui
 				nextExtension = nextExtension.Next as TextEditorExtension;
 			}
 		}
-		
+		static Document ()
+		{
+			IdeApp.Workbench.ActiveDocumentChanged += delegate {
+				// reparse on document switch to update the current file with changes done in other files.
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc == null || doc.Editor == null)
+					return;
+				doc.StartReparseThread ();
+			};
+		}
+
 		public Document (IWorkbenchWindow window)
 		{
 			Counters.OpenDocuments++;
