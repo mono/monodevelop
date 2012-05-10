@@ -1671,6 +1671,10 @@ namespace Mono.TextEditor
 					int lineNr = Document.OffsetToLineNumber (offset);
 					textEditor.SetSelectLines (lineNr, lineNr);
 
+					var range = textEditor.SelectionRange;
+					mouseWordStart = range.Offset;
+					mouseWordEnd = range.EndOffset;
+
 					inSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.WholeLine;
 					return;
@@ -1980,9 +1984,18 @@ namespace Mono.TextEditor
 				//textEditor.SetSelectLines (loc.Line, textEditor.MainSelection.Anchor.Line);
 				DocumentLine line1 = textEditor.Document.GetLine (loc.Line);
 				DocumentLine line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
-				Caret.Offset = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffsetIncludingDelimiter;
-				if (textEditor.MainSelection != null)
+				var o2 = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffsetIncludingDelimiter;
+				Caret.Offset = o2;
+				if (textEditor.MainSelection != null) {
 					textEditor.MainSelection.Lead = Caret.Location;
+					if (mouseWordStart < o2) {
+						textEditor.MainSelection.Anchor = textEditor.OffsetToLocation (mouseWordStart);
+					} else {
+						textEditor.MainSelection.Anchor = textEditor.OffsetToLocation (mouseWordEnd);
+
+					}
+				}
+
 				break;
 			}
 			Caret.PreserveSelection = false;
