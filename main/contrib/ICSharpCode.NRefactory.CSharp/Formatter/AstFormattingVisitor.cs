@@ -2059,14 +2059,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		void PlaceOnNewLine(NewLinePlacement newLine, AstNode keywordNode)
+		void PlaceOnNewLine (NewLinePlacement newLine, AstNode keywordNode)
 		{
 			if (keywordNode == null || newLine == NewLinePlacement.DoNotCare) {
 				return;
 			}
+			var prev = keywordNode.GetPrevNode ();
+			Console.WriteLine ("prev:" + prev);
+			if (prev is Comment || prev is PreProcessorDirective)
+				return;
 
 			int offset = document.GetOffset(keywordNode.StartLocation);
-			
+
 			int whitespaceStart = SearchWhitespaceStart(offset);
 			string indentString = newLine == NewLinePlacement.NewLine ? this.options.EolMarker + this.curIndent.IndentString : " ";
 			AddChange(whitespaceStart, offset - whitespaceStart, indentString);
