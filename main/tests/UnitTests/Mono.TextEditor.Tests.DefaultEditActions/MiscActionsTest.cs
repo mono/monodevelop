@@ -232,16 +232,16 @@ ffffffffff");
 		{
 			var data = Create (@"aaaaaaaaa
 bbbbbbbbbb
-cccccccc$cc
-dddddd$dddd
+cccccccc<-cc
+dddddd->$dddd
 eeeeeeeeee
 ffffffffff");
 			MiscActions.DuplicateLine (data);
 			Check (data, @"aaaaaaaaa
 bbbbbbbbbb
 cccccccccc
-dddddd$cc
-dddddddddd
+ddddddcc
+dddddd$dddd
 eeeeeeeeee
 ffffffffff");
 		}
