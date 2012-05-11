@@ -84,8 +84,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			try {
 				if (ext != null) {
-					ext.document.Editor.EnsureCaretIsNotVirtual ();
-					completionContext.TriggerOffset = ext.document.Editor.Caret.Offset;
+					int inserted = ext.document.Editor.EnsureCaretIsNotVirtual ();
+					if (inserted > 0)
+						completionContext.TriggerOffset = ext.document.Editor.Caret.Offset;
 				}
 				if (wnd == null) {
 					wnd = new CompletionListWindow ();
