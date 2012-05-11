@@ -236,7 +236,6 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					break;
 				}
 			}
-			
 			foreach (var meth in type.Methods) {
 				foreach (var att in meth.Attributes) {
 					var attType = att.AttributeType;
@@ -245,8 +244,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						if (!attType.Equals (Resolve (dom, exportAttType)))
 							continue;
 					}
-					bool isDesigner = MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (
-						meth.DeclaringTypeDefinition.Region.FileName);
+					bool isDesigner = MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.Region.FileName);
 					//only support Export from old designer files, user code must be IBAction
 					if (!isDesigner && !isIBAction)
 						continue;

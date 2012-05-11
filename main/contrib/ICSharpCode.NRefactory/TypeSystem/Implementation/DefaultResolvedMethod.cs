@@ -43,11 +43,126 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.TypeParameters = unresolved.TypeParameters.CreateResolvedTypeParameters(context);
 			this.IsExtensionMethod = isExtensionMethod;
 		}
-		
-		public static DefaultResolvedMethod CreateFromMultipleParts(IUnresolvedMethod[] parts, ITypeResolveContext firstPartParentContext, bool isExtensionMethod)
+
+		class ListOfLists<T> : IList<T>
 		{
-			DefaultResolvedMethod method = new DefaultResolvedMethod(parts[0], firstPartParentContext, isExtensionMethod);
+			List<IList<T>> lists =new List<IList<T>> ();
+
+			public void AddList(IList<T> list)
+			{
+				lists.Add (list);
+			}
+
+			#region IEnumerable implementation
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+			#endregion
+
+			#region IEnumerable implementation
+			public IEnumerator<T> GetEnumerator ()
+			{
+				for (int i = 0; i < this.Count; i++) {
+					yield return this[i];
+				}
+			}
+			#endregion
+
+			#region ICollection implementation
+			public void Add (T item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void Clear ()
+			{
+				throw new NotSupportedException();
+			}
+
+			public bool Contains (T item)
+			{
+				var comparer = EqualityComparer<T>.Default;
+				for (int i = 0; i < this.Count; i++) {
+					if (comparer.Equals(this[i], item))
+						return true;
+				}
+				return false;
+			}
+
+			public void CopyTo (T[] array, int arrayIndex)
+			{
+				for (int i = 0; i < Count; i++) {
+					array[arrayIndex + i] = this[i];
+				}
+			}
+
+			public bool Remove (T item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public int Count {
+				get {
+					return lists.Sum (l => l.Count);
+				}
+			}
+
+			public bool IsReadOnly {
+				get {
+					return true;
+				}
+			}
+			#endregion
+
+			#region IList implementation
+			public int IndexOf (T item)
+			{
+				var comparer = EqualityComparer<T>.Default;
+				for (int i = 0; i < this.Count; i++) {
+					if (comparer.Equals(this[i], item))
+						return i;
+				}
+				return -1;
+			}
+
+			public void Insert (int index, T item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void RemoveAt (int index)
+			{
+				throw new NotSupportedException();
+			}
+
+			public T this[int index] {
+				get {
+					foreach (var list in lists){
+						if (index < list.Count)
+							return list[index];
+						index -=list.Count;
+					}
+					throw new IndexOutOfRangeException ();
+				}
+				set {
+					throw new NotSupportedException();
+				}
+			}
+			#endregion
+		}
+
+		public static DefaultResolvedMethod CreateFromMultipleParts(IUnresolvedMethod[] parts, ITypeResolveContext[] contexts, bool isExtensionMethod)
+		{
+			DefaultResolvedMethod method = new DefaultResolvedMethod(parts[0], contexts[0], isExtensionMethod);
 			method.parts = parts;
+			if (parts.Length > 1) {
+				var attrs = new ListOfLists <IAttribute>();
+				for (int i = 0; i < parts.Length; i++) {
+					attrs.AddList (parts[i].Attributes.CreateResolvedAttributes(contexts[i]));
+				}
+				method.Attributes = attrs;
+			}
 			return method;
 		}
 		
