@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						var info = partialMethodInfos[i];
 						int memberIndex = NonPartialMemberCount + i;
 						resolvedMembers[memberIndex] = DefaultResolvedMethod.CreateFromMultipleParts(
-							info.Parts.ToArray(), info.PrimaryContext, false);
+							info.Parts.ToArray(), info.Contexts.ToArray (), false);
 					}
 				}
 			}
@@ -250,15 +250,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public readonly int TypeParameterCount;
 			public readonly IList<IParameter> Parameters;
 			public readonly List<IUnresolvedMethod> Parts = new List<IUnresolvedMethod>();
-			public ITypeResolveContext PrimaryContext;
-			
+			public readonly List<ITypeResolveContext> Contexts = new List<ITypeResolveContext>();
+
 			public PartialMethodInfo(IUnresolvedMethod method, ITypeResolveContext context)
 			{
 				this.Name = method.Name;
 				this.TypeParameterCount = method.TypeParameters.Count;
 				this.Parameters = method.Parameters.CreateResolvedParameters(context);
 				this.Parts.Add(method);
-				this.PrimaryContext = context;
+				this.Contexts.Add (context);
 			}
 			
 			public void AddPart(IUnresolvedMethod method, ITypeResolveContext context)
@@ -266,9 +266,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (method.IsPartialMethodImplementation) {
 					// make the implementation the primary part
 					this.Parts.Insert(0, method);
-					this.PrimaryContext = context;
+					this.Contexts.Insert (0, context);
 				} else {
 					this.Parts.Add(method);
+					this.Contexts.Add (context);
 				}
 			}
 			
