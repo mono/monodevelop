@@ -472,7 +472,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.Stroke ();
 			
 		}
-		
+
+		protected override void OnSizeAllocated (Rectangle allocation)
+		{
+			yPositionCache.Clear ();
+			base.OnSizeAllocated (allocation);
+		}
+
 		protected virtual void DrawBar (Cairo.Context cr)
 		{
 			if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize) 
