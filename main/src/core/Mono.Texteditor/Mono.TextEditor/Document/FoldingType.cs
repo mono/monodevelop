@@ -34,6 +34,7 @@ namespace Mono.TextEditor
 		None,
 		Region,
 		TypeDefinition,
-		TypeMember
+		TypeMember,
+		Comment
 	}
 }

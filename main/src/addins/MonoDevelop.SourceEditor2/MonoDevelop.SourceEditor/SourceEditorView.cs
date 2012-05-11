@@ -1658,7 +1658,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (FoldSegment segment in Document.FoldSegments) {
 				if (segment.FoldingType == FoldingType.TypeDefinition)
 					segment.IsFolded = false;
-				if (segment.FoldingType == FoldingType.TypeMember)
+				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
 					segment.IsFolded = true;
 			}
 			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();

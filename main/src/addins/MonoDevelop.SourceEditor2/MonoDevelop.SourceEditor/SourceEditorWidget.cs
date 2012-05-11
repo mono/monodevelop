@@ -472,10 +472,12 @@ namespace MonoDevelop.SourceEditor
 						folded = true;
 						break;
 					case FoldType.Comment:
+						type = FoldingType.Comment;
 						setFolded = options.DefaultCommentFolding;
 						folded = true;
 						break;
 					case FoldType.CommentInsideMember:
+						type = FoldingType.Comment;
 						setFolded = options.DefaultCommentFolding;
 						folded = false;
 						break;
