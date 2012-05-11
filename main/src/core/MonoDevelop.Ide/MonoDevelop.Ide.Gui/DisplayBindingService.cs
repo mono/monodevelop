@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui
 			return GetDisplayBindings (filePath, mimeType, ownerProject).FirstOrDefault (d => d.CanUseAsDefault);
 		}
 		
-		public static void AttachSubWindows (IWorkbenchWindow workbenchWindow)
+		internal static void AttachSubWindows (IWorkbenchWindow workbenchWindow)
 		{
 			foreach (var b in GetBindings<IAttachableDisplayBinding> ()) {
 				if (b.CanAttachTo (workbenchWindow.ViewContent)) 

@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return topMenu; }
 		}
 		
-		public IWorkbenchWindow ActiveWorkbenchWindow {
+		internal IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
 				if (tabControl == null || tabControl.CurrentTabIndex < 0 || tabControl.CurrentTabIndex >= tabControl.TabCount)  {
 					return null;
@@ -1114,7 +1114,7 @@ namespace MonoDevelop.Ide.Gui
 				last = lastActiveWindows.Last.Value;
 				lastActiveWindows.RemoveLast ();
 			} while (lastActiveWindows.Count > 0 && (last == cur || last == null || (last != null && last.ViewContent == null)));
-			if (last != null) {
+			if (last != null && last != cur) {
 				last.SelectWindow ();
 				return true;
 			}
@@ -1124,6 +1124,7 @@ namespace MonoDevelop.Ide.Gui
 		void CloseWindowEvent (object sender, WorkbenchWindowEventArgs e)
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
+			lastActiveWindows.Remove (f);
 
 			if (f.ViewContent != null) {
 				CloseContent (f.ViewContent);
@@ -1385,7 +1386,7 @@ namespace MonoDevelop.Ide.Gui
 	// The SdiDragNotebook class allows redirecting the command route to the ViewCommandHandler
 	// object of the selected document, which implement some default commands.
 	
-	class SdiDragNotebook: DockNotebook, ICommandDelegatorRouter, IShadedWidget
+	class SdiDragNotebook: DockNotebook, ICommandDelegatorRouter
 	{
 		ShadedContainer shadedContainer;
 		

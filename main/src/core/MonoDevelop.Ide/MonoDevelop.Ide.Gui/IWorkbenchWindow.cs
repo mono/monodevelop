@@ -29,6 +29,7 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using Mono.Addins;
+using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -52,7 +53,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool CloseWindow (bool force);
 		void SelectWindow ();
-		
+
+		/// <summary>
+		/// Returns a toolbar for the pad.
+		/// </summary>
+		DockItemToolbar GetToolbar (Gtk.PositionType position);
+
 		event EventHandler DocumentChanged;
 		event WorkbenchWindowEventHandler Closed;
 		event WorkbenchWindowEventHandler Closing;

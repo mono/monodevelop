@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Gui
 		List<IDockNotebookTab> pages = new List<IDockNotebookTab> ();
 		TabStrip tabStrip;
 		Gtk.EventBox contentBox;
-		Gtk.Alignment topBarAlign;
 		ReadOnlyCollection<IDockNotebookTab> pagesCol;
 
 		IDockNotebookTab currentTab;
@@ -74,8 +73,15 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler PageRemoved;
 		public event EventHandler SwitchPage;
 
-		public event EventHandler PreviousClicked;
-		public event EventHandler NextClicked;
+		public event EventHandler PreviousClicked {
+			add { tabStrip.PreviousButton.Clicked += value; }
+			remove { tabStrip.PreviousButton.Clicked -= value; }
+		}
+
+		public event EventHandler NextClicked {
+			add { tabStrip.NextButton.Clicked += value; }
+			remove { tabStrip.NextButton.Clicked -= value; }
+		}
 
 		public ReadOnlyCollection<IDockNotebookTab> Tabs {
 			get { return pagesCol; }
@@ -88,10 +94,13 @@ namespace MonoDevelop.Ide.Gui
 				if (contentBox.Child != null)
 					contentBox.Remove (contentBox.Child);
 
-				if (currentTab != null)
+				if (currentTab != null && currentTab.Content != null)
 					contentBox.Add (currentTab.Content);
 
 				tabStrip.Update ();
+
+				if (SwitchPage != null)
+					SwitchPage (this, EventArgs.Empty);
 			}
 		}
 
@@ -120,6 +129,10 @@ namespace MonoDevelop.Ide.Gui
 				CurrentTab = tab;
 
 			tabStrip.Update ();
+
+			if (PageAdded != null)
+				PageAdded (this, EventArgs.Empty);
+
 			return tab;
 		}
 
@@ -148,6 +161,15 @@ namespace MonoDevelop.Ide.Gui
 			pages.RemoveAt (page);
 			UpdateIndexes (page);
 			tabStrip.Update ();
+
+			if (PageRemoved != null)
+				PageRemoved (this, EventArgs.Empty);
+		}
+
+		internal void OnCloseTab (DockNotebookTab tab)
+		{
+			if (TabClosed != null)
+				TabClosed (this, new TabEventArgs () { Tab = tab });
 		}
 
 		void ReorderChild (Gtk.Widget widget, int npage)
@@ -288,6 +310,7 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.Widget content;
 
 		internal Gdk.Rectangle Allocation;
+		internal Gdk.Rectangle CloseButtonAllocation;
 
 		public int Index { get; internal set; }
 
@@ -353,11 +376,18 @@ namespace MonoDevelop.Ide.Gui
 		IDockNotebookTab firstTab;
 		int firstTabIndex;
 		IDockNotebookTab highlightedTab;
-		Gtk.Button previousButton;
-		Gtk.Button nextButton;
+		bool overCloseButton;
 		Gtk.Button dropDownButton;
 		int tabStartX, tabEndX;
 		Fixed frame;
+
+		public Gtk.Button PreviousButton;
+		public Gtk.Button NextButton;
+
+		static Gdk.Pixbuf closeSelImage;
+		static Gdk.Pixbuf closeSelOverImage;
+		static Gdk.Pixbuf closeImage;
+		static Gdk.Pixbuf closeOverImage;
 
 		const int TopBarPadding = 3;
 		const int BottomBarPadding = 3;
@@ -366,8 +396,21 @@ namespace MonoDevelop.Ide.Gui
 		const int TopPadding = 7;
 		const int BottomPadding = 7;
 		const int SeparatorWidth = 2;
-		const int LabelButtonSeparatorWidth = 4;
+		const int LabelButtonSeparatorWidth = 6;
 		const double TabBorderRadius = 3;
+		const int BackgroundShadowHeight = 5;
+
+		static TabStrip ()
+		{
+			try {
+				closeSelImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.png");
+				closeSelOverImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.Over.png");
+				closeImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.png");
+				closeOverImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Over.png");
+			} catch (Exception e) {
+				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Close.png", e);
+			}
+		}
 
 		public TabStrip (DockNotebook notebook)
 		{
@@ -375,12 +418,12 @@ namespace MonoDevelop.Ide.Gui
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonPressMask;
 
-			previousButton = new Button (new Gtk.Arrow (Gtk.ArrowType.Left, Gtk.ShadowType.None));
-			previousButton.Relief = ReliefStyle.None;
-			previousButton.ShowAll ();
-			nextButton = new Button (new Gtk.Arrow (Gtk.ArrowType.Right, Gtk.ShadowType.None));
-			nextButton.Relief = ReliefStyle.None;
-			nextButton.ShowAll ();
+			PreviousButton = new Button (new Gtk.Arrow (Gtk.ArrowType.Left, Gtk.ShadowType.None));
+			PreviousButton.Relief = ReliefStyle.None;
+			PreviousButton.ShowAll ();
+			NextButton = new Button (new Gtk.Arrow (Gtk.ArrowType.Right, Gtk.ShadowType.None));
+			NextButton.Relief = ReliefStyle.None;
+			NextButton.ShowAll ();
 			dropDownButton = new Button ("");
 			dropDownButton.Relief = ReliefStyle.None;
 			dropDownButton.ShowAll ();
@@ -389,10 +432,10 @@ namespace MonoDevelop.Ide.Gui
 
 			frame = new Fixed ();
 
-			frame.Put (previousButton, x, TopBarPadding);
-			x += previousButton.SizeRequest ().Width;
-			frame.Put (nextButton, x, TopBarPadding);
-			x += nextButton.SizeRequest ().Width;
+			frame.Put (PreviousButton, x, TopBarPadding);
+			x += PreviousButton.SizeRequest ().Width;
+			frame.Put (NextButton, x, TopBarPadding);
+			x += NextButton.SizeRequest ().Width;
 
 			frame.Put (dropDownButton, 0, 0);
 
@@ -402,10 +445,15 @@ namespace MonoDevelop.Ide.Gui
 			Add (frame);
 		}
 
+		int lastTabEndX;
+
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			tabEndX = allocation.Width - dropDownButton.SizeRequest ().Height;
-			frame.Put (dropDownButton, tabEndX, TopBarPadding);
+			if (lastTabEndX != tabEndX) {
+				lastTabEndX = tabEndX;
+				frame.Move (dropDownButton, tabEndX, TopBarPadding);
+			}
 			base.OnSizeAllocated (allocation);
 		}
 
@@ -414,6 +462,11 @@ namespace MonoDevelop.Ide.Gui
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
 			if (t != highlightedTab) {
 				highlightedTab = t;
+				QueueDraw ();
+			}
+			var newOver = IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y);
+			if (newOver != overCloseButton) {
+				overCloseButton = newOver;
 				QueueDraw ();
 			}
 			return base.OnMotionNotifyEvent (evnt);
@@ -430,13 +483,17 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
 			if (t != null) {
+				if (IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
+					notebook.OnCloseTab (t);
+					return true;
+				}
 				notebook.CurrentTab = t;
 				return true;
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
 
-		IDockNotebookTab FindTab (int x, int y)
+		DockNotebookTab FindTab (int x, int y)
 		{
 			for (int n = firstTabIndex; n < notebook.Tabs.Count; n++) {
 				DockNotebookTab tab = (DockNotebookTab) notebook.Tabs[n];
@@ -444,6 +501,11 @@ namespace MonoDevelop.Ide.Gui
 					return tab;
 			}
 			return null;
+		}
+
+		bool IsOverCloseButton (DockNotebookTab tab, int x, int y)
+		{
+			return tab != null && tab.CloseButtonAllocation.Contains (x, y);
 		}
 
 		public void Update ()
@@ -483,14 +545,22 @@ namespace MonoDevelop.Ide.Gui
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 
 				// Draw the background
-				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height - BottomBarPadding);
-				Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, Allocation.Height);
+				var h = Allocation.Height - BottomBarPadding - BackgroundShadowHeight + 1;
+				ctx.Rectangle (0, 0, Allocation.Width, h); // +1 since background and shadow overlap 1 pixel
+				Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, h);
 				gr.AddColorStop (0, Styles.TabBarGradientStartColor);
+				gr.AddColorStop (1, Styles.TabBarGradientMidColor);
+				ctx.Pattern = gr;
+				ctx.Fill ();
+
+				ctx.Rectangle (0, h - 1, Allocation.Width, BackgroundShadowHeight);
+				gr = new LinearGradient (0, h, 0, h - 1 + BackgroundShadowHeight);
+				gr.AddColorStop (0, Styles.TabBarGradientMidColor);
 				gr.AddColorStop (1, Styles.TabBarGradientEndColor);
 				ctx.Pattern = gr;
 				ctx.Fill ();
 
-				ctx.Rectangle (0, Allocation.Height - BottomBarPadding - 1, Allocation.Width, BottomBarPadding);
+				ctx.Rectangle (0, Allocation.Height - BottomBarPadding, Allocation.Width, BottomBarPadding);
 				ctx.Color = Styles.BreadcrumbBackgroundColor;
 				ctx.Fill ();
 
@@ -503,6 +573,7 @@ namespace MonoDevelop.Ide.Gui
 						DrawActiveTab (ctx, tab, ref x, y, tab == highlightedTab);
 					else
 						DrawTab (ctx, tab, ref x, y, tab == highlightedTab);
+
 					tab.Allocation = new Gdk.Rectangle (sx, Allocation.Y, x - sx, Allocation.Height);
 				}
 			}
@@ -535,7 +606,17 @@ namespace MonoDevelop.Ide.Gui
 
 			GdkWindow.DrawLayout (gc, x, y + TopPadding, la);
 
-			x += w + LeftRightPadding;
+			x += w + LabelButtonSeparatorWidth;
+
+			var image = highlight && overCloseButton ? closeOverImage : closeImage;
+			var ch = Allocation.Height - TopBarPadding - BottomBarPadding;
+			var crect = new Gdk.Rectangle (x, y + TopBarPadding + (ch - image.Height) / 2, image.Width, image.Height);
+			CairoHelper.SetSourcePixbuf (ctx, image, crect.X, crect.Y);
+			ctx.Paint ();
+			crect.Inflate (2, 2);
+			tab.CloseButtonAllocation = crect;
+
+			x += image.Width + LeftRightPadding;
 
 			la.Dispose ();
 		}
@@ -546,22 +627,27 @@ namespace MonoDevelop.Ide.Gui
 			int w, h;
 			la.GetPixelSize (out w, out h);
 
+			var closePix = highlight && overCloseButton ? closeSelOverImage : closeSelImage;
+
+			int tabWidth = w + LeftRightPaddingSel * 2 + LabelButtonSeparatorWidth + closePix.Width;
+
 			ctx.LineWidth = 1;
-			DrawTabBorder (ctx, w + LeftRightPaddingSel * 2 - 2, x, 0);
+			DrawTabBorder (ctx, tabWidth - 2, x, 0);
 			ctx.ClosePath ();
-			Cairo.LinearGradient gr = new LinearGradient (x, Allocation.Y, x, Allocation.Bottom);
+			double tops = 5d / (Allocation.Bottom - TopBarPadding); // The initial gradient is 4 pixels height
+			Cairo.LinearGradient gr = new LinearGradient (x, TopBarPadding, x, Allocation.Bottom);
 			gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor);
-			gr.AddColorStop (0.3, Styles.BreadcrumbBackgroundColor);
+			gr.AddColorStop (tops, Styles.BreadcrumbBackgroundColor);
 			gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor);
 			ctx.Pattern = gr;
 			ctx.Fill ();
 
 			ctx.Color = Styles.BreadcrumbBorderColor;
-			DrawTabBorder (ctx, w + LeftRightPaddingSel * 2 - 2, x, 0);
+			DrawTabBorder (ctx, tabWidth - 2, x, 0);
 			ctx.Stroke ();
 
 			ctx.Color = Styles.BreadcrumbInnerBorderColor;
-			DrawTabBorder (ctx, w + LeftRightPaddingSel * 2 - 4, x + 1, 1);
+			DrawTabBorder (ctx, tabWidth - 4, x + 1, 1);
 			ctx.Stroke ();
 
 			var gc = Style.WhiteGC;
@@ -570,7 +656,16 @@ namespace MonoDevelop.Ide.Gui
 
 			GdkWindow.DrawLayout (gc, x, y + TopPadding, la);
 
-			x += w + LeftRightPaddingSel;
+			x += w + LabelButtonSeparatorWidth;
+
+			var ch = Allocation.Height - TopBarPadding - BottomBarPadding;
+			var crect = new Gdk.Rectangle (x, y + TopBarPadding + (ch - closePix.Height) / 2, closePix.Width, closePix.Height);
+			CairoHelper.SetSourcePixbuf (ctx, closePix, crect.X, crect.Y);
+			ctx.Paint ();
+			crect.Inflate (2, 2);
+			tab.CloseButtonAllocation = crect;
+
+			x += closePix.Width + LeftRightPadding;
 
 			la.Dispose ();
 		}
@@ -578,7 +673,7 @@ namespace MonoDevelop.Ide.Gui
 		void DrawTabBorder (Cairo.Context ctx, int contentWidth, int px, int margin)
 		{
 			double x = 0.5 + (double)px;
-			double y = (double) Allocation.Height - 0.5 - BottomBarPadding + margin;
+			double y = (double) Allocation.Height + 0.5 - BottomBarPadding + margin;
 			double height = Allocation.Height - TopBarPadding - BottomBarPadding;
 
 			ctx.MoveTo (0.5, y);

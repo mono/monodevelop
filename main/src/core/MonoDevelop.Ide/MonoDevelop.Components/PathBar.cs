@@ -31,6 +31,7 @@ using System.Linq;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components
 {
@@ -42,6 +43,8 @@ namespace MonoDevelop.Components
 	
 	public class PathEntry 
 	{
+		Gdk.Pixbuf darkIcon;
+
 		public Gdk.Pixbuf Icon {
 			get;
 			private set;
@@ -96,6 +99,15 @@ namespace MonoDevelop.Components
 				return (Icon != null ? Icon.GetHashCode () : 0) ^ (Markup != null ? Markup.GetHashCode () : 0);
 			}
 		}
+
+		internal Gdk.Pixbuf DarkIcon {
+			get {
+				if (darkIcon == null && Icon != null) {
+					darkIcon = ImageService.MakeGrayscale (Icon);
+				}
+				return darkIcon;
+			}
+		}
 	}
 	
 	public class PathBar : Gtk.DrawingArea
@@ -111,13 +123,23 @@ namespace MonoDevelop.Components
 		
 		int[] leftWidths, rightWidths;
 		int height;
-		
+		int textHeight;
+
 		bool pressed, hovering, menuVisible;
 		int hoverIndex = -1;
 		int activeIndex = -1;
-		
-		const int padding = 2;
-		const int spacing = 10;
+
+		const int leftPadding = 6;
+		const int rightPadding = 6;
+		const int topPadding = 2;
+		const int bottomPadding = 4;
+		const int iconSpacing = 4;
+		const int padding = 3;
+		const int buttonPadding = 2;
+		const int arrowLeftPadding = 4;
+		const int arrowRightPadding = 4;
+		const int arrowSize = 10;
+		const int spacing = arrowLeftPadding + arrowRightPadding + arrowSize;
 		
 		Func<int, Widget> createMenuForItem;
 		
@@ -180,102 +202,121 @@ namespace MonoDevelop.Components
 		{
 			EnsureWidths ();
 			requisition.Width = Math.Max (WidthRequest, 0);
-			requisition.Height = height + padding * 2;
+			requisition.Height = height + topPadding + bottomPadding;
 		}
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			bool usePaintBox = !Gtk.Settings.Default.ThemeName.Contains ("Equinox");
-			if (usePaintBox) {
-				//HACK: paint the button background as if it were bigger, but it stays clipped to the real area,
-				// so we get the content but not the border. This might break with crazy themes.
-				// Themes that don't work need to be filtered out.
-				//FIXME: we can't use the style's actual internal padding because GTK# hasn't wrapped GtkBorder AFAICT
-				// (default-border, inner-border, default-outside-border, etc - see http://git.gnome.org/browse/gtk+/tree/gtk/gtkbutton.c)
-				const int boxpadding = 4;
-				Style.PaintBox (Style, evnt.Window, StateType.Normal, ShadowType.None, evnt.Area, styleButton, "button", 
-				                - boxpadding, - padding, Allocation.Width + boxpadding * 2, Allocation.Height + boxpadding * 2);
-			}
-			
+			var ctx = Gdk.CairoHelper.Create (GdkWindow);
+
+			ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+			Cairo.LinearGradient g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height);
+			g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
+			g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
+			ctx.Pattern = g;
+			ctx.Fill ();
+
 			if (leftWidths == null || rightWidths == null)
 				return true;
-			
-			int xpos = padding, ypos = padding;
+
+			int textTopPadding = topPadding + (height - textHeight) / 2;
+			int xpos = leftPadding, ypos = topPadding;
+
 			for (int i = 0; i < leftPath.Length; i++) {
 				bool last = i == leftPath.Length - 1;
 				
 				int x = xpos;
 				xpos += leftWidths [i];
-				xpos += spacing;
-				
-				if (hoverIndex >= 0 && hoverIndex < Path.Length && leftPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering)) {
-					if (usePaintBox) {
-						Style.PaintBox (Style, GdkWindow,
-						                (pressed || menuVisible) ? StateType.Active : StateType.Prelight,
-						                (pressed || menuVisible) ? ShadowType.In : ShadowType.Out,
-						                evnt.Area, styleButton, "button",
-						                x - padding, ypos - padding, leftWidths [i] + padding + padding /*+ (last ? padding : spacing)*/,
-						                height + padding * 2);
-					} else {
-						evnt.Window.DrawRectangle (Style.DarkGC (StateType.Normal), false, x - padding, ypos - padding, leftWidths [i] + padding + padding, height + padding);
-					}
-				}
-				
+
+				if (hoverIndex >= 0 && hoverIndex < Path.Length && leftPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering))
+					DrawButtonBorder (ctx, x - padding, leftWidths [i] + padding + padding);
+
 				int textOffset = 0;
-				if (leftPath [i].Icon != null) {
-					GdkWindow.DrawPixbuf (Style.BaseGC (State), leftPath [i].Icon, 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
-					textOffset += leftPath [i].Icon.Width + padding;
+				if (leftPath [i].DarkIcon != null) {
+					int iy = (height - leftPath [i].DarkIcon.Height) / 2 + topPadding;
+					GdkWindow.DrawPixbuf (Style.BaseGC (State), leftPath [i].DarkIcon, 0, 0, x, iy, -1, -1, RgbDither.None, 0, 0);
+					textOffset += leftPath [i].DarkIcon.Width + iconSpacing;
 				}
 				
 				layout.Attributes = (i == activeIndex) ? boldAtts : null;
 				layout.SetMarkup (leftPath [i].Markup);
-				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", x + textOffset, ypos, layout);
+
+				// Text shadow
+				ctx.Color = new Cairo.Color (0,0,0);
+				ctx.MoveTo (x + textOffset, textTopPadding + 1);
+				PangoCairoHelper.ShowLayout (ctx, layout);
+
+				// Text
+				ctx.Color = Styles.BreadcrumbTextColor;
+				ctx.MoveTo (x + textOffset, textTopPadding);
+				PangoCairoHelper.ShowLayout (ctx, layout);
+
 				if (!last) {
+					xpos += arrowLeftPadding;
 					if (leftPath [i].IsPathEnd) {
-						Style.PaintVline (Style, GdkWindow, State, evnt.Area, this, "", ypos, ypos + height, xpos - spacing / 2);
+						Style.PaintVline (Style, GdkWindow, State, evnt.Area, this, "", ypos, ypos + height, xpos - arrowSize / 2);
 					} else {
-						int arrowH = Math.Min (height, spacing);
+						int arrowH = Math.Min (height, arrowSize);
 						int arrowY = ypos + (height - arrowH) / 2;
 						Style.PaintArrow (Style, GdkWindow, State, ShadowType.None, evnt.Area, this, "", ArrowType.Right,
-						                  true, xpos - spacing, arrowY, spacing, arrowH);
+						                  true, xpos, arrowY, arrowSize, arrowH);
 					}
+					xpos += arrowSize + arrowRightPadding;
 				}
 			}
 			
-			int xposRight = Allocation.Width - padding;
+			int xposRight = Allocation.Width - rightPadding;
 			for (int i = 0; i < rightPath.Length; i++) {
 //				bool last = i == rightPath.Length - 1;
 				
 				xposRight -= rightWidths [i];
-				xposRight -= spacing;
+				xposRight -= arrowSize;
 					
 				int x = xposRight;
 				
-				if (hoverIndex >= 0 && hoverIndex < Path.Length && rightPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering)) {
-					if (usePaintBox) {
-						Style.PaintBox (Style, GdkWindow,
-						                (pressed || menuVisible) ? StateType.Active : StateType.Prelight,
-						                (pressed || menuVisible) ? ShadowType.In : ShadowType.Out,
-						                evnt.Area, this, "button",
-						                x - padding, ypos - padding, rightWidths [i] + padding + padding /*+ (last ? padding : spacing)*/,
-						                height + padding * 2);
-					} else {
-						evnt.Window.DrawRectangle (Style.DarkGC (StateType.Normal), false, x - padding, ypos - padding, rightWidths [i] + padding + padding, height + padding);
-					}
-				}
+				if (hoverIndex >= 0 && hoverIndex < Path.Length && rightPath [i] == Path [hoverIndex] && (menuVisible || pressed || hovering))
+					DrawButtonBorder (ctx, x - padding, rightWidths [i] + padding + padding);
 				
 				int textOffset = 0;
-				if (rightPath [i].Icon != null) {
-					GdkWindow.DrawPixbuf (Style.BaseGC (State), rightPath [i].Icon, 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
-					textOffset += rightPath [i].Icon.Width + padding;
+				if (rightPath [i].DarkIcon != null) {
+					GdkWindow.DrawPixbuf (Style.BaseGC (State), rightPath [i].DarkIcon, 0, 0, x, ypos, -1, -1, RgbDither.None, 0, 0);
+					textOffset += rightPath [i].DarkIcon.Width + padding;
 				}
 				
 				layout.Attributes = (i == activeIndex) ? boldAtts : null;
 				layout.SetMarkup (rightPath [i].Markup);
-				Style.PaintLayout (Style, GdkWindow, State, false, evnt.Area, this, "", x + textOffset, ypos, layout);
+
+				// Text shadow
+				ctx.Color = new Cairo.Color (0,0,0);
+				ctx.MoveTo (x + textOffset, textTopPadding + 1);
+				PangoCairoHelper.ShowLayout (ctx, layout);
+
+				// Text
+				ctx.Color = Styles.BreadcrumbTextColor;
+				ctx.MoveTo (x + textOffset, textTopPadding);
+				PangoCairoHelper.ShowLayout (ctx, layout);
 			}
-			
+
+			((IDisposable)ctx).Dispose ();
+
 			return true;
+		}
+
+		void DrawButtonBorder (Cairo.Context ctx, double x, double width)
+		{
+			x -= buttonPadding;
+			width += buttonPadding;
+			double y = topPadding - buttonPadding;
+			double height = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
+
+			ctx.Rectangle (x, y, width, height);
+			ctx.Color = Styles.BreadcrumbButtonFillColor;
+			ctx.Fill ();
+
+			ctx.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
+			ctx.Color = Styles.BreadcrumbButtonBorderColor;
+			ctx.LineWidth = 1;
+			ctx.Stroke ();
 		}
 		
 		protected override bool OnButtonPressEvent (EventButton evnt)
@@ -463,14 +504,22 @@ namespace MonoDevelop.Components
 		int[] CreateWidthArray (PathEntry[] path)
 		{
 			var result = new int[path.Length];
+			int maxIconHeight = 0;
+
 			for (int i = 0; i < path.Length; i++) {
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
 				layout.SetMarkup (path[i].Markup);
 				int w, h;
 				layout.GetPixelSize (out w, out h);
-				height = Math.Max (h, height);
-				result[i] = w + (path[i].Icon != null ? path[i].Icon.Width + padding : 0);
+				textHeight = Math.Max (h, textHeight);
+				if (path[i].DarkIcon != null) {
+					maxIconHeight = Math.Max (path[i].DarkIcon.Height, maxIconHeight);
+					w += path[i].DarkIcon.Width + iconSpacing;
+				}
+				result[i] = w;
 			}
+			height = Math.Max (height, maxIconHeight);
+			height = Math.Max (height, textHeight);
 			return result;
 		}
 
@@ -482,7 +531,8 @@ namespace MonoDevelop.Components
 			layout.SetText ("#");
 			int w;
 			layout.GetPixelSize (out w, out this.height);
-			
+			textHeight = height;
+
 			leftWidths = CreateWidthArray (leftPath);
 			rightWidths = CreateWidthArray (rightPath);
 		}

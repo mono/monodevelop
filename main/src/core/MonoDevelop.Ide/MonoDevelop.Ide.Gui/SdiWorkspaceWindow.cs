@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Gui
 {
-	internal class SdiWorkspaceWindow : Frame, IWorkbenchWindow, ICommandDelegatorRouter
+	internal class SdiWorkspaceWindow : EventBox, IWorkbenchWindow, ICommandDelegatorRouter
 	{
 		DefaultWorkbench workbench;
 		IViewContent content;
@@ -74,8 +74,6 @@ namespace MonoDevelop.Ide.Gui
 			this.content = content;
 			this.tab = tabLabel;
 			this.tabPage = content.Control;
-			
-			ShadowType = ShadowType.None;
 			
 			box = new VBox ();
 			box.PackStart (content.Control);
@@ -221,8 +219,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SelectWindow()
 		{
-			if (this.Parent == null)
-				return;
 			tabControl.CurrentTabIndex = tab.Index;
 			if (tabControl.FocusChild != null) {
 				tabControl.FocusChild.GrabFocus ();
@@ -254,6 +250,11 @@ namespace MonoDevelop.Ide.Gui
 				foreach (var f in c.FocusChain.SelectMany (x => GetFocussableWidgets (x)).Where (y => y != null))
 					yield return f;
 			}
+		}
+
+		public MonoDevelop.Components.Docking.DockItemToolbar GetToolbar (Gtk.PositionType position)
+		{
+			return null;
 		}
 
 		void BeforeSave(object sender, EventArgs e)

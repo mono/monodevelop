@@ -99,6 +99,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			
 		}
+
+		public MonoDevelop.Components.Docking.DockItemToolbar GetToolbar (Gtk.PositionType position)
+		{
+			return null;
+		}
+
 		public event EventHandler TitleChanged { add {} remove {} }
 		public event EventHandler DocumentChanged;
 		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closing;

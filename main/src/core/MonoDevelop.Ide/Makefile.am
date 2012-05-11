@@ -933,7 +933,10 @@ RES =  \
 	icons/web-overlay-32.png \
 	icons/workspace-16.png \
 	icons/workspace-32.png \
+	icons-components/MonoDevelop.Close.Over.png \
 	icons-components/MonoDevelop.Close.png \
+	icons-components/MonoDevelop.Close.Selected.Over.png \
+	icons-components/MonoDevelop.Close.Selected.png \
 	icons-components/MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp \
 	icons-components/MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp \
 	icons-components/MonoDevelop.Components.PropertyGrid.SortByCat.png \

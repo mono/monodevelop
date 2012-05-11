@@ -29,12 +29,17 @@ namespace MonoDevelop.Ide.Gui
 {
 	static class Styles
 	{
-		public static readonly Cairo.Color TabBarGradientStartColor = new Cairo.Color (245d / 255d, 245d / 255d, 245d / 255d);
+		public static readonly Cairo.Color TabBarGradientStartColor = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
+		public static readonly Cairo.Color TabBarGradientMidColor = new Cairo.Color (217d / 255d, 217d / 255d, 217d / 255d);
 		public static readonly Cairo.Color TabBarGradientEndColor = new Cairo.Color (183d / 255d, 183d / 255d, 183d / 255d);
 		public static readonly Cairo.Color BreadcrumbBackgroundColor = new Cairo.Color (77d / 255d, 77d / 255d, 77d / 255d);
-		public static readonly Cairo.Color BreadcrumbGradientStartColor = new Cairo.Color (95d / 255d, 95d / 255d, 95d / 255d);
+		public static readonly Cairo.Color BreadcrumbGradientStartColor = new Cairo.Color (100d / 255d, 100d / 255d, 100d / 255d);
+		public static readonly Cairo.Color BreadcrumbGradientEndColor = new Cairo.Color (51d / 255d, 51d / 255d, 51d / 255d);
 		public static readonly Cairo.Color BreadcrumbBorderColor = new Cairo.Color (55d / 255d, 55d / 255d, 55d / 255d);
 		public static readonly Cairo.Color BreadcrumbInnerBorderColor = new Cairo.Color (1, 1, 1, 0.1d);
+		public static readonly Cairo.Color BreadcrumbTextColor = new Cairo.Color (204d / 255d, 204d / 255d, 204d / 255d);
+		public static readonly Cairo.Color BreadcrumbButtonBorderColor = new Cairo.Color (204d / 255d, 204d / 255d, 204d / 255d);
+		public static readonly Cairo.Color BreadcrumbButtonFillColor = new Cairo.Color (1, 1, 1, 0.1d);
 	}
 }
 
