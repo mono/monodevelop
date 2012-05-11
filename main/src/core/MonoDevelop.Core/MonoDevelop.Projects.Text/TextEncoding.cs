@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Text
 					for (int n=0; n<encodings.GetUpperBound (0); n++)
 						supported[n] = new TextEncoding (encodings[n,0], encodings[n,1]);
 				}
-				return supported;
+				return supported ?? new TextEncoding[0];
 			}
 		}
 		
@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects.Text
 					}
 					conversion = list.ToArray ();
 				}
-				return conversion;
+				return conversion ?? new TextEncoding[0];
 			}
 			set {
 				conversion = value;
