@@ -347,6 +347,11 @@ namespace MonoDevelop.Platform
 		{
 			Runtime.ProcessService.StartProcess (TerminalCommand, "", directory, null);
 		}
+
+		public override MonoDevelop.Compontents.MainToolbar.MainToolbar CreateMainToolbar (Gtk.Window window)
+		{
+			return new MonoDevelop.Compontents.MainToolbar.MainToolbar ();
+		}
 	}
 	
 	class GnomeDesktopApplication : DesktopApplication

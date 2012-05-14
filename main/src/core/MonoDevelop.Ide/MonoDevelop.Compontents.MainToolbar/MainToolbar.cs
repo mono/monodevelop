@@ -78,8 +78,10 @@ namespace MonoDevelop.Compontents.MainToolbar
 				);
 				context.Clip ();
 				context.LineWidth = 1;
-				for (int x=0; x < Allocation.Width; x+= Background.Width) {
-					Background.Show (context, x, -TitleBarHeight);
+				if (Background != null) {
+					for (int x=0; x < Allocation.Width; x+= Background.Width) {
+						Background.Show (context, x, -TitleBarHeight);
+					}
 				}
 				context.MoveTo (0, Allocation.Bottom + 0.5);
 				context.LineTo (Allocation.Width + evnt.Area.Width, Allocation.Bottom + 0.5);
