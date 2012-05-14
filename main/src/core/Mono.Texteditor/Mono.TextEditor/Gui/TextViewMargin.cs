@@ -2297,7 +2297,7 @@ namespace Mono.TextEditor
 						lineArea.Height);
 					} else {
 						// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
-						lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale - 1,
+						lineArea = new Cairo.Rectangle (System.Math.Max (pangoPosition / Pango.Scale.PangoScale - 1, XOffset + TextStartPosition),
 						lineArea.Y,
 						textEditor.Allocation.Width - pangoPosition / Pango.Scale.PangoScale + 1,
 						lineArea.Height);
