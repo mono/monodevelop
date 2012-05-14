@@ -25,11 +25,28 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Core;
+using System.Linq;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Components;
+
+
 namespace MonoDevelop.Compontents.MainToolbar
 {
 	public class MainToolbar: Gtk.EventBox
 	{
 		HBox contentBox = new HBox (false, 6);
+
+		ComboBox configurationCombo;
+		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
+
+		ComboBox runtimeCombo;
+		TreeStore runtimeStore = new TreeStore (typeof(string), typeof(TargetRuntime));
+
+		SearchEntry matchEntry;
 
 		public Cairo.ImageSurface Background {
 			get;
@@ -46,22 +63,132 @@ namespace MonoDevelop.Compontents.MainToolbar
 			set;
 		}
 
+
+		/*
+		internal class SelectActiveRuntimeHandler : CommandHandler
+		{
+			protected override void Update (CommandArrayInfo info)
+			{
+			}
+	
+			protected override void Run (object dataItem)
+			{
+			}
+		}
+		*/
 		public MainToolbar ()
 		{
+			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateConfigurations ();
+			IdeApp.Workspace.ActiveRuntimeChanged += (sender, e) => UpdateConfigurations ();
+			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateConfigurations ();
+
+			IdeApp.Workspace.ActiveRuntimeChanged += (sender, e) => UpdateRuntimes ();
+			IdeApp.Workspace.RuntimesChanged += (sender, e) => UpdateRuntimes ();
+
+			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
+			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			contentBox.BorderWidth = 6;
-			AddWidget (new Gtk.Button ("Run"));
-			AddWidget (new Gtk.ComboBox (new [] {"Debug", "Release"}));
-			AddWidget (new Gtk.ComboBox (new [] {"Simulator", "IPhone"}));
+			var button = new Gtk.Button ("Run");
+			button.Clicked += (sender, e) => IdeApp.CommandService.DispatchCommand (ProjectCommands.Run);
+			AddWidget (button);
+
+			configurationCombo = new Gtk.ComboBox ();
+			configurationCombo.Model = configurationStore;
+			var ctx = new Gtk.CellRendererText ();
+			configurationCombo.PackStart (ctx, true);
+			configurationCombo.AddAttribute (ctx, "text", 0);
+
+			AddWidget (configurationCombo);
+
+			runtimeCombo = new Gtk.ComboBox ();
+			runtimeCombo.Model = runtimeStore;
+			runtimeCombo.PackStart (ctx, true);
+			runtimeCombo.AddAttribute (ctx, "text", 0);
+
+			AddWidget (runtimeCombo);
+
 			AddWidget (new Gtk.Button ("Stop"));
 			AddWidget (new Gtk.Button ("Step over"));
 			AddWidget (new Gtk.Button ("Step into"));
 			AddWidget (new Gtk.Button ("Step out"));
-			AddWidget (new Gtk.ComboBox (new [] {"Dummy"}));
-			AddWidget (new Gtk.Entry ());
+
+			contentBox.PackStart (new Gtk.ComboBox (new [] {"Dummy"}), true, true, 0);
+
+			this.matchEntry = new SearchEntry ();
+			this.matchEntry.EmptyMessage = GettextCatalog.GetString ("Press Control + , for search.");
+			this.matchEntry.Ready = true;
+			this.matchEntry.Visible = true;
+			this.matchEntry.IsCheckMenu = true;
+
+			contentBox.PackEnd (this.matchEntry, true, true, 0);
 			Add (contentBox);
+			UpdateCombos ();
 		}
-		
+
+		void HandleRuntimeChanged (object sender, EventArgs e)
+		{
+			TreeIter iter;
+			if (!runtimeStore.GetIterFromString (out iter, runtimeCombo.Active.ToString ()))
+				return;
+			var runtime = (TargetRuntime)runtimeStore.GetValue (iter, 1);
+			IdeApp.Workspace.ActiveRuntime = runtime;
+		}
+
+		void HandleConfigurationChanged (object sender, EventArgs e)
+		{
+			TreeIter iter;
+			if (!configurationStore.GetIterFromString (out iter, configurationCombo.Active.ToString ()))
+				return;
+			var config = (string)configurationStore.GetValue (iter, 1);
+			IdeApp.Workspace.ActiveConfigurationId = config;
+		}
+
+		void UpdateCombos ()
+		{
+			UpdateConfigurations ();
+			UpdateRuntimes ();
+		}
+
+		void UpdateConfigurations ()
+		{
+			configurationCombo.Changed -= HandleConfigurationChanged;
+			configurationStore.Clear ();
+			if (!IdeApp.Workspace.IsOpen)
+				return;
+			int selected = -1;
+			int i = 0;
+			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
+				configurationStore.AppendValues (conf, conf);
+				if (conf == IdeApp.Workspace.ActiveConfigurationId)
+					selected = i;
+				i++;
+			}
+			if (selected >= 0)
+				configurationCombo.Active = selected;
+			configurationCombo.Changed += HandleConfigurationChanged;
+		}
+
+		void UpdateRuntimes ()
+		{
+			runtimeCombo.Changed -= HandleRuntimeChanged;
+			runtimeStore.Clear ();
+			if (!IdeApp.Workspace.IsOpen || Runtime.SystemAssemblyService.GetTargetRuntimes ().Count () == 0)
+				return;
+			int selected = -1;
+			int i = 0;
+
+			foreach (var tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
+				runtimeStore.AppendValues (tr.DisplayName, tr);
+				if (tr == IdeApp.Workspace.ActiveRuntime)
+					selected = i;
+				i++;
+			}
+			if (selected >= 0)
+				runtimeCombo.Active = selected;
+			runtimeCombo.Changed += HandleRuntimeChanged;
+		}
+
 		public void AddWidget (Gtk.Widget widget)
 		{
 			contentBox.PackStart (widget, false, false, 0);
