@@ -45,6 +45,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using Mono.TextEditor;
+using MonoDevelop.Compontents.MainToolbar;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -55,7 +56,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string viewContentPath = "/MonoDevelop/Ide/Pads";
-		readonly static string toolbarsPath    = "/MonoDevelop/Ide/Toolbar";
+//		readonly static string toolbarsPath    = "/MonoDevelop/Ide/Toolbar";
 		readonly static string stockLayoutsPath    = "/MonoDevelop/Ide/WorkbenchLayouts";
 		
 		static string configFile = UserProfile.Current.ConfigDir.Combine ("EditingLayout.xml");
@@ -84,10 +85,10 @@ namespace MonoDevelop.Ide.Gui
 		DockFrame dock;
 		SdiDragNotebook tabControl;
 		Gtk.MenuBar topMenu;
-		Gtk.Toolbar[] toolbars;
 		MonoDevelopStatusBar statusBar;
 		Gtk.VBox fullViewVBox;
 		DockItem documentDockItem;
+		MainToolbar toolbar;
 		
 		enum TargetList {
 			UriList = 100
@@ -288,17 +289,6 @@ namespace MonoDevelop.Ide.Gui
 			if (!DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath))
 				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 			
-			toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
-			foreach (Gtk.Toolbar t in toolbars) {
-				t.ToolbarStyle = Gtk.ToolbarStyle.Icons;
-				t.IconSize = IdeApp.Preferences.ToolbarSize;
-			}
-			IdeApp.Preferences.ToolbarSizeChanged += delegate {
-				foreach (Gtk.Toolbar t in toolbars) {
-					t.IconSize = IdeApp.Preferences.ToolbarSize;
-				}
-			};
-				
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		
@@ -311,20 +301,6 @@ namespace MonoDevelop.Ide.Gui
 				UninstallMenuBar ();
 				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
 				InstallMenuBar ();
-			}
-			
-			if (args.PathChanged (toolbarsPath)) {
-				toolbars = IdeApp.CommandService.CreateToolbarSet (toolbarsPath);
-				string cl = toolbarFrame.CurrentLayout;
-				DockToolbarFrameStatus mem = toolbarFrame.GetStatus ();
-				toolbarFrame.ClearToolbars ();
-				foreach (DockToolbar tb in toolbars) {
-					tb.ToolbarStyle = Gtk.ToolbarStyle.Icons;
-					tb.ShowAll ();
-					toolbarFrame.AddBar (tb);
-				}
-				toolbarFrame.SetStatus (mem);
-				toolbarFrame.CurrentLayout = cl;
 			}
 		}
 		
@@ -749,10 +725,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public Gtk.Toolbar[] ToolBars {
-			get { return toolbars; }
-		}
-		
 		public PadCodon GetPad(Type type)
 		{
 			foreach (PadCodon pad in PadContentCollection) {
@@ -788,20 +760,22 @@ namespace MonoDevelop.Ide.Gui
 			AddinManager.AddExtensionNodeHandler (viewContentPath, OnExtensionChanged);
 			initializing = false;
 		}
-		
+
 		void CreateComponents ()
 		{
 			fullViewVBox = new VBox (false, 0);
 			rootWidget = fullViewVBox;
 			
 			InstallMenuBar ();
+			Realize ();
+			toolbar = DesktopService.CreateMainToolbar (this);
 			
+			toolbar.ShowAll ();
+			fullViewVBox.PackStart (toolbar, false, false, 0);
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
+
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
-			
-			foreach (DockToolbar t in toolbars)
-				toolbarFrame.AddBar (t);
-			
+
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
 			

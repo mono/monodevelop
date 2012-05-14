@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
+using MonoDevelop.Compontents.MainToolbar;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -518,6 +519,50 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 		{
 			window.Present ();
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
+		}
+
+		static Cairo.Color ConvertColor (NSColor color)
+		{
+			float r, g, b, a;
+			if (color.ColorSpaceName == NSColorSpace.DeviceWhite) {
+				a = 1.0f;
+				r = g = b = color.WhiteComponent;
+			} else {
+				color.GetRgba (out r, out g, out b, out a);
+			}
+			return new Cairo.Color (r, g, b, a);
+		}
+
+		static int GetTitleBarHeight ()
+		{
+			var frame = new RectangleF (0, 0, 100, 100);
+			var rect = NSWindow.ContentRectFor (frame, NSWindowStyle.Titled);
+			return (int)(frame.Height - rect.Height);
+		}
+
+
+		public override MainToolbar CreateMainToolbar (Gtk.Window window)
+		{
+			NSApplication.Init ();
+			
+			NSColor bottomColor = NSColor.FromDeviceWhite (0.408f, 1.0f);
+			NSWindow w = GtkQuartz.GetWindow (window);
+			w.IsOpaque = false;
+			var fileName = Path.Combine (Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location), "maintoolbarbg.png");
+			
+			
+			NSImage img = new NSImage (fileName);
+			var c = NSColor.FromPatternImage (img);
+			w.BackgroundColor = c;
+			w.StyleMask |= NSWindowStyle.TexturedBackground;
+			var result = new MainToolbar () {
+				Background = new Cairo.ImageSurface (fileName),
+				TitleBarHeight = GetTitleBarHeight (),
+				BottomColor = ConvertColor (bottomColor)
+			};
+			//		File.Delete (tempName);
+			
+			return result;
 		}
 	}
 }

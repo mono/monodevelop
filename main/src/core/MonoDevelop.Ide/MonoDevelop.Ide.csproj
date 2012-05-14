@@ -1521,6 +1521,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DockNotebook.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
+    <Compile Include="MonoDevelop.Compontents.MainToolbar\MainToolbar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -1588,5 +1589,6 @@
     <Folder Include="icons\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\" />
     <Folder Include="branding\" />
+    <Folder Include="MonoDevelop.Compontents.MainToolbar\" />
   </ItemGroup>
 </Project>

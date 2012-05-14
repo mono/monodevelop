@@ -283,6 +283,7 @@ FILES =  \
 	MonoDevelop.Components/TreeViewCellContainer.cs \
 	MonoDevelop.Components/TreeViewState.cs \
 	MonoDevelop.Components/WindowTransparencyDecorator.cs \
+	MonoDevelop.Compontents.MainToolbar/MainToolbar.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContext.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContextEventArgs.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionData.cs \

@@ -30,6 +30,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Core;
 using System.IO;
+using MonoDevelop.Compontents.MainToolbar;
 
 namespace MonoDevelop.Ide
 {
@@ -216,6 +217,11 @@ namespace MonoDevelop.Ide
 		internal static void GrabDesktopFocus (Gtk.Window window)
 		{
 			PlatformService.GrabDesktopFocus (window);
+		}
+
+		internal static MainToolbar CreateMainToolbar (Gtk.Window window)
+		{
+			return PlatformService.CreateMainToolbar (window);
 		}
 	}
 }

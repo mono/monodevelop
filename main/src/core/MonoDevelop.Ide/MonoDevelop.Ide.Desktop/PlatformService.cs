@@ -38,6 +38,7 @@ using MonoDevelop.Core;
 using Mono.Unix;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Compontents.MainToolbar;
 
 
 namespace MonoDevelop.Ide.Desktop
@@ -347,6 +348,7 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			return new string[0];
 		}
+
 		
 		/// <summary>
 		/// Starts the installer.
@@ -380,6 +382,11 @@ namespace MonoDevelop.Ide.Desktop
 		public virtual void GrabDesktopFocus (Gtk.Window window)
 		{
 			window.Present ();
+		}
+
+		public virtual MainToolbar CreateMainToolbar (Gtk.Window window)
+		{
+			return null;
 		}
 	}
 }

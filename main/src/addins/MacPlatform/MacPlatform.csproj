@@ -46,6 +46,7 @@
     <Reference Include="MonoMac">
       <HintPath>..\..\..\..\external\monomac\src\MonoMac.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -91,6 +92,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="maintoolbarbg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

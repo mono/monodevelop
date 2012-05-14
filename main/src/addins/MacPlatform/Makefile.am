@@ -13,6 +13,7 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	-r:../../../../external/monomac/src/MonoMac.dll \
+	-r:Mono.Cairo \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
