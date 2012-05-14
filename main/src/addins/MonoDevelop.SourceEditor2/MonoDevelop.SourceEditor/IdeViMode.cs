@@ -93,7 +93,7 @@ namespace MonoDevelop.SourceEditor
 					case 'q':	// :wq
 						editor.View.WorkbenchWindow.Document.Save ();
 						Gtk.Application.Invoke (delegate {
-							editor.View.WorkbenchWindow.CloseWindow (false, true, -1);
+							editor.View.WorkbenchWindow.CloseWindow (false/*, true, -1*/);
 						});
 						return "Saved and closed file.";
 					case '!':	// :w!
@@ -122,7 +122,7 @@ namespace MonoDevelop.SourceEditor
 					return "Document has not been saved!";
 
 				Gtk.Application.Invoke (delegate {
-					editor.View.WorkbenchWindow.CloseWindow (force, true, -1);
+					editor.View.WorkbenchWindow.CloseWindow (force/*, true, -1*/);
 				});
 				return force? "Closed file without saving.": "Closed file.";
 				
