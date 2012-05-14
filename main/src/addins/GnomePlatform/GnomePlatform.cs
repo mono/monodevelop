@@ -296,7 +296,7 @@ namespace MonoDevelop.Platform
 				return;
 			}
 			
-			FindExec (fallback_terminal);
+			terminal_command = FindExec (fallback_terminal);
 			runner = fallback_runner;
 		}
 
