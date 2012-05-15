@@ -67,6 +67,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			scroller = new ScrolledWindow ();
 			widget = new WelcomePageWidget ();
 			scroller.AddWithViewport (widget);
+			((Gtk.Viewport)scroller.Child).ShadowType = ShadowType.None;
 			scroller.ShadowType = ShadowType.None;
 			scroller.FocusChain = new Widget[] { widget };
 			scroller.Show ();

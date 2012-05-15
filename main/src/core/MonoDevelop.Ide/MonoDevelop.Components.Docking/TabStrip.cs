@@ -80,7 +80,6 @@ namespace MonoDevelop.Components.Docking
 		{
 			Tab tab = new Tab ();
 			tab.SetLabel (page, icon, label);
-			tab.ShowAll ();
 			AddTab (tab);
 		}
 
@@ -233,6 +232,7 @@ namespace MonoDevelop.Components.Docking
 		Gtk.Label labelWidget;
 		int labelWidth;
 		string visualStyle;
+		Image tabIcon;
 		
 		const int TopPadding = 7;
 		const int BottomPadding = 7;
@@ -249,6 +249,8 @@ namespace MonoDevelop.Components.Docking
 			get { return visualStyle; }
 			set {
 				visualStyle = value;
+				if (tabIcon != null)
+					tabIcon.Visible = value != DockStyle.Browser;
 				QueueDraw ();
 			}
 		}
@@ -269,10 +271,15 @@ namespace MonoDevelop.Components.Docking
 			Gtk.HBox box = new HBox ();
 			box.Spacing = 2;
 			
-			if (icon != null)
-				box.PackStart (new Gtk.Image (icon), false, false, 0);
+			if (icon != null) {
+				tabIcon = new Gtk.Image (icon);
+				box.PackStart (tabIcon, false, false, 0);
+			} else
+				tabIcon = null;
 
 			if (!string.IsNullOrEmpty (label)) {
+				if (VisualStyle == DockStyle.Browser)
+					label = label.ToUpper ();
 				labelWidget = new Gtk.Label (label);
 				labelWidget.UseMarkup = true;
 				labelWidget.Xalign = 0;
@@ -290,6 +297,8 @@ namespace MonoDevelop.Components.Docking
 			
 			if (labelWidget != null)
 				labelWidget.Ellipsize = oldMode;
+			if (tabIcon != null)
+				tabIcon.Visible = VisualStyle != DockStyle.Browser;
 		}
 		
 		public void SetEllipsize (bool elipsize)

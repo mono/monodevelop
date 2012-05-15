@@ -68,7 +68,7 @@ namespace MonoDevelop.Components.Docking
 		Tab titleTab;
 		bool allowPlaceholderDocking;
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
-		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.Hand2);
+		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
 
 		public event EventHandler VisibleChanged;
 		public event EventHandler ContentVisibleChanged;
@@ -129,7 +129,6 @@ namespace MonoDevelop.Components.Docking
 					titleTab.SetLabel (Widget, icon, label);
 					titleTab.ShowAll ();
 					titleTab.ButtonPressEvent += HeaderButtonPress;
-					titleTab.ButtonPressEvent += HeaderButtonPress;
 					titleTab.ButtonReleaseEvent += HeaderButtonRelease;
 					titleTab.MotionNotifyEvent += HeaderMotion;
 					titleTab.KeyPressEvent += HeaderKeyPress;
@@ -139,17 +138,15 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
+		bool tabPressed;
+
 		void HeaderButtonPress (object ob, Gtk.ButtonPressEventArgs args)
 		{
 			if (args.Event.TriggersContextMenu ()) {
 				ShowDockPopupMenu (args.Event.Time);
 				args.RetVal = false;
 			} else if (args.Event.Button == 1) {
-				frame.ShowPlaceholder ();
-				titleTab.GdkWindow.Cursor = fleurCursor;
-				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
-				frame.Toplevel.KeyReleaseEvent += HeaderKeyRelease;
-				allowPlaceholderDocking = true;
+				tabPressed = true;
 			}
 		}
 		
@@ -163,6 +160,20 @@ namespace MonoDevelop.Components.Docking
 				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
 				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
 			}
+			tabPressed = false;
+		}
+		
+		void HeaderMotion (object ob, Gtk.MotionNotifyEventArgs args)
+		{
+			if (tabPressed) {
+				frame.ShowPlaceholder ();
+				titleTab.GdkWindow.Cursor = fleurCursor;
+				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
+				frame.Toplevel.KeyReleaseEvent += HeaderKeyRelease;
+				allowPlaceholderDocking = true;
+				tabPressed = false;
+			}
+			frame.UpdatePlaceholder (this, titleTab.Allocation.Size, allowPlaceholderDocking);
 		}
 		
 		[GLib.ConnectBeforeAttribute]
@@ -188,12 +199,7 @@ namespace MonoDevelop.Components.Docking
 				frame.UpdatePlaceholder (this, titleTab.Allocation.Size, true);
 			}
 		}
-		
-		void HeaderMotion (object ob, Gtk.MotionNotifyEventArgs args)
-		{
-			frame.UpdatePlaceholder (this, titleTab.Allocation.Size, allowPlaceholderDocking);
-		}
-		
+
 		public DockItemStatus Status {
 			get {
 				return frame.GetStatus (this); 

@@ -32,6 +32,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using Gtk;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -831,7 +832,9 @@ namespace MonoDevelop.Components.Docking
 			int y = Allocation.Y;
 			int hw = horiz ? Frame.HandleSize : Allocation.Width;
 			int hh = horiz ? Allocation.Height : Frame.HandleSize;
-			Gtk.Orientation or = horiz ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
+
+			Gdk.GC hgc = new Gdk.GC (Frame.Container.GdkWindow);
+			hgc.RgbFgColor = Styles.DockFrameBackground;
 
 			for (int n=0; n<VisibleObjects.Count; n++) {
 				DockObject ob = VisibleObjects [n];
@@ -851,13 +854,7 @@ namespace MonoDevelop.Components.Docking
 						Frame.Container.QueueDrawArea (x, y, hw, hh);
 					}
 					else {
-						if (Frame.ShadedSeparators) {
-							Frame.ShadedContainer.DrawBackground (Frame.Container, new Gdk.Rectangle (x, y, hw, hh));
-						} else {
-							StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
-							if (!DockFrame.IsWindows)
-								Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
-						}
+						Frame.Container.GdkWindow.DrawRectangle (hgc, true, x, y, hw, hh);
 					}
 					
 					if (horiz)
@@ -866,6 +863,7 @@ namespace MonoDevelop.Components.Docking
 						y += Frame.HandleSize + Frame.HandlePadding;
 				}
 			}
+			hgc.Dispose ();
 		}
 		
 		public void ResizeItem (int index, int newSize)

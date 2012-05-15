@@ -40,6 +40,17 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color BreadcrumbTextColor = new Cairo.Color (204d / 255d, 204d / 255d, 204d / 255d);
 		public static readonly Cairo.Color BreadcrumbButtonBorderColor = new Cairo.Color (204d / 255d, 204d / 255d, 204d / 255d);
 		public static readonly Cairo.Color BreadcrumbButtonFillColor = new Cairo.Color (1, 1, 1, 0.1d);
+
+		public static readonly Cairo.Color DockTabBarGradientTop = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
+		public static readonly Cairo.Color DockTabBarGradientStart = new Cairo.Color (242d / 255d, 242d / 255d, 242d / 255d);
+		public static readonly Cairo.Color DockTabBarGradientEnd = new Cairo.Color (230d / 255d, 230d / 255d, 230d / 255d);
+		public static readonly Cairo.Color DockTabBarShadowGradientStart = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 1);
+		public static readonly Cairo.Color DockTabBarShadowGradientEnd = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 0);
+
+		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (219, 224, 231);
+
+		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
+
 	}
 }
 

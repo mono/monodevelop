@@ -828,6 +828,9 @@ namespace MonoDevelop.Ide.Gui
 			documentDockItem.Label = GettextCatalog.GetString ("Documents");
 			documentDockItem.Content = tabControl;
 			
+			dock.SetRegionStyle ("Documents/Left", "Browser");
+			dock.SetRegionStyle ("Documents/Right", "Browser");
+
 			// Add some hiden items to be used as position reference
 			DockItem dit = dock.AddItem ("__left");
 			dit.DefaultLocation = "Documents/Left";
