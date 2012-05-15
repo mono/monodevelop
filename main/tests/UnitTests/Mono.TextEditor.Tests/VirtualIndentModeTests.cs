@@ -368,8 +368,51 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\t\t\t\n\n", data.Document.Text);
 		}
 
+		class SpacesIndentTracker : IIndentationTracker
+		{
+			const string indentString = "        ";
+			#region IIndentationTracker implementation
+			public string GetIndentationString (int offset)
+			{
+				return indentString;
+			}
 
+			public string GetIndentationString (int lineNumber, int column)
+			{
+				return indentString;
+			}
 
+			public int GetVirtualIndentationColumn (int offset)
+			{
+				return indentString.Length + 1;
+			}
+
+			public int GetVirtualIndentationColumn (int lineNumber, int column)
+			{
+				return indentString.Length + 1;
+			}
+			#endregion
+		}
+		TextEditorData CreateDataWithSpaces ()
+		{
+			var data = new TextEditorData ();
+			data.IndentationTracker = new SpacesIndentTracker ();
+			data.Options = new TextEditorOptions () {
+				TabsToSpaces = true,
+				IndentStyle = IndentStyle.Virtual
+			};
+			return data;
+		}
+
+		[Test()]
+		public void TestIndentWithSpaces ()
+		{
+			var data = CreateDataWithSpaces ();
+			data.Document.Text = "\n        \n\n";
+			data.Caret.Location = new DocumentLocation (2, 9);
+			MiscActions.InsertNewLine (data);
+			Assert.AreEqual ("\n\n\n\n", data.Document.Text);
+		}
 	}
 }
 
