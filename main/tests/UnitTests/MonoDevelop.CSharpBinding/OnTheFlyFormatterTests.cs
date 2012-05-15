@@ -94,7 +94,6 @@ namespace MonoDevelop.CSharpBinding
 			ext.KeyPress (Gdk.Key.semicolon, ';', Gdk.ModifierType.None);
 			
 			var newText = content.Text;
-			Console.WriteLine (newText);
 			Assert.AreEqual (@"class Foo
 {
 	void Test ()
@@ -128,6 +127,21 @@ namespace MonoDevelop.CSharpBinding
 	}
 }", newText);
 
+		}
+
+		
+		/// <summary>
+		/// Bug 5080 - Pressing tab types /t instead of tabbing
+		/// </summary>
+		[Test]
+		public void TestBug5080 ()
+		{
+			TestViewContent content;
+			var ext = Setup ("\"Hello\n\t$", out content);
+			ext.KeyPress (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+
+			var newText = content.Text;
+			Assert.AreEqual ("\"Hello\n\t", newText);
 		}
 	}
 }

@@ -235,15 +235,18 @@ namespace MonoDevelop.CSharp.Formatting
 			if (key == Gdk.Key.Tab) {
 				stateTracker.UpdateEngine ();
 				if (stateTracker.Engine.IsInsideStringLiteral) {
-					textEditorData.InsertAtCaret ("\\t");
-					return false;
+					var lexer = new CSharpCompletionEngineBase.MiniLexer (textEditorData.Document.GetTextAt (0, textEditorData.Caret.Offset));
+					lexer.Parse ();
+					if (lexer.IsInString) {
+						textEditorData.InsertAtCaret ("\\t");
+						return false;
+					}
 				}
 			}
 
 
 			if (key == Gdk.Key.Tab && DefaultSourceEditorOptions.Instance.TabIsReindent && !CompletionWindowManager.IsVisible && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = textEditorData.Caret.Offset;
-
 				if (stateTracker.Engine.IsInsideVerbatimString) {
 					// insert normal tab inside @" ... "
 					if (textEditorData.IsSomethingSelected) {
@@ -282,7 +285,6 @@ namespace MonoDevelop.CSharp.Formatting
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					DoPreInsertionSmartIndent (key);
 				}
-
 				retval = base.KeyPress (key, keyChar, modifier);
 
 				using (var undo = textEditorData.OpenUndoGroup ()) {
