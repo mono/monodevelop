@@ -26,6 +26,8 @@ clean:
 
 install:
 
+uninstall:
+
 distdir: dist
 
 dist:
