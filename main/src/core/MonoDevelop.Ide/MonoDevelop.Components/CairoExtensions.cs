@@ -399,5 +399,13 @@ namespace MonoDevelop.Components
                 native_push_pop_exists = false;
             }
         }
+
+		public static Cairo.Color ParseColor (string s, double alpha = 1)
+		{
+			double r = ((double) int.Parse (s.Substring (0,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+			double g = ((double) int.Parse (s.Substring (2,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+			double b = ((double) int.Parse (s.Substring (4,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+			return new Cairo.Color (r, g, b, alpha);
+		}
     }
 }

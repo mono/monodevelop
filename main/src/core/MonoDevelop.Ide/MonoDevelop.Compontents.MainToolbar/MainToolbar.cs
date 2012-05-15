@@ -46,6 +46,8 @@ namespace MonoDevelop.Compontents.MainToolbar
 		ComboBox runtimeCombo;
 		TreeStore runtimeStore = new TreeStore (typeof(string), typeof(TargetRuntime));
 
+		StatusArea statusArea;
+
 		SearchEntry matchEntry;
 
 		public Cairo.ImageSurface Background {
@@ -94,6 +96,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 			AddWidget (button);
 
 			configurationCombo = new Gtk.ComboBox ();
+			configurationCombo.SetSizeRequest (150, -1);
 			configurationCombo.Model = configurationStore;
 			var ctx = new Gtk.CellRendererText ();
 			configurationCombo.PackStart (ctx, true);
@@ -102,6 +105,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 			AddWidget (configurationCombo);
 
 			runtimeCombo = new Gtk.ComboBox ();
+			runtimeCombo.SetSizeRequest (150, -1);
 			runtimeCombo.Model = runtimeStore;
 			runtimeCombo.PackStart (ctx, true);
 			runtimeCombo.AddAttribute (ctx, "text", 0);
@@ -113,7 +117,8 @@ namespace MonoDevelop.Compontents.MainToolbar
 			AddWidget (new Gtk.Button ("Step into"));
 			AddWidget (new Gtk.Button ("Step out"));
 
-			contentBox.PackStart (new Gtk.ComboBox (new [] {"Dummy"}), true, true, 0);
+			statusArea = new StatusArea ();
+			contentBox.PackStart (statusArea, true, true, 0);
 
 			this.matchEntry = new SearchEntry ();
 			this.matchEntry.EmptyMessage = GettextCatalog.GetString ("Press Control + , for search.");
