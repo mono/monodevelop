@@ -818,8 +818,20 @@
     <EmbeddedResource Include="icons-components\MonoDevelop.Close.Selected.png">
       <LogicalName>MonoDevelop.Close.Selected.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\runButton.png">
-      <LogicalName>runButton.png</LogicalName>
+    <EmbeddedResource Include="icons\toolbar-runButton.png">
+      <LogicalName>toolbar-runButton.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toolbar-stepOutButton.png">
+      <LogicalName>toolbar-stepOutButton.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toolbar-stepInButton.png">
+      <LogicalName>toolbar-stepInButton.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toolbar-skipButton.png">
+      <LogicalName>toolbar-skipButton.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toolbar-pauseButton.png">
+      <LogicalName>toolbar-pauseButton.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -1535,6 +1547,7 @@
     <Compile Include="MonoDevelop.Compontents.MainToolbar\MainToolbar.cs" />
     <Compile Include="MonoDevelop.Compontents.MainToolbar\StatusArea.cs" />
     <Compile Include="MonoDevelop.Compontents.MainToolbar\RoundButton.cs" />
+    <Compile Include="MonoDevelop.Compontents.MainToolbar\ButtonBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

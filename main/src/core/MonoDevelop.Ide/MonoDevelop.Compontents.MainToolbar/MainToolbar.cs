@@ -113,10 +113,12 @@ namespace MonoDevelop.Compontents.MainToolbar
 
 			AddWidget (runtimeCombo);
 
-			AddWidget (new Gtk.Button ("Stop"));
-			AddWidget (new Gtk.Button ("Step over"));
-			AddWidget (new Gtk.Button ("Step into"));
-			AddWidget (new Gtk.Button ("Step out"));
+			ButtonBar buttonBar = new ButtonBar ();
+			buttonBar.Add (ImageService.GetPixbuf ("md-toolbar-pause-button"));
+			buttonBar.Add (ImageService.GetPixbuf ("md-toolbar-skip-button"));
+			buttonBar.Add (ImageService.GetPixbuf ("md-toolbar-stepIn-button"));
+			buttonBar.Add (ImageService.GetPixbuf ("md-toolbar-stepOut-button"));
+			AddWidget (buttonBar);
 
 			statusArea = new StatusArea ();
 			contentBox.PackStart (statusArea, true, true, 0);

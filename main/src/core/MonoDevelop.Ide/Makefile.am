@@ -283,6 +283,7 @@ FILES =  \
 	MonoDevelop.Components/TreeViewCellContainer.cs \
 	MonoDevelop.Components/TreeViewState.cs \
 	MonoDevelop.Components/WindowTransparencyDecorator.cs \
+	MonoDevelop.Compontents.MainToolbar/ButtonBar.cs \
 	MonoDevelop.Compontents.MainToolbar/MainToolbar.cs \
 	MonoDevelop.Compontents.MainToolbar/RoundButton.cs \
 	MonoDevelop.Compontents.MainToolbar/StatusArea.cs \
@@ -899,7 +900,6 @@ RES =  \
 	icons/project-reference-package-16.png \
 	icons/project-reference-project-16.png \
 	icons/remove-namespace-16.png \
-	icons/runButton.png \
 	icons/software-update-available.png \
 	icons/solution-16.png \
 	icons/solution-32.png \
@@ -921,6 +921,11 @@ RES =  \
 	icons/text-editor-behavior-16.png \
 	icons/text-editor-behavior-24.png \
 	icons/text-quickfix-16.png \
+	icons/toolbar-pauseButton.png \
+	icons/toolbar-runButton.png \
+	icons/toolbar-skipButton.png \
+	icons/toolbar-stepInButton.png \
+	icons/toolbar-stepOutButton.png \
 	icons/tools-external-tools-16.png \
 	icons/tools-external-tools-24.png \
 	icons/uncomment.png \

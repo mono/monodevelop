@@ -1,5 +1,5 @@
 // 
-// RoundButton.cs
+// ButtonBar.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -26,16 +26,17 @@
 using System;
 using Gtk;
 using Gdk;
+using System.Collections.Generic;
 using MonoDevelop.Components;
 using Cairo;
-using MonoDevelop.Ide;
-
 
 namespace MonoDevelop.Compontents.MainToolbar
 {
-	public class RoundButton : Gtk.EventBox
+	public class ButtonBar : EventBox
 	{
-		const int height = 30;
+		const int buttonWidth = 30;
+		List<Pixbuf> buttons = new List<Pixbuf> ();
+
 		Cairo.Color borderColor;
 
 		Cairo.Color fill0Color;
@@ -43,13 +44,14 @@ namespace MonoDevelop.Compontents.MainToolbar
 		Cairo.Color fill2Color;
 		Cairo.Color fill3Color;
 
-		Pixbuf pixbuf;
+		Cairo.Color separator1Color;
+		Cairo.Color separator2Color;
 
-		public RoundButton ()
+
+		public ButtonBar ()
 		{
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask;
-			SetSizeRequest (30, 30);
 
 			borderColor = CairoExtensions.ParseColor ("8c8c8c");
 			fill0Color = CairoExtensions.ParseColor ("ffffff");
@@ -57,72 +59,22 @@ namespace MonoDevelop.Compontents.MainToolbar
 			fill2Color = CairoExtensions.ParseColor ("d6d6d6");
 			fill3Color = CairoExtensions.ParseColor ("767676");
 
-			pixbuf = ImageService.GetPixbuf ("md-toolbar-run-button");
+			separator1Color = CairoExtensions.ParseColor ("c4c4c4", 0.9);
+			separator2Color = CairoExtensions.ParseColor ("efefef", 0.9);
+
 		}
 
-		void SetShape ()
+		public void Add (Pixbuf pixbuf)
 		{
-			var black = new Gdk.Color (0, 0, 0);
-			black.Pixel = 1;
-
-			var white = new Gdk.Color (255, 255, 255);
-			white.Pixel = 0;
-
-			using (var pm = new Pixmap (this.GdkWindow, height, height, 1)) {
-				using (var gc = new Gdk.GC (pm)) {
-					gc.Background = white;
-					gc.Foreground = white;
-					pm.DrawRectangle (gc, true, 0, 0, height, height);
-		
-					gc.Foreground = black;
-					gc.Background = black;
-					pm.DrawArc (gc, true, 0, 0, height, height, 0, 360 * 64);
-		
-					ShapeCombineMask (pm, 0, 0);
-				}
-			}
-		}
-		StateType leaveState = StateType.Normal;
-
-		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
-		{
-			State = leaveState;
-			return base.OnEnterNotifyEvent (evnt);
-		}
-
-		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
-		{
-			leaveState = State;
-			State = StateType.Normal;
-			return base.OnLeaveNotifyEvent (evnt);
-		}
-
-		protected override bool OnButtonPressEvent (EventButton evnt)
-		{
-			if (evnt.Button == 1)
-				State = StateType.Selected;
-			return base.OnButtonPressEvent (evnt);
-		}
-
-		protected override bool OnButtonReleaseEvent (EventButton evnt)
-		{
-			if (State == StateType.Selected)
-				OnClicked (EventArgs.Empty);
-			State = StateType.Prelight;
-			leaveState = StateType.Normal;
-			return base.OnButtonReleaseEvent (evnt);
-		}
-
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
-			SetShape ();
+			buttons.Add (pixbuf);
+			SetSizeRequest (buttons.Count * buttonWidth, -1);
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Arc (height / 2 + 0.5, height / 2 + 0.5, height / 2 - 1, 0, 2 * System.Math.PI);
+				CairoExtensions.RoundedRectangle (context, 0, 0, Allocation.Width, Allocation.Height, 4);
+
 				var lg = new LinearGradient (0, 0, 0, Allocation.Height);
 				if (State == StateType.Selected) {
 					lg.AddColorStop (0, fill2Color);
@@ -141,25 +93,31 @@ namespace MonoDevelop.Compontents.MainToolbar
 				context.Color = borderColor;
 				context.Stroke ();
 
-				evnt.Window.DrawPixbuf (Style.WhiteGC, 
-				                        pixbuf, 
-				                        0, 0, 
-				                        (Allocation.Width - pixbuf.Width) / 2, 
-				                        (Allocation.Height - pixbuf.Height) / 2, 
-				                        pixbuf.Width, pixbuf.Height,
-				                        RgbDither.None, 0, 0);
+
+				for (int i = 0; i < buttons.Count; i++) {
+					int x = i * buttonWidth;
+					evnt.Window.DrawPixbuf (Style.WhiteGC, 
+					                        buttons [i], 
+					                        0, 0, 
+					                        x + (buttonWidth - buttons [i].Width) / 2, 
+					                        (Allocation.Height - buttons [i].Height) / 2, 
+					                        buttons [i].Width, buttons [i].Height,
+					                        RgbDither.None, 0, 0);
+					const int sepHeight = 8;
+					context.Color = separator1Color;
+					context.MoveTo (x + 0.5, (Allocation.Height - sepHeight) / 2);
+					context.LineTo (x + 0.5, (Allocation.Height - sepHeight) / 2 + sepHeight);
+					context.Stroke ();
+					context.Color = separator2Color;
+					context.MoveTo (x + 0.5 + 1, (Allocation.Height - sepHeight) / 2);
+					context.LineTo (x + 0.5 + 1, (Allocation.Height - sepHeight) / 2 + sepHeight);
+					context.Stroke ();
+				}
 			}
 			return base.OnExposeEvent (evnt);
 		}
 
-		public event EventHandler Clicked;
 
-		protected virtual void OnClicked (EventArgs e)
-		{
-			EventHandler handler = this.Clicked;
-			if (handler != null)
-				handler (this, e);
-		}
 	}
 }
 
