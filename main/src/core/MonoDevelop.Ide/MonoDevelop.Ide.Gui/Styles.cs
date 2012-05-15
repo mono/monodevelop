@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color BreadcrumbGradientEndColor = new Cairo.Color (51d / 255d, 51d / 255d, 51d / 255d);
 		public static readonly Cairo.Color BreadcrumbBorderColor = new Cairo.Color (55d / 255d, 55d / 255d, 55d / 255d);
 		public static readonly Cairo.Color BreadcrumbInnerBorderColor = new Cairo.Color (1, 1, 1, 0.1d);
-		public static readonly Cairo.Color BreadcrumbTextColor = new Cairo.Color (204d / 255d, 204d / 255d, 204d / 255d);
+		public static readonly Gdk.Color BreadcrumbTextColor = new Gdk.Color (204, 204, 204);
 		public static readonly Cairo.Color BreadcrumbButtonBorderColor = new Cairo.Color (204d / 255d, 204d / 255d, 204d / 255d);
 		public static readonly Cairo.Color BreadcrumbButtonFillColor = new Cairo.Color (1, 1, 1, 0.1d);
 

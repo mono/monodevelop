@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Returns a toolbar for the pad.
 		/// </summary>
-		DockItemToolbar GetToolbar (Gtk.PositionType position);
+		DocumentToolbar GetToolbar (IBaseViewContent targetView);
 
 		event EventHandler DocumentChanged;
 		event WorkbenchWindowEventHandler Closed;

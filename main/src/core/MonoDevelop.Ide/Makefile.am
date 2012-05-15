@@ -551,6 +551,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/DockNotebook.cs \
 	MonoDevelop.Ide.Gui/Document.cs \
 	MonoDevelop.Ide.Gui/DocumentSwitcher.cs \
+	MonoDevelop.Ide.Gui/DocumentToolbar.cs \
 	MonoDevelop.Ide.Gui/FileViewer.cs \
 	MonoDevelop.Ide.Gui/FreeDispatchAttribute.cs \
 	MonoDevelop.Ide.Gui/GtkSynchronizationContext.cs \

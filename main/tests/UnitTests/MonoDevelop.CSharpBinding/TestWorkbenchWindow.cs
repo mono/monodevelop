@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharpBinding
 			set {}
 		}
 		
-		public bool CloseWindow (bool force, bool fromMenu, int pageNum)
+		public bool CloseWindow (bool force)
 		{
 			return true;
 		}
@@ -104,7 +104,12 @@ namespace MonoDevelop.CSharpBinding
 		{
 			
 		}
-		
+
+		public MonoDevelop.Components.Docking.DockItemToolbar GetToolbar (IBaseViewContent targetView)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public event EventHandler DocumentChanged;
 		public event EventHandler TitleChanged;
 		public event WorkbenchWindowEventHandler Closing;

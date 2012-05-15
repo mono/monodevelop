@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Gui
 		Tabstrip subViewToolbar = null;
 		PathBar pathBar = null;
 		HBox toolbarBox = null;
+		Dictionary<IBaseViewContent,DocumentToolbar> documentToolbars = new Dictionary<IBaseViewContent, DocumentToolbar> ();
 		
 		VBox box;
 		IDockNotebookTab tab;
@@ -252,9 +253,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public MonoDevelop.Components.Docking.DockItemToolbar GetToolbar (Gtk.PositionType position)
+		public DocumentToolbar GetToolbar (IBaseViewContent targetView)
 		{
-			return null;
+			DocumentToolbar toolbar;
+			if (!documentToolbars.TryGetValue (targetView, out toolbar)) {
+				toolbar = new DocumentToolbar ();
+				documentToolbars [targetView] = toolbar;
+				box.PackStart (toolbar.Container, false, false, 0);
+				box.ReorderChild (toolbar.Container, 0);
+				toolbar.Visible = (targetView == ActiveViewContent);
+			}
+			return toolbar;
 		}
 
 		void BeforeSave(object sender, EventArgs e)
@@ -441,6 +450,11 @@ namespace MonoDevelop.Ide.Gui
 			box.PackStart (subViewNotebook, true, true, 1);
 			box.Show ();
 		}
+
+		void ShowDocumentToolbar (DocumentToolbar toolbar)
+		{
+		}
+
 		#endregion
 		
 			
@@ -587,6 +601,10 @@ namespace MonoDevelop.Ide.Gui
 
 			if (pathedDocument != null)
 				AttachToPathedDocument (pathedDocument);
+
+			foreach (var t in documentToolbars)
+				t.Value.Container.Visible = ActiveViewContent == t.Key;
+
 			OnActiveViewContentChanged (new ActiveViewContentEventArgs (this.ActiveViewContent));
 		}
 

@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.Gui
 			
 		}
 
-		public MonoDevelop.Components.Docking.DockItemToolbar GetToolbar (Gtk.PositionType position)
+		public DocumentToolbar GetToolbar (IBaseViewContent targetView)
 		{
 			return null;
 		}
