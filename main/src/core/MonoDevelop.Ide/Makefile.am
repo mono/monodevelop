@@ -284,6 +284,7 @@ FILES =  \
 	MonoDevelop.Components/TreeViewState.cs \
 	MonoDevelop.Components/WindowTransparencyDecorator.cs \
 	MonoDevelop.Compontents.MainToolbar/MainToolbar.cs \
+	MonoDevelop.Compontents.MainToolbar/RoundButton.cs \
 	MonoDevelop.Compontents.MainToolbar/StatusArea.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContext.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContextEventArgs.cs \
@@ -898,6 +899,7 @@ RES =  \
 	icons/project-reference-package-16.png \
 	icons/project-reference-project-16.png \
 	icons/remove-namespace-16.png \
+	icons/runButton.png \
 	icons/software-update-available.png \
 	icons/solution-16.png \
 	icons/solution-32.png \

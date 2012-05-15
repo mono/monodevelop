@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
+using Cairo;
 
 
 namespace MonoDevelop.Compontents.MainToolbar
@@ -91,7 +92,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			contentBox.BorderWidth = 6;
-			var button = new Gtk.Button ("Run");
+			var button = new RoundButton ();
 			button.Clicked += (sender, e) => IdeApp.CommandService.DispatchCommand (ProjectCommands.Run);
 			AddWidget (button);
 
@@ -214,6 +215,14 @@ namespace MonoDevelop.Compontents.MainToolbar
 					for (int x=0; x < Allocation.Width; x+= Background.Width) {
 						Background.Show (context, x, -TitleBarHeight);
 					}
+				} else {
+					context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+					var lg = new LinearGradient (0, 0, 0, Allocation.Height);
+					lg.AddColorStop (0, (HslColor)Style.Light (StateType.Normal));
+					lg.AddColorStop (1, (HslColor)Style.Mid (StateType.Normal));
+					context.Pattern = lg;
+					context.Fill ();
+
 				}
 				context.MoveTo (0, Allocation.Bottom + 0.5);
 				context.LineTo (Allocation.Width + evnt.Area.Width, Allocation.Bottom + 0.5);
