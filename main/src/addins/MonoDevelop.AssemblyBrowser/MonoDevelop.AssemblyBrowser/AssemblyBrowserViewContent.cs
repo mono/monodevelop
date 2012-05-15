@@ -39,6 +39,15 @@ namespace MonoDevelop.AssemblyBrowser
 	{
 		AssemblyBrowserWidget widget;
 		
+		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		{
+			base.OnWorkbenchWindowChanged (e);
+			if (WorkbenchWindow != null) {
+				var toolbar = WorkbenchWindow.GetToolbar (this);
+				widget.SetToolbar (toolbar);
+			}
+		}
+
 		public override Gtk.Widget Control {
 			get {
 				return widget;
