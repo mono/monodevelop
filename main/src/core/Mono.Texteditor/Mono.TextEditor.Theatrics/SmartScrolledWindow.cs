@@ -32,6 +32,8 @@ namespace Mono.TextEditor.Theatrics
 		public Adjustment Hadjustment {
 			get { return this.hAdjustment; }
 		}
+
+		public bool BorderVisible { get; set; }
 		
 		public override ContainerChild this [Widget w] {
 			get {
@@ -184,10 +186,12 @@ namespace Mono.TextEditor.Theatrics
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			
+
+			int margin = BorderVisible ? 1 : 0;
 			int vwidth = vScrollBar.Visible ? vScrollBar.Requisition.Width : 0;
 			int hheight = hScrollBar.Visible ? hScrollBar.Requisition.Height : 0; 
-			var childRectangle = new Rectangle (allocation.X + 1, allocation.Y + 1, allocation.Width - vwidth - 2, allocation.Height - hheight - 2);
+			var childRectangle = new Rectangle (allocation.X + margin, allocation.Y + margin, allocation.Width - vwidth - margin*2, allocation.Height - hheight - margin*2);
+
 			if (Child != null) 
 				Child.SizeAllocate (childRectangle);
 			if (vScrollBar.Visible) {
@@ -197,13 +201,13 @@ namespace Mono.TextEditor.Theatrics
 					vChildTopHeight += child.Child.Requisition.Height;
 				}
 				int v = vScrollBar is Scrollbar && hScrollBar.Visible ? hScrollBar.Requisition.Height : 0;
-				vScrollBar.SizeAllocate (new Rectangle (childRectangle.X + childRectangle.Width + 1, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight - 1));
+				vScrollBar.SizeAllocate (new Rectangle (childRectangle.X + childRectangle.Width + margin, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight - margin));
 				vAdjustment.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vAdjustment.Value), vAdjustment.Lower);
 			}
 			
 			if (hScrollBar.Visible) {
 				int v = vScrollBar.Visible ? vScrollBar.Requisition.Width : 0;
-				hScrollBar.SizeAllocate (new Rectangle (allocation.X, childRectangle.Y + childRectangle.Height + 1, allocation.Width - v, hheight));
+				hScrollBar.SizeAllocate (new Rectangle (allocation.X, childRectangle.Y + childRectangle.Height + margin, allocation.Width - v, hheight));
 				hScrollBar.Value = System.Math.Max (System.Math.Min (hAdjustment.Upper - hAdjustment.PageSize, hScrollBar.Value), hAdjustment.Lower);
 			}
 		}
@@ -240,21 +244,23 @@ namespace Mono.TextEditor.Theatrics
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.LineWidth = 1;
-				
-				var alloc = Allocation;
-				int right = alloc.RightInside ();
-				int bottom = alloc.BottomInside ();
-				
-				cr.SharpLineX (alloc.X, alloc.Y, alloc.X, bottom);
-				cr.SharpLineX (right, alloc.Y, right, bottom);
-				
-				cr.SharpLineY (alloc.X, alloc.Y, right, alloc.Y);
-				cr.SharpLineY (alloc.X, bottom, right, bottom);
-				
-				cr.Color = Mono.TextEditor.Highlighting.ColorScheme.ToCairoColor (Style.Dark (State));
-				cr.Stroke ();
+			if (BorderVisible) {
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+					cr.LineWidth = 1;
+					
+					var alloc = Allocation;
+					int right = alloc.RightInside ();
+					int bottom = alloc.BottomInside ();
+					
+					cr.SharpLineX (alloc.X, alloc.Y, alloc.X, bottom);
+					cr.SharpLineX (right, alloc.Y, right, bottom);
+					
+					cr.SharpLineY (alloc.X, alloc.Y, right, alloc.Y);
+					cr.SharpLineY (alloc.X, bottom, right, bottom);
+					
+					cr.Color = Mono.TextEditor.Highlighting.ColorScheme.ToCairoColor (Style.Dark (State));
+					cr.Stroke ();
+				}
 			}
 			return base.OnExposeEvent (evnt);
 		}
