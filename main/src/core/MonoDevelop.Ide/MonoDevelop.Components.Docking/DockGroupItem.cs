@@ -77,12 +77,30 @@ namespace MonoDevelop.Components.Docking
 		
 		internal override Requisition SizeRequest ()
 		{
-			return item.Widget.SizeRequest ();
+			var req = item.Widget.SizeRequest ();
+
+			if (ParentGroup.Type != DockGroupType.Tabbed || ParentGroup.VisibleObjects.Count == 1) {
+				var tr = item.TitleTab.SizeRequest ();
+				req.Height += tr.Height;
+				return req;
+			} else
+				return req;
 		}
 
 		public override void SizeAllocate (Gdk.Rectangle newAlloc)
 		{
-			item.Widget.SizeAllocate (newAlloc);
+			if ((ParentGroup.Type != DockGroupType.Tabbed || ParentGroup.VisibleObjects.Count == 1) && (item.Behavior & DockItemBehavior.NoGrip) == 0) {
+				var tr = newAlloc;
+				tr.Height = item.TitleTab.SizeRequest ().Height;
+				item.TitleTab.SizeAllocate (tr);
+				var wr = newAlloc;
+				wr.Y += tr.Height;
+				wr.Height -= tr.Height;
+				item.Widget.SizeAllocate (wr);
+			}
+			else
+				item.Widget.SizeAllocate (newAlloc);
+
 			base.SizeAllocate (newAlloc);
 		}
 		

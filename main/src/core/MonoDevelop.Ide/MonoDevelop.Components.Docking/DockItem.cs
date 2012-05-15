@@ -32,6 +32,7 @@ using System;
 using System.Xml;
 using Gtk;
 using Mono.Unix;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -63,7 +64,12 @@ namespace MonoDevelop.Components.Docking
 		DockItemToolbar toolbarBottom;
 		DockItemToolbar toolbarLeft;
 		DockItemToolbar toolbarRight;
-		
+
+		Tab titleTab;
+		bool allowPlaceholderDocking;
+		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
+		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.Hand2);
+
 		public event EventHandler VisibleChanged;
 		public event EventHandler ContentVisibleChanged;
 		public event EventHandler ContentRequired;
@@ -74,13 +80,11 @@ namespace MonoDevelop.Components.Docking
 			this.id = id;
 		}
 		
-		internal DockItem (DockFrame frame, Widget w, string id)
+		internal DockItem (DockFrame frame, Widget w, string id): this (frame, id)
 		{
-			this.frame = frame;
-			this.id = id;
 			content = w;
 		}
-		
+
 		public string Id {
 			get { return id; }
 		}
@@ -94,8 +98,8 @@ namespace MonoDevelop.Components.Docking
 			get { return label ?? string.Empty; }
 			set {
 				label = value; 
-				if (widget != null)
-					widget.Label = label;
+				if (titleTab != null)
+					titleTab.SetLabel (widget, icon, label);
 				frame.UpdateTitle (this);
 				if (floatingWindow != null)
 					floatingWindow.Title = GetWindowTitle ();
@@ -118,6 +122,78 @@ namespace MonoDevelop.Components.Docking
 			return frame.GetVisible (this, layout); 
 		}
 		
+		internal Tab TitleTab {
+			get {
+				if (titleTab == null) {
+					titleTab = new Tab ();
+					titleTab.SetLabel (Widget, icon, label);
+					titleTab.ShowAll ();
+					titleTab.ButtonPressEvent += HeaderButtonPress;
+					titleTab.ButtonPressEvent += HeaderButtonPress;
+					titleTab.ButtonReleaseEvent += HeaderButtonRelease;
+					titleTab.MotionNotifyEvent += HeaderMotion;
+					titleTab.KeyPressEvent += HeaderKeyPress;
+					titleTab.KeyReleaseEvent += HeaderKeyRelease;
+				}
+				return titleTab;
+			}
+		}
+
+		void HeaderButtonPress (object ob, Gtk.ButtonPressEventArgs args)
+		{
+			if (args.Event.TriggersContextMenu ()) {
+				ShowDockPopupMenu (args.Event.Time);
+				args.RetVal = false;
+			} else if (args.Event.Button == 1) {
+				frame.ShowPlaceholder ();
+				titleTab.GdkWindow.Cursor = fleurCursor;
+				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
+				frame.Toplevel.KeyReleaseEvent += HeaderKeyRelease;
+				allowPlaceholderDocking = true;
+			}
+		}
+		
+		void HeaderButtonRelease (object ob, Gtk.ButtonReleaseEventArgs args)
+		{
+			if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
+				frame.DockInPlaceholder (this);
+				frame.HidePlaceholder ();
+				if (titleTab.GdkWindow != null)
+					titleTab.GdkWindow.Cursor = handCursor;
+				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
+				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
+			}
+		}
+		
+		[GLib.ConnectBeforeAttribute]
+		void HeaderKeyPress (object ob, Gtk.KeyPressEventArgs a)
+		{
+			if (a.Event.Key == Gdk.Key.Control_L || a.Event.Key == Gdk.Key.Control_R) {
+				allowPlaceholderDocking = false;
+				frame.UpdatePlaceholder (this, titleTab.Allocation.Size, false);
+			}
+			if (a.Event.Key == Gdk.Key.Escape) {
+				frame.HidePlaceholder ();
+				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
+				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
+				Gdk.Pointer.Ungrab (0);
+			}
+		}
+				
+		[GLib.ConnectBeforeAttribute]
+		void HeaderKeyRelease (object ob, Gtk.KeyReleaseEventArgs a)
+		{
+			if (a.Event.Key == Gdk.Key.Control_L || a.Event.Key == Gdk.Key.Control_R) {
+				allowPlaceholderDocking = true;
+				frame.UpdatePlaceholder (this, titleTab.Allocation.Size, true);
+			}
+		}
+		
+		void HeaderMotion (object ob, Gtk.MotionNotifyEventArgs args)
+		{
+			frame.UpdatePlaceholder (this, titleTab.Allocation.Size, allowPlaceholderDocking);
+		}
+		
 		public DockItemStatus Status {
 			get {
 				return frame.GetStatus (this); 
@@ -137,12 +213,13 @@ namespace MonoDevelop.Components.Docking
 				if (widget == null) {
 					widget = new DockItemContainer (frame, this);
 					widget.Visible = false; // Required to ensure that the Shown event is fired
-					widget.Label = label;
 					widget.Shown += SetupContent;
 				}
 				return widget;
 			}
 		}
+
+		public string VisualStyle { get; set; }
 		
 		void SetupContent (object ob, EventArgs args)
 		{
@@ -247,6 +324,8 @@ namespace MonoDevelop.Components.Docking
 			}
 			set {
 				icon = value;
+				if (titleTab != null)
+					titleTab.SetLabel (widget, icon, label);
 			}
 		}
 
@@ -272,7 +351,8 @@ namespace MonoDevelop.Components.Docking
 
 		public bool DrawFrame {
 			get {
-				return drawFrame;
+				return false;
+//				return drawFrame;
 			}
 			set {
 				drawFrame = value;

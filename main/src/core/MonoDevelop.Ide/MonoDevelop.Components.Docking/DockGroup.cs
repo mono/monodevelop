@@ -348,7 +348,7 @@ namespace MonoDevelop.Components.Docking
 			if (type == DockGroupType.Tabbed) {
 				if (boundTabStrip != null) {
 					int tabsHeight = boundTabStrip.SizeRequest ().Height;
-					boundTabStrip.SizeAllocate (new Gdk.Rectangle (newAlloc.X, newAlloc.Bottom - tabsHeight, newAlloc.Width, tabsHeight));
+					boundTabStrip.SizeAllocate (new Gdk.Rectangle (newAlloc.X, newAlloc.Y, newAlloc.Width, tabsHeight));
 				}
 				if (allocStatus == AllocStatus.Valid && newAlloc == oldAlloc) {
 					// Even if allocation has not changed, SizeAllocation has to be called on all items to avoid redrawing issues.
@@ -359,6 +359,7 @@ namespace MonoDevelop.Components.Docking
 				if (VisibleObjects.Count > 1 && boundTabStrip != null) {
 					int tabsHeight = boundTabStrip.SizeRequest ().Height;
 					newAlloc.Height -= tabsHeight;
+					newAlloc.Y += tabsHeight;
 					boundTabStrip.QueueDraw ();
 				} else if (VisibleObjects.Count != 0) {
 					((DockGroupItem)VisibleObjects [0]).Item.Widget.Show ();
@@ -619,7 +620,7 @@ namespace MonoDevelop.Components.Docking
 			// Add missing pages
 			foreach (DockObject ob in VisibleObjects) {
 				DockGroupItem it = ob as DockGroupItem;
-				ts.AddTab (it.Item.Widget, it.Item.Icon, it.Item.Label);
+				ts.AddTab (it.Item.TitleTab);
 			}
 
 			boundTabStrip = ts;
@@ -690,9 +691,14 @@ namespace MonoDevelop.Components.Docking
 		
 		public void LayoutWidgets ()
 		{
+			Frame.UpdateRegionStyle (this);
+
 			foreach (DockObject ob in VisibleObjects) {
 				DockGroupItem it = ob as DockGroupItem;
 				if (it != null) {
+					Frame.UpdateRegionStyle (it);
+					it.Item.Widget.VisualStyle = it.VisualStyle;
+					// Add the dock item to the container and show it if visible
 					if (it.Item.Widget.Parent != Frame.Container) {
 						if (it.Item.Widget.Parent != null) {
 							((Gtk.Container)it.Item.Widget.Parent).Remove (it.Item.Widget);
@@ -701,6 +707,19 @@ namespace MonoDevelop.Components.Docking
 					}
 					if (!it.Item.Widget.Visible && type != DockGroupType.Tabbed)
 						it.Item.Widget.Show ();
+
+					// Do the same for the title tab
+					if ((type != DockGroupType.Tabbed || boundTabStrip == null) && (it.Item.Behavior & DockItemBehavior.NoGrip) == 0) {
+						var tab = it.Item.TitleTab;
+						tab.VisualStyle = it.VisualStyle;
+						if (tab.Parent != Frame.Container) {
+							if (tab.Parent != null) {
+								((Gtk.Container)tab.Parent).Remove (tab);
+							}
+							Frame.Container.Add (tab);
+						}
+						tab.ShowAll ();
+					}
 				}
 				else
 					((DockGroup)ob).LayoutWidgets ();

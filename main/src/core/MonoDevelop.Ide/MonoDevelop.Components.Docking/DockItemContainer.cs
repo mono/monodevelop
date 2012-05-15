@@ -32,42 +32,19 @@ using System;
 using Gtk;
 using Mono.Unix;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
 	class DockItemContainer: VBox
 	{
-		static Gdk.Pixbuf pixClose;
-		static Gdk.Pixbuf pixAutoHide;
-		static Gdk.Pixbuf pixDock;
-		
-		Gtk.Label title;
-		Gtk.Button btnClose;
-		Gtk.Button btnDock;
-		string txt;
-		Gtk.EventBox header;
-		Gtk.Alignment headerAlign;
 		DockFrame frame;
 		DockItem item;
 		Widget widget;
 		Container borderFrame;
-		bool allowPlaceholderDocking;
 		bool pointerHover;
 		Box contentBox;
-		
-		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
-		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.Hand2);
-		
-		static DockItemContainer ()
-		{
-			try {
-				pixClose = Gdk.Pixbuf.LoadFromResource ("stock-close-12.png");
-				pixAutoHide = Gdk.Pixbuf.LoadFromResource ("stock-auto-hide.png");
-				pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
-			} catch (Exception) {
-			}
-		}
-		
+
 		public DockItemContainer (DockFrame frame, DockItem item)
 		{
 			this.frame = frame;
@@ -76,55 +53,6 @@ namespace MonoDevelop.Components.Docking
 			ResizeMode = Gtk.ResizeMode.Queue;
 			Spacing = 0;
 			
-			title = new Gtk.Label ();
-			title.Xalign = 0;
-			title.Xpad = 3;
-			title.UseMarkup = true;
-			title.Ellipsize = Pango.EllipsizeMode.End;
-			
-			btnDock = new Button (new Gtk.Image (pixAutoHide));
-			btnDock.Relief = ReliefStyle.None;
-			btnDock.CanFocus = false;
-			btnDock.WidthRequest = btnDock.HeightRequest = 17;
-			btnDock.Clicked += OnClickDock;
-			
-			btnClose = new Button (new Gtk.Image (pixClose));
-			btnClose.TooltipText = Catalog.GetString ("Hide");
-			btnClose.Relief = ReliefStyle.None;
-			btnClose.CanFocus = false;
-			btnClose.WidthRequest = btnClose.HeightRequest = 17;
-			btnClose.Clicked += delegate {
-				item.Visible = false;
-			};
-			
-			HBox box = new HBox (false, 0);
-			box.PackStart (title, true, true, 0);
-			box.PackEnd (btnClose, false, false, 0);
-			box.PackEnd (btnDock, false, false, 0);
-			
-			headerAlign = new Alignment (0.0f, 0.0f, 1.0f, 1.0f);
-			headerAlign.TopPadding = headerAlign.BottomPadding = headerAlign.RightPadding = headerAlign.LeftPadding = 1;
-			headerAlign.Add (box);
-			
-			header = new EventBox ();
-			header.Events |= Gdk.EventMask.KeyPressMask | Gdk.EventMask.KeyReleaseMask;
-			header.ButtonPressEvent += HeaderButtonPress;
-			header.ButtonReleaseEvent += HeaderButtonRelease;
-			header.MotionNotifyEvent += HeaderMotion;
-			header.KeyPressEvent += HeaderKeyPress;
-			header.KeyReleaseEvent += HeaderKeyRelease;
-			header.Add (headerAlign);
-			header.ExposeEvent += HeaderExpose;
-			header.Realized += delegate {
-				header.GdkWindow.Cursor = handCursor;
-			};
-			
-			foreach (Widget w in new Widget [] { header, btnDock, btnClose }) {
-				w.EnterNotifyEvent += HeaderEnterNotify;
-				w.LeaveNotifyEvent += HeaderLeaveNotify;
-			}
-			
-			PackStart (header, false, false, 0);
 			ShowAll ();
 			
 			PackStart (item.GetToolbar (PositionType.Top).Container, false, false, 0);
@@ -145,7 +73,9 @@ namespace MonoDevelop.Components.Docking
 			
 			UpdateBehavior ();
 		}
-		
+
+		public string VisualStyle { get; set; }
+
 		void OnClickDock (object s, EventArgs a)
 		{
 			if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating)
@@ -159,7 +89,10 @@ namespace MonoDevelop.Components.Docking
 			if (widget != null)
 				((Gtk.Container)widget.Parent).Remove (widget);
 			widget = item.Content;
-			
+
+			if (widget != null)
+				SetStyle (widget);
+
 			if (item.DrawFrame) {
 				if (borderFrame == null) {
 					borderFrame = new CustomFrame (1, 1, 1, 1);
@@ -180,128 +113,51 @@ namespace MonoDevelop.Components.Docking
 				widget.Show ();
 			}
 		}
+
+		void SetStyle (Gtk.Widget w)
+		{
+			if (w is Gtk.TreeView) {
+				if (w.IsRealized)
+					OnTreeRealized (w, null);
+				else
+					w.Realized += OnTreeRealized;
+			}
+			else {
+				var c = w as Gtk.Container;
+				if (c != null) {
+					foreach (var cw in c.Children)
+						SetStyle (cw);
+				}
+			}
+		}
+
+		void OnTreeRealized (object sender, EventArgs e)
+		{
+			var w = (Gtk.TreeView)sender;
+			if (VisualStyle == DockStyle.Browser) {
+				w.ModifyBase (StateType.Normal, Styles.BrowserPadBackground);
+				w.ModifyBase (StateType.Insensitive, Styles.BrowserPadBackground);
+//				w.ModifyBase (StateType.Active, Styles.BrowserPadBackground);
+				//		w.ModifyBase (StateType.Prelight, Styles.BrowserPadBackground);
+			} else {
+				w.ModifyBase (StateType.Normal, Parent.Style.Base (StateType.Normal));
+				w.ModifyBase (StateType.Insensitive, Parent.Style.Base (StateType.Insensitive));
+			}
+		}
 		
 		public void UpdateBehavior ()
 		{
-			btnClose.Visible = (item.Behavior & DockItemBehavior.CantClose) == 0;
-			header.Visible = (item.Behavior & DockItemBehavior.Locked) == 0;
-			btnDock.Visible = (item.Behavior & DockItemBehavior.CantAutoHide) == 0;
-			
-			if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
-				btnDock.Image = new Gtk.Image (pixDock);
-				btnDock.TooltipText = Catalog.GetString ("Dock");
-			}
-			else {
-				btnDock.Image = new Gtk.Image (pixAutoHide);
-				btnDock.TooltipText = Catalog.GetString ("Auto Hide");
-			}
 		}
-		
-		void HeaderButtonPress (object ob, Gtk.ButtonPressEventArgs args)
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			if (args.Event.TriggersContextMenu ()) {
-				item.ShowDockPopupMenu (args.Event.Time);
-			} else if (args.Event.Button == 1) {
-				frame.ShowPlaceholder ();
-				header.GdkWindow.Cursor = fleurCursor;
-				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
-				frame.Toplevel.KeyReleaseEvent += HeaderKeyRelease;
-				allowPlaceholderDocking = true;
+			if (VisualStyle == DockStyle.Browser) {
+				Gdk.GC gc = new Gdk.GC (GdkWindow);
+				gc.RgbFgColor = Styles.BrowserPadBackground;
+				evnt.Window.DrawRectangle (gc, true, Allocation);
+				gc.Dispose ();
 			}
-		}
-		
-		void HeaderButtonRelease (object ob, Gtk.ButtonReleaseEventArgs args)
-		{
-			if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
-				frame.DockInPlaceholder (item);
-				frame.HidePlaceholder ();
-				if (header.GdkWindow != null)
-					header.GdkWindow.Cursor = handCursor;
-				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
-				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
-			}
-		}
-		
-		void HeaderMotion (object ob, Gtk.MotionNotifyEventArgs args)
-		{
-			frame.UpdatePlaceholder (item, Allocation.Size, allowPlaceholderDocking);
-		}
-		
-		[GLib.ConnectBeforeAttribute]
-		void HeaderKeyPress (object ob, Gtk.KeyPressEventArgs a)
-		{
-			if (a.Event.Key == Gdk.Key.Control_L || a.Event.Key == Gdk.Key.Control_R) {
-				allowPlaceholderDocking = false;
-				frame.UpdatePlaceholder (item, Allocation.Size, false);
-			}
-			if (a.Event.Key == Gdk.Key.Escape) {
-				frame.HidePlaceholder ();
-				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
-				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
-				Gdk.Pointer.Ungrab (0);
-			}
-		}
-				
-		[GLib.ConnectBeforeAttribute]
-		void HeaderKeyRelease (object ob, Gtk.KeyReleaseEventArgs a)
-		{
-			if (a.Event.Key == Gdk.Key.Control_L || a.Event.Key == Gdk.Key.Control_R) {
-				allowPlaceholderDocking = true;
-				frame.UpdatePlaceholder (item, Allocation.Size, true);
-			}
-		}
-		
-		private void HeaderExpose (object ob, Gtk.ExposeEventArgs a)
-		{
-			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, header.Allocation.Width - 1, header.Allocation.Height);
-			HslColor gcol = frame.Style.Background (Gtk.StateType.Normal);
-			
-			if (pointerHover)
-				gcol.L *= 1.05;
-			gcol.L = Math.Min (1, gcol.L);
-				
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (a.Event.Window)) {
-				cr.NewPath ();
-				cr.MoveTo (0, 0);
-				cr.RelLineTo (rect.Width, 0);
-				cr.RelLineTo (0, rect.Height);
-				cr.RelLineTo (-rect.Width, 0);
-				cr.RelLineTo (0, -rect.Height);
-				cr.ClosePath ();
-				Cairo.SolidPattern solidPattern = new Cairo.SolidPattern (gcol);
-				cr.Pattern = solidPattern;
-				cr.FillPreserve ();
-				solidPattern.Destroy ();
-				
-				cr.NewPath ();
-				cr.LineWidth = 1d;
-				cr.Color = (HslColor) frame.Style.Dark (StateType.Normal);
-				cr.Rectangle (rect.X + 0.5d, rect.Y + 0.5d, rect.Width, rect.Height);
-				cr.Stroke ();
-			}
-			
-			foreach (Widget child in header.Children)
-				header.PropagateExpose (child, a.Event);
-		}
-		
-		private void HeaderLeaveNotify (object ob, EventArgs a)
-		{
-			pointerHover = false;
-			header.QueueDraw ();
-		}
-		
-		private void HeaderEnterNotify (object ob, EventArgs a)
-		{
-			pointerHover = true;
-			header.QueueDraw ();
-		}
-				
-		public string Label {
-			get { return txt; }
-			set {
-				title.Markup = "<small>" + value + "</small>";
-				txt = value;
-			}
+			return base.OnExposeEvent (evnt);
 		}
 	}
 

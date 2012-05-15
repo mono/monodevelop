@@ -158,8 +158,11 @@ namespace MonoDevelop.Components.Docking
 			foreach (Widget w in notebooks)
 				widgets.Add (w);
 			foreach (DockItem it in items) {
-				if (it.HasWidget && it.Widget.Parent == this)
+				if (it.HasWidget && it.Widget.Parent == this) {
 					widgets.Add (it.Widget);
+					if (it.TitleTab.Parent == this)
+						widgets.Add (it.TitleTab);
+				}
 			}
 			foreach (Widget w in widgets)
 				callback (w);
@@ -228,6 +231,8 @@ namespace MonoDevelop.Components.Docking
 					notebooks.Add (ts);
 					ts.Parent = this;
 				}
+				frame.UpdateRegionStyle (grp);
+				ts.VisualStyle = grp.VisualStyle;
 				grp.UpdateNotebook (ts);
 			}
 			
@@ -336,8 +341,8 @@ namespace MonoDevelop.Components.Docking
 				for (int n=0; n<grp.VisibleObjects.Count; n++) {
 					DockObject obj = grp.VisibleObjects [n];
 					if (n < grp.Objects.Count - 1) {
-						if ((grp.Type == DockGroupType.Horizontal && x > obj.Allocation.Right && x < obj.Allocation.Right + frame.TotalHandleSize) ||
-						    (grp.Type == DockGroupType.Vertical && y > obj.Allocation.Bottom && y < obj.Allocation.Bottom + frame.TotalHandleSize))
+						if ((grp.Type == DockGroupType.Horizontal && x > obj.Allocation.Right && x < obj.Allocation.Right + frame.TotalSensitiveHandleSize) ||
+						    (grp.Type == DockGroupType.Vertical && y > obj.Allocation.Bottom && y < obj.Allocation.Bottom + frame.TotalSensitiveHandleSize))
 						{
 							foundGrp = grp;
 							objectIndex = n;

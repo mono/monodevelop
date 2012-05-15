@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.Docking
 		
 		DockContainer container;
 		
-		int handleSize = IsWindows ? 4 : 6;
+		int handleSize = 1;
 		int handlePadding = 0;
 		int defaultItemWidth = 300;
 		int defaultItemHeight = 250;
@@ -99,20 +99,112 @@ namespace MonoDevelop.Components.Docking
 			get { return compactGuiLevel; }
 			set {
 				compactGuiLevel = value;
-				switch (compactGuiLevel) {
+/*				switch (compactGuiLevel) {
 					case 1: handleSize = 6; break;
 					case 2: 
 					case 3: handleSize = IsWindows ? 4 : 6; break;
 					case 4:
 					case 5: handleSize = 3; break;
 				}
-				handlePadding = 0;
+*/				handlePadding = 0;
 				dockBarTop.OnCompactLevelChanged ();
 				dockBarBottom.OnCompactLevelChanged ();
 				dockBarLeft.OnCompactLevelChanged ();
 				dockBarRight.OnCompactLevelChanged ();
 				container.RelayoutWidgets ();
 			}
+		}
+
+		Dictionary<string,string> regionStyles = new Dictionary<string, string> ();
+
+		public void SetRegionStyle (string regionPosition, string style)
+		{
+			regionStyles [regionPosition] = style;
+		}
+
+		internal void UpdateRegionStyle (DockObject obj)
+		{
+			if ((obj is DockGroupItem)) {
+				var s = ((DockGroupItem)obj).Item.VisualStyle;
+				if (!string.IsNullOrEmpty (s) && s != DockStyle.Default) {
+					obj.VisualStyle = s;
+					return;
+				}
+			}
+			obj.VisualStyle = GetRegionStyleForObject (obj);
+		}
+
+		internal string GetRegionStyleForObject (DockObject obj)
+		{
+			foreach (var e in regionStyles) {
+				if (InRegion (e.Key, obj))
+					return e.Value;
+			}
+			return "default";
+		}
+
+		bool InRegion (string location, DockObject obj)
+		{
+			string[] positions = location.Split (';');
+			foreach (string pos in positions) {
+				int i = pos.IndexOf ('/');
+				if (i == -1) continue;
+				string id = pos.Substring (0,i).Trim ();
+				DockGroup g = container.Layout.FindGroupContaining (id);
+				if (g != null) {
+					DockPosition dpos;
+					try {
+						dpos = (DockPosition) Enum.Parse (typeof(DockPosition), pos.Substring(i+1).Trim(), true);
+					}
+					catch {
+						continue;
+					}
+
+					var refItem = g.FindDockGroupItem (id);
+					if (InRegion (g, dpos, refItem, obj))
+						return true;
+				}
+			}
+			return false;
+		}
+
+		bool InRegion (DockGroup grp, DockPosition pos, DockObject refObject, DockObject objToFind)
+		{
+			if (grp == null)
+				return false;
+
+			if (grp.Type == DockGroupType.Tabbed) {
+				if (pos != DockPosition.Center && pos != DockPosition.CenterBefore)
+					return InRegion (grp.ParentGroup, pos, grp, objToFind);
+			}
+			if (grp.Type == DockGroupType.Horizontal) {
+				if (pos != DockPosition.Left && pos != DockPosition.Right)
+					return InRegion (grp.ParentGroup, pos, grp, objToFind);
+			}
+			if (grp.Type == DockGroupType.Vertical) {
+				if (pos != DockPosition.Top && pos != DockPosition.Bottom)
+					return InRegion (grp.ParentGroup, pos, grp, objToFind);
+			}
+
+			bool left = true;
+			bool findingLeft = pos == DockPosition.Left || pos == DockPosition.Top || pos == DockPosition.CenterBefore;
+
+			foreach (var ob in grp.Objects) {
+				if (ob == refObject)
+					left = false;
+				else if (ob == objToFind)
+					return left == findingLeft;
+				else if (ob is DockGroup) {
+					if (ObjectHasAncestor (objToFind, (DockGroup)ob))
+						return left == findingLeft;
+				}
+			}
+			return InRegion (grp.ParentGroup, pos, grp, objToFind);
+		}
+
+		bool ObjectHasAncestor (DockObject obj, DockGroup ancestorToFind)
+		{
+			return obj != null && (obj.ParentGroup == ancestorToFind || ObjectHasAncestor (obj.ParentGroup, ancestorToFind));
 		}
 		
 		public DockBar ExtractDockBar (PositionType pos)
@@ -184,6 +276,10 @@ namespace MonoDevelop.Components.Docking
 		
 		internal int TotalHandleSize {
 			get { return handleSize + handlePadding*2; }
+		}
+
+		internal int TotalSensitiveHandleSize {
+			get { return 6; }
 		}
 		
 		public DockItem AddItem (string id)
@@ -703,6 +799,12 @@ namespace MonoDevelop.Components.Docking
 		{
 			return new Cairo.Color (color.Red / (double) ushort.MaxValue, color.Green / (double) ushort.MaxValue, color.Blue / (double) ushort.MaxValue);
 		}
+	}
+
+	public class DockStyle
+	{
+		public const string Default = "Default";
+		public const string Browser = "Browser";
 	}
 	
 	

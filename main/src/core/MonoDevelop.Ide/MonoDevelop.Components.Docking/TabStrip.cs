@@ -31,28 +31,28 @@
 using Gtk; 
 
 using System;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
-	class TabStrip: Notebook
+	class TabStrip: Gtk.EventBox
 	{
 		int currentTab = -1;
 		bool ellipsized = true;
 		HBox box = new HBox ();
 		DockFrame frame;
 		Label bottomFiller = new Label ();
-		
+		string visualStyle;
+
 		public TabStrip (DockFrame frame)
 		{
 			this.frame = frame;
 			frame.ShadedContainer.Add (this);
 			VBox vbox = new VBox ();
-			box = new HBox ();
+			box = new TabStripBox () { TabStrip = this };
 			vbox.PackStart (box, false, false, 0);
-			vbox.PackStart (bottomFiller, false, false, 0);
-			AppendPage (vbox, null);
-			ShowBorder = false;
-			ShowTabs = false;
+		//	vbox.PackStart (bottomFiller, false, false, 0);
+			Add (vbox);
 			ShowAll ();
 			bottomFiller.Hide ();
 			BottomPadding = 3;
@@ -65,18 +65,38 @@ namespace MonoDevelop.Components.Docking
 				bottomFiller.Visible = value > 0;
 			}
 		}
+
+		public string VisualStyle {
+			get { return visualStyle; }
+			set {
+				visualStyle = value;
+				foreach (Tab t in box.Children)
+					t.VisualStyle = value;
+				box.QueueDraw ();
+			}
+		}
 		
 		public void AddTab (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
 			Tab tab = new Tab ();
 			tab.SetLabel (page, icon, label);
 			tab.ShowAll ();
+			AddTab (tab);
+		}
+
+		public void AddTab (Tab tab)
+		{
+			if (tab.Parent != null)
+				((Gtk.Container)tab.Parent).Remove (tab);
+
+			tab.VisualStyle = VisualStyle;
+
 			box.PackStart (tab, true, true, 0);
 			if (currentTab == -1)
 				CurrentTab = box.Children.Length - 1;
 			else {
 				tab.Active = false;
-				page.Hide ();
+				tab.Page.Hide ();
 			}
 			
 			tab.ButtonPressEvent += OnTabPress;
@@ -143,10 +163,8 @@ namespace MonoDevelop.Components.Docking
 		{
 			ellipsized = true;
 			currentTab = -1;
-			foreach (Widget w in box.Children) {
+			foreach (Widget w in box.Children)
 				box.Remove (w);
-				w.Destroy ();
-			}
 		}
 		
 		void OnTabPress (object s, Gtk.ButtonPressEventArgs args)
@@ -180,113 +198,32 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public Gdk.Rectangle GetTabArea (int ntab)
+		internal class TabStripBox: HBox
 		{
-			Gtk.Widget[] tabs = box.Children;
-			Tab tab = (Tab) tabs[ntab];
-			Gdk.Rectangle rect = GetTabArea (tab, ntab);
-			int x, y;
-			tab.GdkWindow.GetRootOrigin (out x, out y);
-			rect.X += x;
-			rect.Y += y;
-			return rect;
+			public TabStrip TabStrip;
+
+			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+			{
+				if (TabStrip.VisualStyle == DockStyle.Browser) {
+					var alloc = Allocation;
+					var c = new HslColor (Styles.BrowserPadBackground);
+					c.L *= 0.9;
+					Gdk.GC gc = new Gdk.GC (GdkWindow);
+					gc.RgbFgColor = c;
+					evnt.Window.DrawRectangle (gc, true, alloc);
+					gc.Dispose ();
+		
+					Gdk.GC bgc = new Gdk.GC (GdkWindow);
+					c = new HslColor (Styles.BrowserPadBackground);
+					c.L *= 0.7;
+					bgc.RgbFgColor = c;
+					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
+					bgc.Dispose ();
+				}	
+				return base.OnExposeEvent (evnt);
+			}
 		}
 		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			frame.ShadedContainer.DrawBackground (this);
-
-			Gtk.Widget[] tabs = box.Children;
-			for (int n=tabs.Length - 1; n>=0; n--) {
-				Tab tab = (Tab) tabs [n];
-				if (n != currentTab)
-					DrawTab (evnt, tab, n);
-			}
-			if (currentTab != -1) {
-				Tab ctab = (Tab) tabs [currentTab];
-//				GdkWindow.DrawLine (Style.DarkGC (Gtk.StateType.Normal), Allocation.X, Allocation.Y, Allocation.Right, Allocation.Y);
-				DrawTab (evnt, ctab, currentTab);
-			}
-			return base.OnExposeEvent (evnt);
-		}
-
-		public Gdk.Rectangle GetTabArea (Tab tab, int pos)
-		{
-			Gdk.Rectangle rect = tab.Allocation;
-
-			int xdif = 0;
-			if (pos > 0)
-				xdif = 2;
-
-			int reqh;
-//			StateType st;
-
-			if (tab.Active) {
-//				st = StateType.Normal;
-				reqh = tab.Allocation.Height;
-			}
-			else {
-				reqh = tab.Allocation.Height - 3;
-//				st = StateType.Active;
-			}
-
-			if (DockFrame.IsWindows) {
-				rect.Height = reqh - 1;
-				rect.Width--;
-				if (pos > 0) {
-					rect.X--;
-					rect.Width++;
-				}
-				return rect;
-			}
-			else {
-				rect.X -= xdif;
-				rect.Width += xdif;
-				rect.Height = reqh;
-				return rect;
-			}
-		}
-
-		void DrawTab (Gdk.EventExpose evnt, Tab tab, int pos)
-		{
-			Gdk.Rectangle rect = GetTabArea (tab, pos);
-			StateType st;
-			if (tab.Active)
-				st = StateType.Normal;
-			else
-				st = StateType.Active;
-
-			if (DockFrame.IsWindows) {
-				GdkWindow.DrawRectangle (Style.DarkGC (Gtk.StateType.Normal), false, rect);
-				rect.X++;
-				rect.Width--;
-				if (tab.Active) {
-					GdkWindow.DrawRectangle (Style.LightGC (Gtk.StateType.Normal), true, rect);
-				}
-				else {
-					using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-						cr.NewPath ();
-						cr.MoveTo (rect.X, rect.Y);
-						cr.RelLineTo (rect.Width, 0);
-						cr.RelLineTo (0, rect.Height);
-						cr.RelLineTo (-rect.Width, 0);
-						cr.RelLineTo (0, -rect.Height);
-						cr.ClosePath ();
-						Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + rect.Height);
-						Cairo.Color color1 = DockFrame.ToCairoColor (Style.Mid (Gtk.StateType.Normal));
-						pat.AddColorStop (0, color1);
-						color1.R *= 1.2;
-						color1.G *= 1.2;
-						color1.B *= 1.2;
-						pat.AddColorStop (1, color1);
-						cr.Pattern = pat;
-						cr.FillPreserve ();
-					}
-				}
-			}
-			else
-				Gtk.Style.PaintExtension (Style, GdkWindow, st, ShadowType.Out, evnt.Area, this, "tab", rect.X, rect.Y, rect.Width, rect.Height, Gtk.PositionType.Top); 
-		}
 	}
 	
 	class Tab: Gtk.EventBox
@@ -295,18 +232,27 @@ namespace MonoDevelop.Components.Docking
 		Gtk.Widget page;
 		Gtk.Label labelWidget;
 		int labelWidth;
+		string visualStyle;
 		
-		const int TopPadding = 2;
-		const int BottomPadding = 4;
-		const int TopPaddingActive = 3;
-		const int BottomPaddingActive = 5;
-		const int HorzPadding = 5;
+		const int TopPadding = 7;
+		const int BottomPadding = 7;
+		const int TopPaddingActive = 7;
+		const int BottomPaddingActive = 7;
+		const int HorzPadding = 11;
 		
 		public Tab ()
 		{
 			this.VisibleWindow = false;
 		}
-		
+
+		public string VisualStyle {
+			get { return visualStyle; }
+			set {
+				visualStyle = value;
+				QueueDraw ();
+			}
+		}
+
 		public void SetLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
 			Pango.EllipsizeMode oldMode = Pango.EllipsizeMode.End;
@@ -329,6 +275,7 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new Gtk.Label (label);
 				labelWidget.UseMarkup = true;
+				labelWidget.Xalign = 0;
 				box.PackStart (labelWidget, true, true, 0);
 			} else {
 				labelWidget = null;
@@ -402,6 +349,104 @@ namespace MonoDevelop.Components.Docking
 				rect.Height = Child.SizeRequest ().Height;
 			}
 			Child.SizeAllocate (rect);
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			if (VisualStyle == DockStyle.Browser)
+				DrawAsBrowser (evnt);
+			else
+				DrawNormal (evnt);
+			return base.OnExposeEvent (evnt);
+		}
+
+		void DrawAsBrowser (Gdk.EventExpose evnt)
+		{
+			var alloc = Allocation;
+
+			Gdk.GC bgc = new Gdk.GC (GdkWindow);
+			var c = new HslColor (Styles.BrowserPadBackground);
+			c.L *= 0.7;
+			var cc = (Gdk.Color)c;
+			bgc.RgbFgColor = c;
+			bool first = true;
+			bool last = true;
+			if (Parent is TabStrip.TabStripBox) {
+				var cts = ((TabStrip.TabStripBox)Parent).Children;
+				first = cts[0] == this;
+				last = cts[cts.Length - 1] == this;
+			}
+
+			if (Active || (first && last)) {
+				Gdk.GC gc = new Gdk.GC (GdkWindow);
+				gc.RgbFgColor = Styles.BrowserPadBackground;
+				evnt.Window.DrawRectangle (gc, true, alloc);
+				if (!first)
+					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
+				if (!last || !first)
+					evnt.Window.DrawLine (bgc, alloc.X + alloc.Width - 1, alloc.Y, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
+				gc.Dispose ();
+
+			} else {
+				c = new HslColor (Styles.BrowserPadBackground);
+				c.L *= 0.9;
+				Gdk.GC gc = new Gdk.GC (GdkWindow);
+				gc.RgbFgColor = c;
+				evnt.Window.DrawRectangle (gc, true, alloc);
+				gc.Dispose ();
+				evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
+			}
+			bgc.Dispose ();
+		}
+
+		void DrawNormal (Gdk.EventExpose evnt)
+		{
+			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+				var x = Allocation.X;
+				var y = Allocation.Y;
+
+				ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
+				var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1);
+				g.AddColorStop (0, Styles.DockTabBarGradientStart);
+				g.AddColorStop (1, Styles.DockTabBarGradientEnd);
+				ctx.Pattern = g;
+				ctx.Fill ();
+				g.Dispose ();
+
+				ctx.MoveTo (x + 0.5, y + 0.5);
+				ctx.LineTo (x + Allocation.Width - 0.5d, y + 0.5);
+				ctx.Color = Styles.DockTabBarGradientTop;
+				ctx.Stroke ();
+
+				if (active) {
+
+					ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
+					g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1);
+					g.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.01));
+					g.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.08));
+					g.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.01));
+					ctx.Pattern = g;
+					ctx.Fill ();
+					g.Dispose ();
+
+/*					double offset = Allocation.Height * 0.25;
+					var rect = new Cairo.Rectangle (x - Allocation.Height + offset, y, Allocation.Height, Allocation.Height);
+					var cg = new Cairo.RadialGradient (rect.X + rect.Width / 2, rect.Y + rect.Height / 2, 0, rect.X, rect.Y + rect.Height / 2, rect.Height / 2);
+					cg.AddColorStop (0, Styles.DockTabBarShadowGradientStart);
+					cg.AddColorStop (1, Styles.DockTabBarShadowGradientEnd);
+					ctx.Pattern = cg;
+					ctx.Rectangle (rect);
+					ctx.Fill ();
+
+					rect = new Cairo.Rectangle (x + Allocation.Width - offset, y, Allocation.Height, Allocation.Height);
+					cg = new Cairo.RadialGradient (rect.X + rect.Width / 2, rect.Y + rect.Height / 2, 0, rect.X, rect.Y + rect.Height / 2, rect.Height / 2);
+					cg.AddColorStop (0, Styles.DockTabBarShadowGradientStart);
+					cg.AddColorStop (1, Styles.DockTabBarShadowGradientEnd);
+					ctx.Pattern = cg;
+					ctx.Rectangle (rect);
+					ctx.Fill ();*/
+				}
+			}
 		}
 	}
 }
