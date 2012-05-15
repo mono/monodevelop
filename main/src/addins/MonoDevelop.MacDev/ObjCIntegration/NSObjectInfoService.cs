@@ -45,7 +45,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 	{
 		//static readonly Regex frameworkRegex = new Regex ("#import\\s+<([A-Z][A-Za-z]*)/([A-Z][A-Za-z]*)\\.h>", RegexOptions.Compiled);
 		static readonly Regex typeInfoRegex = new Regex ("@(interface|protocol)\\s+(\\w*)\\s*:\\s*(\\w*)", RegexOptions.Compiled);
-		static readonly Regex ibRegex = new Regex ("(- \\(IBAction\\)|IBOutlet)([^;]*);", RegexOptions.Compiled);
+		static readonly Regex ibRegex = new Regex ("(-\\s*\\(IBAction\\)|IBOutlet)\\s*([^;]*);", RegexOptions.Compiled);
 		static readonly char[] colonChar = { ':' };
 		static readonly char[] whitespaceChars = { ' ', '\t', '\n', '\r' };
 		static readonly char[] splitActionParamsChars = { ' ', '\t', '\n', '\r', '*', '(', ')' };
@@ -306,18 +306,36 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 				var def = match.Groups[2].Value;
 				if (kind == "IBOutlet") {
 					var split = def.Split (whitespaceChars, StringSplitOptions.RemoveEmptyEntries);
-					if (split.Length != 2)
-						continue;
-					string objcName = split[1].TrimStart ('*');
 					string objcType = split[0].TrimEnd ('*');
-					if (objcType == "id")
-						objcType = "NSObject";
-					if (string.IsNullOrEmpty (objcType)) {
+					string objcName = null;
+
+					for (int i = 1; i < split.Length; i++) {
+						objcName = split[i].TrimStart ('*');
+						if (string.IsNullOrEmpty (objcName))
+							continue;
+
+						if (i + 1 < split.Length) {
+							// This is a bad sign... what tokens are after the name??
+							objcName = null;
+							break;
+						}
+					}
+
+					if (string.IsNullOrEmpty (objcType) || string.IsNullOrEmpty (objcName)) {
 						MessageService.ShowError (GettextCatalog.GetString ("Error while parsing header file."),
 							string.Format (GettextCatalog.GetString ("The definition '{0}' can't be parsed."), def));
+
+						// We can't recover if objcName is empty...
+						if (string.IsNullOrEmpty (objcName))
+							continue;
+
+						// We can try using NSObject...
 						objcType = "NSObject";
 					}
-					
+
+					if (objcType == "id")
+						objcType = "NSObject";
+
 					IBOutlet outlet = new IBOutlet (objcName, objcName, objcType, null);
 					outlet.IsDesigner = true;
 					

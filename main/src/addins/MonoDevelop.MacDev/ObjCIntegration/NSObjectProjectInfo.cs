@@ -28,7 +28,6 @@ using System;
 using System.Linq;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using MonoDevelop.Projects;
 
 using ICSharpCode.NRefactory.TypeSystem;
