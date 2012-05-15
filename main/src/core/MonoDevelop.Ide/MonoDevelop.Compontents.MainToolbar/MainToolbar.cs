@@ -213,8 +213,8 @@ namespace MonoDevelop.Compontents.MainToolbar
 				);
 				context.Clip ();
 				context.LineWidth = 1;
-				if (Background != null) {
-					for (int x=0; x < Allocation.Width; x+= Background.Width) {
+				if (Background != null && Background.Width > 0) {
+					for (int x=0; x < Allocation.Width; x += Background.Width) {
 						Background.Show (context, x, -TitleBarHeight);
 					}
 				} else {
