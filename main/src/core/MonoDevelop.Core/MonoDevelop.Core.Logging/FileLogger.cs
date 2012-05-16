@@ -89,13 +89,21 @@ namespace MonoDevelop.Core.Logging
 		
 		public void Dispose ()
 		{
-			if (writer != null)
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+		protected void Dispose (bool disposing)
+		{
+			if (disposing && writer != null) {
 				writer.Dispose ();
+				writer = null;
+			}
 		}
 		
 		~FileLogger ()
 		{
-			Dispose ();
+			Dispose (false);
 		}
 	}
 }
