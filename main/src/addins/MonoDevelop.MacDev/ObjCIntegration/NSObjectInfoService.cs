@@ -148,8 +148,9 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			int cnt = 0, infcnt=0, models=0;
 			
 			foreach (var contextType in assembly.GetAllTypeDefinitions ()) {
-				if (contextType.IsDerivedFrom (nso)) {
-					var info = ConvertType (dom, contextType);
+				var importedType = dom.Compilation.Import (contextType);
+				if (importedType.IsDerivedFrom (nso)) {
+					var info = ConvertType (dom, importedType);
 					if (info != null)
 						yield return info;
 				}
