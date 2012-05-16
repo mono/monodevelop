@@ -368,6 +368,21 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\t\t\t\n\n", data.Document.Text);
 		}
 
+		/// <summary>
+		/// Bug 5067 - Selection does not respect virtual space
+		/// </summary>
+		[Test()]
+		public void TestBug5067 ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\n\t\tFoo ();\n";
+			data.Caret.Location = new DocumentLocation (2, 3);
+			SelectionActions.MoveDown (data);
+			DeleteActions.Delete (data);
+
+			Assert.AreEqual ("\n\t\tFoo ();\n", data.Document.Text);
+		}
+
 		class SpacesIndentTracker : IIndentationTracker
 		{
 			const string indentString = "        ";

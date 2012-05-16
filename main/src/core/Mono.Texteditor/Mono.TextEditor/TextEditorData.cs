@@ -812,11 +812,13 @@ namespace Mono.TextEditor
 			switch (selection.SelectionMode) {
 			case SelectionMode.Normal:
 				var segment = selection.GetSelectionRange (this);
-				if (Caret.Offset > segment.Offset)
-					Caret.Offset -= System.Math.Min (segment.Length, Caret.Offset - segment.Offset);
 				int len = System.Math.Min (segment.Length, Document.TextLength - segment.Offset);
+				var loc = selection.Anchor < selection.Lead ? selection.Anchor : selection.Lead;
+				caret.Location = loc;
+				EnsureCaretIsNotVirtual ();
 				if (len > 0)
 					Remove (segment.Offset, len);
+				caret.Location = loc;
 				break;
 			case SelectionMode.Block:
 				DocumentLocation visStart = LogicalToVisualLocation (selection.Anchor);
@@ -1094,6 +1096,7 @@ namespace Mono.TextEditor
 			}
 			return 0;
 		}
+
 		#endregion
 		
 		public Stream OpenStream ()
