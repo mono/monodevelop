@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # icon-theme-installer
 # Copyright (C) 2006 Novell, Inc.

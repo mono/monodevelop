@@ -20,8 +20,8 @@ CONFIG_MAKE=$(top_srcdir)/config.make
 	case $$2 in *=*) dk="exit 1" ;; *k*) dk=: ;; *) dk="exit 1" ;; esac; \
 	for dir in $(SUBDIRS); do \
 		case $$dir in \
-		.) make $*-local || { final_exit="exit 1"; $$dk; };;\
-		*) (cd $$dir && make $*) || { final_exit="exit 1"; $$dk; };;\
+		.) $(MAKE) $*-local || { final_exit="exit 1"; $$dk; };;\
+		*) (cd $$dir && $(MAKE) $*) || { final_exit="exit 1"; $$dk; };;\
 		esac \
 	done
 	$$final_exit
@@ -76,19 +76,19 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
 
 run:
-	cd main && make run
+	cd main && $(MAKE) run
 
 run-gdb:
-	cd main && make run-gdb
+	cd main && $(MAKE) run-gdb
 
 test:
-	cd main/tests/UnitTests && make test fixture=$(fixture)
+	cd main/tests/UnitTests && $(MAKE) test fixture=$(fixture)
 
 check-addins:
-	cd main && make check-addins
+	cd main && $(MAKE) check-addins
 
 app-dir:
-	cd main && make app-dir
+	cd main && $(MAKE) app-dir
 
 reset-versions: reset-all
 check-versions: check-all
