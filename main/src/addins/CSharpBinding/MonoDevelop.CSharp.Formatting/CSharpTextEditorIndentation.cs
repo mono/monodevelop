@@ -99,7 +99,18 @@ namespace MonoDevelop.CSharp.Formatting
 
 			textEditorData = Document.Editor;
 			if (textEditorData != null) {
-				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (textEditorData, new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textStylePolicy), textEditorData));
+				textEditorData.Options.Changed += delegate {
+					policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
+					textStylePolicy = base.Document.Project.Policies.Get<TextStylePolicy> (types);
+					textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
+						textEditorData,
+						new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textStylePolicy), textEditorData)
+					);
+				};
+				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
+					textEditorData,
+					new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (policy, textStylePolicy), textEditorData)
+				);
 			}
 
 			InitTracker ();
