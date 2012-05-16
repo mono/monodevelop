@@ -40,8 +40,10 @@ distcheck: distcheck-recursive
 distclean: distclean-recursive
 	rm -rf config.make local-config
 
-dist: dist-recursive
+remove-stale-tarballs:
 	rm -rf tarballs
+
+dist: remove-stale-tarballs dist-recursive
 	mkdir -p tarballs
 	for t in $(SUBDIRS); do \
 		if test -a $$t/*.tar.gz; then \

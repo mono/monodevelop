@@ -2,7 +2,7 @@
 ADDIN_BUILD = $(top_builddir)/build/AddIns
 ASSEMBLY = $(ADDIN_BUILD)/MacPlatform.dll
 
-MONOMAC_SRC = $(top_srcdir)/../external/monomac/src/MonoMac.dll
+MONOMAC_SRC = $(top_srcdir)/external/monomac/src/MonoMac.dll
 MONOMAC = $(ADDIN_BUILD)/MonoMac.dll
 
 DEPS =  \
@@ -12,7 +12,7 @@ DEPS =  \
 REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../../external/monomac/src/MonoMac.dll \
+	-r:../../../external/monomac/src/MonoMac.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \
@@ -59,7 +59,7 @@ all:
 endif
 
 $(MONOMAC_SRC):
-	make -C $(top_srcdir)/../external/monomac/src
+	make -C $(top_srcdir)/external/monomac/src
 
 $(ASSEMBLY): $(MONOMAC_SRC) $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
