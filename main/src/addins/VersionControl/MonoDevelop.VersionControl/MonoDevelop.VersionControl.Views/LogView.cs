@@ -83,6 +83,8 @@ namespace MonoDevelop.VersionControl.Views
 			lw.History = this.info.History;
 			vinfo   = this.info.VersionInfo;
 		
+			if (WorkbenchWindow != null)
+				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
 		}
 		
 		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
@@ -115,6 +117,13 @@ namespace MonoDevelop.VersionControl.Views
 					CreateControlFromInfo ();
 				return widget; 
 			}
+		}
+
+		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		{
+			base.OnWorkbenchWindowChanged (e);
+			if (WorkbenchWindow != null && widget != null)
+				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
 		}
 		
 		public override void Dispose ()

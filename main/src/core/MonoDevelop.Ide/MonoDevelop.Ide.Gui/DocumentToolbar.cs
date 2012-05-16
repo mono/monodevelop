@@ -169,5 +169,21 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 	}
+
+	public class DocumentToolButton: Gtk.Button
+	{
+		public DocumentToolButton (string stockId)
+		{
+			Image = new Gtk.Image (stockId, IconSize.Menu);
+			Image.Show ();
+		}
+		
+		public DocumentToolButton (string stockId, string label)
+		{
+			Label = label;
+			Image = new Gtk.Image (stockId, IconSize.Menu);
+			Image.Show ();
+		}
+	}
 }
 

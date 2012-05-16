@@ -53,6 +53,7 @@ namespace MonoDevelop.VersionControl.Views
 					ComparisonWidget.DiffEditor.Document.Text = info.Item.Repository.GetBaseText (info.Item.Path);
 					ComparisonWidget.SetLocal (ComparisonWidget.OriginalEditor.GetTextEditorData ());
 					widget.ShowAll ();
+					widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
 				}
 				return widget;
 			}

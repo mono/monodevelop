@@ -36,6 +36,10 @@ namespace MonoDevelop.VersionControl.Views
 		VersionControlDocumentInfo info;
 		Mono.TextEditor.TextEditor diffTextEditor;
 		MonoDevelop.VersionControl.Views.ComparisonWidget comparisonWidget;
+		Gtk.Button buttonNext;
+		Gtk.Button buttonPrev;
+		Gtk.Button buttonDiff;
+		Gtk.Label labelOverview;
 
 		internal ComparisonWidget ComparisonWidget {
 			get {
@@ -75,8 +79,11 @@ namespace MonoDevelop.VersionControl.Views
 			this.info = info;
 			this.Build ();
 			comparisonWidget = new MonoDevelop.VersionControl.Views.ComparisonWidget (viewOnly);
+			buttonNext = new DocumentToolButton (Gtk.Stock.GoUp, GettextCatalog.GetString ("Previous Change"));
+			buttonPrev = new DocumentToolButton (Gtk.Stock.GoDown, GettextCatalog.GetString ("Next Change"));
+			labelOverview = new Gtk.Label () { Xalign = 0 };
+			buttonDiff = new Gtk.Button (GettextCatalog.GetString ("Unified Diff"));
 			
-			fixed1.SetSizeRequest (16, 16);
 			this.buttonNext.Clicked += (sender, args) => ComparisonWidget.GotoNext ();
 			this.buttonPrev.Clicked += (sender, args) => ComparisonWidget.GotoPrev ();
 			notebook1.Page = 0;
@@ -98,6 +105,15 @@ namespace MonoDevelop.VersionControl.Views
 			scrolledwindow1.Child = diffTextEditor;
 			diffTextEditor.Show ();
 			SetButtonSensitivity ();
+		}
+
+		internal void SetToolbar (DocumentToolbar toolbar)
+		{
+			toolbar.Add (labelOverview, true);
+			toolbar.Add (buttonDiff);
+			toolbar.Add (buttonPrev);
+			toolbar.Add (buttonNext);
+			toolbar.ShowAll ();
 		}
 		
 		void SetButtonSensitivity ()

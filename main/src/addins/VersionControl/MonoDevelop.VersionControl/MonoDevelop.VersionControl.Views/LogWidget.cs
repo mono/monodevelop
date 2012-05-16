@@ -50,17 +50,10 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public Toolbar CommandBar {
-			get {
-				return commandBar;
-			}
-		}
-		
-		
 		ListStore logstore = new ListStore (typeof (Revision));
 		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
-		Gtk.ToolButton revertButton, revertToButton;
+		Gtk.Button revertButton, revertToButton;
 		SearchEntry searchEntry;
 		string currentFilter;
 		
@@ -123,21 +116,15 @@ namespace MonoDevelop.VersionControl.Views
 			if (info.Document != null)
 				this.preselectFile = info.Item.Path;
 			
-			revertButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert changes from this revision"));
-			revertButton.IsImportant = true;
+			revertButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert changes from this revision"));
 //			revertButton.Sensitive = false;
 			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
-			CommandBar.Insert (revertButton, -1);
-			
-			revertToButton = new Gtk.ToolButton (new Gtk.Image ("vc-revert-command", Gtk.IconSize.Menu), GettextCatalog.GetString ("Revert to this revision"));
-			revertToButton.IsImportant = true;
+
+			revertToButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert to this revision"));
 //			revertToButton.Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
-			CommandBar.Insert (revertToButton, -1);
-			
-			Gtk.ToolItem item = new Gtk.ToolItem ();
+
 			Gtk.HBox a = new Gtk.HBox ();
-			item.Add (a);
 			searchEntry = new SearchEntry ();
 			searchEntry.WidthRequest = 200;
 			searchEntry.ForceFilterButtonVisible = true;
@@ -146,11 +133,7 @@ namespace MonoDevelop.VersionControl.Views
 			searchEntry.Ready = true;
 			searchEntry.Show ();
 			a.PackEnd (searchEntry, false, false, 0);
-			CommandBar.Insert (item, -1);
-			((Gtk.Toolbar.ToolbarChild)CommandBar[item]).Expand = true;
-			
-			CommandBar.ShowAll ();
-			
+
 			messageRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			TreeViewColumn colRevMessage = new TreeViewColumn ();
 			colRevMessage.Title = GettextCatalog.GetString ("Message");
@@ -235,6 +218,18 @@ namespace MonoDevelop.VersionControl.Views
 			labelAuthor.Text = "";
 			labelDate.Text = "";
 			labelRevision.Text = "";
+		}
+
+		internal void SetToolbar (DocumentToolbar toolbar)
+		{
+			toolbar.Add (revertButton);
+			toolbar.Add (revertToButton);
+
+			Gtk.HBox a = new Gtk.HBox ();
+			a.PackEnd (searchEntry, false, false, 0);
+			toolbar.Add (a, true);
+
+			toolbar.ShowAll ();
 		}
 		
 		bool filtering;

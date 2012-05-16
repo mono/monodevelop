@@ -77,13 +77,13 @@ namespace MonoDevelop.Ide.Gui
 			this.tabPage = content.Control;
 			
 			box = new VBox ();
+			content.WorkbenchWindow = this;
+
 			box.PackStart (content.Control);
 			
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
 			extensionContext = AddinManager.CreateExtensionContext ();
 			extensionContext.RegisterCondition ("FileType", fileTypeCondition);
-			
-			content.WorkbenchWindow = this;
 			
 			content.ContentNameChanged += new EventHandler(SetTitleEvent);
 			content.DirtyChanged       += new EventHandler(SetTitleEvent);
