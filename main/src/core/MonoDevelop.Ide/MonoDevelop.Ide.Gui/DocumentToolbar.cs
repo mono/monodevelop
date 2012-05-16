@@ -70,15 +70,12 @@ namespace MonoDevelop.Ide.Gui
 		void Add (Widget widget, bool fill, int padding, int index)
 		{
 			int defaultPadding = 3;
-			widget.Realized += delegate {
-				widget.ModifyText (StateType.Normal, Styles.BreadcrumbTextColor);
-				widget.ModifyFg (StateType.Normal, Styles.BreadcrumbTextColor);
-			};
-			
+
 			if (widget is Button) {
 				((Button)widget).Relief = ReliefStyle.None;
 				((Button)widget).FocusOnClick = false;
 				defaultPadding = 0;
+				ChangeColor (widget);
 			}
 			else if (widget is Entry) {
 				((Entry)widget).HasFrame = false;
@@ -86,8 +83,12 @@ namespace MonoDevelop.Ide.Gui
 			else if (widget is ComboBox) {
 				((ComboBox)widget).HasFrame = false;
 			}
-			else if (widget is VSeparator)
+			else if (widget is VSeparator) {
 				((VSeparator)widget).HeightRequest = 10;
+				ChangeColor (widget);
+			}
+			else
+				ChangeColor (widget);
 			
 			if (padding == -1)
 				padding = defaultPadding;
@@ -100,6 +101,18 @@ namespace MonoDevelop.Ide.Gui
 			if (index != -1) {
 				Box.BoxChild bc = (Box.BoxChild) box [widget];
 				bc.Position = index;
+			}
+		}
+
+		void ChangeColor (Gtk.Widget w)
+		{
+			w.Realized += delegate {
+				w.ModifyText (StateType.Normal, Styles.BreadcrumbTextColor);
+				w.ModifyFg (StateType.Normal, Styles.BreadcrumbTextColor);
+			};
+			if (w is Gtk.Container) {
+				foreach (var c in ((Gtk.Container)w).Children)
+					ChangeColor (c);
 			}
 		}
 		
