@@ -207,7 +207,11 @@ namespace Mono.Debugging.Soft
 				return cx.RuntimeInvoke (method, toType, new Value[] { value });
 
 			// Finally, try a ctor...
-			return CreateValue (ctx, toType, value);
+			try {
+				return CreateValue (ctx, toType, value);
+			} catch {
+				return null;
+			}
 		}
 
 		public override object TryCast (EvaluationContext ctx, object obj, object targetType)
