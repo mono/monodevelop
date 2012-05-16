@@ -1,4 +1,4 @@
-SUBDIRS = ../external contrib src po man theme-icons build tests
+SUBDIRS = external contrib src po man theme-icons build tests
 
 #capture aclocal flags for autoreconf
 ACLOCAL_AMFLAGS=$(ACLOCAL_FLAGS)
@@ -149,7 +149,7 @@ app-dir: all
 
 # we can't use the variables that are conditionally defined
 EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
-	monodevelop.xml $(pkgconfig_in_files) vcrevision
+	monodevelop.xml $(pkgconfig_in_files) vcrevision external/Makefile.in
 
 DISTCLEANFILES = monodevelop intltool-extract intltool-merge intltool-update \
 	$(pkgconfig_DATA) 

@@ -271,6 +271,7 @@ contrib/NRefactory/Makefile
 contrib/ICSharpCode.NRefactory/Makefile
 contrib/ICSharpCode.NRefactory.CSharp/Makefile
 contrib/ICSharpCode.Decompiler/Makefile
+external/Makefile
 src/Makefile
 src/core/Makefile
 src/core/Mono.Texteditor/Makefile

@@ -1,5 +1,4 @@
-SUBDIRS=`ls .`
-TARBALL_PATH=../tarballs
+TARBALL_PATH=../../tarballs
 
 NGIT_SLN=ngit/ngit.sln
 NGIT=$(NGIT_SLN) /t:NGit
@@ -8,7 +7,7 @@ CECIL_SLN=cecil/Mono.Cecil.sln
 CECIL=/property:Configuration=net_4_0_Debug $(CECIL_SLN)
 CECIL_OUTPUT=cecil/bin/net_4_0_Debug
 
-OUTPUT=../main/build/bin
+OUTPUT=../build/bin
 
 all:
 	mkdir -p $(OUTPUT)
@@ -32,15 +31,15 @@ distdir: dist
 
 dist:
 	mkdir -p $(TARBALL_PATH)
-	@for dir in $(SUBDIRS); do \
+	@for dir in `ls .`; do \
 		if test -d $$dir; then \
 			echo Creating tarball for $$dir; \
-			cd $$dir && git archive --prefix=external/$$dir/ HEAD | bzip2 > ../$(TARBALL_PATH)/$$dir.tar.bz2 && cd ..; \
+			cd $$dir && git archive --prefix=monodevelop-@PACKAGE_VERSION@/external/$$dir/ HEAD | bzip2 > ../$(TARBALL_PATH)/$$dir-@PACKAGE_VERSION@.tar.bz2 && cd ..; \
 		fi \
 	done	
 
 dist-clean:
-	@for dir in $(SUBDIRS); do \
+	@for dir in `ls .`; do \
 		if test -d $$dir; then \
 			rm -f $(TARBALL_PATH)/$$dir.tar.bz2; \
 		fi \
