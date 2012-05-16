@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockItemContainer: VBox
+	class DockItemContainer: EventBox
 	{
 		DockFrame frame;
 		DockItem item;
@@ -44,18 +44,22 @@ namespace MonoDevelop.Components.Docking
 		Container borderFrame;
 		bool pointerHover;
 		Box contentBox;
+		VBox mainBox;
 
 		public DockItemContainer (DockFrame frame, DockItem item)
 		{
 			this.frame = frame;
 			this.item = item;
-			
-			ResizeMode = Gtk.ResizeMode.Queue;
-			Spacing = 0;
+
+			mainBox = new VBox ();
+			Add (mainBox);
+
+			mainBox.ResizeMode = Gtk.ResizeMode.Queue;
+			mainBox.Spacing = 0;
 			
 			ShowAll ();
 			
-			PackStart (item.GetToolbar (PositionType.Top).Container, false, false, 0);
+			mainBox.PackStart (item.GetToolbar (PositionType.Top).Container, false, false, 0);
 			
 			HBox hbox = new HBox ();
 			hbox.Show ();
@@ -67,9 +71,9 @@ namespace MonoDevelop.Components.Docking
 			
 			hbox.PackStart (item.GetToolbar (PositionType.Right).Container, false, false, 0);
 			
-			PackStart (hbox, true, true, 0);
+			mainBox.PackStart (hbox, true, true, 0);
 			
-			PackStart (item.GetToolbar (PositionType.Bottom).Container, false, false, 0);
+			mainBox.PackStart (item.GetToolbar (PositionType.Bottom).Container, false, false, 0);
 			
 			UpdateBehavior ();
 		}
