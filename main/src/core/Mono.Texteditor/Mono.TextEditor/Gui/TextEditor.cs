@@ -1346,6 +1346,11 @@ namespace Mono.TextEditor
 		{
 			return textEditorData.LogicalToVisualLocation (location);
 		}
+
+		public DocumentLocation LogicalToVisualLocation (int line, int column)
+		{
+			return textEditorData.LogicalToVisualLocation (line, column);
+		}
 		
 		public void CenterToCaret ()
 		{
