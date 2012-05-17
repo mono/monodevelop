@@ -69,11 +69,11 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 		tar xvjf external/$$tb; \
 	done
 	@rm -rf tarballs/external	
-	@echo Decompressing monodevelop-$(PACKAGE_VERSION_LABEL).tar.bz2
-	@cd tarballs && tar xvjf monodevelop-$(PACKAGE_VERSION_LABEL).tar.bz2
+	@echo Decompressing monodevelop-$(PACKAGE_VERSION).tar.bz2
+	@cd tarballs && tar xvjf monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@echo Generating merged tarball
-	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION_LABEL).tar.bz2 monodevelop-$(PACKAGE_VERSION_LABEL)
-	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION_LABEL)
+	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION).tar.bz2 monodevelop-$(PACKAGE_VERSION)
+	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
 
 run:
 	cd main && make run
