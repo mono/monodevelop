@@ -442,16 +442,13 @@ namespace MonoDevelop.XmlEditor
 		/// the xml editor.
 		/// </summary>
 		public static bool IsFileNameHandled (string fileName)
-		{			
-			if (fileName == null)
+		{
+			if (string.IsNullOrEmpty (fileName))
 				return false;
-			// HACK: Bug 4747 - No code completion for unsaved XML files 
-//			if (System.IO.Path.IsPathRooted (fileName)) {
-				string vfsname = fileName.Replace ("%", "%25").Replace ("#", "%23").Replace ("?", "%3F");
-				string mimeType = DesktopService.GetMimeTypeForUri (vfsname);
-				if (IsMimeTypeHandled (mimeType))
-					return true;
-//			}
+
+			string mimeType = DesktopService.GetMimeTypeForUri (fileName);
+			if (IsMimeTypeHandled (mimeType))
+				return true;
 			
 			return XmlFileAssociationManager.IsXmlFileName (fileName);
 		}
