@@ -63,6 +63,12 @@ dist: remove-stale-tarballs dist-recursive
 			cp -f $$t/*.spec specs ;\
 		fi \
 	done
+	@cd tarballs && for tb in `ls .`; do \
+		echo Decompressing $$tb; \
+		tar xvjf $$tb; \
+		rm $$tb; \
+	done
+	cd tarballs && tar -cyf `ls -d monodevelop-*`.tar.bz2 monodevelop-*
 
 run:
 	cd main && make run
