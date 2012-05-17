@@ -12,9 +12,9 @@ REFS =  \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
-	-r:../../../external/ngit/bin/NGit.dll \
-	-r:../../../external/ngit/bin/NSch.dll \
-	-r:../../../external/ngit/bin/Sharpen.dll \
+	-r:../../external/ngit/bin/NGit.dll \
+	-r:../../external/ngit/bin/NSch.dll \
+	-r:../../external/ngit/bin/Sharpen.dll \
 	-r:../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll \
 	-r:../../build/AddIns/MonoDevelop.AspNet/MonoDevelop.AspNet.dll \
