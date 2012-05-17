@@ -46,7 +46,7 @@ remove-stale-tarballs:
 dist: remove-stale-tarballs dist-recursive
 	mkdir -p tarballs
 	for t in $(SUBDIRS); do \
-		if test -a $$t/*.tar.gz; then \
+		if test -e $$t/*.tar.gz; then \
 			mv -f $$t/*.tar.gz tarballs ;\
 		fi \
 	done
