@@ -68,7 +68,7 @@ dist: remove-stale-tarballs dist-recursive
 		tar xvjf $$tb; \
 		rm $$tb; \
 	done
-	cd tarballs && tar -cyf `ls -d monodevelop-*`.tar.bz2 monodevelop-*
+	cd tarballs && tar -cjf `ls -d monodevelop-*`.tar.bz2 monodevelop-*
 
 run:
 	cd main && make run
