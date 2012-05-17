@@ -262,6 +262,8 @@ if test -z "$platform_bindings"; then
 	AC_MSG_ERROR([You must enable one of the platform bindings])
 fi
 
+echo PACKAGE_VERSION_LABEL=$PACKAGE_VERSION_LABEL > monodevelop_version
+
 AC_OUTPUT([
 build/Makefile
 build/MacOSX/Makefile

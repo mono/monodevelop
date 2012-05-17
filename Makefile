@@ -1,3 +1,4 @@
+include main/monodevelop_version
 
 EXTRA_DIST = configure
 
@@ -68,7 +69,7 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 		tar xvjf $$tb; \
 		rm $$tb; \
 	done
-	cd tarballs && tar -cjf `ls -d monodevelop-*`.tar.bz2 monodevelop-*
+	cd tarballs && tar -cjf monodevelop-$PACKAGE_VERSION_LABEL.tar.bz2 monodevelop-$PACKAGE_VERSION_LABEL
 
 run:
 	cd main && make run
