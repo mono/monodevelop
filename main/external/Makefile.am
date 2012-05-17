@@ -1,4 +1,4 @@
-TARBALL_PATH=../../tarballs
+TARBALL_PATH=../../tarballs/external
 
 NGIT_SLN=ngit/ngit.sln
 NGIT=$(NGIT_SLN) /t:NGit

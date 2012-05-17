@@ -64,12 +64,16 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 			cp -f $$t/*.spec specs ;\
 		fi \
 	done
-	@cd tarballs && for tb in `ls .`; do \
+	@cd tarballs && for tb in `ls external`; do \
 		echo Decompressing $$tb; \
-		tar xvjf $$tb; \
-		rm $$tb; \
+		tar xvjf external/$$tb; \
 	done
-	cd tarballs && tar -cjf monodevelop-$PACKAGE_VERSION_LABEL.tar.bz2 monodevelop-$PACKAGE_VERSION_LABEL
+	@rm -rf tarballs/external	
+	@echo Decompressing monodevelop-$(PACKAGE_VERSION_LABEL).tar.bz2
+	@cd tarballs && tar xvjf monodevelop-$(PACKAGE_VERSION_LABEL).tar.bz2
+	@echo Generating merged tarball
+	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION_LABEL).tar.bz2 monodevelop-$(PACKAGE_VERSION_LABEL)
+	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION_LABEL)
 
 run:
 	cd main && make run
