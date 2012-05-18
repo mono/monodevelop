@@ -53,6 +53,7 @@ namespace MonoDevelop.Core.Assemblies
 		bool initialized;
 		bool initializing;
 		bool backgroundInitialize;
+		bool extensionInitialized;
 		
 		Dictionary<TargetFrameworkMoniker,TargetFrameworkBackend> frameworkBackends
 			= new Dictionary<TargetFrameworkMoniker, TargetFrameworkBackend> ();
@@ -373,6 +374,12 @@ namespace MonoDevelop.Core.Assemblies
 						// If we are here, that's because 1) the runtime has been initialized, or 2) the runtime is being initialized by *this* thread
 						throw new InvalidOperationException ("Runtime intialization not started");
 				}
+				if (!extensionInitialized && !initializing) {
+					// Get assemblies registered using the extension point.
+					// This is not done in BackgroundInitialize because the add-in manager is not thread safe
+					extensionInitialized = true;
+					AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/SupportPackages", OnPackagesChanged);
+				}
 			}
 		}
 		
@@ -426,16 +433,6 @@ namespace MonoDevelop.Core.Assemblies
 			
 			timer.Trace ("Initializing frameworks");
 			OnInitialize ();
-			
-			if (ShuttingDown)
-				return;
-			
-			timer.Trace ("Registering support packages");
-			
-			// Get assemblies registered using the extension point
-			mainContext.Post (delegate {
-				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/SupportPackages", OnPackagesChanged);
-			}, null);
 		}
 		
 		void OnPackagesChanged (object s, ExtensionNodeEventArgs args)
