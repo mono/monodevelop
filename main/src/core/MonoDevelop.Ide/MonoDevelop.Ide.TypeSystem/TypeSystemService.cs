@@ -258,6 +258,18 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
 						wrapper.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), result.ParsedFile));
 					}
+
+					// The parsed file could be included in other projects as well, therefore
+					// they need to be updated.
+					foreach (var cnt in projectContents) {
+						if (cnt.Key == project)
+							continue;
+						// Use the project context because file lookup is faster there than in the project class.
+						var file = cnt.Value.Content.GetFile (fileName);
+						if (file != null) {
+							cnt.Value.UpdateContent (c => c.UpdateProjectContent (file, result.ParsedFile));
+						}
+					}
 				}
 				return result;
 			} catch (Exception e) {
