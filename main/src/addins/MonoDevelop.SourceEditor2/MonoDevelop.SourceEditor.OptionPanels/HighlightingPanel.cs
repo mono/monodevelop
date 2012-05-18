@@ -245,7 +245,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public virtual void ApplyChanges ()
 		{
 			DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
+			if (DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting != this.enableSemanticHighlightingCheckbutton.Active) {
+				DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
+				if (IdeApp.Workbench.ActiveDocument != null) {
+					IdeApp.Workbench.ActiveDocument.UpdateParseDocument ();
+					IdeApp.Workbench.ActiveDocument.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
+					IdeApp.Workbench.ActiveDocument.Editor.Parent.QueueDraw ();
+				}
+			}
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
 				ColorScheme sheme = ((Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1));
