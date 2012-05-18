@@ -445,6 +445,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
+					case (PInvokeAttributes)0:
+						Debug.WriteLine ("P/Invoke calling convention not set on:" + methodDefinition.FullName);
+						callingConvention = CallingConvention.StdCall;
+						break;
 					case PInvokeAttributes.CallConvCdecl:
 						callingConvention = CallingConvention.Cdecl;
 						break;
