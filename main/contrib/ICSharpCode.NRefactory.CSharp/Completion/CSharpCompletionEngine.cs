@@ -242,9 +242,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var initializerResult = ResolveExpression(p, unit);
 				if (initializerResult != null && initializerResult.Item1.Type.Kind != TypeKind.Unknown) {
 					// check 3 cases:
-					// New initalizer { xpr
-					// Object initializer { prop = val1, field = val2, xpr
-					// Array initializer { new Foo (), a, xpr
+					// 1) New initalizer { xpr
+					// 2) Object initializer { prop = val1, field = val2, xpr
+					// 3) Array initializer { new Foo (), a, xpr
 					// in case 1 all object/array initializer options should be given - in the others not.
 
 					AstNode prev = null;
@@ -256,6 +256,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 					if (prev != null && !(prev is NamedExpression)) {
 						AddContextCompletion(contextList, GetState(), n, unit);
+						// case 3)
 						return contextList.Result;
 					}
 
@@ -263,12 +264,23 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						contextList.AddMember(m);
 					}
 
-					if (prev != null && (prev is NamedExpression))
+					if (prev != null && (prev is NamedExpression)) {
+						// case 2)
 						return contextList.Result;
+					}
+
+					// case 1)
+
+					// check if the object is a list, if not only provide object initalizers
+					var list = typeof (System.Collections.IList).ToTypeReference ().Resolve (Compilation);
+					if (initializerResult.Item1.Type.Kind != TypeKind.Array && list != null) {
+						var def = initializerResult.Item1.Type.GetDefinition (); 
+						if (def != null && !def.IsDerivedFrom (list.GetDefinition ()))
+							return contextList.Result;
+					}
 
 					AddContextCompletion(contextList, GetState(), n, unit);
 					return contextList.Result;
-
 				}
 			}
 			return null;
