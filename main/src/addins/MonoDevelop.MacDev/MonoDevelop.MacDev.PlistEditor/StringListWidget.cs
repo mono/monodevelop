@@ -48,6 +48,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 		}
 		
 		TreeStore treeStore = new TreeStore (typeof (string), typeof (PString));
+		bool editing = false;
 		TreeView treeview;
 		PArray array;
 		
@@ -136,12 +137,26 @@ namespace MonoDevelop.MacDev.PlistEditor
 				PObject obj = null;
 				if (hasSelection) {
 					obj = (PObject) treeStore.GetValue (iter, (int) ListColumn.Object);
+					treeStore.Remove (ref iter);
+
+					editing = true;
 					obj.Remove ();
+					editing = false;
 				}
 			};
 			addRemoveRenderer.AddClicked += delegate {
-				PObject obj = new PString ("");
-				array.Add (obj);
+				PObject obj = new PString (string.Empty);
+				TreeIter iter;
+
+				bool hasSelection = treeview.Selection.GetSelected (out iter);
+				if (hasSelection) {
+					treeStore.SetValues (iter, string.Empty, obj);
+					AppendCreateNewEntry ();
+
+					editing = true;
+					array.Add (obj);
+					editing = false;
+				}
 			};
 			treeview.AppendColumn (col);
 			
@@ -196,13 +211,19 @@ namespace MonoDevelop.MacDev.PlistEditor
 				throw new ArgumentException ("The PList container must be a PArray.", "container");
 			
 			array = (PArray) container;
-			array.Changed += delegate {
-				QueueDraw ();
-			};
-			
+			array.Changed += OnArrayChanged;
 			RefreshList ();
 		}
-		
+
+		void OnArrayChanged (object sender, EventArgs e)
+		{
+			if (editing)
+				return;
+
+			RefreshList ();
+			QueueDraw ();
+		}
+
 		void AppendCreateNewEntry ()
 		{
 			treeStore.AppendValues (GettextCatalog.GetString (AddNewEntry), null);
