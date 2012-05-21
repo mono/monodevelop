@@ -28,6 +28,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.IO;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -37,6 +38,13 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		protected override void Run ()
 		{
+			foreach (var view in IdeApp.Workbench.Documents) {
+				if (view.PrimaryView is AssemblyBrowserViewContent) {
+					view.Window.SelectWindow ();
+					return;
+				}
+			}
+
 			var assemblyBrowserView = new AssemblyBrowserViewContent ();
 			
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
