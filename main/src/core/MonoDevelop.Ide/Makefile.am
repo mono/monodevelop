@@ -590,6 +590,7 @@ FILES =  \
 	MonoDevelop.Ide.Gui/WorkbenchWindow.cs \
 	MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs \
 	MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs \
+	MonoDevelop.Ide.NavigateToDialog/NavigateToPopup.cs \
 	MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs \
 	MonoDevelop.Ide.NavigateToDialog/SearchResult.cs \
 	MonoDevelop.Ide.Navigation/DocumentNavigationPoint.cs \

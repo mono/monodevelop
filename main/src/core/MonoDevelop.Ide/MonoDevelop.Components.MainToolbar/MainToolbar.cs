@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
 using Cairo;
+using MonoDevelop.Ide.NavigateToDialog;
 
 
 namespace MonoDevelop.Compontents.MainToolbar
@@ -136,18 +137,56 @@ namespace MonoDevelop.Compontents.MainToolbar
 
 			contentBox.PackStart (statusAreaVBox, true, true, 0);
 
-			this.matchEntry = new SearchEntry ();
-			this.matchEntry.EmptyMessage = GettextCatalog.GetString ("Press Control + , for search.");
-			this.matchEntry.Ready = true;
-			this.matchEntry.Visible = true;
-			this.matchEntry.IsCheckMenu = true;
-			this.matchEntry.SetSizeRequest (240, 26);
+			matchEntry = new SearchEntry ();
+			matchEntry.EmptyMessage = GettextCatalog.GetString ("Press Control + , for search.");
+			matchEntry.Ready = true;
+			matchEntry.Visible = true;
+			matchEntry.IsCheckMenu = true;
+			matchEntry.SetSizeRequest (240, 26);
+			matchEntry.Entry.Changed += HandleSearchEntryChanged;
+			matchEntry.SizeAllocated += (o, args) => PositionPopup ();
+			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {
+				if (args.Event is Gdk.EventConfigure)
+					PositionPopup ();
+			};
+
 			var searchEntryComboVBox = new VBox ();
 			searchEntryComboVBox.PackStart (this.matchEntry, true, false, 0);
 			AddWidget (searchEntryComboVBox);
 
 			Add (contentBox);
 			UpdateCombos ();
+		}
+
+		NavigateToPopup popup = null;
+		void HandleSearchEntryChanged (object sender, EventArgs e)
+		{
+			if (string.IsNullOrEmpty (matchEntry.Entry.Text)){
+				if (popup != null)
+					popup.Destroy ();
+				return;
+			}
+			if (popup == null) {
+				popup = new NavigateToPopup (NavigateToType.All, true);
+				popup.Resize (480, 240);
+				popup.Attach (matchEntry);
+				popup.Destroyed += delegate {
+					popup = null;
+					matchEntry.Entry.Text = "";
+				};
+				PositionPopup ();
+				popup.ShowAll ();
+			}
+			popup.Query = matchEntry.Entry.Text;
+		}
+
+		void PositionPopup ()
+		{
+			if (popup == null)
+				return;
+			int ox, oy;
+			matchEntry.GdkWindow.GetOrigin (out ox, out oy);
+			popup.Move (ox + matchEntry.Allocation.Width - popup.Allocation.Width, oy + matchEntry.Allocation.Height);
 		}
 
 		void HandleRuntimeChanged (object sender, EventArgs e)

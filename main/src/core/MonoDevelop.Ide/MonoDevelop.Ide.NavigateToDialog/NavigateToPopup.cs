@@ -1,14 +1,10 @@
-//
-// NavigateToDialog.cs
+// 
+// NavigateToPopup.cs
 //  
 // Author:
-//   Zach Lute (zach.lute@gmail.com)
-//   Aaron Bockover (abockover@novell.com)
-//   Jacob Ilsø Christensen
-//   Lluis Sanchez
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,39 +23,28 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading;
-using Gdk;
-using Gtk;
 using MonoDevelop.Components;
-using MonoDevelop.Core;
+using System.Collections.Generic;
+using System.Threading;
 using MonoDevelop.Core.Instrumentation;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Gui;
+using Gtk;
+using System.ComponentModel;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Core.Text;
+using Gdk;
+using MonoDevelop.Ide.Gui;
+
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
-	[Flags]
-	public enum NavigateToType {
-		Files   = 1,
-		Types   = 2,
-		Members = 4,
-		All     = Files | Types | Members,
-		NonMembers = Files | Types
-	}
-	
-	partial class NavigateToDialog : Gtk.Dialog
+	public class NavigateToPopup : Gtk.Window
 	{
 		ListView list;
-		
+		ScrolledWindow scrolledWindow = new ScrolledWindow ();
 		public NavigateToType NavigateToType {
 			get;
 			set;
@@ -85,94 +70,34 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				return locations.ToArray ();
 			}
 		}
+
+		string query;
+
+		public string Query {
+			get {
+				return query;
+			}
+			set {
+				query = value;
+				PerformSearch ();
+			}
+		}
 		
 		bool useFullSearch;
 		bool isAbleToSearchMembers;
-		public NavigateToDialog (NavigateToType navigateTo, bool isAbleToSearchMembers)
+		public NavigateToPopup (NavigateToType navigateTo, bool isAbleToSearchMembers) : base (Gtk.WindowType.Popup)
 		{
+			this.TypeHint = WindowTypeHint.Dialog;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
+			this.DestroyWithParent = true;
+			this.SkipPagerHint = true;
+			this.SkipTaskbarHint = true;
+			this.Decorated = false;
 			this.NavigateToType = navigateTo;
 			this.isAbleToSearchMembers = isAbleToSearchMembers;
-			this.Build ();
-			this.label1.MnemonicWidget = matchEntry.Entry;
-			this.matchEntry.Ready = true;
-			this.matchEntry.Visible = true;
-			this.matchEntry.IsCheckMenu = true;
-			lastResult = new WorkerResult (this);
-			HasSeparator = false;
-			useFullSearch = PropertyService.Get ("UseFullSearchMatch", true);
-			
-			CheckMenuItem includeFilesItem = this.matchEntry.AddFilterOption (0, GettextCatalog.GetString ("Include _Files"));
-			includeFilesItem.DrawAsRadio = false;
-			includeFilesItem.Active = (navigateTo & NavigateToType.Files) == NavigateToType.Files;
-			includeFilesItem.Toggled += delegate {
-				if (includeFilesItem.Active) {
-					this.NavigateToType |= NavigateToType.Files;
-				} else {
-					this.NavigateToType &= ~NavigateToType.Files;
-				}
-				PerformSearch ();
-			};
-			
-			CheckMenuItem includeTypes = this.matchEntry.AddFilterOption (1, GettextCatalog.GetString ("Include _Types"));
-			includeTypes.DrawAsRadio = false;
-			includeTypes.Active = (navigateTo & NavigateToType.Files) == NavigateToType.Files;
-			includeTypes.Toggled += delegate {
-				if (includeTypes.Active) {
-					this.NavigateToType |= NavigateToType.Types;
-				} else {
-					this.NavigateToType &= ~NavigateToType.Types;
-				}
-				PerformSearch ();
-			};
-			
-			if (this.isAbleToSearchMembers) {
-				CheckMenuItem includeMembers = this.matchEntry.AddFilterOption (2, GettextCatalog.GetString ("Include _Members"));
-				includeMembers.DrawAsRadio = false;
-				includeMembers.Active = (navigateTo & NavigateToType.Members) == NavigateToType.Members;
-				includeMembers.Toggled += delegate {
-					if (includeMembers.Active) {
-						this.NavigateToType |= NavigateToType.Members;
-					} else {
-						this.NavigateToType &= ~NavigateToType.Members;
-					}
-					PerformSearch ();
-				};
-			}
-			
-			CheckMenuItem useComplexMatching = this.matchEntry.AddFilterOption (3, GettextCatalog.GetString ("Use complex matching"));
-			useComplexMatching.DrawAsRadio = false;
-			useComplexMatching.Active = useFullSearch;
-			useComplexMatching.Toggled += delegate {
-				useFullSearch = useComplexMatching.Active;
-				PropertyService.Set ("UseFullSearchMatch", useFullSearch);
-				PerformSearch ();
-			};
-			
-			this.matchEntry.Changed += delegate {
-				PerformSearch ();
-			};
+			this.Add (scrolledWindow);
 			SetupTreeView ();
-			this.labelResults.MnemonicWidget = list;
-			
 			StartCollectThreads ();
-			this.matchEntry.Entry.KeyPressEvent += HandleKeyPress;
-			this.matchEntry.Activated += delegate {
-				OpenFile ();
-			};
-			this.buttonOpen.Clicked += delegate {
-				OpenFile ();
-			};
-			
-			this.matchEntry.Entry.GrabFocus ();
-			
-			DefaultWidth  = PropertyService.Get ("NavigateToDialog.DialogWidth", 620);
-			DefaultHeight = PropertyService.Get ("NavigateToDialog.DialogHeight", 440);
-			
-			this.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
-				PropertyService.Set ("NavigateToDialog.DialogWidth", args.Allocation.Width);
-				PropertyService.Set ("NavigateToDialog.DialogHeight", args.Allocation.Height);
-			};
-			
 		}
 		
 		Thread collectFiles;
@@ -199,7 +124,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			list.ItemActivated += delegate { 
 				OpenFile ();
 			};
-			scrolledwindow1.Add (list);
+			scrolledWindow.Add (list);
 		}
 		
 		void OpenFile ()
@@ -212,24 +137,24 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						continue;
 					var loc = new OpenLocation (res.File, res.Row, res.Column);
 					if (loc.Line == -1) {
-						int i = matchEntry.Query.LastIndexOf (':');
+						int i = Query.LastIndexOf (':');
 						if (i != -1) {
-							if (!int.TryParse (matchEntry.Query.Substring (i+1), out loc.Line))
+							if (!int.TryParse (Query.Substring (i + 1), out loc.Line))
 								loc.Line = -1;
 						}
 					}
 					locations.Add (loc);
 				}
-				Respond (ResponseType.Ok);
-			} else {
-				Respond (ResponseType.Cancel);
+				foreach (var loc in locations)
+					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column);
+				Destroy ();
 			}
 		}
-		
+
 		protected override void OnDestroyed ()
 		{
 			StopActiveSearch ();
-			
+			Detach ();
 			base.OnDestroyed ();
 		}
 		 
@@ -248,14 +173,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			
 			WaitForCollectFiles ();
 			
-			string toMatch = matchEntry.Query;
+			string toMatch = Query;
 			
 			if (string.IsNullOrEmpty (toMatch)) {
 				list.DataSource = new ResultsDataSource (this);
-				labelResults.LabelProp = GettextCatalog.GetString ("_Results: Enter search term to start.");
+//				labelResults.LabelProp = GettextCatalog.GetString ("_Results: Enter search term to start.");
 				return;
 			} else {
-				labelResults.LabelProp = GettextCatalog.GetString ("_Results: Searching...");
+//				labelResults.LabelProp = GettextCatalog.GetString ("_Results: Searching...");
 			}
 			
 			if (lastResult != null && !string.IsNullOrEmpty (lastResult.pattern) && toMatch.StartsWith (lastResult.pattern))
@@ -271,14 +196,16 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					return;
 				Application.Invoke (delegate {
 					lastResult = e.Result as WorkerResult;
-					list.DataSource = lastResult.results;
-					list.SelectedRow = 0;
-					list.CenterViewToSelection ();
-					labelResults.LabelProp = String.Format (GettextCatalog.GetPluralString ("_Results: {0} match found.", "_Results: {0} matches found.", lastResult.results.ItemCount), lastResult.results.ItemCount);
+					if (lastResult != null && lastResult.results != null) {
+						list.DataSource = lastResult.results;
+						list.SelectedRow = 0;
+						list.CenterViewToSelection ();
+					}
+//					labelResults.LabelProp = String.Format (GettextCatalog.GetPluralString ("_Results: {0} match found.", "_Results: {0} matches found.", lastResult.results.ItemCount), lastResult.results.ItemCount);
 				});
 			};
 			
-			searchWorker.RunWorkerAsync (new KeyValuePair<string, WorkerResult> (toMatch, lastResult));
+			searchWorker.RunWorkerAsync (new KeyValuePair<string, WorkerResult> (toMatch, lastResult ?? new WorkerResult (this)));
 		}
 		
 		class WorkerResult 
@@ -404,7 +331,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				toMatch = toMatch.Substring (0,i);
 				newResult.isGotoFilePattern = true;
 			}
-			newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
+			newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
 			newResult.FullSearch = useFullSearch;
 			
 			foreach (SearchResult result in AllResults (worker, lastResult, newResult)) {
@@ -427,7 +354,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			// Search files
 			if (newResult.IncludeFiles) {
 				newResult.filteredFiles = new List<ProjectFile> ();
-				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
+				bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
 				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
 				foreach (ProjectFile file in allFiles) {
 					if (worker.CancellationPending) 
@@ -512,7 +439,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					list.Add (new ProjectFile (doc.Name));
 			}
 			
-			ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
+			var projects = IdeApp.Workspace.GetAllProjects ();
 
 			foreach (Project p in projects) {
 				foreach (ProjectFile file in p.Files) {
@@ -545,7 +472,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 						}
 					}
 					
-					ReadOnlyCollection<Project> projects = IdeApp.Workspace.GetAllProjects ();
+					var projects = IdeApp.Workspace.GetAllProjects ();
 					
 					foreach (Project p in projects) {
 						var pctx = TypeSystemService.GetCompilation (p);
@@ -598,5 +525,30 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				break;
 			}
 		}
+
+		SearchEntry matchEntry;
+		public void Attach (SearchEntry matchEntry)
+		{
+			this.matchEntry = matchEntry;
+			matchEntry.Entry.KeyPressEvent += HandleKeyPress;
+			matchEntry.Activated += HandleActivated;
+		}
+
+
+		void Detach ()
+		{
+			if (matchEntry != null) {
+				matchEntry.Entry.KeyPressEvent -= HandleKeyPress;
+				matchEntry.Activated -= HandleActivated;
+				matchEntry = null;
+			}
+		}
+
+		void HandleActivated (object sender, EventArgs e)
+		{
+			OpenFile ();
+		}
+
 	}
 }
+
