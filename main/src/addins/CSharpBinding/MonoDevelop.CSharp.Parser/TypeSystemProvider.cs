@@ -100,9 +100,32 @@ namespace MonoDevelop.CSharp.Parser
 		class FoldingVisitor : DepthFirstAstVisitor<object, object>
 		{
 			public readonly List<FoldingRegion> Foldings = new List<FoldingRegion> ();
-			
+
+			void AddUsings (AstNode parent)
+			{
+				var firstChild = parent.Children.FirstOrDefault (child => child is UsingDeclaration || child is UsingAliasDeclaration);
+				var node = firstChild;
+				while (node != null) {
+					var next = node.GetNextNode ();
+					if (next is UsingDeclaration || next is UsingAliasDeclaration) {
+						node = next;
+					} else {
+						break;
+					}
+				}
+				if (firstChild != node) {
+					Foldings.Add (new FoldingRegion (new DomRegion (firstChild.StartLocation, node.EndLocation), FoldType.Undefined));
+				}
+			}
+			public override object VisitCompilationUnit (CompilationUnit unit, object data)
+			{
+				AddUsings (unit);
+				return base.VisitCompilationUnit (unit, data);
+			}
+
 			public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
 			{
+				AddUsings (namespaceDeclaration);
 				if (!namespaceDeclaration.RBraceToken.IsNull)
 					Foldings.Add (new FoldingRegion (new DomRegion (namespaceDeclaration.LBraceToken.GetPrevNode ().EndLocation, namespaceDeclaration.RBraceToken.EndLocation), FoldType.Undefined));
 				return base.VisitNamespaceDeclaration (namespaceDeclaration, data);
