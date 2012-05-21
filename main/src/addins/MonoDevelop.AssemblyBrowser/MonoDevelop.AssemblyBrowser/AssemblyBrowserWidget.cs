@@ -88,8 +88,9 @@ namespace MonoDevelop.AssemblyBrowser
 					if (publicApiOnly == value)
 						return;
 					publicApiOnly = value;
-					GetRootNode ().Options ["PublicApiOnly"] = publicApiOnly;
-					RefreshTree ();
+					var root = GetRootNode ();
+					if (root != null)
+						RefreshNode (root);
 				}
 			}
 
@@ -120,9 +121,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new DomPropertyNodeBuilder (this),
 				new BaseTypeFolderNodeBuilder (this),
 				new BaseTypeNodeBuilder (this)
-				}, new TreePadOption [] {
-				new TreePadOption ("PublicApiOnly", GettextCatalog.GetString ("Show public members only"), true)
-			});
+				}, new TreePadOption [0]);
 			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
 			TreeView.ShadowType = ShadowType.None;
@@ -527,8 +526,7 @@ namespace MonoDevelop.AssemblyBrowser
 						return null;
 					}
 					try {
-						if (nav.DataItem is TypeDefinition && nav.Options ["PublicApiOnly"]) {
-							nav.Options ["PublicApiOnly"] = PublicApiOnly;
+						if (nav.DataItem is TypeDefinition && PublicApiOnly) {
 							nav.MoveToFirstChild ();
 							result = SearchMember (nav, helpUrl);
 							if (result != null)

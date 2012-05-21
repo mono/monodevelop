@@ -81,7 +81,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			
 			var namespaces = new Dictionary<string, Namespace> ();
-			bool publicOnly = builder.Options ["PublicApiOnly"];
+			bool publicOnly = Widget.PublicApiOnly;
 			
 			foreach (var type in ctx.TopLevelTypeDefinitions) {
 				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;

@@ -1634,6 +1634,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			ITreeBuilder builder = CreateBuilder (iter);
 			builder.UpdateAll ();
 		}
+
+		public void RefreshNode (ITreeNavigator nav)
+		{
+			RefreshNode (nav.CurrentPosition._iter);
+		}
 		
 		internal void ResetState (ITreeNavigator nav)
 		{
