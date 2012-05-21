@@ -1298,7 +1298,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			globalOptions = new TreeOptions ();
 			foreach (TreePadOption opt in options) {
 				bool val;
-				if (state.Options != null && !state.Options.TryGetValue (opt.Id, out val))
+				if (state.Options == null || !state.Options.TryGetValue (opt.Id, out val))
 					val = opt.DefaultValue;
 				globalOptions[opt.Id] = val;
 			}
