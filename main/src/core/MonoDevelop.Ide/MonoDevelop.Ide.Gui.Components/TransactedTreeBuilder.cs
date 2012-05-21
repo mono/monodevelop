@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui.Components
 	
 			public ITreeOptions Options {
 				get {
-					return (node != null) ? node.Options : navigator.Options;
+					return tree.globalOptions;
 				}
 			}
 	
@@ -548,7 +548,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 				TreeNode n = CreateNode (dataObject);
 				if (n != null) {
-					n.Options = node.Options;
 					if (node.Children == null)
 						node.Children = new List<TreeNode> ();
 					node.Children.Add (n);
@@ -582,7 +581,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				n.Filled = navigator.Filled;
 				n.Name = navigator.NodeName;
 				n.NodeIter = navigator.CurrentPosition._iter;
-				n.Options = navigator.Options;
 				n.Selected = navigator.Selected;
 				n.TypeNodeBuilder = navigator.TypeNodeBuilder;
 				tstore.RegisterNode (n);
@@ -674,7 +672,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			public bool Selected;
 			public bool Filled;
 			public bool Expanded;
-			public ITreeOptions Options;
 			public TypeNodeBuilder TypeNodeBuilder;
 			public TreeNode Parent;
 			public object DataItem;

@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Gui.Components
 {
 	public partial class ExtensibleTreeView
 	{
-		class TreeNodeNavigator: ITreeNavigator, ITreeOptions
+		class TreeNodeNavigator: ITreeNavigator
 		{
 			protected ExtensibleTreeView pad;
 			protected Gtk.TreeView tree;
@@ -122,17 +122,6 @@ namespace MonoDevelop.Ide.Gui.Components
 					NodePosition pos = new NodePosition ();
 					pos._iter = currentIter;
 					return pos;
-				}
-			}
-		
-			bool ITreeOptions.this [string name] {
-				get {
-					AssertIsValid ();
-					return pad.GetOptions (currentIter, false) [name]; 
-				}
-				set {
-					AssertIsValid ();
-					pad.GetOptions (currentIter, true) [name] = value;
 				}
 			}
 			
@@ -328,7 +317,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 	
 			public ITreeOptions Options {
-				get { return this; }
+				get { return pad.globalOptions; }
 			}
 			
 			public NodeState SaveState ()
