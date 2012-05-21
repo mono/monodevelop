@@ -92,6 +92,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			foreach (var ns in namespaces.Values) {
+				if (publicOnly && !ns.Types.Any (t => t.IsPublic))
+					continue;
 				builder.AddChild (ns);
 			}
 		}
