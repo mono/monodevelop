@@ -29,35 +29,67 @@ using Gdk;
 using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Ide;
+using System.Reflection;
 
 
 namespace MonoDevelop.Compontents.MainToolbar
 {
+	public class LazyImage
+	{
+		string resourceName;
+
+		ImageSurface img;
+		public ImageSurface Img {
+			get {
+				if (img == null)
+					img = CairoExtensions.LoadImage (Assembly.GetCallingAssembly (), resourceName);
+				return img;
+			}
+		}
+
+		public LazyImage (string resourceName)
+		{
+			this.resourceName = resourceName;
+		}
+
+		public static implicit operator ImageSurface(LazyImage lazy)
+		{
+			return lazy.Img;
+		}
+
+	}
+
 	public class RoundButton : Gtk.EventBox
 	{
-		const int height = 30;
-		Cairo.Color borderColor;
+		const int height = 32;
+/*		Cairo.Color borderColor;
 
 		Cairo.Color fill0Color;
 		Cairo.Color fill1Color;
 		Cairo.Color fill2Color;
-		Cairo.Color fill3Color;
+		Cairo.Color fill3Color;*/
 
-		Pixbuf pixbuf;
+		LazyImage btnNormal, btnPressed, btnInactive, btnHover;
+
+		LazyImage iconRunNormal, iconRunDisabled;
+		LazyImage iconStopNormal, iconStopDisabled;
 
 		public RoundButton ()
 		{
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
-			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask;
-			SetSizeRequest (30, 30);
+			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.LeaveNotifyMask | EventMask.EnterNotifyMask;
+			SetSizeRequest (height, height);
 
-			borderColor = CairoExtensions.ParseColor ("8c8c8c");
-			fill0Color = CairoExtensions.ParseColor ("ffffff");
-			fill1Color = CairoExtensions.ParseColor ("fbfbfb");
-			fill2Color = CairoExtensions.ParseColor ("d6d6d6");
-			fill3Color = CairoExtensions.ParseColor ("767676");
+			btnNormal = new LazyImage ("btExecuteBase-Normal.png");
+			btnInactive = new LazyImage ("btExecuteBase-Disabled.png");
+			btnPressed = new LazyImage ("btExecuteBase-Pressed.png");
+			btnHover = new LazyImage ("btExecuteBase-Hover.png");
 
-			pixbuf = ImageService.GetPixbuf ("md-toolbar-run-button");
+			iconRunNormal = new LazyImage ("icoExecute-Normal.png");
+			iconRunDisabled = new LazyImage ("icoExecute-Disabled.png");
+
+			iconStopNormal = new LazyImage ("icoStop-Normal.png");
+			iconStopDisabled = new LazyImage ("icoStop-Disabled.png");
 		}
 
 		void SetShape ()
@@ -119,10 +151,41 @@ namespace MonoDevelop.Compontents.MainToolbar
 			SetShape ();
 		}
 
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			requisition.Width = btnNormal.Img.Width;
+			requisition.Height = btnNormal.Img.Height + 2;
+			base.OnSizeRequested (ref requisition);
+		}
+
+
+		ImageSurface GetBackground()
+		{
+			switch (State) {
+				case StateType.Selected:
+					return btnPressed;
+				case StateType.Prelight:
+					return btnHover;
+				case StateType.Insensitive:
+					return btnInactive;
+				default:
+					return btnNormal;
+				}
+		}
+
+		ImageSurface GetIcon()
+		{
+			return iconRunNormal;
+		}
+
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Arc (height / 2 + 0.5, height / 2 + 0.5, height / 2 - 1, 0, 2 * System.Math.PI);
+				GetBackground ().Show (context, 0, 0);
+				var icon = GetIcon();
+				icon.Show (context, (icon.Width - Allocation.Width) / 2, (icon.Height - Allocation.Height) / 2);
+
+/*				context.Arc (height / 2 + 0.5, height / 2 + 0.5, height / 2 - 1, 0, 2 * System.Math.PI);
 				var lg = new LinearGradient (0, 0, 0, Allocation.Height);
 				if (State == StateType.Selected) {
 					lg.AddColorStop (0, fill2Color);
@@ -147,7 +210,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 				                        (Allocation.Width - pixbuf.Width) / 2, 
 				                        (Allocation.Height - pixbuf.Height) / 2, 
 				                        pixbuf.Width, pixbuf.Height,
-				                        RgbDither.None, 0, 0);
+				                        RgbDither.None, 0, 0);*/
 			}
 			return base.OnExposeEvent (evnt);
 		}

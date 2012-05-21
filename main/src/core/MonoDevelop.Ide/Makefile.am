@@ -208,6 +208,10 @@ FILES =  \
 	MonoDevelop.Components.Extensions/ISelectFileDialog.cs \
 	MonoDevelop.Components.Extensions/PlatformDialog.cs \
 	MonoDevelop.Components.Extensions/TextQuestionDialog.cs \
+	MonoDevelop.Components.MainToolbar/ButtonBar.cs \
+	MonoDevelop.Components.MainToolbar/MainToolbar.cs \
+	MonoDevelop.Components.MainToolbar/RoundButton.cs \
+	MonoDevelop.Components.MainToolbar/StatusArea.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs \
@@ -283,10 +287,6 @@ FILES =  \
 	MonoDevelop.Components/TreeViewCellContainer.cs \
 	MonoDevelop.Components/TreeViewState.cs \
 	MonoDevelop.Components/WindowTransparencyDecorator.cs \
-	MonoDevelop.Compontents.MainToolbar/ButtonBar.cs \
-	MonoDevelop.Compontents.MainToolbar/MainToolbar.cs \
-	MonoDevelop.Compontents.MainToolbar/RoundButton.cs \
-	MonoDevelop.Compontents.MainToolbar/StatusArea.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContext.cs \
 	MonoDevelop.Ide.CodeCompletion/CodeCompletionContextEventArgs.cs \
 	MonoDevelop.Ide.CodeCompletion/CompletionData.cs \
@@ -956,6 +956,28 @@ RES =  \
 	MonoDevelop.Components.Docking/stock-dock.png \
 	MonoDevelop.Components.Docking/stock-menu-left-12.png \
 	MonoDevelop.Components.Docking/stock-menu-right-12.png \
+	MonoDevelop.Components.MainToolbar/Theme/btDebugBase-LeftCap-Normal.png \
+	MonoDevelop.Components.MainToolbar/Theme/btDebugBase-LeftCap-Pressed.png \
+	MonoDevelop.Components.MainToolbar/Theme/btDebugBase-MidCap-Normal.png \
+	MonoDevelop.Components.MainToolbar/Theme/btDebugBase-MidCap-Pressed.png \
+	MonoDevelop.Components.MainToolbar/Theme/btDebugBase-RightCap-Normal.png \
+	MonoDevelop.Components.MainToolbar/Theme/btDebugBase-RightCap-Pressed.png \
+	MonoDevelop.Components.MainToolbar/Theme/btExecuteBase-Disabled.png \
+	MonoDevelop.Components.MainToolbar/Theme/btExecuteBase-Hover.png \
+	MonoDevelop.Components.MainToolbar/Theme/btExecuteBase-Normal.png \
+	MonoDevelop.Components.MainToolbar/Theme/btExecuteBase-Pressed.png \
+	MonoDevelop.Components.MainToolbar/Theme/icoDebug-Pause.png \
+	MonoDevelop.Components.MainToolbar/Theme/icoDebug-StepIn.png \
+	MonoDevelop.Components.MainToolbar/Theme/icoDebug-StepOut.png \
+	MonoDevelop.Components.MainToolbar/Theme/icoDebug-StepOver.png \
+	MonoDevelop.Components.MainToolbar/Theme/icoExecute-Disabled.png \
+	MonoDevelop.Components.MainToolbar/Theme/icoExecute-Normal.png \
+	MonoDevelop.Components.MainToolbar/Theme/icoStop-Disabled.png \
+	MonoDevelop.Components.MainToolbar/Theme/icoStop-Normal.png \
+	MonoDevelop.Components.MainToolbar/Theme/notificationBuildingIcon.png \
+	MonoDevelop.Components.MainToolbar/Theme/notificationDisclosure-Active.png \
+	MonoDevelop.Components.MainToolbar/Theme/notificationDisclosure-Normal.png \
+	MonoDevelop.Components.MainToolbar/Theme/notificationErrorIcon.png \
 	MonoDevelop.Ide.CodeFormatting/InvariantTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/MonoTextStylePolicy.xml \
 	MonoDevelop.Ide.CodeFormatting/VisualStudioTextStylePolicy.xml \

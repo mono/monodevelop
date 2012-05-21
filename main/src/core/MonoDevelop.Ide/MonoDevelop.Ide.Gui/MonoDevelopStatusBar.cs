@@ -40,24 +40,25 @@ namespace MonoDevelop.Ide
 {
 	class MonoDevelopStatusBar : Gtk.Statusbar, StatusBar, IShadedWidget
 	{
-		ProgressBar progressBar = new ProgressBar ();
 		Frame textStatusBarPanel = new Frame ();
 		
-		Label statusLabel;
 		Label modeLabel;
 		Label cursorLabel;
 		MiniButton feedbackButton;
 		
 		HBox statusBox;
-		HBox messageBox;
 		Image currentStatusImage;
 		
-		HBox statusIconBox;
+		readonly ProgressBar progressBar = new ProgressBar ();
+		readonly Label statusLabel = new Label ();
+		public readonly static HBox messageBox = new HBox ();
+		public readonly static HBox statusIconBox = new HBox ();
+
 		
 		List<StatusBarContextImpl> contexts = new List<StatusBarContextImpl> ();
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
-		Pad sourcePad;
+		static Pad sourcePad;
 		uint autoPulseTimeoutId;
 		
 		public StatusBar MainContext {
@@ -136,7 +137,6 @@ namespace MonoDevelop.Ide
 			
 			// Status panels
 			
-			progressBar = new ProgressBar ();
 			progressBar.PulseStep = 0.1;
 			progressBar.SizeRequest ();
 			progressBar.HeightRequest = 1;
@@ -144,25 +144,24 @@ namespace MonoDevelop.Ide
 			statusBox = new HBox (false, 0);
 			statusBox.BorderWidth = 0;
 			
-			statusLabel = new Label ();
 			statusLabel.SetAlignment (0, 0.5f);
 			statusLabel.Wrap = false;
 			int w, h;
 			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
 			statusLabel.HeightRequest = h;
 			statusLabel.SetPadding (0, 0);
+			statusLabel.ShowAll ();
 			
-			EventBox eventMessageBox = new EventBox ();
-			messageBox = new HBox ();
+//			EventBox eventMessageBox = new EventBox ();
 			messageBox.PackStart (progressBar, false, false, 0);
 			messageBox.PackStart (statusLabel, true, true, 0);
-			eventMessageBox.Add (messageBox);
-			statusBox.PackStart (eventMessageBox, true, true, 0);
-			eventMessageBox.ButtonPressEvent += HandleEventMessageBoxButtonPressEvent;
+//			eventMessageBox.Add (messageBox);
+//			statusBox.PackStart (eventMessageBox, true, true, 0);
+//			eventMessageBox.ButtonPressEvent += HandleEventMessageBoxButtonPressEvent;
 			
 			textStatusBarPanel.BorderWidth = 0;
 			textStatusBarPanel.ShadowType = ShadowType.None;
-			textStatusBarPanel.Add (statusBox);
+//			textStatusBarPanel.Add (statusBox);
 			
 			var eventCaretBox = new EventBox ();
 			var caretStatusBox = new HBox ();
@@ -178,10 +177,10 @@ namespace MonoDevelop.Ide
 			eventCaretBox.Add (caretStatusBox);
 			statusBox.PackEnd (eventCaretBox, false, false, 0);
 			
-			statusIconBox = new HBox ();
+
 			statusIconBox.BorderWidth = 0;
 			statusIconBox.Spacing = 3;
-			statusBox.PackEnd (statusIconBox, false, false, 4);
+//			statusBox.PackEnd (statusIconBox, false, false, 4);
 			
 			this.PackStart (textStatusBarPanel, true, true, 0);
 			
@@ -194,7 +193,7 @@ namespace MonoDevelop.Ide
 	//		boxChild.Padding = 0;
 	//		boxChild.Expand = boxChild.Fill = false;
 			
-			this.progressBar.Fraction = 0.0;
+			progressBar.Fraction = 0.0;
 			this.ShowAll ();
 			statusIconBox.HideAll ();
 			
@@ -254,7 +253,7 @@ namespace MonoDevelop.Ide
 			ignoreFeedbackButtonClick = false;
 		}
 
-		void HandleEventMessageBoxButtonPressEvent (object o, ButtonPressEventArgs args)
+		internal static void HandleEventMessageBoxButtonPressEvent (object o, ButtonPressEventArgs args)
 		{
 			if (sourcePad != null)
 				sourcePad.BringToFront (true);
@@ -403,34 +402,34 @@ namespace MonoDevelop.Ide
 		public void BeginProgress (string name)
 		{
 			ShowMessage (name);
-			this.progressBar.Visible = true;
+			progressBar.Visible = true;
 		}
 		
 		public void BeginProgress (Image image, string name)
 		{
 			ShowMessage (image, name);
-			this.progressBar.Visible = true;
+			progressBar.Visible = true;
 		}
 
 		public void SetProgressFraction (double work)
 		{
 			DispatchService.AssertGuiThread ();
-			this.progressBar.Fraction = work;
+			progressBar.Fraction = work;
 		}
 		
 		public void EndProgress ()
 		{
 			ShowMessage ("");
-			this.progressBar.Fraction = 0.0;
-			this.progressBar.Visible = false;
+			progressBar.Fraction = 0.0;
+			progressBar.Visible = false;
 			AutoPulse = false;
 		}
 
 		public void Pulse ()
 		{
 			DispatchService.AssertGuiThread ();
-			this.progressBar.Visible = true;
-			this.progressBar.Pulse ();
+			progressBar.Visible = true;
+			progressBar.Pulse ();
 		}
 
 		public bool AutoPulse {
@@ -438,10 +437,10 @@ namespace MonoDevelop.Ide
 			set {
 				DispatchService.AssertGuiThread ();
 				if (value) {
-					this.progressBar.Visible = true;
+					progressBar.Visible = true;
 					if (autoPulseTimeoutId == 0) {
 						autoPulseTimeoutId = GLib.Timeout.Add (100, delegate {
-							this.progressBar.Pulse ();
+							progressBar.Pulse ();
 							return true;
 						});
 					}

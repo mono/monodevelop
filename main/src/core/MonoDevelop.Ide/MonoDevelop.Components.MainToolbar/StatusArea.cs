@@ -27,6 +27,7 @@ using System;
 using Gtk;
 using MonoDevelop.Components;
 using Cairo;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Compontents.MainToolbar
 {
@@ -49,9 +50,15 @@ namespace MonoDevelop.Compontents.MainToolbar
 			fill2Color = CairoExtensions.ParseColor ("d0d9db");
 
 			innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
-
-			contentBox.PackStart (new Gtk.Label ("Status"), true, true, 0);
+			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 0);
+			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 4);
 			Add (contentBox);
+
+			this.ButtonPressEvent += delegate {
+				MonoDevelopStatusBar.HandleEventMessageBoxButtonPressEvent (null, null);
+			};
+			SetSizeRequest (32, 22);
+			ShowAll ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)

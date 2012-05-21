@@ -407,5 +407,24 @@ namespace MonoDevelop.Components
 			double b = ((double) int.Parse (s.Substring (4,2), System.Globalization.NumberStyles.HexNumber)) / 255;
 			return new Cairo.Color (r, g, b, alpha);
 		}
-    }
+
+		public static ImageSurface LoadImage (Assembly assembly, string resource)
+		{
+			byte[] buffer;
+			using (var stream = assembly.GetManifestResourceStream (resource)) {
+				buffer = new byte [stream.Length];
+				stream.Read (buffer, 0, (int)stream.Length);
+			}
+/* This should work, but doesn't:
+			using (var px = new Gdk.Pixbuf (buffer)) 
+				return new ImageSurface (px.Pixels, Format.Argb32, px.Width, px.Height, px.Rowstride);*/
+
+			// Workaround: loading from file name.
+			var tmp = System.IO.Path.GetTempFileName ();
+			System.IO.File.WriteAllBytes (tmp, buffer);
+			var img = new ImageSurface (tmp);
+			System.IO.File.Delete (tmp);
+			return img;
+		}
+	}
 }

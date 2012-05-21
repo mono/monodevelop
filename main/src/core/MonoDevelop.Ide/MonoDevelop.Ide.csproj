@@ -44,18 +44,23 @@
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib" />
@@ -64,12 +69,15 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Mono.Addins.Gui, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins-gui</Package>
     </Reference>
     <Reference Include="Mono.Addins, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="Mono.Addins.Setup, Version=0.5.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>
+      <Package>mono-addins-setup</Package>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\build\bin\Mono.Cecil.dll</HintPath>
@@ -825,6 +833,72 @@
     <EmbeddedResource Include="icons\toolbar-pauseButton.png">
       <LogicalName>toolbar-pauseButton.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btDebugBase-LeftCap-Normal.png">
+      <LogicalName>btDebugBase-LeftCap-Normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btDebugBase-LeftCap-Pressed.png">
+      <LogicalName>btDebugBase-LeftCap-Pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btDebugBase-MidCap-Normal.png">
+      <LogicalName>btDebugBase-MidCap-Normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btDebugBase-MidCap-Pressed.png">
+      <LogicalName>btDebugBase-MidCap-Pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btDebugBase-RightCap-Normal.png">
+      <LogicalName>btDebugBase-RightCap-Normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btDebugBase-RightCap-Pressed.png">
+      <LogicalName>btDebugBase-RightCap-Pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Disabled.png">
+      <LogicalName>btExecuteBase-Disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Hover.png">
+      <LogicalName>btExecuteBase-Hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Normal.png">
+      <LogicalName>btExecuteBase-Normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Pressed.png">
+      <LogicalName>btExecuteBase-Pressed.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoDebug-Pause.png">
+      <LogicalName>icoDebug-Pause.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoDebug-StepIn.png">
+      <LogicalName>icoDebug-StepIn.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoDebug-StepOut.png">
+      <LogicalName>icoDebug-StepOut.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoDebug-StepOver.png">
+      <LogicalName>icoDebug-StepOver.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoExecute-Disabled.png">
+      <LogicalName>icoExecute-Disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoExecute-Normal.png">
+      <LogicalName>icoExecute-Normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoStop-Disabled.png">
+      <LogicalName>icoStop-Disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoStop-Normal.png">
+      <LogicalName>icoStop-Normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationBuildingIcon.png">
+      <LogicalName>notificationBuildingIcon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationDisclosure-Active.png">
+      <LogicalName>notificationDisclosure-Active.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationDisclosure-Normal.png">
+      <LogicalName>notificationDisclosure-Normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationErrorIcon.png">
+      <LogicalName>notificationErrorIcon.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1536,11 +1610,11 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DockNotebook.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
-    <Compile Include="MonoDevelop.Compontents.MainToolbar\MainToolbar.cs" />
-    <Compile Include="MonoDevelop.Compontents.MainToolbar\StatusArea.cs" />
-    <Compile Include="MonoDevelop.Compontents.MainToolbar\RoundButton.cs" />
-    <Compile Include="MonoDevelop.Compontents.MainToolbar\ButtonBar.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\StatusArea.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\RoundButton.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\ButtonBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -1608,6 +1682,7 @@
     <Folder Include="icons\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\" />
     <Folder Include="branding\" />
-    <Folder Include="MonoDevelop.Compontents.MainToolbar\" />
+    <Folder Include="MonoDevelop.Components.MainToolbar\" />
+    <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
   </ItemGroup>
 </Project>

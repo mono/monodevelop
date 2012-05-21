@@ -103,7 +103,9 @@ namespace MonoDevelop.Compontents.MainToolbar
 			configurationCombo.PackStart (ctx, true);
 			configurationCombo.AddAttribute (ctx, "text", 0);
 
-			AddWidget (configurationCombo);
+			var configurationComboVBox = new VBox ();
+			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
+			AddWidget (configurationComboVBox);
 
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.SetSizeRequest (150, -1);
@@ -111,25 +113,39 @@ namespace MonoDevelop.Compontents.MainToolbar
 			runtimeCombo.PackStart (ctx, true);
 			runtimeCombo.AddAttribute (ctx, "text", 0);
 
-			AddWidget (runtimeCombo);
+			var runtimeComboVBox = new VBox ();
+			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
+			AddWidget (runtimeComboVBox);
+
 
 			ButtonBar buttonBar = new ButtonBar ();
-			buttonBar.Add (ImageService.GetPixbuf ("md-toolbar-pause-button"));
-			buttonBar.Add (ImageService.GetPixbuf ("md-toolbar-skip-button"));
-			buttonBar.Add (ImageService.GetPixbuf ("md-toolbar-stepIn-button"));
-			buttonBar.Add (ImageService.GetPixbuf ("md-toolbar-stepOut-button"));
-			AddWidget (buttonBar);
+
+			buttonBar.Add (new LazyImage ("icoDebug-Pause.png"));
+			buttonBar.Add (new LazyImage ("icoDebug-StepOver.png"));
+			buttonBar.Add (new LazyImage ("icoDebug-StepIn.png"));
+			buttonBar.Add (new LazyImage ("icoDebug-StepOut.png"));
+
+			var buttonBarVBox = new VBox ();
+			buttonBarVBox.PackStart (buttonBar, true, false, 0);
+			AddWidget (buttonBarVBox);
 
 			statusArea = new StatusArea ();
-			contentBox.PackStart (statusArea, true, true, 0);
+
+			var statusAreaVBox = new VBox ();
+			statusAreaVBox.PackStart (statusArea, true, false, 0);
+
+			contentBox.PackStart (statusAreaVBox, true, true, 0);
 
 			this.matchEntry = new SearchEntry ();
 			this.matchEntry.EmptyMessage = GettextCatalog.GetString ("Press Control + , for search.");
 			this.matchEntry.Ready = true;
 			this.matchEntry.Visible = true;
 			this.matchEntry.IsCheckMenu = true;
+			this.matchEntry.SetSizeRequest (240, 26);
+			var searchEntryComboVBox = new VBox ();
+			searchEntryComboVBox.PackStart (this.matchEntry, true, false, 0);
+			AddWidget (searchEntryComboVBox);
 
-			contentBox.PackEnd (this.matchEntry, true, true, 0);
 			Add (contentBox);
 			UpdateCombos ();
 		}
