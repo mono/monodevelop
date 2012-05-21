@@ -173,6 +173,21 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			resolved = null;
 			return false;
 		}
+
+		static IEnumerable<ITypeDefinition> GetAllBaseClassDefinitions (IType type)
+		{
+			while (type != null) {
+				foreach (var t in type.DirectBaseTypes) {
+					if (t.Kind != TypeKind.Class)
+						continue;
+					var def = t.GetDefinition ();
+					if (def != null)
+						yield return def;
+					type = t;
+					break;
+				}
+			}
+		}
 		
 		/// <summary>
 		/// Resolves the Objective-C types by mapping the known .NET type information.
@@ -198,10 +213,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 					//hierarchy until we find a valid base class
 					var reference = ReflectionHelper.ParseReflectionName (type.BaseCliType);
 					var baseCliType = reference.Resolve (dom.Compilation);
-					foreach (var bt in baseCliType.GetAllBaseTypeDefinitions ()) {
-						if (bt.Kind != TypeKind.Class) 
-							continue;
-						
+					foreach (var bt in GetAllBaseClassDefinitions (baseCliType)) {
 						if (TryResolveCliToObjc (bt.ReflectionName, out resolved)) {
 							if (resolved.IsModel)
 								type.BaseIsModel = true;
