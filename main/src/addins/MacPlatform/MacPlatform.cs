@@ -541,6 +541,22 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 		}
 
 
+		static NSImage LoadImage (string resource)
+		{
+			byte[] buffer;
+			using (var stream = typeof (MacPlatformService).Assembly.GetManifestResourceStream (resource)) {
+				buffer = new byte [stream.Length];
+				stream.Read (buffer, 0, (int)stream.Length);
+			}
+
+			// Workaround: loading from file name.
+			var tmp = System.IO.Path.GetTempFileName ();
+			System.IO.File.WriteAllBytes (tmp, buffer);
+			var img = new NSImage (tmp);
+			System.IO.File.Delete (tmp);
+			return img;
+		}
+
 		public override MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
 			NSApplication.Init ();
@@ -548,15 +564,14 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			NSColor bottomColor = NSColor.FromDeviceWhite (0.408f, 1.0f);
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = false;
-			var fileName = Path.Combine (Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location), "maintoolbarbg.png");
-			
-			
-			NSImage img = new NSImage (fileName);
+
+			var resource = "maintoolbarbg.png";
+			NSImage img = LoadImage (resource);
 			var c = NSColor.FromPatternImage (img);
 			w.BackgroundColor = c;
 			w.StyleMask |= NSWindowStyle.TexturedBackground;
 			var result = new MainToolbar () {
-				Background = new Cairo.ImageSurface (fileName),
+				Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
 				TitleBarHeight = GetTitleBarHeight (),
 				BottomColor = ConvertColor (bottomColor)
 			};

@@ -92,14 +92,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="maintoolbarbg.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <EmbeddedResource Include="MacPlatform.addin.xml">
       <LogicalName>MacPlatform.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="maintoolbarbg.png">
+      <LogicalName>maintoolbarbg.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ProjectExtensions>

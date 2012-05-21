@@ -51,7 +51,9 @@ FILES =  \
 	MacMainMenu.cs \
 	MacPlatform.cs
 
-RES = MacPlatform.addin.xml
+RES =  \
+	MacPlatform.addin.xml \
+	maintoolbarbg.png
 
 if ENABLE_MACPLATFORM
 all: $(MONOMAC) $(MONOMAC).mdb $(ASSEMBLY) $(ASSEMBLY).mdb
