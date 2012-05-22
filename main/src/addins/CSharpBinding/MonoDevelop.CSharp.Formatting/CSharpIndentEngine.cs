@@ -159,7 +159,7 @@ namespace MonoDevelop.CSharp.Formatting
 			builder = new StringBuilder ();
 			for (int i = 0; i < indent.Length; i++) {
 				if (indent[i] == '\t')
-					builder.Append (' ', textPolicy.TabWidth);
+					builder.Append (' ', textPolicy.IndentWidth);
 				else
 					builder.Append (indent[i]);
 			}
