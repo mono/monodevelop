@@ -38,6 +38,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		bool IsPartialMethodDeclaration { get; }
 		bool IsPartialMethodImplementation { get; }
+		
+		/// <summary>
+		/// Resolves the member.
+		/// </summary>
+		/// <param name="context">
+		/// Context for looking up the member. The context must specify the current assembly.
+		/// A <see cref="Implementation.SimpleTypeResolveContext"/> that specifies the current assembly is sufficient.
+		/// </param>
+		/// <returns>
+		/// Returns the resolved member, or <c>null</c> if the member could not be found.
+		/// </returns>
+		new IMethod Resolve(ITypeResolveContext context);
 	}
 	
 	/// <summary>

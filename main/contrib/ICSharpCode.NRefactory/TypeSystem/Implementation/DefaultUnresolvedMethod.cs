@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -147,6 +148,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return new DefaultResolvedMethod(this, context);
 		}
 		
+		public override IMember Resolve(ITypeResolveContext context)
+		{
+			ITypeReference interfaceTypeReference = null;
+			if (this.IsExplicitInterfaceImplementation && this.ExplicitInterfaceImplementations.Count == 1)
+				interfaceTypeReference = this.ExplicitInterfaceImplementations[0].DeclaringTypeReference;
+			return Resolve(ExtendContextForType(context, this.DeclaringTypeDefinition),
+			               this.EntityType, this.Name, interfaceTypeReference,
+			               this.TypeParameters.Select(tp => tp.Name).ToList(),
+			               this.Parameters.Select(p => p.Type).ToList());
+		}
+		
+		IMethod IUnresolvedMethod.Resolve(ITypeResolveContext context)
+		{
+			return (IMethod)Resolve(context);
+		}
+		
 		public static DefaultUnresolvedMethod CreateDefaultConstructor(IUnresolvedTypeDefinition typeDefinition)
 		{
 			if (typeDefinition == null)
@@ -160,6 +177,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				Region = region,
 				ReturnType = KnownTypeReference.Void
 			};
+		}
+		
+		static readonly IUnresolvedMethod dummyConstructor = CreateDummyConstructor();
+		
+		/// <summary>
+		/// Returns a dummy constructor instance:
+		/// </summary>
+		/// <returns>
+		/// A public instance constructor with IsSynthetic=true and no declaring type.
+		/// </returns>
+		public static IUnresolvedMethod DummyConstructor {
+			get { return dummyConstructor; }
+		}
+		
+		static IUnresolvedMethod CreateDummyConstructor()
+		{
+			var m = new DefaultUnresolvedMethod {
+				EntityType = EntityType.Constructor,
+				Name = ".ctor",
+				Accessibility = Accessibility.Public,
+				IsSynthetic = true,
+				ReturnType = KnownTypeReference.Void
+			};
+			m.Freeze();
+			return m;
 		}
 	}
 }

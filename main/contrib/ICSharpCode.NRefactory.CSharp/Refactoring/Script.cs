@@ -324,7 +324,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <summary>
 		/// Renames the specified entity.
 		/// </summary>
-		/// <param name='entity'>
+		/// <param name='type'>
 		/// The Entity to rename
 		/// </param>
 		/// <param name='name'>

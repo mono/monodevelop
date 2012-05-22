@@ -738,12 +738,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (FixedField f)
 			{
 				var location = LocationsBag.GetMemberLocation (f);
+				int locationIdx = 0;
 				
 				var newField = new FixedFieldDeclaration ();
 				AddAttributeSection (newField, f);
 				AddModifiers (newField, location);
 				if (location != null && location.Count > 0)
-					newField.AddChild (new CSharpTokenNode (Convert (location [0])), FixedFieldDeclaration.FixedKeywordRole);
+					newField.AddChild (new CSharpTokenNode (Convert (location [locationIdx++])), FixedFieldDeclaration.FixedKeywordRole);
 
 				if (f.TypeExpression != null)
 					newField.AddChild (ConvertToType (f.TypeExpression), Roles.Type);
@@ -780,8 +781,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						newField.AddChild (variable, FixedFieldDeclaration.VariableRole);
 					}
 				}
-				if (location != null && location.Count > 1)
-					newField.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Semicolon);
+				if (location != null && location.Count > locationIdx)
+					newField.AddChild (new CSharpTokenNode (Convert (location [locationIdx])), Roles.Semicolon);
 				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 				
 			}
@@ -797,10 +798,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				VariableInitializer variable = new VariableInitializer ();
 				variable.AddChild (Identifier.Create (f.MemberName.Name, Convert (f.MemberName.Location)), Roles.Identifier);
-				
+				int locationIdx = 0;
 				if (f.Initializer != null) {
 					if (location != null)
-						variable.AddChild (new CSharpTokenNode (Convert (location [0])), Roles.Assign);
+						variable.AddChild (new CSharpTokenNode (Convert (location [locationIdx++])), Roles.Assign);
 					variable.AddChild ((Expression)f.Initializer.Accept (this), Roles.Expression);
 				}
 				newField.AddChild (variable, Roles.Variable);
@@ -820,8 +821,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						newField.AddChild (variable, Roles.Variable);
 					}
 				}
-				if (location != null && location.Count > 1)
-					newField.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Semicolon);
+				if (location != null &&location.Count > locationIdx)
+					newField.AddChild (new CSharpTokenNode (Convert (location [locationIdx++])), Roles.Semicolon);
 
 				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 			}

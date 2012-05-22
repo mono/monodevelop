@@ -1139,6 +1139,18 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				outputList.Add(p);
 			}
 		}
+		
+		internal static IList<ITypeReference> GetParameterTypes(IEnumerable<ParameterDeclaration> parameters)
+		{
+			List<ITypeReference> result = new List<ITypeReference>();
+			foreach (ParameterDeclaration pd in parameters) {
+				ITypeReference type = pd.Type.ToTypeReference();
+				if (pd.ParameterModifier == ParameterModifier.Ref || pd.ParameterModifier == ParameterModifier.Out)
+					type = new ByReferenceTypeReference(type);
+				result.Add(type);
+			}
+			return result;
+		}
 		#endregion
 		
 		#region XML Documentation

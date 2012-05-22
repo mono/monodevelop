@@ -107,8 +107,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Creates a type reference that can be used to look up a type equivalent to this type in another compilation.
 		/// </summary>
 		/// <remarks>
-		/// If this type is open, the resulting type reference will need to be looked up in an appropriate generic context.
-		/// If this type is closed, the resulting type reference can be looked up in the main resolve context of another compilation.
+		/// If this type contains open generics, the resulting type reference will need to be looked up in an appropriate generic context.
+		/// Otherwise, the main resolve context of a compilation is sufficient.
 		/// </remarks>
 		ITypeReference ToTypeReference();
 		

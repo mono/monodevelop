@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <summary>
 		/// Gets/Sets the text of the whole document..
 		/// </summary>
-		new string Text { get; set; } // hides TextBuffer.Text to add the setter
+		new string Text { get; set; } // hides ITextSource.Text to add the setter
 		
 		/// <summary>
 		/// This event is called directly before a change is applied to the document.

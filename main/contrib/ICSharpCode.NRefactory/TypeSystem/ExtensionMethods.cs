@@ -410,16 +410,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region ITypeReference.Resolve(ICompilation)
 
 		/// <summary>
-		/// Resolves a type reference.
+		/// Resolves a type reference in the compilation's main type resolve context.
+		/// Some type references require a more specific type resolve context and will not resolve using this method.
 		/// </summary>
 		/// <returns>
 		/// Returns the resolved type.
 		/// In case of an error, returns <see cref="SpecialType.UnknownType"/>.
 		/// Never returns null.
 		/// </returns>
-		/// <param name='compilation'>
-		/// The compilation in which the type should be resolved.
-		/// </param>
 		public static IType Resolve (this ITypeReference reference, ICompilation compilation)
 		{
 			if (reference == null)

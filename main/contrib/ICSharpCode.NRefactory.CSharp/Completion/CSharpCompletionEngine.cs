@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -288,7 +288,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace)
 		{
-			ExpressionResult expr;
 			Tuple<ResolveResult, CSharpResolver> resolveResult;
 			switch (completionChar) {
 			// Magic key completion
@@ -641,7 +640,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							// May happen in variable names
 							return controlSpace ? DefaultControlSpaceItems(identifierStart) : null;
 						}
-	
 						if (identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
 							return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 						}
@@ -1282,6 +1280,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			
+			if (node is Expression) {
+				var astResolver = new CSharpAstResolver(state, unit, CSharpParsedFile);
+				foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)node)) {
+					if (type.Kind == TypeKind.Enum) {
+						AddEnumMembers(wrapper, type, state);
+					}
+				}
+			}
 		}
 		
 		static bool IsInSwitchContext(AstNode node)

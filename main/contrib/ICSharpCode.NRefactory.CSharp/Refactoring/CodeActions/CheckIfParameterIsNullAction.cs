@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[ContextAction("Check if parameter is null", Description = "Checks function parameter is not null.")]
 	public class CheckIfParameterIsNullAction : SpecializedCodeAction<ParameterDeclaration>
 	{
-		protected override CodeAction GetAction (RefactoringContext context, ParameterDeclaration parameter)
+		protected override CodeAction GetAction(RefactoringContext context, ParameterDeclaration parameter)
 		{
 			BlockStatement bodyStatement;
 			if (parameter.Parent is LambdaExpression) {
@@ -45,14 +45,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			if (bodyStatement == null || bodyStatement.IsNull)
 				return null;
-			var type = context.ResolveType (parameter.Type);
-			if (type.IsReferenceType == false || HasNullCheck (parameter)) 
+			var type = context.ResolveType(parameter.Type);
+			if (type.IsReferenceType == false || HasNullCheck(parameter)) 
 				return null;
-			return new CodeAction (context.TranslateString("Add null check for parameter"), script => {
-				var statement = new IfElseStatement () {
+			
+			return new CodeAction(context.TranslateString("Add null check for parameter"), script => {
+				var statement = new IfElseStatement() {
 					Condition = new BinaryOperatorExpression (new IdentifierExpression (parameter.Name), BinaryOperatorType.Equality, new NullReferenceExpression ()),
 					TrueStatement = new ThrowStatement (new ObjectCreateExpression (context.CreateShortType("System", "ArgumentNullException"), new PrimitiveExpression (parameter.Name)))
 				};
+				System.Console.WriteLine(bodyStatement.StartLocation +"/" + bodyStatement.EndLocation);
 				script.AddTo(bodyStatement, statement);
 			});
 		}

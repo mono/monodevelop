@@ -98,5 +98,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return new DefaultResolvedEvent(this, context);
 		}
+		
+		IEvent IUnresolvedEvent.Resolve(ITypeResolveContext context)
+		{
+			return (IEvent)Resolve(context);
+		}
 	}
 }
