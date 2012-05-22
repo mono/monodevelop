@@ -1223,7 +1223,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return t.GetAllBaseTypeDefinitions().Any(bt => bt.Equals(attribute)) ? t : null;
 				};
 			}
-
 			AddTypesAndNamespaces(wrapper, state, node, typePred);
 			
 			wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));
@@ -1287,6 +1286,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						AddEnumMembers(wrapper, type, state);
 					}
 				}
+			}
+
+			// Add 'this' keyword for first parameter (extension method case)
+			if (node != null && node.Parent is ParameterDeclaration && 
+			    node.Parent.PrevSibling != null && node.Parent.PrevSibling.Role == Roles.LPar) {
+				wrapper.AddCustom ("this");
 			}
 		}
 		
