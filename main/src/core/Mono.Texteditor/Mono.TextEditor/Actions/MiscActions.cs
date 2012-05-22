@@ -87,18 +87,22 @@ namespace Mono.TextEditor
 				var lead = data.MainSelection.Lead;
 				bool first = true;
 				bool removedFromLast = false;
+				int removeLast = 0;
 				bool removedFromFirst = false;
+				int removeFirst = 0;
 				foreach (var line in data.SelectedLines) {
 					int remove = RemoveTabInLine (data, line);
 					removedFromLast |= remove > 0;
+					removeLast = remove;
 					if (first) {
 						removedFromFirst = remove > 0;
+						removeFirst = remove;
 						first = false;
 					}
 				}
 
-				var ac = System.Math.Max (DocumentLocation.MinColumn, anchor.Column - data.Options.IndentationString.Length);
-				var lc = System.Math.Max (DocumentLocation.MinColumn, lead.Column - data.Options.IndentationString.Length);
+				var ac = System.Math.Max (DocumentLocation.MinColumn, anchor.Column - (anchor < lead ? removeFirst : removeLast));
+				var lc = System.Math.Max (DocumentLocation.MinColumn, lead.Column - (anchor < lead ? removeLast : removeFirst));
 				
 				if (anchor < lead) {
 					if (!removedFromFirst)
