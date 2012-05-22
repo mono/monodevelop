@@ -1312,6 +1312,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddTypesAndNamespaces(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Func<IType, IType> typePred = null, Predicate<IMember> memberPred = null, Action<ICompletionData, IType> callback = null)
 		{
+			var lookup = new MemberLookup(
+				ctx.CurrentTypeDefinition,
+				Compilation.MainAssembly
+			);
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
@@ -1338,10 +1342,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (this.currentMember != null && !(node is AstType)) {
 					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition(currentType);
 					if (def != null) {
-						var lookup = new MemberLookup(
-							ctx.CurrentTypeDefinition,
-							Compilation.MainAssembly
-						);
 						bool isProtectedAllowed = true;
 						foreach (var member in def.GetMembers ()) {
 							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize") {
@@ -1384,6 +1384,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				foreach (var u in n.Usings) {
 					foreach (var type in u.Types) {
+						if (!lookup.IsAccessible(type, false))
+							continue;
+
 						IType addType = typePred != null ? typePred(type) : type;
 						if (addType != null) {
 							string name = type.Name;
@@ -1399,6 +1402,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var type in n.Namespace.Types) {
+					if (!lookup.IsAccessible(type, false))
+						continue;
 					IType addType = typePred != null ? typePred(type) : type;
 					if (addType != null) {
 						var a2 = wrapper.AddType(addType, addType.Name);
