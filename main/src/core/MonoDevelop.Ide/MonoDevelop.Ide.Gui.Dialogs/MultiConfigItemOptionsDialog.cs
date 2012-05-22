@@ -78,7 +78,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				configData.Update (ModifiedObjects);
 		}
 
-
 		public string CurrentConfig {
 			get {
 				return currentConfig;
