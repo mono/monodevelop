@@ -78,9 +78,12 @@ namespace MonoDevelop.Refactoring
 
 			ResolveResult resolveResult;
 			AstNode node;
-			if (!ResolveAt (doc, out resolveResult, out node))
-				return;
-
+			if (!ResolveAt (doc, out resolveResult, out node)) {
+				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
+				resolveResult = GetHeuristicResult (doc, location, ref node);
+				if (resolveResult == null)
+					return;
+			}
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
 			
