@@ -43,9 +43,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Creates mono indent style CSharpFormatting options.
 		/// </summary>
-		public static CSharpFormattingOptions CreateMono()
+		public static CSharpFormattingOptions CreateMono ()
 		{
-			return new CSharpFormattingOptions() {
+			return new CSharpFormattingOptions () {
 				IndentNamespaceBody = true,
 				IndentClassBody = true,
 				IndentInterfaceBody = true,
@@ -175,12 +175,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
-				ChainedMethodCallWrapping = Wrapping.WrapIfTooLong,
-				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
+				ChainedMethodCallWrapping = Wrapping.DoNotChange,
+				MethodCallArgumentWrapping = Wrapping.DoNotChange,
 				NewLineAferMethodCallOpenParentheses = true,
 				MethodCallClosingParenthesesOnNewLine = true,
 
-				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
+				IndexerArgumentWrapping = Wrapping.DoNotChange,
 				NewLineAferIndexerOpenBracket = false,
 				IndexerClosingBracketOnNewLine = false,
 
@@ -212,9 +212,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// The K&R style, so named because it was used in Kernighan and Ritchie's book The C Programming Language,
 		/// is commonly used in C. It is less common for C++, C#, and others.
 		/// </summary>
-		public static CSharpFormattingOptions CreateKRStyle()
+		public static CSharpFormattingOptions CreateKRStyle ()
 		{
-			return new CSharpFormattingOptions() {
+			return new CSharpFormattingOptions () {
 				IndentNamespaceBody = true,
 				IndentClassBody = true,
 				IndentInterfaceBody = true,
@@ -344,12 +344,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
-				ChainedMethodCallWrapping = Wrapping.WrapIfTooLong,
-				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
+				ChainedMethodCallWrapping = Wrapping.DoNotChange,
+				MethodCallArgumentWrapping = Wrapping.DoNotChange,
 				NewLineAferMethodCallOpenParentheses = true,
 				MethodCallClosingParenthesesOnNewLine = true,
 
-				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
+				IndexerArgumentWrapping = Wrapping.DoNotChange,
 				NewLineAferIndexerOpenBracket = false,
 				IndexerClosingBracketOnNewLine = false,
 
