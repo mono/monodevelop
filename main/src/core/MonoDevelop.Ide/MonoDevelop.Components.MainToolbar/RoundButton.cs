@@ -78,6 +78,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 		{
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.LeaveNotifyMask | EventMask.EnterNotifyMask;
+			VisibleWindow = false;
 			SetSizeRequest (height, height);
 
 			btnNormal = new LazyImage ("btExecuteBase-Normal.png");
@@ -181,9 +182,13 @@ namespace MonoDevelop.Compontents.MainToolbar
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				GetBackground ().Show (context, 0, 0);
+				GetBackground ().Show (context, Allocation.X, Allocation.Y);
 				var icon = GetIcon();
-				icon.Show (context, (icon.Width - Allocation.Width) / 2, (icon.Height - Allocation.Height) / 2);
+				icon.Show (
+					context,
+					Allocation.X + (icon.Width - Allocation.Width) / 2,
+					Allocation.Y + (icon.Height - Allocation.Height) / 2
+				);
 
 /*				context.Arc (height / 2 + 0.5, height / 2 + 0.5, height / 2 - 1, 0, 2 * System.Math.PI);
 				var lg = new LinearGradient (0, 0, 0, Allocation.Height);

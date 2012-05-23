@@ -46,6 +46,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 		public ButtonBar ()
 		{
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
+			VisibleWindow = false;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask;
 
 			btnLeftNormal = new LazyImage ("btDebugBase-LeftCap-Normal.png");
@@ -101,7 +102,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				double x = 0, y = 0;
+				double x = Allocation.X, y = Allocation.Y;
 				for (int i = 0; i < buttons.Count; i++) {
 					ImageSurface img;
 					if (i == 0) {

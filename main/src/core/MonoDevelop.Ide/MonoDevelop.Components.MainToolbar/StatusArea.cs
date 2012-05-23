@@ -44,6 +44,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 
 		public StatusArea ()
 		{
+			VisibleWindow = false;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			borderColor = CairoExtensions.ParseColor ("8c8c8c");
 			fill1Color = CairoExtensions.ParseColor ("eff5f7");
@@ -70,8 +71,8 @@ namespace MonoDevelop.Compontents.MainToolbar
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				CairoExtensions.RoundedRectangle (context, 0, 0, Allocation.Width, Allocation.Height, 4);
-				LinearGradient lg = new LinearGradient (0, 0, 0, Allocation.Height);
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width, Allocation.Height, 4);
+				LinearGradient lg = new LinearGradient (Allocation.X, Allocation.Y, Allocation.X, Allocation.Height);
 				lg.AddColorStop (0, fill1Color);
 				lg.AddColorStop (1, fill2Color);
 				context.Pattern = lg;
