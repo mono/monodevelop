@@ -52,6 +52,9 @@ namespace MonoDevelop.Compontents.MainToolbar
 
 		SearchEntry matchEntry;
 
+		ButtonBar buttonBar = new ButtonBar ();
+		RoundButton button = new RoundButton ();
+
 		public Cairo.ImageSurface Background {
 			get;
 			set;
@@ -67,7 +70,17 @@ namespace MonoDevelop.Compontents.MainToolbar
 			set;
 		}
 
+		public ButtonBar ButtonBar {
+			get {
+				return buttonBar;
+			}
+		}
 
+		public RoundButton StartButton {
+			get {
+				return button;
+			}
+		}
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler
 		{
@@ -93,14 +106,6 @@ namespace MonoDevelop.Compontents.MainToolbar
 			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			contentBox.BorderWidth = 6;
-			var button = new RoundButton ();
-			button.Clicked += delegate {
-				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
-					IdeApp.CommandService.DispatchCommand (ProjectCommands.Stop);
-				} else {
-					IdeApp.CommandService.DispatchCommand (ProjectCommands.Run);
-				}
-			};
 
 			IdeApp.ProjectOperations.CurrentRunOperationChanged += delegate {
 				button.QueueDraw ();
@@ -140,7 +145,6 @@ namespace MonoDevelop.Compontents.MainToolbar
 			AddWidget (runtimeComboVBox);
 
 
-			ButtonBar buttonBar = new ButtonBar ();
 
 			buttonBar.Add (new LazyImage ("icoDebug-Pause.png"));
 			buttonBar.Add (new LazyImage ("icoDebug-StepOver.png"));

@@ -115,7 +115,13 @@ namespace MonoDevelop.Ide.Gui
 				return statusBar;
 			}
 		}
-		
+
+		public MainToolbar Toolbar {
+			get {
+				return toolbar;
+			}
+		}
+
 		public Gtk.MenuBar TopMenu {
 			get { return topMenu; }
 		}

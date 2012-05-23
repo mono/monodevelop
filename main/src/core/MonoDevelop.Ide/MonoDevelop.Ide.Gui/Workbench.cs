@@ -238,7 +238,13 @@ namespace MonoDevelop.Ide.Gui
 				return workbench.StatusBar.MainContext;
 			}
 		}
-		
+
+		public MonoDevelop.Compontents.MainToolbar.MainToolbar Toolbar {
+			get {
+				return workbench.Toolbar;
+			}
+		}
+
 		public Pad GetPad<T> ()
 		{
 			foreach (Pad pad in Pads)

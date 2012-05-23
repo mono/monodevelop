@@ -85,8 +85,8 @@ namespace MonoDevelop.Compontents.MainToolbar
 
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
-//			if (State == StateType.Selected)
-//				OnClicked (EventArgs.Empty);
+			if (State == StateType.Selected)
+				OnClicked (new ClickEventArgs (pushedButton));
 			State = StateType.Prelight;
 			leaveState = StateType.Normal;
 			pushedButton = -1;
@@ -126,6 +126,24 @@ namespace MonoDevelop.Compontents.MainToolbar
 			return base.OnExposeEvent (evnt);
 		}
 
+		public sealed class ClickEventArgs : EventArgs
+		{
+			public int Button { get; private set; }
+
+			public ClickEventArgs (int button)
+			{
+				this.Button = button;
+			}
+		}
+
+		public event EventHandler<ClickEventArgs> Clicked;
+
+		protected virtual void OnClicked (ClickEventArgs e)
+		{
+			var handler = this.Clicked;
+			if (handler != null)
+				handler (this, e);
+		}
 
 	}
 }

@@ -90,7 +90,7 @@ namespace MonoDevelop.Debugger
 			
 		static public event EventHandler EvaluationOptionsChanged;
 		
-		static DebuggingService()
+		static DebuggingService ()
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
 			TextFileService.LineCountChanged += OnLineCountChanged;
@@ -101,6 +101,32 @@ namespace MonoDevelop.Debugger
 				busyDialog = new BusyEvaluatorDialog ();
 				busyDialog.TransientFor = MessageService.RootWindow;
 				busyDialog.DestroyWithParent = true;
+
+				IdeApp.Workbench.Toolbar.StartButton.Clicked += delegate {
+					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.ProjectCommands.Stop);
+					} else {
+						IdeApp.CommandService.DispatchCommand (DebugCommands.Debug);
+					}
+				};
+				IdeApp.Workbench.Toolbar.ButtonBar.Hide ();
+				IdeApp.Workbench.Toolbar.ButtonBar.Clicked += delegate(object sender, MonoDevelop.Compontents.MainToolbar.ButtonBar.ClickEventArgs e) {
+					switch (e.Button) {
+					case 0:
+						IdeApp.CommandService.DispatchCommand (DebugCommands.Pause);
+						break;
+					case 1:
+						IdeApp.CommandService.DispatchCommand (DebugCommands.StepOver);
+						break;
+					case 2:
+						IdeApp.CommandService.DispatchCommand (DebugCommands.StepInto);
+						break;
+					case 3:
+						IdeApp.CommandService.DispatchCommand (DebugCommands.StepOut);
+						break;
+					}
+				};
+
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Regresh the engine list
@@ -524,11 +550,14 @@ namespace MonoDevelop.Debugger
 			});
 			
 			try {
+				session.TargetStarted += (sender, e) => IdeApp.Workbench.Toolbar.ButtonBar.ShowAll ();
+				session.TargetExited += (sender, e) => IdeApp.Workbench.Toolbar.ButtonBar.Hide ();
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
 				Cleanup ();
 				throw;
 			}
+
 		}
 		
 		static bool ExceptionHandler (Exception ex)
