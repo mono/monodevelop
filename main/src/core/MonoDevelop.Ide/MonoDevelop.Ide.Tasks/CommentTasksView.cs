@@ -195,11 +195,18 @@ namespace MonoDevelop.Ide.Tasks
 			
 			// Load all tags that are stored in pidb files
 			foreach (Project p in sln.GetAllProjects ()) {
-				var pContext = TypeSystemService.GetProjectContext (p);
+				var pContext = TypeSystemService.GetProjectContentWrapper (p);
 				if (pContext == null)
 					continue;
-				foreach (ProjectFile file in p.Files) {
-					UpdateCommentTags (sln, file.Name, GetSpecialComments (pContext, file.Name));
+				var tags = pContext.GetExtensionObject<ProjectCommentTags> ();
+				if (tags == null) {
+					tags = new ProjectCommentTags ();
+					pContext.UpdateExtensionObject (tags);
+					tags.Update (pContext.Project);
+				} else {
+					foreach (var kv in tags.Tags) {
+						UpdateCommentTags (sln, kv.Key, kv.Value);
+					}
 				}
 			}
 		}
@@ -225,8 +232,11 @@ namespace MonoDevelop.Ide.Tasks
 			//because of parse queueing, it's possible for this event to come in after the solution is closed
 			//so we track which solutions are currently open so that we don't leak memory by holding 
 			// on to references to closed projects
-			if (e.Project != null && e.Project.ParentSolution != null && loadedSlns.Contains (e.Project.ParentSolution))
-				UpdateCommentTags (e.Project.ParentSolution, e.FileName, e.TagComments);
+			if (e.Project != null && e.Project.ParentSolution != null && loadedSlns.Contains (e.Project.ParentSolution)) {
+				Application.Invoke (delegate {
+					UpdateCommentTags (e.Project.ParentSolution, e.FileName, e.TagComments);
+				});
+			}
 		}
 		
 		void OnCommentTagsChanged (object sender, EventArgs e)
