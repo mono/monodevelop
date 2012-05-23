@@ -412,6 +412,7 @@
     <Compile Include="MonoDevelop.Core.AddIns\FilePathExtensionNode.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\TargetsAvailableCondition.cs" />
     <Compile Include="MonoDevelop.Projects\PortableDotNetProjectBinding.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\AssemblyInstalledCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -420,6 +421,7 @@
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">
       <LogicalName>MonoDevelop.Core.addin.xml</LogicalName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frameworks\framework_NET_1_1.xml">
       <LogicalName>framework_NET_1_1.xml</LogicalName>
