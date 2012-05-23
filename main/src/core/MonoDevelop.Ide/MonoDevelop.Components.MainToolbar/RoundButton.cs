@@ -142,7 +142,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 			if (State == StateType.Selected)
 				OnClicked (EventArgs.Empty);
 			State = StateType.Prelight;
-			leaveState = StateType.Normal;
+			leaveState = StateType.Normal; 
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
@@ -176,7 +176,10 @@ namespace MonoDevelop.Compontents.MainToolbar
 
 		ImageSurface GetIcon()
 		{
-			return iconRunNormal;
+			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+				return State ==  StateType.Insensitive ? iconStopDisabled : iconStopNormal;
+			}
+			return State ==  StateType.Insensitive ? iconRunDisabled : iconRunNormal;
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)

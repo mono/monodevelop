@@ -94,7 +94,28 @@ namespace MonoDevelop.Compontents.MainToolbar
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			contentBox.BorderWidth = 6;
 			var button = new RoundButton ();
-			button.Clicked += (sender, e) => IdeApp.CommandService.DispatchCommand (ProjectCommands.Run);
+			button.Clicked += delegate {
+				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+					IdeApp.CommandService.DispatchCommand (ProjectCommands.Stop);
+				} else {
+					IdeApp.CommandService.DispatchCommand (ProjectCommands.Run);
+				}
+			};
+
+			IdeApp.ProjectOperations.CurrentRunOperationChanged += delegate {
+				button.QueueDraw ();
+				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
+					IdeApp.ProjectOperations.CurrentRunOperation.Completed += (op) => button.QueueDraw ();
+			};
+
+			IdeApp.Workspace.WorkspaceItemOpened += delegate {
+				button.Sensitive = true;
+			};
+			IdeApp.Workspace.WorkspaceItemClosed += delegate {
+				button.Sensitive = false;
+			};
+			button.Sensitive = false;
+
 			AddWidget (button);
 
 			configurationCombo = new Gtk.ComboBox ();

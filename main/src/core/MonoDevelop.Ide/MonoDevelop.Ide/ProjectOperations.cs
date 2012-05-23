@@ -156,9 +156,12 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation CurrentRunOperation {
 			get { return currentRunOperation; }
-			set { currentRunOperation = value ?? NullAsyncOperation.Success; }
+			set {
+				currentRunOperation = value ?? NullAsyncOperation.Success;
+				OnCurrentRunOperationChanged (EventArgs.Empty);
+			}
 		}
-		
+
 		public bool IsBuilding (IBuildTarget target)
 		{
 			return !currentBuildOperation.IsCompleted && ContainsTarget (target, currentBuildOperationOwner);
@@ -874,7 +877,7 @@ namespace MonoDevelop.Ide
 			DispatchService.ThreadDispatch (delegate {
 				ExecuteSolutionItemAsync (monitor, entry, context);
 			});
-			currentRunOperation = monitor.AsyncOperation;
+			CurrentRunOperation = monitor.AsyncOperation;
 			currentRunOperationOwner = entry;
 			currentRunOperation.Completed += delegate {
 			 	DispatchService.GuiDispatch (() => {
@@ -1895,6 +1898,14 @@ namespace MonoDevelop.Ide
 		
 		// Fired just before an entry is added to a combine
 		public event AddEntryEventHandler AddingEntryToCombine;
+
+		public event EventHandler CurrentRunOperationChanged;
+		protected virtual void OnCurrentRunOperationChanged (EventArgs e)
+		{
+			var handler = CurrentRunOperationChanged;
+			if (handler != null)
+				handler (this, e);
+		}
 	}
 	
 	class ParseProgressMonitorFactory: IProgressMonitorFactory
