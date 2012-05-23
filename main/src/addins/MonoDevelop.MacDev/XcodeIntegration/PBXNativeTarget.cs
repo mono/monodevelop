@@ -79,8 +79,8 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.AppendFormat ("\t\t\t);\n");
 			sb.AppendFormat ("\t\t\tdependencies = (\n");
 			sb.AppendFormat ("\t\t\t);\n");
-			sb.AppendFormat ("\t\t\tname = {0};\n", name);
-			sb.AppendFormat ("\t\t\tproductName = {0};\n", name);
+			sb.AppendFormat ("\t\t\tname = \"{0}\";\n", name);
+			sb.AppendFormat ("\t\t\tproductName = \"{0}\";\n", name);
 			sb.AppendFormat ("\t\t\tproductReference = {0} /* {1} */;\n", target.Token, target.Name);
 			sb.AppendFormat ("\t\t\tproductType = \"com.apple.product-type.application\";\n");
 			sb.AppendFormat ("\t\t}};");

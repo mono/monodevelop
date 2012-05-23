@@ -85,7 +85,7 @@ namespace MonoDevelop.MacDev.XcodeIntegration
 			sb.AppendFormat ("\t\t\tknownRegions = (\n");
 			foreach (var lang in KnownRegions)
 				sb.AppendFormat ("\t\t\t\t{0},\n", lang);
-			sb.AppendFormat ("\t\t\t);");
+			sb.AppendFormat ("\t\t\t);\n");
 			sb.AppendFormat ("\t\t\tmainGroup = {0};\n", mainGroup.Token);
 			sb.AppendFormat ("\t\t\tproductRefGroup = {0} /* {1} */;\n", productGroup.Token, productGroup.Name);
 			sb.AppendFormat ("\t\t\tprojectDirPath = \"\";\n");

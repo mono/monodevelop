@@ -518,6 +518,8 @@ namespace MonoDevelop.Ide
 			}
 			while (retry);
 
+			LoggingService.Shutdown ();
+
 			return ret;
 		}
 	}

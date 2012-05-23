@@ -247,7 +247,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				int col = type.BodyRegion.EndColumn - 1;
 				var line = data.GetLine (type.BodyRegion.EndLine);
 				if (line != null) {
-					while (col > 1 && char.IsWhiteSpace (data.GetCharAt (line.Offset + col - 2)))
+					var lineOffset = line.Offset;
+					col = Math.Min (line.Length, col);
+					while (lineOffset + col - 2 >= 0 && char.IsWhiteSpace (data.GetCharAt (lineOffset + col - 2)))
 						col--;
 				}
 				result.Add (new InsertionPoint (new DocumentLocation (type.BodyRegion.EndLine, col), insertLine, NewLineInsertion.Eol));

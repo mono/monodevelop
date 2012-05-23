@@ -124,10 +124,11 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = (IUnresolvedTypeDefinition)dataObject;
 			var list = new System.Collections.ArrayList ();
 			list.Add (new BaseTypeFolder (type));
-			bool publicOnly = builder.Options ["PublicApiOnly"];
-			foreach (var t in type.NestedTypes.Where (m => !m.IsSynthetic && !(publicOnly && (m.IsPublic || m.IsProtected) )))
+			bool publicOnly = Widget.PublicApiOnly;
+			foreach (var t in type.NestedTypes.Where (m => !m.IsSynthetic && (m.IsPublic || m.IsProtected || !publicOnly))) {
 				list.Add (t);
-			foreach (var m in type.Members.Where (m => !m.IsSynthetic && !(publicOnly && !(m.IsProtected || m.IsPublic || m.IsInternal))))
+			}
+			foreach (var m in type.Members.Where (m => !m.IsSynthetic && (m.IsPublic || m.IsProtected || !publicOnly)))
 				list.Add (m);
 			builder.AddChildren (list);
 		}

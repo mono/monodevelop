@@ -159,10 +159,11 @@ namespace MonoDevelop.CSharp.Highlighting
 									var textEditor = editorData.Parent;
 									if (textEditor != null) {
 										var margin = textEditor.TextViewMargin;
-										if (!parsedDocument.HasErrors)
+										if (!parsedDocument.HasErrors) {
 											highlightedSegmentCache.Clear ();
-										margin.PurgeLayoutCache ();
-										textEditor.QueueDraw ();
+											margin.PurgeLayoutCache ();
+											textEditor.QueueDraw ();
+										}
 									}
 								});
 							}

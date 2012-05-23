@@ -26,56 +26,35 @@
 //
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
 	public partial class ExtensibleTreeView
 	{
-		internal class TreeOptions : Hashtable, ITreeOptions
+		internal class TreeOptions : Dictionary<string,bool>, ITreeOptions
 		{
-			ExtensibleTreeView pad;
-			Gtk.TreeIter iter;
-			
 			public TreeOptions ()
 			{
 			}
 			
-			public TreeOptions (ExtensibleTreeView pad, Gtk.TreeIter iter)
+			public TreeOptions (ExtensibleTreeView pad)
 			{
-				this.pad = pad;
-				this.iter = iter;
+				this.Pad = pad;
 			}
 			
-			public ExtensibleTreeView Pad {
-				get { return pad; }
-				set { pad = value; }
-			}
-
-			public Gtk.TreeIter Iter {
-				get { return iter; }
-				set { iter = value; }
-			}
+			public ExtensibleTreeView Pad { get; set ;}
 
 			public bool this [string name] {
 				get {
-					object op = base [name];
-					if (op == null) return false;
-					return (bool) op;
+					bool val;
+					return base.TryGetValue (name, out val) && val;
 				}
 				set {
 					base [name] = value;
-					if (pad != null)
-						pad.RefreshNode (iter);
+					if (Pad != null)
+						Pad.RefreshTree ();
 				}
-			}
-			
-			public TreeOptions CloneOptions (Gtk.TreeIter newIter)
-			{
-				TreeOptions ops = new TreeOptions (pad, newIter);
-				foreach (DictionaryEntry de in this)
-					ops [de.Key] = de.Value;
-				return ops;
 			}
 		}
 	}

@@ -159,11 +159,11 @@
     <None Include="mono-version-check">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\external\monomac\src\MonoMac.dll">
+    <None Include="..\..\external\monomac\src\MonoMac.dll">
       <Link>MonoMac.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\external\monomac\src\MonoMac.dll.mdb">
+    <None Include="..\..\external\monomac\src\MonoMac.dll.mdb">
       <Link>MonoMac.dll.mdb</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

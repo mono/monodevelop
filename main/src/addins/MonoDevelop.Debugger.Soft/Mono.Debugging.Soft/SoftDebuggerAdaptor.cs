@@ -207,7 +207,11 @@ namespace Mono.Debugging.Soft
 				return cx.RuntimeInvoke (method, toType, new Value[] { value });
 
 			// Finally, try a ctor...
-			return CreateValue (ctx, toType, value);
+			try {
+				return CreateValue (ctx, toType, value);
+			} catch {
+				return null;
+			}
 		}
 
 		public override object TryCast (EvaluationContext ctx, object obj, object targetType)
@@ -649,24 +653,42 @@ namespace Mono.Debugging.Soft
 		protected override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
 		{
 			TypeMirror type = (TypeMirror) t;
+
 			while (type != null) {
 				FieldInfoMirror field = FindByName (type.GetFields(), f => f.Name, name, ctx.CaseSensitive);
 				if (field != null && (field.IsStatic || co != null))
 					return new FieldValueReference (ctx, field, co, type);
+
 				PropertyInfoMirror prop = FindByName (type.GetProperties(), p => p.Name, name, ctx.CaseSensitive);
 				if (prop != null && (IsStatic (prop) || co != null)) {
+					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
+					// This way we avoid overhead of invoking methods on the debugee when the value is requested.
+					string cgFieldName = string.Format ("<{0}>k__BackingField", prop.Name);
+					if ((field = FindByName (type.GetFields (), f => f.Name, cgFieldName, true)) != null && IsCompilerGenerated (field))
+						return new FieldValueReference (ctx, field, co, type, prop.Name, ObjectValueFlags.Property);
+
+					// Backing field not available, so do things the old fashioned way.
 					MethodMirror getter = prop.GetGetMethod (true);
 					if (getter == null)
 						return null;
 					
 					return new PropertyValueReference (ctx, prop, co, type, getter, null);
 				}
+
 				type = type.BaseType;
 			}
+
 			return null;
 		}
+
+		static bool IsCompilerGenerated (FieldInfoMirror field)
+		{
+			CustomAttributeDataMirror[] attrs = field.GetCustomAttributes (true);
+			var cga = GetAttribute<System.Runtime.CompilerServices.CompilerGeneratedAttribute> (attrs);
+			return cga != null;
+		}
 		
-		bool IsStatic (PropertyInfoMirror prop)
+		static bool IsStatic (PropertyInfoMirror prop)
 		{
 			MethodMirror met = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
 			return met.IsStatic;
@@ -1086,7 +1108,7 @@ namespace Mono.Debugging.Soft
 			return new TypeDisplayData (proxyType, valueString, typeString, nameString, isCompilerGenerated, memberData);
 		}
 		
-		T GetAttribute<T> (CustomAttributeDataMirror[] attrs)
+		static T GetAttribute<T> (CustomAttributeDataMirror[] attrs)
 		{
 			foreach (CustomAttributeDataMirror attr in attrs) {
 				if (attr.Constructor.DeclaringType.FullName == typeof(T).FullName)
@@ -1129,7 +1151,7 @@ namespace Mono.Debugging.Soft
 		}
 
 		
-		T BuildAttribute<T> (CustomAttributeDataMirror attr)
+		static T BuildAttribute<T> (CustomAttributeDataMirror attr)
 		{
 			List<object> args = new List<object> ();
 			foreach (CustomAttributeTypedArgumentMirror arg in attr.ConstructorArguments) {

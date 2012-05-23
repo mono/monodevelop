@@ -698,6 +698,7 @@ FILES =  \
 	MonoDevelop.Ide.TypeSystem/OutputSettings.cs \
 	MonoDevelop.Ide.TypeSystem/ParsedDocument.cs \
 	MonoDevelop.Ide.TypeSystem/PreProcessorDefine.cs \
+	MonoDevelop.Ide.TypeSystem/ProjectCommentTags.cs \
 	MonoDevelop.Ide.TypeSystem/ProjectContentEventArgs.cs \
 	MonoDevelop.Ide.TypeSystem/StockIcons.cs \
 	MonoDevelop.Ide.TypeSystem/Tag.cs \

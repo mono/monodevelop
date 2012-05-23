@@ -402,6 +402,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				
 				if (comment.CommentType == CommentType.Block) {
 					int startOffset = 0;
+					if (comment.Region.BeginLine == comment.Region.EndLine)
+						continue;
 					while (startOffset < comment.Text.Length) {
 						char ch = comment.Text [startOffset];
 						if (!char.IsWhiteSpace (ch) && ch != '*')

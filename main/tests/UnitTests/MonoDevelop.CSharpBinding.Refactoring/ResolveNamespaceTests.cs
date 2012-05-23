@@ -328,6 +328,33 @@ namespace sadfhgjhkfj
 			Assert.IsFalse (result.Contains ("System.Collections"));
 			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
 		}
+
+
+		/// <summary>
+		/// Bug 5206 - Resolve -> Add Using statement does not work after "|" 
+		/// </summary>
+		[Test ()]
+		public void TestBug5206 ()
+		{
+			var result = GetResult (@"using System;
+
+namespace TestConsole
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			var f = typeof (int).GetFields (System.Reflection.BindingFlags.Static | Binding$Flags
+		}
+ 	}
+}"
+			);
+
+			Assert.IsTrue (result.Contains ("System.Reflection"));
+		}
+
+
+
 	}
 }
 

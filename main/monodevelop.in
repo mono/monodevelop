@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #Workaround for Unity gnome shell
 export UBUNTU_MENUPROXY=0

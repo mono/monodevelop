@@ -265,8 +265,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				this.unresolvedTypeDict = unresolved.GetTypeDictionary(compilation.NameComparer);
 				this.rootNamespace = new NS(this, unresolved.GetUnresolvedRootNamespace(compilation.NameComparer), null);
 				this.context = new SimpleTypeResolveContext(this);
-				this.AssemblyAttributes = unresolved.AssemblyAttributes.ToList().CreateResolvedAttributes(context);
-				this.ModuleAttributes = unresolved.ModuleAttributes.ToList().CreateResolvedAttributes(context);
+				this.AssemblyAttributes = unresolved.AssemblyAttributes.CreateResolvedAttributes(context);
+				this.ModuleAttributes = unresolved.ModuleAttributes.CreateResolvedAttributes(context);
 			}
 			
 			public IUnresolvedAssembly UnresolvedAssembly {
@@ -292,51 +292,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				get { return compilation; }
 			}
 			
-			volatile string[] internalsVisibleTo;
-		
-			string[] GetInternalsVisibleTo()
+			public bool InternalsVisibleTo(IAssembly assembly)
 			{
-				var result = this.internalsVisibleTo;
-				if (result != null) {
-					return result;
-				} else {
-					using (var busyLock = BusyManager.Enter(this)) {
-						Debug.Assert(busyLock.Success);
-						if (!busyLock.Success) {
-							return new string[0];
-						}
-						internalsVisibleTo = (
-							from attr in this.AssemblyAttributes
-							where attr.AttributeType.Name == "InternalsVisibleToAttribute"
-							&& attr.AttributeType.Namespace == "System.Runtime.CompilerServices"
-							&& attr.PositionalArguments.Count == 1
-							select GetShortName(attr.PositionalArguments.Single().ConstantValue as string)
-						).ToArray();
-					}
-					return internalsVisibleTo;
-				}
-			}
-
-			static string GetShortName(string fullAssemblyName)
-			{
-				if (fullAssemblyName == null)
-					return null;
-				int pos = fullAssemblyName.IndexOf(',');
-				if (pos < 0)
-					return fullAssemblyName;
-				else
-					return fullAssemblyName.Substring(0, pos);
-			}
-		
-			public bool InternalsVisibleTo (IAssembly assembly)
-			{
-				if (this == assembly)
-					return true;
-				foreach (string shortName in GetInternalsVisibleTo()) {
-					if (assembly.AssemblyName == shortName)
-						return true;
-				}
-				return false;
+				return assembly == this;
 			}
 			
 			public ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount)

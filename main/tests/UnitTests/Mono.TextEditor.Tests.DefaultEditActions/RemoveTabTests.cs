@@ -145,6 +145,25 @@ $2
 	3");
 		}
 
+
+		[Test]
+		public void TestRemoveWithTabsToSpaces ()
+		{
+			var data = Create (@"    123d456789
+        123$<-456789
+        123d456789
+        ->123456789
+    123456789
+    123456789", new TextEditorOptions () { TabsToSpaces = true } );
+
+			MiscActions.RemoveTab (data);
+			Check (data, @"    123d456789
+    123$<-456789
+    123d456789
+    ->123456789
+    123456789
+    123456789");
+		}
 	}
 }
 

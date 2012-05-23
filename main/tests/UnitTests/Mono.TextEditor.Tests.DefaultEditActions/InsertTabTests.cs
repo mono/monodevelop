@@ -31,7 +31,7 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class InsertTabTests
+	public class InsertTabTests : TextEditorTestBase
 	{
 		public static TextEditorData Create (string input, bool reverse)
 		{
@@ -126,6 +126,28 @@ namespace Mono.TextEditor.Tests.Actions
 	123]456789
 123456789
 123456789", reverse);
+		}
+
+		/// <summary>
+		/// Bug 5223 - Tab to indent with tab-to-spaces does not adjust selection correctly
+		/// </summary>
+		[Test]
+		public void TestBug5223 ()
+		{
+			var data = Create (@"    123d456789
+    123$<-456789
+    123d456789
+    ->123456789
+    123456789
+    123456789", new TextEditorOptions () { TabsToSpaces = true } );
+
+			MiscActions.InsertTab (data);
+			Check (data, @"    123d456789
+        123$<-456789
+        123d456789
+        ->123456789
+    123456789
+    123456789");
 		}
 	}
 }

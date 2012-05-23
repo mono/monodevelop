@@ -77,8 +77,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		TreePadOption[] options;
 		TreeOptions globalOptions;
-		Dictionary<Gtk.TreeIter, TreeOptions> nodeOptions;
-		
+
 		TreeNodeNavigator workNode;
 		TreeNodeNavigator compareNode1;
 		TreeNodeNavigator compareNode2;
@@ -180,7 +179,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			store = new Gtk.TreeStore (typeof(string), typeof(Gdk.Pixbuf), typeof(Gdk.Pixbuf), typeof(object), typeof(object), typeof(bool));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
-			nodeOptions = new Dictionary<Gtk.TreeIter, TreeOptions> (new IterComparer (store));
 
 			tree.EnableModelDragDest (target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			Gtk.Drag.SourceSet (tree, Gdk.ModifierType.Button1Mask, target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
@@ -320,7 +318,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			globalOptions = new TreeOptions ();
 			foreach (TreePadOption op in options)
 				globalOptions [op.Id] = op.DefaultValue;
-				
 			globalOptions.Pad = this;
 			
 			// Check that there is only one TypeNodeBuilder per type
@@ -449,7 +446,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				TransactedNodeStore store = transactionStore;
 				transactionStore = null;
 				store.CommitChanges ();
-				CleanupNodeOptions ();
 			}
 		}
 
@@ -554,7 +550,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				NotifyNodeRemoved (dataObject, null);
 			
 			nodeHash = new NodeHashtable ();
-			nodeOptions.Clear ();
 			store.Clear ();
 		}
 		
@@ -1274,19 +1269,41 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (root == null) 
 				return null;
 
-			return root.SaveState ();
+			var state = root.SaveState ();
+
+			var s = new Dictionary<string, bool> ();
+			foreach (TreePadOption opt in options) {
+				bool val;
+				if (globalOptions.TryGetValue (opt.Id, out val) && val != opt.DefaultValue)
+					s[opt.Id] = val;
+			}
+			if (s.Count != 0) {
+				state.Options = s;
+			}
+
+			return state;
 		}
 		
 		public void RestoreTreeState (NodeState state)
 		{
-			ITreeNavigator nav = GetRootNode ();
-			
-			if (nav == null)
+			if (state == null)
 				return;
 			
-			if (state != null) {
-				nav.RestoreState (state);
+			ITreeNavigator nav = GetRootNode ();
+			if (nav == null)
+				return;
+
+			nav.RestoreState (state);
+
+			globalOptions = new TreeOptions ();
+			foreach (TreePadOption opt in options) {
+				bool val = false;
+				if (state.Options == null || !state.Options.TryGetValue (opt.Id, out val))
+					val = opt.DefaultValue;
+				globalOptions[opt.Id] = val;
 			}
+			globalOptions.Pad = this;
+			RefreshTree ();
 		}
 		
 		TypeNodeBuilder GetTypeNodeBuilder (Type type)
@@ -1480,9 +1497,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						dragObjects = null;
 				}
 			}
-			
-			if (store.IterIsValid (iter))
-				nodeOptions.Remove (iter);
+
 			object currentIt;
 			nodeHash.TryGetValue (dataObject, out currentIt);
 			if (currentIt is Gtk.TreeIter[]) {
@@ -1522,16 +1537,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				store.Remove (ref child);
 			}
 		}
-		
-		internal void CleanupNodeOptions ()
-		{
-			Dictionary<Gtk.TreeIter, TreeOptions> newOps = new Dictionary<Gtk.TreeIter, TreeOptions> ();
-			foreach (KeyValuePair<Gtk.TreeIter,TreeOptions> val in nodeOptions) {
-				if (store.IterIsValid (val.Key))
-					newOps [val.Key] = val.Value;
-			}
-			nodeOptions = newOps;
-		}
 				
 		void NotifyNodeRemoved (object dataObject, NodeBuilder[] chain)
 		{
@@ -1567,53 +1572,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		internal TreeOptions GetOptions (Gtk.TreeIter iter, bool createSpecificOptions)
-		{
-			if (nodeOptions.Count == 0) {
-				if (createSpecificOptions) {
-					TreeOptions ops = globalOptions.CloneOptions (iter);
-					nodeOptions [iter] = ops;
-					return ops;
-				}
-				else
-					return globalOptions;
-			}
-			
-			TreeOptions result = null;
-			Gtk.TreeIter it = iter;
-			do {
-				nodeOptions.TryGetValue (it, out result);
-			} while (result == null && store.IterParent (out it, it));
-
-			if (result == null)
-				result = globalOptions;
-			
-			if (createSpecificOptions && !it.Equals (iter)) {
-				TreeOptions ops = result.CloneOptions (iter);
-				nodeOptions [iter] = ops;
-				return ops;
-			} else
-				return result;
-		}
-		
-		internal void ClearOptions (Gtk.TreeIter iter)
-		{
-			if (nodeOptions.Count == 0)
-				return;
-
-			List<Gtk.TreeIter> toDelete = new List<Gtk.TreeIter> ();
-			string path = store.GetPath (iter).ToString () + ":";
-			
-			foreach (Gtk.TreeIter nit in nodeOptions.Keys) {
-				string npath = store.GetPath (nit).ToString () + ":";
-				if (npath.StartsWith (path))
-					toDelete.Add (nit);
-			}
-
-			foreach (Gtk.TreeIter ob in toDelete)
-				nodeOptions.Remove (ob);
-		}
-		
 		internal string GetNamePathFromIter (Gtk.TreeIter iter)
 		{
 			workNode.MoveToIter (iter);
@@ -1634,6 +1592,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			ITreeBuilder builder = CreateBuilder (iter);
 			builder.UpdateAll ();
 		}
+
+		public void RefreshNode (ITreeNavigator nav)
+		{
+			RefreshNode (nav.CurrentPosition._iter);
+		}
 		
 		internal void ResetState (ITreeNavigator nav)
 		{
@@ -1644,39 +1607,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			else {
 				ITreeBuilder builder = CreateBuilder (nav.CurrentPosition._iter);
 				ResetState (builder);
-			}
-		}
-
-		internal void SetNodeOptions (ITreeNavigator nav, TreeOptions ops)
-		{
-			if (nav.CurrentPosition._node != null)
-				return;
-			
-			// TODO transaction
-			Gtk.TreeIter iter = nav.CurrentPosition._iter;
-			ops.Pad = this;
-			ops.Iter = iter;
-			nodeOptions [iter] = ops;
-		}
-
-		internal TreeOptions GetNodeOptions (ITreeNavigator nav)
-		{
-			TreeNode node = nav.CurrentPosition._node as TreeNode;
-			if (node != null && node.HasIter) {
-				TreeOptions ops;
-				if (nodeOptions.TryGetValue (node.NodeIter, out ops))
-					return ops;
-				else
-					return null;
-			}
-			else if (node != null)
-				return null;
-			else {
-				TreeOptions ops;
-				if (nodeOptions.TryGetValue (nav.CurrentPosition._iter, out ops))
-					return ops;
-				else
-					return null;
 			}
 		}
 		
@@ -1805,10 +1735,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected void BuildTreeOptionsMenu (CommandArrayInfo info)
 		{
 			ITreeNavigator tnav = GetSelectedNode ();
-			ITreeOptions currentOptions = tnav.Options;
 			foreach (TreePadOption op in options) {
 				CommandInfo ci = new CommandInfo (op.Label);
-				ci.Checked = currentOptions [op.Id];
+				ci.Checked = globalOptions [op.Id];
 				info.Add (ci, op.Id);
 			}
 		}
@@ -1816,9 +1745,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		[CommandHandler (ViewCommands.TreeDisplayOptionList)]
 		protected void OptionToggled (string optionId)
 		{
-			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
-				node.Options [optionId] = !node.Options [optionId];
-			}
+			globalOptions [optionId] = !globalOptions [optionId];
+			RefreshTree ();
 		}
 		
 		[CommandHandler (ViewCommands.ResetTreeDisplayOptions)]
@@ -1827,7 +1755,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
 				Gtk.TreeIter it = node.CurrentPosition._iter;
 				if (store.IterIsValid (it)) {
-					ClearOptions (it);
 					ITreeBuilder tb = CreateBuilder (it);
 					tb.UpdateAll ();
 				}

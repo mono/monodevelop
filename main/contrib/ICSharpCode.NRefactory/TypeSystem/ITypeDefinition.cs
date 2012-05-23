@@ -49,12 +49,34 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool? HasExtensionMethods { get; }
 		
 		/// <summary>
-		/// Creates a type resolve context for this part of the type definition.
+		/// Looks up the resolved type definition from the <paramref name="context"/> corresponding to this unresolved
+		/// type definition.
+		/// </summary>
+		/// <param name="context">
+		/// Context for looking up the type. The context must specify the current assembly.
+		/// A <see cref="Implementation.SimpleTypeResolveContext"/> that specifies the current assembly is sufficient.
+		/// </param>
+		/// <returns>
+		/// Returns the resolved type definition.
+		/// In case of an error, returns an <see cref="Implementation.UnknownType"/> instance.
+		/// Never returns null.
+		/// </returns>
+		new IType Resolve(ITypeResolveContext context);
+		
+		/// <summary>
 		/// This method is used to add language-specific elements like the C# UsingScope
 		/// to the type resolve context.
 		/// </summary>
 		/// <param name="parentContext">The parent context (e.g. the parent assembly),
 		/// including the parent type definition for inner classes.</param>
+		/// <returns>
+		/// The parent context, modified to include language-specific elements (e.g. using scope)
+		/// associated with this type definition.
+		/// </returns>
+		/// <remarks>
+		/// Use <c>unresolvedTypeDef.CreateResolveContext(parentContext).WithTypeDefinition(typeDef)</c> to
+		/// create the context for use within the type definition.
+		/// </remarks>
 		ITypeResolveContext CreateResolveContext(ITypeResolveContext parentContext);
 	}
 	

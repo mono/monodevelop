@@ -51,10 +51,11 @@ namespace Mono.TextEditor.Tests
 
 
 
-		public static TextEditorData Create (string content)
+		public static TextEditorData Create (string content, ITextEditorOptions options = null)
 		{
 			var data = new TextEditorData ();
-
+			if (options != null)
+				data.Options = options;
 			var sb = new StringBuilder ();
 			int caretIndex = -1, selectionStart = -1, selectionEnd = -1;
 			var foldSegments = new List<FoldSegment> ();

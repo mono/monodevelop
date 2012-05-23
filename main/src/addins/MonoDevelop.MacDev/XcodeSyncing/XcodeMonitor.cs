@@ -121,8 +121,11 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				itemMap.Remove (f);
 				syncTimeCache.Remove (f);
 				var path = projectDir.Combine (f);
-				if (File.Exists (path))
-					File.Delete (path);
+				try {
+					if (File.Exists (path))
+						File.Delete (path);
+				} catch {
+				}
 			}
 			
 			if (removedOldProject) {
@@ -317,25 +320,41 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			bool isRunning = CheckRunning ();
 			
 			XC4Debug.Log ("Deleting temporary Xcode project directories.");
-			
-			if (Directory.Exists (projectDir))
-				Directory.Delete (projectDir, true);
-			
+
+			try {
+				if (Directory.Exists (projectDir))
+					Directory.Delete (projectDir, true);
+			} catch (Exception ex) {
+				XC4Debug.Indent ();
+				XC4Debug.Log (ex.Message);
+				XC4Debug.Unindent ();
+			}
+
 			if (isRunning) {
 				XC4Debug.Log ("Xcode still running, leaving empty directory in place to prevent name re-use.");
-				Directory.CreateDirectory (projectDir);
+				if (!Directory.Exists (projectDir))
+					Directory.CreateDirectory (projectDir);
 			} else {
 				XC4Debug.Log ("Xcode not running, removing all temporary directories.");
-				if (Directory.Exists (originalProjectDir))
-					Directory.Delete (originalProjectDir, true);
+				try {
+					if (Directory.Exists (originalProjectDir))
+						Directory.Delete (originalProjectDir, true);
+				} catch (Exception ex) {
+					XC4Debug.Indent ();
+					XC4Debug.Log (ex.Message);
+					XC4Debug.Unindent ();
+				}
 			}
 		}
 		
 		void DeleteXcproj (IProgressMonitor monitor)
 		{
 			monitor.Log.WriteLine ("Deleting project artifacts.");
-			if (Directory.Exists (xcproj))
-				Directory.Delete (xcproj, true);
+			try {
+				if (Directory.Exists (xcproj))
+					Directory.Delete (xcproj, true);
+			} catch {
+			}
 		}
 		
 		static string GetWorkspacePath (string infoPlist)

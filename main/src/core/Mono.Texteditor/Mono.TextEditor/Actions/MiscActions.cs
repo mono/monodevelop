@@ -87,18 +87,22 @@ namespace Mono.TextEditor
 				var lead = data.MainSelection.Lead;
 				bool first = true;
 				bool removedFromLast = false;
+				int removeLast = 0;
 				bool removedFromFirst = false;
+				int removeFirst = 0;
 				foreach (var line in data.SelectedLines) {
 					int remove = RemoveTabInLine (data, line);
 					removedFromLast |= remove > 0;
+					removeLast = remove;
 					if (first) {
 						removedFromFirst = remove > 0;
+						removeFirst = remove;
 						first = false;
 					}
 				}
 
-				var ac = System.Math.Max (DocumentLocation.MinColumn, anchor.Column - 1);
-				var lc = System.Math.Max (DocumentLocation.MinColumn, lead.Column - 1);
+				var ac = System.Math.Max (DocumentLocation.MinColumn, anchor.Column - (anchor < lead ? removeFirst : removeLast));
+				var lc = System.Math.Max (DocumentLocation.MinColumn, lead.Column - (anchor < lead ? removeLast : removeFirst));
 				
 				if (anchor < lead) {
 					if (!removedFromFirst)
@@ -158,13 +162,15 @@ namespace Mono.TextEditor
 			GetSelectedLines (data, out startLineNr, out endLineNr);
 			var anchor = data.MainSelection.Anchor;
 			var lead = data.MainSelection.Lead;
+			var indentationString = data.Options.IndentationString;
 			using (var undo = data.OpenUndoGroup ()) {
 				foreach (DocumentLine line in data.SelectedLines) {
-					data.Insert (line.Offset, data.Options.IndentationString);
+					data.Insert (line.Offset, indentationString);
 				}
 			}
-			var leadCol = lead.Column > 1 || lead < anchor ? lead.Column + 1 : 1;
-			var anchorCol = anchor.Column > 1 || anchor < lead ? anchor.Column + 1 : 1;
+			int chars = indentationString.Length;
+			var leadCol = lead.Column > 1 || lead < anchor ? lead.Column + chars : 1;
+			var anchorCol = anchor.Column > 1 || anchor < lead ? anchor.Column + chars : 1;
 			data.SetSelection (anchor.Line, anchorCol, lead.Line, leadCol);
 			data.Document.RequestUpdate (new MultipleLineUpdate (startLineNr, endLineNr));
 			data.Document.CommitDocumentUpdate ();

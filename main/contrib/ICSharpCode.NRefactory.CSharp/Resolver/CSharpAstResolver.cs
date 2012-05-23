@@ -42,16 +42,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Use this overload if you are resolving within a complete C# file.
 		/// </summary>
 		/// <param name="compilation">The current compilation.</param>
-		/// <param name="parsedFile">
-		/// Result of the <see cref="TypeSystemConvertVisitor"/> for the file being passed. This is used for setting up the context on the resolver. The parsed file must be registered in the compilation.
-		/// </param>
 		/// <param name="compilationUnit">The compilation unit corresponding to the specified parsed file.</param>
-		public CSharpAstResolver(ICompilation compilation, CompilationUnit compilationUnit, CSharpParsedFile parsedFile)
+		/// <param name="parsedFile">
+		/// Optional: Result of the <see cref="TypeSystemConvertVisitor"/> for the file being resolved.
+		/// <para>
+		/// This is used for setting up the context on the resolver. The parsed file must be registered in the compilation.
+		/// </para>
+		/// <para>
+		/// When a parsedFile is specified, the resolver will use the member's StartLocation/EndLocation to identify
+		/// member declarations in the AST with members in the type system.
+		/// When no parsedFile is specified (<c>null</c> value for this parameter), the resolver will instead compare the
+		/// member's signature in the AST with the signature in the type system.
+		/// </para>
+		/// </param>
+		public CSharpAstResolver(ICompilation compilation, CompilationUnit compilationUnit, CSharpParsedFile parsedFile = null)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
-			if (parsedFile == null)
-				throw new ArgumentNullException("parsedFile");
 			if (compilationUnit == null)
 				throw new ArgumentNullException("compilationUnit");
 			this.initialResolverState = new CSharpResolver(compilation);
@@ -66,9 +73,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <param name="resolver">The resolver state at the root node (to be more precise: outside the root node).</param>
 		/// <param name="rootNode">The root node of the resolved tree.</param>
-		/// <param name="parsedFile">The parsed file for the nodes being resolved. This parameter is used only
-		/// when the root node is on the type level; it is not necessary when an expression is passed.
-		/// This parameter may be null.</param>
+		/// <param name="parsedFile">
+		/// Optional: Result of the <see cref="TypeSystemConvertVisitor"/> for the file being resolved.
+		/// <para>
+		/// This is used for setting up the context on the resolver. The parsed file must be registered in the compilation.
+		/// </para>
+		/// <para>
+		/// When a parsedFile is specified, the resolver will use the member's StartLocation/EndLocation to identify
+		/// member declarations in the AST with members in the type system.
+		/// When no parsedFile is specified (<c>null</c> value for this parameter), the resolver will instead compare the
+		/// member's signature in the AST with the signature in the type system.
+		/// </para>
+		/// </param>
 		public CSharpAstResolver(CSharpResolver resolver, AstNode rootNode, CSharpParsedFile parsedFile = null)
 		{
 			if (resolver == null)

@@ -99,13 +99,16 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			
 			protected override void DrawBar (Cairo.Context cr)
 			{
+				/*
 				if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize) 
 					return;
 				var h = Allocation.Height;
-				cr.Rectangle (1.5,
-					              h * vadjustment.Value / vadjustment.Upper + cr.LineWidth + 0.5,
-					              Allocation.Width - 2,
-					              h * (vadjustment.PageSize / vadjustment.Upper));
+
+				cr.Rectangle (
+					1.5,
+					y,
+					Allocation.Width - 2,
+					h * (vadjustment.PageSize / vadjustment.Upper));
 				Cairo.Color color = (TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0);
 				color.A = 0.5;
 				cr.Color = color;
@@ -113,7 +116,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				
 				color.A = 0.05;
 				cr.Color = color;
-				cr.Fill ();
+				cr.Fill ();*/
 			}
 		
 			protected override void OnSizeRequested (ref Requisition requisition)
@@ -298,7 +301,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					if (backgroundPixbuf != null) {
 						int h = backgroundPixbuf.ClipRegion.Clipbox.Height - Allocation.Height;
 						int y = (int)(h * vadjustment.Value / (vadjustment.Upper - vadjustment.Lower));
-						int dy = (int)(backgroundPixbuf.ClipRegion.Clipbox.Height * vadjustment.Value / (vadjustment.Upper - vadjustment.Lower));
+
+						int startLine = TextEditor.YToLine (vadjustment.Value);
+						double dy = TextEditor.LogicalToVisualLocation (startLine, 1).Line * lineHeight;
+
 						cr.Rectangle (0, 
 						              dy - y,
 						              Allocation.Width, 

@@ -86,5 +86,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return new DefaultResolvedField(this, context);
 		}
+		
+		IField IUnresolvedField.Resolve(ITypeResolveContext context)
+		{
+			return (IField)Resolve(context);
+		}
 	}
 }

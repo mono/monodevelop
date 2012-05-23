@@ -245,6 +245,9 @@ namespace MonoDevelop.Refactoring
 			if (editor == null || location.Column == 1)
 				return location;
 
+			if (editor.IsSomethingSelected)
+				return editor.MainSelection.Start;
+
 			var line = editor.GetLine (location.Line);
 			if (line == null || location.Column >= line.Length)
 				return location;

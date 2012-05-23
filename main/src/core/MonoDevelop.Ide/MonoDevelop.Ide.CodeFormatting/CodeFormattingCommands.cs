@@ -97,6 +97,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 			var selection = doc.Editor.SelectionRange;
 			
 			using (var undo = doc.Editor.OpenUndoGroup ()) {
+				var version = doc.Editor.Version;
+
 				if (formatter.SupportsOnTheFlyFormatting) {
 					formatter.OnTheFlyFormat (doc, selection.Offset, selection.EndOffset);
 				} else {
@@ -104,9 +106,14 @@ namespace MonoDevelop.Ide.CodeFormatting
 					string text = formatter.FormatText (pol, doc.Editor.Text, selection.Offset, selection.EndOffset);
 					if (text != null) {
 						doc.Editor.Replace (selection.Offset, selection.Length, text);
-						doc.Editor.SetSelection (selection.Offset, selection.Offset + text.Length - 1);
 					}
 				}
+
+				int newOffset = version.MoveOffsetTo (doc.Editor.Version, selection.Offset);
+				int newEndOffset = version.MoveOffsetTo (doc.Editor.Version, selection.EndOffset);
+				
+				doc.Editor.SetSelection (newOffset, newEndOffset);
+
 			}
 		}
 	}

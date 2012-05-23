@@ -30,6 +30,11 @@ namespace MonoDevelop.Core
 {
 	public class MacSystemInformation : UnixSystemInformation
 	{
+		public static readonly Version MountainLion = new Version (10, 8);
+		public static readonly Version Lion = new Version (10, 7);
+		public static readonly Version SnowLeopard = new Version (10, 6);
+		static Version version;
+
 		[System.Runtime.InteropServices.DllImport ("/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon")]
 		static extern int Gestalt (int selector, out int result);
 		
@@ -45,14 +50,22 @@ namespace MonoDevelop.Core
 				throw new Exception (string.Format ("Error reading gestalt for selector '{0}': {1}", selector, ret));
 			return result;
 		}
+
+		static MacSystemInformation ()
+		{
+			version = new Version (Gestalt ("sys1"), Gestalt ("sys2"), Gestalt ("sys3"));
+		}
+
+		public static Version OsVersion {
+			get { return version; }
+		}
 		
 		protected override void AppendOperatingSystem (StringBuilder sb)
 		{
-			sb.AppendFormat ("\tMac OS X {0}.{1}.{2}", Gestalt ("sys1"), Gestalt ("sys2"), Gestalt ("sys3"));
+			sb.AppendFormat ("\tMac OS X {0}", version);
 			sb.AppendLine ();
 			
 			base.AppendOperatingSystem (sb);
 		}
 	}
 }
-

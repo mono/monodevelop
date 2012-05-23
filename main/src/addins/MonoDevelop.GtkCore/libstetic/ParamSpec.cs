@@ -16,13 +16,20 @@ namespace Stetic {
 
 		~ParamSpec ()
 		{
-			Dispose ();
+			Dispose (false);
 		}
 
 		public void Dispose () 
 		{
-			Raw = IntPtr.Zero;
 			GC.SuppressFinalize (this);
+			Dispose (true);
+		}
+		
+		protected virtual void Dispose (bool disposing)
+		{
+			if (_obj != IntPtr.Zero)
+				g_param_spec_unref (_obj);
+			_obj = IntPtr.Zero;
 		}
 
 		IntPtr Raw {

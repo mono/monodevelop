@@ -235,9 +235,10 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 		{
-			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
+			if (usingDeclaration.PrevSibling != null && !(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
 			} else if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) {
+				FixIndentationForceNewLine(usingDeclaration.StartLocation);
 				EnsureBlankLinesAfter(usingDeclaration, policy.BlankLinesAfterUsings);
 			} else {
 				FixIndentationForceNewLine(usingDeclaration.StartLocation);
@@ -246,9 +247,10 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
-			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
+			if (usingDeclaration.PrevSibling != null && !(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
 			} else if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) {
+				FixIndentationForceNewLine(usingDeclaration.StartLocation);
 				EnsureBlankLinesAfter(usingDeclaration, policy.BlankLinesAfterUsings);
 			} else {
 				FixIndentationForceNewLine(usingDeclaration.StartLocation);
@@ -2059,18 +2061,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		void PlaceOnNewLine (NewLinePlacement newLine, AstNode keywordNode)
+		void PlaceOnNewLine(NewLinePlacement newLine, AstNode keywordNode)
 		{
 			if (keywordNode == null || newLine == NewLinePlacement.DoNotCare) {
 				return;
 			}
+
 			var prev = keywordNode.GetPrevNode ();
-			Console.WriteLine ("prev:" + prev);
 			if (prev is Comment || prev is PreProcessorDirective)
 				return;
 
 			int offset = document.GetOffset(keywordNode.StartLocation);
-
+			
 			int whitespaceStart = SearchWhitespaceStart(offset);
 			string indentString = newLine == NewLinePlacement.NewLine ? this.options.EolMarker + this.curIndent.IndentString : " ";
 			AddChange(whitespaceStart, offset - whitespaceStart, indentString);

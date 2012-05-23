@@ -213,6 +213,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			var unresolvedTypeDef = entity as IUnresolvedTypeDefinition ?? entity.DeclaringTypeDefinition;
 			var resolvedTypeDef = resolvedEntity as ITypeDefinition ?? resolvedEntity.DeclaringTypeDefinition;
 			if (unresolvedTypeDef != null && resolvedTypeDef != null) {
+				// Strictly speaking, we would have to pass the parent context into CreateResolveContext,
+				// then transform the result using WithTypeDefinition().
+				// However, we can simplify this here because we know this is a C# type definition.
 				var context = unresolvedTypeDef.CreateResolveContext(new SimpleTypeResolveContext(resolvedTypeDef));
 				if (resolvedEntity is IMember)
 					context = context.WithCurrentMember((IMember)resolvedEntity);

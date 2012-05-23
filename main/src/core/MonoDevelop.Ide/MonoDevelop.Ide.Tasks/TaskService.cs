@@ -183,6 +183,13 @@ namespace MonoDevelop.Ide.Tasks
 			if (handler != null)
 				handler (null, new TaskEventArgs (task));
 		}
+
+		internal static void InformCommentTasks (CommentTasksChangedEventArgs args)
+		{
+			var handler = CommentTasksChanged;
+			if (handler != null)
+				handler (null, args);
+		}
 		
 		public static event EventHandler<CommentTasksChangedEventArgs> CommentTasksChanged;
 

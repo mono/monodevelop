@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		static IEnumerable<SearchCollector.FileList> GetFileNames (Solution solution, object node, RefactoryScope scope, 
 		                                                           IProgressMonitor monitor, IEnumerable<object> searchNodes)
 		{
-			if (node is IVariable || scope == RefactoryScope.File) {
+			if (!(node is IField) && node is IVariable || scope == RefactoryScope.File) {
 				string fileName;
 				if (node is IEntity) {
 					fileName = ((IEntity)node).Region.FileName;
@@ -191,7 +191,6 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (member is IMember)
 					searchNodes = CollectMembers (solution, (IMember)member, scope).ToList<object> ();
 			}
-			
 			// prepare references finder
 			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
 			var curList = new List<FilePath> ();

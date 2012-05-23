@@ -41,7 +41,9 @@ namespace MonoDevelop.Core
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
 		static DateTime timestamp;
-		
+		static TextWriter defaultError;
+		static TextWriter defaultOut;
+
 		static LoggingService ()
 		{
 			ConsoleLogger consoleLogger = new ConsoleLogger ();
@@ -100,6 +102,11 @@ namespace MonoDevelop.Core
 				RedirectOutputToLogFile ();
 		}
 		
+		public static void Shutdown ()
+		{
+			RestoreOutputRedirection ();
+		}
+
 		static void PurgeOldLogs ()
 		{
 			// Delete all logs older than a week
@@ -118,7 +125,7 @@ namespace MonoDevelop.Core
 				}
 			}
 		}
-		
+
 		static void RedirectOutputToLogFile ()
 		{
 			FilePath logDir = UserProfile.Current.LogDir;
@@ -145,11 +152,13 @@ namespace MonoDevelop.Core
 			var stderr = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
 			stderr.ChainWriter (Console.Error);
 			stderr.ChainWriter (writer);
+			defaultError = Console.Error;
 			Console.SetError (stderr);
 
 			var stdout = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
 			stdout.ChainWriter (Console.Out);
 			stdout.ChainWriter (writer);
+			defaultOut = Console.Out;
 			Console.SetOut (stdout);
 		}
 		
@@ -186,6 +195,14 @@ namespace MonoDevelop.Core
 			} finally {
 				Mono.Unix.Native.Syscall.close (fd);
 			}
+		}
+
+		static void RestoreOutputRedirection ()
+		{
+			if (defaultError != null)
+				Console.SetError (defaultError);
+			if (defaultOut != null)
+				Console.SetOut (defaultOut);
 		}
 		
 		internal static RemoteLogger RemoteLogger {

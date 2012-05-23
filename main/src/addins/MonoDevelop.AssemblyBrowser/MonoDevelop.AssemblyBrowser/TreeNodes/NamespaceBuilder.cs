@@ -86,7 +86,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			Namespace ns = (Namespace)dataObject;
-			bool publicOnly = ctx.Options ["PublicApiOnly"];
+			bool publicOnly = Widget.PublicApiOnly;
 			if (ns.Types != null) 
 				ctx.AddChildren (publicOnly ? ns.Types.Where (t => t.IsPublic) : ns.Types);
 		}
@@ -113,7 +113,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-		//	bool publicOnly = navigator.Options ["PublicApiOnly"];
+		//	bool publicOnly = Widget.PublicApiOnly;
 			Namespace ns = (Namespace)navigator.DataItem;
 			
 			data.Text = "// " + ns.Name;

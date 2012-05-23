@@ -738,12 +738,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (FixedField f)
 			{
 				var location = LocationsBag.GetMemberLocation (f);
+				int locationIdx = 0;
 				
 				var newField = new FixedFieldDeclaration ();
 				AddAttributeSection (newField, f);
 				AddModifiers (newField, location);
 				if (location != null && location.Count > 0)
-					newField.AddChild (new CSharpTokenNode (Convert (location [0])), FixedFieldDeclaration.FixedKeywordRole);
+					newField.AddChild (new CSharpTokenNode (Convert (location [locationIdx++])), FixedFieldDeclaration.FixedKeywordRole);
 
 				if (f.TypeExpression != null)
 					newField.AddChild (ConvertToType (f.TypeExpression), Roles.Type);
@@ -780,8 +781,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						newField.AddChild (variable, FixedFieldDeclaration.VariableRole);
 					}
 				}
-				if (location != null)
-					newField.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Semicolon);
+				if (location != null && location.Count > locationIdx)
+					newField.AddChild (new CSharpTokenNode (Convert (location [locationIdx])), Roles.Semicolon);
 				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 				
 			}
@@ -797,10 +798,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				VariableInitializer variable = new VariableInitializer ();
 				variable.AddChild (Identifier.Create (f.MemberName.Name, Convert (f.MemberName.Location)), Roles.Identifier);
-				
+				int locationIdx = 0;
 				if (f.Initializer != null) {
 					if (location != null)
-						variable.AddChild (new CSharpTokenNode (Convert (location [0])), Roles.Assign);
+						variable.AddChild (new CSharpTokenNode (Convert (location [locationIdx++])), Roles.Assign);
 					variable.AddChild ((Expression)f.Initializer.Accept (this), Roles.Expression);
 				}
 				newField.AddChild (variable, Roles.Variable);
@@ -820,8 +821,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						newField.AddChild (variable, Roles.Variable);
 					}
 				}
-				if (location != null)
-					newField.AddChild (new CSharpTokenNode (Convert (location [location.Count - 1])), Roles.Semicolon);
+				if (location != null &&location.Count > locationIdx)
+					newField.AddChild (new CSharpTokenNode (Convert (location [locationIdx++])), Roles.Semicolon);
 
 				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 			}
@@ -2689,25 +2690,31 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (NewAnonymousType newAnonymousType)
 			{
 				var result = new AnonymousTypeCreateExpression ();
-				if (newAnonymousType.Parameters == null)
-					return result;
-				foreach (var par in newAnonymousType.Parameters) {
-					if (par == null)
-						continue;
-					var location = LocationsBag.GetLocations (par);
-
-					if (location == null) {
-						if (par.Expr != null)
-							result.AddChild ((Expression)par.Expr.Accept (this), Roles.Expression);
-					} else {
-						var namedExpression = new NamedExpression ();
-						namedExpression.AddChild (Identifier.Create (par.Name, Convert (par.Location)), Roles.Identifier);
-						namedExpression.AddChild (new CSharpTokenNode (Convert (location [0])), Roles.Assign);
-						if (par.Expr != null)
-							namedExpression.AddChild ((Expression)par.Expr.Accept (this), Roles.Expression);
-						result.AddChild (namedExpression, Roles.Expression);
+				var location = LocationsBag.GetLocations (newAnonymousType);
+				result.AddChild (new CSharpTokenNode (Convert (newAnonymousType.Location)), ObjectCreateExpression.NewKeywordRole);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location [0])), Roles.LBrace);
+				if (newAnonymousType.Parameters != null) {
+					foreach (var par in newAnonymousType.Parameters) {
+						if (par == null)
+							continue;
+						var parLocation = LocationsBag.GetLocations (par);
+	
+						if (parLocation == null) {
+							if (par.Expr != null)
+								result.AddChild ((Expression)par.Expr.Accept (this), Roles.Expression);
+						} else {
+							var namedExpression = new NamedExpression ();
+							namedExpression.AddChild (Identifier.Create (par.Name, Convert (par.Location)), Roles.Identifier);
+							namedExpression.AddChild (new CSharpTokenNode (Convert (parLocation [0])), Roles.Assign);
+							if (par.Expr != null)
+								namedExpression.AddChild ((Expression)par.Expr.Accept (this), Roles.Expression);
+							result.AddChild (namedExpression, Roles.Expression);
+						}
 					}
 				}
+				if (location != null && location.Count > 1)
+					result.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.RBrace);
 				return result;
 			}
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 version=1.9
 prefix=/usr/local
 profile=dist

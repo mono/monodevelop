@@ -1,9 +1,9 @@
 
 ADDIN_BUILD = $(top_builddir)/build/AddIns/VersionControl
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.VersionControl.Git.dll
-NGIT=$(top_builddir)/../external/ngit/bin/NGit.dll
-NSCH=$(top_builddir)/../external/ngit/bin/NSch.dll
-SHARPEN=$(top_builddir)/../external/ngit/bin/Sharpen.dll
+NGIT=$(top_builddir)/external/ngit/bin/NGit.dll
+NSCH=$(top_builddir)/external/ngit/bin/NSch.dll
+SHARPEN=$(top_builddir)/external/ngit/bin/Sharpen.dll
 
 DEPS =  \
 	$(top_builddir)/build/AddIns/VersionControl/MonoDevelop.VersionControl.dll \
@@ -12,9 +12,9 @@ DEPS =  \
 	$(top_builddir)/build/bin/Mono.TextEditor.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Core.dll \
 	$(top_builddir)/build/bin/MonoDevelop.Ide.dll \
-	$(top_builddir)/../external/ngit/bin/NGit.dll \
-	$(top_builddir)/../external/ngit/bin/NSch.dll \
-	$(top_builddir)/../external/ngit/bin/Sharpen.dll
+	$(top_builddir)/external/ngit/bin/NGit.dll \
+	$(top_builddir)/external/ngit/bin/NSch.dll \
+	$(top_builddir)/external/ngit/bin/Sharpen.dll
 
 REFS =  \
 	$(GLIB_SHARP_LIBS) \

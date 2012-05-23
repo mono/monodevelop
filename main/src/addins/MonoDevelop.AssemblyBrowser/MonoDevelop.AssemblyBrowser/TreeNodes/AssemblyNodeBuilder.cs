@@ -80,7 +80,7 @@ namespace MonoDevelop.AssemblyBrowser
 				builder.AddChild (resources);
 			
 			var namespaces = new Dictionary<string, Namespace> ();
-			bool publicOnly = builder.Options ["PublicApiOnly"];
+			bool publicOnly = Widget.PublicApiOnly;
 			
 			foreach (var type in compilationUnit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
@@ -92,6 +92,8 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			foreach (var ns in namespaces.Values) {
+				if (publicOnly && !ns.Types.Any (t => t.IsPublic))
+					continue;
 				builder.AddChild (ns);
 			}
 		}

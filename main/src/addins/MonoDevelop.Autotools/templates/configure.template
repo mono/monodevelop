@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 VERSION=%%VERSION%%
 PACKAGE=%%PACKAGE%%
 prefix=/usr/local

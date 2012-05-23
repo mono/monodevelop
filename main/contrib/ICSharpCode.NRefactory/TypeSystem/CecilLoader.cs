@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -446,7 +446,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
 					case (PInvokeAttributes)0:
-						Console.WriteLine ("Calling convention not set for:" + methodDefinition.FullName);
+						Debug.WriteLine ("P/Invoke calling convention not set on:" + methodDefinition.FullName);
 						callingConvention = CallingConvention.StdCall;
 						break;
 					case PInvokeAttributes.CallConvCdecl:
