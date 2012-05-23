@@ -138,6 +138,28 @@ namespace MonoDevelop.Ide
 			return copy;
 		}
 		
+		public static Gdk.Pixbuf MakeInverted (Gdk.Pixbuf icon)
+		{
+			if (icon.BitsPerSample != 8)
+				throw new NotSupportedException ();
+			Gdk.Pixbuf copy = icon.Copy ();
+			unsafe {
+				byte* pix = (byte*)copy.Pixels;
+				bool hasAlpha = copy.HasAlpha;
+				for (int y = 0; y < copy.Height; y++) {
+					var start = pix;
+					for (int x = 0; x < copy.Width; x++) {
+						pix [0] = (byte)~pix [0];
+						pix [1] = (byte)~pix [1];
+						pix [2] = (byte)~pix [2];
+						pix += hasAlpha ? 4 : 3;
+					}
+					pix = start + copy.Rowstride;
+				}
+			}
+			return copy;
+		}
+		
 		public static Gdk.Pixbuf GetPixbuf (string name)
 		{
 			return GetPixbuf (name, Gtk.IconSize.Button);

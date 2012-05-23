@@ -104,6 +104,7 @@ namespace MonoDevelop.Components
 			get {
 				if (darkIcon == null && Icon != null) {
 					darkIcon = ImageService.MakeGrayscale (Icon);
+					darkIcon = ImageService.MakeInverted (darkIcon);
 				}
 				return darkIcon;
 			}
