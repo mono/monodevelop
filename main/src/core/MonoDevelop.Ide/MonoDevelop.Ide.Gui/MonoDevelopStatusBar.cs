@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide
 		HBox statusBox;
 		Image currentStatusImage;
 		
-		readonly ProgressBar progressBar = new ProgressBar ();
+//		readonly ProgressBar progressBar = new ProgressBar ();
 		readonly Label statusLabel = new Label ();
 		public readonly static HBox messageBox = new HBox ();
 		public readonly static HBox statusIconBox = new HBox ();
@@ -137,10 +137,7 @@ namespace MonoDevelop.Ide
 			
 			// Status panels
 			
-			progressBar.PulseStep = 0.1;
-			progressBar.SizeRequest ();
-			progressBar.HeightRequest = 1;
-			
+
 			statusBox = new HBox (false, 0);
 			statusBox.BorderWidth = 0;
 			
@@ -153,7 +150,7 @@ namespace MonoDevelop.Ide
 			statusLabel.ShowAll ();
 			
 //			EventBox eventMessageBox = new EventBox ();
-			messageBox.PackStart (progressBar, false, false, 0);
+//			messageBox.PackStart (progressBar, false, false, 0);
 			messageBox.PackStart (statusLabel, true, true, 0);
 //			eventMessageBox.Add (messageBox);
 //			statusBox.PackStart (eventMessageBox, true, true, 0);
@@ -193,13 +190,11 @@ namespace MonoDevelop.Ide
 	//		boxChild.Padding = 0;
 	//		boxChild.Expand = boxChild.Fill = false;
 			
-			progressBar.Fraction = 0.0;
 			this.ShowAll ();
 			statusIconBox.HideAll ();
 			
 			originalFrame.HideAll ();
-			progressBar.Visible = false;
-			
+
 			StatusBarContext completionStatus = null;
 			
 			// todo: Move this to the CompletionWindowManager when it's possible.
@@ -399,37 +394,76 @@ namespace MonoDevelop.Ide
 		}
 		
 		#region Progress Monitor implementation
+		public static event EventHandler ProgressBegin, ProgressEnd, ProgressPulse;
+		public static event EventHandler<FractionEventArgs> ProgressFraction;
+
+		public sealed class FractionEventArgs : EventArgs
+		{
+			public double Work { get; private set; }
+
+			public FractionEventArgs (double work)
+			{
+				this.Work = work;
+			}
+		}
+
+		static void OnProgressBegin (EventArgs e)
+		{
+			var handler = ProgressBegin;
+			if (handler != null)
+				handler (null, e);
+		}
+
+		static void OnProgressEnd (EventArgs e)
+		{
+			var handler = ProgressEnd;
+			if (handler != null)
+				handler (null, e);
+		}
+
+		static void OnProgressPulse (EventArgs e)
+		{
+			var handler = ProgressPulse;
+			if (handler != null)
+				handler (null, e);
+		}
+
+		static void OnProgressFraction (FractionEventArgs e)
+		{
+			var handler = ProgressFraction;
+			if (handler != null)
+				handler (null, e);
+		}
+
 		public void BeginProgress (string name)
 		{
 			ShowMessage (name);
-			progressBar.Visible = true;
+			OnProgressBegin (EventArgs.Empty);
 		}
 		
 		public void BeginProgress (Image image, string name)
 		{
 			ShowMessage (image, name);
-			progressBar.Visible = true;
+			OnProgressBegin (EventArgs.Empty);
 		}
 
 		public void SetProgressFraction (double work)
 		{
 			DispatchService.AssertGuiThread ();
-			progressBar.Fraction = work;
+			OnProgressFraction (new FractionEventArgs (work));
 		}
 		
 		public void EndProgress ()
 		{
 			ShowMessage ("");
-			progressBar.Fraction = 0.0;
-			progressBar.Visible = false;
+			OnProgressEnd (EventArgs.Empty);
 			AutoPulse = false;
 		}
 
 		public void Pulse ()
 		{
 			DispatchService.AssertGuiThread ();
-			progressBar.Visible = true;
-			progressBar.Pulse ();
+			OnProgressPulse (EventArgs.Empty);
 		}
 
 		public bool AutoPulse {
@@ -437,10 +471,9 @@ namespace MonoDevelop.Ide
 			set {
 				DispatchService.AssertGuiThread ();
 				if (value) {
-					progressBar.Visible = true;
 					if (autoPulseTimeoutId == 0) {
 						autoPulseTimeoutId = GLib.Timeout.Add (100, delegate {
-							progressBar.Pulse ();
+							Pulse ();
 							return true;
 						});
 					}

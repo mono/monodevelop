@@ -42,6 +42,12 @@ namespace MonoDevelop.Compontents.MainToolbar
 
 		Color innerColor;
 
+		Color progressColor;
+
+
+		bool inProgress;
+		double progressFraction;
+
 		public StatusArea ()
 		{
 			VisibleWindow = false;
@@ -49,7 +55,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 			borderColor = CairoExtensions.ParseColor ("8c8c8c");
 			fill1Color = CairoExtensions.ParseColor ("eff5f7");
 			fill2Color = CairoExtensions.ParseColor ("d0d9db");
-
+			progressColor = CairoExtensions.ParseColor ("95999a");
 			innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
 			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 0);
 			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 4);
@@ -58,6 +64,28 @@ namespace MonoDevelop.Compontents.MainToolbar
 			this.ButtonPressEvent += delegate {
 				MonoDevelopStatusBar.HandleEventMessageBoxButtonPressEvent (null, null);
 			};
+
+			MonoDevelopStatusBar.ProgressBegin += delegate {
+				inProgress = true;
+				progressFraction = 0;
+				QueueDraw ();
+			};
+
+			MonoDevelopStatusBar.ProgressEnd += delegate {
+				inProgress = false;
+				progressFraction = 0;
+				QueueDraw ();
+			};
+
+			MonoDevelopStatusBar.ProgressFraction += delegate(object sender, MonoDevelopStatusBar.FractionEventArgs e) {
+				progressFraction = e.Work;
+				QueueDraw ();
+			};
+
+			MonoDevelopStatusBar.ProgressPulse += delegate {
+				// TODO
+			};
+
 			SetSizeRequest (32, 22);
 			ShowAll ();
 		}
@@ -81,6 +109,16 @@ namespace MonoDevelop.Compontents.MainToolbar
 				context.LineWidth = 4;
 				context.Color = innerColor;
 				context.StrokePreserve ();
+
+				if (inProgress) {
+					context.NewPath ();
+					context.Rectangle (Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width * progressFraction, Allocation.Height);
+					context.Clip ();
+					CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width, Allocation.Height, 4);
+					context.Color = progressColor;
+					context.FillPreserve ();
+					context.ResetClip ();
+				}
 
 				context.LineWidth = 1;
 				context.Color = borderColor;
