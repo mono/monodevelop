@@ -1,19 +1,19 @@
-<?xml version="1.0"?>
-<Template Originator="Michael Hutchinson"
-          Created="2009/02/20"
-          LastModified="2012/05/17">
+﻿<?xml version="1.0"?>
+<Template Originator="Piotr Dowgiallo"
+          Created="2012/05/16"
+          LastModified="2012/05/16">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>ASP.NET MVC 2 Global.asax</_Name>
+		<_Name>ASP.NET MVC 3 Global.asax</_Name>
 		<_Category>ASP.NET MVC</_Category>
 		<Icon>md-html-file-icon</Icon>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>AspNetMvc</ProjectType>
 		<DefaultFilename IsFixed="True">Global.asax</DefaultFilename>
-		<_Description>Creates an ASP.NET MVC 2 Global.asax file.</_Description>
+		<_Description>Creates an ASP.NET MVC 3 Global.asax file.</_Description>
 	</TemplateConfiguration>
-	
+
 	<Conditions>
 		<ParentProject PermittedCreationPaths="" ExcludedFiles="/Global.asax" />
 	</Conditions>
@@ -50,9 +50,15 @@ namespace ${Namespace}
 
         }
 
+        public static void RegisterGlobalFilters(GlobalFilterCollection filters)
+        {
+            filters.Add(new HandleErrorAttribute());
+        }
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
+            RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
         }
     }
