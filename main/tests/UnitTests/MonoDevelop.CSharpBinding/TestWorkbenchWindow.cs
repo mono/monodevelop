@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharpBinding
 			
 		}
 
-		public MonoDevelop.Components.Docking.DockItemToolbar GetToolbar (IBaseViewContent targetView)
+		public DocumentToolbar GetToolbar (IBaseViewContent targetView)
 		{
 			throw new NotImplementedException ();
 		}
