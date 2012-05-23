@@ -18,11 +18,14 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
+monostub: monostub.c
+	gcc -Wall -m32 monostub.c -o monostub -framework CoreFoundation
+
 clean-local:
 	rm -rf MonoDevelop.app
 	rm -f MonoDevelop*.dmg
 
-app:
+app: monostub
 	@echo ""
 	@echo "Creating directories in app bundle"
 	@echo ""
@@ -121,6 +124,11 @@ app:
 	test ! -d $(ARTIFACTS)/MonoDoc.app ||  cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
 	cp -r MDMonitor.app $(MACOS)
+
+# Mono stubs to make the process name and bundle location correct
+	mkdir -p "$(MACOS)/bin"
+	cp -f monostub "$(MACOS)/bin/monodevelop"
+	cp -f monostub "$(MACOS)/bin/mdtool"
 
 # update revision in updateinfo
 	@echo ""
