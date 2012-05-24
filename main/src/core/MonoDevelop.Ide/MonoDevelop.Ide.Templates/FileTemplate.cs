@@ -355,7 +355,7 @@ namespace MonoDevelop.Ide.Templates
 				} else {
 					string fileName = singleFile.GetFileName (policyParent, project, language, directory, name);
 					string mimeType = GuessMimeType (fileName);
-					return DisplayBindingService.GetDefaultViewBinding (null, mimeType, null) != null;
+					return DisplayBindingService.GetDefaultViewBinding (null, mimeType, false, null) != null;
 				}
 			}
 		}

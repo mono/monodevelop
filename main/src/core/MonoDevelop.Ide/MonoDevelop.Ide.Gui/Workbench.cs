@@ -50,6 +50,7 @@ using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Components.Docking;
 using System.Text;
+using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -472,11 +473,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document NewDocument (string defaultName, string mimeType, Stream content)
 		{
-			IViewDisplayBinding binding = DisplayBindingService.GetDefaultViewBinding (null, mimeType, null);
+			IViewDisplayBinding binding = DisplayBindingService.GetDefaultViewBinding (null, mimeType, false, null);
 			if (binding == null)
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			
-			IViewContent newContent = binding.CreateContent (null, mimeType, null);
+			IViewContent newContent = binding.CreateContent (null, mimeType, false, null);
 			using (content) {
 				newContent.LoadNew (content, mimeType);
 			}
@@ -765,11 +766,11 @@ namespace MonoDevelop.Ide.Gui
 			IDisplayBinding binding = null;
 			IViewDisplayBinding viewBinding = null;
 			Project project = GetProjectContainingFile (fileName);
-			
+			bool isBinary = false;
 			if (openFileInfo.DisplayBinding != null) {
 				binding = viewBinding = openFileInfo.DisplayBinding;
 			} else {
-				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, project).Where (d => d.CanUseAsDefault);
+				var bindings = DisplayBindingService.GetDisplayBindings (fileName, null, isBinary, project).Where (d => d.CanUseAsDefault);
 				if (openFileInfo.Options.HasFlag (OpenDocumentOptions.OnlyInternalViewer)) {
 					binding = bindings.OfType<IViewDisplayBinding>().FirstOrDefault ();
 					viewBinding = (IViewDisplayBinding) binding;
@@ -791,7 +792,7 @@ namespace MonoDevelop.Ide.Gui
 						fw.Invoke (fileName);
 					} else {
 						var extBinding = (IExternalDisplayBinding)binding;
-						var app = extBinding.GetApplication (fileName, null, project);
+						var app = extBinding.GetApplication (fileName, null, isBinary, project);
 						app.Launch (fileName);
 					}
 					
@@ -1101,8 +1102,15 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				Counters.OpenDocumentTimer.Trace ("Creating content");
 				string mimeType = DesktopService.GetMimeTypeForUri (fileName);
-				if (binding.CanHandle (fileName, mimeType, project)) {
-					newContent = binding.CreateContent (fileName, mimeType, project);
+				bool isBinary;
+				try {
+					isBinary = TextFileUtility.IsBinary (fileName);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while calling IsBinary.", e);
+					isBinary = false;
+				}
+				if (binding.CanHandle (fileName, mimeType, isBinary, project)) {
+					newContent = binding.CreateContent (fileName, mimeType, isBinary, project);
 				} else {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 				}

@@ -42,12 +42,12 @@ namespace MonoDevelop.Gettext
 			get { return GettextCatalog.GetString ("Gettext Editor"); }
 		}
 		
-		public bool CanHandle (FilePath filePath, string mimeType, Project project)
+		public bool CanHandle (FilePath filePath, string mimeType, bool isBinary, Project project)
 		{
 			return filePath.IsNotNull && filePath.HasExtension (".po");
 		}
 		
-		public IViewContent CreateContent (FilePath filePath, string mimeType, Project project)
+		public IViewContent CreateContent (FilePath filePath, string mimeType, bool isBinary, Project project)
 		{
 			foreach (TranslationProject tp in IdeApp.Workspace.GetAllSolutionItems<TranslationProject>  ())
 				if (tp.BaseDirectory == Path.GetDirectoryName (filePath))

@@ -34,6 +34,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -45,26 +46,26 @@ namespace MonoDevelop.Ide.Gui
 				.OfType<T> ();
 		}
 		
-		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, Project ownerProject)
+		internal static IEnumerable<IDisplayBinding> GetDisplayBindings (FilePath filePath, string mimeType, bool isBinary, Project ownerProject)
 		{
 			if (mimeType == null && !filePath.IsNullOrEmpty)
 				mimeType = DesktopService.GetMimeTypeForUri (filePath);
 			
 			foreach (var b in GetBindings<IDisplayBinding> ()) {
-				if (b.CanHandle (filePath, mimeType, ownerProject))
+				if (b.CanHandle (filePath, mimeType, isBinary, ownerProject))
 					yield return b;
 			}
 		}
 		
-		public static IViewDisplayBinding GetDefaultViewBinding (FilePath filePath, string mimeType, Project ownerProject)
+		public static IViewDisplayBinding GetDefaultViewBinding (FilePath filePath, string mimeType, bool isBinary, Project ownerProject)
 		{
-			return GetDisplayBindings (filePath, mimeType, ownerProject).OfType<IViewDisplayBinding> ()
+			return GetDisplayBindings (filePath, mimeType, isBinary, ownerProject).OfType<IViewDisplayBinding> ()
 				.FirstOrDefault (d => d.CanUseAsDefault);
 		}
 		
-		public static IDisplayBinding GetDefaultBinding (FilePath filePath, string mimeType, Project ownerProject)
+		public static IDisplayBinding GetDefaultBinding (FilePath filePath, string mimeType, bool isBinary, Project ownerProject)
 		{
-			return GetDisplayBindings (filePath, mimeType, ownerProject).FirstOrDefault (d => d.CanUseAsDefault);
+			return GetDisplayBindings (filePath, mimeType, isBinary, ownerProject).FirstOrDefault (d => d.CanUseAsDefault);
 		}
 		
 		public static void AttachSubWindows (IWorkbenchWindow workbenchWindow)
@@ -79,14 +80,21 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string mimeType = DesktopService.GetMimeTypeForUri (filePath);
 			var viewerIds = new HashSet<string> ();
-			
-			foreach (var b in GetDisplayBindings (filePath, mimeType, ownerProject)) {
+			bool isBinary;
+			try {
+				isBinary = TextFileUtility.IsBinary (filePath);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while calling IsBinary.", e);
+				isBinary = false;
+			}
+
+			foreach (var b in GetDisplayBindings (filePath, mimeType, isBinary, ownerProject)) {
 				var vb = b as IViewDisplayBinding;
 				if (vb != null) {
 					yield return new FileViewer (vb);
 				} else {
 					var eb = (IExternalDisplayBinding) b;
-					var app = eb.GetApplication (filePath, mimeType, ownerProject);
+					var app = eb.GetApplication (filePath, mimeType, isBinary, ownerProject);
 					if (viewerIds.Add (app.Id))
 						yield return new FileViewer (app);
 				}
@@ -101,7 +109,7 @@ namespace MonoDevelop.Ide.Gui
 	//dummy binding, anchor point for extension tree
 	class DefaultDisplayBinding : IViewDisplayBinding
 	{
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
 		{
 			throw new InvalidOperationException ();
 		}
@@ -110,7 +118,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return null; }
 		}
 
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
 		{
 			return false;
 		}

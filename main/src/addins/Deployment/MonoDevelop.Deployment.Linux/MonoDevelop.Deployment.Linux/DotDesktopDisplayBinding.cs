@@ -10,13 +10,13 @@ namespace MonoDevelop.Deployment.Linux
 {
 	public class DotDesktopDisplayBinding: IViewDisplayBinding
 	{
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
 		{
 			return (fileName.IsNotNull && fileName.HasExtension (".desktop"))
 				|| (mimeType != null && mimeType == "application/x-desktop");
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
 		{
 			return new DotDesktopView ();
 		}

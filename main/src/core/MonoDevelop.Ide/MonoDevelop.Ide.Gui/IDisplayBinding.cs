@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui
 		/// Whether this instance can handle the specified item. ownerProject may be null, and either 
 		/// fileName or mimeType may be null, but not both.
 		/// </summary>
-		bool CanHandle (FilePath fileName, string mimeType, Project ownerProject);
+		bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject);
 		
 		/// <summary>
 		/// Whether the display binding can be used as the default handler for the content types
@@ -53,14 +53,14 @@ namespace MonoDevelop.Ide.Gui
 	///<summary>A display binding that opens a new view within the workspace.</summary>
 	public interface IViewDisplayBinding : IDisplayBinding
 	{
-		IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject);
+		IViewContent CreateContent (FilePath fileName, string mimeType, bool isBinary, Project ownerProject);
 		string Name { get; }
 	}
 	
 	///<summary>A display binding that opens an external application.</summary>
 	public interface IExternalDisplayBinding : IDisplayBinding
 	{
-		DesktopApplication GetApplication (FilePath fileName, string mimeType, Project ownerProject);
+		DesktopApplication GetApplication (FilePath fileName, string mimeType, bool isBinary, Project ownerProject);
 	}
 	
 	///<summary>A display binding that attaches to an existing view in the workspace.</summary>

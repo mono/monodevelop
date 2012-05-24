@@ -60,14 +60,14 @@ namespace MonoDevelop.AssemblyBrowser
 			return viewContent;
 		}
 		
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
 		{
 			return mimeType == "application/x-ms-dos-executable"
 				|| mimeType == "application/x-executable"
 				|| mimeType == "application/x-msdownload";
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
 		{
 			return GetViewContent ();
 		}
