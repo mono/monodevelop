@@ -41,12 +41,12 @@ namespace MonoDevelop.Database.Query
 			}
 		}
 
-		public bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return fileName.IsNotNull && fileName.HasExtension (".sql");
 		}
 
-		public IViewContent CreateContent (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new SqlQueryView ();
 		}
