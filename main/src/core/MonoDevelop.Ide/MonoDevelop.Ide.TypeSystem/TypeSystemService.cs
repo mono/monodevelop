@@ -592,7 +592,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
 				Task.Factory.StartNew (delegate {
 					ReloadAllReferences ();
-					CheckModifiedFiles ();
 				});
 
 				solution.SolutionItemAdded += OnSolutionItemAdded;
@@ -1027,6 +1026,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
+					Task.Factory.StartNew (delegate {
+						CheckModifiedFiles (project, wrapper);
+					});
+
 					return wrapper;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
