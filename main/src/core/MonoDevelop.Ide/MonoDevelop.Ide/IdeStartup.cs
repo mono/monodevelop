@@ -75,8 +75,8 @@ namespace MonoDevelop.Ide
 		{
 			Counters.Initialization.BeginTiming ();
 			
-			if (options.LogCounters) {
-				string logFile = Path.Combine (Environment.CurrentDirectory, "monodevelop.clog");
+			if (options.PerfLog) {
+				string logFile = Path.Combine (Environment.CurrentDirectory, "monodevelop.perf-log");
 				LoggingService.LogInfo ("Logging instrumentation service data to file: " + logFile);
 				InstrumentationService.StartAutoSave (logFile, 1000);
 			}
@@ -135,11 +135,11 @@ namespace MonoDevelop.Ide
 			//don't show the splash screen on the Mac, so instead we get the expected "Dock bounce" effect
 			//this also enables the Mac platform service to subscribe to open document events before the GUI loop starts.
 			if (Platform.IsMac)
-				options.NoLogo = true;
+				options.NoSplash = true;
 			
 			IProgressMonitor monitor;
 			
-			if (options.NoLogo) {
+			if (options.NoSplash) {
 				monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			} else {
 				monitor = SplashScreenForm.SplashScreen;
@@ -529,18 +529,18 @@ namespace MonoDevelop.Ide
 		MonoDevelopOptions ()
 		{
 			IpcTcp = (PlatformID.Unix != Environment.OSVersion.Platform);
+			RedirectOutput = true;
 		}
 		
 		Mono.Options.OptionSet GetOptionSet ()
 		{
 			return new Mono.Options.OptionSet () {
-				{ "nologo", "Do not display splash screen.", s => NoLogo = true },
+				{ "no-splash", "Do not display splash screen.", s => NoSplash = true },
 				{ "ipc-tcp", "Use the Tcp channel for inter-process comunication.", s => IpcTcp = true },
-				{ "newwindow", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => NewWindow = true },
+				{ "new-window", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => NewWindow = true },
 				{ "h|?|help", "Show help", s => ShowHelp = true },
-				{ "clog", "Log internal counter data", s => LogCounters = true },
-				{ "clog-interval=", "Interval between counter logs (in milliseconds)", (int i) => LogCountersInterval = i },
-				{ "redirect-output", "Whether to redirect stdout/stderr to a log file", s => RedirectOutput = true },
+				{ "perf-log", "Enable performance counter logging", s => PerfLog = true },
+				{ "no-redirect", "Disable redirection of stdout/stderr to a log file", s => RedirectOutput = false },
 			};
 		}
 		
@@ -569,12 +569,11 @@ namespace MonoDevelop.Ide
 			return opt;
 		}
 		
-		public bool NoLogo { get; set; }
+		public bool NoSplash { get; set; }
 		public bool IpcTcp { get; set; }
 		public bool NewWindow { get; set; }
 		public bool ShowHelp { get; set; }
-		public bool LogCounters { get; set; }
-		public int LogCountersInterval { get; set; }
+		public bool PerfLog { get; set; }
 		public bool RedirectOutput { get; set; }
 		public string Error { get; set; }
 		public IList<string> RemainingArgs { get; set; }
