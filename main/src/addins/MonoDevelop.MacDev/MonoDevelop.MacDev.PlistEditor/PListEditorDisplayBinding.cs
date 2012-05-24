@@ -40,13 +40,13 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public bool CanUseAsDefault { get { return true; } }
 		
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
 		{
 			return mimeType == "application/vnd.apple-plist" || 
 				fileName.Extension == ".plist";
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
 		{
 			IPlistEditingHandler handler = null;
 			if (ownerProject != null && fileName != null) {
