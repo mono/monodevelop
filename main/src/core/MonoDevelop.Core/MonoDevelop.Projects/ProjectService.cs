@@ -499,7 +499,7 @@ namespace MonoDevelop.Projects
 					return project;
 				}
 			}
-			return null;
+			throw new InvalidOperationException ("Project type '" + type + "' not found");
 		}
 		
 		public Solution GetWrapperSolution (IProgressMonitor monitor, string filename)
