@@ -448,7 +448,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool Close ()
 		{
-			return Window.CloseWindow (false);
+			return ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
 		}
 		
 		protected virtual void OnSaved (EventArgs args)

@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (FileCommands.CloseFile)]
 		protected void OnCloseFile ()
 		{
-			window.CloseWindow (false);
+			((SdiWorkspaceWindow)window).CloseWindow (false, true);
 		}
 		
 		[CommandHandler (FileCommands.Save)]

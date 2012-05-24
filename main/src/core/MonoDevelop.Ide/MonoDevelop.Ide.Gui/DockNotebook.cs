@@ -33,6 +33,7 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Cairo;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -41,6 +42,7 @@ namespace MonoDevelop.Ide.Gui
 	class DockNotebook : Gtk.VBox
     {
 		List<IDockNotebookTab> pages = new List<IDockNotebookTab> ();
+		List<IDockNotebookTab> pagesHistory = new List<IDockNotebookTab> ();
 		TabStrip tabStrip;
 		Gtk.EventBox contentBox;
 		ReadOnlyCollection<IDockNotebookTab> pagesCol;
@@ -52,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 			pagesCol = new ReadOnlyCollection<IDockNotebookTab> (pages);
 			ButtonPressEvent += new ButtonPressEventHandler (OnButtonPress);
 			ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonRelease);
-			AddEvents ((Int32) (EventMask.AllEventsMask));
+			AddEvents ((Int32)(EventMask.AllEventsMask));
 
 			tabStrip = new TabStrip (this);
 
@@ -62,6 +64,20 @@ namespace MonoDevelop.Ide.Gui
 			PackStart (contentBox, true, true, 0);
 
 			ShowAll ();
+
+			tabStrip.DropDownButton.MenuCreator = delegate {
+				Gtk.Menu menu = new Menu ();
+				foreach (var tab in pagesHistory) {
+					var mi = new Gtk.ImageMenuItem (tab.Text);
+					menu.Insert (mi, -1);
+					var locTab = tab;
+					mi.Activated += delegate {
+						CurrentTab = locTab;
+					};
+				}
+				menu.ShowAll ();
+				return menu;
+			};
 		}
 		
 		Cursor fleurCursor = new Cursor (CursorType.Fleur);
@@ -73,14 +89,24 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler PageRemoved;
 		public event EventHandler SwitchPage;
 
-		public event EventHandler PreviousClicked {
+		public event EventHandler PreviousButtonClicked {
 			add { tabStrip.PreviousButton.Clicked += value; }
 			remove { tabStrip.PreviousButton.Clicked -= value; }
 		}
 
-		public event EventHandler NextClicked {
+		public event EventHandler NextButtonClicked {
 			add { tabStrip.NextButton.Clicked += value; }
 			remove { tabStrip.NextButton.Clicked -= value; }
+		}
+
+		public bool PreviousButtonEnabled {
+			get { return tabStrip.PreviousButton.Sensitive; }
+			set { tabStrip.PreviousButton.Sensitive = value; }
+		}
+
+		public bool NextButtonEnabled {
+			get { return tabStrip.NextButton.Sensitive; }
+			set { tabStrip.NextButton.Sensitive = value; }
 		}
 
 		public ReadOnlyCollection<IDockNotebookTab> Tabs {
@@ -94,8 +120,12 @@ namespace MonoDevelop.Ide.Gui
 				if (contentBox.Child != null)
 					contentBox.Remove (contentBox.Child);
 
-				if (currentTab != null && currentTab.Content != null)
-					contentBox.Add (currentTab.Content);
+				if (currentTab != null) {
+					if (currentTab.Content != null)
+						contentBox.Add (currentTab.Content);
+					pagesHistory.Remove (currentTab);
+					pagesHistory.Insert (0, currentTab);
+				}
 
 				tabStrip.Update ();
 
@@ -119,12 +149,14 @@ namespace MonoDevelop.Ide.Gui
 			if (index == -1) {
 				pages.Add (tab);
 				tab.Index = pages.Count - 1;
-			}
-			else {
+			} else {
 				pages.Insert (index, tab);
 				tab.Index = index;
 				UpdateIndexes (index + 1);
 			}
+
+			pagesHistory.Add (tab);
+
 			if (pages.Count == 1)
 				CurrentTab = tab;
 
@@ -150,30 +182,47 @@ namespace MonoDevelop.Ide.Gui
 				return pages [n];
 		}
 
-		public void RemoveTab (int page)
+		public void RemoveTab (int page, bool animate)
 		{
-			if (page < pages.Count - 1)
-				CurrentTabIndex = page + 1;
-			else if (page > 0)
-				CurrentTabIndex = page - 1;
-			else
-				CurrentTab = null;
+			var tab = pages [page];
+			if (animate)
+				tabStrip.StartCloseAnimation ((DockNotebookTab)tab);
+			if (page == CurrentTabIndex) {
+				if (page < pages.Count - 1)
+					CurrentTabIndex = page + 1;
+				else if (page > 0)
+					CurrentTabIndex = page - 1;
+				else
+					CurrentTab = null;
+			}
 			pages.RemoveAt (page);
 			UpdateIndexes (page);
+			pagesHistory.Remove (tab);
 			tabStrip.Update ();
 
 			if (PageRemoved != null)
 				PageRemoved (this, EventArgs.Empty);
 		}
 
+		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTabPosition)
+		{
+			if (tab == targetTabPosition)
+				return;
+			if (tab.Index > targetTabPosition.Index) {
+				pages.RemoveAt (tab.Index);
+				pages.Insert (targetTabPosition.Index, tab);
+			} else {
+				pages.Insert (targetTabPosition.Index + 1, tab);
+				pages.RemoveAt (tab.Index);
+			}
+			UpdateIndexes (0);
+			tabStrip.Update ();
+		}
+
 		internal void OnCloseTab (DockNotebookTab tab)
 		{
 			if (TabClosed != null)
 				TabClosed (this, new TabEventArgs () { Tab = tab });
-		}
-
-		void ReorderChild (Gtk.Widget widget, int npage)
-		{
 		}
 
 		internal void ShowContent (DockNotebookTab tab)
@@ -377,12 +426,23 @@ namespace MonoDevelop.Ide.Gui
 		int firstTabIndex;
 		IDockNotebookTab highlightedTab;
 		bool overCloseButton;
-		Gtk.Button dropDownButton;
+		bool buttonPressedOnTab;
 		int tabStartX, tabEndX;
-		Fixed frame;
+
+		bool draggingTab;
+		int dragX;
+		int dragOffset;
+
+		DockNotebookTab closingTab;
+		int closingTabIndex;
+		int closingTabStep;
+		int closingAnimationLength;
+		double closingTabAnimationStep;
+		uint closingAnimation;
 
 		public Gtk.Button PreviousButton;
 		public Gtk.Button NextButton;
+		public MenuButton DropDownButton;
 
 		static Gdk.Pixbuf closeSelImage;
 		static Gdk.Pixbuf closeSelOverImage;
@@ -399,6 +459,10 @@ namespace MonoDevelop.Ide.Gui
 		const int LabelButtonSeparatorWidth = 6;
 		const double TabBorderRadius = 3;
 		const int BackgroundShadowHeight = 5;
+		const int LeftBarPadding = 58;
+
+		const uint CloseAnimationFrameRate = 20;
+		const int CloseAnimationStepSize = 25;
 
 		static TabStrip ()
 		{
@@ -418,56 +482,155 @@ namespace MonoDevelop.Ide.Gui
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonPressMask;
 
-			PreviousButton = new Button (new Gtk.Arrow (Gtk.ArrowType.Left, Gtk.ShadowType.None));
+			var arr = new Gtk.Arrow (Gtk.ArrowType.Left, Gtk.ShadowType.None);
+			arr.HeightRequest = arr.WidthRequest = 9;
+			PreviousButton = new Button (arr);
 			PreviousButton.Relief = ReliefStyle.None;
-			PreviousButton.ShowAll ();
-			NextButton = new Button (new Gtk.Arrow (Gtk.ArrowType.Right, Gtk.ShadowType.None));
+			PreviousButton.CanDefault = PreviousButton.CanFocus = false;
+
+			arr = new Gtk.Arrow (Gtk.ArrowType.Right, Gtk.ShadowType.None);
+			arr.HeightRequest = arr.WidthRequest = 9;
+			NextButton = new Button (arr);
 			NextButton.Relief = ReliefStyle.None;
+			NextButton.CanDefault = NextButton.CanFocus = false;
+
+			DropDownButton = new MenuButton ();
+			DropDownButton.Relief = ReliefStyle.None;
+			DropDownButton.CanDefault = DropDownButton.CanFocus = false;
+
+			PreviousButton.ShowAll ();
 			NextButton.ShowAll ();
-			dropDownButton = new Button ("");
-			dropDownButton.Relief = ReliefStyle.None;
-			dropDownButton.ShowAll ();
+			DropDownButton.ShowAll ();
 
-			int x = 0;
+			PreviousButton.Name = "MonoDevelop.DockNotebook.BarButton";
+			NextButton.Name = "MonoDevelop.DockNotebook.BarButton";
+			DropDownButton.Name = "MonoDevelop.DockNotebook.BarButton";
 
-			frame = new Fixed ();
-
-			frame.Put (PreviousButton, x, TopBarPadding);
-			x += PreviousButton.SizeRequest ().Width;
-			frame.Put (NextButton, x, TopBarPadding);
-			x += NextButton.SizeRequest ().Width;
-
-			frame.Put (dropDownButton, 0, 0);
-
-			tabStartX = x;
-
-			frame.ShowAll ();
-			Add (frame);
+			PreviousButton.Parent = this;
+			NextButton.Parent = this;
+			DropDownButton.Parent = this;
 		}
 
-		int lastTabEndX;
+		public void StartCloseAnimation (DockNotebookTab closingTab)
+		{
+			if (closingAnimation != 0)
+				GLib.Source.Remove (closingAnimation);
+
+			int x = 0;
+			CalcTabSize (closingTab, ref x, false, false);
+
+			this.closingTab = closingTab;
+			closingTabIndex = closingTab.Index;
+			closingTabStep = 0;
+			closingAnimationLength = x;
+			closingTabAnimationStep = 0;
+			closingAnimation = GLib.Timeout.Add (CloseAnimationFrameRate, AnimateClosingTab);
+		}
+
+		bool AnimateClosingTab ()
+		{
+			closingTabStep += CloseAnimationStepSize;
+			closingTabAnimationStep = (double)closingTabStep / (double)closingAnimationLength;
+			QueueDraw ();
+			if (closingTabStep < closingAnimationLength)
+				return true;
+			else {
+				closingAnimation = 0;
+				closingTab = null;
+				return false;
+			}
+		}
+
+		protected override void ForAll (bool include_internals, Callback callback)
+		{
+			base.ForAll (include_internals, callback);
+			callback (NextButton);
+			callback (PreviousButton);
+			callback (DropDownButton);
+		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			tabEndX = allocation.Width - dropDownButton.SizeRequest ().Height;
-			if (lastTabEndX != tabEndX) {
-				lastTabEndX = tabEndX;
-				frame.Move (dropDownButton, tabEndX, TopBarPadding);
-			}
+			tabStartX = allocation.X + LeftBarPadding;
+			tabEndX = allocation.Width - DropDownButton.SizeRequest ().Width;
+
+			PreviousButton.SizeAllocate (new Gdk.Rectangle (
+				allocation.X,
+				allocation.Y,
+				LeftBarPadding / 2,
+				allocation.Height - BottomBarPadding
+			)
+			);
+			NextButton.SizeAllocate (new Gdk.Rectangle (
+				allocation.X + LeftBarPadding / 2,
+				allocation.Y,
+				LeftBarPadding / 2, allocation.Height - BottomBarPadding)
+			);
+
+			DropDownButton.SizeAllocate (new Gdk.Rectangle (
+				tabEndX,
+				allocation.Y,
+				DropDownButton.SizeRequest ().Width,
+				allocation.Height - BottomBarPadding));
+
 			base.OnSizeAllocated (allocation);
 		}
 
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			Pango.Layout la = new Pango.Layout (PangoContext);
+			la.SetText ("H");
+			int w, h;
+			la.GetPixelSize (out w, out h);
+
+			h += TopPadding + BottomPadding;
+			requisition.Height = h;
+			requisition.Width = 0;
+		}
+
+		int lastDragX = 0;
+
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
-			var t = FindTab ((int)evnt.X, (int)evnt.Y);
-			if (t != highlightedTab) {
-				highlightedTab = t;
+			if (!draggingTab) {
+				var t = FindTab ((int)evnt.X, (int)evnt.Y);
+				if (t != highlightedTab) {
+					highlightedTab = t;
+					QueueDraw ();
+				}
+				var newOver = IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y);
+				if (newOver != overCloseButton) {
+					overCloseButton = newOver;
+					QueueDraw ();
+				}
+				if (!overCloseButton && !draggingTab && buttonPressedOnTab) {
+					draggingTab = true;
+					int x = (int)evnt.X;
+					dragOffset = x - t.Allocation.X;
+					dragX = x - dragOffset;
+					lastDragX = (int)evnt.X;
+				}
+			} else {
+				dragX = (int)evnt.X - dragOffset;
 				QueueDraw ();
-			}
-			var newOver = IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y);
-			if (newOver != overCloseButton) {
-				overCloseButton = newOver;
-				QueueDraw ();
+
+				var t = FindTab ((int)evnt.X, TopPadding + 3);
+				if (t == null) {
+					var last = (DockNotebookTab)notebook.Tabs.Last ();
+					if (dragX > last.Allocation.Right)
+						t = last;
+					if (dragX < 0)
+						t = (DockNotebookTab)notebook.Tabs.First ();
+				}
+				if (t != null && t != notebook.CurrentTab && (
+					((int)evnt.X > lastDragX && t.Index > notebook.CurrentTab.Index) ||
+					((int)evnt.X < lastDragX && t.Index < notebook.CurrentTab.Index)))
+				{
+					notebook.ReorderTab ((DockNotebookTab)notebook.CurrentTab, t);
+				}
+				lastDragX = (int)evnt.X;
 			}
 			return base.OnMotionNotifyEvent (evnt);
 		}
@@ -483,14 +646,31 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
 			if (t != null) {
-				if (IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
+				buttonPressedOnTab = true;
+				// Don't select the tab if we are clicking the close button
+				if (IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y))
+					return true;
+				notebook.CurrentTab = t;
+				return true;
+			} else
+				buttonPressedOnTab = true;
+			QueueDraw ();
+			return base.OnButtonPressEvent (evnt);
+		}
+
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			buttonPressedOnTab = false;
+			if (!draggingTab) {
+				var t = FindTab ((int)evnt.X, (int)evnt.Y);
+				if (t != null && IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
 					notebook.OnCloseTab (t);
 					return true;
 				}
-				notebook.CurrentTab = t;
-				return true;
 			}
-			return base.OnButtonPressEvent (evnt);
+			draggingTab = false;
+			QueueDraw ();
+			return base.OnButtonReleaseEvent (evnt);
 		}
 
 		DockNotebookTab FindTab (int x, int y)
@@ -514,30 +694,67 @@ namespace MonoDevelop.Ide.Gui
 				firstTabIndex = firstTab.Index;
 
 			int tabsAllocWidth = tabEndX - tabStartX;
-			while (firstTabIndex > 0 && CalcTabExtent () < tabsAllocWidth)
-				firstTabIndex--;
+
+			int lastTabIndex = CalcLastTab (firstTabIndex);
+			if (lastTabIndex == -1)
+				lastTabIndex = firstTabIndex;
+
+			if (notebook.CurrentTab != null) {
+				if (notebook.CurrentTab.Index <= firstTabIndex)
+					firstTabIndex = notebook.CurrentTab.Index;
+				else if (notebook.CurrentTab.Index > lastTabIndex) {
+					firstTabIndex = notebook.CurrentTab.Index - 1;
+					do {
+						int t = CalcLastTab (firstTabIndex);
+						if (t == notebook.CurrentTab.Index || t == -1)
+							break;
+						if (t < notebook.CurrentTab.Index) {
+							firstTabIndex++;
+							break;
+						}
+						firstTabIndex--;
+					} while (firstTabIndex >= 0);
+				}
+			}
+
+			// If there is space left in the tab strip, try to fill it using tabs
+			// in lower indexes
+			int startIndex = firstTabIndex;
+			while (startIndex >= 0 && CalcTabExtent (startIndex, out lastTabIndex) < tabsAllocWidth)
+				firstTabIndex = startIndex--;
 
 			firstTab = notebook.GetTab (firstTabIndex);
 
 			QueueDraw ();
 		}
 
-		int CalcTabExtent ()
+		int CalcLastTab (int startIndex)
 		{
-			int x = 0;
-			for (int n = firstTabIndex; n < notebook.Tabs.Count; n++) {
-				if (n > firstTabIndex && (n - 1 != notebook.CurrentTabIndex))
-				    x += SeparatorWidth;
-				var tab = notebook.Tabs [n];
-				CalcTabSize (tab, ref x, tab == notebook.CurrentTab, tab == highlightedTab);
-			}
-			return x;
+			int lastIncludedTabIndex;
+			CalcTabExtent (startIndex, out lastIncludedTabIndex);
+			return lastIncludedTabIndex;
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		int CalcTabExtent (int startIndex, out int lastIncludedTabIndex)
 		{
-			base.OnSizeRequested (ref requisition);
-			requisition.Width = 0;
+			// Gets the space taken for the tabs starting at firstTabIndex, and including
+			// tabs which don't go beyond maxExtent
+
+			int maxExtent = tabEndX - tabStartX;
+			lastIncludedTabIndex = -1;
+			int x = 0;
+			int n;
+			for (n = startIndex; n < notebook.Tabs.Count; n++) {
+				if (n > startIndex && (n - 1 != notebook.CurrentTabIndex))
+					x += SeparatorWidth;
+				var tab = notebook.Tabs [n];
+				CalcTabSize (tab, ref x, tab == notebook.CurrentTab, tab == highlightedTab);
+				if (x < maxExtent)
+					lastIncludedTabIndex = n;
+				else
+					break;
+			}
+			return x;
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
@@ -560,15 +777,23 @@ namespace MonoDevelop.Ide.Gui
 				ctx.Pattern = gr;
 				ctx.Fill ();
 
-				ctx.Rectangle (0, Allocation.Height - BottomBarPadding, Allocation.Width, BottomBarPadding);
-				ctx.Color = Styles.BreadcrumbBackgroundColor;
-				ctx.Fill ();
+				if (notebook.Tabs.Count > 0) {
+					ctx.Rectangle (0, Allocation.Height - BottomBarPadding, Allocation.Width, BottomBarPadding);
+					ctx.Color = Styles.BreadcrumbBackgroundColor;
+					ctx.Fill ();
+				}
 
+				ctx.Rectangle (tabStartX, 0, tabEndX - tabStartX, Allocation.Height); 
+				ctx.Clip ();
+				int xActive = 0;
 				int x = tabStartX;
 				int y = 0;
-				for (int n = firstTabIndex; n < notebook.Tabs.Count; n++) {
+				for (int n = firstTabIndex; n < notebook.Tabs.Count && x < tabEndX; n++) {
+					if (closingTab != null && n == closingTabIndex) {
+						DrawTab (ctx, closingTab, ref x, y, false);
+					}
 					int sx = x;
-					var tab = (DockNotebookTab) notebook.Tabs [n];
+					var tab = (DockNotebookTab)notebook.Tabs [n];
 					if (tab == notebook.CurrentTab)
 						DrawActiveTab (ctx, tab, ref x, y, tab == highlightedTab);
 					else
@@ -576,6 +801,13 @@ namespace MonoDevelop.Ide.Gui
 
 					tab.Allocation = new Gdk.Rectangle (sx, Allocation.Y, x - sx, Allocation.Height);
 				}
+
+				if (draggingTab) {
+					// We draw the active again to make sure it is drawn over all the other tabs
+					DrawActiveTab (ctx, (DockNotebookTab)notebook.CurrentTab, ref x, y, true);
+				}
+
+				ctx.ResetClip ();
 			}
 			return base.OnExposeEvent (evnt);
 		}
@@ -597,14 +829,27 @@ namespace MonoDevelop.Ide.Gui
 
 		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, ref int x, int y, bool highlight)
 		{
+			bool isClosing = tab == closingTab;
+
 			var la = CreateTabLayout (tab);
 			int w, h;
 			la.GetPixelSize (out w, out h);
 
-			var gc = highlight ? Style.TextGC (Gtk.StateType.Normal) : Style.TextGC (Gtk.StateType.Insensitive);
 			x += LeftRightPadding;
 
-			GdkWindow.DrawLayout (gc, x, y + TopPadding, la);
+			if (isClosing) {
+				w = (int)((1d - closingTabAnimationStep) * (double)w);
+				ctx.Save ();
+				ctx.Rectangle (x, y + TopPadding, w, Allocation.Height);
+				ctx.Clip ();
+			}
+
+			ctx.MoveTo (x, y + TopPadding);
+			ctx.Color = highlight ? Style.Text (Gtk.StateType.Normal).ToCairoColor () : Style.Text (Gtk.StateType.Insensitive).ToCairoColor ();
+			PangoCairoHelper.ShowLayout (ctx, la);
+
+			if (isClosing)
+				ctx.Restore ();
 
 			x += w + LabelButtonSeparatorWidth;
 
@@ -629,6 +874,19 @@ namespace MonoDevelop.Ide.Gui
 
 			var closePix = highlight && overCloseButton ? closeSelOverImage : closeSelImage;
 
+			int startX = x;
+
+			if (draggingTab) {
+				x = dragX;
+				int tabsize = LeftRightPaddingSel + w + LabelButtonSeparatorWidth + closePix.Width + LeftRightPadding;
+				if (x < tabStartX)
+					x = tabStartX;
+				else if (x + tabsize > tabEndX)
+					x = tabEndX - tabsize;
+
+			}
+			int startXDrag = x;
+
 			int tabWidth = w + LeftRightPaddingSel * 2 + LabelButtonSeparatorWidth + closePix.Width;
 
 			ctx.LineWidth = 1;
@@ -650,11 +908,11 @@ namespace MonoDevelop.Ide.Gui
 			DrawTabBorder (ctx, tabWidth - 4, x + 1, 1);
 			ctx.Stroke ();
 
-			var gc = Style.WhiteGC;
-
 			x += LeftRightPaddingSel;
 
-			GdkWindow.DrawLayout (gc, x, y + TopPadding, la);
+			ctx.MoveTo (x, y + TopPadding);
+			ctx.Color = new Cairo.Color (1, 1, 1);
+			PangoCairoHelper.ShowLayout (ctx, la);
 
 			x += w + LabelButtonSeparatorWidth;
 
@@ -666,6 +924,9 @@ namespace MonoDevelop.Ide.Gui
 			tab.CloseButtonAllocation = crect;
 
 			x += closePix.Width + LeftRightPadding;
+
+			if (draggingTab)
+				x = startX + (x - startXDrag);
 
 			la.Dispose ();
 		}
@@ -690,9 +951,9 @@ namespace MonoDevelop.Ide.Gui
 		Pango.Layout CreateTabLayout (IDockNotebookTab tab)
 		{
 			Pango.Layout la = new Pango.Layout (PangoContext);
-			if (tab.Markup != null)
+			if (!string.IsNullOrEmpty (tab.Markup))
 				la.SetMarkup (tab.Markup);
-			else
+			else if (!string.IsNullOrEmpty (tab.Text))
 				la.SetText (tab.Text);
 			return la;
 		}

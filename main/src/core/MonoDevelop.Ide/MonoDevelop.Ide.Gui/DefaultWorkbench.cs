@@ -589,22 +589,22 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		void CheckRemovedFile(object sender, FileEventArgs args)
+		void CheckRemovedFile (object sender, FileEventArgs args)
 		{
 			foreach (FileEventInfo e in args) {
 				if (e.IsDirectory) {
 					IViewContent[] views = new IViewContent [viewContentCollection.Count];
 					viewContentCollection.CopyTo (views, 0);
 					foreach (IViewContent content in views) {
-						if (content.ContentName.StartsWith(e.FileName)) {
-							content.WorkbenchWindow.CloseWindow(true);
+						if (content.ContentName.StartsWith (e.FileName)) {
+							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
 						}
 					}
 				} else {
 					foreach (IViewContent content in viewContentCollection) {
 						if (content.ContentName != null &&
-						    content.ContentName == e.FileName) {
-							content.WorkbenchWindow.CloseWindow(true);
+							content.ContentName == e.FileName) {
+							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
 							return;
 						}
 					}
@@ -715,7 +715,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (lastActiveWindows.Count > MAX_LASTACTIVEWINDOWS)
 				lastActiveWindows.RemoveFirst ();
-			
+
+			lastActiveWindows.Remove (lastActive);
 			lastActiveWindows.AddLast (lastActive);
 			lastActive = ActiveWorkbenchWindow;
 			SetWorkbenchTitle ();
@@ -1091,6 +1092,7 @@ namespace MonoDevelop.Ide.Gui
 				last = lastActiveWindows.Last.Value;
 				lastActiveWindows.RemoveLast ();
 			} while (lastActiveWindows.Count > 0 && (last == cur || last == null || (last != null && last.ViewContent == null)));
+
 			if (last != null && last != cur) {
 				last.SelectWindow ();
 				return true;
@@ -1113,16 +1115,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CloseClicked (object o, TabEventArgs e)
 		{
-			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false);
+			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true);
 		}
 
-		internal void RemoveTab (int pageNum) {
+		internal void RemoveTab (int pageNum, bool animate)
+		{
 			try {
 				// Weird switch page events are fired when a tab is removed.
 				// This flag avoids unneeded events.
 				ignorePageSwitch = true;
 				IWorkbenchWindow w = ActiveWorkbenchWindow;
-				tabControl.RemoveTab (pageNum);
+				tabControl.RemoveTab (pageNum, animate);
 				ignorePageSwitch = false;
 				if (w != ActiveWorkbenchWindow)
 					OnActiveWindowChanged (null, null);
@@ -1363,7 +1366,7 @@ namespace MonoDevelop.Ide.Gui
 	// The SdiDragNotebook class allows redirecting the command route to the ViewCommandHandler
 	// object of the selected document, which implement some default commands.
 	
-	class SdiDragNotebook: DockNotebook, ICommandDelegatorRouter
+	class SdiDragNotebook: DockNotebook, ICommandDelegatorRouter, ICommandBar
 	{
 		ShadedContainer shadedContainer;
 		
@@ -1380,6 +1383,13 @@ namespace MonoDevelop.Ide.Gui
 				if (AreasChanged != null)
 					AreasChanged (this, EventArgs.Empty);
 			};
+			NextButtonClicked += delegate {
+				IdeApp.CommandService.DispatchCommand (Ide.Commands.NavigationCommands.NavigateForward);
+			};
+			PreviousButtonClicked += delegate {
+				IdeApp.CommandService.DispatchCommand (Ide.Commands.NavigationCommands.NavigateBack);
+			};
+			IdeApp.CommandService.RegisterCommandBar (this);
 		}
 		
 		public object GetNextCommandTarget ()
@@ -1389,7 +1399,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public object GetDelegatedCommandTarget ()
 		{
-			SdiWorkspaceWindow win = (SdiWorkspaceWindow) CurrentTab.Content;
+			SdiWorkspaceWindow win = CurrentTab != null ? (SdiWorkspaceWindow) CurrentTab.Content : null;
 			return win != null ? win.CommandHandler : null;
 		}
 		
@@ -1431,5 +1441,23 @@ namespace MonoDevelop.Ide.Gui
 			}
 			return base.OnPopupMenu ();
 		}
+
+		#region ICommandBar implementation
+		bool isEnabled = true;
+
+		void ICommandBar.Update (object activeTarget)
+		{
+			var ci = IdeApp.CommandService.GetCommandInfo (Ide.Commands.NavigationCommands.NavigateForward);
+			NextButtonEnabled = isEnabled && ci.Enabled && ci.Visible;
+
+			ci = IdeApp.CommandService.GetCommandInfo (Ide.Commands.NavigationCommands.NavigateBack);
+			PreviousButtonEnabled = isEnabled && ci.Enabled && ci.Visible;
+		}
+
+		void ICommandBar.SetEnabled (bool enabled)
+		{
+			isEnabled = enabled;
+		}
+		#endregion
 	}
 }

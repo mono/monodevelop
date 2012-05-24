@@ -46,13 +46,15 @@ namespace MonoDevelop.Components
 		public MenuButton ()
 			: base ()
 		{
-			HBox box = new HBox();
+			HBox box = new HBox ();
 			box.Spacing = 6;
 			Add (box);
 			
 			image = new Image ();
+			image.NoShowAll = true;
 			box.PackStart (image, false, false, 0);
 			label = new Label ();
+			label.NoShowAll = true;
 			box.PackStart (label, false, false, 0);
 			ArrowType = Gtk.ArrowType.Down;
 			base.Label = null;
@@ -156,7 +158,10 @@ namespace MonoDevelop.Components
 
 		public new string Label {
 			get { return label.Text; }
-			set { label.Text = value; }
+			set {
+				label.Text = value;
+				label.Visible = !string.IsNullOrEmpty (value);
+			}
 		}
 		
 		public new bool UseUnderline {
@@ -165,7 +170,10 @@ namespace MonoDevelop.Components
 		}
 		
 		public string StockImage {
-			set { image.Pixbuf = RenderIcon (value, IconSize.Button, null); }
+			set {
+				image.Pixbuf = RenderIcon (value, IconSize.Button, null);
+				image.Show ();
+			}
 		}
 		
 		public bool UseMarkup

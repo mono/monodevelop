@@ -353,6 +353,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool CloseWindow (bool force)
 		{
+			return CloseWindow (force, false);
+		}
+
+		public bool CloseWindow (bool force, bool animate)
+		{
 			bool wasActive = workbench.ActiveWorkbenchWindow == this;
 			WorkbenchWindowEventArgs args = new WorkbenchWindowEventArgs (force, wasActive);
 			args.Cancel = false;
@@ -360,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 			if (args.Cancel)
 				return false;
 			
-			workbench.RemoveTab (tab.Index);
+			workbench.RemoveTab (tab.Index, animate);
 
 			OnClosed (args);
 			
