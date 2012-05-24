@@ -40,22 +40,17 @@ namespace MonoDevelop.Core.AddIns
 			if (assemblies.Count == 0)
 				return false;
 			string version = conditionNode.GetAttribute ("version");
-			if (version.Length > 0)
-				return assemblies.Where (asm => asm.Version == version).Count () > 0;
-			version = conditionNode.GetAttribute ("minVersion");
-			if (version.Length > 0) {
-				foreach (var asm in assemblies) {
-					if (Addin.CompareVersions (version, asm.Version) >= 0)
-						return true;
-				}
-				return false;
+			if (!String.IsNullOrEmpty (version))
+				return assemblies.Any (asm => asm.Version == version);
+			string minVersion = conditionNode.GetAttribute ("minVersion");
+			if (!String.IsNullOrEmpty (minVersion)) {
+				if (!assemblies.Any (asm => Addin.CompareVersions (minVersion, asm.Version) >= 0))
+					return false;
 			}
-			version = conditionNode.GetAttribute ("maxVersion");
-			if (version.Length > 0) {
-				foreach (var asm in assemblies) {
-					if (Addin.CompareVersions (version, asm.Version) > 0)
-						return false;
-				}
+			string maxVersion = conditionNode.GetAttribute ("maxVersion");
+			if (!String.IsNullOrEmpty(maxVersion)) {
+				if (assemblies.Any (asm => Addin.CompareVersions (maxVersion, asm.Version) > 0))
+					return false;
 			}
 			return true;
 		}
