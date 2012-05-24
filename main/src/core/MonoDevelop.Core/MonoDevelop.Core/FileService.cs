@@ -354,9 +354,11 @@ namespace MonoDevelop.Core
 					a++;
 					b++;
 					if (b >= bEnd) {
-						indx++;
-						lastStartA = a + 1;
-						lastStartB = b;
+						if (a >= aEnd || IsSeparator (*a)) {
+							indx++;
+							lastStartA = a + 1;
+							lastStartB = b;
+						}
 						break;
 					}
 				}
