@@ -35,12 +35,12 @@ namespace MonoDevelop.MacDev
 {
 	public class XcodeInterfaceBuilderDisplayBinding : IExternalDisplayBinding
 	{
-		public DesktopApplication GetApplication (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
+		public DesktopApplication GetApplication (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new XcodeInterfaceBuilderDesktopApplication ((IXcodeTrackedProject)ownerProject);
 		}
 		
-		public bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			if (!AppleSdkSettings.IsXcode4)
 				return false;
