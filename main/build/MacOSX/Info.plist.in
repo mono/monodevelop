@@ -51,8 +51,12 @@
 	<string>monodevelop</string>
 	<key>CFBundleIconFile</key>
 	<string>monodevelop.icns</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.developer-tools</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.6</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.ximian.monodevelop</string>
+	<string>com.xamarin.monodevelop</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
