@@ -84,94 +84,6 @@ check_mono_version (const char *version, const char *req_version)
 	return TRUE;
 }
 
-static int
-mkdir_with_parents (const char *dirname, int mode)
-{
-	char *path, *d;
-	char dirsep;
-	int rv;
-	
-	if (dirname == NULL || *dirname == '\0') {
-		errno = EINVAL;
-		return -1;
-	}
-	
-	d = path = strdup (dirname);
-	while (*d == '/')
-		d++;
-	
-	while (*d != '\0') {
-		while (*d && *d != '/')
-			d++;
-		
-		dirsep = *d;
-		*d = '\0';
-		
-		if ((rv = mkdir (path, mode)) == -1 && errno != EEXIST)
-			break;
-		
-		*d = dirsep;
-		while (*d == '/')
-			d++;
-	}
-	
-	free (path);
-	
-	return rv;
-}
-
-static int
-redirect_io (int from_fd, const char *to_path)
-{
-	int err;
-	int fd;
-	
-	if ((fd = open (to_path, O_CREAT | O_TRUNC | O_WRONLY, 0644)) == -1)
-		return -1;
-	
-	if (dup2 (fd, from_fd) == -1) {
-		err = errno;
-		close (fd);
-		errno = err;
-		return -1;
-	}
-	
-	return 0;
-}
-
-static void
-init_logdir (const char *app)
-{
-	const char *env;
-	size_t dirlen;
-	char *path;
-	
-	if ((env = getenv ("MONOMAC_LOGDIR")) != NULL && *env) {
-		// Redirect stdout/err to log files...
-		if (mkdir_with_parents (env, 0755) == -1 && errno != EEXIST) {
-			fprintf (stderr, "Could not create log directory: %s\n", strerror (errno));
-			return;
-		}
-		
-		dirlen = strlen (env);
-		path = malloc (dirlen + 12);
-		strcpy (path, env);
-		
-		if (path[dirlen - 1] != '/')
-			path[dirlen++] = '/';
-		
-		strcpy (path + dirlen, "stdout.log");
-		if (redirect_io (STDOUT_FILENO, path) == -1)
-			fprintf (stderr, "Could not redirect stdout to `%s': %s\n", path, strerror (errno));
-		
-		strcpy (path + dirlen, "stderr.log");
-		if (redirect_io (STDERR_FILENO, path) == -1)
-			fprintf (stderr, "Could not redirect stderr to `%s': %s\n", path, strerror (errno));
-		
-		free (path);
-	}
-}
-
 typedef struct _ListNode {
 	struct _ListNode *next;
 	char *value;
@@ -435,8 +347,6 @@ int main (int argc, char **argv)
 		limit.rlim_cur = MIN (limit.rlim_max, 1024);
 		setrlimit (RLIMIT_NOFILE, &limit);
 	}
-	
-	init_logdir (argv[0]);
 	
 	exeName = [NSString stringWithFormat:@"%s.exe", basename];
 	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
