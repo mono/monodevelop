@@ -175,12 +175,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
-				ChainedMethodCallWrapping = Wrapping.WrapIfTooLong,
-				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
+				ChainedMethodCallWrapping = Wrapping.DoNotWrap,
+				MethodCallArgumentWrapping = Wrapping.DoNotWrap,
 				NewLineAferMethodCallOpenParentheses = true,
 				MethodCallClosingParenthesesOnNewLine = true,
 
-				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
+				IndexerArgumentWrapping = Wrapping.DoNotWrap,
 				NewLineAferIndexerOpenBracket = false,
 				IndexerClosingBracketOnNewLine = false,
 
@@ -344,12 +344,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
-				ChainedMethodCallWrapping = Wrapping.WrapIfTooLong,
-				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
+				ChainedMethodCallWrapping = Wrapping.DoNotWrap,
+				MethodCallArgumentWrapping = Wrapping.DoNotWrap,
 				NewLineAferMethodCallOpenParentheses = true,
 				MethodCallClosingParenthesesOnNewLine = true,
 
-				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
+				IndexerArgumentWrapping = Wrapping.DoNotWrap,
 				NewLineAferIndexerOpenBracket = false,
 				IndexerClosingBracketOnNewLine = false,
 
