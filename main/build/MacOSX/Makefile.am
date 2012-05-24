@@ -18,8 +18,8 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
-monostub: monostub.c
-	gcc -Wall -m32 monostub.c -o monostub -framework CoreFoundation
+monostub: monostub.m
+	gcc -Wall -m32 monostub.m -o monostub -framework AppKit
 
 clean-local:
 	rm -rf MonoDevelop.app
@@ -66,19 +66,12 @@ app: monostub
 	cp ../../monodevelop.xml $(MACOS)/share/mime/packages
 	cp ../../monodevelop.desktop $(MACOS)/share/applications
 
-#launch scripts
+# Native launch scripts
 	@echo ""
 	@echo "Copying launch scripts into app bundle"
 	@echo ""
-	cp monodevelop $(MACOS)/monodevelop
-	cp mono-version-check $(MACOS)/mono-version-check
-	cp mdtool $(MACOS)/mdtool
-	
-# Mono stubs to make the process name and bundle location correct
-	rm -rf "$(MACOS)/bin"
-	mkdir -p "$(MACOS)/bin"
-	ln -s /Library/Frameworks/Mono.framework/Versions/Current/bin/mono "$(MACOS)/bin/monodevelop"
-	ln -s /Library/Frameworks/Mono.framework/Versions/Current/bin/mono "$(MACOS)/bin/mdtool"
+	cp monostub $(MACOS)/monodevelop
+	cp monostub $(MACOS)/mdtool
 	
 # Remove addins that don't work on OSX
 	@echo ""
@@ -124,11 +117,6 @@ app: monostub
 	test ! -d $(ARTIFACTS)/MonoDoc.app ||  cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
 	cp -r MDMonitor.app $(MACOS)
-
-# Mono stubs to make the process name and bundle location correct
-	mkdir -p "$(MACOS)/bin"
-	cp -f monostub "$(MACOS)/bin/monodevelop"
-	cp -f monostub "$(MACOS)/bin/mdtool"
 
 # update revision in updateinfo
 	@echo ""
