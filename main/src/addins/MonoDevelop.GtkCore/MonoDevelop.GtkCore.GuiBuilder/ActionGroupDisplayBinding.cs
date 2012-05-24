@@ -53,7 +53,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return true; }
 		}
 		
-		public bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			if (excludeThis)
 				return false;
@@ -68,18 +68,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, isBinary, ownerProject);
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
 			excludeThis = false;
 			return db != null;
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			excludeThis = true;
-			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, isBinary, ownerProject);
+			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
 			GtkDesignInfo info = GtkDesignInfo.FromProject ((DotNetProject) ownerProject);
 			
-			var content = db.CreateContent (fileName, mimeType, isBinary, ownerProject);
+			var content = db.CreateContent (fileName, mimeType, ownerProject);
 			ActionGroupView view = new ActionGroupView (content, GetActionGroup (fileName), info.GuiBuilderProject);
 			excludeThis = false;
 			return view;

@@ -82,14 +82,14 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public bool CanHandle (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			if (string.IsNullOrEmpty (mimeType) || isBinary)
+			if (string.IsNullOrEmpty (mimeType))
 				return false;
 			return DesktopService.GetMimeTypeIsText (mimeType);
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, bool isBinary, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new SourceEditorView ();
 		}
