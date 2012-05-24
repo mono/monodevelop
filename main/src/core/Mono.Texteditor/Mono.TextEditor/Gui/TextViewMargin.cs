@@ -1717,16 +1717,18 @@ namespace Mono.TextEditor
 
 				bool autoScroll = textEditor.Caret.AutoScrollToCaret;
 				textEditor.Caret.AutoScrollToCaret = false;
+				if (selection != null && selectionRange.Contains (offset)) {
+					textEditor.ClearSelection ();
+					textEditor.Caret.Offset = selectionRange.EndOffset;
+					return;
+				}
+
 				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				textEditor.Caret.Offset = oldOffset;
 				if (selection != null) {
 					if (offset < selectionRange.EndOffset) {
-						oldOffset += length;
-						anchor += length;
-						selection = new Selection (Document.OffsetToLocation (selectionRange.Offset + length),
-						                           Document.OffsetToLocation (selectionRange.Offset + length + selectionRange.Length));
+						textEditor.SelectionRange = new TextSegment (selectionRange.Offset + length, selectionRange.Length);
 					}
-					textEditor.MainSelection = selection;
 				}
 
 				if (autoScroll)
