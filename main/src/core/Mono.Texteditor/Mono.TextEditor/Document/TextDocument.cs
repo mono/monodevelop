@@ -33,6 +33,8 @@ using Mono.TextEditor.Utils;
 using System.Linq;
 using System.ComponentModel;
 using ICSharpCode.NRefactory.Editor;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Mono.TextEditor
 {
@@ -138,14 +140,6 @@ namespace Mono.TextEditor
 				Text = text,
 				ReadOnly = true
 			};
-		}
-
-		~TextDocument ()
-		{
-			if (foldSegmentWorker != null) {
-				foldSegmentWorker.Dispose ();
-				foldSegmentWorker = null;
-			}
 		}
 
 		void SplitterLineSegmentTreeLineChanged (object sender, LineEventArgs e)
@@ -979,23 +973,15 @@ namespace Mono.TextEditor
 		}
 		
 		readonly object syncObject = new object();
-		BackgroundWorker foldSegmentWorker = null;
-		BackgroundWorker FoldSegmentWorker {
-			get {
-				if (foldSegmentWorker == null) {
-					foldSegmentWorker = new BackgroundWorker ();
-					foldSegmentWorker.WorkerSupportsCancellation = true;
-					foldSegmentWorker.DoWork += UpdateFoldSegmentWorker;
-				}
-				return foldSegmentWorker;
-			}
-		}
-		
+
 		public void UpdateFoldSegments (List<FoldSegment> newSegments)
 		{
 			UpdateFoldSegments (newSegments, true);
 		}
 		
+
+		CancellationTokenSource foldSegmentSrc;
+		Task foldSegmentTask;
 
 		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool runInThread)
 		{
@@ -1004,11 +990,26 @@ namespace Mono.TextEditor
 			}
 			
 			InterruptFoldWorker ();
+			bool update;
 			if (!runInThread) {
-				UpdateFoldSegmentWorker (null, new DoWorkEventArgs (newSegments));
-				return;
+				foldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
+				InformFoldTreeUpdated ();
 			}
-			FoldSegmentWorker.RunWorkerAsync (newSegments);
+			foldSegmentSrc = new CancellationTokenSource ();
+			var token = foldSegmentSrc.Token;
+			foldSegmentTask = Task.Factory.StartNew (delegate {
+				var segments = UpdateFoldSegmentWorker (newSegments, out update, token);
+				if (token.IsCancellationRequested)
+					return;
+				Gtk.Application.Invoke (delegate {
+					if (token.IsCancellationRequested)
+						return;
+					foldedSegments = segments;
+					InformFoldTreeUpdated ();
+					if (update)
+						CommitUpdateAll ();
+				});
+			}, token);
 		}
 		
 		void RemoveFolding (FoldSegment folding)
@@ -1023,18 +1024,18 @@ namespace Mono.TextEditor
 		/// Updates the fold segments in a background worker thread. Don't call this method outside of a background worker.
 		/// Use UpdateFoldSegments instead.
 		/// </summary>
-		public void UpdateFoldSegmentWorker (object sender, DoWorkEventArgs e)
+		public HashSet<FoldSegment> UpdateFoldSegmentWorker (List<FoldSegment> newSegments, out bool update, CancellationToken token = default(CancellationToken))
 		{
-			var worker = sender as BackgroundWorker;
-			var newSegments = (List<FoldSegment>)e.Argument;
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
 			bool foldedSegmentAdded = false;
 			newSegments.Sort ();
 			var newFoldedSegments = new HashSet<FoldSegment> ();
 			foreach (FoldSegment newFoldSegment in newSegments) {
-				if (worker != null && worker.CancellationPending)
-					return;
+				if (token.IsCancellationRequested) {
+					update = false;
+					return null;
+				}
 				int offset = newFoldSegment.Offset;
 				while (oldIndex < oldSegments.Count && offset > oldSegments [oldIndex].Offset) {
 					RemoveFolding (oldSegments [oldIndex]);
@@ -1073,35 +1074,33 @@ namespace Mono.TextEditor
 				}
 			}
 			while (oldIndex < oldSegments.Count) {
+				if (token.IsCancellationRequested) {
+					update = false;
+					return null;
+				}
 				RemoveFolding (oldSegments [oldIndex]);
 				oldIndex++;
 			}
 			bool countChanged = foldedSegments.Count != newFoldedSegments.Count;
-			if (worker != null) {
-				Gtk.Application.Invoke (delegate {
-					foldedSegments = newFoldedSegments;
-					InformFoldTreeUpdated ();
-					if (foldedSegmentAdded || countChanged)
-						CommitUpdateAll ();
-				});
-			} else {
-				foldedSegments = newFoldedSegments;
-				InformFoldTreeUpdated ();
-			}
+			update = foldedSegmentAdded || countChanged;
+			return newFoldedSegments;
 		}
 		
 		public void WaitForFoldUpdateFinished ()
 		{
-			while (FoldSegmentWorker.IsBusy)
-				System.Threading.Thread.Sleep (10);
+			if (foldSegmentTask != null) {
+				foldSegmentTask.Wait (5000);
+				foldSegmentTask = null;
+			}
 		}
 		
 		void InterruptFoldWorker ()
 		{
-			if (!FoldSegmentWorker.IsBusy)
+			if (foldSegmentSrc == null)
 				return;
-			FoldSegmentWorker.CancelAsync ();
+			foldSegmentSrc.Cancel ();
 			WaitForFoldUpdateFinished ();
+			foldSegmentSrc = null;
 		}
 		
 		public void ClearFoldSegments ()

@@ -435,6 +435,7 @@ namespace Mono.TextEditor
 		{
 			if (IsDisposed)
 				return;
+			document.WaitForFoldUpdateFinished ();
 			IsDisposed = true;
 			options = options.Kill ();
 			HeightTree.Dispose ();

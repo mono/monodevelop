@@ -365,6 +365,7 @@ namespace MonoDevelop.SourceEditor
 					parseInformationUpdaterWorkerThread.Dispose ();
 					parseInformationUpdaterWorkerThread = null;
 				}
+
 			};
 			vbox.ShowAll ();
 			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
@@ -501,7 +502,8 @@ namespace MonoDevelop.SourceEditor
 						marker.IsFolded = false;
 					
 				}
-				doc.UpdateFoldSegmentWorker (sender, new DoWorkEventArgs (foldSegments));
+				bool update;
+				doc.UpdateFoldSegmentWorker (foldSegments, out update);
 				
 				if (reloadSettings) {
 					reloadSettings = false;
