@@ -64,10 +64,13 @@ namespace MonoDevelop.Projects
 		
 		public override bool SupportsFramework (TargetFramework framework)
 		{
+			if (framework.Id.Identifier == TargetFrameworkMoniker.ID_PORTABLE && framework.Id.Version == "4.0")
+				return true;
+
 			if (!framework.IsCompatibleWithFramework (TargetFrameworkMoniker.PORTABLE_4_0))
 				return false;
-			else
-				return base.SupportsFramework (framework);
+
+			return base.SupportsFramework (framework);
 		}
 		
 		public override TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
