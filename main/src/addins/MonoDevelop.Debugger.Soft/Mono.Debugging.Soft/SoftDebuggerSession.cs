@@ -52,6 +52,7 @@ namespace Mono.Debugging.Soft
 		Dictionary<TypeMirror, string[]> type_to_source = new Dictionary<TypeMirror, string[]> ();
 		bool useFullPaths = true;
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
+		Dictionary<string, MonoSymbolFile> symbolFiles = new Dictionary<string, MonoSymbolFile> ();
 		Dictionary<EventRequest,BreakInfo> breakpoints = new Dictionary<EventRequest,BreakInfo> ();
 		List<BreakInfo> pending_bes = new List<BreakInfo> ();
 		ThreadMirror current_thread, recent_thread;
@@ -549,6 +550,13 @@ namespace Mono.Debugging.Soft
 			if (!exited) {
 				exited = true;
 				EndLaunch ();
+
+				foreach (var symfile in symbolFiles)
+					symfile.Value.Dispose ();
+
+				symbolFiles.Clear ();
+				symbolFiles = null;
+
 				if (vm != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
@@ -1731,9 +1739,6 @@ namespace Mono.Debugging.Soft
 			// Return the location of the method.
 			return method.Locations.Count > 0 ? method.Locations[0] : null;
 		}
-		
-		
-		Dictionary<string, MonoSymbolFile> symbolFiles = new Dictionary<string, MonoSymbolFile> ();
 		
 		bool CheckBetterMatch (TypeMirror type, string file, int line, Location found)
 		{
