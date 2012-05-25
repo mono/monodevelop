@@ -8,7 +8,7 @@ ARTIFACTS=$(top_srcdir)/../../artifacts
 
 CLEANFILES = render.exe
 #DISTCLEANFILES = 
-EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh mdtool monodevelop render.exe
+EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.exe
 
 all: app
 
