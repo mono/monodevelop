@@ -146,11 +146,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			//FIXME: only emit this for the wrapper NS
 //			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition ().FullName, null, null, false, false, false);
 			int cnt = 0, infcnt=0, models=0;
-			
+			nso = assembly.Compilation.Import (nso);
 			foreach (var contextType in assembly.GetAllTypeDefinitions ()) {
-				var importedType = dom.Compilation.Import (contextType);
-				if (importedType.IsDerivedFrom (nso)) {
-					var info = ConvertType (dom, importedType);
+				if (contextType.IsDerivedFrom (nso)) {
+					var info = ConvertType (dom, contextType);
 					if (info != null)
 						yield return info;
 				}
