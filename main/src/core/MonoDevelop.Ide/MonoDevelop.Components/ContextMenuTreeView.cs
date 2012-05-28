@@ -105,23 +105,5 @@ namespace MonoDevelop.Components
 		{
 			return this.Selection.GetSelectedRows ().Length > 1;
 		}
-		
-		protected override bool OnDragMotion (Gdk.DragContext context, int x, int y, uint time)
-		{
-			bool canDrop = CheckCanDrop != null && CheckCanDrop (context, x, y, time);
-			
-			//let default handler handle hover-to-expand, autoscrolling, etc
-			base.OnDragMotion (context, x, y, time);
-			
-			//if we can't handle it, flag as not droppable and remove the drop marker
-			if (!canDrop) {
-				Gdk.Drag.Status (context, (Gdk.DragAction)0, time);
-				SetDragDestRow (null, 0);
-			}
-			
-			return true;
-		}
-		
-		internal Func<Gdk.DragContext, int, int, uint, bool> CheckCanDrop { get; set; }
 	}
 }

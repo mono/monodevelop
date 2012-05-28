@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
 		NodeHashtable nodeHash = new NodeHashtable ();
 		
-		ContextMenuTreeView tree = new ContextMenuTreeView ();
+		ExtensibleTreeViewTree tree;
 		Gtk.TreeStore store;
 		internal Gtk.TreeViewColumn complete_column;
 		internal ZoomableCellRendererPixbuf pix_render;
@@ -82,8 +82,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeNodeNavigator compareNode1;
 		TreeNodeNavigator compareNode2;
 		internal bool sorting;
-		
-		object[] dragObjects;
+
 		object[] copyObjects;
 		DragOperation currentTransferOperation;
 
@@ -91,12 +90,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		int updateLockCount;
 		string contextMenuPath;
 		IDictionary<string,string> contextMenuTypeNameAliases;
-		
-		private static Gtk.TargetEntry [] target_table = new Gtk.TargetEntry [] {
-			new Gtk.TargetEntry ("text/uri-list", 0, 11 ),
-			new Gtk.TargetEntry ("text/plain", 0, 22),
-			new Gtk.TargetEntry ("application/x-rootwindow-drop", 0, 33)
-		};
 		
 		public IDictionary<string,string> ContextMenuTypeNameAliases {
 			get { return contextMenuTypeNameAliases; }
@@ -117,17 +110,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public string Id { get; set; }
 
-		internal object[] DragObjects {
-			get {
-				return this.dragObjects;
-			}
-		}
-		
 		public ExtensibleTreeView ()
 		{
+			tree = new ExtensibleTreeViewTree (this);
 		}
 		
-		public ExtensibleTreeView (NodeBuilder[] builders, TreePadOption[] options)
+		public ExtensibleTreeView (NodeBuilder[] builders, TreePadOption[] options) : this ()
 		{
 			Initialize (builders, options);
 		}
@@ -179,9 +167,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			store = new Gtk.TreeStore (typeof(string), typeof(Gdk.Pixbuf), typeof(Gdk.Pixbuf), typeof(object), typeof(object), typeof(bool));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
-
-			tree.EnableModelDragDest (target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
-			Gtk.Drag.SourceSet (tree, Gdk.ModifierType.Button1Mask, target_table, Gdk.DragAction.Copy | Gdk.DragAction.Move);
 			
 			store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (CompareNodes);
 			store.SetSortColumnId (/* GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID */ -1, Gtk.SortType.Ascending);
@@ -224,12 +209,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			workNode = new TreeNodeNavigator (this);
 			compareNode1 = new TreeNodeNavigator (this);
 			compareNode2 = new TreeNodeNavigator (this);
-			
-			tree.DragBegin += OnDragBegin;
-			tree.DragDataReceived += OnDragDataReceived;
-			tree.DragDrop += OnDragDrop;
-			tree.DragEnd += OnDragEnd;
-			tree.CheckCanDrop = (ctx, x, y, time) => dragObjects == null || CheckAndDrop (x, y, false, ctx, dragObjects);
 			
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
@@ -343,51 +322,36 @@ namespace MonoDevelop.Ide.Gui.Components
 				nb.SetContext (builderContext);
 		}
 
-		void OnDragBegin (object o, Gtk.DragBeginArgs arg)
+		public void EnableDragUriSource (Func<object,string> nodeToUri)
+		{
+			tree.EnableDragUriSource (nodeToUri);
+		}
+
+		object[] GetDragObjects (out Gdk.Pixbuf icon)
 		{
 			ITreeNavigator[] navs = GetSelectedNodes ();
-			if (navs.Length == 0) return;
-			dragObjects = new object [navs.Length];
+			if (navs.Length == 0) {
+				icon = null;
+				return null;
+			}
+			var dragObjects = new object [navs.Length];
 			for (int n=0; n<navs.Length; n++)
 				dragObjects [n] = navs [n].DataItem;
-			Gdk.Pixbuf px = (Gdk.Pixbuf) store.GetValue (navs[0].CurrentPosition._iter, OpenIconColumn);
-			Gtk.Drag.SetIconPixbuf (arg.Context, px, -10, -10);
+			icon = (Gdk.Pixbuf) store.GetValue (navs[0].CurrentPosition._iter, OpenIconColumn);
+			return dragObjects;
 		}
-		
-		void OnDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
-		{
-			if (dragObjects != null) {
-				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, dragObjects);
-				Gtk.Drag.Finish (args.Context, res, true, args.Time);
-			} else {
-				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, new object[] { args.SelectionData });
-//				string fullData = System.Text.Encoding.UTF8.GetString (args.SelectionData.Data);
-				Gtk.Drag.Finish (args.Context, res, true, args.Time);
-			}
-		}
-		
-		void OnDragDrop (object o, Gtk.DragDropArgs args)
-		{
-			if (dragObjects != null) {
-				bool res = CheckAndDrop (args.X, args.Y, true, args.Context, dragObjects);
-				Gtk.Drag.Finish (args.Context, res, true, args.Time);
-			}
-		}
-		
-		void OnDragEnd (object o, Gtk.DragEndArgs args)
-		{
-			dragObjects = null;
-		}
-		
+
 		bool CheckAndDrop (int x, int y, bool drop, Gdk.DragContext ctx, object[] obj)
 		{
 			Gtk.TreePath path;
 			Gtk.TreeViewDropPosition pos;
-			if (!tree.GetDestRowAtPos (x, y, out path, out pos)) return false;
-			
+			if (!tree.GetDestRowAtPos (x, y, out path, out pos))
+				return false;
+
 			Gtk.TreeIter iter;
-			if (!store.GetIter (out iter, path)) return false;
-			
+			if (!store.GetIter (out iter, path))
+				return false;
+
 			TreeNodeNavigator nav = new TreeNodeNavigator (this, iter);
 			NodeBuilder[] chain = nav.BuilderChain;
 			bool foundHandler = false;
@@ -541,7 +505,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public void Clear ()
 		{
-			copyObjects = dragObjects = null;
+			copyObjects = tree.dragObjects = null;
 			
 			object[] obs = new object [nodeHash.Count];
 			nodeHash.Keys.CopyTo (obs, 0);
@@ -1486,15 +1450,15 @@ namespace MonoDevelop.Ide.Gui.Components
 				
 			// Remove object from drag list
 
-			if (dragObjects != null) {
-				int i = Array.IndexOf (dragObjects, dataObject);
+			if (tree.dragObjects != null) {
+				int i = Array.IndexOf (tree.dragObjects, dataObject);
 				if (i != -1) {
-					ArrayList list = new ArrayList (dragObjects);
+					ArrayList list = new ArrayList (tree.dragObjects);
 					list.RemoveAt (i);
 					if (list.Count > 0)
-						dragObjects = list.ToArray ();
+						tree.dragObjects = list.ToArray ();
 					else
-						dragObjects = null;
+						tree.dragObjects = null;
 				}
 			}
 
@@ -1995,6 +1959,117 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			public ExtensibleTreeView Tree {
 				get { return pad; }
+			}
+		}
+
+		class ExtensibleTreeViewTree : ContextMenuTreeView
+		{
+			ExtensibleTreeView tv;
+
+			public ExtensibleTreeViewTree (ExtensibleTreeView tv)
+			{
+				this.tv = tv;
+				EnableModelDragDest (targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+				Gtk.Drag.SourceSet (this, Gdk.ModifierType.Button1Mask, targetTable, Gdk.DragAction.Copy | Gdk.DragAction.Move);
+			}
+
+			static Gtk.TargetEntry [] targetTable = new Gtk.TargetEntry [] {
+				new Gtk.TargetEntry ("text/uri-list", 0, 11 ),
+				new Gtk.TargetEntry ("text/plain", 0, 22),
+				new Gtk.TargetEntry ("application/x-rootwindow-drop", 0, 33)
+			};
+
+			public object[] dragObjects = null;
+			bool dropping = false;
+			Func<object,string> nodeToUri;
+
+			public void EnableDragUriSource (Func<object,string> nodeToUri)
+			{
+				this.nodeToUri = nodeToUri;
+			}
+
+			public delegate object[] GetDragObjects (out Gdk.Pixbuf dragIcon);
+			public delegate bool CheckAndDrop (int x, int y, bool drop, Gdk.DragContext ctx, object[] obj);
+
+			protected override void OnDragBegin (Gdk.DragContext context)
+			{
+				Gdk.Pixbuf dragIcon;
+				dragObjects = tv.GetDragObjects (out dragIcon);
+				Gtk.Drag.SetIconPixbuf (context, dragIcon, -10, -10);
+
+				base.OnDragBegin (context);
+			}
+
+			protected override void OnDragEnd (Gdk.DragContext context)
+			{
+				dragObjects = null;
+				base.OnDragEnd (context);
+			}
+
+			protected override bool OnDragMotion (Gdk.DragContext context, int x, int y, uint time)
+			{
+				//OnDragDataReceived callback loses x/y values, so stash them
+				this.x = x;
+				this.y = y;
+
+				if (dragObjects == null) {
+					//it's a drag from outside, need to retrieve the data. This will cause OnDragDataReceived to be called.
+					Gdk.Atom atom = Gtk.Drag.DestFindTarget (this, context, null);
+					Gtk.Drag.GetData (this, context, atom, time);
+				} else {
+					//it's from inside, can call OnDragDataReceived directly
+					OnDragDataReceived (context, x, y, null, 0, time);
+				}
+				return true;
+			}
+
+			int x, y;
+			protected override void OnDragDataReceived (Gdk.DragContext context, int x, int y, Gtk.SelectionData selection_data, uint info, uint time)
+			{
+				x = this.x;
+				y = this.y;
+
+				object[] data = dragObjects ?? new object[] { selection_data };
+				bool canDrop = tv.CheckAndDrop (x, y, dropping, context, data);
+				if (dropping) {
+					dropping = false;
+					SetDragDestRow (null, 0);
+					Gtk.Drag.Finish (context, canDrop, true, time);
+					return;
+				}
+
+				//let default handler handle hover-to-expand, autoscrolling, etc
+				base.OnDragMotion (context, x, y, time);
+
+				//if we can't handle it, flag as not droppable and remove the drop marker
+				if (!canDrop) {
+					Gdk.Drag.Status (context, (Gdk.DragAction)0, time);
+					SetDragDestRow (null, 0);
+				}
+			}
+
+			protected override bool OnDragDrop (Gdk.DragContext context, int x, int y, uint time_)
+			{
+				dropping = true;
+				return base.OnDragDrop (context, x, y, time_);
+			}
+
+			protected override void OnDragDataGet (Gdk.DragContext context, Gtk.SelectionData selection_data, uint info, uint time_)
+			{
+				if (dragObjects == null)
+					return;
+
+				uint uriListTarget = targetTable[0].Info;
+				if (info == uriListTarget) {
+					var sb = new StringBuilder ();
+					foreach (var dobj in dragObjects) {
+						var val = nodeToUri (dobj);
+						if (val != null) {
+							sb.AppendLine (val);
+						}
+					}
+					selection_data.Set (selection_data.Target, selection_data.Format, Encoding.UTF8.GetBytes (sb.ToString ()));
+				}
 			}
 		}
 	}
