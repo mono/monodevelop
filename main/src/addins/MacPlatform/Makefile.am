@@ -53,19 +53,26 @@ FILES =  \
 RES = MacPlatform.addin.xml
 
 if ENABLE_MACPLATFORM
-all: $(MONOMAC) $(MONOMAC).mdb $(ASSEMBLY) $(ASSEMBLY).mdb
+all: $(ASSEMBLY) $(ASSEMBLY).mdb
 else
 all:
 endif
 
-$(MONOMAC_SRC):
-	make -C $(top_srcdir)/external/monomac/src
-
-$(ASSEMBLY): $(MONOMAC_SRC) $(build_sources) $(build_resources) $(DEPS)
+$(ASSEMBLY): $(MONOMAC) $(build_sources) $(build_resources) $(DEPS)
 	mkdir -p $(ADDIN_BUILD)
 	$(CSC) $(CSC_FLAGS) -unsafe $(REFS) $(build_deps) $(build_resources:%=/resource:%) $(build_sources) -out:$@ -target:library
 
 $(ASSEMBLY).mdb: $(ASSEMBLY) $(MONOMAC).mdb
+
+monomac-build:
+	make -C $(top_srcdir)/external/monomac/src
+
+monomac-clean:
+	make -C $(top_srcdir)/external/monomac/src clean
+
+$(MONOMAC_SRC): monomac-build
+
+$(MONOMAC_SRC).mdb: monomac-build
 
 $(MONOMAC).mdb: $(MONOMAC_SRC).mdb
 	mkdir -p $(ADDIN_BUILD)
@@ -80,9 +87,11 @@ assemblydir = $(MD_ADDIN_DIR)/MacPlatform
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(MONOMAC) $(MONOMAC).mdb
 endif
 
+clean-local: monomac-clean
+
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(MONOMAC) $(MONOMAC).mdb
 EXTRA_DIST = $(FILES) $(RES)
 
-.PHONY: $(MONOMAC_SRC)
+.PHONY: monomac-build monomac-clean
 
 include $(top_srcdir)/Makefile.include
