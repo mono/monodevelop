@@ -93,7 +93,7 @@ $(ASSEMBLY): $(build_sources) $(build_resources) $(DEPS)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
-assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Gettext
+assemblydir = $(MD_ADDIN_DIR)/DisplayBindings/MonoDevelop.Gettext
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
