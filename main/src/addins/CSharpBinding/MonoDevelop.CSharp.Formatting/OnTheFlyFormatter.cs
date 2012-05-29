@@ -129,9 +129,10 @@ namespace MonoDevelop.CSharp.Formatting
 				var compilationUnit = parser.Parse (stubData);
 				bool hadErrors = parser.HasErrors;
 				if (hadErrors) {
-					stubData.Insert (stubData.Length, "}");
-					compilationUnit = parser.Parse (stubData);
-					hadErrors = parser.HasErrors;
+					using (var stubData2 = TextEditorData.CreateImmutable (input + "}")) {
+						compilationUnit = parser.Parse (stubData2);
+						hadErrors = parser.HasErrors;
+					}
 				}
 				
 				// try it out, if the behavior is better when working only with correct code.
