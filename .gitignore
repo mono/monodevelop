@@ -17,6 +17,8 @@ obj/
 /main/contrib/bin/
 /main/contrib/*/*/bin/
 /local-libs
+/main/build/tests
+/main/monodevelop_version
 
 # globs
 Makefile.in
@@ -63,6 +65,7 @@ test-results/
 /main/man/Makefile
 /main/build/MacOSX/Makefile
 /main/build/Makefile
+main/external/Makefile
 /main/contrib/Makefile
 /main/contrib/Mono.Cecil/Makefile
 /main/contrib/NRefactory/Makefile
