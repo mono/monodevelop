@@ -149,5 +149,29 @@ namespace Mono.TextEditor.Tests.Actions
     123456789
     123456789");
 		}
+
+
+		/// <summary>
+		/// Bug 5373 - Indenting selected block should not indent blank lines in it
+		/// </summary>
+		[Test]
+		public void TestBug5373 ()
+		{
+			var data = Create (@"	123d456789
+	123$<-456789
+
+	123d456789
+
+	->123456789", new TextEditorOptions () { IndentStyle = IndentStyle.Virtual } );
+			data.IndentationTracker = SmartIndentModeTests.IndentTracker;
+
+			MiscActions.InsertTab (data);
+			Check (data, @"	123d456789
+		123$<-456789
+
+		123d456789
+
+		->123456789");
+		}
 	}
 }
