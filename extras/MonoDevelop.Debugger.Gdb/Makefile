@@ -1,5 +1,5 @@
 
-EXTRA_DIST = MonoDevelop.Debugger.Gdb.make rules.make configure Makefile.include
+EXTRA_DIST = MonoDevelop.Debugger.Gdb.make rules.make configure Makefile.include monodevelop-debugger-gdb.spec.in
 
 all: all-recursive
 
