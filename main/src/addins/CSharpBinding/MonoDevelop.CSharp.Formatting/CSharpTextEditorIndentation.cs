@@ -326,7 +326,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (reIndent || automaticReindent)
 						DoReSmartIndent ();
 					if (!skipFormatting && keyChar == '}')
-						RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column - 1));
+						RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column));
 				}
 
 				stateTracker.UpdateEngine ();
@@ -345,7 +345,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var result = base.KeyPress (key, keyChar, modifier);
 
 			if (!skipFormatting && keyChar == '}')
-				RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column - 1));
+				RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column));
 			return result;
 		}
 

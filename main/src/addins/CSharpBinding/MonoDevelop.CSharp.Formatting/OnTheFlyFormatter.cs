@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp.Formatting
 		/// <param name='memberStartOffset'>
 		/// The offset where the member starts in the returned text.
 		/// </param>
-		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int endOffset, out int memberStartOffset)
+		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int startOffset, int endOffset, out int memberStartOffset)
 		{
 			var pf = data.ParsedDocument.ParsedFile as CSharpParsedFile;
 			if (pf == null) {
@@ -85,7 +85,6 @@ namespace MonoDevelop.CSharp.Formatting
 			var sb = new StringBuilder ();
 			
 			int closingBrackets = 0;
-			
 			// use the member start location to determine the using scope, because this information is in sync, the position in
 			// the file may have changed since last parse run (we have up 2 date locations from the type segment tree).
 			var scope = pf.GetUsingScope (seg.Entity.Region.Begin);
@@ -117,7 +116,7 @@ namespace MonoDevelop.CSharp.Formatting
 				sb.Append (data.Editor.EolMarker);
 			}
 			sb.Append (data.Editor.EolMarker);
-			sb.Append (new string ('}', closingBrackets + 1));
+			sb.Append (new string ('}', closingBrackets));
 			
 			return sb.ToString ();
 		}
@@ -129,6 +128,12 @@ namespace MonoDevelop.CSharp.Formatting
 				var parser = document.HasProject ? new ICSharpCode.NRefactory.CSharp.CSharpParser (TypeSystemParser.GetCompilerArguments (document.Project)) : new ICSharpCode.NRefactory.CSharp.CSharpParser ();
 				var compilationUnit = parser.Parse (stubData);
 				bool hadErrors = parser.HasErrors;
+				if (hadErrors) {
+					stubData.Insert (stubData.Length, "}");
+					compilationUnit = parser.Parse (stubData);
+					hadErrors = parser.HasErrors;
+				}
+				
 				// try it out, if the behavior is better when working only with correct code.
 				if (hadErrors) {
 					return null;
@@ -151,7 +156,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var ext = data.GetContent<CSharpCompletionTextEditorExtension> ();
 			if (ext == null)
 				return;
-			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset);
+			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset - 1);
 			if (seg == null)
 				return;
 			var member = seg.Entity;
@@ -160,7 +165,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			// Build stub
 			int formatStartOffset;
-			var text = BuildStub (data, seg, endOffset, out formatStartOffset);
+			var text = BuildStub (data, seg, startOffset, endOffset, out formatStartOffset);
 			int formatLength = endOffset - seg.Offset;
 			// Get changes from formatting visitor
 			var changes = GetFormattingChanges (policyParent, mimeTypeChain, data, text);
