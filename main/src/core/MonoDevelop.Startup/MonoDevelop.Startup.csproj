@@ -30,6 +30,7 @@
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <Commandlineparameters>-no-redirect</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
