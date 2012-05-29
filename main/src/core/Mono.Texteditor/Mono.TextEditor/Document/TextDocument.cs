@@ -994,6 +994,7 @@ namespace Mono.TextEditor
 			if (!runInThread) {
 				foldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
 				InformFoldTreeUpdated ();
+				return;
 			}
 			foldSegmentSrc = new CancellationTokenSource ();
 			var token = foldSegmentSrc.Token;
