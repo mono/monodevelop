@@ -723,7 +723,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					string fileName = Path.Combine (cacheDir, typeof (T).FullName + ".cache");
 					if (File.Exists (fileName)) {
-						Console.WriteLine ("deserialize :" + fileName);
 						var deserialized = DeserializeObject<T> (fileName);
 						extensionObjects[typeof(T)] = deserialized;
 						return deserialized;

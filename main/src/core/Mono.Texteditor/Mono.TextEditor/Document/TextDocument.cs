@@ -1025,7 +1025,7 @@ namespace Mono.TextEditor
 		/// Updates the fold segments in a background worker thread. Don't call this method outside of a background worker.
 		/// Use UpdateFoldSegments instead.
 		/// </summary>
-		public HashSet<FoldSegment> UpdateFoldSegmentWorker (List<FoldSegment> newSegments, out bool update, CancellationToken token = default(CancellationToken))
+		HashSet<FoldSegment> UpdateFoldSegmentWorker (List<FoldSegment> newSegments, out bool update, CancellationToken token = default(CancellationToken))
 		{
 			var oldSegments = new List<FoldSegment> (FoldSegments);
 			int oldIndex = 0;
@@ -1419,17 +1419,11 @@ namespace Mono.TextEditor
 		}
 		
 		public static bool IsWordSeparator (char ch)
-
 		{
-
 			return Char.IsWhiteSpace (ch) || (Char.IsPunctuation (ch) && ch != '_');
-
 		}
 
-		
-
 		public bool IsWholeWordAt (int offset, int length)
-
 		{
 			return (offset == 0 || IsWordSeparator (GetCharAt (offset - 1))) &&
 				   (offset + length == TextLength || IsWordSeparator (GetCharAt (offset + length)));

@@ -502,9 +502,8 @@ namespace MonoDevelop.SourceEditor
 						marker.IsFolded = false;
 					
 				}
-				bool update;
-				doc.UpdateFoldSegmentWorker (foldSegments, out update);
-				
+				doc.UpdateFoldSegments (foldSegments, false);
+
 				if (reloadSettings) {
 					reloadSettings = false;
 					Application.Invoke (delegate {
