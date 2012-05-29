@@ -248,14 +248,15 @@ namespace MonoDevelop.Core.Assemblies
 					return name;
 				
 				try {
-					AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
-					assemblyNameCache [file] = new AssemblyName (asm.Name.FullName);
-				return assemblyNameCache [file];
-				
+					/*
 					// Don't use reflection to get the name since it is a common cause for deadlocks
 					// in Mono < 2.6.
-					// return System.Reflection.AssemblyName.GetAssemblyName (file);
-				
+					AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
+					assemblyNameCache [file] = new AssemblyName (asm.Name.FullName);
+					return assemblyNameCache [file];
+					*/
+					assemblyNameCache [file] = System.Reflection.AssemblyName.GetAssemblyName (file);
+					return assemblyNameCache [file];
 				} catch (FileNotFoundException) {
 					// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
 					foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
