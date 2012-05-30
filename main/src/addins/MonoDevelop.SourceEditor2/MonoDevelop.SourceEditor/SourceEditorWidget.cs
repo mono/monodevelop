@@ -502,7 +502,7 @@ namespace MonoDevelop.SourceEditor
 						marker.IsFolded = false;
 					
 				}
-				doc.UpdateFoldSegments (foldSegments, false);
+				doc.UpdateFoldSegments (foldSegments, false, true);
 
 				if (reloadSettings) {
 					reloadSettings = false;

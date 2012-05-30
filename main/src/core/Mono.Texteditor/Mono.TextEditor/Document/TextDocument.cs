@@ -974,29 +974,29 @@ namespace Mono.TextEditor
 		
 		readonly object syncObject = new object();
 
-		public void UpdateFoldSegments (List<FoldSegment> newSegments)
-		{
-			UpdateFoldSegments (newSegments, true);
-		}
-		
-
 		CancellationTokenSource foldSegmentSrc;
 		Task foldSegmentTask;
 
-		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool runInThread)
+		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false)
 		{
 			if (newSegments == null) {
 				return;
 			}
+			Console.WriteLine ("startTask={0}, useApplicationInvoke={1}", startTask, useApplicationInvoke);
 			
 			InterruptFoldWorker ();
 			bool update;
-			if (!runInThread) {
+			if (!startTask) {
 				var newFoldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
-				Gtk.Application.Invoke (delegate {
+				if (useApplicationInvoke) {
+					Gtk.Application.Invoke (delegate {
+						foldedSegments = newFoldedSegments;
+						InformFoldTreeUpdated ();
+					});
+				} else {
 					foldedSegments = newFoldedSegments;
 					InformFoldTreeUpdated ();
-				});
+				}
 				return;
 			}
 			foldSegmentSrc = new CancellationTokenSource ();
