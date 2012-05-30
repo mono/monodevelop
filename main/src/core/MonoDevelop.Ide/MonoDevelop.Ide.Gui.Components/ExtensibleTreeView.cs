@@ -2056,7 +2056,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			protected override void OnDragDataGet (Gdk.DragContext context, Gtk.SelectionData selection_data, uint info, uint time_)
 			{
-				if (dragObjects == null)
+				if (dragObjects == null || nodeToUri == null)
 					return;
 
 				uint uriListTarget = targetTable[0].Info;
