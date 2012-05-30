@@ -110,6 +110,7 @@ FILES =  \
 	Mono.TextEditor/Gui/DashedLineMargin.cs \
 	Mono.TextEditor/Gui/FoldingScreenbackgroundRenderer.cs \
 	Mono.TextEditor/Gui/FoldMarkerMargin.cs \
+	Mono.TextEditor/Gui/GtkGestures.cs \
 	Mono.TextEditor/Gui/GtkWorkarounds.cs \
 	Mono.TextEditor/Gui/GutterMargin.cs \
 	Mono.TextEditor/Gui/HslColor.cs \
