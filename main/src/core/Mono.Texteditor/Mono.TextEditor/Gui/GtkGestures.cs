@@ -47,7 +47,7 @@ namespace Mono.TextEditor
 				try {
 					isSupported = gdk_quartz_supports_gesture_events ();
 					Console.WriteLine (isSupported);
-				} catch (DllNotFoundException) {
+				} catch (EntryPointNotFoundException) {
 				}
 			}
 		}
