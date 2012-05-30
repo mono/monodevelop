@@ -112,7 +112,7 @@ app: monostub
 	@echo "Copying binary artifacts into app bundle"
 	@echo ""
 
-	mkdir -p $(MACOS)/lib/{pkgconfig}
+	mkdir -p $(MACOS)/lib/pkgconfig
 	mkdir -p $(MACOS)/MonoDoc.app/
 	test ! -d $(ARTIFACTS)/MonoDoc.app ||  cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
