@@ -42,6 +42,7 @@ namespace Mono.TextEditor
 		// TODO: Add support for line word wrap to the text editor - with the height tree this is possible.
 		internal RedBlackTree<HeightNode> tree = new RedBlackTree<HeightNode> ();
 		readonly TextEditorData editor;
+		readonly Thread guiThread;
 
 		public double TotalHeight {
 			get {
@@ -57,10 +58,17 @@ namespace Mono.TextEditor
 		
 		public HeightTree (TextEditorData editor)
 		{
+			guiThread = Thread.CurrentThread;
 			this.editor = editor;
 			this.editor.Document.Splitter.LineRemoved += HandleLineRemoved;
 			this.editor.Document.Splitter.LineInserted += HandleLineInserted;
 			this.editor.Document.FoldTreeUpdated += HandleFoldTreeUpdated;
+		}
+
+		void CheckThread ()
+		{
+			if (guiThread != Thread.CurrentThread)
+				throw new InvalidOperationException ("Called from the wrong thread.");
 		}
 
 		void HandleLineInserted (object sender, LineEventArgs e)
@@ -89,6 +97,7 @@ namespace Mono.TextEditor
 
 		void RemoveLine (int line)
 		{
+			CheckThread ();
 			try {
 				var node = GetNodeByLine (line);
 				if (node == null)
@@ -126,6 +135,7 @@ namespace Mono.TextEditor
 
 		void InsertLine (int line)
 		{
+			CheckThread ();
 			var newLine = new HeightNode () {
 				count = 1,
 				height = editor.LineHeight
@@ -153,6 +163,7 @@ namespace Mono.TextEditor
 		bool rebuild;
 		public void Rebuild ()
 		{
+			CheckThread ();
 			rebuild = true;
 			try {
 				markers.Clear ();
@@ -184,6 +195,7 @@ namespace Mono.TextEditor
 		
 		public void SetLineHeight (int lineNumber, double height)
 		{
+			CheckThread ();
 			var node = GetNodeByLine (lineNumber);
 			if (node == null)
 				throw new Exception ("No node for line number " + lineNumber + " found. (maxLine=" + tree.Root.totalCount + ")");
@@ -241,6 +253,7 @@ namespace Mono.TextEditor
 		
 		public FoldMarker Fold (int lineNumber, int count)
 		{
+			CheckThread ();
 			GetSingleLineNode (lineNumber);
 			lineNumber++;
 			
@@ -257,7 +270,7 @@ namespace Mono.TextEditor
 		
 		public void Unfold (FoldMarker marker, int lineNumber, int count)
 		{
-
+			CheckThread ();
 			if (marker == null || !markers.Contains (marker))
 				return;
 			markers.Remove (marker);

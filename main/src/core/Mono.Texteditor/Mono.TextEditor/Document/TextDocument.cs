@@ -992,8 +992,11 @@ namespace Mono.TextEditor
 			InterruptFoldWorker ();
 			bool update;
 			if (!runInThread) {
-				foldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
-				InformFoldTreeUpdated ();
+				var newFoldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
+				Gtk.Application.Invoke (delegate {
+					foldedSegments = newFoldedSegments;
+					InformFoldTreeUpdated ();
+				});
 				return;
 			}
 			foldSegmentSrc = new CancellationTokenSource ();
