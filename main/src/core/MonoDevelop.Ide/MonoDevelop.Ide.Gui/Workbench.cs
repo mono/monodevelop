@@ -697,6 +697,8 @@ namespace MonoDevelop.Ide.Gui
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
 				if (IdeApp.ProjectOperations.CurrentSelectedProject.Files.GetFile (fileName) != null)
 					project = IdeApp.ProjectOperations.CurrentSelectedProject;
+				else if (IdeApp.ProjectOperations.CurrentSelectedProject.FileName == fileName)
+					project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			}
 			if (project == null && IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem != null) {
 				project = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetProjectContainingFile (fileName);

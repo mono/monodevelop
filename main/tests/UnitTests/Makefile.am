@@ -93,6 +93,7 @@ FILES =  \
 	MonoDevelop.Projects/MSBuildTests.cs \
 	MonoDevelop.Projects/PackagingTests.cs \
 	MonoDevelop.Projects/ProjectTests.cs \
+	MonoDevelop.Projects/SolutionFolderTests.cs \
 	MonoDevelop.Projects/SolutionTests.cs \
 	MonoDevelop.Projects/TestProjectsChecks.cs \
 	MonoDevelop.Projects/TextFormatterTests.cs \

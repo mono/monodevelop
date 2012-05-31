@@ -488,7 +488,7 @@ namespace MonoDevelop.Projects
 		{
 			ReadOnlyCollection<Project> projects = GetAllProjects ();
 			foreach (Project projectEntry in projects) {
-				if (projectEntry.IsFileInProject(fileName)) {
+				if (projectEntry.FileName == fileName || projectEntry.IsFileInProject(fileName)) {
 					return projectEntry;
 				}
 			}
