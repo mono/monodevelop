@@ -177,15 +177,19 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 		static IEnumerable<ITypeDefinition> GetAllBaseClassDefinitions (IType type)
 		{
 			while (type != null) {
+				IType baseType = null;
+
 				foreach (var t in type.DirectBaseTypes) {
 					if (t.Kind != TypeKind.Class)
 						continue;
 					var def = t.GetDefinition ();
 					if (def != null)
 						yield return def;
-					type = t;
+					baseType = t;
 					break;
 				}
+
+				type = baseType;
 			}
 		}
 		
