@@ -348,6 +348,12 @@ namespace Mono.TextEditor
 #if ATK
 			TextEditorAccessible.Factory.Init (this);
 #endif
+
+			if (GtkGestures.IsSupported) {
+				this.AddGestureMagnifyHandler ((sender, args) => {
+					Options.Zoom += Options.Zoom * (args.Magnification / 4d);
+				});
+			}
 		}
 
 		void HandleDocumenthandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)

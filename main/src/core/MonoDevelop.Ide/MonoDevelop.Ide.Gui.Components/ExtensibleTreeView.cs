@@ -213,6 +213,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
 
+			if (GtkGestures.IsSupported) {
+				tree.AddGestureMagnifyHandler ((sender, args) => {
+					Zoom += Zoom * (args.Magnification / 4d);
+				});
+			}
+
 			for (int n=3; n<16; n++) {
 				Gtk.Rc.ParseString ("style \"MonoDevelop.ExtensibleTreeView_" + n + "\" {\n GtkTreeView::expander-size = " + n + "\n }\n");
 				Gtk.Rc.ParseString ("widget \"*.MonoDevelop.ExtensibleTreeView_" + n + "\" style  \"MonoDevelop.ExtensibleTreeView_" + n + "\"\n");
@@ -845,35 +851,31 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		
 		public event EventHandler CurrentItemActivated;
-		
+
 		#region Zoom
-		
-		const int ZOOM_MIN = -4;
-		const int ZOOM_MAX = 8;
+
 		const double ZOOM_FACTOR = 1.1f;
-		
-		int zoomPow = 0;
-		double zoom = 1;
-		
+		const int ZOOM_MIN_POW = -4;
+		const int ZOOM_MAX_POW = 8;
+		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
+		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
+		double zoom;
+
 		public double Zoom {
 			get {
 				 return zoom;
 			}
 			set {
-				ZoomPow = (int) System.Math.Round (System.Math.Log (value) / System.Math.Log (ZOOM_FACTOR));
-			}
-		}
-		
-		int ZoomPow {
-			get {
-				return zoomPow;
-			}
-			set {
 				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
-				if (zoomPow != value) {
-					zoomPow = value;
-					zoom = System.Math.Pow (ZOOM_FACTOR, zoomPow);
-					OnZoomChanged (zoom);
+				if (value > ZOOM_MAX || value < ZOOM_MIN)
+					return;
+				//snap to one, if within 0.001d
+				if ((System.Math.Abs (value - 1d)) < 0.001d) {
+					value = 1d;
+				}
+				if (zoom != value) {
+					zoom = value;
+					OnZoomChanged (value);
 				}
 			}
 		}
@@ -897,47 +899,48 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.ColumnsAutosize ();
 			if (!string.IsNullOrEmpty (Id)) {
 				PropertyService.Set ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, Zoom);
-				PropertyService.SaveProperties ();
 			}
 		}
 		
 		[CommandHandler (ViewCommands.ZoomIn)]
 		public void ZoomIn ()
 		{
-			ZoomPow++;
+			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow + 1);
 		}
 
 		[CommandHandler (ViewCommands.ZoomOut)]
 		public void ZoomOut ()
 		{
-			ZoomPow--;
+			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow - 1);
 		}
 		
 		[CommandHandler (ViewCommands.ZoomReset)]
 		public void ZoomReset ()
 		{
-			ZoomPow = 0;
+			Zoom = 1d;
 		}
 
 		[CommandUpdateHandler (ViewCommands.ZoomIn)]
 		protected void UpdateZoomIn (CommandInfo cinfo)
 		{
-			cinfo.Enabled = ZoomPow <= ZOOM_MAX;
+			cinfo.Enabled = zoom < ZOOM_MAX - 0.000001d;
 		}
 
 		[CommandUpdateHandler (ViewCommands.ZoomOut)]
 		protected void UpdateZoomOut (CommandInfo cinfo)
 		{
-			cinfo.Enabled = ZoomPow >= ZOOM_MIN;
+			cinfo.Enabled = zoom > ZOOM_MIN + 0.000001d;
 		}
 		
 		[CommandUpdateHandler (ViewCommands.ZoomReset)]
 		protected void UpdateZoomReset (CommandInfo cinfo)
 		{
-			cinfo.Enabled = ZoomPow != 0;
+			cinfo.Enabled = zoom != 1d;
 		}
 		
-		#endregion
+		#endregion Zoom
 
 		[CommandHandler (EditCommands.Copy)]
 		public void CopyCurrentItem ()

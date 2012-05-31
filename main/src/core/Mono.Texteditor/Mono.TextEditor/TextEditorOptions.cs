@@ -69,71 +69,73 @@ namespace Mono.TextEditor
 		string colorStyle = "text";
 		Pango.FontDescription font;
 		
-		int zoomPow = 0;
-		double zoom = 1;
+		double zoom = 1d;
 		IWordFindStrategy wordFindStrategy = new EmacsWordFindStrategy (true);
-		
-		
+
+		#region Zoom
+
+		const double ZOOM_FACTOR = 1.1f;
+		const int ZOOM_MIN_POW = -4;
+		const int ZOOM_MAX_POW = 8;
+		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
+		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
+
 		public double Zoom {
 			get {
 				 return zoom;
 			}
 			set {
-				ZoomPow = (int) System.Math.Round (System.Math.Log (value) / System.Math.Log (ZOOM_FACTOR));
-			}
-		}
-		
-		int ZoomPow {
-			get {
-				return zoomPow;
-			}
-			set {
 				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
-				if (zoomPow != value) {
-					zoomPow = value;
-					zoom = System.Math.Pow (ZOOM_FACTOR, zoomPow);
+				if (value > ZOOM_MAX || value < ZOOM_MIN)
+					return;
+				//snap to one, if within 0.001d
+				if ((System.Math.Abs (value - 1d)) < 0.001d) {
+					value = 1d;
+				}
+				if (zoom != value) {
+					zoom = value;
 					DisposeFont ();
 					OnChanged (EventArgs.Empty);
 				}
 			}
 		}
 		
-		const int ZOOM_MIN = -4;
-		const int ZOOM_MAX = 8;
-		const double ZOOM_FACTOR = 1.1f;
-		
 		public bool CanZoomIn {
 			get {
-				return ZoomPow <= ZOOM_MAX;
+				return zoom < ZOOM_MAX - 0.000001d;
 			}
 		}
 		
 		public bool CanZoomOut {
 			get {
-				return ZoomPow >= ZOOM_MIN;
+				return zoom > ZOOM_MIN + 0.000001d;
 			}
 		}
 		
 		public bool CanResetZoom {
 			get {
-				return ZoomPow != 0;
+				return zoom != 1d;
 			}
 		}
 		
 		public void ZoomIn ()
 		{
-			ZoomPow++;
+			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow + 1);
 		}
 		
 		public void ZoomOut ()
 		{
-			ZoomPow--;
+			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow - 1);
 		}
 		
 		public void ZoomReset ()
 		{
-			ZoomPow = 0;
+			Zoom = 1d;
 		}
+
+		#endregion Zoom
 		
 		public string IndentationString {
 			get {
