@@ -20,6 +20,11 @@
 		<Import file = "Templates/WebConfigApp.xft.xml"/>
 		<Import file = "Templates/WebConfigViews.xft.xml"/>
 		<Import file = "CodeTemplates/AddView/Empty.tt" />
+		<Import file = "Templates/ProjectMvc3.xpt.xml" />
+		<Import file = "Templates/EmptyProjectMvc3.xpt.xml" />
+		<Import file = "Templates/GlobalAsaxMvc3.xft.xml" />
+		<Import file = "Templates/WebConfigAppMvc3.xft.xml" />
+		<Import file = "Templates/WebConfigViewsMvc3.xft.xml" />
 	</Runtime>
 	
 	<Dependencies>
@@ -55,11 +60,21 @@
 		              file     = "Templates/WebConfigApp.xft.xml" />
 		<FileTemplate id       = "AspMvcWebConfigViews"
 		              file     = "Templates/WebConfigViews.xft.xml" />
+		<FileTemplate id       = "AspMvc3GlobalAsax"
+		              file     = "Templates/GlobalAsaxMvc3.xft.xml" />
+		<FileTemplate id       = "AspMvc3WebConfigApp"
+		              file     = "Templates/WebConfigAppMvc3.xft.xml" />
+		<FileTemplate id       = "AspMvc3WebConfigViews"
+		              file     = "Templates/WebConfigViewsMvc3.xft.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "AspMvcProject" file = "Templates/Project.xpt.xml" />
 		<ProjectTemplate id = "AspMvcProject-Empty" file = "Templates/EmptyProject.xpt.xml"/>
+	<Condition id="AssemblyInstalled" name="System.Web.Mvc" minVersion="3.0.0.0">
+		<ProjectTemplate id = "AspMvc3Project" file = "Templates/ProjectMvc3.xpt.xml" />
+		<ProjectTemplate id = "AspMvc3Project-Empty" file = "Templates/EmptyProjectMvc3.xpt.xml" />
+	</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
