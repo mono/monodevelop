@@ -47,6 +47,11 @@ DATA_FILES = \
 	Templates/GlobalAsax.xft.xml \
 	Templates/WebConfigApp.xft.xml \
 	Templates/WebConfigViews.xft.xml \
+	Templates/EmptyProjectMvc3.xpt.xml \
+	Templates/GlobalAsaxMvc3.xft.xml \
+	Templates/ProjectMvc3.xpt.xml \
+	Templates/WebConfigAppMvc3.xft.xml \
+	Templates/WebConfigViewsMvc3.xft.xml \
 	CodeTemplates/AddView/Empty.tt
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))

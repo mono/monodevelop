@@ -9,6 +9,7 @@ FILES =  \
 	Mono.Options.cs \
 	MonoDevelop.Core.AddIns/ApplicationExtensionNode.cs \
 	MonoDevelop.Core.AddIns/AssemblyExtensionNode.cs \
+	MonoDevelop.Core.AddIns/AssemblyInstalledCondition.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeNode.cs \
 	MonoDevelop.Core.AddIns/ExecutionModeSetNode.cs \
 	MonoDevelop.Core.AddIns/FilePathExtensionNode.cs \
