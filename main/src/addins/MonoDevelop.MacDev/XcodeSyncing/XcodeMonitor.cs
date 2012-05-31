@@ -443,7 +443,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			activate
 		end timeout
 	end if
-	with timeout of 30 seconds
+	with timeout of 60 seconds
 		open ""{1}""
 	end timeout
 end tell";
@@ -451,7 +451,7 @@ end tell";
 		// Note: Can throw TimeoutException
 		const string XCODE_OPEN_PROJECT_FILE =
 @"tell application ""{0}""
-	with timeout of 30 seconds
+	with timeout of 60 seconds
 		activate
 		activate
 		open ""{1}""
