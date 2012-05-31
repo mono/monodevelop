@@ -635,8 +635,7 @@ namespace MonoDevelop.VersionControl
 				if (vcs.IsInstalled)
 					return true;
 			}
-			
-			MessageService.ShowError (GettextCatalog.GetString ("There isn't any supported version control system installed. You may need to install additional add-ins or packages."));
+
 			return false;
 		}
 		
