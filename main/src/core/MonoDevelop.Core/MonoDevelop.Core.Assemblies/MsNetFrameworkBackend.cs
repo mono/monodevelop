@@ -93,14 +93,21 @@ namespace MonoDevelop.Core.Assemblies
 				yield return s;
 			yield return PropertyService.EntryAssemblyPath;
 		}
+
+		// ProgramFilesX86 is broken on 32-bit WinXP, this is a workaround
+		static string GetProgramFilesX86 ()
+		{
+			return Environment.GetFolderPath (IntPtr.Size == 8?
+				Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
+		}
 		
 		IEnumerable<string> GetFrameworkToolsPaths ()
 		{
 			//FIXME: use the toolversion from the project file
 			TargetFrameworkToolsVersion toolsVersion = framework.GetToolsVersion ();
-			
-			string sdkPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86),
-				"Microsoft SDKs", "Windows");
+
+			string programFilesX86 = GetProgramFilesX86 ();
+			string sdkPath = Path.Combine (programFilesX86, "Microsoft SDKs", "Windows");
 			
 			switch (toolsVersion) {
 			case TargetFrameworkToolsVersion.V1_1:

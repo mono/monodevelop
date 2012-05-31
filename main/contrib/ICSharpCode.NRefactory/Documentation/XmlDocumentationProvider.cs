@@ -137,11 +137,17 @@ namespace ICSharpCode.NRefactory.Documentation
 				}
 			}
 		}
-		
+
+		// ProgramFilesX86 is broken on 32-bit WinXP, this is a workaround
+		static string GetProgramFilesX86()
+		{
+			return Environment.GetFolderPath(IntPtr.Size == 8?
+				Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
+		}
+
 		static string GetRedirectionTarget(string target)
 		{
-			string programFilesDir = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-			programFilesDir = AppendDirectorySeparator(programFilesDir);
+			string programFilesDir = AppendDirectorySeparator(GetProgramFilesX86());
 			
 			string corSysDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
 			corSysDir = AppendDirectorySeparator(corSysDir);
