@@ -76,15 +76,6 @@ namespace MonoDevelop.Ide.Gui
 			get { return enabledLevel; }
 		}
 		
-		public static List<LogMessage> Messages {
-			get { return logger.Messages; }
-		}
-		
-		public static void Reset ()
-		{
-			logger.Reset ();
-		}
-
 		static void NotifyError (LogMessage message)
 		{
 			if (!errorNotificationEnabled)
@@ -92,7 +83,10 @@ namespace MonoDevelop.Ide.Gui
 			ClearErrorIcon ();
 			Gdk.Pixbuf pix = ImageService.GetPixbuf (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
 			errorIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (pix);
-			errorIcon.EventBox.ButtonPressEvent += new Gtk.ButtonPressEventHandler (OnShowLogPad);
+			errorIcon.EventBox.ButtonPressEvent += delegate {
+				ClearErrorIcon ();
+				MessageService.ShowError (message.Message);
+			};
 			errorIcon.SetAlertMode (5);
 			errorIcon.ToolTip = message.Message;
 		}
@@ -112,54 +106,14 @@ namespace MonoDevelop.Ide.Gui
 				NotifyError (logger.LastError);
 		}
 		
-		static void OnShowLogPad (object s, EventArgs a)
-		{
-			Pad pad = IdeApp.Workbench.GetPad<InternalLogPad> ();
-			pad.BringToFront ();
-			ClearErrorIcon ();
-		}
-		
-		public static int ErrorCount {
-			get { return logger.ErrorCount; }
-		}
-		
-		public static int WarningCount {
-			get { return logger.WarningCount; }
-		}
-		
-		public static int InfoCount {
-			get { return logger.InfoCount; }
-		}
-		
-		public static int DebugCount {
-			get { return logger.DebugCount; }
-		}
-		
 		private class InternalLogger : ILogger
 		{
-			public List<LogMessage> Messages = new List<LogMessage> ();
-			
-			public int ErrorCount = 0;
-			public int WarningCount = 0;
-			public int InfoCount = 0;
-			public int DebugCount = 0;
-			
 			public LogMessage LastError = null;
 			
 			public void Log (LogLevel level, string message)
 			{
 				LogMessage logMessage = new LogMessage (level, message);
-				lock (Messages) {
-					Messages.Add (logMessage);
-					switch (level) {
-						case LogLevel.Fatal: ErrorCount++; break;
-						case LogLevel.Error: ErrorCount++; break;
-						case LogLevel.Warn:  WarningCount++; break;
-						case LogLevel.Info:  InfoCount++; break;
-						case LogLevel.Debug: DebugCount++; break;
-					}
-				}
-				
+
 				if (level  == LogLevel.Fatal) {
 					if (errorNotificationEnabled) {
 						Gtk.Application.Invoke (delegate {
@@ -168,14 +122,6 @@ namespace MonoDevelop.Ide.Gui
 					}
 					else
 						LastError = logMessage;
-				}
-			}
-			
-			public void Reset ()
-			{
-				lock (Messages) {
-					Messages.Clear ();
-					ErrorCount = WarningCount = InfoCount = DebugCount = 0;
 				}
 			}
 			
