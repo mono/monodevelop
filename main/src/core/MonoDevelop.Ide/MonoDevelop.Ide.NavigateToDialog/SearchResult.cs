@@ -77,17 +77,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, false).GetMatch (text);
 			StringBuilder result = new StringBuilder ();
+			result.Append ("<span foreground=\"#808080\">");
 			if (lane != null) {
 				int lastPos = 0;
 				for (int n=0; n < lane.Length; n++) {
 					int pos = lane[n];
 					if (pos - lastPos > 0)
 						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
-					result.Append ("<span foreground=\"");
-					var color = Mono.TextEditor.HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
-						widget.Style.Text (StateType.Normal), 3)[2];
-					result.Append (color.ToPangoString ());
-					result.Append ("\">");
+					result.Append ("<span foreground=\"#4d4d4d\">");
 					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
 					result.Append ("</span>");
 					lastPos = pos + 1;
@@ -97,6 +94,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			} else {
 				MarkupUtilities.AppendEscapedString (result, text);
 			}
+			result.Append ("</span>");
 			return result.ToString ();
 		}
 	}

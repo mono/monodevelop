@@ -29,9 +29,8 @@ using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.Compontents.MainToolbar
+namespace MonoDevelop.Components.MainToolbar
 {
-
 	public class StatusArea : EventBox
 	{
 		HBox contentBox = new HBox (false, 0);

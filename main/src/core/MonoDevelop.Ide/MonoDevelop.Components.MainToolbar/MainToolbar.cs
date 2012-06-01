@@ -36,7 +36,7 @@ using Cairo;
 using MonoDevelop.Ide.NavigateToDialog;
 
 
-namespace MonoDevelop.Compontents.MainToolbar
+namespace MonoDevelop.Components.MainToolbar
 {
 	public class MainToolbar: Gtk.EventBox
 	{
@@ -183,7 +183,7 @@ namespace MonoDevelop.Compontents.MainToolbar
 			UpdateCombos ();
 		}
 
-		NavigateToPopup popup = null;
+		SearchPopupWindow popup = null;
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
 			if (string.IsNullOrEmpty (matchEntry.Entry.Text)){
@@ -192,17 +192,19 @@ namespace MonoDevelop.Compontents.MainToolbar
 				return;
 			}
 			if (popup == null) {
-				popup = new NavigateToPopup (NavigateToType.All, true);
-				popup.Resize (480, 240);
+				popup = new SearchPopupWindow ();
 				popup.Attach (matchEntry);
 				popup.Destroyed += delegate {
 					popup = null;
 					matchEntry.Entry.Text = "";
 				};
+				popup.SizeAllocated += delegate {
+					PositionPopup ();
+				};
 				PositionPopup ();
 				popup.ShowAll ();
 			}
-			popup.Query = matchEntry.Entry.Text;
+			popup.Update (matchEntry.Entry.Text);
 		}
 
 		void PositionPopup ()

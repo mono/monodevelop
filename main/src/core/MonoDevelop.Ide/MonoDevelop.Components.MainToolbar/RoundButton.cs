@@ -32,7 +32,7 @@ using MonoDevelop.Ide;
 using System.Reflection;
 
 
-namespace MonoDevelop.Compontents.MainToolbar
+namespace MonoDevelop.Components.MainToolbar
 {
 	public class LazyImage
 	{

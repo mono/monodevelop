@@ -1469,8 +1469,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.StringTagSelectorButton.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SolutionFolderFileNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Components\CompactScrolledWindow.cs" />
-    <Compile Include="MonoDevelop.Ide.NavigateToDialog\NavigateToDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs" />
     <Compile Include="MonoDevelop.Ide.NavigateToDialog\NavigateToCommand.cs" />
     <Compile Include="MonoDevelop.Ide.NavigateToDialog\SearchResult.cs" />
     <Compile Include="MonoDevelop.Ide.NavigateToDialog\ResultsDataSource.cs" />
@@ -1615,8 +1613,12 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusArea.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\RoundButton.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ButtonBar.cs" />
-    <Compile Include="MonoDevelop.Ide.NavigateToDialog\NavigateToPopup.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectCommentTags.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWidget.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\ProjectSearchCategory.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\SearchCategory.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\ISearchDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

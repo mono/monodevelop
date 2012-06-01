@@ -45,7 +45,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using Mono.TextEditor;
-using MonoDevelop.Compontents.MainToolbar;
+using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Ide.Gui
 {

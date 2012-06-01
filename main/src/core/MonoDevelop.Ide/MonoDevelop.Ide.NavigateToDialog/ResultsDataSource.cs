@@ -38,10 +38,12 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Components.MainToolbar;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
-	class ResultsDataSource: List<SearchResult>, IListViewDataSource
+	class ResultsDataSource: List<SearchResult>, ISearchDataSource
 	{
 		Gtk.Widget widget;
 		SearchResult bestResult;
@@ -52,38 +54,39 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			this.widget = widget;
 		}
-		
-		public string GetText (int n)
+
+		#region ISearchDataSource implementation
+		string ISearchDataSource.GetMarkup (int item, bool isSelected)
 		{
-			string descr = this[n].Description;
-			if (string.IsNullOrEmpty (descr))
-				return this[n].GetMarkupText (widget);
-			return this[n].GetMarkupText (widget) + " <span foreground=\"darkgray\">[" + descr + "]</span>";
+			if (isSelected)
+				return GLib.Markup.EscapeText (this[item].PlainText);
+			return this[item].GetMarkupText (widget);
+		}
+
+		ICSharpCode.NRefactory.TypeSystem.DomRegion ISearchDataSource.GetRegion (int item)
+		{
+			var result = this [item];
+			return new DomRegion (result.File, result.Row, result.Column, result.Row, result.Column);
+		}
+
+		int ISearchDataSource.ItemCount {
+			get {
+				return this.Count;
+			}
+		}
+		#endregion		
+/*		public string GetText (int n)
+		{
+
 		}
 		
 		public string GetSelectedText (int n)
 		{
 			string descr = this[n].Description;
 			if (string.IsNullOrEmpty (descr))
-				return GLib.Markup.EscapeText (this[n].PlainText);
+return GLib.Markup.EscapeText (this[n].PlainText);
 			return GLib.Markup.EscapeText (this[n].PlainText) + " [" + descr + "]";
-		}
-
-		public Pixbuf GetIcon (int n)
-		{
-			return this[n].Icon;
-		}
-		
-		public bool UseMarkup (int n)
-		{
-			return true;
-		}
-				
-		public int ItemCount {
-			get {
-				return Count;
-			}
-		}
+		}*/
 
 		public SearchResult BestResult {
 			get {

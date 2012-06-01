@@ -115,5 +115,10 @@ namespace MonoDevelop.CSharpBinding
 		public event WorkbenchWindowEventHandler Closing;
 		public event WorkbenchWindowEventHandler Closed;
 		public event ActiveViewContentEventHandler ActiveViewContentChanged;
+
+		DocumentToolbar IWorkbenchWindow.GetToolbar (IBaseViewContent targetView)
+		{
+			throw new System.NotImplementedException ();
+		}
 	}
 }

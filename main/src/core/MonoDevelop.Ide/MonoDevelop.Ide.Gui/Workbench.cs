@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public MonoDevelop.Compontents.MainToolbar.MainToolbar Toolbar {
+		public MonoDevelop.Components.MainToolbar.MainToolbar Toolbar {
 			get {
 				return workbench.Toolbar;
 			}

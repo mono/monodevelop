@@ -67,7 +67,6 @@ FILES =  \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs \
 	gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs \
-	gtk-gui/MonoDevelop.Ide.NavigateToDialog.NavigateToDialog.cs \
 	gtk-gui/MonoDevelop.Ide.ProgressMonitoring.ProgressBarMonitor.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.AddExternalFileDialog.cs \
 	gtk-gui/MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs \
@@ -209,8 +208,13 @@ FILES =  \
 	MonoDevelop.Components.Extensions/PlatformDialog.cs \
 	MonoDevelop.Components.Extensions/TextQuestionDialog.cs \
 	MonoDevelop.Components.MainToolbar/ButtonBar.cs \
+	MonoDevelop.Components.MainToolbar/ISearchDataSource.cs \
 	MonoDevelop.Components.MainToolbar/MainToolbar.cs \
+	MonoDevelop.Components.MainToolbar/ProjectSearchCategory.cs \
 	MonoDevelop.Components.MainToolbar/RoundButton.cs \
+	MonoDevelop.Components.MainToolbar/SearchCategory.cs \
+	MonoDevelop.Components.MainToolbar/SearchPopupWidget.cs \
+	MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs \
 	MonoDevelop.Components.MainToolbar/StatusArea.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs \
@@ -589,8 +593,6 @@ FILES =  \
 	MonoDevelop.Ide.Gui/WorkbenchMemento.cs \
 	MonoDevelop.Ide.Gui/WorkbenchWindow.cs \
 	MonoDevelop.Ide.NavigateToDialog/NavigateToCommand.cs \
-	MonoDevelop.Ide.NavigateToDialog/NavigateToDialog.cs \
-	MonoDevelop.Ide.NavigateToDialog/NavigateToPopup.cs \
 	MonoDevelop.Ide.NavigateToDialog/ResultsDataSource.cs \
 	MonoDevelop.Ide.NavigateToDialog/SearchResult.cs \
 	MonoDevelop.Ide.Navigation/DocumentNavigationPoint.cs \

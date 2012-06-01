@@ -30,7 +30,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Core;
 using System.IO;
-using MonoDevelop.Compontents.MainToolbar;
+using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Ide
 {

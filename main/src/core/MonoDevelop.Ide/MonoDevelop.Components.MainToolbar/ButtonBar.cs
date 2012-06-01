@@ -31,7 +31,7 @@ using MonoDevelop.Components;
 using Cairo;
 using System.Linq;
 
-namespace MonoDevelop.Compontents.MainToolbar
+namespace MonoDevelop.Components.MainToolbar
 {
 	public class ButtonBar : EventBox
 	{

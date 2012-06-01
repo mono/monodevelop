@@ -47,7 +47,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
-using MonoDevelop.Compontents.MainToolbar;
+using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.MacIntegration
 {

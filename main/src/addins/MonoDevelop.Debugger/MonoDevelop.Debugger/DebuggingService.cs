@@ -110,7 +110,7 @@ namespace MonoDevelop.Debugger
 					}
 				};
 				IdeApp.Workbench.Toolbar.ButtonBar.Hide ();
-				IdeApp.Workbench.Toolbar.ButtonBar.Clicked += delegate(object sender, MonoDevelop.Compontents.MainToolbar.ButtonBar.ClickEventArgs e) {
+				IdeApp.Workbench.Toolbar.ButtonBar.Clicked += delegate(object sender, MonoDevelop.Components.MainToolbar.ButtonBar.ClickEventArgs e) {
 					switch (e.Button) {
 					case 0:
 						IdeApp.CommandService.DispatchCommand (DebugCommands.Pause);

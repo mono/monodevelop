@@ -38,7 +38,7 @@ using MonoDevelop.Core;
 using Mono.Unix;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Compontents.MainToolbar;
+using MonoDevelop.Components.MainToolbar;
 
 
 namespace MonoDevelop.Ide.Desktop
