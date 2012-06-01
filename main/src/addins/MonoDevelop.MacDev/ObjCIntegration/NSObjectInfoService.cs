@@ -244,7 +244,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						if (!attType.Equals (Resolve (dom, exportAttType)))
 							continue;
 					}
-					bool isDesigner = MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.Region.FileName);
+
+					bool isDesigner = meth.Parts.Any (part => MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.Region.FileName));
 					//only support Export from old designer files, user code must be IBAction
 					if (!isDesigner && !isIBAction)
 						continue;
@@ -264,7 +265,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							label = null;
 						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.Type.ReflectionName));
 					}
-					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.Region.FileName))
+					if (meth.Parts.Any (part => MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.Region.FileName)))
 						action.IsDesigner = true;
 					info.Actions.Add (action);
 					break;
