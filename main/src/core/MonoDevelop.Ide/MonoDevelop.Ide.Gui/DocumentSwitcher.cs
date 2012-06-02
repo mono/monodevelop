@@ -558,7 +558,7 @@ namespace MonoDevelop.Ide
 		Label labelTitle    = new Label ();
 		DocumentList documentList = new DocumentList ();
 		
-		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Popup)
+		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
 			IdeApp.CommandService.IsEnabled = false;
 			this.documents = new List<MonoDevelop.Ide.Gui.Document> (
