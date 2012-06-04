@@ -77,7 +77,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, false).GetMatch (text);
 			StringBuilder result = new StringBuilder ();
-			result.Append ("<span foreground=\"#808080\">");
 			if (lane != null) {
 				int lastPos = 0;
 				for (int n=0; n < lane.Length; n++) {
@@ -94,7 +93,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			} else {
 				MarkupUtilities.AppendEscapedString (result, text);
 			}
-			result.Append ("</span>");
 			return result.ToString ();
 		}
 	}

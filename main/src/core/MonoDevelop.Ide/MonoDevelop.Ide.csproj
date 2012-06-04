@@ -1610,6 +1610,7 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchDataSource.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\FileSearchCategory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

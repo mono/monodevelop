@@ -1,21 +1,21 @@
-// 
-// ProjectSearchCategory.cs
-//  
+//
+// FileSearchCategory.cs
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
-// 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
-// 
+//
+// Copyright (c) 2012 mkrueger
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,17 +41,16 @@ using System.Linq;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-
-	public class ProjectSearchCategory : SearchCategory
+	public class FileSearchCategory : SearchCategory
 	{
 		Widget widget;
-		public ProjectSearchCategory (Widget widget) : base (GettextCatalog.GetString("Solution"))
+		public FileSearchCategory (Widget widget) : base (GettextCatalog.GetString("Files"))
 		{
 			this.widget = widget;
 			this.lastResult = new WorkerResult (widget);
 		}
 
-	/*	IEnumerable<ProjectFile> files {
+		IEnumerable<ProjectFile> files {
 			get {
 				HashSet<ProjectFile> list = new HashSet<ProjectFile> ();
 				foreach (Document doc in IdeApp.Workbench.Documents) {
@@ -73,58 +71,6 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 		}
-		*/
-		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
-		IEnumerable<IMember> members {
-			get {
-				getMembersTimer.BeginTiming ();
-				try {
-					lock (members) {
-						foreach (var type in types) {
-							foreach (var m in type.Members) {
-								yield return m;
-							}
-						}
-					}
-				} finally {
-					getMembersTimer.EndTiming ();
-				}
-				
-			}
-		}
-
-		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
-		IEnumerable<ITypeDefinition> types {
-			get {
-				getTypesTimer.BeginTiming ();
-				try {
-					foreach (Document doc in IdeApp.Workbench.Documents) {
-						// We only want to check it here if it's not part
-						// of the open combine. Otherwise, it will get
-						// checked down below.
-						if (doc.Project == null && doc.IsFile) {
-							var info = doc.ParsedDocument;
-							if (info != null) {
-								var ctx = doc.Compilation;
-								foreach (var type in ctx.MainAssembly.GetAllTypeDefinitions ()) {
-									yield return type;
-								}
-							}
-						}
-					}
-					
-					var projects = IdeApp.Workspace.GetAllProjects ();
-					
-					foreach (Project p in projects) {
-						var pctx = TypeSystemService.GetCompilation (p);
-						foreach (var type in pctx.MainAssembly.GetAllTypeDefinitions ())
-							yield return type;
-					}
-				} finally {
-					getTypesTimer.EndTiming ();
-				}
-			}
-		}
 
 		WorkerResult lastResult;
 
@@ -136,9 +82,7 @@ namespace MonoDevelop.Components.MainToolbar
 				newResult.IncludeFiles = true;
 				newResult.IncludeTypes = true;
 				newResult.IncludeMembers = true;
-				var firstType = types.FirstOrDefault ();
-				newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
-				
+
 				string toMatch = searchPattern;
 				int i = toMatch.IndexOf (':');
 				if (i != -1) {
@@ -161,50 +105,16 @@ namespace MonoDevelop.Components.MainToolbar
 
 		IEnumerable<SearchResult> AllResults (WorkerResult lastResult, WorkerResult newResult)
 		{
-//			// Search files
-//			if (newResult.IncludeFiles) {
-//				newResult.filteredFiles = new List<ProjectFile> ();
-//				bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
-//				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
-//				foreach (ProjectFile file in allFiles) {
-//					SearchResult curResult = newResult.CheckFile (file);
-//					if (curResult != null) {
-//						newResult.filteredFiles.Add (file);
-//						yield return curResult;
-//					}
-//				}
-//			}
-			if (newResult.isGotoFilePattern)
-				yield break;
-			
-			// Search Types
-			if (newResult.IncludeTypes) {
-				newResult.filteredTypes = new List<ITypeDefinition> ();
-				lock (types) {
-					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
-					var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
-					foreach (var type in allTypes) {
-						SearchResult curResult = newResult.CheckType (type);
-						if (curResult != null) {
-							newResult.filteredTypes.Add (type);
-							yield return curResult;
-						}
-					}
-				}
-			}
-			
-			// Search members
-			if (newResult.IncludeMembers) {
-				newResult.filteredMembers = new List<IMember> ();
-				lock (members) {
-					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
-					var allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
-					foreach (var member in allMembers) {
-						SearchResult curResult = newResult.CheckMember (member);
-						if (curResult != null) {
-							newResult.filteredMembers.Add (member);
-							yield return curResult;
-						}
+			// Search files
+			if (newResult.IncludeFiles) {
+				newResult.filteredFiles = new List<ProjectFile> ();
+				bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
+				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
+				foreach (ProjectFile file in allFiles) {
+					SearchResult curResult = newResult.CheckFile (file);
+					if (curResult != null) {
+						newResult.filteredFiles.Add (file);
+						yield return curResult;
 					}
 				}
 			}
@@ -321,5 +231,5 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 		
 	}
-	
 }
+

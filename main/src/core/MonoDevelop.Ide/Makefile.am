@@ -208,6 +208,7 @@ FILES =  \
 	MonoDevelop.Components.Extensions/PlatformDialog.cs \
 	MonoDevelop.Components.Extensions/TextQuestionDialog.cs \
 	MonoDevelop.Components.MainToolbar/ButtonBar.cs \
+	MonoDevelop.Components.MainToolbar/FileSearchCategory.cs \
 	MonoDevelop.Components.MainToolbar/ISearchDataSource.cs \
 	MonoDevelop.Components.MainToolbar/MainToolbar.cs \
 	MonoDevelop.Components.MainToolbar/ProjectSearchCategory.cs \

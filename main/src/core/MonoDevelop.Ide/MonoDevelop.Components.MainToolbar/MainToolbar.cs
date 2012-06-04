@@ -170,6 +170,15 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.SetSizeRequest (240, 26);
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
 			matchEntry.SizeAllocated += (o, args) => PositionPopup ();
+			matchEntry.Activated += (sender, e) => {
+				if (popup != null)
+					popup.OpenFile ();
+			};
+			matchEntry.Entry.KeyPressEvent += (o, args) => {
+				if (popup != null) {
+					args.RetVal = popup.ProcessKey (args.Event.Key);
+				}
+			};
 			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {
 				if (args.Event is Gdk.EventConfigure)
 					PositionPopup ();
@@ -193,7 +202,6 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			if (popup == null) {
 				popup = new SearchPopupWindow ();
-				popup.Attach (matchEntry);
 				popup.Destroyed += delegate {
 					popup = null;
 					matchEntry.Entry.Text = "";

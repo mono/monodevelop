@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -38,6 +39,7 @@ namespace MonoDevelop.Components.MainToolbar
 			widget.SizeRequested += delegate(object o, SizeRequestedArgs args) {
 				Resize (args.Requisition.Width, args.Requisition.Height);
 			};
+			widget.ItemActivated += (sender, e) => OpenFile ();
 		}
 
 		public void Update (string searchPattern)
@@ -45,90 +47,23 @@ namespace MonoDevelop.Components.MainToolbar
 			widget.Update (searchPattern);
 		}
 
-
-		SearchEntry matchEntry;
-		public void Attach (SearchEntry matchEntry)
+		internal void OpenFile ()
 		{
-			this.matchEntry = matchEntry;
-			matchEntry.Entry.KeyPressEvent += HandleKeyPress;
-			matchEntry.Activated += HandleActivated;
-		}
-
-
-		void Detach ()
-		{
-			if (matchEntry != null) {
-				matchEntry.Entry.KeyPressEvent -= HandleKeyPress;
-				matchEntry.Activated -= HandleActivated;
-				matchEntry = null;
+			var region = widget.SelectedItemRegion;
+			if (string.IsNullOrEmpty (region.FileName))
+				return;
+			if (region.Begin.IsEmpty) {
+				IdeApp.Workbench.OpenDocument (region.FileName);
+			} else {
+				IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
 			}
-		}
-
-		void HandleActivated (object sender, EventArgs e)
-		{
-			OpenFile ();
-		}
-
-		protected virtual void HandleKeyPress (object o, KeyPressEventArgs args)
-		{
-			// Up and down move the tree selection up and down
-			// for rapid selection changes.
-			Gdk.EventKey key = args.Event;
-			switch (key.Key) {
-			case Gdk.Key.Page_Down:
-//				list.ModifySelection (false, true, (args.Event.State & ModifierType.ShiftMask) == ModifierType.ShiftMask);
-				args.RetVal = true;
-				break;
-			case Gdk.Key.Page_Up:
-//				list.ModifySelection (true, true, (args.Event.State & ModifierType.ShiftMask) == ModifierType.ShiftMask);
-				args.RetVal = true;
-				break;
-			case Gdk.Key.Up:
-//				list.ModifySelection (true, false, (args.Event.State & ModifierType.ShiftMask) == ModifierType.ShiftMask);
-				args.RetVal = true;
-				break;
-			case Gdk.Key.Down:
-//				list.ModifySelection (false, false, (args.Event.State & ModifierType.ShiftMask) == ModifierType.ShiftMask);
-				args.RetVal = true;
-				break;
-			case Gdk.Key.Escape:
-				Destroy ();
-				args.RetVal = true;
-				break;
-			}
-		}
-
-		void OpenFile ()
-		{
-//			locations.Clear ();
-//			if (list.SelectedRows.Count != 0) {
-//				foreach (int sel in list.SelectedRows) {
-//					var res = lastResult.results [sel];
-//					if (res.File == null)
-//						continue;
-//					var loc = new OpenLocation (res.File, res.Row, res.Column);
-//					if (loc.Line == -1) {
-//						int i = Query.LastIndexOf (':');
-//						if (i != -1) {
-//							if (!int.TryParse (Query.Substring (i + 1), out loc.Line))
-//								loc.Line = -1;
-//						}
-//					}
-//					locations.Add (loc);
-//				}
-//				foreach (var loc in locations)
-//					IdeApp.Workbench.OpenDocument (loc.Filename, loc.Line, loc.Column);
 			Destroy ();
-//			}
 		}
 
-
-		protected override void OnDestroyed ()
+		public bool ProcessKey (Gdk.Key key)
 		{
-			Detach ();
-			base.OnDestroyed ();
+			return widget.ProcessKey (key);
 		}
-		
 	}
 }
 
