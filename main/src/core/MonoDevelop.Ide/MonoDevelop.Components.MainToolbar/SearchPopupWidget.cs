@@ -47,6 +47,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public SearchPopupWidget ()
 		{
+			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask  | Gdk.EventMask.ButtonReleaseMask;
 			headerColor = CairoExtensions.ParseColor ("d4d4d4");
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
@@ -107,7 +108,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			base.OnSizeRequested (ref requisition);
 
-			double maxX = 0, y = 0;
+			double maxX = 0, y = yMargin;
 				
 			foreach (var result in results) {
 //				var category = result.Item1;
@@ -134,6 +135,57 @@ namespace MonoDevelop.Components.MainToolbar
 			requisition.Width = (int)maxX + 100 + xMargin * 2 + lineNumberBorder;
 			requisition.Height = (int)y + 4 + yMargin * 2;
 		}
+
+		Tuple<SearchCategory, ISearchDataSource, int> GetItemAt (double px, double py)
+		{
+			double maxX = 0, y = yMargin;
+				
+			foreach (var result in results) {
+				var category = result.Item1;
+				var dataSrc = result.Item2;
+				if (dataSrc.ItemCount == 0)
+					continue;
+				
+				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+					layout.SetMarkup (dataSrc.GetMarkup (i, false));
+
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					y += h;
+					if (y > py){
+						return Tuple.Create (category, dataSrc, i);
+					}
+
+					var region = dataSrc.GetRegion (i);
+					if (!region.Begin.IsEmpty) {
+						layout.SetMarkup (region.BeginLine.ToString ());
+						int w2, h2;
+						layout.GetPixelSize (out w2, out h2);
+						w += w2;
+					}
+					maxX = Math.Max (maxX, w);
+				}
+			}
+			return new Tuple<SearchCategory, ISearchDataSource, int> (null, null, -1);
+		}
+
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			if (evnt.Button == 1) {
+				var item = GetItemAt (evnt.X, evnt.Y);
+				if (item.Item1 != null) {
+					selectedCategory = item.Item1;
+					selectedDataSource = item.Item2;
+					selectedItem = item.Item3;
+					QueueDraw ();
+				}
+				if (evnt.Type == Gdk.EventType.TwoButtonPress)
+					OnItemActivated (EventArgs.Empty);
+			}
+
+			return base.OnButtonPressEvent (evnt);
+		}
+
 
 		internal bool ProcessKey (Gdk.Key key)
 		{
