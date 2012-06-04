@@ -134,14 +134,18 @@ namespace MonoDevelop.Gettext
 		
 		// on Windows, we support using gettext from http://gnuwin32.sourceforge.net/packages/gettext.htm
 		static FilePath overrideToolsLocation = FilePath.Null;
-		
+
+		// ProgramFilesX86 is broken on 32-bit WinXP, this is a workaround
+		static string GetProgramFilesX86 ()
+		{
+			return Environment.GetFolderPath (IntPtr.Size == 8?
+				Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
+		}
+
 		static Translation ()
 		{
 			if (Platform.IsWindows) {
-				//On WinXP 32-bit, ProgramFilesX86 is null
-				FilePath programFiles = Environment.GetFolderPath (IntPtr.Size == 8?
-					Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
-				var toolsBin = programFiles.Combine ("GnuWin32", "bin");
+				FilePath toolsBin = Path.Combine (GetProgramFilesX86 (), "GnuWin32", "bin");
 				if (File.Exists (toolsBin.Combine ("msgfmt.exe"))) {
 					overrideToolsLocation = toolsBin;
 				}

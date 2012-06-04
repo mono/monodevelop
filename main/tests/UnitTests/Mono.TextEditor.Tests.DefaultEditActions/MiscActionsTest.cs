@@ -39,7 +39,8 @@ namespace Mono.TextEditor.Tests.Actions
 		[Test()]
 		public void TestInsertTabBug615196_IndentCase ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			TextEditorData data = new Mono.TextEditor.TextEditorData ();
+			data.Options = new TextEditorOptions () { IndentStyle = IndentStyle.Smart };
 			data.Document.Text = "\n\n\n\n\n";
 			data.Caret.Offset = data.Document.GetLine (2).Offset; // 2nd.Line
 			data.MainSelection = new Selection (2, 1, 4, 1);

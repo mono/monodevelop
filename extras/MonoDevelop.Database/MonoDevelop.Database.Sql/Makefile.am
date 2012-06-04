@@ -1,6 +1,7 @@
 ADDIN_BUILD = $(top_builddir)/build
 ASSEMBLY = $(ADDIN_BUILD)/MonoDevelop.Database.Sql.dll
 REFS =  \
+	$(GTK_SHARP_LIBS) \
 	$(MONO_ADDINS_LIBS) \
 	$(MONODEVELOP_LIBS) \
 	-r:System \

@@ -45,33 +45,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnWindowChanged);
 		}
 		
-		public override void Initialize (MonoDevelop.Ide.Gui.Components.NodeBuilder[] builders, MonoDevelop.Ide.Gui.Components.TreePadOption[] options, string contextMenuPath)
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
 		{
 			base.Initialize (builders, options, contextMenuPath);
 			var aliases = new Dictionary<string,string> ();
 			aliases.Add ("SystemFile", "MonoDevelop.Ide.Gui.Pads.ProjectPad.SystemFile");
 			aliases.Add ("ProjectFolder", "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolder");
 			TreeView.ContextMenuTypeNameAliases = aliases;
-			TreeView.Tree.DragDataGet += OnDragDataGet;
-		}
-
-		void OnDragDataGet (object o, Gtk.DragDataGetArgs args)
-		{
-			if (treeView.DragObjects == null)
-				return;
-			const int uriListTarget = 11;
-			if (args.Info == uriListTarget) {
-				StringBuilder sb = new StringBuilder ();
-				foreach (var dobj in treeView.DragObjects) {
-					if (dobj is ProjectFile) {
-						sb.Append (new Uri (((ProjectFile)dobj).FilePath).AbsoluteUri);
-						sb.AppendLine ();
-					}
+			TreeView.EnableDragUriSource (n => {
+				var pf = n as ProjectFile;
+				if (pf != null) {
+					return new Uri (pf.FilePath).AbsoluteUri;
 				}
-				args.SelectionData.Set (args.SelectionData.Target, args.SelectionData.Format, System.Text.Encoding.UTF8.GetBytes (sb.ToString ()));
-			}
+				return null;
+			});
 		}
-	
 		
 		protected override void OnSelectionChanged (object sender, EventArgs args)
 		{

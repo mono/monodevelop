@@ -110,6 +110,8 @@ namespace Mono.TextEditor
 		{
 			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
 				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
+					if (info.X == x && info.Y == y)
+						break;
 					info.X = x;
 					info.Y = y;
 					if (widget.Visible)
@@ -219,8 +221,8 @@ namespace Mono.TextEditor
 				childRectangle.X = (int)(child.X * zoom - textEditorWidget.HAdjustment.Value);
 				childRectangle.Y = (int)(child.Y * zoom - textEditorWidget.VAdjustment.Value);
 			}
-			childRectangle.X += allocation.X;
-			childRectangle.Y += allocation.Y;
+//			childRectangle.X += allocation.X;
+//			childRectangle.Y += allocation.Y;
 			child.Child.SizeAllocate (childRectangle);
 		}
 

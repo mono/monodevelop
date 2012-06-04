@@ -73,6 +73,11 @@ namespace MonoDevelop.Ide.StandardHeader
 				StringBuilder sb = new StringBuilder (policy.Text.Length);
 				string[] lines = policy.Text.Split ('\n');
 				foreach (string line in lines) {
+					if (string.IsNullOrWhiteSpace (line)) {
+						sb.Append (cmt.TrimEnd ());
+						sb.Append (eolMarker);
+						continue;
+					}
 					sb.Append (cmt);
 					sb.Append (line);
 					sb.Append (eolMarker);

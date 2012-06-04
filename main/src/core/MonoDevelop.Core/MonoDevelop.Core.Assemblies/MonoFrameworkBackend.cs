@@ -32,8 +32,12 @@ namespace MonoDevelop.Core.Assemblies
 {
 	public class MonoFrameworkBackend: TargetFrameworkBackend<MonoTargetRuntime>
 	{
+		string ref_assemblies_folder;
+
 		string GetReferenceAssembliesFolder ()
 		{
+			if (ref_assemblies_folder != null)
+				return ref_assemblies_folder;
 			var fxDir = framework.Id.GetAssemblyDirectoryName ();
 			foreach (var rootDir in runtime.GetReferenceFrameworkDirectories ()) {
 				var dir = rootDir.Combine (fxDir);
@@ -50,6 +54,7 @@ namespace MonoDevelop.Core.Assemblies
 						}
 					}
 				}
+				ref_assemblies_folder = dir;
 				return dir;
 			}
 			return null;

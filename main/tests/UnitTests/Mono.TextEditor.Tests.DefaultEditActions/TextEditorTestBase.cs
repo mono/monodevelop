@@ -131,7 +131,7 @@ namespace Mono.TextEditor.Tests
 				}
 			}
 			if (foldSegments.Count > 0)
-				data.Document.UpdateFoldSegments (foldSegments, false);
+				data.Document.UpdateFoldSegments (foldSegments);
 			return data;
 		}
 

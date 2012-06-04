@@ -150,6 +150,11 @@ namespace MonoDevelop.CSharp.Refactoring
 				node = ((NamedExpression)node).NameToken;
 			if (node is VariableInitializer)
 				node = ((VariableInitializer)node).NameToken;
+
+			if (node is IdentifierExpression) {
+				node = ((IdentifierExpression)node).IdentifierToken;
+			}
+
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 
 			var length = node is PrimitiveType ? keywordName.Length : node.EndLocation.Column - node.StartLocation.Column;

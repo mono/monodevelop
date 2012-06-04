@@ -259,7 +259,7 @@ namespace MonoDevelop.SourceEditor
 
 		public double Zoom {
 			get { return DefaultSourceEditorOptions.Instance.Zoom; }
-			set { throw new NotSupportedException (); }
+			set { DefaultSourceEditorOptions.Instance.Zoom = value; }
 		}
 
 		public void ZoomIn ()

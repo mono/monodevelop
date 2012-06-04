@@ -365,6 +365,7 @@ namespace MonoDevelop.SourceEditor
 					parseInformationUpdaterWorkerThread.Dispose ();
 					parseInformationUpdaterWorkerThread = null;
 				}
+
 			};
 			vbox.ShowAll ();
 			parseInformationUpdaterWorkerThread = new BackgroundWorker ();
@@ -430,7 +431,7 @@ namespace MonoDevelop.SourceEditor
 			if (!options.ShowFoldMargin)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
-			if (doc.HasFoldSegments && parsedDocument.Errors.Any ())
+			if (doc.HasFoldSegments && parsedDocument.Errors.Any (err => err.ErrorType == ErrorType.Error))
 				return;
 			try {
 				List<FoldSegment > foldSegments = new List<FoldSegment> ();
@@ -501,8 +502,8 @@ namespace MonoDevelop.SourceEditor
 						marker.IsFolded = false;
 					
 				}
-				doc.UpdateFoldSegmentWorker (sender, new DoWorkEventArgs (foldSegments));
-				
+				doc.UpdateFoldSegments (foldSegments, false, true);
+
 				if (reloadSettings) {
 					reloadSettings = false;
 					Application.Invoke (delegate {

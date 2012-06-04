@@ -66,6 +66,36 @@ namespace MonoDevelop.Projects
 		{
 			Assert.AreEqual (@"../..", FileService.AbsoluteToRelativePath (@"/aa/bb/cc/dd", @"/aa/bb"));
 		}
+
+		[Test]
+		public void TestGetRelativeWithSamePathSubstring ()
+		{
+			Assert.AreEqual (@"../bbcc", FileService.AbsoluteToRelativePath (@"/aa/bb", @"/aa/bbcc"));
+			Assert.AreEqual (@"../bbcc/dd", FileService.AbsoluteToRelativePath (@"/aa/bb", @"/aa/bbcc/dd"));
+			Assert.AreEqual (@"../bbcc", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc"));
+			Assert.AreEqual (@"../bbcc/", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc/"));
+			Assert.AreEqual (@"../bbcc/", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc/"));
+		}
+
+		[Test]
+		public void TestGetRelativeEmptyDir ()
+		{
+			Assert.AreEqual (@"cc", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bb/cc"));
+			Assert.AreEqual (@".", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bb/"));
+			Assert.AreEqual (@"bb/", FileService.AbsoluteToRelativePath (@"/aa", @"/aa/bb/"));
+			Assert.AreEqual (@"bb/", FileService.AbsoluteToRelativePath (@"/aa/", @"/aa/bb/"));
+		}
+
+		[Test]
+		public void TestGetRelativeBadInput ()
+		{
+			Assert.AreEqual (@"bbb", FileService.AbsoluteToRelativePath (@"aaa", @"bbb"));
+			Assert.AreEqual (@"bbb/ccc", FileService.AbsoluteToRelativePath (@"aaa", @"bbb/ccc"));
+			Assert.AreEqual (@"", FileService.AbsoluteToRelativePath (@"aaa/bbb", @""));
+			Assert.AreEqual (@"aa/bb", FileService.AbsoluteToRelativePath (@"", @"aa/bb"));
+			Assert.AreEqual (@"aa/bb", FileService.AbsoluteToRelativePath (@"/aa", @"aa/bb"));
+			Assert.AreEqual (@"aa", FileService.AbsoluteToRelativePath (@"/aa", @"aa"));
+		}
 	}
 }
 

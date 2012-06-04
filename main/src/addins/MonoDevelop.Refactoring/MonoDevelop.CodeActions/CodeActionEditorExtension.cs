@@ -68,37 +68,50 @@ namespace MonoDevelop.CodeActions
 		void CreateWidget (IEnumerable<CodeAction> fixes, TextLocation loc)
 		{
 			Fixes = fixes;
-			if (!QuickTaskStrip.EnableFancyFeatures)
+			if (!QuickTaskStrip.EnableFancyFeatures) {
+				RemoveWidget ();
 				return;
+			}
 			var editor = document.Editor;
-			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized)
+			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized) {
+				RemoveWidget ();
 				return;
-			if (document.ParsedDocument == null || document.ParsedDocument.IsInvalid)
+			}
+			if (document.ParsedDocument == null || document.ParsedDocument.IsInvalid) {
+				RemoveWidget ();
 				return;
+			}
 			if (!fixes.Any ()) {
 				ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
 				ICSharpCode.NRefactory.CSharp.AstNode node;
 				if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
 					var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, resolveResult);
-					if (!possibleNamespaces.Any ())
+					if (!possibleNamespaces.Any ()) {
+						RemoveWidget ();
 						return;
-				} else
+					}
+				} else {
+					RemoveWidget ();
 					return;
+				}
 			}
 			var container = editor.Parent.Parent as TextEditorContainer;
-			if (container == null) 
+			if (container == null) {
+				RemoveWidget ();
 				return;
+			}
 			if (widget == null) {
 				widget = new CodeActionWidget (this, Document);
 				container.AddTopLevelWidget (widget,
 					2 + (int)editor.Parent.TextViewMargin.XOffset,
 					-2 + (int)editor.Parent.LineToY (document.Editor.Caret.Line));
 			} else {
+				if (!widget.Visible)
+					widget.Show ();
 				container.MoveTopLevelWidget (widget,
 					2 + (int)editor.Parent.TextViewMargin.XOffset,
 					-2 + (int)editor.Parent.LineToY (document.Editor.Caret.Line));
 			}
-			widget.Show ();
 			widget.SetFixes (fixes, loc);
 		}
 
@@ -112,21 +125,21 @@ namespace MonoDevelop.CodeActions
 
 		public override void CursorPositionChanged ()
 		{
-			RemoveWidget ();
 			CancelQuickFixTimer ();
-			
+
 			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null) {
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Document.Editor.Caret.Location;
 					RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<CodeAction> fixes) {
 						Application.Invoke (delegate {
-							RemoveWidget ();
 							CreateWidget (fixes, loc);
+							quickFixTimeout = 0;
 						});
 					});
-					quickFixTimeout = 0;
 					return false;
 				});
+			} else {
+				RemoveWidget ();
 			}
 			base.CursorPositionChanged ();
 		}

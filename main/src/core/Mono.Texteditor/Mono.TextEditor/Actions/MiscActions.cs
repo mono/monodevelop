@@ -165,6 +165,8 @@ namespace Mono.TextEditor
 			var indentationString = data.Options.IndentationString;
 			using (var undo = data.OpenUndoGroup ()) {
 				foreach (DocumentLine line in data.SelectedLines) {
+					if (data.Options.IndentStyle == IndentStyle.Virtual && line.Length == 0)
+						continue;
 					data.Insert (line.Offset, indentationString);
 				}
 			}

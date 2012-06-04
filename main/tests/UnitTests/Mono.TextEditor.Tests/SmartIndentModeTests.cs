@@ -35,9 +35,15 @@ namespace Mono.TextEditor.Tests
 	{
 		internal readonly static IIndentationTracker IndentTracker = new TestIndentTracker ();
 
-		class TestIndentTracker : IIndentationTracker
+		internal class TestIndentTracker : IIndentationTracker
 		{
-			const string indentString = "\t\t";
+			string indentString;
+
+			public TestIndentTracker (string indentString = "\t\t")
+			{
+				this.indentString = indentString;
+			}
+			
 			#region IIndentationTracker implementation
 			public string GetIndentationString (int offset)
 			{

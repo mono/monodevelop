@@ -622,7 +622,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (currentType != null && currentType.Kind == TypeKind.Enum) {
 						return HandleEnumContext();
 					}
-				
 					var contextList = new CompletionDataWrapper(this);
 					var identifierStart = GetExpressionAtCursor();
 					if (identifierStart != null) {
@@ -1441,8 +1440,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			switch (word) {
-				case "using":
 				case "namespace":
+					return null;
+				case "using":
 					if (currentType != null) {
 						return null;
 					}
@@ -1709,7 +1709,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return true;
 		}
 
-		string GetLineIndent (int lineNr)
+		string GetLineIndent(int lineNr)
 		{
 			var line = document.GetLineByNumber(lineNr);
 			for (int j = line.Offset; j < line.EndOffset; j++) {
@@ -2626,6 +2626,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				location,
 				n => n is IdentifierExpression || n is MemberReferenceExpression
 			);
+
 			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType>(location.Line, location.Column - 1);
 			}
@@ -2736,6 +2737,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					expr = baseUnit.GetNodeAt<AstType>(location.Line, location.Column);
 				} 
 			}
+
 			if (expr == null) {
 				return null;
 			}

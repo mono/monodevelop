@@ -655,7 +655,7 @@ namespace MonoDevelop.Ide
 				} else if (padCategory.Items.Count > 0) {
 					activeItem = padCategory.Items [0];
 				} else {
-					Destroy ();
+					DestroyWindow ();
 					return;
 				}
 			}
@@ -663,14 +663,17 @@ namespace MonoDevelop.Ide
 			documentList.ActiveItem = activeItem;
 			documentList.NextItem (true);
 			documentList.RequestClose += delegate(object sender, DocumentList.RequestActionEventArgs e) {
-				if (e.SelectItem) {
-					if (documentList.ActiveItem.Tag is Pad) {
-						((Pad)documentList.ActiveItem.Tag).BringToFront (true);
-					} else {
-						((MonoDevelop.Ide.Gui.Document)documentList.ActiveItem.Tag).Select ();
+				try {
+					if (e.SelectItem) {
+						if (documentList.ActiveItem.Tag is Pad) {
+							((Pad)documentList.ActiveItem.Tag).BringToFront (true);
+						} else {
+							((MonoDevelop.Ide.Gui.Document)documentList.ActiveItem.Tag).Select ();
+						}
 					}
+				} finally {
+					DestroyWindow ();
 				}
-				Destroy ();
 			};
 			
 			this.ShowAll ();
@@ -691,10 +694,15 @@ namespace MonoDevelop.Ide
 		
 		protected override bool OnFocusOutEvent (EventFocus evnt)
 		{
-			Destroy ();
+			DestroyWindow ();
 			return base.OnFocusOutEvent (evnt);
 		}
-		
+
+		void DestroyWindow ()
+		{
+			Destroy ();
+		}
+
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();

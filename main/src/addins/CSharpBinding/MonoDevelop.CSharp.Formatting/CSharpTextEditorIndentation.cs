@@ -258,13 +258,15 @@ namespace MonoDevelop.CSharp.Formatting
 
 			if (key == Gdk.Key.Tab && DefaultSourceEditorOptions.Instance.TabIsReindent && !CompletionWindowManager.IsVisible && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected) {
 				int cursor = textEditorData.Caret.Offset;
+				if (stateTracker.Engine.IsInsideVerbatimString && cursor > 0 && cursor < textEditorData.Document.TextLength && textEditorData.GetCharAt (cursor - 1) == '"')
+					stateTracker.UpdateEngine (cursor + 1);
+
 				if (stateTracker.Engine.IsInsideVerbatimString) {
 					// insert normal tab inside @" ... "
 					if (textEditorData.IsSomethingSelected) {
 						textEditorData.SelectedText = "\t";
 					} else {
 						textEditorData.Insert (cursor, "\t");
-						textEditorData.Caret.Offset++;
 					}
 					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 				} else if (cursor >= 1) {
@@ -324,7 +326,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (reIndent || automaticReindent)
 						DoReSmartIndent ();
 					if (!skipFormatting && keyChar == '}')
-						RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column - 1));
+						RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column));
 				}
 
 				stateTracker.UpdateEngine ();
@@ -343,7 +345,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var result = base.KeyPress (key, keyChar, modifier);
 
 			if (!skipFormatting && keyChar == '}')
-				RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column - 1));
+				RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column));
 			return result;
 		}
 

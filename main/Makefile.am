@@ -107,10 +107,10 @@ MD_LAUNCH=$(MD_LAUNCH_SETUP) UBUNTU_MENUPROXY=0 exec -a "monodevelop" $(RUNTIME)
 run: runmd
 
 runmd: $(PROGRAM)
-	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-debug: $(PROGRAM)
-	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH) --debug=casts $(MD_BIN_PATH)/MonoDevelop.exe
+	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH) --debug=casts $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-gdb: $(PROGRAM)
 	echo "run --debug $(MD_BIN_PATH)/MonoDevelop.exe" > gdb.commands
@@ -118,20 +118,20 @@ run-gdb: $(PROGRAM)
 	rm -f gdb.commands
 
 run-profile: $(PROGRAM)
-	$(MD_LAUNCH) --profile=log:calls $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH) --profile=log:calls $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-profile-stat: $(PROGRAM)
-	$(MD_LAUNCH) --profile=log:sample $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH) --profile=log:sample $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-trace: $(PROGRAM)
-	$(MD_LAUNCH_SETUP) MONODEVELOP_TRACE=1 exec strace -ttt -f -o md.strace mono $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH_SETUP) MONODEVELOP_TRACE=1 exec strace -ttt -f -o md.strace mono $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 plot-trace:
 	if [ ! -e 'plot-timeline.py' ]; then wget http://gitorious.org/performance-scripts/mainline/blobs/raw/master/plot-timeline.py; fi
 	python plot-timeline.py -o md-trace.png  md.strace
 
 run-profile-heap: $(PROGRAM)
-	$(MD_LAUNCH) -O=inline --profile=heap:heaplog $(MD_BIN_PATH)/MonoDevelop.exe
+	$(MD_LAUNCH) -O=inline --profile=heap:heaplog $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 check-addins:
 	$(MDTOOL_RUN) setup reg-build -v

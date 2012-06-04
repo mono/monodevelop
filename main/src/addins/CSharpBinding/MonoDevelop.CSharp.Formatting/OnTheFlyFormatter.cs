@@ -49,19 +49,19 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location)
 		{
-			Format (data, location, location);
+			Format (data, location, location, false);
 		} 
 
-		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation startLocation, TextLocation endLocation)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation startLocation, TextLocation endLocation, bool exact = true)
 		{
-			Format (data, data.Editor.LocationToOffset (startLocation), data.Editor.LocationToOffset (endLocation));
+			Format (data, data.Editor.LocationToOffset (startLocation), data.Editor.LocationToOffset (endLocation), exact);
 		}
 		
-		public static void Format (MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset)
+		public static void Format (MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset, bool exact = true)
 		{
 			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, data, startOffset, endOffset);
+			Format (policyParent, mimeTypeChain, data, startOffset, endOffset, exact);
 		}
 		
 		
@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp.Formatting
 		/// <param name='memberStartOffset'>
 		/// The offset where the member starts in the returned text.
 		/// </param>
-		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int endOffset, out int memberStartOffset)
+		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int startOffset, int endOffset, out int memberStartOffset)
 		{
 			var pf = data.ParsedDocument.ParsedFile as CSharpParsedFile;
 			if (pf == null) {
@@ -85,7 +85,6 @@ namespace MonoDevelop.CSharp.Formatting
 			var sb = new StringBuilder ();
 			
 			int closingBrackets = 0;
-			
 			// use the member start location to determine the using scope, because this information is in sync, the position in
 			// the file may have changed since last parse run (we have up 2 date locations from the type segment tree).
 			var scope = pf.GetUsingScope (seg.Entity.Region.Begin);
@@ -117,7 +116,7 @@ namespace MonoDevelop.CSharp.Formatting
 				sb.Append (data.Editor.EolMarker);
 			}
 			sb.Append (data.Editor.EolMarker);
-			sb.Append (new string ('}', closingBrackets + 1));
+			sb.Append (new string ('}', closingBrackets));
 			
 			return sb.ToString ();
 		}
@@ -129,6 +128,13 @@ namespace MonoDevelop.CSharp.Formatting
 				var parser = document.HasProject ? new ICSharpCode.NRefactory.CSharp.CSharpParser (TypeSystemParser.GetCompilerArguments (document.Project)) : new ICSharpCode.NRefactory.CSharp.CSharpParser ();
 				var compilationUnit = parser.Parse (stubData);
 				bool hadErrors = parser.HasErrors;
+				if (hadErrors) {
+					using (var stubData2 = TextEditorData.CreateImmutable (input + "}")) {
+						compilationUnit = parser.Parse (stubData2);
+						hadErrors = parser.HasErrors;
+					}
+				}
+				
 				// try it out, if the behavior is better when working only with correct code.
 				if (hadErrors) {
 					return null;
@@ -144,24 +150,34 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset)
+		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document data, int startOffset, int endOffset, bool exact)
 		{
 			if (data.ParsedDocument == null)
 				return;
 			var ext = data.GetContent<CSharpCompletionTextEditorExtension> ();
 			if (ext == null)
 				return;
-			var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset);
-			if (seg == null)
-				return;
-			var member = seg.Entity;
-			if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
-				return;
-			
-			// Build stub
-			int formatStartOffset;
-			var text = BuildStub (data, seg, endOffset, out formatStartOffset);
-			int formatLength = endOffset - seg.Offset;
+			string text;
+			int formatStartOffset, formatLength, realTextDelta;
+			if (exact) {
+				text = data.Editor.Text;
+				formatStartOffset = startOffset;
+				formatLength = endOffset - startOffset;
+				realTextDelta = 0;
+			} else {
+				var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset - 1);
+				if (seg == null)
+					return;
+				var member = seg.Entity;
+				if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
+					return;
+				
+				// Build stub
+				text = BuildStub (data, seg, startOffset, endOffset, out formatStartOffset);
+				formatLength = endOffset - seg.Offset;
+				realTextDelta = seg.Offset - formatStartOffset;
+			}
+
 			// Get changes from formatting visitor
 			var changes = GetFormattingChanges (policyParent, mimeTypeChain, data, text);
 			if (changes == null)
@@ -170,7 +186,6 @@ namespace MonoDevelop.CSharp.Formatting
 			// Do the actual formatting
 //			var originalVersion = data.Editor.Document.Version;
 
-			int realTextDelta = seg.Offset - formatStartOffset;
 			int startDelta = 1;
 			using (var undo = data.Editor.OpenUndoGroup ()) {
 				try {

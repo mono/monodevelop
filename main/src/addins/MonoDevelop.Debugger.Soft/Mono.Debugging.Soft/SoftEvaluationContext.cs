@@ -128,6 +128,22 @@ namespace Mono.Debugging.Soft
 					}
 				}
 			}
+
+			if (method.DeclaringType.IsClass) {
+				object type = Adapter.GetValueType (this, target);
+				TypeMirror targetTypeMirror = type as TypeMirror;
+				Type targetType = type as Type;
+
+				if ((targetTypeMirror != null && (targetTypeMirror.IsValueType || targetTypeMirror.IsPrimitive)) || (targetType != null && (targetType.IsValueType || targetType.IsPrimitive))) {
+					// A value type being assigned to a parameter which is not a value type. The value has to be boxed.
+					try {
+						target = Thread.Domain.CreateBoxedValue ((Value) target);
+					} catch (NotSupportedException) {
+						// This runtime doesn't support creating boxed values
+						throw new EvaluatorException ("This runtime does not support creating boxed values.");
+					}
+				}
+			}
 			
 			MethodCall mc = new MethodCall (this, method, target, values);
 			Adapter.AsyncExecute (mc, Options.EvaluationTimeout);

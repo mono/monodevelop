@@ -800,9 +800,8 @@ namespace MonoDevelop.CSharp.Highlighting
 
 				public override object VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
 				{
-					bool left  = (bool)(binaryOperatorExpression.Left.AcceptVisitor (this, data) ?? (object)false);
+					bool left = (bool)(binaryOperatorExpression.Left.AcceptVisitor (this, data) ?? (object)false);
 					bool right = (bool)(binaryOperatorExpression.Right.AcceptVisitor (this, data) ?? (object)false);
-					
 					switch (binaryOperatorExpression.Operator) {
 					case BinaryOperatorType.InEquality:
 						return left != right;
@@ -816,6 +815,11 @@ namespace MonoDevelop.CSharp.Highlighting
 					
 					Console.WriteLine ("Unknown operator:" + binaryOperatorExpression.Operator);
 					return left;
+				}
+
+				public override object VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, object data)
+				{
+					return parenthesizedExpression.Expression.AcceptVisitor (this, data);
 				}
 			}
 			
@@ -856,9 +860,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			IEnumerable<string> Defines {
 				get {
+					if (SpanStack == null)
+						yield break;
 					foreach (var span in SpanStack) {
-						if (span is DefineSpan)
-							yield return ((DefineSpan)span).Define;
+						if (span is DefineSpan) {
+							var define = ((DefineSpan)span).Define;
+							if (define != null)
+								yield return define;
+						}
 					}
 				}
 			}
@@ -905,13 +914,17 @@ namespace MonoDevelop.CSharp.Highlighting
 				DocumentLine line = doc.GetLineByOffset (i);
 				int length = line.Offset + line.Length - i;
 				string parameter = doc.GetTextAt (i + 5, length - 5);
-					
 				AstNode expr;
 				using (var reader = new StringReader (parameter)) {
 					expr = new CSharpParser ().ParseExpression (reader);
 				}
-				
-				bool result = expr != null && !expr.IsNull ? (bool)expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null) : false;
+				bool result;
+				if (expr != null && !expr.IsNull) {
+					var visitResult = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null);
+					result = visitResult != null ? (bool)visitResult : false;
+				} else {
+					result = false;
+				}
 					
 				IfBlockSpan containingIf = null;
 				if (result) {

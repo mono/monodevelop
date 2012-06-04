@@ -181,7 +181,9 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.Tree.Selection.Mode = Gtk.SelectionMode.Single;
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
 			TreeView.ShadowType = ShadowType.None;
-
+			TreeView.BorderWidth = 1;
+			TreeView.ShowBorderLine = true;
+			TreeView.Zoom = 1.0;
 			treeViewPlaceholder.Add (TreeView);
 			treeViewPlaceholder.ShowAll ();
 			

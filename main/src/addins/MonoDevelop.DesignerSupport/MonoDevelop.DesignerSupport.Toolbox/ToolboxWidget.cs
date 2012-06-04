@@ -401,6 +401,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			return false;
 		}
+
+		protected override void OnUnrealized ()
+		{
+			HideTooltipWindow ();
+			base.OnUnrealized ();
+		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)		
 		{

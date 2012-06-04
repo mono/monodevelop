@@ -39,6 +39,7 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Desktop
 {
@@ -230,13 +231,17 @@ namespace MonoDevelop.Ide.Desktop
 			if (file.Length == 0) {
 				return result;
 			}
-			
-			using (var reader = XmlReader.Create (file, new XmlReaderSettings { CloseInput = false })) {
-				while (reader.Read ()) {
-					if (reader.IsStartElement () && reader.LocalName == RecentItem.Node) {
-						result.Add (RecentItem.Read (reader));
+
+			try {
+				using (var reader = XmlReader.Create (file, new XmlReaderSettings { CloseInput = false })) {
+					while (reader.Read ()) {
+						if (reader.IsStartElement () && reader.LocalName == RecentItem.Node) {
+							result.Add (RecentItem.Read (reader));
+						}
 					}
 				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while reading recent file store.", e);
 			}
 			
 			return result;

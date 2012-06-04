@@ -230,9 +230,9 @@ namespace MonoDevelop.CSharp.Parser
 			}
 			cmt.Region = new DomRegion (comment.Line, comment.Col, comment.EndLine, comment.EndCol);
 			result.Comments.Add (cmt);
+			var trimmedContent = comment.Content.TrimStart ();
 			foreach (string tag in tagComments) {
-				int idx = comment.Content.IndexOf (tag);
-				if (idx < 0)
+				if (!trimmedContent.StartsWith (tag))
 					continue;
 				result.Add (new MonoDevelop.Ide.TypeSystem.Tag (tag, comment.Content, cmt.Region));
 			}

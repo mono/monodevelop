@@ -7,11 +7,13 @@ namespace MonoDevelop.VersionControl
 {
 	internal class CheckoutCommand : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = VersionControlService.CheckVersionControlInstalled ();
+		}
+
 		protected override void Run()
 		{
-			if (!VersionControlService.CheckVersionControlInstalled ())
-				return;
-			
 			SelectRepositoryDialog del = new SelectRepositoryDialog (SelectRepositoryMode.Checkout);
 			try {
 				if (MessageService.RunCustomDialog (del) == (int) Gtk.ResponseType.Ok && del.Repository != null) {

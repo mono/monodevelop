@@ -30,6 +30,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Mono.Cecil.Mdb;
 using Mono.CompilerServices.SymbolWriter;
 using Mono.Debugging.Client;
@@ -52,6 +53,7 @@ namespace Mono.Debugging.Soft
 		Dictionary<TypeMirror, string[]> type_to_source = new Dictionary<TypeMirror, string[]> ();
 		bool useFullPaths = true;
 		Dictionary<string,TypeMirror> types = new Dictionary<string, TypeMirror> ();
+		Dictionary<string, MonoSymbolFile> symbolFiles = new Dictionary<string, MonoSymbolFile> ();
 		Dictionary<EventRequest,BreakInfo> breakpoints = new Dictionary<EventRequest,BreakInfo> ();
 		List<BreakInfo> pending_bes = new List<BreakInfo> ();
 		ThreadMirror current_thread, recent_thread;
@@ -549,6 +551,13 @@ namespace Mono.Debugging.Soft
 			if (!exited) {
 				exited = true;
 				EndLaunch ();
+
+				foreach (var symfile in symbolFiles)
+					symfile.Value.Dispose ();
+
+				symbolFiles.Clear ();
+				symbolFiles = null;
+
 				if (vm != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
@@ -1666,7 +1675,7 @@ namespace Mono.Debugging.Soft
 			foreach (string s in type_to_source [type]) {
 				foreach (var bi in pending_bes.Where (b => b.BreakEvent is Breakpoint)) {
 					var bp = (Breakpoint) bi.BreakEvent;
-					if (PathComparer.Compare (PathToFileName (bp.FileName), s) == 0) {
+					if (PathsAreEqual (PathToFileName (bp.FileName), s)) {
 						bool insideLoadedRange;
 						bool genericMethod;
 						
@@ -1720,10 +1729,37 @@ namespace Mono.Debugging.Soft
 			
 			return Path.GetFileName (path);
 		}
+
+		[DllImport ("libc")]
+		static extern IntPtr realpath (string path, IntPtr buffer);
 		
-		bool PathsAreEqual (string p1, string p2)
+		static string ResolveFullPath (string path)
 		{
-			return PathComparer.Compare (p1, p2) == 0;
+			if (IsWindows)
+				return Path.GetFullPath (path);
+
+			const int PATHMAX = 4096 + 1;
+			IntPtr buffer = IntPtr.Zero;
+
+			try {
+				buffer = Marshal.AllocHGlobal (PATHMAX);
+				var result = realpath (path, buffer);
+				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+			} finally {
+				if (buffer != IntPtr.Zero)
+					Marshal.FreeHGlobal (buffer);
+			}
+		}
+		
+		static bool PathsAreEqual (string p1, string p2)
+		{
+			if (PathComparer.Compare (p1, p2) == 0)
+				return true;
+
+			var rp1 = ResolveFullPath (p1);
+			var rp2 = ResolveFullPath (p2);
+
+			return PathComparer.Compare (rp1, rp2) == 0;
 		}
 		
 		Location GetLocFromMethod (MethodMirror method)
@@ -1731,9 +1767,6 @@ namespace Mono.Debugging.Soft
 			// Return the location of the method.
 			return method.Locations.Count > 0 ? method.Locations[0] : null;
 		}
-		
-		
-		Dictionary<string, MonoSymbolFile> symbolFiles = new Dictionary<string, MonoSymbolFile> ();
 		
 		bool CheckBetterMatch (TypeMirror type, string file, int line, Location found)
 		{
@@ -1804,8 +1837,8 @@ namespace Mono.Debugging.Soft
 					string srcFile = location.SourceFile;
 					
 					//Console.WriteLine ("\tExamining {0}:{1}...", srcFile, location.LineNumber);
-					
-					if (srcFile != null && PathComparer.Compare (PathToFileName (NormalizePath (srcFile)), file) == 0) {
+
+					if (srcFile != null && PathsAreEqual (PathToFileName (NormalizePath (srcFile)), file)) {
 						if (location.LineNumber < rangeFirstLine)
 							rangeFirstLine = location.LineNumber;
 						

@@ -146,11 +146,10 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 			//FIXME: only emit this for the wrapper NS
 //			yield return new NSObjectTypeInfo ("NSObject", nso.GetDefinition ().FullName, null, null, false, false, false);
 			int cnt = 0, infcnt=0, models=0;
-			
+			nso = assembly.Compilation.Import (nso);
 			foreach (var contextType in assembly.GetAllTypeDefinitions ()) {
-				var importedType = dom.Compilation.Import (contextType);
-				if (importedType.IsDerivedFrom (nso)) {
-					var info = ConvertType (dom, importedType);
+				if (contextType.IsDerivedFrom (nso)) {
+					var info = ConvertType (dom, contextType);
 					if (info != null)
 						yield return info;
 				}
@@ -245,7 +244,8 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 						if (!attType.Equals (Resolve (dom, exportAttType)))
 							continue;
 					}
-					bool isDesigner = MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.Region.FileName);
+
+					bool isDesigner = meth.Parts.Any (part => MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.Region.FileName));
 					//only support Export from old designer files, user code must be IBAction
 					if (!isDesigner && !isIBAction)
 						continue;
@@ -265,7 +265,7 @@ namespace MonoDevelop.MacDev.ObjCIntegration
 							label = null;
 						action.Parameters.Add (new IBActionParameter (label, param.Name, null, param.Type.ReflectionName));
 					}
-					if (MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (meth.Region.FileName))
+					if (meth.Parts.Any (part => MonoDevelop.DesignerSupport.CodeBehind.IsDesignerFile (part.Region.FileName)))
 						action.IsDesigner = true;
 					info.Actions.Add (action);
 					break;

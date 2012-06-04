@@ -83,8 +83,6 @@
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ClassPad.ReferenceNodeBuilder"/>
 	</SolutionPad>
 	
-	<Pad id = "MonoDevelop.Ide.Gui.Pads.InternalLogPad" icon="md-message-log" defaultPlacement = "Bottom" _label = "Message Log" class = "MonoDevelop.Ide.Gui.Pads.InternalLogPad"/>
-	
 	<Category id="Other" _name="Other Pads">
 	</Category>
 </Extension>

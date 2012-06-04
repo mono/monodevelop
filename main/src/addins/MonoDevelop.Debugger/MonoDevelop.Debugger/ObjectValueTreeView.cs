@@ -1085,6 +1085,13 @@ namespace MonoDevelop.Debugger
 			
 			if (!store.GetIter (out iter, selected[0]))
 				return;
+
+			object focus = IdeApp.Workbench.RootWindow.Focus;
+
+			if (focus is Gtk.Editable) {
+				((Gtk.Editable) focus).CopyClipboard ();
+				return;
+			}
 			
 			string value = (string) store.GetValue (iter, ValueCol);
 			Clipboard.Get (Gdk.Selection.Clipboard).Text = value;

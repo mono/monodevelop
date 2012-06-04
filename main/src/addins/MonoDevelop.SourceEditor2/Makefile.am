@@ -97,7 +97,7 @@ $(ASSEMBLY) : $(build_sources) $(build_resources) $(DEPS)
 
 $(ASSEMBLY).mdb: $(ASSEMBLY)
 
-assemblydir = $(MD_ADDIN_DIR)
+assemblydir = $(MD_ADDIN_DIR)/DisplayBindings/SourceEditor
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb

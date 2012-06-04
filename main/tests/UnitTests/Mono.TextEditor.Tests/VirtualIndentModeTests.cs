@@ -383,35 +383,10 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\t\tFoo ();\n", data.Document.Text);
 		}
 
-		class SpacesIndentTracker : IIndentationTracker
-		{
-			const string indentString = "        ";
-			#region IIndentationTracker implementation
-			public string GetIndentationString (int offset)
-			{
-				return indentString;
-			}
-
-			public string GetIndentationString (int lineNumber, int column)
-			{
-				return indentString;
-			}
-
-			public int GetVirtualIndentationColumn (int offset)
-			{
-				return indentString.Length + 1;
-			}
-
-			public int GetVirtualIndentationColumn (int lineNumber, int column)
-			{
-				return indentString.Length + 1;
-			}
-			#endregion
-		}
 		TextEditorData CreateDataWithSpaces ()
 		{
 			var data = new TextEditorData ();
-			data.IndentationTracker = new SpacesIndentTracker ();
+			data.IndentationTracker = new SmartIndentModeTests.TestIndentTracker ("        ");
 			data.Options = new TextEditorOptions () {
 				TabsToSpaces = true,
 				IndentStyle = IndentStyle.Virtual
@@ -427,6 +402,21 @@ namespace Mono.TextEditor.Tests
 			data.Caret.Location = new DocumentLocation (2, 9);
 			MiscActions.InsertNewLine (data);
 			Assert.AreEqual ("\n\n\n\n", data.Document.Text);
+		}
+
+		/// <summary>
+		/// Bug 5402 - Backspace doesn't work with 1-tab virtual indent
+		/// </summary>
+		[Test()]
+		public void TestBug5402 ()
+		{
+			var data = new TextEditorData ();
+			data.IndentationTracker = new SmartIndentModeTests.TestIndentTracker ("\t");
+			data.Document.Text = "\t";
+			data.Caret.Location = new DocumentLocation (1, 2);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual ("", data.Document.Text);
+			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 		}
 	}
 }

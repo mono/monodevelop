@@ -932,7 +932,8 @@ namespace MonoDevelop.Projects
 						root = defaultNmspc;
 						goto case DirectoryNamespaceAssociation.Flat;
 					case DirectoryNamespaceAssociation.Flat:
-						dirNamespc = SanitisePotentialNamespace (relativeDirname);
+						//use the last component only
+						dirNamespc = SanitisePotentialNamespace (Path.GetFileName (relativeDirname));
 						break;
 
 					case DirectoryNamespaceAssociation.PrefixedHierarchical:

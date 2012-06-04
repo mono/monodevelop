@@ -12,11 +12,8 @@ namespace MonoDevelop.VersionControl
 	{
 		public static bool Publish (IWorkspaceObject entry, FilePath localPath, bool test)
 		{
-			if (!VersionControlService.CheckVersionControlInstalled ())
-				return false;
-
 			if (test)
-				return VersionControlService.GetRepository (entry) == null;
+				return VersionControlService.CheckVersionControlInstalled () && VersionControlService.GetRepository (entry) == null;
 
 			List<FilePath> files = new List<FilePath> ();
 
@@ -63,6 +60,9 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public static bool CanPublish (Repository vc, string path, bool isDir) {
+			if (!VersionControlService.CheckVersionControlInstalled ())
+				return false;
+
 			if (!vc.GetVersionInfo (path).IsVersioned && isDir) 
 				return true;
 			return false;

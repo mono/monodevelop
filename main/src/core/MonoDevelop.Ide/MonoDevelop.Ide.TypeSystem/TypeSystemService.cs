@@ -592,7 +592,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
 				Task.Factory.StartNew (delegate {
 					ReloadAllReferences ();
-					CheckModifiedFiles ();
 				});
 
 				solution.SolutionItemAdded += OnSolutionItemAdded;
@@ -724,7 +723,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					string fileName = Path.Combine (cacheDir, typeof (T).FullName + ".cache");
 					if (File.Exists (fileName)) {
-						Console.WriteLine ("deserialize :" + fileName);
 						var deserialized = DeserializeObject<T> (fileName);
 						extensionObjects[typeof(T)] = deserialized;
 						return deserialized;
@@ -1027,6 +1025,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
+					Task.Factory.StartNew (delegate {
+						CheckModifiedFiles (project, wrapper);
+					});
+
 					return wrapper;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
@@ -1307,7 +1309,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			
 			if (MonoDevelop.Core.Platform.IsWindows) {
-				string windowsFileName = FindXmlDocumentation (baseName, runtime);
+				string windowsFileName = FindWindowsXmlDocumentation (baseName, runtime);
 				if (File.Exists (windowsFileName)) {
 					xmlFileName = windowsFileName;
 					return true;
@@ -1319,10 +1321,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		
 		#region Lookup XML documentation
-		static readonly string referenceAssembliesPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86), @"Reference Assemblies\Microsoft\\Framework");
+
+		// ProgramFilesX86 is broken on 32-bit WinXP, this is a workaround
+		static string GetProgramFilesX86 ()
+		{
+			return Environment.GetFolderPath (IntPtr.Size == 8?
+				Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles);
+		}
+
+		static readonly string referenceAssembliesPath = Path.Combine (GetProgramFilesX86 (), @"Reference Assemblies\Microsoft\\Framework");
 		static readonly string frameworkPath = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Windows), @"Microsoft.NET\Framework");
 		
-		static string FindXmlDocumentation (string assemblyFileName, MonoDevelop.Core.Assemblies.TargetRuntime runtime)
+		static string FindWindowsXmlDocumentation (string assemblyFileName, MonoDevelop.Core.Assemblies.TargetRuntime runtime)
 		{
 			string fileName;
 			ClrVersion version = runtime != null && runtime.CustomFrameworks.Any () ? runtime.CustomFrameworks.First ().ClrVersion : ClrVersion.Default;
