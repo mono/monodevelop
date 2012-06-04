@@ -108,7 +108,7 @@ namespace MonoDevelop.Components
 				string dir = (string) store.GetValue (it, 0);
 				directories.Remove (dir);
 				store.Remove (ref it);
-				if (!it.Equals (TreeIter.Zero))
+				if (store.IterIsValid (it))
 					FocusRow (it);
 				else
 					UpdateStatus ();
