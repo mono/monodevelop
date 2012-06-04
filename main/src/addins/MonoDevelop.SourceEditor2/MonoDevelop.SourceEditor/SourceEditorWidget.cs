@@ -431,7 +431,7 @@ namespace MonoDevelop.SourceEditor
 			if (!options.ShowFoldMargin)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
-			if (doc.HasFoldSegments && parsedDocument.Errors.Any ())
+			if (doc.HasFoldSegments && parsedDocument.Errors.Any (err => err.ErrorType == ErrorType.Error))
 				return;
 			try {
 				List<FoldSegment > foldSegments = new List<FoldSegment> ();
