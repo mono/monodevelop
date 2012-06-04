@@ -64,7 +64,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 			src = new CancellationTokenSource ();
 			results.Clear ();
-			QueueDraw ();
 			foreach (var _cat in categories) {
 				var cat = _cat;
 				var token = src.Token;
@@ -96,8 +95,10 @@ namespace MonoDevelop.Components.MainToolbar
 			selectedDataSource = results [0].Item2;
 			selectedItem = 0;
 
-			QueueDraw ();
-			QueueResize ();
+			if (results.Count == categories.Count) {
+				QueueResize ();
+				QueueDraw ();
+			}
 		}
 
 		const int maxItems = 8;
@@ -120,7 +121,6 @@ namespace MonoDevelop.Components.MainToolbar
 					int w, h;
 					layout.GetPixelSize (out w, out h);
 					y += h;
-					maxX = Math.Max (maxX, w);
 					var region = dataSrc.GetRegion (i);
 					if (!region.Begin.IsEmpty) {
 						layout.SetMarkup (region.BeginLine.ToString ());
@@ -128,6 +128,7 @@ namespace MonoDevelop.Components.MainToolbar
 						layout.GetPixelSize (out w2, out h2);
 						w += w2;
 					}
+					maxX = Math.Max (maxX, w);
 				}
 			}
 			requisition.Width = (int)maxX + 100 + xMargin * 2 + lineNumberBorder;
@@ -160,7 +161,7 @@ namespace MonoDevelop.Components.MainToolbar
 					selectedItem++;
 				} else {
 					for (int i = 0; i < results.Count - 1; i++) {
-						if (results [i].Item1 == selectedCategory) {
+						if (results [i].Item1 == selectedCategory && results [i + 1].Item2.ItemCount > 0) {
 							selectedCategory = results [i + 1].Item1;
 							selectedDataSource = results [i + 1].Item2;
 							selectedItem = 0;
