@@ -56,6 +56,8 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			case ClrVersion.Net_2_0:
 				return prefix.Combine ("lib", "mono", "2.0");
 			case ClrVersion.Net_4_0:
+				var net45Path = prefix.Combine ("lib", "mono", "4.5");
+				if (Directory.Exists (net45Path)) return net45Path;
 				return prefix.Combine ("lib", "mono", "4.0");
 			}
 			throw new InvalidOperationException (string.Format ("Unknown runtime version '{0}'", version));
