@@ -163,6 +163,7 @@ namespace MonoDevelop.Components.MainToolbar
 			contentBox.PackStart (statusAreaVBox, true, true, 0);
 
 			matchEntry = new SearchEntry ();
+//			matchEntry.VisibleWindow = false;
 			matchEntry.EmptyMessage = GettextCatalog.GetString ("Press Control + , for search.");
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
@@ -221,7 +222,7 @@ namespace MonoDevelop.Components.MainToolbar
 				return;
 			int ox, oy;
 			matchEntry.GdkWindow.GetOrigin (out ox, out oy);
-			popup.Move (ox + matchEntry.Allocation.Width - popup.Allocation.Width, oy + matchEntry.Allocation.Height);
+			popup.Move (ox + matchEntry.Allocation.X + matchEntry.Allocation.Width - popup.Allocation.Width, oy + matchEntry.Allocation.Y + matchEntry.Allocation.Height);
 		}
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
