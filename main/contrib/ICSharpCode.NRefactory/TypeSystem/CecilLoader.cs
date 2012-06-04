@@ -1189,7 +1189,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IType ReadCustomAttributeFieldOrPropType()
 			{
 				ICompilation compilation = currentResolvedAssembly.Compilation;
-				switch (ReadByte()) {
+				var b = ReadByte();
+				switch (b) {
 					case 0x02:
 						return compilation.FindType(KnownTypeCode.Boolean);
 					case 0x03:
@@ -1225,7 +1226,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					case 0x55: // enum
 						return ReadType();
 					default:
-						throw new NotSupportedException();
+						throw new NotSupportedException(string.Format("Custom attribute type 0x{0:x} is not supported.", b));
 				}
 			}
 			
