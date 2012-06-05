@@ -35,16 +35,20 @@ using System.Linq;
 
 namespace MonoDevelop.Components
 {
-	[ToolboxItem (true)]
-	public class Tabstrip : DrawingArea
+	class Tabstrip : DrawingArea
 	{
+		static readonly Cairo.Color BackgroundGradientStart = new Cairo.Color (241d / 255d, 241d / 255d, 241d / 255d);
+		static readonly Cairo.Color BackgroundGradientEnd = new Cairo.Color (224d / 255d, 224d / 255d, 224d / 255d);
+		internal static readonly Cairo.Color ActiveGradientStart = new Cairo.Color (92d / 255d, 93d / 255d, 94d / 255d);
+		internal static readonly Cairo.Color ActiveGradientEnd = new Cairo.Color (134d / 255d, 136d / 255d, 137d / 255d);
+
 		readonly List<Tab> tabs = new List<Tab> ();
 		readonly List<Cairo.PointD> tabSizes = new List<Cairo.PointD> ();
-		
+
+
 		double mx, my;
 		Tab hoverTab;
-		TabstripVisualStyle visualStyle = TabstripVisualStyle.Buttons;
-		
+
 		int activeTab;
 		public int ActiveTab {
 			get {
@@ -75,11 +79,6 @@ namespace MonoDevelop.Components
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
 		}
 		
-		public TabstripVisualStyle VisualStyle {
-			get { return visualStyle; }
-			set { visualStyle = value; QueueDraw (); }
-		}
-		
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
@@ -100,7 +99,7 @@ namespace MonoDevelop.Components
 			if (tab == null)
 				return new Cairo.Rectangle (0, 0, 0, 0);
 			
-			int spacerWidth = visualStyle == TabstripVisualStyle.CurveTabs ? Tab.SpacerWidth : 0;
+			int spacerWidth = 0;
 			int idx = tabs.IndexOf (tab);
 			double distance = 0;
 			for (int i = 0; i < idx; i++) {
@@ -163,17 +162,25 @@ namespace MonoDevelop.Components
 		
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			requisition.Height = 1 + (int)Math.Ceiling (tabSizes.Max (p => p.Y));
+			requisition.Height = (int)Math.Ceiling (tabSizes.Max (p => p.Y));
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
-				cr.Color = (HslColor)Style.Background (StateType.Normal);
-				cr.FillPreserve ();
-				cr.Clip ();
-				
+				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+				Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, Allocation.Height);
+				gr.AddColorStop (0, BackgroundGradientStart);
+				gr.AddColorStop (1, BackgroundGradientEnd);
+				cr.Pattern = gr;
+				cr.Fill ();
+
+				cr.MoveTo (0.5, 0.5);
+				cr.Line (0.5, 0.5, Allocation.Width - 1, 0.5);
+				cr.Color = new Cairo.Color (1,1,1);
+				cr.LineWidth = 1;
+				cr.Stroke ();
+
 				for (int i = tabs.Count; i --> 0;) {
 					if (i == ActiveTab)
 						continue;
@@ -194,9 +201,10 @@ namespace MonoDevelop.Components
 		Right
 	}
 	
-	public class Tab : IDisposable
+	class Tab : IDisposable
 	{
 		internal static readonly int SpacerWidth = 8;
+		const int Padding = 6;
 		Pango.Layout layout;
 		Tabstrip parent;
 		int w, h;
@@ -257,8 +265,7 @@ namespace MonoDevelop.Components
 			layout = PangoUtil.CreateLayout (parent);
 			layout.SetText (label);
 			layout.GetPixelSize (out w, out h);
-			h += 2;
-			
+
 			if (IsSeparator)
 				w = SpacerWidth * 2;
 			
@@ -268,72 +275,13 @@ namespace MonoDevelop.Components
 		public Cairo.PointD Size {
 			get {
 				if (IsSeparator)
-					return new Cairo.PointD (w, h);
+					return new Cairo.PointD (w, h + Padding*2);
 				else
-					return new Cairo.PointD (Math.Max (45, w + SpacerWidth * 2), h);
+					return new Cairo.PointD (Math.Max (45, w + SpacerWidth * 2), h + Padding*2);
 			}
 		}
 		
 		public void Draw (Cairo.Context cr, Cairo.Rectangle rectangle)
-		{
-			switch (parent.VisualStyle) {
-			case TabstripVisualStyle.CurveTabs: DrawCurveTabs (cr, rectangle); break;
-			case TabstripVisualStyle.Buttons: DrawButtonTabs (cr, rectangle); break;
-			}
-		}
-		
-		void DrawCurveTabs (Cairo.Context cr, Cairo.Rectangle rectangle)
-		{
-			if (IsSeparator)
-				return;
-			
-			cr.MoveTo (rectangle.X, rectangle.Y);
-			
-			double bottom = rectangle.Y + rectangle.Height - 1;
-			
-			cr.CurveTo (
-				rectangle.X + SpacerWidth / 2, rectangle.Y,
-				rectangle.X + SpacerWidth / 2, bottom,
-				rectangle.X + SpacerWidth, bottom);
-			
-			cr.LineTo (rectangle.X + rectangle.Width - SpacerWidth, bottom);
-			
-			cr.CurveTo (
-				rectangle.X + rectangle.Width - SpacerWidth / 2, bottom,
-				rectangle.X + rectangle.Width - SpacerWidth / 2, rectangle.Y,
-				rectangle.X + rectangle.Width, rectangle.Y);
-			
-			cr.Color = (HslColor)parent.Style.Dark (StateType.Normal);
-			cr.StrokePreserve ();
-			cr.ClosePath ();
-			if (Active) {
-				cr.Color = (HslColor)parent.Style.Background (StateType.Prelight);
-			} else if (HoverPosition.X >= 0) {
-				double rx = rectangle.X + HoverPosition.X;
-				double ry = rectangle.Y + HoverPosition.Y;
-				Cairo.RadialGradient gradient = new Cairo.RadialGradient (rx, ry, rectangle.Height * 1.5, 
-					rx, ry, 2);
-				var color = (HslColor)parent.Style.Mid (StateType.Normal);
-				color.L *= 1.05;
-				gradient.AddColorStop (0, color);
-				color.L *= 1.07;
-				gradient.AddColorStop (1, color);
-				cr.Pattern = gradient;
-			} else {
-				cr.Color = (HslColor)parent.Style.Mid (StateType.Normal);
-			}
-			cr.Fill ();
-			
-			cr.Save ();
-			cr.Translate (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2);
-			cr.Color = (HslColor)parent.Style.Text (StateType.Normal);
-			
-			cr.ShowLayout (layout);
-			
-			cr.Restore ();
-		}
-		
-		void DrawButtonTabs (Cairo.Context cr, Cairo.Rectangle rectangle)
 		{
 			if (IsSeparator) {
 				cr.NewPath ();
@@ -347,41 +295,39 @@ namespace MonoDevelop.Components
 				return;
 			}
 			
-			int topPadding = 2;
-			
 			if (Active || HoverPosition.X >= 0) {
-				cr.Rectangle (rectangle.X + 1, rectangle.Y + 1 + topPadding, rectangle.Width - 1, rectangle.Height - topPadding);
 				if (Active) {
-					cr.Color = (HslColor)parent.Style.Background (StateType.Prelight);
-				} else if (HoverPosition.X >= 0) {
-					double rx = rectangle.X + HoverPosition.X;
-					double ry = rectangle.Y + HoverPosition.Y;
-					Cairo.RadialGradient gradient = new Cairo.RadialGradient (rx, ry, rectangle.Height * 1.5, 
-						rx, ry, 2);
-					var color = (HslColor)parent.Style.Dark (StateType.Normal);
-					color.L *= 1.1;
-					gradient.AddColorStop (0, color);
-					color.L *= 1.1;
-					gradient.AddColorStop (1, color);
-					cr.Pattern = gradient;
-				}
-				cr.Fill ();
-				
-				if (Active) {
-					cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5 + topPadding, rectangle.Width - 1, rectangle.Height - topPadding);
-					cr.Color = (HslColor)parent.Style.Dark (StateType.Normal);
+					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+					Cairo.LinearGradient gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height);
+					gr.AddColorStop (0, Tabstrip.ActiveGradientStart);
+					gr.AddColorStop (1, Tabstrip.ActiveGradientEnd);
+					cr.Pattern = gr;
+					cr.Fill ();
+					cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5, rectangle.Width - 1, rectangle.Height - 1);
+					cr.Color = new Cairo.Color (1, 1, 1, 0.05);
 					cr.LineWidth = 1;
 					cr.Stroke ();
+				} else if (HoverPosition.X >= 0) {
+					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+					Cairo.LinearGradient gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height);
+					var c1 = Tabstrip.ActiveGradientStart;
+					var c2 = Tabstrip.ActiveGradientEnd;
+					c1.A = 0.2;
+					c2.A = 0.2;
+					gr.AddColorStop (0, c1);
+					gr.AddColorStop (1, c2);
+					cr.Pattern = gr;
+					cr.Fill ();
 				}
 			}
 			
-			cr.Save ();
-			cr.Translate (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2 + topPadding);
-			cr.Color = (HslColor)parent.Style.Text (StateType.Normal);
-			
-			cr.ShowLayout (layout);
-			
-			cr.Restore ();
+			if (Active)
+				cr.Color = new Cairo.Color (1, 1, 1);
+			else
+				cr.Color = parent.Style.Text (StateType.Normal).ToCairoColor ();
+
+			cr.MoveTo (rectangle.X + (rectangle.Width - w) / 2, (rectangle.Height - h) / 2);
+			Pango.CairoHelper.ShowLayout (cr, layout);
 		}
 		
 		public override string ToString ()
@@ -397,12 +343,6 @@ namespace MonoDevelop.Components
 		}
 
 		public event EventHandler Activated;
-	}
-	
-	public enum TabstripVisualStyle
-	{
-		CurveTabs,
-		Buttons
 	}
 }
 
