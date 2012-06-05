@@ -82,7 +82,7 @@ run-gdb:
 	cd main && $(MAKE) run-gdb
 
 test:
-	cd main && $(MAKE) test
+	cd main && $(MAKE) test assembly=$(assembly)
 
 check-addins:
 	cd main && $(MAKE) check-addins
