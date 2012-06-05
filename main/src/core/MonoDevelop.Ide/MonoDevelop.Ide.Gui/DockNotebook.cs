@@ -796,8 +796,11 @@ namespace MonoDevelop.Ide.Gui
 					var tab = (DockNotebookTab)notebook.Tabs [n];
 					if (tab == notebook.CurrentTab)
 						DrawActiveTab (ctx, tab, ref x, y, tab == highlightedTab);
-					else
+					else {
 						DrawTab (ctx, tab, ref x, y, tab == highlightedTab);
+						if (n + 1 < notebook.Tabs.Count && notebook.Tabs[n+1] != notebook.CurrentTab)
+							DrawSeparator (ctx, ref x);
+					}
 
 					tab.Allocation = new Gdk.Rectangle (sx, Allocation.Y, x - sx, Allocation.Height);
 				}
@@ -825,6 +828,26 @@ namespace MonoDevelop.Ide.Gui
 				x += LeftRightPadding * 2 + w;
 
 			la.Dispose ();
+		}
+
+		void DrawSeparator (Cairo.Context ctx, ref int x)
+		{
+			var topMargin = TopBarPadding + 4;
+			ctx.Rectangle (x, topMargin, 1, Allocation.Height - BottomBarPadding - topMargin);
+			Cairo.LinearGradient gr = new LinearGradient (x, topMargin, x, Allocation.Height - BottomBarPadding - topMargin);
+			gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
+			gr.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.3));
+			ctx.Pattern = gr;
+			ctx.Fill ();
+			x++;
+
+			ctx.Rectangle (x, topMargin, 1, Allocation.Height - BottomBarPadding - topMargin);
+			gr = new LinearGradient (x, topMargin, x, Allocation.Height - BottomBarPadding - topMargin);
+			gr.AddColorStop (0, new Cairo.Color (1, 1, 1, 0));
+			gr.AddColorStop (1, new Cairo.Color (1, 1, 1, 0.3));
+			ctx.Pattern = gr;
+			ctx.Fill ();
+			x++;
 		}
 
 		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, ref int x, int y, bool highlight)
