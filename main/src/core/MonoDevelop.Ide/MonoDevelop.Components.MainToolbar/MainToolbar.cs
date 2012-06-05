@@ -222,7 +222,7 @@ namespace MonoDevelop.Components.MainToolbar
 				return;
 			int ox, oy;
 			matchEntry.GdkWindow.GetOrigin (out ox, out oy);
-			popup.Move (ox + matchEntry.Allocation.X + matchEntry.Allocation.Width - popup.Allocation.Width, oy + matchEntry.Allocation.Y + matchEntry.Allocation.Height);
+			popup.Move (ox /*+ matchEntry.Allocation.X */+ matchEntry.Allocation.Width - popup.Allocation.Width, oy /*+ matchEntry.Allocation.Y */+ matchEntry.Allocation.Height);
 		}
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
