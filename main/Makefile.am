@@ -137,7 +137,7 @@ check-addins:
 	$(MDTOOL_RUN) setup reg-build -v
 
 test:
-	cd tests && make test
+	cd tests && make test assembly=$(assembly)
 
 app-dir: all
 	cd build && make app-dir
