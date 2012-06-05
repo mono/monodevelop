@@ -82,7 +82,7 @@ run-gdb:
 	cd main && $(MAKE) run-gdb
 
 test:
-	cd main/tests/UnitTests && $(MAKE) test fixture=$(fixture)
+	cd main && $(MAKE) test
 
 check-addins:
 	cd main && $(MAKE) check-addins

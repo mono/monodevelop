@@ -1,7 +1,22 @@
+include $(top_srcdir)/Makefile.include
+
+MONO=mono
+HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe
+RUN_TEST=$(MD_LAUNCH_SETUP) $(MONO) $(HARNESS)
+TEST_DIR=$(top_builddir)/build/tests
+
 if ENABLE_TESTS
 
-SUBDIRS = UnitTests
-	
+all:
+	xbuild MacPlatform.Tests/MacPlatform.Tests.csproj
+	xbuild MonoDevelop.MacDev.Tests/MonoDevelop.MacDev.Tests.csproj
+	xbuild UnitTests/UnitTests.csproj
+
+test:
+	$(RUN_TEST) $(TEST_DIR)/MacPlatform.Tests.dll
+	$(RUN_TEST) $(TEST_DIR)/MonoDevelop.MacDev.Tests.dll
+	$(RUN_TEST) $(TEST_DIR)/UnitTests.dll
+
 EXTRA_DIST = \
 	test-projects/resources-tester/ResourcesTester/Subfolder/FormFile2.cs \
 	test-projects/resources-tester/ResourcesTester/Subfolder/FormFile2.Designer.cs \
