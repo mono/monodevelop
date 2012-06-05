@@ -13,9 +13,17 @@ all:
 	xbuild UnitTests/UnitTests.csproj
 
 test:
-	$(RUN_TEST) $(TEST_DIR)/MacPlatform.Tests.dll
-	$(RUN_TEST) $(TEST_DIR)/MonoDevelop.MacDev.Tests.dll
-	$(RUN_TEST) $(TEST_DIR)/UnitTests.dll
+	@if test -n "$(assembly)"; then \
+		if test $(TEST_DIR)/$(assembly); then \
+			$(RUN_TEST) $(TEST_DIR)/$(assembly); \
+		fi; \
+	fi
+
+	@if ! test -n "$(assembly)"; then \
+		$(RUN_TEST) $(TEST_DIR)/MacPlatform.Tests.dll && \
+		$(RUN_TEST) $(TEST_DIR)/MonoDevelop.MacDev.Tests.dll && \
+		$(RUN_TEST) $(TEST_DIR)/UnitTests.dll; \
+	fi
 
 EXTRA_DIST = \
 	test-projects/resources-tester/ResourcesTester/Subfolder/FormFile2.cs \
