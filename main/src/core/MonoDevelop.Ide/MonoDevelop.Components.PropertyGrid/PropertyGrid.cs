@@ -53,7 +53,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		object currentObject;
 		object[] propertyProviders;
 
-		PropertyGridTree tree;
+		PropertyGridTable tree;
 		HSeparator helpSeparator;
 		HSeparator toolbarSeparator;
 		VPaned vpaned;
@@ -131,16 +131,23 @@ namespace MonoDevelop.Components.PropertyGrid
 
 			vpaned = new VPaned ();
 
-			tree = new PropertyGridTree (editorManager, this);
+			tree = new PropertyGridTable (editorManager, this);
 			tree.Changed += delegate {
 				Update ();
 			};
+
+			CompactScrolledWindow sw = new CompactScrolledWindow ();
+			sw.AddWithViewport (tree);
+			((Gtk.Viewport)sw.Child).ShadowType = Gtk.ShadowType.None;
+			sw.ShadowType = Gtk.ShadowType.None;
+			sw.HscrollbarPolicy = PolicyType.Never;
+			sw.VscrollbarPolicy = PolicyType.Automatic;
 
 			VBox tbox = new VBox ();
 			toolbarSeparator = new HSeparator ();
 			toolbarSeparator.Visible = true;
 			tbox.PackStart (toolbarSeparator, false, false, 0);
-			tbox.PackStart (tree, true, true, 0);
+			tbox.PackStart (sw, true, true, 0);
 			helpSeparator = new HSeparator ();
 			tbox.PackStart (helpSeparator, false, false, 0);
 			helpSeparator.NoShowAll = true;

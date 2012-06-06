@@ -1157,7 +1157,9 @@
     <Compile Include="MonoDevelop.Components\CellRendererComboBox.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewCellContainer.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewState.cs" />
-    <Compile Include="MonoDevelop.Components\NotebookButtonBar.cs" />
+    <Compile Include="MonoDevelop.Components\NotebookButtonBar.cs">
+      <DeployService-Deploy>true</DeployService-Deploy>
+    </Compile>
     <Compile Include="MonoDevelop.Components\MenuButton.cs" />
     <Compile Include="MonoDevelop.Components\FixedWidthWrapLabel.cs" />
     <Compile Include="MonoDevelop.Components\InvisibleFrame.cs" />
@@ -1611,6 +1613,8 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchDataSource.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\FileSearchCategory.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGridTable.cs" />
+    <Compile Include="MonoDevelop.Components\CompactDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

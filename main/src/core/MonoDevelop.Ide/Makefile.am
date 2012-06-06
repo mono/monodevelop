@@ -240,6 +240,7 @@ FILES =  \
 	MonoDevelop.Components.PropertyGrid/PropertyEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid/PropertyEditorTypeAttribute.cs \
 	MonoDevelop.Components.PropertyGrid/PropertyGrid.cs \
+	MonoDevelop.Components.PropertyGrid/PropertyGridTable.cs \
 	MonoDevelop.Components.PropertyGrid/PropertyGridTree.cs \
 	MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventArgs.cs \
 	MonoDevelop.Components.PropertyGrid/PropertyValueChangedEventHandler.cs \
@@ -252,6 +253,7 @@ FILES =  \
 	MonoDevelop.Components/BaseFileEntry.cs \
 	MonoDevelop.Components/CairoExtensions.cs \
 	MonoDevelop.Components/CellRendererComboBox.cs \
+	MonoDevelop.Components/CompactDialog.cs \
 	MonoDevelop.Components/CompactScrolledWindow.cs \
 	MonoDevelop.Components/ConsoleView.cs \
 	MonoDevelop.Components/ContextMenuTreeView.cs \
