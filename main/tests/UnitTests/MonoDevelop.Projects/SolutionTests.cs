@@ -229,6 +229,7 @@ namespace MonoDevelop.Projects
 			
 			// Projects inherit the file format from the parent solution
 			Solution sol = new Solution ();
+			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
 			sol.RootFolder.Items.Add (prj);
 			Assert.AreEqual ("test4", prj.Name);
 			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
