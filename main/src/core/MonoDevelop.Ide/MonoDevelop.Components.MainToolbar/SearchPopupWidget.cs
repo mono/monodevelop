@@ -39,6 +39,8 @@ namespace MonoDevelop.Components.MainToolbar
 		const int yMargin = 6;
 		const int xMargin = 6;
 		const int lineNumberBorder = 8;
+		const int categorySeparatorHeight = 16;
+
 		List<SearchCategory> categories = new List<SearchCategory> ();
 		List<Tuple<SearchCategory, ISearchDataSource>> results = new List<Tuple<SearchCategory, ISearchDataSource>> ();
 		Pango.Layout layout, headerLayout;
@@ -47,8 +49,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public SearchPopupWidget ()
 		{
-			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask  | Gdk.EventMask.ButtonReleaseMask;
-			headerColor = CairoExtensions.ParseColor ("d4d4d4");
+			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask;
+			headerColor = CairoExtensions.ParseColor ("b3b3b3");
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			layout = new Pango.Layout (PangoContext);
@@ -132,8 +134,8 @@ namespace MonoDevelop.Components.MainToolbar
 					maxX = Math.Max (maxX, w);
 				}
 			}
-			requisition.Width = (int)maxX + 100 + xMargin * 2 + lineNumberBorder;
-			requisition.Height = (int)y + 4 + yMargin * 2;
+			requisition.Width = Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2 + lineNumberBorder));
+			requisition.Height = (int)y + 4 + yMargin * 2 + (results.Count - 1) * categorySeparatorHeight;
 		}
 
 		Tuple<SearchCategory, ISearchDataSource, int> GetItemAt (double px, double py)
@@ -270,6 +272,7 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				context.LineWidth = 1;
 				context.Color = new Cairo.Color (1, 1, 1);
 
 				context.Rectangle (evnt.Area.X, evnt.Area.Y, evnt.Area.Width, evnt.Area.Height);
@@ -311,6 +314,13 @@ namespace MonoDevelop.Components.MainToolbar
 						}
 
 						y += h;
+					}
+					if (result != results.Last ()) {
+						context.MoveTo (0, y + categorySeparatorHeight / 2 + 0.5);
+						context.LineTo (Allocation.Width, y + categorySeparatorHeight / 2 + 0.5);
+						context.Color = (HslColor)Style.Mid (StateType.Normal);
+						context.Stroke ();
+						y += categorySeparatorHeight;
 					}
 				}
 			}

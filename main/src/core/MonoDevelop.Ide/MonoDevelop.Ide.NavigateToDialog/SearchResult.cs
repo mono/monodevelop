@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 					int pos = lane[n];
 					if (pos - lastPos > 0)
 						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
-					result.Append ("<span foreground=\"#4d4d4d\">");
+					result.Append ("<span foreground=\"#4d4d4d\" font_weight=\"bold\">");
 					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
 					result.Append ("</span>");
 					lastPos = pos + 1;
