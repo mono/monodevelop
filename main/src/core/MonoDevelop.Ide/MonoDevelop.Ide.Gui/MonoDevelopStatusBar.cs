@@ -505,6 +505,7 @@ namespace MonoDevelop.Ide
 				this.statusBar = statusBar;
 				this.icon = icon;
 				box = new EventBox ();
+				box.VisibleWindow = false;
 				image = new Image (icon);
 				image.SetPadding (0, 0);
 				box.Child = image;
