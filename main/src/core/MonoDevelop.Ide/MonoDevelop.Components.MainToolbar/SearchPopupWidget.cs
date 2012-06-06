@@ -38,7 +38,6 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		const int yMargin = 6;
 		const int xMargin = 6;
-		const int lineNumberBorder = 8;
 		const int categorySeparatorHeight = 16;
 
 		List<SearchCategory> categories = new List<SearchCategory> ();
@@ -119,22 +118,15 @@ namespace MonoDevelop.Components.MainToolbar
 					continue;
 				
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
-					layout.SetMarkup (dataSrc.GetMarkup (i, false));
+					layout.SetMarkup (dataSrc.GetMarkup (i, false) +"\n<small>\t"+dataSrc.GetDescriptionMarkup (i, false) +"</small>");
 
 					int w, h;
 					layout.GetPixelSize (out w, out h);
 					y += h;
-					var region = dataSrc.GetRegion (i);
-					if (!region.Begin.IsEmpty) {
-						layout.SetMarkup (region.BeginLine.ToString ());
-						int w2, h2;
-						layout.GetPixelSize (out w2, out h2);
-						w += w2;
-					}
 					maxX = Math.Max (maxX, w);
 				}
 			}
-			requisition.Width = Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2 + lineNumberBorder));
+			requisition.Width = Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2));
 			requisition.Height = (int)y + 4 + yMargin * 2 + (results.Count - 1) * categorySeparatorHeight;
 		}
 
@@ -293,7 +285,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
 						context.Color = new Cairo.Color (0, 0, 0);
-						layout.SetMarkup ("<span foreground=\"#808080\">" + dataSrc.GetMarkup (i, false) + "</span>");
+						layout.SetMarkup ("<span foreground=\"#808080\">" + dataSrc.GetMarkup (i, false) +"\n<small>\t"+dataSrc.GetDescriptionMarkup (i, false) +"</small>" + "</span>");
 						layout.GetPixelSize (out w, out h);
 						if (selectedCategory == category && selectedItem == i) {
 							context.Color = new Cairo.Color (0.8, 0.8, 0.8);
@@ -304,14 +296,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 						context.MoveTo (x + 100, y);
 						PangoCairoHelper.ShowLayout (context, layout);
-						var region = dataSrc.GetRegion (i);
-						if (!region.Begin.IsEmpty) {
-							context.Color = new Cairo.Color (0, 0, 0);
-							layout.SetText (region.BeginLine.ToString ());
-							layout.GetPixelSize (out w, out h);
-							context.MoveTo (Allocation.Width - xMargin - w, y);
-							PangoCairoHelper.ShowLayout (context, layout);
-						}
+
 
 						y += h;
 					}

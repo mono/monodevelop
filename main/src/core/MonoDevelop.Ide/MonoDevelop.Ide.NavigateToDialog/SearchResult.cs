@@ -52,9 +52,15 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			return HighlightMatch (widget, PlainText, match);
 		}
 
+		public virtual string GetDescriptionMarkupText (Widget widget)
+		{
+			return GLib.Markup.EscapeText (Description);
+		}
+
+
 		public abstract SearchResultType SearchResultType { get; }
 		public abstract string PlainText  { get; }
-		
+
 		public int Rank { get; private set; }
 
 		public virtual int Row { get { return -1; } }
@@ -126,12 +132,28 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				return Ambience.GetString (type, Flags);
 			}
 		}
-		
+
 		public override string Description {
 			get {
-				if (type.GetSourceProject () != null)
-					return GettextCatalog.GetString ("from Project \"{0} in {1}\"", type.GetSourceProject ().Name ?? "", type.Namespace ?? "");
-				return String.Format (GettextCatalog.GetString ("from \"{0} in {1}\""), File ?? "", type.Namespace ?? "");
+				string loc;
+				if (type.GetSourceProject () != null) {
+					loc = GettextCatalog.GetString ("project {0}", type.GetSourceProject ().Name);
+				} else {
+					loc = GettextCatalog.GetString ("file {0}", type.Region.FileName);
+				}
+
+				switch (type.Kind) {
+				case TypeKind.Interface:
+					return GettextCatalog.GetString ("interface ({0})", loc);
+				case TypeKind.Struct:
+					return GettextCatalog.GetString ("struct ({0})", loc);
+				case TypeKind.Delegate:
+					return GettextCatalog.GetString ("delegate ({0})", loc);
+				case TypeKind.Enum:
+					return GettextCatalog.GetString ("enumeration ({0})", loc);
+				default:
+					return GettextCatalog.GetString ("class ({0})", loc);
+				}
 			}
 		}
 		
@@ -179,9 +201,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			get {
 				if (useFileName)
 					return file.Project != null
-						? GettextCatalog.GetString ("from \"{0}\" in Project \"{1}\"", GetRelProjectPath (file), file.Project.Name)
-						: GettextCatalog.GetString ("from \"{0}\"", GetRelProjectPath (file));
-				return file.Project != null ? GettextCatalog.GetString ("from Project \"{0}\"", file.Project.Name) : "";
+						? GettextCatalog.GetString ("file \"{0}\" in project \"{1}\"", GetRelProjectPath (file), file.Project.Name)
+						: GettextCatalog.GetString ("file \"{0}\"", GetRelProjectPath (file));
+				return file.Project != null ? GettextCatalog.GetString ("file in project \"{0}\"", file.Project.Name) : "";
 			}
 		}
 		
@@ -240,7 +262,28 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string Description {
 			get {
-				return GettextCatalog.GetString ("from Type \"{0}\"", member.DeclaringType.Name);
+				string loc = GettextCatalog.GetString ("type \"{0}\"", member.DeclaringType.Name);
+
+				switch (member.EntityType) {
+				case EntityType.Field:
+					return GettextCatalog.GetString ("field ({0})", loc);
+				case EntityType.Property:
+					return GettextCatalog.GetString ("property ({0})", loc);
+				case EntityType.Indexer:
+					return GettextCatalog.GetString ("indexer ({0})", loc);
+				case EntityType.Event:
+					return GettextCatalog.GetString ("event ({0})", loc);
+				case EntityType.Method:
+					return GettextCatalog.GetString ("method ({0})", loc);
+				case EntityType.Operator:
+					return GettextCatalog.GetString ("operator ({0})", loc);
+				case EntityType.Constructor:
+					return GettextCatalog.GetString ("constructor ({0})", loc);
+				case EntityType.Destructor:
+					return GettextCatalog.GetString ("destrutcor ({0})", loc);
+				default:
+					throw new NotSupportedException (member.EntityType + " is not supported.");
+				}
 			}
 		}
 		

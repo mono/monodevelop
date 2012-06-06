@@ -36,6 +36,7 @@ namespace MonoDevelop.Components.MainToolbar
 		int ItemCount { get; }
 
 		string GetMarkup (int item, bool isSelected);
+		string GetDescriptionMarkup (int item, bool isSelected);
 
 		DomRegion GetRegion (int item);
 	}

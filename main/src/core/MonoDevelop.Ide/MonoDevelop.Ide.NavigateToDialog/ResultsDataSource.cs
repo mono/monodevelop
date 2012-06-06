@@ -63,6 +63,13 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			return this[item].GetMarkupText (widget);
 		}
 
+		string ISearchDataSource.GetDescriptionMarkup (int item, bool isSelected)
+		{
+			if (isSelected)
+				return GLib.Markup.EscapeText (this[item].Description);
+			return this[item].GetDescriptionMarkupText (widget);
+		}
+
 		ICSharpCode.NRefactory.TypeSystem.DomRegion ISearchDataSource.GetRegion (int item)
 		{
 			var result = this [item];
