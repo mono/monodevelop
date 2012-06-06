@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				foreach (var file in e) {
 					// Open documents are handled by the Document class itself.
-					if (IdeApp.Workbench.GetDocument (file.FileName) != null)
+					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
 					//
 					lock (projectWrapperUpdateLock) {
