@@ -147,19 +147,21 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
 				newResult.FullSearch = true;
-
-				foreach (SearchResult result in AllResults (lastResult, newResult)) {
-					if (token.IsCancellationRequested)
-						return (ISearchDataSource)newResult.results;
+				var now = DateTime.Now;
+				foreach (SearchResult result in AllResults (lastResult, newResult, token)) {
 					newResult.results.AddResult (result);
 				}
+				if (token.IsCancellationRequested) {
+					return null;
+				}
+				now = DateTime.Now;
 				newResult.results.Sort (new DataItemComparer ());
 				lastResult = newResult;
 				return (ISearchDataSource)newResult.results;
 			}, token);
 		}
 
-		IEnumerable<SearchResult> AllResults (WorkerResult lastResult, WorkerResult newResult)
+		IEnumerable<SearchResult> AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
 		{
 //			// Search files
 //			if (newResult.IncludeFiles) {
@@ -180,15 +182,15 @@ namespace MonoDevelop.Components.MainToolbar
 			// Search Types
 			if (newResult.IncludeTypes) {
 				newResult.filteredTypes = new List<ITypeDefinition> ();
-				lock (types) {
-					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
-					var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
-					foreach (var type in allTypes) {
-						SearchResult curResult = newResult.CheckType (type);
-						if (curResult != null) {
-							newResult.filteredTypes.Add (type);
-							yield return curResult;
-						}
+				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
+				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
+				foreach (var type in allTypes) {
+					if (token.IsCancellationRequested)
+						yield break;
+					SearchResult curResult = newResult.CheckType (type);
+					if (curResult != null) {
+						newResult.filteredTypes.Add (type);
+						yield return curResult;
 					}
 				}
 			}
@@ -196,15 +198,15 @@ namespace MonoDevelop.Components.MainToolbar
 			// Search members
 			if (newResult.IncludeMembers) {
 				newResult.filteredMembers = new List<IMember> ();
-				lock (members) {
-					bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
-					var allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
-					foreach (var member in allMembers) {
-						SearchResult curResult = newResult.CheckMember (member);
-						if (curResult != null) {
-							newResult.filteredMembers.Add (member);
-							yield return curResult;
-						}
+				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
+				var allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
+				foreach (var member in allMembers) {
+					if (token.IsCancellationRequested)
+						yield break;
+					SearchResult curResult = newResult.CheckMember (member);
+					if (curResult != null) {
+						newResult.filteredMembers.Add (member);
+						yield return curResult;
 					}
 				}
 			}

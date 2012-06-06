@@ -71,8 +71,9 @@ namespace MonoDevelop.Components.MainToolbar
 				var token = src.Token;
 				var task = cat.GetResults (searchPattern, token);
 				task.ContinueWith (delegate {
-					if (token.IsCancellationRequested)
+					if (token.IsCancellationRequested || task.Result == null) {
 						return;
+					}
 					Application.Invoke (delegate {
 						if (token.IsCancellationRequested)
 							return;
@@ -296,7 +297,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 						context.MoveTo (x + 100, y);
 						PangoCairoHelper.ShowLayout (context, layout);
-
 
 						y += h;
 					}

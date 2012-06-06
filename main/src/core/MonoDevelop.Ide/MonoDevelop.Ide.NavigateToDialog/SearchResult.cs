@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		protected static string HighlightMatch (Widget widget, string text, string toMatch)
 		{
-			var lane = StringMatcher.GetMatcher (toMatch, false).GetMatch (text);
+			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
 			StringBuilder result = new StringBuilder ();
 			if (lane != null) {
 				int lastPos = 0;
