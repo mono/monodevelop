@@ -54,6 +54,9 @@ namespace MonoDevelop.Components.PropertyGrid
 		static readonly Cairo.Color DividerColor = new Cairo.Color (217d/255d, 217d/255d, 217d/255d);
 		static readonly Cairo.Color CategoryLabelColor = new Cairo.Color (128d/255d, 128d/255d, 128d/255d);
 
+		const uint animationTimeSpan = 10;
+		const int animationStepSize = 20;
+
 		double dividerPosition = 0.5;
 
 		Gdk.Cursor resizeCursor;
@@ -72,7 +75,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			public bool AnimatingExpand;
 			public int AnimationHeight;
 			public int ChildrenHeight;
-			public uint AnimationHandler;
+			public uint AnimationHandle;
 		}
 
 		public PropertyGridTable (EditorManager editorManager, PropertyGrid parentGrid)
@@ -89,6 +92,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		protected override void OnDestroyed ()
 		{
+			StopAllAnimations ();
 			base.OnDestroyed ();
 			resizeCursor.Dispose ();
 			handCursor.Dispose ();
@@ -131,6 +135,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		public virtual void Clear ()
 		{
+			StopAllAnimations ();
 			EndEditing ();
 			rows.Clear ();
 			QueueDraw ();
@@ -441,6 +446,9 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			if (evnt.Type != EventType.ButtonPress)
+				return base.OnButtonPressEvent (evnt);
+
 			var cat = rows.FirstOrDefault (r => r.IsCategory && r.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y));
 			if (cat != null) {
 				cat.Expanded = !cat.Expanded;
@@ -517,13 +525,13 @@ namespace MonoDevelop.Components.PropertyGrid
 		void StartExpandAnimation (TableRow row)
 		{
 			if (row.AnimatingExpand) {
-				GLib.Source.Remove (row.AnimationHandler);
+				GLib.Source.Remove (row.AnimationHandle);
 			} else
 				row.AnimationHeight = 0;
 
 			row.AnimatingExpand = true;
-			row.AnimationHandler = GLib.Timeout.Add (30, delegate {
-				row.AnimationHeight += 20;
+			row.AnimationHandle = GLib.Timeout.Add (animationTimeSpan, delegate {
+				row.AnimationHeight += animationStepSize;
 				QueueResize ();
 				if (row.AnimationHeight >= row.ChildrenHeight) {
 					row.AnimatingExpand = false;
@@ -536,13 +544,13 @@ namespace MonoDevelop.Components.PropertyGrid
 		void StartCollapseAnimation (TableRow row)
 		{
 			if (row.AnimatingExpand) {
-				GLib.Source.Remove (row.AnimationHandler);
+				GLib.Source.Remove (row.AnimationHandle);
 			} else {
 				row.AnimationHeight = row.ChildrenHeight;
 			}
 			row.AnimatingExpand = true;
-			row.AnimationHandler = GLib.Timeout.Add (30, delegate {
-				row.AnimationHeight -= 20;
+			row.AnimationHandle = GLib.Timeout.Add (animationTimeSpan, delegate {
+				row.AnimationHeight -= animationStepSize;
 				QueueResize ();
 				if (row.AnimationHeight <= 0) {
 					row.AnimatingExpand = false;
@@ -550,6 +558,16 @@ namespace MonoDevelop.Components.PropertyGrid
 				}
 				return true;
 			});
+		}
+
+		void StopAllAnimations ()
+		{
+			foreach (var r in GetAllRows (false)) {
+				if (r.AnimatingExpand) {
+					GLib.Source.Remove (r.AnimationHandle);
+					r.AnimatingExpand = false;
+				}
+			}
 		}
 
 		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
