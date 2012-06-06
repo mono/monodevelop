@@ -522,7 +522,7 @@ namespace MonoDevelop.Projects
 			// Add new project
 			
 			Project newp = new DotNetAssemblyProject ("C#");
-			Assert.AreEqual ("MSBuild05", newp.FileFormat.Id);
+			Assert.AreEqual ("MSBuild10", newp.FileFormat.Id);
 			
 			sol.RootFolder.Items.Add (newp);
 			Assert.AreEqual ("MD1", newp.FileFormat.Id);
