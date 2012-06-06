@@ -10,12 +10,14 @@ TEST_PROJECTS= \
 	MacPlatform.Tests/MacPlatform.Tests.csproj \
 	MonoDevelop.MacDev.Tests/MonoDevelop.MacDev.Tests.csproj \
 	UnitTests/UnitTests.csproj \
+	$(top_srcdir)/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests/MonoDevelop.Debugger.Tests.csproj \
 	$(EXTERNAL)/ngit/NGit.Test/NGit.Test.csproj
 
 TEST_ASSEMBLIES= \
 	$(TEST_DIR)/MacPlatform.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.MacDev.Tests.dll \
 	$(TEST_DIR)/UnitTests.dll \
+	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
 	$(EXTERNAL)/ngit/bin/NGit.Test.dll
 
 if ENABLE_TESTS
