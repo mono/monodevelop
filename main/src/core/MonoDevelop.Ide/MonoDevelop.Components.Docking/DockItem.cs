@@ -454,10 +454,18 @@ namespace MonoDevelop.Components.Docking
 				if (Widget.Parent != null) {
 					((Gtk.Container) Widget.Parent).Remove (Widget);
 				}
+				if (TitleTab.Parent != null) {
+					((Gtk.Container) TitleTab.Parent).Remove (TitleTab);
+				}
+
 				floatingWindow = new Window (GetWindowTitle ());
 				floatingWindow.TransientFor = frame.Toplevel as Gtk.Window;
 				floatingWindow.TypeHint = Gdk.WindowTypeHint.Utility;
-				floatingWindow.Add (Widget);
+				VBox box = new VBox ();
+				box.Show ();
+				box.PackStart (TitleTab, false, false, 0);
+				box.PackStart (Widget, true, true, 0);
+				floatingWindow.Add (box);
 				floatingWindow.DeleteEvent += delegate (object o, DeleteEventArgs a) {
 					if (behavior == DockItemBehavior.CantClose)
 						Status = DockItemStatus.Dockable;
@@ -476,7 +484,9 @@ namespace MonoDevelop.Components.Docking
 		internal void ResetFloatMode ()
 		{
 			if (floatingWindow != null) {
-				floatingWindow.Remove (Widget);
+				VBox box = (VBox) floatingWindow.Child;
+				box.Remove (Widget);
+				box.Remove (TitleTab);
 				floatingWindow.Destroy ();
 				floatingWindow = null;
 				widget.UpdateBehavior ();
