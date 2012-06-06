@@ -36,7 +36,7 @@ test:
 	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \
-				$(RUN_TEST) $$asm; \
+				$(RUN_TEST) $$asm || exit $?; \
 			fi; \
 		done \
 	fi
