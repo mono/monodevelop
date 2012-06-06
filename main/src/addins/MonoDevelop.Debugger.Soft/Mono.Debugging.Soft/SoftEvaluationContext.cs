@@ -129,7 +129,7 @@ namespace Mono.Debugging.Soft
 				}
 			}
 
-			if (method.DeclaringType.IsClass) {
+			if (!method.IsStatic && method.DeclaringType.IsClass) {
 				object type = Adapter.GetValueType (this, target);
 				TypeMirror targetTypeMirror = type as TypeMirror;
 				Type targetType = type as Type;
