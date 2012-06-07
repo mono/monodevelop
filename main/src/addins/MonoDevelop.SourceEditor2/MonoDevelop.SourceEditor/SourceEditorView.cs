@@ -1561,7 +1561,7 @@ namespace MonoDevelop.SourceEditor
 			using (var undo = data.OpenUndoGroup ()) {
 				SetCompletionText (data, ctx, partial_word, complete_word, wordOffset);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				if (complete_word.IndexOfAny (' ', '\t', '{', '}') > 0 && formatter.SupportsOnTheFlyFormatting) {
+				if (complete_word.IndexOfAny (new [] {' ', '\t', '{', '}'}) > 0 && formatter.SupportsOnTheFlyFormatting) {
 					formatter.OnTheFlyFormat (WorkbenchWindow.Document, ctx.TriggerOffset, ctx.TriggerOffset + complete_word.Length);
 				}
 			}
