@@ -79,26 +79,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			};
 
 			yield return new NamingRule(AffectedEntity.Field) {
-				Name = "Fields (Non Private)",
+				Name = "Fields (Public & Protected)",
 				NamingStyle = NamingStyle.PascalCase,
-				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal
+				VisibilityMask = Modifiers.Public | Modifiers.Protected
 			};
 			
 			yield return new NamingRule(AffectedEntity.ReadonlyField) {
-				Name = "ReadOnly Fields (Non Private)",
+				Name = "ReadOnly Fields (Public & Protected)",
 				NamingStyle = NamingStyle.PascalCase,
-				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal,
+				VisibilityMask = Modifiers.Public | Modifiers.Protected,
 				IncludeStaticEntities = false
 			};
 
-			yield return new NamingRule(AffectedEntity.Field | AffectedEntity.ReadonlyField) {
-				Name = "Fields (Private)",
-				NamingStyle = NamingStyle.CamelCase,
-				AllowedPrefixes = new [] { "_", "m_" },
-				VisibilityMask = Modifiers.Private,
-				IncludeStaticEntities = false
-			};
-			
 			yield return new NamingRule(AffectedEntity.Field) {
 				Name = "Static Fields (Private)",
 				NamingStyle = NamingStyle.CamelCase,
@@ -107,14 +99,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				IncludeInstanceMembers = false
 			};
 			
-			yield return new NamingRule(AffectedEntity.ReadonlyField) {
-				Name = "ReadOnly Fields (Private)",
-				NamingStyle = NamingStyle.CamelCase,
-				VisibilityMask = Modifiers.Private,
-				AllowedPrefixes = new [] { "_", "m_" },
-				IncludeStaticEntities = false
-			};
-
 			yield return new NamingRule(AffectedEntity.ConstantField) {
 				Name = "Constant Fields",
 				NamingStyle = NamingStyle.PascalCase,
