@@ -1,7 +1,7 @@
 include $(top_srcdir)/Makefile.include
 
 MONO=mono
-HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe -process=separate -domain=none
+HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe
 RUN_TEST=$(MD_LAUNCH_SETUP) $(MONO) $(HARNESS)
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
