@@ -891,6 +891,12 @@
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\notificationErrorIcon.png">
       <LogicalName>notificationErrorIcon.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-down.png">
+      <LogicalName>disclose-arrow-down.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-up.png">
+      <LogicalName>disclose-arrow-up.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1615,6 +1621,7 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\FileSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGridTable.cs" />
     <Compile Include="MonoDevelop.Components\CompactDialog.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\DockVisualStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

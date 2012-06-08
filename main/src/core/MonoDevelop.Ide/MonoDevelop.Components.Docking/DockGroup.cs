@@ -698,7 +698,7 @@ namespace MonoDevelop.Components.Docking
 				DockGroupItem it = ob as DockGroupItem;
 				if (it != null) {
 					Frame.UpdateRegionStyle (it);
-					it.Item.Widget.VisualStyle = it.VisualStyle;
+					it.Item.SetRegionStyle (it.VisualStyle);
 					// Add the dock item to the container and show it if visible
 					if (it.Item.Widget.Parent != Frame.Container) {
 						if (it.Item.Widget.Parent != null) {
@@ -712,7 +712,6 @@ namespace MonoDevelop.Components.Docking
 					// Do the same for the title tab
 					if ((type != DockGroupType.Tabbed || boundTabStrip == null) && (it.Item.Behavior & DockItemBehavior.NoGrip) == 0) {
 						var tab = it.Item.TitleTab;
-						tab.VisualStyle = it.VisualStyle;
 						if (tab.Parent != Frame.Container) {
 							if (tab.Parent != null) {
 								((Gtk.Container)tab.Parent).Remove (tab);

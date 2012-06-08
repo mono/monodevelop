@@ -184,6 +184,7 @@ FILES =  \
 	MonoDevelop.Components.Docking/DockLayout.cs \
 	MonoDevelop.Components.Docking/DockObject.cs \
 	MonoDevelop.Components.Docking/DockPosition.cs \
+	MonoDevelop.Components.Docking/DockVisualStyle.cs \
 	MonoDevelop.Components.Docking/PlaceholderWindow.cs \
 	MonoDevelop.Components.Docking/ShadedContainer.cs \
 	MonoDevelop.Components.Docking/TabStrip.cs \
@@ -799,6 +800,8 @@ RES =  \
 	icons/compiler-options-24.png \
 	icons/custom-commands-16.png \
 	icons/custom-commands-24.png \
+	icons/disclose-arrow-down.png \
+	icons/disclose-arrow-up.png \
 	icons/edit-find-next-16.png \
 	icons/edit-find-next-24.png \
 	icons/edit-select-all.png \

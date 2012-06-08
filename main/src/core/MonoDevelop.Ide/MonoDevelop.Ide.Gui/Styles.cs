@@ -48,6 +48,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color DockTabBarShadowGradientEnd = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 0);
 
 		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (219, 224, 231);
+		public static readonly Gdk.Color PadBackground = new Gdk.Color (240, 240, 240);
 
 		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
 

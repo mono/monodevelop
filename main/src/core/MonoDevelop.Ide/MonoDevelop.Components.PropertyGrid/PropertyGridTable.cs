@@ -43,6 +43,8 @@ namespace MonoDevelop.Components.PropertyGrid
 		Gtk.Widget currentEditor;
 		TableRow currentEditorRow;
 		bool draggingDivider;
+		Gdk.Pixbuf discloseDown;
+		Gdk.Pixbuf discloseUp;
 
 		const int CategoryTopBottomPadding = 6;
 		const int CategoryLeftPadding = 8;
@@ -88,6 +90,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
 			HasTooltip = true;
+			discloseDown = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-down.png");
+			discloseUp = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-up.png");
 		}
 
 		protected override void OnDestroyed ()
@@ -380,7 +384,12 @@ namespace MonoDevelop.Components.PropertyGrid
 					ctx.MoveTo (x, y + CategoryTopBottomPadding);
 					ctx.Color = CategoryLabelColor;
 					Pango.CairoHelper.ShowLayout (ctx, layout);
-					y += h + CategoryTopBottomPadding*2;
+
+					var img = r.Expanded ? discloseUp : discloseDown;
+					CairoHelper.SetSourcePixbuf (ctx, img, Allocation.Width - img.Width - CategoryTopBottomPadding, y + (rh - img.Height) / 2);
+					ctx.Paint ();
+
+					y += rh;
 					lastCategory = r;
 				}
 				else {
@@ -524,6 +533,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		void StartExpandAnimation (TableRow row)
 		{
+			EndEditing ();
 			if (row.AnimatingExpand) {
 				GLib.Source.Remove (row.AnimationHandle);
 			} else
@@ -543,6 +553,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		void StartCollapseAnimation (TableRow row)
 		{
+			EndEditing ();
 			if (row.AnimatingExpand) {
 				GLib.Source.Remove (row.AnimationHandle);
 			} else {

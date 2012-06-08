@@ -70,6 +70,10 @@ namespace MonoDevelop.Components.Docking
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
 
+		DockVisualStyle regionStyle;
+		DockVisualStyle itemStyle;
+		DockVisualStyle currentVisualStyle;
+
 		public event EventHandler VisibleChanged;
 		public event EventHandler ContentVisibleChanged;
 		public event EventHandler ContentRequired;
@@ -78,6 +82,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			this.frame = frame;
 			this.id = id;
+			currentVisualStyle = regionStyle = frame.GetRegionStyleForItem (this);
 		}
 		
 		internal DockItem (DockFrame frame, Widget w, string id): this (frame, id)
@@ -125,7 +130,8 @@ namespace MonoDevelop.Components.Docking
 		internal Tab TitleTab {
 			get {
 				if (titleTab == null) {
-					titleTab = new Tab ();
+					titleTab = new Tab (frame);
+					titleTab.VisualStyle = currentVisualStyle;
 					titleTab.SetLabel (Widget, icon, label);
 					titleTab.ShowAll ();
 					titleTab.ButtonPressEvent += HeaderButtonPress;
@@ -218,6 +224,7 @@ namespace MonoDevelop.Components.Docking
 			get {
 				if (widget == null) {
 					widget = new DockItemContainer (frame, this);
+					widget.VisualStyle = currentVisualStyle;
 					widget.Visible = false; // Required to ensure that the Shown event is fired
 					widget.Shown += SetupContent;
 				}
@@ -225,7 +232,28 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public string VisualStyle { get; set; }
+		public DockVisualStyle VisualStyle {
+			get { return itemStyle; }
+			set { itemStyle = value; UpdateStyle (); }
+		}
+
+		internal void SetRegionStyle (DockVisualStyle style)
+		{
+			regionStyle = style;
+			UpdateStyle ();
+		}
+
+		void UpdateStyle ()
+		{
+			var s = itemStyle != null ? itemStyle : regionStyle;
+			if (s != currentVisualStyle) {
+				currentVisualStyle = s;
+				if (titleTab != null)
+					titleTab.VisualStyle = s;
+				if (widget != null)
+					widget.VisualStyle = s;
+			}
+		}
 		
 		void SetupContent (object ob, EventArgs args)
 		{
@@ -457,7 +485,7 @@ namespace MonoDevelop.Components.Docking
 				if (TitleTab.Parent != null) {
 					((Gtk.Container) TitleTab.Parent).Remove (TitleTab);
 				}
-
+				SetRegionStyle (frame.GetRegionStyleForItem (this));
 				floatingWindow = new Window (GetWindowTitle ());
 				floatingWindow.TransientFor = frame.Toplevel as Gtk.Window;
 				floatingWindow.TypeHint = Gdk.WindowTypeHint.Utility;
@@ -524,6 +552,8 @@ namespace MonoDevelop.Components.Docking
 			dockBarItem = frame.BarDock (pos, this, size);
 			if (widget != null)
 				widget.UpdateBehavior ();
+
+			SetRegionStyle (frame.GetRegionStyleForItem (this));
 		}
 		
 		void ResetBarUndockMode ()

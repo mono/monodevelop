@@ -834,9 +834,19 @@ namespace MonoDevelop.Ide.Gui
 			documentDockItem.DrawFrame = false;
 			documentDockItem.Label = GettextCatalog.GetString ("Documents");
 			documentDockItem.Content = tabControl;
-			
-			dock.SetRegionStyle ("Documents/Left", "Browser");
-			dock.SetRegionStyle ("Documents/Right", "Browser");
+
+			DockVisualStyle style = new DockVisualStyle ();
+			style.PadBackgroundColor = Styles.PadBackground;
+			dock.DefaultVisualStyle = style;
+
+			style = new DockVisualStyle ();
+			style.PadBackgroundColor = Styles.BrowserPadBackground;
+			style.TreeBackgroundColor = Styles.BrowserPadBackground;
+			dock.SetDockItemStyle ("ProjectPad", style);
+			dock.SetDockItemStyle ("ClassPad", style);
+
+//			dock.SetRegionStyle ("Documents/Left", "Browser");
+//			dock.SetRegionStyle ("Documents/Right", "Browser");
 
 			// Add some hiden items to be used as position reference
 			DockItem dit = dock.AddItem ("__left");

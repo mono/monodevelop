@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.Docking
 		HBox box = new HBox ();
 		DockFrame frame;
 		Label bottomFiller = new Label ();
-		string visualStyle;
+		DockVisualStyle visualStyle;
 
 		public TabStrip (DockFrame frame)
 		{
@@ -66,19 +66,17 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public string VisualStyle {
+		public DockVisualStyle VisualStyle {
 			get { return visualStyle; }
 			set {
 				visualStyle = value;
-				foreach (Tab t in box.Children)
-					t.VisualStyle = value;
 				box.QueueDraw ();
 			}
 		}
 		
 		public void AddTab (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
-			Tab tab = new Tab ();
+			Tab tab = new Tab (frame);
 			tab.SetLabel (page, icon, label);
 			AddTab (tab);
 		}
@@ -87,8 +85,6 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (tab.Parent != null)
 				((Gtk.Container)tab.Parent).Remove (tab);
-
-			tab.VisualStyle = VisualStyle;
 
 			box.PackStart (tab, true, true, 0);
 			if (currentTab == -1)
@@ -203,9 +199,9 @@ namespace MonoDevelop.Components.Docking
 
 			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 			{
-				if (TabStrip.VisualStyle == DockStyle.Browser) {
+				if (TabStrip.VisualStyle.TabStyle == DockTabStyle.Normal) {
 					var alloc = Allocation;
-					var c = new HslColor (Styles.BrowserPadBackground);
+					var c = new HslColor (TabStrip.VisualStyle.PadBackgroundColor);
 					c.L *= 0.9;
 					Gdk.GC gc = new Gdk.GC (GdkWindow);
 					gc.RgbFgColor = c;
@@ -213,7 +209,7 @@ namespace MonoDevelop.Components.Docking
 					gc.Dispose ();
 		
 					Gdk.GC bgc = new Gdk.GC (GdkWindow);
-					c = new HslColor (Styles.BrowserPadBackground);
+					c = new HslColor (TabStrip.VisualStyle.PadBackgroundColor);
 					c.L *= 0.7;
 					bgc.RgbFgColor = c;
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
@@ -231,8 +227,9 @@ namespace MonoDevelop.Components.Docking
 		Gtk.Widget page;
 		Gtk.Label labelWidget;
 		int labelWidth;
-		string visualStyle;
+		DockVisualStyle visualStyle;
 		Image tabIcon;
+		DockFrame frame;
 		
 		const int TopPadding = 7;
 		const int BottomPadding = 7;
@@ -240,19 +237,26 @@ namespace MonoDevelop.Components.Docking
 		const int BottomPaddingActive = 7;
 		const int HorzPadding = 11;
 		
-		public Tab ()
+		public Tab (DockFrame frame)
 		{
+			this.frame = frame;
 			this.VisibleWindow = false;
+			UpdateVisualStyle ();
 		}
 
-		public string VisualStyle {
+		public DockVisualStyle VisualStyle {
 			get { return visualStyle; }
 			set {
 				visualStyle = value;
-				if (tabIcon != null)
-					tabIcon.Visible = value != DockStyle.Browser;
+				UpdateVisualStyle ();
 				QueueDraw ();
 			}
+		}
+
+		void UpdateVisualStyle ()
+		{
+		//	if (tabIcon != null)
+		//		tabIcon.Visible = visualStyle != DockStyle.Browser;
 		}
 
 		public void SetLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
@@ -273,13 +277,12 @@ namespace MonoDevelop.Components.Docking
 			
 			if (icon != null) {
 				tabIcon = new Gtk.Image (icon);
+				tabIcon.Show ();
 				box.PackStart (tabIcon, false, false, 0);
 			} else
 				tabIcon = null;
 
 			if (!string.IsNullOrEmpty (label)) {
-				if (VisualStyle == DockStyle.Browser)
-					label = label.ToUpper ();
 				labelWidget = new Gtk.Label (label);
 				labelWidget.UseMarkup = true;
 				labelWidget.Xalign = 0;
@@ -297,8 +300,7 @@ namespace MonoDevelop.Components.Docking
 			
 			if (labelWidget != null)
 				labelWidget.Ellipsize = oldMode;
-			if (tabIcon != null)
-				tabIcon.Visible = VisualStyle != DockStyle.Browser;
+			UpdateVisualStyle ();
 		}
 		
 		public void SetEllipsize (bool elipsize)
@@ -362,7 +364,7 @@ namespace MonoDevelop.Components.Docking
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			if (VisualStyle == DockStyle.Browser)
+			if (VisualStyle.TabStyle == DockTabStyle.Normal)
 				DrawAsBrowser (evnt);
 			else
 				DrawNormal (evnt);
@@ -374,9 +376,8 @@ namespace MonoDevelop.Components.Docking
 			var alloc = Allocation;
 
 			Gdk.GC bgc = new Gdk.GC (GdkWindow);
-			var c = new HslColor (Styles.BrowserPadBackground);
+			var c = new HslColor (VisualStyle.PadBackgroundColor);
 			c.L *= 0.7;
-			var cc = (Gdk.Color)c;
 			bgc.RgbFgColor = c;
 			bool first = true;
 			bool last = true;
@@ -388,7 +389,7 @@ namespace MonoDevelop.Components.Docking
 
 			if (Active || (first && last)) {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = Styles.BrowserPadBackground;
+				gc.RgbFgColor = VisualStyle.PadBackgroundColor;
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				if (!first)
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
@@ -397,7 +398,7 @@ namespace MonoDevelop.Components.Docking
 				gc.Dispose ();
 
 			} else {
-				c = new HslColor (Styles.BrowserPadBackground);
+				c = new HslColor (frame.DefaultVisualStyle.PadBackgroundColor);
 				c.L *= 0.9;
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
 				gc.RgbFgColor = c;

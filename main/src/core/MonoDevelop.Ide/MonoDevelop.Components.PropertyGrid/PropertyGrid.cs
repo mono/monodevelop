@@ -350,7 +350,8 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			get { return descFrame != null; }
 			set {
-				if (value == ShowHelp)
+				// Disable for now. Documentation is shown in tooltips
+/*				if (value == ShowHelp)
 					return;
 				if (value) {
 					AddHelpPane ();
@@ -362,7 +363,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					descTextView = null;
 					descTitleLabel = null;
 					helpSeparator.Hide ();
-				}
+				}*/
 			}
 		}
 		

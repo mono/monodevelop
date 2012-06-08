@@ -110,7 +110,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public string VisualStyle { get; set; }
+		public DockVisualStyle VisualStyle { get; set; }
 		
 		internal void ResetDefaultSize ()
 		{

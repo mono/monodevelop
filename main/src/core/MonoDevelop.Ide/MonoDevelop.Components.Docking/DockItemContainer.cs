@@ -78,7 +78,12 @@ namespace MonoDevelop.Components.Docking
 			UpdateBehavior ();
 		}
 
-		public string VisualStyle { get; set; }
+		DockVisualStyle visualStyle;
+
+		public DockVisualStyle VisualStyle {
+			get { return visualStyle; }
+			set { visualStyle = value; UpdateVisualStyle (); }
+		}
 
 		void OnClickDock (object s, EventArgs a)
 		{
@@ -87,15 +92,12 @@ namespace MonoDevelop.Components.Docking
 			else
 				item.Status = DockItemStatus.AutoHide;
 		}
-		
+
 		public void UpdateContent ()
 		{
 			if (widget != null)
 				((Gtk.Container)widget.Parent).Remove (widget);
 			widget = item.Content;
-
-			if (widget != null)
-				SetStyle (widget);
 
 			if (item.DrawFrame) {
 				if (borderFrame == null) {
@@ -116,9 +118,23 @@ namespace MonoDevelop.Components.Docking
 				contentBox.Add (widget);
 				widget.Show ();
 			}
+			UpdateVisualStyle ();
 		}
 
-		void SetStyle (Gtk.Widget w)
+		void UpdateVisualStyle ()
+		{
+			if (VisualStyle != null) {
+				if (widget != null)
+					SetTreeStyle (widget);
+
+				item.GetToolbar (PositionType.Top).SetStyle (VisualStyle);
+				item.GetToolbar (PositionType.Left).SetStyle (VisualStyle);
+				item.GetToolbar (PositionType.Right).SetStyle (VisualStyle);
+				item.GetToolbar (PositionType.Bottom).SetStyle (VisualStyle);
+			}
+		}
+
+		void SetTreeStyle (Gtk.Widget w)
 		{
 			if (w is Gtk.TreeView) {
 				if (w.IsRealized)
@@ -130,7 +146,7 @@ namespace MonoDevelop.Components.Docking
 				var c = w as Gtk.Container;
 				if (c != null) {
 					foreach (var cw in c.Children)
-						SetStyle (cw);
+						SetTreeStyle (cw);
 				}
 			}
 		}
@@ -138,11 +154,9 @@ namespace MonoDevelop.Components.Docking
 		void OnTreeRealized (object sender, EventArgs e)
 		{
 			var w = (Gtk.TreeView)sender;
-			if (VisualStyle == DockStyle.Browser) {
-				w.ModifyBase (StateType.Normal, Styles.BrowserPadBackground);
-				w.ModifyBase (StateType.Insensitive, Styles.BrowserPadBackground);
-//				w.ModifyBase (StateType.Active, Styles.BrowserPadBackground);
-				//		w.ModifyBase (StateType.Prelight, Styles.BrowserPadBackground);
+			if (!VisualStyle.TreeBackgroundColor.Equals (DockVisualStyle.DefaultColor)) {
+				w.ModifyBase (StateType.Normal, VisualStyle.TreeBackgroundColor);
+				w.ModifyBase (StateType.Insensitive, VisualStyle.TreeBackgroundColor);
 			} else {
 				w.ModifyBase (StateType.Normal, Parent.Style.Base (StateType.Normal));
 				w.ModifyBase (StateType.Insensitive, Parent.Style.Base (StateType.Insensitive));
@@ -155,9 +169,9 @@ namespace MonoDevelop.Components.Docking
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			if (VisualStyle == DockStyle.Browser) {
+			if (VisualStyle.TabStyle == DockTabStyle.Normal) {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = Styles.BrowserPadBackground;
+				gc.RgbFgColor = VisualStyle.PadBackgroundColor;
 				evnt.Window.DrawRectangle (gc, true, Allocation);
 				gc.Dispose ();
 			}
@@ -177,6 +191,9 @@ namespace MonoDevelop.Components.Docking
 		int bottomPadding;
 		int leftPadding;
 		int rightPadding;
+
+		Gdk.Color backgroundColor;
+		bool backgroundColorSet;
 		
 		public CustomFrame ()
 		{
@@ -204,6 +221,11 @@ namespace MonoDevelop.Components.Docking
 		}
 		
 		public bool GradientBackround { get; set; }
+
+		public Gdk.Color BackgroundColor {
+			get { return backgroundColor; }
+			set { backgroundColor = value; backgroundColorSet = true; }
+		}
 
 		protected override void OnAdded (Widget widget)
 		{
@@ -250,11 +272,11 @@ namespace MonoDevelop.Components.Docking
 			
 			//Gdk.Rectangle.Right and Bottom are inconsistent
 			int right = rect.X + rect.Width, bottom = rect.Y + rect.Height;
+
+			var bcolor = backgroundColorSet ? BackgroundColor : Style.Background (Gtk.StateType.Normal);
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 			
-			if (GradientBackround) {
-				HslColor gcol = Style.Background (Gtk.StateType.Normal);
-				
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+				if (GradientBackround) {
 					cr.NewPath ();
 					cr.MoveTo (rect.X, rect.Y);
 					cr.RelLineTo (rect.Width, 0);
@@ -263,19 +285,24 @@ namespace MonoDevelop.Components.Docking
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
 					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom);
-					Cairo.Color color1 = gcol;
-					pat.AddColorStop (0, color1);
+					pat.AddColorStop (0, bcolor.ToCairoColor ());
+					HslColor gcol = bcolor;
 					gcol.L -= 0.1;
 					if (gcol.L < 0) gcol.L = 0;
 					pat.AddColorStop (1, gcol);
 					cr.Pattern = pat;
 					cr.FillPreserve ();
+				} else {
+					if (backgroundColorSet) {
+						Gdk.GC gc = new Gdk.GC (GdkWindow);
+						gc.RgbFgColor = bcolor;
+						evnt.Window.DrawRectangle (gc, true, rect.X, rect.Y, rect.Width, rect.Height);
+						gc.Dispose ();
+					}
 				}
-			}
 			
-			bool res = base.OnExposeEvent (evnt);
+				base.OnExposeEvent (evnt);
 			
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Color = (HslColor) Style.Dark (Gtk.StateType.Normal);
 				
 				double y = rect.Y + topMargin / 2d;
@@ -297,9 +324,9 @@ namespace MonoDevelop.Components.Docking
 				cr.LineWidth = rightMargin;
 				cr.Line (x, rect.Y, x, bottom);
 				cr.Stroke ();
+
+				return false;
 			}
-			
-			return res;
 		}
 	}
 }

@@ -90,6 +90,8 @@ namespace MonoDevelop.Components.Docking
 			dockBarBottom.UpdateVisibility ();
 			dockBarLeft.UpdateVisibility ();
 			dockBarRight.UpdateVisibility ();
+
+			DefaultVisualStyle = new DockVisualStyle ();
 		}
 		
 		/// <summary>
@@ -115,32 +117,52 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		Dictionary<string,string> regionStyles = new Dictionary<string, string> ();
+		Dictionary<string,DockVisualStyle> regionStyles = new Dictionary<string, DockVisualStyle> ();
+		Dictionary<string,DockVisualStyle> stylesById = new Dictionary<string, DockVisualStyle> ();
 
-		public void SetRegionStyle (string regionPosition, string style)
+		public DockVisualStyle DefaultVisualStyle { get; set; }
+
+		public void SetRegionStyle (string regionPosition, DockVisualStyle style)
 		{
-			regionStyles [regionPosition] = style;
+			if (style != null)
+				regionStyles [regionPosition] = style;
+			else
+				regionStyles.Remove (regionPosition);
+		}
+
+		public void SetDockItemStyle (string itemId, DockVisualStyle style)
+		{
+			if (style != null)
+				stylesById [itemId] = style;
+			else
+				stylesById.Remove (itemId);
 		}
 
 		internal void UpdateRegionStyle (DockObject obj)
 		{
-			if ((obj is DockGroupItem)) {
-				var s = ((DockGroupItem)obj).Item.VisualStyle;
-				if (!string.IsNullOrEmpty (s) && s != DockStyle.Default) {
-					obj.VisualStyle = s;
-					return;
-				}
-			}
 			obj.VisualStyle = GetRegionStyleForObject (obj);
 		}
 
-		internal string GetRegionStyleForObject (DockObject obj)
+		internal DockVisualStyle GetRegionStyleForObject (DockObject obj)
 		{
+			if (obj is DockGroupItem) {
+				DockVisualStyle s;
+				if (stylesById.TryGetValue (((DockGroupItem)obj).Id, out s))
+					return s;
+			}
 			foreach (var e in regionStyles) {
 				if (InRegion (e.Key, obj))
 					return e.Value;
 			}
-			return "default";
+			return DefaultVisualStyle;
+		}
+
+		internal DockVisualStyle GetRegionStyleForItem (DockItem item)
+		{
+			DockVisualStyle s;
+			if (stylesById.TryGetValue (item.Id, out s))
+				return s;
+			return DefaultVisualStyle;
 		}
 
 		bool InRegion (string location, DockObject obj)

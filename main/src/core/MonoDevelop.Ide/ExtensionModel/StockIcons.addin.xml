@@ -237,6 +237,8 @@
 	<StockIcon stockid = "md-external-tools" resource = "tools-external-tools-24.png"/>
 	<StockIcon stockid = "md-feedback" resource = "balloon.png" size = "Menu" />
 	<StockIcon stockid = "md-software-update-available" resource = "software-update-available.png" size="Menu" />
+	<StockIcon stockid = "md-disclose-arrrow-up" resource = "disclose-arrrow-up.png" size="Menu" />
+	<StockIcon stockid = "md-disclose-arrrow-down" resource = "disclose-arrrow-down.png" size="Menu" />
 </Extension>
 
 </ExtensionModel>
