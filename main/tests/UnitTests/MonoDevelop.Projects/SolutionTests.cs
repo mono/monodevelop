@@ -229,6 +229,7 @@ namespace MonoDevelop.Projects
 			
 			// Projects inherit the file format from the parent solution
 			Solution sol = new Solution ();
+			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
 			sol.RootFolder.Items.Add (prj);
 			Assert.AreEqual ("test4", prj.Name);
 			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
@@ -491,8 +492,8 @@ namespace MonoDevelop.Projects
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("reloading");
 			Project p = (Project) sol.Items [0];
 			
-			Assert.AreEqual (Ide.IdeApp.Services.ProjectService.DefaultFileFormatId, sol.FileFormat.Id);
-			Assert.AreEqual (Ide.IdeApp.Services.ProjectService.DefaultFileFormatId, p.FileFormat.Id);
+			Assert.AreEqual (Services.ProjectService.DefaultFileFormatId, sol.FileFormat.Id);
+			Assert.AreEqual (Services.ProjectService.DefaultFileFormatId, p.FileFormat.Id);
 			
 			// Change solution format of unsaved solution
 			
@@ -521,7 +522,7 @@ namespace MonoDevelop.Projects
 			// Add new project
 			
 			Project newp = new DotNetAssemblyProject ("C#");
-			Assert.AreEqual ("MSBuild05", newp.FileFormat.Id);
+			Assert.AreEqual ("MSBuild10", newp.FileFormat.Id);
 			
 			sol.RootFolder.Items.Add (newp);
 			Assert.AreEqual ("MD1", newp.FileFormat.Id);

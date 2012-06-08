@@ -29,30 +29,30 @@ using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests.Mdb
 {
-	[TestFixture()]
-	[Ignore ("Mdb is unmaintained and currently all tests fail")]
-	public class MdbEvaluationTests: EvaluationTests
-	{
-		public MdbEvaluationTests (): base ("Mono.Debugger.Mdb")
-		{
-		}
-		
-		[Test()]
-		[Ignore ("Not working due to bug #584306")]
-		public override void Assignment ()
-		{
-		}
-		
-		[Test()]
-		[Ignore ("Not working due to bug #584306")]
-		public override void AssignmentStatic ()
-		{
-		}
-		
-		[Test()]
-		[Ignore ("Not yet implemented")]
-		public override void TypeReferenceGeneric ()
-		{
-		}
-	}
+//	[TestFixture()]
+//	[Ignore ("Mdb is unmaintained and currently all tests fail")]
+//	public class MdbEvaluationTests: EvaluationTests
+//	{
+//		public MdbEvaluationTests (): base ("Mono.Debugger.Mdb")
+//		{
+//		}
+//		
+//		[Test()]
+//		[Ignore ("Not working due to bug #584306")]
+//		public override void Assignment ()
+//		{
+//		}
+//		
+//		[Test()]
+//		[Ignore ("Not working due to bug #584306")]
+//		public override void AssignmentStatic ()
+//		{
+//		}
+//		
+//		[Test()]
+//		[Ignore ("Not yet implemented")]
+//		public override void TypeReferenceGeneric ()
+//		{
+//		}
+//	}
 }

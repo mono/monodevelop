@@ -10345,6 +10345,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
             <child>
               <widget class="MonoDevelop.Components.FolderEntry" id="folderentry">
                 <property name="MemberName" />
+                <signal name="PathChanged" handler="OnFolderentryPathChanged" />
               </widget>
               <packing>
                 <property name="Position">0</property>

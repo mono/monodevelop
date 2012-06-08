@@ -127,6 +127,7 @@ namespace MonoDevelop.Components
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.folderentry.PathChanged += new global::System.EventHandler (this.OnFolderentryPathChanged);
 			this.buttonAdd.Clicked += new global::System.EventHandler (this.OnButtonAddClicked);
 			this.buttonRemove.Clicked += new global::System.EventHandler (this.OnButtonRemoveClicked);
 			this.buttonUpdate.Clicked += new global::System.EventHandler (this.OnButtonUpdateClicked);

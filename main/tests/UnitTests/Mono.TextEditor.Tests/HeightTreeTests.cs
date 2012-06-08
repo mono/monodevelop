@@ -183,9 +183,6 @@ namespace Mono.TextEditor.Tests
 			heightTree.Rebuild ();
 			
 			heightTree.Fold (1, 3);
-			for (int i = 1; i <= editor.LineCount; i++) {
-				Console.WriteLine (i + ":"+ heightTree.LineNumberToY (i));
-			}
 			Assert.AreEqual (0, heightTree.LineNumberToY (2));
 			Assert.AreEqual (0, heightTree.LineNumberToY (4));
 			Assert.AreEqual (1 * editor.LineHeight, heightTree.LineNumberToY (5));

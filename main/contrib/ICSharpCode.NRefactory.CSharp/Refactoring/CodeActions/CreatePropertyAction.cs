@@ -63,9 +63,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			ResolveResult targetResolveResult = null;
 			if (identifier is MemberReferenceExpression) {
 				targetResolveResult = context.Resolve(((MemberReferenceExpression)identifier).Target);
+				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
+					yield break;
 				createInOtherType = !state.CurrentTypeDefinition.Equals(targetResolveResult.Type.GetDefinition());
 			}
-
+			
 			bool isStatic = targetResolveResult is TypeResolveResult;
 			if (createInOtherType) {
 				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface || targetResolveResult.Type.Kind == TypeKind.Enum)
