@@ -201,6 +201,10 @@
       <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
       <Name>Mono.Debugging.Soft</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.v3.5.csproj">
+      <Project>{40a31ade-6f26-4d99-a3c7-87bb8236151d}</Project>
+      <Name>MonoDevelop.Projects.Formats.MSBuild.v3.5</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
