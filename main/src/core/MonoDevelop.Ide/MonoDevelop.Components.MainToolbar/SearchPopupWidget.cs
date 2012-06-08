@@ -135,8 +135,8 @@ namespace MonoDevelop.Components.MainToolbar
 					maxX = Math.Max (maxX, w);
 				}
 			}
-			requisition.Width = Math.Min (geometry.Width - 16, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2)));
-			requisition.Height = Math.Min (geometry.Height - 16, (int)y + 4 + yMargin * 2 + (results.Count - 1) * categorySeparatorHeight);
+			requisition.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2)));
+			requisition.Height = Math.Min (geometry.Height * 4 / 5, (int)y + 4 + yMargin * 2 + (results.Count - 1) * categorySeparatorHeight);
 		}
 
 		Tuple<SearchCategory, ISearchDataSource, int> GetItemAt (double px, double py)
