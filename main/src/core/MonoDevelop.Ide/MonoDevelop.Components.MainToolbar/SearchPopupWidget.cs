@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Gtk;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -46,8 +47,11 @@ namespace MonoDevelop.Components.MainToolbar
 		CancellationTokenSource src;
 		Cairo.Color headerColor;
 
-		public SearchPopupWidget ()
+		SearchPopupWindow searchPopupWindow;
+
+		public SearchPopupWidget (SearchPopupWindow searchPopupWindow)
 		{
+			this.searchPopupWindow = searchPopupWindow;
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask;
 			headerColor = CairoExtensions.ParseColor ("b3b3b3");
 			categories.Add (new ProjectSearchCategory (this));
@@ -110,6 +114,10 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			base.OnSizeRequested (ref requisition);
 
+			int ox, oy;
+			searchPopupWindow.GetPosition (out ox, out oy);
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
+
 			double maxX = 0, y = yMargin;
 				
 			foreach (var result in results) {
@@ -121,14 +129,14 @@ namespace MonoDevelop.Components.MainToolbar
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
 					layout.SetMarkup (dataSrc.GetMarkup (i, false) +"\n<small>\t"+dataSrc.GetDescriptionMarkup (i, false) +"</small>");
 
-					int w, h;
+					int w,h;
 					layout.GetPixelSize (out w, out h);
 					y += h;
 					maxX = Math.Max (maxX, w);
 				}
 			}
-			requisition.Width = Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2));
-			requisition.Height = (int)y + 4 + yMargin * 2 + (results.Count - 1) * categorySeparatorHeight;
+			requisition.Width = Math.Min (geometry.Width - 16, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2)));
+			requisition.Height = Math.Min (geometry.Height - 16, (int)y + 4 + yMargin * 2 + (results.Count - 1) * categorySeparatorHeight);
 		}
 
 		Tuple<SearchCategory, ISearchDataSource, int> GetItemAt (double px, double py)

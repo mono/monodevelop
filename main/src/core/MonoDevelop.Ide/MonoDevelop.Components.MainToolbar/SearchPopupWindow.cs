@@ -31,10 +31,11 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	public class SearchPopupWindow : Gtk.Window
 	{
-		SearchPopupWidget widget = new SearchPopupWidget ();
+		SearchPopupWidget widget;
 
 		public SearchPopupWindow () : base(WindowType.Popup)
 		{
+			widget = new SearchPopupWidget (this);
 			TransientFor = IdeApp.Workbench.RootWindow;
 			SkipTaskbarHint = true;
 			SkipPagerHint = true;
