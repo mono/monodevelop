@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	{
 		internal IParameterCompletionDataFactory factory;
 		
-		public CSharpParameterCompletionEngine(IDocument document, IParameterCompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx, CompilationUnit unit, CSharpParsedFile parsedFile) : base (content, ctx, unit, parsedFile)
+		public CSharpParameterCompletionEngine(IDocument document, ICompletionContextProvider completionContextProvider, IParameterCompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx) : base (content, completionContextProvider, ctx)
 		{
 			if (document == null) {
 				throw new ArgumentNullException("document");
@@ -55,9 +55,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null && currentType == null) { 
-				return null;
-			}
-			if (Unit == null) {
 				return null;
 			}
 			baseUnit = ParseStub("x] = a[1");
@@ -80,9 +77,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (currentMember == null && currentType == null) { 
 				return null;
 			}
-			if (Unit == null) {
-				return null;
-			}
 			baseUnit = ParseStub("a) {}", false);
 			
 			var expr = baseUnit.GetNodeAt <ConstructorInitializer>(location); 
@@ -96,9 +90,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null && currentType == null) { 
-				return null;
-			}
-			if (Unit == null) {
 				return null;
 			}
 			baseUnit = ParseStub("x> a");
@@ -171,7 +162,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 					if (invoke.Node is ObjectCreateExpression) {
-						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type, invoke.Unit);
+						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type);
 						if (createType.Item1.Type.Kind == TypeKind.Unknown)
 							return null;
 						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Item1.Type);
@@ -234,7 +225,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (GetCurrentParameterIndex(document.GetOffset(invoke.Node.StartLocation), offset) < 0)
 						return null;
 					if (invoke.Node is ObjectCreateExpression) {
-						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type, invoke.Unit);
+						var createType = ResolveExpression(((ObjectCreateExpression)invoke.Node).Type);
 						return factory.CreateConstructorProvider(document.GetOffset(invoke.Node.StartLocation), createType.Item1.Type);
 					}
 				
@@ -316,17 +307,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		List<string> GetUsedNamespaces()
 		{
-			var scope = CSharpParsedFile.GetUsingScope(location);
+			var scope = ctx.CurrentUsingScope;
 			var result = new List<string>();
-			var resolver = new CSharpResolver(ctx);
 			while (scope != null) {
-				result.Add(scope.NamespaceName);
+				result.Add(scope.Namespace.FullName);
 				
-				foreach (var u in scope.Usings) {
-					var ns = u.ResolveNamespace(resolver);
-					if (ns == null) {
-						continue;
-					}
+				foreach (var ns in scope.Usings) {
 					result.Add(ns.FullName);
 				}
 				scope = scope.Parent;

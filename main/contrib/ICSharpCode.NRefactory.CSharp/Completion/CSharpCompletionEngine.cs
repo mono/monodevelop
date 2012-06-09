@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public bool CloseOnSquareBrackets;
 		#endregion
 		
-		public CSharpCompletionEngine(IDocument document, ICompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx, CompilationUnit unit, CSharpParsedFile parsedFile) : base (content, ctx, unit, parsedFile)
+		public CSharpCompletionEngine(IDocument document, ICompletionContextProvider completionContextProvider, ICompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx) : base (content, completionContextProvider, ctx)
 		{
 			if (document == null) {
 				throw new ArgumentNullException("document");
@@ -239,7 +239,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				parent = (ArrayInitializerExpression)parent.Parent;
 			if (p != null) {
 				var contextList = new CompletionDataWrapper(this);
-				var initializerResult = ResolveExpression(p, unit);
+				var initializerResult = ResolveExpression(p);
 				if (initializerResult != null && initializerResult.Item1.Type.Kind != TypeKind.Unknown) {
 					// check 3 cases:
 					// 1) New initalizer { xpr
@@ -255,7 +255,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 
 					if (prev != null && !(prev is NamedExpression)) {
-						AddContextCompletion(contextList, GetState(), n, unit);
+						AddContextCompletion(contextList, GetState(), n);
 						// case 3)
 						return contextList.Result;
 					}
@@ -279,7 +279,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return contextList.Result;
 					}
 
-					AddContextCompletion(contextList, GetState(), n, unit);
+					AddContextCompletion(contextList, GetState(), n);
 					return contextList.Result;
 				}
 			}
@@ -480,8 +480,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								AddContextCompletion(
 									wrapper,
 									resolveResult.Item2,
-									expressionOrVariableDeclaration.Node,
-									expressionOrVariableDeclaration.Unit);
+									expressionOrVariableDeclaration.Node);
 								AddEnumMembers(wrapper, resolveResult.Item1.Type, resolveResult.Item2);
 								AutoCompleteEmptyMatch = false;
 								return wrapper.Result;
@@ -742,8 +741,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (n != null && n.Parent is InvocationExpression) {
 						var invokeParent = (InvocationExpression)n.Parent;
 						var invokeResult = ResolveExpression(
-							invokeParent.Target,
-							identifierStart.Unit
+							invokeParent.Target
 						);
 						var mgr = invokeResult != null ? invokeResult.Item1 as MethodGroupResolveResult : null;
 						if (mgr != null) {
@@ -777,7 +775,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 
 					if (n != null && n.Parent is ObjectCreateExpression) {
-						var invokeResult = ResolveExpression(n.Parent, identifierStart.Unit);
+						var invokeResult = ResolveExpression(n.Parent);
 						var mgr = invokeResult != null ? invokeResult.Item1 as ResolveResult : null;
 						if (mgr != null) {
 							foreach (var constructor in mgr.Type.GetConstructors ()) {
@@ -797,14 +795,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						// check for compare to enum case 
 						if (evaluationExpr != null) {
-							resolveResult = ResolveExpression(evaluationExpr, identifierStart.Unit);
+							resolveResult = ResolveExpression(evaluationExpr);
 							if (resolveResult != null && resolveResult.Item1.Type.Kind == TypeKind.Enum) {
 								var wrapper = new CompletionDataWrapper(this);
 								AddContextCompletion(
 									wrapper,
 									resolveResult.Item2,
-									evaluationExpr,
-									identifierStart.Unit
+									evaluationExpr
 								);
 								AddEnumMembers(wrapper, resolveResult.Item1.Type, resolveResult.Item2);
 								AutoCompleteEmptyMatch = false;
@@ -827,7 +824,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return DefaultControlSpaceItems();
 						}
 					
-						var initalizerResult = ResolveExpression(n.Parent, identifierStart.Unit);
+						var initalizerResult = ResolveExpression(n.Parent);
 					
 						var concreteNode = identifierStart.Unit.GetNodeAt<IdentifierExpression>(location);
 						// check if we're on the right side of an initializer expression
@@ -869,8 +866,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					if (n is MemberType) {
 						resolveResult = ResolveExpression(
-							((MemberType)n).Target,
-							identifierStart.Unit
+							((MemberType)n).Target
 						);
 						return CreateTypeAndNamespaceCompletionData(
 							location,
@@ -886,11 +882,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 							nodes.Add(n.Parent);
 						}
-						var astResolver = new CSharpAstResolver(
-							csResolver,
-							identifierStart.Unit,
-							CSharpParsedFile
-						);
+						var astResolver = CompletionContextProvider.GetResolver (csResolver, identifierStart.Unit);
 						astResolver.ApplyNavigator(new NodeListResolveVisitorNavigator(nodes));
 						try {
 							csResolver = astResolver.GetResolverStateBefore(n);
@@ -917,8 +909,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddContextCompletion(
 						contextList,
 						csResolver,
-						identifierStart.Node,
-						identifierStart.Unit
+						identifierStart.Node
 					);
 					return contextList.Result;
 //				if (stub.Parent is BlockStatement)
@@ -1111,7 +1102,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			Tuple<ResolveResult, CSharpResolver> rr;
 			if (xp != null) {
 				node = xp.Node;
-				rr = ResolveExpression(node, xp.Unit);
+				rr = ResolveExpression(node);
 				unit = xp.Unit;
 			} else {
 				unit = ParseStub("foo", false);
@@ -1120,7 +1111,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					location.Column + 2,
 					n => n is Expression || n is AstType
 				);
-				rr = ResolveExpression(node, unit);
+				rr = ResolveExpression(node);
 			}
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
@@ -1152,7 +1143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return wrapper.Result;
 				}
 			}
-			if (Unit != null && (node == null || node is TypeDeclaration)) {
+/*			if (Unit != null && (node == null || node is TypeDeclaration)) {
 				var constructor = Unit.GetNodeAt<ConstructorDeclaration>(
 					location.Line,
 					location.Column - 3
@@ -1162,7 +1153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddCustom("base");
 					return wrapper.Result;
 				}
-			}
+			}*/
 
 			var initializer = node != null ? node.Parent as ArrayInitializerExpression : null;
 			if (initializer != null) {
@@ -1190,12 +1181,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					csResolver = GetState();
 				}
 			}
-			AddContextCompletion(wrapper, csResolver, node, unit);
+			AddContextCompletion(wrapper, csResolver, node);
 			
 			return wrapper.Result;
 		}
 		
-		void AddContextCompletion(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, CompilationUnit unit)
+		void AddContextCompletion(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
 			if (state != null && !(node is AstType)) {
 				foreach (var variable in state.LocalVariables) {
@@ -1266,7 +1257,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Result.AddRange(factory.CreateCodeTemplateCompletionData());
 			
 			if (node != null && node.Role == Roles.Argument) {
-				var resolved = ResolveExpression(node.Parent, unit);
+				var resolved = ResolveExpression(node.Parent);
 				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
 				if (invokeResult != null) {
 					int argNum = 0;
@@ -1284,7 +1275,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			if (node is Expression) {
-				var astResolver = new CSharpAstResolver(state, unit, CSharpParsedFile);
+				var root = node;
+				while (root.Parent != null)
+					root = root.Parent;
+				var astResolver = CompletionContextProvider.GetResolver (state, root);
 				foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)node)) {
 					if (type.Kind == TypeKind.Enum) {
 						AddEnumMembers(wrapper, type, state);
@@ -1320,10 +1314,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddTypesAndNamespaces(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Func<IType, IType> typePred = null, Predicate<IMember> memberPred = null, Action<ICompletionData, IType> callback = null)
 		{
-			var lookup = new MemberLookup(
-				ctx.CurrentTypeDefinition,
-				Compilation.MainAssembly
-			);
+			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
@@ -1384,7 +1375,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddTypeParameter(p);
 				}
 			}
-			var scope = CSharpParsedFile.GetUsingScope(location).Resolve(Compilation);
+			var scope = ctx.CurrentUsingScope;
 			
 			for (var n = scope; n != null; n = n.Parent) {
 				foreach (var pair in n.UsingAliases) {
@@ -1523,7 +1514,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							parent = parent.Parent;
 						}
 						if (parent is VariableDeclarationStatement) {
-							var resolved = ResolveExpression(parent, isAsExpression.Unit);
+							var resolved = ResolveExpression(parent);
 							if (resolved != null) {
 								isAsType = resolved.Item1.Type;
 							}
@@ -1662,11 +1653,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var expressionOrVariableDeclaration = GetNewExpressionAt(j);
 					if (expressionOrVariableDeclaration == null)
 						return null;
-					var astResolver = new CSharpAstResolver(
-						GetState(),
-						expressionOrVariableDeclaration.Unit,
-						CSharpParsedFile
-					);
+					var astResolver = CompletionContextProvider.GetResolver(GetState(), expressionOrVariableDeclaration.Unit);
 					hintType = CreateFieldAction.GetValidTypes(
 						astResolver,
 						expressionOrVariableDeclaration.Node as Expression
@@ -1689,8 +1676,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddContextCompletion(
 						inList,
 						rr != null ? rr.Item2 : GetState(),
-						expr.Node,
-						Unit
+						expr.Node
 					);
 					return inList.Result;
 			}
@@ -2149,11 +2135,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var exprParent = resolvedNode.GetParent<Expression>();
 			var unit = exprParent != null ? exprParent.GetParent<CompilationUnit>() : null;
 
-			var astResolver = unit != null ? new CSharpAstResolver(
-				state,
-				unit,
-				CSharpParsedFile
-			) : null;
+			var astResolver = unit != null ? CompletionContextProvider.GetResolver(state, unit) : null;
 			IType hintType = exprParent != null && astResolver != null ? 
 				CreateFieldAction.GetValidTypes(astResolver, exprParent) .FirstOrDefault() :
 				null;
@@ -2238,7 +2220,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AutoCompleteEmptyMatch = false;
 				AutoSelect = false;
 			}
-			AddContextCompletion(result, state, invocation, unit);
+			AddContextCompletion(result, state, invocation);
 			
 			//			resolver.AddAccessibleCodeCompletionData (ExpressionContext.MethodBody, cdc);
 			//			if (addedDelegates.Count > 0) {
@@ -2372,7 +2354,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				// ADD Aliases
-				var scope = CSharpParsedFile.GetUsingScope(location).Resolve(Compilation);
+				var scope = ctx.CurrentUsingScope;
 			
 				for (var n = scope; n != null; n = n.Parent) {
 					foreach (var pair in n.UsingAliases) {
@@ -2752,7 +2734,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			sb.Append("a;");
 			AppendMissingClosingBrackets(sb, text, false);
 			var stream = new System.IO.StringReader(sb.ToString());
-			var completionUnit = parser.Parse(stream, CSharpParsedFile.FileName, 0);
+			var completionUnit = parser.Parse(stream, "a.cs", 0);
 			stream.Close();
 			var loc = document.GetLocation(offset);
 			
@@ -2775,7 +2757,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AppendMissingClosingBrackets(sb, text, false);
 			
 			var stream = new System.IO.StringReader(sb.ToString());
-			var completionUnit = parser.Parse(stream, CSharpParsedFile.FileName, 0);
+			var completionUnit = parser.Parse(stream, "a.cs", 0);
 			stream.Close();
 			var loc = document.GetLocation(offset);
 			
@@ -2786,7 +2768,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				sb.Append("a ()");
 				AppendMissingClosingBrackets(sb, text, false);
 				stream = new System.IO.StringReader(sb.ToString());
-				completionUnit = parser.Parse(stream, CSharpParsedFile.FileName, 0);
+				completionUnit = parser.Parse(stream, "a.cs", 0);
 				stream.Close();
 				loc = document.GetLocation(offset);
 				

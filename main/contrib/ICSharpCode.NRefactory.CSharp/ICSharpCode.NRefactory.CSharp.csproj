@@ -281,7 +281,6 @@
     <Compile Include="TypeSystem\TypeOrNamespaceReference.cs" />
     <Compile Include="TypeSystem\TypeSystemConvertVisitor.cs" />
     <Compile Include="TypeSystem\UsingScope.cs" />
-    <Compile Include="Completion\IMemberProvider.cs" />
     <Compile Include="Parser\mcs\module.cs" />
     <Compile Include="Parser\mcs\settings.cs" />
     <Compile Include="Analysis\ReachabilityAnalysis.cs" />
@@ -370,6 +369,7 @@
     <Compile Include="Refactoring\CodeActions\ImplementAbstractMembersAction.cs" />
     <Compile Include="Refactoring\CodeActions\ImplementInterfaceAction.cs" />
     <Compile Include="Refactoring\CodeActions\ImplementInterfaceExplicitAction.cs" />
+    <Compile Include="Completion\ICompletionContextProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
