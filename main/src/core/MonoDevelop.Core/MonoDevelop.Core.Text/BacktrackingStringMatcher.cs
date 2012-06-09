@@ -24,21 +24,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Text
 {
-	class BacktrackingStringMatcher: StringMatcher
+	class BacktrackingStringMatcher : StringMatcher
 	{
 		readonly string filterTextUpperCase;
-
 		readonly bool[] filterTextLowerCaseTable;
 		readonly bool[] filterIsNonLetter;
 		readonly bool[] filterIsDigit;
 		readonly string filterText;
-
 		int[] cachedResult;
 
 		public BacktrackingStringMatcher (string filterText)
@@ -111,6 +108,7 @@ namespace MonoDevelop.Core.Text
 		int GetMatchChar (string text, int i, int j, bool onlyWordStart)
 		{
 			char filterChar = filterTextUpperCase [i];
+			char ch;
 			// filter char is no letter -> next char should match it - see Bug 674512 - Space doesn't commit generics
 			if (filterIsNonLetter [i]) {
 				if (filterChar == text [j])
@@ -118,8 +116,9 @@ namespace MonoDevelop.Core.Text
 				return -1;
 			}
 			// letter case
-			bool textCharIsUpper = char.IsUpper (text [j]);
-			if (!onlyWordStart && filterChar == (textCharIsUpper ? text [j] : char.ToUpper (text [j]))) {
+			ch = text [j];
+			bool textCharIsUpper = char.IsUpper (ch);
+			if (!onlyWordStart && filterChar == (textCharIsUpper ? ch : char.ToUpper (ch))) {
 				// cases don't match. Filter is upper char & letter is low, now prefer the match that does the word skip.
 				if (!(textCharIsUpper || filterTextLowerCaseTable [i]) && j + 1 < text.Length) {
 					int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart);
@@ -134,8 +133,9 @@ namespace MonoDevelop.Core.Text
 			for (; j < text.Length; j++) {
 				// word start is either a upper case letter (FooBar) or a char that follows a non letter
 				// like foo:bar 
-				if ((char.IsUpper (text [j]) || filterCharIsDigit) && filterChar == text [j] || 
-					(filterChar == char.ToUpper (text [j]) && j > 0 && !char.IsLetterOrDigit (text [j - 1]))) {
+				ch = text [j];
+				if ((char.IsUpper (ch) || filterCharIsDigit) && filterChar == ch || 
+					(filterChar == char.ToUpper (ch) && j > 0 && !char.IsLetterOrDigit (text [j - 1]))) {
 					if (HasLetter (text, j))
 						return j;
 				}
@@ -179,7 +179,7 @@ namespace MonoDevelop.Core.Text
 			while (i < filterTextUpperCase.Length) {
 				if (j >= text.Length) {
 					if (i > 0) {
-						j = result[--i] + 1;
+						j = result [--i] + 1;
 						onlyWordStart = true;
 						continue;
 					}
@@ -189,13 +189,13 @@ namespace MonoDevelop.Core.Text
 				onlyWordStart = false;
 				if (j == -1) {
 					if (i > 0) {
-						j = result[--i] + 1;
+						j = result [--i] + 1;
 						onlyWordStart = true;
 						continue;
 					}
 					return null;
 				} else {
-					result[i] = j++;
+					result [i] = j++;
 				}
 				i++;
 			}
@@ -204,5 +204,180 @@ namespace MonoDevelop.Core.Text
 			return result;
 		}
 	}
+
+	class BacktrackingStringMatcher64 : StringMatcher
+	{
+		readonly string filterTextUpperCase;
+		readonly ulong filterTextLowerCaseTable;
+		readonly ulong filterIsNonLetter;
+		readonly ulong filterIsDigit;
+		readonly string filterText;
+		int[] cachedResult;
+
+		public BacktrackingStringMatcher64 (string filterText)
+		{
+			this.filterText = filterText ?? "";
+			if (filterText != null) {
+				for (int i = 0; i < filterText.Length && i < 64; i++) {
+					filterTextLowerCaseTable |= char.IsLower (filterText [i]) ? 1ul << i : 0;
+					filterIsNonLetter |= !char.IsLetterOrDigit (filterText [i]) ? 1ul << i : 0;
+					filterIsDigit |= char.IsDigit (filterText [i]) ? 1ul << i : 0;
+				}
+					
+				filterTextUpperCase = filterText.ToUpper ();
+			} else {
+				filterTextUpperCase = "";
+			}
+		}
+
+		public override bool CalcMatchRank (string name, out int matchRank)
+		{
+			if (filterTextUpperCase.Length == 0) {
+				matchRank = int.MinValue;
+				return true;
+			}
+			var lane = GetMatch (name);
+			if (lane != null) {
+				int capitalMatches = 0;
+				int nonCapitalMatches = 0;
+				int matching = 0;
+				int fragments = 0;
+				int lastIndex = -1;
+				for (int n = 0; n < lane.Length; n++) {
+					var ch = filterText [n];
+					var i = lane [n];
+					bool newFragment = i > lastIndex + 1;
+					if (newFragment)
+						fragments++;
+					lastIndex = i;
+					if (ch == name [i]) {
+						matching += 1000 / (1 + fragments);
+						if (char.IsUpper (ch))
+							capitalMatches += Math.Max (1, 10000 - 1000 * fragments);
+					} else if (newFragment || i == 0) {
+						matching += 900 / (1 + fragments);
+						if (char.IsUpper (ch))
+							capitalMatches += Math.Max (1, 1000 - 100 * fragments);
+					} else {
+						var x = 100 * (i + 1) / (1 + fragments);
+						nonCapitalMatches += x;
+					}
+				}
+				matchRank = capitalMatches + matching - fragments + nonCapitalMatches;
+				return true;
+			}
+			matchRank = int.MinValue;
+			return false;
+		}
+
+		public override bool IsMatch (string text)
+		{
+			int[] match = GetMatch (text);
+			// no need to clear the cache
+			cachedResult = cachedResult ?? match;
+			return match != null;
+		}
+
+		int GetMatchChar (string text, int i, int j, bool onlyWordStart)
+		{
+			char filterChar = filterTextUpperCase [i];
+			char ch;
+			// filter char is no letter -> next char should match it - see Bug 674512 - Space doesn't commit generics
+			var flag = 1ul << i;
+			if ((filterIsNonLetter & flag) != 0) {
+				if (filterChar == text [j])
+					return j;
+				return -1;
+			}
+			// letter case
+			ch = text [j];
+			bool textCharIsUpper = char.IsUpper (ch);
+			if (!onlyWordStart && filterChar == (textCharIsUpper ? ch : char.ToUpper (ch))) {
+				// cases don't match. Filter is upper char & letter is low, now prefer the match that does the word skip.
+				if (!(textCharIsUpper || (filterTextLowerCaseTable & flag) != 0) && j + 1 < text.Length) {
+					int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart);
+					if (possibleBetterResult >= 0)
+						return possibleBetterResult;
+				}
+				return j;
+			}
+			bool filterCharIsDigit = (filterIsDigit & flag) != 0;
+			// no match, try to continue match at the next word start
+			j++;
+			for (; j < text.Length; j++) {
+				// word start is either a upper case letter (FooBar) or a char that follows a non letter
+				// like foo:bar 
+				ch = text [j];
+				if ((char.IsUpper (ch) || filterCharIsDigit) && filterChar == ch || 
+					(filterChar == char.ToUpper (ch) && j > 0 && !char.IsLetterOrDigit (text [j - 1]))) {
+					if (HasLetter (text, j))
+						return j;
+				}
+			}
+			return -1;
+		}
+
+		static bool HasLetter (string text, int i)
+		{
+			for (int j = 0; j < i; j++) {
+				var ch = text [j];
+				if (ch == '_' || char.IsLetterOrDigit (ch)) 
+					return true;
+			}
+			return false;
+		}
+			
+		/// <summary>
+		/// Gets the match indices.
+		/// </summary>
+		/// <returns>
+		/// The indices in the text which are matched by our filter.
+		/// </returns>
+		/// <param name='text'>
+		/// The text to match.
+		/// </param>
+		public override int[] GetMatch (string text)
+		{
+			if (string.IsNullOrEmpty (filterTextUpperCase))
+				return new int[0];
+			if (string.IsNullOrEmpty (text))
+				return null;
+			int[] result;
+			if (cachedResult != null) {
+				result = cachedResult;
+			} else {
+				cachedResult = result = new int[filterTextUpperCase.Length];
+			}
+			int j = 0;
+			int i = 0;
+			bool onlyWordStart = false;
+			while (i < filterTextUpperCase.Length) {
+				if (j >= text.Length) {
+					if (i > 0) {
+						j = result [--i] + 1;
+						onlyWordStart = true;
+						continue;
+					}
+					return null;
+				}
+				j = GetMatchChar (text, i, j, onlyWordStart);
+				onlyWordStart = false;
+				if (j == -1) {
+					if (i > 0) {
+						j = result [--i] + 1;
+						onlyWordStart = true;
+						continue;
+					}
+					return null;
+				} else {
+					result [i] = j++;
+				}
+				i++;
+			}
+			cachedResult = null;
+			// clear cache
+			return result;
+		}
+	}		
 }
 
