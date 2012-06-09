@@ -47,20 +47,59 @@ namespace MonoDevelop.Core
 			CompareMatch(match, "****------**-----");
 		}
 
+		[Test()]
+		public void TestGetMatchWithUpperCaseWord ()
+		{
+			var matcher = StringMatcher.GetMatcher ("myhtmser", true);
+			var match = matcher.GetMatch("MyFunnyHTMLService");
+			CompareMatch(match,          "**-----***-***----");
+		}
+
+		[Ignore("Currently fails")]
+		[Test()]
+		public void TestGetMatchWithUpperCaseWordCase2 ()
+		{
+			var matcher = StringMatcher.GetMatcher ("myhmser", true);
+			var match = matcher.GetMatch("MyFunnyHTMLMasterService");
+			CompareMatch(match,          "**-----*---*-----***----");
+		}
+
+		[Test()]
+		public void TestGetMatchWithunderscoreWord ()
+		{
+			var matcher = StringMatcher.GetMatcher ("myhtmser", true);
+			var match = matcher.GetMatch("my_html_Service");
+			CompareMatch(match,          "**-***--***----");
+		}
+		static string GenerateString(int[] match, string str)
+		{
+			var result = new char[str.Length];
+			for (int i = 0; i < result.Length;i++) {
+				result[i] = match.Contains (i) ? '*' : '-';
+			}
+			return new string (result);
+		}
 		static void CompareMatch (int[] match, string str)
 		{
 			for (int i = 0; i < str.Length;i++){
 				if (str[i] == '*' && !match.Any(m => m == i)){
+					Console.WriteLine (str);
+					Console.WriteLine (GenerateString (match, str));
 					Assert.Fail ("Match "+ i +" not found match.");
 				}
 				if (str[i] == '-' && match.Any(m => m == i)){
+					Console.WriteLine (str);
+					Console.WriteLine (GenerateString (match, str));
 					Assert.Fail ("Match "+ i +" wrongly found.");
 				}
 			}
 
 			foreach (var i in match){
-				if (str[i] != '*')
+				if (str[i] != '*') {
+					Console.WriteLine (str);
+					Console.WriteLine (GenerateString (match, str));
 					Assert.Fail ("Match "+ i +" doesn't match.");
+				}
 			}
 		}
 	}
