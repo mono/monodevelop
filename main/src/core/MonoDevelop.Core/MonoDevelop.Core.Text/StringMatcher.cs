@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Text
 		public static StringMatcher GetMatcher (string filter, bool matchWordStartsOnly)
 		{
 			if (matchWordStartsOnly)
-				return filter.Length < 65 ? (StringMatcher)new BacktrackingStringMatcher64 (filter) : new BacktrackingStringMatcher (filter);
+				return new BacktrackingStringMatcher (filter);
 			else
 				return new LaneStringMatcher (filter);
 		}
