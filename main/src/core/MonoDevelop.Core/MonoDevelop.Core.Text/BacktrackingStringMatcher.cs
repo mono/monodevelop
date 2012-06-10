@@ -150,7 +150,7 @@ namespace MonoDevelop.Core.Text
 					lastWasLower = false;
 					lastWasUpper = true;
 				} else if (category == System.Globalization.UnicodeCategory.ConnectorPunctuation) {
-					if (filterChar == char.ToUpper (text [j + 1]))
+					if (j + 1 < text.Length && filterChar == char.ToUpper (text [j + 1]))
 						return j + 1;
 					lastWasLower = lastWasUpper = false;
 				} else {
