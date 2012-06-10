@@ -2974,7 +2974,7 @@ namespace Mono.CSharp {
 							"An object reference is required to access non-static member `{0}'",
 							GetSignatureForError ());
 
-					InstanceExpression = new CompilerGeneratedThis (type, loc).Resolve (rc);
+					InstanceExpression = new CompilerGeneratedThis (rc.CurrentType, loc).Resolve (rc);
 					return false;
 				}
 
@@ -3452,6 +3452,15 @@ namespace Mono.CSharp {
 
 		public override MemberExpr ResolveMemberAccess (ResolveContext ec, Expression left, SimpleName original)
 		{
+			var fe = left as FieldExpr;
+			if (fe != null) {
+				//
+				// Using method-group on struct fields makes the struct assigned. I am not sure
+				// why but that's what .net does
+				//
+				fe.Spec.MemberDefinition.SetIsAssigned ();
+			}
+
 			simple_name = original;
 			return base.ResolveMemberAccess (ec, left, original);
 		}

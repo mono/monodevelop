@@ -1498,6 +1498,9 @@ namespace Mono.CSharp {
 			if (ec.HasSet (ResolveContext.Options.ExpressionTreeConversion))
 				flags |= ResolveContext.Options.ExpressionTreeConversion;
 
+			if (ec.HasSet (ResolveContext.Options.BaseInitializer))
+				flags |= ResolveContext.Options.BaseInitializer;
+
 			aec.Set (flags);
 
 			var errors = ec.Report.Errors;

@@ -33,6 +33,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using System.Linq;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory;
+using System.Threading;
 
 namespace MonoDevelop.CodeActions
 {
@@ -117,21 +118,28 @@ namespace MonoDevelop.CodeActions
 
 		public void CancelQuickFixTimer ()
 		{
+			if (quickFixCancellationTokenSource != null)
+				quickFixCancellationTokenSource.Cancel ();
 			if (quickFixTimeout != 0) {
 				GLib.Source.Remove (quickFixTimeout);
 				quickFixTimeout = 0;
 			}
 		}
 
+		CancellationTokenSource quickFixCancellationTokenSource;
+
 		public override void CursorPositionChanged ()
 		{
 			CancelQuickFixTimer ();
-
+			quickFixCancellationTokenSource = new CancellationTokenSource ();
 			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null) {
+				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Document.Editor.Caret.Location;
-					RefactoringService.QueueQuickFixAnalysis (Document, loc, delegate(List<CodeAction> fixes) {
+					RefactoringService.QueueQuickFixAnalysis (Document, loc, token, delegate(List<CodeAction> fixes) {
 						Application.Invoke (delegate {
+							if (token.IsCancellationRequested)
+								return;
 							CreateWidget (fixes, loc);
 							quickFixTimeout = 0;
 						});

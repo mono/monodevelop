@@ -1432,7 +1432,7 @@ namespace Mono.CSharp {
 				base_ctor = ConstructorLookup (ec, type, ref argument_list, loc);
 			}
 	
-			if (base_ctor.MemberDefinition == caller_builder.Spec.MemberDefinition) {
+			if (base_ctor != null && base_ctor.MemberDefinition == caller_builder.Spec.MemberDefinition) {
 				ec.Report.Error (516, loc, "Constructor `{0}' cannot call itself",
 					caller_builder.GetSignatureForError ());
 			}
@@ -1964,7 +1964,7 @@ namespace Mono.CSharp {
 						//
 						if ((flags & MethodAttributes.MemberAccessMask) != MethodAttributes.Public) {
 							implementing = null;
-						} else if (optional && (container.Interfaces == null || Array.IndexOf (container.Interfaces, implementing.DeclaringType) < 0)) {
+						} else if (optional && (container.Interfaces == null || !container.Definition.Interfaces.Contains (implementing.DeclaringType))) {
 							//
 							// We are not implementing interface when base class already implemented it
 							//

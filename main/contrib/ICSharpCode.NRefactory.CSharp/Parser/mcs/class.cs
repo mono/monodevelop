@@ -351,7 +351,8 @@ namespace Mono.CSharp
 			if (containers != null)
 				containers.Remove (cont);
 
-			defined_names.Remove (cont.Basename);
+			var tc = Parent == Module ? Module : this;
+			tc.defined_names.Remove (cont.Basename);
 		}
 
 		public virtual void VerifyMembers ()
@@ -1928,7 +1929,7 @@ namespace Mono.CSharp
 						continue;
 
 					//
-					// Don't be pendatic over serializable attributes
+					// Don't be pedantic when type requires specific layout
 					//
 					if (f.OptAttributes != null || PartialContainer.HasStructLayout)
 						continue;
@@ -1940,10 +1941,6 @@ namespace Mono.CSharp
 					} else if (TypeSpec.IsReferenceType (f.MemberType)) {
 						value = "null";
 					} else {
-						// Ignore this warning for struct value fields (they are always initialized)
-						if (f.MemberType.IsStruct)
-							continue;
-
 						value = null;
 					}
 

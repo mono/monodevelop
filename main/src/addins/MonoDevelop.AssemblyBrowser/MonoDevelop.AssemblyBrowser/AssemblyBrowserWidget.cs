@@ -554,6 +554,7 @@ namespace MonoDevelop.AssemblyBrowser
 			bool searchType = helpUrl.StartsWith ("T:");
 			do {
 				if (IsMatch (nav, helpUrl, searchType)) {
+					inspectEditor.ClearSelection ();
 					nav.ExpandToNode ();
 					nav.Selected = nav.Expanded = true;
 					return nav;
