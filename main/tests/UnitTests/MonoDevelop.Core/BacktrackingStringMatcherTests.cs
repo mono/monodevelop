@@ -55,7 +55,6 @@ namespace MonoDevelop.Core
 			CompareMatch(match,          "**-----***-***----");
 		}
 
-		[Ignore("Currently fails")]
 		[Test()]
 		public void TestGetMatchWithUpperCaseWordCase2 ()
 		{
@@ -71,6 +70,23 @@ namespace MonoDevelop.Core
 			var match = matcher.GetMatch("my_html_Service");
 			CompareMatch(match,          "**-***--***----");
 		}
+
+		[Test()]
+		public void TestDigit ()
+		{
+			var matcher = StringMatcher.GetMatcher ("my12", true);
+			var match = matcher.GetMatch("my_html_Service_123");
+			CompareMatch(match,          "**--------------**-");
+		}
+
+		[Test()]
+		public void TestPunctuation ()
+		{
+			var matcher = StringMatcher.GetMatcher ("foo:b", true);
+			var match = matcher.GetMatch("foo:bar");
+			CompareMatch(match,          "*****--");
+		}
+
 		static string GenerateString(int[] match, string str)
 		{
 			var result = new char[str.Length];
