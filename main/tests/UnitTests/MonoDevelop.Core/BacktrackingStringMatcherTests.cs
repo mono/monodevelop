@@ -87,6 +87,14 @@ namespace MonoDevelop.Core
 			CompareMatch(match,          "*****--");
 		}
 
+		[Test()]
+		public void TestUnderscoreAtEnd ()
+		{
+			var matcher = StringMatcher.GetMatcher ("FB", true);
+			var match = matcher.GetMatch("foo_");
+			Assert.AreEqual (null, match);
+		}
+
 		static string GenerateString(int[] match, string str)
 		{
 			var result = new char[str.Length];
