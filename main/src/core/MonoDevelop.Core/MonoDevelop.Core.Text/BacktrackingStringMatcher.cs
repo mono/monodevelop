@@ -176,7 +176,7 @@ namespace MonoDevelop.Core.Text
 		{
 			if (string.IsNullOrEmpty (filterTextUpperCase))
 				return new int[0];
-			if (string.IsNullOrEmpty (text))
+			if (string.IsNullOrEmpty (text) || filterText.Length  > text.Length)
 				return null;
 			int[] result;
 			if (cachedResult != null) {
