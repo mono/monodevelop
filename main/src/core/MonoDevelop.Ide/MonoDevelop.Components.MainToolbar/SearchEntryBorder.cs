@@ -30,6 +30,7 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	public class SearchEntryBorder : HBox
 	{
+		public const int Height = 22;
 		Cairo.Color borderColor;
 		Cairo.Color borderColor2;
 
@@ -56,32 +57,31 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			const int height = 22;
 
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				context.LineWidth = 1;
 				RoundBorder (context, 
 				             4 + Allocation.X + 0.5,  
-				             Allocation.Y + 0.5 + (Allocation.Height - height) / 2, 
-				             Allocation.Width - height, 
-				             height);
+				             Allocation.Y + 0.5 + (Allocation.Height - Height) / 2, 
+				             Allocation.Width - Height, 
+				             Height);
 				context.Color = new Cairo.Color (1, 1, 1);
 				context.Fill ();
 
 
 				RoundBorder (context, 
 				             4 + Allocation.X + 0.5,  
-				             1 + Allocation.Y + 0.5 + (Allocation.Height - height) / 2, 
-				             Allocation.Width - height, 
-				             height);
+				             1 + Allocation.Y + 0.5 + (Allocation.Height - Height) / 2, 
+				             Allocation.Width - Height, 
+				             Height);
 				context.Color = borderColor2;
 				context.Stroke ();
 
 				RoundBorder (context, 
 				             4 + Allocation.X + 0.5,  
-				             Allocation.Y + 0.5 + (Allocation.Height - height) / 2, 
-				             Allocation.Width - height, 
-				             height);
+				             Allocation.Y + 0.5 + (Allocation.Height - Height) / 2, 
+				             Allocation.Width - Height, 
+				             Height);
 				context.LineWidth = 1;
 				context.Color = borderColor;
 				context.Stroke ();

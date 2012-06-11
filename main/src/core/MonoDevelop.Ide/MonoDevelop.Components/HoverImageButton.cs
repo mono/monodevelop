@@ -28,6 +28,7 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
 {
@@ -185,8 +186,7 @@ namespace MonoDevelop.Components
 
             for(int i = 0; i < icon_names.Length; i++) {
                 try {
-                    normal_pixbuf = RenderIcon(icon_names[i], icon_size, null)
-                        ?? theme.LoadIcon(icon_names[i], width, 0);
+					normal_pixbuf = ImageService.GetPixbuf (icon_names[i], icon_size);
                     active_pixbuf = ColorShiftPixbuf(normal_pixbuf, 30);
                     break;
                 } catch {

@@ -187,7 +187,7 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 
 			var searchEntryComboVBox = new SearchEntryBorder ();
-			searchEntryComboVBox.PackStart (this.matchEntry, true, false, 11);
+			searchEntryComboVBox.PackStart (this.matchEntry, true, false, SearchEntryBorder.Height / 2);
 			AddWidget (searchEntryComboVBox);
 
 			Add (contentBox);
