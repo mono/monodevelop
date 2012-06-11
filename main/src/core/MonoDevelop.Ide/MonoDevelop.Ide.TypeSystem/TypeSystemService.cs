@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				foreach (var file in e) {
 					// Open documents are handled by the Document class itself.
-					if (IdeApp.Workbench.GetDocument (file.FileName) != null)
+					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
 					//
 					lock (projectWrapperUpdateLock) {
@@ -181,6 +181,8 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (projectFile != null)
 								QueueParseJob (wrapper, new [] { projectFile });
 						}
+						if (cachedAssemblyContents.ContainsKey (file.FileName))
+							CheckModifiedFile (cachedAssemblyContents[file.FileName]);
 					}
 				}
 			};
@@ -1449,7 +1451,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
-			
+
 			public LazyAssemblyLoader (string fileName, string cache)
 			{
 				this.fileName = fileName;
@@ -1536,8 +1538,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		static AssemblyContext LoadAssemblyContext (string fileName)
 		{
 			AssemblyContext loadedContext;
-			if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext))
+			if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext)) {
+				CheckModifiedFile (loadedContext);
 				return loadedContext;
+			}
 			if (!File.Exists (fileName))
 				return null;
 			string cache = GetCacheDirectory (fileName);
@@ -1546,6 +1550,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "assembly.descriptor"));
 				if (deserialized != null) {
 					deserialized.CtxLoader = new LazyAssemblyLoader (fileName, cache);
+					CheckModifiedFile (deserialized);
 					cachedAssemblyContents [fileName] = deserialized;
 					return deserialized;
 				} else {
@@ -1884,8 +1889,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					string cache = GetCacheDirectory (context.FileName);
 					context.LastWriteTimeUtc = writeTime;
 					if (cache != null) {
-						SerializeObject (Path.Combine (cache, "assembly.descriptor"), context);
 						context.CtxLoader = new LazyAssemblyLoader (context.FileName, cache);
+						SerializeObject (Path.Combine (cache, "assembly.descriptor"), context);
 						try {
 							// File is reloaded by the lazy loader
 							File.Delete (Path.Combine (cache, "assembly.data"));

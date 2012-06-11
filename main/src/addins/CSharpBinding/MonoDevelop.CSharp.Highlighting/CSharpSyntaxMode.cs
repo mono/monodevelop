@@ -962,7 +962,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 				int textOffset = i - StartOffset;
 
-				if (textOffset < CurText.Length && CurText [textOffset] == '#' && IsFirstNonWsChar (textOffset)) {
+				if (textOffset < CurText.Length && CurRule.Name != "Comment" && CurRule.Name != "String" && CurText [textOffset] == '#' && IsFirstNonWsChar (textOffset)) {
 
 					if (CurText.IsAt (textOffset, "#define")) {
 						int length = CurText.Length - textOffset;

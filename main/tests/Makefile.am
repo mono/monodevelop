@@ -1,28 +1,50 @@
 include $(top_srcdir)/Makefile.include
 
 MONO=mono
-HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe
+HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe -domain=multiple
 RUN_TEST=$(MD_LAUNCH_SETUP) $(MONO) $(HARNESS)
 TEST_DIR=$(top_builddir)/build/tests
+EXTERNAL=$(top_builddir)/external
+
+TEST_PROJECTS= \
+	MacPlatform.Tests/MacPlatform.Tests.csproj \
+	MonoDevelop.MacDev.Tests/MonoDevelop.MacDev.Tests.csproj \
+	UnitTests/UnitTests.csproj \
+	$(top_srcdir)/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests/MonoDevelop.Debugger.Tests.csproj \
+	$(EXTERNAL)/ngit/NGit.Test/NGit.Test.csproj
+
+TEST_ASSEMBLIES= \
+	$(TEST_DIR)/MacPlatform.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.MacDev.Tests.dll \
+	$(TEST_DIR)/UnitTests.dll \
+	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
+	$(EXTERNAL)/ngit/bin/NGit.Test.dll
 
 if ENABLE_TESTS
 
 all:
-	xbuild MacPlatform.Tests/MacPlatform.Tests.csproj
-	xbuild MonoDevelop.MacDev.Tests/MonoDevelop.MacDev.Tests.csproj
-	xbuild UnitTests/UnitTests.csproj
+	@for csproj in $(TEST_PROJECTS); do \
+		xbuild $$csproj; \
+	done
+
+clean:
+	@for csproj in $(TEST_PROJECTS); do \
+		xbuild /t:Clean $$csproj; \
+	done
 
 test:
 	@if test -n "$(assembly)"; then \
-		if test $(TEST_DIR)/$(assembly); then \
-			$(RUN_TEST) $(TEST_DIR)/$(assembly); \
-		fi; \
+		for asm in $(TEST_ASSEMBLIES); do \
+			if test `basename $$asm` = $(assembly); then \
+				$(RUN_TEST) $$asm || exit $?; \
+			fi; \
+		done \
 	fi
 
 	@if ! test -n "$(assembly)"; then \
-		$(RUN_TEST) $(TEST_DIR)/MacPlatform.Tests.dll && \
-		$(RUN_TEST) $(TEST_DIR)/MonoDevelop.MacDev.Tests.dll && \
-		$(RUN_TEST) $(TEST_DIR)/UnitTests.dll; \
+		for asm in $(TEST_ASSEMBLIES); do \
+			$(RUN_TEST) $$asm; \
+		done \
 	fi
 
 EXTRA_DIST = \

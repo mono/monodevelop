@@ -982,7 +982,6 @@ namespace Mono.TextEditor
 			if (newSegments == null) {
 				return;
 			}
-			Console.WriteLine ("startTask={0}, useApplicationInvoke={1}", startTask, useApplicationInvoke);
 			
 			InterruptFoldWorker ();
 			bool update;

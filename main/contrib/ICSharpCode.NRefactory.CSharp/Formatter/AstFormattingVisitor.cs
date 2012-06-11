@@ -1822,7 +1822,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 						ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
 					} else {
-						bool sameLine = rParToken.GetPrevNode().StartLocation.Line == rParToken.StartLocation.Line;
+						bool sameLine = rParToken.GetPrevNode().EndLocation.Line == rParToken.StartLocation.Line;
 						if (sameLine) {
 							ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
 						} else {

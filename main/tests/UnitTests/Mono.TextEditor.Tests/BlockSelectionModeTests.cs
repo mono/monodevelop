@@ -44,7 +44,7 @@ namespace Mono.TextEditor.Tests
 1234567890");
 			data.MainSelection.SelectionMode = SelectionMode.Block;
 			data.InsertAtCaret ("hello");
-			Console.WriteLine (data.Text);
+
 			Check (data, @"1234567890
 1234hello<-567890
 1234hello567890

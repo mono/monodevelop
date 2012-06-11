@@ -115,6 +115,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override void InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 		{
+			if (parentType == null)
+				return;
 			var part = parentType.Parts.FirstOrDefault ();
 			if (part == null)
 				return;

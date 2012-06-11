@@ -263,8 +263,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			node.AcceptVisitor (visitor);
 			string text = stringWriter.ToString().TrimEnd();
 			
-			if (node is FieldDeclaration)
-				text += Options.EolMarker;
 			return new NodeOutput(text, formatter.NewSegments);
 		}
 		
