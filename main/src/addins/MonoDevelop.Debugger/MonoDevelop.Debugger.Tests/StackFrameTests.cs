@@ -30,7 +30,7 @@ using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
 {
-	public class StackFrameTests: DebugTests
+	public abstract class StackFrameTests: DebugTests
 	{
 		DebuggerSession ds;
 		StackFrame frame;
