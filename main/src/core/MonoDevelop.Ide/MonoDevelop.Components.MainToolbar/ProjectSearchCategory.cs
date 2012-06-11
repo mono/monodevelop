@@ -132,33 +132,38 @@ namespace MonoDevelop.Components.MainToolbar
 		public override Task<ISearchDataSource> GetResults (string searchPattern, CancellationToken token)
 		{
 			return Task.Factory.StartNew (delegate {
-				WorkerResult newResult = new WorkerResult (widget);
-				newResult.pattern = searchPattern;
-				newResult.IncludeFiles = true;
-				newResult.IncludeTypes = true;
-				newResult.IncludeMembers = true;
-				var firstType = types.FirstOrDefault ();
-				newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
-				
-				string toMatch = searchPattern;
-				int i = toMatch.IndexOf (':');
-				if (i != -1) {
-					toMatch = toMatch.Substring (0, i);
-					newResult.isGotoFilePattern = true;
-				}
-				newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
-//				newResult.FullSearch = searchPattern.IndexOf ('.') > 0;
-				var now = DateTime.Now;
-				foreach (SearchResult result in AllResults (lastResult, newResult, token)) {
-					newResult.results.AddResult (result);
-				}
-				if (token.IsCancellationRequested) {
+				try {
+					WorkerResult newResult = new WorkerResult (widget);
+					newResult.pattern = searchPattern;
+					newResult.IncludeFiles = true;
+					newResult.IncludeTypes = true;
+					newResult.IncludeMembers = true;
+					var firstType = types.FirstOrDefault ();
+					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
+					
+					string toMatch = searchPattern;
+					int i = toMatch.IndexOf (':');
+					if (i != -1) {
+						toMatch = toMatch.Substring (0, i);
+						newResult.isGotoFilePattern = true;
+					}
+					newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
+	//				newResult.FullSearch = searchPattern.IndexOf ('.') > 0;
+					var now = DateTime.Now;
+					foreach (SearchResult result in AllResults (lastResult, newResult, token)) {
+						newResult.results.AddResult (result);
+					}
+					if (token.IsCancellationRequested) {
+						return null;
+					}
+					now = DateTime.Now;
+					newResult.results.Sort (new DataItemComparer ());
+					lastResult = newResult;
+					return (ISearchDataSource)newResult.results;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while retrieving search results.", e);
 					return null;
 				}
-				now = DateTime.Now;
-				newResult.results.Sort (new DataItemComparer ());
-				lastResult = newResult;
-				return (ISearchDataSource)newResult.results;
 			}, token);
 		}
 
