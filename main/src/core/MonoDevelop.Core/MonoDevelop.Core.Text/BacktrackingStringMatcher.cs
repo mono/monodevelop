@@ -149,15 +149,12 @@ namespace MonoDevelop.Core.Text
 					}
 					lastWasLower = false;
 					lastWasUpper = true;
-				} else if (category == System.Globalization.UnicodeCategory.ConnectorPunctuation) {
-					if (j + 1 < text.Length && filterChar == char.ToUpper (text [j + 1]))
-						return j + 1;
-					lastWasLower = lastWasUpper = false;
 				} else {
 					if (filterChar == ch)
 						return j;
-					lastWasLower = false;
-					lastWasUpper = false;
+					if (j + 1 < text.Length && filterChar == char.ToUpper (text [j + 1]))
+						return j + 1;
+					lastWasLower = lastWasUpper = false;
 				} 
 			}
 			return -1;
