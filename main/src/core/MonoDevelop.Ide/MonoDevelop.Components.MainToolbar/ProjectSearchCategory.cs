@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,17 +41,17 @@ using System.Linq;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-
 	public class ProjectSearchCategory : SearchCategory
 	{
 		Widget widget;
+
 		public ProjectSearchCategory (Widget widget) : base (GettextCatalog.GetString("Solution"))
 		{
 			this.widget = widget;
 			this.lastResult = new WorkerResult (widget);
 		}
 
-	/*	IEnumerable<ProjectFile> files {
+		/*	IEnumerable<ProjectFile> files {
 			get {
 				HashSet<ProjectFile> list = new HashSet<ProjectFile> ();
 				foreach (Document doc in IdeApp.Workbench.Documents) {
@@ -75,6 +74,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 		*/
 		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
+
 		IEnumerable<IMember> members {
 			get {
 				getMembersTimer.BeginTiming ();
@@ -94,6 +94,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
+
 		IEnumerable<ITypeDefinition> types {
 			get {
 				getTypesTimer.BeginTiming ();
@@ -142,11 +143,11 @@ namespace MonoDevelop.Components.MainToolbar
 				string toMatch = searchPattern;
 				int i = toMatch.IndexOf (':');
 				if (i != -1) {
-					toMatch = toMatch.Substring (0,i);
+					toMatch = toMatch.Substring (0, i);
 					newResult.isGotoFilePattern = true;
 				}
 				newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
-				newResult.FullSearch = true;
+//				newResult.FullSearch = searchPattern.IndexOf ('.') > 0;
 				var now = DateTime.Now;
 				foreach (SearchResult result in AllResults (lastResult, newResult, token)) {
 					newResult.results.AddResult (result);
@@ -212,22 +213,17 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 		
-		class WorkerResult 
+		class WorkerResult
 		{
 			public List<ProjectFile> filteredFiles = null;
 			public List<ITypeDefinition> filteredTypes = null;
-			public List<IMember> filteredMembers  = null;
-			
+			public List<IMember> filteredMembers = null;
 			public string pattern = null;
 			public bool isGotoFilePattern;
 			public ResultsDataSource results;
-			
 			public bool FullSearch;
-			
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
-			
 			public Ambience ambience;
-			
 			public StringMatcher matcher = null;
 			
 			public WorkerResult (Widget widget)
@@ -270,15 +266,16 @@ namespace MonoDevelop.Components.MainToolbar
 				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
 				if (MatchName (memberName, out rank))
 					return new MemberSearchResult (pattern, memberName, rank, member, false) { Ambience = ambience };
-				if (!FullSearch)
+/*				if (!FullSearch)
 					return null;
 				memberName = useDeclaringTypeName ? member.DeclaringType.FullName : member.FullName;
 				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (pattern, memberName, rank, member, true) { Ambience = ambience };
+					return new MemberSearchResult (pattern, memberName, rank, member, true) { Ambience = ambience };*/
 				return null;
 			}
 			
 			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
+
 			bool MatchName (string name, out int matchRank)
 			{
 				if (name == null) {
@@ -288,14 +285,13 @@ namespace MonoDevelop.Components.MainToolbar
 				MatchResult savedMatch;
 				if (!savedMatches.TryGetValue (name, out savedMatch)) {
 					bool doesMatch = matcher.CalcMatchRank (name, out matchRank);
-					savedMatches[name] = savedMatch = new MatchResult (doesMatch, matchRank);
+					savedMatches [name] = savedMatch = new MatchResult (doesMatch, matchRank);
 				}
 				
 				matchRank = savedMatch.Rank;
 				return savedMatch.Match;
 			}
 		}
-
 
 		class DataItemComparer : IComparer<SearchResult>
 		{
@@ -310,7 +306,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		struct MatchResult 
+		struct MatchResult
 		{
 			public bool Match;
 			public int Rank;
