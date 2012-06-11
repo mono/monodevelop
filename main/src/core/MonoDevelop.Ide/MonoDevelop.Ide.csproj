@@ -1622,6 +1622,7 @@
     <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGridTable.cs" />
     <Compile Include="MonoDevelop.Components\CompactDialog.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockVisualStyle.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\SearchEntryBorder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -215,6 +215,7 @@ FILES =  \
 	MonoDevelop.Components.MainToolbar/ProjectSearchCategory.cs \
 	MonoDevelop.Components.MainToolbar/RoundButton.cs \
 	MonoDevelop.Components.MainToolbar/SearchCategory.cs \
+	MonoDevelop.Components.MainToolbar/SearchEntryBorder.cs \
 	MonoDevelop.Components.MainToolbar/SearchPopupWidget.cs \
 	MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs \
 	MonoDevelop.Components.MainToolbar/StatusArea.cs \

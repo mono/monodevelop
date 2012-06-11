@@ -55,7 +55,7 @@ namespace MonoDevelop.Components
         public HoverImageButton()
         {
             CanFocus = true;
-
+			VisibleWindow = false;
             image = new Image();
             image.Show();
             Add(image);

@@ -163,11 +163,12 @@ namespace MonoDevelop.Components.MainToolbar
 			contentBox.PackStart (statusAreaVBox, true, true, 0);
 
 			matchEntry = new SearchEntry ();
-//			matchEntry.VisibleWindow = false;
+			matchEntry.VisibleWindow = false;
 			matchEntry.EmptyMessage = GettextCatalog.GetString ("Press Control + , for search.");
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
 			matchEntry.IsCheckMenu = true;
+			matchEntry.Entry.ModifyBase (StateType.Normal, Style.White);
 			matchEntry.SetSizeRequest (240, 26);
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
 			matchEntry.SizeAllocated += (o, args) => PositionPopup ();
@@ -185,8 +186,8 @@ namespace MonoDevelop.Components.MainToolbar
 					PositionPopup ();
 			};
 
-			var searchEntryComboVBox = new VBox ();
-			searchEntryComboVBox.PackStart (this.matchEntry, true, false, 0);
+			var searchEntryComboVBox = new SearchEntryBorder ();
+			searchEntryComboVBox.PackStart (this.matchEntry, true, false, 11);
 			AddWidget (searchEntryComboVBox);
 
 			Add (contentBox);
@@ -223,7 +224,7 @@ namespace MonoDevelop.Components.MainToolbar
 			int ox, oy;
 			matchEntry.GdkWindow.GetOrigin (out ox, out oy);
 			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
-			popup.Move (Math.Max (geometry.Left, ox /*+ matchEntry.Allocation.X */+ matchEntry.Allocation.Width - popup.Allocation.Width), oy /*+ matchEntry.Allocation.Y */+ matchEntry.Allocation.Height);
+			popup.Move (Math.Max (geometry.Left, ox + matchEntry.Allocation.X + matchEntry.Allocation.Width - popup.Allocation.Width), oy + matchEntry.Allocation.Y + matchEntry.Allocation.Height);
 		}
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
