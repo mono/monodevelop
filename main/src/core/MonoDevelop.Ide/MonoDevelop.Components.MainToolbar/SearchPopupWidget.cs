@@ -49,6 +49,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		SearchPopupWindow searchPopupWindow;
 
+		bool isInSearch;
 		public SearchPopupWidget (SearchPopupWindow searchPopupWindow)
 		{
 			this.searchPopupWindow = searchPopupWindow;
@@ -69,6 +70,9 @@ namespace MonoDevelop.Components.MainToolbar
 			selectedItem = 0;	
 
 			src = new CancellationTokenSource ();
+			isInSearch = true;
+			if (results.Count == 0)
+				QueueDraw ();
 			results.Clear ();
 			foreach (var _cat in categories) {
 				var cat = _cat;
@@ -105,6 +109,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (results.Count == categories.Count) {
 				QueueResize ();
 				QueueDraw ();
+				isInSearch = false;
 			}
 		}
 
@@ -127,16 +132,24 @@ namespace MonoDevelop.Components.MainToolbar
 					continue;
 				
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
-					layout.SetMarkup (dataSrc.GetMarkup (i, false) +"\n<small>\t"+dataSrc.GetDescriptionMarkup (i, false) +"</small>");
+					layout.SetMarkup (dataSrc.GetMarkup (i, false) + "\n<small>\t" + dataSrc.GetDescriptionMarkup (i, false) + "</small>");
 
-					int w,h;
+					int w, h;
 					layout.GetPixelSize (out w, out h);
 					y += h;
 					maxX = Math.Max (maxX, w);
 				}
 			}
 			requisition.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2)));
-			requisition.Height = Math.Min (geometry.Height * 4 / 5, (int)y + 4 + yMargin * 2 + (results.Count - 1) * categorySeparatorHeight);
+			if (y == yMargin) {
+				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+				y += h + yMargin;
+			}
+
+			requisition.Height = Math.Min (geometry.Height * 4 / 5, (int)y + 4 + yMargin * 2 + (results.Count (res => res.Item2.ItemCount > 0) - 1) * categorySeparatorHeight);
+		
 		}
 
 		Tuple<SearchCategory, ISearchDataSource, int> GetItemAt (double px, double py)
@@ -281,7 +294,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 				double x = xMargin, y = yMargin;
 				int w, h;
-				foreach (var result in results) {
+				var r = results.Where (res => res.Item2.ItemCount > 0).ToArray ();
+				foreach (var result in r) {
 					var category = result.Item1;
 					var dataSrc = result.Item2;
 					if (dataSrc.ItemCount == 0)
@@ -308,13 +322,19 @@ namespace MonoDevelop.Components.MainToolbar
 
 						y += h;
 					}
-					if (result != results.Last ()) {
+					if (result != r.Last ()) {
 						context.MoveTo (0, y + categorySeparatorHeight / 2 + 0.5);
 						context.LineTo (Allocation.Width, y + categorySeparatorHeight / 2 + 0.5);
 						context.Color = (HslColor)Style.Mid (StateType.Normal);
 						context.Stroke ();
 						y += categorySeparatorHeight;
 					}
+				}
+				if (y ==yMargin) {
+					context.Color = new Cairo.Color (0, 0, 0);
+					layout.SetMarkup (isInSearch ? GettextCatalog.GetString ("Searching...") : GettextCatalog.GetString ("No matches"));
+					context.MoveTo (x, y);
+					PangoCairoHelper.ShowLayout (context, layout);
 				}
 			}
 			return base.OnExposeEvent (evnt);
