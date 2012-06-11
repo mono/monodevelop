@@ -146,4 +146,10 @@ EXTRA_DIST = \
 	test-projects/console-project/ConsoleProject/Program.cs \
 	test-projects/console-project/ConsoleProject.sln
 
+else
+
+test:
+	@echo "md is configured without --enable-tests."
+	@exit 1
+
 endif
