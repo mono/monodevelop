@@ -32,13 +32,13 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class ListWidget : Gtk.DrawingArea
 	{
 		int margin = 0;
-		int padding = 4;
 		int listWidth = 300;
 		Pango.Layout layout;
 		ListWindow win;
@@ -48,7 +48,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int rowHeight;
 		bool buttonPressed;
 		public event EventHandler SelectionChanged;
-
 		protected virtual void OnSelectionChanged (EventArgs e)
 		{
 			var handler = this.SelectionChanged;
@@ -114,7 +113,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public int CategoryCount {
 			get { return this.categories.Count; }
 		}
-		
+
+		Cairo.Color separatorLine;
+		Cairo.Color lightSearchBackground;
+		Cairo.Color darkSearchBackground;
+
+		Cairo.Color color1, color2;
+
+		const int marginIconSpacing = 4;
+		const int iconTextSpacing = 6;
+
+		const int itemSeparatorHeight = 2;
+
 		public ListWidget (ListWindow win)
 		{
 			this.win = win;
@@ -124,6 +134,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.Wrap = Pango.WrapMode.Char;
 			FontDescription des = this.Style.FontDescription.Copy ();
 			layout.FontDescription = des;
+			separatorLine = CairoExtensions.ParseColor ("dedede");
+			darkSearchBackground = CairoExtensions.ParseColor ("ffffff");
+			lightSearchBackground = CairoExtensions.ParseColor ("f2f2f2");
+			color1 = CairoExtensions.ParseColor ("fdfdfd");
+			color2 = CairoExtensions.ParseColor ("f7f7f7");
 		}
 		
 		public void ResetState ()
@@ -337,205 +352,252 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
-			Gdk.Window window = args.Window;
-			var alloc = Allocation;
-			int width = alloc.Width;
-			int height = alloc.Height;
-			
-			int lineWidth = width - margin * 2;
-			int xpos = margin + padding;
-			int yPos = margin;
-			
-			if (PreviewCompletionString) {
-				layout.SetText (
-					string.IsNullOrEmpty (CompletionString) ? MonoDevelop.Core.GettextCatalog.GetString ("Select template") : CompletionString
-				);
-				int wi, he;
-				layout.GetPixelSize (out wi, out he);
-				window.DrawRectangle (this.Style.BaseGC (StateType.Insensitive), true, margin, yPos, lineWidth, he + padding);
-				window.DrawLayout (
-					string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal),
-					xpos,
-					yPos,
-					layout
-				);
-				yPos += rowHeight;
-			}
-			
-			//when there are no matches, display a message to indicate that the completion list is still handling input
-			if (filteredItems.Count == 0) {
-				Gdk.GC gc = new Gdk.GC (window);
-				gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
-				window.DrawRectangle (gc, true, 0, yPos, width, height - yPos);
-				layout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
-				int lWidth, lHeight;
-				layout.GetPixelSize (out lWidth, out lHeight);
-				gc.RgbFgColor = new Gdk.Color (0, 0, 0);
-				window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2, layout);
-				gc.Dispose ();
-				return true;
-			}
-			
-			var textGCInsensitive = this.Style.TextGC (StateType.Insensitive);
-			var textGCNormal = this.Style.TextGC (StateType.Normal);
-			var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
-			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
-			var highlightColor = HighlightColor;
-			Iterate (true, ref yPos, delegate (Category category, int ypos) {
-				if (ypos >= height - margin)
-					return;
+			using (var context = Gdk.CairoHelper.Create (args.Window)) {
+				context.LineWidth = 1;
+				Gdk.Window window = args.Window;
+				var alloc = Allocation;
+				int width = alloc.Width;
+				int height = alloc.Height;
 				
-				//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, width, rowHeight);
-				int x = 2;
-				if (!string.IsNullOrEmpty (category.CompletionCategory.Icon)) {
-					var icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
-					window.DrawPixbuf (fgGCNormal, icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
-					x = icon.Width + 4;
+				int lineWidth = width - margin * 2;
+				int xpos = margin + iconTextSpacing;
+				int yPos = margin;
+				
+				if (PreviewCompletionString) {
+					layout.SetText (
+						string.IsNullOrEmpty (CompletionString) ? MonoDevelop.Core.GettextCatalog.GetString ("Select template") : CompletionString
+					);
+					int wi, he;
+					layout.GetPixelSize (out wi, out he);
+					window.DrawRectangle (this.Style.BaseGC (StateType.Insensitive), true, margin, yPos, lineWidth, he + iconTextSpacing);
+					window.DrawLayout (
+						string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal),
+						xpos,
+						yPos,
+						layout
+					);
+					yPos += rowHeight;
 				}
 				
-				layout.SetMarkup ("<span weight='bold'>" + category.CompletionCategory.DisplayText + "</span>");
-				window.DrawLayout (textGCInsensitive, x, ypos, layout);
-				layout.SetMarkup ("");
-			}, delegate (Category curCategory, int item, int itemidx, int ypos) {
-				if (ypos >= height - margin)
-					return false;
-				if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null) {
-					xpos = margin + padding + 8;
-				} else {
-					xpos = margin + padding;
+				//when there are no matches, display a message to indicate that the completion list is still handling input
+				if (filteredItems.Count == 0) {
+					Gdk.GC gc = new Gdk.GC (window);
+					gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
+					window.DrawRectangle (gc, true, 0, yPos, width, height - yPos);
+					layout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
+					int lWidth, lHeight;
+					layout.GetPixelSize (out lWidth, out lHeight);
+					gc.RgbFgColor = new Gdk.Color (0, 0, 0);
+					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2, layout);
+					gc.Dispose ();
+					return true;
 				}
-				string markup      = win.DataProvider.HasMarkup (item) ? (win.DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (item) ?? "<null>");
-				string description = win.DataProvider.GetDescription (item);
 				
-				if (string.IsNullOrEmpty (description)) {
-					layout.SetMarkup (markup);
-				} else {
-					if (item == SelectedItem) {
-						layout.SetMarkup (markup + " " + description );
-					} else {
-						layout.SetMarkup (markup + " <span foreground=\"darkgray\">" + description + "</span>");
+				var textGCInsensitive = this.Style.TextGC (StateType.Insensitive);
+				var textGCNormal = this.Style.TextGC (StateType.Normal);
+				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
+				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
+				var highlightColor = HighlightColor;
+				Iterate (true, ref yPos, delegate (Category category, int ypos) {
+					if (ypos >= height - margin)
+						return;
+					
+					//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, width, rowHeight);
+					int x = 2;
+					if (category.CompletionCategory != null && !string.IsNullOrEmpty (category.CompletionCategory.Icon)) {
+						var icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
+						window.DrawPixbuf (fgGCNormal, icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+						x = icon.Width + 4;
 					}
-				}
-				int mw, mh;
-				layout.GetPixelSize (out mw, out mh);
-				if (mw > listWidth) {
-					WidthRequest = listWidth = mw;
-					win.WidthRequest = win.Allocation.Width + mw - width;
-					win.QueueResize ();
-				}
+					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
+					var linearGradient =new Cairo.LinearGradient (0, ypos, 0, ypos + rowHeight);
+					linearGradient.AddColorStop (0, color1);
+					linearGradient.AddColorStop (0, color2);
+					context.Pattern = linearGradient;
+					context.Fill ();
 			
-				string text = win.DataProvider.GetText (item);
-				
-				if ((!SelectionEnabled || item != SelectedItem) && !string.IsNullOrEmpty (text)) {
-					int[] matchIndices = matcher.GetMatch (text);
-					if (matchIndices != null) {
-						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
-						for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
-							int idx = matchIndices[newSelection];
-							Pango.AttrForeground fg = new Pango.AttrForeground (highlightColor.Red, highlightColor.Green, highlightColor.Blue);
-							fg.StartIndex = (uint)idx;
-							fg.EndIndex = (uint)(idx + 1);
-							attrList.Insert (fg);
+					layout.SetMarkup ("<span weight='bold'>" + (category.CompletionCategory != null ? category.CompletionCategory.DisplayText : "Uncategorized") + "</span>");
+					window.DrawLayout (textGCInsensitive, x, ypos, layout);
+					layout.SetMarkup ("");
+				}, delegate (Category curCategory, int item, int itemidx, int ypos) {
+					if (ypos >= height - margin)
+						return false;
+					const int categoryModeItemIndenting = 0;
+					if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null) {
+						xpos = margin + iconTextSpacing + categoryModeItemIndenting;
+					} else {
+						xpos = margin + iconTextSpacing;
+					}
+					string markup = win.DataProvider.HasMarkup (item) ? (win.DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (item) ?? "<null>");
+					string description = win.DataProvider.GetDescription (item);
+					
+					if (string.IsNullOrEmpty (description)) {
+						layout.SetMarkup (markup);
+					} else {
+						if (item == SelectedItem) {
+							layout.SetMarkup (markup + " " + description);
+						} else {
+							layout.SetMarkup (markup + " <span foreground=\"darkgray\">" + description + "</span>");
 						}
-						layout.Attributes = attrList;
 					}
-				}
+					int mw, mh;
+					layout.GetPixelSize (out mw, out mh);
+					if (mw > listWidth) {
+						WidthRequest = listWidth = mw;
+						win.WidthRequest = win.Allocation.Width + mw - width;
+						win.QueueResize ();
+					}
 				
-				Gdk.Pixbuf icon = win.DataProvider.GetIcon (item);
-				int iconHeight, iconWidth;
-				if (icon != null) {
-					iconWidth = icon.Width;
-					iconHeight = icon.Height;
-				} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
-					iconHeight = iconWidth = 24;
-				}
-				
-				int wi, he, typos, iypos;
-				layout.GetPixelSize (out wi, out he);
-				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
-				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-				if (item == SelectedItem) {
-					if (SelectionEnabled) {
-						window.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
-						window.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
+					string text = win.DataProvider.GetText (item);
+					
+					if (!string.IsNullOrEmpty (text)) {
+						int[] matchIndices = matcher.GetMatch (text);
+						if (matchIndices != null) {
+							Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
+							for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
+								int idx = matchIndices [newSelection];
+								Pango.AttrForeground fg = new Pango.AttrForeground (highlightColor.Red, highlightColor.Green, highlightColor.Blue);
+								fg.StartIndex = (uint)idx;
+								fg.EndIndex = (uint)(idx + 1);
+								attrList.Insert (fg);
+							}
+							layout.Attributes = attrList;
+						}
+					}
+					
+					Gdk.Pixbuf icon = win.DataProvider.GetIcon (item);
+					int iconHeight, iconWidth;
+					if (icon != null) {
+						iconWidth = icon.Width;
+						iconHeight = icon.Height;
+					} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
+						iconHeight = iconWidth = 24;
+					}
+					
+					int wi, he, typos, iypos;
+					layout.GetPixelSize (out wi, out he);
+					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
+					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
+					if (item == SelectedItem) {
+						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
+						if (SelectionEnabled) {
+							var linearGradient =new Cairo.LinearGradient (0, ypos, 0, ypos + rowHeight);
+							linearGradient.AddColorStop (0, color1);
+							linearGradient.AddColorStop (0, color2);
+							context.Pattern = linearGradient;
+						} else {
+							context.Color = darkSearchBackground;
+						}
+						context.Fill ();
+
+						context.Color = separatorLine;
+						context.MoveTo (0.5, 0.5 + ypos);
+						context.LineTo (0.5 + Allocation.Width, 0.5 + ypos);
+						context.Stroke ();
+
+						context.MoveTo (0.5, 0.5 + ypos + rowHeight - 1);
+						context.LineTo (0.5 + Allocation.Width, 0.5 + ypos + rowHeight - 1);
+						context.Stroke ();
+
+
+						if (icon != null) {
+							window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+							xpos += iconTextSpacing;
+						}
+						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 					} else {
-						window.DrawRectangle (this.Style.DarkGC (StateType.Prelight), false, margin, ypos, lineWidth - 1, he + padding - 1);
+						context.Color = lightSearchBackground;
+						var xSpacing = marginIconSpacing + iconTextSpacing + 16 + margin;
+						if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null)
+							xSpacing += categoryModeItemIndenting;
+						context.Rectangle (0, ypos, xSpacing, he + iconTextSpacing - 1);
+						context.Fill ();
+
+						context.Color = darkSearchBackground;
+						context.Rectangle (xSpacing, ypos, lineWidth - 1 - xSpacing, he + iconTextSpacing - 1);
+						context.Fill ();
+
+						context.MoveTo (0.5 + xSpacing, 0.5 + ypos);
+						context.LineTo (0.5 + xSpacing, 0.5 + ypos + he + iconTextSpacing - 1);
+						context.Color = separatorLine;
+						context.Stroke ();
+						if (icon != null) {
+							window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+							xpos += iconTextSpacing;
+						}
 						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 					}
-				} else
-					window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
-				if (icon != null)
-					window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
-				
-				layout.SetMarkup ("");
-				if (layout.Attributes != null) {
-					layout.Attributes.Dispose ();
-					layout.Attributes = null;
-				}
-				return true;
-			});
-			/*
-			int n = 0;
-			while (ypos < winHeight - margin && (page + n) < filteredItems.Count) {
-				
-				bool hasMarkup = win.DataProvider.HasMarkup (filteredItems[page + n]);
-				if (hasMarkup) {
-					layout.SetMarkup (win.DataProvider.GetMarkup (filteredItems[page + n]) ?? "&lt;null&gt;");
-				} else {
-					layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
-				}
-				string text = win.DataProvider.GetText (filteredItems[page + n]);
-				if ((!SelectionEnabled || page + n != selection) && !string.IsNullOrEmpty (text)) {
-					int[] matchIndices = Match (CompletionString, text);
-					if (matchIndices != null) {
-						Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
-						for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
-							int idx = matchIndices[newSelection];
-							Pango.AttrForeground fg = new Pango.AttrForeground (0, 0, ushort.MaxValue);
-							fg.StartIndex = (uint)idx;
-							fg.EndIndex = (uint)(idx + 1);
-							attrList.Insert (fg);
-						}
-						layout.Attributes = attrList;
+
+					layout.SetMarkup ("");
+					if (layout.Attributes != null) {
+						layout.Attributes.Dispose ();
+						layout.Attributes = null;
 					}
-				}
-				
-				Gdk.Pixbuf icon = win.DataProvider.GetIcon (filteredItems[page + n]);
-				int iconHeight, iconWidth;
-				if (icon != null) {
-					iconWidth = icon.Width;
-					iconHeight = icon.Height;
-				} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
-					iconHeight = iconWidth = 24;
-				}
-				
-				int wi, he, typos, iypos;
-				layout.GetPixelSize (out wi, out he);
-				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
-				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-				if (page + n == selection) {
-					if (SelectionEnabled) {
-						window.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
-						window.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
+					return true;
+				});
+				/*
+				int n = 0;
+				while (ypos < winHeight - margin && (page + n) < filteredItems.Count) {
+					
+					bool hasMarkup = win.DataProvider.HasMarkup (filteredItems[page + n]);
+					if (hasMarkup) {
+						layout.SetMarkup (win.DataProvider.GetMarkup (filteredItems[page + n]) ?? "&lt;null&gt;");
 					} else {
-						window.DrawRectangle (this.Style.DarkGC (StateType.Prelight), false, margin, ypos, lineWidth - 1, he + padding - 1);
-						window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
+						layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
 					}
-				} else
-					window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
-				if (icon != null)
-					window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
-				ypos += rowHeight;
-				n++;
-				if (hasMarkup)
-					layout.SetMarkup (string.Empty);
-				if (layout.Attributes != null) {
-					layout.Attributes.Dispose ();
-					layout.Attributes = null;
+					string text = win.DataProvider.GetText (filteredItems[page + n]);
+					if ((!SelectionEnabled || page + n != selection) && !string.IsNullOrEmpty (text)) {
+						int[] matchIndices = Match (CompletionString, text);
+						if (matchIndices != null) {
+							Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
+							for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
+								int idx = matchIndices[newSelection];
+								Pango.AttrForeground fg = new Pango.AttrForeground (0, 0, ushort.MaxValue);
+								fg.StartIndex = (uint)idx;
+								fg.EndIndex = (uint)(idx + 1);
+								attrList.Insert (fg);
+							}
+							layout.Attributes = attrList;
+						}
+					}
+					
+					Gdk.Pixbuf icon = win.DataProvider.GetIcon (filteredItems[page + n]);
+					int iconHeight, iconWidth;
+					if (icon != null) {
+						iconWidth = icon.Width;
+						iconHeight = icon.Height;
+					} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
+						iconHeight = iconWidth = 24;
+					}
+					
+					int wi, he, typos, iypos;
+					layout.GetPixelSize (out wi, out he);
+					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
+					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
+					if (page + n == selection) {
+						if (SelectionEnabled) {
+							window.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
+							window.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
+						} else {
+							window.DrawRectangle (this.Style.DarkGC (StateType.Prelight), false, margin, ypos, lineWidth - 1, he + padding - 1);
+							window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
+						}
+					} else
+						window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
+					if (icon != null)
+						window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+					ypos += rowHeight;
+					n++;
+					if (hasMarkup)
+						layout.SetMarkup (string.Empty);
+					if (layout.Attributes != null) {
+						layout.Attributes.Dispose ();
+						layout.Attributes = null;
+					}
 				}
+				*/
+				return true;
 			}
-			*/
-			return true;
 		}
 		
 		public int TextOffset {
@@ -543,7 +605,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int iconWidth, iconHeight;
 				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight))
 					iconHeight = iconWidth = 24;
-				return iconWidth + margin + padding + 2;
+				return iconWidth + margin + iconTextSpacing + marginIconSpacing;
 			}
 		}
 		
@@ -652,7 +714,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get {
 				int rowWidth;
 				layout.GetPixelSize (out rowWidth, out rowHeight);
-				rowHeight += padding;
+				rowHeight += 4;
 				return Allocation.Height / rowHeight;
 			}
 		}
@@ -677,8 +739,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			int rowWidth;
 			layout.GetPixelSize (out rowWidth, out rowHeight);
-			rowHeight += padding;
-			int requestedVisibleRows = (winHeight + padding - margin * 2) / rowHeight;
+			rowHeight += 4;
+			int requestedVisibleRows = (winHeight + 4 - margin * 2) / rowHeight;
 			
 			int viewableCats = InCategoryMode ? categories.Count: 0;
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
@@ -702,14 +764,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			int curItem = 0;
 			if (InCategoryMode) {
 				foreach (Category category in this.categories) {
-					if (category.CompletionCategory != null) {
+	//				if (category.CompletionCategory != null) {
 						if (!startAtPage || curItem >= page) {
 							if (catAction != null)  
 								catAction (category, ypos);
 							ypos += rowHeight;
 						}
 						curItem++;
-					}
+	//				}
 					
 					bool result = IterateItems (category, startAtPage,ref ypos, ref curItem, action);
 					if (!result)
