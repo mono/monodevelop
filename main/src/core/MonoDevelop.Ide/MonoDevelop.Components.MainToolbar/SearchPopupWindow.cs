@@ -39,6 +39,7 @@ namespace MonoDevelop.Components.MainToolbar
 			TransientFor = IdeApp.Workbench.RootWindow;
 			SkipTaskbarHint = true;
 			SkipPagerHint = true;
+			Opacity = 0.97;
 			Add (widget);
 			widget.SizeRequested += delegate(object o, SizeRequestedArgs args) {
 				Resize (args.Requisition.Width, args.Requisition.Height);
