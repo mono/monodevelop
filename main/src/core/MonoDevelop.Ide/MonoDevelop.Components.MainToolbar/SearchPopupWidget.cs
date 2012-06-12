@@ -40,6 +40,8 @@ namespace MonoDevelop.Components.MainToolbar
 		const int yMargin = 6;
 		const int xMargin = 6;
 		const int itemSeparatorHeight = 2;
+		const int marginIconSpacing = 4;
+		const int iconTextSpacing = 6;
 		const int categorySeparatorHeight = 8;
 		const int headerMarginSize = 100;
 
@@ -110,10 +112,13 @@ namespace MonoDevelop.Components.MainToolbar
 				return categories.IndexOf (x.Item1).CompareTo (categories.IndexOf (y.Item1));
 			}
 			);
-
-			selectedCategory = results [0].Item1;
-			selectedDataSource = results [0].Item2;
-			selectedItem = 0;
+			for (int i = 0; i < results.Count; i++) {
+				if (results[i].Item2.ItemCount == 0)
+					continue;
+				selectedCategory = results [i].Item1;
+				selectedDataSource = results [i].Item2;
+				selectedItem = 0;
+			}
 
 			if (results.Count == categories.Count) {
 				QueueResize ();
@@ -147,7 +152,7 @@ namespace MonoDevelop.Components.MainToolbar
 					layout.GetPixelSize (out w, out h);
 					var px = dataSrc.GetIcon (i);
 					if (px != null)
-						w += px.Width + 2;
+						w += px.Width + iconTextSpacing + marginIconSpacing;
 					y += h + itemSeparatorHeight;
 					maxX = Math.Max (maxX, w);
 				}
@@ -157,10 +162,11 @@ namespace MonoDevelop.Components.MainToolbar
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
 				layout.GetPixelSize (out w, out h);
-				y += h + yMargin;
+				y += h + itemSeparatorHeight + 4;
+			} else {
+				y -= itemSeparatorHeight;
 			}
-
-			requisition.Height = Math.Min (geometry.Height * 4 / 5, (int)y + 4 + yMargin * 2 + (results.Count (res => res.Item2.ItemCount > 0) - 1) * categorySeparatorHeight);
+			requisition.Height = Math.Min (geometry.Height * 4 / 5, (int)y + yMargin + (results.Count (res => res.Item2.ItemCount > 0) - 1) * categorySeparatorHeight);
 		
 		}
 
@@ -334,7 +340,7 @@ namespace MonoDevelop.Components.MainToolbar
 					for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
 						double x = xMargin + headerMarginSize;
 						context.Color = new Cairo.Color (0, 0, 0);
-						layout.SetMarkup ("<span foreground=\"#808080\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#787878\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
+						layout.SetMarkup ("<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#8F8F8F\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
 						layout.GetPixelSize (out w, out h);
 						if (selectedCategory == category && selectedItem == i) {
 							context.Color = new Cairo.Color (0.8, 0.8, 0.8);
@@ -345,8 +351,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 						var px = dataSrc.GetIcon (i);
 						if (px != null) {
-							evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x, (int)y, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
-							x += px.Width + 2;
+							evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+							x += px.Width + iconTextSpacing + marginIconSpacing;
 						}
 
 						context.MoveTo (x, y);
