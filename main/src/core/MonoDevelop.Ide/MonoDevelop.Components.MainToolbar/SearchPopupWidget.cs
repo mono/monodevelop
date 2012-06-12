@@ -39,13 +39,18 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		const int yMargin = 6;
 		const int xMargin = 6;
-		const int categorySeparatorHeight = 16;
+		const int itemSeparatorHeight = 2;
+		const int categorySeparatorHeight = 8;
+		const int headerMarginSize = 100;
 
 		List<SearchCategory> categories = new List<SearchCategory> ();
 		List<Tuple<SearchCategory, ISearchDataSource>> results = new List<Tuple<SearchCategory, ISearchDataSource>> ();
 		Pango.Layout layout, headerLayout;
 		CancellationTokenSource src;
 		Cairo.Color headerColor;
+		Cairo.Color separatorLine;
+		Cairo.Color darkSearchBackground;
+		Cairo.Color lightSearchBackground;
 
 		SearchPopupWindow searchPopupWindow;
 
@@ -54,7 +59,11 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			this.searchPopupWindow = searchPopupWindow;
 			Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask;
-			headerColor = CairoExtensions.ParseColor ("b3b3b3");
+			headerColor = CairoExtensions.ParseColor ("8c8c8c");
+			separatorLine = CairoExtensions.ParseColor ("dedede");
+			lightSearchBackground = CairoExtensions.ParseColor ("ffffff");
+			darkSearchBackground = CairoExtensions.ParseColor ("f7f7f7");
+
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			layout = new Pango.Layout (PangoContext);
@@ -132,15 +141,18 @@ namespace MonoDevelop.Components.MainToolbar
 					continue;
 				
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
-					layout.SetMarkup (dataSrc.GetMarkup (i, false) + "\n<small>\t" + dataSrc.GetDescriptionMarkup (i, false) + "</small>");
+					layout.SetMarkup (dataSrc.GetMarkup (i, false) + "\n<small>" + dataSrc.GetDescriptionMarkup (i, false) + "</small>");
 
 					int w, h;
 					layout.GetPixelSize (out w, out h);
-					y += h;
+					var px = dataSrc.GetIcon (i);
+					if (px != null)
+						w += px.Width + 2;
+					y += h + itemSeparatorHeight;
 					maxX = Math.Max (maxX, w);
 				}
 			}
-			requisition.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + 100 + xMargin * 2)));
+			requisition.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + headerMarginSize + xMargin * 2)));
 			if (y == yMargin) {
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
@@ -163,11 +175,11 @@ namespace MonoDevelop.Components.MainToolbar
 					continue;
 				
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
-					layout.SetMarkup (dataSrc.GetMarkup (i, false));
+					layout.SetMarkup (dataSrc.GetMarkup (i, false) + "\n<small>" + dataSrc.GetDescriptionMarkup (i, false) + "</small>");
 
 					int w, h;
 					layout.GetPixelSize (out w, out h);
-					y += h;
+					y += h + itemSeparatorHeight;
 					if (y > py){
 						return Tuple.Create (category, dataSrc, i);
 					}
@@ -286,15 +298,28 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.LineWidth = 1;
-				context.Color = new Cairo.Color (1, 1, 1);
-
-				context.Rectangle (evnt.Area.X, evnt.Area.Y, evnt.Area.Width, evnt.Area.Height);
-				context.Fill ();
-
-				double x = xMargin, y = yMargin;
-				int w, h;
 				var r = results.Where (res => res.Item2.ItemCount > 0).ToArray ();
+				if (r.Any ()) {
+					context.LineWidth = 1;
+					context.Color = lightSearchBackground;
+					context.Rectangle (evnt.Area.X, evnt.Area.Y, headerMarginSize, evnt.Area.Height);
+					context.Fill ();
+
+					context.Color = darkSearchBackground;
+					context.Rectangle (evnt.Area.X + headerMarginSize, evnt.Area.Y, Allocation.Width - headerMarginSize, evnt.Area.Height);
+					context.Fill ();
+					context.MoveTo (0.5 + evnt.Area.X + headerMarginSize, 0);
+					context.LineTo (0.5 + evnt.Area.X + headerMarginSize, Allocation.Height);
+					context.Color = separatorLine;
+					context.Stroke ();
+				} else {
+					context.Color = new Cairo.Color (1, 1, 1);
+					context.Rectangle (evnt.Area.X, evnt.Area.Y, evnt.Area.Width, evnt.Area.Height);
+					context.Fill ();
+				}
+
+				double y = yMargin;
+				int w, h;
 				foreach (var result in r) {
 					var category = result.Item1;
 					var dataSrc = result.Item2;
@@ -302,38 +327,45 @@ namespace MonoDevelop.Components.MainToolbar
 						continue;
 					headerLayout.SetText (category.Name);
 					headerLayout.GetPixelSize (out w, out h);
-					context.MoveTo (100 - w, y);
+					context.MoveTo (headerMarginSize - w - xMargin, y);
 					context.Color = headerColor;
 					PangoCairoHelper.ShowLayout (context, headerLayout);
 
 					for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+						double x = xMargin + headerMarginSize;
 						context.Color = new Cairo.Color (0, 0, 0);
-						layout.SetMarkup ("<span foreground=\"#808080\">" + dataSrc.GetMarkup (i, false) +"\n<small>\t"+dataSrc.GetDescriptionMarkup (i, false) +"</small>" + "</span>");
+						layout.SetMarkup ("<span foreground=\"#808080\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#787878\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
 						layout.GetPixelSize (out w, out h);
 						if (selectedCategory == category && selectedItem == i) {
 							context.Color = new Cairo.Color (0.8, 0.8, 0.8);
-							context.Rectangle (x + 100, y, evnt.Area.Width - 100, h);
+							context.Rectangle (headerMarginSize, y, evnt.Area.Width - headerMarginSize, h);
 							context.Fill ();
 							context.Color = new Cairo.Color (1, 1, 1);
 						}
 
-						context.MoveTo (x + 100, y);
+						var px = dataSrc.GetIcon (i);
+						if (px != null) {
+							evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x, (int)y, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+							x += px.Width + 2;
+						}
+
+						context.MoveTo (x, y);
 						PangoCairoHelper.ShowLayout (context, layout);
 
-						y += h;
+						y += h + itemSeparatorHeight;
 					}
 					if (result != r.Last ()) {
-						context.MoveTo (0, y + categorySeparatorHeight / 2 + 0.5);
+/*						context.MoveTo (0, y + categorySeparatorHeight / 2 + 0.5);
 						context.LineTo (Allocation.Width, y + categorySeparatorHeight / 2 + 0.5);
 						context.Color = (HslColor)Style.Mid (StateType.Normal);
-						context.Stroke ();
+						context.Stroke ();*/
 						y += categorySeparatorHeight;
 					}
 				}
 				if (y ==yMargin) {
 					context.Color = new Cairo.Color (0, 0, 0);
 					layout.SetMarkup (isInSearch ? GettextCatalog.GetString ("Searching...") : GettextCatalog.GetString ("No matches"));
-					context.MoveTo (x, y);
+					context.MoveTo (xMargin, y);
 					PangoCairoHelper.ShowLayout (context, layout);
 				}
 			}

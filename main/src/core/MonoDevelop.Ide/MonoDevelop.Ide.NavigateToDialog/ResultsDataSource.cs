@@ -56,6 +56,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		}
 
 		#region ISearchDataSource implementation
+
+		Gdk.Pixbuf ISearchDataSource.GetIcon (int item)
+		{
+			return this[item].Icon;
+		}
+
 		string ISearchDataSource.GetMarkup (int item, bool isSelected)
 		{
 			if (isSelected)
