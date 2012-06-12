@@ -30,6 +30,8 @@ using NUnit.Framework;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -216,7 +218,7 @@ class C : IA
 		}
 		
 		[Test ()]
-		public void TestMultiInterfacesImpl ()
+		public void TestMultiInterfacesImpl1 ()
 		{
 			var code = @"
 interface IA
@@ -248,13 +250,67 @@ class C : IB
 			expected1.Add (GetMemberFilter ("IA", memberName));
 			expected1.Add (GetMemberFilter ("IB", memberName));
 			TestCollectMembers (code, "A", memberName, expected1);
-			
+		}
+
+		[Test ()]
+		public void TestMultiInterfacesImpl2 ()
+		{
+			var code = @"
+interface IA
+{
+	void Method();
+}
+interface IB
+{
+	void Method();
+}
+class A : IA, IB
+{
+	public void Method() { }
+}
+class B : IA
+{
+	public void Method() { }
+}
+class C : IB
+{
+	public void Method() { }
+}";
+			string memberName = "Method";
+
 			var expected2 = new List<Predicate<IMember>>();
 			expected2.Add (GetMemberFilter ("A", memberName));
 			expected2.Add (GetMemberFilter ("B", memberName));
 			expected2.Add (GetMemberFilter ("IA", memberName));
 			TestCollectMembers (code, "B", memberName, expected2);
 			TestCollectMembers (code, "IA", memberName, expected2);
+		}
+
+		[Test ()]
+		public void TestMultiInterfacesImpl3 ()
+		{
+			var code = @"
+interface IA
+{
+	void Method();
+}
+interface IB
+{
+	void Method();
+}
+class A : IA, IB
+{
+	public void Method() { }
+}
+class B : IA
+{
+	public void Method() { }
+}
+class C : IB
+{
+	public void Method() { }
+}";
+			string memberName = "Method";
 			
 			var expected3 = new List<Predicate<IMember>>();
 			expected3.Add (GetMemberFilter ("A", memberName));

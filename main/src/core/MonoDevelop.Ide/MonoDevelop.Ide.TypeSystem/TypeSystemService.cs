@@ -1846,7 +1846,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (parsedFile == null)
 				return true;
-			return System.IO.File.GetLastWriteTimeUtc (file.FilePath) > parsedFile.LastWriteTime;
+			try {
+				return System.IO.File.GetLastWriteTimeUtc (file.FilePath) > parsedFile.LastWriteTime;
+			} catch (Exception) {
+				return false;
+			}
 		}
 
 		static void CheckModifiedFiles (Project project, ProjectContentWrapper content)
