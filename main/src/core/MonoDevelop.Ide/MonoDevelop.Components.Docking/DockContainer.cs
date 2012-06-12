@@ -52,6 +52,7 @@ namespace MonoDevelop.Components.Docking
 		bool needsRelayout = true;
 
 		PlaceholderWindow placeholderWindow;
+		PadTitleWindow padTitleWindow;
 		
 		public DockContainer (DockFrame frame)
 		{
@@ -384,8 +385,9 @@ namespace MonoDevelop.Components.Docking
 			base.OnUnrealized ();
 		}
 		
-		internal void ShowPlaceholder ()
+		internal void ShowPlaceholder (DockItem draggedItem)
 		{
+			padTitleWindow = new PadTitleWindow (frame, draggedItem);
 			placeholderWindow = new PlaceholderWindow (frame);
 		}
 		
@@ -399,21 +401,22 @@ namespace MonoDevelop.Components.Docking
 			
 			placeholderWindow.AllowDocking = allowDocking;
 			
+			int ox, oy;
+			GdkWindow.GetOrigin (out ox, out oy);
+
+			int tw, th;
+			padTitleWindow.GetSize (out tw, out th);
+			padTitleWindow.Move (ox + px - tw/2, oy + py - th/2);
+			padTitleWindow.GdkWindow.KeepAbove = true;
+
 			DockDelegate dockDelegate;
 			Gdk.Rectangle rect;
 			if (allowDocking && layout.GetDockTarget (item, px, py, out dockDelegate, out rect)) {
-				int ox, oy;
-				GdkWindow.GetOrigin (out ox, out oy);
-				
 				placeholderWindow.Relocate (ox + rect.X, oy + rect.Y, rect.Width, rect.Height, true);
 				placeholderWindow.Show ();
 				return true;
-			} else {
-				int ox, oy;
-				GdkWindow.GetOrigin (out ox, out oy);
-				placeholderWindow.Relocate (ox + px - size.Width / 2, oy + py - 18, size.Width, size.Height, false);
-				placeholderWindow.Show ();
 			}
+
 			return false;
 		}
 		
@@ -451,6 +454,8 @@ namespace MonoDevelop.Components.Docking
 			if (placeholderWindow != null) {
 				placeholderWindow.Destroy ();
 				placeholderWindow = null;
+				padTitleWindow.Destroy ();
+				padTitleWindow = null;
 			}
 		}
 		

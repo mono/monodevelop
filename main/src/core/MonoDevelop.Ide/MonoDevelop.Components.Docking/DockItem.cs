@@ -145,6 +145,7 @@ namespace MonoDevelop.Components.Docking
 		}
 
 		bool tabPressed;
+		double pressX, pressY;
 
 		void HeaderButtonPress (object ob, Gtk.ButtonPressEventArgs args)
 		{
@@ -153,6 +154,8 @@ namespace MonoDevelop.Components.Docking
 				args.RetVal = false;
 			} else if (args.Event.Button == 1) {
 				tabPressed = true;
+				pressX = args.Event.X;
+				pressY = args.Event.Y;
 			}
 		}
 		
@@ -171,8 +174,8 @@ namespace MonoDevelop.Components.Docking
 		
 		void HeaderMotion (object ob, Gtk.MotionNotifyEventArgs args)
 		{
-			if (tabPressed) {
-				frame.ShowPlaceholder ();
+			if (tabPressed && Math.Abs (args.Event.X - pressX) > 3 && Math.Abs (args.Event.Y - pressY) > 3) {
+				frame.ShowPlaceholder (this);
 				titleTab.GdkWindow.Cursor = fleurCursor;
 				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
 				frame.Toplevel.KeyReleaseEvent += HeaderKeyRelease;

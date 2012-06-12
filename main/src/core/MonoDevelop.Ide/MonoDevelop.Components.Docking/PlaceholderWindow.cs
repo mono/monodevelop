@@ -63,6 +63,12 @@ namespace MonoDevelop.Components.Docking
 			redgc = new Gdk.GC (GdkWindow);
 	   		redgc.RgbFgColor = frame.Style.Background (StateType.Selected);
 		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			GdkWindow.Opacity = 0.6;
+		}
 		
 		void CreateShape (int width, int height)
 		{
@@ -138,6 +144,35 @@ namespace MonoDevelop.Components.Docking
 			}
 			anim = 0;
 			return false;
+		}
+	}
+
+	class PadTitleWindow: Gtk.Window
+	{
+		public PadTitleWindow (DockFrame frame, DockItem draggedItem): base (Gtk.WindowType.Popup)
+		{
+			SkipTaskbarHint = true;
+			Decorated = false;
+			TransientFor = (Gtk.Window) frame.Toplevel;
+			TypeHint = WindowTypeHint.Utility;
+
+
+			HBox box = new HBox (false, 3);
+			if (draggedItem.Icon != null) {
+				Gtk.Image img = new Gtk.Image (draggedItem.Icon);
+				box.PackStart (img, false, false, 0);
+			}
+			Gtk.Label la = new Label ();
+			la.Markup = draggedItem.Label;
+			box.PackStart (la, false, false, 0);
+
+			CustomFrame f = new CustomFrame ();
+			f.SetPadding (12, 12, 12, 12);
+			f.SetMargins (1, 1, 1, 1);
+			f.Add (box);
+
+			Add (f);
+			ShowAll ();
 		}
 	}
 }

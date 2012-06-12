@@ -672,9 +672,9 @@ namespace MonoDevelop.Components.Docking
 			return rect;
 		}
 		
-		internal void ShowPlaceholder ()
+		internal void ShowPlaceholder (DockItem draggedItem)
 		{
-			container.ShowPlaceholder ();
+			container.ShowPlaceholder (draggedItem);
 		}
 		
 		internal void DockInPlaceholder (DockItem item)

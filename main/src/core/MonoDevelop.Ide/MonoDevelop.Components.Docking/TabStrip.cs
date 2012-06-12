@@ -168,6 +168,7 @@ namespace MonoDevelop.Components.Docking
 			Tab t = (Tab) s;
 			DockItem.SetFocus (t.Page);
 			QueueDraw ();
+			args.RetVal = true;
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
