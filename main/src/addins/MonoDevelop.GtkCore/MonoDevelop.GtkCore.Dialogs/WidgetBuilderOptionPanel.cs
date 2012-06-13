@@ -101,7 +101,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 					info.GenerateGettext = checkGettext.Active;
 					info.GettextClass = entryGettext.Text;
 					info.GuiBuilderProject.SteticProject.TargetGtkVersion = comboVersions.ActiveText;
-					info.GuiBuilderProject.Save (false);
+					info.GuiBuilderProject.SaveProject (false);
 				}
 				refmgr.Dispose ();
 			}

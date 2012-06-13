@@ -551,6 +551,8 @@ namespace Stetic
 			get { return failForUnknownWidgets; }
 			set { failForUnknownWidgets = value; }
 		}
+
+		public bool GenerateModifiedOnly { get; set; }
 	}
 }
 

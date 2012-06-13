@@ -155,7 +155,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (oldBuildFile != newBuildFile)
 				FileService.MoveFile (oldBuildFile, newBuildFile);
 
-			project.Save (true);
+			project.SaveProject (true);
 		}
 		
 		public override void Dispose ()

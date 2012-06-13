@@ -292,6 +292,21 @@ namespace Stetic
 			return new ActionGroupDesigner (this, null, actionGroup.Name, null, autoCommitChanges);
 		}
 
+		public void SetWidgetModified (string widgetName)
+		{
+			ProjectBackend.SetWidgetModified (widgetName);
+		}
+
+		public void SetAllWidgetsModified ()
+		{
+			ProjectBackend.SetAllWidgetsModified ();
+		}
+
+		public void ResetModifiedWidgetFlags ()
+		{
+			ProjectBackend.ResetModifiedWidgetFlags ();
+		}
+
 		public WidgetInfo AddNewComponent (ComponentType type, string name)
 		{
 			object ob = ProjectBackend.AddNewWidget (type.Name, name);

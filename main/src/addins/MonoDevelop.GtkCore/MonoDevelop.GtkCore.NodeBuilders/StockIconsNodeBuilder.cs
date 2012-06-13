@@ -75,7 +75,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 				return GuiBuilderService.ImportFile (gp.Project, file);
 			};
 			sp.EditIcons ();
-			gp.Save (true);
+			gp.SaveProject (true);
 		}
 		
 		[CommandHandler (GtkCommands.EditIcons)]

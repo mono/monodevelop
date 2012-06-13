@@ -269,7 +269,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				cls = matches [0];
 				className = cls.FullName;
 				targetObject.Name = className;
-				gproject.Save (true);
+				gproject.SaveWindow (true, targetObject.Name);
 				return cls;
 			}
 			
@@ -283,7 +283,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 							return null;
 						else {
 							targetObject.Name = className;
-							gproject.Save (true);
+							gproject.SaveWindow (true, targetObject.Name);
 							return gproject.FindClass (className);
 						}
 					}
