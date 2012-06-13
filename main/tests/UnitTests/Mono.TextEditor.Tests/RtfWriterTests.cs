@@ -44,6 +44,20 @@ namespace Mono.TextEditor.Tests
 			@"{\rtf1\ansi\deff0\adeflang1025{\fonttbl{\f0\fnil\fprq1\fcharset128 Mono;}}{\colortbl ;\red92\green53\blue102;\red0\green0\blue0;}\viewkind4\uc1\pard\f0\fs20\cf1\b\cf1 class\b0\cf2  Foo \{\}\par
 }", generatedRtf);
 		}
+
+		/// <summary>
+		/// Bug 5628 - Error while pasting text/rtf
+		/// </summary>
+		[Test()]
+		public void TestBug5628 ()
+		{
+			var data = Create ("class Foo {}");
+			var style = SyntaxModeService.GetColorStyle (null, "TangoLight");
+			ISyntaxMode mode = null;
+			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
+			Assert.AreEqual (
+			@"{\rtf1\ansi\deff0\adeflang1025{\fonttbl{\f0\fnil\fprq1\fcharset128 Mono;}}{\colortbl ;}\viewkind4\uc1\pard\f0\fs20\cf1class Foo \{\}}", generatedRtf);
+		}
 	}
 }
 

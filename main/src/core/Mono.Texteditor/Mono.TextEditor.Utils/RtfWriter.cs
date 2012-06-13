@@ -54,6 +54,34 @@ namespace Mono.TextEditor.Utils
 			return GenerateRtf (data.Document, data.Document.SyntaxMode, data.ColorStyle, data.Options);
 		}
 
+		static void AppendRtfText (StringBuilder rtfText, TextDocument doc, int start, int end, ref bool appendSpace)
+		{
+			for (int i = start; i < end; i++) {
+				char ch = doc.GetCharAt (i);
+				switch (ch) {
+				case '\\':
+					rtfText.Append (@"\\");
+					break;
+				case '{':
+					rtfText.Append (@"\{");
+					break;
+				case '}':
+					rtfText.Append (@"\}");
+					break;
+				case '\t':
+					rtfText.Append (@"\tab");
+					appendSpace = true;
+					break;
+				default:
+					if (appendSpace) {
+						rtfText.Append (' ');
+						appendSpace = false;
+					}
+					rtfText.Append (ch);
+					break;
+				}
+			}
+		}
 		public static string GenerateRtf (TextDocument doc, Mono.TextEditor.Highlighting.ISyntaxMode mode, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
 		{
 			var rtfText = new StringBuilder ();
@@ -68,6 +96,10 @@ namespace Mono.TextEditor.Utils
 			int curColor = -1;
 			foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
 				bool appendSpace = false;
+				if (mode == null) {
+					AppendRtfText (rtfText, doc, System.Math.Max (selection.Offset, line.Offset), System.Math.Min (line.EndOffset, selection.EndOffset), ref appendSpace);
+					continue;
+				}
 				foreach (var chunk in mode.GetChunks (style, line, line.Offset, line.Length)) {
 					int start = System.Math.Max (selection.Offset, chunk.Offset);
 					int end = System.Math.Min (chunk.EndOffset, selection.EndOffset);
@@ -91,32 +123,7 @@ namespace Mono.TextEditor.Utils
 							rtfText.Append (@"\cf" + (curColor + 1));
 							appendSpace = true;
 						}
-						for (int i = start; i < end; i++) {
-							char ch = doc.GetCharAt (i);
-							
-							switch (ch) {
-							case '\\':
-								rtfText.Append (@"\\");
-								break;
-							case '{':
-								rtfText.Append (@"\{");
-								break;
-							case '}':
-								rtfText.Append (@"\}");
-								break;
-							case '\t':
-								rtfText.Append (@"\tab");
-								appendSpace = true;
-								break;
-							default:
-								if (appendSpace) {
-									rtfText.Append (' ');
-									appendSpace = false;
-								}
-								rtfText.Append (ch);
-								break;
-							}
-						}
+						AppendRtfText (rtfText, doc, start, end, ref appendSpace);
 					}
 				}
 				rtfText.Append (@"\par");
