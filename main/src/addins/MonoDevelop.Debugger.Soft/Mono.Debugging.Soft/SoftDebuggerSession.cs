@@ -551,13 +551,15 @@ namespace Mono.Debugging.Soft
 			if (!exited) {
 				exited = true;
 				EndLaunch ();
+			}
 
-				foreach (var symfile in symbolFiles)
-					symfile.Value.Dispose ();
+			foreach (var symfile in symbolFiles)
+				symfile.Value.Dispose ();
 
-				symbolFiles.Clear ();
-				symbolFiles = null;
+			symbolFiles.Clear ();
+			symbolFiles = null;
 
+			if (!exited) {
 				if (vm != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
