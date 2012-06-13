@@ -49,6 +49,7 @@ namespace MonoDevelop.CSharp
 		
 		public override void Initialize ()
 		{
+			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			UpdatePath (null, null);
 			Document.Editor.Caret.PositionChanged += UpdatePath;
 			var ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
