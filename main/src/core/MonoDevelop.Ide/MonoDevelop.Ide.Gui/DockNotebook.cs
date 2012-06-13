@@ -116,21 +116,23 @@ namespace MonoDevelop.Ide.Gui
 		public IDockNotebookTab CurrentTab {
 			get { return currentTab; }
 			set {
-				currentTab = value;
-				if (contentBox.Child != null)
-					contentBox.Remove (contentBox.Child);
+				if (currentTab != value) {
+					currentTab = value;
+					if (contentBox.Child != null)
+						contentBox.Remove (contentBox.Child);
 
-				if (currentTab != null) {
-					if (currentTab.Content != null)
-						contentBox.Add (currentTab.Content);
-					pagesHistory.Remove (currentTab);
-					pagesHistory.Insert (0, currentTab);
+					if (currentTab != null) {
+						if (currentTab.Content != null)
+							contentBox.Add (currentTab.Content);
+						pagesHistory.Remove (currentTab);
+						pagesHistory.Insert (0, currentTab);
+					}
+
+					tabStrip.Update ();
+
+					if (SwitchPage != null)
+						SwitchPage (this, EventArgs.Empty);
 				}
-
-				tabStrip.Update ();
-
-				if (SwitchPage != null)
-					SwitchPage (this, EventArgs.Empty);
 			}
 		}
 
