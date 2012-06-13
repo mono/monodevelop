@@ -25,6 +25,10 @@
 		<Import file = "Templates/GlobalAsaxMvc3.xft.xml" />
 		<Import file = "Templates/WebConfigAppMvc3.xft.xml" />
 		<Import file = "Templates/WebConfigViewsMvc3.xft.xml" />
+		<Import file = "Templates/ProjectWithUnitTest.xpt.xml" />
+		<Import file = "Templates/ProjectMvc3WithUnitTest.xpt.xml" />
+		<Import file = "Templates/ProjectMvc3Razor.xpt.xml" />
+		<Import file = "Templates/ProjectMvc3RazorWithUnitTest.xpt.xml" />
 	</Runtime>
 	
 	<Dependencies>
@@ -69,11 +73,15 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "AspMvcProject" file = "Templates/Project.xpt.xml" />
 		<ProjectTemplate id = "AspMvcProject-Empty" file = "Templates/EmptyProject.xpt.xml"/>
+		<ProjectTemplate id = "AspMvcProject" file = "Templates/Project.xpt.xml" />
+		<ProjectTemplate id = "AspMvcProjectWithUnitTest" file = "Templates/ProjectWithUnitTest.xpt.xml" />
 	<Condition id="AssemblyInstalled" name="System.Web.Mvc" minVersion="3.0.0.0">
-		<ProjectTemplate id = "AspMvc3Project" file = "Templates/ProjectMvc3.xpt.xml" />
 		<ProjectTemplate id = "AspMvc3Project-Empty" file = "Templates/EmptyProjectMvc3.xpt.xml" />
+		<ProjectTemplate id = "AspMvc3Project" file = "Templates/ProjectMvc3.xpt.xml" />
+		<ProjectTemplate id = "AspMvc3ProjectWithUnitTest" file = "Templates/ProjectMvc3WithUnitTest.xpt.xml" />
+		<ProjectTemplate id = "AspMvc3Project-Razor" file = "Templates/ProjectMvc3Razor.xpt.xml" />
+		<ProjectTemplate id = "AspMvc3Project-RazorWithUnitTest" file = "Templates/ProjectMvc3RazorWithUnitTest.xpt.xml" />
 	</Condition>
 	</Extension>
 	

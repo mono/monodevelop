@@ -28,7 +28,7 @@
 							<NamespaceImport Namespace="System.Web.Mvc.Ajax" />
 						</Imports>
 					</Namespace>
-					<Namespace Name="${Namespace}">
+					<Namespace Name="${Namespace}.Controllers">
 						<Types>
 							<TypeDeclaration Name="${Name}" IsClass="true" >
 								<BaseTypes>
