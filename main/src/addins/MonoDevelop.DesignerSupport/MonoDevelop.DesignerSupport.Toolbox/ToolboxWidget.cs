@@ -234,6 +234,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				cr.Color = Style.Text (StateType.Normal).ToCairoColor ();
 				Pango.CairoHelper.ShowLayout (cr, messageLayout);
 				messageLayout.Dispose ();
+				((IDisposable)cr).Dispose ();
 				return true;
 			}
 
