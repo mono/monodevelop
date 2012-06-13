@@ -650,6 +650,7 @@ namespace MonoDevelop.SourceEditor
 				}
 
 				var tle = new TextLinkEditMode (this, result.InsertPosition, links);
+				tle.TextLinkMode = TextLinkMode.General;
 				if (tle.ShouldStartTextLinkMode) {
 					tle.OldMode = CurrentMode;
 					tle.StartMode ();

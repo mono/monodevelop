@@ -204,13 +204,10 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
-/*			
-			if (textEditorData.CurrentMode is CompletionTextLinkMode) {
-				if (!((CompletionTextLinkMode)textEditorData.CurrentMode).TriggerCodeCompletion)
+			if (textEditorData.CurrentMode is TextLinkEditMode) {
+				if (((TextLinkEditMode)textEditorData.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
 					return null;
-			} else if (textEditorData.CurrentMode is Mono.TextEditor.TextLinkEditMode) {
-				return null;
-			}*/
+			}
 			if (Unit == null || CSharpParsedFile == null)
 				return null;
 			var list = new CompletionDataList ();

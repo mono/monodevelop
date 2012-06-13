@@ -134,6 +134,11 @@ namespace Mono.TextEditor
 		#endregion
 	}
 
+	public enum TextLinkMode {
+		EditIdentifier,
+		General
+	}
+
 	public class TextLinkEditMode : HelpWindowEditMode
 	{
 		List<TextLink> links;
@@ -172,6 +177,11 @@ namespace Mono.TextEditor
 		}
 
 		public bool SelectPrimaryLink {
+			get;
+			set;
+		}
+
+		public TextLinkMode TextLinkMode {
 			get;
 			set;
 		}

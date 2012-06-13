@@ -56,7 +56,6 @@ FILES =  \
 	MonoDevelop.CSharp.CodeGeneration/ReadonlyPropertyGenerator.cs \
 	MonoDevelop.CSharp.CodeGeneration/ToStringGenerator.cs \
 	MonoDevelop.CSharp.CodeGeneration/WriteLineGenerator.cs \
-	MonoDevelop.CSharp.Completion/CompletionTextLinkMode.cs \
 	MonoDevelop.CSharp.Completion/ConstructorParameterDataProvider.cs \
 	MonoDevelop.CSharp.Completion/CSharpCompletionTextEditorExtension.cs \
 	MonoDevelop.CSharp.Completion/DelegateDataProvider.cs \
