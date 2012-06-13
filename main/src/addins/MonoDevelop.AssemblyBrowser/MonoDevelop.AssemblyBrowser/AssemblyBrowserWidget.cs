@@ -355,9 +355,9 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (type is ArrayTypeReference) {
 				var array = (ArrayTypeReference)type;
-				AppendTypeReference (result, array.ElementType);
+  				AppendTypeReference (result, array.ElementType);
 				result.Append ("[");
-				result.Append (new string (',', array.Dimensions));
+				result.Append (new string (',', array.Dimensions  - 1));
 				result.Append ("]");
 				return;
 			}
@@ -368,7 +368,13 @@ namespace MonoDevelop.AssemblyBrowser
 				result.Append ("*");
 				return;
 			}
-			
+
+			if (type is GetClassTypeReference){
+				var r = (GetClassTypeReference)type;
+				result.Append (r.Namespace + "." + r.Name);
+				return;
+			}
+
 			if (type is IUnresolvedTypeDefinition)
 				result.Append (((IUnresolvedTypeDefinition)type).FullName);
 		}
@@ -474,8 +480,9 @@ namespace MonoDevelop.AssemblyBrowser
 				if (member is IUnresolvedTypeDefinition)
 					return GetIdString (member) == helpUrl;
 			} else {
-				if (member is IUnresolvedMember)
+				if (member is IUnresolvedMember) {
 					return GetIdString (member) == helpUrl;
+				}
 			}
 			return false;
 		}
