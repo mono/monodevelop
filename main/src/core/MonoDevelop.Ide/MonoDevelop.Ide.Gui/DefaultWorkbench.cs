@@ -1435,29 +1435,6 @@ namespace MonoDevelop.Ide.Gui
 			yield return rect;
 		}
 		
-		public Action<int,Gdk.EventButton> DoPopupMenu { get; set; }
-		
-		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
-		{
-			if (DoPopupMenu != null && evnt.TriggersContextMenu ()) {
-				int tab = FindTabAtPosition (evnt.XRoot, evnt.YRoot);
-				if (tab >= 0) {
-					DoPopupMenu (tab, evnt);
-					return true;
-				}
-			}
-			return base.OnButtonPressEvent (evnt);
-		}
-		
-		protected override bool OnPopupMenu ()
-		{
-			if (DoPopupMenu != null) {
-				DoPopupMenu (this.CurrentTabIndex, null);
-				return true;
-			}
-			return base.OnPopupMenu ();
-		}
-
 		#region ICommandBar implementation
 		bool isEnabled = true;
 

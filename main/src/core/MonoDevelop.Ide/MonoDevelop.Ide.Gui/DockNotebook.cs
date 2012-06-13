@@ -145,6 +145,8 @@ namespace MonoDevelop.Ide.Gui
 			get { return pages.Count; }
 		}
 
+		public Action<int,Gdk.EventButton> DoPopupMenu { get; set; }
+
 		public IDockNotebookTab InsertTab (int index)
 		{
 			var tab = new DockNotebookTab (this, tabStrip);
@@ -648,6 +650,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
 			if (t != null) {
+				if (evnt.IsContextMenuButton ()) {
+					notebook.DoPopupMenu (t.Index, evnt);
+					return true;
+				}
 				buttonPressedOnTab = true;
 				// Don't select the tab if we are clicking the close button
 				if (IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y))
