@@ -97,6 +97,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
+
+		public DomRegion FormattingRegion {
+			get;
+			set;
+		}
 		
 		public AstFormattingVisitor(CSharpFormattingOptions policy, IDocument document, TextEditorOptions options = null)
 		{
@@ -110,6 +115,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.document = document;
 			this.options = options ?? TextEditorOptions.Default;
 			curIndent = new Indent(this.options);
+		}
+
+		protected virtual void VisitChildren (AstNode node)
+		{
+			if (!FormattingRegion.IsEmpty) {
+				if (node.EndLocation < FormattingRegion.Begin || node.StartLocation > FormattingRegion.End)
+					return;
+			}
+
+			AstNode next;
+			for (var child = node.FirstChild; child != null; child = next) {
+				// Store next to allow the loop to continue
+				// if the visitor removes/replaces child.
+				next = child.NextSibling;
+				child.AcceptVisitor (this);
+			}
 		}
 		
 		/// <summary>
