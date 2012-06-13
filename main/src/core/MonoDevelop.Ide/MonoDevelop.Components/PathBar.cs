@@ -172,7 +172,7 @@ namespace MonoDevelop.Components
 			activeIndex = -1;
 			leftWidths = rightWidths = null;
 			EnsureWidths ();
-			QueueDraw ();
+			QueueResize ();
 		}
 		
 		bool ArrSame (PathEntry[] a, PathEntry[] b)
@@ -505,7 +505,10 @@ namespace MonoDevelop.Components
 		int[] CreateWidthArray (PathEntry[] path)
 		{
 			var result = new int[path.Length];
-			int maxIconHeight = 0;
+
+			// Assume that there will be icons of at least 16 pixels. This avoids
+			// annoying path bar height changes when switching between empty and full paths
+			int maxIconHeight = 16;
 
 			for (int i = 0; i < path.Length; i++) {
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
