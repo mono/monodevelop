@@ -79,7 +79,10 @@ namespace MonoDevelop.Ide.Gui
 			box = new VBox ();
 			content.WorkbenchWindow = this;
 
-			box.PackStart (content.Control);
+			// The previous WorkbenchWindow property assignement may end with a call to AttachViewContent,
+			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
+			if (subViewContents == null)
+				box.PackStart (content.Control);
 			
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
 			extensionContext = AddinManager.CreateExtensionContext ();
@@ -438,8 +441,13 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			
 			subViewContents = new List<IAttachableViewContent> ();
-			
-			box.Remove (this.ViewContent.Control);
+
+			// The view may call AttachViewContent when initialized, and this
+			// may happen before the main content is added to 'box', so we
+			// have to check if the content is already parented or not
+
+			if (this.ViewContent.Control.Parent != null)
+				box.Remove (this.ViewContent.Control);
 			
 			subViewNotebook = new Notebook ();
 			subViewNotebook.TabPos = PositionType.Bottom;
