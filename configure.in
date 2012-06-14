@@ -1,0 +1,72 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.68])
+AC_INIT([F# binding], [0.9], [str8sega@hotmail.com])
+#AM_INIT_AUTOMAKE([F# binding, 0.9])
+m4_pattern_allow(AM_INIT_AUTOMAKE([foreign tar-ustar]))
+m4_pattern_allow(AM_MAINTAINER_MODE([enable]))
+([AM_INIT_AUTOMAKE])
+
+dnl pkg-config
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+if test "x$PKG_CONFIG" = "xno"; then
+        AC_MSG_ERROR([You need to install pkg-config])
+fi
+
+# Checks for programs.
+AC_PROG_INSTALL
+
+AC_PATH_PROG(MONO, mono)
+AC_PATH_PROG(MCS, gmcs)
+#AC PATH_PROG(FSHARPC, fsharpc)
+
+if test "x$MONO" = "x" ; then
+	AC_MSG_ERROR([Can't find "mono" in your PATH])
+fi
+
+if test "x$MCS" = "x" ; then
+  AC_MSG_ERROR([Can't find "gmcs" in your PATH])
+fi
+
+AC_PATH_PROG(GACUTIL, gacutil, no)
+if test "x$GACUTIL" = "xno" ; then
+AC_MSG_ERROR([No gacutil tool found])
+fi
+
+#if test "x$FSHARPC" = "x" ; then
+#	AC_MSG_ERROR([Can`t find F# compler in your PATH])
+#fi
+
+# Checks for libraries.
+
+PKG_CHECK_MODULES(GTK_SHARP, gtk-sharp-2.0 glade-sharp-2.0)
+AC_SUBST(GTK_SHARP_LIBS)
+
+PKG_CHECK_MODULES(GNOME_SHARP, gnome-sharp-2.0 gconf-sharp-2.0, enable_gnome=yes, enable_gnome=no)
+if test "x$enable_gnome" = "xyes"; then
+CSHARP_FLAGS="-d:GNOME"
+fi
+
+PKG_CHECK_MODULES(ATK_SHARP, atk-sharp-2.0)
+if test "x$
+
+AC_SUBST(GNOME_SHARP_LIBS)
+m4_pattern_allow(AM_CONDITIONAL(ENABLE_GNOME, test "x$enable_gnome" = "xyes"))
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
+
+
+
+AC_CONFIG_FILES([
+#Makefile
+#src/Makefile
+#src/Resources/Makefile
+#src/Services/Makefile
+])
+
+AC_OUTPUT()
