@@ -137,8 +137,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			separatorLine = CairoExtensions.ParseColor ("dedede");
 			darkSearchBackground = CairoExtensions.ParseColor ("ffffff");
 			lightSearchBackground = CairoExtensions.ParseColor ("f2f2f2");
-			color1 = CairoExtensions.ParseColor ("fdfdfd");
-			color2 = CairoExtensions.ParseColor ("f7f7f7");
+			color1 = CairoExtensions.ParseColor ("cccccc");
+			color2 = CairoExtensions.ParseColor ("cccccc");
 		}
 		
 		public void ResetState ()
@@ -410,7 +410,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						x = icon.Width + 4;
 					}
 					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
-					var linearGradient =new Cairo.LinearGradient (0, ypos, 0, ypos + rowHeight);
+					var linearGradient =new Cairo.LinearGradient (0, ypos+ 0.5, 0, ypos + rowHeight + 0.5);
 					linearGradient.AddColorStop (0, color1);
 					linearGradient.AddColorStop (0, color2);
 					context.Pattern = linearGradient;
@@ -490,16 +490,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 						}
 						context.Fill ();
 
-						context.Color = separatorLine;
-						context.MoveTo (0.5, 0.5 + ypos);
-						context.LineTo (0.5 + Allocation.Width, 0.5 + ypos);
-						context.Stroke ();
-
-						context.MoveTo (0.5, 0.5 + ypos + rowHeight - 1);
-						context.LineTo (0.5 + Allocation.Width, 0.5 + ypos + rowHeight - 1);
-						context.Stroke ();
-
-
 						if (icon != null) {
 							window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
 							xpos += iconTextSpacing;
@@ -510,11 +500,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 						var xSpacing = marginIconSpacing + iconTextSpacing + 16 + margin;
 						if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null)
 							xSpacing += categoryModeItemIndenting;
-						context.Rectangle (0, ypos, xSpacing, he + iconTextSpacing - 1);
+						context.Rectangle (0, ypos + 0.5, xSpacing, he + iconTextSpacing - 1);
 						context.Fill ();
-
+					
 						context.Color = darkSearchBackground;
-						context.Rectangle (xSpacing, ypos, lineWidth - 1 - xSpacing, he + iconTextSpacing - 1);
+						context.Rectangle (xSpacing, ypos + 0.5, lineWidth - 1 - xSpacing, he + iconTextSpacing - 1);
 						context.Fill ();
 
 						context.MoveTo (0.5 + xSpacing, 0.5 + ypos);

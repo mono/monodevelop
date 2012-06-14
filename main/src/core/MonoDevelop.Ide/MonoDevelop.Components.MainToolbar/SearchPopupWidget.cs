@@ -54,6 +54,7 @@ namespace MonoDevelop.Components.MainToolbar
 		Cairo.Color darkSearchBackground;
 		Cairo.Color lightSearchBackground;
 
+		Cairo.Color selectionBackgroundColor;
 		SearchPopupWindow searchPopupWindow;
 
 		bool isInSearch;
@@ -65,7 +66,7 @@ namespace MonoDevelop.Components.MainToolbar
 			separatorLine = CairoExtensions.ParseColor ("dedede");
 			lightSearchBackground = CairoExtensions.ParseColor ("ffffff");
 			darkSearchBackground = CairoExtensions.ParseColor ("f7f7f7");
-
+			selectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			layout = new Pango.Layout (PangoContext);
@@ -361,7 +362,7 @@ namespace MonoDevelop.Components.MainToolbar
 					layout.SetMarkup ("<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#8F8F8F\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
 					layout.GetPixelSize (out w, out h);
 					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
-						context.Color = new Cairo.Color (0.8, 0.8, 0.8);
+						context.Color = selectionBackgroundColor;
 						context.Rectangle (headerMarginSize, y, evnt.Area.Width - headerMarginSize, h);
 						context.Fill ();
 						context.Color = new Cairo.Color (1, 1, 1);
