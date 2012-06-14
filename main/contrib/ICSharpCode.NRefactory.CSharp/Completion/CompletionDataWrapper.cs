@@ -250,7 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AddType(resolvedType, typeString);
 			}
 			foreach (var field in resolvedType.GetFields ()) {
-				if (field.IsConst || field.IsStatic) {
+				if (field.IsPublic && (field.IsConst || field.IsStatic)) {
 					Result.Add(Factory.CreateEntityCompletionData(
 						field,
 						typeString + "." + field.Name
