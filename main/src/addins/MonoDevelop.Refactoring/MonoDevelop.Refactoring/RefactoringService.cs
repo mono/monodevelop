@@ -251,9 +251,8 @@ namespace MonoDevelop.Refactoring
 				return editor.MainSelection.Start;
 
 			var line = editor.GetLine (location.Line);
-			if (line == null || location.Column >= line.Length)
+			if (line == null || location.Column > line.LengthIncludingDelimiter)
 				return location;
-
 			int offset = editor.LocationToOffset (location);
 			if (offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1)))
 				return new DocumentLocation (location.Line, location.Column - 1);
