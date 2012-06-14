@@ -38,6 +38,7 @@ namespace MonoDevelop.Components.MainToolbar
 		Gdk.Pixbuf GetIcon (int item);
 		string GetMarkup (int item, bool isSelected);
 		string GetDescriptionMarkup (int item, bool isSelected);
+		double GetWeight (int item);
 
 		DomRegion GetRegion (int item);
 	}

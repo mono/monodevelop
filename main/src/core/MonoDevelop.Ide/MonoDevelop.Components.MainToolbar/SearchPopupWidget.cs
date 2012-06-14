@@ -76,9 +76,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (src != null)
 				src.Cancel ();
-			selectedCategory = null;
-			selectedDataSource = null;
-			selectedItem = 0;	
+			selectedItem = null;
 
 			src = new CancellationTokenSource ();
 			isInSearch = true;
@@ -112,15 +110,17 @@ namespace MonoDevelop.Components.MainToolbar
 				return categories.IndexOf (x.Item1).CompareTo (categories.IndexOf (y.Item1));
 			}
 			);
-			for (int i = 0; i < results.Count; i++) {
-				if (results[i].Item2.ItemCount == 0)
-					continue;
-				selectedCategory = results [i].Item1;
-				selectedDataSource = results [i].Item2;
-				selectedItem = 0;
-			}
 
 			if (results.Count == categories.Count) {
+				topItem = null;
+				for (int i = 0; i < results.Count; i++) {
+					if (results[i].Item2.ItemCount == 0)
+						continue;
+					if (topItem == null || topItem.DataSource.GetWeight (topItem.Item) <  results[i].Item2.GetWeight (0)) 
+						topItem = new ItemIdentifier (results[i].Item1, results[i].Item2, 0);
+				}
+				selectedItem = topItem;
+
 				QueueResize ();
 				QueueDraw ();
 				isInSearch = false;
@@ -170,7 +170,7 @@ namespace MonoDevelop.Components.MainToolbar
 		
 		}
 
-		Tuple<SearchCategory, ISearchDataSource, int> GetItemAt (double px, double py)
+		ItemIdentifier GetItemAt (double px, double py)
 		{
 			double maxX = 0, y = yMargin;
 				
@@ -187,7 +187,7 @@ namespace MonoDevelop.Components.MainToolbar
 					layout.GetPixelSize (out w, out h);
 					y += h + itemSeparatorHeight;
 					if (y > py){
-						return Tuple.Create (category, dataSrc, i);
+						return new ItemIdentifier (category, dataSrc, i);
 					}
 
 					var region = dataSrc.GetRegion (i);
@@ -200,17 +200,15 @@ namespace MonoDevelop.Components.MainToolbar
 					maxX = Math.Max (maxX, w);
 				}
 			}
-			return new Tuple<SearchCategory, ISearchDataSource, int> (null, null, -1);
+			return null;
 		}
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (evnt.Button == 1) {
 				var item = GetItemAt (evnt.X, evnt.Y);
-				if (item.Item1 != null) {
-					selectedCategory = item.Item1;
-					selectedDataSource = item.Item2;
-					selectedItem = item.Item3;
+				if (item != null) {
+					selectedItem = item;
 					QueueDraw ();
 				}
 				if (evnt.Type == Gdk.EventType.TwoButtonPress)
@@ -225,32 +223,36 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			switch (key) {
 			case Gdk.Key.Up:
-				if (selectedDataSource == null)
+				if (selectedItem == null)
 					return true;
-				if (selectedItem > 0) {
-					selectedItem--;
+				if (selectedItem.Item > 0) {
+					selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item - 1);
 				} else {
 					for (int i = 1; i < results.Count; i++) {
-						if (results [i].Item1 == selectedCategory) {
-							selectedCategory = results [i - 1].Item1;
-							selectedDataSource = results [i - 1].Item2;
-							selectedItem = Math.Min (maxItems, selectedDataSource.ItemCount) - 1;
+						if (results [i].Item1 == selectedItem.Category) {
+							selectedItem = new ItemIdentifier (
+								results [i - 1].Item1,
+								results [i - 1].Item2,
+								Math.Min (maxItems, results [i - 1].Item2.ItemCount) - 1
+							);
 						}
 					}
 				}
 				QueueDraw ();
 				return true;
 			case Gdk.Key.Down:
-				if (selectedDataSource == null)
+				if (selectedItem == null)
 					return true;
-				if (selectedItem + 1 < Math.Min (maxItems, selectedDataSource.ItemCount)) {
-					selectedItem++;
+				if (selectedItem.Item + 1 < Math.Min (maxItems, selectedItem.DataSource.ItemCount)) {
+					selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item + 1);
 				} else {
 					for (int i = 0; i < results.Count - 1; i++) {
-						if (results [i].Item1 == selectedCategory && results [i + 1].Item2.ItemCount > 0) {
-							selectedCategory = results [i + 1].Item1;
-							selectedDataSource = results [i + 1].Item2;
-							selectedItem = 0;
+						if (results [i].Item1 == selectedItem.Category && results [i + 1].Item2.ItemCount > 0) {
+							selectedItem = new ItemIdentifier (
+								results [i + 1].Item1,
+								results [i + 1].Item2,
+								0
+							);
 						}
 					}
 				}
@@ -258,17 +260,23 @@ namespace MonoDevelop.Components.MainToolbar
 				return true;
 			case Gdk.Key.Home:
 				if (results.Any ()) {
-					selectedCategory = results.First ().Item1;
-					selectedDataSource = results.First ().Item2;
-					selectedItem = 0;
+					var r = results.First (r2 => r2.Item2.ItemCount > 0);
+					selectedItem = new ItemIdentifier (
+						r.Item1,
+						r.Item2,
+						0
+					);
 					QueueDraw ();
 				}
 				return true;
 			case Gdk.Key.End:
 				if (results.Any ()) {
-					selectedCategory = results.Last ().Item1;
-					selectedDataSource = results.Last ().Item2;
-					selectedItem = selectedDataSource.ItemCount - 1;
+					var r = results.Last (r2 => r2.Item2.ItemCount > 0);
+					selectedItem = new ItemIdentifier (
+						r.Item1,
+						r.Item2,
+						r.Item2.ItemCount - 1
+					);
 					QueueDraw ();
 				}
 				return true;
@@ -291,15 +299,26 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public DomRegion SelectedItemRegion {
 			get {
-				if (selectedDataSource == null || selectedItem < 0 || selectedItem >= selectedDataSource.ItemCount)
+				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
 					return DomRegion.Empty;
-				return selectedDataSource.GetRegion (selectedItem);
+				return selectedItem.DataSource.GetRegion (selectedItem.Item);
 			}
 		}
 
-		SearchCategory selectedCategory;
-		ISearchDataSource selectedDataSource;
-		int selectedItem;
+		class ItemIdentifier {
+			public SearchCategory Category { get; private set; }
+			public ISearchDataSource DataSource { get; private set; }
+			public int Item { get; private set; }
+
+			public ItemIdentifier (SearchCategory category, ISearchDataSource dataSource, int item)
+			{
+				this.Category = category;
+				this.DataSource = dataSource;
+				this.Item = item;
+			}
+		}
+
+		ItemIdentifier selectedItem = null, topItem = null;
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
@@ -326,10 +345,47 @@ namespace MonoDevelop.Components.MainToolbar
 
 				double y = yMargin;
 				int w, h;
+				if (topItem != null) {
+					headerLayout.SetText (GettextCatalog.GetString ("Top result"));
+					headerLayout.GetPixelSize (out w, out h);
+					context.MoveTo (headerMarginSize - w - xMargin, y);
+					context.Color = headerColor;
+					PangoCairoHelper.ShowLayout (context, headerLayout);
+
+					var category = topItem.Category;
+					var dataSrc = topItem.DataSource;
+					var i = topItem.Item;
+
+					double x = xMargin + headerMarginSize;
+					context.Color = new Cairo.Color (0, 0, 0);
+					layout.SetMarkup ("<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#8F8F8F\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
+					layout.GetPixelSize (out w, out h);
+					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+						context.Color = new Cairo.Color (0.8, 0.8, 0.8);
+						context.Rectangle (headerMarginSize, y, evnt.Area.Width - headerMarginSize, h);
+						context.Fill ();
+						context.Color = new Cairo.Color (1, 1, 1);
+					}
+
+					var px = dataSrc.GetIcon (i);
+					if (px != null) {
+						evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+						x += px.Width + iconTextSpacing + marginIconSpacing;
+					}
+
+					context.MoveTo (x, y);
+					PangoCairoHelper.ShowLayout (context, layout);
+
+					y += h + itemSeparatorHeight;
+
+				}
+
 				foreach (var result in r) {
 					var category = result.Item1;
 					var dataSrc = result.Item2;
 					if (dataSrc.ItemCount == 0)
+						continue;
+					if (dataSrc.ItemCount == 1 && topItem != null && topItem.DataSource == dataSrc)
 						continue;
 					headerLayout.SetText (category.Name);
 					headerLayout.GetPixelSize (out w, out h);
@@ -338,11 +394,13 @@ namespace MonoDevelop.Components.MainToolbar
 					PangoCairoHelper.ShowLayout (context, headerLayout);
 
 					for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+						if (topItem != null && topItem.Category == category && topItem.Item == i)
+							continue;
 						double x = xMargin + headerMarginSize;
 						context.Color = new Cairo.Color (0, 0, 0);
 						layout.SetMarkup ("<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#8F8F8F\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
 						layout.GetPixelSize (out w, out h);
-						if (selectedCategory == category && selectedItem == i) {
+						if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
 							context.Color = new Cairo.Color (0.8, 0.8, 0.8);
 							context.Rectangle (headerMarginSize, y, evnt.Area.Width - headerMarginSize, h);
 							context.Fill ();
