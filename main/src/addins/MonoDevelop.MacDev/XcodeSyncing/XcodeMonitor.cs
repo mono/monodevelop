@@ -81,7 +81,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var toClose = new HashSet<string> ();
 			var syncList = new List<XcodeSyncedItem> ();
 			bool updateProject = false;
-			
+
+			monitor.Log.WriteLine ("Calculating sync list...");
 			foreach (var item in items) {
 				bool needsSync = item.NeedsSyncOut (monitor, ctx);
 				if (needsSync)
@@ -92,10 +93,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					toRemove.Remove (file);
 					
 					if (!itemMap.ContainsKey (file)) {
-						monitor.Log.WriteLine ("'{0}' needs to be added.", file);
+						monitor.Log.WriteLine ("\t'{0}' needs to be added.", file);
 						updateProject = true;
 					} else if (needsSync) {
-						monitor.Log.WriteLine ("'{0}' needs to be closed & updated.", file);
+						monitor.Log.WriteLine ("\t'{0}' needs to be closed & updated.", file);
 						toClose.Add (file);
 					}
 					
@@ -107,7 +108,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			bool removedOldProject = false;
 			if (updateProject) {
 				if (pendingProjectWrite == null && ProjectExists ()) {
-					monitor.Log.WriteLine ("A project file needs to be updated, closing and removing old project.");
+					monitor.Log.WriteLine ("The project.pbxproj file needs to be updated, closing and removing old project.");
 					CloseProject ();
 					DeleteXcproj (monitor);
 					removedOldProject = true;
