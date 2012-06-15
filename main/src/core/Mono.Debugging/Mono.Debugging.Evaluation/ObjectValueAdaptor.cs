@@ -275,7 +275,7 @@ namespace Mono.Debugging.Evaluation
 		public object GetBaseType (EvaluationContext ctx, object type, bool includeObjectClass)
 		{
 			object bt = GetBaseType (ctx, type);
-			string tn = GetTypeName (ctx, bt);
+			string tn = bt != null ? GetTypeName (ctx, bt) : null;
 			if (!includeObjectClass && bt != null && (tn == "System.Object" || tn == "System.ValueType"))
 				return null;
 			else
