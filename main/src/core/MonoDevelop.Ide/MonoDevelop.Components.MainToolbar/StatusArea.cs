@@ -34,18 +34,13 @@ namespace MonoDevelop.Components.MainToolbar
 	public class StatusArea : EventBox
 	{
 		HBox contentBox = new HBox (false, 0);
+		StyledProgressBar progressBar = new StyledProgressBar ();
 		Color borderColor;
 
 		Color fill1Color;
 		Color fill2Color;
 
 		Color innerColor;
-
-		Color progressColor;
-
-
-		bool inProgress;
-		double progressFraction;
 
 		public StatusArea ()
 		{
@@ -54,10 +49,10 @@ namespace MonoDevelop.Components.MainToolbar
 			borderColor = CairoExtensions.ParseColor ("8c8c8c");
 			fill1Color = CairoExtensions.ParseColor ("eff5f7");
 			fill2Color = CairoExtensions.ParseColor ("d0d9db");
-			progressColor = CairoExtensions.ParseColor ("95999a");
 			innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
 			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 0);
 			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 4);
+			contentBox.PackEnd (progressBar, false, false, 4);
 			Add (contentBox);
 
 			this.ButtonPressEvent += delegate {
@@ -65,19 +60,19 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 
 			MonoDevelopStatusBar.ProgressBegin += delegate {
-				inProgress = true;
-				progressFraction = 0;
-				QueueDraw ();
+				progressBar.ShowProgress = true;
+				progressBar.Visible = true;
+				progressBar.Fraction = 0;
 			};
 
 			MonoDevelopStatusBar.ProgressEnd += delegate {
-				inProgress = false;
-				progressFraction = 0;
-				QueueDraw ();
+				progressBar.ShowProgress = false;
+				progressBar.Visible = false;
+				progressBar.Fraction = 0;
 			};
 
 			MonoDevelopStatusBar.ProgressFraction += delegate(object sender, MonoDevelopStatusBar.FractionEventArgs e) {
-				progressFraction = e.Work;
+				progressBar.Fraction = e.Work;
 				QueueDraw ();
 			};
 
@@ -86,7 +81,8 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 
 			SetSizeRequest (32, 22);
-			ShowAll ();
+			progressBar.Hide ();
+			Show ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -108,16 +104,6 @@ namespace MonoDevelop.Components.MainToolbar
 				context.LineWidth = 4;
 				context.Color = innerColor;
 				context.StrokePreserve ();
-
-				if (inProgress) {
-					context.NewPath ();
-					context.Rectangle (Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width * progressFraction, Allocation.Height);
-					context.Clip ();
-					CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width, Allocation.Height, 4);
-					context.Color = progressColor;
-					context.FillPreserve ();
-					context.ResetClip ();
-				}
 
 				context.LineWidth = 1;
 				context.Color = borderColor;

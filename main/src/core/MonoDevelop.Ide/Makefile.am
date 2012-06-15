@@ -219,6 +219,7 @@ FILES =  \
 	MonoDevelop.Components.MainToolbar/SearchPopupWidget.cs \
 	MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs \
 	MonoDevelop.Components.MainToolbar/StatusArea.cs \
+	MonoDevelop.Components.MainToolbar/StyledProgressBar.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/BooleanEditorCell.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CharPropertyEditor.cs \
 	MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs \

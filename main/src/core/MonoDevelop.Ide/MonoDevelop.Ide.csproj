@@ -1626,6 +1626,7 @@
     <Compile Include="MonoDevelop.Components\CompactDialog.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockVisualStyle.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchEntryBorder.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\StyledProgressBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
