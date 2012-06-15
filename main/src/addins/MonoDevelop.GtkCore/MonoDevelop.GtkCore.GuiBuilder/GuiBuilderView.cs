@@ -350,7 +350,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				FileService.MoveFile (oldBuildFile, newBuildFile);
 			}
 			
-			gproject.Save (true);
+			gproject.SaveWindow (true, window.RootWidget.Name);
 		}
 		
 		public override bool IsDirty {

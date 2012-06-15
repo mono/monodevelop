@@ -551,13 +551,15 @@ namespace Mono.Debugging.Soft
 			if (!exited) {
 				exited = true;
 				EndLaunch ();
+			}
 
-				foreach (var symfile in symbolFiles)
-					symfile.Value.Dispose ();
+			foreach (var symfile in symbolFiles)
+				symfile.Value.Dispose ();
 
-				symbolFiles.Clear ();
-				symbolFiles = null;
+			symbolFiles.Clear ();
+			symbolFiles = null;
 
+			if (!exited) {
 				if (vm != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
@@ -1856,6 +1858,11 @@ namespace Mono.Debugging.Soft
 										//Console.WriteLine ("\t\tLocation is closest match. (ILOffset = 0x{0:x5})", location.ILOffset);
 										target_loc = location;
 									}
+								} else if (target_loc.LineNumber != line) {
+									// Previous match was a fuzzy match, but now we've found an exact line match
+									//Console.WriteLine ("\t\tLocation is exact line match. (ILOffset = 0x{0:x5})", location.ILOffset);
+									target_loc = location;
+									fuzzy = false;
 								} else if (location.ILOffset < target_loc.ILOffset) {
 									// Line number matches exactly, but has an earlier ILOffset
 									//Console.WriteLine ("\t\tLocation has an earlier ILOffset. (ILOffset = 0x{0:x5})", location.ILOffset);

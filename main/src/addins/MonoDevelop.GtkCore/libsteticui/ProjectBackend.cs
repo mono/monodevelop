@@ -400,7 +400,7 @@ namespace Stetic {
 			
 			return data.Widget;
 		}
-		
+
 		public void Save (string fileName)
 		{
 			this.fileName = fileName;
@@ -575,6 +575,30 @@ namespace Stetic {
 			if (throwIfNotFound)
 				throw new InvalidOperationException ("Component not found: " + name);
 			return null;
+		}
+
+		HashSet<string> modifiedWidgets = new HashSet<string> ();
+		bool allModified;
+
+		public void SetWidgetModified (string widgetName)
+		{
+			modifiedWidgets.Add (widgetName);
+		}
+
+		public void SetAllWidgetsModified ()
+		{
+			allModified = true;
+		}
+
+		public void ResetModifiedWidgetFlags ()
+		{
+			allModified = false;
+			modifiedWidgets.Clear ();
+		}
+
+		internal bool IsWidgetModified (string name)
+		{
+			return allModified || modifiedWidgets.Contains (name);
 		}
 		
 		public object AddNewWidget (string type, string name)
@@ -786,6 +810,7 @@ namespace Stetic {
 
 		public void AddWidget (Gtk.Widget widget)
 		{
+			modifiedWidgets.Add (widget.Name);
 			if (!typeof(Gtk.Container).IsInstanceOfType (widget))
 				throw new System.ArgumentException ("widget", "Only containers can be top level widgets");
 			topLevels.Add (new WidgetData (null, null, widget));

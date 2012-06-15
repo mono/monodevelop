@@ -2256,18 +2256,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return;
 			}
 			string typeString = GetShortType(resolvedType, state);
-			if (typeString.Contains(".")) {
-				completionList.AddType(resolvedType, typeString);
-			}
-			foreach (var field in resolvedType.GetFields ()) {
-				if (field.IsConst || field.IsStatic) {
-					completionList.Result.Add(factory.CreateEntityCompletionData(
-						field,
-						typeString + "." + field.Name
-					)
-					);
-				}
-			}
+			completionList.AddEnumMembers (resolvedType, state, typeString);
 			DefaultCompletionString = typeString;
 		}
 		

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
@@ -237,6 +238,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (Type.GetAllBaseTypes ().Any (t => t.ReflectionName == compareCategory.Type.ReflectionName))
 					return -1;
 				return 1;
+			}
+		}
+		HashSet<IType> addedEnums = new HashSet<IType> ();
+		public void AddEnumMembers (IType resolvedType, CSharpResolver state, string typeString)
+		{
+			if (addedEnums.Contains (resolvedType))
+				return;
+			addedEnums.Add (resolvedType);
+			if (typeString.Contains(".")) {
+				AddType(resolvedType, typeString);
+			}
+			foreach (var field in resolvedType.GetFields ()) {
+				if (field.IsPublic && (field.IsConst || field.IsStatic)) {
+					Result.Add(Factory.CreateEntityCompletionData(
+						field,
+						typeString + "." + field.Name
+					)
+					);
+				}
 			}
 		}
 	}

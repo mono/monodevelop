@@ -130,16 +130,16 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					xcode.CloseProject ();
 				xcode.DeleteProjectDirectory ();
 			} finally {
+				MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn -= AppRegainedFocus;
+				dnp.FileAddedToProject -= FileAddedToProject;
+				dnp.FilePropertyChangedInProject -= FilePropertyChangedInProject;;
+				dnp.FileRemovedFromProject -= FileRemovedFromProject;
+				dnp.FileChangedInProject -= FileChangedInProject;
+				dnp.NameChanged -= ProjectNameChanged;
+
 				XC4Debug.Unindent ();
 				xcode = null;
 			}
-			
-			dnp.FileAddedToProject -= FileAddedToProject;
-			dnp.FilePropertyChangedInProject -= FilePropertyChangedInProject;;
-			dnp.FileRemovedFromProject -= FileRemovedFromProject;
-			dnp.FileChangedInProject -= FileChangedInProject;
-			dnp.NameChanged -= ProjectNameChanged;
-			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn -= AppRegainedFocus;
 		}
 		
 		void ShowXcodeScriptError ()

@@ -135,7 +135,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 								project.Files.Remove (file);
 						}
 						gproject.RemoveActionGroup (group);
-						gproject.Save (false);
+						gproject.SaveProject (false);
 						IdeApp.ProjectOperations.Save (project);
 					}
 				}

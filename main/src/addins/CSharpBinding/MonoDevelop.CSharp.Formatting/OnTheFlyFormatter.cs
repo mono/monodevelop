@@ -121,7 +121,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return sb.ToString ();
 		}
 		
-		static AstFormattingVisitor GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document document, string input)
+		static AstFormattingVisitor GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document document, string input, DomRegion formattingRegion)
 		{
 			using (var stubData = TextEditorData.CreateImmutable (input)) {
 				stubData.Document.FileName = document.FileName;
@@ -143,8 +143,10 @@ namespace MonoDevelop.CSharp.Formatting
 				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 				
 				var formattingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, document.Editor.CreateNRefactoryTextEditorOptions ()) {
-					HadErrors = hadErrors
+					HadErrors = hadErrors,
+					FormattingRegion = formattingRegion
 				};
+
 				compilationUnit.AcceptVisitor (formattingVisitor);
 				return formattingVisitor;
 			}
@@ -159,11 +161,13 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			string text;
 			int formatStartOffset, formatLength, realTextDelta;
+			DomRegion formattingRegion = DomRegion.Empty;
 			if (exact) {
 				text = data.Editor.Text;
 				formatStartOffset = startOffset;
 				formatLength = endOffset - startOffset;
 				realTextDelta = 0;
+				formattingRegion = new DomRegion (data.Editor.OffsetToLocation (startOffset), data.Editor.OffsetToLocation (endOffset));
 			} else {
 				var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset - 1);
 				if (seg == null)
@@ -174,12 +178,12 @@ namespace MonoDevelop.CSharp.Formatting
 				
 				// Build stub
 				text = BuildStub (data, seg, startOffset, endOffset, out formatStartOffset);
+
 				formatLength = endOffset - seg.Offset;
 				realTextDelta = seg.Offset - formatStartOffset;
 			}
-
 			// Get changes from formatting visitor
-			var changes = GetFormattingChanges (policyParent, mimeTypeChain, data, text);
+			var changes = GetFormattingChanges (policyParent, mimeTypeChain, data, text, formattingRegion);
 			if (changes == null)
 				return;
 

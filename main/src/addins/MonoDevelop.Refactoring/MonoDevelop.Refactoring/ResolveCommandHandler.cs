@@ -60,7 +60,8 @@ namespace MonoDevelop.Refactoring
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, doc.Editor.Caret.Location, out node);
+				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
+				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, location, out node);
 				if (resolveResult == null || node is Statement)
 					return false;
 			} catch (Exception e) {

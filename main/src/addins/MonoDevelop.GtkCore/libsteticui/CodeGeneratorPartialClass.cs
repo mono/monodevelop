@@ -18,7 +18,7 @@ namespace Stetic
 			
 				// Generate top levels
 				foreach (Gtk.Widget w in gp.Toplevels)
-					GenerateWidgetCode (globalUnit, globalNs, options, units, w, warnings);
+					GenerateWidgetCode (globalUnit, globalNs, options, units, w, warnings, !options.GenerateModifiedOnly || gp.IsWidgetModified (w.Name));
 					
 				// Generate global action groups
 				foreach (Wrapper.ActionGroup agroup in gp.ActionGroups)
@@ -34,7 +34,8 @@ namespace Stetic
 				unit = globalUnit;
 			else {
 				unit = new SteticCompilationUnit (name);
-				units.Add (unit);
+				if (units != null)
+					units.Add (unit);
 			}
 			
 			string ns = "";
@@ -56,42 +57,57 @@ namespace Stetic
 		}
 		
 		
-		static void GenerateWidgetCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, GenerationOptions options, List<SteticCompilationUnit> units, Gtk.Widget w, ArrayList warnings)
+		static void GenerateWidgetCode (SteticCompilationUnit globalUnit, CodeNamespace globalNs, GenerationOptions options, List<SteticCompilationUnit> units, Gtk.Widget w, ArrayList warnings, bool regenerateWidgetClass)
 		{
-			// Generate the build method
-			
+			if (options.GenerateSingleFile)
+				regenerateWidgetClass = true;
+
+			// Don't register this unit if the class doesn't need to be regenerated
+			if (!regenerateWidgetClass)
+				units = null;
+
 			CodeTypeDeclaration type = CreatePartialClass (globalUnit, units, options, w.Name);
+
+			// Generate the build method
 			CodeMemberMethod met = new CodeMemberMethod ();
 			met.Name = "Build";
 			type.Members.Add (met);
 			met.ReturnType = new CodeTypeReference (typeof(void));
 			met.Attributes = MemberAttributes.Family;
-			
+				
 			Stetic.Wrapper.Widget wwidget = Stetic.Wrapper.Widget.Lookup (w);
 
-			if (options.GenerateEmptyBuildMethod) {
-				GenerateWrapperFields (type, wwidget);
-				return;
+			if (regenerateWidgetClass) {
+
+				if (options.GenerateEmptyBuildMethod) {
+					GenerateWrapperFields (type, wwidget);
+					return;
+				}
+
+				met.Statements.Add (
+						new CodeMethodInvokeExpression (
+							new CodeTypeReferenceExpression (new CodeTypeReference (globalNs.Name + ".Gui", CodeTypeReferenceOptions.GlobalReference)),
+							"Initialize",
+				            new CodeThisReferenceExpression ()
+						)
+				);
+
+				if (wwidget.GeneratePublic)
+					type.TypeAttributes = TypeAttributes.Public;
+				else
+					type.TypeAttributes = TypeAttributes.NotPublic;
+				
+				if (!String.IsNullOrEmpty (wwidget.UIManagerName))
+					type.Members.Add (new CodeMemberField (new CodeTypeReference ("Gtk.UIManager", CodeTypeReferenceOptions.GlobalReference), wwidget.UIManagerName));
 			}
 
-			met.Statements.Add (
-					new CodeMethodInvokeExpression (
-						new CodeTypeReferenceExpression (new CodeTypeReference (globalNs.Name + ".Gui", CodeTypeReferenceOptions.GlobalReference)),
-						"Initialize",
-			            new CodeThisReferenceExpression ()
-					)
-			);
-
-			if (wwidget.GeneratePublic)
-				type.TypeAttributes = TypeAttributes.Public;
-			else
-				type.TypeAttributes = TypeAttributes.NotPublic;
-			
-			if (!String.IsNullOrEmpty (wwidget.UIManagerName))
-				type.Members.Add (new CodeMemberField (new CodeTypeReference ("Gtk.UIManager", CodeTypeReferenceOptions.GlobalReference), wwidget.UIManagerName));
+			// We need to generate the creation code even if regenerateWidgetClass is false because GenerateCreationCode
+			// may inject support classes or methods into the global namespace, which is always generated
 
 			Stetic.WidgetMap map = Stetic.CodeGenerator.GenerateCreationCode (globalNs, type, w, new CodeThisReferenceExpression (), met.Statements, options, warnings);
-			CodeGenerator.BindSignalHandlers (new CodeThisReferenceExpression (), wwidget, map, met.Statements, options);
+
+			if (regenerateWidgetClass)
+				CodeGenerator.BindSignalHandlers (new CodeThisReferenceExpression (), wwidget, map, met.Statements, options);
 		}
 		
 		static void GenerateWrapperFields (CodeTypeDeclaration type, ObjectWrapper wrapper)

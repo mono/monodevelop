@@ -361,7 +361,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				DateTime last_gen_time = File.Exists (info.SteticGeneratedFile) ? File.GetLastWriteTime (info.SteticGeneratedFile) : DateTime.MinValue;
 				
 				bool ref_changed = false;
-				foreach (ProjectReference pref in project.References) {
+
+				// Disabled check for changes in referenced assemblies, since it cause too much
+				// regeneration of code. If a component has changed in a referenced project, this
+				// project may not build, but this can be solved by editing some file in the
+				// designer and saving.
+
+/*				foreach (ProjectReference pref in project.References) {
 					if (!pref.IsValid)
 						continue;
 					foreach (string filename in pref.GetReferencedFileNames (configuration)) {
@@ -372,7 +378,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					}
 					if (ref_changed)
 						break;
-				}
+				}*/
 	
 				// Check if generated code is already up to date.
 				if (!ref_changed && last_gen_time >= File.GetLastWriteTime (info.SteticFile))
@@ -440,7 +446,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						options.GettextClass = info.GettextClass;
 						options.UsePartialClasses = project.UsePartialTypes;
 						options.GenerateSingleFile = false;
+						options.GenerateModifiedOnly = true;
 						generationResult = SteticApp.GenerateProjectCode (options, info.GuiBuilderProject.SteticProject);
+						info.GuiBuilderProject.SteticProject.ResetModifiedWidgetFlags ();
 					} catch (Exception ex) {
 						generatedException = ex;
 					}

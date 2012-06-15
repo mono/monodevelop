@@ -191,7 +191,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public void Save (bool saveMdProject)
+		public void SaveAll (bool saveMdProject)
+		{
+			if (gproject != null)
+				gproject.SetAllWidgetsModified ();
+			SaveProject (saveMdProject);
+		}
+
+		public void SaveWindow (bool saveMdProject, string modifiedWindow)
+		{
+			if (gproject != null)
+				gproject.SetWidgetModified (modifiedWindow);
+			SaveProject (saveMdProject);
+		}
+
+		public void SaveProject (bool saveMdProject)
 		{
 			if (disposed)
 				return;
@@ -374,7 +388,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
 			if (pref != null) {
 				gproject.AddWidgetLibrary (pref);
-				Save (false);
+				SaveProject (false);
 			}
 		}
 		
@@ -385,7 +399,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string pref = GetReferenceLibraryPath (args.ProjectReference);
 			if (pref != null) {
 				gproject.RemoveWidgetLibrary (pref);
-				Save (false);
+				SaveProject (false);
 			}
 		}
 
@@ -415,7 +429,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			dlg.AddAllFilesFilter ();
 			if (dlg.Run ()) {
 				SteticProject.ImportGlade (dlg.SelectedFile);
-				Save (true);
+				SaveAll (true);
 			}
 		}
 		
@@ -581,7 +595,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			if (needsSave)
-				Save (true);
+				SaveAll (true);
 		}
 		
 		bool LibrariesChanged (string[] oldLibs, string[] internalLibs, string[] newLibs)
