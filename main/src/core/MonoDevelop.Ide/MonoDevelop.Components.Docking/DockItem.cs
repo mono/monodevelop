@@ -153,9 +153,13 @@ namespace MonoDevelop.Components.Docking
 				ShowDockPopupMenu (args.Event.Time);
 				args.RetVal = false;
 			} else if (args.Event.Button == 1) {
-				tabPressed = true;
-				pressX = args.Event.X;
-				pressY = args.Event.Y;
+				if (args.Event.Type == Gdk.EventType.ButtonPress) {
+					tabPressed = true;
+					pressX = args.Event.X;
+					pressY = args.Event.Y;
+				} else if (args.Event.Type == Gdk.EventType.TwoButtonPress) {
+					Status = DockItemStatus.AutoHide;
+				}
 			}
 		}
 		
