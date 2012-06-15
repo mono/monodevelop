@@ -178,7 +178,7 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 			matchEntry.Entry.KeyPressEvent += (o, args) => {
 				if (popup != null) {
-					args.RetVal = popup.ProcessKey (args.Event.Key);
+					args.RetVal = popup.ProcessKey (args.Event.Key, args.Event.State);
 				}
 			};
 			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {

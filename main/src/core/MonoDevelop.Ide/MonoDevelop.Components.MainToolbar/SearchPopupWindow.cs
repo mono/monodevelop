@@ -65,9 +65,9 @@ namespace MonoDevelop.Components.MainToolbar
 			Destroy ();
 		}
 
-		public bool ProcessKey (Gdk.Key key)
+		public bool ProcessKey (Gdk.Key key, Gdk.ModifierType state)
 		{
-			return widget.ProcessKey (key);
+			return widget.ProcessKey (key, state);
 		}
 	}
 }

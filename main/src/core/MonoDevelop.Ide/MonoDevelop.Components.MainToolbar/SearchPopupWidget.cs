@@ -219,67 +219,184 @@ namespace MonoDevelop.Components.MainToolbar
 			return base.OnButtonPressEvent (evnt);
 		}
 
+		int SelectedCategoryIndex {
+			get {
+				for (int i = 0; i < results.Count; i++) {
+					if (results [i].Item1 == selectedItem.Category) {
+						return i;
+					}
+				}
+				return -1;
+			}
+		}
 
-		internal bool ProcessKey (Gdk.Key key)
+		void SelectItemUp ()
+		{
+			if (selectedItem == null)
+				return;
+			int i = SelectedCategoryIndex;
+			if (selectedItem.Item > 0) {
+				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item - 1);
+			} else {
+				if (i > 0) {
+					selectedItem = new ItemIdentifier (
+						results [i - 1].Item1,
+						results [i - 1].Item2,
+						Math.Min (maxItems, results [i - 1].Item2.ItemCount) - 1
+					);
+				}
+			}
+			if (i > 0 && selectedItem.Equals (topItem)) {
+				SelectItemUp ();
+				return;
+			}
+			QueueDraw ();
+		}
+
+		void SelectItemDown ()
+		{
+			if (selectedItem == null)
+				return;
+			var i = SelectedCategoryIndex;
+			if (selectedItem.Item + 1 < Math.Min (maxItems, selectedItem.DataSource.ItemCount)) {
+				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item + 1);
+			} else {
+				if (i < results.Count - 1) {
+					selectedItem = new ItemIdentifier (
+						results [i + 1].Item1,
+						results [i + 1].Item2,
+						0
+					);
+				}
+			}
+			if (i < results.Count && selectedItem.Equals (topItem)) {
+				SelectItemDown ();
+				return;
+			}
+			QueueDraw ();
+		}
+
+		void SelectNextCategory ()
+		{
+			if (selectedItem == null)
+				return;
+			var i = SelectedCategoryIndex;
+			if (selectedItem.Equals (topItem)) {
+				if (i > 0) {
+					selectedItem = new ItemIdentifier (
+						results [0].Item1,
+						results [0].Item2,
+						0
+					);
+
+				} else {
+					if (topItem.DataSource.ItemCount > 1) {
+						selectedItem = new ItemIdentifier (
+							results [0].Item1,
+							results [0].Item2,
+							1
+						);
+					} else if (i < results.Count - 1) {
+						selectedItem = new ItemIdentifier (
+							results [i + 1].Item1,
+							results [i + 1].Item2,
+							0
+						);
+					}
+				}
+			} else {
+				if (i < results.Count - 1) {
+					selectedItem = new ItemIdentifier (
+						results [i + 1].Item1,
+						results [i + 1].Item2,
+						0
+					);
+				}
+			}
+			QueueDraw ();	
+		}
+
+		void SelectPrevCategory ()
+		{
+			if (selectedItem == null)
+				return;
+			var i = SelectedCategoryIndex;
+			if (i > 0) {
+				selectedItem = new ItemIdentifier (
+					results [i - 1].Item1,
+					results [i - 1].Item2,
+					0
+				);
+				if (selectedItem.Equals (topItem)) {
+					if (topItem.DataSource.ItemCount > 1) {
+						selectedItem = new ItemIdentifier (
+							results [i - 1].Item1,
+							results [i - 1].Item2,
+							1
+						);
+					} else if (i > 1) {
+						selectedItem = new ItemIdentifier (
+							results [i - 2].Item1,
+							results [i - 2].Item2,
+							0
+						);
+					}
+				}
+			} else {
+				selectedItem = topItem;
+			}
+			QueueDraw ();
+		}
+
+		void SelectFirstCategory ()
+		{
+			selectedItem = topItem;
+			QueueDraw ();
+		}
+
+		void SelectLastCatgory ()
+		{
+			var r = results.LastOrDefault (r2 => r2.Item2.ItemCount > 0 && !(r2.Item2.ItemCount == 1 && topItem.Category == r2.Item1));
+			if (r == null)
+				return;
+			selectedItem = new ItemIdentifier (
+				r.Item1,
+				r.Item2,
+				r.Item2.ItemCount - 1
+			);
+			QueueDraw ();
+		}
+
+		internal bool ProcessKey (Gdk.Key key, Gdk.ModifierType state)
 		{
 			switch (key) {
 			case Gdk.Key.Up:
-				if (selectedItem == null)
-					return true;
-				if (selectedItem.Item > 0) {
-					selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item - 1);
-				} else {
-					for (int i = 1; i < results.Count; i++) {
-						if (results [i].Item1 == selectedItem.Category) {
-							selectedItem = new ItemIdentifier (
-								results [i - 1].Item1,
-								results [i - 1].Item2,
-								Math.Min (maxItems, results [i - 1].Item2.ItemCount) - 1
-							);
-						}
-					}
-				}
-				QueueDraw ();
+				if (state.HasFlag (Gdk.ModifierType.Mod2Mask))
+					goto case Gdk.Key.Page_Up;
+				if (state.HasFlag (Gdk.ModifierType.ControlMask))
+					goto case Gdk.Key.Home;
+				SelectItemUp ();
 				return true;
 			case Gdk.Key.Down:
-				if (selectedItem == null)
-					return true;
-				if (selectedItem.Item + 1 < Math.Min (maxItems, selectedItem.DataSource.ItemCount)) {
-					selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item + 1);
-				} else {
-					for (int i = 0; i < results.Count - 1; i++) {
-						if (results [i].Item1 == selectedItem.Category && results [i + 1].Item2.ItemCount > 0) {
-							selectedItem = new ItemIdentifier (
-								results [i + 1].Item1,
-								results [i + 1].Item2,
-								0
-							);
-						}
-					}
-				}
-				QueueDraw ();
+				if (state.HasFlag (Gdk.ModifierType.Mod2Mask))
+					goto case Gdk.Key.Page_Down;
+				if (state.HasFlag (Gdk.ModifierType.ControlMask))
+					goto case Gdk.Key.End;
+				SelectItemDown ();
+				return true;
+			case Gdk.Key.KP_Page_Down:
+			case Gdk.Key.Page_Down:
+				SelectNextCategory ();
+				return true;
+			case Gdk.Key.KP_Page_Up:
+			case Gdk.Key.Page_Up:
+				SelectPrevCategory ();
 				return true;
 			case Gdk.Key.Home:
-				if (results.Any ()) {
-					var r = results.First (r2 => r2.Item2.ItemCount > 0);
-					selectedItem = new ItemIdentifier (
-						r.Item1,
-						r.Item2,
-						0
-					);
-					QueueDraw ();
-				}
+				SelectFirstCategory ();
 				return true;
 			case Gdk.Key.End:
-				if (results.Any ()) {
-					var r = results.Last (r2 => r2.Item2.ItemCount > 0);
-					selectedItem = new ItemIdentifier (
-						r.Item1,
-						r.Item2,
-						r.Item2.ItemCount - 1
-					);
-					QueueDraw ();
-				}
+				SelectLastCatgory ();
 				return true;
 			
 			case Gdk.Key.Return:
@@ -316,6 +433,25 @@ namespace MonoDevelop.Components.MainToolbar
 				this.Category = category;
 				this.DataSource = dataSource;
 				this.Item = item;
+			}
+
+			public override bool Equals (object obj)
+			{
+				if (obj == null)
+					return false;
+				if (ReferenceEquals (this, obj))
+					return true;
+				if (obj.GetType () != typeof(ItemIdentifier))
+					return false;
+				ItemIdentifier other = (ItemIdentifier)obj;
+				return Category == other.Category && DataSource == other.DataSource && Item == other.Item;
+			}
+			
+			public override int GetHashCode ()
+			{
+				unchecked {
+					return (Category != null ? Category.GetHashCode () : 0) ^ (DataSource != null ? DataSource.GetHashCode () : 0) ^ Item.GetHashCode ();
+				}
 			}
 		}
 
