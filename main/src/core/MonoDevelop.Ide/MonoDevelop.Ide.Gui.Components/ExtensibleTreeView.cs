@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		int updateLockCount;
 		string contextMenuPath;
 		IDictionary<string,string> contextMenuTypeNameAliases;
-		
+
 		public IDictionary<string,string> ContextMenuTypeNameAliases {
 			get { return contextMenuTypeNameAliases; }
 			set { contextMenuTypeNameAliases = value; }
@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
-
+				 
 			if (GtkGestures.IsSupported) {
 				tree.AddGestureMagnifyHandler ((sender, args) => {
 					Zoom += Zoom * (args.Magnification / 4d);
@@ -230,11 +230,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			this.Add (tree);
 			this.ShowAll ();
 
+			ShowSelectionPopupButton = true;
+
 #if TREE_VERIFY_INTEGRITY
 			GLib.Timeout.Add (3000, Checker);
 #endif
 		}
-	
+
 #if TREE_VERIFY_INTEGRITY
 		// Verifies the consistency of the tree view. Disabled by default
 		HashSet<object> ochecked = new HashSet<object> ();
@@ -1669,9 +1671,16 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
+			var menu = CreateContextMenu ();
+			if (menu != null)
+				IdeApp.CommandService.ShowContextMenu (this, evt, menu, this);
+		}
+
+		protected Gtk.Menu CreateContextMenu ()
+		{
 			ITreeNavigator tnav = GetSelectedNode ();
 			if (tnav == null)
-				return;
+				return null;
 			TypeNodeBuilder nb = GetTypeNodeBuilder (tnav.CurrentPosition._iter);
 			string menuPath = nb != null && nb.ContextMenuAddinPath != null ? nb.ContextMenuAddinPath : contextMenuPath;
 			if (menuPath == null) {
@@ -1680,8 +1689,9 @@ namespace MonoDevelop.Ide.Gui.Components
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
-					IdeApp.CommandService.ShowContextMenu (this, evt, opset, this);
+					return IdeApp.CommandService.CreateMenu (opset, this);
 				}
+				return null;
 			} else {
 				ExtensionContext ctx = AddinManager.CreateExtensionContext ();
 				ctx.RegisterCondition ("ItemType", new ItemTypeCondition (tnav.DataItem.GetType (), contextMenuTypeNameAliases));
@@ -1694,7 +1704,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
 				opset.AddItem (ViewCommands.RefreshTree);
 				opset.AddItem (ViewCommands.CollapseAllTreeNodes);
-				IdeApp.CommandService.ShowContextMenu (this, evt, eset, this);
+				return IdeApp.CommandService.CreateMenu (eset, this);
 			}
 		}
 		
@@ -1745,7 +1755,119 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			tree.CollapseAll();
 		}
-		
+
+		Gtk.Widget selectionPopupButton;
+		Gdk.Rectangle selectionPopupButtonRect;
+		Gtk.TreePath popupPath;
+		int lastMouseX, lastMouseY;
+
+		public bool ShowSelectionPopupButton {
+			get { return selectionPopupButton != null; }
+			set {
+				if (value && selectionPopupButton == null) {
+					var ev = new PopupButton ();
+					ev.Clicked += delegate {
+						tree.Selection.SelectPath (popupPath);
+						tree.SetCursor (popupPath, tree.Columns [0], false);
+						var menu = CreateContextMenu ();
+						if (menu != null)
+							GtkWorkarounds.ShowContextMenu (menu, this, selectionPopupButtonRect);
+					};
+					selectionPopupButton = ev;
+					selectionPopupButton.Hide ();
+					selectionPopupButton.Parent = this;
+					tree.Events |= Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask;
+					tree.MotionNotifyEvent += HandleMotionNotifyEvent;
+					tree.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+					VScrollbar.Shown += HandleScrollbarVisibleChanged;
+					VScrollbar.Hidden += HandleScrollbarVisibleChanged;
+					((Gtk.Scrollbar)VScrollbar).ValueChanged += HandleScrollValueChanged;
+					((Gtk.Scrollbar)HScrollbar).ValueChanged += HandleScrollValueChanged;
+					QueueResize ();
+				}
+				else if (!value && selectionPopupButton != null) {
+					selectionPopupButton.Unparent ();
+					selectionPopupButton.Destroy ();
+					selectionPopupButton = null;
+					tree.MotionNotifyEvent -= HandleMotionNotifyEvent;
+					VScrollbar.Shown -= HandleScrollbarVisibleChanged;
+					VScrollbar.Hidden -= HandleScrollbarVisibleChanged;
+					((Gtk.Scrollbar)VScrollbar).ValueChanged -= HandleScrollValueChanged;
+					((Gtk.Scrollbar)HScrollbar).ValueChanged -= HandleScrollValueChanged;
+				}
+			}
+		}
+
+		[GLib.ConnectBefore]
+		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
+		{
+		}
+
+		void HandleScrollValueChanged (object sender, EventArgs e)
+		{
+			if (selectionPopupButton != null && selectionPopupButton.Visible)
+				selectionPopupButton.Hide ();
+		}
+
+		void HandleScrollbarVisibleChanged (object sender, EventArgs e)
+		{
+			if (selectionPopupButton != null && selectionPopupButton.Visible)
+				UpdateSelectionPopupPosition ();
+		}
+
+		[GLib.ConnectBefore]
+		void HandleMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
+		{
+			lastMouseX = (int)args.Event.X;
+			lastMouseY = (int)args.Event.Y;
+			UpdateSelectionPopupPosition ();
+		}
+
+		void UpdateSelectionPopupPosition ()
+		{
+			Gtk.TreePath path;
+			if (tree.GetPathAtPos (lastMouseX, lastMouseY, out path)) {
+				var rect = tree.GetCellArea (path, tree.Columns [0]);
+				rect.X = Allocation.Width - 22;
+				rect.Width = 20;
+				rect.Height -= 2;
+				rect.Y += 1;
+				if (VScrollbar.Visible)
+					rect.X -= VScrollbar.Allocation.Width;
+				if (rect != selectionPopupButtonRect || !selectionPopupButton.Visible) {
+					selectionPopupButton.Show ();
+					selectionPopupButtonRect = rect;
+					popupPath = path;
+					QueueResize ();
+				}
+			} else {
+				selectionPopupButton.Hide ();
+			}
+		}
+
+		protected override void ForAll (bool include_internals, Gtk.Callback callback)
+		{
+			base.ForAll (include_internals, callback);
+			if (selectionPopupButton != null)
+				callback (selectionPopupButton);
+		}
+
+		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			if (selectionPopupButton != null)
+				selectionPopupButton.SizeRequest ();
+		}
+
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			if (selectionPopupButton != null && selectionPopupButton.Visible) {
+				UpdateSelectionPopupPosition ();
+				selectionPopupButton.SizeAllocate (selectionPopupButtonRect);
+			}
+		}
+
 		[GLib.ConnectBefore]
 		void OnKeyPress (object o, Gtk.KeyPressEventArgs args)
 		{
@@ -1880,6 +2002,24 @@ namespace MonoDevelop.Ide.Gui.Components
 			builderChains.Clear ();
 			
 			base.OnDestroyed ();
+		}
+
+		class PopupButton: Gtk.EventBox
+		{
+			public event EventHandler Clicked;
+
+			public PopupButton ()
+			{
+				Gtk.Button b = new Gtk.Button ("...");
+				b.CanFocus = false;
+				Add (b);
+
+				b.Clicked += delegate {
+					if (Clicked != null)
+						Clicked (this, EventArgs.Empty);
+				};
+				ShowAll ();
+			}
 		}
 		
 		internal class PadCheckMenuItem: Gtk.CheckMenuItem
