@@ -92,10 +92,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					toRemove.Remove (file);
 					
 					if (!itemMap.ContainsKey (file)) {
-						monitor.Log.WriteLine ("'{0}' needs to be updated.", file);
+						monitor.Log.WriteLine ("'{0}' needs to be added.", file);
 						updateProject = true;
 					} else if (needsSync) {
-						monitor.Log.WriteLine ("'{0}' needs to be closed.", file);
+						monitor.Log.WriteLine ("'{0}' needs to be closed & updated.", file);
 						toClose.Add (file);
 					}
 					
