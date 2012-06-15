@@ -29,6 +29,9 @@
 		<Import file = "Templates/ProjectMvc3WithUnitTest.xpt.xml" />
 		<Import file = "Templates/ProjectMvc3Razor.xpt.xml" />
 		<Import file = "Templates/ProjectMvc3RazorWithUnitTest.xpt.xml" />
+		<Import file = "Templates/LayoutPage.xft.xml" />
+		<Import file = "Templates/ViewPageRazor.xft.xml" />
+		<Import file = "Templates/PartialViewPageRazor.xft.xml" />
 	</Runtime>
 	
 	<Dependencies>
@@ -70,6 +73,12 @@
 		              file     = "Templates/WebConfigAppMvc3.xft.xml" />
 		<FileTemplate id       = "AspMvc3WebConfigViews"
 		              file     = "Templates/WebConfigViewsMvc3.xft.xml" />
+		<FileTemplate id       = "AspMvcViewPageRazor"
+		              file     = "Templates/ViewPageRazor.xft.xml" />
+		<FileTemplate id       = "AspMvcLayoutPage"
+		              file     = "Templates/LayoutPage.xft.xml" />
+		<FileTemplate id       = "AspMvcPartialViewPageRazor"
+		              file     = "Templates/PartialViewPageRazor.xft.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
