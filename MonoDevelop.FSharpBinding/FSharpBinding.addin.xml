@@ -1,7 +1,7 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="Community" copyright="???" url="http://www.fsharp.net"
        description="F# Language Binding" category="Language bindings" version="3.0">
-	   
+
 	<Runtime>
     	<Import assembly="FSharpBinding.dll" />
     	<Import assembly="FSharpBinding.Gui.dll" />
@@ -25,7 +25,7 @@
     	<Section id="FSharpSettings" _label="F# Settings" class = "FSharp.MonoDevelop.FSharpSettingsPanel" />
   	</Extension>
   
-  	<Extension path="/MonoDevelop/ProjectModel/DomParser">
+  	<Extension path="/MonoDevelop/TypeSystem/Parser">
     	<Parser class="FSharp.MonoDevelop.FSharpParser"  fileExtensions=".fs" />
   	</Extension>
 
@@ -81,7 +81,7 @@
     	<StockIcon stockid="md-fs-script" resource="fsharp-script-icon.png" />
     	<StockIcon stockid="md-fs-project" resource="fsharp-project-icon.png" />
   	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Core/MimeTypes">
 		<MimeType id="text/x-fsharp" _description="F# Source File" icon="md-fs-file" isText="true">
 			<File pattern="*.fs" />
@@ -143,7 +143,7 @@
 					shortcut="Control|Alt|F"
 					macShortcut="Meta|Control|F"
 					defaultHandler="FSharp.MonoDevelop.ShowFSharpInteractive" />
-		  
+
 			<Command id="FSharp.MonoDevelop.FSharpCommands.SendSelection"
 					_label = "Send selection to F# Interactive"
 					_description="Send the selected text to F# Interactive"
