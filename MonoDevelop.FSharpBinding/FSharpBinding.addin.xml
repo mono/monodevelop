@@ -1,7 +1,7 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="Community" copyright="???" url="http://www.fsharp.net"
-       description="F# Language Binding" category="Language bindings" version="2.8">
-
+       description="F# Language Binding" category="Language bindings" version="3.0">
+	   
 	<Runtime>
     	<Import assembly="FSharpBinding.dll" />
     	<Import assembly="FSharpBinding.Gui.dll" />
