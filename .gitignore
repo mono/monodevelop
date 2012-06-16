@@ -1,5 +1,6 @@
 src/obj/*
 src/Gui/obj/*
+MonoDevelop.FSharpBinding/_ReSharper.FSharp.MonoDevelop/*
 bin/*
 repository/*
 *.suo
