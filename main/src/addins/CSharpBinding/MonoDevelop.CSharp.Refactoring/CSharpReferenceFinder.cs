@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (firstMember is INamedElement) {
 				var namedElement = (INamedElement)firstMember;
 				var name = namedElement.Name;
-				if (namedElement is IMethod && ((IMethod)namedElement).IsConstructor ||((IMethod)namedElement).IsDestructor)
+				if (namedElement is IMethod && (((IMethod)namedElement).IsConstructor | ((IMethod)namedElement).IsDestructor))
 					name = ((IMethod)namedElement).DeclaringType.Name;
 				memberName = name;
 
