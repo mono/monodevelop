@@ -3,6 +3,7 @@ namespace FSharp.MonoDevelop
 open System
 open System.Xml
 open System.CodeDom.Compiler
+open System.IO
 
 open MonoDevelop.Core
 open MonoDevelop.Ide
@@ -33,7 +34,7 @@ type FSharpLanguageBinding() =
       // Trigger full parse using the current configuration
       let config = IdeApp.Workspace.ActiveConfiguration
       Debug.tracef "Parsing" "Triggering full parse from OnIdle"
-      LanguageService.Service.TriggerParse(doc.FileName, doc.Editor.Text, doc.Dom, config, full=true)
+      LanguageService.Service.TriggerParse(doc.FileName, doc.Editor.Text, doc.Window.Document, config, full=true)
     true
 
   // Create or remove Idle timer 
@@ -54,16 +55,16 @@ type FSharpLanguageBinding() =
   // ------------------------------------------------------------------------------------
   
   interface IDotNetLanguageBinding 
-           
+           with
     member x.BlockCommentEndTag = "*)"
     member x.BlockCommentStartTag = "(*"
     member x.Language = LanguageName
     member x.SingleLineCommentTag = "//"
-    member x.Parser = null
-    member x.Refactorer = null
+    //member x.Parser = null
+    //member x.Refactorer = null
 
-    member x.GetFileName(fileNameWithoutExtension) = fileNameWithoutExtension + ".fs"
-    member x.IsSourceCodeFile(fileName) = Common.supportedExtension(IO.Path.GetExtension(fileName))
+    member x.GetFileName(baseName:FilePath) = baseName + ".fs"
+    member x.IsSourceCodeFile(fileName) = StringComparer.OrdinalIgnoreCase.Equals (Path.GetExtension (fileName), ".fs")
     
     // IDotNetLanguageBinding
     member x.Compile(items, config, configSel, monitor) : BuildResult =

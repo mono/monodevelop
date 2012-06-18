@@ -2,23 +2,21 @@
 
 open System
 open MonoDevelop.Ide
+open MonoDevelop.Ide.Gui
 open MonoDevelop.Core
-//open MonoDevelop.Projects.Dom
-//open MonoDevelop.Projects.Dom.Parser
-
-//open ICSharpCode.NRefactory
+open MonoDevelop.Ide.TypeSystem
 
 type FSharpParsedDocument(fileName) = 
-     inherit ParseWorker(fileName)
+     inherit ParsedDocument(fileName)
   
 
 type FSharpParser() =
-  inherit AbstractParser()
+  inherit AbstractTypeSystemParser()
   
-  override x.CanParse(fileName) =
-    Common.supportedExtension(IO.Path.GetExtension(fileName))
+  //override x.CanParse(fileName) =
+  //  Common.supportedExtension(IO.Path.GetExtension(fileName))
       
-  override x.Parse(dom:ProjectDom, fileName:string, fileContent:string) : ParsedDocument =
+  member x.Parse(dom:Document, fileName:string, fileContent:string) : ParsedDocument =
     Debug.tracef "Parsing" "Update in FSharpParser.Parse"
   
     // If this call is not a result of updating errors (but a usual call 

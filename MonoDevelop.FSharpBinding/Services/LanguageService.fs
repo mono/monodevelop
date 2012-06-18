@@ -363,7 +363,7 @@ type internal LanguageServiceMessage =
 
 open System.Reflection
 open Microsoft.FSharp.Compiler.Reflection
-    
+open Mono.TextEditor
 /// Provides functionality for working with the F# interactive checker running in background
 type internal LanguageService private () =
 
@@ -513,7 +513,7 @@ type internal LanguageService private () =
   //      Debug.tracee "Worker" e )
   
   /// Constructs options for the interactive checker
-  member x.GetCheckerOptions(fileName, source, dom:ProjectDom, config:ConfigurationSelector) =
+  member x.GetCheckerOptions(fileName, source, dom:Document, config:ConfigurationSelector) =
     let ext = IO.Path.GetExtension(fileName)
     let opts = 
       if (dom = null || dom.Project = null || ext = ".fsx" || ext = ".fsscript") then
@@ -577,13 +577,13 @@ type internal LanguageService private () =
                  opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
     opts
   
-  member x.TriggerParse(file:FilePath, src, dom:ProjectDom, config, ?full) = 
+  member x.TriggerParse(file:FilePath, src, dom:Document, config, ?full) = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, dom, config)
     Debug.tracef "Parsing" "Trigger parse (fileName=%s)" fileName
     mbox.Post(TriggerRequest(ParseRequest(file, src, opts, defaultArg full false)))
 
-  member x.GetTypedParseResult((file:FilePath, src, dom:ProjectDom, config), ?timeout) = 
+  member x.GetTypedParseResult((file:FilePath, src, dom:Document, config), ?timeout) = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, dom, config)
     Debug.tracef "Parsing" "Get typed parse result (fileName=%s)" fileName
