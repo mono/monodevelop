@@ -46,20 +46,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var identifier = context.GetNode<IdentifierExpression>();
-			if (identifier == null)
+			var expr = context.GetNode(n => n is IdentifierExpression || n is MemberReferenceExpression) as Expression;
+			if (expr == null)
 				yield break;
-			if (IsInvocationTarget(identifier))
+
+			if (expr is MemberReferenceExpression && !(((MemberReferenceExpression)expr).Target is ThisReferenceExpression))
 				yield break;
-			var statement = identifier.GetParent<Statement>();
+
+			var propertyName = CreatePropertyAction.GetPropertyName(expr);
+			if (propertyName == null)
+				yield break;
+
+			if (IsInvocationTarget(expr))
+				yield break;
+			var statement = expr.GetParent<Statement>();
 			if (statement == null)
 				yield break;
-			if (!(context.Resolve(identifier).IsError))
+			if (!(context.Resolve(expr).IsError))
 				yield break;
-			var guessedType = CreateFieldAction.GuessAstType(context, identifier);
+			var guessedType = CreateFieldAction.GuessAstType(context, expr);
 			if (guessedType == null)
 				yield break;
-			var state = context.GetResolverStateBefore(identifier);
+			var state = context.GetResolverStateBefore(expr);
 			if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
 				yield break;
 
@@ -73,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new CodeAction(context.TranslateString("Create field"), script => {
 				var decl = new FieldDeclaration() {
 					ReturnType = guessedType,
-					Variables = { new VariableInitializer(identifier.Identifier) }
+					Variables = { new VariableInitializer(propertyName) }
 				};
 				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;

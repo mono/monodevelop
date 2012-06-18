@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			});
 		}
 
-		static string GetPropertyName(Expression expr)
+		internal static string GetPropertyName(Expression expr)
 		{
 			if (expr is IdentifierExpression) 
 				return ((IdentifierExpression)expr).Identifier;
