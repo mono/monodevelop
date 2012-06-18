@@ -173,33 +173,6 @@ namespace MonoDevelop.Components.MainToolbar
 					Allocation.X + (icon.Width - Allocation.Width) / 2,
 					Allocation.Y + (icon.Height - Allocation.Height) / 2
 				);
-
-/*				context.Arc (height / 2 + 0.5, height / 2 + 0.5, height / 2 - 1, 0, 2 * System.Math.PI);
-				var lg = new LinearGradient (0, 0, 0, Allocation.Height);
-				if (State == StateType.Selected) {
-					lg.AddColorStop (0, fill2Color);
-					lg.AddColorStop (1, fill3Color);
-				} else if (State == StateType.Prelight) {
-					lg.AddColorStop (0, fill0Color);
-					lg.AddColorStop (1, fill1Color);
-				} else {
-					lg.AddColorStop (0, fill1Color);
-					lg.AddColorStop (1, fill2Color);
-				}
-				context.Pattern = lg;
-				context.FillPreserve ();
-
-				context.LineWidth = 1;
-				context.Color = borderColor;
-				context.Stroke ();
-
-				evnt.Window.DrawPixbuf (Style.WhiteGC, 
-				                        pixbuf, 
-				                        0, 0, 
-				                        (Allocation.Width - pixbuf.Width) / 2, 
-				                        (Allocation.Height - pixbuf.Height) / 2, 
-				                        pixbuf.Width, pixbuf.Height,
-				                        RgbDither.None, 0, 0);*/
 			}
 			return base.OnExposeEvent (evnt);
 		}

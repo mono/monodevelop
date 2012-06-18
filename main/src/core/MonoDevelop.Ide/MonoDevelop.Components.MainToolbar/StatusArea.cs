@@ -95,10 +95,11 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width, Allocation.Height, 4);
-				LinearGradient lg = new LinearGradient (Allocation.X, Allocation.Y, Allocation.X, Allocation.Height);
-				lg.AddColorStop (0, fill1Color);
-				lg.AddColorStop (1, fill2Color);
-				context.Pattern = lg;
+				using (LinearGradient lg = new LinearGradient (Allocation.X, Allocation.Y, Allocation.X, Allocation.Height)) {
+					lg.AddColorStop (0, fill1Color);
+					lg.AddColorStop (1, fill2Color);
+					context.Pattern = lg;
+				}
 				context.FillPreserve ();
 
 				context.LineWidth = 4;

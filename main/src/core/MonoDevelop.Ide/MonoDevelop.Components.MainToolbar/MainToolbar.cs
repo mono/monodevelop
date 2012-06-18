@@ -312,10 +312,11 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				} else {
 					context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-					var lg = new LinearGradient (0, 0, 0, Allocation.Height);
-					lg.AddColorStop (0, (HslColor)Style.Light (StateType.Normal));
-					lg.AddColorStop (1, (HslColor)Style.Mid (StateType.Normal));
-					context.Pattern = lg;
+					using (var lg = new LinearGradient (0, 0, 0, Allocation.Height)) {
+						lg.AddColorStop (0, (HslColor)Style.Light (StateType.Normal));
+						lg.AddColorStop (1, (HslColor)Style.Mid (StateType.Normal));
+						context.Pattern = lg;
+					}
 					context.Fill ();
 
 				}
