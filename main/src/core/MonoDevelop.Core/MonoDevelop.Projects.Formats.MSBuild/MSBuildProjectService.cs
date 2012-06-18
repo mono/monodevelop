@@ -585,7 +585,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
-			return new DataValue (Name, (bool)value ? "true" : "false");
+			return new DataValue (Name, (bool)value ? "True" : "False");
 		}
 		
 		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
