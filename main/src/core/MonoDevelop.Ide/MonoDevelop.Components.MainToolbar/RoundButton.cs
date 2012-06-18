@@ -77,7 +77,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public RoundButton ()
 		{
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
-			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.LeaveNotifyMask | EventMask.EnterNotifyMask;
+			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.LeaveNotifyMask | EventMask.PointerMotionMask;
 			VisibleWindow = false;
 			SetSizeRequest (height, height);
 
@@ -93,47 +93,27 @@ namespace MonoDevelop.Components.MainToolbar
 			iconStopDisabled = new LazyImage ("icoStop-Disabled.png");
 		}
 
-		void SetShape ()
+		StateType hoverState = StateType.Normal;
+
+		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
-			var black = new Gdk.Color (0, 0, 0);
-			black.Pixel = 1;
 
-			var white = new Gdk.Color (255, 255, 255);
-			white.Pixel = 0;
-
-			using (var pm = new Pixmap (this.GdkWindow, height, height, 1)) {
-				using (var gc = new Gdk.GC (pm)) {
-					gc.Background = white;
-					gc.Foreground = white;
-					pm.DrawRectangle (gc, true, 0, 0, height, height);
-		
-					gc.Foreground = black;
-					gc.Background = black;
-					pm.DrawArc (gc, true, 0, 0, height, height, 0, 360 * 64);
-		
-					ShapeCombineMask (pm, 0, 0);
-				}
-			}
+			State = IsInside (evnt.X, evnt.Y) ? hoverState : StateType.Normal;;
+			return base.OnMotionNotifyEvent (evnt);
 		}
-		StateType leaveState = StateType.Normal;
 
-		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
-		{
-			State = leaveState;
-			return base.OnEnterNotifyEvent (evnt);
-		}
 
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
-			leaveState = State;
 			State = StateType.Normal;
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-			if (evnt.Button == 1)
-				State = StateType.Selected;
+			if (evnt.Button == 1 && IsInside (evnt.X, evnt.Y)) {
+				hoverState = State = StateType.Selected;
+			}
 			return base.OnButtonPressEvent (evnt);
 		}
 
@@ -141,15 +121,16 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (State == StateType.Selected)
 				OnClicked (EventArgs.Empty);
-			State = StateType.Prelight;
-			leaveState = StateType.Normal; 
+			State = IsInside (evnt.X, evnt.Y) ? StateType.Prelight : StateType.Normal;;
+			hoverState = StateType.Prelight; 
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		bool IsInside (double x, double y)
 		{
-			base.OnSizeAllocated (allocation);
-			SetShape ();
+			var xr = x - Allocation.Width / 2;
+			var yr = y - Allocation.Height / 2;
+			return Math.Sqrt (xr * xr + yr * yr) <= height / 2;
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
