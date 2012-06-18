@@ -318,6 +318,8 @@ namespace MonoDevelop.AssemblyBrowser
 
 		void InspectEditorhandleLinkRequest (object sender, Mono.TextEditor.LinkEventArgs args)
 		{
+			var loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof(AssemblyLoader), true);
+
 			if (args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
 				AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
 				foreach (var cu in definitions) {
@@ -326,7 +328,7 @@ namespace MonoDevelop.AssemblyBrowser
 				IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
 				((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
 			} else {
-				this.Open (args.Link);
+				this.Open (args.Link, loader);
 			}
 		}
 		
@@ -1125,18 +1127,32 @@ namespace MonoDevelop.AssemblyBrowser
 			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
 		}
 		
-		public void Open (string url)
+		public void Open (string url, AssemblyLoader currentAssembly = null)
 		{
 			ITreeNavigator nav = SearchMember (url);
 			if (definitions == null) // we've been disposed
 				return;
 			if (nav == null) {
-				foreach (var definition in definitions.ToArray ()) {
-					var cecilObject = loader.GetCecilObject (definition.UnresolvedAssembly);
-					if (cecilObject == null)
-						continue;
-					foreach (var assemblyNameReference in cecilObject.MainModule.AssemblyReferences) {
-						AddReferenceByAssemblyName (assemblyNameReference);
+				if (currentAssembly != null) {
+					var cecilObject = loader.GetCecilObject (currentAssembly.UnresolvedAssembly);
+					if (cecilObject != null) {
+						foreach (var reference in cecilObject.MainModule.AssemblyReferences) {
+							string fileName = currentAssembly.LookupAssembly (reference.FullName);
+							AddReferenceByFileName (fileName, true);
+							nav = SearchMember (url);
+							if (nav != null)
+								break;
+						}
+					}
+
+				} else {
+					foreach (var definition in definitions.ToArray ()) {
+						var cecilObject = loader.GetCecilObject (definition.UnresolvedAssembly);
+						if (cecilObject == null)
+							continue;
+						foreach (var assemblyNameReference in cecilObject.MainModule.AssemblyReferences) {
+							AddReferenceByAssemblyName (assemblyNameReference);
+						}
 					}
 				}
 				nav = SearchMember (url);
@@ -1261,7 +1277,6 @@ namespace MonoDevelop.AssemblyBrowser
 		public AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName, bool selectReference = false)
 		{
 			string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyFullName, null);
-			
 			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile)) {
 				foreach (var wrapper in definitions) {
 					assemblyFile = wrapper.LookupAssembly (assemblyFullName);
