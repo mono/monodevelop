@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					result = (
 						from part in parts
 						from nestedTypeRef in part.NestedTypes
-						group nestedTypeRef by nestedTypeRef.Name into g
+						group nestedTypeRef by new { nestedTypeRef.Name, nestedTypeRef.TypeParameters.Count } into g
 						select new DefaultResolvedTypeDefinition(new SimpleTypeResolveContext(this), g.ToArray())
 					).ToList<ITypeDefinition>().AsReadOnly();
 					return LazyInit.GetOrSet(ref this.nestedTypes, result);
