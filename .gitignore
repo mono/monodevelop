@@ -1,6 +1,9 @@
 src/obj/*
 src/Gui/obj/*
 bin/*
+_ReSharper.FSharp.MonoDevelop/*
+FSharp.MonoDevelop/obj*
+FSharp.MonoDevelop/bin*
 repository/*
 *.suo
 *.pidb
