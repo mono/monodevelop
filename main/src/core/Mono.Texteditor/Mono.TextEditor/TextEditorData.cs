@@ -142,6 +142,10 @@ namespace Mono.TextEditor
 
 		void HandleDocTextSet (object sender, EventArgs e)
 		{
+			if (vadjustment != null)
+				vadjustment.Value = vadjustment.Lower;
+			if (hadjustment != null)
+				hadjustment.Value = hadjustment.Lower;
 			caret.SetDocument (document);
 			HeightTree.Rebuild ();
 			ClearSelection ();
