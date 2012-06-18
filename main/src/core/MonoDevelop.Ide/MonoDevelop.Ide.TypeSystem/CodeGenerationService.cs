@@ -262,6 +262,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
 			}
 			result.Sort ((left, right) => left.Location.CompareTo (right.Location));
+//			foreach (var res in result)
+//				Console.WriteLine (res);
 			return result;
 		}
 
@@ -313,14 +315,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (nextLine == null) // check for 1 line case.
 				return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
 			
-			for (int i = nextLine.Offset; i < nextLine.Offset + nextLine.Length; i++) {
+			for (int i = nextLine.Offset; i < nextLine.EndOffset; i++) {
 				char ch = doc.GetCharAt (i);
 				if (!char.IsWhiteSpace (ch)) {
 					// case2: next line contains non ws chars.
 					return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
 				}
 			}
-			// case3: whitespace line
+
+			DocumentLine nextLine2 = doc.GetLine (line + 2);
+			if (nextLine2 != null) {
+				for (int i = nextLine2.Offset; i < nextLine2.EndOffset; i++) {
+					char ch = doc.GetCharAt (i);
+					if (!char.IsWhiteSpace (ch)) {
+						// case3: one blank line
+						return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol);
+					}
+				}
+			}
+			// case4: more than 1 blank line
 			return new InsertionPoint (new DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.None);
 		}
 		
