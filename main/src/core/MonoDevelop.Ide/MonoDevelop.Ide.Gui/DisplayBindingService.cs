@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Gui
 {
 	public static class DisplayBindingService
 	{
-		static IEnumerable<T> GetBindings<T> ()
+		public static IEnumerable<T> GetBindings<T> ()
 		{
 			return AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/DisplayBindings")
 				.OfType<T> ();

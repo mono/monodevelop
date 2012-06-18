@@ -29,6 +29,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.IO;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using System.Linq;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -44,8 +46,8 @@ namespace MonoDevelop.AssemblyBrowser
 					return;
 				}
 			}
-
-			var assemblyBrowserView = new AssemblyBrowserViewContent ();
+			var binding = DisplayBindingService.GetBindings<AssemblyBrowserDisplayBinding> ().FirstOrDefault ();
+			var assemblyBrowserView = binding != null ? binding.GetViewContent () : new AssemblyBrowserViewContent ();
 			
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
 				foreach (var assembly in defaultAssemblies) {

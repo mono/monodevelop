@@ -49,7 +49,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		AssemblyBrowserViewContent viewContent = null;
 		
-		AssemblyBrowserViewContent GetViewContent ()
+		internal AssemblyBrowserViewContent GetViewContent ()
 		{
 			if (viewContent == null || viewContent.IsDisposed) {
 				viewContent = new AssemblyBrowserViewContent ();
