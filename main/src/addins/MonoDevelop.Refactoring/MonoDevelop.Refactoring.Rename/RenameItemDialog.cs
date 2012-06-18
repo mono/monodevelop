@@ -50,24 +50,31 @@ namespace MonoDevelop.Refactoring.Rename
 				options.SelectedItem = ((IMethod)options.SelectedItem).DeclaringType;
 			}
 			this.Build ();
-
 			if (options.SelectedItem is IType) {
-				var type = ((IType)options.SelectedItem).GetDefinition ();
-				if (type.DeclaringType == null) {
-					// not supported for inner types
-					this.renameFileFlag.Visible = true;
-					this.renameFileFlag.Active = true;
-					// if more than one type is in the file, only rename the file as defilt if the file name contains the type name
-					// see Bug 603938 - Renaming a Class in a file with multiple classes renames the file
-					if (options.Document != null && options.Document.ParsedDocument.TopLevelTypeDefinitions.Count > 1) 
-						this.renameFileFlag.Active = options.Document.FileName.FileNameWithoutExtension.Contains (type.Name);
+
+				var t = (IType)options.SelectedItem;
+				if (t.Kind == TypeKind.TypeParameter) {
+					this.Title = GettextCatalog.GetString ("Rename Type Parameter");
+					entry.Text = t.Name;
+
 				} else {
-					this.renameFileFlag.Active = false;
+					var typeDefinition = (t).GetDefinition ();
+					if (typeDefinition.DeclaringType == null) {
+						// not supported for inner types
+						this.renameFileFlag.Visible = true;
+						this.renameFileFlag.Active = true;
+						// if more than one type is in the file, only rename the file as defilt if the file name contains the type name
+						// see Bug 603938 - Renaming a Class in a file with multiple classes renames the file
+						if (options.Document != null && options.Document.ParsedDocument.TopLevelTypeDefinitions.Count > 1) 
+							this.renameFileFlag.Active = options.Document.FileName.FileNameWithoutExtension.Contains (typeDefinition.Name);
+					} else {
+						this.renameFileFlag.Active = false;
+					}
+					if (typeDefinition.Kind == TypeKind.Interface)
+						this.Title = GettextCatalog.GetString ("Rename Interface");
+					else
+						this.Title = GettextCatalog.GetString ("Rename Class");
 				}
-				if (type.Kind == TypeKind.Interface)
-					this.Title = GettextCatalog.GetString ("Rename Interface");
-				else
-					this.Title = GettextCatalog.GetString ("Rename Class");
 				//				this.fileName = type.GetDefinition ().Region.FileName;
 			} else if (options.SelectedItem is IField) {
 				this.Title = GettextCatalog.GetString ("Rename Field");

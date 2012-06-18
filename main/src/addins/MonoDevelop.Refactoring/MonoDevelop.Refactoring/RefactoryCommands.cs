@@ -228,6 +228,8 @@ namespace MonoDevelop.Refactoring
 				canRename = true; 
 			} else if (item is ITypeDefinition) { 
 				canRename = !((ITypeDefinition)item).Region.IsEmpty;
+			} else if (item is IType) { 
+				canRename = ((IType)item).Kind == TypeKind.TypeParameter;
 			} else if (item is IMember) {
 				canRename = !((IMember)item).Region.IsEmpty;
 			} else {
