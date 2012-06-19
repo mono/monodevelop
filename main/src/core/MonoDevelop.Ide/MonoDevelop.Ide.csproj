@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -827,6 +827,7 @@
     <Compile Include="MonoDevelop.Ide.CodeTemplates\CodeTemplateService.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ICustomProjectCIEntry.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\INewFileCreator.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectDescriptor.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplate.cs" />
@@ -1555,28 +1556,5 @@
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(Data)" DestinationFolder="..\..\..\build\data\%(Data.RelativeDir)" />
   </Target>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.Ide.CodeFormatting\" />
-    <Folder Include="MonoDevelop.Ide.Execution\" />
-    <Folder Include="MonoDevelop.Ide.Extensions\" />
-    <Folder Include="MonoDevelop.Ide.CustomTools\" />
-    <Folder Include="MonoDevelop.Components.Extensions\" />
-    <Folder Include="MonoDevelop.Components.Theming\" />
-    <Folder Include="MonoDevelop.Components.Docking\" />
-    <Folder Include="MonoDevelop.Ide.Gui\" />
-    <Folder Include="MonoDevelop.Ide.Desktop\" />
-    <Folder Include="MonoDevelop.Ide.Projects\" />
-    <Folder Include="MonoDevelop.Ide\" />
-    <Folder Include="MonoDevelop.Ide.Gui.Dialogs\" />
-    <Folder Include="MonoDevelop.Ide.Projects.OptionPanels\" />
-    <Folder Include="MonoDevelop.Ide.NavigateToDialog\" />
-    <Folder Include="MonoDevelop.Ide.Navigation\" />
-    <Folder Include="MonoDevelop.Components.AutoTest\" />
-    <Folder Include="MonoDevelop.Ide.Fonts\" />
-    <Folder Include="MonoDevelop.Ide.Codons\" />
-    <Folder Include="ExtensionModel\" />
-    <Folder Include="icons\" />
-    <Folder Include="MonoDevelop.Ide.WelcomePage\" />
-    <Folder Include="branding\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

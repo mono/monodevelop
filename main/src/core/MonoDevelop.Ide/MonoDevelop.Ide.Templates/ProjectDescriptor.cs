@@ -38,10 +38,11 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Templates
 {
-	internal class ProjectDescriptor : ISolutionItemDescriptor
+	internal class ProjectDescriptor : ISolutionItemDescriptor, ICustomProjectCIEntry
 	{
 		private string name;
 		private string type;
+		private string directory;
 
 		private List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
 		private List<SingleFileDescriptionTemplate> resources = new List<SingleFileDescriptionTemplate> ();
@@ -59,6 +60,7 @@ namespace MonoDevelop.Ide.Templates
 			ProjectDescriptor projectDescriptor = new ProjectDescriptor ();
 
 			projectDescriptor.name = xmlElement.GetAttribute ("name");
+			projectDescriptor.directory = xmlElement.GetAttribute ("directory");
 
 			projectDescriptor.type = xmlElement.GetAttribute ("type");
 			if (String.IsNullOrEmpty (projectDescriptor.type))
@@ -124,22 +126,24 @@ namespace MonoDevelop.Ide.Templates
 				return;
 			}
 
-			string pname = StringParserService.Parse (name, new string[,] { {
-				"ProjectName",
-				projectCreateInformation.ProjectName
-			} });
-			
 			// Set the file before setting the name, to make sure the file extension is kept
-			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, pname);
-			project.Name = pname;
-			
+			project.FileName = Path.Combine (projectCreateInformation.ProjectBasePath, projectCreateInformation.ProjectName);
+			project.Name = projectCreateInformation.ProjectName;
+
 			var dnp = project as DotNetProject;
 			if (dnp != null) {
 				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.SupportsFramework (dnp.TargetFramework)) {
 					SetClosestSupportedTargetFramework (policyParent.ParentSolution.FileFormat, dnp);
 				}
-				foreach (ProjectReference projectReference in references)
-					dnp.References.Add (projectReference);
+				var substitution = new string[,] { { "ProjectName", projectCreateInformation.SolutionName } };
+				foreach (ProjectReference projectReference in references) {
+					if (projectReference.ReferenceType == ReferenceType.Project) {
+						string referencedProjectName = StringParserService.Parse (projectReference.Reference, substitution);
+						var parsedReference = ProjectReference.RenameReference (projectReference, referencedProjectName);
+						dnp.References.Add (parsedReference);
+					} else
+						dnp.References.Add (projectReference);
+				}
 			}
 
 			foreach (SingleFileDescriptionTemplate resourceTemplate in resources) {
@@ -179,13 +183,32 @@ namespace MonoDevelop.Ide.Templates
 					//FIXME: string comparisons aren't a valid way to compare profiles, but it works w/released .NET versions
 				.OrderBy (fx => fx.Id.Version)
 				.ToList ();
-			
+
 			TargetFramework newFx =
 				candidates.FirstOrDefault (fx => string.CompareOrdinal (fx.Id.Version, curFx.Id.Version) > 0)
 				 ?? candidates.LastOrDefault ();
-			
+
 			if (newFx != null)
 				project.TargetFramework = newFx;
+		}
+
+		public ProjectCreateInformation CreateProjectCI (ProjectCreateInformation projectCI)
+		{
+			var projectCreateInformation = projectCI;
+			var substitution = new string[,] { { "ProjectName", projectCreateInformation.ProjectName } };
+
+			projectCreateInformation.ProjectName = StringParserService.Parse (name, substitution);
+
+			if (string.IsNullOrEmpty (directory) || directory == ".")
+				return projectCreateInformation;
+
+			string dir = StringParserService.Parse (directory, substitution);
+			projectCreateInformation.ProjectBasePath = Path.Combine (projectCreateInformation.SolutionPath, dir);
+
+			if (!Directory.Exists (projectCreateInformation.ProjectBasePath))
+				Directory.CreateDirectory (projectCreateInformation.ProjectBasePath);
+
+			return projectCreateInformation;
 		}
 	}
 }

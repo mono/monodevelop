@@ -1,27 +1,27 @@
-<?xml version="1.0"?>
-<Template originator="Michael Hutchinson"
-          created="2009/02/17"
-          lastModified="2012/05/17">
-	
+﻿<?xml version="1.0"?>
+<Template originator="Piotr Dowgiallo"
+          created="2012/06/05"
+          lastModified="2012/06/05">
+
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>ASP.NET MVC 2 Project</_Name>
+		<_Name>ASP.NET MVC 2 with Unit Test Project</_Name>
 		<_Category>C#/ASP.NET</_Category>
 		<Icon>md-project-web</Icon>
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates an ASP.NET MVC 2 Web Project.</_Description>
+		<_Description>Creates an ASP.NET MVC 2 Web Project with Unit Test project.</_Description>
 	</TemplateConfiguration>
-	
+
 	<!-- Actions -->
 	<Actions>
 	</Actions>
-	
+
 	<!-- Template Content -->
 	<Combine name = "${ProjectName}" directory = ".">
 		<Options>
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
-		
+
 		<Project name = "${ProjectName}" directory = "." type = "AspNetMvc">
 			<Options TargetFrameworkVersion = "4.0" />
 			<References>
@@ -49,7 +49,8 @@
 					<FileTemplateReference TemplateID="AspMvcWebConfigViews" name="Web.config" SuppressAutoOpen="true"  />
 					<Directory name="Home">
 						<AspNetFile name="Index.aspx">
-						<FileText><![CDATA[<%@ Page Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" %>
+							<FileText>
+								<![CDATA[<%@ Page Language="${AspNetLanguage}" Inherits="System.Web.Mvc.ViewPage" %>
 ${Doctype}
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -61,12 +62,38 @@ ${Doctype}
 	</div>
 </body>
 ]]>
-						</FileText>
+							</FileText>
 						</AspNetFile>
 					</Directory>
 				</Directory>
 				<FileTemplateReference TemplateID="AspMvcWebConfigApp" name="Web.config" SuppressAutoOpen="true" />
 				<FileTemplateReference TemplateID="AspMvcGlobalAsax" name="Global.asax" SuppressAutoOpen="true"  />
+			</Files>
+		</Project>
+		<Project name = "${ProjectName}.Tests" directory = "${ProjectName}.Tests">
+			<Options Target = "Library" />
+
+			<References>
+				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Core" />
+				<Reference type="Package" refto="System.Web.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Package" refto="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Package" refto="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Package" refto="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
+				<Reference type="Package" refto="System.Web.DynamicData, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Package" refto="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
+				<Reference type="Package" refto="System.Xml.Linq" />
+				<Reference type="Package" refto="nunit.framework" SpecificVersion = "false" LocalCopy = "false" />
+				<Reference type="Project" refto="${ProjectName}" />
+			</References>
+
+			<Files>
+				<Directory name="Controllers">
+					<File name="HomeControllerTest.cs" src="Common/HomeControllerTest.cs" />
+				</Directory>
 			</Files>
 		</Project>
 	</Combine>

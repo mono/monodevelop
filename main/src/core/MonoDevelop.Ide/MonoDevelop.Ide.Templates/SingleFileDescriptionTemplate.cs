@@ -360,6 +360,8 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			tags ["Namespace"] = ns;
+			if (policyParent != null)
+				tags ["SolutionName"] = policyParent.Name;
 			if (project != null) {
 				tags ["ProjectName"] = project.Name;
 				tags ["SafeProjectName"] = CreateIdentifierName (project.Name);
