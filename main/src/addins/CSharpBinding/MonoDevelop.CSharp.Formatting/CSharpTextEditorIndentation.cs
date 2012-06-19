@@ -444,7 +444,7 @@ namespace MonoDevelop.CSharp.Formatting
 		// removes "\s*\+\s*" patterns (used for special behaviour inside strings)
 		void HandleStringConcatinationDeletion (int start, int end)
 		{
-			if (start < 0 || end >= textEditorData.Length)
+			if (start < 0 || end >= textEditorData.Length || textEditorData.IsSomethingSelected)
 				return;
 			char ch = textEditorData.GetCharAt (start);
 			if (ch == '"') {
