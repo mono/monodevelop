@@ -662,6 +662,7 @@ FILES =  \
 	MonoDevelop.Ide.Templates/FileTemplate.cs \
 	MonoDevelop.Ide.Templates/FileTemplateCondition.cs \
 	MonoDevelop.Ide.Templates/FileTemplateReference.cs \
+	MonoDevelop.Ide.Templates/ICustomProjectCIEntry.cs \
 	MonoDevelop.Ide.Templates/INewFileCreator.cs \
 	MonoDevelop.Ide.Templates/ISolutionItemDescriptor.cs \
 	MonoDevelop.Ide.Templates/ISolutionItemFeature.cs \
