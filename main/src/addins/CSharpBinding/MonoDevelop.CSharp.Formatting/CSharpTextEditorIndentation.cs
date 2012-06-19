@@ -231,7 +231,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (text.EndsWith (";") || text.Trim ().StartsWith ("for"))
 					return retval;
 
-				int guessedOffset = GuessSemicolonInsertionOffset (textEditorData, curLine);
+				int guessedOffset = GuessSemicolonInsertionOffset (textEditorData, curLine, textEditorData.Caret.Offset);
 				if (guessedOffset != textEditorData.Caret.Offset) {
 					using (var undo = textEditorData.OpenUndoGroup ()) {
 						textEditorData.Remove (textEditorData.Caret.Offset - 1, 1);
@@ -349,21 +349,25 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 
-		static int GuessSemicolonInsertionOffset (TextEditorData data, DocumentLine curLine)
+		public static int GuessSemicolonInsertionOffset (TextEditorData data, DocumentLine curLine, int caretOffset)
 		{
-			int offset = data.Caret.Offset;
-			int lastNonWsOffset = offset;
-
-			int max = curLine.Offset + curLine.Length;
-
-			// if the line ends with ';' the line end is not the correct place for a new semicolon.
-			if (curLine.Length > 0 && data.Document.GetCharAt (max - 1) == ';')
-				return offset;
+			int lastNonWsOffset = caretOffset;
+			char lastNonWsChar = '\0';
+		
+			int max = curLine.EndOffset;
+			if (caretOffset - 2 >= curLine.Offset && data.Document.GetCharAt (caretOffset - 2) == ')')
+				return caretOffset;
 
 			bool isInString = false , isInChar= false , isVerbatimString= false;
 			bool isInLineComment = false , isInBlockComment= false;
-			for (int pos = offset; pos < max; pos++) {
+			for (int pos = caretOffset; pos < max; pos++) {
+				if (pos == caretOffset) {
+					if (isInString || isInChar || isVerbatimString || isInLineComment || isInBlockComment) {
+						return pos;
+					}
+				}
 				char ch = data.Document.GetCharAt (pos);
+				Console.WriteLine ("ch:"+ ch +"/"+pos);
 				switch (ch) {
 				case '/':
 					if (isInBlockComment) {
@@ -407,9 +411,14 @@ namespace MonoDevelop.CSharp.Formatting
 						isInChar = !isInChar;
 					break;
 				}
-				if (!char.IsWhiteSpace (ch))
+				if (!char.IsWhiteSpace (ch)) {
 					lastNonWsOffset = pos;
+					lastNonWsChar = ch;
+				}
 			}
+			// if the line ends with ';' the line end is not the correct place for a new semicolon.
+			if (lastNonWsChar == ';')
+				return caretOffset;
 
 			return lastNonWsOffset;
 
