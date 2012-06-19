@@ -45,7 +45,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Templates
 {
-    internal class SolutionDescriptor 
+    internal class SolutionDescriptor
 	{
         string startupProject;
         string directory;
@@ -139,12 +139,18 @@ namespace MonoDevelop.Ide.Templates
 
             Solution solution = workspaceItem as Solution;
             if (solution != null) {
-                for ( int i = 0; i < entryDescriptors.Count; i++ )
-                {
+                for ( int i = 0; i < entryDescriptors.Count; i++ ) {
+                    ProjectCreateInformation entryProjectCI;
+                    var entry = entryDescriptors[i] as ICustomProjectCIEntry;
+                    if (entry != null)
+	                    entryProjectCI = entry.CreateProjectCI (localProjectCI);
+                    else
+	                    entryProjectCI = localProjectCI;
+
                     ISolutionItemDescriptor solutionItem = entryDescriptors[i];
 
-                    SolutionEntityItem info = solutionItem.CreateItem (localProjectCI, defaultLanguage);
-                    entryDescriptors[i].InitializeItem (solution.RootFolder, localProjectCI, defaultLanguage, info);
+                    SolutionEntityItem info = solutionItem.CreateItem (entryProjectCI, defaultLanguage);
+                    entryDescriptors[i].InitializeItem (solution.RootFolder, entryProjectCI, defaultLanguage, info);
 
                     IConfigurationTarget configurationTarget = info as IConfigurationTarget;
                     if (configurationTarget != null) {
