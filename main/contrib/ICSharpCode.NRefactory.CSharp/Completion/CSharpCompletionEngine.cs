@@ -1221,12 +1221,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AddTypesAndNamespaces(wrapper, state, node, typePred);
 			
 			wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));
-			
 			if (!(node is AstType)) {
 				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
 					AddKeywords(wrapper, expressionLevelKeywords);
-					if (node is TypeDeclaration)
+					if (node == null || node is TypeDeclaration)
 						AddKeywords(wrapper, typeLevelKeywords);
 				} else if (currentType != null) {
 					AddKeywords(wrapper, typeLevelKeywords);
@@ -1430,6 +1429,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				return null;
 			}
+
 			switch (word) {
 				case "namespace":
 					return null;

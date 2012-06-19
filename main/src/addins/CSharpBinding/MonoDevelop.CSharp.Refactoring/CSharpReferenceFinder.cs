@@ -66,7 +66,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			var firstMember = searchedMembers.FirstOrDefault ();
 			if (firstMember is INamedElement) {
 				var namedElement = (INamedElement)firstMember;
-				memberName = namedElement.Name;
+				var name = namedElement.Name;
+				if (namedElement is IMethod && (((IMethod)namedElement).IsConstructor | ((IMethod)namedElement).IsDestructor))
+					name = ((IMethod)namedElement).DeclaringType.Name;
+				memberName = name;
 
 				keywordName = CSharpAmbience.NetToCSharpTypeName (namedElement.FullName);
 				if (keywordName == namedElement.FullName)

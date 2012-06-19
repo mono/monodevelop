@@ -1696,7 +1696,7 @@ namespace Mono.TextEditor
 			Insert (offset, text);
 		}
 
-		public void Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType defaultAnchorMovementType)
+		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType defaultAnchorMovementType)
 		{
 			Insert (offset, text);
 		}

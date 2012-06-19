@@ -74,13 +74,14 @@ RES =  \
 	action.png \
 	missing.png
 
-DEPS = ../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll
+DEPS =  \
+	../../../../build/AddIns/MonoDevelop.GtkCore/libstetic.dll \
+	../../../../external/cecil/bin/net_4_0_Debug/Mono.Cecil.dll
 
 REFS =  \
 	$(GLADE_SHARP_LIBS) \
 	$(GLIB_SHARP_LIBS) \
 	$(GTK_SHARP_LIBS) \
-	-r:../../../../build/bin/Mono.Cecil.dll \
 	-r:Mono.Posix \
 	-r:System \
 	-r:System.Core \

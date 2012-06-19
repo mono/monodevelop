@@ -63,6 +63,8 @@ namespace MonoDevelop.Refactoring.Rename
 				return true;
 			if (options.SelectedItem is ITypeDefinition)
 				return !string.IsNullOrEmpty (((ITypeDefinition)options.SelectedItem).Region.FileName);
+			if (options.SelectedItem is IType && ((IType)options.SelectedItem).Kind == TypeKind.TypeParameter)
+				return !string.IsNullOrEmpty (((ITypeParameter)options.SelectedItem).Region.FileName);
 
 			if (options.SelectedItem is IMember) {
 				var cls = ((IMember)options.SelectedItem).DeclaringTypeDefinition;

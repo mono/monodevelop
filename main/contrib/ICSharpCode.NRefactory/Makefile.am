@@ -3,7 +3,7 @@ ASSEMBLY = $(top_builddir)/build/bin/ICSharpCode.NRefactory.dll
   
 
 REFS =  \
-	-r:../../build/bin/Mono.Cecil.dll \
+	-r:../../external/cecil/bin/net_4_0_Debug/Mono.Cecil.dll \
 	-r:System \
 	-r:System.Core \
 	-r:System.Xml \

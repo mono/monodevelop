@@ -5,7 +5,7 @@ ASSEMBLY = $(top_builddir)/build/bin/ICSharpCode.Decompiler.dll
 REFS =  \
 	-r:../../build/bin/ICSharpCode.NRefactory.CSharp.dll \
 	-r:../../build/bin/ICSharpCode.NRefactory.dll \
-	-r:../../build/bin/Mono.Cecil.dll \
+	-r:../../external/cecil/bin/net_4_0_Debug/Mono.Cecil.dll \
 	-r:System \
 	-r:System.Core \
 	-r:System.Xml \

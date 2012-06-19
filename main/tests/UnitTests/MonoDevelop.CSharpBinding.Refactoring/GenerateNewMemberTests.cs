@@ -202,15 +202,17 @@ class Test {
 	{
 	}
 @u	
+
 	int a;
 @u	
+
 	class Test2 {
 		void TestMe2 ()
 		{
 	
 		}
 	}
-@u	
+@s	
 	public delegate void ADelegate ();
 	
 @d}
@@ -227,14 +229,14 @@ class Test {
 @t	static void B ()
 	{
 	}
-@u	
+@s	
 	public static void Main (string[] args)
 	{
 		System.Console.WriteLine ();
 	}
 @t	int g;
 @t	int i;
-@u	
+@s	
 	int j;
 @t	public delegate void Del(int a);
 @s}
@@ -266,7 +268,26 @@ public class EmptyClass
 		}
 		
 
+		/// <summary>
+		/// Bug 5682 - insert method inserts two trailing tabs after } and has no trailing blank line
+		/// </summary>
+		[Test()]
+		public void Bug5682 ()
+		{
+			TestInsertionPoints (@"class MainClass {
+@D	static void A ()
+	{
+	}
+@s	
+	public static void Main (string[] args)
+	{
+		System.Console.WriteLine ();
+	}
+@s}
+");
+		}
 
+		
 	}
 }
 

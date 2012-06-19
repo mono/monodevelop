@@ -49,7 +49,7 @@ namespace MonoDevelop.Debugger.Tests
 		public override void TearDown ()
 		{
 			base.TearDown ();
-			ds.Stop ();
+			ds.Exit ();
 			ds.Dispose ();
 		}
 		

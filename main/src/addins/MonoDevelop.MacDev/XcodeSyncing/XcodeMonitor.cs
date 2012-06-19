@@ -81,7 +81,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			var toClose = new HashSet<string> ();
 			var syncList = new List<XcodeSyncedItem> ();
 			bool updateProject = false;
-			
+
+			monitor.Log.WriteLine ("Calculating sync list...");
 			foreach (var item in items) {
 				bool needsSync = item.NeedsSyncOut (monitor, ctx);
 				if (needsSync)
@@ -92,10 +93,10 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					toRemove.Remove (file);
 					
 					if (!itemMap.ContainsKey (file)) {
-						monitor.Log.WriteLine ("'{0}' needs to be updated.", file);
+						monitor.Log.WriteLine ("\t'{0}' needs to be added.", file);
 						updateProject = true;
 					} else if (needsSync) {
-						monitor.Log.WriteLine ("'{0}' needs to be closed.", file);
+						monitor.Log.WriteLine ("\t'{0}' needs to be closed & updated.", file);
 						toClose.Add (file);
 					}
 					
@@ -107,30 +108,41 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			bool removedOldProject = false;
 			if (updateProject) {
 				if (pendingProjectWrite == null && ProjectExists ()) {
-					monitor.Log.WriteLine ("A project file needs to be updated, closing and removing old project.");
+					monitor.Log.WriteLine ("The project.pbxproj file needs to be updated, closing and removing old project.");
 					CloseProject ();
 					DeleteXcproj (monitor);
 					removedOldProject = true;
+
+					// All items need to be re-synced...
+					syncList.Clear ();
+					foreach (var item in items) {
+						syncList.Add (item);
+
+						var files = item.GetTargetRelativeFileNames ();
+						foreach (var file in files)
+							itemMap[file] = item;
+					}
 				}
 			} else {
 				foreach (var f in toClose)
 					CloseFile (monitor, projectDir.Combine (f));
 			}
-			
-			foreach (var f in toRemove) {
-				itemMap.Remove (f);
-				syncTimeCache.Remove (f);
-				var path = projectDir.Combine (f);
-				try {
-					if (File.Exists (path))
-						File.Delete (path);
-				} catch {
-				}
-			}
-			
+
 			if (removedOldProject) {
 				HackRelocateProject (monitor);
 				ctx.ProjectDir = projectDir;
+				syncTimeCache.Clear ();
+			} else {
+				foreach (var f in toRemove) {
+					itemMap.Remove (f);
+					syncTimeCache.Remove (f);
+					var path = projectDir.Combine (f);
+					try {
+						if (File.Exists (path))
+							File.Delete (path);
+					} catch {
+					}
+				}
 			}
 			
 			foreach (var item in items) {
@@ -156,27 +168,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		// gets extremely unhappy if a new or changed project is in the same location as
 		// a previously opened one.
 		//
-		// To work around this we increment a subdirectory name and use that, and do some
-		// careful bookkeeping to reduce the unnecessary I/O overhead that this adds.
+		// To work around this we increment a subdirectory name and use that.
 		//
 		void HackRelocateProject (IProgressMonitor monitor)
 		{
-			var oldProjectDir = projectDir;
 			HackGetNextProjectDir ();
 			
-			monitor.Log.WriteLine ("Relocating {0} to {1}", oldProjectDir, projectDir);
-			
-			foreach (var f in syncTimeCache) {
-				var target = projectDir.Combine (f.Key);
-				var src = oldProjectDir.Combine (f.Key);
-				var parent = target.ParentDirectory;
-				
-				if (!Directory.Exists (parent))
-					Directory.CreateDirectory (parent);
-				
-				if (File.Exists (src))
-					File.Move (src, target);
-			}
+			monitor.Log.WriteLine ("Changed Xcode project path to {0}", projectDir);
 		}
 		
 		void HackGetNextProjectDir ()

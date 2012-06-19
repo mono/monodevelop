@@ -172,6 +172,54 @@ namespace MonoDevelop.CSharpBinding
 
 			CheckOutput (data, "\"Hello\n\t" + eolMarker + "\t$");
 		}
+
+		void TestGuessSemicolonInsertionOffset (string fooBar)
+		{
+			StringBuilder sb = new StringBuilder ();
+			int semicolonOffset = 0;
+			int guessedOffset = 0;
+			for (int i = 0; i <fooBar.Length; i++) {
+				char ch = fooBar [i];
+				if (ch == '$') {
+					semicolonOffset = sb.Length - 1;
+				} else if (ch == '~') {
+					guessedOffset = sb.Length - 1;
+				} else {
+					sb.Append (ch);
+				}
+			}
+			var data = new TextEditorData ();
+			data.Text = sb.ToString ();
+			int guessed = CSharpTextEditorIndentation.GuessSemicolonInsertionOffset (data, data.GetLineByOffset (semicolonOffset), semicolonOffset);
+			Assert.AreEqual (guessedOffset, guessed);
+		}
+
+		[Test]
+		public void TestSemicolonOffsetInParens ()
+		{
+			TestGuessSemicolonInsertionOffset ("FooBar($)~");
+		}
+
+		[Test]
+		public void TestSemicolonAlreadyPlaced ()
+		{
+			TestGuessSemicolonInsertionOffset ("FooBar($~);");
+		}
+
+		/// <summary>
+		/// Bug 5353 - semicolon placed in wrong place in single-line statement 
+		/// </summary>
+		[Test]
+		public void TestBug5353 ()
+		{
+			TestGuessSemicolonInsertionOffset ("NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Refresh, delegate { ReloadSummaryWrapper()$~}); ");
+		}
+
+		[Test]
+		public void TestBug5353Case2 ()
+		{
+			TestGuessSemicolonInsertionOffset ("NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Refresh, delegate { ReloadSummaryWrapper();$})~");
+		}
 	}
 }
 
