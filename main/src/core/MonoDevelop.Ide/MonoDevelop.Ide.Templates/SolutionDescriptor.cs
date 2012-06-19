@@ -140,12 +140,12 @@ namespace MonoDevelop.Ide.Templates
             Solution solution = workspaceItem as Solution;
             if (solution != null) {
                 for ( int i = 0; i < entryDescriptors.Count; i++ ) {
-					ProjectCreateInformation entryProjectCI;
-					var entry = entryDescriptors[i] as ICustomProjectCIEntry;
-					if (entry != null)
-						entryProjectCI = entry.CreateProjectCI (localProjectCI);
-					else
-						entryProjectCI = localProjectCI;
+                    ProjectCreateInformation entryProjectCI;
+                    var entry = entryDescriptors[i] as ICustomProjectCIEntry;
+                    if (entry != null)
+	                    entryProjectCI = entry.CreateProjectCI (localProjectCI);
+                    else
+	                    entryProjectCI = localProjectCI;
 
                     ISolutionItemDescriptor solutionItem = entryDescriptors[i];
 
