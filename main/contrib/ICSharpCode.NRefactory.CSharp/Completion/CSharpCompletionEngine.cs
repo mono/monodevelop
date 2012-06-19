@@ -1221,6 +1221,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AddTypesAndNamespaces(wrapper, state, node, typePred);
 			
 			wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));
+			
 			if (!(node is AstType)) {
 				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
@@ -1429,7 +1430,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				return null;
 			}
-
 			switch (word) {
 				case "namespace":
 					return null;
@@ -2853,9 +2853,54 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				"value"
 			}
 			);
-		
+
+		string GetLastClosingXmlCommentTag ()
+		{
+			var line = document.GetLineByNumber(location.Line);
+
+		restart:
+			string lineText = document.GetText(line);
+			if (!lineText.Trim ().StartsWith ("///"))
+				return null;
+			int startIndex = Math.Min(location.Column - 1, lineText.Length - 1) - 1;
+			while (startIndex > 0 && lineText [startIndex] != '<') {
+				--startIndex;
+				if (lineText [startIndex] == '/') {
+					// already closed.
+					startIndex = -1;
+					break;
+				}
+			}
+			if (startIndex < 0 && line.PreviousLine != null) {
+				line = line.PreviousLine;
+				goto restart;
+			}
+
+			if (startIndex >= 0) {
+				int endIndex = startIndex;
+				while (endIndex + 1 < lineText.Length && lineText [endIndex] != '>' && !Char.IsWhiteSpace (lineText [endIndex + 1])) {
+					endIndex++;
+				}
+				string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring(
+					startIndex + 1,
+					endIndex - startIndex - 1
+				) : null;
+				if (!string.IsNullOrEmpty(tag) && commentTags.IndexOf(tag) >= 0) {
+					return tag;
+				}
+			}
+			return null;
+		}
+
 		IEnumerable<ICompletionData> GetXmlDocumentationCompletionData()
 		{
+			var closingTag = GetLastClosingXmlCommentTag ();
+			if (closingTag != null) {
+				yield return factory.CreateLiteralCompletionData(
+					"/" + closingTag + ">"
+				);
+			}
+
 			yield return factory.CreateLiteralCompletionData(
 				"c",
 				"Set text in a code-like font"
@@ -2952,6 +2997,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				"value",
 				"Describe a property"
 			);
+
 		}
 		#endregion
 		
