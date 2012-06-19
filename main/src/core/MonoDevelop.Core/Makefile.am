@@ -379,9 +379,9 @@ REFS =  \
 	$(MONO_ADDINS_SETUP_LIBS) \
 	$(MONODOC_LIBS) \
 	-r:../../../build/bin/ICSharpCode.NRefactory.dll \
-	-r:../../../build/bin/Mono.Cecil.dll \
-	-r:../../../build/bin/Mono.Cecil.Mdb.dll \
 	-r:../../../build/bin/MonoDevelop.Projects.Formats.MSBuild.exe \
+	-r:../../../external/cecil/bin/net_4_0_Debug/Mono.Cecil.dll \
+	-r:../../../external/cecil/bin/net_4_0_Debug/Mono.Cecil.Mdb.dll \
 	-r:ICSharpCode.SharpZipLib \
 	-r:Mono.Posix \
 	-r:System \
