@@ -245,7 +245,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			if (key == Gdk.Key.Tab) {
 				stateTracker.UpdateEngine ();
-				if (stateTracker.Engine.IsInsideStringLiteral) {
+				if (stateTracker.Engine.IsInsideStringLiteral && !textEditorData.IsSomethingSelected) {
 					var lexer = new CSharpCompletionEngineBase.MiniLexer (textEditorData.Document.GetTextAt (0, textEditorData.Caret.Offset));
 					lexer.Parse ();
 					if (lexer.IsInString) {
