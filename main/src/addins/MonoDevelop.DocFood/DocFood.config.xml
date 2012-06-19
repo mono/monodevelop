@@ -275,17 +275,42 @@
 					<Case startsWithWord="Is,Has,Can">
 						<Switch>
 							<Case wordCount="1">
-								<Section name="summary">Determines whether this instance ${AllWords}  ${ParameterSentence}.</Section>
-								<Section name="returns">${True} if this instance ${AllWords} ${ParameterSentence}; otherwise, ${False}.</Section>
+								<Switch>
+									<Case modifier="Static">
+										<Section name="summary">Determines if ${AllWords}  ${ParameterSentence}.</Section>
+										<Section name="returns">${True} if ${AllWords} ${ParameterSentence}; otherwise, ${False}.</Section>
+									</Case>
+									<Default>
+										<Section name="summary">Determines whether this instance ${AllWords}  ${ParameterSentence}.</Section>
+										<Section name="returns">${True} if this instance ${AllWords} ${ParameterSentence}; otherwise, ${False}.</Section>
+									</Default>
+								</Switch>
 							</Case>
 							<Default>
 								<If paramCount="0">
-									<Section name="summary">Determines whether this instance ${AllWords}.</Section>
-									<Section name="returns">${True} if this instance ${AllWords}; otherwise, ${False}.</Section>
+									<Switch>
+										<Case modifier="Static">
+											<Section name="summary">Determines if ${AllWords}.</Section>
+											<Section name="returns">${True} if ${AllWords}; otherwise, ${False}.</Section>
+										</Case>
+										<Default>
+											<Section name="summary">Determines whether this instance ${AllWords}.</Section>
+											<Section name="returns">${True} if this instance ${AllWords}; otherwise, ${False}.</Section>
+										</Default>
+									</Switch>
 								</If>
 								<IfNot paramCount="0">
-									<Section name="summary">Determines whether this instance ${AllWords} the specified ${ParameterSentence}.</Section>
-									<Section name="returns">${True} if this instance ${AllWords} the specified ${ParameterSentence}; otherwise, ${False}.</Section>
+									<Switch>
+										<Case modifier="Static">
+											<Section name="summary">Determines if ${AllWords} the specified ${ParameterSentence}.</Section>
+											<Section name="returns">${True} if ${AllWords} the specified ${ParameterSentence}; otherwise, ${False}.</Section>
+										</Case>
+										<Default>
+											<Section name="summary">Determines whether this instance ${AllWords} the specified ${ParameterSentence}.</Section>
+											<Section name="returns">${True} if this instance ${AllWords} the specified ${ParameterSentence}; otherwise, ${False}.</Section>
+										</Default>
+									</Switch>
+								
 								</IfNot>
 							</Default>
 						</Switch>
@@ -416,8 +441,16 @@
 			<Case type="property">
 				<Switch>
 					<Case startsWithWord="Is,Has,Can">
-						<Section name="summary">${AccessText} a value indicating whether this instance ${AllWords}.</Section>
-						<Section name="value">${True} if this instance ${AllWords}; otherwise, ${False}.</Section>
+						<Switch>
+							<Case modifier="Static">
+								<Section name="summary">${AccessText} a value indicating ${AllWords}.</Section>
+								<Section name="value">${True} if ${AllWords}; otherwise, ${False}.</Section>
+							</Case>
+							<Default>
+								<Section name="summary">${AccessText} a value indicating whether this instance ${AllWords}.</Section>
+								<Section name="value">${True} if this instance ${AllWords}; otherwise, ${False}.</Section>
+							</Default>
+						</Switch>
 					</Case>
 					<Case returns="System.Boolean">
 						<If wordCount="1">

@@ -237,10 +237,14 @@ namespace MonoDevelop.DocFood
 						break;
 					case "modifier":
 						if (member is IMember) {
-							try {
-								var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
-								result |=  ((IMember)member).Accessibility == mod;
-							} catch (Exception) {
+							if (val.ToUpperInvariant () == "STATIC"){
+								result |= ((IMember)member).IsStatic;
+							} else {
+								try {
+									var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
+									result |=  ((IMember)member).Accessibility == mod;
+								} catch (Exception) {
+								}
 							}
 						}
 						break;
