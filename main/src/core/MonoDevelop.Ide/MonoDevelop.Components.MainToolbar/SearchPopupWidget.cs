@@ -258,15 +258,21 @@ namespace MonoDevelop.Components.MainToolbar
 			if (selectedItem == null)
 				return;
 			var i = SelectedCategoryIndex;
-			if (selectedItem.Item + 1 < Math.Min (maxItems, selectedItem.DataSource.ItemCount)) {
+			var upperBound = Math.Min (maxItems, selectedItem.DataSource.ItemCount);
+			if (selectedItem.Item + 1 < upperBound) {
+				if (topItem.DataSource == selectedItem.DataSource && selectedItem.Item == upperBound - 1)
+					return;
 				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item + 1);
 			} else {
-				if (i < results.Count - 1) {
+				for (int j = i + 1; j < results.Count; j++) {
+					if (results[j].Item2.ItemCount == 0 || results[j].Item2.ItemCount == 1 && topItem.DataSource == results[j].Item2)
+						continue;
 					selectedItem = new ItemIdentifier (
-						results [i + 1].Item1,
-						results [i + 1].Item2,
+						results [j].Item1,
+						results [j].Item2,
 						0
 					);
+					break;
 				}
 			}
 			if (i < results.Count && selectedItem.Equals (topItem)) {
