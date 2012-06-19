@@ -282,12 +282,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (result.CaretEndOffset > e.Offset)
 					result.CaretEndOffset += delta;
 			};
-			
-			var formatter = CodeFormatterService.GetFormatter (context.Document.Editor.Document.MimeType);
-			if (formatter != null && context.Document.HasProject) {
-				formatter.OnTheFlyFormat (context.Document, 0, data.Length);
-			}
-			
+
 			IndentCode (data, context.LineIndent);
 			result.Code = data.Text;
 			data.Dispose ();
@@ -434,17 +429,20 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 
 			document.Editor.Caret.Location = document.Editor.OffsetToLocation (newoffset) ;
-			
-/*			if (PropertyService.Get ("OnTheFlyFormatting", false)) {
-				string mt = DesktopService.GetMimeTypeForUri (document.FileName);
-				var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
-				if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
-					document.Editor.Document.BeginAtomicUndo ();
-					formatter.OnTheFlyFormat (document.Project != null ? document.Project.Policies : null, 
-						document.Editor, offset, offset + length);
-					document.Editor.Document.EndAtomicUndo ();
+
+			var prettyPrinter = CodeFormatterService.GetFormatter (data.MimeType);
+			if (prettyPrinter != null) {
+				int endOffset = template.InsertPosition + template.Code.Length;
+				var oldVersion = data.Version;
+				prettyPrinter.OnTheFlyFormat (document, template.InsertPosition, endOffset);
+				foreach (var textLink in template.TextLinks) {
+					for (int i = 0; i < textLink.Links.Count; i++) {
+						var segment = textLink.Links [i];
+						var translatedOffset = oldVersion.MoveOffsetTo (data.Version, template.InsertPosition + segment.Offset) - template.InsertPosition;
+						textLink.Links [i] = new TextSegment (translatedOffset, segment.Length);
+					}
 				}
-			}*/
+			}
 			return template;
 		}
 
