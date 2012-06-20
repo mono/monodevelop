@@ -58,6 +58,7 @@ namespace ICSharpCode.Decompiler.Ast
 			MethodDefinition oldCurrentMethod = context.CurrentMethod;
 			Debug.Assert(oldCurrentMethod == null || oldCurrentMethod == methodDef);
 			context.CurrentMethod = methodDef;
+			context.CurrentMethodIsAsync = false;
 			try {
 				AstMethodBodyBuilder builder = new AstMethodBodyBuilder();
 				builder.methodDef = methodDef;
@@ -175,7 +176,13 @@ namespace ICSharpCode.Decompiler.Ast
 				};
 			} else if (node is ILSwitch) {
 				ILSwitch ilSwitch = (ILSwitch)node;
-				if (TypeAnalysis.IsBoolean(ilSwitch.Condition.InferredType) && ilSwitch.CaseBlocks.SelectMany(cb => cb.Values).Any(val => val != 0 && val != 1)) {
+				if (TypeAnalysis.IsBoolean(ilSwitch.Condition.InferredType) && (
+					from cb in ilSwitch.CaseBlocks
+					where cb.Values != null
+					from val in cb.Values
+					select val
+				).Any(val => val != 0 && val != 1))
+				{
 					// If switch cases contain values other then 0 and 1, force the condition to be non-boolean
 					ilSwitch.Condition.ExpectedType = typeSystem.Int32;
 				}
@@ -525,6 +532,10 @@ namespace ICSharpCode.Decompiler.Ast
 				case ILCode.Conv_Ovf_U2_Un:
 				case ILCode.Conv_Ovf_U4_Un:
 				case ILCode.Conv_Ovf_U8_Un:
+				case ILCode.Conv_Ovf_I:
+				case ILCode.Conv_Ovf_U:
+				case ILCode.Conv_Ovf_I_Un:
+				case ILCode.Conv_Ovf_U_Un:
 					{
 						// conversion was handled by Convert() function using the info from type analysis
 						CastExpression cast = arg1 as CastExpression;
@@ -533,15 +544,15 @@ namespace ICSharpCode.Decompiler.Ast
 						}
 						return arg1;
 					}
-					case ILCode.Conv_Ovf_I:     return arg1.CastTo(new MemberType(new SimpleType ("System"), "IntPtr")); // TODO
-					case ILCode.Conv_Ovf_U:     return arg1.CastTo(new MemberType(new SimpleType ("System"), "UIntPtr"));
-					case ILCode.Conv_Ovf_I_Un:  return arg1.CastTo(new MemberType(new SimpleType ("System"), "IntPtr"));
-					case ILCode.Conv_Ovf_U_Un:  return arg1.CastTo(new MemberType(new SimpleType ("System"), "UIntPtr"));
-					case ILCode.Castclass:      return arg1.CastTo(operandAsTypeRef);
 				case ILCode.Unbox_Any:
 					// unboxing does not require a cast if the argument was an isinst instruction
 					if (arg1 is AsExpression && byteCode.Arguments[0].Code == ILCode.Isinst && TypeAnalysis.IsSameType(operand as TypeReference, byteCode.Arguments[0].Operand as TypeReference))
 						return arg1;
+					else
+						goto case ILCode.Castclass;
+				case ILCode.Castclass:
+					if ((byteCode.Arguments[0].InferredType != null && byteCode.Arguments[0].InferredType.IsGenericParameter) || ((Cecil.TypeReference)operand).IsGenericParameter)
+						return arg1.CastTo(new PrimitiveType("object")).CastTo(operandAsTypeRef);
 					else
 						return arg1.CastTo(operandAsTypeRef);
 				case ILCode.Isinst:
@@ -837,8 +848,11 @@ namespace ICSharpCode.Decompiler.Ast
 				case ILCode.ExpressionTreeParameterDeclarations:
 					args[args.Count - 1].AddAnnotation(new ParameterDeclarationAnnotation(byteCode));
 					return args[args.Count - 1];
+				case ILCode.Await:
+					return new UnaryOperatorExpression(UnaryOperatorType.Await, arg1);
 				case ILCode.NullableOf:
-					case ILCode.ValueOf: return arg1;
+				case ILCode.ValueOf: 
+					return arg1;
 				default:
 					throw new Exception("Unknown OpCode: " + byteCode.Code);
 			}

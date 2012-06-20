@@ -131,6 +131,8 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
 		{
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			DecompilerSettings settings = new DecompilerSettings () {
 				AnonymousMethods = true,
 				AutomaticEvents  = true,
@@ -138,7 +140,7 @@ namespace MonoDevelop.AssemblyBrowser
 				ForEachStatement = true,
 				LockStatement = true,
 				ShowXmlDocumentation = true,
-
+				CSharpFormattingOptions = codePolicy.CreateOptions ()
 			};
 			return Decompile (data, module, currentType, setData, settings);
 		}
@@ -147,9 +149,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
 		{
 			try {
-				var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
-				var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-				
+
 				var context = new DecompilerContext (module);
 				var source = new CancellationTokenSource ();
 				
@@ -165,8 +165,7 @@ namespace MonoDevelop.AssemblyBrowser
 				astBuilder.RunTransformations (o => false);
 				GeneratedCodeSettings.Default.Apply (astBuilder.CompilationUnit);
 				var output = new ColoredCSharpFormatter (data.Document);
-				CSharpFormattingOptions options = codePolicy.CreateOptions ();
-				astBuilder.GenerateCode (output, options);
+				astBuilder.GenerateCode (output);
 				output.SetDocumentData ();
 				return output.ReferencedSegments;
 			} catch (Exception e) {

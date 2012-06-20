@@ -38,11 +38,11 @@ namespace ICSharpCode.Decompiler.Ast
 			this.comment = comment;
 		}
 		
-		public override void AcceptVisitor (IAstVisitor visitor)
+		public override void AcceptVisitor(IAstVisitor visitor)
 		{
 		}
-			
-		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		
+		public override T AcceptVisitor<T>(IAstVisitor<T> visitor)
 		{
 			return default(T);
 		}
