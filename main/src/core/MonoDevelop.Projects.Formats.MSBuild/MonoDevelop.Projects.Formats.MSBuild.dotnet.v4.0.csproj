@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{db96f55e-41c5-4330-a427-15a4ec028bbe}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
+    <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
+    <BaseIntermediateOutputPath>obj\4.0</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin\MSBuild\dotnet.4.0</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin\MSBuild\dotnet.4.0</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildResult.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\LocalLogger.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ILogWriter.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IProjectBuilder.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IBuildEngine.cs" />
+    <Compile Include="AssemblyInfo.v4.0.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ProjectBuilder.v4.0.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Projects.Formats.MSBuild\" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../..">
+          <BuildFilesVar Sync="true" Name="FILES" />
+          <DeployFilesVar />
+          <ResourcesVar Sync="true" Name="RES" />
+          <OthersVar />
+          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <ItemGroup>
+    <None Include="MonoDevelop.Projects.Formats.MSBuild.dotnet.v4.0.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>
+    </None>
+  </ItemGroup>
+</Project>
