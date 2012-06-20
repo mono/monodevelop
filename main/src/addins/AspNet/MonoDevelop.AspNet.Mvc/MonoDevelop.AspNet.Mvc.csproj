@@ -34,7 +34,17 @@
     <Compile Include="AspMvcProject.cs" />
     <Compile Include="AspMvcProjectConfiguration.cs" />
     <Compile Include="AspMvcCommands.cs" />
+    <Compile Include="CommandHandlers.cs" />
     <Compile Include="Gui\FolderNodeBuilderExtension.cs" />
+    <None Include="CodeTemplates\C#\AddController\Controller with empty read and write actions.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CodeTemplates\C#\AddController\Empty.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CodeTemplates\C#\AddView\Razor\Empty.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Templates\Common\Error.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -48,6 +58,8 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Gui\AddViewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs" />
+    <Compile Include="Gui\AddControllerDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddControllerDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -165,7 +177,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="CodeTemplates\AddView\Empty.tt">
+    <None Include="CodeTemplates\C#\AddView\Aspx\Empty.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Makefile.am" />
@@ -222,6 +234,10 @@
   <ItemGroup>
     <None Include="Templates\ViewPageRazor.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
 </Project>

@@ -33,6 +33,8 @@
 		<Import file = "Templates/PartialViewPageRazor.xft.xml" />
 		<Import file = "CodeTemplates/C#/AddView/Aspx/Empty.tt" />
 		<Import file = "CodeTemplates/C#/AddView/Razor/Empty.tt" />
+		<Import file = "CodeTemplates/C#/AddController/Empty.tt" />
+		<Import file = "CodeTemplates/C#/AddController/Controller with empty read and write actions.tt" />
 	</Runtime>
 	
 	<Dependencies>
