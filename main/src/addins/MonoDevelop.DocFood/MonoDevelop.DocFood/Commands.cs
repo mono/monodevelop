@@ -170,7 +170,16 @@ namespace MonoDevelop.DocFood
 						inTag = true;
 					if (ch == '>')
 						inTag = false;
-					if (!inTag && char.IsWhiteSpace (ch)) {
+
+					if (ch =='\n') {
+						result.Append (curWord.ToString ());
+						curWord.Length = 0;
+
+						result.AppendLine ();
+						result.Append (indent);
+						result.Append (prefix);
+						column = indent.Length + prefix .Length;
+					} else if (!inTag && char.IsWhiteSpace (ch)) {
 						if (column + curWord.Length > 120) {
 							result.Length--; // trunk last char white space.
 							result.AppendLine ();

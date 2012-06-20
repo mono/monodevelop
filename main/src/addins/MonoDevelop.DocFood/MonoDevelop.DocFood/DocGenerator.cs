@@ -89,7 +89,9 @@ namespace MonoDevelop.DocFood
 			sb.Append ("<root>");
 			bool wasWs = false;
 			foreach (char ch in xmlDoc) {
-				if (char.IsWhiteSpace (ch)) {
+				if (ch =='\r')
+					continue;
+				if (ch == ' ' || ch == '\t') {
 					if (!wasWs)
 						sb.Append (' ');
 					wasWs = true;
@@ -113,7 +115,7 @@ namespace MonoDevelop.DocFood
 								readSection.SetAttribute (reader.LocalName, reader.Value);
 							} while (reader.MoveToNextAttribute ());
 						}
-						readSection.Documentation = reader.ReadElementString ();
+						readSection.Documentation = reader.ReadElementString ().Trim ();
 						sections.Add (readSection);
 					}
 				}
