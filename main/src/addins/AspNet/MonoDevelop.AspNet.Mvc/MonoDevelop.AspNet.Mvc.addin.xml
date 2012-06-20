@@ -126,12 +126,39 @@
 		         _description = "Add an ASP.NET MVC view" />
 		</Category>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
+		<Command id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToView"
+				_label = "Go To View"
+				defaultHandler = "MonoDevelop.AspNet.Mvc.GoToViewCommandHandler"
+				description = "Go to the corresponding view file" />
+		<Command id = "MonoDevelop.AspNet.Mvc.AspCommands.AddViewFromController"
+				_label = "Add View..."
+				defaultHandler = "MonoDevelop.AspNet.Mvc.AddViewFromControllerCommandHandler"
+				description = "Add an ASP.NET MVC view" />
+		<Command id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToController"
+				_label = "Go To Controller"
+				defaultHandler = "MonoDevelop.AspNet.Mvc.GoToControllerCommandHandler"
+				description = "Go to the corresponding controller file" />
+	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="activeproject" value="AspNetMvc">
 			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddController" insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"  disabledVisible="false"/>
 			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddView" disabledVisible="false" />
 			<SeparatorItem id = "MvcAddSeparator" />
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<Condition id="FileType" fileExtensions=".cs">
+			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToView" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
+			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspCommands.AddViewFromController" />
+			<SeparatorItem id = "MvcSeparator1" />
+		</Condition>
+		<Condition id="FileType" fileExtensions=".cshtml,.aspx">
+			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToController" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
+			<SeparatorItem id = "MvcSeparator2" />
 		</Condition>
 	</Extension>
 	
