@@ -449,7 +449,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				//always start the remote process explicitly, even if it's using the current runtime and fx
 				//else it won't pick up the assembly redirects from the builder exe
-				var exe = GetExeLocation (toolsVersion);
+				var exe = GetExeLocation (runtime, toolsVersion);
 				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 				var pinfo = new ProcessStartInfo (exe) {
 					UseShellExecute = false,
@@ -483,9 +483,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		static string GetExeLocation (string toolsVersion)
+		static string GetExeLocation (TargetRuntime runtime, string toolsVersion)
 		{
 			FilePath sourceExe = typeof(ProjectBuilder).Assembly.Location;
+
+			if ((runtime is MsNetTargetRuntime) && int.Parse (toolsVersion.Split ('.')[0]) >= 4)
+				toolsVersion = "dotnet." + toolsVersion;
+
 			if (toolsVersion == REFERENCED_MSBUILD_TOOLS)
 				return sourceExe;
 			
