@@ -417,12 +417,12 @@ namespace MonoDevelop.Components.Docking
 				var y = Allocation.Y;
 
 				ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
-				var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1);
-				g.AddColorStop (0, Styles.DockTabBarGradientStart);
-				g.AddColorStop (1, Styles.DockTabBarGradientEnd);
-				ctx.Pattern = g;
-				ctx.Fill ();
-				g.Dispose ();
+				using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
+					g.AddColorStop (0, Styles.DockTabBarGradientStart);
+					g.AddColorStop (1, Styles.DockTabBarGradientEnd);
+					ctx.Pattern = g;
+					ctx.Fill ();
+				}
 
 				ctx.MoveTo (x + 0.5, y + 0.5);
 				ctx.LineTo (x + Allocation.Width - 0.5d, y + 0.5);
@@ -432,13 +432,13 @@ namespace MonoDevelop.Components.Docking
 				if (active) {
 
 					ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
-					g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1);
-					g.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.01));
-					g.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.08));
-					g.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.01));
-					ctx.Pattern = g;
-					ctx.Fill ();
-					g.Dispose ();
+					using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
+						g.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.01));
+						g.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.08));
+						g.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.01));
+						ctx.Pattern = g;
+						ctx.Fill ();
+					}
 
 /*					double offset = Allocation.Height * 0.25;
 					var rect = new Cairo.Rectangle (x - Allocation.Height + offset, y, Allocation.Height, Allocation.Height);
