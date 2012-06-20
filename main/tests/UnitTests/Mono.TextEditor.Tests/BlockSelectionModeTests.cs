@@ -116,6 +116,30 @@ namespace Mono.TextEditor.Tests
 1234567890");
 		}
 
+		/// <summary>
+		/// Bug 5724 - Tab-indent loses selection in block selection
+		/// </summary>
+		[Test]
+		public void TestBug5724 ()
+		{
+			var data = Create (
+@"1234567890
+1234<-567890
+1234567890
+1234567890
+123456->$7890
+1234567890");
+			data.MainSelection.SelectionMode = SelectionMode.Block;
+			MiscActions.InsertTab (data);
+			Check (data, 
+@"1234567890
+1234	<-7890
+1234	7890
+1234	7890
+1234	->$7890
+1234567890");
+		}
+
 	}
 }
 
