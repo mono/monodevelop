@@ -351,7 +351,12 @@ int main (int argc, char **argv)
 	exeName = [NSString stringWithFormat:@"%s.exe", basename];
 	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 	
-	void *libmono = dlopen (MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
+	void *libmono;
+	if (getenv ("MONODEVELOP_USE_SGEN") != NULL)
+		libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
+	else
+		libmono = dlopen (MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
+	
 	if (libmono == NULL)
 		exit_with_message ("This application requires the Mono framework.", argv[0]);
 	
@@ -379,12 +384,16 @@ int main (int argc, char **argv)
 	
 	extra_argv = get_mono_env_options (&extra_argc);
 	
-	char **new_argv = (char **) malloc (sizeof (char *) * (argc + extra_argc + 2));
+	const int injected = 2; /* --debug and exe path */
+	char **new_argv = (char **) malloc (sizeof (char *) * (argc + extra_argc + injected));
 	int i, n = 0;
 	
 	new_argv[n++] = argv[0];
 	for (i = 0; i < extra_argc; i++)
 		new_argv[n++] = extra_argv[i];
+	
+	// enable --debug so that we can get useful stack traces
+	new_argv[n++] = "--debug";
 	
 	new_argv[n++] = strdup ([exePath UTF8String]);
 	
@@ -395,5 +404,5 @@ int main (int argc, char **argv)
 	free (extra_argv);
 	[pool drain];
 	
-	return _mono_main (argc + extra_argc + 1, new_argv);
+	return _mono_main (argc + extra_argc + injected, new_argv);
 }
