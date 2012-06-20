@@ -351,30 +351,29 @@ int main (int argc, char **argv)
 	exeName = [NSString stringWithFormat:@"%s.exe", basename];
 	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 	
-	void *libmono;
-	if (getenv ("MONODEVELOP_USE_SGEN") != NULL)
-		libmono = dlopen (MONO_LIB_PATH ("libmonosgen-2.0.dylib"), RTLD_LAZY);
-	else
-		libmono = dlopen (MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
+	bool sgen = getenv ("MONODEVELOP_USE_SGEN") != NULL;
+	void *libmono = dlopen (sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
 	
-	if (libmono == NULL)
+	if (libmono == NULL) {
+		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", sgen ? "sgen" : "", dlerror ());
 		exit_with_message ("This application requires the Mono framework.", argv[0]);
+	}
 	
 	mono_main _mono_main = (mono_main) dlsym (libmono, "mono_main");
 	if (!_mono_main) {
-		fprintf (stderr, "Could not load mono_main\n");
+		fprintf (stderr, "Could not load mono_main(): %s\n", dlerror ());
 		exit_with_message ("Failed to load the Mono framework.", argv[0]);
 	}
 	
 	mono_free _mono_free = (mono_free) dlsym (libmono, "mono_free");
 	if (!_mono_free) {
-		fprintf (stderr, "Could not load mono_free\n");
+		fprintf (stderr, "Could not load mono_free(): %s\n", dlerror ());
 		exit_with_message ("Failed to load the Mono framework.", argv[0]);
 	}
 	
 	mono_get_runtime_build_info _mono_get_runtime_build_info = (mono_get_runtime_build_info) dlsym (libmono, "mono_get_runtime_build_info");
 	if (!_mono_get_runtime_build_info) {
-		fprintf (stderr, "Could not load mono_get_runtime_build_info\n");
+		fprintf (stderr, "Could not load mono_get_runtime_build_info(): %s\n", dlerror ());
 		exit_with_message ("Failed to load the Mono framework.", argv[0]);
 	}
 	
