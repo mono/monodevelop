@@ -52,6 +52,13 @@ DATA_FILES = \
 	Templates/ProjectMvc3.xpt.xml \
 	Templates/WebConfigAppMvc3.xft.xml \
 	Templates/WebConfigViewsMvc3.xft.xml \
+	Templates/ProjectWithUnitTest.xpt.xml \
+	Templates/ProjectMvc3WithUnitTest.xpt.xml \
+	Templates/ProjectMvc3Razor.xpt.xml \
+	Templates/ProjectMvc3RazorWithUnitTest.xpt.xml \
+	Templates/LayoutPage.xft.xml \
+	Templates/ViewPageRazor.xft.xml \
+	Templates/PartialViewPageRazor.xft.xml \
 	CodeTemplates/AddView/Empty.tt
 
 DATA_FILE_BUILD = $(addprefix $(ADDIN_BUILD)/, $(DATA_FILES))
