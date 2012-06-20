@@ -63,6 +63,7 @@ FILES =  \
 	FlowAnalysis/SsaOptimization.cs \
 	FlowAnalysis/SsaVariable.cs \
 	FlowAnalysis/TransformToSsa.cs \
+	ILAst/AsyncDecompiler.cs \
 	ILAst/DefaultDictionary.cs \
 	ILAst/GotoRemoval.cs \
 	ILAst/ILAstBuilder.cs \
@@ -71,10 +72,13 @@ FILES =  \
 	ILAst/ILCodes.cs \
 	ILAst/ILInlining.cs \
 	ILAst/InitializerPeepholeTransforms.cs \
+	ILAst/LiftedOperators.cs \
 	ILAst/LoopsAndConditions.cs \
 	ILAst/PatternMatching.cs \
 	ILAst/PeepholeTransform.cs \
 	ILAst/SimpleControlFlow.cs \
+	ILAst/StateRange.cs \
+	ILAst/SymbolicExecution.cs \
 	ILAst/TypeAnalysis.cs \
 	ILAst/YieldReturnDecompiler.cs \
 	ITextOutput.cs \

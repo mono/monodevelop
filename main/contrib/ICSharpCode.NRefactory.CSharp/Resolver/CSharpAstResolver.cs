@@ -275,7 +275,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return true;
 			}
-			return (node.NodeType == NodeType.Whitespace || node is ArraySpecifier || node is NamedArgumentExpression);
+			return (node.NodeType == NodeType.Whitespace || node is ArraySpecifier || node is NamedArgumentExpression || node is ArrayInitializerExpression);
 		}
 	}
 }

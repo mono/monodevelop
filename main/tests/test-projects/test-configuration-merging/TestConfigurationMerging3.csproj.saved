@@ -9,24 +9,24 @@
     <AssemblyName>TestConfigurationMerging</AssemblyName>
     <RootNamespace>TestConfigurationMerging</RootNamespace>
     <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug</OutputPath>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>none</DebugType>
     <OutputPath>bin\Release</OutputPath>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugSymbols>false</DebugSymbols>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugSymbols>False</DebugSymbols>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

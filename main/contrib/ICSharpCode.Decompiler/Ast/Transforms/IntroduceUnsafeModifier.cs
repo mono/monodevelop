@@ -32,11 +32,11 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			compilationUnit.AcceptVisitor(this, null);
 		}
 		
-		protected override bool VisitChildren (AstNode node, object data)
+		protected override bool VisitChildren(AstNode node, object data)
 		{
 			bool result = false;
 			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
-				result |= child.AcceptVisitor (this, data);
+				result |= child.AcceptVisitor(this, data);
 			}
 			if (result && node is EntityDeclaration && !(node is Accessor)) {
 				((EntityDeclaration)node).Modifiers |= Modifiers.Unsafe;

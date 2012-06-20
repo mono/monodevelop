@@ -333,13 +333,13 @@ namespace Mono.TextEditor
 
 		ICSharpCode.NRefactory.Editor.IDocumentLine ICSharpCode.NRefactory.Editor.IDocumentLine.PreviousLine {
 			get {
-				throw new NotImplementedException ();
+				return this.PreviousLine;
 			}
 		}
 
 		ICSharpCode.NRefactory.Editor.IDocumentLine ICSharpCode.NRefactory.Editor.IDocumentLine.NextLine {
 			get {
-				throw new NotImplementedException ();
+				return this.NextLine;
 			}
 		}
 

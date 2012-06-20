@@ -64,63 +64,69 @@ namespace ICSharpCode.Decompiler.Ast
 			this.DecompileMethodBodies = true;
 		}
 		
-		public static bool MemberIsHidden (MemberReference member, DecompilerSettings settings)
+		public static bool MemberIsHidden(MemberReference member, DecompilerSettings settings)
 		{
 			MethodDefinition method = member as MethodDefinition;
 			if (method != null) {
 				if (method.IsGetter || method.IsSetter || method.IsAddOn || method.IsRemoveOn)
 					return true;
-				if (settings.HideNonPublicMembers && !method.IsPublic)
-					return true;
-				if (settings.AnonymousMethods && method.Name.StartsWith ("<", StringComparison.Ordinal) && method.IsCompilerGenerated ())
+				if (settings.AnonymousMethods && method.HasGeneratedName() && method.IsCompilerGenerated())
 					return true;
 			}
 
 			TypeDefinition type = member as TypeDefinition;
 			if (type != null) {
-				if (settings.HideNonPublicMembers && !type.IsPublic)
-					return true;
 				if (type.DeclaringType != null) {
-					if (settings.AnonymousMethods && type.Name.StartsWith ("<>c__DisplayClass", StringComparison.Ordinal) && type.IsCompilerGenerated ())
+					if (settings.AnonymousMethods && IsClosureType(type))
 						return true;
-					if (settings.YieldReturn && YieldReturnDecompiler.IsCompilerGeneratorEnumerator (type))
+					if (settings.YieldReturn && YieldReturnDecompiler.IsCompilerGeneratorEnumerator(type))
 						return true;
-				} else if (type.IsCompilerGenerated ()) {
-					if (type.Name.StartsWith ("<PrivateImplementationDetails>", StringComparison.Ordinal))
+					if (settings.AsyncAwait && AsyncDecompiler.IsCompilerGeneratedStateMachine(type))
 						return true;
-					if (type.IsAnonymousType ())
+				} else if (type.IsCompilerGenerated()) {
+					if (type.Name.StartsWith("<PrivateImplementationDetails>", StringComparison.Ordinal))
+						return true;
+					if (type.IsAnonymousType())
 						return true;
 				}
 			}
 			
 			FieldDefinition field = member as FieldDefinition;
 			if (field != null) {
-				if (settings.HideNonPublicMembers && !field.IsPublic)
-					return true;
-				if (field.IsCompilerGenerated ()) {
-					if (settings.AnonymousMethods && field.Name.StartsWith ("CS$<>", StringComparison.Ordinal))
+				if (field.IsCompilerGenerated()) {
+					if (settings.AnonymousMethods && IsAnonymousMethodCacheField(field))
 						return true;
-					if (settings.AutomaticProperties && field.Name.StartsWith ("<", StringComparison.Ordinal) && field.Name.EndsWith ("BackingField", StringComparison.Ordinal))
+					if (settings.AutomaticProperties && IsAutomaticPropertyBackingField(field))
+						return true;
+					if (settings.SwitchStatementOnString && IsSwitchOnStringCache(field))
 						return true;
 				}
 				// event-fields are not [CompilerGenerated]
-				if (settings.AutomaticEvents && field.DeclaringType.Events.Any (ev => ev.Name == field.Name))
+				if (settings.AutomaticEvents && field.DeclaringType.Events.Any(ev => ev.Name == field.Name))
 					return true;
 			}
-
-			PropertyDefinition property = member as PropertyDefinition;
-			if (property != null) {
-				if (settings.HideNonPublicMembers && (property.GetMethod == null || !property.GetMethod.IsPublic) && (property.SetMethod == null || !property.SetMethod.IsPublic))
-					return true;
-			}
-
-			EventDefinition evt = member as EventDefinition;
-			if (evt != null) {
-				if (settings.HideNonPublicMembers && (evt.AddMethod == null || !evt.AddMethod.IsPublic) && (evt.RemoveMethod == null || !evt.RemoveMethod.IsPublic))
-					return true;
-			}
-
+			
 			return false;
+		}
+
+		static bool IsSwitchOnStringCache(FieldDefinition field)
+		{
+			return field.Name.StartsWith("<>f__switch", StringComparison.Ordinal);
+		}
+
+		static bool IsAutomaticPropertyBackingField(FieldDefinition field)
+		{
+			return field.HasGeneratedName() && field.Name.EndsWith("BackingField", StringComparison.Ordinal);
+		}
+
+		static bool IsAnonymousMethodCacheField(FieldDefinition field)
+		{
+			return field.Name.StartsWith("CS$<>", StringComparison.Ordinal) || field.Name.StartsWith("<>f__am", StringComparison.Ordinal);
+		}
+
+		static bool IsClosureType(TypeDefinition type)
+		{
+			return type.HasGeneratedName() && type.IsCompilerGenerated() && (type.Name.Contains("DisplayClass") || type.Name.Contains("AnonStorey"));
 		}
 		
 		/// <summary>
@@ -148,22 +154,14 @@ namespace ICSharpCode.Decompiler.Ast
 		/// Generates C# code from the abstract source tree.
 		/// </summary>
 		/// <remarks>This method adds ParenthesizedExpressions into the AST, and will run transformations if <see cref="RunTransformations"/> was not called explicitly</remarks>
-		public void GenerateCode(ITextOutput output, CSharpFormattingOptions formattingPolicy = null)
+		public void GenerateCode(ITextOutput output)
 		{
 			if (!transformationsHaveRun)
 				RunTransformations();
 			
 			astCompileUnit.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
-			var outputFormatter = new TextOutputFormatter(output);
-			if (formattingPolicy == null)  {
-					
-				formattingPolicy = FormattingOptionsFactory.CreateMono ();
-				// disable whitespace in front of parentheses:
-				formattingPolicy.SpaceBeforeMethodCallParentheses = false;
-				formattingPolicy.SpaceBeforeMethodDeclarationParentheses = false;
-				formattingPolicy.SpaceBeforeConstructorDeclarationParentheses = false;
-				formattingPolicy.SpaceBeforeDelegateDeclarationParentheses = false;
-			}
+			var outputFormatter = new TextOutputFormatter(output) { FoldBraces = context.Settings.FoldBraces };
+			var formattingPolicy = context.Settings.CSharpFormattingOptions;
 			astCompileUnit.AcceptVisitor(new CSharpOutputVisitor(outputFormatter, formattingPolicy));
 		}
 		
@@ -282,16 +280,16 @@ namespace ICSharpCode.Decompiler.Ast
 		/// </summary>
 		/// <param name="typeDef"></param>
 		/// <returns>TypeDeclaration or DelegateDeclaration.</returns>
-		public EntityDeclaration CreateType (TypeDefinition typeDef)
+		public EntityDeclaration CreateType(TypeDefinition typeDef)
 		{
 			// create type
 			TypeDefinition oldCurrentType = context.CurrentType;
 			context.CurrentType = typeDef;
-			TypeDeclaration astType = new TypeDeclaration ();
-			ConvertAttributes (astType, typeDef);
-			astType.AddAnnotation (typeDef);
-			astType.Modifiers = ConvertModifiers (typeDef);
-			astType.Name = CleanName (typeDef.Name);
+			TypeDeclaration astType = new TypeDeclaration();
+			ConvertAttributes(astType, typeDef);
+			astType.AddAnnotation(typeDef);
+			astType.Modifiers = ConvertModifiers(typeDef);
+			astType.Name = CleanName(typeDef.Name);
 			
 			if (typeDef.IsEnum) {  // NB: Enum is value type
 				astType.ClassType = ClassType.Enum;
@@ -308,52 +306,52 @@ namespace ICSharpCode.Decompiler.Ast
 			
 			IEnumerable<GenericParameter> genericParameters = typeDef.GenericParameters;
 			if (typeDef.DeclaringType != null && typeDef.DeclaringType.HasGenericParameters)
-				genericParameters = genericParameters.Skip (typeDef.DeclaringType.GenericParameters.Count);
-			astType.TypeParameters.AddRange (MakeTypeParameters (genericParameters));
-			astType.Constraints.AddRange (MakeConstraints (genericParameters));
+				genericParameters = genericParameters.Skip(typeDef.DeclaringType.GenericParameters.Count);
+			astType.TypeParameters.AddRange(MakeTypeParameters(genericParameters));
+			astType.Constraints.AddRange(MakeConstraints(genericParameters));
 			
 			EntityDeclaration result = astType;
 			if (typeDef.IsEnum) {
 				long expectedEnumMemberValue = 0;
-				bool forcePrintingInitializers = IsFlagsEnum (typeDef);
+				bool forcePrintingInitializers = IsFlagsEnum(typeDef);
 				foreach (FieldDefinition field in typeDef.Fields) {
-					if (field.IsRuntimeSpecialName) {
+					if (!field.IsStatic) {
 						// the value__ field
 						if (field.FieldType != typeDef.Module.TypeSystem.Int32) {
-							astType.AddChild (ConvertType (field.FieldType), Roles.BaseType);
+							astType.AddChild(ConvertType(field.FieldType), Roles.BaseType);
 						}
 					} else {
-						var enumMember = new EnumMemberDeclaration ();
-						enumMember.AddAnnotation (field);
-						enumMember.Name = CleanName (field.Name);
-						long memberValue = (long)CSharpPrimitiveCast.Cast (TypeCode.Int64, field.Constant, false);
+						EnumMemberDeclaration enumMember = new EnumMemberDeclaration();
+						enumMember.AddAnnotation(field);
+						enumMember.Name = CleanName(field.Name);
+						long memberValue = (long)CSharpPrimitiveCast.Cast(TypeCode.Int64, field.Constant, false);
 						if (forcePrintingInitializers || memberValue != expectedEnumMemberValue) {
-							enumMember.AddChild (new PrimitiveExpression (field.Constant), EnumMemberDeclaration.InitializerRole);
+							enumMember.AddChild(new PrimitiveExpression(field.Constant), EnumMemberDeclaration.InitializerRole);
 						}
 						expectedEnumMemberValue = memberValue + 1;
-						astType.AddChild (enumMember, Roles.TypeMemberRole);
+						astType.AddChild(enumMember, Roles.TypeMemberRole);
 					}
 				}
 			} else if (typeDef.BaseType != null && typeDef.BaseType.FullName == "System.MulticastDelegate") {
-				DelegateDeclaration dd = new DelegateDeclaration ();
+				DelegateDeclaration dd = new DelegateDeclaration();
 				dd.Modifiers = astType.Modifiers & ~Modifiers.Sealed;
 				dd.Name = astType.Name;
-				dd.AddAnnotation (typeDef);
-				astType.Attributes.MoveTo (dd.Attributes);
-				astType.TypeParameters.MoveTo (dd.TypeParameters);
-				astType.Constraints.MoveTo (dd.Constraints);
+				dd.AddAnnotation(typeDef);
+				astType.Attributes.MoveTo(dd.Attributes);
+				astType.TypeParameters.MoveTo(dd.TypeParameters);
+				astType.Constraints.MoveTo(dd.Constraints);
 				foreach (var m in typeDef.Methods) {
 					if (m.Name == "Invoke") {
-						dd.ReturnType = ConvertType (m.ReturnType, m.MethodReturnType);
-						dd.Parameters.AddRange (MakeParameters (m));
-						ConvertAttributes (dd, m.MethodReturnType, m.Module);
+						dd.ReturnType = ConvertType(m.ReturnType, m.MethodReturnType);
+						dd.Parameters.AddRange(MakeParameters(m));
+						ConvertAttributes(dd, m.MethodReturnType, m.Module);
 					}
 				}
 				result = dd;
 			} else {
 				// Base type
 				if (typeDef.BaseType != null && !typeDef.IsValueType && typeDef.BaseType.FullName != "System.Object") {
-					astType.AddChild (ConvertType (typeDef.BaseType), Roles.BaseType);
+					astType.AddChild(ConvertType(typeDef.BaseType), Roles.BaseType);
 				}
 				foreach (var i in typeDef.Interfaces)
 					astType.AddChild(ConvertType(i), Roles.BaseType);
@@ -717,15 +715,15 @@ namespace ICSharpCode.Decompiler.Ast
 
 		#endregion
 		
-		void AddTypeMembers (TypeDeclaration astType, TypeDefinition typeDef)
+		void AddTypeMembers(TypeDeclaration astType, TypeDefinition typeDef)
 		{
 			// Nested types
 			foreach (TypeDefinition nestedTypeDef in typeDef.NestedTypes) {
-				if (MemberIsHidden (nestedTypeDef, context.Settings))
+				if (MemberIsHidden(nestedTypeDef, context.Settings))
 					continue;
-				var nestedType = CreateType (nestedTypeDef);
-				SetNewModifier (nestedType);
-				astType.AddChild (nestedType, Roles.TypeMemberRole);
+				var nestedType = CreateType(nestedTypeDef);
+				SetNewModifier(nestedType);
+				astType.AddChild(nestedType, Roles.TypeMemberRole);
 			}
 			
 			// Add fields
@@ -774,6 +772,10 @@ namespace ICSharpCode.Decompiler.Ast
 						SetNewModifier(astMethod);
 				}
 				astMethod.Body = CreateMethodBody(methodDef, astMethod.Parameters);
+				if (context.CurrentMethodIsAsync) {
+					astMethod.Modifiers |= Modifiers.Async;
+					context.CurrentMethodIsAsync = false;
+				}
 			}
 			ConvertAttributes(astMethod, methodDef);
 			if (methodDef.HasCustomAttributes && astMethod.Parameters.Count > 0) {
@@ -948,7 +950,6 @@ namespace ICSharpCode.Decompiler.Ast
 		IndexerDeclaration ConvertPropertyToIndexer(PropertyDeclaration astProp, PropertyDefinition propDef)
 		{
 			var astIndexer = new IndexerDeclaration();
-			astIndexer.Name = astProp.Name;
 			astIndexer.CopyAnnotationsFrom(astProp);
 			astProp.Attributes.MoveTo(astIndexer.Attributes);
 			astIndexer.Modifiers = astProp.Modifiers;
@@ -1029,7 +1030,7 @@ namespace ICSharpCode.Decompiler.Ast
 			return astField;
 		}
 		
-		static Expression CreateExpressionForConstant(object constant, TypeReference type, bool isEnumEntityDeclaration = false)
+		static Expression CreateExpressionForConstant(object constant, TypeReference type, bool isEnumMemberDeclaration = false)
 		{
 			if (constant == null) {
 				if (type.IsValueType && !(type.Namespace == "System" && type.Name == "Nullable`1"))
@@ -1038,7 +1039,7 @@ namespace ICSharpCode.Decompiler.Ast
 					return new NullReferenceExpression();
 			} else {
 				TypeCode c = Type.GetTypeCode(constant.GetType());
-				if (c >= TypeCode.SByte && c <= TypeCode.UInt64 && !isEnumEntityDeclaration) {
+				if (c >= TypeCode.SByte && c <= TypeCode.UInt64 && !isEnumMemberDeclaration) {
 					return MakePrimitive((long)CSharpPrimitiveCast.Cast(TypeCode.Int64, constant, false), type);
 				} else {
 					return new PrimitiveExpression(constant);
@@ -1167,10 +1168,10 @@ namespace ICSharpCode.Decompiler.Ast
 				Ast.Attribute dllImport = CreateNonCustomAttribute(typeof(DllImportAttribute));
 				dllImport.Arguments.Add(new PrimitiveExpression(info.Module.Name));
 				
-//				if (info.IsBestFitDisabled)
-//					dllImport.AddNamedArgument("BestFitMapping", new PrimitiveExpression(false));
-//				if (info.IsBestFitEnabled)
-//					dllImport.AddNamedArgument("BestFitMapping", new PrimitiveExpression(true));
+				if (info.IsBestFitDisabled)
+					dllImport.AddNamedArgument("BestFitMapping", new PrimitiveExpression(false));
+				if (info.IsBestFitEnabled)
+					dllImport.AddNamedArgument("BestFitMapping", new PrimitiveExpression(true));
 				
 				CallingConvention callingConvention;
 				switch (info.Attributes & PInvokeAttributes.CallConvMask) {
@@ -1347,6 +1348,7 @@ namespace ICSharpCode.Decompiler.Ast
 		
 		static void ConvertCustomAttributes(AstNode attributedNode, ICustomAttributeProvider customAttributeProvider, string attributeTarget = null)
 		{
+			EntityDeclaration entityDecl = attributedNode as EntityDeclaration;
 			if (customAttributeProvider.HasCustomAttributes) {
 				var attributes = new List<ICSharpCode.NRefactory.CSharp.Attribute>();
 				foreach (var customAttribute in customAttributeProvider.CustomAttributes.OrderBy(a => a.AttributeType.FullName)) {
@@ -1357,6 +1359,15 @@ namespace ICSharpCode.Decompiler.Ast
 					if (customAttribute.AttributeType.Name == "ParamArrayAttribute" && customAttribute.AttributeType.Namespace == "System") {
 						// don't show the ParamArrayAttribute (it's converted to the 'params' modifier)
 						continue;
+					}
+					// if the method is async, remove [DebuggerStepThrough] and [Async
+					if (entityDecl != null && entityDecl.HasModifier(Modifiers.Async)) {
+						if (customAttribute.AttributeType.Name == "DebuggerStepThroughAttribute" && customAttribute.AttributeType.Namespace == "System.Diagnostics") {
+							continue;
+						}
+						if (customAttribute.AttributeType.Name == "AsyncStateMachineAttribute" && customAttribute.AttributeType.Namespace == "System.Runtime.CompilerServices") {
+							continue;
+						}
 					}
 					
 					var attribute = new ICSharpCode.NRefactory.CSharp.Attribute();
@@ -1517,7 +1528,7 @@ namespace ICSharpCode.Decompiler.Ast
 					foreach (FieldDefinition field in enumDefinition.Fields) {
 						if (field.IsStatic && object.Equals(CSharpPrimitiveCast.Cast(TypeCode.Int64, field.Constant, false), val))
 							return ConvertType(type).Member(field.Name).WithAnnotation(field);
-						else if (!field.IsStatic && field.IsRuntimeSpecialName)
+						else if (!field.IsStatic)
 							enumBaseTypeCode = TypeAnalysis.GetTypeCode(field.FieldType); // use primitive type of the enum
 					}
 					if (IsFlagsEnum(enumDefinition)) {

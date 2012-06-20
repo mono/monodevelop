@@ -351,25 +351,29 @@ int main (int argc, char **argv)
 	exeName = [NSString stringWithFormat:@"%s.exe", basename];
 	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 	
-	void *libmono = dlopen (MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
-	if (libmono == NULL)
+	bool sgen = getenv ("MONODEVELOP_USE_SGEN") != NULL;
+	void *libmono = dlopen (sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
+	
+	if (libmono == NULL) {
+		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", sgen ? "sgen" : "", dlerror ());
 		exit_with_message ("This application requires the Mono framework.", argv[0]);
+	}
 	
 	mono_main _mono_main = (mono_main) dlsym (libmono, "mono_main");
 	if (!_mono_main) {
-		fprintf (stderr, "Could not load mono_main\n");
+		fprintf (stderr, "Could not load mono_main(): %s\n", dlerror ());
 		exit_with_message ("Failed to load the Mono framework.", argv[0]);
 	}
 	
 	mono_free _mono_free = (mono_free) dlsym (libmono, "mono_free");
 	if (!_mono_free) {
-		fprintf (stderr, "Could not load mono_free\n");
+		fprintf (stderr, "Could not load mono_free(): %s\n", dlerror ());
 		exit_with_message ("Failed to load the Mono framework.", argv[0]);
 	}
 	
 	mono_get_runtime_build_info _mono_get_runtime_build_info = (mono_get_runtime_build_info) dlsym (libmono, "mono_get_runtime_build_info");
 	if (!_mono_get_runtime_build_info) {
-		fprintf (stderr, "Could not load mono_get_runtime_build_info\n");
+		fprintf (stderr, "Could not load mono_get_runtime_build_info(): %s\n", dlerror ());
 		exit_with_message ("Failed to load the Mono framework.", argv[0]);
 	}
 	
@@ -379,12 +383,16 @@ int main (int argc, char **argv)
 	
 	extra_argv = get_mono_env_options (&extra_argc);
 	
-	char **new_argv = (char **) malloc (sizeof (char *) * (argc + extra_argc + 2));
+	const int injected = 2; /* --debug and exe path */
+	char **new_argv = (char **) malloc (sizeof (char *) * (argc + extra_argc + injected + 1));
 	int i, n = 0;
 	
 	new_argv[n++] = argv[0];
 	for (i = 0; i < extra_argc; i++)
 		new_argv[n++] = extra_argv[i];
+	
+	// enable --debug so that we can get useful stack traces
+	new_argv[n++] = "--debug";
 	
 	new_argv[n++] = strdup ([exePath UTF8String]);
 	
@@ -395,5 +403,5 @@ int main (int argc, char **argv)
 	free (extra_argv);
 	[pool drain];
 	
-	return _mono_main (argc + extra_argc + 1, new_argv);
+	return _mono_main (argc + extra_argc + injected, new_argv);
 }

@@ -102,7 +102,7 @@ namespace MonoDevelop.MacDev
 				location = null;
 			if (location == PropertyService.Get<string> (SDK_KEY))
 				return;
-			PropertyService.Set (SDK_KEY, location);
+			PropertyService.Set (SDK_KEY, location.ToString ());
 
 			//if the location is being overridden by an env var, the setting has no effect, so don't bother updating
 			if (GetEnvLocation () != null)

@@ -631,23 +631,6 @@ namespace MonoDevelop.SourceEditor
 				var result = template.InsertTemplateContents (document);
 
 				var links = result.TextLinks;
-				if (PropertyService.Get ("OnTheFlyFormatting", true)) {
-					var prettyPrinter = CodeFormatterService.GetFormatter (Document.MimeType);
-					if (prettyPrinter != null) {
-						int endOffset = result.InsertPosition + result.Code.Length;
-						//						string oldText = Document.GetTextAt (result.InsertPosition, result.Code.Length);
-						//						var policies = document.Project != null ? document.Project.Policies : null;
-						var oldVersion = Document.Version;
-						prettyPrinter.OnTheFlyFormat (document, result.InsertPosition, endOffset);
-						foreach (var textLink in links) {
-							for (int i = 0; i < textLink.Links.Count; i++) {
-								var segment = textLink.Links [i];
-								var translatedOffset = oldVersion.MoveOffsetTo (Document.Version, result.InsertPosition + segment.Offset) - result.InsertPosition;
-								textLink.Links [i] = new TextSegment (translatedOffset, segment.Length);
-							}
-						}
-					}
-				}
 
 				var tle = new TextLinkEditMode (this, result.InsertPosition, links);
 				tle.TextLinkMode = TextLinkMode.General;

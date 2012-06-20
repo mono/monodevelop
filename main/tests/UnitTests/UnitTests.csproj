@@ -11,25 +11,25 @@
     <RootNamespace>UnitTests</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>..\..\build\tests</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -276,14 +276,14 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../..">
-          <BuildFilesVar Sync="true" Name="FILES" />
+        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
+          <BuildFilesVar Sync="True" Name="FILES" />
           <DeployFilesVar />
-          <ResourcesVar Sync="true" Name="RES" />
+          <ResourcesVar Sync="True" Name="RES" />
           <OthersVar />
-          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <ProjectRefVar Sync="true" Name="REFS" Prefix="-r:" />
+          <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
         </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>

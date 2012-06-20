@@ -11,13 +11,13 @@
     <RootNamespace>CBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <ConsolePause>False</ConsolePause>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -25,11 +25,11 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>..\..\..\build\AddIns\BackendBindings\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <ConsolePause>False</ConsolePause>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
@@ -316,14 +316,14 @@
     <MonoDevelop>
       <Properties>
         <Deployment.LinuxDeployData scriptName="cbinding" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../">
-          <BuildFilesVar Sync="true" Name="FILES" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../">
+          <BuildFilesVar Sync="True" Name="FILES" />
           <DeployFilesVar />
-          <ResourcesVar Sync="true" Name="RES" />
+          <ResourcesVar Sync="True" Name="RES" />
           <OthersVar />
-          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <ProjectRefVar Sync="true" Name="DEPS" />
+          <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="True" Name="DEPS" />
         </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>

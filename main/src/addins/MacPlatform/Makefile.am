@@ -57,8 +57,10 @@ RES =  \
 
 if ENABLE_MACPLATFORM
 all: $(ASSEMBLY) $(ASSEMBLY).mdb
+clean-local: monomac-clean
 else
 all:
+clean-local:
 endif
 
 $(ASSEMBLY): $(MONOMAC) $(build_sources) $(build_resources) $(DEPS)
@@ -89,8 +91,6 @@ if ENABLE_MACPLATFORM
 assemblydir = $(MD_ADDIN_DIR)/MacPlatform
 assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(MONOMAC) $(MONOMAC).mdb
 endif
-
-clean-local: monomac-clean
 
 CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(MONOMAC) $(MONOMAC).mdb
 EXTRA_DIST = $(FILES) $(RES)

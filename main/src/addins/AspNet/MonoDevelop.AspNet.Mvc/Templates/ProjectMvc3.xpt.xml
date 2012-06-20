@@ -40,31 +40,12 @@
 				<Reference type="Package" refto="System.Web.DynamicData, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
 				<Reference type="Package" refto="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
 				<Reference type="Package" refto="System.Xml.Linq" />
+				<Reference type="Package" refto="Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 			</References>
 			<Files>
 				<Directory name="Content" />
 				<Directory name="Controllers">
-					<File name="HomeController.cs">
-<![CDATA[using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Mvc.Ajax;
-
-namespace Controllers
-{
-	public class HomeController : Controller
-	{
-		public ActionResult Index ()
-		{
-			ViewData["Message"] = "Welcome to ASP.NET MVC 3 on Mono!";
-			return View ();
-		}
-	}
-}
-]]>
-					</File>
+					<File name="HomeController.cs" src="Common/HomeController.cs" />
 				</Directory>
 				<Directory name="Models" />
 				<Directory name="Scripts" />

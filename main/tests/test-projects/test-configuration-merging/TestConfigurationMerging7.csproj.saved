@@ -9,20 +9,20 @@
     <AssemblyName>TestConfigurationMerging</AssemblyName>
     <RootNamespace>TestConfigurationMerging</RootNamespace>
     <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugSymbols>True</DebugSymbols>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>True</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug</OutputPath>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release</OutputPath>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
   </PropertyGroup>

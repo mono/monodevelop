@@ -38,7 +38,7 @@ using System.Threading;
 
 namespace Mono.TextEditor
 {
-	public class TextDocument : AbstractAnnotatable, IBuffer, ICSharpCode.NRefactory.Editor.IDocument
+	public class TextDocument : AbstractAnnotatable, ICSharpCode.NRefactory.Editor.IDocument
 	{
 		readonly IBuffer buffer;
 		readonly ILineSplitter splitter;
@@ -178,9 +178,9 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public void Insert (int offset, string text)
+		public void Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
 		{
-			Replace (offset, 0, text);
+			Replace (offset, 0, text, anchorMovementType);
 		}
 		
 		public void Remove (int offset, int count)
@@ -195,6 +195,11 @@ namespace Mono.TextEditor
 
 		public void Replace (int offset, int count, string value)
 		{
+			Replace (offset, count, value, AnchorMovementType.Default);
+		}
+
+		public void Replace (int offset, int count, string value, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
+		{
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException ("offset", "must be > 0, was: " + offset);
 			if (offset > TextLength)
@@ -205,7 +210,7 @@ namespace Mono.TextEditor
 			InterruptFoldWorker ();
 			
 			//int oldLineCount = LineCount;
-			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
+			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, anchorMovementType);
 			OnTextReplacing (args);
 			value = args.InsertedText;
 			UndoOperation operation = null;
@@ -1696,9 +1701,9 @@ namespace Mono.TextEditor
 			Insert (offset, text);
 		}
 
-		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType defaultAnchorMovementType)
+		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
 		{
-			Insert (offset, text);
+			Insert (offset, text, anchorMovementType);
 		}
 
 		void ICSharpCode.NRefactory.Editor.IDocument.StartUndoableAction ()

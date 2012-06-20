@@ -9,13 +9,13 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Mono.Debugging.Soft</RootNamespace>
     <AssemblyName>Mono.Debugging.Soft</AssemblyName>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\core\Mono.Debugging\mono.debugging.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.Debugger.Soft</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -23,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.Debugger.Soft</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -72,14 +72,14 @@
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="true" IsAutotoolsProject="true" RelativeConfigureInPath="../../../..">
-          <BuildFilesVar Sync="true" Name="FILES" />
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../../../..">
+          <BuildFilesVar Sync="True" Name="FILES" />
           <DeployFilesVar />
-          <ResourcesVar Sync="true" Name="RES" />
+          <ResourcesVar Sync="True" Name="RES" />
           <OthersVar />
-          <GacRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <AsmRefVar Sync="true" Name="REFS" Prefix="-r:" />
-          <ProjectRefVar Sync="true" Name="DEPS" />
+          <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
+          <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
+          <ProjectRefVar Sync="True" Name="DEPS" />
         </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>

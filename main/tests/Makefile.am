@@ -6,30 +6,43 @@ RUN_TEST=$(MD_LAUNCH_SETUP) $(MONO) $(HARNESS)
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
 
-TEST_PROJECTS= \
+TEST_PROJECTS_MAC = \
 	MacPlatform.Tests/MacPlatform.Tests.csproj \
-	MonoDevelop.MacDev.Tests/MonoDevelop.MacDev.Tests.csproj \
+	MonoDevelop.MacDev.Tests/MonoDevelop.MacDev.Tests.csproj
+
+TEST_PROJECTS_COMMON = \
 	UnitTests/UnitTests.csproj \
 	$(top_srcdir)/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests/MonoDevelop.Debugger.Tests.csproj \
 	$(EXTERNAL)/ngit/NGit.Test/NGit.Test.csproj
 
-TEST_ASSEMBLIES= \
+TEST_ASSEMBLIES_MAC = \
 	$(TEST_DIR)/MacPlatform.Tests.dll \
-	$(TEST_DIR)/MonoDevelop.MacDev.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.MacDev.Tests.dll
+
+TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/UnitTests.dll \
 	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
 	$(EXTERNAL)/ngit/bin/NGit.Test.dll
+
+
+TEST_PROJECTS = $(TEST_PROJECTS_COMMON)
+TEST_ASSEMBLIES = $(TEST_ASSEMBLIES_COMMON)
+
+if ENABLE_MACPLATFORM
+TEST_PROJECTS += $(TEST_PROJECTS_MAC)
+TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_MAC)
+endif
 
 if ENABLE_TESTS
 
 all:
 	@for csproj in $(TEST_PROJECTS); do \
-		xbuild $$csproj; \
+		xbuild $$csproj || exit $?; \
 	done
 
 clean:
 	@for csproj in $(TEST_PROJECTS); do \
-		xbuild /t:Clean $$csproj; \
+		xbuild /t:Clean $$csproj || exit $?; \
 	done
 
 test:
@@ -38,13 +51,13 @@ test:
 			if test `basename $$asm` = $(assembly); then \
 				$(RUN_TEST) $$asm || exit $?; \
 			fi; \
-		done \
+		done; \
 	fi
 
 	@if ! test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
-			$(RUN_TEST) $$asm; \
-		done \
+			$(RUN_TEST) $$asm || exit $?; \
+		done; \
 	fi
 
 EXTRA_DIST = \

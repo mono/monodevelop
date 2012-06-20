@@ -89,7 +89,9 @@ namespace MonoDevelop.DocFood
 			sb.Append ("<root>");
 			bool wasWs = false;
 			foreach (char ch in xmlDoc) {
-				if (char.IsWhiteSpace (ch)) {
+				if (ch =='\r')
+					continue;
+				if (ch == ' ' || ch == '\t') {
 					if (!wasWs)
 						sb.Append (' ');
 					wasWs = true;
@@ -113,7 +115,7 @@ namespace MonoDevelop.DocFood
 								readSection.SetAttribute (reader.LocalName, reader.Value);
 							} while (reader.MoveToNextAttribute ());
 						}
-						readSection.Documentation = reader.ReadElementString ();
+						readSection.Documentation = reader.ReadElementString ().Trim ();
 						sections.Add (readSection);
 					}
 				}
@@ -237,10 +239,14 @@ namespace MonoDevelop.DocFood
 						break;
 					case "modifier":
 						if (member is IMember) {
-							try {
-								var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
-								result |=  ((IMember)member).Accessibility == mod;
-							} catch (Exception) {
+							if (val.ToUpperInvariant () == "STATIC"){
+								result |= ((IMember)member).IsStatic;
+							} else {
+								try {
+									var mod = (Accessibility)Enum.Parse (typeof(Accessibility), val);
+									result |=  ((IMember)member).Accessibility == mod;
+								} catch (Exception) {
+								}
 							}
 						}
 						break;

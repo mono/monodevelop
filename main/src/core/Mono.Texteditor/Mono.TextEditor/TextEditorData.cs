@@ -179,7 +179,7 @@ namespace Mono.TextEditor
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			caret.UpdateCaretPosition ();
+			caret.UpdateCaretPosition (e);
 		}
 
 
