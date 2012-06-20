@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using Microsoft.Build.Logging;
+using Microsoft.Build.Execution;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -145,13 +146,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
 				// an xbuild bug which causes references to not be resolved after the project has been built once.
-				project.Build ("ResolveAssemblyReferences");
-/*				List<string> refs = new List<string> ();
-				foreach (ProjectItem item in project.AllEvaluatedItems.Where (it => it.ItemType == "ReferencePath"))
+				var pi = project.CreateProjectInstance ();
+				pi.Build ("ResolveAssemblyReferences", null);
+				List<string> refs = new List<string> ();
+				foreach (ProjectItemInstance item in pi.GetItems ("ReferencePath"))
 					refs.Add (UnescapeString (item.EvaluatedInclude));
-				refsArray = refs.ToArray ();*/
+				refsArray = refs.ToArray ();
 			});
-			return project.AllEvaluatedItems.Select (it => it.ItemType + ":" + it.EvaluatedInclude).ToArray ();
 			return refsArray;
 		}
 		
