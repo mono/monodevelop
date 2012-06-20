@@ -81,6 +81,8 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public FilePath CanonicalPath {
 			get {
+				if (string.IsNullOrEmpty (fileName))
+					return FilePath.Empty;
 				string fp = Path.GetFullPath (fileName);
 				if (fp.Length > 0 && fp[fp.Length - 1] == Path.DirectorySeparatorChar)
 					return fp.TrimEnd (Path.DirectorySeparatorChar);
