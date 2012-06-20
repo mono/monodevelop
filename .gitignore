@@ -2,6 +2,7 @@ src/obj/*
 src/Gui/obj/*
 MonoDevelop.FSharpBinding/_ReSharper.FSharp.MonoDevelop/*
 MonoDevelop.FSharpBinding/obj*
+MonoDevelop.FSharpBinding/Gui/obj/Debug*
 bin/*
 repository/*
 *.suo

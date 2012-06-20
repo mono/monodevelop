@@ -17,7 +17,7 @@ open MonoDevelop.Core
 open MonoDevelop.Projects
 //open MonoDevelop.Projects.Dom
 //open MonoDevelop.Projects.Dom.Parser
-//open MonoDevelop.Ide.Tasks
+open MonoDevelop.Ide.Tasks
 open MonoDevelop.Ide.Gui
 
 open ICSharpCode.NRefactory.TypeSystem
@@ -363,7 +363,8 @@ type internal LanguageServiceMessage =
 
 open System.Reflection
 open Microsoft.FSharp.Compiler.Reflection
-open Mono.TextEditor
+open ICSharpCode.NRefactory.TypeSystem
+
 /// Provides functionality for working with the F# interactive checker running in background
 type internal LanguageService private () =
 
@@ -376,10 +377,10 @@ type internal LanguageService private () =
   /// Format errors for the given line (if there are multiple, we collapse them into a single one)
   let formatErrorGroup errors = 
     match errors |> List.ofSeq with
-    | [error:ErrorInfo] ->
+    | [error:ErrorInfo] -> 
         // Single error for this line
         let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
-        new Dom.Error(typ, error.StartLine + 1, error.StartColumn + 1, error.Message)
+        new Error(typ, error.Message, error.StartLine + 1, error.StartColumn + 1)
     | errors & (first::_) ->        
         // Multiple errors - fold them
         let msg =
@@ -392,7 +393,7 @@ type internal LanguageService private () =
           
         // Report as error if there is at least one error              
         let typ = if errors |> Seq.forall (fun e -> e.Severity = Severity.Warning) then ErrorType.Warning else ErrorType.Error
-        new Dom.Error(typ, first.StartLine + 1, 1, "Multiple errors\n" + msg)
+        new Error(typ, "Multiple errors\n" + msg, first.StartLine + 1, 1)
     | _ -> failwith "Unexpected" 
 
 

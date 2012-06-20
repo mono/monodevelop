@@ -11,9 +11,9 @@ open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler
 
-open ICSharpCode.NRefactory.TypeSystem
-open ICSharpCode.NRefactory.Editor
-open ICSharpCode.NRefactory.Completion
+//open ICSharpCode.NRefactory.TypeSystem
+//open ICSharpCode.NRefactory.Editor
+//open ICSharpCode.NRefactory.Completion
 
 type FSharpLanguageBinding() =
   static let LanguageName = "F#"
@@ -63,27 +63,27 @@ type FSharpLanguageBinding() =
     //member x.Parser = null
     //member x.Refactorer = null
 
-    member x.GetFileName(baseName:FilePath) = baseName + ".fs"
-    member x.IsSourceCodeFile(fileName) = StringComparer.OrdinalIgnoreCase.Equals (Path.GetExtension (fileName), ".fs")
+    member x.GetFileName(baseName) = baseName + ".fs"
+    member x.IsSourceCodeFile(fileName) = StringComparer.OrdinalIgnoreCase.Equals (Path.GetExtension (fileName.ToString()), ".fs")
     
     // IDotNetLanguageBinding
-    member x.Compile(items, config, configSel, monitor) : BuildResult =
+    override x.Compile(items, config, configSel, monitor) : BuildResult =
       CompilerService.Compile(items, config, configSel, monitor)
 
-    member x.CreateCompilationParameters(options:XmlElement) : ConfigurationParameters =
+    override x.CreateCompilationParameters(options:XmlElement) : ConfigurationParameters =
       // Debug.tracef "Config" "Creating compiler configuration parameters"
       new FSharpCompilerParameters() :> ConfigurationParameters
 
-    member x.CreateProjectParameters(options:XmlElement) : ProjectParameters =
+    override x.CreateProjectParameters(options:XmlElement) : ProjectParameters =
       new FSharpProjectParameters() :> ProjectParameters
       
-    member x.GetCodeDomProvider() : CodeDomProvider =
+    override x.GetCodeDomProvider() : CodeDomProvider =
       null 
       // TODO: Simplify CodeDom provider to generate reasonable template
       // files at least for some MonoDevelop project types. Then we can recover:
       //   provider.Value :> CodeDomProvider
       
-    member x.GetSupportedClrVersions() =
+    override x.GetSupportedClrVersions() =
       [| ClrVersion.Net_2_0; ClrVersion.Net_4_0 |]
 
-    member x.ProjectStockIcon = "md-fs-project"
+    override x.ProjectStockIcon = "md-fs-project"
