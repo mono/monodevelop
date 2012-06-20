@@ -23,7 +23,7 @@ if (mvcHost.IsViewUserControl) { #>
 </head>
 <body>
 	<div>
-		
+
 	</div>
 </body>
 <# } #>

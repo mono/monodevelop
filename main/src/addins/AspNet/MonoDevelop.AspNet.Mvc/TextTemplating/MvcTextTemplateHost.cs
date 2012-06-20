@@ -92,7 +92,11 @@ namespace MonoDevelop.AspNet.Mvc.TextTemplating
 		
 		public string LanguageExtension { get; set; }
 		
-		public string ViewDataTypeGenericString { get; set; }
+		public string ViewDataTypeString { get; set; }
+
+		public string ViewDataTypeGenericString {
+			get	{ return String.IsNullOrEmpty (ViewDataTypeString) ? "" : "<" + ViewDataTypeString + ">"; }
+		}
 		
 		public Type ViewDataType { get; set; }
 		

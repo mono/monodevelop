@@ -19,7 +19,6 @@
 		<Import file = "Templates/GlobalAsax.xft.xml"/>
 		<Import file = "Templates/WebConfigApp.xft.xml"/>
 		<Import file = "Templates/WebConfigViews.xft.xml"/>
-		<Import file = "CodeTemplates/AddView/Empty.tt" />
 		<Import file = "Templates/ProjectMvc3.xpt.xml" />
 		<Import file = "Templates/EmptyProjectMvc3.xpt.xml" />
 		<Import file = "Templates/GlobalAsaxMvc3.xft.xml" />
@@ -32,6 +31,8 @@
 		<Import file = "Templates/LayoutPage.xft.xml" />
 		<Import file = "Templates/ViewPageRazor.xft.xml" />
 		<Import file = "Templates/PartialViewPageRazor.xft.xml" />
+		<Import file = "CodeTemplates/C#/AddView/Aspx/Empty.tt" />
+		<Import file = "CodeTemplates/C#/AddView/Razor/Empty.tt" />
 	</Runtime>
 	
 	<Dependencies>

@@ -111,11 +111,16 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 					dialog.Hide ();
 					if (resp != Gtk.ResponseType.Ok || ! dialog.IsValid ())
 						return;
-				
-					outputFile = System.IO.Path.Combine (path, dialog.ViewName) + (dialog.IsPartialView? ".ascx" : ".aspx");
-					
+
+					string ext = ".cshtml";
+					if (dialog.ActiveViewEngine == "Aspx")
+						ext = dialog.IsPartialView ? ".ascx" : ".aspx";
+
+					outputFile = System.IO.Path.Combine (path, dialog.ViewName) + ext;
+
 					if (System.IO.File.Exists (outputFile)) {
-						fileGood = MessageService.AskQuestion ("Overwrite file?", "The file '{0}' already exists.\n" +
+						fileGood = MessageService.AskQuestion ("Overwrite file?",
+								String.Format ("The file '{0}' already exists.\n", dialog.ViewName) +
 								"Would you like to overwrite it?", AlertButton.OverwriteFile, AlertButton.Cancel)
 							!= AlertButton.Cancel;
 					} else
@@ -128,7 +133,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				host = MvcTextTemplateHost.Create (handle.Domain);
 				
 				host.LanguageExtension = provider.FileExtension;
-				host.ViewDataTypeGenericString = "";
+				host.ItemName = dialog.ViewName;
+				host.ViewDataTypeString = "";
 				
 				if (dialog.HasMaster) {
 					host.IsViewContentPage = true;
@@ -141,10 +147,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				else
 					host.IsViewPage = true;
 				
-				if (dialog.IsStronglyTyped) {
-					//TODO: use dialog.ViewDataType to construct 
-					// host.ViewDataTypeGenericString and host.ViewDataType
-				}
+				if (dialog.IsStronglyTyped)
+					host.ViewDataTypeString = dialog.ViewDataTypeString;
 				
 				host.ProcessTemplate (dialog.TemplateFile, outputFile);
 				MonoDevelop.TextTemplating.TextTemplatingService.ShowTemplateHostErrors (host.Errors);
