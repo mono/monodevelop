@@ -385,7 +385,7 @@ int main (int argc, char **argv)
 	extra_argv = get_mono_env_options (&extra_argc);
 	
 	const int injected = 2; /* --debug and exe path */
-	char **new_argv = (char **) malloc (sizeof (char *) * (argc + extra_argc + injected));
+	char **new_argv = (char **) malloc (sizeof (char *) * (argc + extra_argc + injected + 1));
 	int i, n = 0;
 	
 	new_argv[n++] = argv[0];
