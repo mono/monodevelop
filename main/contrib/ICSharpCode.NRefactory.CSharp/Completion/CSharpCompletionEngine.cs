@@ -336,7 +336,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							endIndex - startIndex - 2
 						) : null;
 						if (!string.IsNullOrEmpty(tag) && commentTags.IndexOf(tag) >= 0) {
-							document.Insert(offset, "</" + tag + ">");
+							document.Insert(offset, "</" + tag + ">", AnchorMovementType.BeforeInsertion);
 						}
 					}
 					return null;

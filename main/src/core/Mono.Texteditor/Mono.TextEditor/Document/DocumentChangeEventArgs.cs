@@ -27,6 +27,7 @@
 
 using System;
 using System.Text;
+using ICSharpCode.NRefactory.Editor;
 
 namespace Mono.TextEditor
 {
@@ -37,9 +38,15 @@ namespace Mono.TextEditor
 				return InsertionLength - RemovalLength;
 			}
 		}
-		
-		public DocumentChangeEventArgs (int offset, string removedText, string insertedText) : base (offset, removedText, insertedText)
+
+		public AnchorMovementType AnchorMovementType {
+			get;
+			private set;
+		}
+
+		public DocumentChangeEventArgs (int offset, string removedText, string insertedText, AnchorMovementType anchorMovementType = AnchorMovementType.Default) : base (offset, removedText, insertedText)
 		{
+			AnchorMovementType = anchorMovementType;
 		}
 
 		public override string ToString ()
