@@ -118,12 +118,15 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			if (src != null) {
 				src.Cancel ();
-				oldTask.Wait ();
+				try {
+					oldTask.Wait ();
+				} catch (TaskCanceledException) {
+				}
 			}
 			src = new CancellationTokenSource ();
 			var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
 			var task = AnalysisService.QueueAnalysis (Document, treeType, src.Token);
-			oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update ());
+			oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update (), src.Token);
 		}
 		
 		class ResultsUpdater 
