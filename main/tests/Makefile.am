@@ -37,12 +37,12 @@ if ENABLE_TESTS
 
 all:
 	@for csproj in $(TEST_PROJECTS); do \
-		xbuild $$csproj || exit $? \
+		xbuild $$csproj || exit $?; \
 	done
 
 clean:
 	@for csproj in $(TEST_PROJECTS); do \
-		xbuild /t:Clean $$csproj || exit $? \
+		xbuild /t:Clean $$csproj || exit $?; \
 	done
 
 test:
@@ -51,13 +51,13 @@ test:
 			if test `basename $$asm` = $(assembly); then \
 				$(RUN_TEST) $$asm || exit $?; \
 			fi; \
-		done \
+		done; \
 	fi
 
 	@if ! test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			$(RUN_TEST) $$asm || exit $?; \
-		done \
+		done; \
 	fi
 
 EXTRA_DIST = \
