@@ -298,9 +298,12 @@ namespace MonoDevelop.CSharp.Formatting
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					DoPreInsertionSmartIndent (key);
 				}
-				retval = base.KeyPress (key, keyChar, modifier);
 
+				bool automaticReindent;
 				using (var undo = textEditorData.OpenUndoGroup ()) {
+
+					retval = base.KeyPress (key, keyChar, modifier);
+
 					//handle inserted characters
 					if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
 						return retval;
@@ -322,11 +325,21 @@ namespace MonoDevelop.CSharp.Formatting
 					//inserted rather than just updating the stack due to moving around
 
 					stateTracker.UpdateEngine ();
-					bool automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
-					if (reIndent || automaticReindent)
+					automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
+					if (key == Gdk.Key.Return && (reIndent || automaticReindent))
 						DoReSmartIndent ();
-					if (!skipFormatting && keyChar == '}')
+				}
+
+				if (key != Gdk.Key.Return && (reIndent || automaticReindent)) {
+					using (var undo = textEditorData.OpenUndoGroup ()) {
+						DoReSmartIndent ();
+					}
+				}
+
+				if (!skipFormatting && keyChar == '}') {
+					using (var undo = textEditorData.OpenUndoGroup ()) {
 						RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column));
+					}
 				}
 
 				stateTracker.UpdateEngine ();
