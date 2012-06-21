@@ -39,42 +39,17 @@ namespace MonoDevelop.AssemblyBrowser
 			Stetic.BinContainer w1 = global::Stetic.BinContainer.Attach (this);
 			this.UIManager = new global::Gtk.UIManager ();
 			global::Gtk.ActionGroup w2 = new global::Gtk.ActionGroup ("Default");
-			this.NavigateBackwardAction = new global::Gtk.Action (
-				"NavigateBackwardAction",
-				global::Mono.Unix.Catalog.GetString("Navigate backward"),
-				null,
-				"gtk-go-back"
-			);
+			this.NavigateBackwardAction = new global::Gtk.Action ("NavigateBackwardAction", global::Mono.Unix.Catalog.GetString ("Navigate backward"), null, "gtk-go-back");
 			this.NavigateBackwardAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Navigate backward");
 			w2.Add (this.NavigateBackwardAction, null);
-			this.NavigateForwardAction = new global::Gtk.Action (
-				"NavigateForwardAction",
-				global::Mono.Unix.Catalog.GetString("Navigate forward"),
-				null,
-				"gtk-go-forward"
-			);
+			this.NavigateForwardAction = new global::Gtk.Action ("NavigateForwardAction", global::Mono.Unix.Catalog.GetString ("Navigate forward"), null, "gtk-go-forward");
 			this.NavigateForwardAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Navigate forward");
 			w2.Add (this.NavigateForwardAction, null);
-			this.goBackAction = new global::Gtk.Action (
-				"goBackAction",
-				null,
-				null,
-				"gtk-go-back"
-			);
+			this.goBackAction = new global::Gtk.Action ("goBackAction", null, null, "gtk-go-back");
 			w2.Add (this.goBackAction, null);
-			this.goForwardAction = new global::Gtk.Action (
-				"goForwardAction",
-				null,
-				null,
-				"gtk-go-forward"
-			);
+			this.goForwardAction = new global::Gtk.Action ("goForwardAction", null, null, "gtk-go-forward");
 			w2.Add (this.goForwardAction, null);
-			this.goBackAction1 = new global::Gtk.Action (
-				"goBackAction1",
-				null,
-				null,
-				"gtk-go-back"
-			);
+			this.goBackAction1 = new global::Gtk.Action ("goBackAction1", null, null, "gtk-go-back");
 			w2.Add (this.goBackAction1, null);
 			this.UIManager.InsertActionGroup (w2, 0);
 			this.Name = "MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget";
@@ -213,10 +188,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.label4 = new global::Gtk.Label ();
 			this.label4.Name = "label4";
 			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("summary");
-			this.notebookInspection.SetTabLabel (
-				this.documentationScrolledWindow,
-				this.label4
-			);
+			this.notebookInspection.SetTabLabel (this.documentationScrolledWindow, this.label4);
 			this.label4.ShowAll ();
 			// Notebook tab
 			global::Gtk.Label w14 = new global::Gtk.Label ();
