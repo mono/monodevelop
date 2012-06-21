@@ -81,7 +81,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string Name {
 			get;
-			internal protected set;
+			set;
 		}
 		
 		public IEnumerable<Keywords> Keywords {
