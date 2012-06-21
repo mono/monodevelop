@@ -804,7 +804,7 @@ namespace Mono.Debugging.Soft
 				
 			foreach (LocalVariable var in locals) {
 				if (var.IsArg) {
-					string name = !string.IsNullOrEmpty (var.Name) || cx.SourceCodeAvailable ? var.Name : "arg" + var.Index;
+					string name = !string.IsNullOrEmpty (var.Name) ? var.Name : "arg" + var.Index;
 					yield return new VariableValueReference (ctx, name, var);
 				}
 			}
