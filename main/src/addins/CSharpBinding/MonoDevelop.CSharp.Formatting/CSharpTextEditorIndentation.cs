@@ -83,38 +83,39 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
-			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
-			if (OnTheFlyFormatting) {
-				int i = insertionOffset + insertedChars;
-				bool foundNonWsFollowUp = false;
-
-				var line = Document.Editor.GetLineByOffset (i);
-				if (line != null) {
-					for (int j = 0; j < line.Offset + line.Length; j++) {
-						var ch = Document.Editor.GetCharAt (j);
-						if (ch != ' ' && ch != '\t') {
-							foundNonWsFollowUp = true;
-							break;
-						}
-					}
-				}
-
-				if (!foundNonWsFollowUp) {
-					while (i > insertionOffset) {
-						char ch = Document.Editor.GetCharAt (i - 1);
-						if (ch != ' ' && ch != '\t') 
-							break;
-						i--;
-					}
-					int delta = insertionOffset + insertedChars - i;
-					if (delta > 0) {
-						Editor.Caret.Offset -= delta;
-						Editor.Remove (insertionOffset + insertedChars - delta, delta);
-					}
-				}
-			}
+//			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
+//			if (OnTheFlyFormatting) {
+//				int i = insertionOffset + insertedChars;
+//				bool foundNonWsFollowUp = false;
+//
+//				var line = Document.Editor.GetLineByOffset (i);
+//				if (line != null) {
+//					for (int j = 0; j < line.Offset + line.Length; j++) {
+//						var ch = Document.Editor.GetCharAt (j);
+//						if (ch != ' ' && ch != '\t') {
+//							foundNonWsFollowUp = true;
+//							break;
+//						}
+//					}
+//				}
+//
+//				if (!foundNonWsFollowUp) {
+//					while (i > insertionOffset) {
+//						char ch = Document.Editor.GetCharAt (i - 1);
+//						if (ch != ' ' && ch != '\t') 
+//							break;
+//						i--;
+//					}
+//					int delta = insertionOffset + insertedChars - i;
+//					if (delta > 0) {
+//						Editor.Caret.Offset -= delta;
+//						Editor.Remove (insertionOffset + insertedChars - delta, delta);
+//					}
+//				}
+//			}
 			var documentLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
 			while (documentLine != null && insertionOffset < documentLine.EndOffset) {
+				stateTracker.UpdateEngine (documentLine.Offset);
 				DoReSmartIndent (documentLine.Offset);
 				documentLine = documentLine.PreviousLine;
 			}
@@ -174,7 +175,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			InitTracker ();
-//			Document.Editor.Paste += HandleTextPaste;
+			Document.Editor.Paste += HandleTextPaste;
 		}
 
 		/*		void TextCut (object sender, ReplaceEventArgs e)
