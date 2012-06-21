@@ -17,15 +17,15 @@ OUTPUT=$(top_builddir)/build/bin
 
 all:
 	mkdir -p $(OUTPUT)
-	xbuild $(NGIT)
-	xbuild $(CECIL)
+	xbuild /property:CodePage=65001 $(NGIT)
+	xbuild /property:CodePage=65001 $(CECIL)
 	for binary in $(BINARIES); do \
 		cp $$binary $(OUTPUT)/; \
 	done
 
 clean:
-	@if test -f $(NGIT_SLN); then xbuild $(NGIT) /t:Clean; fi
-	@if test -f $(CECIL_SLN); then xbuild $(CECIL) /t:Clean; fi
+	@if test -f $(NGIT_SLN); then xbuild /property:CodePage=65001 $(NGIT) /t:Clean; fi
+	@if test -f $(CECIL_SLN); then xbuild /property:CodePage=65001 $(CECIL) /t:Clean; fi
 	for binary in $(BINARIES); do \
 		rm -f $(OUTPUT)/`basename $$binary`; \
 	done

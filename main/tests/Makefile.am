@@ -37,12 +37,12 @@ if ENABLE_TESTS
 
 all:
 	@for csproj in $(TEST_PROJECTS); do \
-		xbuild $$csproj || exit $?; \
+		xbuild /property:CodePage=65001 $$csproj || exit $?; \
 	done
 
 clean:
 	@for csproj in $(TEST_PROJECTS); do \
-		xbuild /t:Clean $$csproj || exit $?; \
+		xbuild /property:CodePage=65001 /t:Clean $$csproj || exit $?; \
 	done
 
 test:

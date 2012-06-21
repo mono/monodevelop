@@ -262,6 +262,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			using (XmlReader reader = provider.Open ()) {
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
 				rules = new List<Rule> (baseMode.Rules);
+				rules.Add (new Rule (baseMode) {
+					Name = "PreProcessorComment"
+				});
 				keywords = new List<Keywords> (baseMode.Keywords);
 				spans = new List<Span> (baseMode.Spans.Where (span => span.Begin.Pattern != "#")).ToArray ();
 				matches = baseMode.Matches;
@@ -345,7 +348,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				TagColor = "text.preprocessor";
 				if (disabled || !IsValid) {
 					Color = "comment.block";
-					Rule = "String";
+					Rule = "PreProcessorComment";
 				} else {
 					Color = "text";
 					Rule = "<root>";

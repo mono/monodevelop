@@ -146,7 +146,7 @@ namespace MonoDevelop.Refactoring
 				changedDocument.FileName = replaceChange.FileName;
 				changedDocument.Text = originalDocument.Text;
 				
-				((Mono.TextEditor.IBuffer)changedDocument).Replace (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
+				changedDocument.Replace (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
 				
 				string diffString = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument);
 				

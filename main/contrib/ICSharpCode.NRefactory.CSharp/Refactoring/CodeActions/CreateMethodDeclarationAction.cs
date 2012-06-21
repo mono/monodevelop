@@ -106,6 +106,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (guessedType.Kind != TypeKind.Delegate)
 				yield break;
 			var invocationMethod = guessedType.GetDelegateInvokeMethod();
+			if (invocationMethod == null)
+				yield break;
 			var state = context.GetResolverStateBefore(identifier);
 			if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
 				yield break;
