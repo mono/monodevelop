@@ -1255,7 +1255,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				wrapper.AddCustom("dynamic");
 			} 
 			wrapper.Result.AddRange(factory.CreateCodeTemplateCompletionData());
-			
 			if (node != null && node.Role == Roles.Argument) {
 				var resolved = ResolveExpression(node.Parent);
 				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
@@ -2213,6 +2212,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					);
 				}
 			}
+
+			foreach (var method in resolveResult.Methods) {
+				if (parameter < method.Parameters.Count && method.Parameters [parameter].Type.Kind == TypeKind.Delegate) {
+					AutoSelect = false;
+					AutoCompleteEmptyMatch = false;
+				}
+				foreach (var p in method.Parameters) {
+					result.AddNamedParameterVariable(p);
+				}
+			}
+
 			if (!controlSpace) {
 				if (addedEnums.Count + addedDelegates.Count == 0) {
 					return Enumerable.Empty<ICompletionData>();
