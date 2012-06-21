@@ -587,7 +587,7 @@ namespace Mono.Debugging.Soft
 				if (local != null) {
 					return new VariableValueReference (ctx, GetLocalName (cx, local), local);
 				}
-				return FindByName (OnGetLocalVariables (ctx), v => v.Name, name, ctx.CaseSensitive);;
+				return FindByName (OnGetLocalVariables (ctx), v => v.Name, name, ctx.CaseSensitive);
 			} catch (AbsentInformationException) {
 				return null;
 			}
