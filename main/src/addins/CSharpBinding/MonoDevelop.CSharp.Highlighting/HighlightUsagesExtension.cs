@@ -151,32 +151,36 @@ namespace MonoDevelop.CSharp.Highlighting
 			var lineNumbers = new HashSet<int> ();
 			usages.Clear ();
 			UsagesSegments.Clear ();
-			if (references != null) {
-				bool alphaBlend = false;
-				foreach (var r in references) {
-					var marker = GetMarker (r.Region.BeginLine);
-					
-					usages.Add (r.Region.Begin);
-					
-					int offset = r.Offset;
-					int endOffset = offset + r.Length;
-					if (!alphaBlend && textEditorData.Parent.TextViewMargin.SearchResults.Any (sr => sr.Contains (offset) || sr.Contains (endOffset) ||
-						offset < sr.Offset && sr.EndOffset < endOffset)) {
-						textEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
+			var editor = textEditorData.Parent;
+			if (editor != null && editor.TextViewMargin != null) {
+				if (references != null) {
+					bool alphaBlend = false;
+					foreach (var r in references) {
+						var marker = GetMarker (r.Region.BeginLine);
+						
+						usages.Add (r.Region.Begin);
+						
+						int offset = r.Offset;
+						int endOffset = offset + r.Length;
+						if (!alphaBlend && editor.TextViewMargin.SearchResults.Any (sr => sr.Contains (offset) || sr.Contains (endOffset) ||
+							offset < sr.Offset && sr.EndOffset < endOffset)) {
+							editor.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
+						}
+						UsagesSegments.Add (new TextSegment (offset, endOffset - offset));
+						marker.Usages.Add (new TextSegment (offset, endOffset - offset));
+						lineNumbers.Add (r.Region.BeginLine);
 					}
-					UsagesSegments.Add (new TextSegment (offset, endOffset - offset));
-					marker.Usages.Add (new TextSegment (offset, endOffset - offset));
-					lineNumbers.Add (r.Region.BeginLine);
 				}
+				foreach (int line in lineNumbers)
+					textEditorData.Document.CommitLineUpdate (line);
+				UsagesSegments.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
 			}
-			foreach (int line in lineNumbers)
-				textEditorData.Document.CommitLineUpdate (line);
-			UsagesSegments.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
 			OnUsagesUpdated (EventArgs.Empty);
 		}
 
 
-		List<MemberReference> GetReferences (ResolveResult resolveResult)
+		static readonly List<MemberReference> emptyList = new List<MemberReference> ();
+		IEnumerable<MemberReference> GetReferences (ResolveResult resolveResult)
 		{
 			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
 			if (resolveResult is MemberResolveResult) {
@@ -190,7 +194,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			} else if (resolveResult is LocalResolveResult) { 
 				finder.SetSearchedMembers (new [] { ((LocalResolveResult)resolveResult).Variable });
 			} else {
-				return null;
+				return emptyList;
 			}
 			
 			try {
@@ -198,7 +202,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			} catch (Exception e) {
 				LoggingService.LogError ("Error in highlight usages extension.", e);
 			}
-			return null;
+			return emptyList;
 		}
 
 		Dictionary<int, UsageMarker> markers = new Dictionary<int, UsageMarker> ();
