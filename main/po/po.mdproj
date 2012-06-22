@@ -19,6 +19,7 @@
         <Translation isoCode="it" />
         <Translation isoCode="ja" />
         <Translation isoCode="nl" />
+        <Translation isoCode="nb" />
         <Translation isoCode="pl" />
         <Translation isoCode="pt" />
         <Translation isoCode="pt_BR" />
@@ -62,6 +63,7 @@
     <GettextTranslation Include="it.po" />
     <GettextTranslation Include="ja.po" />
     <GettextTranslation Include="nl.po" />
+    <GettextTranslation Include="nb.po" />
     <GettextTranslation Include="pl.po" />
     <GettextTranslation Include="pt.po" />
     <GettextTranslation Include="pt_BR.po" />
