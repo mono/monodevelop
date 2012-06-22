@@ -43,6 +43,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 	public interface IXcodeTrackedProject
 	{
 		XcodeProjectTracker XcodeProjectTracker { get; }
+		FilePath GetBundleResourceId (ProjectFile pf);
+		FilePath DefaultBundleResourceDir { get; }
 	}
 	
 	public abstract class XcodeProjectTracker : IDisposable
@@ -245,7 +247,8 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		bool IncludeInSyncedProject (ProjectFile pf)
 		{
 			return (pf.BuildAction == BuildAction.Content && pf.ProjectVirtualPath.ParentDirectory.IsNullOrEmpty)
-				|| (pf.BuildAction == BuildAction.InterfaceDefinition && HasInterfaceDefinitionExtension (pf.FilePath));
+				|| (pf.BuildAction == BuildAction.InterfaceDefinition && HasInterfaceDefinitionExtension (pf.FilePath)
+				    || pf.BuildAction == "BundleResource");
 		}
 		
 		#region Project change tracking
@@ -575,9 +578,9 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 					continue;
 				
 				monitor.Log.WriteLine ("Adding '{0}' to project '{1}'", file.SyncedRelative, dnp.Name);
-				
+
 				FilePath path = new FilePath (file.Original);
-				string buildAction = HasInterfaceDefinitionExtension (path) ? BuildAction.InterfaceDefinition : BuildAction.Content;
+				string buildAction = HasInterfaceDefinitionExtension (path) ? BuildAction.InterfaceDefinition : BuildAction.BundleResource;
 				context.Project.AddFile (path, buildAction);
 				filesAdded = true;
 			}

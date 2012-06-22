@@ -42,6 +42,7 @@ namespace MonoDevelop.Projects
 		public const string ApplicationDefinition = "ApplicationDefinition";
 		public const string Page = "Page";
 		public const string InterfaceDefinition = "InterfaceDefinition";
+		public const string BundleResource = "BundleResource";
 		public const string Resource = "Resource";
 		public const string SplashScreen = "SplashScreen";
 		public const string EntityDeploy = "EntityDeploy";

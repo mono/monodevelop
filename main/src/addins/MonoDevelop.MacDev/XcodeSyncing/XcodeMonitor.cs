@@ -216,12 +216,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				} else {
 					FilePath original, relative;
 					
-					if (relativePath != null)
+					if (relativePath != null) {
 						relative = new FilePath (Path.Combine (relativePath, Path.GetFileName (file)));
-					else
+						original = ctx.Project.BaseDirectory.Combine (relative);
+					} else {
 						relative = new FilePath (Path.GetFileName (file));
-					
-					original = ctx.Project.BaseDirectory.Combine (relative);
+						original = ((IXcodeTrackedProject) ctx.Project).DefaultBundleResourceDir.Combine (relative);
+					}
 					
 					monitor.Log.WriteLine ("New content file found: {0}", relative);
 					ctx.FileSyncJobs.Add (new XcodeSyncFileBackJob (original, relative, true));
