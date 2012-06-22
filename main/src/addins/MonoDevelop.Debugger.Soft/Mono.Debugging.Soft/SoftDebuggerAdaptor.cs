@@ -587,7 +587,7 @@ namespace Mono.Debugging.Soft
 				if (local != null) {
 					return new VariableValueReference (ctx, GetLocalName (cx, local), local);
 				}
-				return FindByName (OnGetLocalVariables (ctx), v => v.Name, name, ctx.CaseSensitive);;
+				return FindByName (OnGetLocalVariables (ctx), v => v.Name, name, ctx.CaseSensitive);
 			} catch (AbsentInformationException) {
 				return null;
 			}
@@ -804,7 +804,7 @@ namespace Mono.Debugging.Soft
 				
 			foreach (LocalVariable var in locals) {
 				if (var.IsArg) {
-					string name = !string.IsNullOrEmpty (var.Name) || cx.SourceCodeAvailable ? var.Name : "arg" + var.Index;
+					string name = !string.IsNullOrEmpty (var.Name) ? var.Name : "arg" + var.Index;
 					yield return new VariableValueReference (ctx, name, var);
 				}
 			}

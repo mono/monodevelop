@@ -131,6 +131,7 @@ namespace MonoDevelop.Debugger
 			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf), typeof(bool));
 			Model = store;
 			RulesHint = true;
+			EnableSearch = false;
 			Selection.Mode = Gtk.SelectionMode.Multiple;
 			ResetColumnSizes ();
 			
