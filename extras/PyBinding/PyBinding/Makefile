@@ -63,6 +63,8 @@ FILES =  \
 	PyBinding.Gui.Navigation/PackageNodeBuilder.cs \
 	PyBinding.Gui.Navigation/PackagesNodeBuilder.cs \
 	PyBinding.Gui.Navigation/ProjectNodeBuilderExtension.cs \
+	PyBinding.Gui/CompilationUnitDataProvider.cs \
+	PyBinding.Gui/DataProvider.cs \
 	PyBinding.Gui/PythonEditorCompletion.cs \
 	PyBinding.Gui/PythonEditorIndentation.cs \
 	PyBinding.Gui/PythonEditorOutline.cs \
