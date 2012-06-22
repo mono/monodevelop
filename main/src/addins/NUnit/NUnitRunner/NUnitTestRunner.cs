@@ -43,7 +43,7 @@ namespace MonoDevelop.NUnit.External
 {
 	public class NUnitTestRunner: MarshalByRefObject
 	{
-		public void Initialize (string nunitPath, string nunitCorePath)
+		public void Initialize (string nunitPath, string nunitCorePath, string nunitCoreInterfacesPath)
 		{
 			// In some cases MS.NET can't properly resolve assemblies even if they
 			// are already loaded. For example, when deserializing objects from remoting.
@@ -57,6 +57,7 @@ namespace MonoDevelop.NUnit.External
 
 			// Force the loading of the NUnit.Framework assembly.
 			// It's needed since that dll is not located in the test dll directory.
+			Assembly.LoadFrom (nunitCoreInterfacesPath);
 			Assembly.LoadFrom (nunitCorePath);
 			Assembly.LoadFrom (nunitPath);
 
