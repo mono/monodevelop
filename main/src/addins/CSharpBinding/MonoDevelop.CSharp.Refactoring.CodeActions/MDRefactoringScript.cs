@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -59,8 +60,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			document.Editor.SelectionRange = new TextSegment (GetSegment (node));
 		}
 
-		public override void InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
+		public override Task InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
+			var task = new Task (() => {});
 			var editor = document.Editor;
 			DocumentLocation loc = document.Editor.Caret.Location;
 			var declaringType = document.ParsedDocument.GetInnermostTypeDefinition (loc);
@@ -71,7 +73,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				MessageService.ShowError (
 					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
 				);
-				return;
+				return task;
 			}
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
@@ -106,23 +108,26 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (iCArgs.Success) {
 					foreach (var node in nodes) {
 						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
-						output.RegisterTrackedSegments (this, document.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
-						iCArgs.InsertionPoint.Insert (editor, output.Text);
+						var offset = document.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
+						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
+						output.RegisterTrackedSegments (this, delta + offset);
 					}
+					task.RunSynchronously ();
 				}
 			};
+			return task;
 		}
 
-		public override void InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
+		public override Task InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 		{
+			var task = new Task (() => {});
 			if (parentType == null)
-				return;
+				return task;
 			var part = parentType.Parts.FirstOrDefault ();
 			if (part == null)
-				return;
+				return task;
 
 			var loadedDocument = Ide.IdeApp.Workbench.OpenDocument (part.Region.FileName);
-
 			loadedDocument.RunWhenLoaded (delegate {
 				var editor = loadedDocument.Editor;
 				var loc = part.Region.Begin;
@@ -149,18 +154,24 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 					if (iCArgs.Success) {
 						foreach (var node in nodes) {
 							var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
-							output.RegisterTrackedSegments (this, loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
-							iCArgs.InsertionPoint.Insert (editor, output.Text);
+							var offset = loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
+							var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
+							output.RegisterTrackedSegments (this, delta + offset);
 						}
+						task.RunSynchronously (TaskScheduler.FromCurrentSynchronizationContext());
 					}
 				};
 			});
+		
+			return task;
 		}
 
-		public override void Link (params AstNode[] nodes)
+		public override Task Link (params AstNode[] nodes)
 		{
+			Console.WriteLine ("link:"+nodes.Length);
+			var task = new Task (() => {});
 			var segments = new List<TextSegment> (nodes.Select (node => new TextSegment (GetSegment (node))).OrderBy (s => s.Offset));
-
+			
 			var link = new TextLink ("name");
 			segments.ForEach (s => link.AddLink (s));
 			var links = new List<TextLink> ();
@@ -173,6 +184,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				tle.StartMode ();
 				document.Editor.CurrentMode = tle;
 			}
+			return task;
 		}
 		
 		public override void Dispose ()

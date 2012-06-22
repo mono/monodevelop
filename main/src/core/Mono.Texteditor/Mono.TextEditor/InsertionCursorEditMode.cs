@@ -76,7 +76,7 @@ namespace Mono.TextEditor
 			offset += editor.Insert (offset, str);
 		}
 		
-		public void Insert (TextEditorData editor, string text)
+		public int Insert (TextEditorData editor, string text)
 		{
 			int offset = editor.Document.LocationToOffset (Location);
 			using (var undo = editor.OpenUndoGroup ()) {
@@ -86,9 +86,11 @@ namespace Mono.TextEditor
 				int insertionOffset = line.Offset + Location.Column - 1;
 				offset = insertionOffset;
 				InsertNewLine (editor, LineBefore, ref offset);
-				
+				int result = offset - insertionOffset;
+
 				offset += editor.Insert (offset, text);
 				InsertNewLine (editor, LineAfter, ref offset);
+				return result;
 			}
 		}
 	}
