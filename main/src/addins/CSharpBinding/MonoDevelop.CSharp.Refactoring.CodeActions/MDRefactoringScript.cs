@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override Task InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
-			var task = new Task (() => {});
+			var tcs = new TaskCompletionSource<object> ();
 			var editor = document.Editor;
 			DocumentLocation loc = document.Editor.Caret.Location;
 			var declaringType = document.ParsedDocument.GetInnermostTypeDefinition (loc);
@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				MessageService.ShowError (
 					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
 				);
-				return task;
+				return tcs.Task;
 			}
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
@@ -124,23 +124,23 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
 						output.RegisterTrackedSegments (this, delta + offset);
 					}
-					task.RunSynchronously ();
+					tcs.SetResult (null);
 				} else {
 					Rollback ();
 				}
 				DisposeOnClose (); 
 			};
-			return task;
+			return tcs.Task;
 		}
 
 		public override Task InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 		{
-			var task = new Task (() => {});
+			var tcs = new TaskCompletionSource<object>();
 			if (parentType == null)
-				return task;
+				return tcs.Task;
 			var part = parentType.Parts.FirstOrDefault ();
 			if (part == null)
-				return task;
+				return tcs.Task;
 
 			var loadedDocument = Ide.IdeApp.Workbench.OpenDocument (part.Region.FileName);
 			loadedDocument.RunWhenLoaded (delegate {
@@ -173,7 +173,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 							var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
 							output.RegisterTrackedSegments (this, delta + offset);
 						}
-						task.RunSynchronously (TaskScheduler.FromCurrentSynchronizationContext());
+						tcs.SetResult (null);
 					} else {
 						Rollback ();
 					}
@@ -181,12 +181,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				};
 			});
 		
-			return task;
+			return tcs.Task;
 		}
 
 		public override Task Link (params AstNode[] nodes)
 		{
-			var task = new Task (() => {});
+			var tcs = new TaskCompletionSource<object> ();
 			var segments = new List<TextSegment> (nodes.Select (node => new TextSegment (GetSegment (node))).OrderBy (s => s.Offset));
 			
 			var link = new TextLink ("name");
@@ -204,7 +204,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				tle.StartMode ();
 				document.Editor.CurrentMode = tle;
 			}
-			return task;
+			return tcs.Task;
 		}
 
 		bool isDisposed = false;
