@@ -55,6 +55,7 @@
   	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id="FSharpConsoleProject" resource="FSharpConsoleProject.xpt.xml"/>
 		<ProjectTemplate id="FSharpLibraryProject" resource="FSharpLibraryProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpTutorialProject" resource="FSharpTutorialProject.xpt.xml"/>
 	</Extension>
 
   	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
