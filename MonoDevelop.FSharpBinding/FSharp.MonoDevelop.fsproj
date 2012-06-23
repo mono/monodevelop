@@ -53,6 +53,9 @@
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
   </PropertyGroup>
+  <Target Name="Clean">
+	<RemoveDir Directories="..\bin\"/>
+  </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -80,18 +83,21 @@
     <OutputPath>..\bin\</OutputPath>
     <PostBuildEvent />
   </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <ItemGroup>
     <EmbeddedResource Include="icons\fsharp-icon-32.png" />
     <EmbeddedResource Include="icons\fsharp-script-32.png" />
     <EmbeddedResource Include="icons\fsharp-file-icon.png" />
     <EmbeddedResource Include="icons\fsharp-project-icon.png" />
     <EmbeddedResource Include="icons\fsharp-script-icon.png" />
-    <EmbeddedResource Include="templates\FSharpBinding.addin.xml" />
     <EmbeddedResource Include="templates\EmptyFSharpSource.xft.xml" />
     <EmbeddedResource Include="templates\EmptyFSharpScript.xft.xml" />
     <EmbeddedResource Include="templates\FSharpConsoleProject.xpt.xml" />
     <EmbeddedResource Include="templates\FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="templates\FSharpLibraryProject.xpt.xml" />
+	<EmbeddedResource Include="templates\FSharpTutorialProject.xpt.xml" />
+	<EmbeddedResource Include="FSharpBinding.addin.xml" />
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
     <Compile Include="PowerPack\CodeDomGenerator.fs" />
     <Compile Include="PowerPack\CodeProvider.fs" />
@@ -143,13 +149,9 @@
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="Gui\FSharp.MonoDevelop.Gui.csproj">
       <Name>FSharp.MonoDevelop.Gui</Name>
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
 </Project>
