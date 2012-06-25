@@ -1463,9 +1463,14 @@ namespace MonoDevelop.SourceEditor
 			DocumentLocation loc = Document.OffsetToLocation (triggerOffset);
 			result.TriggerLine = loc.Line;
 			result.TriggerLineOffset = loc.Column - 1;
-			var p = DocumentToScreenLocation (loc);
-			result.TriggerXCoord = p.X;
-			result.TriggerYCoord = p.Y;
+			var p = this.widget.TextEditor.TextViewMargin.CaretVisualLocation;
+			int tx, ty;
+			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
+			tx += widget.TextEditorContainer.Allocation.X + (int)p.X;
+			ty += widget.TextEditorContainer.Allocation.Y + (int)p.Y + (int)TextEditor.LineHeight;
+
+			result.TriggerXCoord = tx;
+			result.TriggerYCoord = ty;
 			result.TriggerTextHeight = (int)TextEditor.LineHeight;
 			return result;
 		}

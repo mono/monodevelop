@@ -597,6 +597,12 @@ namespace Mono.TextEditor
 		internal double caretX;
 		internal double caretY;
 
+		public Cairo.PointD CaretVisualLocation {
+			get {
+				return new Cairo.PointD (caretX, caretY);
+			}
+		}
+
 		void SetVisibleCaretPosition (double x, double y)
 		{
 			if (x == caretX && y == caretY)

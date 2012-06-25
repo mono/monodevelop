@@ -33,6 +33,7 @@ using System.Text;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -132,7 +133,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			DefaultCompletionString = "";
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
-			FontDescription des = this.Style.FontDescription.Copy ();
+			FontDescription des = FontService.GetFontDescription ("Editor");
+
 			layout.FontDescription = des;
 			separatorLine = CairoExtensions.ParseColor ("dedede");
 			darkSearchBackground = CairoExtensions.ParseColor ("ffffff");
@@ -594,8 +596,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get {
 				int iconWidth, iconHeight;
 				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight))
-					iconHeight = iconWidth = 24;
-				return iconWidth + margin + iconTextSpacing + marginIconSpacing;
+					iconHeight = iconWidth = 16;
+				var xSpacing = marginIconSpacing + iconTextSpacing + margin;
+				return iconWidth + xSpacing + 2 + 1;
 			}
 		}
 		
