@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			this.Add (tree);
 			this.ShowAll ();
 
-			ShowSelectionPopupButton = true;
+//			ShowSelectionPopupButton = true;
 
 #if TREE_VERIFY_INTEGRITY
 			GLib.Timeout.Add (3000, Checker);
@@ -1845,13 +1845,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected override void ForAll (bool include_internals, Gtk.Callback callback)
+/*		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
 			base.ForAll (include_internals, callback);
-			if (selectionPopupButton != null)
+			if (include_internals && selectionPopupButton != null)
 				callback (selectionPopupButton);
 		}
-
+*/
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
