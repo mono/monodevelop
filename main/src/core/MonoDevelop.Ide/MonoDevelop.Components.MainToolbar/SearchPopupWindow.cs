@@ -1,21 +1,21 @@
-//
+// 
 // SearchPopupWindow.cs
-//
+//  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
-//
+// 
 // Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
-//
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,37 +24,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
+using System.Collections.Generic;
 using Gtk;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class SearchPopupWindow : Gtk.Window
+	public class SearchPopupWindow : RoundedWindow
 	{
-		SearchPopupWidget widget;
+		const int yMargin = 6;
+		const int xMargin = 6;
+		const int itemSeparatorHeight = 2;
+		const int marginIconSpacing = 4;
+		const int iconTextSpacing = 6;
+		const int categorySeparatorHeight = 8;
+		const int headerMarginSize = 100;
 
-		public SearchPopupWindow () : base(WindowType.Popup)
+		List<SearchCategory> categories = new List<SearchCategory> ();
+		List<Tuple<SearchCategory, ISearchDataSource>> results = new List<Tuple<SearchCategory, ISearchDataSource>> ();
+		Pango.Layout layout, headerLayout;
+		CancellationTokenSource src;
+		Cairo.Color headerColor;
+		Cairo.Color separatorLine;
+		Cairo.Color darkSearchBackground;
+		Cairo.Color lightSearchBackground;
+
+		Cairo.Color selectionBackgroundColor;
+
+		bool isInSearch;
+		public SearchPopupWindow ()
 		{
-			widget = new SearchPopupWidget (this);
+			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask;
+			headerColor = CairoExtensions.ParseColor ("8c8c8c");
+			separatorLine = CairoExtensions.ParseColor ("dedede");
+			lightSearchBackground = CairoExtensions.ParseColor ("ffffff");
+			darkSearchBackground = CairoExtensions.ParseColor ("f7f7f7");
+			selectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
+			categories.Add (new ProjectSearchCategory (this));
+			categories.Add (new FileSearchCategory (this));
+			layout = new Pango.Layout (PangoContext);
+			headerLayout = new Pango.Layout (PangoContext);
+			CanFocus = false;
 			TransientFor = IdeApp.Workbench.RootWindow;
-			SkipTaskbarHint = true;
-			SkipPagerHint = true;
-			Opacity = 0.97;
-			Add (widget);
-			widget.SizeRequested += delegate(object o, SizeRequestedArgs args) {
-				Resize (args.Requisition.Width, args.Requisition.Height);
+			ItemActivated += (sender, e) => OpenFile ();
+			SizeRequested += delegate(object o, SizeRequestedArgs args) {
+				if (args.Requisition.Width != Allocation.Width || args.Requisition.Height != Allocation.Height)
+					Resize (args.Requisition.Width, args.Requisition.Height);
 			};
-			widget.ItemActivated += (sender, e) => OpenFile ();
-		}
-
-		public void Update (string searchPattern)
-		{
-			widget.Update (searchPattern);
 		}
 
 		internal void OpenFile ()
 		{
-			var region = widget.SelectedItemRegion;
+			var region = SelectedItemRegion;
 			if (string.IsNullOrEmpty (region.FileName))
 				return;
 			if (region.Begin.IsEmpty) {
@@ -65,9 +91,527 @@ namespace MonoDevelop.Components.MainToolbar
 			Destroy ();
 		}
 
-		public bool ProcessKey (Gdk.Key key, Gdk.ModifierType state)
+
+		public void Update (string searchPattern)
 		{
-			return widget.ProcessKey (key, state);
+			if (src != null)
+				src.Cancel ();
+			selectedItem = null;
+
+			src = new CancellationTokenSource ();
+			isInSearch = true;
+			if (results.Count == 0) {
+				QueueDraw ();
+			}
+			results.Clear ();
+			foreach (var _cat in categories) {
+				var cat = _cat;
+				var token = src.Token;
+				var task = cat.GetResults (searchPattern, token);
+				task.ContinueWith (delegate {
+					if (token.IsCancellationRequested || task.Result == null) {
+						return;
+					}
+					Application.Invoke (delegate {
+						if (token.IsCancellationRequested)
+							return;
+						ShowResult (cat, task.Result);
+					}
+					);
+				}
+				);
+			}
+		}
+
+		void ShowResult (SearchCategory cat, ISearchDataSource result)
+		{
+			results.Add (Tuple.Create (cat, result));
+
+			results.Sort ((x, y) => {
+				return categories.IndexOf (x.Item1).CompareTo (categories.IndexOf (y.Item1));
+			}
+			);
+
+			if (results.Count == categories.Count) {
+				topItem = null;
+				for (int i = 0; i < results.Count; i++) {
+					if (results[i].Item2.ItemCount == 0)
+						continue;
+					if (topItem == null || topItem.DataSource.GetWeight (topItem.Item) <  results[i].Item2.GetWeight (0)) 
+						topItem = new ItemIdentifier (results[i].Item1, results[i].Item2, 0);
+				}
+				selectedItem = topItem;
+
+				QueueResize ();
+				QueueDraw ();
+				isInSearch = false;
+			}
+		}
+
+		const int maxItems = 8;
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			int ox, oy;
+			GetPosition (out ox, out oy);
+			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
+
+			double maxX = 0, y = yMargin;
+				
+			foreach (var result in results) {
+//				var category = result.Item1;
+				var dataSrc = result.Item2;
+				if (dataSrc.ItemCount == 0)
+					continue;
+				
+				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+					layout.SetMarkup (dataSrc.GetMarkup (i, false) + "\n<small>" + dataSrc.GetDescriptionMarkup (i, false) + "</small>");
+
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					var px = dataSrc.GetIcon (i);
+					if (px != null)
+						w += px.Width + iconTextSpacing + marginIconSpacing;
+					y += h + itemSeparatorHeight;
+					maxX = Math.Max (maxX, w);
+				}
+			}
+			requisition.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + headerMarginSize + xMargin * 2)));
+			if (y == yMargin) {
+				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+				y += h + itemSeparatorHeight + 4;
+			} else {
+				y -= itemSeparatorHeight;
+			}
+			requisition.Height = Math.Min (geometry.Height * 4 / 5, (int)y + yMargin + (results.Count (res => res.Item2.ItemCount > 0) - 1) * categorySeparatorHeight);
+		
+		}
+
+		ItemIdentifier GetItemAt (double px, double py)
+		{
+			double maxX = 0, y = yMargin;
+				
+			foreach (var result in results) {
+				var category = result.Item1;
+				var dataSrc = result.Item2;
+				if (dataSrc.ItemCount == 0)
+					continue;
+				
+				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+					layout.SetMarkup (dataSrc.GetMarkup (i, false) + "\n<small>" + dataSrc.GetDescriptionMarkup (i, false) + "</small>");
+
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					y += h + itemSeparatorHeight;
+					if (y > py){
+						return new ItemIdentifier (category, dataSrc, i);
+					}
+
+					var region = dataSrc.GetRegion (i);
+					if (!region.Begin.IsEmpty) {
+						layout.SetMarkup (region.BeginLine.ToString ());
+						int w2, h2;
+						layout.GetPixelSize (out w2, out h2);
+						w += w2;
+					}
+					maxX = Math.Max (maxX, w);
+				}
+			}
+			return null;
+		}
+
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			if (evnt.Button == 1) {
+				var item = GetItemAt (evnt.X, evnt.Y);
+				if (item != null) {
+					selectedItem = item;
+					QueueDraw ();
+				}
+				if (evnt.Type == Gdk.EventType.TwoButtonPress)
+					OnItemActivated (EventArgs.Empty);
+			}
+
+			return base.OnButtonPressEvent (evnt);
+		}
+
+		int SelectedCategoryIndex {
+			get {
+				for (int i = 0; i < results.Count; i++) {
+					if (results [i].Item1 == selectedItem.Category) {
+						return i;
+					}
+				}
+				return -1;
+			}
+		}
+
+		void SelectItemUp ()
+		{
+			if (selectedItem == null)
+				return;
+			int i = SelectedCategoryIndex;
+			if (selectedItem.Item > 0) {
+				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item - 1);
+			} else {
+				if (i > 0) {
+					selectedItem = new ItemIdentifier (
+						results [i - 1].Item1,
+						results [i - 1].Item2,
+						Math.Min (maxItems, results [i - 1].Item2.ItemCount) - 1
+					);
+				}
+			}
+			if (i > 0 && selectedItem.Equals (topItem)) {
+				SelectItemUp ();
+				return;
+			}
+			QueueDraw ();
+		}
+
+		void SelectItemDown ()
+		{
+			if (selectedItem == null)
+				return;
+			var i = SelectedCategoryIndex;
+			var upperBound = Math.Min (maxItems, selectedItem.DataSource.ItemCount);
+			if (selectedItem.Item + 1 < upperBound) {
+				if (topItem.DataSource == selectedItem.DataSource && selectedItem.Item == upperBound - 1)
+					return;
+				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item + 1);
+			} else {
+				for (int j = i + 1; j < results.Count; j++) {
+					if (results[j].Item2.ItemCount == 0 || results[j].Item2.ItemCount == 1 && topItem.DataSource == results[j].Item2)
+						continue;
+					selectedItem = new ItemIdentifier (
+						results [j].Item1,
+						results [j].Item2,
+						0
+					);
+					break;
+				}
+			}
+			if (i < results.Count && selectedItem.Equals (topItem)) {
+				SelectItemDown ();
+				return;
+			}
+			QueueDraw ();
+		}
+
+		void SelectNextCategory ()
+		{
+			if (selectedItem == null)
+				return;
+			var i = SelectedCategoryIndex;
+			if (selectedItem.Equals (topItem)) {
+				if (i > 0) {
+					selectedItem = new ItemIdentifier (
+						results [0].Item1,
+						results [0].Item2,
+						0
+					);
+
+				} else {
+					if (topItem.DataSource.ItemCount > 1) {
+						selectedItem = new ItemIdentifier (
+							results [0].Item1,
+							results [0].Item2,
+							1
+						);
+					} else if (i < results.Count - 1) {
+						selectedItem = new ItemIdentifier (
+							results [i + 1].Item1,
+							results [i + 1].Item2,
+							0
+						);
+					}
+				}
+			} else {
+				if (i < results.Count - 1) {
+					selectedItem = new ItemIdentifier (
+						results [i + 1].Item1,
+						results [i + 1].Item2,
+						0
+					);
+				}
+			}
+			QueueDraw ();	
+		}
+
+		void SelectPrevCategory ()
+		{
+			if (selectedItem == null)
+				return;
+			var i = SelectedCategoryIndex;
+			if (i > 0) {
+				selectedItem = new ItemIdentifier (
+					results [i - 1].Item1,
+					results [i - 1].Item2,
+					0
+				);
+				if (selectedItem.Equals (topItem)) {
+					if (topItem.DataSource.ItemCount > 1) {
+						selectedItem = new ItemIdentifier (
+							results [i - 1].Item1,
+							results [i - 1].Item2,
+							1
+						);
+					} else if (i > 1) {
+						selectedItem = new ItemIdentifier (
+							results [i - 2].Item1,
+							results [i - 2].Item2,
+							0
+						);
+					}
+				}
+			} else {
+				selectedItem = topItem;
+			}
+			QueueDraw ();
+		}
+
+		void SelectFirstCategory ()
+		{
+			selectedItem = topItem;
+			QueueDraw ();
+		}
+
+		void SelectLastCatgory ()
+		{
+			var r = results.LastOrDefault (r2 => r2.Item2.ItemCount > 0 && !(r2.Item2.ItemCount == 1 && topItem.Category == r2.Item1));
+			if (r == null)
+				return;
+			selectedItem = new ItemIdentifier (
+				r.Item1,
+				r.Item2,
+				r.Item2.ItemCount - 1
+			);
+			QueueDraw ();
+		}
+
+		internal bool ProcessKey (Gdk.Key key, Gdk.ModifierType state)
+		{
+			switch (key) {
+			case Gdk.Key.Up:
+				if (state.HasFlag (Gdk.ModifierType.Mod2Mask))
+					goto case Gdk.Key.Page_Up;
+				if (state.HasFlag (Gdk.ModifierType.ControlMask))
+					goto case Gdk.Key.Home;
+				SelectItemUp ();
+				return true;
+			case Gdk.Key.Down:
+				if (state.HasFlag (Gdk.ModifierType.Mod2Mask))
+					goto case Gdk.Key.Page_Down;
+				if (state.HasFlag (Gdk.ModifierType.ControlMask))
+					goto case Gdk.Key.End;
+				SelectItemDown ();
+				return true;
+			case Gdk.Key.KP_Page_Down:
+			case Gdk.Key.Page_Down:
+				SelectNextCategory ();
+				return true;
+			case Gdk.Key.KP_Page_Up:
+			case Gdk.Key.Page_Up:
+				SelectPrevCategory ();
+				return true;
+			case Gdk.Key.Home:
+				SelectFirstCategory ();
+				return true;
+			case Gdk.Key.End:
+				SelectLastCatgory ();
+				return true;
+			
+			case Gdk.Key.Return:
+				OnItemActivated (EventArgs.Empty);
+				return true;
+			}
+			return true;
+		}
+
+		public event EventHandler ItemActivated;
+
+		protected virtual void OnItemActivated (EventArgs e)
+		{
+			EventHandler handler = this.ItemActivated;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public DomRegion SelectedItemRegion {
+			get {
+				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
+					return DomRegion.Empty;
+				return selectedItem.DataSource.GetRegion (selectedItem.Item);
+			}
+		}
+
+		class ItemIdentifier {
+			public SearchCategory Category { get; private set; }
+			public ISearchDataSource DataSource { get; private set; }
+			public int Item { get; private set; }
+
+			public ItemIdentifier (SearchCategory category, ISearchDataSource dataSource, int item)
+			{
+				this.Category = category;
+				this.DataSource = dataSource;
+				this.Item = item;
+			}
+
+			public override bool Equals (object obj)
+			{
+				if (obj == null)
+					return false;
+				if (ReferenceEquals (this, obj))
+					return true;
+				if (obj.GetType () != typeof(ItemIdentifier))
+					return false;
+				ItemIdentifier other = (ItemIdentifier)obj;
+				return Category == other.Category && DataSource == other.DataSource && Item == other.Item;
+			}
+			
+			public override int GetHashCode ()
+			{
+				unchecked {
+					return (Category != null ? Category.GetHashCode () : 0) ^ (DataSource != null ? DataSource.GetHashCode () : 0) ^ Item.GetHashCode ();
+				}
+			}
+		}
+
+		ItemIdentifier selectedItem = null, topItem = null;
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var g = Gdk.CairoHelper.Create (evnt.Window)) {
+				g.SetSourceRGBA (1, 1, 1, 0);
+				g.Operator = Cairo.Operator.Source;
+				g.Paint ();
+			}
+
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				context.LineWidth = 1;
+				BorderPath (context);
+				context.Clip ();
+
+				var r = results.Where (res => res.Item2.ItemCount > 0).ToArray ();
+				if (r.Any ()) {
+					context.Color = lightSearchBackground;
+					context.Rectangle (evnt.Area.X, evnt.Area.Y, headerMarginSize, evnt.Area.Height);
+					context.Fill ();
+
+					context.Color = darkSearchBackground;
+					context.Rectangle (evnt.Area.X + headerMarginSize, evnt.Area.Y, Allocation.Width - headerMarginSize, evnt.Area.Height);
+					context.Fill ();
+					context.MoveTo (0.5 + evnt.Area.X + headerMarginSize, 0);
+					context.LineTo (0.5 + evnt.Area.X + headerMarginSize, Allocation.Height);
+					context.Color = separatorLine;
+					context.Stroke ();
+				} else {
+					context.Color = new Cairo.Color (1, 1, 1);
+					context.Rectangle (evnt.Area.X, evnt.Area.Y, evnt.Area.Width, evnt.Area.Height);
+					context.Fill ();
+				}
+
+				double y = yMargin;
+				int w, h;
+				if (topItem != null) {
+					headerLayout.SetText (GettextCatalog.GetString ("Top result"));
+					headerLayout.GetPixelSize (out w, out h);
+					context.MoveTo (headerMarginSize - w - xMargin, y);
+					context.Color = headerColor;
+					PangoCairoHelper.ShowLayout (context, headerLayout);
+
+					var category = topItem.Category;
+					var dataSrc = topItem.DataSource;
+					var i = topItem.Item;
+
+					double x = xMargin + headerMarginSize;
+					context.Color = new Cairo.Color (0, 0, 0);
+					layout.SetMarkup ("<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#8F8F8F\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
+					layout.GetPixelSize (out w, out h);
+					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+						context.Color = selectionBackgroundColor;
+						context.Rectangle (headerMarginSize, y, evnt.Area.Width - headerMarginSize, h);
+						context.Fill ();
+						context.Color = new Cairo.Color (1, 1, 1);
+					}
+
+					var px = dataSrc.GetIcon (i);
+					if (px != null) {
+						evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+						x += px.Width + iconTextSpacing + marginIconSpacing;
+					}
+
+					context.MoveTo (x, y);
+					PangoCairoHelper.ShowLayout (context, layout);
+
+					y += h + itemSeparatorHeight;
+
+				}
+
+				foreach (var result in r) {
+					var category = result.Item1;
+					var dataSrc = result.Item2;
+					if (dataSrc.ItemCount == 0)
+						continue;
+					if (dataSrc.ItemCount == 1 && topItem != null && topItem.DataSource == dataSrc)
+						continue;
+					headerLayout.SetText (category.Name);
+					headerLayout.GetPixelSize (out w, out h);
+					context.MoveTo (headerMarginSize - w - xMargin, y);
+					context.Color = headerColor;
+					PangoCairoHelper.ShowLayout (context, headerLayout);
+
+					for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+						if (topItem != null && topItem.Category == category && topItem.Item == i)
+							continue;
+						double x = xMargin + headerMarginSize;
+						context.Color = new Cairo.Color (0, 0, 0);
+						layout.SetMarkup ("<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#8F8F8F\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
+						layout.GetPixelSize (out w, out h);
+						if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+							context.Color = new Cairo.Color (0.8, 0.8, 0.8);
+							context.Rectangle (headerMarginSize, y, evnt.Area.Width - headerMarginSize, h);
+							context.Fill ();
+							context.Color = new Cairo.Color (1, 1, 1);
+						}
+
+						var px = dataSrc.GetIcon (i);
+						if (px != null) {
+							evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+							x += px.Width + iconTextSpacing + marginIconSpacing;
+						}
+
+						context.MoveTo (x, y);
+						PangoCairoHelper.ShowLayout (context, layout);
+
+						y += h + itemSeparatorHeight;
+					}
+					if (result != r.Last ()) {
+/*						context.MoveTo (0, y + categorySeparatorHeight / 2 + 0.5);
+						context.LineTo (Allocation.Width, y + categorySeparatorHeight / 2 + 0.5);
+						context.Color = (HslColor)Style.Mid (StateType.Normal);
+						context.Stroke ();*/
+						y += categorySeparatorHeight;
+					}
+				}
+				if (y == yMargin) {
+					context.Color = new Cairo.Color (0, 0, 0);
+					layout.SetMarkup (isInSearch ? GettextCatalog.GetString ("Searching...") : GettextCatalog.GetString ("No matches"));
+					context.MoveTo (xMargin, y);
+					PangoCairoHelper.ShowLayout (context, layout);
+				}
+				context.ResetClip ();
+				context.LineWidth = 1;
+				BorderPath (context);
+				context.Color = new Cairo.Color (0.7, 0.7, 0.7);
+				context.Stroke ();
+			}
+
+			return false;//base.OnExposeEvent (evnt);
 		}
 	}
 }

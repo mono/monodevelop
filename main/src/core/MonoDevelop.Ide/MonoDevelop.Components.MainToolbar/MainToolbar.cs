@@ -215,6 +215,7 @@ namespace MonoDevelop.Components.MainToolbar
 				popup.ShowAll ();
 			}
 			popup.Update (matchEntry.Entry.Text);
+
 		}
 
 		void PositionPopup ()

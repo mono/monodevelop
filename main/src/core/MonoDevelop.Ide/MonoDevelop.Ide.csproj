@@ -1168,7 +1168,7 @@
     <Compile Include="MonoDevelop.Components\TreeViewCellContainer.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewState.cs" />
     <Compile Include="MonoDevelop.Components\NotebookButtonBar.cs">
-      <DeployService-Deploy>true</DeployService-Deploy>
+      <DeployService-Deploy>True</DeployService-Deploy>
     </Compile>
     <Compile Include="MonoDevelop.Components\MenuButton.cs" />
     <Compile Include="MonoDevelop.Components\FixedWidthWrapLabel.cs" />
@@ -1617,10 +1617,8 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\RoundButton.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ButtonBar.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectCommentTags.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWidget.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ProjectSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchCategory.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchDataSource.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\FileSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGridTable.cs" />
@@ -1628,6 +1626,8 @@
     <Compile Include="MonoDevelop.Components.Docking\DockVisualStyle.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchEntryBorder.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StyledProgressBar.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\RoundedWindow.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

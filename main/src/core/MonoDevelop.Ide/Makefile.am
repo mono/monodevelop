@@ -214,9 +214,9 @@ FILES =  \
 	MonoDevelop.Components.MainToolbar/MainToolbar.cs \
 	MonoDevelop.Components.MainToolbar/ProjectSearchCategory.cs \
 	MonoDevelop.Components.MainToolbar/RoundButton.cs \
+	MonoDevelop.Components.MainToolbar/RoundedWindow.cs \
 	MonoDevelop.Components.MainToolbar/SearchCategory.cs \
 	MonoDevelop.Components.MainToolbar/SearchEntryBorder.cs \
-	MonoDevelop.Components.MainToolbar/SearchPopupWidget.cs \
 	MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs \
 	MonoDevelop.Components.MainToolbar/StatusArea.cs \
 	MonoDevelop.Components.MainToolbar/StyledProgressBar.cs \
