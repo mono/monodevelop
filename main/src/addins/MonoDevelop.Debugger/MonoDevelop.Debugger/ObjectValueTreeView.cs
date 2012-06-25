@@ -1244,16 +1244,19 @@ namespace MonoDevelop.Debugger
 		
 		string GetFullExpression (TreeIter it)
 		{
-			string exp = "";
 			TreePath path = store.GetPath (it);
+			string exp = "";
 			
-			while (path != null && path.Depth != 1) {
+			while (path.Depth != 1) {
 				ObjectValue val = (ObjectValue)store.GetValue (it, ObjectCol);
 				exp = val.ChildSelector + exp;
-				store.IterParent (out it, it);
+				if (!store.IterParent (out it, it))
+					break;
 				path = store.GetPath (it);
 			}
+
 			string name = (string) store.GetValue (it, NameCol);
+
 			return name + exp;
 		}
 
