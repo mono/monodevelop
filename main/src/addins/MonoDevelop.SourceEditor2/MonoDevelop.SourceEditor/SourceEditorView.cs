@@ -51,6 +51,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.SourceEditor.QuickTasks;
 using System.Text;
+using Mono.Addins;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -228,7 +229,7 @@ namespace MonoDevelop.SourceEditor
 
 			this.WorkbenchWindowChanged += delegate {
 				if (WorkbenchWindow != null) {
-					widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext;
+					widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext ?? AddinManager.AddinEngine;
 					WorkbenchWindow.ActiveViewContentChanged += delegate {
 						widget.UpdateLineCol ();
 					};
