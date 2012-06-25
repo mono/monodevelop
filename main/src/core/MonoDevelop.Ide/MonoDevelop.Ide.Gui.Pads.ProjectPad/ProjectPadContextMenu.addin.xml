@@ -26,7 +26,6 @@
 	
 	<SeparatorItem id = "ActionsSectionStart" />
 	<Condition id="ItemType" value="ProjectReference|ProjectFile|SystemFile">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.Open" />
 		<ItemSet id = "OpenWith" _label = "Open _With" autohide="true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
 		</ItemSet>
