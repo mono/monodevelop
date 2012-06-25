@@ -52,6 +52,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				targetRelative = ((IXcodeTrackedProject) pf.Project).GetBundleResourceId (pf);
 				break;
 			case BuildAction.Content:
+			default:
 				targetRelative = pf.ProjectVirtualPath;
 				break;
 			}
