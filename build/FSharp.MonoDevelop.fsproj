@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -38,6 +38,7 @@
         <String>FSharpLanguageBinding.fs</String>
       </BuildOrder>
     </BuildOrder>
+	<!--<builtdir>FSharp</builtdir>-->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,6 +54,9 @@
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
   </PropertyGroup>
+  <Target Name="Clean">
+	<RemoveDir Directories="..\bin" />
+  </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -91,7 +95,7 @@
     <EmbeddedResource Include="Resources\EmptyFSharpScript.xft.xml" />
     <EmbeddedResource Include="Resources\FSharpConsoleProject.xpt.xml" />
     <EmbeddedResource Include="Resources\FSharpSyntaxMode.xml" />
-	<EmbeddedResource Include="Resources\FSharpLibraryProject.xpt.xml" />
+    <EmbeddedResource Include="Resources\FSharpLibraryProject.xpt.xml" />
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
     <Compile Include="PowerPack\CodeDomGenerator.fs" />
     <Compile Include="PowerPack\CodeProvider.fs" />
@@ -120,46 +124,35 @@
   <ItemGroup>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Addins">
+      <HintPath>..\..\..\..\..\..\..\Program Files\MonoDevelop\bin\Mono.Addins.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.TextEditor">
+      <HintPath>..\..\..\..\..\..\..\Program Files\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Core">
+      <HintPath>..\..\..\..\..\..\..\Program Files\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide">
+      <HintPath>..\..\..\..\..\..\..\Program Files\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
+    </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.TextEditor">
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath>
-      <HintPath>/usr/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
-      <HintPath>C:\Program Files (x86)\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
-      <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.Core">
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
-      <HintPath>/usr/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
-      <HintPath>C:\Program Files (x86)\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
-      <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide">
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
-      <HintPath>/usr/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
-      <HintPath>C:\Program Files (x86)\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
-      <Package>monodevelop</Package>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Gui\FSharp.MonoDevelop.Gui.csproj">
       <Name>FSharp.MonoDevelop.Gui</Name>
-      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
+      <Project>{fd0d1033-9145-48e5-8ed8-e2365252878c}</Project>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
+	
 </Project>
