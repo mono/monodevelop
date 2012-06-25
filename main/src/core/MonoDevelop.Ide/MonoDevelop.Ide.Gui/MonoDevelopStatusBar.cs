@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
+using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Ide
 {
@@ -49,7 +50,7 @@ namespace MonoDevelop.Ide
 		HBox statusBox;
 		Image currentStatusImage;
 		
-//		readonly ProgressBar progressBar = new ProgressBar ();
+		readonly StyledProgressBar progressBar = new StyledProgressBar ();
 		readonly Label statusLabel = new Label ();
 		public readonly static HBox messageBox = new HBox ();
 		public readonly static HBox statusIconBox = new HBox ();
@@ -150,7 +151,7 @@ namespace MonoDevelop.Ide
 			statusLabel.ShowAll ();
 			
 //			EventBox eventMessageBox = new EventBox ();
-//			messageBox.PackStart (progressBar, false, false, 0);
+			messageBox.PackStart (progressBar, false, false, 0);
 			messageBox.PackStart (statusLabel, true, true, 0);
 //			eventMessageBox.Add (messageBox);
 //			statusBox.PackStart (eventMessageBox, true, true, 0);
@@ -212,6 +213,23 @@ namespace MonoDevelop.Ide
 					completionStatus.Dispose ();
 					completionStatus = null;
 				}
+			};
+
+			MonoDevelopStatusBar.ProgressBegin += delegate {
+				progressBar.ShowProgress = true;
+				progressBar.Visible = true;
+				progressBar.Fraction = 0;
+			};
+			
+			MonoDevelopStatusBar.ProgressEnd += delegate {
+				progressBar.ShowProgress = false;
+				progressBar.Visible = false;
+				progressBar.Fraction = 0;
+			};
+			
+			MonoDevelopStatusBar.ProgressFraction += delegate(object sender, MonoDevelopStatusBar.FractionEventArgs e) {
+				progressBar.Fraction = e.Work;
+				QueueDraw ();
 			};
 		}
 		

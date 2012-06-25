@@ -34,7 +34,6 @@ namespace MonoDevelop.Components.MainToolbar
 	public class StatusArea : EventBox
 	{
 		HBox contentBox = new HBox (false, 0);
-		StyledProgressBar progressBar = new StyledProgressBar ();
 		Color borderColor;
 
 		Color fill1Color;
@@ -51,7 +50,6 @@ namespace MonoDevelop.Components.MainToolbar
 			fill2Color = CairoExtensions.ParseColor ("d0d9db");
 			innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
 			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 0);
-			contentBox.PackEnd (progressBar, false, false, 4);
 			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 4);
 			Add (contentBox);
 
@@ -59,29 +57,7 @@ namespace MonoDevelop.Components.MainToolbar
 				MonoDevelopStatusBar.HandleEventMessageBoxButtonPressEvent (null, null);
 			};
 
-			MonoDevelopStatusBar.ProgressBegin += delegate {
-				progressBar.ShowProgress = true;
-				progressBar.Visible = true;
-				progressBar.Fraction = 0;
-			};
-
-			MonoDevelopStatusBar.ProgressEnd += delegate {
-				progressBar.ShowProgress = false;
-				progressBar.Visible = false;
-				progressBar.Fraction = 0;
-			};
-
-			MonoDevelopStatusBar.ProgressFraction += delegate(object sender, MonoDevelopStatusBar.FractionEventArgs e) {
-				progressBar.Fraction = e.Work;
-				QueueDraw ();
-			};
-
-			MonoDevelopStatusBar.ProgressPulse += delegate {
-				// TODO
-			};
-
 			SetSizeRequest (32, 22);
-			progressBar.Hide ();
 			Show ();
 		}
 
