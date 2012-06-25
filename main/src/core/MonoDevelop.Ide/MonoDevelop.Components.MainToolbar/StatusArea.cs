@@ -51,8 +51,8 @@ namespace MonoDevelop.Components.MainToolbar
 			fill2Color = CairoExtensions.ParseColor ("d0d9db");
 			innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
 			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 0);
-			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 4);
 			contentBox.PackEnd (progressBar, false, false, 4);
+			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 4);
 			Add (contentBox);
 
 			this.ButtonPressEvent += delegate {
