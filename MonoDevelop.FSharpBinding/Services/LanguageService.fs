@@ -15,10 +15,9 @@ open System.Diagnostics
 open MonoDevelop.Ide
 open MonoDevelop.Core
 open MonoDevelop.Projects
-//open MonoDevelop.Projects.Dom
-//open MonoDevelop.Projects.Dom.Parser
 open MonoDevelop.Ide.Tasks
 open MonoDevelop.Ide.Gui
+open MonoDevelop.Ide.TypeSystem
 
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.Completion
@@ -416,7 +415,7 @@ type internal LanguageService private () =
     Debug.tracef "Errors" "Trigger update after completion"
     let doc = IdeApp.Workbench.ActiveDocument
     if doc.FileName.FullPath = file.FullPath then
-      ProjectDomService.Parse(file.ToString(), fun () -> doc.Editor.Text) |> ignore
+      TypeSystemService.ParseFile (doc.FileName.FileName, doc.Editor.MimeType, doc.Editor.Text) |> ignore
     updatingErrors <- false
 
   // ------------------------------------------------------------------------------------

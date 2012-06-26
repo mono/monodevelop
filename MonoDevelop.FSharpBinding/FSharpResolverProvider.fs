@@ -7,8 +7,6 @@ namespace FSharp.MonoDevelop
 open System
 open MonoDevelop.Ide
 open MonoDevelop.Core
-//open MonoDevelop.Projects.Dom
-//open MonoDevelop.Projects.Dom.Parser
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.Gui
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -20,10 +18,11 @@ open ICSharpCode.NRefactory.TypeSystem
 /// Stores the data tip that we get from the language service
 /// (this is passed to MonoDevelop, which asks as about tooltip later)
 type internal FSharpResolveResult(tip:DataTipText) = 
-  inherit ResolveResult()  
+  inherit ResolveResult(SpecialType.UnknownType)  
 
-  override x.GetDefinitionRegion(dom:DomRegion, memb:IMember) =
-    seq { do () }
+  // override x.GetDefinitionRegion(dom:DomRegion, memb:IMember) =
+  //   seq { do () }
+
   member x.DataTip = tip
   
 
@@ -38,12 +37,15 @@ type FSharpResolverProvider() =
       
     
     /// Whatever this is, we don't support it!  
-    member x.GetLanguageItem(dom:Document, data, offset, expression) : ResolveResult =
+    member x.GetLanguageItem(dom:Document, offset:int, expressionRegion:DomRegion byref) : ResolveResult =
+      null
+
+    member x.GetLanguageItem(dom:Document, offset:int, identifier:string) : ResolveResult =
       null
 
     /// Returns string with tool-tip from 'FSharpResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
-    member x.CreateTooltip(dom:Document, unit, result, errorInformation, ambience, modifierState) : string = 
+    member x.CreateTooltip(unit:IParsedFile, result:ResolveResult, errorInformation, ambience, modifierState) : string = 
       match result with
       | :? FSharpResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null
