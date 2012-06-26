@@ -1340,8 +1340,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		object ICommandDelegatorRouter.GetNextCommandTarget ()
 		{
-			// This is the last object of the chain
-			return null;
+			return toolbar;
 		}
 
 		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()

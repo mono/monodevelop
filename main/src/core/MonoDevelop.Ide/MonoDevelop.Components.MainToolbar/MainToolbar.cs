@@ -38,7 +38,7 @@ using MonoDevelop.Ide.NavigateToDialog;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class MainToolbar: Gtk.EventBox
+	public class MainToolbar: Gtk.EventBox, ICommandDelegatorRouter
 	{
 		HBox contentBox = new HBox (false, 6);
 
@@ -164,7 +164,14 @@ namespace MonoDevelop.Components.MainToolbar
 
 			matchEntry = new SearchEntry ();
 			matchEntry.VisibleWindow = false;
-			matchEntry.EmptyMessage = GettextCatalog.GetString ("Press Control + , for search.");
+			 
+			var info = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
+
+			if (info != null && !string.IsNullOrEmpty (info.AccelKey)) {
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press {0} for search.", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
+			} else {
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Enter text to search.");
+			}
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
 			matchEntry.IsCheckMenu = true;
@@ -328,6 +335,25 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			return base.OnExposeEvent (evnt);
 		}
+
+		[CommandHandler(MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo)]
+		public void NavigateToCommand ()
+		{
+			matchEntry.Entry.GrabFocus ();
+		}
+
+		#region ICommandDelegatorRouter implementation
+		object ICommandDelegatorRouter.GetNextCommandTarget ()
+		{
+			// This is the last object of the chain
+			return null;
+		}
+
+		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
+		{
+			return null;
+		}
+		#endregion
 	}
 }
 
