@@ -3,7 +3,7 @@
 // error messages and expose various methods for to be used from MonoDevelop integration
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 #nowarn "40"
 
 open System
@@ -416,6 +416,7 @@ type internal LanguageService private () =
     Debug.tracef "Errors" "Trigger update after completion"
     let doc = IdeApp.Workbench.ActiveDocument
     if doc.FileName.FullPath = file.FullPath then
+      
       ProjectDomService.Parse(file.ToString(), fun () -> doc.Editor.Text) |> ignore
     updatingErrors <- false
 

@@ -1,5 +1,5 @@
 #nowarn "40"
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 
 open System
 open System.IO

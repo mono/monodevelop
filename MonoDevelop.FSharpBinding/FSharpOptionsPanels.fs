@@ -2,7 +2,7 @@
 // User interface panels for F# project properties
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 
 open Gtk
 open System

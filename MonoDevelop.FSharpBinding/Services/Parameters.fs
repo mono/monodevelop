@@ -3,7 +3,7 @@
 // F# compiler parameters (debug mode, tail-calls, etc.)
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 
 open MonoDevelop.Projects
 open MonoDevelop.Core.Serialization

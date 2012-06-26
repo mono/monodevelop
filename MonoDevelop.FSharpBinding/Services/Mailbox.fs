@@ -4,7 +4,7 @@
 // For more information see project in /Related/MailboxIssue
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.MonoDevelop.Mailbox
+namespace MonoDevelop.FSharp.Mailbox
 #nowarn "40"
 
 open System.Threading

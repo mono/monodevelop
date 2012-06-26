@@ -1,5 +1,5 @@
 // Based on code from FSharp.PowerPack (MS-PL at CodePlex)
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 
 open System
 open System.IO
