@@ -184,7 +184,7 @@ platform_bindings=""
 # Gnome platform addin
 AC_ARG_ENABLE(gnomeplatform,
 	AC_HELP_STRING([--enable-gnomeplatform],
-		[enable Gnome platform support [default=autodetect]]),
+		[enable Gnome platform support [default=no]]),
 		enable_gnomeplatform=${enableval}, enable_gnomeplatform=$default_gnomeplatform)
 
 if test x$enable_gnomeplatform = xyes; then
@@ -205,7 +205,7 @@ AM_CONDITIONAL(ENABLE_GNOMEPLATFORM, [test x$enable_gnomeplatform = xyes])
 # Mac platform addin
 AC_ARG_ENABLE(macplatform,
 	AC_HELP_STRING([--enable-macplatform],
-		[enable Mac platform support [default=autodetect]]),
+		[enable Mac platform support [default=no]]),
 		enable_macplatform=${enableval}, enable_macplatform=$default_macplatform)
 
 if test x$enable_macplatform = xyes; then
@@ -225,7 +225,7 @@ AM_CONDITIONAL(ENABLE_MACBUNDLE, [test x$enable_macbundle = xyes])
 AC_ARG_ENABLE(windowsplatform,
 	AC_HELP_STRING([--enable-windowsplatform],
 		[enable Windows platform support [default=no]]),
-		enable_windowsplatform=${enableval}, enable_windowsplatform=no)
+		enable_windowsplatform=${enableval}, enable_windowsplatform=$default_windowsplatform)
 
 if test x$enable_windowsplatform = xyes; then
 	platform_bindings="${platform_bindings}Windows "
@@ -284,7 +284,6 @@ src/core/MonoDevelop.Ide/Makefile
 src/core/MonoDevelop.Ide/BuildVariables.cs
 src/core/MonoDevelop.Startup/Makefile
 src/tools/Makefile
-src/tools/mdcrashlog/Makefile
 src/tools/mdhost/Makefile
 src/tools/mdtool/Makefile
 src/tools/SharpCoco/Makefile
@@ -313,6 +312,7 @@ src/addins/TextTemplating/Makefile
 src/addins/TextTemplating/Mono.TextTemplating/Makefile
 src/addins/TextTemplating/TextTransform/Makefile
 src/addins/TextTemplating/MonoDevelop.TextTemplating/Makefile
+src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
 src/addins/AspNet/Makefile
 src/addins/AspNet/MonoDevelop.AspNet/Makefile
 src/addins/AspNet/MonoDevelop.AspNet.Mvc/Makefile
@@ -342,6 +342,9 @@ src/addins/MonoDevelop.DocFood/Makefile
 src/addins/MonoDevelop.MacDev/Makefile
 tests/Makefile
 tests/UnitTests/Makefile
+tests/UserInterfaceTests/Makefile
+tests/MonoDevelop.MacDev.Tests/Makefile
+tests/MacPlatform.Tests/Makefile
 Makefile
 monodevelop
 mdtool

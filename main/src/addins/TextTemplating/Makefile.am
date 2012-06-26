@@ -1,4 +1,5 @@
 SUBDIRS = \
 	Mono.TextTemplating \
 	TextTransform \
-	MonoDevelop.TextTemplating
+	MonoDevelop.TextTemplating \
+	Mono.TextTemplating.Tests

@@ -4,5 +4,4 @@ extras/ValaBinding
 extras/MonoDevelop.Database
 extras/MonoDevelop.Debugger.Gdb
 extras/PyBinding
-extras/MonoDevelop.MonoMac
 extras/MonoDevelop.MeeGo
