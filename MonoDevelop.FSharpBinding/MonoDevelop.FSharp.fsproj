@@ -10,7 +10,7 @@
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <Name>FSharp.MonoDevelop</Name>
+    <Name>MonoDevelop.FSharp</Name>
     <UsePartialTypes>false</UsePartialTypes>
     <BuildOrder>
       <BuildOrder>
@@ -155,9 +155,12 @@
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
-    <ProjectReference Include="Gui\FSharp.MonoDevelop.Gui.csproj">
-      <Name>FSharp.MonoDevelop.Gui</Name>
-      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
+      <Name>MonoDevelop.FSharp.Gui</Name>
+      <Project>{fd0d1033-9145-48e5-8ed8-e2365252878c}</Project>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>

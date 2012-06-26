@@ -5,6 +5,7 @@ MonoDevelop.FSharpBinding/obj*
 MonoDevelop.FSharpBinding/Gui/obj/Debug*
 MonoDevelop.FSharpBinding/bin*
 MonoDevelop.FSharpBinding/Gui/bin*
+MonoDevelop.FSharpBinding/Gui/obj*
 bin/*
 repository/*
 *.suo

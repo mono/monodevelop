@@ -23,8 +23,9 @@ open MonoDevelop.Ide.Gui
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.Completion
 
-open FSharp.MonoDevelop
-open FSharp.MonoDevelop.Mailbox
+open MonoDevelop.FSharp
+open MonoDevelop.FSharp.MailBox
+
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module FsParser = Microsoft.FSharp.Compiler.Parser
@@ -364,6 +365,7 @@ type internal LanguageServiceMessage =
 open System.Reflection
 open Microsoft.FSharp.Compiler.Reflection
 open ICSharpCode.NRefactory.TypeSystem
+open MonoDevelop.Ide.TypeSystem
 
 /// Provides functionality for working with the F# interactive checker running in background
 type internal LanguageService private () =
@@ -416,8 +418,7 @@ type internal LanguageService private () =
     Debug.tracef "Errors" "Trigger update after completion"
     let doc = IdeApp.Workbench.ActiveDocument
     if doc.FileName.FullPath = file.FullPath then
-      
-      ProjectDomService.Parse(file.ToString(), fun () -> doc.Editor.Text) |> ignore
+      TypeSystemService.ParseFile(file.ToString(), doc.Editor.MimeType, doc.Editor.Text) |> ignore
     updatingErrors <- false
 
   // ------------------------------------------------------------------------------------

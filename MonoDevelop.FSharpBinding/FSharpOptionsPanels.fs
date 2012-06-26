@@ -9,7 +9,7 @@ open System
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Gui.Dialogs
-open FSharp.MonoDevelop.Gui
+open MonoDevelop.FSharp.Gui
 
 // --------------------------------------------------------------------------------------
 // F# build options - compiler configuration panel
