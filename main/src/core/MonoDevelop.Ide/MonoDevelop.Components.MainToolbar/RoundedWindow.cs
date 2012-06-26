@@ -27,24 +27,58 @@ using System;
 using Gtk;
 using MonoDevelop.Ide;
 using Mono.TextEditor;
+using Gdk;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	public class RoundedWindow : Gtk.Window
 	{
-		public RoundedWindow () : base(WindowType.Popup)
+		public RoundedWindow () : base(Gtk.WindowType.Popup)
 		{
 			SkipTaskbarHint = true;
 			SkipPagerHint = true;
-
-			var rgbaColormap = Screen.RgbaColormap;
-			if (rgbaColormap != null)
-				Colormap = rgbaColormap;
+			AppPaintable = true;
+			TypeHint = WindowTypeHint.Tooltip;
+			CheckScreenColormap ();
 		}
 
-		public void BorderPath (Cairo.Context ctx)
+		public bool SupportsAlpha {
+			get;
+			private set;
+		}
+
+		void CheckScreenColormap ()
 		{
-			CairoExtensions.RoundedRectangle (ctx, 0.5, 0.5, Allocation.Width, Allocation.Height - 1, 5);
+			SupportsAlpha = Screen.RgbaColormap != null;
+			if (SupportsAlpha) {
+				Colormap = Screen.RgbaColormap;
+			} else {
+				Colormap = Screen.RgbColormap;
+			}
+		}
+
+		protected override void OnScreenChanged (Gdk.Screen previous_screen)
+		{
+			base.OnScreenChanged (previous_screen);
+			CheckScreenColormap ();
+		}
+
+		protected void DrawTransparentBackground (Gdk.EventExpose evnt)
+		{
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				if (SupportsAlpha) {
+					context.SetSourceRGBA (1, 1, 1, 0);
+				} else {
+					context.SetSourceRGB (1, 1, 1);
+				}
+				context.Operator = Cairo.Operator.DestIn;
+				context.Paint ();
+			}
+		}
+
+		protected void BorderPath (Cairo.Context ctx)
+		{
+			CairoExtensions.RoundedRectangle (ctx, 0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1, 5);
 		}
 	}
 }

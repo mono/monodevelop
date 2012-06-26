@@ -73,10 +73,18 @@ namespace MonoDevelop.Components.MainToolbar
 			TransientFor = IdeApp.Workbench.RootWindow;
 			ItemActivated += (sender, e) => OpenFile ();
 			SizeRequested += delegate(object o, SizeRequestedArgs args) {
-				if (args.Requisition.Width != Allocation.Width || args.Requisition.Height != Allocation.Height)
+				if (inResize)
+					return;
+				if (args.Requisition.Width != Allocation.Width || args.Requisition.Height != Allocation.Height) {
+					inResize = true;
+					Visible = false;
 					Resize (args.Requisition.Width, args.Requisition.Height);
+					Visible = true;
+					inResize = false;
+				}
 			};
 		}
+		bool inResize = false;
 
 		internal void OpenFile ()
 		{
@@ -90,7 +98,6 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			Destroy ();
 		}
-
 
 		public void Update (string searchPattern)
 		{
@@ -485,12 +492,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			using (var g = Gdk.CairoHelper.Create (evnt.Window)) {
-				g.SetSourceRGBA (1, 1, 1, 0);
-				g.Operator = Cairo.Operator.Source;
-				g.Paint ();
-			}
-
+			DrawTransparentBackground (evnt);
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				context.LineWidth = 1;
 				BorderPath (context);
@@ -611,7 +613,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.Stroke ();
 			}
 
-			return false;//base.OnExposeEvent (evnt);
+			return true;//base.OnExposeEvent (evnt);
 		}
 	}
 }
