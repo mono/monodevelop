@@ -72,11 +72,13 @@ namespace MonoDevelop.Components.MainToolbar
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				context.LineWidth = 1;
 				var y = Allocation.Y + (Allocation.Height - height) / 2;
-				context.Rectangle (Allocation.X + 0.5, y + 0.5, Allocation.Width, height);
+				const int leftBorder = 6;
+				context.Rectangle (Allocation.X + 0.5 + leftBorder, y + 0.5, Allocation.Width - leftBorder, height);
 				context.Color = borderColor;
 				context.Stroke ();
 				context.Color = progressColor;
-				for (double x = 1; x < Allocation.Width * fraction; x += 3) {
+				var barWidth = Allocation.Width - leftBorder;
+				for (double x = leftBorder; x < barWidth * fraction; x += 3) {
 					context.Rectangle (Allocation.X + x + 0.5, y + 1 + 0.5, 2, height - 2);
 					context.Fill ();
 				}
