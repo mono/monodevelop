@@ -544,7 +544,7 @@ namespace MonoDevelop.Projects
 
 					//VS COMPAT: recursively copy references's "local copy" files
 					//but only copy the "copy to output" files from the immediate references
-					if (processedProjects.Add (p))
+					if (processedProjects.Add (p) || supportReferDistance == 1)
 						foreach (var f in p.GetSupportFileList (configuration))
 							list.Add (f.Src, f.CopyOnlyIfNewer, f.Target);
 
