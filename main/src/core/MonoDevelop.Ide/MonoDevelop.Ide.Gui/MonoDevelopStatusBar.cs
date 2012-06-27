@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide
 			statusLabel.ShowAll ();
 			
 //			EventBox eventMessageBox = new EventBox ();
-			messageBox.PackStart (progressBar, false, false, 0);
+			messageBox.PackEnd (progressBar, false, false, 0);
 			messageBox.PackStart (statusLabel, true, true, 0);
 //			eventMessageBox.Add (messageBox);
 //			statusBox.PackStart (eventMessageBox, true, true, 0);
