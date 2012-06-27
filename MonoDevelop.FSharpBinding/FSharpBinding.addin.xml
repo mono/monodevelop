@@ -8,10 +8,10 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="SourceEditor2" version="3.1.0"/>
-    <Addin id="Refactoring" version="3.1.0"/>
+		<Addin id="Core" version="3.0.2"/>
+		<Addin id="Ide" version="3.0.2"/>
+		<Addin id="SourceEditor2" version="3.0.2"/>
+    <Addin id="Refactoring" version="3.0.2"/>
   </Dependencies>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
