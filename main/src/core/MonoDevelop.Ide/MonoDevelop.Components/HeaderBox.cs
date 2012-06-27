@@ -40,7 +40,7 @@ namespace MonoDevelop.Components
 		int bottomPadding;
 		int leftPadding;
 		int rightPadding;
-		
+
 		public HeaderBox ()
 		{
 		}
@@ -67,6 +67,8 @@ namespace MonoDevelop.Components
 		}
 		
 		public bool GradientBackround { get; set; }
+
+		public Gdk.Color? BorderColor { get; set; }
 
 		protected override void OnAdded (Widget widget)
 		{
@@ -130,21 +132,23 @@ namespace MonoDevelop.Components
 			
 			bool res = base.OnExposeEvent (evnt);
 			
-			Gdk.GC borderColor = Style.DarkGC (Gtk.StateType.Normal);
-			
+			var borderColor = new Gdk.GC (GdkWindow);
+			borderColor.RgbFgColor = BorderColor != null ? BorderColor.Value : Style.Dark (Gtk.StateType.Normal);
+
 			rect = Allocation;
 			for (int n=0; n<topMargin; n++)
 				GdkWindow.DrawLine (borderColor, rect.X, rect.Y + n, rect.Right - 1, rect.Y + n);
 			
 			for (int n=0; n<bottomMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X, rect.Bottom - n - 1, rect.Right - 1, rect.Bottom - n - 1);
+				GdkWindow.DrawLine (borderColor, rect.X, rect.Bottom - n, rect.Right, rect.Bottom - n);
 			
 			for (int n=0; n<leftMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.X + n, rect.Y, rect.X + n, rect.Bottom - 1);
+				GdkWindow.DrawLine (borderColor, rect.X + n, rect.Y, rect.X + n, rect.Bottom);
 			
 			for (int n=0; n<rightMargin; n++)
-				GdkWindow.DrawLine (borderColor, rect.Right - n - 1, rect.Y, rect.Right - n - 1, rect.Bottom - 1);
-			
+				GdkWindow.DrawLine (borderColor, rect.Right - n, rect.Y, rect.Right - n, rect.Bottom);
+
+			borderColor.Dispose ();
 			return res;
 		}
 	}
