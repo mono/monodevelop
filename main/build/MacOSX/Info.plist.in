@@ -48,7 +48,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>monodevelop</string>
+	<string>MonoDevelop</string>
 	<key>CFBundleIconFile</key>
 	<string>monodevelop.icns</string>
 	<key>LSApplicationCategoryType</key>

@@ -70,7 +70,7 @@ app: monostub
 	@echo ""
 	@echo "Copying launch scripts into app bundle"
 	@echo ""
-	cp monostub $(MACOS)/monodevelop
+	cp monostub $(MACOS)/MonoDevelop
 	cp monostub $(MACOS)/mdtool
 
 # Remove addins that don't work on OSX

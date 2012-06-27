@@ -16,6 +16,7 @@ BINARIES = $(CECIL_BINARIES) $(NGIT_BINARIES)
 OUTPUT=$(top_builddir)/build/bin
 
 all:
+	$(MAKE) -C monomac/src
 	mkdir -p $(OUTPUT)
 	xbuild /property:CodePage=65001 $(NGIT)
 	xbuild /property:CodePage=65001 $(CECIL)

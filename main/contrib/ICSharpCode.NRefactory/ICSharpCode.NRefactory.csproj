@@ -29,7 +29,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
-    <DebugType>Full</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE;FULL_AST</DefineConstants>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>

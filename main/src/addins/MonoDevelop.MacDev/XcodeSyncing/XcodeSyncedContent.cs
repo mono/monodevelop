@@ -42,11 +42,20 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		FilePath targetRelative, source;
 		bool isInterfaceDefinition;
 		
-		public XcodeSyncedContent (ProjectFile p)
+		public XcodeSyncedContent (ProjectFile pf)
 		{
-			this.targetRelative = p.ProjectVirtualPath;
-			this.source = p.FilePath;
-			isInterfaceDefinition = p.BuildAction == BuildAction.InterfaceDefinition;
+			isInterfaceDefinition = pf.BuildAction == BuildAction.InterfaceDefinition;
+			source = pf.FilePath;
+
+			switch (pf.BuildAction) {
+			case BuildAction.BundleResource:
+				targetRelative = ((IXcodeTrackedProject) pf.Project).GetBundleResourceId (pf);
+				break;
+			case BuildAction.Content:
+			default:
+				targetRelative = pf.ProjectVirtualPath;
+				break;
+			}
 		}
 		
 		public override bool NeedsSyncOut (IProgressMonitor monitor, XcodeSyncContext context)

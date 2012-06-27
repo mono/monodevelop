@@ -802,7 +802,17 @@ namespace Mono.TextEditor
 			this.RequestUpdate (new UpdateAll ());
 			this.CommitDocumentUpdate ();
 		}
-		
+
+		public void RollbackTo (ICSharpCode.NRefactory.Editor.ITextSourceVersion version)
+		{
+			var steps = Version.CompareAge (version);
+			if (steps < 0)
+				throw new InvalidOperationException ("Invalid version");
+			while (steps-- > 0) {
+				undoStack.Pop ().Undo (this);
+			}
+		}
+
 		internal protected virtual void OnUndone (UndoOperationEventArgs e)
 		{
 			EventHandler<UndoOperationEventArgs> handler = this.Undone;
@@ -1793,6 +1803,7 @@ namespace Mono.TextEditor
 		{
 			return new SnapshotDocument (Text, Version);
 		}
+
 		#endregion
 	}
 	

@@ -205,6 +205,15 @@ namespace Mono.TextEditor
 			ExitTextLinkMode ();
 		}
 
+		public event EventHandler Exited;
+
+		protected virtual void OnExited (EventArgs e)
+		{
+			EventHandler handler = this.Exited;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		public event EventHandler Cancel;
 
 		protected virtual void OnCancel (EventArgs e)
@@ -313,6 +322,7 @@ namespace Mono.TextEditor
 				Editor.Document.StackUndoToDepth (undoDepth);
 			Editor.CurrentMode = OldMode;
 			Editor.Document.CommitUpdateAll ();
+			OnExited (EventArgs.Empty);
 		}
 
 		public bool IsInUpdate {

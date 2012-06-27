@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading.Tasks;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -137,11 +138,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public CSharpFormattingOptions FormattingOptions {
 			get { return formattingOptions; }
 		}
-
+		
 		public TextEditorOptions Options {
 			get { return options; }
 		}
-
+		
 		public void InsertBefore(AstNode node, AstNode insertNode)
 		{
 			var startOffset = GetCurrentOffset(new TextLocation(node.StartLocation.Line, 1));
@@ -152,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			InsertText(startOffset, text);
 			output.RegisterTrackedSegments(this, startOffset);
 		}
-
+		
 		public void AddTo(BlockStatement bodyStatement, AstNode insertNode)
 		{
 			var startOffset = GetCurrentOffset(bodyStatement.LBraceToken.EndLocation);
@@ -161,10 +162,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			output.RegisterTrackedSegments(this, startOffset);
 		}
 		
-		public virtual void Link (params AstNode[] nodes)
+		public virtual Task Link (params AstNode[] nodes)
 		{
 			// Default implementation: do nothing
 			// Derived classes are supposed to enter the text editor's linked state.
+			return null;
 		}
 		
 		public void Replace (AstNode node, AstNode replaceWith)
@@ -197,27 +199,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			After,
 			End
 		}
-
-		public virtual void InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> node)
+		
+		public virtual Task InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> node)
 		{
 			throw new NotImplementedException();
 		}
-
-		public virtual void InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> node)
+		
+		public virtual Task InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> node)
 		{
 			throw new NotImplementedException();
 		}
-
-		public void InsertWithCursor(string operation, InsertPosition defaultPosition, params AstNode[] nodes)
+		
+		public Task InsertWithCursor(string operation, InsertPosition defaultPosition, params AstNode[] nodes)
 		{
-			InsertWithCursor(operation, defaultPosition, (IEnumerable<AstNode>)nodes);
+			return InsertWithCursor(operation, defaultPosition, (IEnumerable<AstNode>)nodes);
 		}
-
-		public void InsertWithCursor(string operation, ITypeDefinition parentType, params AstNode[] nodes)
+		
+		public Task InsertWithCursor(string operation, ITypeDefinition parentType, params AstNode[] nodes)
 		{
-			InsertWithCursor(operation, parentType, (IEnumerable<AstNode>)nodes);
+			return InsertWithCursor(operation, parentType, (IEnumerable<AstNode>)nodes);
 		}
-
+		
 		protected virtual int GetIndentLevelAt (int offset)
 		{
 			return 0;
@@ -344,23 +346,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public virtual void Rename(IVariable variable, string name = null)
 		{
 		}
-
+		
 		public virtual void Dispose()
 		{
 		}
-
+		
 		public enum NewTypeContext {
 			/// <summary>
 			/// The class should be placed in a new file to the current namespace.
 			/// </summary>
 			CurrentNamespace,
-
+			
 			/// <summary>
 			/// The class should be placed in the unit tests. (not implemented atm.)
 			/// </summary>
 			UnitTests
 		}
-
+		
 		/// <summary>
 		/// Creates a new file containing the type, namespace and correct usings.
 		/// (Note: Should take care of IDE specific things, file headers, add to project, correct name).

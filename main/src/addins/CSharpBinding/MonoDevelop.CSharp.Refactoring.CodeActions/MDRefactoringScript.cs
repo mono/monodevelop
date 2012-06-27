@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -46,12 +47,24 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		readonly MDRefactoringContext context;
 		readonly Document document;
 		readonly IDisposable undoGroup;
+		readonly ICSharpCode.NRefactory.Editor.ITextSourceVersion startVersion;
+		int operationsRunning = 0;
 
 		public MDRefactoringScript (MDRefactoringContext context, Document document, CSharpFormattingOptions formattingOptions) : base(document.Editor.Document, formattingOptions, document.Editor.CreateNRefactoryTextEditorOptions ())
 		{
 			this.context = context;
 			this.document = document;
 			undoGroup  = this.document.Editor.OpenUndoGroup ();
+			this.startVersion = this.document.Editor.Version;
+
+		}
+
+		void Rollback ()
+		{
+			DisposeOnClose (true);
+			foreach (var ver in this.document.Editor.Version.GetChangesTo (this.startVersion)) {
+				document.Editor.Document.Replace (ver.Offset, ver.RemovalLength, ver.InsertedText);
+			}
 		}
 
 		public override void Select (AstNode node)
@@ -59,8 +72,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			document.Editor.SelectionRange = new TextSegment (GetSegment (node));
 		}
 
-		public override void InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
+		public override Task InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
+			var tcs = new TaskCompletionSource<object> ();
 			var editor = document.Editor;
 			DocumentLocation loc = document.Editor.Caret.Location;
 			var declaringType = document.ParsedDocument.GetInnermostTypeDefinition (loc);
@@ -71,7 +85,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				MessageService.ShowError (
 					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
 				);
-				return;
+				return tcs.Task;
 			}
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
@@ -100,29 +114,35 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				}
 				break;
 			}
-			
+			operationsRunning++;
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 				if (iCArgs.Success) {
 					foreach (var node in nodes) {
 						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
-						output.RegisterTrackedSegments (this, document.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
-						iCArgs.InsertionPoint.Insert (editor, output.Text);
+						var offset = document.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
+						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
+						output.RegisterTrackedSegments (this, delta + offset);
 					}
+					tcs.SetResult (null);
+				} else {
+					Rollback ();
 				}
+				DisposeOnClose (); 
 			};
+			return tcs.Task;
 		}
 
-		public override void InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
+		public override Task InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 		{
+			var tcs = new TaskCompletionSource<object>();
 			if (parentType == null)
-				return;
+				return tcs.Task;
 			var part = parentType.Parts.FirstOrDefault ();
 			if (part == null)
-				return;
+				return tcs.Task;
 
 			var loadedDocument = Ide.IdeApp.Workbench.OpenDocument (part.Region.FileName);
-
 			loadedDocument.RunWhenLoaded (delegate {
 				var editor = loadedDocument.Editor;
 				var loc = part.Region.Begin;
@@ -143,24 +163,32 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				mode.HelpWindow = helpWindow;
 				
 				mode.CurIndex = 0;
-
+				operationsRunning++;
 				mode.StartMode ();
 				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 					if (iCArgs.Success) {
 						foreach (var node in nodes) {
 							var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
-							output.RegisterTrackedSegments (this, loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location));
-							iCArgs.InsertionPoint.Insert (editor, output.Text);
+							var offset = loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
+							var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
+							output.RegisterTrackedSegments (this, delta + offset);
 						}
+						tcs.SetResult (null);
+					} else {
+						Rollback ();
 					}
+					DisposeOnClose (); 
 				};
 			});
+		
+			return tcs.Task;
 		}
 
-		public override void Link (params AstNode[] nodes)
+		public override Task Link (params AstNode[] nodes)
 		{
+			var tcs = new TaskCompletionSource<object> ();
 			var segments = new List<TextSegment> (nodes.Select (node => new TextSegment (GetSegment (node))).OrderBy (s => s.Offset));
-
+			
 			var link = new TextLink ("name");
 			segments.ForEach (s => link.AddLink (s));
 			var links = new List<TextLink> ();
@@ -168,17 +196,34 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var tle = new TextLinkEditMode (document.Editor.Parent, 0, links);
 			tle.SetCaretPosition = false;
 			if (tle.ShouldStartTextLinkMode) {
+				operationsRunning++;
 				document.Editor.Caret.Offset = segments [0].EndOffset;
 				tle.OldMode = document.Editor.CurrentMode;
+				tle.Cancel += (sender, e) => Rollback ();
+				tle.Exited += (sender, e) => DisposeOnClose (); 
 				tle.StartMode ();
 				document.Editor.CurrentMode = tle;
+			}
+			return tcs.Task;
+		}
+
+		bool isDisposed = false;
+		void DisposeOnClose (bool force = false)
+		{
+			if (isDisposed)
+				return;
+			if (force)
+				operationsRunning = 0;
+			if (operationsRunning-- == 0) {
+				isDisposed = true;
+				undoGroup.Dispose ();
+				base.Dispose ();
 			}
 		}
 		
 		public override void Dispose ()
 		{
-			undoGroup.Dispose ();
-			base.Dispose ();
+			DisposeOnClose ();
 		}
 
 		public override void Rename (IEntity entity, string name)

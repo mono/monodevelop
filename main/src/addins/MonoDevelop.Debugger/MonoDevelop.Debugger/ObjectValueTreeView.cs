@@ -1003,7 +1003,42 @@ namespace MonoDevelop.Debugger
 				CleanPinIcon ();
 			return base.OnLeaveNotifyEvent (evnt);
 		}
-
+		
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		{
+			// Ignore if editing a cell, or if not editable
+			if (!AllowEditing || !AllowAdding || editing)
+				return base.OnKeyPressEvent (evnt);
+			
+			// Delete the current item with any delete key
+			switch (evnt.Key) {
+			case Gdk.Key.Delete:
+			case Gdk.Key.KP_Delete:
+			case Gdk.Key.BackSpace:
+				TreePath path;
+				TreeViewColumn column;
+				TreeIter iter;
+				ObjectValue val;
+				string expression;
+				
+				// Get the expression and value at the cursor
+				GetCursor (out path, out column);
+				Model.GetIter (out iter, path);
+				val = (ObjectValue)store.GetValue (iter, ObjectCol);
+				expression = GetFullExpression (iter);
+				
+				// Lookup and remove
+				if (val != null && values.Contains (val)) {
+					RemoveValue (val);
+					return true;
+				} else if (!string.IsNullOrEmpty (expression) && valueNames.Contains (expression)) {
+					RemoveExpression (expression);
+					return true;
+				}
+				break;
+			}
+			return base.OnKeyPressEvent (evnt);
+		}
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
@@ -1209,13 +1244,19 @@ namespace MonoDevelop.Debugger
 		
 		string GetFullExpression (TreeIter it)
 		{
+			TreePath path = store.GetPath (it);
 			string exp = "";
-			while (store.GetPath (it).Depth != 1) {
-				ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
+			
+			while (path.Depth != 1) {
+				ObjectValue val = (ObjectValue)store.GetValue (it, ObjectCol);
 				exp = val.ChildSelector + exp;
-				store.IterParent (out it, it);
+				if (!store.IterParent (out it, it))
+					break;
+				path = store.GetPath (it);
 			}
+
 			string name = (string) store.GetValue (it, NameCol);
+
 			return name + exp;
 		}
 
