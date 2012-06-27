@@ -78,8 +78,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
 
+			string prefix = Environment.GetEnvironmentVariable ("MONO_INSTALL_PREFIX");
 			FilePath homeDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-			string[] searchDirs = { homeDir.Combine (".themes"), Gtk.Rc.ThemeDir };
+
+			var searchDirs = new List<string> ();
+			searchDirs.Add (homeDir.Combine (".themes"));
+			searchDirs.Add (Gtk.Rc.ThemeDir);
+			if (!string.IsNullOrEmpty (prefix))
+				searchDirs.Add (new FilePath (prefix).Combine ("share").Combine ("themes"));
+
 			var themes = FindThemes (searchDirs).ToList ();
 			themes.Sort ();
 			
@@ -106,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		}
 		
 		// Code for getting the list of themes based on f-spot
-		ICollection<string> FindThemes (params string[] themeDirs)
+		ICollection<string> FindThemes (IEnumerable<string> themeDirs)
 		{
 			var themes = new HashSet<string> ();
 			string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
