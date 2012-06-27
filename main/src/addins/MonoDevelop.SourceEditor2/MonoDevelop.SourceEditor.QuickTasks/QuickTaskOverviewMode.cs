@@ -488,7 +488,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			var allocH = Allocation.Height - (int) IndicatorHeight;
 			var adjUpper = vadjustment.Upper;
 			var barY = allocH * vadjustment.Value / adjUpper + barPadding;
-			var barH = allocH * (vadjustment.PageSize / adjUpper) - barPadding - barPadding;
+			const int minBarHeight = 16;
+			var barH = Math.Max (minBarHeight, allocH * (vadjustment.PageSize / adjUpper) - barPadding - barPadding);
 			int barWidth = Allocation.Width - barPadding - barPadding;
 			
 			MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, 
