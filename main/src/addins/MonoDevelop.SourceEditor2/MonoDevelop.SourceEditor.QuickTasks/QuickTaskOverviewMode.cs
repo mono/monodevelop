@@ -302,7 +302,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 		
-		void MouseMove (double y)
+		protected virtual void MouseMove (double y)
 		{
 			if (button != 1)
 				return;
@@ -310,10 +310,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
 			vadjustment.Value = position;
 		}
-		
+
 		QuickTask hoverTask = null;
 		
-		uint button;
+		protected uint button;
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
