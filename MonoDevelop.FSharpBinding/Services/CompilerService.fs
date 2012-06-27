@@ -3,7 +3,7 @@
 // the compiler and parses compiler error messages 
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 
 open System
 open System.IO

@@ -10,7 +10,7 @@
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <Name>FSharp.MonoDevelop</Name>
+    <Name>MonoDevelop.FSharp</Name>
     <UsePartialTypes>false</UsePartialTypes>
     <BuildOrder>
       <BuildOrder>
@@ -54,7 +54,7 @@
     <GenerateTailCalls>false</GenerateTailCalls>
   </PropertyGroup>
   <Target Name="Clean">
-	<RemoveDir Directories="..\bin\"/>
+    <RemoveDir Directories="..\bin\" />
   </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -96,8 +96,8 @@
     <EmbeddedResource Include="templates\FSharpConsoleProject.xpt.xml" />
     <EmbeddedResource Include="templates\FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="templates\FSharpLibraryProject.xpt.xml" />
-	<EmbeddedResource Include="templates\FSharpTutorialProject.xpt.xml" />
-	<EmbeddedResource Include="FSharpBinding.addin.xml" />
+    <EmbeddedResource Include="templates\FSharpTutorialProject.xpt.xml" />
+    <EmbeddedResource Include="FSharpBinding.addin.xml" />
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
     <Compile Include="PowerPack\CodeDomGenerator.fs" />
     <Compile Include="PowerPack\CodeProvider.fs" />
@@ -129,6 +129,9 @@
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory.CSharp">
+      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\ICSharpCode.NRefactory.CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Addins">
       <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\Mono.Addins.dll</HintPath>
     </Reference>
@@ -141,6 +144,9 @@
     <Reference Include="MonoDevelop.Ide">
       <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
+    <Reference Include="MonoDevelop.Refactoring">
+      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
+    </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -149,9 +155,12 @@
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
-    <ProjectReference Include="Gui\FSharp.MonoDevelop.Gui.csproj">
-      <Name>FSharp.MonoDevelop.Gui</Name>
-      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
+      <Name>MonoDevelop.FSharp.Gui</Name>
+      <Project>{fd0d1033-9145-48e5-8ed8-e2365252878c}</Project>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>

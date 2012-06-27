@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.MonoDevelop", "FSharp.MonoDevelop.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MonoDevelop.FSharp", "MonoDevelop.FSharp.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSharp.MonoDevelop.Gui", "Gui\FSharp.MonoDevelop.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.FSharp.Gui", "Gui\MonoDevelop.FSharp.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

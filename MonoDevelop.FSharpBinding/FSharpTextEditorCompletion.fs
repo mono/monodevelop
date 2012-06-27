@@ -2,7 +2,7 @@
 // Provides IntelliSense completion for F# in MonoDevelop
 // (this file implements MonoDevelop interfaces and calls 'LanguageService')
 // --------------------------------------------------------------------------------------
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 
 open System
 open MonoDevelop.Ide

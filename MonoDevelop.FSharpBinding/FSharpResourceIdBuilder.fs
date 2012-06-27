@@ -1,4 +1,4 @@
-﻿namespace FSharp.MonoDevelop
+﻿namespace MonoDevelop.FSharp
 
 open System
 open MonoDevelop.Projects

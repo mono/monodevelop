@@ -3,7 +3,7 @@
 // error messages and expose various methods for to be used from MonoDevelop integration
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 #nowarn "40"
 
 open System
@@ -17,13 +17,13 @@ open MonoDevelop.Core
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Tasks
 open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide.TypeSystem
 
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.Completion
 
-open FSharp.MonoDevelop
-open FSharp.MonoDevelop.Mailbox
+open MonoDevelop.FSharp
+open MonoDevelop.FSharp.MailBox
+
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module FsParser = Microsoft.FSharp.Compiler.Parser
@@ -363,6 +363,7 @@ type internal LanguageServiceMessage =
 open System.Reflection
 open Microsoft.FSharp.Compiler.Reflection
 open ICSharpCode.NRefactory.TypeSystem
+open MonoDevelop.Ide.TypeSystem
 
 /// Provides functionality for working with the F# interactive checker running in background
 type internal LanguageService private () =
@@ -415,7 +416,7 @@ type internal LanguageService private () =
     Debug.tracef "Errors" "Trigger update after completion"
     let doc = IdeApp.Workbench.ActiveDocument
     if doc.FileName.FullPath = file.FullPath then
-      TypeSystemService.ParseFile (doc.FileName.FileName, doc.Editor.MimeType, doc.Editor.Text) |> ignore
+      TypeSystemService.ParseFile(file.ToString(), doc.Editor.MimeType, doc.Editor.Text) |> ignore
     updatingErrors <- false
 
   // ------------------------------------------------------------------------------------

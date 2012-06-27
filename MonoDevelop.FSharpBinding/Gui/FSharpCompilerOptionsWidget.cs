@@ -1,5 +1,5 @@
 using System;
-namespace FSharp.MonoDevelop.Gui
+namespace MonoDevelop.FSharp.Gui
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class FSharpCompilerOptionsWidget : Gtk.Bin

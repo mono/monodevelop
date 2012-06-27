@@ -1,5 +1,5 @@
 #nowarn "40"
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 
 open System
 open System.IO
@@ -14,7 +14,7 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 
-open FSharp.MonoDevelop
+open MonoDevelop.FSharp
 
 type FSharpCommands = 
   | ShowFSharpInteractive = 0

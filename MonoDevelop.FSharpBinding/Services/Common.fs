@@ -2,7 +2,7 @@
 // Common utilities for environment, debugging and working with project files
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.MonoDevelop
+namespace MonoDevelop.FSharp
 
 open System
 open System.IO

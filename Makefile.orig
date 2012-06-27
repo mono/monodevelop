@@ -20,6 +20,7 @@ FSC = INSERT_FSHARP_COMPILER
 CSC = INSERT_CSHARP_COMPILER
 
 MDBIN = $(MDROOT)/bin
+MDADDIN = $(MDROOT)/AddIns
 
 # Resources and files to be compiled/included as part of the project
 RESOURCES = \
@@ -64,14 +65,18 @@ FILES = \
 REFERENCES = \
 	-r:$(MONOBIN)/mscorlib.dll \
 	-r:System.dll \
+	-r:System.Core.dll \
 	-r:System.Xml.dll \
 	-r:$(MONOBIN)/Mono.Posix.dll \
 	-r:$(MONOBIN)/Mono.Cairo.dll \
 	-r:$(MADIR)/Mono.Addins.dll \
 	-r:$(MDBIN)/MonoDevelop.Core.dll \
 	-r:$(MDBIN)/MonoDevelop.Ide.dll \
+	-r:$(MDADDIN)/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
+	-r:$(MDADDIN)/BackendBindings/MonoDevelop.CSharpBinding.dll \
 	-r:$(MDBIN)/Mono.TextEditor.dll \
 	-r:$(MDBIN)/ICSharpCode.NRefactory.dll \
+	-r:$(MDBIN)/ICSharpCode.NRefactory.CSharp.dll \
 	-r:$(FSBIN)/FSharp.Core.dll \
 	-r:$(FSBIN)/FSharp.Compiler.dll \
 	-r:$(FSBIN)/FSharp.Compiler.Interactive.Settings.dll \
@@ -107,10 +112,10 @@ gui:
 	$(CSC) $(GUIOPTIONS) $(REFERENCES) $(GUIFILES) 
 
 install:
-	cp bin/FSharpBinding.* $(MDROOT)/AddIns/BackendBindings/
+	cp bin/FSharpBinding.* $(MDADDIN)/BackendBindings/
 
 uninstall:
-	rm $(MDROOT)/AddIns/BackendBindings/FSharpBinding.*
+	rm $(MDADDIN)/BackendBindings/FSharpBinding.*
 
 package:
 	mkdir -p bin/repository
