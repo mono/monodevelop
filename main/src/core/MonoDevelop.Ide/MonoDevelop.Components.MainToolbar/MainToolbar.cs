@@ -34,6 +34,8 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Ide.NavigateToDialog;
+using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -46,7 +48,7 @@ namespace MonoDevelop.Components.MainToolbar
 		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
 
 		ComboBox runtimeCombo;
-		TreeStore runtimeStore = new TreeStore (typeof(string), typeof(TargetRuntime));
+		TreeStore runtimeStore = new TreeStore (typeof(string), typeof(string));
 
 		StatusArea statusArea;
 
@@ -95,12 +97,9 @@ namespace MonoDevelop.Components.MainToolbar
 		*/
 		public MainToolbar ()
 		{
-			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateConfigurations ();
-			IdeApp.Workspace.ActiveRuntimeChanged += (sender, e) => UpdateConfigurations ();
-			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateConfigurations ();
-
-			IdeApp.Workspace.ActiveRuntimeChanged += (sender, e) => UpdateRuntimes ();
-			IdeApp.Workspace.RuntimesChanged += (sender, e) => UpdateRuntimes ();
+			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
+			IdeApp.Workspace.ActiveRuntimeChanged += (sender, e) => UpdateCombos ();
+			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
 
 			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
@@ -240,8 +239,20 @@ namespace MonoDevelop.Components.MainToolbar
 			TreeIter iter;
 			if (!runtimeStore.GetIterFromString (out iter, runtimeCombo.Active.ToString ()))
 				return;
-			var runtime = (TargetRuntime)runtimeStore.GetValue (iter, 1);
-			IdeApp.Workspace.ActiveRuntime = runtime;
+			var runtime = (string)runtimeStore.GetValue (iter, 1);
+			string activeName;
+			string platform;
+			ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out activeName, out platform);
+			
+			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
+				string name;
+				ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
+				if (activeName == name && platform == runtime) {
+					IdeApp.Workspace.ActiveConfigurationId = conf;
+					SelectActiveConfiguration ();
+					break;
+				}
+			}
 		}
 
 		void HandleConfigurationChanged (object sender, EventArgs e)
@@ -250,51 +261,100 @@ namespace MonoDevelop.Components.MainToolbar
 			if (!configurationStore.GetIterFromString (out iter, configurationCombo.Active.ToString ()))
 				return;
 			var config = (string)configurationStore.GetValue (iter, 1);
-			IdeApp.Workspace.ActiveConfigurationId = config;
+			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
+				string name;
+				string platform;
+				ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
+				if (name == config) {
+					IdeApp.Workspace.ActiveConfigurationId = conf;
+					break;
+				}
+			}
+		}
+
+		void SelectActiveConfiguration ()
+		{
+			UpdateRuntimes ();
+			configurationCombo.Changed -= HandleConfigurationChanged;
+			runtimeCombo.Changed -= HandleRuntimeChanged;
+			string name;
+			string platform;
+			ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out name, out platform);
+			int i = 0;
+			Gtk.TreeIter iter;
+			if (configurationStore.GetIterFirst (out iter)) {
+				do {
+					string val = (string)configurationStore.GetValue (iter, 1);
+					if (name == val) {
+						configurationCombo.Active = i;
+						break;
+					}
+					i++;
+				}
+				while (configurationStore.IterNext (ref iter));
+			}
+
+			i = 0;
+			if (runtimeStore.GetIterFirst (out iter)) {
+				do {
+					string val = (string)runtimeStore.GetValue (iter, 1);
+					if (platform == val || platform == null && string.IsNullOrEmpty (val)) {
+						runtimeCombo.Active = i;
+						break;
+					}
+					i++;
+				}
+				while (runtimeStore.IterNext (ref iter));
+			}
+			runtimeCombo.Changed += HandleRuntimeChanged;
+			configurationCombo.Changed += HandleConfigurationChanged;
 		}
 
 		void UpdateCombos ()
-		{
-			UpdateConfigurations ();
-			UpdateRuntimes ();
-		}
-
-		void UpdateConfigurations ()
 		{
 			configurationCombo.Changed -= HandleConfigurationChanged;
 			configurationStore.Clear ();
 			if (!IdeApp.Workspace.IsOpen)
 				return;
-			int selected = -1;
-			int i = 0;
+			var values = new HashSet<string> ();
 			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
-				configurationStore.AppendValues (conf, conf);
-				if (conf == IdeApp.Workspace.ActiveConfigurationId)
-					selected = i;
-				i++;
+				string name;
+				string platform;
+				ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
+				if (values.Contains (name))
+					continue;
+				values.Add (name);
+				configurationStore.AppendValues (name, name);
 			}
-			if (selected >= 0)
-				configurationCombo.Active = selected;
 			configurationCombo.Changed += HandleConfigurationChanged;
+
+			SelectActiveConfiguration ();
 		}
 
 		void UpdateRuntimes ()
 		{
 			runtimeCombo.Changed -= HandleRuntimeChanged;
 			runtimeStore.Clear ();
-			if (!IdeApp.Workspace.IsOpen || Runtime.SystemAssemblyService.GetTargetRuntimes ().Count () == 0)
+			if (!IdeApp.Workspace.IsOpen)
 				return;
-			int selected = -1;
-			int i = 0;
 
-			foreach (var tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
-				runtimeStore.AppendValues (tr.DisplayName, tr);
-				if (tr == IdeApp.Workspace.ActiveRuntime)
-					selected = i;
-				i++;
+			string name;
+			string platform;
+			ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out name, out platform);
+			var values = new HashSet<string> ();
+			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
+				string curName;
+				ItemConfiguration.ParseConfigurationId (conf, out curName, out platform);
+				if (curName != name)
+					continue;
+				if (platform == null)
+					platform = "";
+				if (values.Contains (platform))
+					continue;
+				values.Add (platform);
+				runtimeStore.AppendValues (string.IsNullOrEmpty (platform) ? "Any CPU" : platform, platform);
 			}
-			if (selected >= 0)
-				runtimeCombo.Active = selected;
+
 			runtimeCombo.Changed += HandleRuntimeChanged;
 		}
 
