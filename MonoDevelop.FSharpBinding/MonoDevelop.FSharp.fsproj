@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Name>MonoDevelop.FSharp</Name>
     <UsePartialTypes>false</UsePartialTypes>
     <BuildOrder>
@@ -126,27 +125,14 @@
   <ItemGroup>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="ICSharpCode.NRefactory">
-      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory.CSharp">
-      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\ICSharpCode.NRefactory.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Addins">
-      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\Mono.Addins.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.TextEditor">
-      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Core">
-      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide">
-      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Refactoring">
-      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
-    </Reference>
+    <Reference Include="ICSharpCode.NRefactory" />
+    <Reference Include="ICSharpCode.NRefactory.CSharp" />
+    <Reference Include="Mono.Addins" />
+    <Reference Include="Mono.TextEditor" />
+    <Reference Include="MonoDevelop.Core" />
+    <Reference Include="MonoDevelop.Ide" />
+    <Reference Include="MonoDevelop.Refactoring" />
+    <Reference Include="MonoDevelop.CSharpBinding, Version=2.6.0.0, Culture=neutral" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -154,13 +140,14 @@
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
-    <Reference Include="Mono.Cairo" />
+    <Reference Include="Mono.Cairo">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
       <Name>MonoDevelop.FSharp.Gui</Name>
-      <Project>{fd0d1033-9145-48e5-8ed8-e2365252878c}</Project>
-      <Private>True</Private>
+      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
     </ProjectReference>
   </ItemGroup>
 </Project>
