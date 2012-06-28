@@ -236,7 +236,7 @@ namespace MonoDevelop.SourceEditor
 				
 				var method = allMethods.FirstOrDefault ();
 				if (method != null) {
-					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset).ConvertEntity (method)));
+					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, method.Compilation).ConvertEntity (method)));
 					if (allMethods.Count > 1) {
 						int overloadCount = allMethods.Count - 1;
 						s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
@@ -250,14 +250,14 @@ namespace MonoDevelop.SourceEditor
 				s.Append ("</i></small>\n");
 				var field = member as IField;
 				if (field != null && field.IsConst) {
-					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset).ConvertType (field.Type)));
+					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, field.Compilation).ConvertType (field.Type)));
 					s.Append (" ");
 					s.Append (field.Name);
 					s.Append (" = ");
 					s.Append (GetConst (field.ConstantValue));
 					s.Append (";");
 				} else {
-					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset).ConvertEntity (member)));
+					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, member.Compilation).ConvertEntity (member)));
 				}
 				documentation = AmbienceService.GetDocumentationSummary (member);
 			} else if (result is NamespaceResolveResult) {

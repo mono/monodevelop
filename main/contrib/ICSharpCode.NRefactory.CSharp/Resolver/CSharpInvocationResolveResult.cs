@@ -25,7 +25,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Represents the result of a method invocation.
+	/// Represents the result of a method, constructor or indexer invocation.
+	/// Provides additional C#-specific information for InvocationResolveResult.
 	/// </summary>
 	public class CSharpInvocationResolveResult : InvocationResolveResult
 	{

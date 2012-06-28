@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get;
 			set;
 		}
-		
+
 		public IList<IUnresolvedAttribute> AssemblyAttributes {
 			get { return assemblyAttributes; }
 		}

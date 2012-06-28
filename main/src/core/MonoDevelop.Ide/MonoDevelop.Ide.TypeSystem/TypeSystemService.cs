@@ -937,6 +937,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				#endregion
 
+				object compilerSettings;
+				public IProjectContent SetCompilerSettings (object compilerSettings)
+				{
+					this.compilerSettings = compilerSettings;
+					return this;
+				}
+
+				public object CompilerSettings {
+					get {
+						return compilerSettings;
+					}
+				}
 			}
 
 			bool HasCyclicRefs (ProjectContentWrapper wrapper)

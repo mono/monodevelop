@@ -59,7 +59,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
 		static readonly ResolveResult errorResult = ErrorResolveResult.UnknownError;
-		readonly ResolveResult voidResult;
 		
 		CSharpResolver resolver;
 		/// <summary>Resolve result of the current LINQ query.</summary>
@@ -112,12 +111,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.resolver = resolver;
 			this.parsedFile = parsedFile;
 			this.navigator = skipAllNavigator;
-			this.voidResult = new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Void));
 		}
 		
 		internal void SetNavigator(IResolveVisitorNavigator navigator)
 		{
 			this.navigator = navigator ?? skipAllNavigator;
+		}
+		
+		ResolveResult voidResult {
+			get {
+				return new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Void));
+			}
 		}
 		#endregion
 		
@@ -850,15 +854,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						resolver.CurrentTypeResolveContext, propertyOrIndexerDeclaration.EntityType, name,
 						explicitInterfaceType, parameterTypeReferences: parameterTypeReferences);
 				}
-				resolver = resolver.WithCurrentMember(member);
 				
 				for (AstNode node = propertyOrIndexerDeclaration.FirstChild; node != null; node = node.NextSibling) {
-					if (node.Role == PropertyDeclaration.SetterRole && member != null) {
+					if (node.Role == PropertyDeclaration.GetterRole && member is IProperty) {
 						resolver = resolver.PushBlock();
-						resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value"));
+						resolver = resolver.WithCurrentMember(((IProperty)member).Getter);
 						Scan(node);
 						resolver = resolver.PopBlock();
-					} else {
+					}
+					else if (node.Role == PropertyDeclaration.SetterRole && member is IProperty) {
+						resolver = resolver.PushBlock();
+						resolver = resolver.WithCurrentMember(((IProperty)member).Setter);
+						Scan(node);
+						resolver = resolver.PopBlock();
+					}
+					else {
 						Scan(node);
 					}
 				}
@@ -898,16 +908,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						                                          explicitInterfaceAstType.ToTypeReference());
 					}
 				}
-				resolver = resolver.WithCurrentMember(member);
-				
-				if (member != null) {
-					resolver = resolver.PushBlock();
-					resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value"));
-					ScanChildren(eventDeclaration);
-				} else {
-					ScanChildren(eventDeclaration);
+
+				for (AstNode node = eventDeclaration.FirstChild; node != null; node = node.NextSibling) {
+					if (node.Role == CustomEventDeclaration.AddAccessorRole && member is IEvent) {
+						resolver = resolver.PushBlock();
+						resolver = resolver.WithCurrentMember(((IEvent)member).AddAccessor);
+						Scan(node);
+						resolver = resolver.PopBlock();
+					}
+					else if (node.Role == CustomEventDeclaration.RemoveAccessorRole && member is IEvent) {
+						resolver = resolver.PushBlock();
+						resolver = resolver.WithCurrentMember(((IEvent)member).RemoveAccessor);
+						Scan(node);
+						resolver = resolver.PopBlock();
+					}
+					else {
+						Scan(node);
+					}
 				}
-				
+
 				if (member != null)
 					return new MemberResolveResult(null, member, false);
 				else
@@ -1236,7 +1255,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled) {
 				ResolveResult input = Resolve(asExpression.Expression);
 				var targetType = ResolveType(asExpression.Type);
-				return new ConversionResolveResult(targetType, input, Conversion.TryCast);
+				return new ConversionResolveResult(targetType, input, Conversion.TryCast, resolver.CheckForOverflow);
 			} else {
 				ScanChildren(asExpression);
 				return null;
@@ -1498,7 +1517,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					var addRR = memberLookup.Lookup(initializedObject, "Add", EmptyList<IType>.Instance, true);
 					var mgrr = addRR as MethodGroupResolveResult;
 					if (mgrr != null) {
-						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Compilation, addArguments, null, false, false, resolver.conversions);
+						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Compilation, addArguments, null, false, false, resolver.CheckForOverflow, resolver.conversions);
 						var invocationRR = or.CreateResolveResult(initializedObject);
 						StoreResult(aie, invocationRR);
 						ProcessConversionsInInvocation(null, aie.Elements, invocationRR);
@@ -1579,7 +1598,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<ResolveResult>.VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression)
 		{
 			if (resolverEnabled) {
-				return Resolve(typeReferenceExpression.Type);
+				return Resolve(typeReferenceExpression.Type).ShallowClone();
 			} else {
 				Scan(typeReferenceExpression.Type);
 				return null;
@@ -2405,6 +2424,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal abstract AstNode BodyExpression { get; }
 			
 			internal abstract void EnforceMerge(ResolveVisitor parentVisitor);
+			
+			public override ResolveResult ShallowClone()
+			{
+				if (IsUndecided)
+					throw new NotSupportedException();
+				return base.ShallowClone();
+			}
 		}
 		
 		void MergeUndecidedLambdas()
@@ -3246,7 +3272,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (var clause in queryExpression.Clauses) {
 					currentQueryResult = Resolve(clause);
 				}
-				return currentQueryResult;
+				return WrapResult(currentQueryResult);
 			} finally {
 				currentQueryResult = oldQueryResult;
 				cancellationToken = oldCancellationToken;
@@ -3415,7 +3441,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		ResolveResult WrapResult(ResolveResult result)
 		{
-			return new ConversionResolveResult(result.Type, result, Conversion.IdentityConversion);
+			return new ConversionResolveResult(result.Type, result, Conversion.IdentityConversion, resolver.CheckForOverflow);
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause)
@@ -3603,7 +3629,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ProcessConversion(queryWhereClause.Condition, condition, conversionToBool, boolType);
 			if (currentQueryResult != null) {
 				if (conversionToBool != Conversion.IdentityConversion && conversionToBool != Conversion.None) {
-					condition = new ConversionResolveResult(boolType, condition, conversionToBool);
+					condition = new ConversionResolveResult(boolType, condition, conversionToBool, resolver.CheckForOverflow);
 				}
 				
 				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Where", EmptyList<IType>.Instance);

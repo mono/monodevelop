@@ -655,8 +655,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			AddXmlDocumentation(p, indexerDeclaration);
 			
 			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
-			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_");
-			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p, "set_");
 			
 			if (!indexerDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
@@ -664,6 +662,8 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					p.EntityType, indexerDeclaration.PrivateImplementationType.ToTypeReference(), p.Name, 0, GetParameterTypes(p.Parameters)));
 			}
+			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_");
+			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p, "set_");
 			
 			currentTypeDefinition.Members.Add(p);
 			if (interningProvider != null) {
@@ -677,9 +677,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			if (accessor.IsNull)
 				return null;
 			var a = new DefaultUnresolvedMethod(currentTypeDefinition, prefix + p.Name);
+			a.EntityType = EntityType.Accessor;
+			a.AccessorOwner = p;
 			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? p.Accessibility;
 			a.IsAbstract = p.IsAbstract;
-			a.IsOverride = p.IsOverridable;
+			a.IsOverride = p.IsOverride;
 			a.IsSealed = p.IsSealed;
 			a.IsStatic = p.IsStatic;
 			a.IsSynthetic = p.IsSynthetic;
@@ -706,6 +708,15 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				} else {
 					ConvertAttributes(a.Attributes, section);
 				}
+			}
+			if (p.IsExplicitInterfaceImplementation) {
+				a.IsExplicitInterfaceImplementation = true;
+				Debug.Assert(p.ExplicitInterfaceImplementations.Count == 1);
+				a.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
+					EntityType.Accessor,
+					p.ExplicitInterfaceImplementations[0].DeclaringTypeReference,
+					a.Name, 0, GetParameterTypes(a.Parameters)
+				));
 			}
 			return a;
 		}
@@ -755,11 +766,13 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		DefaultUnresolvedMethod CreateDefaultEventAccessor(IUnresolvedEvent ev, string name, IUnresolvedParameter valueParameter)
 		{
 			var a = new DefaultUnresolvedMethod(currentTypeDefinition, name);
+			a.EntityType = EntityType.Accessor;
+			a.AccessorOwner = ev;
 			a.Region = ev.BodyRegion;
 			a.BodyRegion = ev.BodyRegion;
 			a.Accessibility = ev.Accessibility;
 			a.IsAbstract = ev.IsAbstract;
-			a.IsOverride = ev.IsOverridable;
+			a.IsOverride = ev.IsOverride;
 			a.IsSealed = ev.IsSealed;
 			a.IsStatic = ev.IsStatic;
 			a.IsSynthetic = ev.IsSynthetic;

@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// This is the only way to get an expression that isn't part of a statment.
 		/// (eg. when an error follows an expression).
 		/// 
-		/// This is used for code completion to 'get the expression before a token - like ., <, ('.
+		/// This is used for code completion to 'get the expression before a token - like ., &lt;, ('.
 		/// </summary>
 		public AstNode TopExpression {
 			get;
@@ -136,33 +136,25 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public static CompilationUnit Parse (string text, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var parser = new CSharpParser ();
-			if (settings != null)
-				parser.CompilerSettings = settings;
+			var parser = new CSharpParser (settings);
 			return parser.Parse (text, fileName);
 		}
 		
 		public static CompilationUnit Parse (TextReader reader, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var parser = new CSharpParser ();
-			if (settings != null)
-				parser.CompilerSettings = settings;
+			var parser = new CSharpParser (settings);
 			return parser.Parse (reader, fileName, 0);
 		}
 		
 		public static CompilationUnit Parse (Stream stream, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var parser = new CSharpParser ();
-			if (settings != null)
-				parser.CompilerSettings = settings;
+			var parser = new CSharpParser (settings);
 			return parser.Parse (stream, fileName, 0);
 		}
 		
 		public static CompilationUnit Parse (ITextSource textSource, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var parser = new CSharpParser ();
-			if (settings != null)
-				parser.CompilerSettings = settings;
+			var parser = new CSharpParser (settings);
 			return parser.Parse (textSource, fileName, 0);
 		}
 	}

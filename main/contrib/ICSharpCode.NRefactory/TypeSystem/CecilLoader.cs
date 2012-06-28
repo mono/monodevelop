@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			// Enable interning by default.
 			this.InterningProvider = new SimpleInterningProvider();
 		}
-		
+
 		#region Load From AssemblyDefinition
 		/// <summary>
 		/// Loads the assembly definition into a project content.
@@ -162,6 +162,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
+		/// Sets the current module.
+		/// This causes ReadTypeReference() to use <see cref="DefaultAssemblyReference.CurrentAssembly"/> for references
+		/// in that module.
+		/// </summary>
+		public void SetCurrentModule(ModuleDefinition module)
+		{
+			this.currentModule = module;
+		}
+		
+		/// <summary>
 		/// Loads a type from Cecil.
 		/// </summary>
 		/// <param name="typeDefinition">The Cecil TypeDefinition.</param>
@@ -179,20 +189,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region IUnresolvedAssembly implementation
 		[Serializable]
-		sealed class CecilUnresolvedAssembly : DefaultUnresolvedAssembly, IDocumentationProvider, IDocumentationProviderContainer
+		sealed class CecilUnresolvedAssembly : DefaultUnresolvedAssembly, IDocumentationProvider
 		{
-			[NonSerialized]
-			IDocumentationProvider documentationProvider;
-
-			public IDocumentationProvider DocumentationProvider {
-				get {
-					return documentationProvider;
-				}
-				set {
-					documentationProvider = value;
-				}
-			}
-
+			readonly IDocumentationProvider documentationProvider;
+			
 			public CecilUnresolvedAssembly(string assemblyName, IDocumentationProvider documentationProvider)
 				: base(assemblyName)
 			{
@@ -1657,10 +1657,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[CLSCompliant(false)]
 		public IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, EntityType methodType = EntityType.Method)
 		{
+			return ReadMethod(method, parentType, methodType, null);
+		}
+		
+		IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, EntityType methodType, IUnresolvedMember accessorOwner)
+		{
 			if (method == null)
 				return null;
 			DefaultUnresolvedMethod m = new DefaultUnresolvedMethod(parentType, method.Name);
 			m.EntityType = methodType;
+			m.AccessorOwner = accessorOwner;
 			if (method.HasGenericParameters) {
 				for (int i = 0; i < method.GenericParameters.Count; i++) {
 					if (method.GenericParameters[i].Position != i)
@@ -1689,7 +1695,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (method.IsStatic && HasExtensionAttribute(method)) {
 				m.IsExtensionMethod = true;
 			}
-			
+
+			int lastDot = method.Name.LastIndexOf('.');
+			if (lastDot >= 0 && method.HasOverrides) {
+				// To be consistent with the parser-initialized type system, shorten the method name:
+				m.Name = method.Name.Substring(lastDot + 1);
+				m.IsExplicitInterfaceImplementation = true;
+				foreach (var or in method.Overrides) {
+					m.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
+						accessorOwner != null ? EntityType.Accessor : EntityType.Method,
+						ReadTypeReference(or.DeclaringType),
+						or.Name, or.GenericParameters.Count, m.Parameters.Select(p => p.Type).ToList()));
+				}
+			}
+
 			FinishReadMember(m, method);
 			return m;
 		}
@@ -1874,6 +1893,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Property
+
 		[CLSCompliant(false)]
 		public IUnresolvedProperty ReadProperty(PropertyDefinition property, IUnresolvedTypeDefinition parentType, EntityType propertyType = EntityType.Property)
 		{
@@ -1886,8 +1906,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
 			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property);
 			
-			p.Getter = ReadMethod(property.GetMethod, parentType);
-			p.Setter = ReadMethod(property.SetMethod, parentType);
+			p.Getter = ReadMethod(property.GetMethod, parentType, EntityType.Accessor, p);
+			p.Setter = ReadMethod(property.SetMethod, parentType, EntityType.Accessor, p);
 			
 			if (property.HasParameters) {
 				foreach (ParameterDefinition par in property.Parameters) {
@@ -1895,7 +1915,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			AddAttributes(property, p);
-			
+
+			var accessor = p.Getter ?? p.Setter;
+			if (accessor != null && accessor.IsExplicitInterfaceImplementation) {
+				p.Name = property.Name.Substring(property.Name.LastIndexOf('.') + 1);
+				p.IsExplicitInterfaceImplementation = true;
+				foreach (var mr in accessor.ExplicitInterfaceImplementations) {
+					p.ExplicitInterfaceImplementations.Add(new AccessorOwnerMemberReference(mr));
+				}
+			}
+
 			FinishReadMember(p, property);
 			return p;
 		}
@@ -1914,12 +1943,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(ev.AddMethod, e);
 			e.ReturnType = ReadTypeReference(ev.EventType, typeAttributes: ev);
 			
-			e.AddAccessor = ReadMethod(ev.AddMethod, parentType);
-			e.RemoveAccessor = ReadMethod(ev.RemoveMethod, parentType);
-			e.InvokeAccessor = ReadMethod(ev.InvokeMethod, parentType);
+			e.AddAccessor    = ReadMethod(ev.AddMethod,    parentType, EntityType.Accessor, e);
+			e.RemoveAccessor = ReadMethod(ev.RemoveMethod, parentType, EntityType.Accessor, e);
+			e.InvokeAccessor = ReadMethod(ev.InvokeMethod, parentType, EntityType.Accessor, e);
 			
 			AddAttributes(ev, e);
 			
+			var accessor = e.AddAccessor ?? e.RemoveAccessor ?? e.InvokeAccessor;
+			if (accessor != null && accessor.IsExplicitInterfaceImplementation) {
+				e.Name = ev.Name.Substring(ev.Name.LastIndexOf('.') + 1);
+				e.IsExplicitInterfaceImplementation = true;
+				foreach (var mr in accessor.ExplicitInterfaceImplementations) {
+					e.ExplicitInterfaceImplementations.Add(new AccessorOwnerMemberReference(mr));
+				}
+			}
+
 			FinishReadMember(e, ev);
 			
 			return e;

@@ -370,6 +370,7 @@
     <Compile Include="Refactoring\CodeActions\ImplementInterfaceAction.cs" />
     <Compile Include="Refactoring\CodeActions\ImplementInterfaceExplicitAction.cs" />
     <Compile Include="Completion\ICompletionContextProvider.cs" />
+    <Compile Include="Parser\CompilerSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

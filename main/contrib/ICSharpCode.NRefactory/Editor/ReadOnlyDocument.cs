@@ -257,6 +257,21 @@ namespace ICSharpCode.NRefactory.Editor
 			throw new NotSupportedException();
 		}
 		
+		void IDocument.Insert(int offset, ITextSource text)
+		{
+			throw new NotImplementedException();
+		}
+		
+		void IDocument.Insert(int offset, ITextSource text, AnchorMovementType defaultAnchorMovementType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		void IDocument.Replace(int offset, int length, ITextSource newText)
+		{
+			throw new NotImplementedException();
+		}
+		
 		void IDocument.StartUndoableAction()
 		{
 		}

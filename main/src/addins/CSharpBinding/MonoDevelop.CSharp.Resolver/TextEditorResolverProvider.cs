@@ -177,7 +177,7 @@ namespace MonoDevelop.CSharp.Resolver
 		}
 		static CSharpAmbience ambience = new CSharpAmbience ();
 
-		static TypeSystemAstBuilder CreateBuilder (MonoDevelop.Ide.Gui.Document doc, int offset)
+		static TypeSystemAstBuilder CreateBuilder (MonoDevelop.Ide.Gui.Document doc, int offset, ICompilation compilation)
 		{
 			var ctx = doc.ParsedDocument.ParsedFile.GetTypeResolveContext (doc.Compilation, doc.Editor.Caret.Location) as CSharpTypeResolveContext;
 			var state = new CSharpResolver (ctx);
@@ -197,9 +197,9 @@ namespace MonoDevelop.CSharp.Resolver
 			return builder;
 		}
 
-		internal static MonoDevelop.CSharp.Completion.MemberCompletionData.MyAmbience CreateAmbience (Document doc, int offset)
+		internal static MonoDevelop.CSharp.Completion.MemberCompletionData.MyAmbience CreateAmbience (Document doc, int offset, ICompilation compilation)
 		{
-			return new MonoDevelop.CSharp.Completion.MemberCompletionData.MyAmbience (CreateBuilder (doc, offset));
+			return new MonoDevelop.CSharp.Completion.MemberCompletionData.MyAmbience (CreateBuilder (doc, offset, compilation));
 		}
 
 		public string CreateTooltip (MonoDevelop.Ide.Gui.Document doc, int offset, ResolveResult result, string errorInformations, Gdk.ModifierType modifierState)
@@ -232,7 +232,7 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 					var method = allMethods.FirstOrDefault ();
 					if (method != null) {
-						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset).ConvertEntity (method)));
+						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset, method.Compilation).ConvertEntity (method)));
 						if (allMethods.Count > 1) {
 							int overloadCount = allMethods.Count - 1;
 							s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
@@ -246,14 +246,14 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append ("</i></small>\n");
 					var field = member as IField;
 					if (field != null && field.IsConst) {
-						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset).ConvertType (field.Type)));
+						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset, field.Compilation).ConvertType (field.Type)));
 						s.Append (" ");
 						s.Append (field.Name);
 						s.Append (" = ");
 						s.Append (GetConst (field.ConstantValue));
 						s.Append (";");
 					} else {
-						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset).ConvertEntity (member)));
+						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset, member.Compilation).ConvertEntity (member)));
 					}
 					documentation = AmbienceService.GetDocumentationSummary (member);
 				} else if (result is NamespaceResolveResult) {

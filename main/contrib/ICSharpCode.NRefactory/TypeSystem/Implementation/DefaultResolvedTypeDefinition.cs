@@ -830,6 +830,38 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return GetMembersHelper.GetMembers(this, filter, options);
 			}
 		}
+		
+		public virtual IEnumerable<IMethod> GetAccessors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
+				return GetFilteredAccessors(filter);
+			} else {
+				return GetMembersHelper.GetAccessors(this, filter, options);
+			}
+		}
+		
+		IEnumerable<IMethod> GetFilteredAccessors(Predicate<IUnresolvedMethod> filter)
+		{
+			var members = GetMemberList();
+			for (int i = 0; i < members.unresolvedMembers.Length; i++) {
+				IUnresolvedMember unresolved = members.unresolvedMembers[i];
+				var unresolvedProperty = unresolved as IUnresolvedProperty;
+				var unresolvedEvent = unresolved as IUnresolvedEvent;
+				if (unresolvedProperty != null) {
+					if (unresolvedProperty.CanGet && (filter == null || filter(unresolvedProperty.Getter)))
+						yield return ((IProperty)members[i]).Getter;
+					if (unresolvedProperty.CanSet && (filter == null || filter(unresolvedProperty.Setter)))
+						yield return ((IProperty)members[i]).Setter;
+				} else if (unresolvedEvent != null) {
+					if (unresolvedEvent.CanAdd && (filter == null || filter(unresolvedEvent.AddAccessor)))
+						yield return ((IEvent)members[i]).AddAccessor;
+					if (unresolvedEvent.CanRemove && (filter == null || filter(unresolvedEvent.RemoveAccessor)))
+						yield return ((IEvent)members[i]).RemoveAccessor;
+					if (unresolvedEvent.CanInvoke && (filter == null || filter(unresolvedEvent.InvokeAccessor)))
+						yield return ((IEvent)members[i]).InvokeAccessor;
+				}
+			}
+		}
 		#endregion
 		
 		public bool Equals(IType other)

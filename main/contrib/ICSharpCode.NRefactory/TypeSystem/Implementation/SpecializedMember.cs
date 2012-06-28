@@ -101,10 +101,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (accessorDefinition == null)
 				return null;
 			var result = LazyInit.VolatileRead(ref cachingField);
-			if (result != null)
+			if (result != null) {
 				return result;
-			else
-				return LazyInit.GetOrSet(ref cachingField, new SpecializedMethod(accessorDefinition, substitution));
+			} else {
+				var sm = new SpecializedMethod(accessorDefinition, substitution);
+				//sm.AccessorOwner = this;
+				return LazyInit.GetOrSet(ref cachingField, sm);
+			}
 		}
 		
 		/// <summary>

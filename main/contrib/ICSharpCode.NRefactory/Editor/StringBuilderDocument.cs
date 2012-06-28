@@ -105,14 +105,32 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 		
 		/// <inheritdoc/>
+		public void Insert(int offset, ITextSource text)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			Replace(offset, 0, text.Text);
+		}
+		
+		/// <inheritdoc/>
 		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
 		{
 			if (offset < 0 || offset > this.TextLength)
 				throw new ArgumentOutOfRangeException("offset");
+			if (text == null)
+				throw new ArgumentNullException("text");
 			if (defaultAnchorMovementType == AnchorMovementType.BeforeInsertion)
 				PerformChange(new InsertionWithMovementBefore(offset, text));
 			else
 				Replace(offset, 0, text);
+		}
+		
+		/// <inheritdoc/>
+		public void Insert(int offset, ITextSource text, AnchorMovementType defaultAnchorMovementType)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			Insert(offset, text.Text, defaultAnchorMovementType);
 		}
 		
 		[Serializable]
@@ -149,6 +167,14 @@ namespace ICSharpCode.NRefactory.Editor
 			PerformChange(new TextChangeEventArgs(offset, b.ToString(offset, length), newText));
 		}
 		
+		/// <inheritdoc/>
+		public void Replace(int offset, int length, ITextSource newText)
+		{
+			if (newText == null)
+				throw new ArgumentNullException("newText");
+			Replace(offset, length, newText.Text);
+		}
+		
 		bool isInChange;
 		
 		void PerformChange(TextChangeEventArgs change)
@@ -166,7 +192,7 @@ namespace ICSharpCode.NRefactory.Editor
 					documentSnapshot = null;
 					cachedText = null;
 					b.Remove(change.Offset, change.RemovalLength);
-					b.Insert(change.Offset, change.InsertedText);
+					b.Insert(change.Offset, change.InsertedText.Text);
 					versionProvider.AppendChange(change);
 					
 					// Update anchors and fire Deleted events

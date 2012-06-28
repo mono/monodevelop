@@ -1,4 +1,4 @@
-// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -84,8 +84,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public bool Equals(TypePair other)
 			{
-				if (this.FromType == null || this.ToType == null || other.FromType == null || other.ToType == null)
-					return false;
 				return this.FromType.Equals(other.FromType) && this.ToType.Equals(other.ToType);
 			}
 			
@@ -157,7 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return Conversion.NullLiteralConversion;
 			if (ImplicitReferenceConversion(fromType, toType, 0))
 				return Conversion.ImplicitReferenceConversion;
-			if (BoxingConversion(fromType, toType))
+			if (IsBoxingConversion(fromType, toType))
 				return Conversion.BoxingConversion;
 			if (fromType.Kind == TypeKind.Dynamic)
 				return Conversion.ImplicitDynamicConversion;
@@ -186,7 +184,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			if (ImplicitReferenceConversion(fromType, toType, 0))
 				return true;
-			if (BoxingConversion(fromType, toType) && !NullableType.IsNullable(fromType))
+			if (IsBoxingConversion(fromType, toType) && !NullableType.IsNullable(fromType))
 				return true;
 			if (ImplicitTypeParameterConversion(fromType, toType))
 				return true;
@@ -238,6 +236,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Conversion c = ExplicitNullableConversion(fromType, toType);
 			if (c.IsValid)
 				return c;
+			c = UserDefinedExplicitConversion(fromType, toType);
+			if (c.IsValid)
+				return c;
 			if (ExplicitReferenceConversion(fromType, toType))
 				return Conversion.ExplicitReferenceConversion;
 			if (UnboxingConversion(fromType, toType))
@@ -249,7 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			if (ExplicitPointerConversion(fromType, toType))
 				return Conversion.ExplicitPointerConversion;
-			return UserDefinedExplicitConversion(fromType, toType);
+			return Conversion.None;
 		}
 		#endregion
 		
@@ -400,6 +401,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Implicit Reference Conversion
+		public bool IsImplicitReferenceConversion(IType fromType, IType toType)
+		{
+			return ImplicitReferenceConversion(fromType, toType, 0);
+		}
+		
 		bool ImplicitReferenceConversion(IType fromType, IType toType, int subtypeCheckNestingDepth)
 		{
 			// C# 4.0 spec: §6.1.6
@@ -512,7 +518,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Boxing Conversions
-		bool BoxingConversion(IType fromType, IType toType)
+		public bool IsBoxingConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.7
 			fromType = NullableType.GetUnderlyingType(fromType);

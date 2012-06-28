@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				isStatic |= state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 			}
 
-//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+	//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
 //			if (service != null && !service.IsValidName(propertyName, AffectedEntity.Property, Modifiers.Private, isStatic)) { 
 //				yield break;
 //			}

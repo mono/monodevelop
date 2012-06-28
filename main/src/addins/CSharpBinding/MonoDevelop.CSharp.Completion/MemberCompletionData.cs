@@ -263,26 +263,25 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = false;
 			displayText = entity.Name;
 		}
-		TypeSystemAstBuilder builder;
-		TypeSystemAstBuilder Builder {
-			get {
-				var ctx = editorCompletion.CSharpParsedFile.GetTypeResolveContext (editorCompletion.Document.Compilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
-				var state = new CSharpResolver (ctx);
-				builder = new TypeSystemAstBuilder (state);
-				builder.AddAnnotations = true;
-				var dt = state.CurrentTypeDefinition;
-				var declaring = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.DeclaringTypeDefinition : null;
-				if (declaring != null) {
-					while (dt != null) {
-						if (dt.Equals (declaring)) {
-							builder.AlwaysUseShortTypeNames = true;
-							break;
-						}
-						dt = dt.DeclaringTypeDefinition;
+
+		TypeSystemAstBuilder GetBuilder (ICompilation compilation)
+		{
+			var ctx = editorCompletion.CSharpParsedFile.GetTypeResolveContext (compilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var state = new CSharpResolver (ctx);
+			var builder = new TypeSystemAstBuilder (state);
+			builder.AddAnnotations = true;
+			var dt = state.CurrentTypeDefinition;
+			var declaring = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.DeclaringTypeDefinition : null;
+			if (declaring != null) {
+				while (dt != null) {
+					if (dt.Equals (declaring)) {
+						builder.AlwaysUseShortTypeNames = true;
+						break;
 					}
+					dt = dt.DeclaringTypeDefinition;
 				}
-				return builder;
 			}
+			return builder;
 		}
 
 		internal class MyAmbience : ICSharpCode.NRefactory.CSharp.CSharpAmbience
@@ -311,7 +310,7 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = true;
 			if (Entity is IMethod && ((IMethod)Entity).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			var amb = new MyAmbience (Builder);
+			var amb = new MyAmbience (GetBuilder (Entity.Compilation));
 			sb.Append (GLib.Markup.EscapeText (amb.ConvertEntity (Entity)));
 
 			var m = (IMember)Entity;

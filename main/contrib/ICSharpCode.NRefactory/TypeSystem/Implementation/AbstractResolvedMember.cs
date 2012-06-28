@@ -80,9 +80,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return EmptyList<IMember>.Instance;
 			} else {
 				// TODO: implement interface member mappings correctly
-				return InheritanceHelper.GetBaseMembers(this, true)
+				var result = InheritanceHelper.GetBaseMembers(this, true)
 					.Where(m => m.DeclaringTypeDefinition != null && m.DeclaringTypeDefinition.Kind == TypeKind.Interface)
 					.ToArray();
+
+				result = result.Where(item => !DeclaringTypeDefinition.Members.Any(m => m.IsExplicitInterfaceImplementation && m.ImplementedInterfaceMembers.Contains(item))).ToArray();
+
+				return result;
 			}
 		}
 		

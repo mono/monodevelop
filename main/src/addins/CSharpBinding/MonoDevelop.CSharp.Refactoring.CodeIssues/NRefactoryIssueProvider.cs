@@ -86,7 +86,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					actionNum++;
 				}
 				var issue = new CodeIssue (
-					GettextCatalog.GetString (action.Desription ?? ""),
+					GettextCatalog.GetString (action.Description ?? ""),
 					action.Start,
 					action.End,
 					actions

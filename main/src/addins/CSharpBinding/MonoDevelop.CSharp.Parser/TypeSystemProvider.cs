@@ -321,14 +321,14 @@ namespace MonoDevelop.CSharp.Parser
 				break;
 			}
 		}
-		
-		public static CompilerSettings GetCompilerArguments (MonoDevelop.Projects.Project project)
+
+		public static ICSharpCode.NRefactory.CSharp.CompilerSettings GetCompilerArguments (MonoDevelop.Projects.Project project)
 		{
-			var compilerArguments = new CompilerSettings ();
-			compilerArguments.TabSize = 1;
+			var compilerArguments = new ICSharpCode.NRefactory.CSharp.CompilerSettings ();
+	///		compilerArguments.TabSize = 1;
 
 			if (project == null || MonoDevelop.Ide.IdeApp.Workspace == null) {
-				compilerArguments.Unsafe = true;
+				compilerArguments.AllowUnsafeBlocks = true;
 				return compilerArguments;
 			}
 
@@ -340,14 +340,14 @@ namespace MonoDevelop.CSharp.Parser
 				
 			if (!string.IsNullOrEmpty (par.DefineSymbols)) {
 				foreach (var sym in par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s)))
-					compilerArguments.AddConditionalSymbol (sym);
+					compilerArguments.ConditionalSymbols.Add (sym);
 			}
 			
-			compilerArguments.Unsafe = par.UnsafeCode;
-			compilerArguments.Version = ConvertLanguageVersion (par.LangVersion);
-			compilerArguments.Checked = par.GenerateOverflowChecks;
+			compilerArguments.AllowUnsafeBlocks = par.UnsafeCode;
+			compilerArguments.LanguageVersion = ConvertLanguageVersion (par.LangVersion);
+			compilerArguments.CheckForOverflow = par.GenerateOverflowChecks;
 			compilerArguments.WarningLevel = par.WarningLevel;
-			compilerArguments.EnhancedWarnings = par.TreatWarningsAsErrors;
+			compilerArguments.TreatWarningsAsErrors = par.TreatWarningsAsErrors;
 			if (!string.IsNullOrEmpty (par.NoWarnings)) {
 				foreach (var warning in par.NoWarnings.Split (';', ',', ' ', '\t')) {
 					int w;
@@ -356,24 +356,24 @@ namespace MonoDevelop.CSharp.Parser
 					} catch (Exception) {
 						continue;
 					}
-					compilerArguments.SetIgnoreWarning (w);
+					compilerArguments.DisabledWarnings.Add (w);
 				}
 			}
 			
 			return compilerArguments;
 		}
 		
-		static Mono.CSharp.LanguageVersion ConvertLanguageVersion (LangVersion ver)
+		static Version ConvertLanguageVersion (LangVersion ver)
 		{
 			switch (ver) {
 			case LangVersion.Default:
-				return Mono.CSharp.LanguageVersion.Default;
+				return new Version (4, 0, 0, 0);
 			case LangVersion.ISO_1:
-				return Mono.CSharp.LanguageVersion.ISO_1;
+				return new Version (1, 0, 0, 0);
 			case LangVersion.ISO_2:
-				return Mono.CSharp.LanguageVersion.ISO_2;
+				return new Version (2, 0, 0, 0);
 			}
-			return Mono.CSharp.LanguageVersion.Default;
+			return new Version (4, 0, 0, 0);;
 		}
 	}
 	

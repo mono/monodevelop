@@ -17,35 +17,35 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.Semantics
+namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
-	/// Represents an ambiguous type resolve result.
+	/// Given a reference to an accessor, returns the accessor's owner.
 	/// </summary>
-	public class AmbiguousTypeResolveResult : TypeResolveResult
+	[Serializable]
+	sealed class AccessorOwnerMemberReference : IMemberReference
 	{
-		public AmbiguousTypeResolveResult(IType type) : base(type)
+		readonly IMemberReference accessorReference;
+		
+		public AccessorOwnerMemberReference(IMemberReference accessorReference)
 		{
+			if (accessorReference == null)
+				throw new ArgumentNullException("accessorReference");
+			this.accessorReference = accessorReference;
 		}
 		
-		public override bool IsError {
-			get { return true; }
-		}
-	}
-	
-	/// <summary>
-	/// Represents an ambiguous field/property/event access.
-	/// </summary>
-	public class AmbiguousMemberResolveResult : MemberResolveResult
-	{
-		public AmbiguousMemberResolveResult(ResolveResult targetResult, IMember member) : base(targetResult, member)
-		{
+		public ITypeReference DeclaringTypeReference {
+			get { return accessorReference.DeclaringTypeReference; }
 		}
 		
-		public override bool IsError {
-			get { return true; }
+		public IMember Resolve(ITypeResolveContext context)
+		{
+			IMethod method = accessorReference.Resolve(context) as IMethod;
+			if (method != null)
+				return method.AccessorOwner;
+			else
+				return null;
 		}
 	}
 }

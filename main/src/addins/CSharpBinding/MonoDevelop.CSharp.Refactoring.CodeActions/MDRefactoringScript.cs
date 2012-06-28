@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			DisposeOnClose (true);
 			foreach (var ver in this.document.Editor.Version.GetChangesTo (this.startVersion)) {
-				document.Editor.Document.Replace (ver.Offset, ver.RemovalLength, ver.InsertedText);
+				document.Editor.Document.Replace (ver.Offset, ver.RemovalLength, ver.InsertedText.Text);
 			}
 		}
 

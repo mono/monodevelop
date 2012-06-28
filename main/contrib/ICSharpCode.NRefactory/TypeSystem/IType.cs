@@ -194,7 +194,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// <para>
-		/// The result does not include constructors.
+		/// The result does not include constructors or accessors.
 		/// </para>
 		/// <para>
 		/// For methods on parameterized types, type substitution will be performed on the method signature,
@@ -221,7 +221,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// The filter is tested on the original method definitions (before specialization).</param>
 		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
-		/// <para>The result does not include constructors.</para>
+		/// <para>The result does not include constructors or accessors.</para>
 		/// <para>
 		/// Type substitution will be performed on the method signature, creating a <see cref="Implementation.SpecializedMethod"/>
 		/// with the specified type arguments.
@@ -288,6 +288,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </para>
 		/// </remarks>
 		IEnumerable<IMember> GetMembers(Predicate<IUnresolvedMember> filter = null, GetMemberOptions options = GetMemberOptions.None);
+		
+		/// <summary>
+		/// Gets all accessors belonging to properties or events on this type.
+		/// </summary>
+		/// <param name="filter">The filter used to select which members to return.
+		/// The filter is tested on the original member definitions (before specialization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
+		/// <remarks>
+		/// Accessors are not returned by GetMembers() or GetMethods().
+		/// </remarks>
+		IEnumerable<IMethod> GetAccessors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.None);
 	}
 	
 	[Flags]

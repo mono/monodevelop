@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="context">
 		/// Context for looking up the member. The context must specify the current assembly.
-		/// A <see cref="Implementation.SimpleTypeResolveContext"/> that specifies the current assembly is sufficient.
+		/// A <see cref="SimpleTypeResolveContext"/> that specifies the current assembly is sufficient.
 		/// </param>
 		/// <returns>
 		/// Returns the resolved member, or <c>null</c> if the member could not be found.
