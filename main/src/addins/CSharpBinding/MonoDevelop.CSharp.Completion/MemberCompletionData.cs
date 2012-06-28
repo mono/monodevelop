@@ -41,6 +41,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -260,7 +263,44 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = false;
 			displayText = entity.Name;
 		}
-		
+		TypeSystemAstBuilder builder;
+		TypeSystemAstBuilder Builder {
+			get {
+				var ctx = editorCompletion.CSharpParsedFile.GetTypeResolveContext (editorCompletion.Document.Compilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+				var state = new CSharpResolver (ctx);
+				builder = new TypeSystemAstBuilder (state);
+				builder.AddAnnotations = true;
+				var dt = state.CurrentTypeDefinition;
+				var declaring = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.DeclaringTypeDefinition : null;
+				if (declaring != null) {
+					while (dt != null) {
+						if (dt.Equals (declaring)) {
+							builder.AlwaysUseShortTypeNames = true;
+							break;
+						}
+						dt = dt.DeclaringTypeDefinition;
+					}
+				}
+				return builder;
+			}
+		}
+
+		internal class MyAmbience : ICSharpCode.NRefactory.CSharp.CSharpAmbience
+		{
+			TypeSystemAstBuilder builder;
+
+			public MyAmbience (TypeSystemAstBuilder builder)
+			{
+				this.builder = builder;
+				ConversionFlags = ICSharpCode.NRefactory.TypeSystem.ConversionFlags.StandardConversionFlags;
+			}
+
+			protected override TypeSystemAstBuilder CreateAstBuilder ()
+			{
+				return builder;
+			}
+		}
+
 		void CheckDescription ()
 		{
 			if (descriptionCreated)
@@ -271,8 +311,8 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = true;
 			if (Entity is IMethod && ((IMethod)Entity).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			sb.Append (ambience.GetString (Entity, 
-				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeReturnType | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
+			var amb = new MyAmbience (Builder);
+			sb.Append (GLib.Markup.EscapeText (amb.ConvertEntity (Entity)));
 
 			var m = (IMember)Entity;
 			if (m.IsObsolete ()) {

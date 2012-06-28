@@ -45,38 +45,25 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class DelegateDataProvider : IParameterDataProvider
+	class DelegateDataProvider : AbstractParameterDataProvider
 	{
-		//CSharpCompletionTextEditorExtension ext;
-		
-		int startOffset;
 		IType delegateType;
 		IMethod delegateMethod;
 		CSharpAmbience ambience = new CSharpAmbience ();
 
-		public int StartOffset {
-			get {
-				return startOffset;
-			}
-		}
-		
-		public DelegateDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType delegateType)
+		public DelegateDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType delegateType) : base (ext, startOffset)
 		{
-			this.startOffset = startOffset;
-//			this.ext = ext;
 			this.delegateType = delegateType;
 			this.delegateMethod = delegateType.GetDelegateInvokeMethod ();
 		}
 		
 		#region IParameterDataProvider implementation
-		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
+		public override string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
-			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
-			
 			string name = delegateType.Name;
 			var parameters = new StringBuilder ();
 			int curLen = 0;
-			string prefix = !delegateMethod.IsConstructor ? ambience.GetString (delegateMethod.ReturnType, flags) + " " : "";
+			string prefix = !delegateMethod.IsConstructor ? GetShortType (delegateMethod.ReturnType) + " " : "";
 
 			foreach (string parameter in parameterMarkup) {
 				if (parameters.Length > 0)
@@ -103,7 +90,7 @@ namespace MonoDevelop.CSharp.Completion
 			return sb.ToString ();
 		}
 		
-		public string GetDescription (int overload, int currentParameter)
+		public override string GetDescription (int overload, int currentParameter)
 		{
 //			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
 //			
@@ -157,22 +144,22 @@ namespace MonoDevelop.CSharp.Completion
 			return sb.ToString ();
 		}
 		
-		public string GetParameterDescription (int overload, int paramIndex)
+		public override string GetParameterDescription (int overload, int paramIndex)
 		{
 			if (paramIndex < 0 || paramIndex >= delegateMethod.Parameters.Count)
 				return "";
-			
-			return ambience.GetString (delegateMethod, delegateMethod.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+
+			return GetParameterString (delegateMethod.Parameters [paramIndex]);
 		}
 		
-		public int GetParameterCount (int overload)
+		public override int GetParameterCount (int overload)
 		{
 			if (overload >= Count)
 				return -1;
 			return delegateMethod.Parameters != null ? delegateMethod.Parameters.Count : 0;
 		}
 		
-		public bool AllowParameterList (int overload)
+		public override bool AllowParameterList (int overload)
 		{
 			if (overload >= Count)
 				return false;
@@ -180,7 +167,7 @@ namespace MonoDevelop.CSharp.Completion
 			return lastParam != null && lastParam.IsParams;
 		}
 		
-		public int Count {
+		public override int Count {
 			get {
 				return 1;
 			}

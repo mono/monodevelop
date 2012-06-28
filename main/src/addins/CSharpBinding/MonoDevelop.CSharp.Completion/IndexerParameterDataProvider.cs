@@ -44,35 +44,23 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class IndexerParameterDataProvider : IParameterDataProvider
+	class IndexerParameterDataProvider : AbstractParameterDataProvider
 	{
 		AstNode resolvedExpression;
-		static CSharpAmbience ambience = new CSharpAmbience ();
-		//CSharpCompletionTextEditorExtension ext;
 		List<IProperty> indexers;
-		int startOffset;
 
-		public int StartOffset {
-			get {
-				return startOffset;
-			}
-		}
-		
-		public IndexerParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type, AstNode resolvedExpression)
+		public IndexerParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type, AstNode resolvedExpression) : base (ext, startOffset)
 		{
-			this.startOffset = startOffset;
-//			this.ext = ext;
-		
 			this.resolvedExpression = resolvedExpression;
 			indexers = new List<IProperty> (type.GetProperties (p => p.IsIndexer));
 		}
 
 		#region IParameterDataProvider implementation
-		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
+		public override string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			StringBuilder result = new StringBuilder ();
 //			int curLen = 0;
-			result.Append (ambience.GetString (indexers [overload].ReturnType, OutputFlags.ClassBrowserEntries));
+			result.Append (GetShortType (indexers [overload].ReturnType));
 			result.Append (' ');
 			result.Append ("<b>");
 			result.Append (resolvedExpression);
@@ -89,7 +77,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result.ToString ();
 		}
 		
-		public string GetDescription (int overload, int currentParameter)
+		public override string GetDescription (int overload, int currentParameter)
 		{
 			StringBuilder result = new StringBuilder ();
 			var curParameter = currentParameter >= 0 && currentParameter < indexers [overload].Parameters.Count ? indexers [overload].Parameters [currentParameter] : null;
@@ -113,17 +101,17 @@ namespace MonoDevelop.CSharp.Completion
 			return result.ToString ();
 		}
 		
-		public string GetParameterDescription (int overload, int paramIndex)
+		public override string GetParameterDescription (int overload, int paramIndex)
 		{
 			var indexer = indexers[overload];
 			
 			if (paramIndex < 0 || paramIndex >= indexer.Parameters.Count)
 				return "";
-			
-			return ambience.GetString (indexer, indexer.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.IncludeParameterName | OutputFlags.HighlightName);
+
+			return GetParameterString (indexer.Parameters [paramIndex]);
 		}
 
-		public int GetParameterCount (int overload)
+		public override int GetParameterCount (int overload)
 		{
 			if (overload >= Count)
 				return -1;
@@ -131,7 +119,7 @@ namespace MonoDevelop.CSharp.Completion
 			return indexer != null && indexer.Parameters != null ? indexer.Parameters.Count : 0;
 		}
 
-		public bool AllowParameterList (int overload)
+		public override bool AllowParameterList (int overload)
 		{
 			if (overload >= Count)
 				return false;
@@ -139,7 +127,7 @@ namespace MonoDevelop.CSharp.Completion
 			return lastParam != null && lastParam.IsParams;
 		}
 		
-		public int Count {
+		public override int Count {
 			get {
 				return indexers != null ? indexers.Count : 0;
 			}
