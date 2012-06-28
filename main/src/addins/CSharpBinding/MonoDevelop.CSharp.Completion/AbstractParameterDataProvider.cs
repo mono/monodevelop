@@ -70,7 +70,12 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 			}
-			return GLib.Markup.EscapeText (builder.ConvertType(type).GetText (ext.FormattingPolicy.CreateOptions ()));
+			try {
+				return GLib.Markup.EscapeText (builder.ConvertType(type).GetText (ext.FormattingPolicy.CreateOptions ()));
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while getting short type.", e);
+				return "";
+			}
 		}
 
 		protected string GetParameterString (IParameter parameter)

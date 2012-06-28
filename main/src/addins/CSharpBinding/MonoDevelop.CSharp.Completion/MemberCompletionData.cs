@@ -310,8 +310,12 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = true;
 			if (Entity is IMethod && ((IMethod)Entity).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			var amb = new MyAmbience (GetBuilder (Entity.Compilation));
-			sb.Append (GLib.Markup.EscapeText (amb.ConvertEntity (Entity)));
+			try {
+				var amb = new MyAmbience (GetBuilder (Entity.Compilation));
+				sb.Append (GLib.Markup.EscapeText (amb.ConvertEntity (Entity)));
+			} catch (Exception e) {
+				sb.Append (e.ToString ());
+			}
 
 			var m = (IMember)Entity;
 			if (m.IsObsolete ()) {
