@@ -98,7 +98,8 @@ namespace MonoDevelop.NUnit.External
 			AppDomain domain = Services.DomainManager.CreateDomain (package);
 			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
 			runner = (NUnitTestRunner)domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.NUnit.External.NUnitTestRunner");
-			runner.Initialize (typeof(NF.Assert).Assembly.Location, typeof (NC.TestSuiteBuilder).Assembly.Location, typeof(NC.Test).Assembly.Location);
+			runner.PreloadAssemblies (typeof(NF.Assert).Assembly.Location, typeof (NC.TestSuiteBuilder).Assembly.Location, typeof(NC.Test).Assembly.Location);
+			runner.Initialize ();
 			return runner;
 		}
 	}
