@@ -152,15 +152,6 @@
       <Properties>
         <Deployment.LinuxDeployData generatePcFile="false" />
         <GtkDesignInfo gettextClass="Mono.Addins.AddinManager.CurrentLocalizer" />
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="JavaBinding.make" SyncReferences="true" RelativeConfigureInPath="../../">
-          <BuildFilesVar Sync="true" Name="FILES" />
-          <DeployFilesVar />
-          <ResourcesVar Sync="true" Name="RESOURCES" />
-          <OthersVar />
-          <GacRefVar Sync="true" Name="REFERENCES" />
-          <AsmRefVar Sync="true" Name="REFERENCES" />
-          <ProjectRefVar Sync="true" Name="REFERENCES" />
-        </MonoDevelop.Autotools.MakefileInfo>
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
