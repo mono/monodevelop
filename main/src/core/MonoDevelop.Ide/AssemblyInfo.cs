@@ -10,3 +10,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright ("LGPL")]
 
 [assembly: InternalsVisibleTo("MacPlatform")]
+[assembly: InternalsVisibleTo("MonoDevelop.Debugger")]
