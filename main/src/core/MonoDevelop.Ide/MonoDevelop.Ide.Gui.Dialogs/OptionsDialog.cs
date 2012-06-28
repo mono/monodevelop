@@ -32,12 +32,22 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	
 	public partial class OptionsDialog : Gtk.Dialog
 	{
+		Gtk.HBox mainHBox;
+		Gtk.ScrolledWindow GtkScrolledWindow;
+		Gtk.TreeView tree;
+		Gtk.Image image;
+		Gtk.Label labelTitle;
+		Gtk.HBox pageFrame;
+		Gtk.Button buttonCancel;
+		Gtk.Button buttonOk;
+
 		protected TreeStore store;
 		Dictionary<OptionsDialogSection, SectionPage> pages = new Dictionary<OptionsDialogSection, SectionPage> ();
 		Dictionary<OptionsPanelNode, PanelInstance> panels = new Dictionary<OptionsPanelNode,PanelInstance> ();
@@ -76,7 +86,65 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
 		{
-			this.Build();
+			buttonCancel = new Gtk.Button (Gtk.Stock.Cancel);
+			AddActionWidget (this.buttonCancel, ResponseType.Cancel);
+
+			buttonOk = new Gtk.Button (Gtk.Stock.Ok);
+			AddActionWidget (this.buttonOk, ResponseType.Ok);
+
+			buttonOk.Clicked += OnButtonOkClicked;
+
+			mainHBox = new HBox ();
+			tree = new TreeView ();
+			var sw = new ScrolledWindow ();
+			sw.Add (tree);
+			sw.HscrollbarPolicy = PolicyType.Never;
+			sw.VscrollbarPolicy = PolicyType.Automatic;
+			sw.ShadowType = ShadowType.None;
+
+			var fboxTree = new HeaderBox ();
+			fboxTree.SetMargins (0, 1, 0, 1);
+			fboxTree.SetPadding (6, 6, 6, 6);
+			fboxTree.BackgroundColor = new Gdk.Color (255, 255, 255);
+			fboxTree.Add (sw);
+			mainHBox.PackStart (fboxTree, false, false, 0);
+
+			Realized += delegate {
+				fboxTree.BackgroundColor = tree.Style.Base (Gtk.StateType.Normal);
+			};
+
+			var vbox = new VBox ();
+			mainHBox.PackStart (vbox, true, true, 0);
+			var headerBox = new HBox (false, 6);
+			image = new Image ();
+		//	headerBox.PackStart (image, false, false, 0);
+
+			labelTitle = new Label ();
+			labelTitle.Xalign = 0;
+			headerBox.PackStart (labelTitle, true, true, 0);
+			headerBox.BorderWidth = 12;
+
+			var fboxHeader = new HeaderBox ();
+			fboxHeader.SetMargins (0, 1, 0, 0);
+			fboxHeader.Add (headerBox);
+//			fbox.GradientBackround = true;
+//			fbox.BackgroundColor = new Gdk.Color (255, 255, 255);
+			Realized += delegate {
+				var c = new HslColor (Style.Background (Gtk.StateType.Normal));
+				c.L += 0.09;
+				fboxHeader.BackgroundColor = c;
+			};
+			vbox.PackStart (fboxHeader, false, false, 0);
+
+			pageFrame = new HBox ();
+			var fbox = new HeaderBox ();
+			fbox.SetMargins (0, 1, 0, 0);
+			fbox.ShowTopShadow = true;
+			fbox.Add (pageFrame);
+			vbox.PackStart (fbox, true, true, 0);
+
+			this.VBox.PackStart (mainHBox, true, true, 0);
+
 			this.removeEmptySections = removeEmptySections;
 			extensionContext = AddinManager.CreateExtensionContext ();
 			
@@ -111,6 +179,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			FillTree ();
 			ExpandCategories ();
 			this.DefaultResponse = Gtk.ResponseType.Ok;
+
+			DefaultWidth = 722;
+			DefaultHeight = 502;
 		}
 		
 		void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
@@ -158,8 +229,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		protected Alignment MainBox {
-			get { return alignment; }
+		protected Gtk.Widget MainBox {
+			get { return pageFrame; }
 		}
 		
 		protected void ExpandCategories ()
@@ -401,7 +472,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (page.Widget == null)
 				CreatePageWidget (page);
 			
-			labelTitle.Markup = "<span weight=\"bold\" size=\"x-large\">" + GLib.Markup.EscapeText (section.Label) + "</span>";
+			labelTitle.Markup = "<span weight=\"bold\" size=\"large\">" + GLib.Markup.EscapeText (section.Label) + "</span>";
 			
 			//HACK: mimetype panels can't provide stock ID for mimetype images. Give this some awareness of mimetypes.
 			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
@@ -416,7 +487,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				string icon = section.Icon.IsNull? emptyCategoryIcon : section.Icon.ToString ();
 				image.Pixbuf = ImageService.GetPixbuf (icon, headerIconSize);
 			}
-			
+
+/*			var algn = new HeaderBox ();
+			algn.SetPadding (12, 12, 12, 12);
+			if (page.Widget.Parent != null)
+				((Gtk.Container)page.Widget).Remove (page.Widget);
+			algn.Add (page.Widget);*/
 			pageFrame.PackStart (page.Widget, true, true, 0);
 			
 			// Ensures that the Shown event is fired for each panel
@@ -424,9 +500,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (c != null) {
 				foreach (Gtk.Widget cw in c)
 					cw.Show ();
-				//HACK: weird bug - switching page away and back selects last tab. should preserve the selection.
-				if (c is Notebook)
-					((Notebook)c).Page = 0;
 			}
 			
 			tree.ExpandToPath (store.GetPath (page.Iter));
@@ -553,7 +626,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				pi.Widget.Show ();
 			}
 			
+			box.BorderWidth = 12;
+
 			if (tabPanels.Count > 0) {
+				/*				SquaredNotebook nb = new SquaredNotebook ();
+				nb.Show ();
+				nb.AddTab (box, GettextCatalog.GetString ("General"));
+				foreach (PanelInstance pi in tabPanels) {
+					Gtk.Alignment a = new Alignment (0, 0, 1, 1);
+					a.BorderWidth = 9;
+					a.Show ();
+					a.Add (pi.Widget);
+					nb.AddTab (a, GettextCatalog.GetString (pi.Node.Label));
+					pi.Widget.Show ();
+				}*/
 				Gtk.Notebook nb = new Notebook ();
 				nb.Show ();
 				Gtk.Label blab = new Gtk.Label (GettextCatalog.GetString ("General"));
@@ -571,6 +657,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					pi.Widget.Show ();
 				}
 				page.Widget = nb;
+				nb.BorderWidth = 12;
 			} else {
 				page.Widget = box;
 			}

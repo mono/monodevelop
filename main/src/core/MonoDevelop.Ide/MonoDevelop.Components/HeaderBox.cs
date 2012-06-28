@@ -40,6 +40,8 @@ namespace MonoDevelop.Components
 		int bottomPadding;
 		int leftPadding;
 		int rightPadding;
+		Gdk.Color? backgroundColor;
+		bool showTopShadow;
 
 		public HeaderBox ()
 		{
@@ -65,10 +67,26 @@ namespace MonoDevelop.Components
 			this.leftPadding = leftPadding;
 			this.rightPadding = rightPadding;
 		}
+
+		public bool ShowTopShadow {
+			get { return showTopShadow; }
+			set {
+				showTopShadow = value;
+				QueueDraw ();
+			}
+		}
 		
 		public bool GradientBackround { get; set; }
 
 		public Gdk.Color? BorderColor { get; set; }
+
+		public Gdk.Color? BackgroundColor {
+			get { return backgroundColor; }
+			set {
+				backgroundColor = value;
+				QueueDraw ();
+			}
+		}
 
 		protected override void OnAdded (Widget widget)
 		{
@@ -128,6 +146,12 @@ namespace MonoDevelop.Components
 					cr.Pattern = pat;
 					cr.FillPreserve ();
 				}
+			} else if (BackgroundColor != null) {
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
+					cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+					cr.Color = BackgroundColor.Value.ToCairoColor ();
+					cr.Fill ();
+				}
 			}
 			
 			bool res = base.OnExposeEvent (evnt);
@@ -147,6 +171,17 @@ namespace MonoDevelop.Components
 			
 			for (int n=0; n<rightMargin; n++)
 				GdkWindow.DrawLine (borderColor, rect.Right - n, rect.Y, rect.Right - n, rect.Bottom);
+
+			if (showTopShadow) {
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
+					cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, 3);
+					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + 3);
+					pat.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.1));
+					pat.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
+					cr.Pattern = pat;
+					cr.Fill ();
+				}
+			}
 
 			borderColor.Dispose ();
 			return res;
