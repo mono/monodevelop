@@ -41,7 +41,7 @@ using System.Linq;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class ProjectSearchCategory : SearchCategory
+	class ProjectSearchCategory : SearchCategory
 	{
 		Widget widget;
 

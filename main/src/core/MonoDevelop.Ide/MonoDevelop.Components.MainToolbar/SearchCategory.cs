@@ -30,7 +30,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public abstract class SearchCategory 
+	abstract class SearchCategory 
 	{
 		public string Name  {
 			get;

@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class ButtonBar : EventBox
+	class ButtonBar : EventBox
 	{
 		List<LazyImage> buttons = new List<LazyImage> ();
 

@@ -40,7 +40,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class MainToolbar: Gtk.EventBox, ICommandDelegatorRouter
+	class MainToolbar: Gtk.EventBox, ICommandDelegatorRouter
 	{
 		HBox contentBox = new HBox (false, 6);
 

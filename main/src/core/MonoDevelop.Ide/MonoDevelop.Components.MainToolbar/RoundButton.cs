@@ -34,7 +34,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class LazyImage
+	class LazyImage
 	{
 		string resourceName;
 
@@ -59,7 +59,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 	}
 
-	public class RoundButton : Gtk.EventBox
+	class RoundButton : Gtk.EventBox
 	{
 		const int height = 32;
 /*		Cairo.Color borderColor;

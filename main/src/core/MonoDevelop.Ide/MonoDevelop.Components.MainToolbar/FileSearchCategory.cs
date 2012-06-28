@@ -41,7 +41,7 @@ using System.Linq;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class FileSearchCategory : SearchCategory
+	class FileSearchCategory : SearchCategory
 	{
 		Widget widget;
 		public FileSearchCategory (Widget widget) : base (GettextCatalog.GetString("Files"))

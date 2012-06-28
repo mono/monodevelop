@@ -29,7 +29,7 @@ using Cairo;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class StyledProgressBar : EventBox
+	class StyledProgressBar : EventBox
 	{
 		Color borderColor;
 		Color progressColor;

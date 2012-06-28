@@ -557,7 +557,7 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			return img;
 		}
 
-		public override MainToolbar CreateMainToolbar (Gtk.Window window)
+		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
 			NSApplication.Init ();
 			

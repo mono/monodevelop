@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class StatusArea : EventBox
+	class StatusArea : EventBox
 	{
 		HBox contentBox = new HBox (false, 0);
 		Color borderColor;

@@ -35,7 +35,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class SearchPopupWindow : RoundedWindow
+	class SearchPopupWindow : RoundedWindow
 	{
 		const int yMargin = 6;
 		const int xMargin = 6;

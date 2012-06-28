@@ -28,7 +28,7 @@ using Gtk;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class SearchEntryBorder : HBox
+	class SearchEntryBorder : HBox
 	{
 		public const int Height = 22;
 		Cairo.Color borderColor;

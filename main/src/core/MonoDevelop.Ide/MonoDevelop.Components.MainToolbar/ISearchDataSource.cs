@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace MonoDevelop.Components.MainToolbar
 {
 
-	public interface ISearchDataSource
+	interface ISearchDataSource
 	{
 		int ItemCount { get; }
 

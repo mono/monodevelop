@@ -31,7 +31,7 @@ using Gdk;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public class RoundedWindow : Gtk.Window
+	class RoundedWindow : Gtk.Window
 	{
 		public RoundedWindow () : base(Gtk.WindowType.Popup)
 		{
