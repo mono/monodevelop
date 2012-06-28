@@ -41,6 +41,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading;
 using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -117,7 +118,7 @@ namespace MonoDevelop.CSharp.Resolver
 		static string paramStr = GettextCatalog.GetString ("Parameter");
 		static string localStr = GettextCatalog.GetString ("Local variable");
 		static string methodStr = GettextCatalog.GetString ("Method");
-		
+
 		static string namespaceStr = GettextCatalog.GetString ("Namespace");		
 		static string GetString (IType type)
 		{
@@ -174,42 +175,39 @@ namespace MonoDevelop.CSharp.Resolver
 				return "'" + obj + "'";
 			return obj.ToString ();
 		}
-		
-		public string CreateTooltip (IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState)
+		static CSharpAmbience ambience = new CSharpAmbience ();
+
+		static TypeSystemAstBuilder CreateBuilder (MonoDevelop.Ide.Gui.Document doc, int offset)
+		{
+			var ctx = doc.ParsedDocument.ParsedFile.GetTypeResolveContext (doc.Compilation, doc.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var state = new CSharpResolver (ctx);
+			var builder = new TypeSystemAstBuilder (state);
+			builder.AddAnnotations = true;
+			var dt = state.CurrentTypeDefinition;
+			var declaring = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.DeclaringTypeDefinition : null;
+			if (declaring != null) {
+				while (dt != null) {
+					if (dt.Equals (declaring)) {
+						builder.AlwaysUseShortTypeNames = true;
+						break;
+					}
+					dt = dt.DeclaringTypeDefinition;
+				}
+			}
+			return builder;
+		}
+
+		internal static MonoDevelop.CSharp.Completion.MemberCompletionData.MyAmbience CreateAmbience (Document doc, int offset)
+		{
+			return new MonoDevelop.CSharp.Completion.MemberCompletionData.MyAmbience (CreateBuilder (doc, offset));
+		}
+
+		public string CreateTooltip (MonoDevelop.Ide.Gui.Document doc, int offset, ResolveResult result, string errorInformations, Gdk.ModifierType modifierState)
 		{
 			OutputSettings settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
-			//			if ((Gdk.ModifierType.ShiftMask & modifierState) == Gdk.ModifierType.ShiftMask) {
-			//				settings.EmitNameCallback = delegate(object domVisitable, ref string outString) {
-			//					// crop used namespaces.
-			//					if (unit != null) {
-			//						int len = 0;
-			//						foreach (var u in unit.Usings) {
-			//							foreach (string ns in u.Namespaces) {
-			//								if (outString.StartsWith (ns + ".")) {
-			//									len = Math.Max (len, ns.Length + 1);
-			//								}
-			//							}
-			//						}
-			//						string newName = outString.Substring (len);
-			//						int count = 0;
-			//						// check if there is a name clash.
-			//						if (dom.GetType (newName) != null)
-			//							count++;
-			//						foreach (IUsing u in unit.Usings) {
-			//							foreach (string ns in u.Namespaces) {
-			//								if (dom.GetType (ns + "." + newName) != null)
-			//									count++;
-			//							}
-			//						}
-			//						if (len > 0 && count == 1)
-			//							outString = newName;
-			//					}
-			//				};
-			//			}
-			
 			// Approximate value for usual case
 			StringBuilder s = new StringBuilder (150);
-			string doc = null;
+			string documentation = null;
 			if (result != null) {
 				if (result is UnknownIdentifierResolveResult) {
 					s.Append (String.Format (GettextCatalog.GetString ("Unresolved identifier '{0}'"), ((UnknownIdentifierResolveResult)result).Identifier));
@@ -232,15 +230,14 @@ namespace MonoDevelop.CSharp.Resolver
 					foreach (var l in mrr.GetExtensionMethods ()) {
 						allMethods.AddRange (l);
 					}
-					
 					var method = allMethods.FirstOrDefault ();
 					if (method != null) {
-						s.Append (ambience.GetString (method, settings));
+						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset).ConvertEntity (method)));
 						if (allMethods.Count > 1) {
 							int overloadCount = allMethods.Count - 1;
 							s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
 						}
-						doc = AmbienceService.GetDocumentationSummary (method);
+						documentation = AmbienceService.GetDocumentationSummary (method);
 					}
 				} else if (result is MemberResolveResult) {
 					var member = ((MemberResolveResult)result).Member;
@@ -249,16 +246,16 @@ namespace MonoDevelop.CSharp.Resolver
 					s.Append ("</i></small>\n");
 					var field = member as IField;
 					if (field != null && field.IsConst) {
-						s.Append (ambience.GetString (field.Type, settings));
+						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset).ConvertType (field.Type)));
 						s.Append (" ");
 						s.Append (field.Name);
 						s.Append (" = ");
 						s.Append (GetConst (field.ConstantValue));
 						s.Append (";");
 					} else {
-						s.Append (ambience.GetString (member, settings));
+						s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset).ConvertEntity (member)));
 					}
-					doc = AmbienceService.GetDocumentationSummary (member);
+					documentation = AmbienceService.GetDocumentationSummary (member);
 				} else if (result is NamespaceResolveResult) {
 					s.Append ("<small><i>");
 					s.Append (namespaceStr);
@@ -274,12 +271,12 @@ namespace MonoDevelop.CSharp.Resolver
 					}
 					settings.OutputFlags |= OutputFlags.UseFullName;
 					s.Append (ambience.GetString (tr.Type, settings));
-					doc = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
+					documentation = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
 				}
 				
-				if (!string.IsNullOrEmpty (doc)) {
+				if (!string.IsNullOrEmpty (documentation)) {
 					s.Append ("\n<small>");
-					s.Append (AmbienceService.GetDocumentationMarkup ("<summary>" + doc + "</summary>"));
+					s.Append (AmbienceService.GetDocumentationMarkup ("<summary>" + documentation + "</summary>"));
 					s.Append ("</small>");
 				}
 			}

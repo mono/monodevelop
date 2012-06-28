@@ -55,7 +55,7 @@ namespace MonoDevelop.SourceEditor
 				if (ur.TargetType.Kind != TypeKind.Unknown)
 					tooltip = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ur.TargetType.FullName, ur.MemberName);
 			} else if (result != null && ed.TextEditorResolverProvider != null) {
-				tooltip = ed.TextEditorResolverProvider.CreateTooltip (unit, result, errorInformations, ambience, modifierState);
+				//tooltip = ed.TextEditorResolverProvider.CreateTooltip (unit, result, errorInformations, ambience, modifierState);
 				// TODO: Type sysetm conversion. (btw. this isn't required because the analyzer should provide semantic error messages.)	
 				//				if (result.ResolveErrors.Count > 0) {
 				//					StringBuilder sb = new StringBuilder ();
