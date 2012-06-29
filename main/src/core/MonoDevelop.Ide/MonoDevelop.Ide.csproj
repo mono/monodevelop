@@ -1512,6 +1512,7 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectCommentTags.cs" />
+    <Compile Include="MonoDevelop.Components\ProgressControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
