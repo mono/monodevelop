@@ -35,10 +35,12 @@ namespace MonoDevelop.Ide.Gui.Content
 			set;
 		}
 		
-		void SetBookmarked (int position, bool mark);
+		void SetBookmarked (int position, bool mark, int number);
 		bool IsBookmarked (int position);
 		void PrevBookmark ();
 		void NextBookmark ();
 		void ClearBookmarks ();
+		void GoToBookmark(int number);
+		int HasBookmark(int number);
 	}
 }

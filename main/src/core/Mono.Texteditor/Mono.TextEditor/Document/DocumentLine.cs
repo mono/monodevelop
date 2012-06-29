@@ -141,18 +141,44 @@ namespace Mono.TextEditor
 
 		public bool IsBookmarked {
 			get {
-				if (markers == null)
-					return false;
-				return markers.Contains (BookmarkMarker.Instance);
+				return GetBookmark() != null;
 			}
-			set {
-				if (value) {
-					if (!IsBookmarked)
-						AddMarker (BookmarkMarker.Instance);
+		}
+
+		public BookmarkMarker GetBookmark()
+		{
+			if (markers == null)
+				return null;
+			return markers.OfType<BookmarkMarker>().FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Sets the bookmark.
+		/// </summary>
+		/// <param name='number'>
+		/// Bookmark number, enter -1 for unnumbered bookmark
+		/// </param>
+		public void SetBookmark(int number)
+		{
+			var bookMarkData = GetBookmark();
+			if (bookMarkData == null) {
+				AddMarker(new BookmarkMarker(number));
+			}
+			else {
+				if (bookMarkData.Number == number) {
+					markers.Remove(bookMarkData);
 				} else {
-					if (markers != null)
-						markers.Remove (BookmarkMarker.Instance);
+					markers.Remove(bookMarkData);
+					AddMarker(new BookmarkMarker(number));
 				}
+			}
+		}
+
+		public void RemoveBookmark()
+		{
+			var bookMarkData = GetBookmark();
+			if (bookMarkData != null) {
+				markers.Remove(bookMarkData);
 			}
 		}
 

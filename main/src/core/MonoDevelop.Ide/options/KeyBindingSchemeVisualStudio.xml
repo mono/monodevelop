@@ -51,6 +51,25 @@
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" shortcut="Control+B|N" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" shortcut="Control+B|P" />
 	<binding command="MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" shortcut="Control+B|T" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark1" shortcut="Control+Shift+1" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark2" shortcut="Control+Shift+2" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark3" shortcut="Control+Shift+3" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark4" shortcut="Control+Shift+4" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark5" shortcut="Control+Shift+5" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark6" shortcut="Control+Shift+6" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark7" shortcut="Control+Shift+7" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark8" shortcut="Control+Shift+8" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark9" shortcut="Control+Shift+9" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.CreateBookmark0" shortcut="Control+Shift+0" />	
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark1" shortcut="Control+1" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark2" shortcut="Control+2" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark3" shortcut="Control+3" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark4" shortcut="Control+4" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark5" shortcut="Control+5" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark6" shortcut="Control+6" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark7" shortcut="Control+7" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark8" shortcut="Control+8" />
+	<binding command="MonoDevelop.Ide.Commands.SearchCommands.GoToBookmark9" shortcut="Control+9" />
 	<binding command="Pad|MonoDevelop.DesignerSupport.DocumentOutlinePad" shortcut="Control+W|U" />
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" shortcut="Control+Alt++" />
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" shortcut="Control+Alt+-" />

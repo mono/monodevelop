@@ -45,7 +45,7 @@ namespace Mono.TextEditor.Tests.Actions
 			}
 			for (int i = 1; i <= result.Document.LineCount; i++) {
 				if (result.Document.GetLineText (i).StartsWith ("@"))
-					result.GetLine (i).IsBookmarked = true;
+					result.GetLine (i).SetBookmark(-1);
 			}
 			return result;
 			
