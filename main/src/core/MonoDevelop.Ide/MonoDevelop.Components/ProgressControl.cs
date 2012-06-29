@@ -40,13 +40,13 @@ namespace MonoDevelop.Components
 		
 		struct Petal
 		{
-			public PointD Start { get; private set; }
-			public PointD End { get; private set; }
+			public readonly PointD Start;
+			public readonly PointD End;
 			
 			public Petal (PointD start, PointD end)
 			{
-				this.Start = start;
-				this.End = end;
+				Start = start;
+				End = end;
 			}
 			
 			const int petalCount = 12;

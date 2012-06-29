@@ -146,9 +146,9 @@ namespace Mono.TextEditor
 				vadjustment.Value = vadjustment.Lower;
 			if (hadjustment != null)
 				hadjustment.Value = hadjustment.Lower;
-			caret.SetDocument (document);
 			HeightTree.Rebuild ();
 			ClearSelection ();
+			caret.SetDocument (document);
 		}
 
 		public double GetLineHeight (DocumentLine line)
