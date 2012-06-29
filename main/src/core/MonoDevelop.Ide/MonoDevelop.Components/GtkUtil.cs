@@ -183,6 +183,34 @@ namespace MonoDevelop.Components
 				data.ShowTimer = 0;
 			}
 		}
+
+		public static Gdk.Rectangle ToScreenCoordinates (Gtk.Widget widget, Gdk.Window w, Gdk.Rectangle rect)
+		{
+			return new Gdk.Rectangle (ToScreenCoordinates (widget, w, rect.X, rect.Y), rect.Size);
+		}
+
+		public static Gdk.Point ToScreenCoordinates (Gtk.Widget widget, Gdk.Window w, int x, int y)
+		{
+			int ox, oy;
+			w.GetOrigin (out ox, out oy);
+			ox += widget.Allocation.X;
+			oy += widget.Allocation.Y;
+			return new Gdk.Point (ox + x, oy + y);
+		}
+
+		public static Gdk.Rectangle ToWindowCoordinates (Gtk.Widget widget, Gdk.Window w, Gdk.Rectangle rect)
+		{
+			return new Gdk.Rectangle (ToWindowCoordinates (widget, w, rect.X, rect.Y), rect.Size);
+		}
+		
+		public static Gdk.Point ToWindowCoordinates (Gtk.Widget widget, Gdk.Window w, int x, int y)
+		{
+			int ox, oy;
+			w.GetOrigin (out ox, out oy);
+			ox += widget.Allocation.X;
+			oy += widget.Allocation.Y;
+			return new Gdk.Point (x - ox, y - oy);
+		}
 	}
 
 	class TreeViewTooltipsData

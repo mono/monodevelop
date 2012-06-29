@@ -900,6 +900,9 @@
     <EmbeddedResource Include="icons\searchbox-clear-16.png">
       <LogicalName>searchbox-clear-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-popup-button.png">
+      <LogicalName>tree-popup-button.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

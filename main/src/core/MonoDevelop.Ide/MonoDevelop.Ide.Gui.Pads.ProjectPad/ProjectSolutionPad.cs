@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				return null;
 			});
+			TreeView.ShowSelectionPopupButton = true;
 		}
 		
 		protected override void OnSelectionChanged (object sender, EventArgs args)
