@@ -312,4 +312,8 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Components.ProgressControl" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

@@ -614,13 +614,38 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (result is MemberResolveResult) {
 							var member = ((MemberResolveResult)result).Member;
 							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
-							endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
+								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
 								return "keyword.semantic.field";
 							}
 						}
 						if (result is TypeResolveResult) {
 							if (!result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
 								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
+								return "keyword.semantic.type";
+							}
+						}
+					}
+					var pointerReferenceExpression = node as PointerReferenceExpression;
+					if (pointerReferenceExpression != null) {
+						if (!pointerReferenceExpression.MemberNameToken.Contains (loc)) 
+							return null;
+						
+						var result = csharpSyntaxMode.resolver.Resolve (pointerReferenceExpression);
+						if (result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
+							endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
+							return "keyword.semantic.error";
+						}
+						
+						if (result is MemberResolveResult) {
+							var member = ((MemberResolveResult)result).Member;
+							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
+								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
+								return "keyword.semantic.field";
+							}
+						}
+						if (result is TypeResolveResult) {
+							if (!result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
+								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
 								return "keyword.semantic.type";
 							}
 						}
