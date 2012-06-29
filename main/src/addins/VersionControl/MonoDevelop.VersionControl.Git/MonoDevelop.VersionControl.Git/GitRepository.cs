@@ -1291,7 +1291,7 @@ namespace MonoDevelop.VersionControl.Git
 			List<Annotation> list = new List<Annotation> ();
 			for (int i = 0; i < result.GetResultContents ().Size (); i++) {
 				var commit = result.GetSourceCommit (i);
-				var author = result.GetSourceCommitter (i);
+				var author = result.GetSourceAuthor (i);
 				if (commit != null && author != null) {
 					string name = string.Format ("{0} <{1}>", author.GetName (), author.GetEmailAddress ());
 					var commitTime = new DateTime (1970, 1, 1).AddSeconds (commit.CommitTime);
