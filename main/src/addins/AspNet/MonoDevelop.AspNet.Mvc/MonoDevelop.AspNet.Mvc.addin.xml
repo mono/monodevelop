@@ -46,7 +46,18 @@
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
 			guid="{603c0e0b-db56-11dc-be95-000d561079b0}"
-			type="MonoDevelop.AspNet.Mvc.AspMvcProject"
+			type="MonoDevelop.AspNet.Mvc.AspMvc1Project"
+			insertbefore="MonoDevelop.AspNet.AspNetAppProject"
+			/>
+		<DotNetProjectSubtype
+			guid="{F85E285D-A4E0-4152-9332-AB1D724D3325}"
+			type="MonoDevelop.AspNet.Mvc.AspMvc2Project"
+			insertbefore="MonoDevelop.AspNet.AspNetAppProject"
+			/>
+		<DotNetProjectSubtype
+			guid="{E53F8FEA-EAE0-44A6-8774-FFD645390401}"
+			type="MonoDevelop.AspNet.Mvc.AspMvc3Project"
+			insertbefore="MonoDevelop.AspNet.AspNetAppProject"
 			/>
 	</Extension>
 
@@ -95,7 +106,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id = "AspNetMvc" class = "MonoDevelop.AspNet.Mvc.AspMvcProjectBinding" />
+		<ProjectBinding id = "AspNetMvc1" class = "MonoDevelop.AspNet.Mvc.AspMvc1ProjectBinding" />
+		<ProjectBinding id = "AspNetMvc2" class = "MonoDevelop.AspNet.Mvc.AspMvc2ProjectBinding" />
+		<ProjectBinding id = "AspNetMvc3" class = "MonoDevelop.AspNet.Mvc.AspMvc3ProjectBinding" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
