@@ -141,6 +141,9 @@
     <Reference Include="MonoDevelop.Core">
       <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
+    <Reference Include="MonoDevelop.CSharpBinding">
+      <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\AddIns\BackendBindings\MonoDevelop.CSharpBinding.dll</HintPath>
+    </Reference>
     <Reference Include="MonoDevelop.Ide">
       <HintPath>..\..\..\..\..\..\Program Files\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
