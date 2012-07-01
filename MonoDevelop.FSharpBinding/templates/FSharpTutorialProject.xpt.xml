@@ -27,12 +27,13 @@
         <Reference type="Gac" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
       </References>
       <Files>
-        <File name = "Program.fs" AddStandardHeader="True"><![CDATA[
+        <File name = "Tutorial.fs" AddStandardHeader="True">
+  <![CDATA[
 
 // This file contains code snippets to learn F# basics.  
 //
 // Additional info about F# http://fsharp.net
-// 
+// More tutorials at http://www.tryfsharp.org/
 //
 // Subject:
 //   - A simple calculation
