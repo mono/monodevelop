@@ -50,14 +50,14 @@ namespace MonoDevelop.Debugger
 		public ExceptionsDialog()
 		{
 			this.Build();
-
+			
 			storeExceptions = new ListStore (typeof(String));
 			treeExceptions.Selection.Mode = SelectionMode.Multiple;
 			treeExceptions.Model = storeExceptions;
 			treeExceptions.AppendColumn ("", new CellRendererText (), "text", 0);
 			tstateExc = new TreeViewState (treeExceptions, 0);
 			storeExceptions.SetSortColumnId (0, SortType.Ascending);
-
+			
 			storeSelection = new ListStore (typeof(String));
 			treeSelected.Selection.Mode = SelectionMode.Multiple;
 			treeSelected.Model = storeSelection;
@@ -69,11 +69,11 @@ namespace MonoDevelop.Debugger
 				selectedClasses.Add (cp.ExceptionName);
 			
 			LoadExceptions ();
-
+			
 			FillSelection ();
 			FillExceptions ();
 		}
-
+		
 		void LoadExceptions ()
 		{
 			classes.Add ("System.Exception");
@@ -83,14 +83,16 @@ namespace MonoDevelop.Debugger
 					classes.Add (t.ReflectionName);
 			} else {
 				// no nead to unload this assembly context, it's not cached.
-				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.FullName);
-				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.FullName);
-				var dom = new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (unresolvedAssembly, mscorlib);
-				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
-					classes.Add (t.ReflectionName);
+				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.Location);
+				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.Location);
+				if (unresolvedAssembly != null && mscorlib != null) {
+					var dom = new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (unresolvedAssembly, mscorlib);
+					foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+						classes.Add (t.ReflectionName);
+				}
 			}
 		}
-
+		
 		void FillExceptions ()
 		{
 			tstateExc.Save ();
@@ -107,7 +109,7 @@ namespace MonoDevelop.Debugger
 					treeExceptions.Selection.SelectIter (it);
 			}
 		}
-
+		
 		void FillSelection ()
 		{
 			tstateSel.Save ();
@@ -121,7 +123,7 @@ namespace MonoDevelop.Debugger
 					treeSelected.Selection.SelectIter (it);
 			}
 		}
-
+		
 		protected virtual void OnEntryFilterChanged (object sender, System.EventArgs e)
 		{
 			if (!updateScheduled) {
@@ -133,7 +135,7 @@ namespace MonoDevelop.Debugger
 				});
 			}
 		}
-
+		
 		protected virtual void OnButtonAddClicked (object sender, System.EventArgs e)
 		{
 			foreach (TreePath path in treeExceptions.Selection.GetSelectedRows ()) {
@@ -147,7 +149,7 @@ namespace MonoDevelop.Debugger
 			FillSelection ();
 			FillExceptions ();
 		}
-
+		
 		protected virtual void OnButtonRemoveClicked (object sender, System.EventArgs e)
 		{
 			foreach (TreePath path in treeSelected.Selection.GetSelectedRows ()) {
@@ -161,7 +163,7 @@ namespace MonoDevelop.Debugger
 			FillSelection ();
 			FillExceptions ();
 		}
-
+		
 		void SelectNearest (TreeView view)
 		{
 			ListStore store = (ListStore) view.Model;
@@ -182,12 +184,12 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 		}
-
+		
 		protected virtual void OnEntryFilterActivated (object sender, System.EventArgs e)
 		{
 			OnButtonAddClicked (null, null);
 		}
-
+		
 		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
 		{
 			foreach (Catchpoint cp in new List<Catchpoint> (DebuggingService.Breakpoints.GetCatchpoints ())) {
@@ -199,7 +201,7 @@ namespace MonoDevelop.Debugger
 			foreach (string exc in selectedClasses)
 				DebuggingService.Breakpoints.AddCatchpoint (exc);
 		}
-
+		
 		[GLib.ConnectBefore]
 		protected virtual void OnTreeSelectedKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
 		{
@@ -208,14 +210,14 @@ namespace MonoDevelop.Debugger
 				args.RetVal = true;
 			}
 		}
-
+		
 		[GLib.ConnectBefore]
 		protected virtual void OnTreeSelectedButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
 		{
 			if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
 				OnButtonRemoveClicked (o, args);
 		}
-
+		
 		[GLib.ConnectBefore]
 		protected virtual void OnTreeExceptionsKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
 		{
@@ -224,7 +226,7 @@ namespace MonoDevelop.Debugger
 				args.RetVal = true;
 			}
 		}
-
+		
 		[GLib.ConnectBefore]
 		protected virtual void OnTreeExceptionsButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
 		{
