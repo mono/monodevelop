@@ -25,6 +25,7 @@
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
+			id="MonoDevelop.AspNet.AspNetAppProject"
 			guid="{349c5851-65df-11da-9384-00065b846f21}"
 			type="MonoDevelop.AspNet.AspNetAppProject"
 			/>
