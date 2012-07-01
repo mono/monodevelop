@@ -580,6 +580,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void Update (CommandInfo info)
 		{
+			info.Enabled = IdeApp.Workspace.IsOpen;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
 		}
 	}

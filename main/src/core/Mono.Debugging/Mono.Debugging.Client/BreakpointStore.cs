@@ -83,11 +83,11 @@ namespace Mono.Debugging.Client
 			return true;
 		}
 		
-		public Catchpoint AddCatchpoint (string exceptioName)
+		public Catchpoint AddCatchpoint (string exceptionName)
 		{
 			if (IsReadOnly)
 				return null;
-			Catchpoint cp = new Catchpoint (exceptioName);
+			Catchpoint cp = new Catchpoint (exceptionName);
 			Add (cp);
 			return cp;
 		}
