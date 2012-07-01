@@ -56,6 +56,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
 		{
+			if (cancellationToken.IsCancellationRequested)
+				yield break;
 			var context = new MDRefactoringContext (document, loc);
 			if (context.IsInvalid || context.RootNode == null)
 				yield break;

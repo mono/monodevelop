@@ -755,10 +755,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			public ICompilation Compilation {
 				get {
-					if (compilation == null) {
-						compilation = Content.CreateCompilation ();
+					lock (this) {
+						if (compilation == null) {
+							compilation = Content.CreateCompilation ();
+						}
+						return compilation;
 					}
-					return compilation;
 				}
 			}
 			
