@@ -35,7 +35,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.AspNet.Mvc
 {
-	public class AspMvcProject : AspNetAppProject
+	public abstract class AspMvcProject : AspNetAppProject
 	{
 		public AspMvcProject ()
 		{
@@ -116,6 +116,57 @@ namespace MonoDevelop.AspNet.Mvc
 					break;
 				}
 			}
+		}
+	}
+
+	public class AspMvc1Project : AspMvcProject
+	{
+		public AspMvc1Project ()
+		{
+		}
+
+		public AspMvc1Project (string languageName)
+			: base (languageName)
+		{
+		}
+
+		public AspMvc1Project (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
+			: base (languageName, info, projectOptions)
+		{
+		}
+	}
+
+	public class AspMvc2Project : AspMvcProject
+	{
+		public AspMvc2Project ()
+		{
+		}
+
+		public AspMvc2Project (string languageName)
+			: base (languageName)
+		{
+		}
+
+		public AspMvc2Project (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
+			: base (languageName, info, projectOptions)
+		{
+		}
+	}
+
+	public class AspMvc3Project : AspMvcProject
+	{
+		public AspMvc3Project ()
+		{
+		}
+
+		public AspMvc3Project (string languageName)
+			: base (languageName)
+		{
+		}
+
+		public AspMvc3Project (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
+			: base (languageName, info, projectOptions)
+		{
 		}
 	}
 }
