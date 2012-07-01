@@ -255,13 +255,8 @@ namespace MonoDevelop.CSharp.Completion
 		void SetMember (IEntity entity)
 		{
 			this.Entity = entity;
-			if (entity is IParameter) {
-				this.completionString = ((IParameter)entity).Name;
-			} else {
-				this.completionString = ambience.GetString (entity, OutputFlags.None);
-			}
 			descriptionCreated = false;
-			displayText = entity.Name;
+			this.completionString = displayText = entity.Name;
 		}
 
 		TypeSystemAstBuilder GetBuilder (ICompilation compilation)
