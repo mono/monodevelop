@@ -1721,12 +1721,12 @@ namespace Mono.TextEditor
 			Insert (offset, text);
 		}
 
-		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, ITextSource text, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
+		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, ITextSource text, AnchorMovementType anchorMovementType)
 		{
 			Insert (offset, text.Text, anchorMovementType);
 		}
 
-		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
+		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text, AnchorMovementType anchorMovementType)
 		{
 			Insert (offset, text, anchorMovementType);
 		}
