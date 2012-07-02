@@ -370,8 +370,8 @@ namespace MonoDevelop.CSharp.Completion
 						return result;
 				}
 				
-				string sx = ambience.GetString (mx, flags);
-				string sy = ambience.GetString (my, flags);
+				string sx = mx.ReflectionName;// ambience.GetString (mx, flags);
+				string sy = my.ReflectionName;// ambience.GetString (my, flags);
 				result = sx.Length.CompareTo (sy.Length);
 				return result == 0? string.Compare (sx, sy) : result;
 			}
