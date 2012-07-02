@@ -42,13 +42,14 @@ using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using System.Threading;
 
 namespace MonoDevelop.Refactoring
 {
 	public class ResolveCommandHandler : CommandHandler
 	{
 
-		public static bool ResolveAt (Document doc, out ResolveResult resolveResult, out AstNode node)
+		public static bool ResolveAt (Document doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
 			var parsedDocument = doc.ParsedDocument;
 			resolveResult = null;
@@ -61,7 +62,7 @@ namespace MonoDevelop.Refactoring
 				return false;
 			try {
 				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
-				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, location, out node);
+				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, location, out node, token);
 				if (resolveResult == null || node is Statement)
 					return false;
 			} catch (Exception e) {

@@ -98,6 +98,7 @@ namespace MonoDevelop.CodeActions
 				container.AddTopLevelWidget (widget,
 					2 + (int)editor.Parent.TextViewMargin.XOffset,
 					-2 + (int)editor.Parent.LineToY (document.Editor.Caret.Line));
+				widget.Show ();
 			} else {
 				if (!widget.Visible)
 					widget.Show ();
@@ -123,8 +124,8 @@ namespace MonoDevelop.CodeActions
 		public override void CursorPositionChanged ()
 		{
 			CancelQuickFixTimer ();
-			quickFixCancellationTokenSource = new CancellationTokenSource ();
 			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null) {
+				quickFixCancellationTokenSource = new CancellationTokenSource ();
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Document.Editor.Caret.Location;
@@ -132,7 +133,7 @@ namespace MonoDevelop.CodeActions
 						if (!fixes.Any ()) {
 							ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
 							ICSharpCode.NRefactory.CSharp.AstNode node;
-							if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
+							if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node, token)) {
 								var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, resolveResult);
 								if (!possibleNamespaces.Any ()) {
 									if (widget != null)
