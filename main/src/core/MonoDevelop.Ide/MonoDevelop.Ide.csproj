@@ -1628,9 +1628,9 @@
     <Compile Include="MonoDevelop.Components.Docking\DockVisualStyle.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchEntryBorder.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StyledProgressBar.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\RoundedWindow.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
     <Compile Include="MonoDevelop.Components\SquaredNotebook.cs" />
+    <Compile Include="MonoDevelop.Components\PopoverWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

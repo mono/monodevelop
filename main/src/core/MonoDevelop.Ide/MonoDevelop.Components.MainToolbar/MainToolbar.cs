@@ -53,6 +53,7 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusArea statusArea;
 
 		SearchEntry matchEntry;
+		SearchEntryBorder searchEntryComboVBox;
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
@@ -192,7 +193,7 @@ namespace MonoDevelop.Components.MainToolbar
 					PositionPopup ();
 			};
 
-			var searchEntryComboVBox = new SearchEntryBorder ();
+			searchEntryComboVBox = new SearchEntryBorder ();
 			searchEntryComboVBox.PackStart (this.matchEntry, true, false, SearchEntryBorder.Height / 2);
 			AddWidget (searchEntryComboVBox);
 
@@ -228,10 +229,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (popup == null)
 				return;
-			int ox, oy;
-			matchEntry.GdkWindow.GetOrigin (out ox, out oy);
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
-			popup.Move (Math.Max (geometry.Left, ox + matchEntry.Allocation.X + matchEntry.Allocation.Width - popup.Allocation.Width), oy + matchEntry.Allocation.Y + matchEntry.Allocation.Height);
+			popup.ShowPopup (searchEntryComboVBox, PopupPosition.TopRight);
 		}
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
