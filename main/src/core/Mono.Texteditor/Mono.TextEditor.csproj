@@ -203,6 +203,7 @@
     <Compile Include="Mono.TextEditor\Standalone\TextLocation.cs" />
     <Compile Include="Mono.TextEditor.Utils\RtfWriter.cs" />
     <Compile Include="Mono.TextEditor\Gui\GtkGestures.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TooltipProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
