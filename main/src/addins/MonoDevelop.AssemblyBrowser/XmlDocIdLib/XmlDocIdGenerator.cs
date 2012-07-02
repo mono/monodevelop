@@ -541,7 +541,7 @@ namespace XmlDocIdLib
             {
                 // type is function pointer
                 FunctionPointerType thisFuncPtr = tpType as FunctionPointerType;
-                string tempString = string.Empty;
+//                string tempString = string.Empty;
 
                 // return type
                 CurrPath.Append("=FUNC:");
