@@ -65,6 +65,8 @@ namespace MonoDevelop.Refactoring
 				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, location, out node, token);
 				if (resolveResult == null || node is Statement)
 					return false;
+			} catch (OperationCanceledException) {
+				return false;
 			} catch (Exception e) {
 				Console.WriteLine ("Got resolver exception:" + e);
 				return false;
