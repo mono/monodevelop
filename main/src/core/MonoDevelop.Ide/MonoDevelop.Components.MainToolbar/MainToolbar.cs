@@ -184,6 +184,15 @@ namespace MonoDevelop.Components.MainToolbar
 					popup.OpenFile ();
 			};
 			matchEntry.Entry.KeyPressEvent += (o, args) => {
+				if (args.Event.Key == Gdk.Key.Escape) {
+					var doc = IdeApp.Workbench.ActiveDocument;
+					if (doc != null) {
+						if (popup != null)
+							popup.Destroy ();
+						doc.Select ();
+					}
+					return;
+				}
 				if (popup != null) {
 					args.RetVal = popup.ProcessKey (args.Event.Key, args.Event.State);
 				}
