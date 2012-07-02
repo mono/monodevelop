@@ -147,8 +147,7 @@ namespace MonoDevelop.CodeActions
 						}
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)
-								return;.,
-
+								return;
 							CreateWidget (fixes, loc);
 							quickFixTimeout = 0;
 						});
