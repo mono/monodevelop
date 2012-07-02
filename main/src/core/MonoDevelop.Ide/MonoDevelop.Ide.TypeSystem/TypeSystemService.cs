@@ -1103,7 +1103,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (!args.Any (x => x is SolutionItemModifiedEventInfo && (((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework" || ((SolutionItemModifiedEventInfo)x).Hint == "References")))
 				return;
-			cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
 			var project = (Project)sender;
 			
 			ProjectContentWrapper wrapper;
@@ -1638,7 +1637,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		static Dictionary<Project, ITypeResolveContext> cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
 		static Dictionary<string, AssemblyContext> cachedAssemblyContents = new Dictionary<string, AssemblyContext> ();
 		
 		public static void ForceUpdate (ProjectContentWrapper context)

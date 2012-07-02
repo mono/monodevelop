@@ -293,7 +293,7 @@ namespace MonoDevelop.Ide
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
 			string fileName = entity.Region.FileName;
-			var doc = IdeApp.Workbench.OpenDocument (fileName, entity.Region.BeginLine, entity.Region.BeginColumn);
+			IdeApp.Workbench.OpenDocument (fileName, entity.Region.BeginLine, entity.Region.BeginColumn);
 		}
 
 		public void RenameItem (IWorkspaceFileObject item, string newName)
