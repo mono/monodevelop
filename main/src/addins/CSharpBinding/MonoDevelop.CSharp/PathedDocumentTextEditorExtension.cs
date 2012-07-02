@@ -310,7 +310,9 @@ namespace MonoDevelop.CSharp
 		}
 
 		TypeDeclaration lastType;
+		string lastTypeMarkup;
 		EntityDeclaration lastMember;
+		string lastMemberMarkup;
 		AstAmbience amb;
 		string GetEntityMarkup (AstNode node)
 		{
@@ -338,13 +340,18 @@ namespace MonoDevelop.CSharp
 				curMember = null;
 			if (curType == lastType && lastMember == curMember)
 				return;
-			if (curType != null && lastType != null && curType.StartLocation == lastType.StartLocation && GetEntityMarkup (curType) == GetEntityMarkup (lastType) &&
-				curMember != null && lastMember != null && curMember.StartLocation == lastMember.StartLocation && GetEntityMarkup (curMember) == GetEntityMarkup (lastMember))
+			var curTypeMakeup = GetEntityMarkup (curType);
+			var curMemberMarkup = GetEntityMarkup (curMember);
+			if (curType != null && lastType != null && curType.StartLocation == lastType.StartLocation && curTypeMakeup == lastTypeMarkup &&
+			    curMember != null && lastMember != null && curMember.StartLocation == lastMember.StartLocation && curMemberMarkup == lastMemberMarkup)
 				return;
 
 			lastType = curType;
+			lastTypeMarkup = curTypeMakeup;
+
 			lastMember = curMember;
-			
+			lastMemberMarkup = curMemberMarkup;
+
 			if (curType == null) {
 				if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is IParsedFile)
 					return;
@@ -367,7 +374,7 @@ namespace MonoDevelop.CSharp
 			}
 				
 			if (curMember != null) {
-				result.Add (new PathEntry (ImageService.GetPixbuf (curMember.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (curMember)) { Tag = curMember });
+				result.Add (new PathEntry (ImageService.GetPixbuf (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
 				if (curMember is Accessor) {
 					var parent = curMember.Parent as EntityDeclaration;
 					if (parent != null)

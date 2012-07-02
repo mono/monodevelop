@@ -58,7 +58,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (!parameters.Any ()) 
 				return;
-			sb.Append ("<");
+			sb.Append ("&lt;");
 			bool first = true;
 			foreach (var param in parameters) {
 				if (!first) {
@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharp
 				}
 				sb.Append (param.GetText (options));
 			}
-			sb.Append (">");
+			sb.Append ("&gt;");
 		}
 
 		void AppendParameter (StringBuilder sb, IEnumerable<ParameterDeclaration> parameters)
@@ -185,7 +185,7 @@ namespace MonoDevelop.CSharp
 				sb.Append (entity.Name);
 			}
 
-			string markup = GLib.Markup.EscapeText (sb.ToString ());
+			string markup = sb.ToString ();
 			if (IsObsolete (e as EntityDeclaration))
 				return "<s>" + markup + "</s>";
 			return markup;
