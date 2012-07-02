@@ -412,22 +412,16 @@ namespace MonoDevelop.Gettext
 			{
 			case "utf-32":
 				return new UTF32Encoding(false, false);
-				break;
 			case "utf-32be":
 				return new UTF32Encoding(true, false);
-				break;
 			case "utf-8":
 				return new UTF8Encoding(false);
-				break;
 			case "utf-16":
 				return new UnicodeEncoding(false, false);
-				break;
 			case "unicodefffe":
 				return new UnicodeEncoding(true, false);
-				break;
 			default:
 				return GetEncoding(charset);				
-				break;
 			}
 		}
 		
