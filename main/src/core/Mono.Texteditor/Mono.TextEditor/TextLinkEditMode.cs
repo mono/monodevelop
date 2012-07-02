@@ -536,7 +536,7 @@ namespace Mono.TextEditor
 		}
 	}
 
-	public class TextLinkTooltipProvider : ITooltipProvider
+	public class TextLinkTooltipProvider : TooltipProvider
 	{
 		TextLinkEditMode mode;
 
@@ -546,7 +546,7 @@ namespace Mono.TextEditor
 		}
 
 		#region ITooltipProvider implementation 
-		public TooltipItem GetItem (TextEditor Editor, int offset)
+		public override TooltipItem GetItem (TextEditor Editor, int offset)
 		{
 			int o = offset - mode.BaseOffset;
 			for (int i = 0; i < mode.Links.Count; i++) {
@@ -558,7 +558,7 @@ namespace Mono.TextEditor
 			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
 		}
 
-		public Gtk.Window CreateTooltipWindow (TextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		protected override Gtk.Window CreateTooltipWindow (TextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			TextLink link = item.Item as TextLink;
 			if (link == null || string.IsNullOrEmpty (link.Tooltip))
@@ -569,16 +569,11 @@ namespace Mono.TextEditor
 			return window;
 		}
 
-		public void GetRequiredPosition (TextEditor Editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected override void GetRequiredPosition (TextEditor Editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			TooltipWindow win = (TooltipWindow)tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);
 			xalign = 0.5;
-		}
-
-		public bool IsInteractive (TextEditor Editor, Gtk.Window tipWindow)
-		{
-			return false;
 		}
 		#endregion 
 	}

@@ -51,12 +51,4 @@ namespace Mono.TextEditor
 			this.Item = item;
 		}
 	}
-	
-	public interface ITooltipProvider
-	{
-		TooltipItem GetItem (TextEditor editor, int offset);
-		Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item);
-		void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign);
-		bool IsInteractive (TextEditor editor, Gtk.Window tipWindow);
-	}
 }

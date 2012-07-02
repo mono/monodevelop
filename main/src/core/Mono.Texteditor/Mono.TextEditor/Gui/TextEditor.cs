@@ -758,12 +758,12 @@ namespace Mono.TextEditor
 			tooltipProviders.Clear ();
 		}
 		
-		public void AddTooltipProvider (ITooltipProvider provider)
+		public void AddTooltipProvider (TooltipProvider provider)
 		{
 			tooltipProviders.Add (provider);
 		}
 		
-		public void RemoveTooltipProvider (ITooltipProvider provider)
+		public void RemoveTooltipProvider (TooltipProvider provider)
 		{
 			tooltipProviders.Remove (provider);
 		}
@@ -2480,8 +2480,8 @@ namespace Mono.TextEditor
 		uint tipHideTimeoutId = 0;
 		uint tipShowTimeoutId = 0;
 		Gtk.Window tipWindow;
-		internal List<ITooltipProvider> tooltipProviders = new List<ITooltipProvider> ();
-		ITooltipProvider currentTooltipProvider;
+		internal List<TooltipProvider> tooltipProviders = new List<TooltipProvider> ();
+		TooltipProvider currentTooltipProvider;
 		
 		// Data for the next tooltip to be shown
 		int nextTipOffset = 0;
@@ -2489,7 +2489,7 @@ namespace Mono.TextEditor
 		Gdk.ModifierType nextTipModifierState = ModifierType.None;
 		DateTime nextTipScheduledTime; // Time at which we want the tooltip to show
 		
-		public IEnumerable<ITooltipProvider> TooltipProviders {
+		public IEnumerable<TooltipProvider> TooltipProviders {
 			get { return tooltipProviders; }
 		}
 		
@@ -2555,10 +2555,10 @@ namespace Mono.TextEditor
 			}
 			
 			// Find a provider
-			ITooltipProvider provider = null;
+			TooltipProvider provider = null;
 			TooltipItem item = null;
 			
-			foreach (ITooltipProvider tp in tooltipProviders) {
+			foreach (TooltipProvider tp in tooltipProviders) {
 				try {
 					item = tp.GetItem (this, nextTipOffset);
 				} catch (Exception e) {
@@ -2582,7 +2582,7 @@ namespace Mono.TextEditor
 				tipY = nextTipY;
 				tipItem = item;
 				
-				Gtk.Window tw = provider.CreateTooltipWindow (this, nextTipOffset, nextTipModifierState, item);
+				Gtk.Window tw = provider.ShowTooltipWindow (this, nextTipOffset, nextTipModifierState, tipX + (int) TextViewMargin.XOffset, tipY, item);
 				if (tw == tipWindow)
 					return false;
 				HideTooltip ();
@@ -2590,56 +2590,20 @@ namespace Mono.TextEditor
 					return false;
 				
 				CancelScheduledShow ();
-				DoShowTooltip (provider, tw, tipX, tipY);
+
+				tipWindow = tw;
+				currentTooltipProvider = provider;
+				
+				tipWindow.EnterNotifyEvent += delegate {
+					CancelScheduledHide ();
+				};
+
 				tipShowTimeoutId = 0;
 			} else
 				HideTooltip ();
 			return false;
 		}
 		
-		void DoShowTooltip (ITooltipProvider provider, Gtk.Window liw, int xloc, int yloc)
-		{
-			CancelScheduledShow ();
-			
-			tipWindow = liw;
-			currentTooltipProvider = provider;
-			
-			tipWindow.EnterNotifyEvent += delegate {
-				CancelScheduledHide ();
-			};
-			
-			int ox = 0, oy = 0;
-			if (GdkWindow != null)
-				GdkWindow.GetOrigin (out ox, out oy);
-			
-			int w;
-			double xalign;
-			provider.GetRequiredPosition (this, tipWindow, out w, out xalign);
-			w += 10;
-			
-			int x = xloc + ox + (int) textViewMargin.XOffset;
-			int y = yloc + oy;
-			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
-			
-			x -= (int) ((double) w * xalign);
-			y += 10;
-			
-			if (x + w >= geometry.X + geometry.Width)
-				x = geometry.X + geometry.Width - w;
-			if (x < geometry.Left)
-				x = geometry.Left;
-			
-			int h = tipWindow.SizeRequest ().Height;
-			if (y + h >= geometry.Y + geometry.Height)
-				y = geometry.Y + geometry.Height - h;
-			if (y < geometry.Top)
-				y = geometry.Top;
-			
-			tipWindow.Move (x, y);
-			
-			tipWindow.ShowAll ();
-		}
-
 		public void HideTooltip ()
 		{
 			CancelScheduledHide ();
