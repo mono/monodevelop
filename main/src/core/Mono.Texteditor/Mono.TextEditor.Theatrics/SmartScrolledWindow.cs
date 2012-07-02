@@ -197,7 +197,7 @@ namespace Mono.TextEditor.Theatrics
 					vChildTopHeight += child.Child.Requisition.Height;
 				}
 				int v = vScrollBar is Scrollbar && hScrollBar.Visible ? hScrollBar.Requisition.Height : 0;
-				vScrollBar.SizeAllocate (new Rectangle (childRectangle.X + childRectangle.Width + 1, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight - 1));
+				vScrollBar.SizeAllocate (new Rectangle (childRectangle.X + childRectangle.Width, childRectangle.Y + vChildTopHeight, vwidth, Allocation.Height - v - vChildTopHeight - 1));
 				vAdjustment.Value = System.Math.Max (System.Math.Min (vAdjustment.Upper - vAdjustment.PageSize, vAdjustment.Value), vAdjustment.Lower);
 			}
 			
