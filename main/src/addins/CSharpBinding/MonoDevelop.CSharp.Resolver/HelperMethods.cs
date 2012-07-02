@@ -71,24 +71,24 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		public static AstNode ParseSnippet (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
-		{
-			using (var stream = new  StreamReader (data.OpenStream ())) {
-				var result = parser.ParseExpression (stream);
-				if (!parser.HasErrors)
-					return result;
-			}
-			parser.ErrorPrinter.Reset ();
-			using (var stream = new  StreamReader (data.OpenStream ())) {
-				var result = parser.ParseStatements (stream);
-				if (!parser.HasErrors)
-					return result.FirstOrDefault ();
-			}
-			parser.ErrorPrinter.Reset ();
-			using (var stream = data.OpenStream ()) {
-				return parser.Parse (stream, data.Document.FileName);
-			}
-		}
+//		public static AstNode ParseSnippet (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
+//		{
+//			using (var stream = new  StreamReader (data.OpenStream ())) {
+//				var result = parser.ParseExpression (stream);
+//				if (!parser.HasErrors)
+//					return result;
+//			}
+//			parser.ErrorPrinter.Reset ();
+//			using (var stream = new  StreamReader (data.OpenStream ())) {
+//				var result = parser.ParseStatements (stream);
+//				if (!parser.HasErrors)
+//					return result.FirstOrDefault ();
+//			}
+//			parser.ErrorPrinter.Reset ();
+//			using (var stream = data.OpenStream ()) {
+//				return parser.Parse (stream, data.Document.FileName);
+//			}
+//		}
 		
 		public static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this MonoDevelop.Ide.Gui.Document doc)
 		{

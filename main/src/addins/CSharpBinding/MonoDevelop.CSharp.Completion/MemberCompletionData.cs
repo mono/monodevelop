@@ -342,8 +342,6 @@ namespace MonoDevelop.CSharp.Completion
 	
 		class OverloadSorter : IComparer<ICompletionData>
 		{
-			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
-			
 			public OverloadSorter ()
 			{
 			}
