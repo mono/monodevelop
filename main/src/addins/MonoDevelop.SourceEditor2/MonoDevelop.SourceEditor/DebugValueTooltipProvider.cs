@@ -39,7 +39,7 @@ using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class DebugValueTooltipProvider: ITooltipProvider, IDisposable
+	public class DebugValueTooltipProvider: TooltipProvider, IDisposable
 	{
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
 		
@@ -56,7 +56,7 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITooltipProvider implementation 
 		
-		public TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
+		public override TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
 		{
 			if (offset >= editor.Document.TextLength)
 				return null;
@@ -196,18 +196,14 @@ namespace MonoDevelop.SourceEditor
 			return char.IsLetterOrDigit (c) || c == '_';
 		}
 			
-		public Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
-			return new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
-		}
-		
-		public void GetRequiredPosition (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
-		{
-			xalign = 0.1;
-			requiredWidth = tipWindow.SizeRequest ().Width;
+			var win = new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
+			win.ShowPopup (editor, new Gdk.Rectangle (mouseX, mouseY - 6, 1, 12), MonoDevelop.Components.PopupPosition.TopLeft);
+			return win;
 		}
 
-		public bool IsInteractive (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow)
+		public override bool IsInteractive (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow)
 		{
 			return true;
 		}

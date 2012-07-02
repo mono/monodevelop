@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 	
-	public class DebugValueWindow : BaseWindow
+	public class DebugValueWindow : PopoverWindow
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
@@ -120,6 +120,9 @@ namespace MonoDevelop.SourceEditor
 			tree.EndEditing += delegate {
 				Modal = false;
 			};
+
+			ShowArrow = true;
+			CornerRadius = 3;
 		}
 
 //		void HandlePinWindowButtonPressEvent (object o, ButtonPressEventArgs args)
