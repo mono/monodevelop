@@ -137,7 +137,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			if (node is TypeDeclaration && (searchedMembers.First () is IType)) 
 				node = ((TypeDeclaration)node).NameToken;
-			
+			if (node is DelegateDeclaration) 
+				node = ((DelegateDeclaration)node).NameToken;
+
 			if (node is EntityDeclaration && (searchedMembers.First () is IMember)) 
 				node = ((EntityDeclaration)node).NameToken;
 			
