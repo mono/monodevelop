@@ -46,7 +46,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, IParsedFile unit)
 		{
-			Ambience ambience = AmbienceService.GetAmbience (ed.Document.MimeType);
 			string tooltip = null;
 			if (result is UnknownIdentifierResolveResult) {
 				tooltip = string.Format ("error CS0103: The name `{0}' does not exist in the current context", ((UnknownIdentifierResolveResult)result).Identifier);

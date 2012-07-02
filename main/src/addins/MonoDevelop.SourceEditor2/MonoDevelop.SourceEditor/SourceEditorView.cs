@@ -189,10 +189,9 @@ namespace MonoDevelop.SourceEditor
 				if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
 					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
 					if (marker != null) {
-						double oldHeight = marker.lastHeight;
 						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); 
 						// ensure that the line cache is renewed
-						double newHeight = marker.GetLineHeight (widget.TextEditor);
+						marker.GetLineHeight (widget.TextEditor);
 					}
 				}
 			};
@@ -711,7 +710,6 @@ namespace MonoDevelop.SourceEditor
 			
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged -= HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;
-			MonoDevelop.Ide.Gui.Pads.ErrorListPad errorListPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
 			TaskService.TaskToggled -= HandleErrorListPadTaskToggled;
 			
 			DisposeErrorMarkers ();
@@ -1068,7 +1066,7 @@ namespace MonoDevelop.SourceEditor
 			if (args.TriggersContextMenu ()) {
 				TextEditor.Caret.Line = args.LineNumber;
 				TextEditor.Caret.Column = 1;
-				IdeApp.CommandService.ShowContextMenu (WorkbenchWindow.ExtensionContext, "/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
+				IdeApp.CommandService.ShowContextMenu (TextEditor, args.RawEvent as Gdk.EventButton, "/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
 			} else if (args.Button == 1) {
 				if (!string.IsNullOrEmpty (this.Document.FileName)) {
 					if (args.LineSegment != null)
