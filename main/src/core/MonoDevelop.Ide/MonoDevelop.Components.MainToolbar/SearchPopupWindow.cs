@@ -86,6 +86,11 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 		bool inResize = false;
 
+		public bool SearchForMembers {
+			get;
+			set;
+		}
+
 		internal void OpenFile ()
 		{
 			var region = SelectedItemRegion;

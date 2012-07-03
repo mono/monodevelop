@@ -84,6 +84,16 @@ namespace MonoDevelop.Components.MainToolbar
 				return button;
 			}
 		}
+
+		bool SearchForMembers {
+			get {
+				return PropertyService.Get ("MainToolbar.Search.IncludeMembers", true);
+			}
+			set {
+				PropertyService.Set ("MainToolbar.Search.IncludeMembers", value);
+			}
+		}
+
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler
 		{
@@ -163,6 +173,20 @@ namespace MonoDevelop.Components.MainToolbar
 			contentBox.PackStart (statusAreaVBox, true, true, 0);
 
 			matchEntry = new SearchEntry ();
+
+			CheckMenuItem includeMembers = this.matchEntry.AddFilterOption (2, GettextCatalog.GetString ("Include _Members"));
+			includeMembers.DrawAsRadio = false;
+			includeMembers.Active = SearchForMembers;
+			includeMembers.Toggled += delegate {
+				SearchForMembers = !SearchForMembers;
+				if (popup != null) {
+					string entry = matchEntry.Entry.Text;
+					popup.Destroy ();
+					popup = null;
+					matchEntry.Entry.Text = entry;
+				}
+			};
+
 			matchEntry.VisibleWindow = false;
 			matchEntry.ForceFilterButtonVisible = true;
 
@@ -221,6 +245,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			if (popup == null) {
 				popup = new SearchPopupWindow ();
+				popup.SearchForMembers = SearchForMembers;
 				popup.Destroyed += delegate {
 					popup = null;
 					matchEntry.Entry.Text = "";

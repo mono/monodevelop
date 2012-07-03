@@ -43,9 +43,9 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class ProjectSearchCategory : SearchCategory
 	{
-		Widget widget;
+		SearchPopupWindow widget;
 
-		public ProjectSearchCategory (Widget widget) : base (GettextCatalog.GetString("Solution"))
+		public ProjectSearchCategory (SearchPopupWindow widget) : base (GettextCatalog.GetString("Solution"))
 		{
 			this.widget = widget;
 			this.lastResult = new WorkerResult (widget);
@@ -137,7 +137,7 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.pattern = searchPattern;
 					newResult.IncludeFiles = true;
 					newResult.IncludeTypes = true;
-					newResult.IncludeMembers = true;
+					newResult.IncludeMembers = widget.SearchForMembers;
 					var firstType = types.FirstOrDefault ();
 					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
 					
