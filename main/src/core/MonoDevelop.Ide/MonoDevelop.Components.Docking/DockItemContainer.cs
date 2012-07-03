@@ -291,7 +291,7 @@ namespace MonoDevelop.Components.Docking
 					if (gcol.L < 0) gcol.L = 0;
 					pat.AddColorStop (1, gcol);
 					cr.Pattern = pat;
-					cr.FillPreserve ();
+					cr.Fill ();
 				} else {
 					if (backgroundColorSet) {
 						Gdk.GC gc = new Gdk.GC (GdkWindow);
@@ -301,8 +301,10 @@ namespace MonoDevelop.Components.Docking
 					}
 				}
 			
-				base.OnExposeEvent (evnt);
-			
+			}
+			base.OnExposeEvent (evnt);
+
+			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Color = (HslColor) Style.Dark (Gtk.StateType.Normal);
 				
 				double y = rect.Y + topMargin / 2d;
