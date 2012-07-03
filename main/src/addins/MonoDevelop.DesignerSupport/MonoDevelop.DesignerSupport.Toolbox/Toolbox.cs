@@ -39,6 +39,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using Mono.TextEditor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -52,11 +53,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		ToolboxWidget toolboxWidget;
 		ScrolledWindow scrolledWindow;
 		
-		ToggleButton filterToggleButton;
 		ToggleButton catToggleButton;
 		ToggleButton compactModeToggleButton;
-		Entry filterEntry;
-		bool filterVisible;
+		SearchEntry filterEntry;
 		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
 		IPadWindow container;
 		Dictionary<string,int> categoryPriorities = new Dictionary<string, int> ();
@@ -70,11 +69,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			#region Toolbar
 			DockItemToolbar toolbar = container.GetToolbar (PositionType.Top);
 		
-			filterToggleButton = new ToggleButton ();
-			filterToggleButton.Image = new Image (Gtk.Stock.Find, IconSize.Menu);
-			filterToggleButton.Toggled += new EventHandler (toggleFiltering);
-			filterToggleButton.TooltipText = GettextCatalog.GetString ("Show search box");
-			toolbar.Add (filterToggleButton);
+			filterEntry = new SearchEntry();
+			filterEntry.Ready = true;
+			filterEntry.HasFrame = false;
+			filterEntry.WidthRequest = 150;
+			filterEntry.Changed += new EventHandler (filterTextChanged);
+			filterEntry.Show ();
+
+			toolbar.Add (filterEntry, true);
 			
 			catToggleButton = new ToggleButton ();
 			catToggleButton.Image = new Image (ImageService.GetPixbuf ("md-design-categorise", IconSize.Menu));
@@ -88,19 +90,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			compactModeToggleButton.TooltipText = GettextCatalog.GetString ("Use compact display");
 			toolbar.Add (compactModeToggleButton);
 	
-			VSeparator sep = new VSeparator ();
-			toolbar.Add (sep);
-			
 			toolboxAddButton = new Button (new Gtk.Image (Gtk.Stock.Add, IconSize.Menu));
 			toolbar.Add (toolboxAddButton);
 			toolboxAddButton.TooltipText = GettextCatalog.GetString ("Add toolbox items");
 			toolboxAddButton.Clicked += new EventHandler (toolboxAddButton_Clicked);
 			toolbar.ShowAll ();
-			
-			filterEntry = new Entry();
-			filterEntry.WidthRequest = 150;
-			filterEntry.Changed += new EventHandler (filterTextChanged);
-			
+
 			#endregion
 			
 			toolboxWidget = new ToolboxWidget ();
@@ -140,7 +135,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			Refresh ();
 			
 			//set initial state
-			filterToggleButton.Active = false;
 			this.toolboxWidget.ShowCategories = catToggleButton.Active = true;
 			compactModeToggleButton.Active = MonoDevelop.Core.PropertyService.Get ("ToolboxIsInCompactMode", false);
 			this.toolboxWidget.IsListMode  = !compactModeToggleButton.Active;
@@ -155,19 +149,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			MonoDevelop.Core.PropertyService.Set ("ToolboxIsInCompactMode", compactModeToggleButton.Active);
 		}
 		
-		void toggleFiltering (object sender, EventArgs e)
-		{
-			if (filterVisible) {
-				filterEntry.Text = "";
-				base.Remove (filterEntry);
-			} else {
-				base.PackStart (filterEntry, false, false, 4);
-				filterEntry.Show ();
-				filterEntry.GrabFocus ();
-			}
-			filterVisible = !filterVisible;
-		}
-		
 		void toggleCategorisation (object sender, EventArgs e)
 		{
 			this.toolboxWidget.ShowCategories = catToggleButton.Active;
@@ -178,7 +159,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			foreach (Category cat in toolboxWidget.Categories) {
 				bool hasVisibleChild = false;
 				foreach (Item child in cat.Items) {
-					child.IsVisible = ((ItemToolboxNode) child.Tag).Filter (filterEntry.Text);
+					child.IsVisible = ((ItemToolboxNode) child.Tag).Filter (filterEntry.Entry.Text);
 					hasVisibleChild |= child.IsVisible;
 				}
 				cat.IsVisible = hasVisibleChild;

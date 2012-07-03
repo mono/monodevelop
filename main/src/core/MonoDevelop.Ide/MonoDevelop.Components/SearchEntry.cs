@@ -50,6 +50,8 @@ namespace MonoDevelop.Components
 
 		private event EventHandler filter_changed;
 		private event EventHandler entry_changed;
+		EventHandler activated_event;
+		bool hasFrame = true;
 
 		public event EventHandler Changed {
 			add { entry_changed += value; }
@@ -57,8 +59,8 @@ namespace MonoDevelop.Components
 		}
 
 		public event EventHandler Activated {
-			add { entry.Activated += value; }
-			remove { entry.Activated -= value; }
+			add { activated_event += value; }
+			remove { activated_event -= value; }
 		}
 
 		public event EventHandler FilterChanged {
@@ -66,7 +68,7 @@ namespace MonoDevelop.Components
 			remove { filter_changed -= value; }
 		}
 		
-		bool forceFilterButtonVisible;
+		bool forceFilterButtonVisible = true;
 		public bool ForceFilterButtonVisible {
 			get {
 				return forceFilterButtonVisible; 
@@ -86,6 +88,11 @@ namespace MonoDevelop.Components
 			get { return this.entry; }
 		}
 
+		public bool HasFrame {
+			get { return hasFrame; }
+			set { hasFrame = value; QueueDraw (); }
+		}
+
 		public SearchEntry ()
 		{
 			AppPaintable = true;
@@ -103,7 +110,7 @@ namespace MonoDevelop.Components
 				filter_button.Pixbuf = value;
 			}
 		}
-		
+
 		private void BuildWidget ()
 		{
 			box = new HBox ();
@@ -122,6 +129,9 @@ namespace MonoDevelop.Components
 			entry.FocusInEvent += OnInnerEntryFocusEvent;
 			entry.FocusOutEvent += OnInnerEntryFocusEvent;
 			entry.Changed += OnInnerEntryChanged;
+			entry.Activated += delegate {
+				NotifyActivated ();
+			};
 			
 			filter_button.Image.Xpad = 0;
 			clear_button.Image.Xpad = 0;
@@ -131,10 +141,8 @@ namespace MonoDevelop.Components
 			filter_button.ButtonReleaseEvent += OnButtonReleaseEvent;
 			clear_button.ButtonReleaseEvent += OnButtonReleaseEvent;
 			clear_button.Clicked += OnClearButtonClicked;
-			
-			filter_button.Visible = false;
-			clear_button.Visible = false;
-			
+
+			ShowHideButtons ();
 		}
 
 		Gtk.EventBox statusLabelEventBox;
@@ -148,6 +156,12 @@ namespace MonoDevelop.Components
 			UpdateStyle ();
 			box.ShowAll ();
 			return statusLabelEventBox;
+		}
+
+		void NotifyActivated ()
+		{
+			if (activated_event != null)
+				activated_event (this, EventArgs.Empty);
 		}
 
 		private void BuildMenu ()
@@ -293,6 +307,7 @@ namespace MonoDevelop.Components
 		{
 			active_filter_id = 0;
 			entry.Text = String.Empty;
+			NotifyActivated ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -309,6 +324,7 @@ namespace MonoDevelop.Components
 			if (evnt.Key == Gdk.Key.Escape) {
 				active_filter_id = 0;
 				entry.Text = String.Empty;
+				NotifyActivated ();
 				return true;
 			}
 			return base.OnKeyPressEvent (evnt);
@@ -319,8 +335,10 @@ namespace MonoDevelop.Components
 			Style.PaintFlatBox (entry.Style, GdkWindow, State, ShadowType.None,
 				evnt.Area, this, "entry_bg", 0, 0, Allocation.Width, Allocation.Height);
 			PropagateExpose (Child, evnt);
-			Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
-				evnt.Area, entry, "entry", 0, 0, Allocation.Width, Allocation.Height);
+			if (hasFrame) {
+				Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
+				                   evnt.Area, entry, "entry", 0, 0, Allocation.Width, Allocation.Height);
+			}
 			return true;
 		}
 

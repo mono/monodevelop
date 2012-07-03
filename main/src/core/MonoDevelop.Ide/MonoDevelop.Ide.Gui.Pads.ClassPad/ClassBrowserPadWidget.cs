@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Docking;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
@@ -50,27 +51,25 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		TreeView searchResultsTreeView = new Gtk.TreeView ();
 		ListStore list;
 		TreeModelSort model;
-		Entry searchEntry;
-		Button buttonSearch, buttonCancelSearch;
+		SearchEntry searchEntry;
 		Notebook notebook;
-		
-		
+
 		bool isInBrowerMode = true;
+
 		public ClassBrowserPadWidget (ExtensibleTreeView treeView, IPadWindow window)
 		{
 			this.treeView = treeView;
 			
 			DockItemToolbar searchBox = window.GetToolbar (PositionType.Top);
 			
-			searchEntry = new Entry ();
+			searchEntry = new SearchEntry () {
+				HasFrame = false,
+				Ready = true
+			};
+
 			searchBox.Add (searchEntry, true);
-			buttonSearch = new Button (new Gtk.Image (Gtk.Stock.Find, IconSize.Menu));
-			buttonSearch.Relief = ReliefStyle.None;
-			buttonCancelSearch = new Button (new Gtk.Image (Gtk.Stock.Stop, IconSize.Menu));
-			buttonCancelSearch.Relief = ReliefStyle.None;
-			searchBox.Add (buttonSearch);
-			searchBox.Add (buttonCancelSearch);
 			searchBox.ShowAll ();
+			searchEntry.Show ();
 			
 			notebook = new Notebook ();
 			notebook.ShowTabs = false;
@@ -97,20 +96,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			IdeApp.Workspace.WorkspaceItemClosed += OnCloseCombine;
 					
 			this.searchEntry.Changed += SearchEntryChanged;
-			this.buttonCancelSearch.Clicked += CancelSearchClicked;
-			this.searchEntry.Activated += SearchClicked;
-			this.searchEntry.KeyPressEvent += SearchEntryKeyPressEvent;
-			this.buttonSearch.Clicked += SearchClicked;
-			
+
 			this.ShowAll ();
 		}
 
-		void SearchEntryKeyPressEvent(object o, KeyPressEventArgs args)
-		{
-			if (args.Event.Key == Gdk.Key.Escape)
-				CancelSearchClicked (this, System.EventArgs.Empty);
-		}
-		
 		List<ITypeDefinition> searchResults = new List<ITypeDefinition> ();
 		Thread searchThread;
 		object matchLock   = new object ();
@@ -118,9 +107,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 
 		void SearchEntryChanged (object sender, EventArgs e)
 		{
-			if (isInBrowerMode)
-				return;
-			PerformSearch ();
+			if (searchEntry.Entry.Text.Length > 0) {
+				SetSearchMode ();
+				PerformSearch ();
+			}
+			else
+				SetBrowserMode ();
 		}
 		
 		void SearchRowActivated (object sender, RowActivatedArgs args)
@@ -147,7 +139,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			
 		//	userSelecting = false;
 			
-			string toMatch = this.searchEntry.Text.ToUpper ();
+			string toMatch = this.searchEntry.Entry.Text.ToUpper ();
 				
 			lock (matchLock) {
 				matchString = toMatch;
@@ -178,7 +170,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		
 		bool ShouldAdd (IType type)
 		{
-			
 			return matchString.Length > 0 && type.FullName.ToUpper ().Contains (matchString);
 		}
 				
@@ -214,24 +205,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 				return searchResults.Count > 0;
 			}
 		}
-				
-		void SearchClicked (object sender, EventArgs e)
+
+		void SetSearchMode ()
 		{
-			if (!isInBrowerMode)
-				return;
-			this.notebook.Page = 1;
-			isInBrowerMode = false;
-			PerformSearch ();
+			if (isInBrowerMode) {
+				this.notebook.Page = 1;
+				isInBrowerMode = false;
+			}
 		}
-		
-		void CancelSearchClicked (object sender, EventArgs e)
+
+		void SetBrowserMode ()
 		{
-			if (isInBrowerMode)
-				return;
-			this.notebook.Page = 0;
-			isInBrowerMode = true;
+			if (!isInBrowerMode) {
+				this.notebook.Page = 0;
+				isInBrowerMode = true;
+			}
 		}
-			
+
 		void OnOpenCombine (object sender, WorkspaceItemEventArgs e)
 		{
 			treeView.LoadTree (e.Item);
