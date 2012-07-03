@@ -1556,10 +1556,12 @@ namespace MonoDevelop.SourceEditor
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int wordOffset)
 		{
 			var data = GetTextEditorData ();
+			if (data == null)
+				return;
 			using (var undo = data.OpenUndoGroup ()) {
 				SetCompletionText (data, ctx, partial_word, complete_word, wordOffset);
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				if (complete_word.IndexOfAny (new [] {' ', '\t', '{', '}'}) > 0 && formatter.SupportsOnTheFlyFormatting) {
+				if (formatter != null && complete_word.IndexOfAny (new [] {' ', '\t', '{', '}'}) > 0 && formatter.SupportsOnTheFlyFormatting) {
 					formatter.OnTheFlyFormat (WorkbenchWindow.Document, ctx.TriggerOffset, ctx.TriggerOffset + complete_word.Length);
 				}
 			}
