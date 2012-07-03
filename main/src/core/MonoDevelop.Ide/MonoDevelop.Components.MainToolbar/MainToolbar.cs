@@ -164,7 +164,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 			matchEntry = new SearchEntry ();
 			matchEntry.VisibleWindow = false;
-			 
+			matchEntry.ForceFilterButtonVisible = true;
+
 			var info = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
 
 			if (info != null && !string.IsNullOrEmpty (info.AccelKey)) {

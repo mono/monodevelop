@@ -108,7 +108,7 @@ namespace MonoDevelop.Components
 		{
 			box = new HBox ();
 			entry = new FramelessEntry (this);
-			filter_button = new HoverImageButton (IconSize.Menu, new string[] { Stock.Find });
+			filter_button = new HoverImageButton (IconSize.Menu, new string[] { "md-searchbox-search" });
 			clear_button = new HoverImageButton (IconSize.Menu, new string[] { "md-searchbox-clear" });
 			
 			box.PackStart (filter_button, false, false, 0);
@@ -123,8 +123,8 @@ namespace MonoDevelop.Components
 			entry.FocusOutEvent += OnInnerEntryFocusEvent;
 			entry.Changed += OnInnerEntryChanged;
 			
-			filter_button.Image.Xpad = 2;
-			clear_button.Image.Xpad = 2;
+			filter_button.Image.Xpad = 0;
+			clear_button.Image.Xpad = 0;
 			filter_button.CanFocus = false;
 			clear_button.CanFocus = false;
 			
