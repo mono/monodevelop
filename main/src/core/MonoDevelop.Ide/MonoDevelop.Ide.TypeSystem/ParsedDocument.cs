@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		public ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		public override ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
 		{
 			return null;
 		}

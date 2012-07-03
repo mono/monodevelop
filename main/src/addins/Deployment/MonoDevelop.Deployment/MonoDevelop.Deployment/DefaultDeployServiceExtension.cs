@@ -29,7 +29,7 @@ namespace MonoDevelop.Deployment
 				deployFiles.Add (new DeployFile (project, file, file.ToRelative (outDir), TargetDirectory.ProgramFiles));
 			}
 			
-			FilePath outputFile = project.GetOutputFileName (configuration);
+//			FilePath outputFile = project.GetOutputFileName (configuration);
 			
 			// Collect deployable files
 			foreach (ProjectFile file in project.Files) {

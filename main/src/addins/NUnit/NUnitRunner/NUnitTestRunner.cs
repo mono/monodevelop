@@ -43,8 +43,17 @@ namespace MonoDevelop.NUnit.External
 {
 	public class NUnitTestRunner: MarshalByRefObject
 	{
-		public void Initialize (string nunitPath, string nunitCorePath, string nunitCoreInterfacesPath)
+		public NUnitTestRunner ()
 		{
+		}
+
+		public void PreloadAssemblies (string nunitPath, string nunitCorePath, string nunitCoreInterfacesPath)
+		{
+			// Note: We need to load all nunit.*.dll assemblies before we do *anything* else in this class
+			// This is to ensure that we always load the assemblies from the monodevelop directory and not
+			// from the directory of the assembly under test. For example we wnat to load
+			// /Applications/MonoDevelop/lib/Addins/nunit.framework.dll and not /user/app/foo/bin/debug/nunit.framework.dll
+
 			// In some cases MS.NET can't properly resolve assemblies even if they
 			// are already loaded. For example, when deserializing objects from remoting.
 			AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
@@ -54,13 +63,16 @@ namespace MonoDevelop.NUnit.External
 				}
 				return null;
 			};
-
+			
 			// Force the loading of the NUnit.Framework assembly.
 			// It's needed since that dll is not located in the test dll directory.
 			Assembly.LoadFrom (nunitCoreInterfacesPath);
 			Assembly.LoadFrom (nunitCorePath);
 			Assembly.LoadFrom (nunitPath);
+		}
 
+		public void Initialize ()
+		{
 			// Initialize ExtensionHost if not already done
 			if ( !CoreExtensions.Host.Initialized )
 				CoreExtensions.Host.InitializeService();

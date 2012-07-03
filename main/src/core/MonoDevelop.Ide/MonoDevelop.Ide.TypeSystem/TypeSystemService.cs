@@ -755,10 +755,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			public ICompilation Compilation {
 				get {
-					if (compilation == null) {
-						compilation = Content.CreateCompilation ();
+					lock (this) {
+						if (compilation == null) {
+							compilation = Content.CreateCompilation ();
+						}
+						return compilation;
 					}
-					return compilation;
 				}
 			}
 			
@@ -937,6 +939,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				#endregion
 
+				object compilerSettings;
+				public IProjectContent SetCompilerSettings (object compilerSettings)
+				{
+					this.compilerSettings = compilerSettings;
+					return this;
+				}
+
+				public object CompilerSettings {
+					get {
+						return compilerSettings;
+					}
+				}
 			}
 
 			bool HasCyclicRefs (ProjectContentWrapper wrapper)
@@ -1089,7 +1103,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (!args.Any (x => x is SolutionItemModifiedEventInfo && (((SolutionItemModifiedEventInfo)x).Hint == "TargetFramework" || ((SolutionItemModifiedEventInfo)x).Hint == "References")))
 				return;
-			cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
 			var project = (Project)sender;
 			
 			ProjectContentWrapper wrapper;
@@ -1624,7 +1637,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		static Dictionary<Project, ITypeResolveContext> cachedProjectContents = new Dictionary<Project, ITypeResolveContext> ();
 		static Dictionary<string, AssemblyContext> cachedAssemblyContents = new Dictionary<string, AssemblyContext> ();
 		
 		public static void ForceUpdate (ProjectContentWrapper context)

@@ -339,7 +339,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
-			cr.Rectangle (3, Allocation.Height - IndicatorHeight + 4, Allocation.Width - 6, IndicatorHeight - 6);
+			cr.Rectangle (4, Allocation.Height - IndicatorHeight + 3, Allocation.Width - 6, IndicatorHeight - 6);
 			
 			var darkColor = (HslColor)GetIndicatorColor (severity);
 			darkColor.L *= 0.5;
@@ -462,12 +462,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected void DrawLeftBorder (Cairo.Context cr)
 		{
 			cr.MoveTo (0.5, 1.5);
-			cr.LineTo (0.5, Allocation.Height);
+			cr.LineTo (0.5, Allocation.Height - 1);
 			if (TextEditor.ColorStyle != null) {
 				var col = (HslColor)TextEditor.ColorStyle.Default.CairoBackgroundColor;
-				col.L *= 0.90;
+				col.L *= 0.88;
 				cr.Color = col;
-				
+			
 			}
 			cr.Stroke ();
 			
@@ -543,8 +543,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Color = (HslColor)Style.Dark (State);
 				cr.MoveTo (-0.5, 0.5);
 				cr.LineTo (Allocation.Width, 0.5);
+
+				cr.MoveTo (-0.5, Allocation.Height - 0.5);
+				cr.LineTo (Allocation.Width, Allocation.Height - 0.5);
 				cr.Stroke ();
-				
+
 				if (TextEditor == null)
 					return true;
 				

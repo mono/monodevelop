@@ -18,7 +18,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
 	/// Default ITypeResolveContext implementation.

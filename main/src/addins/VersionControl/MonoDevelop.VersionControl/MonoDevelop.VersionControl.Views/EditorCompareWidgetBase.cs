@@ -580,7 +580,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			foreach (var data in localUpdate.ToArray ()) {
 				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Replace (e.Offset, e.RemovalLength, e.InsertedText);
+				data.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
 				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 				data.Document.CommitUpdateAll ();
 			}
@@ -618,7 +618,7 @@ namespace MonoDevelop.VersionControl.Views
 			localUpdate.Remove (data);
 			var editor = info.Document.GetContent<IEditableTextFile> ();
 			editor.DeleteText (e.Offset, e.RemovalLength);
-			editor.InsertText (e.Offset, e.InsertedText);
+			editor.InsertText (e.Offset, e.InsertedText.Text);
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}

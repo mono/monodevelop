@@ -171,6 +171,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public bool AllowExpandingParams { get; set; }
 		
 		/// <summary>
+		/// Gets/Sets whether ConversionResolveResults created by this OverloadResolution
+		/// instance apply overflow checking.
+		/// The default value is false.
+		/// </summary>
+		public bool CheckForOverflow { get; set; }
+		
+		/// <summary>
 		/// Gets the arguments for which this OverloadResolution instance was created.
 		/// </summary>
 		public IList<ResolveResult> Arguments {
@@ -801,9 +808,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						parameterType = SpecialType.UnknownType;
 					}
 					if (arguments[i].IsCompileTimeConstant && conversions[i] != Conversion.None) {
-						args[i] = new CSharpResolver(compilation).ResolveCast(parameterType, argument);
+						args[i] = new CSharpResolver(compilation).WithCheckForOverflow(CheckForOverflow).ResolveCast(parameterType, argument);
 					} else {
-						args[i] = new ConversionResolveResult(parameterType, argument, conversions[i]);
+						args[i] = new ConversionResolveResult(parameterType, argument, conversions[i], CheckForOverflow);
 					}
 				}
 			}

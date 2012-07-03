@@ -308,4 +308,12 @@
     <itemgroups />
     <signals />
   </object>
+  <object type="MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals />
+  </object>
+  <object type="MonoDevelop.Components.ProgressControl" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
+    <itemgroups />
+    <signals />
+  </object>
 </objects>

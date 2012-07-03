@@ -32,6 +32,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		IList<IUnresolvedAttribute> returnTypeAttributes;
 		IList<IUnresolvedTypeParameter> typeParameters;
 		IList<IUnresolvedParameter> parameters;
+		IUnresolvedMember accessorOwner;
 		
 		protected override void FreezeInternal()
 		{
@@ -125,6 +126,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public IUnresolvedMember AccessorOwner {
+			get { return accessorOwner; }
+			set {
+				ThrowIfFrozen();
+				accessorOwner = value;
+			}
+		}
+		
 		public override string ToString()
 		{
 			StringBuilder b = new StringBuilder("[");
@@ -150,6 +159,29 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override IMember Resolve(ITypeResolveContext context)
 		{
+			if (accessorOwner != null) {
+				var owner = accessorOwner.Resolve(context);
+				if (owner != null) {
+					IProperty p = owner as IProperty;
+					if (p != null) {
+						if (p.CanGet && p.Getter.Name == this.Name)
+							return p.Getter;
+						if (p.CanSet && p.Setter.Name == this.Name)
+							return p.Setter;
+					}
+					IEvent e = owner as IEvent;
+					if (e != null) {
+						if (e.CanAdd && e.AddAccessor.Name == this.Name)
+							return e.AddAccessor;
+						if (e.CanRemove && e.RemoveAccessor.Name == this.Name)
+							return e.RemoveAccessor;
+						if (e.CanInvoke && e.InvokeAccessor.Name == this.Name)
+							return e.InvokeAccessor;
+					}
+				}
+				return null;
+			}
+			
 			ITypeReference interfaceTypeReference = null;
 			if (this.IsExplicitInterfaceImplementation && this.ExplicitInterfaceImplementations.Count == 1)
 				interfaceTypeReference = this.ExplicitInterfaceImplementations[0].DeclaringTypeReference;

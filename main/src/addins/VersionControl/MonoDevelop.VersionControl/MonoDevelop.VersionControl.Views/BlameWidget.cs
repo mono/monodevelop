@@ -575,14 +575,14 @@ namespace MonoDevelop.VersionControl.Views
 					
 					if (lineCount > 0)
 						annotations.RemoveRange (startLine - 1, lineCount);
-					if (!string.IsNullOrEmpty (e.InsertedText)) {
+					if (!string.IsNullOrEmpty (e.InsertedText.Text)) {
 						for (int i=0; i<lineCount; ++i)
 							annotations.Insert (startLine - 1, locallyModified);
 					}
 					return;
 				} else if (0 == e.RemovalLength) {
 					// insert
-					tokens = e.InsertedText.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
+					tokens = e.InsertedText.Text.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
 						lineCount = tokens.Length - 1;
 						for (int i=0; i<lineCount; ++i) {
 							annotations.Insert (Math.Min (startLine, annotations.Count), locallyModified);

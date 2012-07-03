@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				if (!builder.HasChild (ns.Name, typeof(NamespaceData)))
 					builder.AddChild (new ProjectNamespaceData (project, ns));
 			}
-			bool nestedNs = builder.Options ["NestedNamespaces"];
+//			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
 			
 			foreach (var type in namesp.Types) {

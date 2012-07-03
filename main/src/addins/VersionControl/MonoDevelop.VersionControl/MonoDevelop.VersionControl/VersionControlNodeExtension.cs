@@ -38,7 +38,28 @@ namespace MonoDevelop.VersionControl
 		{
 			VersionControlService.FileStatusChanged += Monitor;
 		}
-		
+
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			IdeApp.CommandService.ApplicationFocusIn += HandleApplicationFocusIn;
+		}
+
+		public override void Dispose ()
+		{
+			IdeApp.CommandService.ApplicationFocusIn -= HandleApplicationFocusIn;
+			base.Dispose ();
+		}
+
+		void HandleApplicationFocusIn (object sender, EventArgs e)
+		{
+			foreach (var ob in filePaths.Values) {
+				ITreeBuilder tb = Context.GetTreeBuilder (ob.Object);
+				if (tb != null)
+					tb.Update ();
+			}
+		}
+
 		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			if (!builder.Options["ShowVersionControlOverlays"])

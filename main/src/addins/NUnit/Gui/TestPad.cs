@@ -716,7 +716,7 @@ namespace MonoDevelop.NUnit
 		void OnChartButtonPress (object o, Gtk.ButtonPressEventArgs args)
 		{
 			if (args.Event.TriggersContextMenu ()) {
-				IdeApp.CommandService.ShowContextMenu ("/MonoDevelop/NUnit/ContextMenu/TestChart");
+				IdeApp.CommandService.ShowContextMenu (Control, args.Event, "/MonoDevelop/NUnit/ContextMenu/TestChart");
 				args.RetVal = true;
 			}
 		}

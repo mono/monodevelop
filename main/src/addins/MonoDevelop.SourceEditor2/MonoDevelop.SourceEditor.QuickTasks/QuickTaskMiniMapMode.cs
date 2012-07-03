@@ -124,9 +124,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			{
 				if (button != 1)
 					return;
-				var max = TextEditor.GetTextEditorData ().VisibleLineCount;
-				var clickPosition = (GetBufferYOffset () + y) / lineHeight;
-				double position = clickPosition / max * (vadjustment.Upper - vadjustment.Lower) - vadjustment.PageSize / 2;
+				double position = (y / Allocation.Height) * vadjustment.Upper - vadjustment.PageSize / 2;
 				position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
 				vadjustment.Value = position;
 			}
@@ -191,7 +189,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			{
 				DestroyBgBuffer ();
 				curWidth = Allocation.Width;
-				curHeight = Math.Max (Allocation.Height, (int)(lineHeight * TextEditor.GetTextEditorData ().VisibleLineCount));
+				curHeight = Math.Max (Allocation.Height, (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount + TextEditor.EditorLineThreshold)));
 				if (GdkWindow == null || curWidth < 1 || curHeight < 1)
 					return;
 				backgroundPixbuf = new Pixmap (GdkWindow, curWidth, curHeight);
@@ -233,7 +231,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						cr.Color = mode.TextEditor.ColorStyle.Default.CairoBackgroundColor;
 					cr.Fill ();
 					
-					maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount;
+					maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount + TextEditor.EditorLineThreshold;
 					sx = w / (double)mode.TextEditor.Allocation.Width;
 					sy = Math.Min (1, lineHeight * maxLine / (double)mode.TextEditor.GetTextEditorData ().TotalHeight );
 					cr.Scale (sx, sy);
@@ -293,9 +291,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				int h = backgroundPixbuf.ClipRegion.Clipbox.Height - Allocation.Height;
 				if (h < 0)
 					return 0;
-				return (int)(h * vadjustment.Value / (vadjustment.Upper - vadjustment.Lower));
+				return Math.Max (0, (int)(h * (vadjustment.Value) / (vadjustment.Upper - vadjustment.Lower - vadjustment.PageSize)));
 			}
-
 
 			protected override bool OnExposeEvent (Gdk.EventExpose e)
 			{
@@ -313,8 +310,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					}
 					
 					cr.Color = (HslColor)Style.Dark (State);
-					cr.MoveTo (0.5, 0.5);
+					cr.MoveTo (-0.5, 0.5);
 					cr.LineTo (Allocation.Width, 0.5);
+					cr.MoveTo (-0.5, Allocation.Height - 0.5);
+					cr.LineTo (Allocation.Width, Allocation.Height - 0.5);
 					cr.Stroke ();
 
 					if (backgroundPixbuf != null) {

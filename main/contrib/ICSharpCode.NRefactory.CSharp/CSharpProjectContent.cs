@@ -33,12 +33,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		string assemblyName;
 		Dictionary<string, IParsedFile> parsedFiles;
 		List<IAssemblyReference> assemblyReferences;
+		CompilerSettings compilerSettings;
 		
 		public CSharpProjectContent()
 		{
 			this.assemblyName = string.Empty;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>();
+			this.compilerSettings = new CompilerSettings();
+			compilerSettings.Freeze();
 		}
 		
 		protected CSharpProjectContent(CSharpProjectContent pc)
@@ -46,9 +49,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.assemblyName = pc.assemblyName;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles, Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
+			this.compilerSettings = pc.CompilerSettings;
 			this.Location = pc.Location;
 		}
+
 		public string Location { get; set; }
+
 		public IEnumerable<IParsedFile> Files {
 			get { return parsedFiles.Values; }
 		}
@@ -59,6 +65,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string AssemblyName {
 			get { return assemblyName; }
+		}
+		
+		public CompilerSettings CompilerSettings {
+			get { return compilerSettings; }
+		}
+		
+		object IProjectContent.CompilerSettings {
+			get { return compilerSettings; }
 		}
 		
 		public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
@@ -110,6 +124,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			CSharpProjectContent pc = Clone();
 			pc.assemblyName = newAssemblyName;
+			return pc;
+		}
+		
+		public IProjectContent SetCompilerSettings(object compilerSettings)
+		{
+			if (!(compilerSettings is CompilerSettings))
+				throw new ArgumentException("Settings must be an instance of " + typeof(CompilerSettings).FullName, "compilerSettings");
+			CSharpProjectContent pc = Clone();
+			pc.compilerSettings = (CompilerSettings)compilerSettings;
+			pc.compilerSettings.Freeze();
 			return pc;
 		}
 		

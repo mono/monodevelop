@@ -162,22 +162,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					
 					ParameterModifier mod;
 					switch (status.Item2) {
-					case DefiniteAssignmentStatus.AssignedAfterTrueExpression:
-					case DefiniteAssignmentStatus.AssignedAfterFalseExpression:
-					case DefiniteAssignmentStatus.PotentiallyAssigned:
-						mod = ParameterModifier.Ref;
-						argumentExpression = new DirectionExpression(FieldDirection.Ref, argumentExpression);
-						break;
-					case DefiniteAssignmentStatus.DefinitelyAssigned:
-						if (statusBeforeMethod [status.Item1] != DefiniteAssignmentStatus.PotentiallyAssigned)
-							goto case DefiniteAssignmentStatus.PotentiallyAssigned;
-						mod = ParameterModifier.Out;
-						argumentExpression = new DirectionExpression(FieldDirection.Out, argumentExpression);
-						break;
-						//						case DefiniteAssignmentStatus.Unassigned:
-					default:
-						mod = ParameterModifier.None;
-						break;
+						case DefiniteAssignmentStatus.AssignedAfterTrueExpression:
+						case DefiniteAssignmentStatus.AssignedAfterFalseExpression:
+						case DefiniteAssignmentStatus.PotentiallyAssigned:
+							mod = ParameterModifier.Ref;
+							argumentExpression = new DirectionExpression(FieldDirection.Ref, argumentExpression);
+							break;
+						case DefiniteAssignmentStatus.DefinitelyAssigned:
+							if (statusBeforeMethod [status.Item1] != DefiniteAssignmentStatus.PotentiallyAssigned)
+								goto case DefiniteAssignmentStatus.PotentiallyAssigned;
+							mod = ParameterModifier.Out;
+							argumentExpression = new DirectionExpression(FieldDirection.Out, argumentExpression);
+							break;
+							//						case DefiniteAssignmentStatus.Unassigned:
+						default:
+							mod = ParameterModifier.None;
+							break;
 					}
 					method.Parameters.Add(
 						new ParameterDeclaration(context.CreateShortType(status.Item1.Type), status.Item1.Name, mod));

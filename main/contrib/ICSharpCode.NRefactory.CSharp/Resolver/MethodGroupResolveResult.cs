@@ -51,6 +51,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	
 	/// <summary>
 	/// Represents a group of methods.
+	/// A method reference used to create a delegate is resolved to a MethodGroupResolveResult.
+	/// The MethodGroupResolveResult has no type.
+	/// To retrieve the delegate type or the chosen overload, look at the method group conversion.
 	/// </summary>
 	public class MethodGroupResolveResult : ResolveResult
 	{
@@ -178,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return string.Format("[{0} with {1} method(s)]", GetType().Name, this.Methods.Count());
 		}
 		
-		public OverloadResolution PerformOverloadResolution(ICompilation compilation, ResolveResult[] arguments, string[] argumentNames = null, bool allowExtensionMethods = true, bool allowExpandingParams = true, CSharpConversions conversions = null)
+		public OverloadResolution PerformOverloadResolution(ICompilation compilation, ResolveResult[] arguments, string[] argumentNames = null, bool allowExtensionMethods = true, bool allowExpandingParams = true, bool checkForOverflow = false, CSharpConversions conversions = null)
 		{
 			Log.WriteLine("Performing overload resolution for " + this);
 			Log.WriteCollection("  Arguments: ", arguments);
@@ -186,6 +189,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			var typeArgumentArray = this.TypeArguments.ToArray();
 			OverloadResolution or = new OverloadResolution(compilation, arguments, argumentNames, typeArgumentArray, conversions);
 			or.AllowExpandingParams = allowExpandingParams;
+			or.CheckForOverflow = checkForOverflow;
 			
 			or.AddMethodLists(methodLists);
 			
@@ -207,6 +211,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					var extOr = new OverloadResolution(compilation, extArguments, extArgumentNames, typeArgumentArray, conversions);
 					extOr.AllowExpandingParams = allowExpandingParams;
 					extOr.IsExtensionMethodInvocation = true;
+					extOr.CheckForOverflow = checkForOverflow;
 					
 					foreach (var g in extensionMethods) {
 						foreach (var method in g) {

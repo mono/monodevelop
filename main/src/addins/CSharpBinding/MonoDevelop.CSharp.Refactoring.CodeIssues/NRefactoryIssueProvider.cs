@@ -60,11 +60,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public override IEnumerable<CodeIssue> GetIssues (Document document, CancellationToken cancellationToken)
 		{
-			var context = new MDRefactoringContext (document, document.Editor.Caret.Location);
+			var context = new MDRefactoringContext (document, document.Editor.Caret.Location, cancellationToken);
 			if (context.IsInvalid || context.RootNode == null)
 				yield break;
 			int issueNum = 0;
 			foreach (var action in issueProvider.GetIssues (context)) {
+				if (cancellationToken.IsCancellationRequested)
+					yield break;
 				if (action.Actions == null) {
 					LoggingService.LogError ("NRefactory actions == null in :" + Title);
 					continue;
@@ -76,6 +78,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				
 				var actions = new List<MonoDevelop.CodeActions.CodeAction> ();
 				foreach (var act in action.Actions) {
+					if (cancellationToken.IsCancellationRequested)
+						yield break;
 					if (act == null) {
 						LoggingService.LogError ("NRefactory issue action was null in :" + Title);
 						continue;
@@ -86,7 +90,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					actionNum++;
 				}
 				var issue = new CodeIssue (
-					GettextCatalog.GetString (action.Desription ?? ""),
+					GettextCatalog.GetString (action.Description ?? ""),
 					action.Start,
 					action.End,
 					actions

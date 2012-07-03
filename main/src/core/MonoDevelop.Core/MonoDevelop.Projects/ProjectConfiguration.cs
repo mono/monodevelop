@@ -46,6 +46,10 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		public virtual FilePath IntermediateOutputDirectory {
+			get { return ParentItem.BaseDirectory.Combine ("obj", this.Name);; }
+		}
+
 		[ProjectPathItemProperty("OutputPath")]
 		private FilePath outputDirectory = "." + Path.DirectorySeparatorChar;
 		public virtual FilePath OutputDirectory {

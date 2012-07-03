@@ -49,9 +49,14 @@ namespace MonoDevelop.CodeActions
 		
 		void RemoveWidget ()
 		{
+			/*
 			if (widget == null)
 				return;
-			widget.Hide ();
+			widget.Hide ();*/
+			if (widget != null) {
+				widget.Destroy ();
+				widget = null;
+			}
 		}
 		
 		public override void Dispose ()
@@ -82,20 +87,7 @@ namespace MonoDevelop.CodeActions
 				RemoveWidget ();
 				return;
 			}
-			if (!fixes.Any ()) {
-				ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
-				ICSharpCode.NRefactory.CSharp.AstNode node;
-				if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
-					var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, resolveResult);
-					if (!possibleNamespaces.Any ()) {
-						RemoveWidget ();
-						return;
-					}
-				} else {
-					RemoveWidget ();
-					return;
-				}
-			}
+
 			var container = editor.Parent.Parent as TextEditorContainer;
 			if (container == null) {
 				RemoveWidget ();
@@ -106,6 +98,7 @@ namespace MonoDevelop.CodeActions
 				container.AddTopLevelWidget (widget,
 					2 + (int)editor.Parent.TextViewMargin.XOffset,
 					-2 + (int)editor.Parent.LineToY (document.Editor.Caret.Line));
+				widget.Show ();
 			} else {
 				if (!widget.Visible)
 					widget.Show ();
@@ -131,12 +124,28 @@ namespace MonoDevelop.CodeActions
 		public override void CursorPositionChanged ()
 		{
 			CancelQuickFixTimer ();
-			quickFixCancellationTokenSource = new CancellationTokenSource ();
 			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null) {
+				quickFixCancellationTokenSource = new CancellationTokenSource ();
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Document.Editor.Caret.Location;
 					RefactoringService.QueueQuickFixAnalysis (Document, loc, token, delegate(List<CodeAction> fixes) {
+						if (!fixes.Any ()) {
+							ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
+							ICSharpCode.NRefactory.CSharp.AstNode node;
+							if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node, token)) {
+								var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, resolveResult);
+								if (!possibleNamespaces.Any ()) {
+									if (widget != null)
+										Application.Invoke (delegate { RemoveWidget (); });
+									return;
+								}
+							} else {
+								if (widget != null)
+									Application.Invoke (delegate { RemoveWidget (); });
+								return;
+							}
+						}
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)
 								return;

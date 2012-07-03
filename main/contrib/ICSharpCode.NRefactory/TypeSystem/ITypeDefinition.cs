@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="context">
 		/// Context for looking up the type. The context must specify the current assembly.
-		/// A <see cref="Implementation.SimpleTypeResolveContext"/> that specifies the current assembly is sufficient.
+		/// A <see cref="SimpleTypeResolveContext"/> that specifies the current assembly is sufficient.
 		/// </param>
 		/// <returns>
 		/// Returns the resolved type definition.

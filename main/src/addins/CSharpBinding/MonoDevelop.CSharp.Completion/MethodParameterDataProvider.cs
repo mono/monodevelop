@@ -34,35 +34,24 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class MethodParameterDataProvider : IParameterDataProvider
+	class MethodParameterDataProvider : AbstractParameterDataProvider
 	{
-		protected CSharpCompletionTextEditorExtension ext;
-		
 		protected List<IMethod> methods = new List<IMethod> ();
 		protected CSharpAmbience ambience = new CSharpAmbience ();
-		int startOffset;
 		protected bool staticResolve = false;
 
-		public int StartOffset {
-			get {
-				return startOffset;
-			}
+		protected MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext) : base (ext, startOffset)
+		{
 		}
 		
-		protected MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext)
+		public MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IMethod> m) : base (ext, startOffset)
 		{
-			this.startOffset = startOffset;
-			this.ext = ext;	
-		}
-		
-		public MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IMethod> m)
-		{
-			this.startOffset = startOffset;
-			this.ext = ext;
-			
 			HashSet<string> alreadyAdded = new HashSet<string> ();
 			foreach (var method in m) {
 				if (method.IsConstructor)
@@ -77,9 +66,8 @@ namespace MonoDevelop.CSharp.Completion
 			methods.Sort (MethodComparer);
 		}
 		
-		public MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext, IMethod method)
+		public MethodParameterDataProvider (CSharpCompletionTextEditorExtension ext, IMethod method) : base (ext, 0)
 		{
-			this.ext = ext;
 			methods.Add (method);
 		}
 		
@@ -88,118 +76,14 @@ namespace MonoDevelop.CSharp.Completion
 			return left.Parameters.Count - right.Parameters.Count;
 		}
 		
-//		public NRefactoryParameterDataProvider (TextEditorData editor, TypeResolveResult resolveResult)
-//		{
-//			HashSet<string> alreadyAdded = new HashSet<string> ();
-//			if (resolveResult.CallingType != null) {
-//				bool includeProtected = true;
-//				foreach (IMethod method in resolveResult.CallingType.Methods) {
-//					if (!method.IsConstructor)
-//						continue;
-//					string str = ambience.GetString (method, OutputFlags.IncludeParameters);
-//					if (alreadyAdded.Contains (str))
-//						continue;
-//					alreadyAdded.Add (str);
-//					
-//					if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
-//						methods.Add (method);
-//				}
-//			}
-//		}
-//		
-//		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, BaseResolveResult resolveResult)
-//		{
-//			HashSet<string> alreadyAdded = new HashSet<string> ();
-//			if (resolveResult.CallingType != null) {
-//				IType resolvedType = resolver.Dom.GetType (resolveResult.ResolvedType);
-//				foreach (IReturnType rt in resolveResult.CallingType.BaseTypes) {
-//					IType baseType = resolver.SearchType (rt);
-//					bool includeProtected = DomType.IncludeProtected (resolver.Dom, baseType, resolvedType);
-//					
-//					if (baseType != null) {
-//						foreach (IMethod method in baseType.Methods) {
-//							if (!method.IsConstructor)
-//								continue;
-//							string str = ambience.GetString (method, OutputFlags.IncludeParameters);
-//							if (alreadyAdded.Contains (str))
-//								continue;
-//							alreadyAdded.Add (str);
-//							
-//							if (method.IsAccessibleFrom (resolver.Dom, resolver.CallingType, resolver.CallingMember, includeProtected))
-//								methods.Add (method);
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		// used for constructor completion
-//		public NRefactoryParameterDataProvider (TextEditorData editor, NRefactoryResolver resolver, IType type)
-//		{
-//			if (type != null) {
-//				if (type.ClassType == ClassType.Delegate) {
-//					IMethod invokeMethod = ExtractInvokeMethod (type);
-//					if (type is InstantiatedType) {
-//						this.delegateName = ((InstantiatedType)type).UninstantiatedType.Name;
-//					} else {
-//						this.delegateName = type.Name;
-//					}
-//					if (invokeMethod != null) {
-//						methods.Add (invokeMethod);
-//					} else {
-//						// no invoke method -> tried to create an abstract delegate
-//					}
-//					return;
-//				}
-//				bool includeProtected = DomType.IncludeProtected (resolver.Dom, type, resolver.CallingType);
-//				bool constructorFound = false;
-//				HashSet<string> alreadyAdded = new HashSet<string> ();
-//				foreach (IMethod method in type.Methods) {
-//					constructorFound |= method.IsConstructor;
-//					string str = ambience.GetString (method, OutputFlags.IncludeParameters);
-//					if (alreadyAdded.Contains (str))
-//						continue;
-//					alreadyAdded.Add (str);
-//					if ((method.IsConstructor && method.IsAccessibleFrom (resolver.Dom, type, resolver.CallingMember, includeProtected)))
-//						methods.Add (method);
-//				}
-//				// No constructor - generating default
-//				if (!constructorFound && (type.TypeModifier & TypeModifier.HasOnlyHiddenConstructors) != TypeModifier.HasOnlyHiddenConstructors) {
-//					DomMethod defaultConstructor = new DomMethod ();
-//					defaultConstructor.MethodModifier = MethodModifier.IsConstructor;
-//					defaultConstructor.DeclaringType = type;
-//					methods.Add (defaultConstructor);
-//				}
-//			}
-//		}
-//		IMethod ExtractInvokeMethod (IType type)
-//		{
-//			foreach (IMethod method in type.Methods) {
-//				if (method.Name == "Invoke")
-//					return method;
-//			}
-//			
-//			return null;
-//		}
-//		
-// 		string delegateName = null;
-//		public NRefactoryParameterDataProvider (TextEditorData editor, string delegateName, IType type)
-//		{
-//			this.delegateName = delegateName;
-//			if (type != null) {
-//				methods.Add (ExtractInvokeMethod (type));
-//			}
-//		}
-		
 		#region IParameterDataProvider implementation
 		
 		protected virtual string GetPrefix (IMethod method)
 		{
-			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
-			return ambience.GetString (method.ReturnType, flags) + " ";
+			return GetShortType (method.ReturnType) + " ";
 		}
 		
-		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
+		public override string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
 			if (staticResolve)
@@ -236,7 +120,7 @@ namespace MonoDevelop.CSharp.Completion
 			return sb.ToString ();
 		}
 		
-		public string GetDescription (int overload, int currentParameter)
+		public override string GetDescription (int overload, int currentParameter)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
 			if (staticResolve)
@@ -290,8 +174,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return sb.ToString ();
 		}
-		
-		public string GetParameterDescription (int overload, int paramIndex)
+
+		public override string GetParameterDescription (int overload, int paramIndex)
 		{
 			IMethod method = methods [overload];
 			
@@ -299,10 +183,12 @@ namespace MonoDevelop.CSharp.Completion
 				return "";
 			if (method.IsExtensionMethod)
 				paramIndex++;
-			return ambience.GetString (method, method.Parameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+			var parameter = method.Parameters [paramIndex];
+
+			return GetParameterString (parameter);
 		}
 		
-		public int GetParameterCount (int overload)
+		public override int GetParameterCount (int overload)
 		{
 			if (overload >= Count)
 				return -1;
@@ -315,7 +201,7 @@ namespace MonoDevelop.CSharp.Completion
 			return method.Parameters.Count;
 		}
 		
-		public bool AllowParameterList (int overload)
+		public override bool AllowParameterList (int overload)
 		{
 			if (overload >= Count)
 				return false;
@@ -323,7 +209,7 @@ namespace MonoDevelop.CSharp.Completion
 			return lastParam != null && lastParam.IsParams;
 		}
 		
-		public int Count {
+		public override int Count {
 			get {
 				return methods != null ? methods.Count : 0;
 			}

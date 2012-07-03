@@ -162,7 +162,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		class DescriptionLabel : Gtk.DrawingArea
 		{
 			string markup;
-			bool inUpdate;
 			bool resizeRequested = true;
 			
 			public string Markup {

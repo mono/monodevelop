@@ -212,7 +212,7 @@ namespace Mono.TextEditor
 			//int oldLineCount = LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, anchorMovementType);
 			OnTextReplacing (args);
-			value = args.InsertedText;
+			value = args.InsertedText.Text;
 			UndoOperation operation = null;
 			if (!isInUndo) {
 				operation = new UndoOperation (args);
@@ -549,13 +549,13 @@ namespace Mono.TextEditor
 			
 			public virtual void Undo (TextDocument doc)
 			{
-				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText);
+				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText.Text);
 				OnUndoDone ();
 			}
 			
 			public virtual void Redo (TextDocument doc)
 			{
-				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText);
+				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText.Text);
 				OnRedoDone ();
 			}
 			
@@ -1706,12 +1706,27 @@ namespace Mono.TextEditor
 			return OffsetToLocation (offset);
 		}
 
+		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, ITextSource text)
+		{
+			Insert (offset, text.Text);
+		}
+
+		void ICSharpCode.NRefactory.Editor.IDocument.Replace (int offset, int count, ITextSource text)
+		{
+			Replace (offset, count, text.Text);
+		}
+
 		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text)
 		{
 			Insert (offset, text);
 		}
 
-		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
+		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, ITextSource text, AnchorMovementType anchorMovementType)
+		{
+			Insert (offset, text.Text, anchorMovementType);
+		}
+
+		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text, AnchorMovementType anchorMovementType)
 		{
 			Insert (offset, text, anchorMovementType);
 		}

@@ -1007,6 +1007,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode(primitiveExpression);
 		}
 		
+		public static string PrintPrimitiveValue(object val)
+		{
+			StringWriter writer = new StringWriter();
+			CSharpOutputVisitor visitor = new CSharpOutputVisitor(writer, new CSharpFormattingOptions());
+			visitor.WritePrimitiveValue(val);
+			return writer.ToString();
+		}
+		
 		void WritePrimitiveValue(object val)
 		{
 			if (val == null) {

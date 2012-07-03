@@ -41,6 +41,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -252,15 +255,46 @@ namespace MonoDevelop.CSharp.Completion
 		void SetMember (IEntity entity)
 		{
 			this.Entity = entity;
-			if (entity is IParameter) {
-				this.completionString = ((IParameter)entity).Name;
-			} else {
-				this.completionString = ambience.GetString (entity, OutputFlags.None);
-			}
 			descriptionCreated = false;
-			displayText = entity.Name;
+			this.completionString = displayText = entity.Name;
 		}
-		
+
+		TypeSystemAstBuilder GetBuilder (ICompilation compilation)
+		{
+			var ctx = editorCompletion.CSharpParsedFile.GetTypeResolveContext (compilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var state = new CSharpResolver (ctx);
+			var builder = new TypeSystemAstBuilder (state);
+			builder.AddAnnotations = true;
+			var dt = state.CurrentTypeDefinition;
+			var declaring = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.DeclaringTypeDefinition : null;
+			if (declaring != null) {
+				while (dt != null) {
+					if (dt.Equals (declaring)) {
+						builder.AlwaysUseShortTypeNames = true;
+						break;
+					}
+					dt = dt.DeclaringTypeDefinition;
+				}
+			}
+			return builder;
+		}
+
+		internal class MyAmbience : ICSharpCode.NRefactory.CSharp.CSharpAmbience
+		{
+			TypeSystemAstBuilder builder;
+
+			public MyAmbience (TypeSystemAstBuilder builder)
+			{
+				this.builder = builder;
+				ConversionFlags = ICSharpCode.NRefactory.TypeSystem.ConversionFlags.StandardConversionFlags;
+			}
+
+			protected override TypeSystemAstBuilder CreateAstBuilder ()
+			{
+				return builder;
+			}
+		}
+
 		void CheckDescription ()
 		{
 			if (descriptionCreated)
@@ -271,8 +305,12 @@ namespace MonoDevelop.CSharp.Completion
 			descriptionCreated = true;
 			if (Entity is IMethod && ((IMethod)Entity).IsExtensionMethod)
 				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			sb.Append (ambience.GetString (Entity, 
-				OutputFlags.ClassBrowserEntries | OutputFlags.IncludeReturnType | OutputFlags.IncludeKeywords | OutputFlags.UseFullName | OutputFlags.IncludeParameterName | OutputFlags.IncludeMarkup  | (HideExtensionParameter ? OutputFlags.HideExtensionsParameter : OutputFlags.None)));
+			try {
+				var amb = new MyAmbience (GetBuilder (Entity.Compilation));
+				sb.Append (GLib.Markup.EscapeText (amb.ConvertEntity (Entity)));
+			} catch (Exception e) {
+				sb.Append (e.ToString ());
+			}
 
 			var m = (IMember)Entity;
 			if (m.IsObsolete ()) {
@@ -304,8 +342,6 @@ namespace MonoDevelop.CSharp.Completion
 	
 		class OverloadSorter : IComparer<ICompletionData>
 		{
-			OutputFlags flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName;
-			
 			public OverloadSorter ()
 			{
 			}
@@ -332,8 +368,8 @@ namespace MonoDevelop.CSharp.Completion
 						return result;
 				}
 				
-				string sx = ambience.GetString (mx, flags);
-				string sy = ambience.GetString (my, flags);
+				string sx = mx.ReflectionName;// ambience.GetString (mx, flags);
+				string sy = my.ReflectionName;// ambience.GetString (my, flags);
 				result = sx.Length.CompareTo (sy.Length);
 				return result == 0? string.Compare (sx, sy) : result;
 			}

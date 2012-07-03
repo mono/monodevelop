@@ -22,7 +22,7 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
-		<Project name = "${ProjectName}" directory = "." type = "AspNetMvc">
+		<Project name = "${ProjectName}" directory = "." type = "AspNetMvc2">
 			<Options TargetFrameworkVersion = "4.0" />
 			<References>
 				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

@@ -817,10 +817,11 @@ namespace MonoDevelop.Projects
 					break;
 				}
 			}
-			
+
+			var config = (DotNetProjectConfiguration) GetConfiguration (configuration);
 			return Files.Any (file => file.BuildAction == BuildAction.EmbeddedResource
 					&& String.Compare (Path.GetExtension (file.FilePath), ".resx", StringComparison.OrdinalIgnoreCase) == 0
-					&& MD1DotNetProjectHandler.IsResgenRequired (file.FilePath));
+					&& MD1DotNetProjectHandler.IsResgenRequired (file.FilePath, config.IntermediateOutputDirectory.Combine (file.ResourceId)));
 		}
 		
 		protected internal override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)

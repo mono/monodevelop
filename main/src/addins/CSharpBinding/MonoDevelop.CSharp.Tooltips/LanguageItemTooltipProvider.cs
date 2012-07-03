@@ -41,6 +41,7 @@ using System.Text;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.CSharp.Resolver;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -123,7 +124,7 @@ namespace MonoDevelop.SourceEditor
 					Console.WriteLine (ev.ErrorResolveResult);
 					tooltip = string.Format ("Error while resolving: '{0}'", ev.ErrorNode.GetText ());
 				} else {
-					tooltip = CreateTooltip (titem.Result, ambience);
+					tooltip = CreateTooltip (titem.Result, offset, ambience);
 				}
 			} else {
 				return null;
@@ -202,12 +203,15 @@ namespace MonoDevelop.SourceEditor
 			return obj.ToString ();
 		}
 
-		public string CreateTooltip (ResolveResult result, Ambience ambience)
+		public string CreateTooltip (ResolveResult result, int offset, Ambience ambience)
 		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return null;
 			OutputSettings settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
 			// Approximate value for usual case
 			StringBuilder s = new StringBuilder (150);
-			string doc = null;
+			string documentation = null;
 			if (result is UnknownIdentifierResolveResult) {
 				s.Append (String.Format (GettextCatalog.GetString ("Unresolved identifier '{0}'"), ((UnknownIdentifierResolveResult)result).Identifier));
 			} else if (result.IsError) {
@@ -221,6 +225,7 @@ namespace MonoDevelop.SourceEditor
 				s.Append (" ");
 				s.Append (lr.Variable.Name);
 			} else if (result is MethodGroupResolveResult) {
+
 				var mrr = (MethodGroupResolveResult)result;
 				s.Append ("<small><i>");
 				s.Append (methodStr);
@@ -232,12 +237,12 @@ namespace MonoDevelop.SourceEditor
 				
 				var method = allMethods.FirstOrDefault ();
 				if (method != null) {
-					s.Append (ambience.GetString (method, settings));
+					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, method.Compilation).ConvertEntity (method)));
 					if (allMethods.Count > 1) {
 						int overloadCount = allMethods.Count - 1;
 						s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
 					}
-					doc = AmbienceService.GetDocumentationSummary (method);
+					documentation = AmbienceService.GetDocumentationSummary (method);
 				}
 			} else if (result is MemberResolveResult) {
 				var member = ((MemberResolveResult)result).Member;
@@ -246,16 +251,16 @@ namespace MonoDevelop.SourceEditor
 				s.Append ("</i></small>\n");
 				var field = member as IField;
 				if (field != null && field.IsConst) {
-					s.Append (ambience.GetString (field.Type, settings));
+					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, field.Compilation).ConvertType (field.Type)));
 					s.Append (" ");
 					s.Append (field.Name);
 					s.Append (" = ");
 					s.Append (GetConst (field.ConstantValue));
 					s.Append (";");
 				} else {
-					s.Append (ambience.GetString (member, settings));
+					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, member.Compilation).ConvertEntity (member)));
 				}
-				doc = AmbienceService.GetDocumentationSummary (member);
+				documentation = AmbienceService.GetDocumentationSummary (member);
 			} else if (result is NamespaceResolveResult) {
 				s.Append ("<small><i>");
 				s.Append (namespaceStr);
@@ -271,12 +276,12 @@ namespace MonoDevelop.SourceEditor
 				}
 				settings.OutputFlags |= OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName;
 				s.Append (ambience.GetString (tr.Type, settings));
-				doc = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
+				documentation = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
 			}
 			
-			if (!string.IsNullOrEmpty (doc)) {
+			if (!string.IsNullOrEmpty (documentation)) {
 				s.Append ("\n<small>");
-				s.Append (AmbienceService.GetDocumentationMarkup ("<summary>" + doc + "</summary>"));
+				s.Append (AmbienceService.GetDocumentationMarkup ("<summary>" + documentation + "</summary>"));
 				s.Append ("</small>");
 			}
 			return s.ToString ();

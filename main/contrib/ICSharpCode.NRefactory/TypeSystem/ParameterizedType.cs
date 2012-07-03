@@ -259,6 +259,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return GetMembersHelper.GetMembers(this, filter, options);
 		}
 		
+		public IEnumerable<IMethod> GetAccessors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		{
+			if ((options & GetMemberOptions.ReturnMemberDefinitions) == GetMemberOptions.ReturnMemberDefinitions)
+				return genericType.GetAccessors(filter, options);
+			else
+				return GetMembersHelper.GetAccessors(this, filter, options);
+		}
+		
 		public override bool Equals(object obj)
 		{
 			return Equals(obj as IType);

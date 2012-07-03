@@ -418,6 +418,33 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("", data.Document.Text);
 			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
 		}
+
+		/// <summary>
+		/// Bug 5949 - Movement across empty line is not symmetric
+		/// </summary>
+		[Test()]
+		public void TestBug5949 ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\t\tfoo\n\n\t\tbar";
+			data.Caret.Location = new DocumentLocation (3, 1);
+			CaretMoveActions.Left (data);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+		}
+
+		/// <summary>
+		/// Bug 5956 - Backspacing ignores virtual indents
+		/// </summary>
+		[Test()]
+		public void TestBug5956 ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\t\tfoo\n\n\t\tbar";
+			data.Caret.Location = new DocumentLocation (3, 1);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+			Assert.AreEqual ("\t\tfoo\n\t\t\t\tbar", data.Document.Text);
+		}
 	}
 }
 

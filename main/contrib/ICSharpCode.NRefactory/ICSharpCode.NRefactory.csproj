@@ -63,21 +63,6 @@
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="True" RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar />
-          <ResourcesVar />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-          <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
-        </MonoDevelop.Autotools.MakefileInfo>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
   <ItemGroup>
     <Compile Include="Editor\IDocument.cs" />
     <Compile Include="Editor\IDocumentLine.cs" />
@@ -221,7 +206,6 @@
     <Compile Include="TypeSystem\Implementation\KnownTypeCache.cs" />
     <Compile Include="TypeSystem\Implementation\MergedNamespace.cs" />
     <Compile Include="TypeSystem\Implementation\MinimalCorlib.cs" />
-    <Compile Include="TypeSystem\Implementation\SimpleTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleCompilation.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAssemblyReference.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultMemberReference.cs" />
@@ -252,6 +236,8 @@
     <Compile Include="Editor\TextSourceVersionProvider.cs" />
     <Compile Include="Utils\CallbackOnDispose.cs" />
     <Compile Include="Semantics\InitializedObjectResolveResult.cs" />
+    <Compile Include="TypeSystem\SimpleTypeResolveContext.cs" />
+    <Compile Include="TypeSystem\Implementation\AccessorOwnerMemberReference.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

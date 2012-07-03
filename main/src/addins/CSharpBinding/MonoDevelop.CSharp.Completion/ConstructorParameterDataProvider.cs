@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class ConstructorParameterDataProvider : MethodParameterDataProvider
+	class ConstructorParameterDataProvider : MethodParameterDataProvider
 	{
 		IType type;
 		

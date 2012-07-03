@@ -1614,7 +1614,6 @@ namespace Mono.TextEditor
 			inSelectionDrag = false;
 			inDrag = false;
 			Selection selection = textEditor.MainSelection;
-			int anchor = selection != null ? selection.GetAnchorOffset (this.textEditor.GetTextEditorData ()) : -1;
 			int oldOffset = textEditor.Caret.Offset;
 
 			string link = GetLink != null ? GetLink (args) : null;

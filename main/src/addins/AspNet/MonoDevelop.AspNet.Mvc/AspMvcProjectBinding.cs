@@ -32,12 +32,12 @@ namespace MonoDevelop.AspNet.Mvc
 {
 	
 	
-	public class AspMvcProjectBinding : IProjectBinding
+	public class AspMvc1ProjectBinding : IProjectBinding
 	{
 		public Project CreateProject (ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
 			string lang = projectOptions.GetAttribute ("language");
-			return new AspMvcProject (lang, info, projectOptions);
+			return new AspMvc1Project (lang, info, projectOptions);
 		}
 		
 		public Project CreateSingleFileProject (string sourceFile)
@@ -51,7 +51,55 @@ namespace MonoDevelop.AspNet.Mvc
 		}
 		
 		public string Name {
-			get { return "AspNetMvc"; }
+			get { return "AspNetMvc1"; }
+		}
+	}
+
+	public class AspMvc2ProjectBinding : IProjectBinding
+	{
+		public Project CreateProject (ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
+		{
+			string lang = projectOptions.GetAttribute ("language");
+			return new AspMvc2Project (lang, info, projectOptions);
+		}
+
+		public Project CreateSingleFileProject (string sourceFile)
+		{
+			throw new InvalidOperationException ();
+		}
+
+		public bool CanCreateSingleFileProject (string sourceFile)
+		{
+			return false;
+		}
+
+		public string Name
+		{
+			get { return "AspNetMvc2"; }
+		}
+	}
+
+	public class AspMvc3ProjectBinding : IProjectBinding
+	{
+		public Project CreateProject (ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
+		{
+			string lang = projectOptions.GetAttribute ("language");
+			return new AspMvc3Project (lang, info, projectOptions);
+		}
+
+		public Project CreateSingleFileProject (string sourceFile)
+		{
+			throw new InvalidOperationException ();
+		}
+
+		public bool CanCreateSingleFileProject (string sourceFile)
+		{
+			return false;
+		}
+
+		public string Name
+		{
+			get { return "AspNetMvc3"; }
 		}
 	}
 }

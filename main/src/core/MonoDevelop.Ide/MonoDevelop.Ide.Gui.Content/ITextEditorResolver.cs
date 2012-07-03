@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, out DomRegion expressionRegion);
 		ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, string identifier);
 
-		string CreateTooltip (IParsedFile unit, ResolveResult result, string errorInformations, Ambience ambience, Gdk.ModifierType modifierState);
+		string CreateTooltip (MonoDevelop.Ide.Gui.Document document, int offset, ResolveResult result, string errorInformations, Gdk.ModifierType modifierState);
 
 	}
 	

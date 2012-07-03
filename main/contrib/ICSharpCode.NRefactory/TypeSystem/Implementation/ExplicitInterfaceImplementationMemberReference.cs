@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -58,9 +59,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			IMember interfaceMember = interfaceMemberReference.Resolve(context.WithCurrentTypeDefinition(declaringType.GetDefinition()));
 			if (interfaceMember == null)
 				return null;
-			var members = declaringType.GetMembers(
-				m => m.EntityType == interfaceMember.EntityType && m.IsExplicitInterfaceImplementation,
-				GetMemberOptions.IgnoreInheritedMembers);
+			IEnumerable<IMember> members;
+			if (interfaceMember.EntityType == EntityType.Accessor) {
+				members = declaringType.GetAccessors(
+					m => m.IsExplicitInterfaceImplementation,
+					GetMemberOptions.IgnoreInheritedMembers);
+			} else {
+				members = declaringType.GetMembers(
+					m => m.EntityType == interfaceMember.EntityType && m.IsExplicitInterfaceImplementation,
+					GetMemberOptions.IgnoreInheritedMembers);
+			}
 			return members.FirstOrDefault(m => m.ImplementedInterfaceMembers.Count == 1 && interfaceMember.Equals(m.ImplementedInterfaceMembers[0]));
 		}
 	}

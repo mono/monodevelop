@@ -190,6 +190,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool IsOperator {
 			get { return ((IUnresolvedMethod)unresolved).IsOperator; }
 		}
+			
+		public bool IsAccessor {
+			get { return ((IUnresolvedMethod)unresolved).AccessorOwner != null; }
+		}
+		
+		public IMember AccessorOwner {
+			get { 
+				var reference = ((IUnresolvedMethod)unresolved).AccessorOwner; 
+				if (reference != null)
+					return reference.Resolve(context);
+				else
+					return null;
+			}
+		}
 		
 		public override IMemberReference ToMemberReference()
 		{

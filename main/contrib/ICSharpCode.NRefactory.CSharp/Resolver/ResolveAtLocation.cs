@@ -51,13 +51,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			node = cu.GetNodeAt(location);
-			if (node == null)
+			if (node == null || node is ArrayInitializerExpression)
 				return null;
 			if (CSharpAstResolver.IsUnresolvableNode(node)) {
 				if (node is Identifier) {
 					node = node.Parent;
 				} else if (node.NodeType == NodeType.Token) {
 					if (node.Parent is IndexerExpression || node.Parent is ConstructorInitializer) {
+						Console.WriteLine (2);
 						// There's no other place where one could hover to see the indexer's tooltip,
 						// so we need to resolve it when hovering over the '[' or ']'.
 						// For constructor initializer, the same applies to the 'base'/'this' token.

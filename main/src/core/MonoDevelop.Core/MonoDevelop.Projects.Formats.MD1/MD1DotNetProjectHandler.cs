@@ -180,7 +180,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 				string fname = finfo.Name;
 				string resourceId;
-				CompilerError ce = GetResourceId (env, finfo, ref fname, resgen, out resourceId, monitor);
+				CompilerError ce = GetResourceId (configuration.IntermediateOutputDirectory.Combine (finfo.ResourceId), env, finfo, ref fname, resgen, out resourceId, monitor);
 				if (ce != null) {
 					CompilerResults cr = new CompilerResults (new TempFileCollection ());
 					cr.Errors.Add (ce);
@@ -219,7 +219,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			return null;
 		}
 		
-		CompilerError GetResourceId (ExecutionEnvironment env, ProjectFile finfo, ref string fname, string resgen, out string resourceId, IProgressMonitor monitor)
+		CompilerError GetResourceId (FilePath outputFile, ExecutionEnvironment env, ProjectFile finfo, ref string fname, string resgen, out string resourceId, IProgressMonitor monitor)
 		{
 			resourceId = finfo.ResourceId;
 			if (resourceId == null) {
@@ -233,8 +233,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 			if (String.Compare (Path.GetExtension (fname), ".resx", true) != 0)
 				return null;
 
-			if (!IsResgenRequired (fname)) {
-				fname = Path.ChangeExtension (fname, ".resources");
+			if (!IsResgenRequired (fname, outputFile)) {
+				fname = File.Exists (outputFile) ? (string)outputFile : Path.ChangeExtension (fname, ".resources");
 				return null;
 			}
 			
@@ -307,60 +307,14 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 		// true if the resx file or any file referenced
 		// by the resx is newer than the .resources file
-		public static bool IsResgenRequired (string resx_filename)
+		public static bool IsResgenRequired (string resx_filename, string output_filename)
 		{
 			if (String.Compare (Path.GetExtension (resx_filename), ".resx", true) != 0)
 				throw new ArgumentException (".resx file expected", "resx_filename");
 
-			string resources_filename = Path.ChangeExtension (resx_filename, ".resources");
-
-			if (IsFileNewerThan (resx_filename, resources_filename))
-				return true;
-
-			XmlTextReader xr = null;
-			try {
-				// look for
-				// <data type="System.Resources.ResXFileRef, System.Windows.Forms" ..>
-				//   <value>... filename;.. </value>
-				// </data>
-				xr = new XmlTextReader (resx_filename);
-				string basepath = Path.GetDirectoryName (resx_filename);
-				while (xr.Read ()) {
-					if (xr.NodeType != XmlNodeType.Element ||
-						String.Compare (xr.LocalName, "data") != 0)
-						continue;
-
-					string type = xr.GetAttribute ("type");
-					if (String.IsNullOrEmpty (type))
-						continue;
-
-					if (String.Compare (type, "System.Resources.ResXFileRef, System.Windows.Forms") != 0)
-						continue;
-
-					xr.ReadToDescendant ("value");
-					if (xr.NodeType != XmlNodeType.Element)
-						continue;
-
-					string value = xr.ReadElementContentAsString ();
-
-					string [] parts = value.Split (';');
-					if (parts.Length > 0) {
-						string referenced_filename = MSBuildProjectService.FromMSBuildPath (
-								String.Empty, Path.Combine (basepath, parts [0]).Trim ());
-						if (File.Exists (referenced_filename) &&
-							IsFileNewerThan (referenced_filename, resources_filename))
-							return true;
-					}
-				}
-			} catch (XmlException) {
-				// Ignore xml errors, let resgen handle it
-				return true;
-			} finally {
-				if (xr != null)
-					xr.Close ();
-			}
-
-			return false;
+			if (File.Exists (output_filename))
+				return IsFileNewerThan (resx_filename, output_filename);
+			return IsFileNewerThan (resx_filename, Path.ChangeExtension (resx_filename, ".resources"));
 		}
 
 		// true if first is newer than second
