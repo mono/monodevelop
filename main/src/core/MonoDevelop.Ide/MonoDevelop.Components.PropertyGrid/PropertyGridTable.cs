@@ -526,9 +526,63 @@ namespace MonoDevelop.Components.PropertyGrid
 				GdkWindow.Cursor = resizeCursor;
 				return true;
 			}
-
+			ShowTooltip (evnt);
 			GdkWindow.Cursor = null;
 			return base.OnMotionNotifyEvent (evnt);
+		}
+
+		uint tooltipTimeout;
+		PopoverWindow tooltipWindow;
+
+		void ShowTooltip (EventMotion evnt)
+		{
+			HideTooltip ();
+			tooltipTimeout = GLib.Timeout.Add (500, delegate {
+				ShowTooltipWindow ((int)evnt.X, (int)evnt.Y);
+				return false;
+			});
+		}
+
+		void HideTooltip ()
+		{
+			if (tooltipTimeout != 0) {
+				GLib.Source.Remove (tooltipTimeout);
+				tooltipTimeout = 0;
+			}
+			if (tooltipWindow != null) {
+				tooltipWindow.Destroy ();
+				tooltipWindow = null;
+			}
+		}
+
+		void ShowTooltipWindow (int x, int y)
+		{
+			tooltipTimeout = 0;
+			int dx = (int)((double)Allocation.Width * dividerPosition);
+			if (x >= dx)
+				return;
+			var row = GetAllRows (true).FirstOrDefault (r => !r.IsCategory && y >= r.EditorBounds.Y && y <= r.EditorBounds.Bottom);
+			if (row != null) {
+				tooltipWindow = new PopoverWindow ();
+				tooltipWindow.ShowArrow = true;
+				Label la = new Label ();
+				var s = "<b>" + row.Property.DisplayName + "</b>\n\n";
+				s += GLib.Markup.EscapeText (row.Property.Description);
+				la.Markup = s;
+				la.ShowAll ();
+				tooltipWindow.Add (la);
+				if (la.SizeRequest ().Width > 300) {
+					la.Wrap = true;
+					la.WidthRequest = 300;
+				}
+				tooltipWindow.ShowPopup (this, new Gdk.Rectangle (0, row.EditorBounds.Y, Allocation.Width, row.EditorBounds.Height), PopupPosition.Right);
+			}
+		}
+
+		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
+		{
+			HideTooltip ();
+			return base.OnLeaveNotifyEvent (evnt);
 		}
 
 		void StartExpandAnimation (TableRow row)
@@ -579,21 +633,6 @@ namespace MonoDevelop.Components.PropertyGrid
 					r.AnimatingExpand = false;
 				}
 			}
-		}
-
-		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
-		{
-			int dx = (int)((double)Allocation.Width * dividerPosition);
-			if (x >= dx)
-				return false;
-			var row = GetAllRows (true).FirstOrDefault (r => !r.IsCategory && y >= r.EditorBounds.Y && y <= r.EditorBounds.Bottom);
-			if (row != null) {
-				var s = "<b>" + row.Property.DisplayName + "</b>\n\n";
-				s += GLib.Markup.EscapeText (row.Property.Description);
-				tooltip.Markup = s;
-				return true;
-			}
-			return false;
 		}
 
 		protected override void OnDragLeave (DragContext context, uint time_)

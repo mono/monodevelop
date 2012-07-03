@@ -289,7 +289,7 @@ namespace MonoDevelop.Components
 				context.LineWidth = 1;
 				context.Stroke ();
 			}
-			return true;
+			return base.OnExposeEvent (evnt);
 		}
 
 		protected virtual void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context context)
