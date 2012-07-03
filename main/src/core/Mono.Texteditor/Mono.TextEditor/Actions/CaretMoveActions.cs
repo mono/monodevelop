@@ -65,7 +65,10 @@ namespace Mono.TextEditor
 				}
 			} else if (data.Caret.Line > DocumentLocation.MinLine) {
 				DocumentLine prevLine = data.Document.GetLine (data.Caret.Line - 1);
-				data.Caret.Location = new DocumentLocation (data.Caret.Line - 1, prevLine.Length + 1);
+				var nextLocation = new DocumentLocation (data.Caret.Line - 1, prevLine.Length + 1);
+				if (data.HasIndentationTracker && data.Options.IndentStyle == IndentStyle.Virtual && nextLocation.Column == DocumentLocation.MinColumn)
+					nextLocation = new DocumentLocation (data.Caret.Line - 1, data.GetVirtualIndentationColumn (nextLocation));
+				data.Caret.Location = nextLocation;
 			}
 		}
 		
