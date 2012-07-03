@@ -56,11 +56,22 @@ namespace MonoDevelop.Components
 		int padding = 6;
 		Cairo.Color backgroundColor = new Cairo.Color (1, 1, 1);
 		Cairo.Color borderColor = new Cairo.Color (0.7, 0.7, 0.7);
+
+		Gdk.Rectangle currentCaret;
+		PopupPosition targetPosition;
+		Gdk.Window targetWindow;
+		Gtk.Widget parent;
+		bool eventProvided;
+
 		const int ArrowLength = 10;
 		const int ArrowWidth = 10;
 		const int MinArrowSpacing = 5;
 
-		public PopoverWindow () : base(Gtk.WindowType.Popup)
+		public PopoverWindow () : this(Gtk.WindowType.Popup)
+		{
+		}
+
+		public PopoverWindow (Gtk.WindowType type) : base(type)
 		{
 			SkipTaskbarHint = true;
 			SkipPagerHint = true;
@@ -75,6 +86,7 @@ namespace MonoDevelop.Components
 			}
 			set {
 				showArrow = value;
+				QueueResize ();
 			}
 		}
 
@@ -114,12 +126,28 @@ namespace MonoDevelop.Components
 
 		void ShowPopup (Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret, PopupPosition position)
 		{
+			this.parent = parent;
+			this.currentCaret = caret;
+			this.targetPosition = position;
+
+			if (evt != null) {
+				eventProvided = true;
+				targetWindow = evt.Window;
+			} else
+				targetWindow = parent.GdkWindow;
+			RepositionWindow ();
+		}
+
+		void RepositionWindow ()
+		{
 			int x, y;
-			Gdk.Window window = evt != null? evt.Window : parent.GdkWindow;
+			Gdk.Rectangle caret = currentCaret;
+			Gdk.Window window = targetWindow;
+			PopupPosition position = targetPosition;
 			window.GetOrigin (out x, out y);
 			var alloc = parent.Allocation;
 
-			if (evt != null) {
+			if (eventProvided) {
 				caret.X = x;
 				caret.Y = y;
 				caret.Width = caret.Height = 1;

@@ -71,8 +71,13 @@ namespace MonoDevelop.SourceEditor
 //		PinWindow pinWindow;
 //		TreeIter currentPinIter;
 		
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch)
+		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch): base (Gtk.WindowType.Toplevel)
 		{
+			this.TypeHint = WindowTypeHint.PopupMenu;
+			this.AllowShrink = false;
+			this.AllowGrow = false;
+			this.Decorated = false;
+
 			TransientFor = (Gtk.Window) editor.Toplevel;
 			
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
@@ -180,8 +185,7 @@ namespace MonoDevelop.SourceEditor
 				AcceptFocus = true;
 			return base.OnEnterNotifyEvent (evnt);
 		}
-		
-		
+
 		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)
 		{
 			int x,y,w,h;
@@ -222,8 +226,11 @@ namespace MonoDevelop.SourceEditor
 			if (y < geometry.Top + edgeGap)
 				y = geometry.Top + edgeGap;
 			
-			if (y != oldY)
+			if (y != oldY) {
 				Move (x, y);
+				// If the window is moved, hide the arrow since it will be pointing to the wrong place
+				ShowArrow = false;
+			}
 			
 			base.OnSizeAllocated (allocation);
 		}

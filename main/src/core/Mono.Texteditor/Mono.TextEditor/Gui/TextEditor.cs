@@ -2594,10 +2594,6 @@ namespace Mono.TextEditor
 				tipWindow = tw;
 				currentTooltipProvider = provider;
 				
-				tipWindow.EnterNotifyEvent += delegate {
-					CancelScheduledHide ();
-				};
-
 				tipShowTimeoutId = 0;
 			} else
 				HideTooltip ();
@@ -2610,6 +2606,15 @@ namespace Mono.TextEditor
 			CancelScheduledShow ();
 			
 			if (tipWindow != null) {
+				if (tipWindow.GdkWindow != null) {
+					// Don't hide the tooltip window if the mouse pointer is inside it.
+					int x, y, w, h;
+					Gdk.ModifierType m;
+					tipWindow.GdkWindow.GetPointer (out x, out y, out m);
+					tipWindow.GdkWindow.GetSize (out w, out h);
+					if (x >= 0 && y >= 0 && x < w && y < h)
+						return;
+				}
 				tipWindow.Destroy ();
 				tipWindow = null;
 			}
