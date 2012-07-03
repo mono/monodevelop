@@ -81,8 +81,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				//just unload the project. it will be reloaded when we next build
 				project = null;
 				var loadedProj = engine.GetLoadedProjects (file).FirstOrDefault ();
-				if (loadedProj != null)
+				if (loadedProj != null) {
 					engine.UnloadProject (loadedProj);
+					engine.UnloadProject (loadedProj.Xml);
+				}
 			});
 		}
 		
