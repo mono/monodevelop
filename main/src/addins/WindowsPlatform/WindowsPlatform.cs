@@ -132,11 +132,6 @@ namespace MonoDevelop.Platform
 		{
 			return new MonoDevelop.Platform.WindowsRecentFiles ();
 		}
-
-		public override MonoDevelop.Components.MainToolbar.MainToolbar CreateMainToolbar (Gtk.Window window)
-		{
-			return new MonoDevelop.Components.MainToolbar.MainToolbar ();
-		}
 	}
 	
 	static class GdkWin32

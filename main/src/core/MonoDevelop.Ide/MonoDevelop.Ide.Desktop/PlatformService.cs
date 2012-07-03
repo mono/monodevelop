@@ -386,7 +386,7 @@ namespace MonoDevelop.Ide.Desktop
 
 		internal virtual MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
-			return null;
+			return new MainToolbar ();
 		}
 	}
 }
