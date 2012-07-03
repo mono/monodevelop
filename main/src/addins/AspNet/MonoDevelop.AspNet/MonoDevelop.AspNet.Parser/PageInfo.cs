@@ -31,6 +31,9 @@ using MonoDevelop.AspNet.Parser.Dom;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 
+using MonoDevelop.AspNet.StateEngine;
+using MonoDevelop.Xml.StateEngine;
+
 namespace MonoDevelop.AspNet.Parser
 {
 	
@@ -66,7 +69,174 @@ namespace MonoDevelop.AspNet.Parser
 			node.AcceptVisit (visitor);
 			return visitor.Errors;
 		}
-		
+
+		#region XDocument parsing
+
+		public void Populate (XDocument xDoc, List<Error> errors)
+		{
+			XDocDirectiveParser xDocParser = new XDocDirectiveParser (this, errors);
+			xDocParser.Parse (xDoc);
+		}
+
+		private class XDocDirectiveParser
+		{
+			PageInfo info;
+			List<Error> errors;
+
+			public XDocDirectiveParser (PageInfo inf, List<Error> err)
+			{
+				info = inf;
+				errors = err;
+			}
+
+			public void Parse (XDocument xDoc)
+			{
+				foreach (XNode node in xDoc.AllDescendentNodes) {
+					if (node is AspNetDirective) {
+						HandleDirective (node as AspNetDirective);
+					} else if (node is XDocType) {
+						HandleDocType (node as XDocType);
+					} else {
+						// quit the parsing when reached the html nodes
+						return;
+					}
+				}
+			}
+
+			string GetAttributeValueCI (XAttributeCollection attributes, string key)
+			{
+				XName nameKey = new XName (key.ToLowerInvariant ());
+	
+				foreach (XAttribute attr in attributes) {
+					if (attr.Name.ToLower () == nameKey)
+						return attr.Value;
+				}
+				return string.Empty;
+			}
+
+			void HandleDirective (AspNetDirective directive)
+			{
+				switch (directive.Name.Name.ToLowerInvariant ()) {
+				case "page":
+					info.MasterPageFile = GetAttributeValueCI (directive.Attributes, "masterpagefile");
+					SetSubtype (WebSubtype.WebForm, directive);
+					break;
+				case "control":
+					SetSubtype (WebSubtype.WebControl, directive);
+					break;
+				case "webservice":
+					SetSubtype (WebSubtype.WebService, directive);
+					break;
+				case "webhandler":
+					SetSubtype (WebSubtype.WebHandler, directive);
+					break;
+				case "application":
+					SetSubtype (WebSubtype.Global, directive);
+					break;
+				case "master":
+					SetSubtype (WebSubtype.MasterPage, directive);
+					break;
+				case "mastertype":
+					if (info.MasterPageTypeVPath != null || info.MasterPageTypeName != null) {
+						errors.Add (new Error (ErrorType.Error, "Unexpected second mastertype directive", directive.Region));
+						return;
+					}
+					info.MasterPageTypeName = GetAttributeValueCI (directive.Attributes, "typename");
+					info.MasterPageTypeVPath = GetAttributeValueCI (directive.Attributes, "virtualpath");
+					if (string.IsNullOrEmpty (info.MasterPageTypeName) == string.IsNullOrEmpty (info.MasterPageTypeVPath))
+						errors.Add (new Error (
+							ErrorType.Error,
+							"Mastertype directive must have non-empty 'typename' or 'virtualpath' attribute",
+							directive.Region
+						)
+						);
+					break;
+				case "register":
+					string tagPrefix = GetAttributeValueCI (directive.Attributes, "tagprefix");
+					string tagName = GetAttributeValueCI (directive.Attributes, "tagname");
+					string src = GetAttributeValueCI (directive.Attributes, "src");
+					string nspace = GetAttributeValueCI (directive.Attributes, "namespace");
+					string assembly = GetAttributeValueCI (directive.Attributes, "assembly");
+					if (!string.IsNullOrEmpty (tagPrefix)) {
+						if (!string.IsNullOrEmpty (tagName) && !string.IsNullOrEmpty (src))
+							info.registeredTags.Add (new ControlRegisterDirective (tagPrefix, tagName, src));
+						else if (!string.IsNullOrEmpty (nspace) && !string.IsNullOrEmpty (assembly))
+							info.registeredTags.Add (new AssemblyRegisterDirective (tagPrefix, nspace, assembly));
+					}
+					break;
+				case "assembly":
+					var assm = new AssemblyDirective (
+						GetAttributeValueCI (directive.Attributes, "name"),
+						GetAttributeValueCI (directive.Attributes, "src"));
+					if (assm.IsValid ())
+						info.assemblies.Add (assm);
+					else
+						errors.Add (new Error (
+							ErrorType.Error,
+							"Assembly directive must have non-empty 'name' or 'src' attribute",
+							directive.Region
+						)
+						);
+					break;
+				case "import":
+					string ns = GetAttributeValueCI (directive.Attributes, "namespace");
+					if (!string.IsNullOrEmpty (ns))
+						info.imports.Add (ns);
+					else
+						errors.Add (new Error (
+							ErrorType.Error,
+							"Import directive must have non-empty 'namespace' attribute",
+							directive.Region
+						)
+						);
+					break;
+				case "implements":
+					string interf = GetAttributeValueCI (directive.Attributes, "interface");
+					if (!string.IsNullOrEmpty (interf))
+						info.implements.Add (interf);
+					else
+						errors.Add (new Error (
+							ErrorType.Error,
+							"Implements directive must have non-empty 'interface' attribute",
+							directive.Region
+						)
+						);
+					break;
+				default:
+					break;
+				}
+			}
+
+			void SetSubtype (WebSubtype type, AspNetDirective directive)
+			{
+				if (info.Subtype != WebSubtype.None) {
+					errors.Add (new Error (ErrorType.Error, "Unexpected directive " + directive.Name.FullName, directive.Region));
+					return;
+				}
+				
+				info.Subtype = type;
+							
+				info.InheritedClass = GetAttributeValueCI (directive.Attributes, "inherits");
+				if (info.ClassName == null)
+					info.ClassName = GetAttributeValueCI (directive.Attributes, "classname");
+				info.CodeBehindFile = GetAttributeValueCI (directive.Attributes, "codebehind");
+				info.Language = GetAttributeValueCI (directive.Attributes, "language");
+				info.CodeFile = GetAttributeValueCI (directive.Attributes, "codefile");
+			}
+
+			void HandleDocType (XDocType docType)
+			{
+				info.DocType = "<!DOCTYPE html";
+				if (!string.IsNullOrEmpty (docType.PublicFpi))
+					info.DocType += " \"" + docType.PublicFpi + "\"";
+				if (!string.IsNullOrEmpty (docType.Uri))
+					info.DocType += " \"" + docType.Uri + "\"";
+				info.DocType += ">";
+			}
+		}
+
+		#endregion
+
 		private class PageInfoVisitor : Visitor
 		{
 			PageInfo info;
@@ -209,7 +379,7 @@ namespace MonoDevelop.AspNet.Parser
 		public RegisterDirective (string tagPrefix)
 		{
 			this.TagPrefix = tagPrefix;
-		}		
+		}
 		
 		public RegisterDirective (DirectiveNode node)
 		{
