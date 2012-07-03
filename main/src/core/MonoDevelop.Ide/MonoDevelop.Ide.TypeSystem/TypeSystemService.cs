@@ -671,12 +671,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		[Serializable]
 		public class ProjectContentWrapper
 		{
-			IProjectContent content;
 			Dictionary<Type, object> extensionObjects = new Dictionary<Type, object> ();
 			
+			IProjectContent _content;
 			public IProjectContent Content {
 				get {
-					return content;
+					return _content;
+				}
+				set {
+					if (value == null)
+						throw new InvalidOperationException ("Project content can't be null");
+					_content = value;
 				}
 			}
 
@@ -739,10 +744,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
 			{
 				lock (this) {
-					if (content is LazyProjectLoader) {
-						((LazyProjectLoader)content).ContextTask.Wait ();
+					if (Content is LazyProjectLoader) {
+						((LazyProjectLoader)Content).ContextTask.Wait ();
 					}
-					content = updateFunc (content);
+					Content = updateFunc (Content);
 					compilation = null;
 					WasChanged = true;
 				}
@@ -774,7 +779,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (project == null)
 					throw new ArgumentNullException ("project");
 				this.Project = project;
-				this.content = new LazyProjectLoader (this).Content;
+				this.Content = new LazyProjectLoader (this).Content;
 			}
 			
 			public IEnumerable<Project> ReferencedProjects {
