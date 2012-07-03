@@ -2301,6 +2301,8 @@ namespace MonoDevelop.Ide.Gui.Components
 					sw.GdkWindow.GetSize (out ow, out oh);
 					ox += sw.Allocation.X;
 					oy += sw.Allocation.Y;
+					if (sw.VScrollbar.Visible)
+						ow -= sw.VScrollbar.Allocation.Width;
 
 					int cx, cy, cw, ch;
 					((Gdk.Window)window).GetOrigin (out cx, out cy);
