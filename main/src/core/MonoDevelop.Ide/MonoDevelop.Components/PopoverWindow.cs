@@ -138,12 +138,16 @@ namespace MonoDevelop.Components
 			RepositionWindow ();
 		}
 
-		void RepositionWindow ()
+		public void RepositionWindow ()
 		{
+			if (parent == null)
+				return;
+
 			int x, y;
 			Gdk.Rectangle caret = currentCaret;
 			Gdk.Window window = targetWindow;
 			PopupPosition position = targetPosition;
+			this.position = targetPosition;
 			window.GetOrigin (out x, out y);
 			var alloc = parent.Allocation;
 

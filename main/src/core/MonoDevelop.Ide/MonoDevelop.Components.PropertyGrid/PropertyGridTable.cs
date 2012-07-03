@@ -89,7 +89,6 @@ namespace MonoDevelop.Components.PropertyGrid
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
-			HasTooltip = true;
 			discloseDown = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-down.png");
 			discloseUp = Gdk.Pixbuf.LoadFromResource ("disclose-arrow-up.png");
 		}
@@ -532,7 +531,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		}
 
 		uint tooltipTimeout;
-		PopoverWindow tooltipWindow;
+		TooltipPopoverWindow tooltipWindow;
 
 		void ShowTooltip (EventMotion evnt)
 		{
@@ -563,18 +562,11 @@ namespace MonoDevelop.Components.PropertyGrid
 				return;
 			var row = GetAllRows (true).FirstOrDefault (r => !r.IsCategory && y >= r.EditorBounds.Y && y <= r.EditorBounds.Bottom);
 			if (row != null) {
-				tooltipWindow = new PopoverWindow ();
+				tooltipWindow = new TooltipPopoverWindow ();
 				tooltipWindow.ShowArrow = true;
-				Label la = new Label ();
 				var s = "<b>" + row.Property.DisplayName + "</b>\n\n";
 				s += GLib.Markup.EscapeText (row.Property.Description);
-				la.Markup = s;
-				la.ShowAll ();
-				tooltipWindow.Add (la);
-				if (la.SizeRequest ().Width > 300) {
-					la.Wrap = true;
-					la.WidthRequest = 300;
-				}
+				tooltipWindow.Markup = s;
 				tooltipWindow.ShowPopup (this, new Gdk.Rectangle (0, row.EditorBounds.Y, Allocation.Width, row.EditorBounds.Height), PopupPosition.Right);
 			}
 		}

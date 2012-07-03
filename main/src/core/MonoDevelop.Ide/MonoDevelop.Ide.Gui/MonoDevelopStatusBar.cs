@@ -517,7 +517,9 @@ namespace MonoDevelop.Ide
 			
 			int astep;
 			Gdk.Pixbuf[] images;
-			
+			TooltipPopoverWindow tooltipWindow;
+			bool mouseOver;
+
 			public StatusIcon (MonoDevelopStatusBar statusBar, Gdk.Pixbuf icon)
 			{
 				this.statusBar = statusBar;
@@ -527,10 +529,47 @@ namespace MonoDevelop.Ide
 				image = new Image (icon);
 				image.SetPadding (0, 0);
 				box.Child = image;
+				box.Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
+				box.EnterNotifyEvent += HandleEnterNotifyEvent;
+				box.LeaveNotifyEvent += HandleLeaveNotifyEvent;
 			}
-			
+
+			[GLib.ConnectBefore]
+			void HandleLeaveNotifyEvent (object o, LeaveNotifyEventArgs args)
+			{
+				mouseOver = false;
+				HideTooltip ();
+			}
+
+			[GLib.ConnectBefore]
+			void HandleEnterNotifyEvent (object o, EnterNotifyEventArgs args)
+			{
+				mouseOver = true;
+				ShowTooltip ();
+			}
+
+			void ShowTooltip ()
+			{
+				if (!string.IsNullOrEmpty (tip)) {
+					HideTooltip ();
+					tooltipWindow = new TooltipPopoverWindow ();
+					tooltipWindow.ShowArrow = true;
+					tooltipWindow.Text = tip;
+					tooltipWindow.ShowPopup (box, PopupPosition.Top);
+				}
+			}
+
+			void HideTooltip ()
+			{
+				if (tooltipWindow != null) {
+					tooltipWindow.Destroy ();
+					tooltipWindow = null;
+				}
+			}
+
 			public void Dispose ()
 			{
+				HideTooltip ();
 				statusBar.HideStatusIcon (this);
 				if (images != null) {
 					foreach (Gdk.Pixbuf img in images) {
@@ -546,7 +585,14 @@ namespace MonoDevelop.Ide
 			public string ToolTip {
 				get { return tip; }
 				set {
-					box.TooltipText = tip = value;
+					tip = value;
+					if (tooltipWindow != null) {
+						if (!string.IsNullOrEmpty (tip))
+							tooltipWindow.Text = value;
+						else
+							HideTooltip ();
+					} else if (!string.IsNullOrEmpty (tip) && mouseOver)
+						ShowTooltip ();
 				}
 			}
 			

@@ -1636,6 +1636,7 @@
     <Compile Include="MonoDevelop.Components\SquaredNotebook.cs" />
     <Compile Include="MonoDevelop.Components\PopoverWindow.cs" />
     <Compile Include="MonoDevelop.Components\ProgressControl.cs" />
+    <Compile Include="MonoDevelop.Components\TooltipPopoverWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
