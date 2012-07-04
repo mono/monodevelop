@@ -440,28 +440,27 @@ namespace Mono.TextEditor
 
 			if (unixEolLayout == null) {
 				unixEolLayout = PangoUtil.CreateLayout (textEditor);
-				unixEolLayout.SetText ("\\n");
-				Pango.Rectangle logRect;
-				unixEolLayout.GetPixelExtents (out unixEolLayoutRect, out logRect);
-
 				macEolLayout = PangoUtil.CreateLayout (textEditor);
-				macEolLayout.SetText ("\\r");
-				macEolLayout.GetPixelExtents (out macEolLayoutRect, out logRect);
-
 				windowsEolLayout = PangoUtil.CreateLayout (textEditor);
-				windowsEolLayout.SetText ("\\r\\n");
-				windowsEolLayout.GetPixelExtents (out windowsEolLayoutRect, out logRect);
-
 				eofEolLayout = PangoUtil.CreateLayout (textEditor);
-				eofEolLayout.SetText ("<EOF>");
-				eofEolLayout.GetPixelExtents (out eofEolLayoutRect, out logRect);
 			}
-			
-			if (unixEolLayout != null) {
-				var font = textEditor.Options.Font.Copy ();
-				font.Size = font.Size * 3 / 4;
-				unixEolLayout.FontDescription = macEolLayout.FontDescription = windowsEolLayout.FontDescription = eofEolLayout.FontDescription = font;
-			}
+
+			var font = textEditor.Options.Font.Copy ();
+			font.Size = font.Size * 3 / 4;
+			unixEolLayout.FontDescription = macEolLayout.FontDescription = windowsEolLayout.FontDescription = eofEolLayout.FontDescription = font;
+
+			unixEolLayout.SetText ("\\n");
+			Pango.Rectangle logRect;
+			unixEolLayout.GetPixelExtents (out unixEolLayoutRect, out logRect);
+
+			macEolLayout.SetText ("\\r");
+			macEolLayout.GetPixelExtents (out macEolLayoutRect, out logRect);
+
+			windowsEolLayout.SetText ("\\r\\n");
+			windowsEolLayout.GetPixelExtents (out windowsEolLayoutRect, out logRect);
+
+			eofEolLayout.SetText ("<EOF>");
+			eofEolLayout.GetPixelExtents (out eofEolLayoutRect, out logRect);
 
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
@@ -1515,7 +1514,7 @@ namespace Mono.TextEditor
 				throw new InvalidOperationException (); // other line endings are not known.
 			}
 			cr.Save ();
-			cr.Translate (x, y + LineHeight - rect.Height);
+			cr.Translate (x, y + System.Math.Max (0, LineHeight - rect.Height - 1));
 			cr.Color = selected && SelectionColor.GotForegroundColorAssigned ? SelectionColor.CairoColor : ColorStyle.EolWhitespaceMarker;
 			cr.ShowLayout (layout);
 			cr.Restore ();
