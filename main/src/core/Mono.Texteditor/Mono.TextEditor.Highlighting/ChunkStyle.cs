@@ -51,6 +51,7 @@ namespace Mono.TextEditor
 		}
 		
 		bool backColorIsZero = true;
+		bool foreColorIsZero = false;
 		Cairo.Color cairoBackgroundColor = new Cairo.Color (0, 0, 0, 0);
 		public virtual Cairo.Color CairoBackgroundColor {
 			get { return cairoBackgroundColor; }
@@ -60,6 +61,11 @@ namespace Mono.TextEditor
 		public bool GotBackgroundColorAssigned {
 			get {
 				return !backColorIsZero;
+			}
+		}
+		public bool GotForegroundColorAssigned {
+			get {
+				return !foreColorIsZero;
 			}
 		}
 		
@@ -125,6 +131,7 @@ namespace Mono.TextEditor
 		
 		public ChunkStyle ()
 		{
+			foreColorIsZero = true;
 		}
 		
 		public ChunkStyle (Gdk.Color color)

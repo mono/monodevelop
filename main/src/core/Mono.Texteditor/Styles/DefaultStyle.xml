@@ -63,8 +63,8 @@
 			<Style name="searchresult-main" color="#f3d647"/>
 			<Style name="searchresult" color="#ffe2b9"/>
 		</Style>
-		<Style name="selection" color="aluminium1" bgColor="skyblue1"/>
-		<Style name="selection.inactive" color="aluminium1" bgColor="aluminium3"/>
+		<Style name="selection" bgColor="#c3dcff"/>
+		<Style name="selection.inactive" bgColor="#e1edff"/>
 		<Style name="link" color="blue"/>
 		<Style name="punctuation" color="aluminium6"/>
 		<Style name="preprocessor" color="orange2">
@@ -98,8 +98,8 @@
 		<Style name="line.dirty" color="#EEEE50"/>
 	
 		<Style name="ruler" color="aluminium3"/>
-		<Style name="whitespace" color="aluminium3"> 
-			<Style name="eol" color="aluminium2"/> 
+		<Style name="whitespace" color="#7f8fa6"> 
+			<Style name="eol" color="#7f8fa6"/> 
 		</Style>
 		<Style name="invalidline" color="scarletred2"/>
 		<Style name="bracket" color="aluminium2" bgColor="aluminium1"/>

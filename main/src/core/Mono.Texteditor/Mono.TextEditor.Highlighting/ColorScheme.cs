@@ -685,7 +685,20 @@ namespace Mono.TextEditor.Highlighting
 				if (weight.ToUpper ().IndexOf ("UNDERLINE") >= 0)
 					properties |= ChunkProperties.Underline;
 			}
-			SetStyle (name, !string.IsNullOrEmpty (backColor) ? new ChunkStyle (color, bgColor, properties) : new ChunkStyle (color, properties));
+			ChunkStyle chunkStyle;
+			if (string.IsNullOrEmpty (backColor)) {
+				chunkStyle = new ChunkStyle (color, properties);
+			} else if (string.IsNullOrEmpty (foreColor)) {
+				chunkStyle = new ChunkStyle () {
+					ChunkProperties =properties,
+					CairoBackgroundColor = bgColor
+				};
+			} else {
+				chunkStyle = new ChunkStyle (color, bgColor, properties);
+			}
+
+
+			SetStyle (name, chunkStyle);
 		}
 		
 		public void SetChunkStyle (string name, ChunkStyle style)
@@ -737,9 +750,10 @@ namespace Mono.TextEditor.Highlighting
 			} else {
 				fullName = curName + "." + name;
 			}
-			if (!String.IsNullOrEmpty (color)) {
+			if (!string.IsNullOrEmpty (color) || !string.IsNullOrEmpty (bgColor)) {
 				result.SetChunkStyle (fullName, weight, color, bgColor);
 			}
+			
 			XmlReadHelper.ReadList (reader, "Style", delegate () {
 				switch (reader.LocalName) {
 				case "Style":

@@ -471,8 +471,6 @@ namespace Mono.TextEditor
 				font.Size = font.Size * 3 / 4;
 				unixEolLayout.FontDescription = macEolLayout.FontDescription = windowsEolLayout.FontDescription = eofEolLayout.FontDescription = font;
 			}
-			DecorateLineFg -= DecorateTabsAndSpaces;
-			DecorateLineFg += DecorateTabsAndSpaces;
 
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
@@ -845,6 +843,7 @@ namespace Mono.TextEditor
 			wrapper.Layout.Tabs = tabArray;
 			StringBuilder textBuilder = new StringBuilder ();
 			var chunks = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
+			wrapper.Chunks = chunks;
 			foreach (var chunk in chunks) {
 				try {
 					textBuilder.Append (Document.GetTextAt (chunk));
@@ -912,7 +911,7 @@ namespace Mono.TextEditor
 						}
 						var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						atts.AddForegroundAttribute (SelectionColor.Color, si, ei);
+						atts.AddForegroundAttribute (SelectionColor.GotForegroundColorAssigned ? SelectionColor.Color : chunkStyle.Color, si, ei);
 						if (!wrapper.StartSet)
 							wrapper.SelectionStartIndex = (int)si;
 						wrapper.SelectionEndIndex = (int)ei;
@@ -1106,6 +1105,11 @@ namespace Mono.TextEditor
 				set;
 			}
 
+			public IEnumerable<Chunk> Chunks {
+				get;
+				set;
+			}
+
 			public char[] LineChars {
 				get;
 				set;
@@ -1198,7 +1202,6 @@ namespace Mono.TextEditor
 		public delegate void LineDecorator (Cairo.Context ctx,LayoutWrapper layout,int offset,int length,double xPos,double y,int selectionStart,int selectionEnd);
 
 		public event LineDecorator DecorateLineBg;
-		public event LineDecorator DecorateLineFg;
 
 		void DrawSpaceMarker (Cairo.Context cr, bool selected, double x, double x2, double y)
 		{
@@ -1221,14 +1224,13 @@ namespace Mono.TextEditor
 			bool first = true, oldSelected = false;
 			int index, trailing;
 			layout.Layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
-
+			var curchunk = layout.Chunks != null ? layout.Chunks.FirstOrDefault () : null;
 			for (int i = index; i < layout.LineChars.Length; i++) {
 				char ch = layout.LineChars [i];
 				if (ch != ' ' && ch != '\t')
 					continue;
 				bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
 				if (first || oldSelected != selected) {
-					ctx.Color = selected ? SelectionColor.CairoColor : ColorStyle.WhitespaceMarker;
 					first = false;
 					oldSelected = selected;
 				}
@@ -1240,6 +1242,19 @@ namespace Mono.TextEditor
 					break;
 				Pango.Rectangle pos2 = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i + 1, ref curIndex, ref byteIndex));
 				double xpos2 = xPos + pos2.X / Pango.Scale.PangoScale;
+
+				if (!SelectionColor.GotForegroundColorAssigned) {
+					while (curchunk != null && curchunk.EndOffset < offset + i)
+						curchunk = curchunk.Next;
+					if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "text") {
+						ctx.Color = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color).CairoColor;
+					} else {
+						ctx.Color = ColorStyle.WhitespaceMarker;
+					}
+				} else {
+					ctx.Color = SelectionColor.CairoColor;
+				}
+
 				if (ch == '\t') {
 					DrawTabMarker (ctx, selected, xpos, xpos2, y);
 				} else {
@@ -1328,8 +1343,9 @@ namespace Mono.TextEditor
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 			
-			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
+			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber) {
 				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale);
+			}
 
 			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length)) {
 				double startX;
@@ -1348,7 +1364,7 @@ namespace Mono.TextEditor
 				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
-				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX, LineHeight), this.SelectionColor.CairoBackgroundColor, true);
+				DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (xPos + startX, y, endX - startX + 0.5, LineHeight), this.SelectionColor.CairoBackgroundColor, true);
 			}
 
 			// highlight search results
@@ -1387,9 +1403,8 @@ namespace Mono.TextEditor
 			cr.Translate (xPos, y);
 			cr.ShowLayout (layout.Layout);
 			cr.Restore ();
-			
-			if (DecorateLineFg != null)
-				DecorateLineFg (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
+
+			DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
 			if (lineNumber == Caret.Line) {
 				int caretOffset = Caret.Offset;
@@ -1422,16 +1437,17 @@ namespace Mono.TextEditor
 							endX = (pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale;
 							DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, LineHeight), this.SelectionColor.CairoBackgroundColor, true);
 						}
-						if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
-							DrawCaretLineMarker (cr, pangoPosition / Pango.Scale.PangoScale, y, vx / Pango.Scale.PangoScale);
 
 						// When drawing virtual space before the selection start paint it as unselected.
 						var virtualSpaceMod = selectionStart < caretOffset ? 0 : virtualSpace.Length;
 
+						if (!textEditor.IsSomethingSelected || (selectionStart >= offset && selectionStart != selectionEnd)  && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
+							DrawCaretLineMarker (cr, pangoPosition / Pango.Scale.PangoScale, y, vx / Pango.Scale.PangoScale);
+
 						if (DecorateLineBg != null)
 							DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStart + virtualSpaceMod, selectionEnd + virtualSpace.Length);
-						if (DecorateLineFg != null)
-							DecorateLineFg (cr, wrapper, offset, length, xPos, y, selectionStart + virtualSpaceMod, selectionEnd + virtualSpace.Length);
+						if (textEditor.IsSomethingSelected && (selectionStart < offset || selectionStart == selectionEnd))
+							DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
 						wrapper.Dispose ();
 						pangoPosition += vx;
 					} else if (index == length && textEditor.preeditString == null) {
@@ -1521,7 +1537,7 @@ namespace Mono.TextEditor
 			}
 			cr.Save ();
 			cr.Translate (x, y + LineHeight - rect.Height);
-			cr.Color = selected ? SelectionColor.CairoColor : ColorStyle.EolWhitespaceMarker;
+			cr.Color = selected && SelectionColor.GotForegroundColorAssigned ? SelectionColor.CairoColor : ColorStyle.EolWhitespaceMarker;
 			cr.ShowLayout (layout);
 			cr.Restore ();
 		}
@@ -2182,17 +2198,19 @@ namespace Mono.TextEditor
 						cr.Rectangle (foldingRectangle);
 						cr.Fill ();
 					}
-					
-					cr.Color = isFoldingSelected ? SelectionColor.CairoColor : ColorStyle.FoldLine.CairoColor;
+
+					if (isFoldingSelected && !SelectionColor.GotForegroundColorAssigned) {
+						cr.Color = ColorStyle.WhitespaceMarker;
+					} else {
+						cr.Color = isFoldingSelected  ? SelectionColor.CairoColor : ColorStyle.FoldLine.CairoColor;
+					}
 					cr.Rectangle (foldingRectangle);
 					cr.Stroke ();
 					
 					cr.Save ();
 					cr.Translate (pangoPosition / Pango.Scale.PangoScale, y);
-					cr.Color = isFoldingSelected ? SelectionColor.CairoColor : ColorStyle.FoldLine.CairoColor;
 					cr.ShowLayout (markerLayout);
 					cr.Restore ();
-					
 
 					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
 						SetVisibleCaretPosition ((int)(pangoPosition / Pango.Scale.PangoScale), y);
@@ -2250,20 +2268,11 @@ namespace Mono.TextEditor
 
 			if (!isSelectionDrawn) {
 				if (isEolSelected) {
-					if (!Platform.IsMac) {
-						// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
-						lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale,
-						lineArea.Y,
-						textEditor.Allocation.Width - pangoPosition / Pango.Scale.PangoScale + 1,
-						lineArea.Height);
-					} else {
-						// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
-						lineArea = new Cairo.Rectangle (System.Math.Max (pangoPosition / Pango.Scale.PangoScale - 1, XOffset + TextStartPosition),
-						lineArea.Y,
-						textEditor.Allocation.Width - pangoPosition / Pango.Scale.PangoScale + 1,
-						lineArea.Height);
-					}
-					
+					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
+					lineArea = new Cairo.Rectangle (pangoPosition / Pango.Scale.PangoScale,
+					lineArea.Y,
+					textEditor.Allocation.Width - pangoPosition / Pango.Scale.PangoScale + 1,
+					lineArea.Height);
 					DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.CairoBackgroundColor, false);
 				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
 					LayoutWrapper wrapper = GetLayout (line);
@@ -2540,7 +2549,12 @@ namespace Mono.TextEditor
 							attributes.Add (background);
 						}
 					}, delegate(int start, int end) {
-						Pango.AttrForeground selectedForeground = new Pango.AttrForeground (SelectionColor.Color.Red, SelectionColor.Color.Green, SelectionColor.Color.Blue);
+						Pango.AttrForeground selectedForeground;
+						if (SelectionColor.GotForegroundColorAssigned) {
+							selectedForeground = new Pango.AttrForeground (SelectionColor.Color.Red, SelectionColor.Color.Green, SelectionColor.Color.Blue);
+						} else {
+							selectedForeground = new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue);
+						}
 						selectedForeground.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						selectedForeground.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
 						attributes.Add (selectedForeground);
