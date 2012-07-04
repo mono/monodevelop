@@ -44,8 +44,8 @@ namespace Mono.TextEditor
 		readonly TextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout;
-		Pango.Layout tabMarkerLayout, spaceMarkerLayout, invalidLineLayout;
-		Pango.Layout macEolLayout, unixEolLayout, windowEolLayout, eofEolLayout;
+		Pango.Layout invalidLineLayout;
+		Pango.Layout macEolLayout, unixEolLayout, windowsEolLayout, eofEolLayout;
 		internal double charWidth;
 		int highlightBracketOffset = -1;
 		
@@ -411,6 +411,11 @@ namespace Mono.TextEditor
 			highlightBracketWorker = null;
 		}
 
+		Pango.Rectangle unixEolLayoutRect;
+		Pango.Rectangle macEolLayoutRect;
+		Pango.Rectangle windowsEolLayoutRect;
+		Pango.Rectangle eofEolLayoutRect;
+
 		protected internal override void OptionsChanged ()
 		{
 			DisposeGCs ();
@@ -445,43 +450,30 @@ namespace Mono.TextEditor
 			if (textEditor.Options.ShowEolMarkers && unixEolLayout == null) {
 				unixEolLayout = PangoUtil.CreateLayout (textEditor);
 				unixEolLayout.SetText ("\\n");
+				Pango.Rectangle logRect;
+				unixEolLayout.GetPixelExtents (out unixEolLayoutRect, out logRect);
+
 				macEolLayout = PangoUtil.CreateLayout (textEditor);
 				macEolLayout.SetText ("\\r");
-				windowEolLayout = PangoUtil.CreateLayout (textEditor);
-				windowEolLayout.SetText ("\\r\\n");
+				macEolLayout.GetPixelExtents (out macEolLayoutRect, out logRect);
+
+				windowsEolLayout = PangoUtil.CreateLayout (textEditor);
+				windowsEolLayout.SetText ("\\r\\n");
+				windowsEolLayout.GetPixelExtents (out windowsEolLayoutRect, out logRect);
+
 				eofEolLayout = PangoUtil.CreateLayout (textEditor);
 				eofEolLayout.SetText ("<EOF>");
+				eofEolLayout.GetPixelExtents (out eofEolLayoutRect, out logRect);
 			}
 			
-			if (unixEolLayout != null)
-				unixEolLayout.FontDescription = macEolLayout.FontDescription = windowEolLayout.FontDescription = eofEolLayout.FontDescription = textEditor.Options.Font;
-			
-			if (textEditor.Options.ShowTabs && tabMarkerLayout == null) {
-				tabMarkerLayout = PangoUtil.CreateLayout (textEditor);
-				tabMarkerLayout.SetText ("»");
+			if (unixEolLayout != null) {
+				var font = textEditor.Options.Font.Copy ();
+				font.Size = font.Size * 3 / 4;
+				unixEolLayout.FontDescription = macEolLayout.FontDescription = windowsEolLayout.FontDescription = eofEolLayout.FontDescription = font;
 			}
-			if (tabMarkerLayout != null)
-				tabMarkerLayout.FontDescription = textEditor.Options.Font;
-
-			if (textEditor.Options.ShowSpaces && spaceMarkerLayout == null) {
-				spaceMarkerLayout = PangoUtil.CreateLayout (textEditor);
-				spaceMarkerLayout.SetText ("·");
-			}
-			if (spaceMarkerLayout != null)
-				spaceMarkerLayout.FontDescription = textEditor.Options.Font;
-			
-			DecorateLineFg -= DecorateTabs;
-			DecorateLineFg -= DecorateSpaces;
 			DecorateLineFg -= DecorateTabsAndSpaces;
-			
-			if (textEditor.Options.ShowTabs && textEditor.Options.ShowSpaces) {
-				DecorateLineFg += DecorateTabsAndSpaces;
-			} else if (textEditor.Options.ShowTabs) {
-				DecorateLineFg += DecorateTabs;
-			} else if (textEditor.Options.ShowSpaces) {
-				DecorateLineFg += DecorateSpaces;
-			} 
-			
+			DecorateLineFg += DecorateTabsAndSpaces;
+
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
 				DecorateLineBg += DecorateMatchingBracket;
@@ -533,16 +525,12 @@ namespace Mono.TextEditor
 			DisposeGCs ();
 			if (markerLayout != null)
 				markerLayout.Dispose ();
-			if (tabMarkerLayout != null)
-				tabMarkerLayout.Dispose ();
-			if (spaceMarkerLayout != null)
-				spaceMarkerLayout.Dispose ();
 			if (invalidLineLayout != null)
 				invalidLineLayout.Dispose ();
 			if (unixEolLayout != null) {
 				macEolLayout.Dispose ();
 				unixEolLayout.Dispose ();
-				windowEolLayout.Dispose ();
+				windowsEolLayout.Dispose ();
 				eofEolLayout.Dispose ();
 			}
 			
@@ -1212,68 +1200,19 @@ namespace Mono.TextEditor
 		public event LineDecorator DecorateLineBg;
 		public event LineDecorator DecorateLineFg;
 
-		void DrawSpaceMarker (Cairo.Context cr, bool selected, double x, double y)
+		void DrawSpaceMarker (Cairo.Context cr, bool selected, double x, double x2, double y)
 		{
-			cr.Save ();
-			cr.Translate (x, y);
-			cr.ShowLayout (spaceMarkerLayout);
-			cr.Restore ();
+			var d = textEditor.Options.Zoom * 2;
+			cr.Rectangle (0.5 + x + (x2 - x - d) / 2, 0.5 + y + (LineHeight - d) / 2, d, d);
+			cr.Fill ();
 		}
 
-		void DecorateSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
+		void DrawTabMarker (Cairo.Context cr, bool selected, double x, double x2, double y)
 		{
-			uint curIndex = 0, byteIndex = 0;
-			bool first = true, oldSelected = false;
-			int index, trailing;
-			layout.Layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
-
-			for (int i = index; i < layout.LineChars.Length; i++) {
-				if (layout.LineChars [i] == ' ') {
-					bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
-					if (first || oldSelected != selected) {
-						ctx.Color = selected ? SelectionColor.CairoColor : ColorStyle.WhitespaceMarker;
-						first = false;
-						oldSelected = selected;
-					}
-					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
-					double xpos = xPos + pos.X / Pango.Scale.PangoScale;
-					if (xpos > textEditor.Allocation.Width)
-						break;
-					DrawSpaceMarker (ctx, selected, xpos, y);
-				}
-			}
-		}
-
-		void DrawTabMarker (Cairo.Context cr, bool selected, double x, double y)
-		{
-			cr.Save ();
-			cr.Translate (x, y);
-			cr.ShowLayout (tabMarkerLayout);
-			cr.Restore ();
-		}
-		
-		void DecorateTabs (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
-		{
-			uint curIndex = 0, byteIndex = 0;
-			bool first = true, oldSelected = false;
-			int index, trailing;
-			layout.Layout.XyToIndex ((int)textEditor.HAdjustment.Value, 0, out index, out trailing);
-
-			for (int i = index; i < layout.LineChars.Length; i++) {
-				if (layout.LineChars [i] == '\t') {
-					bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
-					if (first || oldSelected != selected) {
-						ctx.Color = selected ? SelectionColor.CairoColor : ColorStyle.WhitespaceMarker;
-						first = false;
-						oldSelected = selected;
-					}
-					Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
-					double xpos = xPos + pos.X / Pango.Scale.PangoScale;
-					if (xpos > textEditor.Allocation.Width)
-						break;
-					DrawTabMarker (ctx, selected, xpos, y);
-				}
-			}
+			var py = y + LineHeight / 2;
+			cr.MoveTo (0.5 + x, py);
+			cr.LineTo (0.5 + x2 - charWidth / 2, py);
+			cr.Stroke ();
 		}
 
 		void DecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
@@ -1293,14 +1232,18 @@ namespace Mono.TextEditor
 					first = false;
 					oldSelected = selected;
 				}
+				if (!selected)
+					continue;
 				Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 				double xpos = xPos + pos.X / Pango.Scale.PangoScale;
 				if (xpos > textEditor.Allocation.Width)
 					break;
+				Pango.Rectangle pos2 = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i + 1, ref curIndex, ref byteIndex));
+				double xpos2 = xPos + pos2.X / Pango.Scale.PangoScale;
 				if (ch == '\t') {
-					DrawTabMarker (ctx, selected, xpos, y);
+					DrawTabMarker (ctx, selected, xpos, xpos2, y);
 				} else {
-					DrawSpaceMarker (ctx, selected, xpos, y);
+					DrawSpaceMarker (ctx, selected, xpos, xpos2, y);
 				}
 			}
 		}
@@ -1553,26 +1496,31 @@ namespace Mono.TextEditor
 		void DrawEolMarker (Cairo.Context cr, DocumentLine line, bool selected, double x, double y)
 		{
 			Pango.Layout layout;
+			Pango.Rectangle rect;
 			switch (line.DelimiterLength) {
 			case 0:
 				// an emty line end should only happen at eof
 				layout = eofEolLayout;
+				rect = eofEolLayoutRect;
 				break;
 			case 1:
 				if (Document.GetCharAt (line.Offset + line.Length) == '\n') {
 					layout = unixEolLayout;
+					rect = unixEolLayoutRect;
 				} else {
 					layout = macEolLayout;
+					rect = macEolLayoutRect;
 				}
 				break;
 			case 2:
-				layout = windowEolLayout;
+				layout = windowsEolLayout;
+				rect = windowsEolLayoutRect;
 				break;
 			default:
 				throw new InvalidOperationException (); // other line endings are not known.
 			}
 			cr.Save ();
-			cr.Translate (x, y);
+			cr.Translate (x, y + LineHeight - rect.Height);
 			cr.Color = selected ? SelectionColor.CairoColor : ColorStyle.EolWhitespaceMarker;
 			cr.ShowLayout (layout);
 			cr.Restore ();
@@ -2334,7 +2282,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			if (!isEolFolded && textEditor.Options.ShowEolMarkers)
+			if (!isEolFolded && isEolSelected)
 				DrawEolMarker (cr, line, isEolSelected, pangoPosition / Pango.Scale.PangoScale, y);
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null)
