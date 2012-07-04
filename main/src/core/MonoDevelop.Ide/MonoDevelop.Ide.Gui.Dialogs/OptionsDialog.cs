@@ -90,8 +90,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			AddActionWidget (this.buttonCancel, ResponseType.Cancel);
 
 			buttonOk = new Gtk.Button (Gtk.Stock.Ok);
-			AddActionWidget (this.buttonOk, ResponseType.Ok);
-
+			this.ActionArea.PackStart (buttonOk);
 			buttonOk.Clicked += OnButtonOkClicked;
 
 			mainHBox = new HBox ();
@@ -500,6 +499,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (c != null) {
 				foreach (Gtk.Widget cw in c)
 					cw.Show ();
+				//HACK: weird bug - switching page away and back selects last tab. should preserve the selection.
+				if (c is Notebook)
+					((Notebook)c).Page = 0;
 			}
 			
 			tree.ExpandToPath (store.GetPath (page.Iter));
