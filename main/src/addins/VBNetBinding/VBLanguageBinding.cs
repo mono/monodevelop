@@ -91,7 +91,7 @@ namespace MonoDevelop.VBNetBinding
 		
 		public ClrVersion[] GetSupportedClrVersions ()
 		{
-			return new ClrVersion[] { ClrVersion.Net_2_0 };
+			return new ClrVersion[] { ClrVersion.Net_2_0, ClrVersion.Net_4_0 };
 		}
 	
 		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
