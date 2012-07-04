@@ -196,10 +196,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var options = new MonoDevelop.Ide.Gui.CommonTextEditorOptions () {
 				ShowFoldMargin = false,
 				ShowIconMargin = false,
-				ShowInvalidLines = false,
 				ShowLineNumberMargin = false,
-				ShowSpaces = false,
-				ShowTabs = false,
 				HighlightCaretLine = true,
 			};
 			inspectEditor = new TextEditor (new TextDocument (), options);

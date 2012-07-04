@@ -202,11 +202,6 @@ namespace MonoDevelop.SourceEditor
 			set { throw new NotSupportedException (); }
 		}
 
-		public bool ShowEolMarkers {
-			get { return DefaultSourceEditorOptions.Instance.ShowEolMarkers; }
-			set { throw new NotSupportedException (); }
-		}
-
 		public bool ShowFoldMargin {
 			get { return DefaultSourceEditorOptions.Instance.ShowFoldMargin; }
 			set { throw new NotSupportedException (); }
@@ -214,11 +209,6 @@ namespace MonoDevelop.SourceEditor
 
 		public bool ShowIconMargin {
 			get { return DefaultSourceEditorOptions.Instance.ShowIconMargin; }
-			set { throw new NotSupportedException (); }
-		}
-
-		public bool ShowInvalidLines {
-			get { return DefaultSourceEditorOptions.Instance.ShowInvalidLines; }
 			set { throw new NotSupportedException (); }
 		}
 
@@ -232,16 +222,6 @@ namespace MonoDevelop.SourceEditor
 			set { throw new NotSupportedException (); }
 		}
 
-		public bool ShowSpaces {
-			get { return DefaultSourceEditorOptions.Instance.ShowSpaces; }
-			set { throw new NotSupportedException (); }
-		}
-
-		public bool ShowTabs {
-			get { return DefaultSourceEditorOptions.Instance.ShowTabs; }
-			set { throw new NotSupportedException (); }
-		}
-		
 		public bool EnableAnimations {
 			get { return DefaultSourceEditorOptions.Instance.EnableAnimations; }
 			set { throw new NotSupportedException (); }

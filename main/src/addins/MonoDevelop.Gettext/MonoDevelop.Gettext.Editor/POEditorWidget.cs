@@ -241,8 +241,6 @@ namespace MonoDevelop.Gettext
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
-			options.ShowInvalidLines = false;
-			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
 			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 			options.FontName = PropertyService.Get<string> ("FontName");
 			
@@ -300,7 +298,6 @@ namespace MonoDevelop.Gettext
 		
 		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
 		{
-			options.ShowSpaces = options.ShowTabs = checkbuttonWhiteSpaces.Active;
 			texteditorOriginal.QueueDraw ();
 			texteditorPlural.QueueDraw ();
 			for (int i = this.notebookTranslated.NPages - 1; i >= 0; i--) {

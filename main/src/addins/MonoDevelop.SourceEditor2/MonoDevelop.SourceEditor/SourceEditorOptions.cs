@@ -146,20 +146,8 @@ namespace MonoDevelop.SourceEditor
 				case "ShowFoldMargin":
 					base.ShowFoldMargin = (bool)args.NewValue;
 					break;
-				case "ShowInvalidLines":
-					base.ShowInvalidLines = (bool)args.NewValue;
-					break;
-				case "ShowTabs":
-					base.ShowTabs = (bool)args.NewValue;
-					break;
-				case "ShowEolMarkers":
-					base.ShowEolMarkers = (bool)args.NewValue;
-					break;
 				case "HighlightCaretLine":
 					base.HighlightCaretLine = (bool)args.NewValue;
-					break;
-				case "ShowSpaces":
-					base.ShowSpaces = (bool)args.NewValue;
 					break;
 				case "EnableSyntaxHighlighting":
 					base.EnableSyntaxHighlighting = (bool)args.NewValue;
@@ -214,11 +202,7 @@ namespace MonoDevelop.SourceEditor
 			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Smart);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
-			base.ShowInvalidLines = PropertyService.Get ("ShowInvalidLines", false);
-			base.ShowTabs = PropertyService.Get ("ShowTabs", false);
-			base.ShowEolMarkers = PropertyService.Get ("ShowEolMarkers", false);
 			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", false);
-			base.ShowSpaces = PropertyService.Get ("ShowSpaces", false);
 			base.EnableSyntaxHighlighting = PropertyService.Get ("EnableSyntaxHighlighting", true);
 			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
 			base.ShowRuler = PropertyService.Get ("ShowRuler", false);
@@ -566,38 +550,10 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public override bool ShowInvalidLines {
-			set {
-				PropertyService.Set ("ShowInvalidLines", value);
-				base.ShowInvalidLines = value;
-			}
-		}
-		
-		public override bool ShowTabs {
-			set {
-				PropertyService.Set ("ShowTabs", value);
-				base.ShowTabs = value;
-			}
-		}
-		
-		public override bool ShowEolMarkers {
-			set {
-				PropertyService.Set ("ShowEolMarkers", value);
-				base.ShowEolMarkers = value;
-			}
-		}
-		
 		public override bool HighlightCaretLine {
 			set {
 				PropertyService.Set ("HighlightCaretLine", value);
 				base.HighlightCaretLine = value;
-			}
-		}
-		
-		public override bool ShowSpaces {
-			set {
-				PropertyService.Set ("ShowSpaces", value);
-				base.ShowSpaces = value;
 			}
 		}
 		

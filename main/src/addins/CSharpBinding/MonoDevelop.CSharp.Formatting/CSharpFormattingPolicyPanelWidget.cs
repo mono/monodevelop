@@ -72,7 +72,6 @@ namespace Example {
 			texteditor.Options.ShowFoldMargin = false;
 			texteditor.Options.ShowIconMargin = false;
 			texteditor.Options.ShowLineNumberMargin = false;
-			texteditor.Options.ShowInvalidLines = false;
 			texteditor.Document.ReadOnly = true;
 			texteditor.Document.MimeType = CSharpFormatter.MimeType;
 			scrolledwindow1.Child = texteditor;

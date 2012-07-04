@@ -72,8 +72,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
-			options.ShowInvalidLines = false;
-			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
 			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 			textEditor.Options = options;
 			
@@ -94,7 +92,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			textEditor.Document.TextReplaced += DocumentTextReplaced;
 			this.buttonOk.Clicked += ButtonOkClicked;
 			
-			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
+			checkbuttonWhiteSpaces.Hide ();
 			
 			variablesListStore = new ListStore (typeof (string), typeof (CodeTemplateVariable));
 			comboboxVariables.Model = variablesListStore;
@@ -171,11 +169,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.UpdateVariables ();
 		}
 
-		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
-		{
-			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
-			textEditor.QueueDraw ();
-		}
 
 		void CaretPositionChanged (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{

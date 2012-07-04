@@ -66,8 +66,6 @@ namespace MonoDevelop.Debugger
 			editor.Document.ReadOnly = true;
 			
 			editor.Options = new MonoDevelop.Ide.Gui.CommonTextEditorOptions () {
-				ShowEolMarkers = false,
-				ShowInvalidLines = false,
 				ShowLineNumberMargin = false,
 			};
 			

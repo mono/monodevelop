@@ -50,15 +50,11 @@ namespace Mono.TextEditor
 		bool showIconMargin = true;
 		bool showLineNumberMargin = true;
 		bool showFoldMargin = true;
-		bool showInvalidLines = true;
 		IndentStyle indentStyle = IndentStyle.Virtual;
 		
 		int  rulerColumn = 80;
 		bool showRuler = false;
 		
-		bool showTabs   = false;
-		bool showSpaces = false;
-		bool showEolMarkers = false;
 		bool enableSyntaxHighlighting = true;
 		bool highlightMatchingBracket = true;
 		bool highlightCaretLine = false;
@@ -287,42 +283,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public virtual bool ShowInvalidLines {
-			get {
-				return showInvalidLines;
-			}
-			set {
-				if (showInvalidLines != value) {
-					showInvalidLines = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		public virtual bool ShowTabs {
-			get {
-				return showTabs;
-			}
-			set {
-				if (showTabs != value) {
-					showTabs = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		public virtual bool ShowEolMarkers {
-			get {
-				return showEolMarkers;
-			}
-			set {
-				if (showEolMarkers != value) {
-					showEolMarkers = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
 		public virtual bool HighlightCaretLine {
 			get {
 				return highlightCaretLine;
@@ -335,17 +295,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public virtual bool ShowSpaces {
-			get {
-				return showSpaces;
-			}
-			set {
-				if (showSpaces != value) {
-					showSpaces = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
 
 		public virtual int RulerColumn {
 			get {
@@ -486,11 +435,7 @@ namespace Mono.TextEditor
 			showIconMargin = other.showIconMargin;
 			showLineNumberMargin = other.showLineNumberMargin;
 			showFoldMargin = other.showFoldMargin;
-			showInvalidLines = other.showInvalidLines;
-			showTabs = other.showTabs;
-			showEolMarkers = other.showEolMarkers;
 			highlightCaretLine = other.highlightCaretLine;
-			showSpaces = other.showSpaces;
 			rulerColumn = other.rulerColumn;
 			showRuler = other.showRuler;
 			indentStyle = other.indentStyle;

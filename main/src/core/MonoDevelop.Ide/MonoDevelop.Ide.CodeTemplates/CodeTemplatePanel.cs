@@ -77,27 +77,19 @@ namespace MonoDevelop.Ide.CodeTemplates
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
-			options.ShowInvalidLines = false;
-			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = false;
 			textEditor.Options = options;
 			textEditor.Document.ReadOnly = true;
 			this.buttonAdd.Clicked += ButtonAddClicked;
 			this.buttonEdit.Clicked += ButtonEditClicked;
 			this.buttonRemove.Clicked += ButtonRemoveClicked;
-			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
 			this.treeviewCodeTemplates.Selection.Changed += SelectionChanged;
 			SelectionChanged (null, null);
+			checkbuttonWhiteSpaces.Hide ();
 		}
 
 		void SelectionChanged (object sender, EventArgs e)
 		{
 			buttonRemove.Sensitive = buttonEdit.Sensitive = (GetSelectedTemplate () != null);
-		}
-
-		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
-		{
-			options.ShowSpaces = options.ShowTabs = options.ShowEolMarkers = checkbuttonWhiteSpaces.Active;
-			textEditor.QueueDraw ();
 		}
 
 		void ButtonRemoveClicked (object sender, EventArgs e)
