@@ -56,8 +56,8 @@
 	
 	<!-- environment -->
 	<Style name="text" color="aluminium2" bgColor="aluminium6"/>
-	<Style name="text.selection" color="aluminium1" bgColor="aluminium4"/>
-	<Style name="text.selection.inactive" color="aluminium1" bgColor="aluminium5"/>
+	<Style name="text.selection" bgColor="aluminium5"/>
+	<Style name="text.selection.inactive" bgColor="aluminium7"/>
 	
 	<Style name="text.background.readonly" color="aluminium7"/>
 	<Style name="text.background.searchresult" color="#006060"/>
