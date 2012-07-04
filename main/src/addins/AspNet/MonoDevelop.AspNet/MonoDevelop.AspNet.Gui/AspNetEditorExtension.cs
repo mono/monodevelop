@@ -858,24 +858,24 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#region Document outline
 		
-		protected override void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
-		{
-			ParentNode p = ((AspNetParsedDocument)doc).RootNode;
-//			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
-			BuildTreeChildren (store, Gtk.TreeIter.Zero, p);
-		}
+//		protected override void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
+//		{
+//			ParentNode p = ((AspNetParsedDocument)doc).RootNode;
+////			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
+//			BuildTreeChildren (store, Gtk.TreeIter.Zero, p);
+//		}
 		
-		protected override void InitializeOutlineColumns (MonoDevelop.Ide.Gui.Components.PadTreeView outlineTree)
-		{
-			outlineTree.TextRenderer.Xpad = 0;
-			outlineTree.TextRenderer.Ypad = 0;
-			outlineTree.AppendColumn ("Node", outlineTree.TextRenderer, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
-		}
-		
-		protected override void OutlineSelectionChanged (object selection)
-		{
-			SelectNode ((Node)selection);
-		}
+//		protected override void InitializeOutlineColumns (MonoDevelop.Ide.Gui.Components.PadTreeView outlineTree)
+//		{
+//			outlineTree.TextRenderer.Xpad = 0;
+//			outlineTree.TextRenderer.Ypad = 0;
+//			outlineTree.AppendColumn ("Node", outlineTree.TextRenderer, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
+//		}
+//		
+//		protected override void OutlineSelectionChanged (object selection)
+//		{
+//			SelectNode ((Node)selection);
+//		}
 		
 		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, ParentNode p)
 		{

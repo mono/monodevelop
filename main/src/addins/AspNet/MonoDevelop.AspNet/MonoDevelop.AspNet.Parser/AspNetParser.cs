@@ -53,9 +53,8 @@ namespace MonoDevelop.AspNet.Parser
 				new AspNetFreeState (),
 				true
 			);
-
+			
 			try {
-				rootNode.Parse (fileName, tr);
 				// testing the State engine parser. building a XDocument tree
 				parser.Parse (tr);
 			} catch (Exception ex) {
@@ -63,14 +62,9 @@ namespace MonoDevelop.AspNet.Parser
 				errors.Add (new Error (ErrorType.Error, "Unhandled error parsing ASP.NET document: " + ex.Message));
 			}
 
-			foreach (var pe in rootNode.ParseErrors)
-				errors.Add (new Error (ErrorType.Error, pe.Message, pe.Location.BeginLine, pe.Location.BeginColumn));
-
 			// get the errors from the StateEngine parser
-			foreach (Error err in parser.Errors)
-				errors.Add (err);
+			errors.AddRange (parser.Errors);
 
-			//info.Populate (rootNode, errors);
 			// testing the method PageInfo.Populate (XDocument, List<Error>)
 			XDocument xDoc = parser.Nodes.GetRoot ();
 			info.Populate (xDoc, errors);
