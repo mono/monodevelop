@@ -113,8 +113,8 @@ namespace Mono.TextEditor
 			ctx.Color = backgroundColor;
 			ctx.Fill ();
 			
-			ctx.MoveTo (x + Width - 1, y);
-			ctx.LineTo (x + Width - 1, y + lineHeight);
+			ctx.MoveTo (x + Width - 0.5, y);
+			ctx.LineTo (x + Width - 0.5, y + lineHeight);
 			ctx.Color = separatorColor;
 			ctx.Stroke ();
 			

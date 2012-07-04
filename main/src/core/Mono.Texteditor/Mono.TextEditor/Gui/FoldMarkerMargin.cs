@@ -112,19 +112,33 @@ namespace Mono.TextEditor
 				StopTimer ();
 			}
 		}
+
+		FoldSegment GetSelectedSegment (int lineNumber)
+		{
+			FoldSegment selectedSegment = null;
+			foreach (var segment in editor.Document.GetFoldingContaining (lineNumber)) {
+				if (selectedSegment == null || selectedSegment.Contains (segment.Offset))
+					selectedSegment = segment;
+			}
+			return selectedSegment;
+		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
 			if (args.LineSegment == null)
 				return;
-			foreach (FoldSegment segment in editor.Document.GetStartFoldings (args.LineSegment)) {
-				segment.IsFolded = !segment.IsFolded; 
+
+			var selectedSegment = GetSelectedSegment (args.LineNumber);
+
+			if (selectedSegment != null) {
+				selectedSegment.IsFolded = !selectedSegment.IsFolded; 
+				editor.SetAdjustments ();
+				editor.Caret.MoveCaretBeforeFoldings ();
 			}
-			editor.SetAdjustments ();
-			editor.Caret.MoveCaretBeforeFoldings ();
 		}
-		
+
+		FoldSegment hoverSegment;
 		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
@@ -138,13 +152,10 @@ namespace Mono.TextEditor
 				}
 			} 
 			lineHover = lineSegment;
-			bool found = false;
-			foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
-				if (segment.StartLine.Offset == lineSegment.Offset) {
-					found = true;
-					break;
-				}
-			}
+
+			hoverSegment = GetSelectedSegment (args.LineNumber);
+			bool found = hoverSegment != null;
+
 			StopTimer ();
 			if (found) {
 				var list = new List<FoldSegment>(editor.Document.GetFoldingContaining (lineSegment));
@@ -190,7 +201,7 @@ namespace Mono.TextEditor
 		internal protected override void MouseLeft ()
 		{
 			base.MouseLeft ();
-			
+			hoverSegment = null;
 			if (lineHover != null) {
 				lineHover = null;
 				editor.RedrawMargin (this);
@@ -202,7 +213,6 @@ namespace Mono.TextEditor
 		internal protected override void OptionsChanged ()
 		{
 			foldBgGC = editor.ColorStyle.FoldLine.CairoBackgroundColor;
-			foldLineGC = editor.ColorStyle.FoldLine.CairoColor;
 			foldLineHighlightedGC = editor.ColorStyle.FoldLineHighlighted;
 			
 			HslColor hslColor = new HslColor (editor.ColorStyle.Default.CairoBackgroundColor);
@@ -218,10 +228,10 @@ namespace Mono.TextEditor
 			lineStateChangedGC = editor.ColorStyle.LineChangedBg;
 			lineStateDirtyGC = editor.ColorStyle.LineDirtyBg;
 			
-			marginWidth = editor.LineHeight;
+			marginWidth = System.Math.Ceiling (editor.LineHeight / 2);
 		}
 		
-		Cairo.Color foldBgGC, foldLineGC, foldLineHighlightedGC, foldLineHighlightedGCBg, foldToggleMarkerGC;
+		Cairo.Color foldBgGC, foldLineHighlightedGC, foldLineHighlightedGCBg, foldToggleMarkerGC;
 		Cairo.Color lineStateChangedGC, lineStateDirtyGC;
 		
 		public override void Dispose ()
@@ -232,30 +242,56 @@ namespace Mono.TextEditor
 			layout = layout.Kill ();
 		}
 
-		void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isOpen, bool isSelected)
+		static HslColor GetColor (Cairo.Color col)
+		{
+			HslColor hsl = col;
+			if (HslColor.Brightness (hsl) < 0.5) {
+				hsl.L = System.Math.Min (1.0, hsl.L + 0.5);
+			} else {
+				hsl.L = System.Math.Max (0.0, hsl.L - 0.5);
+			}
+			return hsl;
+		}
+
+		void DrawClosedFolding (Cairo.Context cr, Cairo.Color col, double x, double y)
 		{
 			var drawArea = new Cairo.Rectangle (System.Math.Floor (x + (Width - foldSegmentSize) / 2) + 0.5, 
-				                                System.Math.Floor (y + (editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
-			ctx.Rectangle (drawArea);
-			ctx.Color = foldBgGC;
-			ctx.FillPreserve ();
-			ctx.Color = isSelected ? foldLineHighlightedGC  : foldLineGC;
-			ctx.Stroke ();
-
-			ctx.DrawLine (foldToggleMarkerGC,
-			              drawArea.X  + drawArea.Width * 2 / 10,
-			              drawArea.Y + drawArea.Height / 2,
-			              drawArea.X + drawArea.Width - drawArea.Width * 2 / 10,
-			              drawArea.Y + drawArea.Height / 2);
-
-			if (!isOpen)
-				ctx.DrawLine (foldToggleMarkerGC,
-				              drawArea.X + drawArea.Width / 2,
-				              drawArea.Y + drawArea.Height * 2 / 10,
-				              drawArea.X  + drawArea.Width / 2,
-				              drawArea.Y + drawArea.Height - drawArea.Height * 2 / 10);
+			                                    System.Math.Floor (y + (editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
+			cr.MoveTo (new Cairo.PointD (drawArea.X, drawArea.Y));
+			cr.LineTo (new Cairo.PointD (drawArea.X, drawArea.Y + drawArea.Height));
+			cr.LineTo (new Cairo.PointD (drawArea.X + drawArea.Width, drawArea.Y + drawArea.Height / 2));
+			cr.ClosePath ();
+			cr.Color = GetColor (col);
+			cr.Fill ();
 		}
-		
+
+		void DrawUpFolding (Cairo.Context cr, Cairo.Color col, double x, double y)
+		{
+			var drawArea = new Cairo.Rectangle (System.Math.Floor (x + (Width - foldSegmentSize) / 2) + 0.5, 
+			                                    System.Math.Floor (y + (editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
+			cr.MoveTo (new Cairo.PointD (drawArea.X, drawArea.Y));
+			cr.LineTo (new Cairo.PointD (drawArea.X + drawArea.Width, drawArea.Y));
+			cr.LineTo (new Cairo.PointD (drawArea.X + drawArea.Width / 2, drawArea.Y + drawArea.Height));
+			cr.ClosePath ();
+			
+			cr.Color = GetColor (col);
+			cr.Fill ();
+		}
+
+		void DrawDownFolding (Cairo.Context cr, Cairo.Color col, double x, double y)
+		{
+			var drawArea = new Cairo.Rectangle (System.Math.Floor (x + (Width - foldSegmentSize) / 2) + 0.5, 
+			                                    System.Math.Floor (y + (editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
+
+			cr.MoveTo (new Cairo.PointD (drawArea.X, drawArea.Y + drawArea.Height));
+			cr.LineTo (new Cairo.PointD (drawArea.X + drawArea.Width / 2, drawArea.Y));
+			cr.LineTo (new Cairo.PointD (drawArea.X + drawArea.Width, drawArea.Y + drawArea.Height));
+
+			cr.ClosePath ();
+			cr.Color = GetColor (col);
+			cr.Fill ();
+		}
+
 		bool IsMouseHover (IEnumerable<FoldSegment> foldings)
 		{
 			return foldings.Any (s => this.lineHover == s.StartLine);
@@ -263,8 +299,7 @@ namespace Mono.TextEditor
 		
 		List<FoldSegment> startFoldings      = new List<FoldSegment> ();
 		List<FoldSegment> containingFoldings = new List<FoldSegment> ();
-		List<FoldSegment> endFoldings        = new List<FoldSegment> ();
-		
+
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
 			foldSegmentSize = marginWidth * 4 / 6;
@@ -273,44 +308,36 @@ namespace Mono.TextEditor
 			Cairo.Rectangle drawArea = new Cairo.Rectangle (x, y, marginWidth, lineHeight);
 			var state = editor.Document.GetLineState (lineSegment);
 			
-			bool isFoldStart = false;
-			bool isContaining = false;
-			bool isFoldEnd = false;
-			
-			bool isStartSelected = false;
-			bool isContainingSelected = false;
-			bool isEndSelected = false;
+			bool isSelected = false;
 			
 			if (line <= editor.Document.LineCount) {
-				startFoldings.Clear ();
 				containingFoldings.Clear ();
-				endFoldings.Clear ();
+				startFoldings.Clear ();
 				foreach (FoldSegment segment in editor.Document.GetFoldingContaining (lineSegment)) {
-					if (segment.StartLine.Offset == lineSegment.Offset) {
+					if (segment.StartLine == lineSegment)
 						startFoldings.Add (segment);
-					} else if (segment.EndLine.Offset == lineSegment.Offset) {
-						endFoldings.Add (segment);
-					} else {
-						containingFoldings.Add (segment);
-					}
+					containingFoldings.Add (segment);
 				}
 				
-				isFoldStart  = startFoldings.Count > 0;
-				isContaining = containingFoldings.Count > 0;
-				isFoldEnd    = endFoldings.Count > 0;
-				
-				isStartSelected      = this.lineHover != null && IsMouseHover (startFoldings);
-				isContainingSelected = this.lineHover != null && IsMouseHover (containingFoldings);
-				isEndSelected        = this.lineHover != null && IsMouseHover (endFoldings);
+				isSelected   = containingFoldings.Contains (hoverSegment);
 			}
 			
 			var bgGC = foldBgGC;
 			if (editor.TextViewMargin.BackgroundRenderer != null) {
-				if (isContainingSelected || isStartSelected || isEndSelected) {
+				if (isSelected) {
 					bgGC = foldBgGC;
 				} else {
 					bgGC = foldLineHighlightedGCBg;
 				}
+			} else {
+				HslColor col = foldBgGC;
+				Console.WriteLine (col.L +"-"+containingFoldings.Count);
+				if (col.L < 0.5) {
+					col.L = System.Math.Min (1.0, col.L + containingFoldings.Count / 20.0);
+				} else {
+					col.L = System.Math.Max (0.0, col.L - containingFoldings.Count / 20.0);
+				}
+				bgGC = col;
 			}
 			
 			cr.Rectangle (drawArea);
@@ -328,44 +355,22 @@ namespace Mono.TextEditor
 			}
 			
 			if (line < editor.Document.LineCount) {
-				double foldSegmentYPos = y + System.Math.Floor (editor.LineHeight - foldSegmentSize) / 2;
-				double xPos = x + System.Math.Floor (marginWidth / 2) + 0.5;
-				
-				if (isFoldStart) {
-					bool isVisible         = true;
-					bool moreLinedOpenFold = false;
-					foreach (FoldSegment foldSegment in startFoldings) {
-						if (foldSegment.IsFolded) {
-							isVisible = false;
-						} else {
-							moreLinedOpenFold = foldSegment.EndLine.Offset > foldSegment.StartLine.Offset;
+				bool isVisible         = true;
+				foreach (FoldSegment foldSegment in startFoldings) {
+					if (foldSegment.IsFolded) {
+						isVisible = false;
+					}
+				}
+				if (!isVisible) {
+					DrawClosedFolding (cr, bgGC, x, y);
+				} else {
+					if (hoverSegment != null && editor.TextViewMargin.BackgroundRenderer != null) {
+						if (hoverSegment.StartLine == lineSegment) {
+							DrawUpFolding (cr, bgGC, x, y);
+						} else if (hoverSegment.EndLine == lineSegment) {
+							DrawDownFolding (cr, bgGC, x, y);
 						}
 					}
-					bool isFoldEndFromUpperFold = false;
-					foreach (FoldSegment foldSegment in endFoldings) {
-						if (foldSegment.EndLine.Offset > foldSegment.StartLine.Offset && !foldSegment.IsFolded) 
-							isFoldEndFromUpperFold = true;
-					}
-					DrawFoldSegment (cr, x, y, isVisible, isStartSelected);
-
-					if (isContaining || isFoldEndFromUpperFold)
-						cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, foldSegmentYPos - 2);
-					if (isContaining || moreLinedOpenFold) 
-						cr.DrawLine (isEndSelected || (isStartSelected && isVisible) || isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, foldSegmentYPos + foldSegmentSize + 2, xPos, drawArea.Y + drawArea.Height);
-				} else {
-
-					if (isFoldEnd) {
-
-						double yMid = drawArea.Y + drawArea.Height / 2;
-						cr.DrawLine (isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos, yMid, x + marginWidth - 2, yMid);
-						cr.DrawLine (isContainingSelected || isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, yMid);
-
-						if (isContaining) 
-							cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, yMid + 1, xPos, drawArea.Y + drawArea.Height);
-					} else if (isContaining) {
-						cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, drawArea.Y + drawArea.Height);
-					}
-
 				}
 			}
 		}

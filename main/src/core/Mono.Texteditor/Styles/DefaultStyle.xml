@@ -134,7 +134,7 @@
 	<Style name="iconbar" color="#FDFDFF"/>
 	<Style name="iconbar.separator" color="aluminium3"/>
 
-	<Style name="fold" color="aluminium3" bgColor="#FDFDFF"/>
+	<Style name="fold" color="aluminium3" bgColor="#FDFDFD"/>
 	<Style name="fold.highlight" color="aluminium5"/>
 	<Style name="fold.togglemarker" color="black"/>
 	
