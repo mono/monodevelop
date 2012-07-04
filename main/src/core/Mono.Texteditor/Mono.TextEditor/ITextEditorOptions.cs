@@ -51,11 +51,7 @@ namespace Mono.TextEditor
 		bool ShowIconMargin { get; set; }
 		bool ShowLineNumberMargin { get; set; }
 		bool ShowFoldMargin { get; set; }
-		bool ShowInvalidLines { get; set; }
-		bool ShowTabs { get; set; }
-		bool ShowEolMarkers { get; set; }
 		bool HighlightCaretLine { get; set; }
-		bool ShowSpaces { get; set; }
 		int RulerColumn { get; set; }
 		bool ShowRuler { get; set; }
 		IndentStyle IndentStyle { get; set; }

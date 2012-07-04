@@ -44,7 +44,6 @@ namespace Mono.TextEditor
 		readonly TextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout;
-		Pango.Layout invalidLineLayout;
 		Pango.Layout macEolLayout, unixEolLayout, windowsEolLayout, eofEolLayout;
 		internal double charWidth;
 		int highlightBracketOffset = -1;
@@ -439,15 +438,7 @@ namespace Mono.TextEditor
 
 			textEditor.LineHeight = System.Math.Max (1, LineHeight);
 
-			if (textEditor.Options.ShowInvalidLines && invalidLineLayout == null) {
-				invalidLineLayout = PangoUtil.CreateLayout (textEditor);
-				invalidLineLayout.SetText ("~");
-			}
-			
-			if (invalidLineLayout != null)
-				invalidLineLayout.FontDescription = textEditor.Options.Font;
-			
-			if (textEditor.Options.ShowEolMarkers && unixEolLayout == null) {
+			if (unixEolLayout == null) {
 				unixEolLayout = PangoUtil.CreateLayout (textEditor);
 				unixEolLayout.SetText ("\\n");
 				Pango.Rectangle logRect;
@@ -523,8 +514,6 @@ namespace Mono.TextEditor
 			DisposeGCs ();
 			if (markerLayout != null)
 				markerLayout.Dispose ();
-			if (invalidLineLayout != null)
-				invalidLineLayout.Dispose ();
 			if (unixEolLayout != null) {
 				macEolLayout.Dispose ();
 				unixEolLayout.Dispose ();
@@ -615,26 +604,16 @@ namespace Mono.TextEditor
 			if (offset >= 0 && offset < Document.TextLength) {
 				caretChar = Document.GetCharAt (offset);
 			} else {
-				if (textEditor.Options.ShowEolMarkers) {
-					// <EOF>
-					return '<';
-				}
 				caretChar = '\0';
 			}
 
 			switch (caretChar) {
 			case ' ':
-				if (textEditor.Options.ShowSpaces)
-					return '·';
 				break;
 			case '\t':
-				if (textEditor.Options.ShowTabs)
-					return '»';
 				break;
 			case '\n':
 			case '\r':
-				if (textEditor.Options.ShowEolMarkers)
-					return '\\';
 				break;
 			}
 			return caretChar;
@@ -1542,15 +1521,6 @@ namespace Mono.TextEditor
 			cr.Restore ();
 		}
 
-		void DrawInvalidLineMarker (Cairo.Context cr, double x, double y)
-		{
-			cr.Save ();
-			cr.Translate (x, y);
-			cr.Color = ColorStyle.InvalidLineMarker;
-			cr.ShowLayout (invalidLineLayout);
-			cr.Restore ();
-		}
-
 		static internal ulong GetPixel (Color color)
 		{
 			return (((ulong)color.Red) << 32) | (((ulong)color.Green) << 16) | ((ulong)color.Blue);
@@ -2161,8 +2131,6 @@ namespace Mono.TextEditor
 
 			// Check if line is beyond the document length
 			if (line == null) {
-				if (textEditor.Options.ShowInvalidLines)
-					DrawInvalidLineMarker (cr, pangoPosition / Pango.Scale.PangoScale, y);
 				var marker = Document.GetExtendingTextMarker (lineNr);
 				if (marker != null)
 					marker.Draw (textEditor, cr, lineNr, lineArea);
