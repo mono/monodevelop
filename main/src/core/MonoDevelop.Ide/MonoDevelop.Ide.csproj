@@ -829,9 +829,6 @@
     <EmbeddedResource Include="icons\goto-prev-bookmark-16.png">
       <LogicalName>goto-prev-bookmark-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\empty-file-icon-32.png">
-      <LogicalName>empty-file-icon-32.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\clear-all-bookmarks-22.png">
       <LogicalName>clear-all-bookmarks-22.png</LogicalName>
     </EmbeddedResource>
@@ -891,6 +888,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\link-overlay-16.png">
       <LogicalName>link-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\empty-file-32.png">
+      <LogicalName>empty-file-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-prev.png">
+      <LogicalName>tabbar-prev.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next.png">
+      <LogicalName>tabbar-next.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-prev-normal.png">
+      <LogicalName>breadcrumb-prev-normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-normal.png">
+      <LogicalName>breadcrumb-next-normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-popdown.png">
+      <LogicalName>tabbar-popdown.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

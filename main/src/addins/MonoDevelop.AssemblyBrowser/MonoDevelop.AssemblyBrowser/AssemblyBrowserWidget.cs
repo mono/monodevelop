@@ -110,10 +110,10 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			this.Build ();
 
-			buttonBack = new Gtk.Button (new Gtk.Arrow (Gtk.ArrowType.Left, ShadowType.None));
+			buttonBack = new Gtk.Button (new Gtk.Image (ImageService.GetPixbuf ("md-breadcrumb-prev")));
 			buttonBack.Clicked += OnNavigateBackwardActionActivated;
 
-			buttonForeward = new Gtk.Button (new Gtk.Arrow (Gtk.ArrowType.Right, ShadowType.None));
+			buttonForeward = new Gtk.Button (new Gtk.Image (ImageService.GetPixbuf ("md-breadcrumb-next")));
 			buttonForeward.Clicked += OnNavigateForwardActionActivated;
 
 			comboboxVisibilty = ComboBox.NewText ();
