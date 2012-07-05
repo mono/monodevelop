@@ -54,6 +54,9 @@ namespace MonoDevelop.Ide.Extensions
 		[NodeAttribute ("icon", "Id of another icon or combination of icons to assign to this stock id.")]
 		string iconid;
 		
+		[NodeAttribute ("animation", "An animation specification.")]
+		string animation;
+
 		public string StockId {
 			get { return stockid; }
 		}
@@ -72,6 +75,10 @@ namespace MonoDevelop.Ide.Extensions
 		
 		public string IconId {
 			get { return iconid; }
+		}
+		
+		public string Animation {
+			get { return animation; }
 		}
 	}
 }
