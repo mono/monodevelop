@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Globalization;
 
 using MonoDevelop.Core;
-using MonoDevelop.AspNet.Parser.Dom;
+//using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
@@ -43,6 +43,8 @@ using System.Linq;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -363,7 +365,7 @@ namespace MonoDevelop.AspNet.Parser
 			
 			Doc.Info.RegisteredTags.Add (directive);
 			
-			var line = Math.Max (node.Location.EndLine, node.Location.BeginLine);
+			var line = Math.Max (node.Region.EndLine, node.Region.BeginLine);
 			var pos = editor.Document.LocationToOffset (line, editor.Document.GetLine (line - 1).Length);
 			if (pos < 0)
 				return;
@@ -378,31 +380,51 @@ namespace MonoDevelop.AspNet.Parser
 			}
 		}
 		
-		DirectiveNode GetRegisterInsertionPointNode ()
+		AspNetDirective GetRegisterInsertionPointNode ()
 		{
-			var v = new RegisterDirectiveInsertionPointVisitor ();
-			Doc.RootNode.AcceptVisit (v);
-			return v.Node;
-		}
-		
-		class RegisterDirectiveInsertionPointVisitor: Visitor
-		{
-			public DirectiveNode Node { get; private set; }
-			
-			public override void Visit (DirectiveNode node)
-			{
-				switch (node.Name.ToLowerInvariant ()) {
-				case "page": case "control": case "master": case "register":
-					Node = node;
-					return;
+			foreach (XNode node in Doc.XDocument.AllDescendentNodes) {
+				if (node is AspNetDirective) {
+					AspNetDirective directive = node as AspNetDirective;
+					
+					switch (directive.Name.Name.ToLower ()) {
+					case "page":
+					case "control":
+					case "master":
+					case "register":
+						return directive;
+					}
+				} else if (node is XElement) {
+					return null;
 				}
 			}
-			
-			public override void Visit (TagNode node)
-			{
-				QuickExit = true;
-			}
+			return null;
 		}
+		
+//		DirectiveNode GetRegisterInsertionPointNode ()
+//		{
+//			var v = new RegisterDirectiveInsertionPointVisitor ();
+//			Doc.RootNode.AcceptVisit (v);
+//			return v.Node;
+//		}
+//		
+//		class RegisterDirectiveInsertionPointVisitor: Visitor
+//		{
+//			public DirectiveNode Node { get; private set; }
+//			
+//			public override void Visit (DirectiveNode node)
+//			{
+//				switch (node.Name.ToLowerInvariant ()) {
+//				case "page": case "control": case "master": case "register":
+//					Node = node;
+//					return;
+//				}
+//			}
+//			
+//			public override void Visit (TagNode node)
+//			{
+//				QuickExit = true;
+//			}
+//		}
 		
 		#endregion
 		
