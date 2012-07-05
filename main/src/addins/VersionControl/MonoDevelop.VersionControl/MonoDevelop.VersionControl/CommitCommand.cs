@@ -84,6 +84,7 @@ namespace MonoDevelop.VersionControl
 				this.vc = vc;
 				this.changeSet = changeSet;
 				this.dlg = dlg;
+				OperationType = VersionControlOperationType.Push;
 			}
 			
 			protected override string GetDescription()

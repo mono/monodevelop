@@ -31,6 +31,7 @@ namespace MonoDevelop.VersionControl
 						
 			public UpdateWorker (VersionControlItemList items) {
 				this.items = items;
+				OperationType = VersionControlOperationType.Pull;
 			}
 			
 			protected override string GetDescription() {

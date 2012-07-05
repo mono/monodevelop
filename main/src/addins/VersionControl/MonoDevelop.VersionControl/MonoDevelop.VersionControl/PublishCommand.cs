@@ -83,6 +83,7 @@ namespace MonoDevelop.VersionControl
 			this.moduleName = moduleName;
 			this.files = files;
 			this.message = message;
+			OperationType = VersionControlOperationType.Push;
 		}
 
 		protected override string GetDescription ()

@@ -546,11 +546,23 @@ namespace MonoDevelop.VersionControl
 		
 		public static IProgressMonitor GetProgressMonitor (string operation)
 		{
+			return GetProgressMonitor (operation, VersionControlOperationType.Other);
+		}
+		
+		public static IProgressMonitor GetProgressMonitor (string operation, VersionControlOperationType op)
+		{
+			IconId icon;
+			switch (op) {
+			case VersionControlOperationType.Pull: icon = Stock.StatusDownload; break;
+			case VersionControlOperationType.Push: icon = Stock.StatusUpload; break;
+			default: icon = "md-version-control"; break;
+			}
+
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", "Version Control", "md-version-control", false, true);
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
-			mon.AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, "md-version-control", true, true, false, outPad));
+			mon.AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, icon, true, true, false, outPad));
 			return mon;
 		}
 		
@@ -741,5 +753,12 @@ namespace MonoDevelop.VersionControl
 		{
 			repo.Unref ();
 		}
+	}
+
+	public enum VersionControlOperationType
+	{
+		Pull,
+		Push,
+		Other
 	}
 }

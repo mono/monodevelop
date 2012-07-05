@@ -64,7 +64,7 @@ namespace MonoDevelop.VersionControl.Git
 				string remote = dlg.SelectedRemote;
 				string branch = dlg.SelectedRemoteBranch;
 				
-				IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."));
+				IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."), VersionControlOperationType.Push);
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 					try {
 						repo.Push (monitor, remote, branch);

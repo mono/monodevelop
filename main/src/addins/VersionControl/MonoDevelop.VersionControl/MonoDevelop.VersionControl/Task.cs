@@ -11,6 +11,8 @@ namespace MonoDevelop.VersionControl
 	{
 		IProgressMonitor tracker;
 		ThreadNotify threadnotify;
+
+		protected VersionControlOperationType OperationType { get; set; }
 		
 		protected abstract string GetDescription();
 		
@@ -25,6 +27,7 @@ namespace MonoDevelop.VersionControl
 
 		protected Task()
 		{
+			OperationType = VersionControlOperationType.Other;
 			threadnotify = new ThreadNotify(new ReadyEvent(Wakeup));
 		}
 		
@@ -34,7 +37,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected virtual IProgressMonitor CreateProgressMonitor ()
 		{
-			return VersionControlService.GetProgressMonitor (GetDescription ());
+			return VersionControlService.GetProgressMonitor (GetDescription (), OperationType);
 		}
 		
 		public void Start() {

@@ -35,6 +35,7 @@ namespace MonoDevelop.VersionControl
 		{
 			this.vc = vc;
 			this.path = path;
+			OperationType = VersionControlOperationType.Pull;
 		}
 		
 		protected override string GetDescription ()
