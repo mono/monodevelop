@@ -217,6 +217,11 @@ namespace Mono.TextEditor
 		/// </returns>
 		bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg);
 	}
+
+	public interface IGutterMarker
+	{
+		void DrawLineNumber (TextEditor editor, double marginWidth, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight);
+	}
 	
 	public class LineBackgroundMarker: TextMarker, IBackgroundMarker
 	{

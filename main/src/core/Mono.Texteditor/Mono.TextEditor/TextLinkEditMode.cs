@@ -578,7 +578,7 @@ namespace Mono.TextEditor
 		#endregion 
 	}
 
-	public class TextLinkMarker : TextMarker, IBackgroundMarker
+	public class TextLinkMarker : TextMarker, IBackgroundMarker, IGutterMarker
 	{
 		TextLinkEditMode mode;
 
@@ -714,5 +714,34 @@ namespace Mono.TextEditor
 			}
 			return true;
 		}
+
+		#region IGutterMarker implementation
+		public void DrawLineNumber (TextEditor editor, double width, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
+		{
+			var lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
+			var lineNumberGC = editor.ColorStyle.LineNumber.CairoColor;
+			var lineNumberHighlightGC = editor.ColorStyle.LineNumberFgHighlighted;
+
+			cr.Rectangle (x, y, width, lineHeight);
+			cr.Color = editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC;
+			cr.Fill ();
+			
+			if (line <= editor.Document.LineCount) {
+				// Due to a mac? gtk bug I need to re-create the layout here
+				// otherwise I get pango exceptions.
+				using (var layout = PangoUtil.CreateLayout (editor)) {
+					layout.FontDescription = editor.Options.Font;
+					layout.Width = (int)width;
+					layout.Alignment = Pango.Alignment.Right;
+					layout.SetText (line.ToString ());
+					cr.Save ();
+					cr.Translate (x + (int)width + (editor.Options.ShowFoldMargin ? 0 : -2), y);
+					cr.Color = lineNumberBgGC;
+					cr.ShowLayout (layout);
+					cr.Restore ();
+				}
+			}
+		}
+		#endregion
 	}
 }

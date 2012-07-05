@@ -28,6 +28,7 @@
 using System;
 using Gtk;
 using Gdk;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -193,6 +194,12 @@ namespace Mono.TextEditor
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
+			var gutterMarker = (IGutterMarker)lineSegment.Markers.FirstOrDefault (marker => marker is IGutterMarker);
+			if (gutterMarker != null) {
+				gutterMarker.DrawLineNumber (editor, Width, cr, area, lineSegment, line, x, y, lineHeight);
+				return;
+			}
+
 			cr.Rectangle (x, y, Width, lineHeight);
 			cr.Color = lineNumberBgGC;
 			cr.Fill ();

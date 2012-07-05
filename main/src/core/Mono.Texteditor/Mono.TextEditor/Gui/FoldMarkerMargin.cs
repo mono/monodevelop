@@ -331,7 +331,6 @@ namespace Mono.TextEditor
 				}
 			} else {
 				HslColor col = foldBgGC;
-				Console.WriteLine (col.L +"-"+containingFoldings.Count);
 				if (col.L < 0.5) {
 					col.L = System.Math.Min (1.0, col.L + containingFoldings.Count / 20.0);
 				} else {
