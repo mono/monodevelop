@@ -106,7 +106,8 @@ namespace MonoDevelop.AspNet.Gui
 			this.References = references;
 			ScriptBlocks = new List<TagNode> ();
 			Expressions = new List<ExpressionNode> ();
-			aspNetParsedDocument.RootNode.AcceptVisit (new ExpressionCollector (this));
+			//aspNetParsedDocument.RootNode.AcceptVisit (new ExpressionCollector (this));
+			BuildExpressionAndScriptsLists ();
 		}
 		
 		public ICompilation Dom { get; private set; }
@@ -145,6 +146,52 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			throw new InvalidOperationException (string.Format ("Unexpected filetype '{0}'", type));
 		}
+		
+		#region parsing for expression and runat="server" script tags
+		
+		public List<AspNetExpression> XExpressions { get; private set; }
+		public List<S.XElement> XScriptBlocks { get; private set; }
+		
+		void BuildExpressionAndScriptsLists ()
+		{
+			XExpressions = new List<AspNetExpression> ();
+			XScriptBlocks = new List<S.XElement> ();
+			
+			foreach (S.XNode node in AspNetDocument.XDocument.AllDescendentNodes)
+				AddElement (node);
+		}
+		
+		void AddElement (S.XNode node)
+		{
+			if (node is AspNetExpression) {
+				XExpressions.Add (node as AspNetExpression);
+				
+			} else if (node is S.XElement) {
+				S.XElement el = node as S.XElement;
+				
+				if (IsServerScriptTag (el)) {
+					XScriptBlocks.Add (el);
+					
+				} else {
+					foreach (S.XNode nd in el.Nodes) 
+						AddElement (nd);
+				}
+			}
+		}
+		
+		bool IsServerScriptTag (S.XElement el)
+		{
+			if (el.Name.FullName == "script") {
+				S.XName runat = new S.XName ("runat");
+				foreach (S.XAttribute attr in el.Attributes) {
+					if ((attr.Name.ToLower () == runat) && (attr.Value.ToLower () == "server"))
+						return true;
+				}
+			}
+			return false;
+		}
+		
+		#endregion
 		
 		class ExpressionCollector : Visitor
 		{
