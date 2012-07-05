@@ -132,9 +132,6 @@
     <EmbeddedResource Include="templates\EmptyXMLFile.xft.xml">
       <LogicalName>EmptyXMLFile.xft.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.LinkOverlay.png">
-      <LogicalName>Icons.16x16.LinkOverlay.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\mono-powered.png">
       <LogicalName>mono-powered.png</LogicalName>
     </EmbeddedResource>
@@ -411,9 +408,6 @@
     <EmbeddedResource Include="icons\formatting-24.png">
       <LogicalName>formatting-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\GeneralWizardBackground">
-      <LogicalName>GeneralWizardBackground</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\gnome-fs-regular.png">
       <LogicalName>gnome-fs-regular.png</LogicalName>
     </EmbeddedResource>
@@ -425,114 +419,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\hicolor_status_16x16_pin-up.png">
       <LogicalName>hicolor_status_16x16_pin-up.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ClearAllBookmarks">
-      <LogicalName>Icons.16x16.ClearAllBookmarks</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.CloseAllDocuments">
-      <LogicalName>Icons.16x16.CloseAllDocuments</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.CloseCombineIcon">
-      <LogicalName>Icons.16x16.CloseCombineIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ClosedFolderBitmap">
-      <LogicalName>Icons.16x16.ClosedFolderBitmap</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ClosedReferenceFolder">
-      <LogicalName>Icons.16x16.ClosedReferenceFolder</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ClosedResourceFolder">
-      <LogicalName>Icons.16x16.ClosedResourceFolder</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.CombineIcon">
-      <LogicalName>Icons.16x16.CombineIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.Empty">
-      <LogicalName>Icons.16x16.Empty</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.FindInFiles">
-      <LogicalName>Icons.16x16.FindInFiles</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.GotoNextbookmark">
-      <LogicalName>Icons.16x16.GotoNextbookmark</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.GotoPrevbookmark">
-      <LogicalName>Icons.16x16.GotoPrevbookmark</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.MiscFiles">
-      <LogicalName>Icons.16x16.MiscFiles</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.NewFolderIcon">
-      <LogicalName>Icons.16x16.NewFolderIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.OpenFolderBitmap">
-      <LogicalName>Icons.16x16.OpenFolderBitmap</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.OpenProjectIcon">
-      <LogicalName>Icons.16x16.OpenProjectIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.OpenReferenceFolder">
-      <LogicalName>Icons.16x16.OpenReferenceFolder</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.OpenResourceFolder">
-      <LogicalName>Icons.16x16.OpenResourceFolder</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.OutputIcon">
-      <LogicalName>Icons.16x16.OutputIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ReplaceInFiles">
-      <LogicalName>Icons.16x16.ReplaceInFiles</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ResourceFileIcon">
-      <LogicalName>Icons.16x16.ResourceFileIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.SaveAllIcon">
-      <LogicalName>Icons.16x16.SaveAllIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.SplitWindow">
-      <LogicalName>Icons.16x16.SplitWindow</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.TextFileIcon">
-      <LogicalName>Icons.16x16.TextFileIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.TipOfTheDay">
-      <LogicalName>Icons.16x16.TipOfTheDay</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.ToggleBookmark">
-      <LogicalName>Icons.16x16.ToggleBookmark</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.16x16.WebSearchIcon">
-      <LogicalName>Icons.16x16.WebSearchIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.22x22.ClearAllBookmarks.png">
-      <LogicalName>Icons.22x22.ClearAllBookmarks.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.22x22.GotoNextbookmark.png">
-      <LogicalName>Icons.22x22.GotoNextbookmark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.22x22.GotoPrevbookmark.png">
-      <LogicalName>Icons.22x22.GotoPrevbookmark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.22x22.ToggleBookmark.png">
-      <LogicalName>Icons.22x22.ToggleBookmark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.24x24.SaveAllIcon">
-      <LogicalName>Icons.24x24.SaveAllIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.32x32.EmptyFileIcon">
-      <LogicalName>Icons.32x32.EmptyFileIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.32x32.HTMLFileIcon">
-      <LogicalName>Icons.32x32.HTMLFileIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.32x32.ResourceFileIcon">
-      <LogicalName>Icons.32x32.ResourceFileIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.32x32.TextFileIcon">
-      <LogicalName>Icons.32x32.TextFileIcon</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\Icons.32x32.XMLFileIcon">
-      <LogicalName>Icons.32x32.XMLFileIcon</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\keyword-16.png">
       <LogicalName>keyword-16.png</LogicalName>
@@ -906,6 +792,105 @@
     <EmbeddedResource Include="MonoDevelop.Components\SearchEntry.cs" />
     <EmbeddedResource Include="icons\searchbox-search-16.png">
       <LogicalName>searchbox-search-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\clear-all-bookmarks-16.png">
+      <LogicalName>clear-all-bookmarks-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\close-all-documents-16.png">
+      <LogicalName>close-all-documents-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\close-solution-16.png">
+      <LogicalName>close-solution-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\closed-folder-16.png">
+      <LogicalName>closed-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\closed-reference-folder-16.png">
+      <LogicalName>closed-reference-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\closed-resource-folder-16.png">
+      <LogicalName>closed-resource-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\empty-16.png">
+      <LogicalName>empty-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-in-files-16.png">
+      <LogicalName>find-in-files-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\goto-next-bookmark-16.png">
+      <LogicalName>goto-next-bookmark-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\goto-next-bookmark-22.png">
+      <LogicalName>goto-next-bookmark-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\goto-prev-bookmark-22.png">
+      <LogicalName>goto-prev-bookmark-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\goto-prev-bookmark-16.png">
+      <LogicalName>goto-prev-bookmark-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\empty-file-icon-32.png">
+      <LogicalName>empty-file-icon-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\clear-all-bookmarks-22.png">
+      <LogicalName>clear-all-bookmarks-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\misc-files-16.png">
+      <LogicalName>misc-files-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-folder-16.png">
+      <LogicalName>open-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-project-16.png">
+      <LogicalName>open-project-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-reference-folder-16.png">
+      <LogicalName>open-reference-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\open-resource-folder-16.png">
+      <LogicalName>open-resource-folder-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\output-icon-16.png">
+      <LogicalName>output-icon-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\replace-in-files-16.png">
+      <LogicalName>replace-in-files-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\resource-file-16.png">
+      <LogicalName>resource-file-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\resource-file-32.png">
+      <LogicalName>resource-file-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\save-all-16.png">
+      <LogicalName>save-all-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\save-all-24.png">
+      <LogicalName>save-all-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\split-window-16.png">
+      <LogicalName>split-window-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\text-file-32.png">
+      <LogicalName>text-file-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\text-file-16.png">
+      <LogicalName>text-file-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tip-of-the-day-16.png">
+      <LogicalName>tip-of-the-day-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toggle-bookmark-16.png">
+      <LogicalName>toggle-bookmark-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toggle-bookmark-22.png">
+      <LogicalName>toggle-bookmark-22.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\web-search-16.png">
+      <LogicalName>web-search-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\link-overlay-16.png">
+      <LogicalName>link-overlay-16.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

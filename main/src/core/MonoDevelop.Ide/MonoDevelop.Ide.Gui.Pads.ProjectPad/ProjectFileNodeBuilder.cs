@@ -81,13 +81,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			icon = DesktopService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
 			
 			if (file.IsLink && icon != null) {
-				icon = icon.Copy ();
-				using (Gdk.Pixbuf overlay = Gdk.Pixbuf.LoadFromResource ("Icons.16x16.LinkOverlay.png")) {
-					overlay.Composite (icon,
-						0,  0,
-						icon.Width, icon.Width,
-						0, 0,
-						1, 1, Gdk.InterpType.Bilinear, 255); 
+				var overlay = ImageService.GetPixbuf ("md-link-overlay");
+				var cached = Context.GetComposedIcon (icon, overlay);
+				if (cached != null)
+					icon = cached;
+				else {
+					var res = icon.Copy ();
+					overlay.Composite (res,
+					                   0,  0,
+					                   icon.Width, icon.Width,
+					                   0, 0,
+					                   1, 1, Gdk.InterpType.Bilinear, 255); 
+					Context.CacheComposedIcon (icon, overlay, res);
+					icon = res;
 				}
 			}
 		}
