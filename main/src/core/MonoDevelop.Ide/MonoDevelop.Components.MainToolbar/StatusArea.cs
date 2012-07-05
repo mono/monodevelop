@@ -28,29 +28,26 @@ using Gtk;
 using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class StatusArea : EventBox
 	{
 		HBox contentBox = new HBox (false, 0);
-		Color borderColor;
 
-		Color fill1Color;
-		Color fill2Color;
-
-		Color innerColor;
+		Color borderColor = Styles.WidgetBorderColor;
+		Color fill1Color = CairoExtensions.ParseColor ("eff5f7");
+		Color fill2Color = CairoExtensions.ParseColor ("d0d9db");
+		Color innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
+		Color textColor = CairoExtensions.ParseColor ("3a4029");
 
 		public StatusArea ()
 		{
 			VisibleWindow = false;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
-			borderColor = CairoExtensions.ParseColor ("8c8c8c");
-			fill1Color = CairoExtensions.ParseColor ("eff5f7");
-			fill2Color = CairoExtensions.ParseColor ("d0d9db");
-			innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
-			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 0);
-			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 4);
+			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 6);
+			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 6);
 			Add (contentBox);
 
 			this.ButtonPressEvent += delegate {
@@ -59,6 +56,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 			SetSizeRequest (32, 22);
 			Show ();
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			ModifyText (StateType.Normal, textColor.ToGdkColor ());
+			ModifyFg (StateType.Normal, textColor.ToGdkColor ());
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -70,18 +74,20 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width, Allocation.Height, 4);
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width - 1, Allocation.Height - 1, 3);
 				using (LinearGradient lg = new LinearGradient (Allocation.X, Allocation.Y, Allocation.X, Allocation.Height)) {
 					lg.AddColorStop (0, fill1Color);
 					lg.AddColorStop (1, fill2Color);
 					context.Pattern = lg;
 				}
-				context.FillPreserve ();
+				context.Fill ();
 
-				context.LineWidth = 4;
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 1.5, Allocation.Y + 1.5, Allocation.Width - 2.5, Allocation.Height - 2.5, 3);
+				context.LineWidth = 1;
 				context.Color = innerColor;
-				context.StrokePreserve ();
+				context.Stroke ();
 
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width - 1, Allocation.Height - 1, 3);
 				context.LineWidth = 1;
 				context.Color = borderColor;
 				context.Stroke ();
