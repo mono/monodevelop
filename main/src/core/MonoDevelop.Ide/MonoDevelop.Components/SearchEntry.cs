@@ -29,12 +29,15 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	public class SearchEntry : EventBox
 	{
+		Alignment alignment;
+		Alignment entryAlignment;
 		private HBox box;
 		private Entry entry;
 		private HoverImageButton filter_button;
@@ -51,6 +54,7 @@ namespace MonoDevelop.Components
 		private event EventHandler filter_changed;
 		private event EventHandler entry_changed;
 		EventHandler activated_event;
+		bool roundedShape;
 		bool hasFrame = true;
 
 		public event EventHandler Changed {
@@ -93,6 +97,15 @@ namespace MonoDevelop.Components
 			set { hasFrame = value; QueueDraw (); }
 		}
 
+		public bool RoundedShape {
+			get { return roundedShape; }
+			set {
+				roundedShape = value;
+				ShowHideButtons ();
+				QueueDraw ();
+			}
+		}
+
 		public SearchEntry ()
 		{
 			AppPaintable = true;
@@ -113,16 +126,23 @@ namespace MonoDevelop.Components
 
 		private void BuildWidget ()
 		{
+			alignment = new Alignment (0.5f, 0.5f, 1f, 0f);
+			alignment.SetPadding (0, 0, 0, 0);
+			VisibleWindow = false;
+
 			box = new HBox ();
 			entry = new FramelessEntry (this);
-			filter_button = new HoverImageButton (IconSize.Menu, new string[] { "md-searchbox-search" });
-			clear_button = new HoverImageButton (IconSize.Menu, new string[] { "md-searchbox-clear" });
-			
+			filter_button = new HoverImageButton (IconSize.Menu, "md-searchbox-search");
+			clear_button = new HoverImageButton (IconSize.Menu, "md-searchbox-clear");
+
+			entryAlignment = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			entryAlignment.Add (entry);
 			box.PackStart (filter_button, false, false, 0);
-			box.PackStart (entry, true, true, 0);
+			box.PackStart (entryAlignment, true, true, 0);
 			box.PackStart (clear_button, false, false, 0);
-			Add (box);
-			box.ShowAll ();
+			alignment.Add (box);
+			Add (alignment);
+			alignment.ShowAll ();
 			
 			entry.StyleSet += OnInnerEntryStyleSet;
 			entry.StateChanged += OnInnerEntryStateChanged;
@@ -187,7 +207,10 @@ namespace MonoDevelop.Components
 		private void ShowHideButtons ()
 		{
 			clear_button.Visible = entry.Text.Length > 0;
+			entryAlignment.RightPadding = (uint) (!clear_button.Visible && roundedShape ? 6 : 0);
+
 			filter_button.Visible = ForceFilterButtonVisible || (menu != null && menu.Children.Length > 0);
+			entryAlignment.LeftPadding = (uint) (!filter_button.Visible && roundedShape ? 6 : 0);
 		}
 
 		private void OnPositionMenu (Menu menu, out int x, out int y, out bool push_in)
@@ -332,14 +355,53 @@ namespace MonoDevelop.Components
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			Style.PaintFlatBox (entry.Style, GdkWindow, State, ShadowType.None,
-				evnt.Area, this, "entry_bg", 0, 0, Allocation.Width, Allocation.Height);
-			PropagateExpose (Child, evnt);
-			if (hasFrame) {
+			var alloc = box.Allocation;
+
+			if (hasFrame && !roundedShape) {
 				Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
-				                   evnt.Area, entry, "entry", 0, 0, Allocation.Width, Allocation.Height);
+				                   evnt.Area, entry, "entry", alloc.X, alloc.Y, alloc.Width, alloc.Height);
+			}
+			else if (!roundedShape) {
+				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+					CairoExtensions.RoundedRectangle (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1, 4);
+					ctx.Color = entry.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
+					ctx.Fill ();
+				}
+			}
+			else {
+				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+					RoundBorder (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
+					ctx.Color = entry.Style.Base (Gtk.StateType.Normal).ToCairoColor ();
+					ctx.Fill ();
+				}
+			}
+
+			PropagateExpose (Child, evnt);
+
+			if (hasFrame) {
+				if (roundedShape) {
+					using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+						RoundBorder (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
+						ctx.Color = Styles.WidgetBorderColor;
+						ctx.LineWidth = 1;
+						ctx.Stroke ();
+					}
+				}
 			}
 			return true;
+		}
+
+		static void RoundBorder (Cairo.Context ctx, double x, double y, double w, double h)
+		{
+			double r = h / 2;
+			ctx.Arc (x + r, y + r, r, Math.PI / 2, Math.PI + Math.PI / 2);
+			ctx.LineTo (x + w - r, y);
+			
+			ctx.Arc (x + w - r, y + r, r, Math.PI + Math.PI / 2, Math.PI + Math.PI + Math.PI / 2);
+			
+			ctx.LineTo (x + r, y + h);
+			
+			ctx.ClosePath ();
 		}
 
 		protected override void OnShown ()

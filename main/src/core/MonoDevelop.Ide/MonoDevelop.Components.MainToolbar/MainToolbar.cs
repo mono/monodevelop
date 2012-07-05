@@ -53,7 +53,6 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusArea statusArea;
 
 		SearchEntry matchEntry;
-		SearchEntryBorder searchEntryComboVBox;
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
@@ -201,7 +200,8 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Visible = true;
 			matchEntry.IsCheckMenu = true;
 			matchEntry.Entry.ModifyBase (StateType.Normal, Style.White);
-			matchEntry.SetSizeRequest (240, 26);
+			matchEntry.WidthRequest = 240;
+			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
 			matchEntry.SizeAllocated += (o, args) => PositionPopup ();
 			matchEntry.Activated += (sender, e) => {
@@ -227,9 +227,7 @@ namespace MonoDevelop.Components.MainToolbar
 					PositionPopup ();
 			};
 
-			searchEntryComboVBox = new SearchEntryBorder ();
-			searchEntryComboVBox.PackStart (this.matchEntry, true, false, SearchEntryBorder.Height / 2);
-			AddWidget (searchEntryComboVBox);
+			AddWidget (matchEntry);
 
 			Add (contentBox);
 			UpdateCombos ();
@@ -264,7 +262,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (popup == null)
 				return;
-			popup.ShowPopup (searchEntryComboVBox, PopupPosition.TopRight);
+			popup.ShowPopup (matchEntry, PopupPosition.TopRight);
 		}
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
