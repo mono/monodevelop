@@ -33,16 +33,29 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Text;
+using System.Linq;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide
 {
 	public static class ImageService
 	{
 		static Gtk.IconFactory iconFactory = new Gtk.IconFactory ();
+
+		// Mapping of icon spec to stock icon id.
 		static List<Dictionary<string, string>> addinIcons = new List<Dictionary<string, string>> ();
+
+		// Mapping of icon spec to stock icon id, but used only when the icon is not bound to a specific add-in
+		static Dictionary<string, string> iconSpecToStockId = new Dictionary<string, string> ();
+
+		// Map of all animations
+		static Dictionary<string, AnimatedIcon> animationFactory = new Dictionary<string, AnimatedIcon> ();
+
 		static List<RuntimeAddin> addins = new List<RuntimeAddin> ();
 		static Dictionary<string, string> composedIcons = new Dictionary<string, string> ();
 		static Dictionary<Gdk.Pixbuf, string> namedIcons = new Dictionary<Gdk.Pixbuf, string> ();
+
+		// Dictionary of extension nodes by stock icon id. It holds nodes that have not yet been loaded
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();
 		
 		static Gtk.Requisition[] iconSizes = new Gtk.Requisition[7];
@@ -78,6 +91,8 @@ namespace MonoDevelop.Ide
 		{
 			try {
 				Gdk.Pixbuf pixbuf = null;
+				AnimatedIcon animatedIcon = null;
+
 				if (!string.IsNullOrEmpty (iconCodon.Resource) || !string.IsNullOrEmpty (iconCodon.File)) {
 					// using the stream directly produces a gdk warning.
 					byte[] buffer;
@@ -97,12 +112,22 @@ namespace MonoDevelop.Ide
 					}
 					pixbuf = new Gdk.Pixbuf (buffer);
 				} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
-					pixbuf = GetPixbuf (InternalGetStockId (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize), iconCodon.IconSize);
+					var id = GetStockIdForImageSpec (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize);
+					pixbuf = GetPixbuf (id, iconCodon.IconSize);
+					// This may be an animation, get it
+					animationFactory.TryGetValue (id, out animatedIcon);
+				} else if (!string.IsNullOrEmpty (iconCodon.Animation)) {
+					string id = GetStockIdForImageSpec (iconCodon.Addin, "animation:" + iconCodon.Animation, iconCodon.IconSize);
+					pixbuf = GetPixbuf (id, iconCodon.IconSize);
+					// This *should* be an animation
+					animationFactory.TryGetValue (id, out animatedIcon);
 				}
-				if (pixbuf != null) {
-					Gtk.IconSize size = forceWildcard? Gtk.IconSize.Invalid : iconCodon.IconSize;
+
+				Gtk.IconSize size = forceWildcard? Gtk.IconSize.Invalid : iconCodon.IconSize;
+				if (pixbuf != null)
 					AddToIconFactory (iconCodon.StockId, pixbuf, size);
-				}
+				if (animatedIcon != null)
+					AddToAnimatedIconFactory (iconCodon.StockId, animatedIcon);
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Error loading icon '{0}'", iconCodon.StockId), ex);
 			}
@@ -176,14 +201,17 @@ namespace MonoDevelop.Ide
 				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
 				return CreateColorBlock ("#FF0000", size);
 			}
-			
+
+			// If this name refers to an icon defined in an extension point, the images for the icon will now be laoded
 			EnsureStockIconIsLoaded (name, size);
 
 			//if an icon name begins with '#', we assume it's a hex colour
 			if (name[0] == '#')
 				return CreateColorBlock (name, size);
-			
-			string stockid = InternalGetStockId (name, size);
+
+			// Converts an image spec into a real stock icon id
+			string stockid = GetStockIdForImageSpec (name, size);
+
 			if (string.IsNullOrEmpty (stockid)) {
 				LoggingService.LogWarning ("Can't get stock id for " + name + " : " + Environment.NewLine + Environment.StackTrace);
 				return CreateColorBlock ("#FF0000", size);
@@ -265,6 +293,7 @@ namespace MonoDevelop.Ide
 					LoadStockIcon (stockIcon[biggest], true);
 					
 				}
+				// Icon loaded, it can be removed from the pending icon collection
 				iconStock.Remove (stockId);
 			}
 		}
@@ -359,7 +388,9 @@ namespace MonoDevelop.Ide
 	
 		public static Gtk.Image GetImage (string name, Gtk.IconSize size)
 		{
-			return new Gtk.Image (GetPixbuf (name, size));
+			var img = new Gtk.Image ();
+			img.LoadIcon (name, size);
+			return img;
 		}
 		/*
 		public static string GetStockIdFromResource (RuntimeAddin addin, string id)
@@ -386,7 +417,7 @@ namespace MonoDevelop.Ide
 		}
 		public static string GetStockId (string filename, Gtk.IconSize iconSize)
 		{
-			return InternalGetStockId (filename, iconSize);
+			return GetStockIdForImageSpec (filename, iconSize);
 		}
 		
 		public static string GetStockId (RuntimeAddin addin, string filename)
@@ -395,7 +426,7 @@ namespace MonoDevelop.Ide
 		}
 		public static string GetStockId (RuntimeAddin addin, string filename, Gtk.IconSize iconSize)
 		{
-			return InternalGetStockId (addin, filename, iconSize);
+			return GetStockIdForImageSpec (addin, filename, iconSize);
 		}
 		
 		static void AddToIconFactory (string stockId, Gdk.Pixbuf pixbuf, Gtk.IconSize iconSize)
@@ -412,6 +443,11 @@ namespace MonoDevelop.Ide
 			source.Size = iconSize;
 			source.SizeWildcarded = iconSize == Gtk.IconSize.Invalid;
 			iconSet.AddSource (source);
+		}
+
+		static void AddToAnimatedIconFactory (string stockId, AnimatedIcon aicon)
+		{
+			animationFactory [stockId] = aicon;
 		}
 
 		static string InternalGetStockIdFromResource (RuntimeAddin addin, string id, Gtk.IconSize size)
@@ -435,6 +471,33 @@ namespace MonoDevelop.Ide
 			return stockId;
 		}
 		
+		static string InternalGetStockIdFromAnimation (RuntimeAddin addin, string id, Gtk.IconSize size)
+		{
+			if (!id.StartsWith ("animation:"))
+				return id;
+			
+			id = id.Substring (10);
+			Dictionary<string, string> hash;
+			int addinId;
+
+			if (addin != null) {
+				addinId = GetAddinId (addin);
+				hash = addinIcons[addinId];
+			} else {
+				addinId = -1;
+				hash = iconSpecToStockId;
+			}
+
+			string stockId = "__asm" + addinId + "__" + id + "__" + size;
+			if (!hash.ContainsKey (stockId)) {
+				var aicon = new AnimatedIcon (addin, id, size);
+				AddToIconFactory (stockId, aicon.FirstFrame, size);
+				AddToAnimatedIconFactory (stockId, aicon);
+				hash[stockId] = stockId;
+			}
+			return stockId;
+		}
+
 		static int GetAddinId (RuntimeAddin addin)
 		{
 			int result = addins.IndexOf (addin);
@@ -491,12 +554,12 @@ namespace MonoDevelop.Ide
 			return res;
 		}
 		
-		static string InternalGetStockId (string filename, Gtk.IconSize size)
+		static string GetStockIdForImageSpec (string filename, Gtk.IconSize size)
 		{
-			return InternalGetStockId (null, filename, size);
+			return GetStockIdForImageSpec (null, filename, size);
 		}
 
-		static string InternalGetStockId (RuntimeAddin addin, string filename, Gtk.IconSize size)
+		static string GetStockIdForImageSpec (RuntimeAddin addin, string filename, Gtk.IconSize size)
 		{
 			if (filename.IndexOf ('|') == -1)
 				return PrivGetStockId (addin, filename, size);
@@ -513,7 +576,117 @@ namespace MonoDevelop.Ide
 			if (addin != null && filename.StartsWith ("res:"))
 				return InternalGetStockIdFromResource (addin, filename, size);
 
+			if (filename.StartsWith ("animation:"))
+				return InternalGetStockIdFromAnimation (addin, filename, size);
+
 			return filename;
 		}
+
+		public static bool IsAnimation (string iconId, Gtk.IconSize size)
+		{
+			EnsureStockIconIsLoaded (iconId, size);
+			string id = GetStockIdForImageSpec (iconId, size);
+			return animationFactory.ContainsKey (id);
+		}
+
+		public static AnimatedIcon GetAnimatedIcon (string iconId)
+		{
+			return GetAnimatedIcon (iconId, Gtk.IconSize.Button);
+		}
+
+		public static AnimatedIcon GetAnimatedIcon (string iconId, Gtk.IconSize size)
+		{
+			EnsureStockIconIsLoaded (iconId, size);
+			string id = GetStockIdForImageSpec (iconId, size);
+
+			AnimatedIcon aicon;
+			animationFactory.TryGetValue (id, out aicon);
+			return aicon;
+		}
+
+		static List<WeakReference> animatedImages = new List<WeakReference> ();
+
+		class AnimatedImageInfo {
+			public Gtk.Image Image;
+			public AnimatedIcon AnimatedIcon;
+			public IDisposable Animation;
+
+			public AnimatedImageInfo (Gtk.Image img, AnimatedIcon anim)
+			{
+				Image = img;
+				AnimatedIcon = anim;
+				img.Realized += HandleRealized;
+				img.Unrealized += HandleUnrealized;
+				img.Destroyed += HandleDestroyed;
+				if (img.IsRealized)
+					StartAnimation ();
+			}
+
+			void StartAnimation ()
+			{
+				if (Animation == null) {
+					Animation = AnimatedIcon.StartAnimation (delegate (Gdk.Pixbuf pix) {
+						Image.Pixbuf = pix;
+					});
+				}
+			}
+
+			void StopAnimation ()
+			{
+				if (Animation != null) {
+					Animation.Dispose ();
+					Animation = null;
+				}
+			}
+
+			void HandleDestroyed (object sender, EventArgs e)
+			{
+				UnregisterImageAnimation (this);
+			}
+
+			void HandleUnrealized (object sender, EventArgs e)
+			{
+				StopAnimation ();
+			}
+
+			void HandleRealized (object sender, EventArgs e)
+			{
+				StartAnimation ();
+			}
+
+			public void Dispose ()
+			{
+				StopAnimation ();
+				Image.Realized -= HandleRealized;
+				Image.Unrealized -= HandleUnrealized;
+				Image.Destroyed -= HandleDestroyed;
+			}
+		}
+
+		public static void LoadIcon (this Gtk.Image image, string iconId, Gtk.IconSize size)
+		{
+			AnimatedImageInfo ainfo = animatedImages.Select (a => (AnimatedImageInfo) a.Target).FirstOrDefault (a => a != null && a.Image == image);
+			if (ainfo != null) {
+				if (ainfo.AnimatedIcon.AnimationSpec == iconId)
+					return;
+				UnregisterImageAnimation (ainfo);
+			}
+			if (IsAnimation (iconId, size)) {
+				var anim = GetAnimatedIcon (iconId);
+				ainfo = new AnimatedImageInfo (image, anim);
+				ainfo.Animation = anim.StartAnimation (delegate (Gdk.Pixbuf pix) {
+					image.Pixbuf = pix;
+				});
+				animatedImages.Add (new WeakReference (ainfo));
+			} else
+				image.Pixbuf = GetPixbuf (iconId);
+		}
+
+		static void UnregisterImageAnimation (AnimatedImageInfo ainfo)
+		{
+			ainfo.Dispose ();
+			animatedImages.RemoveAll (a => (AnimatedImageInfo)a.Target == ainfo);
+		}
 	}
+
 }

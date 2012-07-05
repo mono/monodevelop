@@ -34,6 +34,7 @@ using System.Collections;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Ide
 {
@@ -320,6 +321,107 @@ namespace MonoDevelop.Ide
 			else
 				LoggingService.LogError ("{0} {1}\nCaller stack not available. Define the environment variable MONODEVELOP_DISPATCH_DEBUG to enable caller stack capture.", errormsg, msg.Exception.ToString ());
 		}
+
+		#region Animations
+
+		/// <summary>
+		/// Runs a delegate at regular intervals 
+		/// </summary>
+		/// <returns>
+		/// An animation object. It can be disposed to stop the animation.
+		/// </returns>
+		/// <param name='animation'>
+		/// The delegate to run. The return value if the number of milliseconds to wait until the delegate is run again.
+		/// The execution will stop if the deletgate returns 0
+		/// </param>
+		public static IDisposable RunAnimation (Func<int> animation)
+		{
+			var ainfo = new AnimationInfo () {
+				AnimationFunc = animation,
+				NextDueTime = DateTime.Now
+			};
+
+			Console.WriteLine ("Started animation " + animation.GetHashCode ());
+			activeAnimations.Add (ainfo);
+			
+			// Don't immediately run the animation if we are going to do it in less than 20ms
+			if (animationHandle == 0 || currentAnimationSpan > 20)
+				ProcessAnimations ();
+			return ainfo;
+		}
+		
+		static List<AnimationInfo> activeAnimations = new List<AnimationInfo> ();
+		static uint animationHandle;
+		static DateTime nextDueTime;
+		static int currentAnimationSpan;
+
+		class AnimationInfo: IDisposable {
+			public Func<int> AnimationFunc;
+			public DateTime NextDueTime;
+
+			public void Dispose ()
+			{
+				DispatchService.StopAnimation (this);
+			}
+		}
+
+		static bool ProcessAnimations ()
+		{
+			List<AnimationInfo> toDelete = null;
+
+			DateTime now = DateTime.Now;
+			nextDueTime = DateTime.MaxValue;
+
+			foreach (var a in activeAnimations) {
+				if (a.NextDueTime <= now) {
+					int ms = a.AnimationFunc ();
+					if (ms <= 0) {
+						if (toDelete == null)
+							toDelete = new List<AnimationInfo> ();
+						toDelete.Add (a);
+						a.NextDueTime = DateTime.MaxValue;
+					} else
+						a.NextDueTime = DateTime.Now + TimeSpan.FromMilliseconds (ms);
+				}
+				if (a.NextDueTime < nextDueTime)
+					nextDueTime = a.NextDueTime;
+			}
+
+			if (toDelete != null) {
+				foreach (var a in toDelete)
+					activeAnimations.Remove (a);
+			}
+
+			if (nextDueTime == DateTime.MaxValue) {
+				// No more animations
+				animationHandle = 0;
+				return false;
+			}
+
+			int nms = (int) (nextDueTime - DateTime.Now).TotalMilliseconds;
+			if (nms < 20)
+				nms = 20;
+
+			// Don't re-schedule if the current time span is more or less the same as the previous one
+			if (animationHandle != 0 && Math.Abs (nms - currentAnimationSpan) <= 3)
+				return true;
+
+			currentAnimationSpan = nms;
+			animationHandle = GLib.Timeout.Add ((uint)currentAnimationSpan, ProcessAnimations);
+			return false;
+		}
+
+		static void StopAnimation (AnimationInfo a)
+		{
+			activeAnimations.Remove (a);
+			Console.WriteLine ("Stopped animation " + a.AnimationFunc.GetHashCode ());
+			if (activeAnimations.Count == 0 && animationHandle != 0) {
+				GLib.Source.Remove (animationHandle);
+				animationHandle = 0;
+			}
+		}
+
+		#endregion
 	}
 
 	public delegate void MessageHandler ();
