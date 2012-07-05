@@ -55,18 +55,21 @@ namespace MonoDevelop.Components
 
         public HoverImageButton()
         {
+			Gtk.Alignment al = new Alignment (0.5f, 0.5f, 0f, 0f);
+			al.Show ();
             CanFocus = true;
 			VisibleWindow = false;
             image = new Image();
             image.Show();
-            Add(image);
+			al.Add (image);
+            Add(al);
         }
 
         public HoverImageButton(IconSize size, string icon_name) : this(size, new string [] { icon_name })
         {
         }
 
-        public HoverImageButton(IconSize size, string [] icon_names) : this()
+        public HoverImageButton(IconSize size, params string [] icon_names) : this()
         {
             this.icon_size = size;
             this.icon_names = icon_names;
@@ -152,8 +155,6 @@ namespace MonoDevelop.Components
         {
             base.OnExposeEvent(evnt);
 
-            PropagateExpose(Child, evnt);
-
             if(HasFocus && draw_focus) {
                 Style.PaintFocus(Style, GdkWindow, StateType.Normal, evnt.Area, this, "button",
                     0, 0, Allocation.Width, Allocation.Height);
@@ -187,7 +188,7 @@ namespace MonoDevelop.Components
             for(int i = 0; i < icon_names.Length; i++) {
                 try {
 					normal_pixbuf = ImageService.GetPixbuf (icon_names[i], icon_size);
-                    active_pixbuf = ColorShiftPixbuf(normal_pixbuf, 30);
+					active_pixbuf = ColorShiftPixbuf(normal_pixbuf, 30);
                     break;
                 } catch {
                 }
