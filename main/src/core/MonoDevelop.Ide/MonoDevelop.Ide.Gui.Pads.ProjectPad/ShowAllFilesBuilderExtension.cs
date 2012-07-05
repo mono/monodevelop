@@ -355,7 +355,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (targetPath == source)
 				targetPath = ProjectOperations.GetTargetCopyName (targetPath, false);
 			
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), Stock.CopyIcon, true))
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), Stock.StatusSolutionOperation, true))
 			{
 				bool move = operation == DragOperation.Move;
 				IdeApp.ProjectOperations.TransferFiles (monitor, null, source, targetProject, targetPath, move, false);

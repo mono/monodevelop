@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			outputPad = (SearchResultPad) pad.Content;
 			outputPad.AsyncOperation = AsyncOperation;
 			outputPad.BeginProgress (pad.Title);
-			statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.FindIcon, false, true, false, pad);
+			statusMonitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.StatusSearch, false, true, false, pad);
 		}
 		
 		[FreeDispatch]

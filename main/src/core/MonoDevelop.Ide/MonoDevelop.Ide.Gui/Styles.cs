@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -52,6 +53,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
 
+		public static readonly Cairo.Color WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
 	}
 }
 

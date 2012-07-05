@@ -301,7 +301,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (targetProject != null)
 				projectsToSave.Add (targetProject);
 			
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), MonoDevelop.Ide.Gui.Stock.CopyIcon, true))
+			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), Stock.StatusSolutionOperation, true))
 			{
 				// If we drag and drop a node in the treeview corresponding to a directory, do not move
 				// the entire directory. We should only move the files which exist in the project. Otherwise
