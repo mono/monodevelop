@@ -51,13 +51,6 @@ namespace MonoDevelop.VersionControl
 				tracker.ReportError("The operation could not be completed because a shared library is missing: " + e.Message, null);
 			} catch (Exception e) {
 				string msg = GettextCatalog.GetString ("Version control operation failed: ");
-				msg += e.Message;
-				if (e.InnerException != null && e.InnerException.Message != e.Message) {
-					msg = msg.Trim ();
-					if (!msg.EndsWith ("."))
-						msg += ".";
-					msg += " " + e.InnerException.Message;
-				}
 				tracker.ReportError (msg, e);
 			} finally {			
 				threadnotify.WakeupMain();
