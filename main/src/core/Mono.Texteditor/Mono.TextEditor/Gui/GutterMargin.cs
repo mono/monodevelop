@@ -194,7 +194,7 @@ namespace Mono.TextEditor
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
-			var gutterMarker = (IGutterMarker)lineSegment.Markers.FirstOrDefault (marker => marker is IGutterMarker);
+			var gutterMarker = lineSegment != null ? (IGutterMarker)lineSegment.Markers.FirstOrDefault (marker => marker is IGutterMarker) : null;
 			if (gutterMarker != null) {
 				gutterMarker.DrawLineNumber (editor, Width, cr, area, lineSegment, line, x, y, lineHeight);
 				return;
