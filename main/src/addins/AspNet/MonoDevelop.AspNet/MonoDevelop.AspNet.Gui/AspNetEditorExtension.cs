@@ -107,12 +107,13 @@ namespace MonoDevelop.AspNet.Gui
 		
 		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
 		{
-			var v = new MemberListVisitor (refman);
-			info.AspNetDocument.RootNode.AcceptVisit (v);
+			var memberList = new MemberListBuilder (refman, info.AspNetDocument.XDocument);
+			//info.AspNetDocument.RootNode.AcceptVisit (v);
+			memberList.Build ();
 			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
 			var dom = refman.TypeCtx.Compilation;
 			var baseType = dom.LookupType (info.BaseType);
-			foreach (var m in CodeBehind.GetDesignerMembers (v.Members.Values, baseType, null)) {
+			foreach (var m in CodeBehind.GetDesignerMembers (memberList.Members.Values, baseType, null)) {
 				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
 					Accessibility = Accessibility.Protected,
 					ReturnType = m.Type.ToTypeReference ()

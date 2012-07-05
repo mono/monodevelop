@@ -38,6 +38,8 @@ using MonoDevelop.AspNet.Parser.Dom;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -99,6 +101,92 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IDictionary<string,CodeBehindMember> Members { get; private set; }
 		public IList<Error> Errors { get; private set; }
+	}
+	
+	public class MemberListBuilder
+	{
+		DocumentReferenceManager docRefMan;
+		XDocument xDocument;
+		
+		public IDictionary<string,CodeBehindMember> Members { get; private set; }
+		public IList<Error> Errors { get; private set; }
+		
+		public MemberListBuilder (DocumentReferenceManager refMan, XDocument xDoc)
+		{
+			docRefMan = refMan;
+			xDocument = xDoc;
+			
+			Errors = new List<Error> ();
+			Members = new Dictionary<string,CodeBehindMember> ();
+		}
+		
+		public void Build ()
+		{
+			try {
+				AddMember (xDocument.RootElement);
+			} catch (Exception ex) {
+				Errors.Add (new Error (ErrorType.Error, "Unknown parser error: " + ex.ToString ()));
+			}
+		}
+		
+		void AddMember (XElement element)
+		{
+			string id = GetAttributeValueCI (element.Attributes, "id");
+			if (IsRunatServer (element) && (id != string.Empty)) {
+				
+				if (Members.ContainsKey (id)) {
+					Errors.Add (new Error (
+						ErrorType.Error,
+						GettextCatalog.GetString ("Tag ID must be unique within the document: '{0}'.", id),
+						element.Region
+					)
+					);
+				} else {
+					string controlType = GetAttributeValueCI (element.Attributes, "type");
+					IType type = docRefMan.GetType (element.Name.Prefix, element.Name.Name, controlType);
+	
+					if (type == null) {
+						Errors.Add (
+							new Error (
+								ErrorType.Error,
+								GettextCatalog.GetString ("The tag type '{0}{1}{2}' has not been registered.", 
+						                          element.Name.Prefix, 
+						                          element.Name.HasPrefix ? string.Empty : ":", 
+						                          element.Name.Name),
+								element.Region
+						)
+						);
+					} else
+						Members [id] = new CodeBehindMember (id, type, element.Region.Begin);
+				}
+
+			}
+			foreach (XNode node in element.Nodes) {
+				if (node is XElement)
+					AddMember (node as XElement);
+			}
+		}
+		
+		bool IsRunatServer (XElement el)
+		{
+			XName runat = new XName ("runat");
+			foreach (XAttribute attr in el.Attributes) {
+				if ((attr.Name.ToLower () == runat) && (attr.Value.ToLower () == "server"))
+					return true;
+			}
+			return false;
+		}
+		
+		string GetAttributeValueCI (XAttributeCollection attributes, string key)
+		{
+			XName nameKey = new XName (key.ToLowerInvariant ());
+
+			foreach (XAttribute attr in attributes) {
+				if (attr.Name.ToLower () == nameKey)
+					return attr.Value;
+			}
+			return string.Empty;
+		}
 	}
 	
 	public class CodeBehindMember
