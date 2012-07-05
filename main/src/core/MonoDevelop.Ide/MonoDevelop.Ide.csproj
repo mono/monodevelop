@@ -1513,6 +1513,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectCommentTags.cs" />
     <Compile Include="MonoDevelop.Components\ProgressControl.cs" />
+    <Compile Include="MonoDevelop.Ide\DefaultWebCertificateProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

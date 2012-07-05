@@ -161,8 +161,8 @@
 	
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/FoldingParser">
 		<ExtensionNode name="Parser" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode"/>
-	</ExtensionPoint
-		>	
+	</ExtensionPoint>	
+
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/Ambiences" name = "Language ambiences">
 		<Description>Language ambiences. Specified classes must implement IAmbience.</Description>
 		<ExtensionNode name="Ambience" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode" />
@@ -287,5 +287,9 @@
 		<Migration sourceVersion="2.6+" kind="Config" path="EditingLayout.xml" />
 		<Migration sourceVersion="2.6+" kind="LocalConfig" path="RecentlyUsed.xml" />
 		<Migration sourceVersion="2.6+" kind="LocalConfig" path="Feedback.xml" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/WebCertificateProvider">
+		<Class class = "MonoDevelop.Ide.DefaultWebCertificateProvider" />
 	</Extension>
 </Addin>

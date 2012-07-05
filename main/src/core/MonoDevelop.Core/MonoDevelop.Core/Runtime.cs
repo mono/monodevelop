@@ -38,6 +38,9 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Setup;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
+using System.Net;
 
 
 namespace MonoDevelop.Core
@@ -63,6 +66,16 @@ namespace MonoDevelop.Core
 			// Set a default sync context
 			if (SynchronizationContext.Current == null)
 				SynchronizationContext.SetSynchronizationContext (new SynchronizationContext ());
+
+			// Hook up the SSL certificate validation codepath
+			System.Net.ServicePointManager.ServerCertificateValidationCallback += delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+				if (sslPolicyErrors == SslPolicyErrors.None)
+					return true;
+				
+				if (sender is WebRequest)
+					sender = ((WebRequest)sender).RequestUri.Host;
+				return WebCertificateService.GetIsCertificateTrusted (sender as string, certificate.GetPublicKeyString ());
+			};
 			
 			AddinManager.AddinLoadError += OnLoadError;
 			AddinManager.AddinLoaded += OnLoad;
