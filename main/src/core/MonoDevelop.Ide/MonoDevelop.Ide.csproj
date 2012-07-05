@@ -907,6 +907,84 @@
     <EmbeddedResource Include="icons\tabbar-popdown.png">
       <LogicalName>tabbar-popdown.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusBuild-05.png">
+      <LogicalName>statusBuild-05.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusBuild-04.png">
+      <LogicalName>statusBuild-04.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusBuild-03.png">
+      <LogicalName>statusBuild-03.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusBuild-02.png">
+      <LogicalName>statusBuild-02.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusBuild-01.png">
+      <LogicalName>statusBuild-01.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusSearch-04.png">
+      <LogicalName>statusSearch-04.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusSearch-03.png">
+      <LogicalName>statusSearch-03.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusSearch-02.png">
+      <LogicalName>statusSearch-02.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusSearch-01.png">
+      <LogicalName>statusSearch-01.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPush-06.png">
+      <LogicalName>statusPush-06.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPush-05.png">
+      <LogicalName>statusPush-05.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPush-04.png">
+      <LogicalName>statusPush-04.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPush-03.png">
+      <LogicalName>statusPush-03.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPush-02.png">
+      <LogicalName>statusPush-02.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPush-01.png">
+      <LogicalName>statusPush-01.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPull-06.png">
+      <LogicalName>statusPull-06.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPull-05.png">
+      <LogicalName>statusPull-05.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPull-04.png">
+      <LogicalName>statusPull-04.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPull-03.png">
+      <LogicalName>statusPull-03.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPull-02.png">
+      <LogicalName>statusPull-02.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusPull-01.png">
+      <LogicalName>statusPull-01.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusOpen-06.png">
+      <LogicalName>statusOpen-06.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusOpen-05.png">
+      <LogicalName>statusOpen-05.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusOpen-04.png">
+      <LogicalName>statusOpen-04.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusOpen-03.png">
+      <LogicalName>statusOpen-03.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusOpen-01.png">
+      <LogicalName>statusOpen-01.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1630,13 +1708,13 @@
     <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGridTable.cs" />
     <Compile Include="MonoDevelop.Components\CompactDialog.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockVisualStyle.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\SearchEntryBorder.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StyledProgressBar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
     <Compile Include="MonoDevelop.Components\SquaredNotebook.cs" />
     <Compile Include="MonoDevelop.Components\PopoverWindow.cs" />
     <Compile Include="MonoDevelop.Components\ProgressControl.cs" />
     <Compile Include="MonoDevelop.Components\TooltipPopoverWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\AnimatedIcon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
