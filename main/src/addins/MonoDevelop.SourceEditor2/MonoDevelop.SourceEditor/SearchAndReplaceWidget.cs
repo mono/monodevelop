@@ -114,6 +114,15 @@ namespace MonoDevelop.SourceEditor
 				textEditorContainer.QueueResize ();
 			}
 		}
+
+		static string GetShortcut (object commandId)
+		{
+			var key = IdeApp.CommandService.GetCommand (commandId).AccelKey;
+			if (string.IsNullOrEmpty (key))
+				return "";
+			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
+			return "(" + nextShortcut + ")";
+		}
 		
 		public SearchAndReplaceWidget (TextEditor textEditor, Widget frame)
 		{
@@ -129,8 +138,8 @@ namespace MonoDevelop.SourceEditor
 			DisableAutomaticSearchPatternCaseMatch = false;
 			Build ();
 			buttonReplace.TooltipText = GettextCatalog.GetString ("Replace");
-			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next");
-			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous");
+			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
+			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
 			buttonSearchMode.TooltipText = GettextCatalog.GetString ("Toggle between search and replace mode");
 			searchEntry.Ready = true;
 			searchEntry.Visible = true;
