@@ -323,11 +323,23 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			// Initialize the repository
 			repo = GitUtil.Init (localPath, Url, monitor);
+			NGit.Api.Git git = new NGit.Api.Git (repo);
+			try {
+				var refs = git.Fetch ().Call ().GetAdvertisedRefs ();
+				if (refs.Count > 0) {
+					throw new UserException ("The remote repository already contains branches. MonoDevelop can only publish to an empty repository");
+				}
+			} catch {
+				if (Directory.Exists (repo.Directory))
+					Directory.Delete (repo.Directory, true);
+				repo.Close ();
+				repo = null;
+				throw;
+			}
+
 			path = localPath;
-			
 			// Add the project files
 			ChangeSet cs = CreateChangeSet (localPath);
-			NGit.Api.Git git = new NGit.Api.Git (repo);
 			var cmd = git.Add ();
 			foreach (FilePath fp in files) {
 				cmd.AddFilepattern (ToGitPath (fp));
@@ -341,7 +353,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			// Push to remote repo
 			Push (monitor, "origin", "master");
-			
+
 			return this;
 		}
 		

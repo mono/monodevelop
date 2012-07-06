@@ -471,7 +471,6 @@ namespace Mono.TextEditor
 				this.RedrawMarginLines (this.textViewMargin, 
 				                        System.Math.Min (System.Math.Min (oldStartLine, oldEndLine), System.Math.Min (startLine, endLine)),
 				                        System.Math.Max (System.Math.Max (oldStartLine, oldEndLine), System.Math.Max (startLine, endLine)));
-				oldSelection = selection;
 			} else {
 				if (endLine < 0 && startLine >=0)
 					endLine = Document.LineCount;
@@ -510,12 +509,12 @@ namespace Mono.TextEditor
 				}
 				
 				if (from >= 0 && to >= 0) {
-					oldSelection = selection;
 					this.RedrawMarginLines (this.textViewMargin, 
 					                        System.Math.Max (0, System.Math.Min (from, to) - 1),
 					                        System.Math.Max (from, to));
 				}
 			}
+			oldSelection = selection;
 			OnSelectionChanged (EventArgs.Empty);
 		}
 		

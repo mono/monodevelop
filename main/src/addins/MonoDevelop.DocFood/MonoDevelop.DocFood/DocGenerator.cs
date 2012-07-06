@@ -386,9 +386,11 @@ namespace MonoDevelop.DocFood
 //				DocConfig.Instance.Rules.ForEach (r => r.Run (this));
 //			}
 		}
-		
+
 		void Init (IEntity member)
 		{
+			if (member == null)
+				throw new ArgumentNullException ("member");
 			FillDocumentation (GetBaseDocumentation (member));
 			//			if (provider != null && !member.Location.IsEmpty && member.BodyRegion.EndLine > 1) {
 			//				LineSegment start = data.Document.GetLine (member.Region.BeginLine);
@@ -448,11 +450,14 @@ namespace MonoDevelop.DocFood
 				
 				var property = member as IProperty;
 				if (property != null) {
-					if (property.CanGet && property.CanSet && property.Getter.Accessibility != Accessibility.Private && property.Setter.Accessibility != Accessibility.Private) {
+					var hasPublicGetter = property.Getter != null && property.Getter.Accessibility != Accessibility.Private;
+					var hasPublicSetter = property.Setter != null && property.Setter.Accessibility != Accessibility.Private;
+
+					if (property.CanGet && property.CanSet && hasPublicGetter && hasPublicSetter) {
 						tags ["AccessText"] = "Gets or sets";
-					} else if (property.CanGet && property.Getter.Accessibility != Accessibility.Private) {
+					} else if (property.CanGet && hasPublicGetter) {
 						tags ["AccessText"] = "Gets";
-					} else if (property.Setter.Accessibility != Accessibility.Private) {
+					} else if (hasPublicSetter) {
 						tags ["AccessText"] = "Sets";
 					} else if (property.CanGet && property.CanSet) {
 						tags ["AccessText"] = "Gets or sets";

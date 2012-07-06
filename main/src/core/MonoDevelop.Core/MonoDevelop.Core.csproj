@@ -413,6 +413,8 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\TargetsAvailableCondition.cs" />
     <Compile Include="MonoDevelop.Projects\PortableDotNetProjectBinding.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\AssemblyInstalledCondition.cs" />
+    <Compile Include="MonoDevelop.Core\WebCertificateService.cs" />
+    <Compile Include="MonoDevelop.Core\IWebCertificateProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

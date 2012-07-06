@@ -1,11 +1,10 @@
-XBUILD=xbuild
-XBUILD_ARGS=/verbosity:quiet /nologo /property:CodePage=65001
 ALL_CSPROJ=$(wildcard *.csproj)
 MAIN_SLN=$(top_builddir)/Main.sln
 
 if ENABLE_MACPLATFORM
 PROFILE_NAME=DebugMac
 endif
+
 if ENABLE_GNOMEPLATFORM
 PROFILE_NAME=Debug
 endif
@@ -14,7 +13,10 @@ if ENABLE_WINDOWSPLATFORM
 PROFILE_NAME=DebugWin32
 endif
 
-PROFILE=/property:Configuration=$(PROFILE_NAME)
+XBUILD=xbuild
+XBUILD_VERBOSITY=quiet
+XBUILD_ARGS=/verbosity:$(XBUILD_VERBOSITY) /nologo /property:CodePage=65001
+XBUILD_PROFILE=/property:Configuration=$(PROFILE_NAME)
 
 # Figure out how far we are from top_builddir
 DEPTH=$(shell echo "$(top_builddir)" | tr '/' '\n' | grep -c '..')
@@ -37,11 +39,11 @@ csproj_clean:
 
 sln_build:
 	@echo Building $(MAIN_SLN)
-	@$(XBUILD) $(XBUILD_ARGS) $(MAIN_SLN) $(PROFILE)
+	@$(XBUILD) $(XBUILD_ARGS) $(MAIN_SLN) $(XBUILD_PROFILE)
 
 sln_clean:
 	@echo Cleaning $(MAIN_SLN)
-	@$(XBUILD) $(XBUILD_ARGS) $(MAIN_SLN) $(PROFILE) /t:Clean
+	@$(XBUILD) $(XBUILD_ARGS) $(MAIN_SLN) $(XBUILD_PROFILE) /t:Clean
 
 print_extradist:
 	@echo $(WILDCARDED_FILES)

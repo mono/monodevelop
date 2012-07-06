@@ -1254,6 +1254,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return result;
 				
 				var name = AssemblyNameReference.Parse (fullName);
+				AssemblyDefinition bestFit = null;
 				// need to handle different file extension casings. Some dlls from windows tend to end with .Dll or .DLL rather than '.dll'
 				foreach (string file in Directory.GetFiles (lookupPath, name.Name + ".*")) {
 					string ext = Path.GetExtension (file);
@@ -1262,6 +1263,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					ext = ext.ToUpper ();
 					if (ext == ".DLL" || ext == ".EXE") {
 						result = ReadAssembly (file);
+						if (result.FullName != fullName) {
+							bestFit = result;
+							result = null;
+							continue;
+						}
 						break;
 					}
 				}
@@ -1275,6 +1281,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						result = ReadAssembly (location);
 					}
 				}
+				if (result == null)
+					result = bestFit;
 				if (result != null)
 					cache [fullName] = result;
 				return result;
