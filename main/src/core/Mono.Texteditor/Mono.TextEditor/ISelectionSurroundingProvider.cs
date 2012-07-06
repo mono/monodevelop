@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 		/// <param name='end'>
 		/// The end of the surrounding
 		/// </param>
-		bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end);
+		bool GetSelectionSurroundings (TextEditorData textEditorData, uint unicodeKey, out string start, out string end);
 
 		void HandleSpecialSelectionKey (TextEditorData textEditorData, uint unicodeKey);
 	}
@@ -58,7 +58,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public sealed class NullSelectionSurroundingProvider : ISelectionSurroundingProvider
 	{
-		public bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end)
+		public bool GetSelectionSurroundings (TextEditorData textEditorData, uint unicodeKey, out string start, out string end)
 		{
 			start = end = "";
 			return false;
@@ -75,7 +75,7 @@ namespace Mono.TextEditor
 	/// </summary>
 	public class DefaultSelectionSurroundingProvider : ISelectionSurroundingProvider
 	{
-		public virtual bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end)
+		public virtual bool GetSelectionSurroundings (TextEditorData textEditorData, uint unicodeKey, out string start, out string end)
 		{
 			switch ((char)unicodeKey) {
 			case '"':
@@ -109,7 +109,7 @@ namespace Mono.TextEditor
 		public virtual void HandleSpecialSelectionKey (TextEditorData textEditorData,uint unicodeKey)
 		{
 			string start, end;
-			GetSelectionSurroundings (unicodeKey, out start, out end);
+			GetSelectionSurroundings (textEditorData, unicodeKey, out start, out end);
 			
 			if (textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
 				var selection = textEditorData.MainSelection;

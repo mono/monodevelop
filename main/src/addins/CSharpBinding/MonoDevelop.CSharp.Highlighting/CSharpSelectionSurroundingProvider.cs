@@ -30,14 +30,20 @@ namespace MonoDevelop.CSharp.Highlighting
 {
 	public class CSharpSelectionSurroundingProvider : DefaultSelectionSurroundingProvider
 	{
-		public override bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end)
+		public override bool GetSelectionSurroundings (TextEditorData textEditorData, uint unicodeKey, out string start, out string end)
 		{
 			if (unicodeKey == '/') {
 				start = "/*";
 				end = "*/";
 				return true;
 			}
-			return base.GetSelectionSurroundings (unicodeKey, out start, out end);
+
+			if (unicodeKey == '"') {
+				start = textEditorData.MainSelection.Anchor.Line != textEditorData.MainSelection.Lead.Line ? "@\"" : "\"";
+				end = "\"";
+				return true;
+			}
+			return base.GetSelectionSurroundings (textEditorData, unicodeKey, out start, out end);
 		}
 	}
 }

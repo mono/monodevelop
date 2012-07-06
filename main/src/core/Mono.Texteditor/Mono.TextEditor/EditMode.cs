@@ -107,7 +107,7 @@ namespace Mono.TextEditor
 		bool IsSpecialKeyForSelection (uint unicodeKey)
 		{
 			string start, end;
-			return textEditorData.SelectionSurroundingProvider.GetSelectionSurroundings (unicodeKey, out start, out end);
+			return textEditorData.SelectionSurroundingProvider.GetSelectionSurroundings (textEditorData, unicodeKey, out start, out end);
 		}
 
 		protected void InsertCharacter (uint unicodeKey)
