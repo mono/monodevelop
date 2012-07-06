@@ -147,5 +147,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId StatusDownload = "md-status-download";
 		public static readonly IconId StatusUpload = "md-status-upload";
 		public static readonly IconId StatusSearch = "md-status-search";
+		public static readonly IconId StatusBuild = "md-status-build";
 	}
 }
