@@ -103,7 +103,18 @@ namespace Mono.TextEditor
 			protected set;
 		}
 
-		
+		ISelectionSurroundingProvider selectionSurroundingProvider = new DefaultSelectionSurroundingProvider ();
+		public ISelectionSurroundingProvider SelectionSurroundingProvider {
+			get {
+				return selectionSurroundingProvider;
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException ("surrounding provider needs to be != null");
+				selectionSurroundingProvider = value;
+			}
+		}
+
 		public TextEditorData () : this (new TextDocument ())
 		{
 		}
