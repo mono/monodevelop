@@ -196,13 +196,13 @@ namespace MonoDevelop.SourceEditor
 			this.tabIsReindent = PropertyService.Get ("TabIsReindent", false);
 			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", true);
 			//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
-			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
+			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", true);
 			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Smart);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
-			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", false);
+			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", true);
 			base.EnableSyntaxHighlighting = PropertyService.Get ("EnableSyntaxHighlighting", true);
 			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
 			base.ShowRuler = PropertyService.Get ("ShowRuler", false);
@@ -216,7 +216,7 @@ namespace MonoDevelop.SourceEditor
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
-			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
+			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", true);
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
 		}
 		
