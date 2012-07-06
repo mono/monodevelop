@@ -1477,7 +1477,7 @@ namespace Mono.TextEditor
 						// When drawing virtual space before the selection start paint it as unselected.
 						var virtualSpaceMod = selectionStart < caretOffset ? 0 : virtualSpace.Length;
 
-						if (!textEditor.IsSomethingSelected || (selectionStart >= offset && selectionStart != selectionEnd)  && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
+						if ((!textEditor.IsSomethingSelected || (selectionStart >= offset && selectionStart != selectionEnd)) && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
 							DrawCaretLineMarker (cr, pangoPosition / Pango.Scale.PangoScale, y, vx / Pango.Scale.PangoScale);
 
 						if (DecorateLineBg != null)
