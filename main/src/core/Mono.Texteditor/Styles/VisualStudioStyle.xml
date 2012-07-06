@@ -50,8 +50,6 @@
 	<Style name="marker.line" color="aluminium1"/>
 	
 	<Style name="marker.ruler" color="aluminium3"/>
-	<Style name="marker.whitespace" color="#2b91af"/>
-	<Style name="marker.invalidline" color="#cc0000"/>
 	<Style name="marker.bracket" color="aluminium2" bgColor="aluminium1"/>
 	<Style name="marker.usages" color="aluminium2" bgColor="aluminium1"/>
 	

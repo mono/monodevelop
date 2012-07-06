@@ -35,8 +35,6 @@
 	<Style name="marker.line.dirty" color="green"/>	
 	
 	<Style name="marker.ruler" color="#CC44CC"/>
-	<Style name="marker.whitespace" color="#AAFFEE"/>
-	<Style name="marker.invalidline" color="#880000"/>
 	<Style name="marker.bracket" color="#97A0EF" bgColor="#3F3FDF"/>
 	
 	<Style name="marker.bookmark.color1" color="#FFFFFF"/>

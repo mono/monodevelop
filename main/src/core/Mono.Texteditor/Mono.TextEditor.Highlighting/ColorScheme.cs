@@ -144,27 +144,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public const string WhitespaceMarkerString = "marker.whitespace";
-		public virtual Cairo.Color WhitespaceMarker {
-			get {
-				return GetColorFromDefinition (WhitespaceMarkerString);
-			}
-		}
-		
-		public const string EolWhitespaceMarkerString = "marker.whitespace.eol";
-		public virtual Cairo.Color EolWhitespaceMarker {
-			get {
-				return GetColorFromDefinition (EolWhitespaceMarkerString);
-			}
-		}
-
-		public const string InvalidLineMarkerString = "marker.invalidline";
-		public virtual Cairo.Color InvalidLineMarker {
-			get {
-				return GetColorFromDefinition (InvalidLineMarkerString);
-			}
-		}
-		
 		public const string FoldToggleMarkerString = "fold.togglemarker";
 		public virtual Cairo.Color FoldToggleMarker {
 			get {
@@ -458,10 +437,7 @@ namespace Mono.TextEditor.Highlighting
 			
 			SetStyle (LineMarkerString, 200, 255, 255);
 			SetStyle (RulerString, 187, 187, 187);
-			SetStyle (WhitespaceMarkerString, RulerString);
-			
-			SetStyle (InvalidLineMarkerString, 210, 0, 0);
-			
+
 			SetStyle (BreakpointString, 255, 255, 255, 125, 0, 0);
 			
 			SetStyle (BreakpointMarkerColor1String, 255, 255, 255);

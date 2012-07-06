@@ -107,11 +107,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			new ColorMetaData ("marker.line.changed", GettextCatalog.GetString ("Quick diff line changed"), ColorsAvailable.Fg),
 			new ColorMetaData ("marker.line.dirty", GettextCatalog.GetString ("Quick diff line dirty"), ColorsAvailable.Fg),
 			
-			new ColorMetaData ("marker.whitespace", GettextCatalog.GetString ("Whitespace marker"), ColorsAvailable.Fg),
-			new ColorMetaData ("marker.whitespace.eol", GettextCatalog.GetString ("Eol marker"), ColorsAvailable.Fg),
-			
-			new ColorMetaData ("marker.invalidline", GettextCatalog.GetString ("Invalid line marker"), ColorsAvailable.Fg),
-			
 			new ColorMetaData ("marker.bracket", GettextCatalog.GetString ("Bracket marker"), ColorsAvailable.FgBg),
 			
 			new ColorMetaData ("marker.usages", GettextCatalog.GetString ("Usages marker"), ColorsAvailable.FgBg),

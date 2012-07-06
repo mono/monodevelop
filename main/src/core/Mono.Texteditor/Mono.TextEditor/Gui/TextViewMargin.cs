@@ -2330,7 +2330,7 @@ namespace Mono.TextEditor
 					}
 
 					if (isFoldingSelected && !SelectionColor.GotForegroundColorAssigned) {
-						cr.Color = ColorStyle.WhitespaceMarker;
+						cr.Color = ColorStyle.FoldLine.CairoColor;
 					} else {
 						cr.Color = isFoldingSelected ? SelectionColor.CairoColor : ColorStyle.FoldLine.CairoColor;
 					}

@@ -78,8 +78,6 @@
 	<Style name="marker.line.dirty" color="accent_yellow_highlight"/>	
 	
 	<Style name="marker.ruler" color="accent_blue_highlight"/>
-	<Style name="marker.whitespace" color="human"/>
-	<Style name="marker.invalidline" color="accent_red_base"/>
 	<Style name="marker.bracket" color="environmental_blue_medium" bgColor="environmental_blue_highlight"/>
 	<Style name="marker.usages" color="environmental_blue_medium" bgColor="environmental_blue_highlight"/>
 	

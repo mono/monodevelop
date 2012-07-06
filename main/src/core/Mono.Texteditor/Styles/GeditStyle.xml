@@ -39,8 +39,6 @@
   <Style name="text.selection.inactive" color="#FFFFFF" bgColor="#C4C4C4" />
   <Style name="marker.line" color="#C7FFFF" />
   <Style name="marker.ruler" color="#BBBBBB" />
-  <Style name="marker.whitespace" color="#BBBBBB" />
-  <Style name="marker.invalidline" color="#D20000" />
   <Style name="marker.breakpoint" color="#FFFFFF" bgColor="#7D0000" />
   <Style name="marker.breakpoint.color1" color="#FFFFFF" />
   <Style name="marker.breakpoint.color2" color="#7D0000" />

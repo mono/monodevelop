@@ -92,10 +92,6 @@ THE SOFTWARE.
 		<Style name="line.dirty" color="yellow"/>
 	
 		<Style name="ruler" color="base1"/>
-		<Style name="whitespace" color="base1"> 
-			<Style name="eol" color="base1"/> 
-		</Style>
-		<Style name="invalidline" color="base1"/>
 		<Style name="bracket" color="orange" bgColor="base2"/>
 		<Style name="usages" color="orange" bgColor="base2"/>
 		

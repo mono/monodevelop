@@ -74,8 +74,6 @@
 	<Style name="marker.template.secondary_highlighted_template" color="aluminium1" bgColor="aluminium5"/>
 		
 	<Style name="marker.ruler" color="aluminium5"/>
-	<Style name="marker.whitespace" color="aluminium3"/>
-	<Style name="marker.invalidline" color="orange1"/>
 	<Style name="marker.bracket" color="aluminium4" bgColor="aluminium5"/>
 	<Style name="marker.usages" color="aluminium4" bgColor="aluminium5"/>
 	
