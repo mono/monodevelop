@@ -2332,10 +2332,10 @@ namespace Mono.TextEditor
 					if (isFoldingSelected && !SelectionColor.GotForegroundColorAssigned) {
 						cr.Color = ColorStyle.WhitespaceMarker;
 					} else {
-						cr.Color = isFoldingSelected  ? SelectionColor.CairoColor : ColorStyle.FoldLine.CairoColor;
+						cr.Color = isFoldingSelected ? SelectionColor.CairoColor : ColorStyle.FoldLine.CairoColor;
 					}
 
-					RoundedRectangle(cr,
+					RoundedRectangle (cr,
 					                 System.Math.Floor (foldingRectangle.X) + 0.5,
 					                 System.Math.Floor (foldingRectangle.Y) + 0.5,
 					                 System.Math.Floor (foldingRectangle.Width - cr.LineWidth),
@@ -2371,7 +2371,7 @@ namespace Mono.TextEditor
 				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref pangoPosition, ref isSelectionDrawn, y, area.X + area.Width);
 			
 			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.Length);
-			var lx = (int) (pangoPosition / Pango.Scale.PangoScale);
+			var lx = (int)(pangoPosition / Pango.Scale.PangoScale);
 			lineArea = new Cairo.Rectangle (lx,
 				lineArea.Y,
 				textEditor.Allocation.Width - lx,
@@ -2429,9 +2429,12 @@ namespace Mono.TextEditor
 					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos);
 				}
 			}
-			
-			if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
-				DrawEolMarker (cr, line, isEolSelected, pangoPosition / Pango.Scale.PangoScale, y);
+
+			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
+				if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
+					DrawEolMarker (cr, line, isEolSelected, pangoPosition / Pango.Scale.PangoScale, y);
+			}
+
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null)
 				extendingMarker.Draw (textEditor, cr, lineNr, lineArea);
