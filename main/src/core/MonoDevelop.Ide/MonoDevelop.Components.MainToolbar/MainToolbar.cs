@@ -36,12 +36,16 @@ using Cairo;
 using MonoDevelop.Ide.NavigateToDialog;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using Mono.Addins;
+using MonoDevelop.Components.Commands.ExtensionNodes;
 
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class MainToolbar: Gtk.EventBox, ICommandDelegatorRouter
 	{
+		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
+
 		HBox contentBox = new HBox (false, 6);
 
 		ComboBox configurationCombo;
@@ -56,6 +60,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
+
+		HashSet<string> visibleBars = new HashSet<string> ();
 
 		public Cairo.ImageSurface Background {
 			get;
@@ -153,13 +159,6 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
 			AddWidget (runtimeComboVBox);
 
-
-
-			buttonBar.Add (new LazyImage ("icoDebug-Pause.png"));
-			buttonBar.Add (new LazyImage ("icoDebug-StepOver.png"));
-			buttonBar.Add (new LazyImage ("icoDebug-StepIn.png"));
-			buttonBar.Add (new LazyImage ("icoDebug-StepOut.png"));
-
 			var buttonBarVBox = new VBox ();
 			buttonBarVBox.PackStart (buttonBar, true, false, 0);
 			AddWidget (buttonBarVBox);
@@ -227,10 +226,47 @@ namespace MonoDevelop.Components.MainToolbar
 					PositionPopup ();
 			};
 
+			BuildToolbar ();
+			IdeApp.CommandService.RegisterCommandBar (buttonBar);
+
+			AddinManager.ExtensionChanged += delegate(object sender, ExtensionEventArgs args) {
+				if (args.PathChanged (ToolbarExtensionPath))
+					BuildToolbar ();
+			};
+
 			AddWidget (matchEntry);
 
 			Add (contentBox);
 			UpdateCombos ();
+		}
+
+		void BuildToolbar ()
+		{
+			buttonBar.Clear ();
+			var bars = AddinManager.GetExtensionNodes (ToolbarExtensionPath).Cast<ItemSetCodon> ().Where (n => visibleBars.Contains (n.Id));
+			if (!bars.Any ()) {
+				buttonBar.Hide ();
+				return;
+			}
+
+			buttonBar.ShowAll ();
+			foreach (var bar in bars) {
+				foreach (CommandItemCodon node in bar.ChildNodes.OfType<CommandItemCodon> ())
+					buttonBar.Add (node.Id);
+				buttonBar.AddSeparator ();
+			}
+		}
+
+		public void ShowCommandBar (string barId)
+		{
+			visibleBars.Add (barId);
+			BuildToolbar ();
+		}
+
+		public void HideCommandBar (string barId)
+		{
+			visibleBars.Remove (barId);
+			BuildToolbar ();
 		}
 
 		SearchPopupWindow popup = null;

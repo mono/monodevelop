@@ -1,59 +1,11 @@
 <ExtensionModel>
 
-<ExtensionPoint path = "/MonoDevelop/Ide/Toolbar" name = "Main toolbar">
+<ExtensionPoint path = "/MonoDevelop/Ide/CommandBar" name = "Main toolbar">
 	<Description>Main toolbar items.</Description>
 	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 </ExtensionPoint>
-	
-<Extension path = "/MonoDevelop/Ide/Toolbar">
-	<ItemSet id = "Standard" _label = "Standard">
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
-		<SeparatorItem id = "Separator1" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Undo" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Redo" />
-		<SeparatorItem id = "Separator2" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
-	</ItemSet>
-	<ItemSet id = "Search" _label="Search">
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
-		<SeparatorItem id = "SearchSeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
-	</ItemSet>
-	
-	<ItemSet id = "Build" _label = "Build">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ConfigurationSelector" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Build" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop" />
-	</ItemSet>
-	
-	<ItemSet id = "Layout" _label = "Layout">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutSelector" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
-	</ItemSet>
-	<ItemSet id = "Navigation" _label = "Navigation">
-		<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
-		<ItemSet id = "NavigationListToolbar">
-			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateHistory" />
-			<SeparatorItem id = "NavigationHistoryClearToolbarSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.ClearNavigationHistory" />
-		</ItemSet>
-	</ItemSet>
+
+<Extension path = "/MonoDevelop/Ide/CommandBar">
 </Extension>
 
 </ExtensionModel>

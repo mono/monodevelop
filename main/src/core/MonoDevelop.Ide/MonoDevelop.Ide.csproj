@@ -741,18 +741,6 @@
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btExecuteBase-Pressed.png">
       <LogicalName>btExecuteBase-Pressed.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoDebug-Pause.png">
-      <LogicalName>icoDebug-Pause.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoDebug-StepIn.png">
-      <LogicalName>icoDebug-StepIn.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoDebug-StepOut.png">
-      <LogicalName>icoDebug-StepOut.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoDebug-StepOver.png">
-      <LogicalName>icoDebug-StepOver.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoExecute-Disabled.png">
       <LogicalName>icoExecute-Disabled.png</LogicalName>
     </EmbeddedResource>

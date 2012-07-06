@@ -30,16 +30,19 @@ using System.Collections.Generic;
 using MonoDevelop.Components;
 using Cairo;
 using System.Linq;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class ButtonBar : EventBox
+	class ButtonBar : EventBox, ICommandBar
 	{
-		List<LazyImage> buttons = new List<LazyImage> ();
+		List<ButtonBarButton> buttons = new List<ButtonBarButton> ();
+		ButtonBarButton[] visibleButtons;
 
-		LazyImage btnLeftNormal, btnLeftPressed;
-		LazyImage btnMidNormal, btnMidPressed;
-		LazyImage btnRightNormal, btnRightPressed;
+		LazyImage[] btnNormal;
+		LazyImage[] btnPressed;
 
 		int pushedButton = -1;
 
@@ -49,16 +52,26 @@ namespace MonoDevelop.Components.MainToolbar
 			VisibleWindow = false;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask;
 
-			btnLeftNormal = new LazyImage ("btDebugBase-LeftCap-Normal.png");
-			btnLeftPressed = new LazyImage ("btDebugBase-LeftCap-Pressed.png");
+			btnNormal = new LazyImage[] {
+				new LazyImage ("btDebugBase-LeftCap-Normal.png"),
+				new LazyImage ("btDebugBase-MidCap-Normal.png"),
+				new LazyImage ("btDebugBase-RightCap-Normal.png")
+			};
 
-			btnMidNormal = new LazyImage ("btDebugBase-MidCap-Normal.png");
-			btnMidPressed = new LazyImage ("btDebugBase-MidCap-Pressed.png");
-
-			btnRightNormal = new LazyImage ("btDebugBase-RightCap-Normal.png");
-			btnRightPressed = new LazyImage ("btDebugBase-RightCap-Pressed.png");
+			btnPressed = new LazyImage[] {
+				new LazyImage ("btDebugBase-LeftCap-Pressed.png"),
+				new LazyImage ("btDebugBase-MidCap-Pressed.png"),
+				new LazyImage ("btDebugBase-RightCap-Pressed.png")
+			};
 		}
 
+		ButtonBarButton[] VisibleButtons {
+			get {
+				if (visibleButtons == null)
+					visibleButtons = buttons.Where (b => b.Visible).ToArray ();
+				return visibleButtons;
+			}
+		}
 
 		StateType leaveState = StateType.Normal;
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
@@ -77,7 +90,7 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Button == 1) {
-				pushedButton = (int)(evnt.X / btnLeftNormal.Img.Width);
+				pushedButton = (int)(evnt.X / btnNormal[0].Img.Width);
 				State = StateType.Selected;
 			}
 			return base.OnButtonPressEvent (evnt);
@@ -93,33 +106,54 @@ namespace MonoDevelop.Components.MainToolbar
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
-		public void Add (LazyImage pixbuf)
+		public void Clear ()
 		{
-			buttons.Add (pixbuf);
-			SetSizeRequest (btnLeftNormal.Img.Width * buttons.Count, btnLeftNormal.Img.Height);
+			buttons.Clear ();
+			visibleButtons = null;
+			pushedButton = -1;
+			QueueResize ();
+		}
+
+		public void Add (string commandId)
+		{
+			ButtonBarButton b = new ButtonBarButton (commandId);
+			var ci = IdeApp.CommandService.GetCommandInfo (commandId);
+			if (ci != null)
+				UpdateButton (b, ci);
+			buttons.Add (b);
+			visibleButtons = null;
+			QueueResize ();
+		}
+
+		public void AddSeparator ()
+		{
+		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			requisition.Width = btnNormal[0].Img.Width * VisibleButtons.Length;
+			requisition.Height = btnNormal[0].Img.Height;
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				double x = Allocation.X, y = Allocation.Y;
-				for (int i = 0; i < buttons.Count; i++) {
-					ImageSurface img;
-					if (i == 0) {
-						img = State == StateType.Selected && pushedButton == i ? btnLeftPressed : btnLeftNormal;
-					} else if (i == buttons.Count - 1) {
-						img = State == StateType.Selected && pushedButton == i ? btnRightPressed : btnRightNormal;
-					} else {
-						img = State == StateType.Selected && pushedButton == i ? btnMidPressed : btnMidNormal;
-					}
+				for (int i = 0; i < VisibleButtons.Length; i++) {
+					ButtonBarButton button = VisibleButtons [i];
+					LazyImage[] images = State == StateType.Selected && pushedButton == i ? btnPressed : btnNormal;
+					ImageSurface img = images [i == 0 ? 0 : i == visibleButtons.Length - 1 ? 2 : 1];
 					img.Show (context, x, y);
 
-					buttons[i].Img.Show (
-						context,
-						x + (img.Width - buttons[i].Img.Width) / 2,
-						y + (img.Height - buttons[i].Img.Height) / 2
-					);
-
+					var icon = ImageService.GetPixbuf (button.Image, IconSize.Menu);
+					var iconCopy = icon;
+					if (!Sensitive || !button.Enabled)
+						iconCopy = ImageService.MakeTransparent (icon, 0.4);
+					Gdk.CairoHelper.SetSourcePixbuf (context, iconCopy, x + (img.Width - icon.Width) / 2, y + (img.Height - icon.Height) / 2);
+					context.Paint ();
+					if (iconCopy != icon)
+						iconCopy.Dispose ();
 					x += img.Width;
 				}
 			}
@@ -145,6 +179,52 @@ namespace MonoDevelop.Components.MainToolbar
 				handler (this, e);
 		}
 
+		#region ICommandBar implementation
+		void ICommandBar.Update (object activeTarget)
+		{
+			foreach (var b in buttons) {
+				var ci = IdeApp.CommandService.GetCommandInfo (b.CommandId, new CommandTargetRoute (activeTarget));
+				UpdateButton (b, ci);
+			}
+		}
+
+		void UpdateButton (ButtonBarButton b, CommandInfo ci)
+		{
+			if (ci.Icon != b.Image) {
+				b.Image = ci.Icon;
+				QueueDraw ();
+			}
+			if (ci.Visible != b.Visible) {
+				b.Visible = ci.Visible;
+				QueueResize ();
+			}
+			if (ci.Enabled != b.Enabled) {
+				b.Enabled = ci.Enabled;
+				QueueDraw ();
+			}
+		}
+
+		void ICommandBar.SetEnabled (bool enabled)
+		{
+			Sensitive = enabled;
+		}
+		#endregion
+	}
+
+	class ButtonBarButton
+	{
+		public ButtonBarButton (string commandId)
+		{
+			this.CommandId = commandId;
+		}
+
+		public IconId Image { get; set; }
+
+		public string CommandId { get; set; }
+
+		internal bool Enabled { get; set; }
+
+		internal bool Visible { get; set; }
 	}
 }
 

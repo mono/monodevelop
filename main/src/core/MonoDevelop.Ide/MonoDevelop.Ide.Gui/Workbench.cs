@@ -239,6 +239,16 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		public void ShowCommandBar (string barId)
+		{
+			workbench.Toolbar.ShowCommandBar (barId);
+		}
+		
+		public void HideCommandBar (string barId)
+		{
+			workbench.Toolbar.HideCommandBar (barId);
+		}
+
 		internal MonoDevelop.Components.MainToolbar.MainToolbar Toolbar {
 			get {
 				return workbench.Toolbar;
