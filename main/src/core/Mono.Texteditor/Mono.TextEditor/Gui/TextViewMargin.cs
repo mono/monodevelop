@@ -1587,8 +1587,14 @@ namespace Mono.TextEditor
 			cr.Translate (x, y + System.Math.Max (0, LineHeight - rect.Height - 1));
 			var col = ColorStyle.Default.CairoColor;
 
-			if (selected && SelectionColor.GotForegroundColorAssigned) 
+			if (selected && SelectionColor.GotForegroundColorAssigned) {
 				col = SelectionColor.CairoColor;
+			} else {
+				if (line != null && line.NextLine != null && line.NextLine.StartSpan != null && line.NextLine.StartSpan.Count > 0) {
+					var span = line.NextLine.StartSpan.Peek ();
+					col = ColorStyle.GetChunkStyle (span.Color).CairoColor;
+				}
+			}
 
 			cr.Color = new Cairo.Color (col.R, col.G, col.B, 0.2);
 			cr.ShowLayout (layout);
