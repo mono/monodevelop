@@ -1313,6 +1313,8 @@ namespace Mono.TextEditor
 				return;
 			if (line.Length == 0) {
 				var nextLine = line.NextLine;
+				while (nextLine != null && nextLine.Length == 0)
+					nextLine = nextLine.NextLine;
 				if (nextLine != null)
 					layout = GetLayout (nextLine);
 			}
