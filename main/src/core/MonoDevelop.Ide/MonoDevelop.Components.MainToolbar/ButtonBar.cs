@@ -45,6 +45,7 @@ namespace MonoDevelop.Components.MainToolbar
 		LazyImage[] btnPressed;
 
 		int pushedButton = -1;
+		object lastCommandTarget;
 
 		public ButtonBar ()
 		{
@@ -90,16 +91,19 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Button == 1) {
-				pushedButton = (int)(evnt.X / btnNormal[0].Img.Width);
-				State = StateType.Selected;
+				var buttonIndex = (int)(evnt.X / btnNormal[0].Img.Width);
+				if (VisibleButtons[buttonIndex].Enabled) {
+					pushedButton = buttonIndex;
+					State = StateType.Selected;
+				}
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
 
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
-			if (State == StateType.Selected)
-				OnClicked (new ClickEventArgs (pushedButton));
+			if (State == StateType.Selected && pushedButton != -1)
+				IdeApp.CommandService.DispatchCommand (VisibleButtons[pushedButton].CommandId, null, lastCommandTarget, CommandSource.MainToolbar);
 			State = StateType.Prelight;
 			leaveState = StateType.Normal;
 			pushedButton = -1;
@@ -117,7 +121,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public void Add (string commandId)
 		{
 			ButtonBarButton b = new ButtonBarButton (commandId);
-			var ci = IdeApp.CommandService.GetCommandInfo (commandId);
+			var ci = IdeApp.CommandService.GetCommandInfo (commandId, new CommandTargetRoute (lastCommandTarget));
 			if (ci != null)
 				UpdateButton (b, ci);
 			buttons.Add (b);
@@ -172,16 +176,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public event EventHandler<ClickEventArgs> Clicked;
 
-		protected virtual void OnClicked (ClickEventArgs e)
-		{
-			var handler = this.Clicked;
-			if (handler != null)
-				handler (this, e);
-		}
-
 		#region ICommandBar implementation
 		void ICommandBar.Update (object activeTarget)
 		{
+			lastCommandTarget = activeTarget;
 			foreach (var b in buttons) {
 				var ci = IdeApp.CommandService.GetCommandInfo (b.CommandId, new CommandTargetRoute (activeTarget));
 				UpdateButton (b, ci);
@@ -219,11 +217,8 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		public IconId Image { get; set; }
-
 		public string CommandId { get; set; }
-
 		internal bool Enabled { get; set; }
-
 		internal bool Visible { get; set; }
 	}
 }
