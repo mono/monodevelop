@@ -578,6 +578,7 @@ namespace MonoDevelop.Ide.Gui
 				allocation.Height - BottomBarPadding));
 
 			base.OnSizeAllocated (allocation);
+			Update ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -800,8 +801,10 @@ namespace MonoDevelop.Ide.Gui
 					if (closingTab != null && n == closingTabIndex) {
 						DrawTab (ctx, closingTab, ref x, y, false);
 					}
+
 					int sx = x;
 					var tab = (DockNotebookTab)notebook.Tabs [n];
+
 					if (tab == notebook.CurrentTab)
 						DrawActiveTab (ctx, tab, ref x, y, tab == highlightedTab);
 					else {
@@ -830,10 +833,14 @@ namespace MonoDevelop.Ide.Gui
 			int w, h;
 			la.GetPixelSize (out w, out h);
 
-			if (active)
-				x += LeftRightPaddingSel * 2 + w;
-			else
-				x += LeftRightPadding * 2 + w;
+			if (active) {
+				var closePix = highlight && overCloseButton ? closeSelOverImage : closeSelImage;
+				x += LeftRightPaddingSel * 2 + w + LabelButtonSeparatorWidth + closePix.Width;
+			}
+			else {
+				var image = highlight && overCloseButton ? closeOverImage : closeImage;
+				x += LeftRightPadding * 2 + w + LabelButtonSeparatorWidth + image.Width;
+			}
 
 			la.Dispose ();
 		}
