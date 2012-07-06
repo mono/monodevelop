@@ -38,7 +38,6 @@ namespace MonoDevelop.Components.Docking
 	class TabStrip: Gtk.EventBox
 	{
 		int currentTab = -1;
-		bool ellipsized = true;
 		HBox box = new HBox ();
 		DockFrame frame;
 		Label bottomFiller = new Label ();
@@ -56,6 +55,7 @@ namespace MonoDevelop.Components.Docking
 			ShowAll ();
 			bottomFiller.Hide ();
 			BottomPadding = 3;
+			WidthRequest = 0;
 		}
 		
 		public int BottomPadding {
@@ -86,7 +86,9 @@ namespace MonoDevelop.Components.Docking
 			if (tab.Parent != null)
 				((Gtk.Container)tab.Parent).Remove (tab);
 
-			box.PackStart (tab, true, true, 0);
+			//box.PackStart (tab, true, true, 0);
+			box.PackStart (tab, false, false, 0);
+			tab.WidthRequest = tab.LabelWidth;
 			if (currentTab == -1)
 				CurrentTab = box.Children.Length - 1;
 			else {
@@ -156,7 +158,6 @@ namespace MonoDevelop.Components.Docking
 		
 		public void Clear ()
 		{
-			ellipsized = true;
 			currentTab = -1;
 			foreach (Widget w in box.Children)
 				box.Remove (w);
@@ -183,15 +184,11 @@ namespace MonoDevelop.Components.Docking
 			foreach (Tab tab in box.Children)
 				tsize += tab.LabelWidth;
 
-			bool ellipsize = tsize > allocation.Width;
-			if (ellipsize != ellipsized) {
-				foreach (Tab tab in box.Children) {
-					tab.SetEllipsize (ellipsize);
-					Gtk.Box.BoxChild bc = (Gtk.Box.BoxChild) box [tab];
-					bc.Expand = bc.Fill = ellipsize;
-				}
-				ellipsized = ellipsize;
-			}
+			double ratio = (double) allocation.Width / (double) tsize;
+			if (ratio > 1)
+				ratio = 1;
+			foreach (Tab tab in box.Children)
+				tab.WidthRequest = (int)((double)tab.LabelWidth * ratio);
 		}
 
 		internal class TabStripBox: HBox
@@ -297,21 +294,11 @@ namespace MonoDevelop.Components.Docking
 			// Get the required size before setting the ellipsize property, since ellipsized labels
 			// have a width request of 0
 			ShowAll ();
-			labelWidth = SizeRequest ().Width;
+			labelWidth = SizeRequest ().Width + 1;
 			
-			if (labelWidget != null)
-				labelWidget.Ellipsize = oldMode;
+		//	if (labelWidget != null)
+		//		labelWidget.Ellipsize = oldMode;
 			UpdateVisualStyle ();
-		}
-		
-		public void SetEllipsize (bool elipsize)
-		{
-			if (labelWidget != null) {
-				if (elipsize)
-					labelWidget.Ellipsize = Pango.EllipsizeMode.End;
-				else
-					labelWidget.Ellipsize = Pango.EllipsizeMode.None;
-			}
 		}
 		
 		public int LabelWidth {
