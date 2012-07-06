@@ -1236,7 +1236,7 @@ namespace Mono.TextEditor
 					first = false;
 					oldSelected = selected;
 				}
-				if (!selected)
+				if (!selected && textEditor.Options.ShowWhitespaces != ShowWhitespaces.Always)
 					continue;
 				Pango.Rectangle pos = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i, ref curIndex, ref byteIndex));
 				double xpos = xPos + pos.X / Pango.Scale.PangoScale;
@@ -1244,18 +1244,19 @@ namespace Mono.TextEditor
 					break;
 				Pango.Rectangle pos2 = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i + 1, ref curIndex, ref byteIndex));
 				double xpos2 = xPos + pos2.X / Pango.Scale.PangoScale;
-
+				Cairo.Color col;
 				if (!SelectionColor.GotForegroundColorAssigned) {
 					while (curchunk != null && curchunk.EndOffset < offset + i)
 						curchunk = curchunk.Next;
 					if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "text") {
-						ctx.Color = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color).CairoColor;
+						col = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color).CairoColor;
 					} else {
-						ctx.Color = ColorStyle.WhitespaceMarker;
+						col = ColorStyle.Default.CairoColor;
 					}
 				} else {
-					ctx.Color = SelectionColor.CairoColor;
+					col = selected ? SelectionColor.CairoColor : col = ColorStyle.Default.CairoColor;
 				}
+				ctx.Color = new Cairo.Color (col.R, col.G, col.B, 0.2);
 
 				if (ch == '\t') {
 					DrawTabMarker (ctx, selected, xpos, xpos2, y);
@@ -1437,7 +1438,8 @@ namespace Mono.TextEditor
 				DrawIndent (cr, layout, line, xPos, y);
 			}
 
-			DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
+			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never)
+				DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
 			if (lineNumber == Caret.Line) {
 				int caretOffset = Caret.Offset;
@@ -1479,8 +1481,17 @@ namespace Mono.TextEditor
 
 						if (DecorateLineBg != null)
 							DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStart + virtualSpaceMod, selectionEnd + virtualSpace.Length);
-						if (textEditor.IsSomethingSelected && (selectionStart < offset || selectionStart == selectionEnd))
+
+						switch (textEditor.Options.ShowWhitespaces) {
+						case ShowWhitespaces.Selection:
+							if (textEditor.IsSomethingSelected && (selectionStart < offset || selectionStart == selectionEnd))
+								DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
+							break;
+						case ShowWhitespaces.Always:
 							DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
+							break;
+						}
+
 						wrapper.Dispose ();
 						pangoPosition += vx;
 					} else if (index == length && textEditor.preeditString == null) {
@@ -1573,7 +1584,12 @@ namespace Mono.TextEditor
 			}
 			cr.Save ();
 			cr.Translate (x, y + System.Math.Max (0, LineHeight - rect.Height - 1));
-			cr.Color = selected && SelectionColor.GotForegroundColorAssigned ? SelectionColor.CairoColor : ColorStyle.EolWhitespaceMarker;
+			var col = ColorStyle.Default.CairoColor;
+
+			if (selected && SelectionColor.GotForegroundColorAssigned) 
+				col = SelectionColor.CairoColor;
+
+			cr.Color = new Cairo.Color (col.R, col.G, col.B, 0.2);
 			cr.ShowLayout (layout);
 			cr.Restore ();
 		}
@@ -2414,7 +2430,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			if (!isEolFolded && isEolSelected)
+			if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
 				DrawEolMarker (cr, line, isEolSelected, pangoPosition / Pango.Scale.PangoScale, y);
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null)

@@ -25,6 +25,8 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Core;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -46,6 +48,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableAnimationCheckbutton1.Active = DefaultSourceEditorOptions.Instance.EnableAnimations;
 			this.enableHighlightUsagesCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableHighlightUsages;
 			this.drawIndentMarkersCheckbutton.Active = DefaultSourceEditorOptions.Instance.DrawIndentationMarkers;
+			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Never"));
+			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Selection"));
+			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Always"));
+			this.showWhitespacesCombobox.Active = (int)DefaultSourceEditorOptions.Instance.ShowWhitespaces;
 			return this;
 		}
 		
@@ -59,6 +65,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.EnableAnimations = this.enableAnimationCheckbutton1.Active;
 			DefaultSourceEditorOptions.Instance.EnableHighlightUsages = this.enableHighlightUsagesCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = this.drawIndentMarkersCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.ShowWhitespaces = (ShowWhitespaces) this.showWhitespacesCombobox.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

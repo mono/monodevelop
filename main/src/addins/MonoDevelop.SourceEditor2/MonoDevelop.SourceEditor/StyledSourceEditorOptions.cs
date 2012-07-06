@@ -247,6 +247,11 @@ namespace MonoDevelop.SourceEditor
 			set { DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = value; }
 		}
 
+		public ShowWhitespaces ShowWhitespaces  {
+			get { return DefaultSourceEditorOptions.Instance.ShowWhitespaces; }
+			set { DefaultSourceEditorOptions.Instance.ShowWhitespaces = value; }
+		}
+
 		public void ZoomIn ()
 		{
 			DefaultSourceEditorOptions.Instance.ZoomIn ();

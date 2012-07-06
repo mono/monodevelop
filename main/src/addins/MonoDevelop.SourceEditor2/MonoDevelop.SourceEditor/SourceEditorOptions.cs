@@ -222,6 +222,7 @@ namespace MonoDevelop.SourceEditor
 			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", true);
 			this.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", true);
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
+			this.ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", Mono.TextEditor.ShowWhitespaces.Never);
 		}
 		
 		#region new options
@@ -607,6 +608,13 @@ namespace MonoDevelop.SourceEditor
 			set {
 				PropertyService.Set ("DrawIndentationMarkers", value);
 				base.DrawIndentationMarkers = value;
+			}
+		}
+
+		public override ShowWhitespaces ShowWhitespaces {
+			set {
+				PropertyService.Set ("ShowWhitespaces", value);
+				base.ShowWhitespaces = value;
 			}
 		}
 

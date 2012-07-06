@@ -433,6 +433,20 @@ namespace Mono.TextEditor
 			}
 		}
 
+		ShowWhitespaces showWhitespaces = ShowWhitespaces.Never;
+		public virtual ShowWhitespaces ShowWhitespaces {
+			get {
+				return showWhitespaces;
+			}
+			set {
+				if (showWhitespaces != value) {
+					showWhitespaces = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+
+
 		
 		public virtual ColorScheme GetColorStyle (Gtk.Style widgetStyle)
 		{
@@ -461,6 +475,7 @@ namespace Mono.TextEditor
 			enableAnimations = other.enableAnimations;
 			useAntiAliasing = other.useAntiAliasing;
 			drawIndentationMarkers = other.drawIndentationMarkers;
+			showWhitespaces = other.showWhitespaces;
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}

@@ -16,6 +16,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.CheckButton enableAnimationCheckbutton1;
 		private global::Gtk.CheckButton enableHighlightUsagesCheckbutton;
 		private global::Gtk.CheckButton drawIndentMarkersCheckbutton;
+		private global::Gtk.HBox hbox1;
+		private global::Gtk.Label label1;
+		private global::Gtk.ComboBox showWhitespacesCombobox;
 		
 		protected virtual void Build ()
 		{
@@ -142,12 +145,39 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w9.Position = 7;
 			w9.Expand = false;
 			w9.Fill = false;
-			this.alignment1.Add (this.vbox3);
-			this.vbox1.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
+			// Container child vbox3.Gtk.Box+BoxChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.label1 = new global::Gtk.Label ();
+			this.label1.Name = "label1";
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Show whitespaces:");
+			this.label1.UseUnderline = true;
+			this.hbox1.Add (this.label1);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.showWhitespacesCombobox = global::Gtk.ComboBox.NewText ();
+			this.showWhitespacesCombobox.Name = "showWhitespacesCombobox";
+			this.hbox1.Add (this.showWhitespacesCombobox);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.showWhitespacesCombobox]));
 			w11.Position = 1;
 			w11.Expand = false;
 			w11.Fill = false;
+			this.vbox3.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
+			w12.Position = 8;
+			w12.Expand = false;
+			w12.Fill = false;
+			this.alignment1.Add (this.vbox3);
+			this.vbox1.Add (this.alignment1);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
+			w14.Position = 1;
+			w14.Expand = false;
+			w14.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

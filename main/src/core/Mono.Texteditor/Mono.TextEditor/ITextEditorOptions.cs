@@ -29,6 +29,12 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
+	public enum ShowWhitespaces {
+		Never,
+		Selection,
+		Always
+	}
+
 	public interface ITextEditorOptions : IDisposable
 	{
 		double Zoom { get; set; }
@@ -67,7 +73,9 @@ namespace Mono.TextEditor
 		
 		string ColorScheme { get; set;  }
 		string DefaultEolMarker { get; set; }
-		
+
+		ShowWhitespaces ShowWhitespaces { get; set; }
+
 		ColorScheme GetColorStyle (Gtk.Style widgetStyle);
 		
 		event EventHandler Changed;
