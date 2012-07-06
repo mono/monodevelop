@@ -926,7 +926,6 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
-			Console.WriteLine (wrapper.IndentSize);
 
 			var nextLine = line.NextLine;
 			wrapper.EolSpanStack = nextLine != null ? nextLine.StartSpan : null;
