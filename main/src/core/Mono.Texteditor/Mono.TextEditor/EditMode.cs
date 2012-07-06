@@ -103,15 +103,91 @@ namespace Mono.TextEditor
 		public virtual bool WantsToPreemptIM {
 			get { return false; }
 		}
+
+		static bool IsSpecialKeyForSelection (uint unicodeKey)
+		{
+			string start, end;
+			GetSelectionSurroundings (unicodeKey, out start, out end);
+			return !string.IsNullOrEmpty (start);
+		}
+
+		static void GetSelectionSurroundings (uint unicodeKey, out string start, out string end)
+		{
+			start = end = "";
+			switch ((char)unicodeKey) {
+			case '"':
+				start = end = "\"";
+				break;
+			case '\'':
+				start = end = "'";
+				break;
+			case '(':
+				start = "(";
+				end = ")";
+				break;
+			case '<':
+				start = "<";
+				end = ">";
+				break;
+			case '[':
+				start = "[";
+				end = "]";
+				break;
+			case '{':
+				start = "{";
+				end = "}";
+				break;
+			}
+		}
+
+		void HandleSpecialSelectionKey (uint unicodeKey)
+		{
+			string start, end;
+			GetSelectionSurroundings (unicodeKey, out start, out end);
+
+			if (textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
+				var selection = textEditorData.MainSelection;
+				Caret.PreserveSelection = true;
+				int startCol = System.Math.Min (selection.Anchor.Column, selection.Lead.Column) - 1;
+				int endCol = System.Math.Max (selection.Anchor.Column, selection.Lead.Column);
+				for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
+					DocumentLine lineSegment = textEditorData.GetLine (lineNumber);
+
+					if (lineSegment.Offset + startCol < lineSegment.EndOffset)
+						textEditorData.Insert (lineSegment.Offset + startCol, start);
+					if (lineSegment.Offset + endCol < lineSegment.EndOffset)
+						textEditorData.Insert (lineSegment.Offset + endCol, end);
+				}
+				
+				textEditorData.MainSelection = new Selection (
+					new DocumentLocation (selection.Anchor.Line, endCol == selection.Anchor.Column ? endCol + 1 : startCol + 2),
+					new DocumentLocation (selection.Lead.Line, endCol == selection.Anchor.Column ? startCol + 2 : endCol + 1),
+					Mono.TextEditor.SelectionMode.Block);
+				Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
+
+
+			} else {
+				int anchorOffset = textEditorData.MainSelection.GetAnchorOffset (textEditorData);
+				int leadOffset = textEditorData.MainSelection.GetLeadOffset (textEditorData);
+
+				textEditorData.Insert (anchorOffset, start);
+				textEditorData.Insert (leadOffset >= anchorOffset ? leadOffset + 1 : leadOffset, end);
+				textEditorData.SetSelection (anchorOffset + 1, leadOffset + 1);
+			}
+		}
 		
 		protected void InsertCharacter (uint unicodeKey)
 		{
 			if (!textEditorData.CanEdit (Data.Caret.Line))
 				return;
-			
+
 			HideMouseCursor ();
 
 			using (var undo = Document.OpenUndoGroup ()) {
+				if (textEditorData.IsSomethingSelected && IsSpecialKeyForSelection (unicodeKey)) {
+					HandleSpecialSelectionKey (unicodeKey);
+					return;
+				}
 				textEditorData.DeleteSelectedText (
 					textEditorData.IsSomethingSelected ? textEditorData.MainSelection.SelectionMode != SelectionMode.Block : true);
 				// Needs to be called after delete text, delete text handles virtual caret postitions itself,
