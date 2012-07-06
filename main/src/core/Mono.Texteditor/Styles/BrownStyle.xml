@@ -159,16 +159,16 @@
 	<Style name="keyword.declaration" color="accent_blue_shadow" weight="bold"/>
 	<Style name="keyword.access" color="black" weight="bold" />
 	<Style name="keyword.operator" color="accent_dark_violet"/>
-	<Style name="keyword.operator.declaration" color="orange_base" weight="bold"/>
-	<Style name="keyword.selection" color="orange_base" weight="bold"/>
-	<Style name="keyword.iteration" color="orange_base" weight="bold"/>
-	<Style name="keyword.jump" color="orange_base" weight="bold"/>
-	<Style name="keyword.context" color="orange_base" />
-	<Style name="keyword.exceptions" color="accent_orange" weight="bold"/>
-	<Style name="keyword.parameter" color="orange_base" weight="bold"/>
-	<Style name="keyword.misc" color="orange_base"/>
+	<Style name="keyword.operator.declaration" color="accent_blue" weight="bold"/>
+	<Style name="keyword.selection" color="accent_blue" weight="bold"/>
+	<Style name="keyword.iteration" color="accent_blue" weight="bold"/>
+	<Style name="keyword.jump" color="accent_blue" weight="bold"/>
+	<Style name="keyword.context" color="accent_blue" />
+	<Style name="keyword.exceptions" color="accent_blue" weight="bold"/>
+	<Style name="keyword.parameter" color="accent_blue" weight="bold"/>
+	<Style name="keyword.misc" color="accent_blue"/>
 	
-	<Style name="keyword.semantic.type" color="accent_green_highlight" weight="normal"/>
+	<Style name="keyword.semantic.type" color="orange_base" weight="bold"/>
 	<Style name="keyword.semantic.field" color="accent_dark_violet"/>
 	<Style name="keyword.semantic.property" color="accent_dark_violet"/>
 	<Style name="keyword.semantic.error" color="accent_red" weight="normal"/>
