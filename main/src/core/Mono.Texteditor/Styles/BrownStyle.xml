@@ -79,7 +79,7 @@
 	
 	<Style name="marker.ruler" color="accent_blue_highlight"/>
 	<Style name="marker.bracket" color="environmental_blue_medium" bgColor="environmental_blue_highlight"/>
-	<Style name="marker.usages" color="environmental_blue_medium" bgColor="environmental_blue_highlight"/>
+	<Style name="marker.usages" color="#EEEEEC" bgColor="#f5f5f5"/>
 	
 	<Style name="marker.bookmark.color1" color="human_highlight"/>
 	<Style name="marker.bookmark.color2" color="human_base"/>
