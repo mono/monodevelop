@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp
 			}
 			return false;
 		}
-
+		
 		void AppendTypeParameter (StringBuilder sb, IEnumerable<TypeParameterDeclaration> parameters)
 		{
 			if (!parameters.Any ()) 
@@ -66,11 +66,11 @@ namespace MonoDevelop.CSharp
 				} else {
 					first = false;
 				}
-				sb.Append (param.GetText (options));
+				AppendEscaped (sb, param.GetText (options));
 			}
 			sb.Append ("&gt;");
 		}
-
+		
 		void AppendParameter (StringBuilder sb, IEnumerable<ParameterDeclaration> parameters)
 		{
 			if (options.SpaceBeforeMethodDeclarationParentheses)
@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharp
 			}
 			if (hasParameters && options.SpaceWithinMethodDeclarationParentheses)
 				sb.Append (" ");
-
+			
 			bool first = true;
 			foreach (var param in parameters) {
 				if (!first) {
@@ -95,13 +95,39 @@ namespace MonoDevelop.CSharp
 				} else {
 					first = false;
 				}
-				sb.Append (param.GetText (options));
+				AppendEscaped (sb, param.GetText (options));
 			}
 			if (hasParameters && options.SpaceWithinMethodDeclarationParentheses)
 				sb.Append (" ");
 			sb.Append (")");
 		}
-
+		
+		static void AppendEscaped (StringBuilder result, string text)
+		{
+			foreach (char ch in text) {
+				switch (ch) {
+				case '<':
+					result.Append ("&lt;");
+					break;
+				case '>':
+					result.Append ("&gt;");
+					break;
+				case '&':
+					result.Append ("&amp;");
+					break;
+				case '\'':
+					result.Append ("&apos;");
+					break;
+				case '"':
+					result.Append ("&quot;");
+					break;
+				default:
+					result.Append (ch);
+					break;
+				}
+			}
+		}
+		
 		public string GetEntityMarkup (AstNode e)
 		{
 			var sb = new StringBuilder ();
@@ -122,7 +148,7 @@ namespace MonoDevelop.CSharp
 			} else if (e is OperatorDeclaration) {
 				var op = e as OperatorDeclaration;
 				sb.Append ("operator");
-				sb.Append (op.OperatorTypeToken.GetText ());
+				AppendEscaped (sb, op.OperatorTypeToken.GetText ());
 				AppendParameter (sb, op.Parameters);
 			} else if (e is MethodDeclaration) {
 				var method = e as MethodDeclaration;
@@ -148,7 +174,7 @@ namespace MonoDevelop.CSharp
 				sb.Append ("[");
 				if (options.SpaceWithinIndexerDeclarationBracket)
 					sb.Append (" ");
-
+				
 				bool first = true;
 				foreach (var param in indexer.Parameters) {
 					if (!first) {
@@ -184,7 +210,7 @@ namespace MonoDevelop.CSharp
 				var entity = (EntityDeclaration)e;
 				sb.Append (entity.Name);
 			}
-
+			
 			string markup = sb.ToString ();
 			if (IsObsolete (e as EntityDeclaration))
 				return "<s>" + markup + "</s>";
