@@ -125,8 +125,8 @@ namespace Mono.TextEditor
 				}
 				
 				textEditorData.MainSelection = new Selection (
-					new DocumentLocation (selection.Anchor.Line, endCol == selection.Anchor.Column ? endCol + 1 : startCol + 2),
-					new DocumentLocation (selection.Lead.Line, endCol == selection.Anchor.Column ? startCol + 2 : endCol + 1),
+					new DocumentLocation (selection.Anchor.Line, endCol == selection.Anchor.Column ? endCol + start.Length : startCol + 1 + start.Length),
+					new DocumentLocation (selection.Lead.Line, endCol == selection.Anchor.Column ? startCol + 1 + start.Length : endCol + start.Length),
 					Mono.TextEditor.SelectionMode.Block);
 				textEditorData.Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
 			} else {
@@ -134,8 +134,8 @@ namespace Mono.TextEditor
 				int leadOffset = textEditorData.MainSelection.GetLeadOffset (textEditorData);
 				
 				textEditorData.Insert (anchorOffset, start);
-				textEditorData.Insert (leadOffset >= anchorOffset ? leadOffset + 1 : leadOffset, end);
-				textEditorData.SetSelection (anchorOffset + 1, leadOffset + 1);
+				textEditorData.Insert (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
+				textEditorData.SetSelection (anchorOffset + start.Length, leadOffset + start.Length);
 			}
 		}
 	}

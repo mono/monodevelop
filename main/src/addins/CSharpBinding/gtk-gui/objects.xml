@@ -16,6 +16,7 @@
       <itemgroup label="ExtensibleTreeView Properties">
         <property name="Id" />
         <property name="Zoom" />
+        <property name="ShowSelectionPopupButton" />
       </itemgroup>
     </itemgroups>
     <signals>
@@ -110,6 +111,8 @@
         <property name="Query" />
         <property name="Ready" />
         <property name="HasFocus" />
+        <property name="HasFrame" />
+        <property name="RoundedShape" />
       </itemgroup>
     </itemgroups>
     <signals>
@@ -192,14 +195,6 @@
         <property name="DrawRightBorder" />
         <property name="DefaultIconHeight" />
         <property name="DefaultIconWidth" />
-      </itemgroup>
-    </itemgroups>
-    <signals />
-  </object>
-  <object type="MonoDevelop.Components.Tabstrip" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
-    <itemgroups>
-      <itemgroup label="Tabstrip Properties">
-        <property name="ActiveTab" />
       </itemgroup>
     </itemgroups>
     <signals />

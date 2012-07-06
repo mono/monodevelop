@@ -54,6 +54,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			base.Initialize ();
 			
 			textEditorData = base.Document.Editor;
+			textEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider ();
 			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
 			textEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
