@@ -194,6 +194,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			if (ci.Visible != b.Visible) {
 				b.Visible = ci.Visible;
+				visibleButtons = null;
 				QueueResize ();
 			}
 			if (ci.Enabled != b.Enabled) {

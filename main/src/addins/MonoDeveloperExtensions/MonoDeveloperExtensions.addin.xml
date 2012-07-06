@@ -37,10 +37,6 @@
 				_label = "Install" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/Toolbar/Build">
-		<CommandItem id = "MonoDeveloper.Commands.Install" insertafter="MonoDevelop.Commands.ProjectCommands.Run"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
 		<Condition id="activeproject" value="MonoMakefile">
 			<CommandItem id = "MonoDeveloper.Commands.Install"
