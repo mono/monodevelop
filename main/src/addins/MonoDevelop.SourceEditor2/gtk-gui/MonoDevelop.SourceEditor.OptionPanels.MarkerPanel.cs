@@ -15,13 +15,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.CheckButton showRulerCheckbutton;
 		private global::Gtk.CheckButton enableAnimationCheckbutton1;
 		private global::Gtk.CheckButton enableHighlightUsagesCheckbutton;
-		private global::Gtk.Label GtkLabel10;
-		private global::Gtk.Alignment GtkAlignment;
-		private global::Gtk.VBox vbox2;
-		private global::Gtk.CheckButton showInvLinesCheckbutton;
-		private global::Gtk.CheckButton showSpacesCheckbutton;
-		private global::Gtk.CheckButton showTabsCheckbutton;
-		private global::Gtk.CheckButton showEolCheckbutton;
 		
 		protected virtual void Build ()
 		{
@@ -142,79 +135,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w10.Position = 1;
 			w10.Expand = false;
 			w10.Fill = false;
-			// Container child vbox1.Gtk.Box+BoxChild
-			this.GtkLabel10 = new global::Gtk.Label ();
-			this.GtkLabel10.Name = "GtkLabel10";
-			this.GtkLabel10.Xalign = 0F;
-			this.GtkLabel10.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Whitespace Markers</b>");
-			this.GtkLabel10.UseMarkup = true;
-			this.vbox1.Add (this.GtkLabel10);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkLabel10]));
-			w11.Position = 2;
-			w11.Expand = false;
-			w11.Fill = false;
-			// Container child vbox1.Gtk.Box+BoxChild
-			this.GtkAlignment = new global::Gtk.Alignment (0F, 0F, 1F, 1F);
-			this.GtkAlignment.Name = "GtkAlignment";
-			this.GtkAlignment.LeftPadding = ((uint)(12));
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			this.vbox2 = new global::Gtk.VBox ();
-			this.vbox2.Name = "vbox2";
-			this.vbox2.Spacing = 6;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.showInvLinesCheckbutton = new global::Gtk.CheckButton ();
-			this.showInvLinesCheckbutton.CanFocus = true;
-			this.showInvLinesCheckbutton.Name = "showInvLinesCheckbutton";
-			this.showInvLinesCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Invalid lines");
-			this.showInvLinesCheckbutton.DrawIndicator = true;
-			this.showInvLinesCheckbutton.UseUnderline = true;
-			this.vbox2.Add (this.showInvLinesCheckbutton);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.showInvLinesCheckbutton]));
-			w12.Position = 0;
-			w12.Expand = false;
-			w12.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.showSpacesCheckbutton = new global::Gtk.CheckButton ();
-			this.showSpacesCheckbutton.CanFocus = true;
-			this.showSpacesCheckbutton.Name = "showSpacesCheckbutton";
-			this.showSpacesCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("S_paces");
-			this.showSpacesCheckbutton.DrawIndicator = true;
-			this.showSpacesCheckbutton.UseUnderline = true;
-			this.vbox2.Add (this.showSpacesCheckbutton);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.showSpacesCheckbutton]));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.showTabsCheckbutton = new global::Gtk.CheckButton ();
-			this.showTabsCheckbutton.CanFocus = true;
-			this.showTabsCheckbutton.Name = "showTabsCheckbutton";
-			this.showTabsCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Tabs");
-			this.showTabsCheckbutton.DrawIndicator = true;
-			this.showTabsCheckbutton.UseUnderline = true;
-			this.vbox2.Add (this.showTabsCheckbutton);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.showTabsCheckbutton]));
-			w14.Position = 2;
-			w14.Expand = false;
-			w14.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.showEolCheckbutton = new global::Gtk.CheckButton ();
-			this.showEolCheckbutton.CanFocus = true;
-			this.showEolCheckbutton.Name = "showEolCheckbutton";
-			this.showEolCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_End of line");
-			this.showEolCheckbutton.DrawIndicator = true;
-			this.showEolCheckbutton.UseUnderline = true;
-			this.vbox2.Add (this.showEolCheckbutton);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.showEolCheckbutton]));
-			w15.Position = 3;
-			w15.Expand = false;
-			w15.Fill = false;
-			this.GtkAlignment.Add (this.vbox2);
-			this.vbox1.Add (this.GtkAlignment);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkAlignment]));
-			w17.Position = 3;
-			w17.Expand = false;
-			w17.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
