@@ -721,5 +721,15 @@ namespace MonoDevelop.Components.PropertyGrid
 			return null;
 		}
 	}
+
+	class InstanceData 
+	{
+		public InstanceData (object instance) 
+		{
+			Instance = instance;
+		}
+		
+		public object Instance;
+	}
 }
 
