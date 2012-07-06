@@ -185,6 +185,9 @@ namespace MonoDevelop.SourceEditor
 				case "UseAntiAliasing":
 					base.UseAntiAliasing = (bool)args.NewValue;
 					break;
+				case "DrawIndentationMarkers":
+					base.DrawIndentationMarkers = (bool)args.NewValue;
+					break;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("SourceEditorOptions error with property value for '" + (args.Key ?? "") + "'", ex);
@@ -217,6 +220,7 @@ namespace MonoDevelop.SourceEditor
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
 			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", true);
+			this.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", true);
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
 		}
 		
@@ -596,6 +600,13 @@ namespace MonoDevelop.SourceEditor
 			set {
 				PropertyService.Set ("UseAntiAliasing", value);
 				base.UseAntiAliasing = value;
+			}
+		}
+
+		public override bool DrawIndentationMarkers {
+			set {
+				PropertyService.Set ("DrawIndentationMarkers", value);
+				base.DrawIndentationMarkers = value;
 			}
 		}
 

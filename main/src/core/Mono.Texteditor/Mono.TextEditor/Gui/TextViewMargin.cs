@@ -915,6 +915,19 @@ namespace Mono.TextEditor
 			}
 			wrapper.LineChars = lineChars;
 			wrapper.Layout.SetText (lineText);
+			wrapper.IndentSize = 0;
+			for (int i = 0; i < lineChars.Length; i++) {
+				char ch = lineChars [i];
+				if (ch == ' ') {
+					wrapper.IndentSize ++;
+				} else if (ch == '\t') {
+					wrapper.IndentSize = GetNextTabstop (textEditor.GetTextEditorData (), wrapper.IndentSize);
+				} else {
+					break;
+				}
+			}
+			Console.WriteLine (wrapper.IndentSize);
+
 			var nextLine = line.NextLine;
 			wrapper.EolSpanStack = nextLine != null ? nextLine.StartSpan : null;
 			atts.AssignTo (wrapper.Layout);
@@ -1068,6 +1081,11 @@ namespace Mono.TextEditor
 
 		public class LayoutWrapper : IDisposable
 		{
+			public int IndentSize {
+				get;
+				set;
+			}
+
 			public Pango.Layout Layout {
 				get;
 				private set;
@@ -1283,6 +1301,31 @@ namespace Mono.TextEditor
 			cr.Stroke ();
 		}
 
+		void DrawIndent (Cairo.Context cr, LayoutWrapper layout, DocumentLine line, double xPos, double y)
+		{
+			if (!textEditor.Options.DrawIndentationMarkers)
+				return;
+			if (line.Length == 0) {
+				var nextLine = line.NextLine;
+				if (nextLine != null)
+					layout = GetLayout (nextLine);
+			}
+			if (layout.IndentSize == 0)
+				return;
+			cr.Save ();
+			var dotted = new [] {1.0};
+			cr.SetDash (dotted, 0);
+			for (int i = 0; i < layout.IndentSize; i += textEditor.Options.IndentationSize) {
+				var x = xPos + i * charWidth;
+				cr.MoveTo (x + 0.5, y);
+				cr.LineTo (x + 0.5, y + LineHeight);
+
+				cr.Color = ColorStyle.FoldLine.CairoColor;
+				cr.Stroke ();
+			}
+			cr.Restore ();
+		}
+
 		void DrawLinePart (Cairo.Context cr, DocumentLine line, int lineNumber, int logicalRulerColumn, int offset, int length, ref double pangoPosition, ref bool isSelectionDrawn, double y, double maxX)
 		{
 			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
@@ -1384,6 +1427,10 @@ namespace Mono.TextEditor
 			cr.Translate (xPos, y);
 			cr.ShowLayout (layout.Layout);
 			cr.Restore ();
+
+			if (offset == line.Offset) {
+				DrawIndent (cr, layout, line, xPos, y);
+			}
 
 			DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 

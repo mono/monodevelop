@@ -45,6 +45,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.showRulerCheckbutton.Active = DefaultSourceEditorOptions.Instance.ShowRuler;
 			this.enableAnimationCheckbutton1.Active = DefaultSourceEditorOptions.Instance.EnableAnimations;
 			this.enableHighlightUsagesCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableHighlightUsages;
+			this.drawIndentMarkersCheckbutton.Active = DefaultSourceEditorOptions.Instance.DrawIndentationMarkers;
 			return this;
 		}
 		
@@ -57,6 +58,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.ShowRuler = this.showRulerCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.EnableAnimations = this.enableAnimationCheckbutton1.Active;
 			DefaultSourceEditorOptions.Instance.EnableHighlightUsages = this.enableHighlightUsagesCheckbutton.Active;
+			DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = this.drawIndentMarkersCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

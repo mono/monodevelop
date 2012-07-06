@@ -242,6 +242,11 @@ namespace MonoDevelop.SourceEditor
 			set { DefaultSourceEditorOptions.Instance.Zoom = value; }
 		}
 
+		public bool DrawIndentationMarkers {
+			get { return DefaultSourceEditorOptions.Instance.DrawIndentationMarkers; }
+			set { DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = value; }
+		}
+
 		public void ZoomIn ()
 		{
 			DefaultSourceEditorOptions.Instance.ZoomIn ();

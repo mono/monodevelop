@@ -419,6 +419,20 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+
+		bool drawIndentationMarkers = true;
+		public virtual bool DrawIndentationMarkers {
+			get {
+				return drawIndentationMarkers;
+			}
+			set {
+				if (drawIndentationMarkers != value) {
+					drawIndentationMarkers = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+
 		
 		public virtual ColorScheme GetColorStyle (Gtk.Style widgetStyle)
 		{
@@ -446,6 +460,7 @@ namespace Mono.TextEditor
 			defaultEolMarker = other.defaultEolMarker;
 			enableAnimations = other.enableAnimations;
 			useAntiAliasing = other.useAntiAliasing;
+			drawIndentationMarkers = other.drawIndentationMarkers;
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}

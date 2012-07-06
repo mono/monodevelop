@@ -15,6 +15,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.CheckButton showRulerCheckbutton;
 		private global::Gtk.CheckButton enableAnimationCheckbutton1;
 		private global::Gtk.CheckButton enableHighlightUsagesCheckbutton;
+		private global::Gtk.CheckButton drawIndentMarkersCheckbutton;
 		
 		protected virtual void Build ()
 		{
@@ -129,12 +130,24 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w8.Position = 6;
 			w8.Expand = false;
 			w8.Fill = false;
+			// Container child vbox3.Gtk.Box+BoxChild
+			this.drawIndentMarkersCheckbutton = new global::Gtk.CheckButton ();
+			this.drawIndentMarkersCheckbutton.CanFocus = true;
+			this.drawIndentMarkersCheckbutton.Name = "drawIndentMarkersCheckbutton";
+			this.drawIndentMarkersCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Draw indentation markers");
+			this.drawIndentMarkersCheckbutton.DrawIndicator = true;
+			this.drawIndentMarkersCheckbutton.UseUnderline = true;
+			this.vbox3.Add (this.drawIndentMarkersCheckbutton);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.drawIndentMarkersCheckbutton]));
+			w9.Position = 7;
+			w9.Expand = false;
+			w9.Fill = false;
 			this.alignment1.Add (this.vbox3);
 			this.vbox1.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
-			w10.Position = 1;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
+			w11.Position = 1;
+			w11.Expand = false;
+			w11.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

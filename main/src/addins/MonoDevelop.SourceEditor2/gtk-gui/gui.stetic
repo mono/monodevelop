@@ -532,6 +532,22 @@
                     <property name="Fill">False</property>
                   </packing>
                 </child>
+                <child>
+                  <widget class="Gtk.CheckButton" id="drawIndentMarkersCheckbutton">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">_Draw indentation markers</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">7</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
               </widget>
             </child>
           </widget>
@@ -1122,7 +1138,6 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.SearchAndReplaceWidget" design-size="412 67">
     <property name="MemberName" />
-    <property name="GeneratePublic">True</property>
     <child>
       <widget class="Gtk.Table" id="table">
         <property name="MemberName" />
@@ -1164,6 +1179,8 @@
               <widget class="MonoDevelop.Components.SearchEntry" id="searchEntry">
                 <property name="MemberName" />
                 <property name="ForceFilterButtonVisible">False</property>
+                <property name="HasFrame">False</property>
+                <property name="RoundedShape">False</property>
                 <property name="IsCheckMenu">False</property>
                 <property name="ActiveFilterID">0</property>
                 <property name="Ready">False</property>
@@ -1383,7 +1400,6 @@
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.GotoLineNumberWidget" design-size="221 33">
     <property name="MemberName" />
-    <property name="GeneratePublic">True</property>
     <child>
       <widget class="Gtk.HBox" id="hbox1">
         <property name="MemberName" />
