@@ -2345,7 +2345,9 @@ namespace Mono.TextEditor
 					cr.Stroke ();
 					
 					cr.Save ();
-					cr.Translate (pangoPosition / Pango.Scale.PangoScale + foldXMargin, y + (foldingRectangle.Height - height / Pango.Scale.PangoScale) / 2);
+					cr.Translate (
+						pangoPosition / Pango.Scale.PangoScale + foldXMargin,
+						System.Math.Floor (y +  (foldingRectangle.Height - System.Math.Floor (height / Pango.Scale.PangoScale)) / 2));
 					cr.ShowLayout (markerLayout);
 					cr.Restore ();
 
