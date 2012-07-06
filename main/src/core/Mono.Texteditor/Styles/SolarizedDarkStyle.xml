@@ -117,9 +117,7 @@ THE SOFTWARE.
 		<Style name="error" color="red" bgColor="base03"/>
 	</Style>
 
-	<Style name="linenumber" color="base00" bgColor="base02">
-		<Style name="highlight" color="base01"/>
-	</Style>
+	<Style name="linenumber" color="base00" bgColor="base02"/>
 	
 	<Style name="iconbar" color="base02"/>
 	<Style name="iconbar.separator" color="base02"/>

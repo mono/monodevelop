@@ -123,9 +123,7 @@
 		<Style name="error" color="aluminium5" bgColor="#f5eae7"/>
 	</Style>
 
-	<Style name="linenumber" color="aluminium4" bgColor="#FDFDFF">
-		<Style name="highlight" color="aluminium5"/>
-	</Style>
+	<Style name="linenumber" color="aluminium4" bgColor="#FDFDFF"/>
 	
 	<Style name="iconbar" color="#FDFDFF"/>
 	<Style name="iconbar.separator" color="aluminium3"/>

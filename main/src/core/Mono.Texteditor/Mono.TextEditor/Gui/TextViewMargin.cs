@@ -1319,10 +1319,11 @@ namespace Mono.TextEditor
 			if (layout.IndentSize == 0)
 				return;
 			cr.Save ();
-			var dotted = new [] {1.0};
-			cr.SetDash (dotted, 0);
+			var dotted = new [] { 1.0 };
+			cr.SetDash (dotted, ((int)y + textEditor.VAdjustment.Value) % 2 == 0 ? 1.0 : 0);
 			for (int i = 0; i < layout.IndentSize; i += textEditor.Options.IndentationSize) {
-				var x = xPos + i * charWidth;
+				var x = System.Math.Floor (xPos + i * charWidth);
+
 				cr.MoveTo (x + 0.5, y);
 				cr.LineTo (x + 0.5, y + LineHeight);
 

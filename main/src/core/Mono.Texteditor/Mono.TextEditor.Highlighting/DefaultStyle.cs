@@ -45,11 +45,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public override Cairo.Color LineNumberFgHighlighted {
-			get {
-				return new Cairo.Color (122 / 255.0, 118 / 255.0, 103 / 255.0);
-			}
-		}
 		Cairo.Color iconBarBg;
 		public override Cairo.Color IconBarBg {
 			get {

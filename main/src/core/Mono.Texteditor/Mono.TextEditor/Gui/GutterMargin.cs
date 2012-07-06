@@ -189,7 +189,6 @@ namespace Mono.TextEditor
 			
 			lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
 			lineNumberGC = editor.ColorStyle.LineNumber.CairoColor;
-			lineNumberHighlightGC = editor.ColorStyle.LineNumberFgHighlighted;
 		}
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
@@ -199,10 +198,29 @@ namespace Mono.TextEditor
 				gutterMarker.DrawLineNumber (editor, Width, cr, area, lineSegment, line, x, y, lineHeight);
 				return;
 			}
+			if (editor.Caret.Line == line) {
+				cr.Rectangle (x, y, Width, lineHeight);
+				cr.Color = lineNumberBgGC;
+				cr.FillPreserve ();
 
-			cr.Rectangle (x, y, Width, lineHeight);
-			cr.Color = lineNumberBgGC;
-			cr.Fill ();
+				var color = editor.ColorStyle.LineMarker;
+				cr.Color = new Cairo.Color (color.R, color.G, color.B, 0.5);
+				cr.Fill ();
+
+				var realY = System.Math.Floor (y) + 0.5;
+				cr.MoveTo (x, realY);
+				cr.LineTo (x + Width, realY);
+
+				cr.MoveTo (x, realY + System.Math.Floor (lineHeight) - 1);
+				cr.LineTo (x + Width, realY + System.Math.Floor (lineHeight) - 1);
+
+				cr.Color = color;
+				cr.Stroke ();
+			} else {
+				cr.Rectangle (x, y, Width, lineHeight);
+				cr.Color = lineNumberBgGC;
+				cr.Fill ();
+			}
 			
 			if (line <= editor.Document.LineCount) {
 				// Due to a mac? gtk bug I need to re-create the layout here
@@ -214,7 +232,7 @@ namespace Mono.TextEditor
 					layout.SetText (line.ToString ());
 					cr.Save ();
 					cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y);
-					cr.Color = editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC;
+					cr.Color = lineNumberGC;
 					cr.ShowLayout (layout);
 					cr.Restore ();
 				}

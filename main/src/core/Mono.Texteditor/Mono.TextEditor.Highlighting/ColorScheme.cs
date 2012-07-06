@@ -67,13 +67,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public const string LineNumberFgHighlightedString = "linenumber.highlight";
-		public virtual Cairo.Color LineNumberFgHighlighted {
-			get {
-				return GetColorFromDefinition (LineNumberFgHighlightedString);
-			}
-		}
-
 		public const string IconBarBgString = "iconbar";
 		public virtual Cairo.Color IconBarBg {
 			get {
@@ -420,8 +413,7 @@ namespace Mono.TextEditor.Highlighting
 			GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
 
 			SetStyle (LineNumberString, 172, 168, 153, 255, 255, 255);
-			SetStyle (LineNumberFgHighlightedString, 122, 118, 103);
-			
+
 			SetStyle (IconBarBgString, 255, 255, 255);
 			SetStyle (IconBarSeperatorString, 172, 168, 153);
 			

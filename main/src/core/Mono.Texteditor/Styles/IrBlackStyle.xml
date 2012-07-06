@@ -123,7 +123,6 @@
 	</Style>
 	
 	<Style name="linenumber" color="LineNrVim" bgColor="BlackVim"/>
-	<Style name="linenumber.highlight" color="aluminium3"/>
 	
 	<Style name="iconbar" color="aluminium7"/>
 	<Style name="iconbar.separator" color="aluminium6"/>

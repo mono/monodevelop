@@ -27,7 +27,6 @@
   <Style name="text" color="#000000" bgColor="#FFFFFF"/>
   <Style name="text.background.readonly" color="#F9F9F8" />
   <Style name="linenumber" color="#ABA799" bgColor="#FFFFFF" />
-  <Style name="linenumber.highlight" color="#7A7666" />
   <Style name="iconbar" color="#FFFFFF" />
   <Style name="iconbar.separator" color="#ABA799" />
   <Style name="fold" color="#ABA799" bgColor="#FFFFFF"/>

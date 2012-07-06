@@ -57,7 +57,6 @@
 	<Style name="marker.bookmark.color2" color="#bfd2f9"/>
 	
 	<Style name="linenumber" color="#2b91af" bgColor="white"/>
-	<Style name="linenumber.highlight" color="#2b91af"/>
 	
 	<Style name="iconbar" color="aluminium1"/>
 	<Style name="iconbar.separator" color="aluminium3"/>

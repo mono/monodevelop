@@ -720,10 +720,9 @@ namespace Mono.TextEditor
 		{
 			var lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
 			var lineNumberGC = editor.ColorStyle.LineNumber.CairoColor;
-			var lineNumberHighlightGC = editor.ColorStyle.LineNumberFgHighlighted;
 
 			cr.Rectangle (x, y, width, lineHeight);
-			cr.Color = editor.Caret.Line == line ? lineNumberHighlightGC : lineNumberGC;
+			cr.Color = editor.Caret.Line == line ? editor.ColorStyle.LineMarker : lineNumberGC;
 			cr.Fill ();
 			
 			if (line <= editor.Document.LineCount) {

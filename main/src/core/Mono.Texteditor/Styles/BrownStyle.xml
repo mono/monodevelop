@@ -111,7 +111,6 @@
 	-->
 		
 	<Style name="linenumber" color="human" bgColor="white"/>
-	<Style name="linenumber.highlight" color="human_base"/>
 	
 	<Style name="iconbar" color="human_highlight"/>
 	<Style name="iconbar.separator" color="human_base"/>

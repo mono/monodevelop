@@ -90,9 +90,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			new ColorMetaData ("text.background.readonly", GettextCatalog.GetString ("Background of read only text"), ColorsAvailable.Fg),
 			
 			new ColorMetaData ("linenumber", GettextCatalog.GetString ("Line numbers"), ColorsAvailable.FgBg),
-			new ColorMetaData ("linenumber.highlight", GettextCatalog.GetString ("Current line number"), ColorsAvailable.FgBg),
-			
-			
+
 			new ColorMetaData ("iconbar", GettextCatalog.GetString ("Icon bar"), ColorsAvailable.Fg),
 			new ColorMetaData ("iconbar.separator", GettextCatalog.GetString ("Icon bar separator"), ColorsAvailable.Fg),
 			

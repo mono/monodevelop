@@ -67,7 +67,6 @@
 	-->
 		
 	<Style name="linenumber" color="#97A0EF" bgColor="#3F3FDF"/>
-	<Style name="linenumber.highlight" color="#97A0EF"/>
 	
 	<Style name="iconbar" color="#3F3FDF"/>
 	<Style name="iconbar.separator" color="#97A0EF"/>
