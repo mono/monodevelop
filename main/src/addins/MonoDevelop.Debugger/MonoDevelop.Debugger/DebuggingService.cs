@@ -109,24 +109,6 @@ namespace MonoDevelop.Debugger
 						IdeApp.CommandService.DispatchCommand (DebugCommands.Debug);
 					}
 				};
-				IdeApp.Workbench.Toolbar.ButtonBar.Hide ();
-				IdeApp.Workbench.Toolbar.ButtonBar.Clicked += delegate(object sender, MonoDevelop.Components.MainToolbar.ButtonBar.ClickEventArgs e) {
-					switch (e.Button) {
-					case 0:
-						IdeApp.CommandService.DispatchCommand (DebugCommands.Pause);
-						break;
-					case 1:
-						IdeApp.CommandService.DispatchCommand (DebugCommands.StepOver);
-						break;
-					case 2:
-						IdeApp.CommandService.DispatchCommand (DebugCommands.StepInto);
-						break;
-					case 3:
-						IdeApp.CommandService.DispatchCommand (DebugCommands.StepOut);
-						break;
-					}
-				};
-
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Regresh the engine list
@@ -550,8 +532,8 @@ namespace MonoDevelop.Debugger
 			});
 			
 			try {
-				session.TargetStarted += (sender, e) => IdeApp.Workbench.Toolbar.ButtonBar.ShowAll ();
-				session.TargetExited += (sender, e) => IdeApp.Workbench.Toolbar.ButtonBar.Hide ();
+				session.TargetStarted += (sender, e) => IdeApp.Workbench.ShowCommandBar ("Debug");
+				session.TargetExited += (sender, e) => IdeApp.Workbench.HideCommandBar ("Debug");
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
 				Cleanup ();

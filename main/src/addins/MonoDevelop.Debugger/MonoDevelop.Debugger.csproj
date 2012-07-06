@@ -150,33 +150,6 @@
     <EmbeddedResource Include="icons\debug-overlay-32.png">
       <LogicalName>debug-overlay-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-into-16.png">
-      <LogicalName>step-into-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-into-22.png">
-      <LogicalName>step-into-22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-out-16.png">
-      <LogicalName>step-out-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-out-22.png">
-      <LogicalName>step-out-22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-over-16.png">
-      <LogicalName>step-over-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-over-22.png">
-      <LogicalName>step-over-22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-into-24.png">
-      <LogicalName>step-into-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-out-24.png">
-      <LogicalName>step-out-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-over-24.png">
-      <LogicalName>step-over-24.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\view-debug-breakpoints-16.png">
       <LogicalName>view-debug-breakpoints-16.png</LogicalName>
     </EmbeddedResource>
@@ -194,6 +167,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\debug-overlay-24.png">
       <LogicalName>debug-overlay-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\icoDebug-Pause.png">
+      <LogicalName>icoDebug-Pause.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\icoDebug-StepIn.png">
+      <LogicalName>icoDebug-StepIn.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\icoDebug-StepOut.png">
+      <LogicalName>icoDebug-StepOut.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\icoDebug-StepOver.png">
+      <LogicalName>icoDebug-StepOver.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\icoDebug-Continue.png">
+      <LogicalName>icoDebug-Continue.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

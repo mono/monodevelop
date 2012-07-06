@@ -49,6 +49,7 @@ namespace MonoDevelop.Debugger
 		StepInto,
 		StepOut,
 		Pause,
+		Continue,
 		ClearAllBreakpoints,
 		AttachToProcess,
 		Detach,
@@ -341,8 +342,21 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DebuggingService.IsRunning;
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Pause);
+			info.Visible = DebuggingService.IsRunning;
+			info.Enabled = DebuggingService.IsFeatureSupported (DebuggerFeatures.Pause);
+		}
+	}
+	
+	internal class ContinueDebugHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			DebuggingService.Resume ();
+		}
+		
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = !DebuggingService.IsRunning;
 		}
 	}
 	
