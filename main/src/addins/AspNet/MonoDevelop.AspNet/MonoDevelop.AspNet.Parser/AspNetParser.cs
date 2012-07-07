@@ -29,7 +29,6 @@
 using System;
 using System.IO;
 
-using MonoDevelop.AspNet.Parser.Dom;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
@@ -45,17 +44,14 @@ namespace MonoDevelop.AspNet.Parser
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
 			var info = new PageInfo ();
-			var rootNode = new RootNode ();
 			var errors = new List<Error> ();
 
-			// testing the StateEngine.Xml.Parser
 			Xml.StateEngine.Parser parser = new Xml.StateEngine.Parser (
 				new AspNetFreeState (),
 				true
 			);
 			
 			try {
-				// testing the State engine parser. building a XDocument tree
 				parser.Parse (tr);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
@@ -65,7 +61,7 @@ namespace MonoDevelop.AspNet.Parser
 			// get the errors from the StateEngine parser
 			errors.AddRange (parser.Errors);
 
-			// testing the method PageInfo.Populate (XDocument, List<Error>)
+			// populating the PageInfo instance
 			XDocument xDoc = parser.Nodes.GetRoot ();
 			info.Populate (xDoc, errors);
 			
@@ -79,7 +75,7 @@ namespace MonoDevelop.AspNet.Parser
 				}
 			}
 			
-			var result = new AspNetParsedDocument (fileName, type, rootNode, info, xDoc);
+			var result = new AspNetParsedDocument (fileName, type, info, xDoc);
 			result.Add (errors);
 							
 			/*
@@ -98,18 +94,6 @@ namespace MonoDevelop.AspNet.Parser
 			}*/
 			
 			return result;
-		}
-		
-		internal void AddError (ErrorType type, ILocation location, string message)
-		{
-			
-		}
-		
-		void Init (TextReader sr)
-		{
-			
-			
-			
 		}
 	}
 }

@@ -40,27 +40,27 @@ namespace MonoDevelop.AspNet.Parser
 	public class AspNetParsedDocument : XmlParsedDocument
 	{
 		
-		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)
-		{
-			Flags |= ParsedDocumentFlags.NonSerializable;
-			Info = info;
-			RootNode = rootNode;
-			Type = type;
-		}
+//		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)
+//		{
+//			Flags |= ParsedDocumentFlags.NonSerializable;
+//			Info = info;
+//			RootNode = rootNode;
+//			Type = type;
+//		}
 
 		// Constructor used for testing the XDOM
-		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info, XDocument xDoc) : 
+		public AspNetParsedDocument (string fileName, WebSubtype type/*, RootNode rootNode*/, PageInfo info, XDocument xDoc) : 
 			base (fileName)
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
 			Info = info;
-			RootNode = rootNode;
+			//RootNode = rootNode;
 			Type = type;
 			XDocument = xDoc;
 		}
 		
 		public PageInfo Info { get; private set; }
-		public RootNode RootNode { get; private set; }
+		//public RootNode RootNode { get; private set; }
 		public WebSubtype Type { get; private set; }
 		
 		public override IEnumerable<FoldingRegion> Foldings {

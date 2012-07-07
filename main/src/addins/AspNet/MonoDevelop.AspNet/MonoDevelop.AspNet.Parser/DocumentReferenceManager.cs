@@ -400,32 +400,6 @@ namespace MonoDevelop.AspNet.Parser
 			return null;
 		}
 		
-//		DirectiveNode GetRegisterInsertionPointNode ()
-//		{
-//			var v = new RegisterDirectiveInsertionPointVisitor ();
-//			Doc.RootNode.AcceptVisit (v);
-//			return v.Node;
-//		}
-//		
-//		class RegisterDirectiveInsertionPointVisitor: Visitor
-//		{
-//			public DirectiveNode Node { get; private set; }
-//			
-//			public override void Visit (DirectiveNode node)
-//			{
-//				switch (node.Name.ToLowerInvariant ()) {
-//				case "page": case "control": case "master": case "register":
-//					Node = node;
-//					return;
-//				}
-//			}
-//			
-//			public override void Visit (TagNode node)
-//			{
-//				QuickExit = true;
-//			}
-//		}
-		
 		#endregion
 		
 		public IEnumerable<string> GetUsings ()

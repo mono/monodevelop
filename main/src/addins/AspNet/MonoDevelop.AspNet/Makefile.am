@@ -84,12 +84,11 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs \
 	MonoDevelop.AspNet.Parser/AspNetParser.cs \
 	MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs \
-	MonoDevelop.AspNet.Parser/ContentPlaceHolderVisitor.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
 	MonoDevelop.AspNet.Parser/Directive.cs \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \
 	MonoDevelop.AspNet.Parser/LocatedParserException.cs \
-	MonoDevelop.AspNet.Parser/MemberListVisitor.cs \
+	MonoDevelop.AspNet.Parser/MemberListBuilder.cs \
 	MonoDevelop.AspNet.Parser/PageInfo.cs \
 	MonoDevelop.AspNet.Parser/Regexes.cs \
 	MonoDevelop.AspNet.Parser/SuggestedHandlerCompletionData.cs \

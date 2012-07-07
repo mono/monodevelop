@@ -38,7 +38,6 @@ using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser;
-using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Html;
 using MonoDevelop.DesignerSupport;
 
@@ -108,7 +107,6 @@ namespace MonoDevelop.AspNet.Gui
 		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
 		{
 			var memberList = new MemberListBuilder (refman, info.AspNetDocument.XDocument);
-			//info.AspNetDocument.RootNode.AcceptVisit (v);
 			memberList.Build ();
 			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
 			var dom = refman.TypeCtx.Compilation;
@@ -856,93 +854,5 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		#endregion
-		
-		#region Document outline
-		
-//		protected override void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
-//		{
-//			ParentNode p = ((AspNetParsedDocument)doc).RootNode;
-////			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
-//			BuildTreeChildren (store, Gtk.TreeIter.Zero, p);
-//		}
-		
-//		protected override void InitializeOutlineColumns (MonoDevelop.Ide.Gui.Components.PadTreeView outlineTree)
-//		{
-//			outlineTree.TextRenderer.Xpad = 0;
-//			outlineTree.TextRenderer.Ypad = 0;
-//			outlineTree.AppendColumn ("Node", outlineTree.TextRenderer, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
-//		}
-//		
-//		protected override void OutlineSelectionChanged (object selection)
-//		{
-//			SelectNode ((Node)selection);
-//		}
-		
-		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, ParentNode p)
-		{
-			foreach (Node n in p) {
-				if (!(n is TagNode || n is DirectiveNode || n is ExpressionNode))
-					continue;
-				Gtk.TreeIter childIter;
-				if (!parent.Equals (Gtk.TreeIter.Zero))
-					
-					childIter = store.AppendValues (parent, n);
-				else
-					childIter = store.AppendValues (n);
-				ParentNode pChild = n as ParentNode;
-				if (pChild != null)
-					BuildTreeChildren (store, childIter, pChild);
-			}
-		}
-		
-		void outlineTreeDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
-		{
-			Gtk.CellRendererText txtRenderer = (Gtk.CellRendererText) cell;
-			Node n = (Node) model.GetValue (iter, 0);
-			string name = null;
-			if (n is TagNode) {
-				TagNode tn = (TagNode) n;
-				name = tn.TagName;
-				string att = null;
-				if (tn.Attributes != null) {
-					att = tn.Attributes["id"] as string;
-				}
-				if (att != null)
-					name = "<" + name + "#" + att + ">";
-				else
-					name = "<" + name + ">";
-			} else if (n is DirectiveNode) {
-				DirectiveNode dn = (DirectiveNode) n;
-				name = "<%@ " + dn.Name + " %>";
-			} else if (n is ExpressionNode) {
-				ExpressionNode en = (ExpressionNode) n;
-				string expr = en.Expression;
-				if (string.IsNullOrEmpty (expr)) {
-					name = "<% %>";
-				} else {
-					if (expr.Length > 10)
-						expr = expr.Substring (0, 10) + "...";
-					name = "<% " + expr + "%>";
-				}
-			}
-			if (name != null)
-				txtRenderer.Text = name;
-		}
-		
-		void SelectNode (Node n)
-		{
-			ILocation start = n.Location, end;
-			TagNode tn = n as TagNode;
-			if (tn != null && tn.EndLocation != null)
-				end = tn.EndLocation;
-			else
-				end = start;
-			
-			//FIXME: why is this offset necessary?
-			int offset = n is TagNode? 1 : 0;
-			EditorSelect (new DomRegion (start.BeginLine, start.BeginColumn + offset, end.EndLine, end.EndColumn + offset));
-		}
-		#endregion
 	}
-		
 }

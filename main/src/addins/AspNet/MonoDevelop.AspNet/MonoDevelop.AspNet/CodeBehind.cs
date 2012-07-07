@@ -82,7 +82,6 @@ namespace MonoDevelop.AspNet
 			
 			var refman = new DocumentReferenceManager (project) { Doc = document };
 			var memberList = new MemberListBuilder (refman, document.XDocument);
-			//document.RootNode.AcceptVisit (memberList);
 			memberList.Build ();
 			
 			var err = memberList.Errors.Where (x => x.ErrorType == ErrorType.Error).FirstOrDefault ();

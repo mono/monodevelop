@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser;
-using MonoDevelop.AspNet.Parser.Dom;
+//using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Html;
 using MonoDevelop.DesignerSupport;
 using S = MonoDevelop.Xml.StateEngine;
@@ -104,8 +104,8 @@ namespace MonoDevelop.AspNet.Gui
 			this.AspNetDocument = aspNetParsedDocument;
 			this.Imports = imports;
 			this.References = references;
-			ScriptBlocks = new List<TagNode> ();
-			Expressions = new List<ExpressionNode> ();
+			//ScriptBlocks = new List<TagNode> ();
+			//Expressions = new List<ExpressionNode> ();
 			//aspNetParsedDocument.RootNode.AcceptVisit (new ExpressionCollector (this));
 			BuildExpressionAndScriptsLists ();
 		}
@@ -113,8 +113,8 @@ namespace MonoDevelop.AspNet.Gui
 		public ICompilation Dom { get; private set; }
 		public AspNetParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
-		public List<ExpressionNode> Expressions { get; private set; }
-		public List<TagNode> ScriptBlocks { get; private set; }
+//		public List<ExpressionNode> Expressions { get; private set; }
+//		public List<TagNode> ScriptBlocks { get; private set; }
 		public IList<ICompilation> References { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
 		
@@ -149,13 +149,13 @@ namespace MonoDevelop.AspNet.Gui
 		
 		#region parsing for expression and runat="server" script tags
 		
-		public List<AspNetExpression> XExpressions { get; private set; }
-		public List<S.XElement> XScriptBlocks { get; private set; }
+		public List<AspNetExpression> Expressions { get; private set; }
+		public List<S.XElement> ScriptBlocks { get; private set; }
 		
 		void BuildExpressionAndScriptsLists ()
 		{
-			XExpressions = new List<AspNetExpression> ();
-			XScriptBlocks = new List<S.XElement> ();
+			Expressions = new List<AspNetExpression> ();
+			ScriptBlocks = new List<S.XElement> ();
 			
 			foreach (S.XNode node in AspNetDocument.XDocument.AllDescendentNodes)
 				AddElement (node);
@@ -164,13 +164,13 @@ namespace MonoDevelop.AspNet.Gui
 		void AddElement (S.XNode node)
 		{
 			if (node is AspNetExpression) {
-				XExpressions.Add (node as AspNetExpression);
+				Expressions.Add (node as AspNetExpression);
 				
 			} else if (node is S.XElement) {
 				S.XElement el = node as S.XElement;
 				
 				if (IsServerScriptTag (el)) {
-					XScriptBlocks.Add (el);
+					ScriptBlocks.Add (el);
 					
 				} else {
 					foreach (S.XNode nd in el.Nodes) 
@@ -192,27 +192,6 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		#endregion
-		
-		class ExpressionCollector : Visitor
-		{
-			DocumentInfo parent;
-			
-			public ExpressionCollector (DocumentInfo parent)
-			{
-				this.parent = parent;
-			}
-			
-			public override void Visit (TagNode node)
-			{
-				if (node.TagName == "script" && (string)node.Attributes["runat"] == "server")
-					parent.ScriptBlocks.Add (node);
-			}
-			
-			public override void Visit (ExpressionNode node)
-			{
-				parent.Expressions.Add (node);
-			}
-		}
 	}
 	
 	/// <summary>
