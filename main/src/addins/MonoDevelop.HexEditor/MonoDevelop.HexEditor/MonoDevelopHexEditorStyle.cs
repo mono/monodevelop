@@ -70,7 +70,7 @@ namespace MonoDevelop.HexEditor
 		
 		public override Color HexOffsetHighlighted {
 			get {
-				return Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (colorStyle.LineNumberFgHighlighted);
+				return Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (colorStyle.LineMarker);
 			}
 		}
 		
