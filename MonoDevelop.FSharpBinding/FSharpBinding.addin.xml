@@ -24,10 +24,10 @@
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
     	<Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" />
   	</Extension>
-  
-  	<Extension path="/MonoDevelop/TypeSystem/Parser">
-    	<Parser class="MonoDevelop.FSharp.FSharpParser"  fileExtensions=".fs" />
-  	</Extension>
+
+  <Extension path="/MonoDevelop/TypeSystem/Parser">
+    <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp" />
+  </Extension>
 
   	<Extension path="/MonoDevelop/Ide/TextEditorResolver">
     	<Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
