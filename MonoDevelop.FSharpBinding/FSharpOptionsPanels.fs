@@ -23,7 +23,7 @@ type FSharpSettingsPanel() =
     if widget.CheckCompilerUseDefault.Active <> use_default then
       widget.CheckCompilerUseDefault.Active <- use_default
     let prop_compiler_path = PropertyService.Get<string>("FSharpBinding.FscPath","")
-    let default_compiler_path = match Common.getDefaultDefaultCompiler with | Some(r) -> r | None -> ""
+    let default_compiler_path = match Common.getDefaultDefaultCompiler() with | Some(r) -> r | None -> ""
     widget.EntryCompilerPath.Text <- if use_default || prop_compiler_path = "" then default_compiler_path else prop_compiler_path
     widget.EntryCompilerPath.Sensitive <- not use_default
     widget.ButtonCompilerBrowse.Sensitive <- not use_default
@@ -33,7 +33,7 @@ type FSharpSettingsPanel() =
       widget.CheckInteractiveUseDefault.Active <- use_default
     let prop_interp_path = PropertyService.Get<string>("FSharpBinding.FsiPath", "")
     let prop_interp_args = PropertyService.Get<string>("FSharpBinding.FsiArguments", "")
-    let default_interp_path = match Common.getDefaultInteractive with | Some(r) -> r | None -> ""
+    let default_interp_path = match Common.getDefaultInteractive() with | Some(r) -> r | None -> ""
     let default_interp_args = ""
     widget.EntryPath.Text <- if use_default || prop_interp_path = "" then default_interp_path else prop_interp_path
     widget.EntryArguments.Text <- if use_default || prop_interp_args = "" then default_interp_args else prop_interp_args

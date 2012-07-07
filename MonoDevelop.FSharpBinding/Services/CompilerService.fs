@@ -85,7 +85,7 @@ module CompilerService =
             br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
           Some(result)
         | _ ->
-          match Common.getDefaultDefaultCompiler with
+          match Common.getDefaultDefaultCompiler() with
           | Some(result) ->
             if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Id then
               br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
