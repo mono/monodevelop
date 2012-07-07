@@ -67,8 +67,8 @@
 		<Style name="selection.inactive" bgColor="#e1edff"/>
 		<Style name="link" color="blue"/>
 		<Style name="punctuation" color="aluminium6"/>
-		<Style name="preprocessor" color="orange2">
-			<Style name="keyword" color="orange3" />
+		<Style name="preprocessor" color="#725334">
+			<Style name="keyword" color="#5e452b" />
 		</Style>
 		<Style name="markup" color="skyblue3">
 			<Style name="tag"/>
@@ -128,24 +128,24 @@
 	<Style name="iconbar" color="#FDFDFF"/>
 	<Style name="iconbar.separator" color="aluminium3"/>
 
-	<Style name="fold" color="aluminium3" bgColor="#FDFDFD"/>
+	<Style name="fold" color="aluminium4" bgColor="aluminium1"/>
 	<Style name="fold.highlight" color="aluminium5"/>
 	<Style name="fold.togglemarker" color="black"/>
 	
-	<Style name="comment"  weight="italic" color="#339900">
-		<Style name="keyword" color="#229000"/>
+	<Style name="comment"  weight="italic" color="#5e9423">
+		<Style name="keyword" color="#436a19"/>
 	</Style>
 	
-	<Style name="constant" color="#CC00CC">
+	<Style name="constant" color="#AE4CAF">
 		<Style name="language.void" color = "Blue"/>
 	</Style>
 	
-	<Style name="string" color="#CC00CC" />
+	<Style name="string" color="#AE4CAF" />
 	
-	<Style name="keyword" color="Blue">
-		<Style name="semantic.type" color="#3399BB"/>
-		<Style name="semantic.field" color="plum3"/>
-		<Style name="semantic.property" color="plum3"/>
+	<Style name="keyword" color="#3411d8">
+		<Style name="semantic.type" color="#769097"/>
+		<Style name="semantic.field" color="#6e42ae"/>
+		<Style name="semantic.property" color="#6e42ae"/>
 		<Style name="semantic.error" color="red"/>
 	</Style>
 </EditorStyle>
