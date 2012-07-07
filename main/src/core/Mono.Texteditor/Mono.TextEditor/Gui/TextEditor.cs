@@ -1510,6 +1510,9 @@ namespace Mono.TextEditor
 				this.GdkWindow.MoveResize (allocation);
 			SetAdjustments (Allocation);
 			sizeHasBeenAllocated = true;
+			if (Options.WrapLines) {
+				textViewMargin.PurgeLayoutCache ();
+			}
 			QueueDraw ();
 		}
 
@@ -1547,20 +1550,24 @@ namespace Mono.TextEditor
 			if (textEditorData.HAdjustment == null)
 				return;
 			textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
-			if (longestLine != null && this.textEditorData.HAdjustment != null) {
-				double maxX = longestLineWidth;
-				if (maxX > Allocation.Width)
-					maxX += 2 * this.textViewMargin.CharWidth;
-				double width = Allocation.Width - this.TextViewMargin.XOffset;
-				var realMaxX = System.Math.Max (maxX, this.textEditorData.HAdjustment.Value + width);
-				this.textEditorData.HAdjustment.SetBounds (
-					0,
-					realMaxX,
-					this.textViewMargin.CharWidth,
-					width,
-					width);
-				if (realMaxX < width)
-					this.textEditorData.HAdjustment.Value = 0;
+			if (Options.WrapLines) {
+				this.textEditorData.HAdjustment.SetBounds (0, 0, 0, 0, 0);
+			} else {
+				if (longestLine != null && this.textEditorData.HAdjustment != null) {
+					double maxX = longestLineWidth;
+					if (maxX > Allocation.Width)
+						maxX += 2 * this.textViewMargin.CharWidth;
+					double width = Allocation.Width - this.TextViewMargin.XOffset;
+					var realMaxX = System.Math.Max (maxX, this.textEditorData.HAdjustment.Value + width);
+					this.textEditorData.HAdjustment.SetBounds (
+						0,
+						realMaxX,
+						this.textViewMargin.CharWidth,
+						width,
+						width);
+					if (realMaxX < width)
+						this.textEditorData.HAdjustment.Value = 0;
+				}
 			}
 			textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged;
 		}
@@ -1619,6 +1626,11 @@ namespace Mono.TextEditor
 			for (int visualLineNumber = textEditorData.LogicalToVisualLine (startLine);; visualLineNumber++) {
 				int logicalLineNumber = textEditorData.VisualToLogicalLine (visualLineNumber);
 				var line = Document.GetLine (logicalLineNumber);
+
+				// Ensure that the correct line height is set.
+				if (line != null)
+					textViewMargin.GetLayout (line);
+
 				double lineHeight = GetLineHeight (line);
 				foreach (var margin in this.margins) {
 					if (!margin.IsVisible)

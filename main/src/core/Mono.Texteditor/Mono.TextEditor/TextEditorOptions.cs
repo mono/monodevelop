@@ -446,8 +446,21 @@ namespace Mono.TextEditor
 			}
 		}
 
+		bool wrapLines = false;
+		public virtual bool WrapLines {
+			get {
+				// Doesn't work atm
+				return false;
+//				return wrapLines;
+			}
+			set {
+				if (wrapLines != value) {
+					wrapLines = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
 
-		
 		public virtual ColorScheme GetColorStyle (Gtk.Style widgetStyle)
 		{
 			return SyntaxModeService.GetColorStyle (widgetStyle, ColorScheme);

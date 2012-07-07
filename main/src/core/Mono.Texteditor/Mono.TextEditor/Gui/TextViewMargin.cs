@@ -825,6 +825,10 @@ namespace Mono.TextEditor
 			wrapper.Layout.Alignment = Pango.Alignment.Left;
 			wrapper.Layout.FontDescription = textEditor.Options.Font;
 			wrapper.Layout.Tabs = tabArray;
+			if (textEditor.Options.WrapLines) {
+				wrapper.Layout.Wrap = Pango.WrapMode.WordChar;
+				wrapper.Layout.Width = (int)((textEditor.Allocation.Width - XOffset - TextStartPosition) * Pango.Scale.PangoScale);
+			}
 			StringBuilder textBuilder = new StringBuilder ();
 			var chunks = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
 			wrapper.Chunks = chunks;
@@ -946,6 +950,7 @@ namespace Mono.TextEditor
 			descriptor = new LayoutDescriptor (line, offset, length, wrapper, selectionStart, selectionEnd);
 			if (!containsPreedit)
 				layoutDict [line] = descriptor;
+			textEditor.GetTextEditorData ().HeightTree.SetLineHeight (line.LineNumber, System.Math.Max (LineHeight, System.Math.Floor (h / Pango.Scale.PangoScale)));
 			return wrapper;
 		}
 
@@ -1511,7 +1516,7 @@ namespace Mono.TextEditor
 							utf8ByteIndex += preeditUtf8ByteIndex;
 						}
 						layout.Layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
-						SetVisibleCaretPosition (xPos + (strong_pos.X / Pango.Scale.PangoScale), y);
+						SetVisibleCaretPosition (xPos + (strong_pos.X / Pango.Scale.PangoScale), y + (strong_pos.Y / Pango.Scale.PangoScale));
 					}
 				}
 			}

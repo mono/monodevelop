@@ -252,6 +252,11 @@ namespace MonoDevelop.SourceEditor
 			set { DefaultSourceEditorOptions.Instance.ShowWhitespaces = value; }
 		}
 
+		public bool WrapLines {
+			get { return DefaultSourceEditorOptions.Instance.WrapLines; }
+			set { DefaultSourceEditorOptions.Instance.WrapLines = value; }
+		}
+
 		public void ZoomIn ()
 		{
 			DefaultSourceEditorOptions.Instance.ZoomIn ();
