@@ -577,9 +577,9 @@ namespace Mono.TextEditor
 
 			if (oldBlinkState == caretBlinkState)
 				return true;
-			textEditor.QueueDrawArea (caretRectangle.X,
+			textEditor.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom, 
 			                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
-			                          caretRectangle.Width,
+			                          caretRectangle.Width + (int)textEditor.Options.Zoom,
 			                          caretRectangle.Height);
 			oldBlinkState = caretBlinkState;
 			return true;
@@ -648,9 +648,9 @@ namespace Mono.TextEditor
 				var curRect = new Gdk.Rectangle ((int)caretX, (int)caretY, (int)this.charWidth, (int)LineHeight - 1);
 				if (curRect != caretRectangle) {
 					caretRectangle = curRect;
-					textEditor.QueueDrawArea (caretRectangle.X,
+					textEditor.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
 					               (int)(caretRectangle.Y + (-textEditor.VAdjustment.Value + caretVAdjustmentValue)),
-					               caretRectangle.Width + 1,
+				                    caretRectangle.Width + (int)textEditor.Options.Zoom,
 					               caretRectangle.Height + 1);
 					caretVAdjustmentValue = textEditor.VAdjustment.Value;
 				}
