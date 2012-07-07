@@ -207,12 +207,13 @@ namespace Mono.TextEditor
 				cr.Color = new Cairo.Color (color.R, color.G, color.B, 0.5);
 				cr.Fill ();
 
-				var realY = System.Math.Floor (y) + 0.5;
-				cr.MoveTo (x, realY);
-				cr.LineTo (x + Width, realY);
+				var realTopY = System.Math.Floor (y + cr.LineWidth / 2) + 0.5;
+				cr.MoveTo (x, realTopY);
+				cr.LineTo (x + Width, realTopY);
 
-				cr.MoveTo (x, realY + System.Math.Floor (lineHeight) - 1);
-				cr.LineTo (x + Width, realY + System.Math.Floor (lineHeight) - 1);
+				var realBottomY = System.Math.Floor (y + lineHeight - cr.LineWidth / 2) + 0.5;
+				cr.MoveTo (x, realBottomY);
+				cr.LineTo (x + Width, realBottomY);
 
 				cr.Color = color;
 				cr.Stroke ();
