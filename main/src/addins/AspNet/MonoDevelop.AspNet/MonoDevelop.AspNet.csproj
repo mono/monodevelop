@@ -302,6 +302,7 @@
     <Compile Include="MonoDevelop.AspNet.StateEngine\HtmlScriptBodyState.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\TypeResolveContextDecorator.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\MemberListBuilder.cs" />
+    <Compile Include="MonoDevelop.AspNet.Parser\ContentPlaceHolderVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

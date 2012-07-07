@@ -84,6 +84,7 @@ FILES =  \
 	MonoDevelop.AspNet.Parser/AspNetParsedDocument.cs \
 	MonoDevelop.AspNet.Parser/AspNetParser.cs \
 	MonoDevelop.AspNet.Parser/CompilationUnitVisitor.cs \
+	MonoDevelop.AspNet.Parser/ContentPlaceHolderVisitor.cs \
 	MonoDevelop.AspNet.Parser/DebugStringVisitor.cs \
 	MonoDevelop.AspNet.Parser/Directive.cs \
 	MonoDevelop.AspNet.Parser/DocumentReferenceManager.cs \

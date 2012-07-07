@@ -39,28 +39,21 @@ namespace MonoDevelop.AspNet.Parser
 {
 	public class AspNetParsedDocument : XmlParsedDocument
 	{
-		
-//		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)
-//		{
-//			Flags |= ParsedDocumentFlags.NonSerializable;
-//			Info = info;
-//			RootNode = rootNode;
-//			Type = type;
-//		}
-
 		// Constructor used for testing the XDOM
-		public AspNetParsedDocument (string fileName, WebSubtype type/*, RootNode rootNode*/, PageInfo info, XDocument xDoc) : 
+		public AspNetParsedDocument (string fileName, WebSubtype type, PageInfo info, XDocument xDoc) : 
 			base (fileName)
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
 			Info = info;
-			//RootNode = rootNode;
+			RootNode = new RootNode ();
 			Type = type;
 			XDocument = xDoc;
 		}
 		
 		public PageInfo Info { get; private set; }
-		//public RootNode RootNode { get; private set; }
+		// dummy RootNode instance, left for keeping the API of the addin
+		[Obsolete ("The RootNode property has been deprecated. Use AspNetParsedDocument.XDocument instead")]
+		public RootNode RootNode { get; private set; } 
 		public WebSubtype Type { get; private set; }
 		
 		public override IEnumerable<FoldingRegion> Foldings {
