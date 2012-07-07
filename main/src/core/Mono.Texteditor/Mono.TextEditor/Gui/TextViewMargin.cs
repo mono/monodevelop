@@ -1347,8 +1347,8 @@ namespace Mono.TextEditor
 			if (layout.IndentSize == 0)
 				return;
 			cr.Save ();
-			var dotted = new [] { 1.0 };
-			cr.SetDash (dotted, ((int)y + textEditor.VAdjustment.Value) % 2 == 0 ? 1.0 : 0);
+			var dotted = new [] { textEditor.Options.Zoom };
+			cr.SetDash (dotted, (int)y + textEditor.VAdjustment.Value);
 			for (int i = 0; i < layout.IndentSize; i += textEditor.Options.IndentationSize) {
 				var x = System.Math.Floor (xPos + i * charWidth);
 
