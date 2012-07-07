@@ -64,7 +64,7 @@ type FSharpLanguageBinding() =
     //member x.Refactorer = null
 
     member x.GetFileName(baseName) = new FilePath(baseName.ToString() + ".fs")
-    member x.IsSourceCodeFile(fileName) = StringComparer.OrdinalIgnoreCase.Equals (Path.GetExtension (fileName.ToString()), ".fs")
+    member x.IsSourceCodeFile(fileName) = Common.supportedExtension (Path.GetExtension (fileName.ToString()))
     
     // IDotNetLanguageBinding
     override x.Compile(items, config, configSel, monitor) : BuildResult =
