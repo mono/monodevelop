@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // User interface panels for F# project properties
 // --------------------------------------------------------------------------------------
 
@@ -127,23 +127,27 @@ type CodeGenerationPanel() =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
     let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
     
-    widget.CheckDebugInfo.Active <- fsconfig.GenerateDebugInfo
-    widget.CheckOptimize.Active <- fsconfig.OptimizeCode
+    widget.CheckDebugInfo.Active <- fsconfig.DebugSymbols
+    widget.CheckOptimize.Active <- fsconfig.Optimize
     widget.CheckTailCalls.Active <- fsconfig.GenerateTailCalls
-    widget.CheckXmlDocumentation.Active <- fsconfig.GenerateXmlDoc
-    widget.EntryCommandLine.Text <- fsconfig.CustomCommandLine
-    widget.EntryDefines.Text <- fsconfig.DefinedSymbols
+    widget.CheckXmlDocumentation.Active <- not (String.IsNullOrEmpty fsconfig.DocumentationFile)
+    widget.EntryCommandLine.Text <- fsconfig.OtherFlags
+    widget.EntryDefines.Text <- fsconfig.DefineConstants
   
   override x.ApplyChanges() =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
     let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
 
-    fsconfig.GenerateDebugInfo <- widget.CheckDebugInfo.Active
-    fsconfig.OptimizeCode <- widget.CheckOptimize.Active
+    fsconfig.DebugSymbols <- widget.CheckDebugInfo.Active
+    fsconfig.Optimize <- widget.CheckOptimize.Active
     fsconfig.GenerateTailCalls <- widget.CheckTailCalls.Active
-    fsconfig.GenerateXmlDoc <- widget.CheckXmlDocumentation.Active
-    fsconfig.CustomCommandLine <- widget.EntryCommandLine.Text
-    fsconfig.DefinedSymbols <- widget.EntryDefines.Text
+    fsconfig.DocumentationFile <- 
+        if widget.CheckXmlDocumentation.Active then 
+           System.IO.Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".xml" 
+        else 
+           ""
+    fsconfig.OtherFlags <- widget.EntryCommandLine.Text
+    fsconfig.DefineConstants <- widget.EntryDefines.Text
 
 
 // --------------------------------------------------------------------------------------

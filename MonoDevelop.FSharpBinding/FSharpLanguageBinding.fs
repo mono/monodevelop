@@ -72,7 +72,26 @@ type FSharpLanguageBinding() =
 
     override x.CreateCompilationParameters(options:XmlElement) : ConfigurationParameters =
       // Debug.tracef "Config" "Creating compiler configuration parameters"
-      new FSharpCompilerParameters() :> ConfigurationParameters
+      let pars = new FSharpCompilerParameters() 
+      // Set up the default options
+      if options <> null then 
+          let debugAtt = options.GetAttribute ("DefineDebug")
+          if (System.String.Compare ("True", debugAtt, StringComparison.OrdinalIgnoreCase) = 0) then
+              pars.AddDefineSymbol "DEBUG"
+              pars.DebugSymbols <- true
+              pars.Optimize <- false
+              pars.GenerateTailCalls <- false
+          let releaseAtt = options.GetAttribute ("Release")
+          if (System.String.Compare ("True", releaseAtt, StringComparison.OrdinalIgnoreCase) = 0) then
+              pars.DebugSymbols <- true
+              pars.Optimize <- true
+              pars.GenerateTailCalls <- true
+
+          // TODO: set up the documentation file to be AssemblyName.xml by default (but how do we get AssemblyName here?)
+          //pars.DocumentationFile <- ""
+          //    System.IO.Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".xml" 
+      pars :> ConfigurationParameters
+
 
     override x.CreateProjectParameters(options:XmlElement) : ProjectParameters =
       new FSharpProjectParameters() :> ProjectParameters
