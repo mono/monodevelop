@@ -62,6 +62,8 @@ type FSharpResolverProvider() =
     /// Returns string with tool-tip from 'FSharpResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
     member x.CreateTooltip(unit, result, errorInformation, ambience, modifierState) : string = 
-      match result with
-      | :? FSharpResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
-      | _ -> null
+      // With monoDevelop head, get error that "result" has type "int"
+      null
+      //match result with
+      //| :? FSharpResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
+      //| _ -> null

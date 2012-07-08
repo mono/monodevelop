@@ -164,8 +164,11 @@ module internal FSharpEnvironment =
     with e -> 
       None
 
- 
-  // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
+
+  let BackupInstallationProbePoints = 
+      [ "/usr/local"; "/usr"; "/Library/Frameworks/Mono.framework/Versions/Current" ]
+
+    // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
   // Used for
   //   - location of design-time copies of FSharp.Core.dll and FSharp.Compiler.Interactive.Settings.dll for the default assumed environment for scripts
   //   - default ToolPath in tasks in FSharp.Build.dll (for Fsc tasks)
@@ -195,21 +198,24 @@ module internal FSharpEnvironment =
         match result with 
         | Some _ ->  result 
         | None -> 
-          let result =  tryRegKey key2
-          match result with 
-          | Some _ ->  result 
-          | None ->
-            let result = tryFsharpiScript("/usr/bin/fsharpi")
-            match result with 
-            | Some _ -> result
-            | None -> 
-              let result = tryFsharpiScript("/usr/local/bin/fsharpi")
-              match result with 
-              | Some _ -> result
-              | None -> 
-                let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
-                if String.IsNullOrEmpty(var) then None
-                else Some(var)
+        let result =  tryRegKey key2
+        match result with 
+        | Some _ ->  result 
+        | None ->
+        let result = 
+            let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
+            if String.IsNullOrEmpty(var) then None
+            else Some(var)
+        match result with 
+        | Some _ -> result
+        | None -> 
+        // NOTE: we should probably probe the path here??
+        let result = BackupInstallationProbePoints |> List.tryPick (fun x -> tryFsharpiScript(Path.Combine(Path.Combine(x,"bin"),"fsharpi")))
+        match result with 
+        | Some _ -> result
+        | None -> 
+        None
     with e -> 
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None
+

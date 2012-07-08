@@ -89,7 +89,7 @@ REFERENCES = \
 	-r:$(GLIBDIR)/glib-sharp.dll
 
 OPTIONS = \
-	--noframework --debug --optimize- --target:library -r:bin/FSharpBinding.Gui.dll --out:bin/FSharpBinding.dll
+	--resident --noframework --debug --optimize- --target:library -r:bin/FSharpBinding.Gui.dll --out:bin/FSharpBinding.dll
 
 # CSharp project that contains designer generated GTK stuff for project options
 
@@ -105,20 +105,23 @@ GUIFILES = \
 GUIOPTIONS = \
 	-debug+ -out:bin/FSharpBinding.Gui.dll -target:library
 
-all: gui
+bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES)
 	$(FSC) $(OPTIONS) $(REFERENCES) $(RESOURCES) $(FILES) 
 
-gui:
+bin/FSharpBinding.Gui.dll: $(GUIFILES)
 	mkdir -p bin
 	$(CSC) $(GUIOPTIONS) $(REFERENCES) $(GUIFILES) 
 
-install:
+install: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
 	cp bin/FSharpBinding.* $(MDADDIN)/BackendBindings/
+	gacutil /i $(FSBIN)/FSharp.Compiler.dll
+	gacutil /i $(FSBIN)/FSharp.Compiler.Server.Shared.dll
 
 uninstall:
 	rm $(MDADDIN)/BackendBindings/FSharpBinding.*
+	rm $(MDADDIN)/BackendBindings/FSharpCompiler.dll
 
-package:
+package: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
 	mkdir -p bin/repository
 	mkdir -p repository
 	cp bin/FSharpBinding.* bin/repository
