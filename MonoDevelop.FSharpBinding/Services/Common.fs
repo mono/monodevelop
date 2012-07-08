@@ -319,21 +319,22 @@ module Common =
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
   let generateReferences (items:ProjectItemCollection) configSelector shouldWrap = seq { 
+    // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
     let files = 
       [ for ref in items.GetAll<ProjectReference>() do
           for file in ref.GetReferencedFileNames(configSelector) do
             yield file ]
     
-    // If 'FSharp.Core.dll' is not in the set of references, we need to 
-    // resolve it and add it (this can be removed when assembly resolution in the
-    // langauge service is fixed on Mono, because LS will try to do this)
-    let coreRef = files |> List.exists (fun fn -> fn.EndsWith("FSharp.Core.dll") )
-    if not coreRef then
-      let dirs = ScriptOptions.getDefaultDirectories None []
-      match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
-      | Some fn -> yield "-r:" + wrapf(fn)
-      | None -> Debug.tracef "Resolution" "FSharp.Core assembly resolution failed!"
+    // If 'mscorlib.dll' and 'FSharp.Core.dll' is not in the set of references, we need to 
+    // resolve it and add it.
+    for assumedFile in ["mscorlib"; "FSharp.Core"] do 
+      let coreRef = files |> List.exists (fun fn -> fn.EndsWith(assumedFile + ".dll") || fn.EndsWith(assumedFile))
+      if not coreRef then
+        let dirs = ScriptOptions.getDefaultDirectories None []
+        match ScriptOptions.resolveAssembly dirs assumedFile with
+        | Some fn -> yield "-r:" + wrapf(fn)
+        | None -> Debug.tracef "Resolution" "Assembly resolution failed when trying to find default reference for '%s'!" assumedFile
       
     for file in files do 
       yield "-r:" + wrapf(file) }
