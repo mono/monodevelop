@@ -143,13 +143,13 @@ module ScriptOptions =
       // Did we find a usable default 4.0 FSharp.Core.dll (for Mono)? If so, use that
       match result with 
       | Some dir -> 
-          Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll : %A" dir
+          Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
           yield dir
       | None -> 
           // For Windows, just use BinFolderOfDefaultFSharpCompiler, a default FSharp.Core.dll is there
           match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with 
           | Some dir -> 
-              Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll : %A" dir
+              Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
               yield dir 
           | None -> 
               Debug.tracef "Resolution" "Unable to find a default location for FSharp.Core.dll"
@@ -414,10 +414,12 @@ module Common =
     Seq.tryPick (path_and_file search_files) search_paths
 
 
-  let getShellToolPath (extensions:seq<string>) (tool_name:string)  =
+  let getShellToolPath (extensions:seq<string>) (toolName:string)  =
     let path_variable = Environment.GetEnvironmentVariable("PATH")
-    let search_paths = path_variable.Split [| ':' |]
-    getToolPath search_paths extensions tool_name
+    // Split the path by ';' on Windows
+    let pathSplitCharacter = (if Environment.OSVersion.Platform = PlatformID.Win32NT then ';' else ':')
+    let searchPaths = path_variable.Split [| pathSplitCharacter |]
+    getToolPath searchPaths extensions toolName
 
   /// Get full path to tool
   let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (tool_name:string) =
