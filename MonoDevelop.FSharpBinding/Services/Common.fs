@@ -23,24 +23,10 @@ module Environment =
 module Debug = 
   open Microsoft.FSharp.Compiler.Reflection // (?) operator
 
-#if LOGGING
-  /// If trace is enabled, we print more information
-  let traceEnabled = 
-    [ "Exception", (true, ConsoleColor.Red)
-      "Errors", (false, ConsoleColor.DarkCyan)
-      "Parsing", (false, ConsoleColor.Blue)
-      "Worker", (false, ConsoleColor.Green)
-      "LanguageService", (false, ConsoleColor.DarkGreen) 
-      "Gui", (false, ConsoleColor.DarkYellow)
-      "Result", (false, ConsoleColor.Magenta)
-      "Interactive", (false, ConsoleColor.Gray)
-      "Checkoptions", (true, ConsoleColor.DarkGray)
-      "Resolution", (true, ConsoleColor.Gray)
-      "Compiler", (false, ConsoleColor.DarkRed)
-      "Config", (false, ConsoleColor.DarkMagenta)
-    ] |> Map.ofSeq
-#else
-  /// If trace is enabled, we print more information
+  let envLogging = (try (match System.Environment.GetEnvironmentVariable("FSHARPBINDING_LOGGING") with null -> "" | s -> s) with _ -> "")
+  let isEnvEnabled c = (envLogging = "*" || envLogging.Contains c)
+  
+    /// If trace is enabled, we print more information
   let traceEnabled = 
     [ "Exception", (true, ConsoleColor.Red)
       "Errors", (false, ConsoleColor.DarkCyan)
@@ -54,8 +40,9 @@ module Debug =
       "Resolution", (false, ConsoleColor.Gray)
       "Compiler", (false, ConsoleColor.DarkRed)
       "Config", (false, ConsoleColor.DarkMagenta)
-    ] |> Map.ofSeq
-#endif
+    ] 
+    |> List.map (fun (category,(enabled,color)) -> category, ((enabled || isEnvEnabled category), color))
+    |> Map.ofList
 
   /// Prints debug information - to debug output (on windows, because this is
   /// easy to see in VS) or to console (on Mono, because this prints to terminal) 
@@ -65,7 +52,8 @@ module Debug =
       Console.ForegroundColor <- clr
       Console.WriteLine(s)
       Console.ForegroundColor <- orig      
-    else System.Diagnostics.Debug.WriteLine(s)
+    else 
+      System.Diagnostics.Debug.WriteLine(s)
 
   /// Prints debug information - to debug output or to console 
   /// Prints only when the specified category is enabled
@@ -120,22 +108,53 @@ module ScriptOptions =
     if Path.IsPathRooted(path) then path
     else Path.Combine(root, path)
   
-  /// Returns default directories to be used when searching for DLL files
-  let getDefaultDirectories root includes =   
-    // Return all known directories
-    [ let runtime = RuntimeEnvironment.GetRuntimeDirectory() 
-      yield if not (runtime.EndsWith("1.0", StringComparison.Ordinal)) then runtime
-            else Path.Combine(Path.GetDirectoryName runtime, "4.0") // Mono 
-      match root with 
-      | Some(root) -> yield! includes |> List.map (makeAbsolute root)
-      | None -> yield! includes |> List.filter Path.IsPathRooted
-      yield! root |> Option.toList                  
-      yield! FSharpEnvironment.BinFolderOfDefaultFSharpCompiler |> Option.toList ]
-                
   /// Returns true if the specified file exists (and never throws exception)
   let safeExists f = 
     try File.Exists(f) with _ -> false
     
+  /// Returns default directories to be used when searching for DLL files
+  let getDefaultDirectories root includes =   
+    let (++) s x = Path.Combine(s,x)
+    // Return all known directories
+    [ // Get the location of the System DLLs
+      let runtime = RuntimeEnvironment.GetRuntimeDirectory() 
+      yield runtime
+
+      // Add the include directories
+      match root with 
+      | Some(root) -> yield! includes |> List.map (makeAbsolute root)
+      | None -> yield! includes |> List.filter Path.IsPathRooted
+      yield! root |> Option.toList                  
+
+      // Detect a usable default 4.0 FSharp.Core.dll (for Mono)
+      let result = 
+          let possibleInstallationPoints = 
+              Option.toList (FSharpEnvironment.BinFolderOfDefaultFSharpCompiler |> Option.map Path.GetDirectoryName) @  
+              FSharpEnvironment.BackupInstallationProbePoints
+
+          Debug.tracef "Resolution" "Probing these installation locations for 4.0 FSharp.Core.dll : %A" possibleInstallationPoints
+          possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
+              let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ "4.0" 
+              if safeExists (candidate ++ "FSharp.Core.dll") then 
+                  Some candidate
+              else
+                  None)
+
+      // Did we find a usable default 4.0 FSharp.Core.dll (for Mono)? If so, use that
+      match result with 
+      | Some dir -> 
+          Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll : %A" dir
+          yield dir
+      | None -> 
+          // For Windows, just use BinFolderOfDefaultFSharpCompiler, a default FSharp.Core.dll is there
+          match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with 
+          | Some dir -> 
+              Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll : %A" dir
+              yield dir 
+          | None -> 
+              Debug.tracef "Resolution" "Unable to find a default location for FSharp.Core.dll"
+          ]
+                
   /// Resolve assembly in the specified list of directories
   let rec resolveAssembly dirs asm =
     match dirs with 
