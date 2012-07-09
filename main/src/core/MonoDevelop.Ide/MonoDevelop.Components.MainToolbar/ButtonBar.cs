@@ -38,13 +38,14 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class ButtonBar : EventBox, ICommandBar
 	{
+		const int SeparatorSpacing = 6;
 		List<ButtonBarButton> buttons = new List<ButtonBarButton> ();
 		ButtonBarButton[] visibleButtons;
 
 		LazyImage[] btnNormal;
 		LazyImage[] btnPressed;
 
-		int pushedButton = -1;
+		ButtonBarButton pushedButton;
 		object lastCommandTarget;
 
 		public ButtonBar ()
@@ -69,7 +70,7 @@ namespace MonoDevelop.Components.MainToolbar
 		ButtonBarButton[] VisibleButtons {
 			get {
 				if (visibleButtons == null)
-					visibleButtons = buttons.Where (b => b.Visible).ToArray ();
+					visibleButtons = buttons.Where (b => b.Visible || b.IsSeparator).ToArray ();
 				return visibleButtons;
 			}
 		}
@@ -91,22 +92,20 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Button == 1) {
-				var buttonIndex = (int)(evnt.X / btnNormal[0].Img.Width);
-				if (VisibleButtons[buttonIndex].Enabled) {
-					pushedButton = buttonIndex;
+				pushedButton = VisibleButtons.FirstOrDefault (b => b.Allocation.Contains (Allocation.X + (int)evnt.X, Allocation.Y + (int)evnt.Y));
+				if (pushedButton != null && pushedButton.Enabled)
 					State = StateType.Selected;
-				}
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
 
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
-			if (State == StateType.Selected && pushedButton != -1)
-				IdeApp.CommandService.DispatchCommand (VisibleButtons[pushedButton].CommandId, null, lastCommandTarget, CommandSource.MainToolbar);
+			if (State == StateType.Selected && pushedButton != null)
+				IdeApp.CommandService.DispatchCommand (pushedButton.CommandId, null, lastCommandTarget, CommandSource.MainToolbar);
 			State = StateType.Prelight;
 			leaveState = StateType.Normal;
-			pushedButton = -1;
+			pushedButton = null;
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
@@ -114,7 +113,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			buttons.Clear ();
 			visibleButtons = null;
-			pushedButton = -1;
+			pushedButton = null;
 			QueueResize ();
 		}
 
@@ -131,12 +130,15 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void AddSeparator ()
 		{
+			buttons.Add (new ButtonBarButton (null));
+			visibleButtons = null;
+			QueueResize ();
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = btnNormal[0].Img.Width * VisibleButtons.Length;
+			requisition.Width = VisibleButtons.Sum (b => !b.IsSeparator ? btnNormal[0].Img.Width : SeparatorSpacing);
 			requisition.Height = btnNormal[0].Img.Height;
 		}
 
@@ -145,10 +147,18 @@ namespace MonoDevelop.Components.MainToolbar
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				double x = Allocation.X, y = Allocation.Y;
 				for (int i = 0; i < VisibleButtons.Length; i++) {
+					bool nextIsSeparator = (i < VisibleButtons.Length - 1 && VisibleButtons[i + 1].IsSeparator) || i == visibleButtons.Length - 1;
+					bool lastWasSeparator = (i > 0 && VisibleButtons[i - 1].IsSeparator) || i == 0;
 					ButtonBarButton button = VisibleButtons [i];
-					LazyImage[] images = State == StateType.Selected && pushedButton == i ? btnPressed : btnNormal;
-					ImageSurface img = images [i == 0 ? 0 : i == visibleButtons.Length - 1 ? 2 : 1];
+					if (button.IsSeparator) {
+						if (!lastWasSeparator)
+							x += SeparatorSpacing;
+						continue;
+					}
+					LazyImage[] images = State == StateType.Selected && pushedButton == button ? btnPressed : btnNormal;
+					ImageSurface img = images [lastWasSeparator ? 0 : nextIsSeparator ? 2 : 1];
 					img.Show (context, x, y);
+					button.Allocation = new Gdk.Rectangle ((int)x, (int)y, img.Width, img.Height);
 
 					var icon = ImageService.GetPixbuf (button.Image, IconSize.Menu);
 					var iconCopy = icon;
@@ -180,7 +190,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void ICommandBar.Update (object activeTarget)
 		{
 			lastCommandTarget = activeTarget;
-			foreach (var b in buttons) {
+			foreach (var b in buttons.Where (bu => !bu.IsSeparator)) {
 				var ci = IdeApp.CommandService.GetCommandInfo (b.CommandId, new CommandTargetRoute (activeTarget));
 				UpdateButton (b, ci);
 			}
@@ -221,6 +231,12 @@ namespace MonoDevelop.Components.MainToolbar
 		public string CommandId { get; set; }
 		internal bool Enabled { get; set; }
 		internal bool Visible { get; set; }
+
+		public Gdk.Rectangle Allocation;
+
+		public bool IsSeparator {
+			get { return CommandId == null; }
+		}
 	}
 }
 
