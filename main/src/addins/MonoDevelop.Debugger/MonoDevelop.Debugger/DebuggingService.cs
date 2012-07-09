@@ -347,6 +347,7 @@ namespace MonoDevelop.Debugger
 				oldLayout = null;
 				// Dispatch asynchronously to avoid start/stop races
 				DispatchService.GuiSyncDispatch (delegate {
+					IdeApp.Workbench.HideCommandBar ("Debug");
 					if (IdeApp.Workbench.CurrentLayout == "Debug")
 						IdeApp.Workbench.CurrentLayout = layout;
 				});
@@ -529,11 +530,10 @@ namespace MonoDevelop.Debugger
 			DispatchService.GuiSyncDispatch (delegate {
 				oldLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Debug";
+				IdeApp.Workbench.ShowCommandBar ("Debug");
 			});
 			
 			try {
-				session.TargetStarted += (sender, e) => IdeApp.Workbench.ShowCommandBar ("Debug");
-				session.TargetExited += (sender, e) => IdeApp.Workbench.HideCommandBar ("Debug");
 				session.Run (startInfo, GetUserOptions ());
 			} catch {
 				Cleanup ();
