@@ -124,7 +124,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			{
 				if (button != 1)
 					return;
-				double position = (y / Allocation.Height) * vadjustment.Upper - vadjustment.PageSize / 2;
+				var ph = (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount + TextEditor.EditorLineThreshold));
+				double position = vadjustment.Upper * (Math.Min (GetBufferYOffset () + y, ph) / (double)ph) - vadjustment.PageSize / 2;
 				position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
 				vadjustment.Value = position;
 			}

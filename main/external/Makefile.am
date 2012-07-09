@@ -21,7 +21,7 @@ all:
 	xbuild /property:CodePage=65001 $(NGIT)
 	xbuild /property:CodePage=65001 $(CECIL)
 	for binary in $(BINARIES); do \
-		cp $$binary $(OUTPUT)/; \
+		rsync -u $$binary $(OUTPUT)/ || exit 1; \
 	done
 
 clean:
