@@ -44,7 +44,7 @@ namespace MonoDevelop.DocFood
 			Attributes = new List<KeyValuePair<string, string>> ();
 		}
 		
-		public abstract void Run (DocGenerator generator);
+		public abstract void Run (DocGenerator generator, object member);
 		
 		public void SetAttribute (string name, string value)
 		{

@@ -227,8 +227,15 @@ namespace MonoDevelop.DocFood
 			}
 			return null;
 		}
+
+		static string GetName (object member)
+		{
+			if (member is IParameter)
+				return ((IParameter)member).Name;
+			return ((INamedElement)member).Name;
+		}
 		
-		public bool EvaluateCondition (List<KeyValuePair<string, string>> conditions)
+		public bool EvaluateCondition (List<KeyValuePair<string, string>> conditions, object member)
 		{
 			foreach (var condition in conditions) {
 				bool result = false;
@@ -263,6 +270,10 @@ namespace MonoDevelop.DocFood
 						result |= idx < ((IParameterizedMember)member).Parameters.Count && name == ((IParameterizedMember)member).Parameters[idx].Name;
 						break;
 					case "returns":
+						if (member is IParameter) {
+							result |= val == ((IParameter)member).Type.ToString ();
+							break;
+						}
 						if ((member as IMember) == null)
 							break;
 						result |= val == ((IMember)member).ReturnType.ToString ();
@@ -277,22 +288,22 @@ namespace MonoDevelop.DocFood
 							}
 						}
 							
-						result |= val == member.Name;
+						result |= val == GetName (member);
 						break;
 					case "endsWith":
 						if (member == null)
 							break;
-						result |= member.Name.EndsWith (val);
+						result |= GetName (member).EndsWith (val);
 						break;
 					case "startsWith":
 						if (member == null)
 							break;
-						result |= member.Name.StartsWith (val);
+						result |= GetName (member).StartsWith (val);
 						break;
 					case "startsWithWord":
 						if (member == null)
 							break;
-						result |= member.Name.StartsWith (val);
+						result |= GetName (member).StartsWith (val);
 						break;
 					case "wordCount":
 						result |= Int32.Parse (val) == wordCount;
@@ -314,7 +325,7 @@ namespace MonoDevelop.DocFood
 			
 			this.member = member;
 			this.currentType = GetType (member);
-			DocConfig.Instance.Rules.ForEach (r => r.Run (this));
+			DocConfig.Instance.Rules.ForEach (r => r.Run (this, member));
 			
 			if (member is IParameterizedMember) {
 				this.currentType = "parameter";
@@ -322,7 +333,7 @@ namespace MonoDevelop.DocFood
 					curName = p.Name;
 					this.member = member;
 					SplitWords (p, p.Name);
-					DocConfig.Instance.Rules.ForEach (r => r.Run (this));
+					DocConfig.Instance.Rules.ForEach (r => r.Run (this, p));
 				}
 			}
 			
@@ -348,7 +359,7 @@ namespace MonoDevelop.DocFood
 						break;
 					}
 					count++;
-					DocConfig.Instance.Rules.ForEach (r => r.Run (this));
+					DocConfig.Instance.Rules.ForEach (r => r.Run (this, param));
 				}
 			}
 			

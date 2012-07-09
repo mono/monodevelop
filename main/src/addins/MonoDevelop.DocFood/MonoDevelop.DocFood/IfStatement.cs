@@ -32,10 +32,10 @@ namespace MonoDevelop.DocFood
 	{
 		public const string XmlTag = "If";
 		
-		public override void Run (DocGenerator generator)
+		public override void Run (DocGenerator generator, object member)
 		{
-			if (generator.EvaluateCondition (Attributes))
-				Children.ForEach (child => child.Run (generator));
+			if (generator.EvaluateCondition (Attributes, member))
+				Children.ForEach (child => child.Run (generator, member));
 		}
 		
 		public override void Write (XmlWriter writer)
