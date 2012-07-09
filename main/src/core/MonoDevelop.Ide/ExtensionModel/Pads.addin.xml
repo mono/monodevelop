@@ -25,7 +25,6 @@
 		_label = "Error List"
 		icon="gtk-dialog-error"
 		class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"
-		dockLabelProvider="MonoDevelop.Ide.Gui.Pads.ErrorPadLabelProvider"
 		defaultPlacement = "Bottom"
 		defaultStatus="AutoHide"
 		defaultLayout="*"/>

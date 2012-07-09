@@ -408,6 +408,8 @@ namespace MonoDevelop.Ide
 		void HideStatusIcon (StatusIcon icon)
 		{
 			statusIconBox.Remove (icon.EventBox);
+			if (statusIconBox.Children.Length == 0)
+				statusIconBox.Hide ();
 			icon.EventBox.Destroy ();
 		}
 		

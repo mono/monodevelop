@@ -29,12 +29,13 @@ using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class StatusArea : EventBox
 	{
-		HBox contentBox = new HBox (false, 0);
+		HBox contentBox = new HBox (false, 8);
 
 		Color borderColor = Styles.WidgetBorderColor;
 		Color fill1Color = CairoExtensions.ParseColor ("eff5f7");
@@ -42,20 +43,97 @@ namespace MonoDevelop.Components.MainToolbar
 		Color innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
 		Color textColor = CairoExtensions.ParseColor ("3a4029");
 
+		StatusAreaSeparator statusIconSeparator;
+		Gtk.Widget buildResultWidget;
+
 		public StatusArea ()
 		{
 			VisibleWindow = false;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
-			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 6);
-			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 6);
-			Add (contentBox);
+			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 0);
+			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 0);
+			contentBox.PackEnd (statusIconSeparator = new StatusAreaSeparator (), false, false, 0);
+			contentBox.PackEnd (buildResultWidget = CreateBuildResultsWidget (Orientation.Horizontal), false, false, 0);
+
+			var align = new Alignment (0, 0, 1, 1);
+			align.LeftPadding = 4;
+			align.RightPadding = 8;
+			align.Add (contentBox);
+			Add (align);
 
 			this.ButtonPressEvent += delegate {
 				MonoDevelopStatusBar.HandleEventMessageBoxButtonPressEvent (null, null);
 			};
 
+			MonoDevelopStatusBar.statusIconBox.Shown += delegate {
+				UpdateSeparators ();
+			};
+
+			MonoDevelopStatusBar.statusIconBox.Hidden += delegate {
+				UpdateSeparators ();
+			};
+			
 			SetSizeRequest (32, 22);
-			Show ();
+			ShowAll ();
+		}
+
+		void UpdateSeparators ()
+		{
+			statusIconSeparator.Visible = MonoDevelopStatusBar.statusIconBox.Visible && buildResultWidget.Visible;
+		}
+
+		public Widget CreateBuildResultsWidget (Orientation orientation)
+		{
+			Gtk.Box box;
+			if (orientation == Orientation.Horizontal)
+				box = new HBox ();
+			else
+				box = new VBox ();
+			box.Spacing = 3;
+			
+			Gdk.Pixbuf errorIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu);
+			Gdk.Pixbuf noErrorIcon = ImageService.MakeGrayscale (errorIcon); // creates a new pixbuf instance
+			Gdk.Pixbuf warningIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu);
+			Gdk.Pixbuf noWarningIcon = ImageService.MakeGrayscale (warningIcon); // creates a new pixbuf instance
+			
+			Gtk.Image errorImage = new Gtk.Image (errorIcon);
+			Gtk.Image warningImage = new Gtk.Image (warningIcon);
+			
+			box.PackStart (errorImage, false, false, 0);
+			Label errors = new Gtk.Label ();
+			box.PackStart (errors, false, false, 0);
+			
+			box.PackStart (warningImage, false, false, 0);
+			Label warnings = new Gtk.Label ();
+			box.PackStart (warnings, false, false, 0);
+			
+			TaskEventHandler updateHandler = delegate {
+				int ec=0, wc=0;
+				foreach (Task t in TaskService.Errors) {
+					if (t.Severity == TaskSeverity.Error)
+						ec++;
+					else if (t.Severity == TaskSeverity.Warning)
+						wc++;
+				}
+				errors.Text = ec.ToString ();
+				errorImage.Pixbuf = ec > 0 ? errorIcon : noErrorIcon;
+				warnings.Text = wc.ToString ();
+				warningImage.Pixbuf = wc > 0 ? warningIcon : noWarningIcon;
+			};
+			
+			updateHandler (null, null);
+			
+			TaskService.Errors.TasksAdded += updateHandler;
+			TaskService.Errors.TasksRemoved += updateHandler;
+			
+			box.Destroyed += delegate {
+				noErrorIcon.Dispose ();
+				noWarningIcon.Dispose ();
+				TaskService.Errors.TasksAdded -= updateHandler;
+				TaskService.Errors.TasksRemoved -= updateHandler;
+			};
+			box.ShowAll ();
+			return box;
 		}
 
 		protected override void OnRealized ()
@@ -94,7 +172,31 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			return base.OnExposeEvent (evnt);
 		}
+	}
 
+	class StatusAreaSeparator: HBox
+	{
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var ctx = Gdk.CairoHelper.Create (this.GdkWindow)) {
+				var alloc = Allocation;
+				alloc.Inflate (0, -2);
+				ctx.Rectangle (alloc.X, alloc.Y, 1, alloc.Height);
+				Cairo.LinearGradient gr = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height);
+				gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
+				gr.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.2));
+				gr.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
+				ctx.Pattern = gr;
+				ctx.Fill ();
+			}
+			return true;
+		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			requisition.Width = 1;
+		}
 	}
 }
 
