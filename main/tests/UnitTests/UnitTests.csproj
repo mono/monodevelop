@@ -205,6 +205,10 @@
       <Project>{40a31ade-6f26-4d99-a3c7-87bb8236151d}</Project>
       <Name>MonoDevelop.Projects.Formats.MSBuild.v3.5</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\external\ngit\Sharpen.Unix\Sharpen.Unix.csproj">
+      <Project>{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}</Project>
+      <Name>Sharpen.Unix</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
