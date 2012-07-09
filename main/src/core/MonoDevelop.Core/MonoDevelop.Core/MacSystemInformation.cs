@@ -28,7 +28,7 @@ using System.Text;
 
 namespace MonoDevelop.Core
 {
-	class MacSystemInformation : UnixSystemInformation
+	public class MacSystemInformation : UnixSystemInformation
 	{
 		public static readonly Version MountainLion = new Version (10, 8);
 		public static readonly Version Lion = new Version (10, 7);
