@@ -32,10 +32,10 @@ namespace MonoDevelop.FSharp.Gui
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
-			// Widget FSharp.MonoDevelop.Gui.FSharpSettingsWidget
+			// Widget MonoDevelop.FSharp.Gui.FSharpSettingsWidget
 			global::Stetic.BinContainer.Attach (this);
-			this.Name = "FSharp.MonoDevelop.Gui.FSharpSettingsWidget";
-			// Container child FSharp.MonoDevelop.Gui.FSharpSettingsWidget.Gtk.Container+ContainerChild
+			this.Name = "MonoDevelop.FSharp.Gui.FSharpSettingsWidget";
+			// Container child MonoDevelop.FSharp.Gui.FSharpSettingsWidget.Gtk.Container+ContainerChild
 			this.vbox1 = new global::Gtk.VBox ();
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;

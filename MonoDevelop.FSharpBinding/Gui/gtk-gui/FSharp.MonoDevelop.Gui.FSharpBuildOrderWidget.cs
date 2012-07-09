@@ -13,14 +13,14 @@ namespace MonoDevelop.FSharp.Gui
 		private global::Gtk.Button btnDown;
 		private global::Gtk.Button btnUp;
 		private global::Gtk.Label GtkLabel2;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
-			// Widget FSharp.MonoDevelop.Gui.FSharpBuildOrderWidget
+			// Widget MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget
 			global::Stetic.BinContainer.Attach (this);
-			this.Name = "FSharp.MonoDevelop.Gui.FSharpBuildOrderWidget";
-			// Container child FSharp.MonoDevelop.Gui.FSharpBuildOrderWidget.Gtk.Container+ContainerChild
+			this.Name = "MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget";
+			// Container child MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget.Gtk.Container+ContainerChild
 			this.frame2 = new global::Gtk.Frame ();
 			this.frame2.Name = "frame2";
 			this.frame2.ShadowType = ((global::Gtk.ShadowType)(0));
