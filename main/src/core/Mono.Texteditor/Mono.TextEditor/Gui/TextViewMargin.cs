@@ -1246,6 +1246,8 @@ namespace Mono.TextEditor
 			cr.Stroke ();
 		}
 
+		const double whitespaceMarkerAlpha = 0.3;
+
 		void DecorateTabsAndSpaces (Cairo.Context ctx, LayoutWrapper layout, int offset, int length, double xPos, double y, int selectionStart, int selectionEnd)
 		{
 			uint curIndex = 0, byteIndex = 0;
@@ -1282,7 +1284,7 @@ namespace Mono.TextEditor
 				} else {
 					col = selected ? SelectionColor.CairoColor : col = ColorStyle.Default.CairoColor;
 				}
-				ctx.Color = new Cairo.Color (col.R, col.G, col.B, 0.2);
+				ctx.Color = new Cairo.Color (col.R, col.G, col.B, whitespaceMarkerAlpha);
 
 				if (ch == '\t') {
 					DrawTabMarker (ctx, selected, xpos, xpos2, y);
@@ -1625,7 +1627,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			cr.Color = new Cairo.Color (col.R, col.G, col.B, 0.2);
+			cr.Color = new Cairo.Color (col.R, col.G, col.B, whitespaceMarkerAlpha);
 			cr.ShowLayout (layout);
 			cr.Restore ();
 		}
