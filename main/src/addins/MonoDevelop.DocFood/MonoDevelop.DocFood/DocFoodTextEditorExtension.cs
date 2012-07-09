@@ -65,12 +65,25 @@ namespace MonoDevelop.DocFood
 			if (keyChar != '/')
 				return base.KeyPress (key, keyChar, modifier);
 			
-			DocumentLine line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
+			var line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 			string text = textEditorData.Document.GetTextAt (line.Offset, line.Length);
 			
 			if (!text.EndsWith ("//"))
 				return base.KeyPress (key, keyChar, modifier);
-			
+
+			// check if there is doc comment above or below.
+			var l = line.PreviousLine;
+			while (l != null && l.Length == 0)
+				l = l.PreviousLine;
+			if (l != null && textEditorData.GetTextAt (l).TrimStart ().StartsWith ("///"))
+				return base.KeyPress (key, keyChar, modifier);
+
+			l = line.NextLine;
+			while (l != null && l.Length == 0)
+				l = l.NextLine;
+			if (l != null && textEditorData.GetTextAt (l).TrimStart ().StartsWith ("///"))
+				return base.KeyPress (key, keyChar, modifier);
+
 			var member = GetMemberToDocument ();
 			if (member == null)
 				return base.KeyPress (key, keyChar, modifier);
