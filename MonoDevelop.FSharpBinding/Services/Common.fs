@@ -40,6 +40,7 @@ module Debug =
       "Resolution", (false, ConsoleColor.Gray)
       "Compiler", (false, ConsoleColor.DarkRed)
       "Config", (false, ConsoleColor.DarkMagenta)
+      "Resolver", (false, ConsoleColor.DarkYellow)
     ] 
     |> List.map (fun (category,(enabled,color)) -> category, ((enabled || isEnvEnabled category), color))
     |> Map.ofList
@@ -59,7 +60,7 @@ module Debug =
   /// Prints only when the specified category is enabled
   let tracef category fmt = 
     fmt |> Printf.kprintf (fun s -> 
-      let enabled, clr = traceEnabled.[category] 
+      let enabled, clr = if traceEnabled.ContainsKey category then traceEnabled.[category] else (true, ConsoleColor.Green)
       if enabled then 
         print ("[F#] [" + category + "] " + s) clr )
 
@@ -318,8 +319,8 @@ module Common =
 
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let generateReferences (items:ProjectItemCollection) configSelector shouldWrap = seq { 
-    // Should we wrap references in "..."
+  let generateReferences (items:ProjectItemCollection) configSelector shouldWrap = 
+   [ // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
     let files = 
       [ for ref in items.GetAll<ProjectReference>() do
@@ -337,7 +338,7 @@ module Common =
         | None -> Debug.tracef "Resolution" "Assembly resolution failed when trying to find default reference for '%s'!" assumedFile
       
     for file in files do 
-      yield "-r:" + wrapf(file) }
+      yield "-r:" + wrapf(file) ]
 
 
   /// Generates command line options for the compiler specified by the 
@@ -346,7 +347,7 @@ module Common =
   let generateCompilerOptions (fsconfig:FSharpCompilerParameters) items config shouldWrap =
     let dashr = generateReferences items config shouldWrap |> Array.ofSeq
     let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
-    [| yield "--noframework"
+    [  yield "--noframework"
        for symbol in defines do yield "--define:" + symbol
        yield if fsconfig.DebugSymbols then  "--debug+" else  "--debug-"
        yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
@@ -354,15 +355,15 @@ module Common =
        // TODO: This currently ignores escaping using "..."
        for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
          yield arg 
-       yield! dashr |] 
+       yield! dashr ] 
   
 
   /// Get source files of the current project (returns files that have 
   /// build action set to 'Compile', but not e.g. scripts or resources)
-  let getSourceFiles (items:ProjectItemCollection) = seq {
-    for file in items.GetAll<ProjectFile>() do
-      if file.BuildAction = "Compile" && file.Subtype <> Subtype.Directory then 
-        yield file.Name.ToString() }
+  let getSourceFiles (items:ProjectItemCollection) = 
+    [ for file in items.GetAll<ProjectFile>() do
+        if file.BuildAction = "Compile" && file.Subtype <> Subtype.Directory then 
+          yield file.Name.ToString() ]
 
   /// Creates a relative path from one file or folder to another. 
   let makeRelativePath (root:string) (file:string) = 
@@ -374,23 +375,24 @@ module Common =
   /// Create a list containing same items as the 'items' parameter that preserves
   /// the order specified by 'ordered' (and new items are at the end)  
   let getItemsInOrder root items ordered relative =
-    let ordered = seq { for f in ordered -> Path.Combine(root, f) }
+    let ordered = [ for f in ordered -> Path.Combine(root, f) ]
     let itemsSet, orderedSet = set items, set ordered
     let keep = Set.intersect orderedSet itemsSet
-    let ordered = ordered |> Seq.filter (fun el -> Set.contains el keep)
+    let ordered = ordered |> List.filter (fun el -> keep.Contains el)
     let procf = if relative then makeRelativePath root else id
-    seq { for f in ordered do yield procf f
-          for f in itemsSet - orderedSet do yield procf f }
+    let unorderedItems = items |> List.filter (fun el -> not (keep.Contains el))
+    [ for f in ordered -> procf f
+      for f in unorderedItems -> procf f ]
     
   /// Generate inputs for the compiler (excluding source code!); returns list of items 
   /// containing resources (prefixed with the --resource parameter)
-  let generateOtherItems (items:ProjectItemCollection) = seq {
-    for file in items.GetAll<ProjectFile>() do
-      match file.BuildAction with
-      | _ when file.Subtype = Subtype.Directory -> ()
-      | "EmbeddedResource" -> yield "--resource:" + (wrapFile(file.Name.ToString()))
-      | "None" | "Content" | "Compile" -> ()
-      | s -> failwith("Items of type '" + s + "' not supported") }
+  let generateOtherItems (items:ProjectItemCollection) = 
+    [ for file in items.GetAll<ProjectFile>() do
+        match file.BuildAction with
+        | _ when file.Subtype = Subtype.Directory -> ()
+        | "EmbeddedResource" -> yield "--resource:" + (wrapFile(file.Name.ToString()))
+        | "None" | "Content" | "Compile" -> ()
+        | s -> failwith("Items of type '" + s + "' not supported") ]
 
   let getToolPath (search_paths:seq<string>) (extensions:seq<string>) (tool_name:string) =
     let search_files = Seq.map (fun x -> tool_name + x) extensions

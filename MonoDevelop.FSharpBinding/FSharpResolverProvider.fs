@@ -40,10 +40,12 @@ type internal FSharpResolveResult(tip:DataTipText) =
 
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
+  do Debug.tracef "Resolver" "Creating FSharpResolverProvider"
   interface ITextEditorResolverProvider with
   
     /// Get tool-tip at the specified offset (from the start of the file)
     member x.GetLanguageItem(doc:MonoDevelop.Ide.Gui.Document, offset:int, region:DomRegion byref) : ResolveResult =
+      do Debug.tracef "Resolver" "in GetLanguageItem"
       let mutable dt = new DomRegion()
       if offset < 0 then dt <- DomRegion.Empty
       let loc = RefactoringService.GetCorrectResolveLocation(doc, doc.Editor.OffsetToLocation(offset))
@@ -56,12 +58,14 @@ type FSharpResolverProvider() =
         result
 
     member x.GetLanguageItem(doc:MonoDevelop.Ide.Gui.Document, offset:int, identifier:string) : ResolveResult =
+      do Debug.tracef "Resolver" "in GetLanguageItem#2"
       let (result, region) = (x :> ITextEditorResolverProvider).GetLanguageItem(doc, offset)
       result
 
     /// Returns string with tool-tip from 'FSharpResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
     member x.CreateTooltip(unit, result, errorInformation, ambience, modifierState) : string = 
+      do Debug.tracef "Resolver" "in CreteTooltip"
       // With monoDevelop head, get error that "result" has type "int"
       null
       //match result with
