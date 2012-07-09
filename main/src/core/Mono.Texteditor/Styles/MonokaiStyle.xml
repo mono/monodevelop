@@ -1,0 +1,130 @@
+﻿<!--
+
+MonokaiStyle.xml
+ 
+Author:
+      Darius Kučinskas <d.kucinskas@gmail.com>
+      Mike Krüger <mkrueger@xamarin.com>
+
+This is based on the Textmate color theme from http://www.monokai.nl/blog/2006/07/15/textmate-color-theme/
+
+Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+<EditorStyle name="Monokai" _description="Monokai style from Textmate color theme.">
+	<Color name="errorColor" value="#FF0000"/>
+
+	<Style name="text" color="#F8F8F2" bgColor="#272822">
+		<Style name="background" color="white">
+			<Style name="readonly" color="#F9F9F8"/>
+			<Style name="searchresult-main" color="#FFE792"/>
+			<Style name="searchresult" color="#FFE792"/> 
+		</Style>
+		<Style name="selection" bgColor="#49483E"/>
+		<Style name="selection.inactive" bgColor="#383830"/>
+		<Style name="link" color="#0000FF"/>
+		<Style name="punctuation" color="#F8F8F2"/>
+		<Style name="preprocessor" color="#729fcf">
+			<Style name="keyword" color="#729fcf" weight="Italic"/>
+		</Style>
+		<Style name="markup" color="#A4E22E">
+			<Style name="tag" weight="Bold" />
+		</Style>
+	</Style>
+	
+	<Style name="template" color ="black" bgColor="#A6E22E">
+		<Style name="tag" color="#FF00FF" />
+		<Style name="directive" color="#FF00FF" />
+	</Style>
+	
+	<Style name="diff">
+		<Style name="line-added" color="#008A8B"/>
+		<Style name="line-removed" color="#6A59CD"/>
+		<Style name="line-changed" color="#336699"/>
+		
+		<Style name="header" color="#008000" weight="Bold" />
+		<Style name="header-seperator" color="#0000FF" />
+		<Style name="header-oldfile" color="#008000" weight="Bold" />
+		<Style name="header-newfile" color="#008000" weight="Bold" />
+		
+		<Style name="location" color="#FB8B00"/>
+	</Style>
+	
+	<Style name="marker">
+		<Style name="line" color="#3E3D31"/>
+		<Style name="line.changed" color="#A4E22E"/>
+		<Style name="line.dirty" color="#E6DB74"/>
+	
+		<Style name="ruler" color="#B3DEFD"/>
+		<Style name="bracket" color="#6699CC" bgColor="#AACCEE"/>
+		<Style name="usages" color="#F8F8F2" bgColor="#f5f5f5"/>
+		
+		<Style name="bookmark.color1" color="#FDD99B"/>
+		<Style name="bookmark.color2"  color="#816647"/>
+		<Style name="underline" color="errorColor">
+			<Style name="error" color="errorColor"/>
+			<Style name="warning" color="#FFA500"/>
+			<Style name="suggestion" color="#8FC68F" />
+			<Style name="hint" color="#8F8FC6" />
+		</Style>
+		
+		<Style name="template">
+			<Style name="primary_template" color="#015A01" bgColor="#98FC66"/>
+			<Style name="primary_highlighted_template" color="#015A01" bgColor="#CCFF99"/>
+			
+			<Style name="secondary_template" color="#FFFFFF" bgColor="#FFFFFF"/>
+			<Style name="secondary_highlighted_template" color="#D9BB7A" bgColor="#FDD99B"/>
+		</Style>
+	</Style>
+	
+	<Style name="bubble">
+		<Style name="warning" color="#000000" bgColor="#F3EEDA" />
+		<Style name="error" color="#FFFFFF" bgColor="#7D0000" />
+	</Style>
+
+	<Style name="linenumber" color="#BCBCBC" bgColor="#272822"/>
+	
+	<Style name="iconbar" color="#3B3A32"/>
+	<Style name="iconbar.separator" color="#3B3A32"/>
+
+	<Style name="fold" color="#75715E" bgColor="#272822"/>
+	<Style name="fold.highlight" color="#565248"/>
+	<Style name="fold.togglemarker" color="#465457"/>
+	
+	<Style name="comment"  weight="italic" color="#75715E">
+		<Style name="keyword" weight="bold" color="#75715E"/>
+	</Style>
+	
+	<Style name="constant" color="#AE81FF">
+		<Style name="language.void" weight="italic" color="#66D9EF"/>
+	</Style>
+	
+	<Style name="string" color="#E6DB74" />
+	
+	<Style name="keyword" color="#F92672">
+		<Style name="access" color="#AE81FF"/> 
+		<Style name="type" weight="italic" color="#66D9EF"/> 
+		<Style name="semantic.type" weight="italic" color="#66D9EF"/> 
+		<Style name="semantic.field" color="#A4E22E"/>
+		<Style name="semantic.property" color="#A4E22E"/>
+		<Style name="semantic.error" color="errorColor"/>
+	</Style>
+</EditorStyle>

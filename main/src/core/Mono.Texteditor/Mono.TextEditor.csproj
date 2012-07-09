@@ -320,6 +320,9 @@
     <EmbeddedResource Include="Styles\SolarizedDarkStyle.xml">
       <LogicalName>SolarizedDarkStyle.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Styles\MonokaiStyle.xml">
+      <LogicalName>MonokaiStyle.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
