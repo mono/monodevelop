@@ -39,7 +39,7 @@ module ServiceSettings =
   
   /// How often should we trigger the 'OnIdle' event and run
   /// background compilation of the current project?
-  let idleTimeout = 30000
+  let idleTimeout = 3000
 
   /// When errors are reported, we don't show them immediately (because appearing
   /// bubbles while typing are annoying). We show them when the user doesn't

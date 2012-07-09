@@ -27,27 +27,31 @@ module CompilerService =
 
 
   /// Generate various command line arguments for the project
-  let private generateCmdArgs (config:DotNetProjectConfiguration) items configSel = seq {
-    match config.CompileTarget with
-    | CompileTarget.Library  -> yield "--target:library"
-    | CompileTarget.Module   -> yield "--target:module"
-    | CompileTarget.WinExe   -> yield "--target:winexe"
-    | (*CompileTarget.Exe*)_ -> yield "--target:exe"
+  let private generateCmdArgs (config:DotNetProjectConfiguration) items configSel = 
+    [ match config.CompileTarget with
+      | CompileTarget.Library  -> yield "--target:library"
+      | CompileTarget.Module   -> yield "--target:module"
+      | CompileTarget.WinExe   -> yield "--target:winexe"
+      | (*CompileTarget.Exe*)_ -> yield "--target:exe"
     
-    if config.SignAssembly then yield "--keyfile:" + Common.wrapFile config.AssemblyKeyFile
-    yield "--out:" + Common.wrapFile (config.CompiledOutputName.ToString())
+      if config.SignAssembly then yield "--keyfile:" + Common.wrapFile config.AssemblyKeyFile
+      yield "--out:" + Common.wrapFile (config.CompiledOutputName.ToString())
+    
+      // Generate compiler options based on F# specific project settings
+      let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
+    
+      if not (String.IsNullOrEmpty fsconfig.DocumentationFile) then 
+          yield ("--doc:" + Common.wrapFile fsconfig.DocumentationFile)
 
-    // Generate compiler options based on F# specific project settings
-    let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
-    let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
-    yield! Common.generateCompilerOptions fsconfig items configSel shouldWrap }
+      let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
+      yield! Common.generateCompilerOptions fsconfig items configSel shouldWrap ]
 
 
   /// Process a single message emitted by the F# compiler
   let private processMsg msg = 
     let m = 
-      let t1 = regParseFsOutput.Match(msg) in
-        if (t1.Success) then t1 else regParseFsOutputNoNum.Match(msg)
+      let t1 = regParseFsOutput.Match(msg) 
+      if (t1.Success) then t1 else regParseFsOutputNoNum.Match(msg)
     if (m.Success) then 
       let errNo = (if (m.Groups.Item("err") <> null) then (m.Groups.Item("err")).Value else "") 
       let info = 
@@ -61,7 +65,6 @@ module CompilerService =
   /// Run the F# compiler with the specified arguments (passed as a list)
   /// and print the arguments to progress monitor (Output in MonoDevelop)
   let private compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:IProgressMonitor) argsList = 
-    let args = String.concat "\n" argsList
   
 //    let nw x = if x = None then "None" else x.Value 
 //    monitor.Log.WriteLine("Env compiler: " + nw (Common.getCompilerFromEnvironment runtime framework))
@@ -93,7 +96,20 @@ module CompilerService =
           | None ->
             br.AddError("No compiler found; add a default compiler in the F# settings.")
             None
-    //monitor.Log.WriteLine("fscPath: " + nw fscPath)
+    
+// The communication with the resident compiler doesn't seem robust enough to use this on Linux
+#if USE_RESIDENT
+    // Add the "stay resident" --resident compiler option 
+    // if using "fsharpc" as the compiler, i.e. a Mono compiler that supports this option.
+    let argsList = 
+        match fscPath with 
+        | None -> argsList
+        | Some p -> if p.EndsWith "fsharpc" then "--resident" :: argsList else argsList
+#endif
+        
+    let args = String.concat "\n" argsList
+
+        //monitor.Log.WriteLine("fscPath: " + nw fscPath)
 
     if fscPath = None then
       br.FailedBuildCount <- 1
@@ -108,10 +124,12 @@ module CompilerService =
       Debug.tracef "Compiler" "Compile using: %s Arguments: %s" fscPath.Value args
       let p = Process.Start(startInfo) 
       
+      Debug.tracef "Compiler" "Reading output..." 
       // Read all output and fold multi-line 
       let lines = 
         [ let line = ref ""
           while (line := p.StandardError.ReadLine(); !line <> null) do
+            Debug.tracef "Compiler" "OUTPUT: %s" !line 
             yield !line 
           yield "" ]    
       let messages = 
@@ -128,9 +146,12 @@ module CompilerService =
         match processMsg msg with
         | true, (f, l, c, n, m) -> br.AddError(f, l, c, n, m)
         | false, (f, l, c, n, m) -> br.AddWarning(f, l, c, n, m)
-      
+
+            
+      Debug.tracef "Compiler" "Waiting for exit..." 
       p.WaitForExit()
-      br.CompilerOutput <- String.concat "\n" messages
+      Debug.tracef "Compiler" "Done with compilation" 
+      br.CompilerOutput <- String.concat "\n" lines
       br
   
   // ------------------------------------------------------------------------------------
@@ -140,16 +161,17 @@ module CompilerService =
   let Compile(items, config:DotNetProjectConfiguration, configSel, monitor) : BuildResult =
     let runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime
     let framework = config.TargetFramework
-    [ yield! [ "--noframework --nologo" ]
-      yield! generateCmdArgs config items configSel  
-      yield! Common.generateReferences items configSel true
-      yield! Common.generateOtherItems items 
+    let args = 
+        [ yield! [ "--noframework --nologo" ]
+          yield! generateCmdArgs config items configSel  
+          yield! Common.generateOtherItems items 
       
-      // Generate source files (sort using current configuration)
-      let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
-      let files = Common.getSourceFiles items
-      let root = System.IO.Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
-      yield! Common.getItemsInOrder root files fsconfig.BuildOrder false ]
-    |> compile runtime framework monitor
+          // Generate source files (sort using current configuration)
+          let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
+          let files = Common.getSourceFiles items
+          let root = System.IO.Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
+          yield! Common.getItemsInOrder root files fsconfig.BuildOrder false ]
+          
+    compile runtime framework monitor args
     
     // CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters)configuration.CompilationParameters ?? new CSharpCompilerParameters ();
