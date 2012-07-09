@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			if (member.EntityType == EntityType.Constructor) {
 				if (includeOverloads)
-					return member.DeclaringType.GetConstructors ();
+					return member.DeclaringType.GetMembers (m => m.EntityType == EntityType.Constructor, GetMemberOptions.IgnoreInheritedMembers);
 				return new [] { member };
 			}
 

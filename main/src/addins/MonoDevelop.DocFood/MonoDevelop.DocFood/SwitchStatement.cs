@@ -43,17 +43,17 @@ namespace MonoDevelop.DocFood
 			CaseSections = new List<Node> ();
 		}
 		
-		public override void Run (DocGenerator generator)
+		public override void Run (DocGenerator generator, object member)
 		{
-			if (!generator.EvaluateCondition (Attributes))
+			if (!generator.EvaluateCondition (Attributes, member))
 				return;
 			foreach (var caseSection in CaseSections) {
-				if (generator.EvaluateCondition (caseSection.Attributes)) {
-					caseSection.Children.ForEach (child => child.Run (generator));
+				if (generator.EvaluateCondition (caseSection.Attributes, member)) {
+					caseSection.Children.ForEach (child => child.Run (generator, member));
 					return;
 				}
 			}
-			Children.ForEach (child => child.Run (generator));
+			Children.ForEach (child => child.Run (generator, member));
 		}
 		
 		public override  void Write (XmlWriter writer)
@@ -98,10 +98,10 @@ namespace MonoDevelop.DocFood
 		{
 			public const string XmlTag = "Case";
 			
-			public override void Run (DocGenerator generator)
+			public override void Run (DocGenerator generator, object member)
 			{
-				if (generator.EvaluateCondition (Attributes))
-					Children.ForEach (child => child.Run (generator));
+				if (generator.EvaluateCondition (Attributes, member))
+					Children.ForEach (child => child.Run (generator, member));
 			}
 			
 			public override void Write (XmlWriter writer)

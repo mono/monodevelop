@@ -54,7 +54,7 @@ namespace MonoDevelop.DocFood
 			this.Name = name;
 		}
 		
-		public override void Run (DocGenerator generator)
+		public override void Run (DocGenerator generator, object member)
 		{
 			string str = StringParserService.Parse (Documentation, generator.tags).Trim ();
 			if (!char.IsUpper (str[0]))

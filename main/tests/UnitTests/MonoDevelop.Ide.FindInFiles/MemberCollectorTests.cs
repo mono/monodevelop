@@ -540,8 +540,8 @@ class B : A
 			var code = @"
 class A
 {
-	public A() { }
-	public A(int i) { }
+public A() { }
+public A(int i) { }
 }";
 			var emptyParam = new string [] { };
 			var intParam = new [] { "Int32" };
@@ -550,14 +550,30 @@ class A
 				m => m.EntityType == EntityType.Constructor && MatchParameters(m, emptyParam),
 				m => m.EntityType == EntityType.Constructor && MatchParameters(m, intParam)
 			};
-
+			
 			foreach (var filter in filters) {
 				var result1 = CollectMembers (code, "A", m => true, filter, true, false);
 				VerifyResult (result1, filters);
 			}
-
+			
 			var result2 = CollectMembers (code, "A", m => true, filters [0], false, true);
 			VerifyResult (result2, new [] { filters [0] });
+		}
+
+
+		[Test ()]
+		public void TestStaticConstructor ()
+		{
+			var code = @"
+class A
+{
+public A() { }
+static A() { }
+}";
+			var emptyParam = new string [] { };
+			Predicate<IMember> filter = m => m.EntityType == EntityType.Constructor && MatchParameters(m, emptyParam);
+			var result1 = CollectMembers (code, "A", m => true, filter, true, false);
+			Assert.AreEqual (2, result1.Count);
 		}
 
 	}

@@ -221,6 +221,10 @@ namespace Mono.TextEditor.Vi
 					
 				case Gdk.Key.BackSpace:
 					return DeleteActions.Backspace;
+
+				case Gdk.Key.Return:
+				case Gdk.Key.KP_Enter:
+					return MiscActions.InsertNewLine;
 				}
 			}
 			return null;

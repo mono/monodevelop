@@ -844,12 +844,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					this.wrapper = wrapper;
 					contextTask = Task.Factory.StartNew (delegate {
 	
-						if (projectCache.ContainsKey (this.wrapper.Project.FileName))
-							return projectCache [this.wrapper.Project.FileName];
+						IProjectContent content;
+						if (projectCache.TryGetValue (this.wrapper.Project.FileName, out content)) {
+							if (content != null)
+								return content;
+						}
 	
 						var context = LoadProjectCache (this.wrapper.Project);
 						if (context != null) {
-							return context.SetAssemblyName (this.wrapper.Project.Name);
+							return context.SetAssemblyName (this.wrapper.Project.Name) ?? context;
 						}
 
 						context = new CSharpProjectContent ();
