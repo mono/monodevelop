@@ -31,7 +31,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Core.AddIns
 {
-	public class ExecutionModeNode: TypeExtensionNode, IExecutionMode
+	class ExecutionModeNode: TypeExtensionNode, IExecutionMode
 	{
 		[NodeAttribute ("_name", Localizable=true)]
 		string name = null;

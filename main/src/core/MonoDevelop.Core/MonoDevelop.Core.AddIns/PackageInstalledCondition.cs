@@ -30,7 +30,7 @@ using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Core.AddIns
 {
-	public class PackageInstalledCondition: ConditionType
+	class PackageInstalledCondition: ConditionType
 	{
 		public override bool Evaluate (Mono.Addins.NodeElement conditionNode)
 		{
@@ -51,7 +51,7 @@ namespace MonoDevelop.Core.AddIns
 		}
 	}
 	
-	public class PackageNotInstalledCondition: PackageInstalledCondition
+	class PackageNotInstalledCondition: PackageInstalledCondition
 	{
 		public override bool Evaluate (Mono.Addins.NodeElement conditionNode)
 		{

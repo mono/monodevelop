@@ -30,7 +30,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core
 {
-	public static class WebCertificateService
+	static class WebCertificateService
 	{
 		const string WebCertificateProvidersPath = "/MonoDevelop/Core/WebCertificateProvider";
 		

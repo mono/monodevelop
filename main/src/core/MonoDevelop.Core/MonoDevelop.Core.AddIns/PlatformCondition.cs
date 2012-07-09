@@ -29,7 +29,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.AddIns
 {
-	public class PlatformCondition: ConditionType
+	class PlatformCondition: ConditionType
 	{
 		public override bool Evaluate (NodeElement conditionNode)
 		{

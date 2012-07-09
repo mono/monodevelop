@@ -28,7 +28,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.AddIns
 {
-	public class FilePathExtensionNode : ExtensionNode
+	class FilePathExtensionNode : ExtensionNode
 	{
 		[NodeAttribute (Required=true)]
 		string path;

@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.Core.AddIns
 {
-	public class AssemblyInstalledCondition : ConditionType
+	class AssemblyInstalledCondition : ConditionType
 	{
 		public override bool Evaluate (NodeElement conditionNode)
 		{

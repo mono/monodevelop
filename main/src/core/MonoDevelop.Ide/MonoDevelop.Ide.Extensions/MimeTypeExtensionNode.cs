@@ -26,7 +26,7 @@
 using System;
 using Mono.Addins;
 
-namespace MonoDevelop.Core.AddIns
+namespace MonoDevelop.Ide.Extensions
 {
 	[NodeAttribute ("class", typeof(Type), true, Description="Name of the class")]
 	[NodeAttribute ("mimeType", typeof(string), true, Description="Mime type to attach to.")]

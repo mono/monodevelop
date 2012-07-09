@@ -33,7 +33,7 @@ using System.Xml;
 
 namespace MonoDevelop.Core.AddIns
 {
-	public class TargetFrameworkNode: ExtensionNode
+	class TargetFrameworkNode: ExtensionNode
 	{
 		[NodeAttribute]
 		protected string resource;

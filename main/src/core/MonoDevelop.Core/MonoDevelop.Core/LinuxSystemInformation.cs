@@ -29,7 +29,7 @@ using System.Text;
 
 namespace MonoDevelop.Core
 {
-	public class LinuxSystemInformation : UnixSystemInformation
+	class LinuxSystemInformation : UnixSystemInformation
 	{
 		protected override void AppendOperatingSystem (StringBuilder sb)
 		{

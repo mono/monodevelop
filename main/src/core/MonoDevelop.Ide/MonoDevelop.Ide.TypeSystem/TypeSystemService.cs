@@ -46,6 +46,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.CSharp;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.TypeSystem
 {

@@ -34,6 +34,7 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.TypeSystem
 {

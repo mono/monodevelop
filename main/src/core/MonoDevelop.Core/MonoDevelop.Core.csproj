@@ -382,7 +382,6 @@
     <Compile Include="MonoDevelop.Core\ApplicationService.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressStatusMonitor.cs" />
     <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
-    <Compile Include="MonoDevelop.Core.AddIns\MimeTypeExtensionNode.cs" />
     <Compile Include="MonoDevelop.Projects\ILanguageBinding.cs" />
     <Compile Include="MonoDevelop.Core\Platform.cs" />
     <Compile Include="MonoDevelop.Core\UserProfile.cs" />
