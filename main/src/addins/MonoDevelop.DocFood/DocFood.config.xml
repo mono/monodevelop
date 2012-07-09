@@ -365,9 +365,16 @@
 						<IfNot paramCount="0">
 							<Section name="summary">${Sentence}.</Section>
 						</IfNot>
-						<IfNot returns="System.Void">
-							<Section name="returns">The ${AllWordsExceptFirst}.</Section>
-						</IfNot>
+						<Switch>
+							<Case returns="System.Boolean">
+								<Section name="returns">${True}, if ${AllWordsExceptFirst} was ${FirstAsVerbPastParticiple}, ${False} otherwise.</Section>
+							</Case>
+							<Default>
+								<IfNot returns="System.Void">
+									<Section name="returns">The ${AllWordsExceptFirst}.</Section>
+								</IfNot>
+							</Default>				
+						</Switch>
 					</Default>
 				</Switch>
 			</Case>
