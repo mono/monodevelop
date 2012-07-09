@@ -14,12 +14,14 @@ type FSharpParsedDocument(fileName) =
 type FSharpParser() =
   inherit AbstractTypeSystemParser()
   do Debug.tracef "Parsing" "Creating FSharpParser"
-  
-  //override x.CanParse(fileName) =
-  //  Common.supportedExtension(IO.Path.GetExtension(fileName))
-      
+        
+  /// Holds the previous errors reported by a file. 
   let prevErrors = System.Collections.Generic.Dictionary<string,Error list>()
+
+  /// Holds the previous content used to generate the previous errors. An entry is only present if we have 
+  /// scheduled a new ReparseDocument() to update the errors.
   let prevContent = System.Collections.Generic.Dictionary<string,string>()
+
   interface ITypeSystemParser with
    override x.Parse(storeAst:bool, fileName:string, content:System.IO.TextReader, proj:MonoDevelop.Projects.Project) =
     let fileContent = content.ReadToEnd()
@@ -62,7 +64,7 @@ type FSharpParser() =
     let errors = 
         match prevErrors.TryGetValue(fileName) with 
         | true,err -> 
-            prevContent.Remove(fileName) |> ignore; 
+            prevContent.Remove(fileName) |> ignore
             err
         | _ -> [ ] 
 
