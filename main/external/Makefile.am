@@ -3,7 +3,7 @@ TARBALL_PATH=../../tarballs/external
 NGIT_SLN=ngit/ngit.sln
 NGIT=$(NGIT_SLN) /t:NGit
 NGIT_OUTPUT = ngit/bin/
-NGIT_ASSEMBLIES = $(addprefix $(NGIT_OUTPUT), NGit.dll NSch.dll Sharpen.dll)
+NGIT_ASSEMBLIES = $(addprefix $(NGIT_OUTPUT), NGit.dll NSch.dll Sharpen.dll Sharpen.Unix.dll)
 NGIT_BINARIES = $(NGIT_ASSEMBLIES) $(addsuffix .mdb, $(NGIT_ASSEMBLIES))
 
 CECIL_SLN=cecil/Mono.Cecil.sln
