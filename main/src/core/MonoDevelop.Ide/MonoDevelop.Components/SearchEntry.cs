@@ -100,7 +100,8 @@ namespace MonoDevelop.Components
 		public bool RoundedShape {
 			get { return roundedShape; }
 			set {
-				roundedShape = value;
+//				roundedShape = value;
+				entry.Name = "search-entry";
 				ShowHideButtons ();
 				QueueDraw ();
 			}
@@ -152,7 +153,7 @@ namespace MonoDevelop.Components
 			entry.Activated += delegate {
 				NotifyActivated ();
 			};
-			
+
 			filter_button.Image.Xpad = 0;
 			clear_button.Image.Xpad = 0;
 			filter_button.CanFocus = false;
