@@ -185,7 +185,6 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			};
 
-			matchEntry.VisibleWindow = false;
 			matchEntry.ForceFilterButtonVisible = true;
 
 			var info = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
