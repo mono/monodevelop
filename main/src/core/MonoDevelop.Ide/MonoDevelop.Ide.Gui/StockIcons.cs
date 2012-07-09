@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Empty = "md-empty";
 		public static readonly IconId EmptyFileIcon = "md-empty-file-icon";
 		public static readonly IconId Enum = "md-enum";
-		public static readonly IconId Error = Gtk.Stock.DialogError;
+		public static readonly IconId Error = "md-error";
 		public static readonly IconId Event = "md-event";
 		public static readonly IconId ExecutionMarker = "md-execution-marker";
 		public static readonly IconId Field = "md-field";
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId TipOfTheDay = "md-tip-of-the-day";
 		public static readonly IconId ToggleBookmark = "md-toggle-bookmark";
 		public static readonly IconId UndoIcon = Gtk.Stock.Undo;
-		public static readonly IconId Warning = Gtk.Stock.DialogWarning;
+		public static readonly IconId Warning = "md-warning";
 		public static readonly IconId WebSearchIcon = "md-web-search-icon";
 		public static readonly IconId XmlFileIcon = "md-xml-file-icon";
 		public static readonly IconId Addin = "md-addin";
