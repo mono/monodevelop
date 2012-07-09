@@ -75,7 +75,7 @@ THE SOFTWARE.
 	
 		<Style name="ruler" color="#B3DEFD"/>
 		<Style name="bracket" color="#6699CC" bgColor="#AACCEE"/>
-		<Style name="usages" color="#F8F8F2" bgColor="#f5f5f5"/>
+		<Style name="usages" color="#49483E" bgColor="#383830"/>
 		
 		<Style name="bookmark.color1" color="#FDD99B"/>
 		<Style name="bookmark.color2"  color="#816647"/>
