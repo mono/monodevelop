@@ -19,6 +19,7 @@ all:
 	$(MAKE) -C monomac/src
 	mkdir -p $(OUTPUT)
 	xbuild /property:CodePage=65001 $(NGIT)
+	XBUILD /property:CodePage=65001 ngit/Sharpen.Unix/Sharpen.Unix.csproj
 	xbuild /property:CodePage=65001 $(CECIL)
 	for binary in $(BINARIES); do \
 		rsync -u $$binary $(OUTPUT)/ || exit 1; \
