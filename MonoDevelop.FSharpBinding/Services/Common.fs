@@ -265,7 +265,7 @@ module ScriptOptions =
       loads |> List.ofSeq, includes |> List.ofSeq
       
   // ------------------------------------------------------------------------------------
-  /// Retrusn compiler options to be used by language service 
+  /// Returns compiler options to be used by language service 
   /// when working with a standalone F# script file
   let getScriptOptionsForFile(fileName, source) = 
     let references, nowarns, loads, includes = parseFile fileName source
@@ -345,18 +345,14 @@ module Common =
   /// parameters and assemblies referenced by the project ("-r" options)
   let generateCompilerOptions (fsconfig:FSharpCompilerParameters) items config shouldWrap =
     let dashr = generateReferences items config shouldWrap |> Array.ofSeq
-    let defines = fsconfig.DefinedSymbols.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
+    let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [| yield "--noframework"
        for symbol in defines do yield "--define:" + symbol
-       if fsconfig.GenerateDebugInfo then 
-         yield "--debug+" 
-         yield "--define:DEBUG" 
-       else 
-         yield "--debug-"
-       yield if fsconfig.OptimizeCode then "--optimize+" else "--optimize-"
+       yield if fsconfig.DebugSymbols then  "--debug+" else  "--debug-"
+       yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
        yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
        // TODO: This currently ignores escaping using "..."
-       for arg in fsconfig.CustomCommandLine.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
+       for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
          yield arg 
        yield! dashr |] 
   
