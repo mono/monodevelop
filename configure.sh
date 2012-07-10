@@ -33,7 +33,8 @@ MONO=mono
 FSC=fsc
 
 
-if [[ `which $FSC` == "" ]]; then FSC=fsc; fi
+if [[ `which $FSC` == "" ]]; then FSC=fsc; else FSC=`which $FSC`; fi 
+if [[ `which $GMCS` == "" ]]; then GMCS=gmcs; else GMCS=`which $GMCS`; fi
  
 while getopts e:f:c:n OPT; do
   case "$OPT" in
@@ -122,6 +123,9 @@ PATHS=( /usr/lib/mono/mono-addins /usr/lib/cli/mono-addins /Library/Frameworks/M
 searchpaths "Mono.Addins" Mono.Addins.dll PATHS[@]
 MADIR=$RESULT
 echo "Successfully found Mono.Addins directory." $MADIR
+echo "Using F# compiler : " $FSC
+echo "Using C# compiler : " $GMCS
+
 # ------------------------------------------------------------------------------
 # Write Makefile
 
