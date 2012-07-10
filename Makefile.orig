@@ -74,7 +74,7 @@ REFERENCES = \
 	-r:$(MDBIN)/MonoDevelop.Core.dll \
 	-r:$(MDBIN)/MonoDevelop.Ide.dll \
 	-r:$(MDADDIN)/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
-	-r:$(MDADDIN)/BackendBindings/MonoDevelop.CSharpBinding.dll \
+	-r:$(MDADDIN)/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll \
 	-r:$(MDBIN)/Mono.TextEditor.dll \
 	-r:$(MDBIN)/ICSharpCode.NRefactory.dll \
 	-r:$(MDBIN)/ICSharpCode.NRefactory.CSharp.dll \
