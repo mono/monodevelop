@@ -91,12 +91,12 @@ namespace Mono.TextEditor
 				DocumentLine segmentStartLine = segment.StartLine;
 				lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentStartLine, segmentStartLine.Offset, segmentStartLine.Length, -1, -1);
 				var rectangleStart = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
-				xPos = System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangleStart.X / Pango.Scale.PangoScale - editor.HAdjustment.Value));
+				xPos = System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + textViewMargin.TextStartPosition + rectangleStart.X / Pango.Scale.PangoScale - editor.HAdjustment.Value));
 				
 				DocumentLine segmentEndLine = segment.EndLine;
 				lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentEndLine, segmentEndLine.Offset, segmentEndLine.Length, -1, -1);
 				var rectangleEnd = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
-				xPos = System.Math.Min (xPos, System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + rectangleEnd.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));
+				xPos = System.Math.Min (xPos, System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + textViewMargin.TextStartPosition + rectangleEnd.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));
 				
 				int width = editor.Allocation.Width;
 				if (editor.HAdjustment.Upper > width) {
@@ -108,6 +108,18 @@ namespace Mono.TextEditor
 				if (yEnd == 0)
 					yEnd = editor.VAdjustment.Upper;
 				rectangleHeight = yEnd - y;
+
+				// TODO: Implement gaussian blur filter for drop shadow effect
+				//       http://www.w3.org/TR/SVG/filters.html#feGaussianBlurElement
+				if (i == foldSegments.Count - 1) {
+					const int xx = 2;
+					const int yy = 2;
+					for (double w2 = 1; w2 < 3 * editor.Options.Zoom; w2 += editor.Options.Zoom){
+						DrawRoundRectangle (cr, true, true, xPos - w2, y - editor.VAdjustment.Value - w2, editor.LineHeight / 2, rectangleWidth + w2 * 2, rectangleHeight + w2 * 2);
+						cr.Color = new Cairo.Color (0.5, 0.5, 0.5, 0.5);
+						cr.Fill ();
+					}
+				}
 
 				DrawRoundRectangle (cr, true, true, xPos, y - editor.VAdjustment.Value, editor.LineHeight / 2, rectangleWidth, rectangleHeight);
 				cr.Color = GetColor (i, brightness, colorCount);
