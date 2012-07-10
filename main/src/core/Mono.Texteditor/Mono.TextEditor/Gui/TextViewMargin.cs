@@ -565,7 +565,7 @@ namespace Mono.TextEditor
 
 		bool UpdateCaret ()
 		{
-			double blinkSinus = 0.5 + System.Math.Sin (1.5 * System.Math.PI * (DateTime.Now - start_time).TotalMilliseconds / blinkTime) / 2;
+			double blinkSinus = 0.5 + System.Math.Sin (1.2 * System.Math.PI * (DateTime.Now - start_time).TotalMilliseconds / blinkTime) / 2;
 
 			if (blinkSinus > 0.8) {
 				caretBlinkState = 1.0;
