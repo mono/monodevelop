@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Collections;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Evaluation;
+using Microsoft.Build.Construction;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -94,9 +95,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			RunSTA (delegate {
 				foreach (var engine in engines.Values) {
+					ProjectRootElement xml = null;
 					foreach (var p in engine.GetLoadedProjects (file)) {
 						engine.UnloadProject (p);
-						engine.UnloadProject (p.Xml);
+						xml = p.Xml;
+					}
+					if (xml != null) {
+						// All the projects from the same file share the same xml, so it has to be unloaded only once
+						engine.UnloadProject (xml);
 					}
 				}
 			});

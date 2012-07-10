@@ -143,18 +143,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Project project = null;
 
 			foreach (var pc in configurations) {
-				var p = engine.LoadProject (pc.ProjectFile);
-				p.SetGlobalProperty ("Configuration", pc.Configuration);
-				if (!string.IsNullOrEmpty (pc.Platform))
-					p.SetGlobalProperty ("Platform", pc.Platform);
-				else
-					p.RemoveGlobalProperty ("Platform");
+				var p = ConfigureProject (pc.ProjectFile, pc.Configuration, pc.Platform);
 				if (pc.ProjectFile == file)
 					project = p;
 			}
 
 			Environment.CurrentDirectory = Path.GetDirectoryName (file);
 			return project;
+		}
+
+		Project ConfigureProject (string file, string configuration, string platform)
+		{
+			var p = engine.GetLoadedProjects (file).FirstOrDefault(pr => pr.GetPropertyValue ("Configuration") == configuration && pr.GetPropertyValue ("Platform") == platform);
+			if (p == null) {
+				p = engine.LoadProject (file);
+				p.SetGlobalProperty ("Configuration", configuration);
+				if (!string.IsNullOrEmpty (platform))
+					p.SetGlobalProperty ("Platform", platform);
+			}
+			return p;
 		}
 
 		public override object InitializeLifetimeService ()
