@@ -421,10 +421,10 @@ namespace Mono.TextEditor
 			DisposeGCs ();
 
 			var markerFont = textEditor.Options.Font.Copy ();
-			markerFont.Size = markerFont.Size * 4 / 5;
+			markerFont.Size = markerFont.Size * 8 / 10;
 			markerLayout.FontDescription = markerFont;
 			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
-			markerLayout.FontDescription.Style = Pango.Style.Italic;
+			markerLayout.FontDescription.Style = Pango.Style.Normal;
 
 			if (textEditor.preeditString != null && textEditor.preeditAttrs != null) {
 				using (var preeditLayout = PangoUtil.CreateLayout (textEditor)) {
@@ -2372,19 +2372,20 @@ namespace Mono.TextEditor
 					} else {
 						cr.Color = isFoldingSelected ? SelectionColor.CairoColor : ColorStyle.FoldLine.CairoColor;
 					}
-
+					var boundingRectangleHeight = foldingRectangle.Height - 1;
+					var boundingRectangleY = System.Math.Floor (foldingRectangle.Y + (foldingRectangle.Height - boundingRectangleHeight) / 2);
 					RoundedRectangle (cr,
 					                 System.Math.Floor (foldingRectangle.X) + 0.5,
-					                 System.Math.Floor (foldingRectangle.Y) + 0.5,
+					                 boundingRectangleY + 0.5,
 					                 System.Math.Floor (foldingRectangle.Width - cr.LineWidth),
-					                 System.Math.Floor (foldingRectangle.Height - cr.LineWidth),
+					                 System.Math.Floor (boundingRectangleHeight - cr.LineWidth),
 					                 LineHeight / 4, CairoCorners.All, false);
 					cr.Stroke ();
 					
 					cr.Save ();
 					cr.Translate (
 						pangoPosition / Pango.Scale.PangoScale + foldXMargin,
-						System.Math.Floor (y +  (foldingRectangle.Height - System.Math.Floor (height / Pango.Scale.PangoScale)) / 2));
+						System.Math.Floor (boundingRectangleY +  (boundingRectangleHeight - System.Math.Floor (height / Pango.Scale.PangoScale)) / 2));
 					cr.ShowLayout (markerLayout);
 					cr.Restore ();
 
