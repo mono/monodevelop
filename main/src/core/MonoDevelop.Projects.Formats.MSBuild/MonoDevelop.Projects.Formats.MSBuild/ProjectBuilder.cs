@@ -178,12 +178,4 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return str;
 		}
 	}
-
-	[Serializable]
-	public class ProjectConfigurationInfo
-	{
-		public string ProjectFile;
-		public string Configuration;
-		public string Platform;
-	}
 }

@@ -35,4 +35,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string[] GetAssemblyReferences (ProjectConfigurationInfo[] configurations);
 		void Refresh ();
 	}
+
+	[Serializable]
+	public class ProjectConfigurationInfo
+	{
+		public string ProjectFile;
+		public string Configuration;
+		public string Platform;
+	}
 }
