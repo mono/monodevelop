@@ -29,7 +29,11 @@
     <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp" />
   </Extension>
 
-  	<Extension path="/MonoDevelop/Ide/TextEditorResolver">
+  <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+    <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpLanguageItemTooltipProvider" />
+  </Extension>
+
+  <Extension path="/MonoDevelop/Ide/TextEditorResolver">
     	<Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
   	</Extension>
 
