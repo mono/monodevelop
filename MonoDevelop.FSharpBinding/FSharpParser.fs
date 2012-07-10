@@ -32,7 +32,7 @@ type FSharpParser() =
     // Trigger a parse/typecheck in the background. After the parse/typecheck is completed, request another parse to report the errors.
     //
     // Skip this is this call is a result of updating errors and the content still matches.
-    if not (prevContent.ContainsKey(fileName) && prevContent.[fileName] = fileContent ) && Common.supportedExtension(IO.Path.GetExtension(fileName)) then 
+    if fileName <> null && not (prevContent.ContainsKey(fileName) && prevContent.[fileName] = fileContent ) && Common.supportedExtension(IO.Path.GetExtension(fileName)) then 
       // Trigger parsing in the language service 
       let filePathOpt = 
           // TriggerParse will work only for full paths
@@ -51,7 +51,8 @@ type FSharpParser() =
         if config <> null then 
           LanguageService.Service.TriggerParse(filePath, fileContent, proj, config, full=false, afterCompleteTypeCheckCallback=(fun (fileName,errors) ->
 
-                      let file = fileName.FullPath.ToString()
+                    let file = fileName.FullPath.ToString()
+                    if file <> null then
                       prevErrors.[file] <- errors
                       prevContent.[file] <- fileContent
                       // Scheule another parse to actually update the errors 
@@ -67,6 +68,9 @@ type FSharpParser() =
     let doc = new FSharpParsedDocument(fileName)
     doc.Flags <- doc.Flags ||| ParsedDocumentFlags.NonSerializable
     let errors = 
+      match fileName with
+      | null -> []
+      | _ ->
         match prevErrors.TryGetValue(fileName) with 
         | true,err -> 
             prevContent.Remove(fileName) |> ignore
