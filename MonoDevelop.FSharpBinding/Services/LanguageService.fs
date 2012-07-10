@@ -227,9 +227,6 @@ type internal TypedParseResult(info:TypeCheckInfo) =
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
         let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
         let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
-        let res2 = info.GetDataTipText((line, col+1), lineStr, identIsland, token)
-        let res3 = info.GetDataTipText((line, col+2), lineStr, identIsland, token)
-        let resM = info.GetDataTipText((line, col-1), lineStr, identIsland, token)
         match res with
         | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
           // This works if we're inside "member x.Foo" and want to get 
