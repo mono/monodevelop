@@ -243,97 +243,17 @@ type internal TypedParseResult(info:TypeCheckInfo) =
                                
 // --------------------------------------------------------------------------------------
 
+type internal AfterCompleteTypeCheckCallback = (FilePath * Error list -> unit) option
+
 /// Represents request send to the background worker
 /// We need information about the current file and project (options)
-type internal ParseRequest
-    (file:FilePath, source:string, options:CheckOptions, fullCompile:bool) =
+type internal ParseRequest (file:FilePath, source:string, options:CheckOptions, fullCompile:bool, afterCompleteTypeCheckCallback: AfterCompleteTypeCheckCallback) =
   member x.File  = file
   member x.Source = source
   member x.Options = options
   member x.StartFullCompile = fullCompile
-
-// --------------------------------------------------------------------------------------
-// Parse worker - we have a single instance of this running in the background and it
-// calls the F# compiler service to do parsing of files; The worker can take some time
-// to process messages, so if it receives a request while processing, it ignores it
-//  (callers can call it as frequently as they want)
-
-/// RequestParse runs ordinary parse, RequestQuickParse tries to get
-/// information from the cache maintained by the F# service and reply quickly
-type internal ParseWorkerMessage = 
-  | RequestParse of ParseRequest
-  | RequestQuickParse of ParseRequest
-    
-/// Runs in background and calls the F# compiler services
-/// - reportUntyped - called when new untyped information is available
-/// - reportTyped   - called when new typed information is available
-/// - reportFailure - called when parsing failed (and 'reportTyped' could not be called)
-type internal ParseWorker(checker:InteractiveChecker, reportUntyped, reportTyped, reportFailure) =
-  // 
-  let maximalQueueLength = 2
-  
-  let mbox = SimpleMailboxProcessor.Start(fun mbox ->
-    async { 
-      while true do 
-        Debug.tracef "Worker" "Waiting for message"
-        let! msg = mbox.Receive()
-        Debug.tracef "Worker" "Got message %A" msg 
-        
-        let ((RequestParse info)|(RequestQuickParse info)) = msg
-        let fileName = info.File.FullPath.ToString()        
-        try
-          match msg with
-          | RequestParse(info) ->
-              Debug.tracef "Worker" "Request parse received"
-              // Run the untyped parsing of the file and report result...
-              let untypedInfo = checker.UntypedParse(fileName, info.Source, info.Options)
-              reportUntyped(info.File, untypedInfo)
-              
-              // Now run the type-chekcing
-              let fileName = Common.fixFileName(fileName)
-              let res = checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,
-                                                 info.Options, IsResultObsolete(fun () -> false) )
-              reportTyped(info.File, res)               
-              
-              // If this is 'full' request, then start background compilations too
-              if info.StartFullCompile then
-                Debug.tracef "Worker" "Starting background compilations"
-                checker.StartBackgroundCompile(info.Options)
-              Debug.tracef "Worker" "Parse completed"
-              
-          | RequestQuickParse(info) ->
-              Debug.tracef "Worker" "Request quick parse received"
-              // Try to get recent results from the F# service
-              match checker.TryGetRecentTypeCheckResultsForFile(fileName, info.Options) with
-              | Some(untyped, typed, _) ->
-                  Debug.tracef "Worker" "Quick parse completed - success"
-                  reportUntyped(info.File, untyped)
-                  reportTyped(info.File, TypeCheckSucceeded typed)
-              | None ->
-                  reportFailure(info)
-                  Debug.tracef "Worker" "Quick parse completed - failed"
-    
-        with e -> 
-          Debug.tracef "Worker" "Worker failed!"
-          Debug.tracee "Worker" e
-          // Exception from the F# service - report to the caller and continue looping
-          reportFailure(info) })
-
-  //do mbox.Error.Add(fun e -> 
-  //     Debug.tracef "Worker" "ParserWorker agent error"
-  //     Debug.tracee "Worker" e )
-       
-  member x.RequestParse(req) = 
-    Debug.tracef "Worker" "RequestParse (#items = %d)" mbox.CurrentQueueLength
-    if mbox.CurrentQueueLength <= maximalQueueLength then
-      mbox.Post(RequestParse(req))
-    else Debug.tracef "Worker" "Ignoring RequestParse"
-      
-  member x.RequestQuickParse(req) = 
-    Debug.tracef "Worker" "RequestParse (#items = %d)" mbox.CurrentQueueLength
-    if mbox.CurrentQueueLength <= maximalQueueLength then
-      mbox.Post(RequestQuickParse(req))
-    else Debug.tracef "Worker" "Ignoring RequestParse"
+  /// A callback that gets called asynchronously on a background thread after a full, complete and accurate typecheck of a file has finally completed.
+  member x.AfterCompleteTypeCheckCallback = afterCompleteTypeCheckCallback
   
 // --------------------------------------------------------------------------------------
 // Language service - is a mailbox processor that deals with requests from the user
@@ -345,18 +265,9 @@ type internal LanguageServiceMessage =
   // Trigger parse request in ParserWorker
   | TriggerRequest of ParseRequest
   
-  // Messages with new results sent from ParserWorker
-  | UpdateUntypedInfo of FilePath * UntypedParseInfo
-  | UpdateTypedInfo of FilePath * TypeCheckAnswer
-  | UpdateInfoFailed of ParseRequest
+  // Request for information - when we receive this, we parse and reply when information become available
+  | UpdateAndGetTypedInfo of ParseRequest * AsyncReplyChannel<TypedParseResult>
   
-  // Request for information - when we receive this, we try to send request to
-  // ParserWorker (it may be busy) and then send ourselves the 'Done' message
-  // which is processed when information become available
-  | GetUntypedInfo of ParseRequest * AsyncReplyChannel<UntypedParseInfo>
-  | GetTypedInfo of ParseRequest * AsyncReplyChannel<TypedParseResult>
-  
-  | GetUntypedInfoDone of AsyncReplyChannel<UntypedParseInfo>
   | GetTypedInfoDone of AsyncReplyChannel<TypedParseResult>
   
 
@@ -372,15 +283,14 @@ type internal LanguageService private () =
   static let instance = Lazy.Create(fun () -> LanguageService())
 
   // Collection of errors reported by last background check
-  let mutable errors : seq<Error> = Seq.empty
+  let mutable errors : Error list = [ ]
 
   /// Format errors for the given line (if there are multiple, we collapse them into a single one)
-  let formatErrorGroup errors = 
-    match errors |> List.ofSeq with
-    | [error:ErrorInfo] -> 
-        // Single error for this line
-        let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
-        new Error(typ, error.Message, error.StartLine + 1, error.StartColumn + 1)
+  let formatError (error:ErrorInfo) =
+      // Single error for this line
+      let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
+      new Error(typ, error.Message, DomRegion(error.StartLine + 1, error.StartColumn, error.EndLine + 1, error.EndColumn + 1))
+(*
     | errors & (first::_) ->        
         // Multiple errors - fold them
         let msg =
@@ -395,29 +305,15 @@ type internal LanguageService private () =
         let typ = if errors |> Seq.forall (fun e -> e.Severity = Severity.Warning) then ErrorType.Warning else ErrorType.Error
         new Error(typ, "Multiple errors\n" + msg, first.StartLine + 1, 1)
     | _ -> failwith "Unexpected" 
+*)
 
-
-  // Are we currently updating the errors list?
-  let mutable updatingErrors = false
   
   /// To be called from the language service mailbox processor (on a 
   /// GUI thread!) when new errors are reported for the specified file
-  let updateErrors(file:FilePath, currentErrors:array<ErrorInfo>) = 
-    Debug.tracef "Errors" "Got update for: %s" (IO.Path.GetFileName(file.FullPath.ToString()))
-    
-    // MonoDevelop reports only a single error per line, so we group them to report everything
-    let grouped = currentErrors |> Seq.groupBy (fun e -> e.StartLine)
-    errors <- 
-      [ for _, error in grouped do
-          yield formatErrorGroup error ]
+  let makeErrors(currentErrors:ErrorInfo[]) = 
+    [ for error in currentErrors do
+          yield formatError error ]
 
-    // Trigger parse for the file (if it is still the current one)
-    updatingErrors <- true
-    Debug.tracef "Errors" "Trigger update after completion"
-    let doc = IdeApp.Workbench.ActiveDocument
-    if doc.FileName.FullPath = file.FullPath then
-      TypeSystemService.ParseFile(file.ToString(), doc.Editor.MimeType, doc.Editor.Text) |> ignore
-    updatingErrors <- false
 
   // ------------------------------------------------------------------------------------
 
@@ -426,98 +322,90 @@ type internal LanguageService private () =
   
   // Post message to the 'LanguageService' mailbox
   let rec post m = (mbox:SimpleMailboxProcessor<_>).Post(m)
-  // Create a 'ParseWorker' that processes parse requests one-by-one
-  and worker = 
-    ParseWorker( checker, (UpdateUntypedInfo >> post), 
-                 (UpdateTypedInfo >> post), (UpdateInfoFailed >> post) )
   
   // Mailbox of this 'LanguageService'
   and mbox = SimpleMailboxProcessor.Start(fun mbox ->
   
     // Tail-recursive loop that remembers the current state
     // (untyped and typed parse results)
-    let rec loop ((untyped, typed) as state) =
+    let rec loop typedInfo =
       mbox.Scan(fun msg ->
         Debug.tracef "LanguageService" "Checking message %s" (msg.GetType().Name)
-        match msg, (untyped, typed) with 
+        match msg, typedInfo with 
         
         // Try forwarding request to the parser worker
-        | TriggerRequest(req), _ -> Some <| async {
+        | TriggerRequest(info), _ -> Some <| async {
             Debug.tracef "LanguageService" "TriggerRequest"
-            worker.RequestParse(req)
-            return! loop state }
+            let fileName = info.File.FullPath.ToString()        
+            Debug.tracef "Worker" "Request parse received"
+            // Run the untyped parsing of the file and report result...
+            let untypedInfo = checker.UntypedParse(fileName, info.Source, info.Options)
+              
+            // Now run the type-checking
+            let fileName = Common.fixFileName(fileName)
+            let res = checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false) )
+              
+            // If this is 'full' request, then start background compilations too
+            if info.StartFullCompile then
+              Debug.tracef "Worker" "Starting background compilations"
+              checker.StartBackgroundCompile(info.Options)
+            Debug.tracef "Worker" "Parse completed"
 
-        // If we receive new untyped info, we store it as the current state
-        | UpdateUntypedInfo(_, updatedUntyped), _ -> Some <| async { 
-            Debug.tracef "LanguageService" "Update untyped info - succeeded"
-            return! loop (Some updatedUntyped, typed) }
-            
-        // If we receive new typed info, we store it as the current state
-        | UpdateTypedInfo(file, updatedTyped), _ -> Some <| async { 
+            let file = info.File
+            let updatedTyped = res
+
             // Construct new typed parse result if the task succeeded
-            let newRes =
+            let newTypedInfo =
               match updatedTyped with
               | TypeCheckSucceeded(results) ->
                   // Handle errors on the GUI thread
                   Debug.tracef "LanguageService" "Update typed info - is some? %A" results.TypeCheckInfo.IsSome
-                  DispatchService.GuiDispatch(fun () -> updateErrors(file, results.Errors))
+                  match info.AfterCompleteTypeCheckCallback with 
+                  | None -> ()
+                  | Some cb -> 
+                      Debug.tracef "Errors" "Got update for: %s" (IO.Path.GetFileName(file.FullPath.ToString()))
+                      DispatchService.GuiDispatch(fun () -> cb(file, makeErrors results.Errors))
+
                   match results.TypeCheckInfo with
                   | Some(info) -> Some(TypedParseResult(info))
-                  | _ -> typed
+                  | _ -> typedInfo
               | _ -> 
                   Debug.tracef "LanguageService" "Update typed info - failed"
-                  typed
-            return! loop (untyped, newRes) }
+                  typedInfo
+            return! loop newTypedInfo }
 
-        // If the parser worker failed, we ignore it (we could retry?)
-        | UpdateInfoFailed(retryReq), _ -> Some <| async { 
-            Debug.tracef "LanguageService" "Update info failed"
-            return! loop state }
-        
         
         // When we receive request for information and we don't have it we trigger a 
         // parse request and then send ourselves a message, so that we can reply later
-        | GetUntypedInfo(quickReq, reply), (unty, _) -> Some <| async {
-            Debug.tracef "LanguageService" "GetUntypedInfo"
-            if unty = None then worker.RequestQuickParse(quickReq)
-            post(GetUntypedInfoDone(reply)) 
-            return! loop state }
-        
-        | GetTypedInfo(quickReq, reply), (_, ty) -> Some <| async { 
-            Debug.tracef "LanguageService" "GetTypedInfo"
-            if ty = None then worker.RequestQuickParse(quickReq)
+        | UpdateAndGetTypedInfo(req, reply), _ -> Some <| async { 
+            Debug.tracef "LanguageService" "UpdateAndGetTypedInfo"
+            post(TriggerRequest(req))
             post(GetTypedInfoDone(reply)) 
-            return! loop state }
-
-        
-        // If we have the information, we reply to the sender (hopefuly, he is still there)
-        | GetUntypedInfoDone(reply), (Some untypedRes, _) -> Some <| async {
-            Debug.tracef "LanguageService" "GetUntypedInfoDonw"
-            reply.Reply(untypedRes)
-            return! loop state }
-            
-        | GetTypedInfoDone(reply), (_, Some typedRes) -> Some <| async {
+            return! loop typedInfo }
+                    
+        | GetTypedInfoDone(reply), (Some typedRes) -> Some <| async {
             Debug.tracef "LanguageService" "GetTypedInfoDone"
             reply.Reply(typedRes)
-            return! loop state }
+            return! loop typedInfo }
 
         // We didn't have information to reply to a request - keep waiting for results!
-        | _ -> 
-            Debug.tracef "Worker" "No match found for the message"
+        // The caller will probably timeout.
+        | GetTypedInfoDone _, None -> 
+            Debug.tracef "Worker" "No match found for the message, leaving in queue until info is available"
             None )
         
     // Start looping with no initial information        
-    loop (None, None) )
+    loop None )
 
   // do mbox.Error.Add(fun e -> 
   //      Debug.tracef "Worker" "LanguageService agent error"
   //      Debug.tracee "Worker" e )
   
   /// Constructs options for the interactive checker
-  member x.GetCheckerOptions(fileName, source, dom:Document, config:ConfigurationSelector) =
+  member x.GetCheckerOptions(fileName, source, proj:MonoDevelop.Projects.Project, config:ConfigurationSelector) =
     let ext = IO.Path.GetExtension(fileName)
     let opts = 
-      if (dom = null || dom.Project = null || ext = ".fsx" || ext = ".fsscript") then
+      if (proj = null || ext = ".fsx" || ext = ".fsscript") then
       
         // We are in a stand-alone file (assuming it is a script file) or we
         // are in a project, but currently editing a script file
@@ -557,19 +445,19 @@ type internal LanguageService private () =
           
       // We are in a project - construct options using current properties
       else
-        let projFile = dom.Project.FileName.ToString()
-        let files = Common.getSourceFiles(dom.Project.Items) |> Array.ofSeq
+        let projFile = proj.FileName.ToString()
+        let files = Common.getSourceFiles(proj.Items) 
         
         // Read project configuration (compiler & build)
-        let projConfig = dom.Project.GetConfiguration(config) :?> DotNetProjectConfiguration
+        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
         let fsbuild = projConfig.ProjectParameters :?> FSharpProjectParameters
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
         
         // Order files using the configuration settings & get options
         let shouldWrap = false //It is unknown if the IntelliSense fails to load assemblies with wrapped paths.
-        let args = Common.generateCompilerOptions fsconfig dom.Project.Items config shouldWrap
-        let root = System.IO.Path.GetDirectoryName(dom.Project.FileName.FullPath.ToString())
-        let files = Common.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofSeq
+        let args = Common.generateCompilerOptions fsconfig proj.Items config shouldWrap |> Array.ofList
+        let root = System.IO.Path.GetDirectoryName(proj.FileName.FullPath.ToString())
+        let files = Common.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
         CheckOptions.Create(projFile, files, args, false, false) 
 
     // Print contents of check option for debugging purposes
@@ -578,24 +466,27 @@ type internal LanguageService private () =
                  opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
     opts
   
-  member x.TriggerParse(file:FilePath, src, dom:Document, config, ?full) = 
+  member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, full, afterCompleteTypeCheckCallback) = 
     let fileName = file.FullPath.ToString()
-    let opts = x.GetCheckerOptions(fileName, src, dom, config)
+    let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.tracef "Parsing" "Trigger parse (fileName=%s)" fileName
-    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, defaultArg full false)))
+    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, full, Some afterCompleteTypeCheckCallback)))
 
-  member x.GetTypedParseResult((file:FilePath, src, dom:Document, config), ?timeout) = 
+  member x.GetTypedParseResult((file:FilePath, src, proj:MonoDevelop.Projects.Project, config), ?timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()
-    let opts = x.GetCheckerOptions(fileName, src, dom, config)
+    let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.tracef "Parsing" "Get typed parse result (fileName=%s)" fileName
-    let req = ParseRequest(file, src, opts, false)
-    mbox.PostAndReply((fun repl -> GetTypedInfo(req, repl)), ?timeout = timeout)
-  
-  /// Returns a sequence of errors generated by the last background type-check  
-  member x.Errors = errors
-  /// Are we currently in the process of updating errors?
-  member x.UpdatingErrors = updatingErrors
-  
+    let req = ParseRequest(file, src, opts, false, None)
+
+    // Try to get recent results from the F# service
+    match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
+    | Some(untyped, typed, _) when typed.TypeCheckInfo.IsSome ->
+        Debug.tracef "Worker" "Quick parse completed - success"
+        TypedParseResult(typed.TypeCheckInfo.Value)
+    | _ ->
+        // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
+        mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), ?timeout = timeout)
+    
   /// Single instance of the language service
   static member Service = instance.Value
     

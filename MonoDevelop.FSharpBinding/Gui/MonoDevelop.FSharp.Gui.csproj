@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>FSharpBinding.Gui</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <RootNamespace>FSharp.MonoDevelop.Gui</RootNamespace>
+    <RootNamespace>MonoDevelop.FSharp.Gui</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

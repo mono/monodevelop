@@ -21,14 +21,14 @@ namespace MonoDevelop.FSharp.Gui
 		private global::Gtk.Alignment GtkAlignment2;
 		private global::Gtk.Entry entryCustomParameters;
 		private global::Gtk.Label GtkLabel6;
-
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
-			// Widget FSharp.MonoDevelop.Gui.FSharpCompilerOptionsWidget
+			// Widget MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget
 			global::Stetic.BinContainer.Attach (this);
-			this.Name = "FSharp.MonoDevelop.Gui.FSharpCompilerOptionsWidget";
-			// Container child FSharp.MonoDevelop.Gui.FSharpCompilerOptionsWidget.Gtk.Container+ContainerChild
+			this.Name = "MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget";
+			// Container child MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.Gtk.Container+ContainerChild
 			this.vbox4 = new global::Gtk.VBox ();
 			this.vbox4.Name = "vbox4";
 			this.vbox4.Spacing = 6;
