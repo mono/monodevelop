@@ -1381,14 +1381,16 @@ namespace Mono.TextEditor
 			double xPos = pangoPosition / Pango.Scale.PangoScale;
 
 			//		if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Document.GetLine(Caret.Line) != line) {
-			foreach (var bg in layout.BackgroundColors) {
-				int x1, x2;
-				x1 = layout.Layout.IndexToPos (bg.FromIdx).X;
-				x2 = layout.Layout.IndexToPos (bg.ToIdx).X;
-				DrawRectangleWithRuler (
-					cr, xPos + textEditor.HAdjustment.Value - TextStartPosition,
-					new Cairo.Rectangle ((x1 + pangoPosition) / Pango.Scale.PangoScale, y, (x2 - x1) / Pango.Scale.PangoScale + 1, _lineHeight),
-					bg.Color, true);
+			if (BackgroundRenderer == null) {
+				foreach (var bg in layout.BackgroundColors) {
+					int x1, x2;
+					x1 = layout.Layout.IndexToPos (bg.FromIdx).X;
+					x2 = layout.Layout.IndexToPos (bg.ToIdx).X;
+					DrawRectangleWithRuler (
+						cr, xPos + textEditor.HAdjustment.Value - TextStartPosition,
+						new Cairo.Rectangle ((x1 + pangoPosition) / Pango.Scale.PangoScale, y, (x2 - x1) / Pango.Scale.PangoScale + 1, _lineHeight),
+						bg.Color, true);
+				}
 			}
 			//		}
 
@@ -1409,7 +1411,7 @@ namespace Mono.TextEditor
 				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale);
 			}
 
-			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length)) {
+			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length) && BackgroundRenderer == null) {
 				double startX;
 				double endX;
 
@@ -1470,7 +1472,7 @@ namespace Mono.TextEditor
 				DrawIndent (cr, layout, line, xPos, y);
 			}
 
-			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never)
+			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never &&  !(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
 				DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
 			if (lineNumber == Caret.Line) {
@@ -1497,7 +1499,7 @@ namespace Mono.TextEditor
 						SetVisibleCaretPosition (((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
 						xPos = (pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale;
 
-						if (!isSelectionDrawn && (selectionEnd == lineOffset + line.Length)) {
+						if (!isSelectionDrawn && (selectionEnd == lineOffset + line.Length) && BackgroundRenderer == null) {
 							double startX;
 							double endX;
 							startX = xPos;
@@ -1516,7 +1518,7 @@ namespace Mono.TextEditor
 
 						switch (textEditor.Options.ShowWhitespaces) {
 						case ShowWhitespaces.Selection:
-							if (textEditor.IsSomethingSelected && (selectionStart < offset || selectionStart == selectionEnd))
+							if (textEditor.IsSomethingSelected && (selectionStart < offset || selectionStart == selectionEnd) && BackgroundRenderer == null)
 								DecorateTabsAndSpaces (cr, wrapper, offset, length, xPos, y, selectionStart, selectionEnd + virtualSpace.Length);
 							break;
 						case ShowWhitespaces.Always:
@@ -2317,11 +2319,9 @@ namespace Mono.TextEditor
 
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
-			DrawRectangleWithRuler (cr, x, lineArea, defaultBgColor, true);
+			if (BackgroundRenderer == null)
+				DrawRectangleWithRuler (cr, x, lineArea, defaultBgColor, true);
 			bool isSelectionDrawn = false;
-
-			if (BackgroundRenderer != null)
-				BackgroundRenderer.Draw (cr, area, line, x, y, _lineHeight);
 
 			// Check if line is beyond the document length
 			if (line == null) {
@@ -2434,7 +2434,7 @@ namespace Mono.TextEditor
 				x1 += correctedXOffset - textEditor.HAdjustment.Value;
 				x2 += correctedXOffset - textEditor.HAdjustment.Value;
 
-				if (x2 > lineArea.X) {
+				if (x2 > lineArea.X && BackgroundRenderer == null)  {
 					if (x1 - lineArea.X > 0) {
 						DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
 						lineArea = new Cairo.Rectangle (x1, lineArea.Y, lineArea.Width, lineArea.Height);
@@ -2444,7 +2444,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			if (!isSelectionDrawn) {
+			if (!isSelectionDrawn && BackgroundRenderer == null) {
 				if (isEolSelected) {
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
 					var eolStartX = System.Math.Floor (pangoPosition / Pango.Scale.PangoScale);
@@ -2473,7 +2473,8 @@ namespace Mono.TextEditor
 
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
 				if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
-					DrawEolMarker (cr, line, isEolSelected, pangoPosition / Pango.Scale.PangoScale, y);
+					if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
+						DrawEolMarker (cr, line, isEolSelected, pangoPosition / Pango.Scale.PangoScale, y);
 			}
 
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
@@ -2481,11 +2482,6 @@ namespace Mono.TextEditor
 				extendingMarker.Draw (textEditor, cr, lineNr, lineArea);
 			
 			lastLineRenderWidth = pangoPosition / Pango.Scale.PangoScale;
-		}
-
-		internal IBackgroundRenderer BackgroundRenderer {
-			get;
-			set;
 		}
 
 		internal double lastLineRenderWidth = 0;

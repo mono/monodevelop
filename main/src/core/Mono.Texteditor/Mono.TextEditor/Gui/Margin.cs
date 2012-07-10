@@ -58,7 +58,12 @@ namespace Mono.TextEditor
 				return marginDrawer;
 			}
 		}
-		
+
+		public IBackgroundRenderer BackgroundRenderer {
+			get;
+			set;
+		}
+
 		protected Margin ()
 		{
 			IsVisible = true;

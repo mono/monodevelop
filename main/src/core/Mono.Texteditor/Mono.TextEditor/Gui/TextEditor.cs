@@ -1623,6 +1623,12 @@ namespace Mono.TextEditor
 			double startY = LineToY (startLine);
 			double curY = startY - this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
+			foreach (var margin in this.margins) {
+				if (margin.BackgroundRenderer != null)
+					margin.BackgroundRenderer.Draw (cr, cairoRectangle);
+			}
+
+
 			for (int visualLineNumber = textEditorData.LogicalToVisualLine (startLine);; visualLineNumber++) {
 				int logicalLineNumber = textEditorData.VisualToLogicalLine (visualLineNumber);
 				var line = Document.GetLine (logicalLineNumber);

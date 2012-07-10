@@ -29,8 +29,8 @@ using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 namespace Mono.TextEditor
 {
-	interface IBackgroundRenderer
+	public interface IBackgroundRenderer
 	{
-		void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, double x, double y, double lineHeight);
+		void Draw (Cairo.Context cr, Cairo.Rectangle area);
 	}
 }
