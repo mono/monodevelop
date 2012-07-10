@@ -149,11 +149,6 @@ namespace MonoDevelop.Components.Docking
 
 			usedSplitters = 0;
 			layout.DrawSeparators (Gdk.Rectangle.Zero, null, 0, DrawSeparatorOperation.Allocate, null);
-
-			for (int n=0; n<usedSplitters; n++) {
-				var s = splitters[n];
-				s.GdkWindow.Raise ();
-			}
 		}
 
 		int usedSplitters;
