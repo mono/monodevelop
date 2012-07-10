@@ -132,8 +132,18 @@ namespace MonoDevelop.Components.MainToolbar
 				TaskService.Errors.TasksAdded -= updateHandler;
 				TaskService.Errors.TasksRemoved -= updateHandler;
 			};
-			box.ShowAll ();
-			return box;
+
+			EventBox ebox = new EventBox ();
+			ebox.VisibleWindow = false;
+			ebox.Add (box);
+			ebox.ShowAll ();
+			ebox.ButtonReleaseEvent += delegate {
+				var pad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
+				pad.BringToFront ();
+			};
+
+
+			return ebox;
 		}
 
 		protected override void OnRealized ()
