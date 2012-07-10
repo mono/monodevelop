@@ -38,49 +38,29 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
-		Project project;
 		Engine engine;
 		string file;
 		ILogWriter currentLogWriter;
 		MDConsoleLogger consoleLogger;
-		string currentConfiguration, currentPlatform;
+		BuildEngine buildEngine;
 
-		AutoResetEvent wordDoneEvent = new AutoResetEvent (false);
-		ThreadStart workDelegate;
-		object workLock = new object ();
-		Thread workThread;
-		Exception workError;
-
-		public ProjectBuilder (string file, string binDir)
+		public ProjectBuilder (BuildEngine buildEngine, Engine engine, string file)
 		{
 			this.file = file;
-			RunSTA (delegate
-			{
-				engine = new Engine (binDir);
-				engine.GlobalProperties.SetProperty ("BuildingInsideVisualStudio", "true");
-				
-				//we don't have host compilers in MD, and this is set to true by some of the MS targets
-				//which causes it to always run the CoreCompile task if BuildingInsideVisualStudio is also
-				//true, because the VS in-process compiler would take care of the deps tracking
-				engine.GlobalProperties.SetProperty ("UseHostCompilerIfAvailable", "false");
-
-				consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
-				engine.RegisterLogger (consoleLogger);
-			});
-			
+			this.engine = engine;
+			this.buildEngine = buildEngine;
+			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 			Refresh ();
+		}
+
+		public void Dispose ()
+		{
+			buildEngine.UnloadProject (file);
 		}
 		
 		public void Refresh ()
 		{
-			RunSTA (delegate
-			{
-				//just unload the project. it will be reloaded when we next build
-				project = null;
-				var loadedProj = engine.GetLoadedProject (file);
-				if (loadedProj != null)
-					engine.UnloadProject (loadedProj);
-			});
+			buildEngine.UnloadProject (file);
 		}
 		
 		void LogWriteLine (string txt)
@@ -89,21 +69,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				currentLogWriter.WriteLine (txt);
 		}
 		
-		public MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter,
+		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,
 			MSBuildVerbosity verbosity)
 		{
 			MSBuildResult[] result = null;
-			RunSTA (delegate
+			BuildEngine.RunSTA (delegate
 			{
 				try {
-					SetupProject (configuration, platform);
+					var project = SetupProject (configurations);
 					currentLogWriter = logWriter;
 
 					LocalLogger logger = new LocalLogger (Path.GetDirectoryName (file));
+					engine.UnregisterAllLoggers ();
 					engine.RegisterLogger (logger);
+					engine.RegisterLogger (consoleLogger);
 
 					consoleLogger.Verbosity = GetVerbosity (verbosity);
-					
+
 					// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
 					// an xbuild bug which causes references to not be resolved after the project has been built once.
 					engine.BuildProject (project, new string[] { target }, new Hashtable (), BuildSettings.None);
@@ -135,13 +117,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public string[] GetAssemblyReferences (string configuration, string platform)
+		public string[] GetAssemblyReferences (ProjectConfigurationInfo[] configurations)
 		{
 			string[] refsArray = null;
 
-			RunSTA (delegate
+			BuildEngine.RunSTA (delegate
 			{
-				SetupProject (configuration, platform);
+				var project = SetupProject (configurations);
 				
 				// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
 				// an xbuild bug which causes references to not be resolved after the project has been built once.
@@ -155,22 +137,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return refsArray;
 		}
 		
-		void SetupProject (string configuration, string platform)
+		Project SetupProject (ProjectConfigurationInfo[] configurations)
 		{
-			if (project != null && configuration == currentConfiguration && platform == currentPlatform)
-				return;
-			currentConfiguration = configuration;
-			currentPlatform = platform;
-			
+			Project project = null;
+
+			foreach (var pc in configurations) {
+				var p = engine.GetLoadedProject (pc.ProjectFile);
+				if (p == null) {
+					p = new Project (engine);
+					p.Load (pc.ProjectFile);
+				}
+				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
+				if (!string.IsNullOrEmpty (pc.Platform))
+					p.GlobalProperties.SetProperty ("Platform", pc.Platform);
+				else
+					p.GlobalProperties.RemoveProperty ("Platform");
+				if (pc.ProjectFile == file)
+					project = p;
+			}
+
 			Environment.CurrentDirectory = Path.GetDirectoryName (file);
-			engine.GlobalProperties.SetProperty ("Configuration", configuration);
-			if (!string.IsNullOrEmpty (platform))
-				engine.GlobalProperties.SetProperty ("Platform", platform);
-			else
-				engine.GlobalProperties.RemoveProperty ("Platform");
-			
-			project = new Project (engine);
-			project.Load (file);
+			return project;
 		}
 		
 		public override object InitializeLifetimeService ()
@@ -178,48 +165,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 
-		void RunSTA (ThreadStart ts)
-		{
-			lock (workLock) {
-				lock (threadLock) {
-					workDelegate = ts;
-					workError = null;
-					if (workThread == null) {
-						workThread = new Thread (STARunner);
-						workThread.SetApartmentState (ApartmentState.STA);
-						workThread.IsBackground = true;
-						workThread.Start ();
-					}
-					else
-						// Awaken the existing thread
-						Monitor.Pulse (threadLock);
-				}
-				wordDoneEvent.WaitOne ();
-			}
-			if (workError != null)
-				throw new Exception ("MSBuild operation failed", workError);
-		}
-
-		object threadLock = new object ();
-
-		void STARunner ()
-		{
-			lock (threadLock) {
-				do {
-					try {
-						workDelegate ();
-					}
-					catch (Exception ex) {
-						workError = ex;
-					}
-					wordDoneEvent.Set ();
-				}
-				while (Monitor.Wait (threadLock, 60000));
-
-				workThread = null;
-			}
-		}
-		
 		//from MSBuildProjectService
 		static string UnescapeString (string str)
 		{
