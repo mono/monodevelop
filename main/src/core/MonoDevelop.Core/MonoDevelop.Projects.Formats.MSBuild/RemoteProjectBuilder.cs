@@ -77,22 +77,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			builder = engine.LoadProject (file, binPath);
 		}
 		
-		public MSBuildResult[] RunTarget (string target, string configuration, string platform, ILogWriter logWriter,
+		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,
 			MSBuildVerbosity verbosity)
 		{
 			if (target == null)
 				throw new ArgumentNullException ("target");
-			if (configuration == null)
-				throw new ArgumentNullException ("configuration");
-			
-			return builder.RunTarget (target, configuration, platform, logWriter, verbosity);
+
+			return builder.RunTarget (target, configurations, logWriter, verbosity);
 		}
 		
-		public string[] GetAssemblyReferences (string configuration, string platform)
+		public string[] GetAssemblyReferences (ProjectConfigurationInfo[] configurations)
 		{
-			if (configuration == null)
-				throw new ArgumentNullException ("configuration");
-			return builder.GetAssemblyReferences (configuration, platform);
+			return builder.GetAssemblyReferences (configurations);
 		}
 		
 		public void Refresh ()

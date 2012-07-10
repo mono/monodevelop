@@ -165,6 +165,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return configObject.Platform;
 		}
+
+		ProjectConfigurationInfo[] GetConfigurations (SolutionEntityItem item, ConfigurationSelector configuration)
+		{
+			// Returns a list of project/configuration information for the provided item and all its references
+			List<ProjectConfigurationInfo> configs = new List<ProjectConfigurationInfo> ();
+			var c = item.GetConfiguration (configuration);
+			configs.Add (new ProjectConfigurationInfo () {
+				ProjectFile = item.FileName,
+				Configuration = c.Name,
+				Platform = GetExplicitPlatform (c)
+			});
+			foreach (var refProject in item.GetReferencedItems (configuration).OfType<Project> ()) {
+				var refConfig = refProject.GetConfiguration (configuration);
+				configs.Add (new ProjectConfigurationInfo () {
+					ProjectFile = refProject.FileName,
+					Configuration = refConfig.Name,
+					Platform = GetExplicitPlatform (refConfig)
+				});
+			}
+			return configs.ToArray ();
+		}
 		
 		IEnumerable<string> IAssemblyReferenceHandler.GetAssemblyReferences (ConfigurationSelector configuration)
 		{
@@ -172,8 +193,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// Get the references list from the msbuild project
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
-				SolutionItemConfiguration configObject = item.GetConfiguration (configuration);
-				foreach (string s in builder.GetAssemblyReferences (configObject.Name, GetExplicitPlatform (configObject)))
+				var configs = GetConfigurations (item, configuration);
+				foreach (string s in builder.GetAssemblyReferences (configs))
 					yield return s;
 			}
 			else {
@@ -193,12 +214,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
 					
-					SolutionItemConfiguration configObject = item.GetConfiguration (configuration);
-				
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
-					MSBuildResult[] results = builder.RunTarget (target, configObject.Name, GetExplicitPlatform (configObject),
-						logWriter, verbosity);
+					var configs = GetConfigurations (item, configuration);
+					MSBuildResult[] results = builder.RunTarget (target, configs, logWriter, verbosity);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					BuildResult br = new BuildResult ();
