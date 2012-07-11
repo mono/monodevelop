@@ -101,14 +101,6 @@ namespace MonoDevelop.Debugger
 				busyDialog = new BusyEvaluatorDialog ();
 				busyDialog.TransientFor = MessageService.RootWindow;
 				busyDialog.DestroyWithParent = true;
-
-				IdeApp.Workbench.Toolbar.StartButton.Clicked += delegate {
-					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
-						IdeApp.CommandService.DispatchCommand (MonoDevelop.Ide.Commands.ProjectCommands.Stop);
-					} else {
-						IdeApp.CommandService.DispatchCommand (DebugCommands.Debug);
-					}
-				};
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Regresh the engine list

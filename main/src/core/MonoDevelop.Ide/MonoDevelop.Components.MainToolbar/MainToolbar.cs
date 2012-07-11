@@ -42,7 +42,7 @@ using MonoDevelop.Components.Commands.ExtensionNodes;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class MainToolbar: Gtk.EventBox, ICommandDelegatorRouter
+	class MainToolbar: Gtk.EventBox, ICommandBar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
 
@@ -78,18 +78,6 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
-		public ButtonBar ButtonBar {
-			get {
-				return buttonBar;
-			}
-		}
-
-		public RoundButton StartButton {
-			get {
-				return button;
-			}
-		}
-
 		bool SearchForMembers {
 			get {
 				return PropertyService.Get ("MainToolbar.Search.IncludeMembers", true);
@@ -121,20 +109,6 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			contentBox.BorderWidth = 6;
-
-			IdeApp.ProjectOperations.CurrentRunOperationChanged += delegate {
-				button.QueueDraw ();
-				if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
-					IdeApp.ProjectOperations.CurrentRunOperation.Completed += (op) => button.QueueDraw ();
-			};
-
-			IdeApp.Workspace.WorkspaceItemOpened += delegate {
-				button.Sensitive = true;
-			};
-			IdeApp.Workspace.WorkspaceItemClosed += delegate {
-				button.Sensitive = false;
-			};
-			button.Sensitive = false;
 
 			AddWidget (button);
 
@@ -237,6 +211,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 			Add (contentBox);
 			UpdateCombos ();
+
+			button.Clicked += HandleStartButtonClicked;
+			IdeApp.CommandService.RegisterCommandBar (this);
 		}
 
 		void BuildToolbar ()
@@ -468,16 +445,45 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.GrabFocus ();
 		}
 
-		#region ICommandDelegatorRouter implementation
-		object ICommandDelegatorRouter.GetNextCommandTarget ()
+		CommandInfo GetStartButtonCommandInfo ()
 		{
-			// This is the last object of the chain
-			return null;
+			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
+				return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Stop);
+			else {
+				var ci = IdeApp.CommandService.GetCommandInfo ("MonoDevelop.Debugger.DebugCommands.Debug");
+				if (ci.Enabled)
+					return ci;
+				else
+					// If debug is not enabled, try Run
+					return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Run);
+			}
+		}
+		
+		void HandleStartButtonClicked (object sender, EventArgs e)
+		{
+			var ci = GetStartButtonCommandInfo ();
+			if (ci.Enabled)
+				IdeApp.CommandService.DispatchCommand (ci.Command.Id);
+		}
+		
+		#region ICommandBar implementation
+		bool toolbarEnabled = true;
+
+		void ICommandBar.Update (object activeTarget)
+		{
+			if (!toolbarEnabled)
+				return;
+			var ci = GetStartButtonCommandInfo ();
+			if (ci.Enabled != button.Sensitive)
+				button.Sensitive = ci.Enabled;
+			button.ShowStart = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
 		}
 
-		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
+		void ICommandBar.SetEnabled (bool enabled)
 		{
-			return null;
+			toolbarEnabled = enabled;
+			button.Sensitive = enabled;
+			matchEntry.Sensitive = enabled;
 		}
 		#endregion
 	}

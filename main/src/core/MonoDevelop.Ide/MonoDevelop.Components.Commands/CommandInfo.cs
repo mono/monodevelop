@@ -33,6 +33,7 @@ namespace MonoDevelop.Components.Commands
 {
 	public class CommandInfo
 	{
+		Command command;
 		string text;
 		IconId icon;
 		string accelKey;
@@ -51,6 +52,7 @@ namespace MonoDevelop.Components.Commands
 			icon = cmd.Icon;
 			accelKey = cmd.AccelKey;
 			description = cmd.Description;
+			command = cmd;
 		}
 		
 		public CommandInfo ()
@@ -67,6 +69,10 @@ namespace MonoDevelop.Components.Commands
 			Text = text;
 			this.enabled = enabled;
 			this.checkd = checkd;
+		}
+		
+		public Command Command {
+			get { return command; }
 		}
 		
 		public string Text {

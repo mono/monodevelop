@@ -157,10 +157,21 @@ namespace MonoDevelop.Components.MainToolbar
 
 		ImageSurface GetIcon()
 		{
-			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
+			if (!ShowStart) {
 				return State ==  StateType.Insensitive ? iconStopDisabled : iconStopNormal;
 			}
 			return State ==  StateType.Insensitive ? iconRunDisabled : iconRunNormal;
+		}
+
+		bool showStart;
+		public bool ShowStart {
+			get { return showStart; }
+			set {
+				if (value != showStart) {
+					showStart = value;
+					QueueDraw ();
+				}
+			}
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
