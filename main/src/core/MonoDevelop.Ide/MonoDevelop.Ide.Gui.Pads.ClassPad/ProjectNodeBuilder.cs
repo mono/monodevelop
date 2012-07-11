@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			var dom = TypeSystemService.GetCompilation (project);
 			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
 			HashSet<string> addedNames = new HashSet<string> ();
-			foreach (var ns in dom.RootNamespace.ChildNamespaces) {
+			foreach (var ns in dom.MainAssembly.RootNamespace.ChildNamespaces) {
 				if (nestedNamespaces) {
 					if (!addedNames.Contains (ns.Name)) {
 						builder.AddChild (new ProjectNamespaceData (project, ns));
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 					FillNamespaces (builder, project, ns);
 				}
 			}
-			foreach (var type in dom.RootNamespace.Types) {
+			foreach (var type in dom.MainAssembly.RootNamespace.Types) {
 				if (!publicOnly || type.IsPublic)
 					builder.AddChild (new ClassData (project, type));
 			}

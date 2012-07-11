@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
@@ -94,23 +95,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (classData.Class.Kind == TypeKind.Delegate)
 				return;
 
-			foreach (var innerClass in classData.Class.NestedTypes)
+			foreach (var innerClass in classData.Class.NestedTypes.Where (m => !m.IsSynthetic))
 				if (innerClass.IsPublic || (innerClass.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (new ClassData (classData.Project, innerClass));
 
-			foreach (var method in classData.Class.Methods)
+			foreach (var method in classData.Class.Methods.Where (m => !m.IsSynthetic)) {
 				if (method.IsPublic || (method.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (method);
+			}
 			
-			foreach (var property in classData.Class.Properties)
+			foreach (var property in classData.Class.Properties.Where (m => !m.IsSynthetic))
 				if (property.IsPublic || (property.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (property);
 			
-			foreach (var field in classData.Class.Fields)
+			foreach (var field in classData.Class.Fields.Where (m => !m.IsSynthetic))
 				if (field.IsPublic || (field.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (field);
 			
-			foreach (var e in classData.Class.Events)
+			foreach (var e in classData.Class.Events.Where (m => !m.IsSynthetic))
 				if (e.IsPublic || (e.IsProtected && publicProtectedOnly) || !publicOnly)
 					builder.AddChild (e);
 		}
