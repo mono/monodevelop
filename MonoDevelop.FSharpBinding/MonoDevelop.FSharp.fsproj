@@ -12,33 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Name>MonoDevelop.FSharp</Name>
     <UsePartialTypes>false</UsePartialTypes>
-    <BuildOrder>
-      <BuildOrder>
-        <String>PowerPack/CodeDomVisitor.fs</String>
-        <String>PowerPack/CodeDomGenerator.fs</String>
-        <String>PowerPack/CodeProvider.fs</String>
-        <String>PowerPack/LazyList.fsi</String>
-        <String>PowerPack/LazyList.fs</String>
-        <String>Services/Mailbox.fs</String>
-        <String>Services/Parser.fs</String>
-        <String>Services/CompilerLocationUtils.fs</String>
-        <String>Services/FSharpCompiler.fs</String>
-        <String>Services/Parameters.fs</String>
-        <String>Services/Common.fs</String>
-        <String>Services/CompilerService.fs</String>
-        <String>Services/InteractiveSession.fs</String>
-        <String>Services/LanguageService.fs</String>
-        <String>FSharpParser.fs</String>
-        <String>FSharpResourceIdBuilder.fs</String>
-        <String>FSharpResolverProvider.fs</String>
-        <String>FSharpSyntaxMode.fs</String>
-        <String>FSharpInteractivePad.fs</String>
-        <String>FSharpOptionsPanels.fs</String>
-        <String>FSharpTextEditorCompletion.fs</String>
-        <String>FSharpLanguageBinding.fs</String>
-      </BuildOrder>
-    </BuildOrder>
-  </PropertyGroup>
+</PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -126,7 +100,6 @@
   <ItemGroup>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-
     <Reference Include="ICSharpCode.NRefactory" />
     <Reference Include="ICSharpCode.NRefactory.CSharp" />
     <Reference Include="Mono.Addins" />
@@ -135,6 +108,33 @@
     <Reference Include="MonoDevelop.Ide" />
     <Reference Include="MonoDevelop.SourceEditor2" />
     <Reference Include="MonoDevelop.Refactoring" />
+<!-- Use these for Mac 
+    <Reference Include="ICSharpCode.NRefactory" > 
+       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory.CSharp" > 
+       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/ICSharpCode.NRefactory.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Addins" > 
+       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.Addins.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.TextEditor" > 
+       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Core" >
+       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide"> 
+       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Refactoring" > 
+       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2" > 
+       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll</HintPath>
+    </Reference>
+-->
+
     <!-- Use these for Windows -->
 <!-- 
     <Reference Include="ICSharpCode.NRefactory">
