@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // User interface panels for F# project properties
 // --------------------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ type FSharpSettingsPanel() =
     if widget.CheckCompilerUseDefault.Active <> use_default then
       widget.CheckCompilerUseDefault.Active <- use_default
     let prop_compiler_path = PropertyService.Get<string>("FSharpBinding.FscPath","")
-    let default_compiler_path = match Common.getDefaultDefaultCompiler with | Some(r) -> r | None -> ""
+    let default_compiler_path = match Common.getDefaultDefaultCompiler() with | Some(r) -> r | None -> ""
     widget.EntryCompilerPath.Text <- if use_default || prop_compiler_path = "" then default_compiler_path else prop_compiler_path
     widget.EntryCompilerPath.Sensitive <- not use_default
     widget.ButtonCompilerBrowse.Sensitive <- not use_default
@@ -33,7 +33,7 @@ type FSharpSettingsPanel() =
       widget.CheckInteractiveUseDefault.Active <- use_default
     let prop_interp_path = PropertyService.Get<string>("FSharpBinding.FsiPath", "")
     let prop_interp_args = PropertyService.Get<string>("FSharpBinding.FsiArguments", "")
-    let default_interp_path = match Common.getDefaultInteractive with | Some(r) -> r | None -> ""
+    let default_interp_path = match Common.getDefaultInteractive() with | Some(r) -> r | None -> ""
     let default_interp_args = ""
     widget.EntryPath.Text <- if use_default || prop_interp_path = "" then default_interp_path else prop_interp_path
     widget.EntryArguments.Text <- if use_default || prop_interp_args = "" then default_interp_args else prop_interp_args
@@ -127,23 +127,27 @@ type CodeGenerationPanel() =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
     let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
     
-    widget.CheckDebugInfo.Active <- fsconfig.GenerateDebugInfo
-    widget.CheckOptimize.Active <- fsconfig.OptimizeCode
+    widget.CheckDebugInfo.Active <- fsconfig.DebugSymbols
+    widget.CheckOptimize.Active <- fsconfig.Optimize
     widget.CheckTailCalls.Active <- fsconfig.GenerateTailCalls
-    widget.CheckXmlDocumentation.Active <- fsconfig.GenerateXmlDoc
-    widget.EntryCommandLine.Text <- fsconfig.CustomCommandLine
-    widget.EntryDefines.Text <- fsconfig.DefinedSymbols
+    widget.CheckXmlDocumentation.Active <- not (String.IsNullOrEmpty fsconfig.DocumentationFile)
+    widget.EntryCommandLine.Text <- fsconfig.OtherFlags
+    widget.EntryDefines.Text <- fsconfig.DefineConstants
   
   override x.ApplyChanges() =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
     let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
 
-    fsconfig.GenerateDebugInfo <- widget.CheckDebugInfo.Active
-    fsconfig.OptimizeCode <- widget.CheckOptimize.Active
+    fsconfig.DebugSymbols <- widget.CheckDebugInfo.Active
+    fsconfig.Optimize <- widget.CheckOptimize.Active
     fsconfig.GenerateTailCalls <- widget.CheckTailCalls.Active
-    fsconfig.GenerateXmlDoc <- widget.CheckXmlDocumentation.Active
-    fsconfig.CustomCommandLine <- widget.EntryCommandLine.Text
-    fsconfig.DefinedSymbols <- widget.EntryDefines.Text
+    fsconfig.DocumentationFile <- 
+        if widget.CheckXmlDocumentation.Active then 
+           System.IO.Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".xml" 
+        else 
+           ""
+    fsconfig.OtherFlags <- widget.EntryCommandLine.Text
+    fsconfig.DefineConstants <- widget.EntryDefines.Text
 
 
 // --------------------------------------------------------------------------------------

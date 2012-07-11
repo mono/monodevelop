@@ -343,7 +343,7 @@ module SourceCodeServices =
   /// A handle to the results of TypeCheckSource
   type TypeCheckResults(wrapped:obj) =
     /// The errors returned by parsing a source file
-    member x.Errors : ErrorInfo array = 
+    member x.Errors : ErrorInfo[] = 
       wrapped?Errors |> Array.untypedMap (fun e -> ErrorInfo(e))
       
     /// A handle to type information gleaned from typechecking the file. 

@@ -164,8 +164,16 @@ module internal FSharpEnvironment =
     with e -> 
       None
 
- 
-  // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
+
+  let BackupInstallationProbePoints = 
+      [ // prefer the latest installation of Mono on Mac
+        "/Library/Frameworks/Mono.framework/Versions/Current"
+        // prefer freshly built F# compilers on Linux
+        "/usr/local"
+        // otherwise look in the standard place
+        "/usr" ]
+
+    // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
   // Used for
   //   - location of design-time copies of FSharp.Core.dll and FSharp.Compiler.Interactive.Settings.dll for the default assumed environment for scripts
   //   - default ToolPath in tasks in FSharp.Build.dll (for Fsc tasks)
@@ -195,21 +203,32 @@ module internal FSharpEnvironment =
         match result with 
         | Some _ ->  result 
         | None -> 
-          let result =  tryRegKey key2
-          match result with 
-          | Some _ ->  result 
-          | None ->
-            let result = tryFsharpiScript("/usr/bin/fsharpi")
-            match result with 
-            | Some _ -> result
-            | None -> 
-              let result = tryFsharpiScript("/usr/local/bin/fsharpi")
-              match result with 
-              | Some _ -> result
-              | None -> 
-                let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
-                if String.IsNullOrEmpty(var) then None
-                else Some(var)
+        let result =  tryRegKey key2
+        match result with 
+        | Some _ ->  result 
+        | None ->
+        let result = 
+            let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
+            if String.IsNullOrEmpty(var) then None
+            else Some(var)
+        match result with 
+        | Some _ -> result
+        | None -> 
+        // NOTE: we should probably probe the path here??
+        let result = 
+            BackupInstallationProbePoints |> List.tryPick (fun x -> 
+               let safeExists f = (try File.Exists(f) with _ -> false)
+               let file f = Path.Combine(Path.Combine(x,"bin"),f)
+               let exists f = safeExists(file f)
+               if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi")
+               elif exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi")
+               else None)
+                
+        match result with 
+        | Some _ -> result
+        | None -> 
+        None
     with e -> 
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None
+

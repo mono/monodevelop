@@ -24,40 +24,63 @@ type FSharpProjectParameters() =
 type FSharpCompilerParameters() = 
   inherit ConfigurationParameters()
   
-  [<field:ItemProperty("GenerateDebugInfo"); DefaultValue>]
-  val mutable public GenerateDebugInfo : bool
+  [<field:ItemProperty("DebugSymbols"); DefaultValue>]
+  val mutable private  debugSymbols : bool
 
-  [<field:ItemProperty("OptimizeCode"); DefaultValue>]
-  val mutable public OptimizeCode : bool
+  [<field:ItemProperty("DebugType"); DefaultValue>]
+  val mutable private  debugType : string
 
-  [<field:ItemProperty("GenerateXmlDoc"); DefaultValue>]
-  val mutable public GenerateXmlDoc : bool
+  [<field:ItemProperty("Optimize"); DefaultValue>]
+  val mutable private optimize : bool
 
-  [<field:ItemProperty("GenerateTailCalls"); DefaultValue>]
-  val mutable public GenerateTailCalls : bool
+  [<field:ItemProperty("DocumentationFile"); DefaultValue>]
+  val mutable private documentationFile : string
 
-  [<field:ItemProperty("DefinedSymbols"); DefaultValue>]
-  val mutable private definedSymbols : string
+  [<field:ItemProperty("Tailcalls"); DefaultValue>]
+  val mutable private generateTailCalls : bool
 
-  [<field:ItemProperty("CustomCommandLine"); DefaultValue>]
-  val mutable private customCommandLine : string
+  [<field:ItemProperty("DefineConstants"); DefaultValue>]
+  val mutable private defineConstants : string
+
+  [<field:ItemProperty("OtherFlags"); DefaultValue>]
+  val mutable private otherFlags : string
 
   override x.AddDefineSymbol(symbol) =
-    if x.definedSymbols = "" || x.definedSymbols = null then
-      x.definedSymbols <- symbol
+    if System.String.IsNullOrEmpty x.DefineConstants then
+      x.DefineConstants <- symbol
     else
-      x.definedSymbols <- x.definedSymbols + ";" + symbol
+      x.DefineConstants <- x.DefineConstants + ";" + symbol
 
   override x.RemoveDefineSymbol(symbol) =
-    if x.definedSymbols = symbol then
-      x.definedSymbols <- null
-    elif x.definedSymbols <> null then
-      x.definedSymbols <- x.definedSymbols.Replace(";" + symbol, null)
+    if x.DefineConstants = symbol then
+      x.DefineConstants <- null
+    elif x.DefineConstants <> null then
+      x.DefineConstants <- x.DefineConstants.Replace(";" + symbol, null)
 
-  member x.DefinedSymbols 
-    with get() = if x.definedSymbols = null then "" else x.definedSymbols
-    and set(value) = x.definedSymbols <- value
+  member x.DefineConstants 
+    with get() = if x.defineConstants = null then "" else x.defineConstants
+    and set(value) = x.defineConstants <- value
 
-  member x.CustomCommandLine
-    with get() = if x.customCommandLine = null then "" else x.customCommandLine
-    and set(value) = x.customCommandLine <- value
+  member x.OtherFlags
+    with get() = if x.otherFlags = null then "" else x.otherFlags
+    and set(value) = x.otherFlags <- value
+
+  member x.DocumentationFile
+    with get() = if x.documentationFile = null then "" else x.documentationFile
+    and set(value) = x.documentationFile <- value
+
+  member x.GenerateTailCalls
+    with get() = x.generateTailCalls
+    and set(value) = x.generateTailCalls <- value
+        
+  member x.Optimize
+    with get() = x.optimize
+    and set(value) = 
+        x.optimize <- value
+        x.debugType <- (if x.DebugSymbols then (if x.optimize then "pdbonly" else "full") else "none")
+        
+  member x.DebugSymbols
+    with get() = x.debugSymbols
+    and set(value) = 
+        x.debugSymbols <- value
+        x.debugType <- (if x.DebugSymbols then (if x.optimize then "pdbonly" else "full") else "none")

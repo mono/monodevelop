@@ -23,24 +23,10 @@ module Environment =
 module Debug = 
   open Microsoft.FSharp.Compiler.Reflection // (?) operator
 
-#if LOGGING
-  /// If trace is enabled, we print more information
-  let traceEnabled = 
-    [ "Exception", (true, ConsoleColor.Red)
-      "Errors", (false, ConsoleColor.DarkCyan)
-      "Parsing", (false, ConsoleColor.Blue)
-      "Worker", (false, ConsoleColor.Green)
-      "LanguageService", (false, ConsoleColor.DarkGreen) 
-      "Gui", (false, ConsoleColor.DarkYellow)
-      "Result", (false, ConsoleColor.Magenta)
-      "Interactive", (false, ConsoleColor.Gray)
-      "Checkoptions", (true, ConsoleColor.DarkGray)
-      "Resolution", (true, ConsoleColor.Gray)
-      "Compiler", (false, ConsoleColor.DarkRed)
-      "Config", (false, ConsoleColor.DarkMagenta)
-    ] |> Map.ofSeq
-#else
-  /// If trace is enabled, we print more information
+  let envLogging = (try (match System.Environment.GetEnvironmentVariable("FSHARPBINDING_LOGGING") with null -> "" | s -> s) with _ -> "")
+  let isEnvEnabled c = (envLogging = "*" || envLogging.Contains c)
+  
+    /// If trace is enabled, we print more information
   let traceEnabled = 
     [ "Exception", (true, ConsoleColor.Red)
       "Errors", (false, ConsoleColor.DarkCyan)
@@ -54,8 +40,10 @@ module Debug =
       "Resolution", (false, ConsoleColor.Gray)
       "Compiler", (false, ConsoleColor.DarkRed)
       "Config", (false, ConsoleColor.DarkMagenta)
-    ] |> Map.ofSeq
-#endif
+      "Resolver", (false, ConsoleColor.DarkYellow)
+    ] 
+    |> List.map (fun (category,(enabled,color)) -> category, ((enabled || isEnvEnabled category), color))
+    |> Map.ofList
 
   /// Prints debug information - to debug output (on windows, because this is
   /// easy to see in VS) or to console (on Mono, because this prints to terminal) 
@@ -65,13 +53,14 @@ module Debug =
       Console.ForegroundColor <- clr
       Console.WriteLine(s)
       Console.ForegroundColor <- orig      
-    else System.Diagnostics.Debug.WriteLine(s)
+    else 
+      System.Diagnostics.Debug.WriteLine(s)
 
   /// Prints debug information - to debug output or to console 
   /// Prints only when the specified category is enabled
   let tracef category fmt = 
     fmt |> Printf.kprintf (fun s -> 
-      let enabled, clr = traceEnabled.[category] 
+      let enabled, clr = if traceEnabled.ContainsKey category then traceEnabled.[category] else (true, ConsoleColor.Green)
       if enabled then 
         print ("[F#] [" + category + "] " + s) clr )
 
@@ -120,22 +109,53 @@ module ScriptOptions =
     if Path.IsPathRooted(path) then path
     else Path.Combine(root, path)
   
-  /// Returns default directories to be used when searching for DLL files
-  let getDefaultDirectories root includes =   
-    // Return all known directories
-    [ let runtime = RuntimeEnvironment.GetRuntimeDirectory() 
-      yield if not (runtime.EndsWith("1.0", StringComparison.Ordinal)) then runtime
-            else Path.Combine(Path.GetDirectoryName runtime, "4.0") // Mono 
-      match root with 
-      | Some(root) -> yield! includes |> List.map (makeAbsolute root)
-      | None -> yield! includes |> List.filter Path.IsPathRooted
-      yield! root |> Option.toList                  
-      yield! FSharpEnvironment.BinFolderOfDefaultFSharpCompiler |> Option.toList ]
-                
   /// Returns true if the specified file exists (and never throws exception)
   let safeExists f = 
     try File.Exists(f) with _ -> false
     
+  /// Returns default directories to be used when searching for DLL files
+  let getDefaultDirectories root includes =   
+    let (++) s x = Path.Combine(s,x)
+    // Return all known directories
+    [ // Get the location of the System DLLs
+      let runtime = RuntimeEnvironment.GetRuntimeDirectory() 
+      yield runtime
+
+      // Add the include directories
+      match root with 
+      | Some(root) -> yield! includes |> List.map (makeAbsolute root)
+      | None -> yield! includes |> List.filter Path.IsPathRooted
+      yield! root |> Option.toList                  
+
+      // Detect a usable default 4.0 FSharp.Core.dll (for Mono)
+      let result = 
+          let possibleInstallationPoints = 
+              Option.toList (FSharpEnvironment.BinFolderOfDefaultFSharpCompiler |> Option.map Path.GetDirectoryName) @  
+              FSharpEnvironment.BackupInstallationProbePoints
+
+          Debug.tracef "Resolution" "Probing these installation locations for 4.0 FSharp.Core.dll : %A" possibleInstallationPoints
+          possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
+              let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ "4.0" 
+              if safeExists (candidate ++ "FSharp.Core.dll") then 
+                  Some candidate
+              else
+                  None)
+
+      // Did we find a usable default 4.0 FSharp.Core.dll (for Mono)? If so, use that
+      match result with 
+      | Some dir -> 
+          Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
+          yield dir
+      | None -> 
+          // For Windows, just use BinFolderOfDefaultFSharpCompiler, a default FSharp.Core.dll is there
+          match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with 
+          | Some dir -> 
+              Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
+              yield dir 
+          | None -> 
+              Debug.tracef "Resolution" "Unable to find a default location for FSharp.Core.dll"
+          ]
+                
   /// Resolve assembly in the specified list of directories
   let rec resolveAssembly dirs asm =
     match dirs with 
@@ -246,7 +266,7 @@ module ScriptOptions =
       loads |> List.ofSeq, includes |> List.ofSeq
       
   // ------------------------------------------------------------------------------------
-  /// Retrusn compiler options to be used by language service 
+  /// Returns compiler options to be used by language service 
   /// when working with a standalone F# script file
   let getScriptOptionsForFile(fileName, source) = 
     let references, nowarns, loads, includes = parseFile fileName source
@@ -299,25 +319,26 @@ module Common =
 
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let generateReferences (items:ProjectItemCollection) configSelector shouldWrap = seq { 
+  let generateReferences (items:ProjectItemCollection) configSelector shouldWrap = 
+   [ // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
     let files = 
       [ for ref in items.GetAll<ProjectReference>() do
           for file in ref.GetReferencedFileNames(configSelector) do
             yield file ]
     
-    // If 'FSharp.Core.dll' is not in the set of references, we need to 
-    // resolve it and add it (this can be removed when assembly resolution in the
-    // langauge service is fixed on Mono, because LS will try to do this)
-    let coreRef = files |> List.exists (fun fn -> fn.EndsWith("FSharp.Core.dll") )
-    if not coreRef then
-      let dirs = ScriptOptions.getDefaultDirectories None []
-      match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
-      | Some fn -> yield "-r:" + wrapf(fn)
-      | None -> Debug.tracef "Resolution" "FSharp.Core assembly resolution failed!"
+    // If 'mscorlib.dll' and 'FSharp.Core.dll' is not in the set of references, we need to 
+    // resolve it and add it.
+    for assumedFile in ["mscorlib"; "FSharp.Core"] do 
+      let coreRef = files |> List.exists (fun fn -> fn.EndsWith(assumedFile + ".dll") || fn.EndsWith(assumedFile))
+      if not coreRef then
+        let dirs = ScriptOptions.getDefaultDirectories None []
+        match ScriptOptions.resolveAssembly dirs assumedFile with
+        | Some fn -> yield "-r:" + wrapf(fn)
+        | None -> Debug.tracef "Resolution" "Assembly resolution failed when trying to find default reference for '%s'!" assumedFile
       
     for file in files do 
-      yield "-r:" + wrapf(file) }
+      yield "-r:" + wrapf(file) ]
 
 
   /// Generates command line options for the compiler specified by the 
@@ -325,28 +346,24 @@ module Common =
   /// parameters and assemblies referenced by the project ("-r" options)
   let generateCompilerOptions (fsconfig:FSharpCompilerParameters) items config shouldWrap =
     let dashr = generateReferences items config shouldWrap |> Array.ofSeq
-    let defines = fsconfig.DefinedSymbols.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
-    [| yield "--noframework"
+    let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
+    [  yield "--noframework"
        for symbol in defines do yield "--define:" + symbol
-       if fsconfig.GenerateDebugInfo then 
-         yield "--debug+" 
-         yield "--define:DEBUG" 
-       else 
-         yield "--debug-"
-       yield if fsconfig.OptimizeCode then "--optimize+" else "--optimize-"
+       yield if fsconfig.DebugSymbols then  "--debug+" else  "--debug-"
+       yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
        yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
        // TODO: This currently ignores escaping using "..."
-       for arg in fsconfig.CustomCommandLine.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
+       for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
          yield arg 
-       yield! dashr |] 
+       yield! dashr ] 
   
 
   /// Get source files of the current project (returns files that have 
   /// build action set to 'Compile', but not e.g. scripts or resources)
-  let getSourceFiles (items:ProjectItemCollection) = seq {
-    for file in items.GetAll<ProjectFile>() do
-      if file.BuildAction = "Compile" && file.Subtype <> Subtype.Directory then 
-        yield file.Name.ToString() }
+  let getSourceFiles (items:ProjectItemCollection) = 
+    [ for file in items.GetAll<ProjectFile>() do
+        if file.BuildAction = "Compile" && file.Subtype <> Subtype.Directory then 
+          yield file.Name.ToString() ]
 
   /// Creates a relative path from one file or folder to another. 
   let makeRelativePath (root:string) (file:string) = 
@@ -355,63 +372,29 @@ module Common =
     let root = Uri(if root.EndsWith(sep) then root else root + sep + "dummy" )
     root.MakeRelativeUri(file).ToString().Replace("/", sep)
 
+
   /// Create a list containing same items as the 'items' parameter that preserves
   /// the order specified by 'ordered' (and new items are at the end)  
   let getItemsInOrder root items ordered relative =
-    let ordered = seq { for f in ordered -> Path.Combine(root, f) }
+    let ordered = [| for f in ordered -> FilePath(Path.Combine(root, f)).CanonicalPath.FullPath.ToString() |]
     let itemsSet, orderedSet = set items, set ordered
     let keep = Set.intersect orderedSet itemsSet
-    let ordered = ordered |> Seq.filter (fun el -> Set.contains el keep)
+    let ordered = ordered |> Array.filter (fun el -> keep.Contains el)
     let procf = if relative then makeRelativePath root else id
-    seq { for f in ordered do yield procf f
-          for f in itemsSet - orderedSet do yield procf f }
+    let unorderedItems = items |> List.filter (fun el -> not (orderedSet.Contains el))
+    [ for f in ordered -> procf f
+      for f in unorderedItems -> procf f ]
+
     
   /// Generate inputs for the compiler (excluding source code!); returns list of items 
   /// containing resources (prefixed with the --resource parameter)
-  let generateOtherItems (items:ProjectItemCollection) = seq {
-    for file in items.GetAll<ProjectFile>() do
-      match file.BuildAction with
-      | _ when file.Subtype = Subtype.Directory -> ()
-      | "EmbeddedResource" -> yield "--resource:" + (wrapFile(file.Name.ToString()))
-      | "None" | "Content" | "Compile" -> ()
-      | s -> failwith("Items of type '" + s + "' not supported") }
-
-  (*
-  /// If we cannto find the F# compiler, we use just "fsc.exe" on 
-  /// .NET or we use "fsharpc" command on Mono (installed by the package)
-  let fscPath = 
-    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
-    | _ when ScriptOptions.safeExists(AddinManager.CurrentAddin.GetFilePath ("fsc.exe")) ->
-        // Use the fsc bundled with the add-in
-        AddinManager.CurrentAddin.GetFilePath ("fsc.exe")
-    | _ when Environment.runningOnMono && ((ScriptOptions.safeExists "/usr/bin/fsc") || (ScriptOptions.safeExists "/usr/local/bin/fsc")) ->
-        // On Mono, we always prefer 'fsharpc' script, especially if we can find it
-        "fsc"
-    | Some(dir) when File.Exists(Path.Combine(dir, "fsc.exe")) ->  
-        // If we can find 'fsc.exe' then that is good no matter where we're running
-        Path.Combine(dir, "fsc.exe")
-        // Fallback case - depends on the platform
-    | _ -> if Environment.runningOnMono then "fsc" else "fsc.exe"
-  *)
-
-  /// If we cannto find F# Interactive, we use just "fsi.exe" on 
-  /// .NET or we use "fsharpi" command on Mono (installed by the package)
-  let fsiPath = 
-    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
-    | _ when ScriptOptions.safeExists(AddinManager.CurrentAddin.GetFilePath ("fsi.exe")) ->
-        // Use the fsi bundled with the add-in
-        AddinManager.CurrentAddin.GetFilePath ("fsi.exe")
-    | _ when Environment.runningOnMono && ScriptOptions.safeExists("/usr/bin/fsi") ->
-        // On Mono, we always prefer 'fsharpi' script, especially if we can find it
-        "fsi"
-    | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsi.exe")) ->  
-        // If we can find 'fsi.exe' then that is good no matter where we're running
-        Path.Combine(dir, "fsi.exe")
-        // Fallback case - depends on the platform
-    | _ -> if Environment.runningOnMono then "fsi" else "fsi.exe"
-
-  // do Debug.tracef "Resolution" "Paths:\n - fsc = %s\n - fsi = %s" fscPath fsiPath
-
+  let generateOtherItems (items:ProjectItemCollection) = 
+    [ for file in items.GetAll<ProjectFile>() do
+        match file.BuildAction with
+        | _ when file.Subtype = Subtype.Directory -> ()
+        | "EmbeddedResource" -> yield "--resource:" + (wrapFile(file.Name.ToString()))
+        | "None" | "Content" | "Compile" -> ()
+        | s -> failwith("Items of type '" + s + "' not supported") ]
 
   let getToolPath (search_paths:seq<string>) (extensions:seq<string>) (tool_name:string) =
     let search_files = Seq.map (fun x -> tool_name + x) extensions
@@ -421,7 +404,7 @@ module Common =
         let candidate_files = IO.Directory.GetFiles(path)
 
         let file_if_exists candidate_file =
-          Seq.tryFind (fun x -> IO.Path.Combine(path,x) = candidate_file) search_files
+          Seq.tryFind (fun x -> Path.Combine(path,x) = candidate_file) search_files
         match Seq.tryPick file_if_exists candidate_files with
           | Some x -> Some(path,x)
           | None -> None
@@ -432,10 +415,12 @@ module Common =
     Seq.tryPick (path_and_file search_files) search_paths
 
 
-  let getShellToolPath (extensions:seq<string>) (tool_name:string)  =
+  let getShellToolPath (extensions:seq<string>) (toolName:string)  =
     let path_variable = Environment.GetEnvironmentVariable("PATH")
-    let search_paths = path_variable.Split [| ':' |]
-    getToolPath search_paths extensions tool_name
+    // Split the path by ';' on Windows
+    let pathSplitCharacter = (if Environment.OSVersion.Platform = PlatformID.Win32NT then ';' else ':')
+    let searchPaths = path_variable.Split [| pathSplitCharacter |]
+    getToolPath searchPaths extensions toolName
 
   /// Get full path to tool
   let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (tool_name:string) =
@@ -476,62 +461,52 @@ module Common =
     let best_info = Seq.fold newest_net_framework_folder (first,[| 0 |]) candidate_frameworks
     fst best_info
 
-  let getDefaultInteractive =
+  let getDefaultInteractive() =
 
     let runtime = IdeApp.Preferences.DefaultTargetRuntime
     let framework = getDefaultTargetFramework runtime
 
-    let tool_info =
-      match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsharpi" with
-      | Some(result) -> Some(result)
-      | None ->
-        match getShellToolPath [| ""; ".exe"; ".bat" |] "fsharpi" with
-        | Some(result) -> Some(result)
-        | None ->
-          match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsi" with
-          | Some(result) -> Some(result)
-          | None ->
-            match getShellToolPath [| ""; ".exe"; ".bat" |] "fsi" with
-            | Some(result) -> Some(result)
-            | None -> None
-
-    match tool_info with
-    | Some(dir,file) -> Some(IO.Path.Combine(dir,file))
+    match getEnvironmentToolPath runtime framework [|""; ".exe"; ".bat" |] "fsharpi" with
+    | Some(dir,file)-> Some(Path.Combine(dir,file))
+    | None->
+    match getShellToolPath [| ""; ".exe"; ".bat" |]"fsharpi" with
+    | Some(dir,file)-> Some(Path.Combine(dir,file))
+    | None->
+    match getEnvironmentToolPath runtime framework [|""; ".exe"; ".bat" |] "fsi" with
+    | Some(dir,file)-> Some(Path.Combine(dir,file))
+    | None->
+    match getShellToolPath [| ""; ".exe"; ".bat" |]"fsi" with
+    | Some(dir,file)-> Some(Path.Combine(dir,file))
+    | None-> 
+    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
+    | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsi.exe")) ->  
+        Some(Path.Combine(dir,"fsi.exe"))
     | _ -> None
 
   let getCompilerFromEnvironment (runtime:TargetRuntime) (framework:TargetFramework) =
-    let tool_info =
-      match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsharpc" with
-      | Some(result) -> Some(result)
-      | None ->
-        match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsc" with
-          | Some(result) -> Some(result)
-          | None -> None
-    match tool_info with
-    | Some(dir,file) -> Some(IO.Path.Combine(dir,file))
-    | _ -> None
+    match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsharpc" with
+    | Some(dir,file) -> Some(Path.Combine(dir,file))
+    | None ->
+    match getEnvironmentToolPath runtime framework [| ""; ".exe"; ".bat" |] "fsc" with
+    | Some(dir,file) -> Some(Path.Combine(dir,file))
+    | None -> None
     
-  let getCompilerFromShell =
-    let tool_info =
-      match getShellToolPath [| ""; ".exe"; ".bat" |] "fsharpc" with
-      | Some(result) -> Some(result)
-      | None ->
-        match getShellToolPath [| ""; ".exe"; ".bat" |] "fsc" with
-        | Some(result) -> Some(result)
-        | None -> None
-    match tool_info with
-    | Some(dir,file) -> Some(IO.Path.Combine(dir,file))
-    | _ -> None
-
-  let getDefaultDefaultCompiler =
+  let getDefaultDefaultCompiler() =
+  
     let runtime = IdeApp.Preferences.DefaultTargetRuntime
     let framework = getDefaultTargetFramework runtime
+
     match getCompilerFromEnvironment runtime framework with
-    | Some(result) -> Some(result)
+    | Some(result)-> Some(result)
+    | None->
+    match getShellToolPath [| ""; ".exe"; ".bat" |] "fsharpc" with
+    | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None ->
-      match getCompilerFromShell with
-      | Some(result) -> Some(result)
-      | None -> None
-
-
+    match getShellToolPath [| ""; ".exe"; ".bat" |] "fsc" with
+    | Some(dir,file) -> Some(Path.Combine(dir,file))
+    | None -> 
+    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
+    | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsc.exe")) ->  
+        Some(Path.Combine(dir,"fsc.exe"))
+    | _ -> None
 
