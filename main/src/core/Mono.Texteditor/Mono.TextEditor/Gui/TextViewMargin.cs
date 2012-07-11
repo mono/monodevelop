@@ -1481,7 +1481,6 @@ namespace Mono.TextEditor
 			cr.Translate (xPos, y);
 			cr.ShowLayout (layout.Layout);
 			cr.Restore ();
-
 			if (offset == line.Offset) {
 				DrawIndent (cr, layout, line, xPos, y);
 			}
@@ -2399,7 +2398,7 @@ namespace Mono.TextEditor
 					cr.Save ();
 					cr.Translate (
 						pangoPosition / Pango.Scale.PangoScale + foldXMargin,
-						System.Math.Floor (boundingRectangleY +  (boundingRectangleHeight - System.Math.Floor (height / Pango.Scale.PangoScale)) / 2));
+						System.Math.Floor (boundingRectangleY + (boundingRectangleHeight - System.Math.Floor (height / Pango.Scale.PangoScale)) / 2));
 					cr.ShowLayout (markerLayout);
 					cr.Restore ();
 
@@ -2422,9 +2421,10 @@ namespace Mono.TextEditor
 			
 			// Draw remaining line - must be called for empty line parts as well because the caret may be at this positon
 			// and the caret position is calculated in DrawLinePart.
-			if (line.EndOffsetIncludingDelimiter - offset >= 0)
+			if (line.EndOffsetIncludingDelimiter - offset >= 0) {
 				DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, line.Offset + line.Length - offset, ref pangoPosition, ref isSelectionDrawn, y, area.X + area.Width, _lineHeight);
-			
+			}
+
 			bool isEolSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionMode == SelectionMode.Normal && textEditor.SelectionRange.Contains (line.Offset + line.Length);
 			var lx = (int)(pangoPosition / Pango.Scale.PangoScale);
 			lineArea = new Cairo.Rectangle (lx,
@@ -2468,6 +2468,8 @@ namespace Mono.TextEditor
 						textEditor.Allocation.Width - eolStartX,
 						lineArea.Height);
 					DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.CairoBackgroundColor, false);
+					if (line.Length == 0)
+						DrawIndent (cr, GetLayout (line), line, lx, y);
 				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
 					LayoutWrapper wrapper = GetLayout (line);
 					if (wrapper.EolSpanStack != null) {
