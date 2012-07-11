@@ -72,41 +72,15 @@ namespace MonoDevelop.MacIntegration
 			
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 			
-			CheckGtkVersion (2, 24, 0);
-			
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
 			Carbon.SetProcessName (BrandingService.ApplicationName);
 			
-			MonoDevelop.MacInterop.Cocoa.InitMonoMac ();
+			Cocoa.InitMonoMac ();
 			
 			timer.Trace ("Installing App Event Handlers");
 			GlobalSetup ();
 			
 			timer.EndTiming ();
-		}
-		
-		//Mac GTK+ behaviour isn't completely stable even between micro releases
-		static void CheckGtkVersion (uint major, uint minor, uint micro)
-		{
-			string url = "http://www.go-mono.com/mono-downloads/download.html";
-			
-			// to require exact version, also check : || Gtk.Global.CheckVersion (major, minor, micro + 1) == null
-			if (Gtk.Global.CheckVersion (major, minor, micro) != null) {
-				
-				MonoDevelop.Core.LoggingService.LogFatalError ("GTK+ version is incompatible with required version {0}.{1}.{2}.", major, minor, micro);
-				
-				AlertButton downloadButton = new AlertButton ("Download...", null);
-				if (downloadButton == MessageService.GenericAlert (
-					Stock.Error,
-					"Incompatible Mono Framework Version",
-					"MonoDevelop requires a newer version of the Mono Framework.",
-					new AlertButton ("Cancel", null), downloadButton))
-				{
-					OpenUrl (url);
-				}
-				
-				Environment.Exit (1);
-			}
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)
