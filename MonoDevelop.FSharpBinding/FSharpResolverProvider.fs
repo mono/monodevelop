@@ -85,6 +85,7 @@ type FSharpResolverProvider() =
             Debug.tracef "Resolver" "No data found"
             null
         | _ -> 
+            Debug.tracef "Resolver" "Got data"
             new FSharpResolveResult(tip) :> ResolveResult
       with exn -> 
         Debug.tracef "Resolver" "Exception: '%s'" (exn.ToString())
@@ -97,14 +98,12 @@ type FSharpResolverProvider() =
 
     /// Returns string with tool-tip from 'FSharpResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
-    member x.CreateTooltip(unit, result, errorInformation, ambience, modifierState) : string = 
-      do Debug.tracef "Resolver" "in CreteTooltip"
-#if MONODEVELOP_HEAD
-      // With monoDevelop head, get error that "result" has type "int"
-      null
+#if MONODEVELOP_3_1_OR_GREATER
+    member x.CreateTooltip(document, offset, result, errorInformation, modifierState) : string = 
 #else
-      // This compiles with MonoDevelop 3.0.3.2 and probably before that too
+    member x.CreateTooltip(unit, result, errorInformation, ambience, modifierState) : string = 
+#endif
+      do Debug.tracef "Resolver" "in CreteTooltip"
       match result with
       | :? FSharpResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null
-#endif

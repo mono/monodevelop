@@ -166,7 +166,12 @@ module internal FSharpEnvironment =
 
 
   let BackupInstallationProbePoints = 
-      [ "/usr/local"; "/usr"; "/Library/Frameworks/Mono.framework/Versions/Current" ]
+      [ // prefer the latest installation of Mono on Mac
+        "/Library/Frameworks/Mono.framework/Versions/Current"
+        // prefer freshly built F# compilers on Linux
+        "/usr/local"
+        // otherwise look in the standard place
+        "/usr" ]
 
     // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
   // Used for
@@ -210,7 +215,15 @@ module internal FSharpEnvironment =
         | Some _ -> result
         | None -> 
         // NOTE: we should probably probe the path here??
-        let result = BackupInstallationProbePoints |> List.tryPick (fun x -> tryFsharpiScript(Path.Combine(Path.Combine(x,"bin"),"fsharpi")))
+        let result = 
+            BackupInstallationProbePoints |> List.tryPick (fun x -> 
+               let safeExists f = (try File.Exists(f) with _ -> false)
+               let file f = Path.Combine(Path.Combine(x,"bin"),f)
+               let exists f = safeExists(file f)
+               if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi")
+               elif exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi")
+               else None)
+                
         match result with 
         | Some _ -> result
         | None -> 

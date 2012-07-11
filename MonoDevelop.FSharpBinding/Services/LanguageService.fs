@@ -333,8 +333,8 @@ type internal LanguageService private () =
                              Debug.tracef "Parsing" "Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file
                              doc.ReparseDocument()
                         with _ -> ()))
-  
-  // Post message to the 'LanguageService' mailbox
+
+    // Post message to the 'LanguageService' mailbox
   let rec post m = (mbox:SimpleMailboxProcessor<_>).Post(m)
   
   // Mailbox of this 'LanguageService'
