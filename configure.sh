@@ -15,7 +15,7 @@ echo "            Default value: mono"
 echo ""
 echo "  -f <fsc>  Path/name of the F# compiler executable or script"
 echo "            ('mono' is NOT automatically added to the front) "
-echo "            Default value: fsharpc"
+echo "            Default value: fsc"
 echo ""
 echo "  -c <gmcs> Path/name of the C# compiler executable or script"
 echo "            ('mono' is NOT automatically added to the front) "
@@ -30,10 +30,19 @@ read a
 
 GMCS=gmcs
 MONO=mono
-FSC=fsharpc
+
+# Annoyingly, Mono 2.10 installs 'fsc' on Mac, but fresh builds on Linux
+# and future versions of Mono will install 'fsharpc'. Even more annoyingly,
+# there can be old, crappy versions of 'fsharpc' hanging around on Mac
+# machines - these versions aren't suitable for use with MonoDevelop.
+if [ -d "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0" ];
+then FSC=fsc; 
+else FSC=fsharpc; 
+fi
 
 
-if [[ `which $FSC` == "" ]]; then FSC=fsc; fi
+if [[ `which $FSC` == "" ]]; then FSC=fsc; else FSC=`which $FSC`; fi 
+if [[ `which $GMCS` == "" ]]; then GMCS=gmcs; else GMCS=`which $GMCS`; fi
  
 while getopts e:f:c:n OPT; do
   case "$OPT" in
@@ -76,47 +85,61 @@ searchpaths()
 }
 
 # ------------------------------------------------------------------------------
-# Find all paths that we need in order to generate the make file
+# Find all paths that we need in order to generate the make file. Paths
+# later in the list are preferred.
 
-PATHS=( /usr/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop )
+PATHS=( /usr/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop )
 searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
 MDDIR=$RESULT
 echo "Successfully found MonoDevelop root directory." $MDDIR
 
-PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /opt/mono/lib/mono/2.0 )
+PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /usr/local/lib/mono/4.0 /opt/mono/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /usr/lib/mono/4.0 /usr/lib64/mono/4.0)
 searchpaths "F#" FSharp.Core.dll PATHS[@]
 FSDIR=$RESULT
 echo "Successfully found F# root directory." $FSDIR
 
-PATHS=( /usr/lib/mono/2.0 /Library/Frameworks/Mono.framework/Versions/2.8/lib/mono/2.0 /opt/mono/lib/mono/2.0 )
+PATHS=( /usr/lib/mono/4.0 /usr/local/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /opt/mono/lib/mono/4.0 /usr/lib64/mono)
 searchpaths "Mono" mscorlib.dll PATHS[@]
 MONODIR=$RESULT
 echo "Successfully found Mono root directory." $MONODIR
 
-PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/gtk-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/2.8/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 )
+PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/gtk-sharp-2.0 /usr/local/lib/mono/gtk-sharp-2.0 /usr/local/lib/cli/gtk-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 /usr/lib64/mono/gtk-sharp-2.0)
 searchpaths "Gtk#" gtk-sharp.dll PATHS[@]
 GTKDIR=$RESULT
 echo "Successfully found Gtk# root directory." $GTKDIR
 
-PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/glib-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/2.8/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 )
+PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/glib-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 /usr/lib64/mono/gtk-sharp-2.0)
 searchpaths "Glib" glib-sharp.dll PATHS[@]
 GLIBDIR=$RESULT
 echo "Successfully found Glib# root directory." $GLIBDIR
 
-PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/atk-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/2.8/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 )
+PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/atk-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 /usr/lib64/mono/gtk-sharp-2.0)
 searchpaths "Atk#" atk-sharp.dll PATHS[@]
 ATKDIR=$RESULT
 echo "Successfully found Atk# root directory." $ATKDIR
 
-PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/gdk-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/2.8/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 )
+PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/gdk-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 /usr/lib64/mono/gtk-sharp-2.0)
 searchpaths "Gdk#" gdk-sharp.dll PATHS[@]
 GDKDIR=$RESULT
 echo "Successfully found Gdk# root directory." $GDKDIR
 
-PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/pango-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/2.8/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 )
+PATHS=( /usr/lib/mono/gtk-sharp-2.0 /usr/lib/cli/pango-sharp-2.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gtk-sharp-2.0 /opt/mono/lib/mono/gtk-sharp-2.0 /usr/lib64/mono/gtk-sharp-2.0)
 searchpaths "Pango#" pango-sharp.dll PATHS[@]
 PANGODIR=$RESULT
 echo "Successfully found Pango root directory." $PANGODIR
+
+PATHS=( /usr/lib/mono/mono-addins /usr/lib/cli/mono-addins /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/mono-addins /opt/mono/lib/mono/mono-addins /usr/lib/cli/Mono.Addins-0.2 /usr/lib64/mono/mono-addins /usr/local/lib/monodevelop)
+searchpaths "Mono.Addins" Mono.Addins.dll PATHS[@]
+MADIR=$RESULT
+echo "Successfully found Mono.Addins directory." $MADIR
+
+PATHS=( $MDDIR/AddIns $MDDIR/AddIns/DisplayBindings/SourceEditor)
+searchpaths "MonoDevelop.SourceEditor2" MonoDevelop.SourceEditor2.dll PATHS[@]
+MDSEDIR=$RESULT
+echo "Successfully found MonoDevelop.SourceEditor2.dll directory." $MDSEDIR
+
+echo "Using F# compiler : " $FSC
+echo "Using C# compiler : " $GMCS
 
 # ------------------------------------------------------------------------------
 # Write Makefile
@@ -133,5 +156,7 @@ sed "s,INSERT_PANGO_DIR,$PANGODIR,g" Makefile.2 > Makefile.1
 sed "s,INSERT_MONO,$MONO,g" Makefile.1 > Makefile.2
 sed "s,INSERT_FSHARP_COMPILER,$FSC,g" Makefile.2 > Makefile.1
 sed "s,INSERT_CSHARP_COMPILER,$GMCS,g" Makefile.1 > Makefile.2
+sed "s,INSERT_MA_DIR,$MADIR,g" Makefile.2 > Makefile.1
+sed "s,INSERT_MDSE_DIR,$MDSEDIR,g" Makefile.1 > Makefile.2
 rm Makefile.1
 mv Makefile.2 Makefile
