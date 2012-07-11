@@ -409,7 +409,21 @@ namespace MonoDevelop.Components.Docking
 			if (allowDocking && layout.GetDockTarget (item, px, py, out dockDelegate, out rect)) {
 				placeholderWindow.Relocate (ox + rect.X, oy + rect.Y, rect.Width, rect.Height, true);
 				placeholderWindow.Show ();
+				placeholderWindow.SetDockInfo (dockDelegate, rect);
 				return true;
+			} else {
+				int w,h;
+				var gi = layout.FindDockGroupItem (item.Id);
+				if (gi != null) {
+					w = gi.Allocation.Width;
+					h = gi.Allocation.Height;
+				} else {
+					w = item.DefaultWidth;
+					h = item.DefaultHeight;
+				}
+				placeholderWindow.Relocate (ox + px - w / 2, oy + py - h / 2, w, h, false);
+				placeholderWindow.Show ();
+				placeholderWindow.AllowDocking = false;
 			}
 
 			return false;
@@ -420,21 +434,17 @@ namespace MonoDevelop.Components.Docking
 			if (placeholderWindow == null || !placeholderWindow.Visible)
 				return;
 			
-			item.Status = DockItemStatus.Dockable;
-			
-			int px, py;
-			GetPointer (out px, out py);
-			
-			DockDelegate dockDelegate;
-			Gdk.Rectangle rect;
-			if (placeholderWindow.AllowDocking && layout.GetDockTarget (item, px, py, out dockDelegate, out rect)) {
+			if (placeholderWindow.AllowDocking && placeholderWindow.DockDelegate != null) {
+				item.Status = DockItemStatus.Dockable;
 				DockGroupItem dummyItem = new DockGroupItem (frame, new DockItem (frame, "__dummy"));
 				DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
 				gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
-				dockDelegate (item);
+				placeholderWindow.DockDelegate (item);
 				dummyItem.ParentGroup.Remove (dummyItem);
 				RelayoutWidgets ();
 			} else {
+				int px, py;
+				GetPointer (out px, out py);
 				DockGroupItem gi = FindDockGroupItem (item.Id);
 				int pw, ph;
 				placeholderWindow.GetPosition (out px, out py);
@@ -449,6 +459,8 @@ namespace MonoDevelop.Components.Docking
 			if (placeholderWindow != null) {
 				placeholderWindow.Destroy ();
 				placeholderWindow = null;
+			}
+			if (padTitleWindow != null) {
 				padTitleWindow.Destroy ();
 				padTitleWindow = null;
 			}

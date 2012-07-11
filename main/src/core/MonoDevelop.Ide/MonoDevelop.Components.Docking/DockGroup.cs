@@ -626,14 +626,16 @@ namespace MonoDevelop.Components.Docking
 
 			boundTabStrip = ts;
 			
-			if (currentTabPage != -1 && currentTabPage < boundTabStrip.TabCount) {
-				boundTabStrip.CurrentTab = currentTabPage;
-				// Discard the currentTabPage value. Current page is now tracked by the tab strip
-				currentTabPage = -1;
-			}
-			else if (oldpage != null)
+			if (oldpage != null) {
 				boundTabStrip.CurrentPage = oldpage;
-			
+			}
+			else if (currentTabPage != -1 && currentTabPage < boundTabStrip.TabCount) {
+				boundTabStrip.CurrentTab = currentTabPage;
+			}
+
+			// Discard the currentTabPage value. Current page is now tracked by the tab strip
+			currentTabPage = -1;
+
 			if (boundTabStrip.CurrentTab == -1) {
 				if (oldtab != -1) {
 					if (oldtab < boundTabStrip.TabCount)
@@ -941,7 +943,8 @@ namespace MonoDevelop.Components.Docking
 			
 			if (type == DockGroupType.Tabbed) {
 				// Tabs can only contain DockGroupItems
-				return ((DockGroupItem)VisibleObjects[0]).GetDockTarget (item, px, py, Allocation, out dockDelegate, out rect);
+				var sel = boundTabStrip != null ? VisibleObjects[boundTabStrip.CurrentTab] : VisibleObjects[VisibleObjects.Count - 1];
+				return ((DockGroupItem)sel).GetDockTarget (item, px, py, Allocation, out dockDelegate, out rect);
 			}
 			else if (type == DockGroupType.Horizontal) {
 				if (px >= Allocation.Right - DockFrame.GroupDockSeparatorSize) {

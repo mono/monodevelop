@@ -56,8 +56,9 @@ namespace MonoDevelop.Components.Docking
 			bottomFiller.Hide ();
 			BottomPadding = 3;
 			WidthRequest = 0;
+			box.Removed += HandleRemoved;
 		}
-		
+
 		public int BottomPadding {
 			get { return bottomFiller.HeightRequest; }
 			set {
@@ -98,7 +99,15 @@ namespace MonoDevelop.Components.Docking
 			
 			tab.ButtonPressEvent += OnTabPress;
 		}
-		
+
+		void HandleRemoved (object o, RemovedArgs args)
+		{
+			Gtk.Widget w = args.Widget;
+			w.ButtonPressEvent -= OnTabPress;
+			if (currentTab >= box.Children.Length)
+				currentTab = box.Children.Length - 1;
+		}
+
 		public void SetTabLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
 			foreach (Tab tab in box.Children) {
@@ -159,7 +168,7 @@ namespace MonoDevelop.Components.Docking
 		public void Clear ()
 		{
 			currentTab = -1;
-			foreach (Widget w in box.Children)
+			foreach (Tab w in box.Children)
 				box.Remove (w);
 		}
 		
