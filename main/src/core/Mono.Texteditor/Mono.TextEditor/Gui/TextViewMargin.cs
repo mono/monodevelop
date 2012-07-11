@@ -2379,7 +2379,7 @@ namespace Mono.TextEditor
 					                 boundingRectangleY + 0.5,
 					                 System.Math.Floor (foldingRectangle.Width - cr.LineWidth),
 					                 System.Math.Floor (boundingRectangleHeight - cr.LineWidth),
-					                 LineHeight / 4, CairoCorners.All, false);
+					                 LineHeight / 8, CairoCorners.All, false);
 					cr.Stroke ();
 					
 					cr.Save ();
