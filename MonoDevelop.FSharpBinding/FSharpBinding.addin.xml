@@ -1,5 +1,5 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
-       author="Community" copyright="???" url="http://www.fsharp.net"
+       author="Community" copyright="Community" url="https://github.com/fsharp/fsharpbinding/wiki"
        description="F# Language Binding" category="Language bindings" version="3.0">
 
 	<Runtime>
@@ -29,7 +29,11 @@
     <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp" />
   </Extension>
 
-  	<Extension path="/MonoDevelop/Ide/TextEditorResolver">
+  <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+    <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpLanguageItemTooltipProvider" />
+  </Extension>
+
+  <Extension path="/MonoDevelop/Ide/TextEditorResolver">
     	<Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
   	</Extension>
 

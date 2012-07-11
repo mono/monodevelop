@@ -8,6 +8,7 @@ MDROOT  = INSERT_MD_ROOT
 MONOBIN = INSERT_MONO_BIN
 FSBIN = INSERT_FSHARP_BIN
 MADIR = INSERT_MA_DIR
+MDSEDIR = INSERT_MDSE_DIR
 ATKDIR = INSERT_ATK_DIR
 PANGODIR = INSERT_PANGO_DIR
 GTKDIR = INSERT_GTK_DIR
@@ -74,7 +75,7 @@ REFERENCES = \
 	-r:$(MDBIN)/MonoDevelop.Core.dll \
 	-r:$(MDBIN)/MonoDevelop.Ide.dll \
 	-r:$(MDADDIN)/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
-	-r:$(MDADDIN)/BackendBindings/MonoDevelop.CSharpBinding.dll \
+	-r:$(MDSEDIR)/MonoDevelop.SourceEditor2.dll \
 	-r:$(MDBIN)/Mono.TextEditor.dll \
 	-r:$(MDBIN)/ICSharpCode.NRefactory.dll \
 	-r:$(MDBIN)/ICSharpCode.NRefactory.CSharp.dll \

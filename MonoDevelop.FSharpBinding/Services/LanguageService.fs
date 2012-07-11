@@ -193,16 +193,16 @@ type internal TypedParseResult(info:TypeCheckInfo) =
     let sel = txt.[offset]
     
     let loc  = doc.OffsetToLocation(offset)
-    let line, col = loc.Line, loc.Column
-    let currentLine = doc.Lines |> Seq.nth loc.Line    
+    let line, col = max (loc.Line - 1) 0, loc.Column
+    let currentLine = doc.Lines |> Seq.nth line
     let lineStr = txt.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
     
     // Parsing - find the identifier around the current location
     // (we look for full identifier in the backward direction, but only
     // for a short identifier forward - this means that when you hover
     // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-    let lookBack = Parsing.createBackStringReader lineStr col
-    let lookForw = Parsing.createForwardStringReader lineStr (col + 1)
+    let lookBack = Parsing.createBackStringReader lineStr (col-1)
+    let lookForw = Parsing.createForwardStringReader lineStr col
     
     let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
     let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
@@ -228,9 +228,7 @@ type internal TypedParseResult(info:TypeCheckInfo) =
         let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
         let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
         match res with
-        | DataTipText(elems) 
-            when elems |> List.forall (function 
-              DataTipElementNone -> true | _ -> false) -> 
+        | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
           // This works if we're inside "member x.Foo" and want to get 
           // tool tip for "Foo" (but I'm not sure why)
           Debug.tracef "Result" "First attempt returned nothing"   
