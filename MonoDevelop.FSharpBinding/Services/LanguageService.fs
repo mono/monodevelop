@@ -315,9 +315,21 @@ type internal LanguageService private () =
 
   // ------------------------------------------------------------------------------------
 
-  // Create an instance of interactive checker
-  let checker = InteractiveChecker.Create(ignore)
-  
+  // Create an instance of interactive checker. The callback is called by the F# compiler service
+  // when its view of the prior-typechecking-state of the start of a file has changed, for example
+  // when the background typechecker has "caught up" after some other file has been changed, 
+  // and its time to re-typecheck the current file.
+  let checker = 
+      InteractiveChecker.Create(fun file -> 
+          DispatchService.GuiDispatch(fun () ->
+                        try 
+                         Debug.tracef "Parsing" "Considering re-typcheck of file %s because compiler reports it needs it" file
+                         let doc = IdeApp.Workbench.ActiveDocument
+                         if doc <> null && doc.FileName.FullPath.ToString() = file then 
+                             Debug.tracef "Parsing" "Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file
+                             doc.ReparseDocument()
+                        with _ -> ()))
+
   // Post message to the 'LanguageService' mailbox
   let rec post m = (mbox:SimpleMailboxProcessor<_>).Post(m)
   
@@ -464,11 +476,11 @@ type internal LanguageService private () =
                  opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
     opts
   
-  member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, full, afterCompleteTypeCheckCallback) = 
+  member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, afterCompleteTypeCheckCallback) = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.tracef "Parsing" "Trigger parse (fileName=%s)" fileName
-    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, full, Some afterCompleteTypeCheckCallback)))
+    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, true, Some afterCompleteTypeCheckCallback)))
 
   member x.GetTypedParseResult((file:FilePath, src, proj:MonoDevelop.Projects.Project, config), ?timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()

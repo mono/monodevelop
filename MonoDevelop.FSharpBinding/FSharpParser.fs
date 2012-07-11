@@ -49,7 +49,7 @@ type FSharpParser() =
       | Some filePath -> 
         let config = IdeApp.Workspace.ActiveConfiguration
         if config <> null then 
-          LanguageService.Service.TriggerParse(filePath, fileContent, proj, config, full=false, afterCompleteTypeCheckCallback=(fun (fileName,errors) ->
+          LanguageService.Service.TriggerParse(filePath, fileContent, proj, config, afterCompleteTypeCheckCallback=(fun (fileName,errors) ->
 
                     let file = fileName.FullPath.ToString()
                     if file <> null then
