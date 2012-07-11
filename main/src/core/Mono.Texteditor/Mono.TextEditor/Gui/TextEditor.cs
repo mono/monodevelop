@@ -990,8 +990,8 @@ namespace Mono.TextEditor
 			
 			//main context menu
 			if (DoPopupMenu != null && e.TriggersContextMenu ()) {
-				if (!workaroundBug2157 && DoClickedPopupMenu (e))
-					return true;
+				DoClickedPopupMenu (e);
+				return true;
 			}
 			
 			if (lastTime != e.Time) {// filter double clicks
@@ -1008,9 +1008,6 @@ namespace Mono.TextEditor
 			}
 			return base.OnButtonPressEvent (e);
 		}
-		
-		//HACK: work around "Bug 2157 - Context menus flaky near left edge of screen" by triggering on ButtonRelease
-		static bool workaroundBug2157 = Platform.IsMac;
 		
 		bool DoClickedPopupMenu (Gdk.EventButton e)
 		{
@@ -1071,8 +1068,7 @@ namespace Mono.TextEditor
 			
 			//main context menu
 			if (DoPopupMenu != null && e.IsContextMenuButton ()) {
-				if (workaroundBug2157 && DoClickedPopupMenu (e))
-					return true;
+				return true;
 			}
 			
 			double startPos;

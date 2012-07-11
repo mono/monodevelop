@@ -45,9 +45,6 @@ namespace MonoDevelop.Components
 		
 		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
 		
-		//HACK: work around "Bug 2157 - Context menus flaky near left edge of screen" by triggering on ButtonRelease
-		static bool workaroundBug2157 = MonoDevelop.Core.Platform.IsMac;
-		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (!evnt.TriggersContextMenu ()) {
@@ -62,8 +59,7 @@ namespace MonoDevelop.Components
 			}
 			
 			if (DoPopupMenu != null) {
-				if (!workaroundBug2157)
-					DoPopupMenu (evnt);
+				DoPopupMenu (evnt);
 				return true;
 			}
 			
@@ -75,8 +71,6 @@ namespace MonoDevelop.Components
 			bool res = base.OnButtonReleaseEvent (evnt);
 			
 			if (DoPopupMenu != null && evnt.IsContextMenuButton ()) {
-				if (workaroundBug2157)
-					DoPopupMenu (evnt);
 				return true;
 			}
 			
