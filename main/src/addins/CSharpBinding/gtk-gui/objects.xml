@@ -3,14 +3,6 @@
     <itemgroups />
     <signals />
   </object>
-  <object type="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
-    <itemgroups />
-    <signals>
-      <itemgroup label="NameConventionPanelWidget Signals">
-        <signal name="PolicyChanged" />
-      </itemgroup>
-    </signals>
-  </object>
   <object type="MonoDevelop.Ide.Gui.Components.ExtensibleTreeView" palette-category="General" allow-children="false" base-type="MonoDevelop.Components.CompactScrolledWindow">
     <itemgroups>
       <itemgroup label="ExtensibleTreeView Properties">
@@ -315,5 +307,13 @@
   <object type="MonoDevelop.Components.ProgressControl" palette-category="General" allow-children="false" base-type="Gtk.DrawingArea">
     <itemgroups />
     <signals />
+  </object>
+  <object type="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget" palette-category="General" allow-children="false" base-type="Gtk.Bin">
+    <itemgroups />
+    <signals>
+      <itemgroup label="NameConventionPanelWidget Signals">
+        <signal name="PolicyChanged" />
+      </itemgroup>
+    </signals>
   </object>
 </objects>

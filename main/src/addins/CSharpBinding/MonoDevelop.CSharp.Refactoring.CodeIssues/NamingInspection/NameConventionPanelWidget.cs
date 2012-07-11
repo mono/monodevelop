@@ -97,6 +97,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				} while (treeStore.IterNext (ref iter));
 			}
 			policy.Rules = rules.ToArray ();
+			if (IdeApp.Workbench.ActiveDocument != null)
+				IdeApp.Workbench.ActiveDocument.UpdateParseDocument ();
 		}
 
 		void AddEntry ()
