@@ -158,7 +158,7 @@ namespace Mono.TextEditor
 			base.MouseHover (args);
 			
 			if (!args.TriggersContextMenu () && args.Button == 1) {
-			//	DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
+				//	DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
 				
 				int lineNumber = args.LineNumber >= DocumentLocation.MinLine ? args.LineNumber : editor.Document.LineCount;
 				editor.Caret.PreserveSelection = true;
@@ -190,7 +190,7 @@ namespace Mono.TextEditor
 			lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
 			lineNumberGC = editor.ColorStyle.LineNumber.CairoColor;
 		}
-		
+
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
 			var gutterMarker = lineSegment != null ? (IGutterMarker)lineSegment.Markers.FirstOrDefault (marker => marker is IGutterMarker) : null;
