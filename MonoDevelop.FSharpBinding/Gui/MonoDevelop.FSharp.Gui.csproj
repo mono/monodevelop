@@ -8,7 +8,6 @@
     <ProjectGuid>{FD0D1033-9145-48E5-8ED8-E2365252878C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>FSharpBinding.Gui</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.FSharp.Gui</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -60,11 +59,11 @@
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="FSharpCompilerOptionsWidget.cs" />
-    <Compile Include="gtk-gui\FSharp.MonoDevelop.Gui.FSharpCompilerOptionsWidget.cs" />
     <Compile Include="FSharpBuildOrderWidget.cs" />
-    <Compile Include="gtk-gui\FSharp.MonoDevelop.Gui.FSharpBuildOrderWidget.cs" />
     <Compile Include="FSharpSettingsWidget.cs" />
-    <Compile Include="gtk-gui\FSharp.MonoDevelop.Gui.FSharpSettingsWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

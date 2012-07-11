@@ -98,9 +98,9 @@ GUIFILES = \
 	MonoDevelop.FSharpBinding/Gui/FSharpBuildOrderWidget.cs \
 	MonoDevelop.FSharpBinding/Gui/FSharpSettingsWidget.cs \
 	MonoDevelop.FSharpBinding/Gui/FSharpCompilerOptionsWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/gtk-gui/FSharp.MonoDevelop.Gui.FSharpBuildOrderWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/gtk-gui/FSharp.MonoDevelop.Gui.FSharpSettingsWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/gtk-gui/FSharp.MonoDevelop.Gui.FSharpCompilerOptionsWidget.cs \
+	MonoDevelop.FSharpBinding/Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget.cs \
+	MonoDevelop.FSharpBinding/Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs \
+	MonoDevelop.FSharpBinding/Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs \
 	MonoDevelop.FSharpBinding/Gui/gtk-gui/generated.cs
 
 GUIOPTIONS = \
