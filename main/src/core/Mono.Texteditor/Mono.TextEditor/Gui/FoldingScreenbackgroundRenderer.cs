@@ -64,12 +64,12 @@ namespace Mono.TextEditor
 			return hslColor;
 		}
 		
-		class DropShadow : IDisposable
+		class Blur : IDisposable
 		{
 			readonly Cairo.ImageSurface buffer;
 			readonly int radius;
 			
-			public DropShadow (int width, int height, int radius)
+			public Blur (int width, int height, int radius)
 			{
 				this.radius = radius;
 				buffer = new Cairo.ImageSurface (Cairo.Format.Argb32, width, height);
@@ -78,6 +78,20 @@ namespace Mono.TextEditor
 			public Cairo.Context GetContext ()
 			{
 				return new Cairo.Context (buffer);
+			}
+
+
+			public void Draw (Cairo.Context cr)
+			{
+				buffer.Flush ();
+				var tmp = cairocks_gaussian_blur (buffer.Data, buffer.Width, buffer.Height, buffer.Stride, radius, radius);
+				buffer.MarkDirty ();
+				
+				using (var newImage = new Cairo.ImageSurface (tmp, Cairo.Format.Argb32, buffer.Width, buffer.Height, buffer.Stride)) {
+					cr.Operator = Cairo.Operator.Atop;
+					cr.SetSourceSurface (newImage, 0, 0);
+					cr.Paint ();
+				}
 			}
 
 			static double[] create_kernel (double radius, double deviation)
@@ -111,185 +125,119 @@ namespace Mono.TextEditor
 				return kernel;
 			}
 
-			unsafe static byte[] cairocks_gaussian_blur (Cairo.ImageSurface surface, double radius, double deviation)
+			unsafe static byte[] cairocks_gaussian_blur (byte[] dataArr, int width, int height, int stride, double radius, double deviation)
 			{
 				double[] horzBlurArr;
 				double[] vertBlurArr;
 				double[] kernel;
-				byte[] dataArr;
-				Cairo.Format format;
-				int width;
-				int height;
-				int stride;
-				int channels;
+				int channels = 4;
 				int iY;
 				int iX;
-				
-				if (surface.Status == Cairo.Status.NullPointer)
-					return null;
-				
-				dataArr = surface.Data;
-				format = surface.Format;
-				width = surface.Width;
-				height = surface.Height;
-				stride = surface.Stride;
-				
-				if (format == Cairo.Format.Argb32)
-					channels = 4;
-				else if (format == Cairo.Format.Rgb24)
-					channels = 3;
-				else if (format == Cairo.Format.A8)
-					channels = 1;
-				else
-					return null;
 				
 				horzBlurArr = new double[height * stride];
 				vertBlurArr = new double[height * stride];
 				kernel = create_kernel (radius, deviation);
 
 				fixed (double* horzBlur = horzBlurArr)
-					fixed (double* vertBlur = vertBlurArr)
-						fixed (byte* data = dataArr) {
-							/* Horizontal pass. */
-							for (iY = 0; iY < height; iY++) {
-								for (iX = 0; iX < width; iX++) {
-									double red = 0.0f;
-									double green = 0.0f;
-									double blue = 0.0f;
-									double alpha = 0.0f;
-									int offset = (int)(kernel [0]) / -2;
-									int baseOffset;
-									int i;
+				fixed (double* vertBlur = vertBlurArr)
+				fixed (byte* data = dataArr) {
+					/* Horizontal pass. */
+					for (iY = 0; iY < height; iY++) {
+						for (iX = 0; iX < width; iX++) {
+							double red = 0.0f;
+							double green = 0.0f;
+							double blue = 0.0f;
+							double alpha = 0.0f;
+							int offset = (int)(kernel [0]) / -2;
+							int baseOffset;
+							int i;
+					
+							for (i = 0; i < (int)(kernel[0]); i++) {
+								byte* dataPtr;
+								int x = iX + offset;
+								double kernip1;
+						
+								if (x < 0 || x >= width)
+									continue;
+						
+								dataPtr = &data [iY * stride + x * channels];
+								kernip1 = kernel [i + 1];
+						
+								alpha += kernip1 * dataPtr [3];
 							
-									for (i = 0; i < (int)(kernel[0]); i++) {
-										byte* dataPtr;
-										int x = iX + offset;
-										double kernip1;
+								red += kernip1 * dataPtr [2];
+								green += kernip1 * dataPtr [1];
+								blue += kernip1 * dataPtr [0];
 								
-										if (x < 0 || x >= width)
-											continue;
-								
-										dataPtr = &data [iY * stride + x * channels];
-										kernip1 = kernel [i + 1];
-								
-										if (channels == 1)
-											alpha += kernip1 * dataPtr [0];
-										else {
-											if (channels == 4)
-												alpha += kernip1 * dataPtr [3];
-									
-											red += kernip1 * dataPtr [2];
-											green += kernip1 * dataPtr [1];
-											blue += kernip1 * dataPtr [0];
-										}
-								
-										offset++;
-									}
-							
-									baseOffset = iY * stride + iX * channels;
-							
-									if (channels == 1)
-										horzBlur [baseOffset] = alpha;
-									else {
-										if (channels == 4)
-											horzBlur [baseOffset + 3] = alpha;
-								
-										horzBlur [baseOffset + 2] = red;
-										horzBlur [baseOffset + 1] = green;
-										horzBlur [baseOffset] = blue;
-									}
-								}
+								offset++;
 							}
 					
-							/* Vertical pass. */
-							for (iY = 0; iY < height; iY++) {
-								for (iX = 0; iX < width; iX++) {
-									double red = 0.0f;
-									double green = 0.0f;
-									double blue = 0.0f;
-									double alpha = 0.0f;
-									int offset = (int)(kernel [0]) / -2;
-									int baseOffset;
-									int i;
-							
-									for (i = 0; i < (int)(kernel[0]); i++) {
-										double* dataPtr;
-										int y = iY + offset;
-										double kernip1;
-								
-										if (y < 0 || y >= height) {
-											offset++;
-									
-											continue;
-										}
-								
-										dataPtr = &horzBlur [y * stride + iX * channels];
-										kernip1 = kernel [i + 1];
-								
-										if (channels == 1)
-											alpha += kernip1 * dataPtr [0];
-										else {
-											if (channels == 4)
-												alpha += kernip1 * dataPtr [3];
-									
-											red += kernip1 * dataPtr [2];
-											green += kernip1 * dataPtr [1];
-											blue += kernip1 * dataPtr [0];
-										}
-								
-										offset++;
-									}
-							
-									baseOffset = iY * stride + iX * channels;
-							
-									if (channels == 1)
-										vertBlur [baseOffset] = alpha;
-									else {
-										if (channels == 4)
-											vertBlur [baseOffset + 3] = alpha;
-								
-										vertBlur [baseOffset + 2] = red;
-										vertBlur [baseOffset + 1] = green;
-										vertBlur [baseOffset] = blue;
-									}
-								}
-							}
-
-							for (iY = 0; iY < height; iY++) {
-								for (iX = 0; iX < width; iX++) {
-									int i = iY * stride + iX * channels;
-							
-									if (channels == 1)
-										data [i] = (byte)(vertBlur [i]);
-									else {
-										if (channels == 4)
-											data [i + 3] = (byte)(
-									vertBlur [i + 3]
-									);
-								
-										data [i + 2] = (byte)(vertBlur [i + 2]);
-										data [i + 1] = (byte)(vertBlur [i + 1]);
-										data [i] = (byte)(vertBlur [i]);
-									}
-								}
-							}
-				
-							return dataArr;
+							baseOffset = iY * stride + iX * channels;
+					
+							horzBlur [baseOffset + 3] = alpha;
+							horzBlur [baseOffset + 2] = red;
+							horzBlur [baseOffset + 1] = green;
+							horzBlur [baseOffset]     = blue;
 						}
-			}
+					}
+			
+					/* Vertical pass. */
+					for (iY = 0; iY < height; iY++) {
+						for (iX = 0; iX < width; iX++) {
+							double red = 0.0f;
+							double green = 0.0f;
+							double blue = 0.0f;
+							double alpha = 0.0f;
+							int offset = (int)(kernel [0]) / -2;
+							int baseOffset;
+							int i;
+					
+							for (i = 0; i < (int)(kernel[0]); i++) {
+								double* dataPtr;
+								int y = iY + offset;
+								double kernip1;
+						
+								if (y < 0 || y >= height) {
+									offset++;
+									continue;
+								}
+						
+								dataPtr = &horzBlur [y * stride + iX * channels];
+								kernip1 = kernel [i + 1];
+						
+								alpha += kernip1 * dataPtr [3];
+								red += kernip1 * dataPtr [2];
+								green += kernip1 * dataPtr [1];
+								blue += kernip1 * dataPtr [0];
 
-			public void Draw (Cairo.Context cr)
-			{
-				buffer.Flush ();
-				var tmp = cairocks_gaussian_blur (buffer, radius, 1);
-				buffer.MarkDirty ();
+								offset++;
+							}
+					
+							baseOffset = iY * stride + iX * channels;
+					
+							vertBlur [baseOffset + 3] = alpha;
+							vertBlur [baseOffset + 2] = red;
+							vertBlur [baseOffset + 1] = green;
+							vertBlur [baseOffset] = blue;
+						}
+					}
 
-				using (var newImage = new Cairo.ImageSurface (tmp, Cairo.Format.Argb32, buffer.Width, buffer.Height, buffer.Stride)) {
-					cr.Operator = Cairo.Operator.Atop;
-					cr.SetSourceSurface (newImage, 0, 0);
-					cr.Paint ();
+					for (iY = 0; iY < height; iY++) {
+						for (iX = 0; iX < width; iX++) {
+							int i = iY * stride + iX * channels;
+					
+							data [i + 3] = (byte)(vertBlur [i + 3]);
+							data [i + 2] = (byte)(vertBlur [i + 2]);
+							data [i + 1] = (byte)(vertBlur [i + 1]);
+							data [i] = (byte)(vertBlur [i]);
+						}
+					}
+		
+					return dataArr;
 				}
 			}
+
+			
 
 			#region IDisposable implementation
 			public void Dispose ()
@@ -342,15 +290,16 @@ namespace Mono.TextEditor
 
 				if (i == foldSegments.Count - 1) {
 					var radius = (int)(editor.Options.Zoom * 2);
-					int w = 10;
-					using (var shadow = new DropShadow ((int)rectangleWidth + w * 2, (int)rectangleHeight + w * 2, radius)) {
+					int w = 2 * radius;
+					using (var shadow = new Blur ((int)rectangleWidth + w * 2, (int)rectangleHeight + w * 2, radius)) {
 						using (var gctx = shadow.GetContext ()) {
 							gctx.Color = new Cairo.Color (0, 0, 0, 0);
 							gctx.Fill ();
 
 							var a = 0;
 							DrawRoundRectangle (gctx, true, true, w - a, w - a, editor.LineHeight / 4, rectangleWidth + a * 2, rectangleHeight + a * 2);
-							gctx.Color = new Cairo.Color (0, 0, 0, 1);
+							var bg = editor.ColorStyle.Default.CairoColor;
+							gctx.Color = new Cairo.Color (bg.R, bg.G, bg.B, 0.6);
 							gctx.Fill ();
 						}
 
