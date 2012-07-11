@@ -77,9 +77,11 @@ namespace MonoDevelop.Components.MainToolbar
 					return;
 				if (args.Requisition.Width != Allocation.Width || args.Requisition.Height != Allocation.Height) {
 					inResize = true;
-					Visible = false;
+//					Visible = false;
 					Resize (args.Requisition.Width, args.Requisition.Height);
-					Visible = true;
+//					Visible = true;
+					if (!Visible)
+						Visible = true;
 					inResize = false;
 				}
 			};
@@ -190,7 +192,7 @@ namespace MonoDevelop.Components.MainToolbar
 					maxX = Math.Max (maxX, w);
 				}
 			}
-			requisition.Width += Math.Min (geometry.Width * 4 / 5, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + headerMarginSize + xMargin * 2)));
+			requisition.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + headerMarginSize + xMargin * 2)));
 			if (y == yMargin) {
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
@@ -200,7 +202,7 @@ namespace MonoDevelop.Components.MainToolbar
 				y -= itemSeparatorHeight;
 			}
 
-			requisition.Height += Math.Min (geometry.Height * 4 / 5, (int)y + yMargin + results.Count (res => res.Item2.ItemCount > 0) * categorySeparatorHeight);
+			requisition.Height = Math.Min (geometry.Height * 4 / 5, (int)y + yMargin + results.Count (res => res.Item2.ItemCount > 0) * categorySeparatorHeight);
 		
 		}
 
