@@ -9,35 +9,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Name>MonoDevelop.FSharp</Name>
     <UsePartialTypes>false</UsePartialTypes>
-    <BuildOrder>
-      <BuildOrder>
-        <String>PowerPack/CodeDomVisitor.fs</String>
-        <String>PowerPack/CodeDomGenerator.fs</String>
-        <String>PowerPack/CodeProvider.fs</String>
-        <String>PowerPack/LazyList.fsi</String>
-        <String>PowerPack/LazyList.fs</String>
-        <String>Services/Mailbox.fs</String>
-        <String>Services/Parser.fs</String>
-        <String>Services/CompilerLocationUtils.fs</String>
-        <String>Services/FSharpCompiler.fs</String>
-        <String>Services/Parameters.fs</String>
-        <String>Services/Common.fs</String>
-        <String>Services/CompilerService.fs</String>
-        <String>Services/InteractiveSession.fs</String>
-        <String>Services/LanguageService.fs</String>
-        <String>FSharpParser.fs</String>
-        <String>FSharpResourceIdBuilder.fs</String>
-        <String>FSharpResolverProvider.fs</String>
-        <String>FSharpSyntaxMode.fs</String>
-        <String>FSharpInteractivePad.fs</String>
-        <String>FSharpOptionsPanels.fs</String>
-        <String>FSharpTextEditorCompletion.fs</String>
-        <String>FSharpLanguageBinding.fs</String>
-      </BuildOrder>
-    </BuildOrder>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -67,6 +40,7 @@
     <OptimizeCode>false</OptimizeCode>
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugInstall|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -105,9 +79,10 @@
     <Compile Include="PowerPack\LazyList.fs" />
     <Compile Include="Services\Mailbox.fs" />
     <Compile Include="Services\Parameters.fs" />
-    <Compile Include="Services\FSharpCompiler.fs" />
-    <Compile Include="Services\CompilerLocationUtils.fs" />
     <Compile Include="Services\Common.fs" />
+    <Compile Include="Services\CompilerLocationUtils.fs" />
+    <Compile Include="Services\FSharpCompiler.fs" />
+    <Compile Include="Services\CompilerArguments.fs" />
     <Compile Include="Services\Parser.fs" />
     <Compile Include="Services\LanguageService.fs" />
     <Compile Include="Services\CompilerService.fs" />
@@ -126,17 +101,6 @@
   <ItemGroup>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-
-    <Reference Include="ICSharpCode.NRefactory" />
-    <Reference Include="ICSharpCode.NRefactory.CSharp" />
-    <Reference Include="Mono.Addins" />
-    <Reference Include="Mono.TextEditor" />
-    <Reference Include="MonoDevelop.Core" />
-    <Reference Include="MonoDevelop.Ide" />
-    <Reference Include="MonoDevelop.SourceEditor2" />
-    <Reference Include="MonoDevelop.Refactoring" />
-    <!-- Use these for Windows -->
-<!-- 
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>C:\Program Files\MonoDevelop\bin\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
@@ -155,13 +119,9 @@
     <Reference Include="MonoDevelop.Ide">
       <HintPath>C:\Program Files\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.SourceEditor2">
-      <HintPath>C:\Program Files\MonoDevelop\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
-    </Reference>    
     <Reference Include="MonoDevelop.Refactoring">
       <HintPath>C:\Program Files\MonoDevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
--->
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -170,12 +130,14 @@
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="MonoDevelop.CSharpBinding, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>C:\Program Files\MonoDevelop\AddIns\BackendBindings\MonoDevelop.CSharpBinding.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
       <Name>MonoDevelop.FSharp.Gui</Name>
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
-      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>
