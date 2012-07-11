@@ -534,7 +534,7 @@ namespace Mono.TextEditor
 
 		#region Caret blinking
 		double caretBlinkState = 0, oldBlinkState = -1;
-		uint blinkTimeout = 0;
+		uint blinkTimeout = 0, startBlinkTimeout = 0;
 		double blinkTime;
 		DateTime start_time;
 
@@ -543,19 +543,31 @@ namespace Mono.TextEditor
 		const int cursorOffMultiplier = 1;
 		const int cursorDivider = 3;
 		
-		public void ResetCaretBlink ()
+		public void ResetCaretBlink (uint delay = 0)
 		{
 			StopCaretThread ();
 			start_time = DateTime.Now;
 			blinkTime = (Gtk.Settings.Default.CursorBlinkTime * cursorOnMultiplier / cursorDivider);
-
-			blinkTimeout = GLib.Timeout.Add (30, UpdateCaret);
+			if (delay == 0) {
+				blinkTimeout = GLib.Timeout.Add (30, UpdateCaret);
+			} else {
+				startBlinkTimeout = GLib.Timeout.Add (delay, delegate { 
+					blinkTimeout = GLib.Timeout.Add (30, UpdateCaret);
+					startBlinkTimeout = 0;
+					return false;
+				});
+			}
 			caretBlinkState = 1.0;
 			oldBlinkState = -1;
 		}
 
 		internal void StopCaretThread ()
 		{
+			if (startBlinkTimeout != 0) {
+				GLib.Source.Remove (startBlinkTimeout);
+				startBlinkTimeout = 0;
+			}
+
 			if (blinkTimeout == 0)
 				return;
 			GLib.Source.Remove (blinkTimeout);
@@ -643,6 +655,8 @@ namespace Mono.TextEditor
 			if (win == null || Settings.Default.CursorBlink && !Caret.IsVisible || caretBlinkState == 0.0)
 				return;
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
+				cr.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height);
+				cr.Clip ();
 				cr.LineWidth = textEditor.Options.Zoom;
 				cr.Antialias = Cairo.Antialias.None;
 				var curRect = new Gdk.Rectangle ((int)caretX, (int)caretY, (int)this.charWidth, (int)LineHeight - 1);

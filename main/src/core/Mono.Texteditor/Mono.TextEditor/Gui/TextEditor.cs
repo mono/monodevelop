@@ -1721,7 +1721,7 @@ namespace Mono.TextEditor
 					e.Area.X, e.Area.Y, e.Area.Width, e.Area.Height);
 #endif
 				if (requestResetCaretBlink && HasFocus) {
-					textViewMargin.ResetCaretBlink ();
+					textViewMargin.ResetCaretBlink (200);
 					requestResetCaretBlink = false;
 				}
 				
