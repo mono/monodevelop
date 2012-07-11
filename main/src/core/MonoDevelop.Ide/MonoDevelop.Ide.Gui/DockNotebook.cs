@@ -599,6 +599,8 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
+			string newTooltip = null;
+
 			if (!draggingTab) {
 				var t = FindTab ((int)evnt.X, (int)evnt.Y);
 				if (t != highlightedTab) {
@@ -616,7 +618,8 @@ namespace MonoDevelop.Ide.Gui
 					dragOffset = x - t.Allocation.X;
 					dragX = x - dragOffset;
 					lastDragX = (int)evnt.X;
-				}
+				} else if (t != null)
+					newTooltip = t.Tooltip;
 			} else {
 				dragX = (int)evnt.X - dragOffset;
 				QueueDraw ();
@@ -637,6 +640,12 @@ namespace MonoDevelop.Ide.Gui
 				}
 				lastDragX = (int)evnt.X;
 			}
+
+			if (newTooltip != null && TooltipText != null && TooltipText != newTooltip)
+				TooltipText = null;
+			else
+				TooltipText = newTooltip;
+
 			return base.OnMotionNotifyEvent (evnt);
 		}
 
