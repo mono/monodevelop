@@ -1,110 +1,65 @@
-﻿// --------------------------------------------------------------------------------------
+﻿
+// --------------------------------------------------------------------------------------
 // Wrapper for the APIs in 'FSharp.Compiler.dll' and 'FSharp.Compiler.Server.Shared.dll'
 // The API is currently internal, so we call it using the (?) operator and Reflection
 // --------------------------------------------------------------------------------------
 
-// Using 'Microsoft' namespace to make the API as similar to the actual one as possible
 namespace Microsoft.FSharp.Compiler
 
 open System
+open System.IO
 open System.Reflection
-open Microsoft.FSharp.Reflection
+open System.Text
 open System.Globalization
-
-/// Implements the (?) operator that makes it possible to access internal methods
-/// and properties and contains definitions for F# assemblies
-module Reflection =   
-  // Various flags configurations for Reflection
-  let staticFlags = BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static 
-  let instanceFlags = BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Instance
-  let ctorFlags = instanceFlags
-  let inline asMethodBase(a:#MethodBase) = a :> MethodBase
-  
-  let (?) (o:obj) name : 'R =
-    // The return type is a function, which means that we want to invoke a method
-    if FSharpType.IsFunction(typeof<'R>) then
-      let argType, resType = FSharpType.GetFunctionElements(typeof<'R>)
-      FSharpValue.MakeFunction(typeof<'R>, fun args ->
-        // We treat elements of a tuple passed as argument as a list of arguments
-        // When the 'o' object is 'System.Type', we call static methods
-        let methods, instance, args = 
-          let args = 
-            if argType = typeof<unit> then [| |]
-            elif not(FSharpType.IsTuple(argType)) then [| args |]
-            else FSharpValue.GetTupleFields(args)
-          if (typeof<System.Type>).IsAssignableFrom(o.GetType()) then 
-            let methods = (unbox<Type> o).GetMethods(staticFlags) |> Array.map asMethodBase
-            let ctors = (unbox<Type> o).GetConstructors(ctorFlags) |> Array.map asMethodBase
-            Array.concat [ methods; ctors ], null, args
-          else 
-            o.GetType().GetMethods(instanceFlags) |> Array.map asMethodBase, o, args
-        
-        // A simple overload resolution based on the name and number of parameters only
-        let methods = 
-          [ for m in methods do
-              if m.Name = name && m.GetParameters().Length = args.Length then yield m ]
-        match methods with 
-        | [] -> failwithf "No method '%s' with %d arguments found" name args.Length
-        | _::_::_ -> failwithf "Multiple methods '%s' with %d arguments found" name args.Length
-        | [:? ConstructorInfo as c] -> c.Invoke(args)
-        | [ m ] -> m.Invoke(instance, args) ) |> unbox<'R>
-    else
-      // When the 'o' object is 'System.Type', we access static properties
-      let typ, flags, instance = 
-        if (typeof<System.Type>).IsAssignableFrom(o.GetType()) then unbox o, staticFlags, null
-        else o.GetType(), instanceFlags, o
-      
-      // Find a property that we can call and get the value
-      let prop = typ.GetProperty(name, flags)
-      if prop = null && instance = null then 
-        // Try nested type...
-        let nested = typ.Assembly.GetType(typ.FullName + "+" + name)
-        if nested = null then 
-          failwithf "Property or nested type '%s' not found in '%s' using flags '%A'." name typ.Name flags
-        elif not ((typeof<'R>).IsAssignableFrom(typeof<System.Type>)) then
-          failwithf "Cannot return nested type '%s' as value of type '%s'." nested.Name (typeof<'R>.Name)
-        else nested |> box |> unbox<'R>
-      else
-        // Call property
-        let meth = prop.GetGetMethod(true)
-        if prop = null then failwithf "Property '%s' found, but doesn't have 'get' method." name
-        try meth.Invoke(instance, [| |]) |> unbox<'R>
-        with _ -> failwithf "Failed to get value of '%s' property (of type '%s')" name typ.Name
-
-
-  /// Wrapper type for the 'FSharp.Compiler.dll' assembly - expose types we use
-  type FSharpCompiler private () =      
-    static let asm = Assembly.Load("FSharp.Compiler, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
-    static member InteractiveChecker = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.InteractiveChecker")
-    static member IsResultObsolete = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.IsResultObsolete")
-    static member CheckOptions = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.CheckOptions")
-    static member SourceTokenizer = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.SourceTokenizer")
-    static member TokenInformation = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.TokenInformation")
-    static member Parser = asm.GetType("Microsoft.FSharp.Compiler.Parser")
+open MonoDevelop.Projects
+open MonoDevelop.Ide.Gui
+open MonoDevelop.Ide
+open MonoDevelop.Core.Assemblies
+open MonoDevelop.Core
+open MonoDevelop.FSharp
+open MonoDevelop.FSharp.Reflection
+open Mono.Addins
     
-  /// Wrapper type for the 'FSharp.Compiler.Server.Shared.dll' assembly - expose types we use
-  type FSharpCompilerServerShared private () =      
-    static let asm = Assembly.Load("FSharp.Compiler.Server.Shared, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
-    static member InteractiveServer = asm.GetType("Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer")
-
 // --------------------------------------------------------------------------------------
-/// Wrapper for the 'Microsoft.FSharp.Compiler.Parser' module
+// Assembly resolution in a script file - a workaround that replaces functionality
+// from 'GetCheckOptionsFromScriptRoot' (which doesn't work well on Mono)
 // --------------------------------------------------------------------------------------
 
+type FSharpCompilerVersionNumber = 
+      | Version_4_0 | Version_4_3
+      override x.ToString() = match x with | Version_4_0 -> "4.0.0.0" | Version_4_3 -> "4.3.0.0"
+
+    /// Wrapper type for the 'FSharp.Compiler.dll' assembly - expose types we use
+type FSharpCompiler(versionNumber:FSharpCompilerVersionNumber) =      
+    let asm = Assembly.Load("FSharp.Compiler, Version="+versionNumber.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
+    let asm2 = Assembly.Load("FSharp.Compiler.Server.Shared, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
+    static let v40 = lazy FSharpCompiler(Version_4_0) 
+    static let v43 = lazy FSharpCompiler(Version_4_3) 
+    member __.InteractiveChecker = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.InteractiveChecker")
+    member __.IsResultObsolete = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.IsResultObsolete")
+    member __.CheckOptions = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.CheckOptions")
+#if USE_FSHARP_COMPILER_TOKENIZATION
+    member __.SourceTokenizer = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.SourceTokenizer")
+    member __.TokenInformation = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.TokenInformation")
+#endif
+    member __.Parser = asm.GetType("Microsoft.FSharp.Compiler.Parser")
+    member __.InteractiveServer = asm2.GetType("Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer")
+    static member Get(version) = 
+        let c = match version with Version_4_0 -> v40 | Version_4_3 -> v43
+        try c.Force() with e -> Debug.tracee "Compiler" e; reraise()
+    
 module Parser = 
-  open Reflection
-  let wrapped = FSharpCompiler.Parser
   
   /// Represents a token
   type token = 
     | WrappedToken of obj
     /// Creates a token representing the specified identifier
-    static member IDENT(name) = 
-      WrappedToken(wrapped?token?IDENT?``.ctor``(name))
+    static member IDENT(version, name) = 
+      WrappedToken(FSharpCompiler.Get(version).Parser?token?IDENT?``.ctor``(name))
   
   /// Returns the tag of the specified token
-  let tagOfToken(WrappedToken token) =
-    wrapped?tagOfToken(token) : int
+  let tagOfToken(version, WrappedToken token) =
+    FSharpCompiler.Get(version).Parser?tagOfToken(token) : int
 
 // --------------------------------------------------------------------------------------
 // Wrapper for 'Microsoft.Compiler.Server.Shared', which contains some API for
@@ -113,12 +68,10 @@ module Parser =
     
 module Server =
   module Shared = 
-    open Reflection
     
     type FSharpInteractiveServer(wrapped:obj) =
-      static member StartClient(channel:string) = 
-        FSharpInteractiveServer
-          (FSharpCompilerServerShared.InteractiveServer?StartClient(channel))
+      static member StartClient(compilerVersion,channel:string) = 
+        FSharpInteractiveServer(FSharpCompiler.Get(compilerVersion).InteractiveServer?StartClient(channel))
       member x.Interrupt() : unit = wrapped?Interrupt()
 
 // --------------------------------------------------------------------------------------
@@ -126,8 +79,8 @@ module Server =
 // --------------------------------------------------------------------------------------
 
 module SourceCodeServices =
-  open Reflection
 
+#if USE_FSHARP_COMPILER_TOKENIZATION
   type TokenColorKind =
     | Comment = 2
     | Default = 0
@@ -190,7 +143,7 @@ module SourceCodeServices =
     let wrapped = FSharpCompiler.SourceTokenizer?``.ctor``(defines, source)
     member x.CreateLineTokenizer(line:string) = 
       LineTokenizer(wrapped?CreateLineTokenizer(line))
-    
+#endif    
   // ------------------------------------------------------------------------------------
 
   module Array = 
@@ -198,7 +151,7 @@ module SourceCodeServices =
       Array.init a.Length (fun i -> f (a.GetValue(i)))
 
   module List = 
-    let rec untypedMap f (l:obj) =
+    let untypedMap f (l:obj) =
       (l :?> System.Collections.IEnumerable) |> Seq.cast<obj> |> Seq.map f |> List.ofSeq
     
   module PrettyNaming = 
@@ -274,19 +227,18 @@ module SourceCodeServices =
   type IsResultObsolete = 
       | IsResultObsolete of (unit->bool)
 
-  type CheckOptions(wrapped:obj) =
+  type CheckOptions(version,wrapped:obj) =
     member x.Wrapped = wrapped
     member x.ProjectFileName : string = wrapped?ProjectFileName
     member x.ProjectFileNames : string array = wrapped?ProjectFileNames
     member x.ProjectOptions : string array = wrapped?ProjectOptions
     member x.IsIncompleteTypeCheckEnvironment : bool = wrapped?IsIncompleteTypeCheckEnvironment 
     member x.UseScriptResolutionRules : bool = wrapped?UseScriptResolutionRules
-    static member Create(fileName:string, fileNames:string[], options:string[], incomplete:bool, scriptRes:bool) =
-      CheckOptions(FSharpCompiler.CheckOptions?``.ctor``(fileName, fileNames, options, incomplete, scriptRes))
+    static member Create(version,fileName:string, fileNames:string[], options:string[], incomplete:bool, scriptRes:bool) =
+      CheckOptions(version,FSharpCompiler.Get(version).CheckOptions?``.ctor``(fileName, fileNames, options, incomplete, scriptRes))
     member x.WithOptions(options:string[]) =
       CheckOptions.Create
-        ( x.ProjectFileName, x.ProjectFileNames, options, x.IsIncompleteTypeCheckEnvironment, 
-          x.UseScriptResolutionRules )
+        ( version,x.ProjectFileName, x.ProjectFileNames, options, x.IsIncompleteTypeCheckEnvironment, x.UseScriptResolutionRules )
       
   type UntypedParseInfo(wrapped:obj) =
     member x.Wrapped = wrapped
@@ -311,7 +263,7 @@ module SourceCodeServices =
     member x.Items = 
       wrapped?Items |> Array.untypedMap (fun o -> Declaration(o))
 
-  type TypeCheckInfo(wrapped:obj) =
+  type TypeCheckInfo(version:FSharpCompilerVersionNumber, wrapped:obj) =
     /// Resolve the names at the given location to a set of declarations
     member x.GetDeclarations(pos:Position, line:string, names:NamesWithResidue, tokentag:int) =
       DeclarationSet(wrapped?GetDeclarations(pos, line, names, tokentag))
@@ -328,7 +280,7 @@ module SourceCodeServices =
     // member GetDeclarationLocation : Position * string * Names * (*tokentag:*)int * bool -> FindDeclResult
     /// A version of `GetDeclarationLocation` augmented with the option (via the `bool`) parameter to force .fsi generation (even if source exists); this is primarily for testing
     // member GetDeclarationLocationInternal : bool -> Position * string * Names * (*tokentag:*)int * bool -> FindDeclResult
-
+    member x.Version = version
 
   type ErrorInfo(wrapped:obj) =
     member x.StartLine : int = wrapped?StartLine
@@ -341,7 +293,7 @@ module SourceCodeServices =
     member x.Subcategory : string = wrapped?Subcategory
   
   /// A handle to the results of TypeCheckSource
-  type TypeCheckResults(wrapped:obj) =
+  type TypeCheckResults(version:FSharpCompilerVersionNumber,wrapped:obj) =
     /// The errors returned by parsing a source file
     member x.Errors : ErrorInfo[] = 
       wrapped?Errors |> Array.untypedMap (fun e -> ErrorInfo(e))
@@ -351,14 +303,15 @@ module SourceCodeServices =
       if wrapped?TypeCheckInfo = null then None 
       else Some(TypeCheckInfo(wrapped?TypeCheckInfo?Value))
 
-  type TypeCheckAnswer(wrapped:obj) =
+  type TypeCheckAnswer(version,wrapped:obj) =
     member x.Wrapped = wrapped
+    member x.Version = version
 
   let (|NoAntecedant|Aborted|TypeCheckSucceeded|) (tc:TypeCheckAnswer) = 
     if tc.Wrapped?IsNoAntecedant then NoAntecedant() 
     elif tc.Wrapped?IsAborted then Aborted() 
     elif tc.Wrapped?IsTypeCheckSucceeded then 
-      TypeCheckSucceeded(TypeCheckResults(tc.Wrapped?Item))
+      TypeCheckSucceeded(TypeCheckResults(tc.Version,tc.Wrapped?Item))
     else failwith "Unexpected TypeCheckAnswer value"    
   
   type TypeCheckSucceededImpl(tyres:TypeCheckResults) =
@@ -367,13 +320,13 @@ module SourceCodeServices =
     member x.IsNoAntecedant = false
     member x.Item = tyres
     
-  let TypeCheckSucceeded arg = 
-    TypeCheckAnswer(TypeCheckSucceededImpl(arg))
+  let TypeCheckSucceeded (version,arg) = 
+    TypeCheckAnswer(version,TypeCheckSucceededImpl(arg))
     
-  type InteractiveChecker(wrapped:obj) =
+  type InteractiveChecker(version:FSharpCompilerVersionNumber,wrapped:obj) =
       /// Crate an instance of the wrapper
-      static member Create (dirty:FileTypeCheckStateIsDirty) =
-        InteractiveChecker(FSharpCompiler.InteractiveChecker?Create(dirty))
+      static member Create (version,dirty:FileTypeCheckStateIsDirty) =
+        InteractiveChecker(version,FSharpCompiler.Get(version).InteractiveChecker?Create(dirty))
         
       /// Parse a source code file, returning a handle that can be used for obtaining navigation bar information
       /// To get the full information, call 'TypeCheckSource' method on the result
@@ -389,13 +342,17 @@ module SourceCodeServices =
           ( parsed:UntypedParseInfo, filename:string, fileversion:int, 
             source:string, options:CheckOptions, (IsResultObsolete f)) =
         TypeCheckAnswer
-          ( wrapped?TypeCheckSource
+          (version, 
+           (wrapped?TypeCheckSource
               ( parsed.Wrapped, filename, fileversion, source, options.Wrapped, 
-                FSharpCompiler.IsResultObsolete?NewIsResultObsolete(f) ) : obj)
+                FSharpCompiler.Get(version).IsResultObsolete?NewIsResultObsolete(f) ) : obj))
       
       /// For a given script file, get the CheckOptions implied by the #load closure
-      member x.GetCheckOptionsFromScriptRoot(filename:string, source:string) : CheckOptions =
-        CheckOptions(wrapped?GetCheckOptionsFromScriptRoot(filename, source))
+      member x.GetCheckOptionsFromScriptRoot(filename:string, source:string, loadedTimeStamp:System.DateTime) : CheckOptions =
+        // GetCheckOptionsFromScriptRoot takes an extra argument in 4.3.0.0. Ignore it in 4.0.0.0
+        match version with 
+        | Version_4_0 -> CheckOptions(wrapped?GetCheckOptionsFromScriptRoot(filename, source))
+        | Version_4_3 -> CheckOptions(wrapped?GetCheckOptionsFromScriptRoot(filename, source, loadedTimeStamp))
           
 
       /// Try to get recent type check results for a file. This may arbitrarily refuse to return any

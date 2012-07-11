@@ -46,6 +46,10 @@ module ServiceSettings =
   /// type anything new into the editor for the time specified here
   let errorTimeout = 1000
 
+  // What version of the FSharp language are we supporting? 
+  let fsVersion = Microsoft.FSharp.Compiler.FSharpCompilerVersionNumber.Version_4_0
+
+
 // --------------------------------------------------------------------------------------
     
 /// Formatting of tool-tip information displayed in F# IntelliSense
@@ -225,7 +229,7 @@ type internal TypedParseResult(info:TypeCheckInfo) =
     | _ -> 
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
+        let token = FsParser.tagOfToken(info.Version,FsParser.token.IDENT(info.Version,"")) 
         let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
         match res with
         | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
@@ -270,7 +274,7 @@ type internal LanguageServiceMessage =
   
 
 open System.Reflection
-open Microsoft.FSharp.Compiler.Reflection
+open MonoDevelop.FSharp.Reflection
 open ICSharpCode.NRefactory.TypeSystem
 open MonoDevelop.Ide.TypeSystem
 
@@ -315,8 +319,20 @@ type internal LanguageService private () =
 
   // ------------------------------------------------------------------------------------
 
-  // Create an instance of interactive checker
-  let checker = InteractiveChecker.Create(ignore)
+    // Create an instance of interactive checker. The callback is called by the F# compiler service
+  // when its view of the prior-typechecking-state of the start of a file has changed, for example
+  // when the background typechecker has "caught up" after some other file has been changed, 
+  // and its time to re-typecheck the current file.
+  let checker = 
+      InteractiveChecker.Create(ServiceSettings.fsVersion, fun file -> 
+          DispatchService.GuiDispatch(fun () ->
+                        try 
+                         Debug.tracef "Parsing" "Considering re-typcheck of file %s because compiler reports it needs it" file
+                         let doc = IdeApp.Workbench.ActiveDocument
+                         if doc <> null && doc.FileName.FullPath.ToString() = file then 
+                             Debug.tracef "Parsing" "Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file
+                             doc.ReparseDocument()
+                        with _ -> ()))
   
   // Post message to the 'LanguageService' mailbox
   let rec post m = (mbox:SimpleMailboxProcessor<_>).Post(m)
@@ -423,7 +439,7 @@ type internal LanguageService private () =
           // include FSharp.Core and other essential assemblies, so we need to include them by hand
           let fileName = Common.fixFileName(fileName)
           Debug.tracef "Checkoptions" "Creating for file: '%s'" fileName 
-          let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source)
+          let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime(int64 (proj.GetHashCode())))
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
@@ -456,7 +472,7 @@ type internal LanguageService private () =
         let args = Common.generateCompilerOptions fsconfig proj.Items config shouldWrap |> Array.ofList
         let root = System.IO.Path.GetDirectoryName(proj.FileName.FullPath.ToString())
         let files = Common.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
-        CheckOptions.Create(projFile, files, args, false, false) 
+        CheckOptions.Create(ServiceSettings.fsVersion, projFile, files, args, false, false) 
 
     // Print contents of check option for debugging purposes
     Debug.tracef "Checkoptions" "ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
@@ -464,11 +480,11 @@ type internal LanguageService private () =
                  opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
     opts
   
-  member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, full, afterCompleteTypeCheckCallback) = 
+  member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, afterCompleteTypeCheckCallback) = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.tracef "Parsing" "Trigger parse (fileName=%s)" fileName
-    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, full, Some afterCompleteTypeCheckCallback)))
+    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, true, Some afterCompleteTypeCheckCallback)))
 
   member x.GetTypedParseResult((file:FilePath, src, proj:MonoDevelop.Projects.Project, config), ?timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()

@@ -219,3 +219,8 @@ module internal FSharpEnvironment =
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None
 
+  // Print debug information about compiler path
+  match BinFolderOfDefaultFSharpCompiler with
+  | Some(path) -> Debug.tracef "Resolution" "Default compiler path: '%s'" path
+  | None -> Debug.tracef "Resolution" "Default compiler path: (unknown)" 
+

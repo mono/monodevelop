@@ -30,7 +30,8 @@ type FSharpLanguageBinding() =
     let doc = IdeApp.Workbench.ActiveDocument
     if doc <> null && (Common.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
          doc.ReparseDocument())
-  
+
+    
   
   // ------------------------------------------------------------------------------------
   

@@ -37,7 +37,7 @@ type InteractiveSession() =
       reraise()
     
   let client = 
-      try Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer.StartClient(server)
+      try Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer.StartClient(ServiceSettings.fsVersion,server)
       with e -> failwithf "oops! %A" e
 
   let textReceived = new Event<_>()  
