@@ -979,6 +979,9 @@
     <EmbeddedResource Include="icons\errors-pad-16.png">
       <LogicalName>errors-pad-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\tree-popup-button-down.png">
+      <LogicalName>tree-popup-button-down.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

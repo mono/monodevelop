@@ -214,7 +214,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
 			tree.ButtonPressEvent += HandleButtonPressEvent;
-				 
+			tree.MotionNotifyEvent += HandleMotionNotifyEvent;
+			tree.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+
 			if (GtkGestures.IsSupported) {
 				tree.AddGestureMagnifyHandler ((sender, args) => {
 					Zoom += Zoom * (args.Magnification / 4d);
@@ -236,7 +238,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			GLib.Timeout.Add (3000, Checker);
 #endif
 		}
-
 #if TREE_VERIFY_INTEGRITY
 		// Verifies the consistency of the tree view. Disabled by default
 		HashSet<object> ochecked = new HashSet<object> ();
@@ -410,11 +411,40 @@ namespace MonoDevelop.Ide.Gui.Components
 		void HandleButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
 		{
 			if (ShowSelectionPopupButton && text_render.PointerInButton ((int)args.Event.XRoot, (int)args.Event.YRoot)) {
+				text_render.Pushed = true;
 				args.RetVal = true;
 				var menu = CreateContextMenu ();
-				if (menu != null)
+				if (menu != null) {
+					menu.Hidden += HandleMenuHidden;
 					GtkWorkarounds.ShowContextMenu (menu, tree, text_render.PopupAllocation);
+				}
 			}
+		}
+
+		[GLib.ConnectBefore]
+		void HandleMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
+		{
+			if (ShowSelectionPopupButton) {
+				text_render.PointerPosition = new Gdk.Point ((int)args.Event.XRoot, (int)args.Event.YRoot);
+				Gtk.TreePath path;
+				if (tree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path)) {
+					var area = tree.GetCellArea (path, tree.Columns[0]);
+					tree.QueueDrawArea (area.X, area.Y, area.Width, area.Height);
+				}
+			}
+		}
+
+		[GLib.ConnectBefore]
+		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
+		{
+			
+		}
+
+		void HandleMenuHidden (object sender, EventArgs e)
+		{
+			((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
+			text_render.Pushed = false;
+			QueueDraw ();
 		}
 		
 		internal void LockUpdates ()
@@ -2260,14 +2290,18 @@ namespace MonoDevelop.Ide.Gui.Components
 	class CustomCellRendererText: Gtk.CellRendererText
 	{
 		static Gdk.Pixbuf popupIcon;
+		static Gdk.Pixbuf popupIconDown;
 		bool bound;
 		ExtensibleTreeView parent;
 		Gdk.Rectangle buttonScreenRect;
 		Gdk.Rectangle buttonAllocation;
 
+		public bool Pushed { get; set; }
+
 		static CustomCellRendererText ()
 		{
 			popupIcon = Gdk.Pixbuf.LoadFromResource ("tree-popup-button.png");
+			popupIconDown = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-down.png");
 		}
 
 		public CustomCellRendererText (ExtensibleTreeView parent)
@@ -2291,9 +2325,10 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 
 				if ((flags & Gtk.CellRendererState.Selected) != 0) {
-					var dy = (cell_area.Height - popupIcon.Height) / 2;
+					var icon = Pushed ? popupIconDown : popupIcon;
+					var dy = (cell_area.Height - icon.Height) / 2;
 					var y = cell_area.Y + dy;
-					var x = cell_area.X + cell_area.Width - popupIcon.Width - dy;
+					var x = cell_area.X + cell_area.Width - icon.Width - dy;
 
 					var sw = (Gtk.ScrolledWindow) widget.Parent;
 					int ox, oy, ow, oh;
@@ -2325,8 +2360,14 @@ namespace MonoDevelop.Ide.Gui.Components
 					buttonAllocation = GtkUtil.ToScreenCoordinates (widget, ((Gdk.Window)window), buttonAllocation);
 					buttonAllocation = GtkUtil.ToWindowCoordinates (widget, widget.GdkWindow, buttonAllocation);
 
-					using (var gc = new Gdk.GC (window)) {
-						window.DrawPixbuf (gc, popupIcon, 0, 0, x, y, popupIcon.Width, popupIcon.Height, Gdk.RgbDither.Normal, 0, 0);
+					bool mouseOver = (flags & Gtk.CellRendererState.Prelit) != 0 && buttonScreenRect.Contains (PointerPosition);
+
+					using (var ctx = Gdk.CairoHelper.Create (window)) {
+						Gdk.CairoHelper.SetSourcePixbuf (ctx, icon, x, y);
+						if (mouseOver || Pushed)
+							ctx.Paint ();
+						else
+							ctx.PaintWithAlpha (0.5);
 					}
 				}
 			}
@@ -2336,6 +2377,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			return buttonScreenRect.Contains (px, py);
 		}
+
+		public Gdk.Point PointerPosition { get; set; }
 
 		public Gdk.Rectangle PopupAllocation {
 			get { return buttonAllocation; }
