@@ -59,6 +59,12 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Gdk.Color PadBackground = new Gdk.Color (240, 240, 240);
 		public static readonly Gdk.Color PadLabelColor = new Gdk.Color (92, 99, 102);
 		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
+		public static readonly Gdk.Color DockSeparatorColor = new Gdk.Color (166, 166, 166);
+
+		public static readonly Cairo.Color DockBarBackground1 = PadBackground.ToCairoColor ();
+		public static readonly Cairo.Color DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
+		public static readonly Cairo.Color DockBarSeparatorColorDark = new Cairo.Color (0, 0, 0, 0.2);
+		public static readonly Cairo.Color DockBarSeparatorColorLight = new Cairo.Color (1, 1, 1, 0.3);
 
 		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (219, 224, 231);
 
@@ -68,17 +74,17 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color StatusBarInnerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
 		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("3a4029");
 
-		static Cairo.Color Shift (Cairo.Color color, double factor)
+		internal static Cairo.Color Shift (Cairo.Color color, double factor)
 		{
 			return new Cairo.Color (color.R * factor, color.G * factor, color.B * factor, color.A);
 		}
 
-		static Cairo.Color WithAlpha (Cairo.Color c, double alpha)
+		internal static Cairo.Color WithAlpha (Cairo.Color c, double alpha)
 		{
 			return new Cairo.Color (c.R, c.G, c.B, alpha);
 		}
 
-		static Cairo.Color Blend (Cairo.Color color, Cairo.Color targetColor, double factor)
+		internal static Cairo.Color Blend (Cairo.Color color, Cairo.Color targetColor, double factor)
 		{
 			return new Cairo.Color (color.R + ((color.R - targetColor.R) * factor),
 			                        color.G + ((color.G - targetColor.G) * factor),
@@ -87,19 +93,19 @@ namespace MonoDevelop.Ide.Gui
 			                        );
 		}
 
-		static Cairo.Color MidColor (double factor)
+		internal static Cairo.Color MidColor (double factor)
 		{
 			return Blend (BaseBackgroundColor, BaseForegroundColor, factor);
 		}
 
-		static Cairo.Color ReduceLight (Cairo.Color color, double factor)
+		internal static Cairo.Color ReduceLight (Cairo.Color color, double factor)
 		{
 			var c = new HslColor (color);
 			c.L *= factor;
 			return c;
 		}
 
-		static Cairo.Color IncreaseLight (Cairo.Color color, double factor)
+		internal static Cairo.Color IncreaseLight (Cairo.Color color, double factor)
 		{
 			var c = new HslColor (color);
 			c.L += (1 - c.L) * factor;

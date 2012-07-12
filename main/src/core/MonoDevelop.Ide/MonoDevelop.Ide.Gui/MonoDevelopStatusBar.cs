@@ -41,8 +41,6 @@ namespace MonoDevelop.Ide
 {
 	class MonoDevelopStatusBar : Gtk.Statusbar, StatusBar, IShadedWidget
 	{
-		Frame textStatusBarPanel = new Frame ();
-		
 		Label modeLabel;
 		Label cursorLabel;
 		MiniButton feedbackButton;
@@ -98,6 +96,14 @@ namespace MonoDevelop.Ide
 			
 			BorderWidth = 0;
 			Spacing = 0;
+
+			HeaderBox hb = new HeaderBox (1, 0, 0, 0);
+			hb.BorderColor = Styles.DockSeparatorColor;
+			var mainBox = new HBox ();
+			mainBox.PackStart (new Label (""), true, true, 0);
+			hb.Add (mainBox);
+			hb.ShowAll ();
+			PackStart (hb, true, true, 0);
 			
 			// Feedback button
 			
@@ -114,7 +120,7 @@ namespace MonoDevelop.Ide
 				feedbackButton = new MiniButton (al);
 				//feedbackButton.BackroundColor = new Gdk.Color (200, 200, 255);
 				fr.Add (feedbackButton);
-				PackStart (fr, false, false, 0);
+				mainBox.PackStart (fr, false, false, 0);
 				feedbackButton.Clicked += HandleFeedbackButtonClicked;
 				feedbackButton.ButtonPressEvent += HandleFeedbackButtonButtonPressEvent;
 				;
@@ -132,9 +138,11 @@ namespace MonoDevelop.Ide
 			
 			DefaultWorkbench wb = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
 			wb.DockFrame.ShadedContainer.Add (this);
-			Gtk.Widget dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
+			var dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
+			dockBar.AlignToEnd = true;
+			dockBar.ShowBorder = false;
 			dockBar.NoShowAll = true;
-			PackStart (dockBar, false, false, 0);
+			mainBox.PackStart (dockBar, false, false, 0);
 			
 			// Status panels
 			
@@ -157,10 +165,6 @@ namespace MonoDevelop.Ide
 //			statusBox.PackStart (eventMessageBox, true, true, 0);
 //			eventMessageBox.ButtonPressEvent += HandleEventMessageBoxButtonPressEvent;
 			
-			textStatusBarPanel.BorderWidth = 0;
-			textStatusBarPanel.ShadowType = ShadowType.None;
-//			textStatusBarPanel.Add (statusBox);
-			
 			var eventCaretBox = new EventBox ();
 			var caretStatusBox = new HBox ();
 			modeLabel = new Label (" ");
@@ -178,19 +182,9 @@ namespace MonoDevelop.Ide
 
 			statusIconBox.BorderWidth = 0;
 			statusIconBox.Spacing = 3;
-//			statusBox.PackEnd (statusIconBox, false, false, 4);
-			
-			this.PackStart (textStatusBarPanel, true, true, 0);
-			
+
 			ShowReady ();
-			Gtk.Box.BoxChild boxChild = (Gtk.Box.BoxChild)this[textStatusBarPanel];
-			boxChild.Position = 0;
-			boxChild.Expand = boxChild.Fill = true;
-			
-	//		boxChild = (Gtk.Box.BoxChild)this[originalFrame];
-	//		boxChild.Padding = 0;
-	//		boxChild.Expand = boxChild.Fill = false;
-			
+
 			this.ShowAll ();
 			statusIconBox.HideAll ();
 			

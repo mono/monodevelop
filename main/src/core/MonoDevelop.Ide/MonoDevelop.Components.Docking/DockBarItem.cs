@@ -32,6 +32,7 @@
 using System;
 using Gtk;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -48,7 +49,8 @@ namespace MonoDevelop.Components.Docking
 		uint autoHideTimeout = uint.MaxValue;
 		int size;
 		Gdk.Size lastFrameSize;
-		
+		StateType state;
+
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
 			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
@@ -102,11 +104,17 @@ namespace MonoDevelop.Components.Docking
 			mainBox = new Alignment (0,0,1,1);
 			if (bar.Orientation == Gtk.Orientation.Horizontal) {
 				box = new HBox ();
-				mainBox.LeftPadding = mainBox.RightPadding = 2;
+				if (bar.AlignToEnd)
+					mainBox.SetPadding (3, 3, 11, 9);
+				else
+					mainBox.SetPadding (3, 3, 9, 11);
 			}
 			else {
 				box = new VBox ();
-				mainBox.TopPadding = mainBox.BottomPadding = 2;
+				if (bar.AlignToEnd)
+					mainBox.SetPadding (11, 9, 3, 3);
+				else
+					mainBox.SetPadding (9, 11, 3, 3);
 			}
 			
 			Gtk.Widget customLabel = null;
@@ -131,12 +139,12 @@ namespace MonoDevelop.Components.Docking
 					label = null;
 			}
 
-			box.BorderWidth = 2;
 			box.Spacing = 2;
 			mainBox.Add (box);
 			mainBox.ShowAll ();
 			Add (mainBox);
-			SetNormalColor ();
+			state = StateType.Normal;
+			QueueDraw ();
 		}
 		
 		public MonoDevelop.Components.Docking.DockItem DockItem {
@@ -144,7 +152,7 @@ namespace MonoDevelop.Components.Docking
 				return it;
 			}
 		}
-		
+
 		protected override void OnHidden ()
 		{
 			base.OnHidden ();
@@ -155,62 +163,97 @@ namespace MonoDevelop.Components.Docking
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			if (State == StateType.Prelight) {
-				int w = Allocation.Width, h = Allocation.Height;
-				double x=Allocation.Left, y=Allocation.Top, r=3;
-				x += 0.5; y += 0.5; h -=1; w -= 1;
-				
-				using (Cairo.Context ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-					HslColor c = new HslColor (Style.Background (Gtk.StateType.Normal));
-					HslColor c1 = c;
-					HslColor c2 = c;
-					if (State != StateType.Prelight) {
-						c1.L *= 0.8;
-						c2.L *= 0.95;
+			var siblings = ((Gtk.Container)Parent).Children;
+			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
+				var alloc = Allocation;
+
+				if (siblings[siblings.Length - 1] == this && !bar.AlignToEnd) {
+					// Final light shadow
+					if (bar.Orientation == Orientation.Vertical) {
+						ctx.MoveTo (alloc.X, alloc.Y + alloc.Height - 0.5);
+						ctx.RelLineTo (Allocation.Width, 0);
+						ctx.Color = Styles.DockBarSeparatorColorLight;
+						ctx.Stroke ();
+						alloc.Height--;
 					} else {
-						c1.L *= 1.1;
-						c2.L *= 1;
+						ctx.MoveTo (alloc.X + alloc.Width - 0.5, alloc.Y);
+						ctx.RelLineTo (0, Allocation.Height);
+						ctx.Color = Styles.DockBarSeparatorColorLight;
+						ctx.Stroke ();
+						alloc.Width--;
 					}
-					Cairo.Gradient pat;
-					switch (bar.Position) {
-						case PositionType.Top: pat = new Cairo.LinearGradient (x, y, x, y+h); break;
-						case PositionType.Bottom: pat = new Cairo.LinearGradient (x, y, x, y+h); break;
-						case PositionType.Left: pat = new Cairo.LinearGradient (x+w, y, x, y); break;
-						default: pat = new Cairo.LinearGradient (x, y, x+w, y); break;
+				}
+				else if (siblings[0] == this && bar.AlignToEnd) {
+					// Initial dark shadow
+					if (bar.Orientation == Orientation.Vertical) {
+						ctx.MoveTo (alloc.X, alloc.Y + 0.5);
+						ctx.RelLineTo (Allocation.Width, 0);
+						ctx.Color = Styles.DockBarSeparatorColorDark;
+						ctx.Stroke ();
+						alloc.Height--;
+						alloc.Y++;
+					} else {
+						ctx.MoveTo (alloc.X + 0.5, alloc.Y);
+						ctx.RelLineTo (0, Allocation.Height);
+						ctx.Color = Styles.DockBarSeparatorColorDark;
+						ctx.Stroke ();
+						alloc.Width--;
+						alloc.X++;
 					}
-					pat.AddColorStop (0, c1);
-					pat.AddColorStop (1, c2);
-					ctx.NewPath ();
-					ctx.Arc (x+r, y+r, r, 180 * (Math.PI / 180), 270 * (Math.PI / 180));
-					ctx.LineTo (x+w-r, y);
-					ctx.Arc (x+w-r, y+r, r, 270 * (Math.PI / 180), 360 * (Math.PI / 180));
-					ctx.LineTo (x+w, y+h);
-					ctx.LineTo (x, y+h);
-					ctx.ClosePath ();
-					ctx.Pattern = pat;
-					ctx.FillPreserve ();
-					c1 = c;
-					c1.L *= 0.7;
-					ctx.LineWidth = 1;
-					ctx.Color = c1;
+				}
+
+				ctx.LineWidth = 1;
+				var fillArea = alloc;
+
+				// Light shadow
+
+				if (bar.Orientation == Orientation.Vertical) {
+					var y = alloc.Y + 0.5;
+					ctx.MoveTo (alloc.X, y);
+					ctx.RelLineTo (Allocation.Width, 0);
+					ctx.Color = Styles.DockBarSeparatorColorLight;
 					ctx.Stroke ();
-					
-					// Inner line
-					ctx.NewPath ();
-					ctx.Arc (x+r+1, y+r+1, r, 180 * (Math.PI / 180), 270 * (Math.PI / 180));
-					ctx.LineTo (x+w-r-1, y+1);
-					ctx.Arc (x+w-r-1, y+r+1, r, 270 * (Math.PI / 180), 360 * (Math.PI / 180));
-					ctx.LineTo (x+w-1, y+h-1);
-					ctx.LineTo (x+1, y+h-1);
-					ctx.ClosePath ();
-					c1 = c;
-					//c1.L *= 0.9;
-					ctx.LineWidth = 1;
-					ctx.Color = c1;
+				} else {
+					var x = alloc.X + 0.5;
+					ctx.MoveTo (x, alloc.Y);
+					ctx.RelLineTo (0, Allocation.Height);
+					ctx.Color = Styles.DockBarSeparatorColorLight;
+					ctx.Stroke ();
+				}
+
+
+				// Background
+				if (state == StateType.Prelight) {
+					ctx.Rectangle (fillArea.X, fillArea.Y, fillArea.Width, fillArea.Height);
+					ctx.Color = Styles.IncreaseLight (Styles.DockBarBackground1, 0.5);
+					ctx.Fill ();
+				} else if (state == StateType.Selected) {
+					ctx.Rectangle (fillArea.X, fillArea.Y, fillArea.Width, fillArea.Height);
+					var gr = bar.Orientation == Orientation.Vertical ? 
+						new Cairo.LinearGradient (fillArea.X, fillArea.Y, fillArea.X + fillArea.Width, fillArea.Y) :
+							new Cairo.LinearGradient (fillArea.X, fillArea.Y, fillArea.X, fillArea.Y + fillArea.Height);
+					gr.AddColorStop (0, Styles.Shift (Styles.DockBarBackground1, 0.9));
+					gr.AddColorStop (1, Styles.Shift (Styles.DockBarBackground1, 0.725));
+					ctx.Pattern = gr;
+					ctx.Fill ();
+				}
+
+				// Dark shadow
+
+				if (bar.Orientation == Orientation.Vertical) {
+					var y = alloc.Y + alloc.Height - 0.5;
+					ctx.MoveTo (alloc.X, y);
+					ctx.RelLineTo (Allocation.Width, 0);
+					ctx.Color = Styles.DockBarSeparatorColorDark;
+					ctx.Stroke ();
+				} else {
+					var x = alloc.X + alloc.Width - 0.5;
+					ctx.MoveTo (x, alloc.Y);
+					ctx.RelLineTo (0, Allocation.Height);
+					ctx.Color = Styles.DockBarSeparatorColorDark;
 					ctx.Stroke ();
 				}
 			}
-		
 			bool res = base.OnExposeEvent (evnt);
 			return res;
 		}
@@ -239,7 +282,8 @@ namespace MonoDevelop.Components.Docking
 				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
 				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 				autoShowFrame.KeyPressEvent += OnFrameKeyPress;
-				SetPrelight ();
+				state = StateType.Selected;
+				QueueDraw ();
 			}
 		}
 		
@@ -257,7 +301,8 @@ namespace MonoDevelop.Components.Docking
 				autoShowFrame.LeaveNotifyEvent -= OnFrameLeave;
 				autoShowFrame.KeyPressEvent -= OnFrameKeyPress;
 				autoShowFrame = null;
-				UnsetPrelight ();
+				state = StateType.Normal;
+				QueueDraw ();
 			}
 		}
 		
@@ -320,49 +365,19 @@ namespace MonoDevelop.Components.Docking
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			ScheduleAutoShow ();
-			SetPrelight ();
+			state = StateType.Prelight;
+			QueueDraw ();
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			ScheduleAutoHide (true);
-			if (autoShowFrame == null)
-				UnsetPrelight ();
+			if (autoShowFrame == null) {
+				state = StateType.Normal;
+				QueueDraw ();
+			}
 			return base.OnLeaveNotifyEvent (evnt);
-		}
-		
-		void SetPrelight ()
-		{
-			if (State != StateType.Prelight) {
-				State = StateType.Prelight;
-				if (label != null)
-					label.ModifyFg (StateType.Normal, Style.Foreground (Gtk.StateType.Normal));
-			}
-		}
-		
-		void UnsetPrelight ()
-		{
-			if (State == StateType.Prelight) {
-				State = StateType.Normal;
-				SetNormalColor ();
-			}
-		}
-		
-		protected override void OnRealized ()
-		{
-			base.OnRealized();
-			SetNormalColor ();
-		}
-
-		
-		void SetNormalColor ()
-		{
-			if (label != null) {
-				HslColor c = Style.Background (Gtk.StateType.Normal);
-				c.L *= 0.4;
-				label.ModifyFg (StateType.Normal, c);
-			}
 		}
 		
 		void OnFrameEnter (object s, Gtk.EnterNotifyEventArgs args)

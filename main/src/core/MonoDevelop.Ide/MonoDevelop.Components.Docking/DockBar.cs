@@ -32,6 +32,7 @@
 using System;
 using Gtk;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -42,7 +43,8 @@ namespace MonoDevelop.Components.Docking
 		DockFrame frame;
 		Label filler;
 		bool alwaysVisible;
-		
+		bool showBorder = true;
+
 		internal DockBar (DockFrame frame, Gtk.PositionType position)
 		{
 			frame.ShadedContainer.Add (this);
@@ -55,22 +57,6 @@ namespace MonoDevelop.Components.Docking
 			else
 				box = new VBox ();
 			
-			uint sizePadding = 1;
-			uint startPadding = 6;
-			switch (Frame.CompactGuiLevel) {
-				case 1: sizePadding = 2; break;
-				case 4: startPadding = 3; break;
-				case 5: startPadding = 0; sizePadding = 0; break;
-			}
-			
-			switch (position) {
-				case PositionType.Top: al.BottomPadding = sizePadding; al.LeftPadding = al.RightPadding = startPadding; break;
-				case PositionType.Bottom: al.TopPadding = sizePadding; al.LeftPadding = al.RightPadding = startPadding; break;
-				case PositionType.Left: al.RightPadding = sizePadding; al.TopPadding = al.BottomPadding = startPadding; break;
-				case PositionType.Right: al.LeftPadding = sizePadding; al.TopPadding = al.BottomPadding = startPadding; break;
-			}
-			
-			box.Spacing = 3;
 			al.Add (box);
 			Add (al);
 			
@@ -93,7 +79,13 @@ namespace MonoDevelop.Components.Docking
 			get { return this.alwaysVisible; }
 			set { this.alwaysVisible = value; UpdateVisibility (); }
 		}
-		
+
+		public bool AlignToEnd { get; set; }
+
+		public bool ShowBorder {
+			get { return showBorder; }
+			set { showBorder = value; QueueResize (); }
+		}
 		
 		internal Gtk.Orientation Orientation {
 			get {
@@ -170,10 +162,80 @@ namespace MonoDevelop.Components.Docking
 		{
 		}
 
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			if (ShowBorder) {
+				// Add space for the separator
+				if (Orientation == Gtk.Orientation.Vertical)
+					requisition.Width++;
+				else
+					requisition.Height++;
+			}
+		}
+
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			if (ShowBorder && Child != null) {
+				switch (Position) {
+				case PositionType.Left: allocation.Width--; break;
+				case PositionType.Right: allocation.X++; allocation.Width--; break;
+				case PositionType.Top: allocation.Height--; break;
+				case PositionType.Bottom: allocation.Y++; allocation.Height--; break;
+				}
+				Child.SizeAllocate (allocation);
+			}
+		}
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			frame.ShadedContainer.DrawBackground (this);
-			return base.OnExposeEvent (evnt);
+			var alloc = Allocation;
+			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+				ctx.Rectangle (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y + alloc.Height);
+				Cairo.LinearGradient gr;
+				if (Orientation == Gtk.Orientation.Vertical)
+					gr = new Cairo.LinearGradient (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y);
+				else
+					gr = new Cairo.LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height);
+				gr.AddColorStop (0, Styles.DockBarBackground1);
+				gr.AddColorStop (1, Styles.DockBarBackground2);
+				ctx.Pattern = gr;
+				ctx.Fill ();
+
+				// Light shadow
+				double offs = ShowBorder ? 1.5 : 0.5;
+				switch (Position) {
+				case PositionType.Left:ctx.MoveTo (alloc.X + alloc.Width - offs, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
+				case PositionType.Right: ctx.MoveTo (alloc.X + offs, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
+				case PositionType.Top: ctx.MoveTo (alloc.X, alloc.Y + alloc.Height - offs); ctx.RelLineTo (Allocation.Width, 0); break;
+				case PositionType.Bottom: ctx.MoveTo (alloc.X, alloc.Y + offs); ctx.RelLineTo (Allocation.Width, 0); break;
+				}
+				ctx.LineWidth = 1;
+				ctx.Color = Styles.DockBarSeparatorColorLight;
+				ctx.Stroke ();
+			}
+
+			if (Child != null)
+				PropagateExpose (Child, evnt);
+
+			if (ShowBorder) {
+				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+					ctx.LineWidth = 1;
+
+					// Dark separator
+					switch (Position) {
+					case PositionType.Left:ctx.MoveTo (alloc.X + alloc.Width - 0.5, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
+					case PositionType.Right: ctx.MoveTo (alloc.X + 0.5, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
+					case PositionType.Top: ctx.MoveTo (alloc.X, alloc.Y + alloc.Height + 0.5); ctx.RelLineTo (Allocation.Width, 0); break;
+					case PositionType.Bottom: ctx.MoveTo (alloc.X, alloc.Y + 0.5); ctx.RelLineTo (Allocation.Width, 0); break;
+					}
+					ctx.Color = Styles.DockSeparatorColor.ToCairoColor ();
+					ctx.Stroke ();
+				}
+			}
+			return true;
 		}
 	}
 }
