@@ -88,13 +88,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public const string FoldLineHighlightedString = "fold.highlight";
-		public virtual Cairo.Color FoldLineHighlighted {
+		public const string FoldMarginString = "fold.margin";
+		public virtual ChunkStyle FoldMargin {
 			get {
-				return GetColorFromDefinition (FoldLineHighlightedString);
+				return GetChunkStyle (FoldMarginString);
 			}
 		}
-		
+
 		public const string LineChangedBgString = "marker.line.changed";
 		public virtual Cairo.Color LineChangedBg {
 			get {
@@ -137,13 +137,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public const string FoldToggleMarkerString = "fold.togglemarker";
-		public virtual Cairo.Color FoldToggleMarker {
-			get {
-				return GetColorFromDefinition (FoldToggleMarkerString);
-			}
-		}
-		
 		public const string BracketHighlightRectangleString = "marker.bracket";
 
 		public virtual ChunkStyle BracketHighlightRectangle {
@@ -418,8 +411,8 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle (IconBarSeperatorString, 172, 168, 153);
 			
 			SetStyle (FoldLineString, LineNumberString);
-			SetStyle (FoldLineHighlightedString, IconBarSeperatorString);
-			SetStyle (FoldToggleMarkerString, DefaultString);
+	//		SetStyle (FoldLineHighlightedString, IconBarSeperatorString);
+	//		SetStyle (FoldToggleMarkerString, DefaultString);
 			
 			SetStyle (LineDirtyBgString, 255, 238, 98);
 			SetStyle (LineChangedBgString, 108, 226, 108);

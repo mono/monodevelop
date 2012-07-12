@@ -213,25 +213,17 @@ namespace Mono.TextEditor
 		internal protected override void OptionsChanged ()
 		{
 			foldBgGC = editor.ColorStyle.FoldLine.CairoBackgroundColor;
-			foldLineHighlightedGC = editor.ColorStyle.FoldLineHighlighted;
-			
-			HslColor hslColor = new HslColor (editor.ColorStyle.Default.CairoBackgroundColor);
-			double brightness = HslColor.Brightness (hslColor);
-			if (brightness < 0.5) {
-				hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25;
-			} else {
-				hslColor.L = hslColor.L * 0.9;
-			}
-			
-			foldLineHighlightedGCBg = hslColor;
-			foldToggleMarkerGC = editor.ColorStyle.FoldToggleMarker;
+
+			foldLineHighlightedGCBg = editor.ColorStyle.FoldMargin.CairoBackgroundColor;
+			foldLineHighlightedGC = editor.ColorStyle.FoldMargin.CairoColor;
+
 			lineStateChangedGC = editor.ColorStyle.LineChangedBg;
 			lineStateDirtyGC = editor.ColorStyle.LineDirtyBg;
 			
 			marginWidth = System.Math.Ceiling (editor.LineHeight / 2);
 		}
 		
-		Cairo.Color foldBgGC, foldLineHighlightedGC, foldLineHighlightedGCBg, foldToggleMarkerGC;
+		Cairo.Color foldBgGC, foldLineHighlightedGC, foldLineHighlightedGCBg;
 		Cairo.Color lineStateChangedGC, lineStateDirtyGC;
 		
 		public override void Dispose ()
@@ -309,7 +301,7 @@ namespace Mono.TextEditor
 			var state = editor.Document.GetLineState (lineSegment);
 			
 			bool isSelected = false;
-			
+			int nextDepth = 0;
 			if (line <= editor.Document.LineCount) {
 				containingFoldings.Clear ();
 				startFoldings.Clear ();
@@ -318,23 +310,28 @@ namespace Mono.TextEditor
 						startFoldings.Add (segment);
 					containingFoldings.Add (segment);
 				}
+
+				nextDepth = containingFoldings.Count;
+				if (lineSegment.NextLine != null)
+					nextDepth = editor.Document.GetFoldingContaining (lineSegment.NextLine).Count ();
+
 				
-				isSelected   = containingFoldings.Contains (hoverSegment);
+				isSelected = containingFoldings.Contains (hoverSegment);
 			}
 			
-			var bgGC = foldBgGC;
+			var bgGC = foldLineHighlightedGC;
 			if (editor.TextViewMargin.BackgroundRenderer != null) {
 				if (isSelected) {
-					bgGC = foldBgGC;
-				} else {
 					bgGC = foldLineHighlightedGCBg;
+				} else {
+					bgGC = foldBgGC;
 				}
 			} else {
-				HslColor col = foldBgGC;
+				HslColor col = foldLineHighlightedGCBg;
 				if (col.L < 0.5) {
-					col.L = System.Math.Min (1.0, col.L + containingFoldings.Count / 20.0);
+					col.L = System.Math.Min (1.0, col.L + containingFoldings.Count / 15.0);
 				} else {
-					col.L = System.Math.Max (0.0, col.L - containingFoldings.Count / 20.0);
+					col.L = System.Math.Max (0.0, col.L - containingFoldings.Count / 15.0);
 				}
 				bgGC = col;
 			}
@@ -342,7 +339,23 @@ namespace Mono.TextEditor
 			cr.Rectangle (drawArea);
 			cr.Color = bgGC;
 			cr.Fill ();
-			
+
+			if (editor.TextViewMargin.BackgroundRenderer == null) {
+				int delta = nextDepth - containingFoldings.Count ();
+				if (delta != 0) {
+					HslColor col = foldLineHighlightedGCBg;
+					if (col.L < 0.5) {
+						col.L = System.Math.Min (1.0, col.L + (nextDepth - delta * 1.5) / 15.0);
+					} else {
+						col.L = System.Math.Max (0.0, col.L - (nextDepth - delta * 1.5) / 15.0);
+					}
+					cr.Color = col;
+					cr.MoveTo (x, y + lineHeight - 0.5);
+					cr.LineTo (x + marginWidth, y + lineHeight - 0.5);
+					cr.Stroke ();
+				}
+			}
+
 			if (state == TextDocument.LineState.Changed) {
 				cr.Color = lineStateChangedGC;
 				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
@@ -354,7 +367,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (line < editor.Document.LineCount) {
-				bool isVisible         = true;
+				bool isVisible = true;
 				foreach (FoldSegment foldSegment in startFoldings) {
 					if (foldSegment.IsFolded) {
 						isVisible = false;

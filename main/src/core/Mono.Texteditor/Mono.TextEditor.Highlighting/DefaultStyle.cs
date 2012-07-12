@@ -65,12 +65,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public override Cairo.Color FoldLineHighlighted {
-			get {
-				return new Cairo.Color (122 / 255.0, 118 / 255.0 , 103 / 255.0);
-			}
-		}
-		
+
 		ChunkStyle selectionStyle;
 		public override ChunkStyle Selection {
 			get {

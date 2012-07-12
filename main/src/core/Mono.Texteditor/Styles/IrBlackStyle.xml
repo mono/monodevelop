@@ -128,8 +128,7 @@
 	<Style name="iconbar.separator" color="aluminium6"/>
 
 	<Style name="fold" color="aluminium3" bgColor="black"/>
-	<Style name="fold.highlight" color="aluminium2"/>
-	<Style name="fold.togglemarker" color="aluminium1"/>
+	<Style name="fold.margin" color="white" bgColor ="BlackVim" />
 	
 	<!-- highlighting -->
 	<Style name="comment" color="CommentVim"/>

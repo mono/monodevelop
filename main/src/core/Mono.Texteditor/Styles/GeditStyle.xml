@@ -30,8 +30,7 @@
   <Style name="iconbar" color="#FFFFFF" />
   <Style name="iconbar.separator" color="#ABA799" />
   <Style name="fold" color="#ABA799" bgColor="#FFFFFF"/>
-  <Style name="fold.highlight" color="#ABA799" />
-  <Style name="fold.togglemarker" color="#000000" />
+  <Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
   <Style name="marker.line.dirty" color="#FFEE61" />
   <Style name="marker.line.changed" color="#6CE16C" />
   <Style name="text.selection" color="#FFFFFF" bgColor="#5F56D2" />

@@ -72,8 +72,7 @@
 	<Style name="iconbar.separator" color="#97A0EF"/>
 
 	<Style name="fold" color="#97A0EF" bgColor="#3F3FDF"/>
-	<Style name="fold.highlight" color="#FFFFFF"/>
-	<Style name="fold.togglemarker" color="#97A0EF"/>
+	<Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
 	
 	<!-- highlighting -->
 	<Style name="comment" color="white"/>

@@ -123,8 +123,7 @@ THE SOFTWARE.
 	<Style name="iconbar.separator" color="base3"/>
 
 	<Style name="fold" color="base0" bgColor="base2"/>
-	<Style name="fold.highlight" color="base1"/>
-	<Style name="fold.togglemarker" color="base1"/>
+	<Style name="fold.margin" color="base01" bgColor="base02" />
 	
 	<Style name="comment" color="base0">
 		<Style name="keyword" color="magenta"/>

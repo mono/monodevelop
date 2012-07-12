@@ -129,8 +129,7 @@
 	<Style name="iconbar.separator" color="aluminium3"/>
 
 	<Style name="fold" color="aluminium4" bgColor="aluminium1"/>
-	<Style name="fold.highlight" color="aluminium5"/>
-	<Style name="fold.togglemarker" color="black"/>
+	<Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
 	
 	<Style name="comment"  weight="italic" color="#5e9423">
 		<Style name="keyword" color="#436a19"/>

@@ -116,8 +116,7 @@
 	<Style name="iconbar.separator" color="human_base"/>
 
 	<Style name="fold" color="human" bgColor="white"/>
-	<Style name="fold.highlight" color="environmental_shadow"/>
-	<Style name="fold.togglemarker" color="black"/>
+	<Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
 	
 	<!-- highlighting -->
 	<Style name="comment" color="accent_green_base"/>
