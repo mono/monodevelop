@@ -790,6 +790,15 @@ namespace MonoDevelop.Components.Docking
 					}
 					parent.Remove (item.Widget);
 				}
+				parent = (Gtk.Container) item.TitleTab.Parent;
+				if (parent != null) {
+					//removing the widget from its parent causes it to unrealize without unmapping
+					//so make sure it's unmapped
+					if (item.TitleTab.IsMapped) {
+						item.TitleTab.Unmap ();
+					}
+					parent.Remove (item.TitleTab);
+				}
 				RemoveTopLevel (widget);
 				widget.Disposed = true;
 				widget.Destroy ();

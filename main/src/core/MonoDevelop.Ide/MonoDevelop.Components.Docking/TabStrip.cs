@@ -287,12 +287,8 @@ namespace MonoDevelop.Components.Docking
 			if (tabIcon != null)
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon;
 			if (IsRealized) {
-				ModifyText (StateType.Normal, visualStyle.PadTitleLabelColor);
-				ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor);
-				if (labelWidget != null) {
-					labelWidget.ModifyText (StateType.Normal, visualStyle.PadTitleLabelColor);
+				if (labelWidget != null)
 					labelWidget.ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor);
-				}
 			}
 			var r = WidthRequest;
 			WidthRequest = -1;
@@ -395,16 +391,18 @@ namespace MonoDevelop.Components.Docking
 			
 			rect.X += padding;
 			rect.Width -= padding * 2;
-			
-			if (active) {
-				rect.Y += TopPaddingActive;
-				rect.Height = Child.SizeRequest ().Height;
+
+			if (Child != null) {
+				if (active) {
+					rect.Y += TopPaddingActive;
+					rect.Height = Child.SizeRequest ().Height;
+				}
+				else {
+					rect.Y += TopPadding;
+					rect.Height = Child.SizeRequest ().Height;
+				}
+				Child.SizeAllocate (rect);
 			}
-			else {
-				rect.Y += TopPadding;
-				rect.Height = Child.SizeRequest ().Height;
-			}
-			Child.SizeAllocate (rect);
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)

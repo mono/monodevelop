@@ -485,14 +485,8 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void SetFloatMode (Gdk.Rectangle rect)
 		{
-			ResetBarUndockMode ();
 			if (floatingWindow == null) {
-				if (Widget.Parent != null) {
-					((Gtk.Container) Widget.Parent).Remove (Widget);
-				}
-				if (TitleTab.Parent != null) {
-					((Gtk.Container) TitleTab.Parent).Remove (TitleTab);
-				}
+				ResetMode ();
 				SetRegionStyle (frame.GetRegionStyleForItem (this));
 				floatingWindow = new Window (GetWindowTitle ());
 				floatingWindow.TransientFor = frame.Toplevel as Gtk.Window;
@@ -544,6 +538,11 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void ResetMode ()
 		{
+			if (Widget.Parent != null)
+				((Gtk.Container) Widget.Parent).Remove (Widget);
+			if (TitleTab.Parent != null)
+				((Gtk.Container) TitleTab.Parent).Remove (TitleTab);
+
 			ResetFloatMode ();
 			ResetBarUndockMode ();
 		}
@@ -611,35 +610,31 @@ namespace MonoDevelop.Components.Docking
 			
 			// Hide menuitem
 			if ((Behavior & DockItemBehavior.CantClose) == 0) {
-				MenuItem mitem = new MenuItem (Catalog.GetString("Hide"));
+				MenuItem mitem = new MenuItem (Catalog.GetString("Close"));
 				mitem.Activated += delegate { Visible = false; };
 				menu.Append (mitem);
 			}
 
-			CheckMenuItem citem;
-			
-			// Dockable menuitem
-			citem = new CheckMenuItem (Catalog.GetString("Dockable"));
-			citem.Active = Status == DockItemStatus.Dockable;
-			citem.DrawAsRadio = true;
-			citem.Toggled += delegate { Status = DockItemStatus.Dockable; };
-			menu.Append (citem);
+			MenuItem citem;
 
-			// Floating menuitem
-			if ((Behavior & DockItemBehavior.NeverFloating) == 0) {
-				citem = new CheckMenuItem (Catalog.GetString("Floating"));
-				citem.Active = Status == DockItemStatus.Floating;
-				citem.DrawAsRadio = true;
-				citem.Toggled += delegate { Status = DockItemStatus.Floating; };
+			if (Status != DockItemStatus.Dockable) {
+				// Dockable menuitem
+				citem = new MenuItem (Catalog.GetString("Dock"));
+				citem.Activated += delegate { Status = DockItemStatus.Dockable; };
 				menu.Append (citem);
 			}
 
 			// Auto Hide menuitem
-			if ((Behavior & DockItemBehavior.CantAutoHide) == 0) {
-				citem = new CheckMenuItem (Catalog.GetString("Auto Hide"));
-				citem.Active = Status == DockItemStatus.AutoHide;
-				citem.DrawAsRadio = true;
-				citem.Toggled += delegate { Status = DockItemStatus.AutoHide; };
+			if ((Behavior & DockItemBehavior.CantAutoHide) == 0 && Status != DockItemStatus.AutoHide) {
+				citem = new MenuItem (Catalog.GetString("Minimize"));
+				citem.Activated += delegate { Status = DockItemStatus.AutoHide; };
+				menu.Append (citem);
+			}
+
+			// Floating menuitem
+			if ((Behavior & DockItemBehavior.NeverFloating) == 0 && Status != DockItemStatus.Floating) {
+				citem = new MenuItem (Catalog.GetString("Undock"));
+				citem.Activated += delegate { Status = DockItemStatus.Floating; };
 				menu.Append (citem);
 			}
 

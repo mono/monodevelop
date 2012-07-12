@@ -73,10 +73,10 @@ namespace MonoDevelop.Components.Docking
 			Box fr;
 			CustomFrame cframe = new CustomFrame ();
 			switch (pos) {
-				case PositionType.Left: cframe.SetMargins (1, 1, 0, 1); break;
-				case PositionType.Right: cframe.SetMargins (1, 1, 1, 0); break;
-				case PositionType.Top: cframe.SetMargins (0, 1, 1, 1); break;
-				case PositionType.Bottom: cframe.SetMargins (1, 0, 1, 1); break;
+				case PositionType.Left: cframe.SetMargins (0, 0, 1, 1); break;
+				case PositionType.Right: cframe.SetMargins (0, 0, 1, 1); break;
+				case PositionType.Top: cframe.SetMargins (1, 1, 0, 0); break;
+				case PositionType.Bottom: cframe.SetMargins (1, 1, 0, 0); break;
 			}
 			EventBox sepBox = new EventBox ();
 			cframe.Add (sepBox);
@@ -107,17 +107,17 @@ namespace MonoDevelop.Components.Docking
 			scrollable.ScrollMode = false;
 			scrollable.Show ();
 #endif
-
-			if (item.Widget.Parent != null) {
-				((Gtk.Container)item.Widget.Parent).Remove (item.Widget);
-			}
+			VBox itemBox = new VBox ();
+			itemBox.Show ();
+			itemBox.PackStart (item.TitleTab, false, false, 0);
+			itemBox.PackStart (item.Widget, true, true, 0);
 
 			item.Widget.Show ();
 #if ANIMATE_DOCKING
-			scrollable.Add (item.Widget);
+			scrollable.Add (itemBox);
 			fr.PackStart (scrollable, true, true, 0);
 #else
-			fr.PackStart (item.Widget, true, true, 0);
+			fr.PackStart (itemBox, true, true, 0);
 #endif
 			
 			sepBox.ButtonPressEvent += OnSizeButtonPress;
