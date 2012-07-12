@@ -17,13 +17,22 @@ open MonoDevelop.FSharp.Gui
 
 type FSharpSettingsPanel() = 
   inherit OptionsPanel()
+  let fscPathPropName = "FSharpBinding.FscPath"
+  let fsiPathPropName = "FSharpBinding.FsiPath"
+  let fsiArgumentsPropName = "FSharpBinding.FsiArguments"
+  let enableFSharp30PropName = "FSharpBinding.EnableFSharp30"
+  let fsiFontNamePropName = "FSharpBinding.FsiFontName"
   let mutable widget : FSharpSettingsWidget = null
   
+  member internal x.setLanguageDisplay(enable:bool) = 
+    if widget.EnableFSharp30.Active <> enable then
+      widget.EnableFSharp30.Active <- enable
+
   member internal x.setCompilerDisplay(use_default:bool) = 
     if widget.CheckCompilerUseDefault.Active <> use_default then
       widget.CheckCompilerUseDefault.Active <- use_default
-    let prop_compiler_path = PropertyService.Get<string>("FSharpBinding.FscPath","")
-    let default_compiler_path = match Common.getDefaultDefaultCompiler() with | Some(r) -> r | None -> ""
+    let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
+    let default_compiler_path = match CompilerArguments.getDefaultDefaultCompiler() with | Some(r) -> r | None -> ""
     widget.EntryCompilerPath.Text <- if use_default || prop_compiler_path = "" then default_compiler_path else prop_compiler_path
     widget.EntryCompilerPath.Sensitive <- not use_default
     widget.ButtonCompilerBrowse.Sensitive <- not use_default
@@ -31,9 +40,9 @@ type FSharpSettingsPanel() =
   member internal x.setInteractiveDisplay(use_default:bool) =
     if widget.CheckInteractiveUseDefault.Active <> use_default then
       widget.CheckInteractiveUseDefault.Active <- use_default
-    let prop_interp_path = PropertyService.Get<string>("FSharpBinding.FsiPath", "")
-    let prop_interp_args = PropertyService.Get<string>("FSharpBinding.FsiArguments", "")
-    let default_interp_path = match Common.getDefaultInteractive() with | Some(r) -> r | None -> ""
+    let prop_interp_path = PropertyService.Get<string>(fsiPathPropName, "")
+    let prop_interp_args = PropertyService.Get<string>(fsiArgumentsPropName, "")
+    let default_interp_path = match CompilerArguments.getDefaultInteractive() with | Some(r) -> r | None -> ""
     let default_interp_args = ""
     widget.EntryPath.Text <- if use_default || prop_interp_path = "" then default_interp_path else prop_interp_path
     widget.EntryArguments.Text <- if use_default || prop_interp_args = "" then default_interp_args else prop_interp_args
@@ -64,44 +73,50 @@ type FSharpSettingsPanel() =
       dlg.Hide() )
 
     // Load current state
-    let prop_interp_path = PropertyService.Get<string>("FSharpBinding.FsiPath", "")
-    let prop_interp_args = PropertyService.Get<string>("FSharpBinding.FsiArguments", "")
-    let prop_interp_font = PropertyService.Get<string>("FSharpBinding.FsiFontName","")  
-    let prop_compiler_path = PropertyService.Get<string>("FSharpBinding.FscPath","")
+    let prop_interp_path = PropertyService.Get<string>(fsiPathPropName, "")
+    let prop_interp_args = PropertyService.Get<string>(fsiArgumentsPropName, "")
+    let prop_interp_font = PropertyService.Get<string>(fsiFontNamePropName,"")  
+    let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
+    let prop_use_fsharp30 = PropertyService.Get<string>(enableFSharp30PropName,"")
 
-    let default_interp_path = Common.getDefaultInteractive
+    let default_interp_path = CompilerArguments.getDefaultInteractive
     let default_interp_args = ""
     let default_interp_font = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
 
     x.setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
     x.setCompilerDisplay( (prop_compiler_path = "") )
+    x.setLanguageDisplay( System.String.Compare (prop_use_fsharp30, "true", true) = 0)
     
     let fontName = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
-    widget.FontInteractive.FontName <- PropertyService.Get<string>("FSharpBinding.FsiFontName", fontName)
+    widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
 
     // Implement checkbox for F# Interactive options
-    widget.CheckInteractiveUseDefault.Toggled.Add(fun _ -> x.setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active))
+    widget.CheckInteractiveUseDefault.Toggled.Add(fun _ -> 
+        x.setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active))
 
     // Implement checkbox for F# Compiler options
-    widget.CheckCompilerUseDefault.Toggled.Add(fun _ -> x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
+    widget.CheckCompilerUseDefault.Toggled.Add(fun _ -> 
+        x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
 
+    // Toggling the language version can affect the compiler locations
+    widget.EnableFSharp30.Toggled.Add(fun _ -> 
+        // Apply the property immediately, to reflect changes in default compiler paths 
+        PropertyService.Set(enableFSharp30PropName, if widget.EnableFSharp30.Active then "true" else "false")
+        x.setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active)
+        x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
+    
     widget.Show()
     upcast widget 
   
   override x.ApplyChanges() =
-    if not widget.CheckCompilerUseDefault.Active then
-      PropertyService.Set("FSharpBinding.FscPath", widget.EntryCompilerPath.Text)
-    else
-      PropertyService.Set("FSharpBinding.FscPath", null)
+    PropertyService.Set(enableFSharp30PropName, if widget.EnableFSharp30.Active then "true" else "false")
 
-    if not widget.CheckInteractiveUseDefault.Active then
-      PropertyService.Set("FSharpBinding.FsiPath", widget.EntryPath.Text)
-      PropertyService.Set("FSharpBinding.FsiArguments", widget.EntryArguments.Text)
-    else 
-      PropertyService.Set("FSharpBinding.FsiPath", null)
-      PropertyService.Set("FSharpBinding.FsiArguments", null)
+    PropertyService.Set(fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
 
-    PropertyService.Set("FSharpBinding.FsiFontName", widget.FontInteractive.FontName)
+    PropertyService.Set(fsiPathPropName, if widget.CheckInteractiveUseDefault.Active then null else widget.EntryPath.Text)
+    PropertyService.Set(fsiArgumentsPropName, if widget.CheckInteractiveUseDefault.Active then null else widget.EntryArguments.Text)
+
+    PropertyService.Set(fsiFontNamePropName, widget.FontInteractive.FontName)
     FSharpInteractivePad.CurrentFsi.UpdateFont()    
     
 // --------------------------------------------------------------------------------------
@@ -182,9 +197,9 @@ type BuildOrderPanel() =
     initializeTreeView()    
     
     // Get sources, drop common prefix (directory) and add them to the list
-    let sources = Common.getSourceFiles x.ConfiguredProject.Items
+    let sources = CompilerArguments.getSourceFiles x.ConfiguredProject.Items
     let root = System.IO.Path.GetDirectoryName(x.ConfiguredProject.FileName.FullPath.ToString())
-    fileOrder <- Common.getItemsInOrder root sources fsconfig.BuildOrder true |> Seq.toArray
+    fileOrder <- CompilerArguments.getItemsInOrder root sources fsconfig.BuildOrder true |> Seq.toArray
     
     // Re-generate items in the tree view list
     let updateStore () =

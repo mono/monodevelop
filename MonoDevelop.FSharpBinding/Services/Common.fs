@@ -75,7 +75,7 @@ module Reflection =
         let meth = prop.GetGetMethod(true)
         if prop = null then failwithf "Property '%s' found, but doesn't have 'get' method." name
         try meth.Invoke(instance, [| |]) |> unbox<'R>
-        with _ -> failwithf "Failed to get value of '%s' property (of type '%s')" name typ.Name
+        with err -> failwithf "Failed to get value of '%s' property (of type '%s'), error: %s" name typ.Name (err.ToString())
 
 module Environment = 
   /// Are we running on the Mono platform?

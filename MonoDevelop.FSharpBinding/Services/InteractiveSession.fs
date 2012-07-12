@@ -16,7 +16,7 @@ type InteractiveSession() =
     match PropertyService.Get<string>("FSharpBinding.FsiPath", "") with
     | s when s <> "" -> s
     | _ -> 
-      match Common.getDefaultInteractive() with
+      match CompilerArguments.getDefaultInteractive() with
       | Some(s) -> s
       | None -> ""
 
@@ -37,7 +37,7 @@ type InteractiveSession() =
       reraise()
     
   let client = 
-      try Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer.StartClient(ServiceSettings.fsVersion,server)
+      try Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer.StartClient(server)
       with e -> failwithf "oops! %A" e
 
   let textReceived = new Event<_>()  

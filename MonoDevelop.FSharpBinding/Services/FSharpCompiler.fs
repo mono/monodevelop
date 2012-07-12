@@ -25,28 +25,91 @@ open Mono.Addins
 // from 'GetCheckOptionsFromScriptRoot' (which doesn't work well on Mono)
 // --------------------------------------------------------------------------------------
 
-type FSharpCompilerVersionNumber = 
-      | Version_4_0 | Version_4_3
-      override x.ToString() = match x with | Version_4_0 -> "4.0.0.0" | Version_4_3 -> "4.3.0.0"
 
-    /// Wrapper type for the 'FSharp.Compiler.dll' assembly - expose types we use
-type FSharpCompiler(versionNumber:FSharpCompilerVersionNumber) =      
+/// Wrapper type for the 'FSharp.Compiler.dll' assembly - expose types we use
+type FSharpCompiler(versionNumber:FSharpCompilerVersion) =      
     let asm = Assembly.Load("FSharp.Compiler, Version="+versionNumber.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
-    let asm2 = Assembly.Load("FSharp.Compiler.Server.Shared, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
+    let asm2 = Assembly.Load("FSharp.Compiler.Server.Shared, Version="+versionNumber.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
     static let v40 = lazy FSharpCompiler(Version_4_0) 
     static let v43 = lazy FSharpCompiler(Version_4_3) 
-    member __.InteractiveChecker = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.InteractiveChecker")
-    member __.IsResultObsolete = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.IsResultObsolete")
-    member __.CheckOptions = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.CheckOptions")
+    let interactiveCheckerType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.InteractiveChecker")
+    let isResultObsoleteType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.IsResultObsolete")
+    let declarationSetType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.DeclarationSet")
+    let checkOptionsType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.CheckOptions")
+    let parserType = asm.GetType("Microsoft.FSharp.Compiler.Parser")
+    let interactiveServerType = asm2.GetType("Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer")
+    let fSharpCore = asm.GetReferencedAssemblies() |> Array.find (fun x -> x.Name = "FSharp.Core") |> fun a -> Assembly.Load(a)
+    let fSharpValueType = fSharpCore.GetType("Microsoft.FSharp.Reflection.FSharpValue")
+    let unitType = fSharpCore.GetType(typeof<unit>.FullName)
+    let fsharpFuncType = fSharpCore.GetType("Microsoft.FSharp.Core.FSharpFunc`2")
+    let asyncType = fSharpCore.GetType("Microsoft.FSharp.Control.FSharpAsync")
+    let fsharpListType = fSharpCore.GetType("Microsoft.FSharp.Collections.FSharpList`1")
+    let fsharpOptionType = fSharpCore.GetType("Microsoft.FSharp.Core.FSharpOption`1")
+    
+    let funcConvertType = fSharpCore.GetType("Microsoft.FSharp.Core.FuncConvert")
+    let toFSharpFunc = funcConvertType.GetMethods() |> Array.find (fun x -> x.Name = "ToFSharpFunc" && x.GetParameters().[0].ParameterType.Name = "Converter`2")
+    let runSynchronously = asyncType.GetMethod "RunSynchronously"
+
+    member __.InteractiveCheckerType = interactiveCheckerType
+    member __.IsResultObsoleteType = isResultObsoleteType
+    member __.CheckOptionsType = checkOptionsType
+    member __.DeclarationSetType = declarationSetType
+    member __.ParserType = parserType
+    member __.InteractiveServerType = interactiveServerType
+    member __.FSharpCore = fSharpCore
+    member __.UnitType = unitType
+    member __.AsyncType = asyncType
+    member __.AsyncRunSynchronouslyMethod = runSynchronously
+    member __.NotifyFileTypeCheckStateIsDirtyType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.NotifyFileTypeCheckStateIsDirty")
+
+
+    // We support multiple backend FSharp.Compiler.dll. 
+    //    - Some of these have slight differences in their "SourceCodeServices" API
+    //    - We use soft-binding via the "dynamic operator" (?) reflection 
+    // Annoyingly, these can use different FSharp.Core.dll, because MonoDevelop doesn't unify FSHarp.Core 4.0.0.0 and FSharp.Core 4.3.0.0.
+    // For the most part this doesn't matter, for two reasons:
+    //    - We invoke most funcitonality via the dynamic operator
+    //    - On the whole the SourceCodeServices API doesnt' transact F#-specific data in argument and return position.
+    // However, in the few places where the SourceCodeServices API does transact F#-specific types (e.g. lists and functions) we need to 
+    // manually construct F# values that correspond the types in the FSharp.Core.dll used by the target FSharp.Compiler.dll we 
+    // are connecting to.
+    //
+    // We assume the mscorlib.dll being used is always the same, i.e. MonoDevelop unifies these into 4.0.0.0.
+    //
+    member x.MakeFunctionType(dom,ran) = fsharpFuncType.MakeGenericType [| dom; ran |]
+    member x.MakePairType(t1,t2) = typedefof<int * int>.MakeGenericType [| t1; t2 |]
+    
+    member x.MakeFunction(domTy,ranTy,converter:Converter<obj,obj>) = 
+        // Convert a 'Converter<obj,obj>' to a 'obj -> obj' using Microsoft.FSharp.Core.FuncConvert.ToFSharpFunc
+        let m2 = toFSharpFunc.MakeGenericMethod([| typeof<obj>; typeof<obj> |])
+        let f = m2.Invoke(null, [| converter |])
+        // Convert the 'obj -> obj' to a 'domTy -> ranTy' using Microsoft.FSharp.Reflection.FSharpValue.MakeFunction
+        let fty = x.MakeFunctionType(domTy,ranTy)
+        fSharpValueType?MakeFunction(fty, f)
+
+    member x.MakePair(ty1,ty2,v1:obj,v2:obj) = 
+        let fty = x.MakePairType(ty1,ty2)
+        fSharpValueType?MakeTuple([| v1; v2 |], fty)
+
+    member x.MakeListType(elemTy) = fsharpListType.MakeGenericType [| elemTy |]
+    member x.MakeList(elemTy,elems: 'a list) =
+        let listTy = x.MakeListType elemTy
+        List.foldBack (fun a x -> listTy?Cons(a, x)) elems (listTy?get_Empty())
+
+    member x.MakeOptionType(elemTy) = fsharpOptionType.MakeGenericType [| elemTy |]
+    member x.MakeOption(elemTy,elem:obj) =
+        let optionTy = x.MakeOptionType elemTy
+        optionTy?Some(elem)
+
+    static member Current 
+      with get() = 
+        let fsVersion = FSharpCompilerVersion.CurrentVersion  
+        let c = match fsVersion with Version_4_0 -> v40 | Version_4_3 -> v43
+        try c.Force() with e -> Debug.tracee "Compiler" e; reraise()
 #if USE_FSHARP_COMPILER_TOKENIZATION
     member __.SourceTokenizer = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.SourceTokenizer")
     member __.TokenInformation = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.TokenInformation")
 #endif
-    member __.Parser = asm.GetType("Microsoft.FSharp.Compiler.Parser")
-    member __.InteractiveServer = asm2.GetType("Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer")
-    static member Get(version) = 
-        let c = match version with Version_4_0 -> v40 | Version_4_3 -> v43
-        try c.Force() with e -> Debug.tracee "Compiler" e; reraise()
     
 module Parser = 
   
@@ -54,12 +117,12 @@ module Parser =
   type token = 
     | WrappedToken of obj
     /// Creates a token representing the specified identifier
-    static member IDENT(version, name) = 
-      WrappedToken(FSharpCompiler.Get(version).Parser?token?IDENT?``.ctor``(name))
+    static member IDENT(name) = 
+      WrappedToken(FSharpCompiler.Current.ParserType?token?IDENT?``.ctor``(name))
   
   /// Returns the tag of the specified token
-  let tagOfToken(version, WrappedToken token) =
-    FSharpCompiler.Get(version).Parser?tagOfToken(token) : int
+  let tagOfToken(WrappedToken token) =
+    FSharpCompiler.Current.ParserType?tagOfToken(token) : int
 
 // --------------------------------------------------------------------------------------
 // Wrapper for 'Microsoft.Compiler.Server.Shared', which contains some API for
@@ -70,8 +133,8 @@ module Server =
   module Shared = 
     
     type FSharpInteractiveServer(wrapped:obj) =
-      static member StartClient(compilerVersion,channel:string) = 
-        FSharpInteractiveServer(FSharpCompiler.Get(compilerVersion).InteractiveServer?StartClient(channel))
+      static member StartClient(channel:string) = 
+        FSharpInteractiveServer(FSharpCompiler.Current.InteractiveServerType?StartClient(channel))
       member x.Interrupt() : unit = wrapped?Interrupt()
 
 // --------------------------------------------------------------------------------------
@@ -220,25 +283,34 @@ module SourceCodeServices =
       d.Wrapped?Item |> List.untypedMap (fun o ->
         DataTipElement(o))
     
-  type FileTypeCheckStateIsDirty = string -> unit
+  type NotifyFileTypeCheckStateIsDirty = string -> unit
           
   /// Callback that indicates whether a requested result has become obsolete.    
   [<NoComparison;NoEquality>]
   type IsResultObsolete = 
       | IsResultObsolete of (unit->bool)
 
-  type CheckOptions(version,wrapped:obj) =
+  type CheckOptions(wrapped:obj) =
     member x.Wrapped = wrapped
     member x.ProjectFileName : string = wrapped?ProjectFileName
     member x.ProjectFileNames : string array = wrapped?ProjectFileNames
     member x.ProjectOptions : string array = wrapped?ProjectOptions
     member x.IsIncompleteTypeCheckEnvironment : bool = wrapped?IsIncompleteTypeCheckEnvironment 
     member x.UseScriptResolutionRules : bool = wrapped?UseScriptResolutionRules
-    static member Create(version,fileName:string, fileNames:string[], options:string[], incomplete:bool, scriptRes:bool) =
-      CheckOptions(version,FSharpCompiler.Get(version).CheckOptions?``.ctor``(fileName, fileNames, options, incomplete, scriptRes))
+    member x.LoadTime : System.DateTime = wrapped?LoadTime
+    static member Create(fileName:string, fileNames:string[], options:string[], incomplete:bool, scriptRes:bool, loadTime:System.DateTime) =
+      let res = 
+          match FSharpCompilerVersion.CurrentVersion with 
+          | FSharpCompilerVersion.Version_4_0 -> 
+              FSharpCompiler.Current.CheckOptionsType?``.ctor``(fileName, fileNames, options, incomplete, scriptRes)
+          | FSharpCompilerVersion.Version_4_3 -> 
+              let noUnresolvedReferences = null (* this null is 'None' in the F# representation of an option value *) 
+              FSharpCompiler.Current.CheckOptionsType?``.ctor``(fileName, fileNames, options, incomplete, scriptRes, loadTime, noUnresolvedReferences)
+      CheckOptions(res)
+
     member x.WithOptions(options:string[]) =
       CheckOptions.Create
-        ( version,x.ProjectFileName, x.ProjectFileNames, options, x.IsIncompleteTypeCheckEnvironment, x.UseScriptResolutionRules )
+        ( x.ProjectFileName, x.ProjectFileNames, options, x.IsIncompleteTypeCheckEnvironment, x.UseScriptResolutionRules, x.LoadTime  )
       
   type UntypedParseInfo(wrapped:obj) =
     member x.Wrapped = wrapped
@@ -263,13 +335,35 @@ module SourceCodeServices =
     member x.Items = 
       wrapped?Items |> Array.untypedMap (fun o -> Declaration(o))
 
-  type TypeCheckInfo(version:FSharpCompilerVersionNumber, wrapped:obj) =
+  type TypeCheckInfo(wrapped:obj) =
     /// Resolve the names at the given location to a set of declarations
-    member x.GetDeclarations(pos:Position, line:string, names:NamesWithResidue, tokentag:int) =
-      DeclarationSet(wrapped?GetDeclarations(pos, line, names, tokentag))
+    member x.GetDeclarations(pos:Position, line:string, (names,residue), tokentag:int, timeout:int) =
+      let fsc = FSharpCompiler.Current
+      let names = fsc.MakeList(typeof<string>, names)
+      let namesAndResidue = fsc.MakePair(fsc.MakeListType(typeof<string>), typeof<string>, names, residue)
+      let res = 
+          match FSharpCompilerVersion.CurrentVersion with 
+          | Version_4_0 -> 
+              wrapped?GetDeclarations(pos, line, namesAndResidue, tokentag)
+          | Version_4_3 -> 
+              // The F# 3.0 api takes an additional two arguments and returns an asynchronous result. 
+              // We force the result synchronously under a timeout
+              let funcArgType = typeof<obj * ((int * int) * (int * int))>
+              // TODO: fill this in. Currently we fill in with (fun _ -> false) relative to the FSharp.Core.dll used by the FSharp.Compiler.dll
+              let hasTextChangedSinceLastTypecheck = fsc.MakeFunction(funcArgType, typeof<bool>, Converter<obj,obj>(fun _ -> box false))
+              let untypedParseInfoOpt = null
+              let asyncDeclSet : obj = wrapped?GetDeclarations(untypedParseInfoOpt, pos, line, namesAndResidue, hasTextChangedSinceLastTypecheck)
+              let optionalTimeout = fsc.MakeOption(typeof<int>,timeout)
+              let optionalCancellationToken = null
+              try fsc.AsyncRunSynchronouslyMethod.MakeGenericMethod(fsc.DeclarationSetType).Invoke(null,[| asyncDeclSet; optionalTimeout; optionalCancellationToken |])
+              with :? System.Reflection.TargetInvocationException as e -> raise e.InnerException
+
+      DeclarationSet(res)
       
     /// Resolve the names at the given location to give a data tip 
     member x.GetDataTipText(pos:Position, line:string, names:Names, tokentag:int) : DataTipText =
+      let fsc = FSharpCompiler.Current
+      let names = fsc.MakeList(typeof<string>, names)
       DataTipText(wrapped?GetDataTipText(pos, line, names, tokentag))
       
     /// Resolve the names at the given location to give F1 keyword
@@ -278,9 +372,6 @@ module SourceCodeServices =
     // member GetMethods : Position * string * Names option * (*tokentag:*)int -> MethodOverloads
     /// Resolve the names at the given location to the declaration location of the corresponding construct
     // member GetDeclarationLocation : Position * string * Names * (*tokentag:*)int * bool -> FindDeclResult
-    /// A version of `GetDeclarationLocation` augmented with the option (via the `bool`) parameter to force .fsi generation (even if source exists); this is primarily for testing
-    // member GetDeclarationLocationInternal : bool -> Position * string * Names * (*tokentag:*)int * bool -> FindDeclResult
-    member x.Version = version
 
   type ErrorInfo(wrapped:obj) =
     member x.StartLine : int = wrapped?StartLine
@@ -293,25 +384,28 @@ module SourceCodeServices =
     member x.Subcategory : string = wrapped?Subcategory
   
   /// A handle to the results of TypeCheckSource
-  type TypeCheckResults(version:FSharpCompilerVersionNumber,wrapped:obj) =
+  type TypeCheckResults(wrapped:obj) =
     /// The errors returned by parsing a source file
-    member x.Errors : ErrorInfo[] = 
-      wrapped?Errors |> Array.untypedMap (fun e -> ErrorInfo(e))
+    member x.Errors : ErrorInfo[] =  wrapped?Errors |> Array.untypedMap (fun e -> ErrorInfo(e))
       
     /// A handle to type information gleaned from typechecking the file. 
     member x.TypeCheckInfo : TypeCheckInfo option = 
-      if wrapped?TypeCheckInfo = null then None 
-      else Some(TypeCheckInfo(wrapped?TypeCheckInfo?Value))
+      match FSharpCompilerVersion.CurrentVersion with 
+      | Version_4_0 -> 
+          if wrapped?TypeCheckInfo = null then None 
+          else Some(TypeCheckInfo(wrapped?TypeCheckInfo?Value))
+      // The types "TypeCheckInfo" and "TypeCheckResults" were merged in F# 3.0
+      | Version_4_3 -> 
+          Some(TypeCheckInfo(wrapped))
 
-  type TypeCheckAnswer(version,wrapped:obj) =
+  type TypeCheckAnswer(wrapped:obj) =
     member x.Wrapped = wrapped
-    member x.Version = version
 
   let (|NoAntecedant|Aborted|TypeCheckSucceeded|) (tc:TypeCheckAnswer) = 
     if tc.Wrapped?IsNoAntecedant then NoAntecedant() 
     elif tc.Wrapped?IsAborted then Aborted() 
     elif tc.Wrapped?IsTypeCheckSucceeded then 
-      TypeCheckSucceeded(TypeCheckResults(tc.Version,tc.Wrapped?Item))
+      TypeCheckSucceeded(TypeCheckResults(tc.Wrapped?Item))
     else failwith "Unexpected TypeCheckAnswer value"    
   
   type TypeCheckSucceededImpl(tyres:TypeCheckResults) =
@@ -320,13 +414,19 @@ module SourceCodeServices =
     member x.IsNoAntecedant = false
     member x.Item = tyres
     
-  let TypeCheckSucceeded (version,arg) = 
-    TypeCheckAnswer(version,TypeCheckSucceededImpl(arg))
+  let TypeCheckSucceeded (arg) = 
+    TypeCheckAnswer(TypeCheckSucceededImpl(arg))
     
-  type InteractiveChecker(version:FSharpCompilerVersionNumber,wrapped:obj) =
+  type InteractiveChecker(wrapped:obj) =
       /// Crate an instance of the wrapper
-      static member Create (version,dirty:FileTypeCheckStateIsDirty) =
-        InteractiveChecker(version,FSharpCompiler.Get(version).InteractiveChecker?Create(dirty))
+      static member Create (dirty:NotifyFileTypeCheckStateIsDirty) =
+        let dirty : obj = 
+            let fsc = FSharpCompiler.Current
+            let funcVal = fsc.MakeFunction(typeof<string>,fsc.UnitType, Converter<obj,obj>(fun obj -> dirty (obj :?> string) |> box))
+            match FSharpCompilerVersion.CurrentVersion with 
+            | Version_4_0 -> box dirty (* this was just a function value in F# 2.0 *)
+            | Version_4_3 -> fsc.NotifyFileTypeCheckStateIsDirtyType?NewNotifyFileTypeCheckStateIsDirty(funcVal)
+        InteractiveChecker(FSharpCompiler.Current.InteractiveCheckerType?Create(dirty))
         
       /// Parse a source code file, returning a handle that can be used for obtaining navigation bar information
       /// To get the full information, call 'TypeCheckSource' method on the result
@@ -338,19 +438,21 @@ module SourceCodeServices =
       ///
       /// Return None if the background builder is not yet done prepring the type check results for the antecedent to the 
       /// file.
-      member x.TypeCheckSource
-          ( parsed:UntypedParseInfo, filename:string, fileversion:int, 
-            source:string, options:CheckOptions, (IsResultObsolete f)) =
-        TypeCheckAnswer
-          (version, 
-           (wrapped?TypeCheckSource
-              ( parsed.Wrapped, filename, fileversion, source, options.Wrapped, 
-                FSharpCompiler.Get(version).IsResultObsolete?NewIsResultObsolete(f) ) : obj))
+      member x.TypeCheckSource( parsed:UntypedParseInfo, filename:string, fileversion:int, source:string, options:CheckOptions, (IsResultObsolete f)) =
+        let isResultObsolete = 
+            let fsc = FSharpCompiler.Current
+            let f2 = fsc.MakeFunction(fsc.UnitType,typeof<bool>, Converter<obj,obj>(fun obj -> f () |> box))
+            fsc.IsResultObsoleteType?NewIsResultObsolete(f2)
+        let res : obj = 
+            match FSharpCompilerVersion.CurrentVersion with 
+            | Version_4_0 -> wrapped?TypeCheckSource(parsed.Wrapped, filename, fileversion, source, options.Wrapped, isResultObsolete ) 
+            | Version_4_3 -> wrapped?TypeCheckSource(parsed.Wrapped, filename, fileversion, source, options.Wrapped, isResultObsolete, null (* textSnapshotInfo *) ) 
+        TypeCheckAnswer(res)
       
       /// For a given script file, get the CheckOptions implied by the #load closure
       member x.GetCheckOptionsFromScriptRoot(filename:string, source:string, loadedTimeStamp:System.DateTime) : CheckOptions =
         // GetCheckOptionsFromScriptRoot takes an extra argument in 4.3.0.0. Ignore it in 4.0.0.0
-        match version with 
+        match FSharpCompilerVersion.CurrentVersion with 
         | Version_4_0 -> CheckOptions(wrapped?GetCheckOptionsFromScriptRoot(filename, source))
         | Version_4_3 -> CheckOptions(wrapped?GetCheckOptionsFromScriptRoot(filename, source, loadedTimeStamp))
           

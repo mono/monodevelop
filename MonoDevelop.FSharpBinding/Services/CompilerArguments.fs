@@ -47,7 +47,7 @@ module ScriptOptions =
       // Detect a usable default 4.0 FSharp.Core.dll (for Mono)
       let result = 
           let possibleInstallationPoints = 
-              Option.toList (FSharpEnvironment.BinFolderOfDefaultFSharpCompiler |> Option.map Path.GetDirectoryName) @  
+              Option.toList (FSharpEnvironment.BinFolderOfDefaultFSharpCompiler() |> Option.map Path.GetDirectoryName) @  
               FSharpEnvironment.BackupInstallationProbePoints
 
           Debug.tracef "Resolution" "Probing these installation locations for 4.0 FSharp.Core.dll : %A" possibleInstallationPoints
@@ -65,7 +65,7 @@ module ScriptOptions =
           yield dir
       | None -> 
           // For Windows, just use BinFolderOfDefaultFSharpCompiler, a default FSharp.Core.dll is there
-          match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with 
+          match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler() with 
           | Some dir -> 
               Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
               yield dir 
@@ -90,7 +90,7 @@ module ScriptOptions =
 // MonoDevelop objects (e.g. references, project items etc.)
 // --------------------------------------------------------------------------------------
 
-module Common = 
+module CompilerArguments = 
   /// Wraps the given string between double quotes
   let wrapFile s = "\"" + s + "\""  
 
@@ -280,7 +280,7 @@ module Common =
     match getShellToolPath [| ""; ".exe"; ".bat" |]"fsi" with
     | Some(dir,file)-> Some(Path.Combine(dir,file))
     | None-> 
-    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
+    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler() with
     | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsi.exe")) ->  
         Some(Path.Combine(dir,"fsi.exe"))
     | _ -> None
@@ -307,7 +307,7 @@ module Common =
     match getShellToolPath [| ""; ".exe"; ".bat" |] "fsc" with
     | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None -> 
-    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler with
+    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler() with
     | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsc.exe")) ->  
         Some(Path.Combine(dir,"fsc.exe"))
     | _ -> None
