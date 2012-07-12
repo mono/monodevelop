@@ -40,10 +40,9 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		IAssembly GenerateAssembly(Project project, string code)
 		{
-			TypeSystemService.LoadProject (project);
+			var wrapper = TypeSystemService.LoadProject (project);
 			TypeSystemService.ParseFile (project, "test.cs", "text/x-csharp", code);
-			var compilation = TypeSystemService.GetCompilation (project);
-			return compilation.MainAssembly;
+			return wrapper.Compilation.MainAssembly;
 		}
 
 		List<IMember> CollectMembers (string code, string typeName, Predicate<IUnresolvedMember> filter1, Predicate<IMember> filter2,
