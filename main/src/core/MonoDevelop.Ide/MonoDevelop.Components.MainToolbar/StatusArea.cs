@@ -37,12 +37,6 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		HBox contentBox = new HBox (false, 8);
 
-		Color borderColor = Styles.WidgetBorderColor;
-		Color fill1Color = CairoExtensions.ParseColor ("eff5f7");
-		Color fill2Color = CairoExtensions.ParseColor ("d0d9db");
-		Color innerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
-		Color textColor = CairoExtensions.ParseColor ("3a4029");
-
 		StatusAreaSeparator statusIconSeparator;
 		Gtk.Widget buildResultWidget;
 
@@ -149,8 +143,8 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			ModifyText (StateType.Normal, textColor.ToGdkColor ());
-			ModifyFg (StateType.Normal, textColor.ToGdkColor ());
+			ModifyText (StateType.Normal, Styles.StatusBarTextColor.ToGdkColor ());
+			ModifyFg (StateType.Normal, Styles.StatusBarTextColor.ToGdkColor ());
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -164,20 +158,20 @@ namespace MonoDevelop.Components.MainToolbar
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width - 1, Allocation.Height - 1, 3);
 				using (LinearGradient lg = new LinearGradient (Allocation.X, Allocation.Y, Allocation.X, Allocation.Height)) {
-					lg.AddColorStop (0, fill1Color);
-					lg.AddColorStop (1, fill2Color);
+					lg.AddColorStop (0, Styles.StatusBarFill1Color);
+					lg.AddColorStop (1, Styles.StatusBarFill2Color);
 					context.Pattern = lg;
 				}
 				context.Fill ();
 
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 1.5, Allocation.Y + 1.5, Allocation.Width - 2.5, Allocation.Height - 2.5, 3);
 				context.LineWidth = 1;
-				context.Color = innerColor;
+				context.Color = Styles.StatusBarInnerColor;
 				context.Stroke ();
 
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width - 1, Allocation.Height - 1, 3);
 				context.LineWidth = 1;
-				context.Color = borderColor;
+				context.Color = Styles.StatusBarBorderColor;
 				context.Stroke ();
 			}
 			return base.OnExposeEvent (evnt);
