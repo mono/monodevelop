@@ -1612,11 +1612,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case NameLookupMode.BaseTypeReference:
 					result = lookup.LookupType(target.Type, identifier, typeArguments, parameterizeResultType);
 					break;
-				default:
+				default: 
 					throw new NotSupportedException("Invalid value for NameLookupMode");
 			}
 			if (result is UnknownMemberResolveResult) {
-				var extensionMethods = GetExtensionMethods(identifier, typeArguments);
+				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments, true);
 				if (extensionMethods.Count > 0) {
 					return new MethodGroupResolveResult(target, identifier, EmptyList<MethodListWithDeclaringType>.Instance, typeArguments) {
 						extensionMethods = extensionMethods
