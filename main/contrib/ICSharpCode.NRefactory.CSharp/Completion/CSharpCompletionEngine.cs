@@ -2324,7 +2324,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					result.AddMember(field);
 				}
 				foreach (var m in type.GetMethods ()) {
-					if (m.Name == "TryParse") {
+					if (m.IsStatic && m.IsPublic) {
 						result.AddMember(m);
 					}
 				}
