@@ -219,8 +219,8 @@ namespace MonoDevelop.SourceEditor
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
-			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", true);
-			this.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", true);
+			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
+			this.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
 			this.ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", Mono.TextEditor.ShowWhitespaces.Never);
 			this.WrapLines = PropertyService.Get ("WrapLines", false);
