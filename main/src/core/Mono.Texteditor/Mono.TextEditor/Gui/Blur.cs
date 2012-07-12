@@ -50,6 +50,8 @@ namespace Mono.TextEditor
 		public void Draw (Cairo.Context cr)
 		{
 			buffer.Flush ();
+			if (buffer.Status == Cairo.Status.NullPointer || buffer.Status == Cairo.Status.NoMemory)
+				return;
 			var tmp = cairocks_gaussian_blur (buffer.Data, buffer.Width, buffer.Height, buffer.Stride, radius, radius);
 			buffer.MarkDirty ();
 			
@@ -90,24 +92,29 @@ namespace Mono.TextEditor
 			
 			return kernel;
 		}
-		
+		static double[] kernel;
+		static double[] tmp;
+		static double oldRadius = 0, oldDeviation = 0;
+
 		unsafe static byte[] cairocks_gaussian_blur (byte[] dataArr, int width, int height, int stride, double radius, double deviation)
 		{
-			double[] horzBlurArr;
-			double[] vertBlurArr;
-			double[] kernel;
 			int channels = 4;
 			int iY;
 			int iX;
-			
-			horzBlurArr = new double[height * stride];
-			vertBlurArr = new double[height * stride];
-			kernel = create_kernel (radius, deviation);
-			
-			fixed (double* horzBlur = horzBlurArr)
-				fixed (double* vertBlur = vertBlurArr)
+
+			if (tmp == null || tmp.Length < height * stride)
+				tmp = new double[height * stride];
+
+			if (oldRadius != radius || oldDeviation != deviation) {
+				kernel = create_kernel (radius, deviation);
+				oldRadius = radius;
+				oldDeviation = deviation;
+			}
+
+			fixed (double* tmpPtr = tmp)
 			fixed (byte* data = dataArr) {
 				/* Horizontal pass. */
+				int yOffset = 0;
 				for (iY = 0; iY < height; iY++) {
 					for (iX = 0; iX < width; iX++) {
 						double red = 0.0f;
@@ -126,7 +133,7 @@ namespace Mono.TextEditor
 							if (x < 0 || x >= width)
 								continue;
 							
-							dataPtr = &data [iY * stride + x * channels];
+							dataPtr = &data [yOffset + x * channels];
 							kernip1 = kernel [i + 1];
 							
 							alpha += kernip1 * dataPtr [3];
@@ -140,11 +147,12 @@ namespace Mono.TextEditor
 						
 						baseOffset = iY * stride + iX * channels;
 						
-						horzBlur [baseOffset + 3] = alpha;
-						horzBlur [baseOffset + 2] = red;
-						horzBlur [baseOffset + 1] = green;
-						horzBlur [baseOffset]     = blue;
+						tmpPtr [baseOffset + 3] = alpha;
+						tmpPtr [baseOffset + 2] = red;
+						tmpPtr [baseOffset + 1] = green;
+						tmpPtr [baseOffset]     = blue;
 					}
+					yOffset += stride;
 				}
 				
 				/* Vertical pass. */
@@ -168,7 +176,7 @@ namespace Mono.TextEditor
 								continue;
 							}
 							
-							dataPtr = &horzBlur [y * stride + iX * channels];
+							dataPtr = &tmpPtr [y * stride + iX * channels];
 							kernip1 = kernel [i + 1];
 							
 							alpha += kernip1 * dataPtr [3];
@@ -181,22 +189,28 @@ namespace Mono.TextEditor
 						
 						baseOffset = iY * stride + iX * channels;
 						
-						vertBlur [baseOffset + 3] = alpha;
-						vertBlur [baseOffset + 2] = red;
-						vertBlur [baseOffset + 1] = green;
-						vertBlur [baseOffset] = blue;
+						tmpPtr [baseOffset + 3] = alpha;
+						tmpPtr [baseOffset + 2] = red;
+						tmpPtr [baseOffset + 1] = green;
+						tmpPtr [baseOffset] = blue;
 					}
 				}
-				
+
+				yOffset = 0;
 				for (iY = 0; iY < height; iY++) {
+					int offset = yOffset;
 					for (iX = 0; iX < width; iX++) {
-						int i = iY * stride + iX * channels;
 						
-						data [i + 3] = (byte)(vertBlur [i + 3]);
-						data [i + 2] = (byte)(vertBlur [i + 2]);
-						data [i + 1] = (byte)(vertBlur [i + 1]);
-						data [i] = (byte)(vertBlur [i]);
+						data [offset] = (byte)tmpPtr [offset];
+						offset++;
+						data [offset] = (byte)tmpPtr [offset];
+						offset++;
+						data [offset] = (byte)tmpPtr [offset];
+						offset++;
+						data [offset] = (byte)tmpPtr [offset];
+						offset++;
 					}
+					yOffset += stride;
 				}
 				
 				return dataArr;

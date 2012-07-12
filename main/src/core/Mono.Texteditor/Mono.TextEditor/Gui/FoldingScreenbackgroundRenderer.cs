@@ -107,13 +107,17 @@ namespace Mono.TextEditor
 				if (i == foldSegments.Count - 1) {
 					var radius = (int)(editor.Options.Zoom * 2);
 					int w = 2 * radius;
-					using (var shadow = new Blur ((int)rectangleWidth + w * 2, (int)rectangleHeight + w * 2, radius)) {
+					using (var shadow = new Blur (
+						System.Math.Min ((int)rectangleWidth + w * 2, editor.Allocation.Width),
+						System.Math.Min ((int)rectangleHeight + w * 2, editor.Allocation.Height), 
+						radius)) {
 						using (var gctx = shadow.GetContext ()) {
 							gctx.Color = new Cairo.Color (0, 0, 0, 0);
 							gctx.Fill ();
 
 							var a = 0;
-							DrawRoundRectangle (gctx, true, true, w - a, w - a, editor.LineHeight / 4, rectangleWidth + a * 2, rectangleHeight + a * 2);
+							var b = 0;
+							DrawRoundRectangle (gctx, true, true, w - a, w - b, editor.LineHeight / 4, rectangleWidth + a * 2, rectangleHeight + a * 2);
 							var bg = editor.ColorStyle.Default.CairoColor;
 							gctx.Color = new Cairo.Color (bg.R, bg.G, bg.B, 0.6);
 							gctx.Fill ();
