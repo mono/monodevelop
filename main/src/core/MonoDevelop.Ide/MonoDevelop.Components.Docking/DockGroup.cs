@@ -682,6 +682,12 @@ namespace MonoDevelop.Components.Docking
 				boundTabStrip.SetTabLabel (it.Widget, it.Icon, it.Label);
 		}
 				
+		internal void UpdateStyle (DockItem it)
+		{
+			if (it.Visible && type == DockGroupType.Tabbed && boundTabStrip != null)
+				boundTabStrip.UpdateStyle (it);
+		}
+		
 		internal void FocusItem (DockGroupItem it)
 		{
 			tabFocus = it;

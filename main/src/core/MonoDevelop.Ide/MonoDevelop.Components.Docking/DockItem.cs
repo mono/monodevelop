@@ -259,6 +259,7 @@ namespace MonoDevelop.Components.Docking
 					titleTab.VisualStyle = s;
 				if (widget != null)
 					widget.VisualStyle = s;
+				frame.UpdateStyle (this);
 			}
 		}
 		

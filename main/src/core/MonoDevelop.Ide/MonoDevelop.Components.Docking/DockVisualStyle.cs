@@ -32,11 +32,14 @@ namespace MonoDevelop.Components.Docking
 		public static readonly Gdk.Color DefaultColor = new Gdk.Color (0,0,0);
 
 		public Gdk.Color PadBackgroundColor { get; set; }
+		public Gdk.Color PadTitleLabelColor { get; set; }
 		public DockTabStyle TabStyle { get; set; }
 		public Gdk.Color TreeBackgroundColor { get; set; }
+		public bool ShowPadTitleIcon { get; set; }
 
 		public DockVisualStyle ()
 		{
+			ShowPadTitleIcon = true;
 		}
 	}
 

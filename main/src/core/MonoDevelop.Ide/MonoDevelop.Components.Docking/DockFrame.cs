@@ -491,6 +491,19 @@ namespace MonoDevelop.Components.Docking
 			dockBarRight.UpdateTitle (item);
 		}
 		
+		internal void UpdateStyle (DockItem item)
+		{
+			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
+			if (gitem == null)
+				return;
+			
+			gitem.ParentGroup.UpdateStyle (item);
+			dockBarTop.UpdateStyle (item);
+			dockBarBottom.UpdateStyle (item);
+			dockBarLeft.UpdateStyle (item);
+			dockBarRight.UpdateStyle (item);
+		}
+		
 		internal void Present (DockItem item, bool giveFocus)
 		{
 			DockGroupItem gitem = container.FindDockGroupItem (item.Id);

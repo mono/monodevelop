@@ -166,6 +166,10 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
+		internal void UpdateStyle (DockItem item)
+		{
+		}
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			frame.ShadedContainer.DrawBackground (this);

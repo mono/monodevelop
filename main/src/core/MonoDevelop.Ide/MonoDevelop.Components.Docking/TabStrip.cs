@@ -119,6 +119,11 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
+		public void UpdateStyle (DockItem item)
+		{
+			QueueResize ();
+		}
+
 		public int TabCount {
 			get { return box.Children.Length; }
 		}
@@ -189,15 +194,31 @@ namespace MonoDevelop.Components.Docking
 		
 		void UpdateEllipsize (Gdk.Rectangle allocation)
 		{
-			int tsize = 0;
-			foreach (Tab tab in box.Children)
-				tsize += tab.LabelWidth;
+			int tabsSize = 0;
+			var children = box.Children;
 
-			double ratio = (double) allocation.Width / (double) tsize;
+			foreach (Tab tab in children)
+				tabsSize += tab.LabelWidth;
+
+			int[] sizes = new int[children.Length];
+			double ratio = (double) allocation.Width / (double) tabsSize;
 			if (ratio > 1)
 				ratio = 1;
-			foreach (Tab tab in box.Children)
-				tab.WidthRequest = (int)((double)tab.LabelWidth * ratio);
+
+			var totalWidth = allocation.Width;
+			for (int n=0; n<children.Length; n++) {
+				var s = (int)((double)((Tab)children[n]).LabelWidth * ratio);
+				sizes[n] = s;
+				totalWidth -= s;
+			}
+			// Spread the remaining size (resulting from rounding)
+			for (int n=0; n<children.Length && totalWidth > 0; n++) {
+				sizes[n]++;
+				totalWidth--;
+			}
+			// Assign the sizes
+			for (int n=0; n<children.Length; n++)
+				children[n].WidthRequest = sizes[n];
 		}
 
 		internal class TabStripBox: HBox
@@ -249,6 +270,7 @@ namespace MonoDevelop.Components.Docking
 			this.frame = frame;
 			this.VisibleWindow = false;
 			UpdateVisualStyle ();
+			NoShowAll = true;
 		}
 
 		public DockVisualStyle VisualStyle {
@@ -262,8 +284,20 @@ namespace MonoDevelop.Components.Docking
 
 		void UpdateVisualStyle ()
 		{
-		//	if (tabIcon != null)
-		//		tabIcon.Visible = visualStyle != DockStyle.Browser;
+			if (tabIcon != null)
+				tabIcon.Visible = visualStyle.ShowPadTitleIcon;
+			if (IsRealized) {
+				ModifyText (StateType.Normal, visualStyle.PadTitleLabelColor);
+				ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor);
+				if (labelWidget != null) {
+					labelWidget.ModifyText (StateType.Normal, visualStyle.PadTitleLabelColor);
+					labelWidget.ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor);
+				}
+			}
+			var r = WidthRequest;
+			WidthRequest = -1;
+			labelWidth = SizeRequest ().Width + 1;
+			WidthRequest = r;
 		}
 
 		public void SetLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
@@ -302,9 +336,9 @@ namespace MonoDevelop.Components.Docking
 			
 			// Get the required size before setting the ellipsize property, since ellipsized labels
 			// have a width request of 0
-			ShowAll ();
-			labelWidth = SizeRequest ().Width + 1;
-			
+			box.ShowAll ();
+			Show ();
+
 		//	if (labelWidget != null)
 		//		labelWidget.Ellipsize = oldMode;
 			UpdateVisualStyle ();
@@ -330,23 +364,37 @@ namespace MonoDevelop.Components.Docking
 				return page;
 			}
 		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			UpdateVisualStyle ();
+		}
 		
 		protected override void OnSizeRequested (ref Gtk.Requisition req)
 		{
-			req = Child.SizeRequest ();
-			req.Width += HorzPadding * 2;
-			if (active)
-				req.Height += TopPaddingActive + BottomPaddingActive;
-			else
-				req.Height += TopPadding + BottomPadding;
+			if (Child != null) {
+				req = Child.SizeRequest ();
+				req.Width += HorzPadding * 2;
+				if (active)
+					req.Height += TopPaddingActive + BottomPaddingActive;
+				else
+					req.Height += TopPadding + BottomPadding;
+			}
 		}
 					
 		protected override void OnSizeAllocated (Gdk.Rectangle rect)
 		{
 			base.OnSizeAllocated (rect);
+
+			int padding = HorzPadding;
+			if (rect.Width < labelWidth) {
+				padding -= (labelWidth - rect.Width) / 2;
+				if (padding < 2) padding = 2;
+			}
 			
-			rect.X += HorzPadding;
-			rect.Width -= HorzPadding * 2;
+			rect.X += padding;
+			rect.Width -= padding * 2;
 			
 			if (active) {
 				rect.Y += TopPaddingActive;
@@ -378,10 +426,13 @@ namespace MonoDevelop.Components.Docking
 			bgc.RgbFgColor = c;
 			bool first = true;
 			bool last = true;
+			TabStrip tabStrip = null;
 			if (Parent is TabStrip.TabStripBox) {
-				var cts = ((TabStrip.TabStripBox)Parent).Children;
+				var tsb = (TabStrip.TabStripBox) Parent;
+				var cts = tsb.Children;
 				first = cts[0] == this;
 				last = cts[cts.Length - 1] == this;
+				tabStrip = tsb.TabStrip;
 			}
 
 			if (Active || (first && last)) {
@@ -395,7 +446,7 @@ namespace MonoDevelop.Components.Docking
 				gc.Dispose ();
 
 			} else {
-				c = new HslColor (frame.DefaultVisualStyle.PadBackgroundColor);
+				c = new HslColor (tabStrip != null ? tabStrip.VisualStyle.PadBackgroundColor : frame.DefaultVisualStyle.PadBackgroundColor);
 				c.L *= 0.9;
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
 				gc.RgbFgColor = c;
