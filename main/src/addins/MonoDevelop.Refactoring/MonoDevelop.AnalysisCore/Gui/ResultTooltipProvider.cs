@@ -34,6 +34,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 {
 	class ResultTooltipProvider : TooltipProvider
 	{
+		public ResultTooltipProvider ()
+		{
+		}
+
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
 			//get the ResultsEditorExtension from the editor
