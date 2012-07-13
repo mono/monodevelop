@@ -171,6 +171,7 @@ namespace Mono.TextEditor
 						break;
 					}
 				}
+
 				if (same)
 					return false;
 			}
@@ -195,6 +196,7 @@ namespace Mono.TextEditor
 		IEnumerable<FoldSegment> foldings;
 		void RemoveBackgroundRenderer ()
 		{
+			oldFolds = null;
 			if (editor.TextViewMargin.BackgroundRenderer != null) {
 				editor.TextViewMargin.BackgroundRenderer = null;
 				editor.QueueDraw ();

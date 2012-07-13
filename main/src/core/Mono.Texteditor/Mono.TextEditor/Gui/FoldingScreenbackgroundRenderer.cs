@@ -46,7 +46,13 @@ namespace Mono.TextEditor
 
 		readonly DateTime startTime;
 		uint timeout;
-		const uint animationLength = 200;
+		const uint animationLength = 250;
+		public bool AnimationFinished {
+			get {
+				var age = (DateTime.Now - startTime).TotalMilliseconds;
+				return age >= animationLength;
+			}
+		}
 
 		public FoldingScreenbackgroundRenderer (TextEditor editor, IEnumerable<FoldSegment> foldSegments)
 		{
@@ -67,7 +73,7 @@ namespace Mono.TextEditor
 			HslColor hslColor = new HslColor (editor.ColorStyle.Default.BackgroundColor);
 			int colorPosition = i + 1;
 			if (i == foldSegments.Count - 1)
-				colorPosition += 2;
+				return hslColor;
 			if (brightness < 0.5) {
 				hslColor.L = hslColor.L * 0.81 + hslColor.L * 0.25 * (colorCount - colorPosition) / colorCount;
 			} else {
@@ -159,13 +165,13 @@ namespace Mono.TextEditor
 						cr.Restore ();
 					}*/
 
-					var curPadSize = 2;
+					var curPadSize = 1;
 
 					var age = (DateTime.Now - startTime).TotalMilliseconds;
 					var alpha = 0.1;
 					if (age < animationLength) {
 						var animationState = age / (double)animationLength;
-						curPadSize = (int)(4 + System.Math.Sin (System.Math.PI * animationState) * 4);
+						curPadSize = (int)(3 + System.Math.Sin (System.Math.PI * animationState) * 3);
 						alpha = 0.1 + (1.0 - animationState) / 5;
 					}
 
@@ -176,8 +182,8 @@ namespace Mono.TextEditor
 
 					if (age < animationLength) {
 						var animationState = age / (double)animationLength;
-						curPadSize = (int)(3 + System.Math.Sin (System.Math.PI * animationState) * 3);
-						DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize + 2, rect.Y - editor.VAdjustment.Value - curPadSize + 2, editor.LineHeight / 2, rect.Width + curPadSize * 2 - 4, rect.Height + curPadSize * 2 - 4);
+						curPadSize = (int)(2 + System.Math.Sin (System.Math.PI * animationState) * 2);
+						DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize, rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2);
 						cr.Color = GetColor (i, brightness, colorCount);
 						cr.Fill ();
 
