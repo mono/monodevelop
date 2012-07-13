@@ -1926,36 +1926,38 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void CheckModifiedFiles (Project project, ProjectContentWrapper content)
 		{
-			List<ProjectFile> modifiedFiles = null;
-			foreach (var file in project.Files) {
-				if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
-					continue;
-				var fileName = file.Name;
-				// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
-				var oldFile = content.Content.GetFile (fileName);
-				if (oldFile == null) {
-					var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName));
-					if (parser == null)
+			lock (projectWrapperUpdateLock) {
+				List<ProjectFile> modifiedFiles = null;
+				foreach (var file in project.Files) {
+					if (file.BuildAction == null || !string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 						continue;
+					var fileName = file.Name;
+					// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
+					var oldFile = content.Content.GetFile (fileName);
+					if (oldFile == null) {
+						var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName));
+						if (parser == null)
+							continue;
+					}
+					if (!IsFileModified (file, oldFile))
+						continue;
+					if (modifiedFiles == null)
+						modifiedFiles = new List<ProjectFile> ();
+					modifiedFiles.Add (file);
 				}
-				if (!IsFileModified (file, oldFile))
-					continue;
+				
+				// check if file needs to be removed from project content 
+				foreach (var file in content.Content.Files) {
+					if (project.GetProjectFile (file.FileName) == null) {
+						content.UpdateContent (c => c.UpdateProjectContent (file, null));
+						content.InformFileRemoved (new ParsedFileEventArgs (file));
+					}
+				}
+				
 				if (modifiedFiles == null)
-					modifiedFiles = new List<ProjectFile> ();
-				modifiedFiles.Add (file);
+					return;
+				QueueParseJob (content, modifiedFiles);
 			}
-			
-			// check if file needs to be removed from project content 
-			foreach (var file in content.Content.Files) {
-				if (project.GetProjectFile (file.FileName) == null) {
-					content.UpdateContent (c => c.UpdateProjectContent (file, null));
-					content.InformFileRemoved (new ParsedFileEventArgs (file));
-				}
-			}
-			
-			if (modifiedFiles == null)
-				return;
-			QueueParseJob (content, modifiedFiles);
 		}
 
 		static void CheckModifiedFile (AssemblyContext context)
