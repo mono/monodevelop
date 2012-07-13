@@ -1929,7 +1929,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				lock (projectWrapperUpdateLock) {
 					List<ProjectFile> modifiedFiles = null;
-					foreach (var file in project.Files) {
+					var projectFileCopy = project.Files.ToArray ();
+					foreach (var file in projectFileCopy) {
 						if (file.BuildAction == null || !string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 							continue;
 						var fileName = file.Name;
