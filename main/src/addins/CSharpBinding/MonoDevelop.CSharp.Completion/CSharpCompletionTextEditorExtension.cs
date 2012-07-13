@@ -53,7 +53,14 @@ namespace MonoDevelop.CSharp.Completion
 	
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, ICompletionDataFactory, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider
 	{
-		internal Mono.TextEditor.TextEditorData textEditorData;
+		internal Mono.TextEditor.TextEditorData TextEditorData {
+			get {
+				var doc = Document;
+				if (doc == null)
+					return null;
+				return doc.Editor;
+			}
+		}
 		
 		CompilationUnit unit;
 		static readonly CompilationUnit emptyUnit = new CompilationUnit ();
@@ -126,7 +133,6 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			textEditorData = Document.Editor;
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument != null) {
 				this.Unit = parsedDocument.GetAst<CompilationUnit> ();
@@ -204,23 +210,23 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
-			if (textEditorData.CurrentMode is TextLinkEditMode) {
-				if (((TextLinkEditMode)textEditorData.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
+			if (TextEditorData.CurrentMode is TextLinkEditMode) {
+				if (((TextLinkEditMode)TextEditorData.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
 					return null;
 			}
 			if (Unit == null || CSharpParsedFile == null)
 				return null;
 			var list = new CompletionDataList ();
 			var engine = new CSharpCompletionEngine (
-				textEditorData.Document,
+				TextEditorData.Document,
 				typeSystemSegmentTree,
 				this,
 				Document.GetProjectContext (),
 				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
 			);
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
-			engine.EolMarker = textEditorData.EolMarker;
-			engine.IndentString = textEditorData.Options.IndentationString;
+			engine.EolMarker = TextEditorData.EolMarker;
+			engine.IndentString = TextEditorData.Options.IndentationString;
 			list.AddRange (engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace));
 			list.AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch;
 			list.AutoSelect = engine.AutoSelect;
@@ -234,7 +240,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int triggerWordLength = 0;
-			char ch = completionContext.TriggerOffset > 0 ? textEditorData.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+			char ch = completionContext.TriggerOffset > 0 ? TextEditorData.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
 			return InternalHandleCodeCompletion (completionContext, ch, true, ref triggerWordLength);
 		}
 		
@@ -359,7 +365,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			try {
 				var engine = new CSharpParameterCompletionEngine (
-					textEditorData.Document,
+					TextEditorData.Document,
 					typeSystemSegmentTree,
 					this,
 					Document.GetProjectContext (),
@@ -400,7 +406,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
 			var engine = new CSharpParameterCompletionEngine (
-				textEditorData.Document,
+				TextEditorData.Document,
 				typeSystemSegmentTree,
 				this,
 				Document.GetProjectContext (),
@@ -413,7 +419,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
 			var engine = new CSharpParameterCompletionEngine (
-				textEditorData.Document,
+				TextEditorData.Document,
 				typeSystemSegmentTree,
 				this,
 				Document.GetProjectContext (),

@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		Mono.TextEditor.TextEditorData Editor {
 			get {
-				return editorCompletion.textEditorData;
+				return editorCompletion.TextEditorData;
 			}
 		}
 		
