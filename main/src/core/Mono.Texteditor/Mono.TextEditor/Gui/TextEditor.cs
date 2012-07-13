@@ -342,9 +342,13 @@ namespace Mono.TextEditor
 			InitAnimations ();
 			this.Document.EndUndo += HandleDocumenthandleEndUndo;
 			this.textEditorData.HeightTree.LineUpdateFrom += delegate(object sender, HeightTree.HeightChangedEventArgs e) {
-//				Console.WriteLine ("redraw from :" + e.Line);
+				//Console.WriteLine ("redraw from :" + e.Line);
 				RedrawFromLine (e.Line);
 			};
+			this.Document.Splitter.LineChanged += delegate(object sender, LineEventArgs e) {
+				RedrawLine (e.Line.LineNumber);
+			};
+
 #if ATK
 			TextEditorAccessible.Factory.Init (this);
 #endif
