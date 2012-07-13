@@ -53,7 +53,7 @@ namespace Mono.TextEditor
 		protected IconMargin       iconMargin;
 		protected GutterMargin     gutterMargin;
 		protected DashedLineMargin dashedLineMargin;
-		protected Margin           foldMarkerMargin;
+		protected FoldMarkerMargin foldMarkerMargin;
 		protected TextViewMargin   textViewMargin;
 		
 		DocumentLine longestLine      = null;
