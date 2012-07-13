@@ -1077,8 +1077,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
+					var files = project.Files.ToArray ();
 					Task.Factory.StartNew (delegate {
-						CheckModifiedFiles (project, wrapper);
+						CheckModifiedFiles (project, files, wrapper);
 					});
 
 					return wrapper;
@@ -1924,13 +1925,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static void CheckModifiedFiles (Project project, ProjectContentWrapper content)
+		static void CheckModifiedFiles (Project project, ProjectFile[] projectFiles, ProjectContentWrapper content)
 		{
 			try {
 				lock (projectWrapperUpdateLock) {
 					List<ProjectFile> modifiedFiles = null;
-					var projectFileCopy = project.Files.ToArray ();
-					foreach (var file in projectFileCopy) {
+					foreach (var file in projectFiles) {
 						if (file.BuildAction == null || !string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
 							continue;
 						var fileName = file.Name;
@@ -1997,7 +1997,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			while (list.Count > 0) {
 				var readydb = list.Dequeue ();
-				CheckModifiedFiles (readydb.Key, readydb.Value);
+				var files = readydb.Key.Files.ToArray ();
+				CheckModifiedFiles (readydb.Key, files, readydb.Value);
 			}
 			
 			Queue<KeyValuePair<string, AssemblyContext>> assemblyList;
