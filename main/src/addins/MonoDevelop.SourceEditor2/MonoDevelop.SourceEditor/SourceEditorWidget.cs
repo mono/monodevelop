@@ -647,7 +647,7 @@ namespace MonoDevelop.SourceEditor
 			get {
 				Gtk.Container c = vbox;
 				while (c != null) {
-					if (c.FocusChild == textEditor)
+					if (c.FocusChild == TextEditor)
 						return true;
 					c = c.FocusChild as Gtk.Container;
 				}
