@@ -36,6 +36,9 @@ namespace MonoDevelop.Components.Docking
 		public DockTabStyle TabStyle { get; set; }
 		public Gdk.Color TreeBackgroundColor { get; set; }
 		public bool ShowPadTitleIcon { get; set; }
+		public bool UppercaseTitles { get; set; }
+		public bool ExpandedTabs { get; set; }
+		public Gdk.Color InactivePadBackgroundColor { get; set; }
 
 		public DockVisualStyle ()
 		{

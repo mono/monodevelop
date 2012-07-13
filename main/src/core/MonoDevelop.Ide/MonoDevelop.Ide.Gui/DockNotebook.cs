@@ -803,7 +803,6 @@ namespace MonoDevelop.Ide.Gui
 
 				ctx.Rectangle (tabStartX, 0, tabEndX - tabStartX, Allocation.Height); 
 				ctx.Clip ();
-				int xActive = 0;
 				int x = tabStartX;
 				int y = 0;
 				for (int n = firstTabIndex; n < notebook.Tabs.Count && x < tabEndX; n++) {
@@ -892,7 +891,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			ctx.MoveTo (x, y + TopPadding);
-			ctx.Color = highlight ? Style.Text (Gtk.StateType.Normal).ToCairoColor () : Style.Text (Gtk.StateType.Insensitive).ToCairoColor ();
+			ctx.Color = highlight ? Styles.TabBarHoverInactiveTextColor : Styles.TabBarInactiveTextColor;
 			PangoCairoHelper.ShowLayout (ctx, la);
 
 			if (isClosing)
@@ -958,7 +957,7 @@ namespace MonoDevelop.Ide.Gui
 			x += LeftRightPaddingSel;
 
 			ctx.MoveTo (x, y + TopPadding);
-			ctx.Color = new Cairo.Color (1, 1, 1);
+			ctx.Color = highlight ? Styles.TabBarHoverActiveTextColor : Styles.TabBarActiveTextColor;
 			PangoCairoHelper.ShowLayout (ctx, la);
 
 			x += w + LabelButtonSeparatorWidth;

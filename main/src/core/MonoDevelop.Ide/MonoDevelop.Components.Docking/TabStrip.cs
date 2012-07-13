@@ -32,6 +32,7 @@ using Gtk;
 
 using System;
 using MonoDevelop.Ide.Gui;
+using System.Linq;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -200,18 +201,44 @@ namespace MonoDevelop.Components.Docking
 			foreach (Tab tab in children)
 				tabsSize += tab.LabelWidth;
 
+			var totalWidth = allocation.Width;
+
 			int[] sizes = new int[children.Length];
 			double ratio = (double) allocation.Width / (double) tabsSize;
-			if (ratio > 1)
-				ratio = 1;
 
-			var totalWidth = allocation.Width;
-			for (int n=0; n<children.Length; n++) {
-				var s = (int)((double)((Tab)children[n]).LabelWidth * ratio);
-				sizes[n] = s;
-				totalWidth -= s;
+			if (ratio > 1 && visualStyle.ExpandedTabs) {
+				// The tabs have to fill all the available space. To get started, assume that all tabs with have the same size 
+				var tsize = totalWidth / children.Length;
+				// Maybe the assigned size is too small for some tabs. If it happens the extra space it requires has to be taken
+				// from tabs which have surplus of space. To calculate it, first get the difference beteen the assigned space
+				// and the required space.
+				for (int n=0; n<children.Length; n++)
+					sizes[n] = tsize - ((Tab)children[n]).LabelWidth;
+
+				// If all is positive, nothing is left to do (all tabs have enough space). If there is any negative, it means
+				// that space has to be reassigned. The negative space has to be turned into positive by reducing space from other tabs
+				for (int n=0; n<sizes.Length; n++) {
+					if (sizes[n] < 0) {
+						ReduceSizes (sizes, -sizes[n]);
+						sizes[n] = 0;
+					}
+				}
+				// Now calculate the final space assignment of each tab
+				for (int n=0; n<children.Length; n++) {
+					sizes[n] += ((Tab)children[n]).LabelWidth;
+					totalWidth -= sizes[n];
+				}
+			} else {
+				if (ratio > 1)
+					ratio = 1;
+				for (int n=0; n<children.Length; n++) {
+					var s = (int)((double)((Tab)children[n]).LabelWidth * ratio);
+					sizes[n] = s;
+					totalWidth -= s;
+				}
 			}
-			// Spread the remaining size (resulting from rounding)
+
+			// There may be some remaining space due to rounding. Spread it
 			for (int n=0; n<children.Length && totalWidth > 0; n++) {
 				sizes[n]++;
 				totalWidth--;
@@ -219,6 +246,32 @@ namespace MonoDevelop.Components.Docking
 			// Assign the sizes
 			for (int n=0; n<children.Length; n++)
 				children[n].WidthRequest = sizes[n];
+		}
+
+		void ReduceSizes (int[] sizes, int amout)
+		{
+			// Homogeneously removes 'amount' pixels from the array of sizes, making sure
+			// no size goes below 0.
+			while (amout > 0) {
+				int part;
+				int candidates = sizes.Count (s => s > 0);
+				if (candidates == 0)
+					return;
+				part = Math.Max (amout / candidates, 1);
+
+				for (int n=0; n<sizes.Length && amout > 0; n++) {
+					var s = sizes [n];
+					if (s <= 0) continue;
+					if (s > part) {
+						s -= part;
+						amout -= part;
+					} else {
+						amout -= s;
+						s = 0;
+					}
+					sizes[n] = s;
+				}
+			}
 		}
 
 		internal class TabStripBox: HBox
@@ -229,15 +282,13 @@ namespace MonoDevelop.Components.Docking
 			{
 				if (TabStrip.VisualStyle.TabStyle == DockTabStyle.Normal) {
 					var alloc = Allocation;
-					var c = new HslColor (TabStrip.VisualStyle.PadBackgroundColor);
-					c.L *= 0.9;
 					Gdk.GC gc = new Gdk.GC (GdkWindow);
-					gc.RgbFgColor = c;
+					gc.RgbFgColor = TabStrip.VisualStyle.InactivePadBackgroundColor;
 					evnt.Window.DrawRectangle (gc, true, alloc);
 					gc.Dispose ();
 		
 					Gdk.GC bgc = new Gdk.GC (GdkWindow);
-					c = new HslColor (TabStrip.VisualStyle.PadBackgroundColor);
+					var c = new HslColor (TabStrip.VisualStyle.PadBackgroundColor);
 					c.L *= 0.7;
 					bgc.RgbFgColor = c;
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
@@ -258,6 +309,7 @@ namespace MonoDevelop.Components.Docking
 		DockVisualStyle visualStyle;
 		Image tabIcon;
 		DockFrame frame;
+		string label;
 		
 		const int TopPadding = 7;
 		const int BottomPadding = 7;
@@ -284,6 +336,13 @@ namespace MonoDevelop.Components.Docking
 
 		void UpdateVisualStyle ()
 		{
+			if (labelWidget != null && label != null) {
+				if (visualStyle.UppercaseTitles)
+					labelWidget.Text = label.ToUpper ();
+				else
+					labelWidget.Text = label;
+			}
+
 			if (tabIcon != null)
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon;
 			if (IsRealized) {
@@ -298,12 +357,9 @@ namespace MonoDevelop.Components.Docking
 
 		public void SetLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
-			Pango.EllipsizeMode oldMode = Pango.EllipsizeMode.End;
-			
+			this.label = label;
 			this.page = page;
 			if (Child != null) {
-				if (labelWidget != null)
-					oldMode = labelWidget.Ellipsize;
 				Gtk.Widget oc = Child;
 				Remove (oc);
 				oc.Destroy ();
@@ -322,7 +378,7 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new Gtk.Label (label);
 				labelWidget.UseMarkup = true;
-				labelWidget.Xalign = 0;
+				labelWidget.Xalign = 0.5f;
 				box.PackStart (labelWidget, true, true, 0);
 			} else {
 				labelWidget = null;
@@ -335,8 +391,6 @@ namespace MonoDevelop.Components.Docking
 			box.ShowAll ();
 			Show ();
 
-		//	if (labelWidget != null)
-		//		labelWidget.Ellipsize = oldMode;
 			UpdateVisualStyle ();
 		}
 		
@@ -444,10 +498,8 @@ namespace MonoDevelop.Components.Docking
 				gc.Dispose ();
 
 			} else {
-				c = new HslColor (tabStrip != null ? tabStrip.VisualStyle.PadBackgroundColor : frame.DefaultVisualStyle.PadBackgroundColor);
-				c.L *= 0.9;
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = c;
+				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor : frame.DefaultVisualStyle.InactivePadBackgroundColor;
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				gc.Dispose ();
 				evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);

@@ -838,18 +838,22 @@ namespace MonoDevelop.Ide.Gui
 			DockVisualStyle style = new DockVisualStyle ();
 			style.PadTitleLabelColor = Styles.PadLabelColor;
 			style.PadBackgroundColor = Styles.PadBackground;
+			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
 			dock.DefaultVisualStyle = style;
 
 			style = new DockVisualStyle ();
 			style.PadTitleLabelColor = Styles.PadLabelColor;
 			style.ShowPadTitleIcon = false;
+			style.UppercaseTitles = true;
+			style.ExpandedTabs = true;
 			style.PadBackgroundColor = Styles.BrowserPadBackground;
+			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
 			style.TreeBackgroundColor = Styles.BrowserPadBackground;
 //			dock.SetDockItemStyle ("ProjectPad", style);
 //			dock.SetDockItemStyle ("ClassPad", style);
 
 			dock.SetRegionStyle ("Documents/Left", style);
-			dock.SetRegionStyle ("Documents/Right", style);
+			//dock.SetRegionStyle ("Documents/Right", style);
 
 			// Add some hiden items to be used as position reference
 			DockItem dit = dock.AddItem ("__left");

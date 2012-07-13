@@ -41,6 +41,10 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color TabBarGradientStartColor = TabBarBackgroundColor;
 		public static readonly Cairo.Color TabBarGradientMidColor = Shift (TabBarBackgroundColor, 0.875);
 		public static readonly Cairo.Color TabBarGradientEndColor = Shift (TabBarBackgroundColor, 0.738);
+		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (1, 1, 1);
+		public static readonly Cairo.Color TabBarHoverActiveTextColor = new Cairo.Color (1, 1, 1);
+		public static readonly Cairo.Color TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
+		public static readonly Cairo.Color TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
 
 		public static readonly Cairo.Color BreadcrumbGradientStartColor = Shift (BreadcrumbBackgroundColor, 1.299);
 		public static readonly Cairo.Color BreadcrumbGradientEndColor = Shift (BreadcrumbBackgroundColor, 0.662);
@@ -57,16 +61,18 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color DockTabBarShadowGradientEnd = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 0);
 
 		public static readonly Gdk.Color PadBackground = new Gdk.Color (240, 240, 240);
+		public static readonly Gdk.Color InactivePadBackground = ReduceLight (PadBackground.ToCairoColor (), 0.9).ToGdkColor ();
 		public static readonly Gdk.Color PadLabelColor = new Gdk.Color (92, 99, 102);
 		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
 		public static readonly Gdk.Color DockSeparatorColor = new Gdk.Color (166, 166, 166);
+
+		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (219, 224, 231);
+		public static readonly Gdk.Color InactiveBrowserPadBackground = ReduceLight (BrowserPadBackground.ToCairoColor (), 0.9).ToGdkColor ();
 
 		public static readonly Cairo.Color DockBarBackground1 = PadBackground.ToCairoColor ();
 		public static readonly Cairo.Color DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
 		public static readonly Cairo.Color DockBarSeparatorColorDark = new Cairo.Color (0, 0, 0, 0.2);
 		public static readonly Cairo.Color DockBarSeparatorColorLight = new Cairo.Color (1, 1, 1, 0.3);
-
-		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (219, 224, 231);
 
 		public static readonly Cairo.Color StatusBarBorderColor = Styles.WidgetBorderColor;
 		public static readonly Cairo.Color StatusBarFill1Color = CairoExtensions.ParseColor ("eff5f7");
@@ -86,9 +92,9 @@ namespace MonoDevelop.Ide.Gui
 
 		internal static Cairo.Color Blend (Cairo.Color color, Cairo.Color targetColor, double factor)
 		{
-			return new Cairo.Color (color.R + ((color.R - targetColor.R) * factor),
-			                        color.G + ((color.G - targetColor.G) * factor),
-			                        color.B + ((color.B - targetColor.B) * factor),
+			return new Cairo.Color (color.R + ((targetColor.R - color.R) * factor),
+			                        color.G + ((targetColor.G - color.G) * factor),
+			                        color.B + ((targetColor.B - color.B) * factor),
 			                        color.A
 			                        );
 		}
