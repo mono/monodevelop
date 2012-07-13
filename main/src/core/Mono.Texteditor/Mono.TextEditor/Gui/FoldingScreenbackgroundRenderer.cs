@@ -29,7 +29,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class FoldingScreenbackgroundRenderer : IBackgroundRenderer
+	public class FoldingScreenbackgroundRenderer : IBackgroundRenderer, IDisposable
 	{
 		TextEditor editor;
 		List<FoldSegment> foldSegments;
@@ -44,10 +44,22 @@ namespace Mono.TextEditor
 			get { return editor.Document; }
 		}
 
+		readonly DateTime startTime;
+		uint timeout;
+		const uint animationLength = 200;
+
 		public FoldingScreenbackgroundRenderer (TextEditor editor, IEnumerable<FoldSegment> foldSegments)
 		{
 			this.editor = editor;
 			this.foldSegments = new List<FoldSegment> (foldSegments);
+			startTime = DateTime.Now;
+			timeout = GLib.Timeout.Add (30, delegate {
+				editor.QueueDraw ();
+				var cont = (DateTime.Now - startTime).TotalMilliseconds < animationLength;
+				if (!cont)
+					timeout = 0;
+				return cont;
+			});
 		}
 
 		HslColor GetColor (int i, double brightness, int colorCount)
@@ -66,7 +78,6 @@ namespace Mono.TextEditor
 		
 		public void Draw (Cairo.Context cr, Cairo.Rectangle area)
 		{
-
 			TextViewMargin textViewMargin = editor.TextViewMargin;
 			ISyntaxMode mode = Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 
@@ -77,39 +88,58 @@ namespace Mono.TextEditor
 			cr.Color = GetColor (-1, brightness, colorCount);
 			cr.Rectangle (area);
 			cr.Fill ();
-			for (int i = 0; i < foldSegments.Count; i++) {
-				FoldSegment segment = foldSegments [i];
+			var rectangles = new Cairo.Rectangle[foldSegments.Count];
+			const int xPadding = 4;
+			const int yPadding = 2;
+			const int rightMarginPadding = 16;
+			for (int i = foldSegments.Count - 1; i >= 0 ; i--) {
+				var segment = foldSegments [i];
+				var segmentStartLine = segment.StartLine;
+				var segmentEndLine = segment.EndLine;
+
+				int curWidth = 0;
+				for (var curLine = segmentStartLine; curLine != segmentEndLine; curLine = curLine.NextLine) {
+					var curLayout = textViewMargin.CreateLinePartLayout (mode, curLine, curLine.Offset, curLine.Length, -1, -1);
+					var width = (int)(curLayout.PangoWidth / Pango.Scale.PangoScale);
+					curWidth = System.Math.Max (curWidth, width);
+				}
 
 				double xPos = textViewMargin.XOffset;
 				double rectangleWidth = 0, rectangleHeight = 0;
-
-				DocumentLine segmentStartLine = segment.StartLine;
+				
 				lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentStartLine, segmentStartLine.Offset, segmentStartLine.Length, -1, -1);
 				var rectangleStart = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
-				xPos = System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + textViewMargin.TextStartPosition + rectangleStart.X / Pango.Scale.PangoScale - editor.HAdjustment.Value));
-				
-				DocumentLine segmentEndLine = segment.EndLine;
+				xPos = System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + textViewMargin.TextStartPosition + rectangleStart.X / Pango.Scale.PangoScale) - xPadding);
+
 				lineLayout = textViewMargin.CreateLinePartLayout (mode, segmentEndLine, segmentEndLine.Offset, segmentEndLine.Length, -1, -1);
-				var rectangleEnd = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
-				xPos = System.Math.Min (xPos, System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + textViewMargin.TextStartPosition + rectangleEnd.X / Pango.Scale.PangoScale - editor.HAdjustment.Value)));
 				
-				int width = editor.Allocation.Width;
-				if (editor.HAdjustment.Upper > width) {
-					width = (int)(textViewMargin.XOffset + editor.HAdjustment.Upper - editor.HAdjustment.Value);
+				var rectangleEnd = lineLayout.Layout.IndexToPos (GetFirstNonWsIdx (lineLayout.Layout.Text));
+				xPos = System.Math.Min (xPos, System.Math.Max (textViewMargin.XOffset, (textViewMargin.XOffset + textViewMargin.TextStartPosition + rectangleEnd.X / Pango.Scale.PangoScale) - xPadding));
+
+				rectangleWidth = textViewMargin.XOffset + textViewMargin.TextStartPosition + curWidth - xPos + xPadding * 2;
+
+				if (i < foldSegments.Count - 1) {
+					rectangleWidth = System.Math.Max ((rectangles [i + 1].X + rectangles[i + 1].Width + rightMarginPadding) - xPos, rectangleWidth);
 				}
-				rectangleWidth = (int)(width - xPos - 6 * (i + 1));
+
 				var y = editor.LineToY (segment.StartLine.LineNumber);
 				var yEnd = editor.LineToY (segment.EndLine.LineNumber + 1);
 				if (yEnd == 0)
 					yEnd = editor.VAdjustment.Upper;
 				rectangleHeight = yEnd - y;
 
+				rectangles[i] = new Cairo.Rectangle (xPos, y - yPadding, rectangleWidth, rectangleHeight + yPadding * 2);
+			}
+
+			for (int i = 0; i < foldSegments.Count; i++) {
+				var rect = rectangles[i];
+
 				if (i == foldSegments.Count - 1) {
-					var radius = (int)(editor.Options.Zoom * 2);
+/*					var radius = (int)(editor.Options.Zoom * 2);
 					int w = 2 * radius;
 					using (var shadow = new Blur (
-						System.Math.Min ((int)rectangleWidth + w * 2, editor.Allocation.Width),
-						System.Math.Min ((int)rectangleHeight + w * 2, editor.Allocation.Height), 
+						System.Math.Min ((int)rect.Width + w * 2, editor.Allocation.Width),
+						System.Math.Min ((int)rect.Height + w * 2, editor.Allocation.Height), 
 						radius)) {
 						using (var gctx = shadow.GetContext ()) {
 							gctx.Color = new Cairo.Color (0, 0, 0, 0);
@@ -117,21 +147,46 @@ namespace Mono.TextEditor
 
 							var a = 0;
 							var b = 0;
-							DrawRoundRectangle (gctx, true, true, w - a, w - b, editor.LineHeight / 4, rectangleWidth + a * 2, rectangleHeight + a * 2);
+							DrawRoundRectangle (gctx, true, true, w - a, w - b, editor.LineHeight / 4, rect.Width + a * 2, rect.Height + a * 2);
 							var bg = editor.ColorStyle.Default.CairoColor;
 							gctx.Color = new Cairo.Color (bg.R, bg.G, bg.B, 0.6);
 							gctx.Fill ();
 						}
 
 						cr.Save ();
-						cr.Translate (xPos - w, y - editor.VAdjustment.Value - w);
+						cr.Translate (rect.X - w - editor.HAdjustment.Value, rect.Y - editor.VAdjustment.Value - w);
 						shadow.Draw (cr);
 						cr.Restore ();
+					}*/
+
+					var curPadSize = 2;
+
+					var age = (DateTime.Now - startTime).TotalMilliseconds;
+					var alpha = 0.1;
+					if (age < animationLength) {
+						var animationState = age / (double)animationLength;
+						curPadSize = (int)(4 + System.Math.Sin (System.Math.PI * animationState) * 4);
+						alpha = 0.1 + (1.0 - animationState) / 5;
+					}
+
+					var bg = editor.ColorStyle.Default.CairoColor;
+					cr.Color = new Cairo.Color (bg.R, bg.G, bg.B, alpha);
+					DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize , rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2);
+					cr.Fill ();
+
+					if (age < animationLength) {
+						var animationState = age / (double)animationLength;
+						curPadSize = (int)(3 + System.Math.Sin (System.Math.PI * animationState) * 3);
+						DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize + 2, rect.Y - editor.VAdjustment.Value - curPadSize + 2, editor.LineHeight / 2, rect.Width + curPadSize * 2 - 4, rect.Height + curPadSize * 2 - 4);
+						cr.Color = GetColor (i, brightness, colorCount);
+						cr.Fill ();
+
+						continue;
 					}
 				}
 
-				DrawRoundRectangle (cr, true, true, xPos, y - editor.VAdjustment.Value, editor.LineHeight / 4, rectangleWidth, rectangleHeight);
-
+				DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value, rect.Y - editor.VAdjustment.Value, editor.LineHeight / 2, rect.Width, rect.Height);
+				
 				cr.Color = GetColor (i, brightness, colorCount);
 				cr.Fill ();
 			}
@@ -207,5 +262,14 @@ namespace Mono.TextEditor
 			return 0;
 		}
 		
+		#region IDisposable implementation
+		void IDisposable.Dispose ()
+		{
+			if (timeout != 0) {
+				GLib.Source.Remove (timeout);
+				timeout = 0;
+			}
+		}
+		#endregion
 	}
 }

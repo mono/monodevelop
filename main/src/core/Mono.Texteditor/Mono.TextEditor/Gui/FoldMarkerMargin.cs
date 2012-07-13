@@ -159,9 +159,23 @@ namespace Mono.TextEditor
 				RemoveBackgroundRenderer ();
 			}
 		}
-		
+		List<FoldSegment> oldFolds;
 		bool SetBackgroundRenderer ()
 		{
+			List<FoldSegment> curFolds = new List<FoldSegment> (foldings);
+			if (oldFolds != null && oldFolds.Count == curFolds.Count) {
+				bool same = true;
+				for (int i = 0; i < curFolds.Count; i++) {
+					if (oldFolds[i] != curFolds [i]) {
+						same = false;
+						break;
+					}
+				}
+				if (same)
+					return false;
+			}
+
+			oldFolds = curFolds;
 			editor.TextViewMargin.DisposeLayoutDict ();
 			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, foldings);
 			editor.QueueDraw ();

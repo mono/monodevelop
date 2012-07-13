@@ -175,6 +175,11 @@ namespace Mono.TextEditor
 		bool SetBackgroundRenderer ()
 		{
 			editor.TextViewMargin.DisposeLayoutDict ();
+
+			var disposable = editor.TextViewMargin.BackgroundRenderer as IDisposable;
+			if (disposable != null)
+				disposable.Dispose ();
+			
 			editor.TextViewMargin.BackgroundRenderer = new FoldingScreenbackgroundRenderer (editor, foldings);
 			editor.QueueDraw ();
 			timerId = 0;
