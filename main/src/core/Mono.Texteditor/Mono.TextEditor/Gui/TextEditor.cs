@@ -437,7 +437,7 @@ namespace Mono.TextEditor
 			HideTooltip ();
 			ResetIMContext ();
 			
-			if (Caret.AutoScrollToCaret)
+			if (Caret.AutoScrollToCaret && HasFocus)
 				ScrollToCaret ();
 			
 //			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
