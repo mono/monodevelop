@@ -658,7 +658,8 @@
               <widget class="Gtk.CheckButton" id="enableFSharp3">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Enable (FSharp.Compiler v4.3.0.0 etc.)</property>
+                <property name="Label" translatable="yes">Enable if available</property>
+                <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>

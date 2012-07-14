@@ -324,11 +324,12 @@ type internal LanguageService private () =
 
   /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
   /// Not yet sure if this works for scripts.
-  let fakeDateTimeRepresentingTimeLoaded proj = System.DateTime(int64 (match proj with null -> 0 | _ -> proj.GetHashCode()))
+  let fakeDateTimeRepresentingTimeLoaded proj = System.DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
+  
 
   // ------------------------------------------------------------------------------------
 
-    // Create an instance of interactive checker. The callback is called by the F# compiler service
+  // Create an instance of interactive checker. The callback is called by the F# compiler service
   // when its view of the prior-typechecking-state of the start of a file has changed, for example
   // when the background typechecker has "caught up" after some other file has been changed, 
   // and its time to re-typecheck the current file.
@@ -343,10 +344,11 @@ type internal LanguageService private () =
                              Debug.tracef "Parsing" "Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file
                              doc.ReparseDocument()
                         with _ -> ()))
-      let lastVersion = ref FSharpCompilerVersion.CurrentVersion
+      // Nuke the checker when the current requested language version changes
+      let lastVersion = ref FSharpCompilerVersion.CurrentRequestedVersion
       let lastChecker = ref (create())
       fun () -> 
-          let currentVer = FSharpCompilerVersion.CurrentVersion
+          let currentVer = FSharpCompilerVersion.CurrentRequestedVersion
           if currentVer <> lastVersion.Value then 
               lastChecker := create()
               lastVersion := currentVer
