@@ -168,5 +168,10 @@ namespace MonoDevelop.AspNet.Mvc
 			: base (languageName, info, projectOptions)
 		{
 		}
+
+		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
+		{
+			return framework.IsCompatibleWithFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
+		}
 	}
 }
