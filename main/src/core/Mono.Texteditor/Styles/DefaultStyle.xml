@@ -1,9 +1,9 @@
-<!-- DefaultStyle.xml
+<!-- Default.xml
 
-	Author:
-		Mike Krüger <mkrueger@novell.com>
+ Authors: Lauri Taimila <lauri@taimila.com>
+ 		  David Siegel <david.siegel@xamarin.com>
 
- Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+ Copyright (c) Lauri Taimila (www.taimila.com)
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,131 +22,80 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
- <EditorStyle name="Default" _description="Default style.">
+ <EditorStyle name="Default" _description="Bright and friendly, just like Xamarin.">
  
-	<!-- tango palette -->
-	<Color name="butter1" value="#fce94f"/>
-	<Color name="butter2" value="#edd400"/>
-	<Color name="butter3" value="#c4a000"/>
-	<Color name="orange1" value="#fcaf3e"/>
-	<Color name="orange2" value="#f57900"/>
-	<Color name="orange3" value="#ce5c00"/>
-	<Color name="chocolate1" value="#e9b96e"/>
-	<Color name="chocolate2" value="#c17d11"/>
-	<Color name="chocolate3" value="#8f5902"/>
-	<Color name="chameleon1" value="#8ae234"/>
-	<Color name="chameleon2" value="#73d216"/>
-	<Color name="chameleon3" value="#4e9a06"/>
-	<Color name="skyblue1" value="#729fcf"/>
-	<Color name="skyblue2" value="#3465a4"/>
-	<Color name="skyblue3" value="#204a87"/>
-	<Color name="plum1" value="#ad7fa8"/>
-	<Color name="plum2" value="#75507b"/>
-	<Color name="plum3" value="#5c3566"/>
-	<Color name="scarletred1" value="#ef2929"/>
-	<Color name="scarletred2" value="#cc0000"/>
-	<Color name="scarletred3" value="#a40000"/>
+	<!-- XCode palette -->
+	<Color name="comment-green" value="#23972d"/>
+	<Color name="string-red" value="#ce2f30"/>
+	<Color name="keyword-purple" value="#c12dad"/>
+	<Color name="method-purple" value="#653c98"/>
+	<Color name="type-purple" value="#8046b0" />
+	<Color name="constant-purple" value="#4d16d8"/>
+	<Color name="method-cyan" value="#506f73"/>
+	<Color name="macro-brown" value="#774b31"/>
+	<Color name="linenumber-gray" value="#D5D1C6"/>
+	<Color name="selection-bg" value="#EBF7F8"/>
 	<Color name="aluminium1" value="#eeeeec"/>
 	<Color name="aluminium2" value="#d3d7cf"/>
 	<Color name="aluminium3" value="#babdb6"/>
 	<Color name="aluminium4" value="#888a85"/>
 	<Color name="aluminium5" value="#555753"/>
 	<Color name="aluminium6" value="#2e3436"/>
+	<Color name="lightgreen" value="#b4e4b4"/>
+	<Color name="invalid-red" value="#C44D58"/>
+	<Color name="bookmark-purple" value="#bfd2f9"/>
 	
-	<Color name="Zombie" value="#A8FBA8"/>
-	<Color name="Lawn" value="#58EB58"/>
+	<!-- environment -->
+	<Style name="text" color="black" bgColor="white"/>
+	<Style name="text.selection" color="black" bgColor="selection-bg"/>
+	<Style name="text.background.searchresult" color="yellow"/>
 	
-	<!-- color styles -->
-	<Style name="text" color="black" bgColor="white">
-		<Style name="background" color="white">
-			<Style name="readonly" color="#FAFAFA"/>
-			<Style name="searchresult-main" color="#f3d647"/>
-			<Style name="searchresult" color="#ffe2b9"/>
-		</Style>
-		<Style name="selection" bgColor="#c3dcff"/>
-		<Style name="selection.inactive" bgColor="#e1edff"/>
-		<Style name="link" color="blue"/>
-		<Style name="punctuation" color="aluminium6"/>
-		<Style name="preprocessor" color="#725334">
-			<Style name="keyword" color="#5e452b" />
-		</Style>
-		<Style name="markup" color="skyblue3">
-			<Style name="attribute" weight="italic"/>
-			<Style name="tag"/>
-		</Style>
-	</Style>
+	<Style name="marker.template.primary_template" color="lightgreen" bgColor="lightgreen"/>
+	<Style name="marker.template.primary_highlighted_template" color="black" bgColor="lightgreen"/>
+	<Style name="marker.template.secondary_template" color="white" bgColor="white"/>
+	<Style name="marker.template.secondary_highlighted_template" color="gray" bgColor="white"/>
 	
-	<Style name="template" color ="black" bgColor="#fdfaed">
-		<Style name="tag" color ="black" bgColor="#fdf0bd"/>
-	</Style>
+	<Style name="text.link" color="method-cyan"/>
 	
-	<Style name="diff">
-		<Style name="line-added" color="Blue"/>
-		<Style name="line-removed" color="Red"/>
-		<Style name="line-changed" color="Green"/>
-		
-		<Style name="header" color="Magenta"/>
-		<Style name="header-seperator" color="Magenta"/>
-		<Style name="header-oldfile" color="Red"/>
-		<Style name="header-newfile" color="Blue"/>
-		
-		<Style name="location" color="Magenta"/>
-	</Style>
+	<Style name="caret" color="black" bgColor="white"/>
 	
-	<Style name="marker">
-		<Style name="line" color="aluminium1"/>
-		<Style name="line.changed" color="#90EE90"/>
-		<Style name="line.dirty" color="#EEEE50"/>
+	<Style name="marker.line" color="aluminium1"/>
 	
-		<Style name="ruler" color="aluminium3"/>
-		<Style name="bracket" color="aluminium2" bgColor="aluminium1"/>
-		<Style name="usages" color="aluminium1" bgColor="#f5f5f5"/>
-		
-		<Style name="bookmark.color1" color="white"/>
-		<Style name="bookmark.color2" color="skyblue1"/>
-<!--		<Style name="underline" color="scarletred1">
-			<Style name="error" color="scarletred1"/>
-			<Style name="warning" color="butter3"/>
-			<Style name="warning" color="butter3"/>
-		</Style>-->
-		
-		<Style name="template">
-			<Style name="primary_template" color="aluminium2" bgColor="Zombie"/>
-			<Style name="primary_highlighted_template" color="Zombie" bgColor="Lawn"/>
-			
-			<Style name="secondary_template" color="aluminium2" bgColor="white"/>
-			<Style name="secondary_highlighted_template" color="aluminium3" bgColor="aluminium1"/>
-		</Style>
-	</Style>
+	<Style name="marker.ruler" color="aluminium3"/>
+	<Style name="marker.whitespace" color="method-cyan"/>
+	<Style name="marker.invalidline" color="invalid-red"/>
+	<Style name="marker.bracket" color="aluminium4" bgColor="aluminium1"/>
 	
-	<Style name="bubble">
-		<Style name="warning" color="aluminium5" bgColor="#f4eeda"/>
-		<Style name="error" color="aluminium5" bgColor="#f5eae7"/>
-	</Style>
-
-	<Style name="linenumber" color="aluminium4" bgColor="#FDFDFF"/>
+	<Style name="marker.bookmark.color1" color="black"/>
+	<Style name="marker.bookmark.color2" color="bookmark-purple"/>
 	
-	<Style name="iconbar" color="#FDFDFF"/>
+	<Style name="linenumber" color="linenumber-gray" bgColor="white"/>
+	<Style name="linenumber.highlight" color="linenumber-gray"/>
+	
+	<Style name="iconbar" color="aluminium1"/>
 	<Style name="iconbar.separator" color="aluminium3"/>
+	
+	<Style name="fold" color="aluminium3" bgColor="white"/>
+	<Style name="fold.highlight" color="aluminium5"/>
+	<Style name="fold.togglemarker" color="black"/>
+	
+	<!-- highlighting -->
+	<Style name="comment" color="comment-green"/>
 
-	<Style name="fold" color="aluminium4" bgColor="aluminium1"/>
-	<Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
+	<Style name="text.preprocessor" color="macro-brown"/>
+	<Style name="text.markup" color="macro-brown"/>
 	
-	<Style name="comment"  weight="italic" color="#5e9423">
-		<Style name="keyword" color="#436a19"/>
+	<Style name="constant" color="constant-purple"/>
+	<Style name="constant.language" color="method-purple"/>
+
+	<Style name="string" color="string-red"/>
+	<Style name="string.single" color="string-red"/>
+	<Style name="string.double" color="string-red"/>
+	<Style name="string.other" color="string-red"/>
+	
+	<Style name="keyword.semantic.type" color="type-purple"/>
+	<Style name="keyword" color="keyword-purple">
+		<Style name="access"/>
 	</Style>
 	
-	<Style name="constant" color="#AE4CAF">
-		<Style name="language.void" color = "Blue"/>
-	</Style>
-	
-	<Style name="string" color="#AE4CAF" />
-	
-	<Style name="keyword" color="#3411d8">
-		<Style name="semantic.type" color="#769097"/>
-		<Style name="semantic.field" color="#6e42ae"/>
-		<Style name="semantic.property" color="#6e42ae"/>
-		<Style name="semantic.error" color="red"/>
-	</Style>
 </EditorStyle>
-
