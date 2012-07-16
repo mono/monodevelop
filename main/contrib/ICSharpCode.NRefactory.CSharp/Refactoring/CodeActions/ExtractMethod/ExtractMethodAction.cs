@@ -139,14 +139,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				afterExtractedRegion.SetAnalyzedRange(lastStatement, stmt.Statements.Last(), false, true);
 				stmt.AcceptVisitor (afterExtractedRegion);
 				usedVariables.Sort ((l, r) => l.Region.Begin.CompareTo (r.Region.Begin));
+				
+				IVariable generatedReturnVariable = null;
+				foreach (var variable in usedVariables) {
+					if ((variable is IParameter) || beforeExtractedRegion.Has (variable) || !afterExtractedRegion.Has (variable))
+						continue;
+					generatedReturnVariable = variable;
+					method.ReturnType = context.CreateShortType (variable.Type);
+					method.Body.Add (new ReturnStatement (new IdentifierExpression (variable.Name)));
+					break;
+				}
+				
 				foreach (var variable in usedVariables) {
 					if (!(variable is IParameter) && !beforeExtractedRegion.Has (variable) && !afterExtractedRegion.Has (variable))
+						continue;
+					if (variable == generatedReturnVariable)
 						continue;
 					Expression argumentExpression = new IdentifierExpression(variable.Name); 
 					
 					ParameterModifier mod = ParameterModifier.None;
 					if (inExtractedRegion.GetStatus (variable) == VariableState.Changed) {
-						
 						if (beforeExtractedRegion.GetStatus (variable) == VariableState.None) {
 							mod = ParameterModifier.Out;
 							argumentExpression = new DirectionExpression(FieldDirection.Out, argumentExpression);
@@ -167,10 +179,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					foreach (var variable in usedVariables) {
 						if ((variable is IParameter) || beforeExtractedRegion.Has (variable) || !afterExtractedRegion.Has (variable))
 							continue;
+						if (variable == generatedReturnVariable)
+							continue;
 						script.InsertBefore (statements [0], new VariableDeclarationStatement (context.CreateShortType(variable.Type), variable.Name));
 					}
+					AstNode invocationStatement;
 					
-					var invocationStatement = new ExpressionStatement(invocation);
+					if (generatedReturnVariable != null) {
+						invocationStatement = new VariableDeclarationStatement (new SimpleType ("var"), generatedReturnVariable.Name, invocation);
+					} else {
+						invocationStatement = new ExpressionStatement(invocation);
+					}
 					script.Replace(statements [0], invocationStatement);
 					
 					
