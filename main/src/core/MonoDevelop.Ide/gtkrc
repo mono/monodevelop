@@ -1,0 +1,284 @@
+# Mac Theme for Xamarian composed by Lanedo GmbH
+# Copyright 2012 Christian Kellner <christian.kellner@lanedo.com>
+
+gtk-color-scheme =
+"bg_color:         #f5f5f5
+fg_color:          #000
+base_color:        #fff
+text_color:        #000
+selected_bg_color: #62b3ec
+selected_fg_color: #fff
+tooltip_bg_color:  #fff9e5
+tooltip_fg_color:  #000"
+
+gtk-button-images     = 0
+gtk-menu-images       = 0
+gtk-toolbar-style     = 0
+gtk-enable-mnemonics  = 0
+gtk-icon-sizes        = "gtk-small-toolbar=16,16:gtk-large-toolbar=22,22"
+gtk-toolbar-icon-size = large-toolbar
+gtk-auto-mnemonics    = 1
+
+
+style "default" {
+    xthickness = 1
+    ythickness = 1
+
+    ### colours
+    bg[NORMAL]        = @bg_color
+    bg[PRELIGHT]      = @bg_color
+    bg[SELECTED]      = @selected_bg_color
+    bg[INSENSITIVE]   = @bg_color
+    bg[ACTIVE]        = @bg_color
+
+    fg[NORMAL]        = @fg_color
+    fg[PRELIGHT]      = @fg_color
+    fg[SELECTED]      = @selected_fg_color
+    fg[INSENSITIVE]   = darker (@bg_color)
+    fg[ACTIVE]        = @fg_color
+
+    text[NORMAL]      = @text_color
+    text[PRELIGHT]    = @text_color
+    text[SELECTED]    = @selected_fg_color
+    text[INSENSITIVE] = darker (@bg_color)
+    text[ACTIVE]      = @selected_fg_color
+
+    base[NORMAL]      = @base_color
+    base[PRELIGHT]    = @selected_bg_color
+    base[SELECTED]    = @selected_bg_color
+    base[INSENSITIVE] = @bg_color
+    base[ACTIVE]      = @selected_bg_color
+
+    ### style properties
+    GtkWidget::new-tooltip-style = 1
+
+    GtkEntry::honors-transparent-bg-hint = 1
+
+    GtkButton::child-displacement-x = 0
+    GtkButton::child-displacement-y = 0
+    GtkButton::default-border = { 0, 0, 0, 0 }
+    GtkButton::inner-border = { 0, 0, 0, 0 }
+
+    GtkTreeView::odd-row-color = @base_color
+
+    engine "xamarin" {
+
+        arrowstyle = 2
+        rgba       = TRUE
+        roundness  = 3
+        glazestyle = 0
+
+        menustyle        = 0
+        menuitemstyle    = 0
+        menubaritemstyle = 0
+        comboboxstyle    = 1
+        spinbuttonstyle  = 1
+    }
+}
+
+style "wide" = "default" {
+    xthickness = 2
+    ythickness = 2
+}
+
+style "wider" = "default" {
+    xthickness = 3
+    ythickness = 3
+}
+
+
+style "button" {
+    xthickness = 0
+    ythickness = 0
+
+    bg[NORMAL]      = @base_color
+    bg[PRELIGHT]    = @bg_color
+    bg[ACTIVE]      = shade(0.7, @bg_color)
+    bg[INSENSITIVE] = @bg_color
+
+    engine "xamarin" {
+        contrast = 1.0
+        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+        focus_color         = shade(0.6, @bg_color)
+        textstyle           = 1
+      }
+}
+
+style "menu" {
+    xthickness = 0
+    ythickness = 0
+
+    fg[PRELIGHT] = @selected_fg_color
+
+    engine "xamarin" {
+        roundness = 3
+        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+    }
+}
+
+style "menu-item" {
+    xthickness = 0
+    ythickness = 3
+
+    fg[PRELIGHT] = @selected_fg_color
+
+    engine "xamarin" {
+        roundness = 0
+        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+    }
+}
+
+style "toolbar" = "default"
+{
+    bg[NORMAL] = "#ddd"
+    engine "xamarin" {
+        toolbarstyle = 2
+    }
+}
+
+style "toolbar-button"
+{
+    engine "xamarin" {
+        contrast = 1.0
+        focus_color         = @bg_color
+      }
+}
+
+style "tooltip"
+{
+    xthickness = 5
+    ythickness = 5
+
+    fg[NORMAL] = @tooltip_fg_color
+    bg[NORMAL] = @tooltip_bg_color
+}
+
+style "treeview" = "default"
+{
+    text[ACTIVE] = @text_color
+    text[SELECTED] = @selected_fg_color
+
+    base[ACTIVE] = @base_color
+    base[SELECTED] = @selected_bg_color
+
+    GtkTreeView::odd-row-color = "#f5f5f5"
+
+    engine "xamarin" {
+        roundness = 0
+        gradient_shades     = {1.0, 1.0, 1.0, 1.0}
+    }
+}
+
+style "tree-header" = "wide"
+{
+    bg[NORMAL] = "#f2f2f2"
+
+    engine "xamarin" {
+        listviewheaderstyle = 3
+        separatorstyle = 1
+    }
+}
+
+style "icon-view" = "default"
+{
+    bg[SELECTED] = "#f5f7fa"
+    base[SELECTED] = "#f5f7fa"
+    fg[SELECTED] = "#000"
+    text[SELECTED] = "#000"
+}
+
+style "toolbar-combo-box" = "default"
+{
+    fg[NORMAL] = "#737373"
+    text[NORMAL] = "#737373"
+    bg[NORMAL] = "#fff"
+    base[NORMAL] = "#fff"
+    ythickness = 0
+
+    engine "xamarin" {
+	comboboxstyle = 0
+        arrowstyle = 2
+    }
+}
+
+style "combo-box" = "default"
+{
+    fg[NORMAL] = "#616161"
+
+    engine "xamarin" {
+        arrowstyle = 3
+    }
+}
+
+style "combo-box-label" = "combo-box"
+{
+    fg[NORMAL] = "#595959"
+}
+
+style "notebook" = "default"
+{
+    GtkNotebook::tab-overlap = 1
+    bg[ACTIVE] = "#e9e9e9"
+}
+
+style "radio-button" = "default"
+{
+    GtkCheckButton::indicator-size = 15
+    text[NORMAL] = lighter (@text_color)
+    base[NORMAL] = @base_color
+    text[ACTIVE] = lighter(@text_color)
+}
+
+style "check-box" = "default"
+{
+    GtkCheckButton::indicator-size = 15
+    base[NORMAL] = "#f8f8f8"
+    text[NORMAL] = "#404040"
+    text[ACTIVE] = "#404040"
+}
+
+style "search-entry" = "wider"
+{
+    GtkEntry::inner-border = { 0, 0, 0, 0 }
+    xthickness = 6
+    ythickness = 4
+    bg[NORMAL] = @base_color
+}
+
+### Apply the styles
+class "GtkWidget"    style "default"
+
+class "GtkEntry"     style "wider"
+class "GtkFrame"     style "wide"
+class "GtkRange"     style "wide"
+class "GtkSeparator" style "wide"
+
+class "GtkRadioButton" style "radio-button"
+class "GtkCheckButton" style "check-box"
+
+widget "*search-entry*" style "search-entry"
+
+widget_class "*<GtkButton>"     style "button"
+
+widget_class "*<GtkMenu>*"      style "menu"
+widget_class "*<GtkMenuItem>*"  style "menu-item"
+
+widget_class "*<GtkToolbar>*" style "toolbar"
+widget_class "*ToolButton*"     style "toolbar-button"
+
+widget_class "*.<GtkTreeView>*"         style "treeview"
+widget_class "*.GtkTreeView.GtkButton"  style "tree-header"
+widget_class "*.GtkList.GtkButton"  style "tree-header"
+
+widget_class "*<GtkIconView>" style "icon-view"
+
+widget_class "*.<GtkComboBox>.*" style "combo-box"
+widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
+
+# Comboboxes within toolbars
+widget_class "*.<GtkToolbar>.*.<GtkComboBox>.*" style "toolbar-combo-box"
+widget_class "*.<GtkEventBox>.*.<GtkComboBox>.*" style "toolbar-combo-box"
+
+widget_class "*<GtkNotebook>" style "notebook"
+
+widget "gtk-tooltip*"       style "tooltip"

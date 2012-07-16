@@ -89,7 +89,9 @@ namespace MonoDevelop.Ide
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
-			
+
+			SetupTheme ();
+
 			//OSXFIXME
 			var args = options.RemainingArgs.ToArray ();
 			Gtk.Application.Init ("monodevelop", ref args);
@@ -279,6 +281,13 @@ namespace MonoDevelop.Ide
 			InstrumentationService.Stop ();
 			
 			return 0;
+		}
+
+		void SetupTheme ()
+		{
+			// Use the bundled gtkrc only if the Xamarin theme is installed
+			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll")))
+				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine ("gtkrc"));
 		}
 		
 		public bool Initialized {
